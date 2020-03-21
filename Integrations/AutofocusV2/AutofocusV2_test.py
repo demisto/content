@@ -89,19 +89,23 @@ INDICATOR_RES = {
 
 def test_parse_indicator_response():
     from AutofocusV2 import parse_indicator_response
-    indicator = parse_indicator_response(IP_RES_JSON, 'IP')
+    raw_indicator = IP_RES_JSON['indicator']
+    raw_tags = IP_RES_JSON['tags']
+    indicator = parse_indicator_response(raw_indicator, raw_tags, 'IP')
     assert json.dumps(indicator) == json.dumps(INDICATOR_RES)
 
 
 def test_calculate_dbot_score():
     from AutofocusV2 import calculate_dbot_score
-    score = calculate_dbot_score(IP_RES_JSON, 'IP')
+    raw_indicator = IP_RES_JSON['indicator']
+    score = calculate_dbot_score(raw_indicator, 'IP')
     assert score == 3
 
 
 def test_calculate_dbot_score_file():
     from AutofocusV2 import calculate_dbot_score
-    score = calculate_dbot_score(FILE_RES_JSON, 'File')
+    raw_indicator = IP_RES_JSON['indicator']
+    score = calculate_dbot_score(raw_indicator, 'File')
     assert score == 3
 
 
