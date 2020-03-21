@@ -26,6 +26,6 @@
     "adaptive cyber protection",
     "apt"
   ],
-  "price": "0",
+  "price": 0,
   "dependencies": {}
 }
