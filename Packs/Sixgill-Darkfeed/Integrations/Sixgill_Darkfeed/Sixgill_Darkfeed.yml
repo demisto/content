@@ -81,7 +81,7 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-description: Sixgill's premium underground intelligence collection capabilities, real-time collection and advanced warning about IOCs to help you keep your edge against unknown threats.
+description: Leverage the power of Sixgill to supercharge Demisto with real-time Threat Intelligence indicators. Get IOCs such as domains, URLs, hashes, and IP addresses straight into the Demisto platform.
 display: Sixgill DarkFeed™ Threat Intelligence
 name: Sixgill_Darkfeed
 script:

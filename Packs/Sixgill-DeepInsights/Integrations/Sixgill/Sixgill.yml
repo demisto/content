@@ -58,7 +58,7 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-description: Define key assets relevant to your brand, industry and geolocation. Obtain bespoke threat intelligence automatically gathered from exclusive deep, dark and surface web sources--delivered straight into the Anomali platform.
+description: Define key assets relevant to your brand, industry and geolocation. Obtain bespoke threat intelligence automatically gathered from exclusive deep, dark and surface web sources-delivered straight into the Demisto platform. Detailed actionable insights include the assessment of the event, the relevant intelligence item, and recommendations for action.
 display: Sixgill Deep Insights
 name: Sixgill
 script:
