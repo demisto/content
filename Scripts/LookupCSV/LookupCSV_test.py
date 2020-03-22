@@ -1,5 +1,6 @@
 import json
 import demistomock as demisto
+import pytest
 
 
 class TestLookupCSV:
@@ -41,13 +42,56 @@ class TestLookupCSV:
             "name": file_path.split("/")[-1]
         }
 
-    def test_main_csv_utf8(self, mocker):
+    def test_main_csv(self, mocker):
         from LookupCSV import main
         with open("./TestData/simple_results.json") as f:
             expected = json.load(f)
         self.mock_demisto(mocker, file_obj=self.create_file_object("./TestData/simple.csv"))
-        print(demisto.args())
         main()
         result = self.get_demisto_results()
-        print(result)
         assert expected == result
+
+    def test_main_csv_no_headers(self, mocker):
+        from LookupCSV import main
+        args_value = {
+            "entryID": "entry_id",
+        }
+
+        with open("./TestData/simple_no_header_results.json") as f:
+            expected = json.load(f)
+        self.mock_demisto(mocker, file_obj=self.create_file_object("./TestData/simple_no_header.csv"),
+                          args_value=args_value)
+        main()
+        result = self.get_demisto_results()
+        assert expected == result
+
+    def test_main_csv_search(self, mocker):
+        from LookupCSV import main
+        with open("./TestData/column_search_results.json") as f:
+            expected = json.load(f)
+
+        args_value = {
+            "entryID": "entry_id",
+            "header_row": "true",
+            "column": "sourceIP",
+            "value": "1.1.1.1"
+        }
+        self.mock_demisto(mocker, file_obj=self.create_file_object("./TestData/column_search.csv"),
+                          args_value=args_value)
+        main()
+        result = self.get_demisto_results()
+        assert expected == result
+
+    def test_main_csv_broken_search(self, mocker):
+        from LookupCSV import main
+        args_value = {
+            "entryID": "entry_id",
+            "header_row": "true",
+            "column": "sourceIP",
+            "value": "1.1.1.1"
+        }
+        self.mock_demisto(mocker, file_obj=self.create_file_object("./TestData/column_search.txt"),
+                          args_value=args_value)
+        with pytest.raises(SystemExit):
+            # Raises using return_error due to invalid file spec (.txt, not .csv)
+            main()
