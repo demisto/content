@@ -4,10 +4,12 @@ from CommonServerUserPython import *
 
 import json
 from base64 import b64decode
+from multiprocessing import Process
 from gevent.pywsgi import WSGIServer
 from tempfile import NamedTemporaryFile
 from flask import Flask, Response, request
 from netaddr import IPAddress, iprange_to_cidrs
+from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
 from typing import Callable, List, Any, cast, Dict, Tuple
 
 
@@ -522,13 +524,15 @@ def test_module(args, params):
             raise ValueError(
                 'Invalid time unit for the Refresh Rate. Must be minutes, hours, days, months, or years.')
         parse_date_range(cache_refresh_rate, to_timestamp=True)
+    run_long_running(params, is_test=True)
     return 'ok', {}, {}
 
 
-def run_long_running(params):
+def run_long_running(params, is_test=False):
     """
     Start the long running server
     :param params: Demisto params
+    :param is_test: Indicates whether it's test-module run or regular run
     :return: None
     """
     certificate: str = params.get('certificate', '')
@@ -549,26 +553,38 @@ def run_long_running(params):
             certificate_path = certificate_file.name
             certificate_file.write(bytes(certificate, 'utf-8'))
             certificate_file.close()
-            ssl_args['certfile'] = certificate_path
 
             private_key_file = NamedTemporaryFile(delete=False)
             private_key_path = private_key_file.name
             private_key_file.write(bytes(private_key, 'utf-8'))
             private_key_file.close()
-            ssl_args['keyfile'] = private_key_path
+            context = SSLContext(PROTOCOL_TLSv1_2)
+            context.load_cert_chain(certificate_path, private_key_path)
+            ssl_args['ssl_context'] = context
             demisto.debug('Starting HTTPS Server')
         else:
             demisto.debug('Starting HTTP Server')
 
         server = WSGIServer(('', port), APP, **ssl_args, log=DEMISTO_LOGGER)
-        server.serve_forever()
+        if is_test:
+            server_process = Process(target=server.serve_forever)
+            server_process.start()
+            time.sleep(5)
+            server_process.terminate()
+        else:
+            server.serve_forever()
+    except SSLError as e:
+        ssl_err_message = f'Failed to validate certificate and/or private key: {str(e)}'
+        demisto.error(ssl_err_message)
+        raise ValueError(ssl_err_message)
     except Exception as e:
+        demisto.error(f'An error occurred in long running loop: {str(e)}')
+        raise ValueError(str(e))
+    finally:
         if certificate_path:
             os.unlink(certificate_path)
         if private_key_path:
             os.unlink(private_key_path)
-        demisto.error(f'An error occurred in long running loop: {str(e)}')
-        raise ValueError(str(e))
 
 
 def update_outbound_command(args, params):
