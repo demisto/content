@@ -503,6 +503,11 @@ class TAXIIClient(object):
         self.poll_service = poll_service
         self.collection = collection
 
+        self.api_key = None
+        self.api_header = None
+        self.username = None
+        self.password = None
+
         # authentication
         if credentials:
             if '_header:' in credentials.get('identifier', None):
@@ -511,8 +516,6 @@ class TAXIIClient(object):
             else:
                 self.username = credentials.get('identifier', None)
                 self.password = credentials.get('password', None)
-                self.api_key = None
-                self.api_header = None
 
         self.all_collections = self.get_all_collections()
         if collection is None or collection == '':
@@ -525,14 +528,19 @@ class TAXIIClient(object):
         Returns:
             list. A list of all collection names in discovery service.
         """
-        taxii_client = cabby.create_client(discovery_path=self.discovery_service)
-        if self.username:
-            taxii_client.set_auth(username=str(self.username), password=self.password, verify_ssl=self.verify_cert)
-        else:
-            taxii_client.set_auth(username=str(self.api_key), verify_ssl=self.verify_cert)
+        if self.discovery_service:
+            taxii_client = cabby.create_client(discovery_path=self.discovery_service)
+            if self.username:
+                taxii_client.set_auth(username=str(self.username), password=self.password, verify_ssl=self.verify_cert)
+            elif self.api_key:
+                taxii_client.set_auth(username=str(self.api_key), verify_ssl=self.verify_cert)
+            else:
+                taxii_client.set_auth(verify_ssl=self.verify_cert)
 
-        all_collections = taxii_client.get_collections()
-        return [collection.name for collection in all_collections]
+            all_collections = taxii_client.get_collections()
+            return [collection.name for collection in all_collections]
+
+        return []
 
     def _send_request(self, url, headers, data, stream=False):
         if self.api_key is not None and self.api_header is not None:
