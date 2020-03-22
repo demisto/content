@@ -52,6 +52,7 @@ CTX_MWG_TYPE_ERR_MSG: str = 'The McAFee Web Gateway type can only be one of the 
                             ' applcontrol, dimension, category, ip, mediatype, number, regex'
 CTX_MISSING_REFRESH_ERR_MSG: str = 'Refresh Rate must be "number date_range_unit", examples: (2 hours, 4 minutes, ' \
                                    '6 months, 1 day, etc.)'
+CTX_NO_URLS_IN_PROXYSG_FORMAT = 'ProxySG format only outputs URLs - no URLs found in the current query'
 
 MIMETYPE_JSON_SEQ: str = 'application/json-seq'
 MIMETYPE_JSON: str = 'application/json'
@@ -324,6 +325,9 @@ def create_proxysg_out_format(iocs: list, category_attribute: list, category_def
         sub_output_string += list_to_str(indicator_list, '\n')
         sub_output_string += "\nend\n"
         formatted_indicators += sub_output_string
+
+    if len(formatted_indicators) == 0:
+        raise Exception(CTX_NO_URLS_IN_PROXYSG_FORMAT)
 
     return {CTX_VALUES_KEY: formatted_indicators}
 
