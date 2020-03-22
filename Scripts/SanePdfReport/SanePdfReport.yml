@@ -73,6 +73,5 @@ runas: DBotWeakRole
 runonce: false
 tests:
 - No Test
-pswd: ''
 deprecated: true
 fromversion: 5.5.0
