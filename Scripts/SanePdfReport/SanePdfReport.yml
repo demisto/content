@@ -60,6 +60,7 @@ commonfields:
 enabled: true
 name: SanePdfReports
 script: '-'
+subtype: python3
 system: false
 tags:
 - sane-pdf-reports
@@ -73,6 +74,5 @@ runonce: false
 tests:
 - No Test
 pswd: ''
-subtype: python3
 deprecated: true
 fromversion: 5.5.0

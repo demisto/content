@@ -52,7 +52,9 @@ try:
             fix_base64(headerRightImage, "right.png")
             headerRightImage = "right.png"
 
-    extra_cmd = f"{orientation} {resourceTimeout} {reportType} {headerLeftImage} {headerRightImage} {pageSize} {disableHeaders}"
+    extra_cmd = f"{orientation} {resourceTimeout} {reportType} " + \
+                f"{headerLeftImage} {headerRightImage} {pageSize} " + \
+                f"{disableHeaders}"
 
     # Generate a random input file so we won't override on concurrent usage
     input_id = random_string()
