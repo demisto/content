@@ -40,4 +40,3 @@ def test_sql_queries(command, args, response, expected_result, mocker):
     client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "")
     result = command(client, args)
     assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
-
