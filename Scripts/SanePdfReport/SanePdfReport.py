@@ -65,7 +65,7 @@ try:
 
     # Generate a random output file so we won't override on concurrent usage
     output_id = random_string()
-    output_file = OUTPUT_FILE_PATH.format(id=output_id)
+    output_file = Path(OUTPUT_FILE_PATH.format(id=output_id))
 
     cmd = ['./reportsServer', input_file, output_file, 'dist'] + shlex.split(
         extra_cmd)
