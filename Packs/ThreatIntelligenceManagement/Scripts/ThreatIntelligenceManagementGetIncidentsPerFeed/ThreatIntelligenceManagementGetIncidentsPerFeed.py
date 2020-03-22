@@ -26,7 +26,7 @@ def get_all_incidents(from_date: str) -> list:
     """
     command_res = demisto.executeCommand('getIncidents', {'fromdate': from_date})
     if is_error(command_res):
-        return_error(f'Error executing "getIncidents fromdate: {from_date}"')
+        return_error(f'Error executing "getIncidents fromdate: {from_date}":\n{command_res}')
     contents = command_res[0]['Contents']
     incidents = contents['data']
     size = len(incidents)
@@ -36,7 +36,7 @@ def get_all_incidents(from_date: str) -> list:
     while total > size:
         command_res = demisto.executeCommand('getIncidents', {'fromdate': from_date, 'page': page})
         if is_error(command_res):
-            return_error(f'Error executing "getIncidents fromdate: {from_date}"')
+            return_error(f'Error executing "getIncidents fromdate: {from_date}":\n{command_res}')
         contents = command_res[0]['Contents']
         new_incidents = contents['data']
         incidents += new_incidents
