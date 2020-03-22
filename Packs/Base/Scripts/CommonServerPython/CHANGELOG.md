@@ -1,7 +1,18 @@
 ## [Unreleased]
 - **DEPRECATED**: *entryTypes*, *formats*, *dbotscores*
-- Added new enums: **IndicatorType**, **EntryFormat**, **EntryType**, **DBotScore** (replaced the deprecated ones) 
-- Added encode string results - safe handle unicode strings to demisto results
+- Added new enums: 
+  - **DBotScoreType** (replaced the deprecated *dbotscores*)
+  - **EntryFormat** (replaced the deprecated *formats*)
+  - **EntryType** (replaced the deprecated *entryTypes*)
+- Added new classes to represent reputation outputs:
+  - **DBotScore**
+  - **IP**
+  - **URL**
+  - **CVE**
+  - **File**
+  - **Domain**
+  - **WHOIS**
+  - **CommandResults** - used to return results to warroom
 
 ## [20.3.3] - 2020-03-18
 Added ***remove_empty_elements*** command.
