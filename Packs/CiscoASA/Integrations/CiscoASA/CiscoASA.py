@@ -182,7 +182,7 @@ class Client(BaseClient):
             raise ValueError("This network object already exists.")
 
     def list_interfaces(self):
-        interfaces = list()
+        interfaces = list()  # type: ignore
         for type in ['global', 'in', 'out']:
             resp = self._http_request('GET', f'/api/access/{type}')
             interfaces.extend(resp.get('items', []))
