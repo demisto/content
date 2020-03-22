@@ -391,7 +391,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Indicator
+              simple: Indicator Feed
     view: |-
       {
         "position": {
