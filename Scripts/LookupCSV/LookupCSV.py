@@ -70,14 +70,15 @@ def main():
             headers = headers.split(",")
             lines = lines[1:]
 
-        for line in lines:
-            d = {}
-            row = line.split(",")
-            if header_row:
+            for line in lines:
+                d = {}
+                row = line.split(",")
                 for i, h in enumerate(headers):
                     d[h] = row[i]
                 csv_data.append(d)
-            else:
+        else:
+            for line in lines:
+                row = line.split(",")
                 csv_data.append(row)
 
     # If we're searching the CSV
