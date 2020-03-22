@@ -26,3 +26,6 @@ subtype: python3
 runonce: false
 dockerimage: demisto/python3:3.8.2.6712
 runas: DBotWeakRole
+commonfields:
+  id: ParseCSV
+  version: -1
