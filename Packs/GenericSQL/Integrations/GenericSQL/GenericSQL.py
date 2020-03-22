@@ -1,10 +1,8 @@
-from typing import Dict, Callable, Tuple, Any, List
 
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-''' IMPORTS '''
 import sqlalchemy
 import pymysql
 from sqlalchemy.sql import text
@@ -15,7 +13,7 @@ pymysql.install_as_MySQLdb()
 
 class Client:
     """
-    Client to use in the SQL databases integration. Overrides BaseClient
+    Client to use in the SQL databases integration. Overrides BaseClient Overrides BaseClient
     makes the connection to the DB server
     """
 
@@ -49,7 +47,7 @@ class Client:
             module = str(dialect)
         return module
 
-    def _create_engine_and_connect(self):
+    def _create_engine_and_connect(self) -> sqlalchemy.engine.base.Connection:
         """
         Creating and engine according to the instance preferences and connecting
         :return: a connection object that will be used in order to execute SQL queries
@@ -82,7 +80,7 @@ class Client:
 
 def generate_default_port_by_dialect(dialect: str) -> str:
     """
-    In case no port wash chosen, a default port will be chosen according to the SQL db type
+    In case no port was chosen, a default port will be chosen according to the SQL db type
     :param dialect: sql db type
     :return: default port needed for connection
     """
@@ -121,7 +119,6 @@ def generate_bind_vars(bind_variables_names: str, bind_variables_values: str) ->
 
 def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
     """
-    Performs basic connect to SQL server
     If the connection in the client was successful the test will return OK
     if it wasn't an exception will be raised
     """
@@ -130,7 +127,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
 
 def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
     """
-    Executes the sql query with the connection that was configurator in the client
+    Executes the sql query with the connection that was configured in the client
     :param client: the client object with the db connection
     :param args: demisto.args() including the sql query
     :return: Demisto outputs
@@ -156,13 +153,12 @@ def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, An
         return human_readable, entry_context, table
 
     except Exception as err:
-        # explain
+        # In case there is no query executed and only an action e.g - insert, delete, update
+        # the result will raise an exception when we try to read the data from it
         if str(err) == "This result object does not return rows. It has been closed automatically.":
             human_readable = "Command executed"
             return human_readable, {}, []
-        else:
-            return_error(err)
-            return "", {}, []
+        return_error(err)
 
 
 def main():
@@ -197,3 +193,4 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+
