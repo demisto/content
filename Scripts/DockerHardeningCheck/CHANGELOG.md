@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.3.3] - 2020-03-18
 Decreased the CPU check sensitivity to accommodate loaded systems. 
 
 ## [20.2.3] - 2020-02-18
