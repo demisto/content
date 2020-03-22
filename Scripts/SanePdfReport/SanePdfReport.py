@@ -4,6 +4,7 @@ from CommonServerUserPython import *
 import traceback
 
 import os
+import shlex
 import base64
 import random
 import string
@@ -64,9 +65,9 @@ try:
     output_id = random_string()
     output_file = OUTPUT_FILE_PATH.format(id=output_id)
 
-    cmd = f'./reportsServer {input_file} {output_file} dist {extra_cmd}'
-    subprocess.check_output(cmd, shell=True, executable='/bin/bash',
-                            cwd=WORKING_DIR)
+    cmd = ['./reportsServer', input_file, output_file, 'dist'] + shlex.split(
+        extra_cmd)
+    subprocess.check_output(cmd, cwd=WORKING_DIR)
 
     output_file = WORKING_DIR / output_file
     with open(output_file, 'rb') as f:
