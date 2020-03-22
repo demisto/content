@@ -1786,7 +1786,8 @@ class CommandResults:
             CortexXDR.Incident
 
     :type outputs_key_field: ``str``
-    :param outputs_key_field: primary key field in the main object
+    :param outputs_key_field: primary key field in the main object. If the command returns Incidents, and of the
+            properties of Incident is incident_id, then outputs_key_field='incident_id'
 
     :type outputs: ``list`` or ``dict``
     :param outputs: the data to be returned and will be set to context
