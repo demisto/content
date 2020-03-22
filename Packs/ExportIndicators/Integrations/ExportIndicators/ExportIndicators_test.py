@@ -384,6 +384,7 @@ class TestHelperFunctions:
         assert "1.2.3.4-1.2.3.5" in ip_range_list
         assert "1.1.1.2" not in ip_range_list
         assert "2.2.2.2" in ip_range_list
+        assert "25.24.23.22" in ip_range_list
 
     @pytest.mark.ips_to_cidrs
     def test_ips_to_ranges_cidr(self):
@@ -399,3 +400,4 @@ class TestHelperFunctions:
         assert "1.2.3.5" not in ip_range_list
         assert "1.1.1.3" not in ip_range_list
         assert "2.2.2.2" in ip_range_list
+        assert "25.24.23.22" in ip_range_list
