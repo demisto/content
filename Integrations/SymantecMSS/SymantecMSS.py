@@ -341,10 +341,10 @@ def query_incident_cmd():
         "Signaturtes": json.dumps(sigs) or "",
         "Related Incidents": json.dumps(result.get("RelatedIncidents",
                                                    {}).get("IncidentNumber", "")) if result.get("RelatedIncidents",
-                                                                                                    {}) else "",
+                                                                                                {}) else "",
         "Comment": result.get("IncidentComments", {}).get("IncidentComment",
                                                           {}).get("Comment", "") if result.get("IncidentComments",
-                                                                                                   {}) else ""
+                                                                                               {}) else ""
     }]
     headers = [
         "Incident Number",
