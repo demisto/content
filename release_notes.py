@@ -632,41 +632,50 @@ def main():
 
     # get changed yaml/json files (filter only relevant changed files)
     file_validator = FilesValidator()
-    change_log = run_command('git diff --name-status {}'.format(args.git_sha1))
-    modified_files, added_files, removed_files, _ = file_validator.get_modified_files(change_log)
-    modified_files, added_files, removed_files = filter_packagify_changes(modified_files, added_files,
-                                                                          removed_files, tag=tag)
+    try:
+        change_log = run_command('git diff --name-status {}'.format(args.git_sha1), exit_on_error=False)
+        modified_files, added_files, removed_files, _ = file_validator.get_modified_files(change_log)
+        modified_files, added_files, removed_files = filter_packagify_changes(modified_files, added_files,
+                                                                              removed_files, tag=tag)
 
-    for file_path in added_files:
-        create_file_release_notes('A', file_path)
+        for file_path in added_files:
+            create_file_release_notes('A', file_path)
 
-    for file_path in modified_files:
-        create_file_release_notes('M', file_path)
+        for file_path in modified_files:
+            create_file_release_notes('M', file_path)
 
-    for file_path in removed_files:
-        handle_deleted_file(file_path, tag)
+        for file_path in removed_files:
+            handle_deleted_file(file_path, tag)
 
-    # join all release notes
-    res = []
-    beta_res = []
-    missing_release_notes = False
-    for key in RELEASE_NOTES_ORDER:
-        value = RELEASE_NOTE_GENERATOR[key]
-        ans, beta_ans = value.generate_release_notes(args.server_version)
-        if ans is None or value.is_missing_release_notes:
-            missing_release_notes = True
-        if ans:
-            res.append(ans)
-        if beta_ans:
-            beta_res.append(beta_ans)
+        # join all release notes
+        res = []
+        beta_res = []
+        missing_release_notes = False
+        for key in RELEASE_NOTES_ORDER:
+            value = RELEASE_NOTE_GENERATOR[key]
+            ans, beta_ans = value.generate_release_notes(args.server_version)
+            if ans is None or value.is_missing_release_notes:
+                missing_release_notes = True
+            if ans:
+                res.append(ans)
+            if beta_ans:
+                beta_res.append(beta_ans)
 
-    release_notes = "\n---\n".join(res)
-    beta_release_notes = "\n---\n".join(beta_res)
-    create_content_descriptor(args.version, args.asset_id, release_notes, args.github_token, beta_rn=beta_release_notes)
+        release_notes = "\n---\n".join(res)
+        beta_release_notes = "\n---\n".join(beta_res)
+        create_content_descriptor(args.version, args.asset_id, release_notes, args.github_token, beta_rn=beta_release_notes)
 
-    if missing_release_notes:
-        print_error("Error: some release notes are missing. See previous errors.")
-        sys.exit(1)
+        if missing_release_notes:
+            print_error("Error: some release notes are missing. See previous errors.")
+            sys.exit(1)
+    except RuntimeError:
+        print_error('Unable to get the SHA1 of the commit in which the version was released. This can happen if your '
+                    'branch is not updated with origin master. Merge from origin master and, try again.\n'
+                    'If you\'re not on a fork, run "git merge origin/master".\n'
+                    'If you are on a fork, first set https://github.com/demisto/content to be '
+                    'your upstream by running "git remote add upstream https://github.com/demisto/content". After '
+                    'setting the upstream, run "git fetch upstream", and then run "git merge upstream/master". Doing '
+                    'these steps will merge your branch with content master as a base.')
 
 
 if __name__ == "__main__":
