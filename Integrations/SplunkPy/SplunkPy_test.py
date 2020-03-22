@@ -136,7 +136,8 @@ def test_parse_time_to_minutes_invalid_time_integer(mocker):
     splunk.FETCH_TIME = 'abc hours'
     splunk.parse_time_to_minutes()
     err_msg = return_error_mock.call_args[0][0]
-    assert err_msg == 'Error: Invalid fetch time, need to be a positive integer.'
+    assert err_msg == "Error: Invalid fetch time, need to be a positive integer with the time unit afterwards " \
+                      "e.g '2 months, 4 days'."
 
 
 def test_parse_time_to_minutes_invalid_time_unit(mocker):

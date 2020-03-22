@@ -26,7 +26,7 @@ FETCH_LIMIT = int(demisto.params().get('fetch_limit', 50))
 FETCH_LIMIT = max(min(200, FETCH_LIMIT), 1)
 FETCH_TIME = demisto.params().get('fetch_time')
 TIME_IN_MINUTES_DICT = {'minute': 1, 'minutes': 1, 'hour': 60, 'hours': 60, 'day': 24 * 60, 'days': 24 * 60,
-                        'week': 7 * 24 * 60, 'weeks': 7 * 24 * 60, 'month': 4 * 7 * 24 * 60, 'months': 4 * 7 * 24 * 60,
+                        'week': 7 * 24 * 60, 'weeks': 7 * 24 * 60, 'month': 30 * 24 * 60, 'months': 30 * 24 * 60,
                         'year': 365 * 24 * 60, 'years': 365 * 24 * 60}
 
 
