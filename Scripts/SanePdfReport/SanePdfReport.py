@@ -71,11 +71,11 @@ try:
         extra_cmd)
     subprocess.check_output(cmd, cwd=WORKING_DIR)
 
-    res_output_file = WORKING_DIR / Path(output_file)
-    with open(res_output_file, 'rb') as f:
+    abspath_output_file = WORKING_DIR / output_file
+    with open(abspath_output_file, 'rb') as f:
         encoded = base64.b64encode(f.read()).decode('utf-8', 'ignore')
 
-    os.remove(res_output_file)
+    os.remove(abspath_output_file)
     return_outputs(readable_output='Successfully generated pdf',
                    outputs={}, raw_response={'data': encoded})
 except Exception:
