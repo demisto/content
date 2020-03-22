@@ -22,6 +22,7 @@ def search_dicts(k, v, data):
     else:
         return match
 
+
 def search_lists(k, v, data):
     """
     Search a list of lists by index
@@ -49,7 +50,6 @@ def main():
 
     search_value = d_args['value'] if 'value' in d_args else None
 
-
     res = demisto.getFilePath(entry_id)
     if not res:
         return_error("Entry {} not found".format(entry_id))
@@ -61,7 +61,7 @@ def main():
             '"{}" is not in csv format. Please ensure the file is in correct format and has a ".csv" extension'.format(
                 file_name))
 
-    csv_data = []
+    csv_data: list = []
     with open(file_path) as f:
         lines = f.read().splitlines()
 
