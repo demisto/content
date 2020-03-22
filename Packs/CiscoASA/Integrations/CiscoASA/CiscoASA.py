@@ -1,4 +1,4 @@
-from typing import Optional, Tuple
+from typing import Optional
 
 import urllib3
 
@@ -168,16 +168,16 @@ class Client(BaseClient):
 
     def create_object(self, obj_name, obj_type, obj_value):
         data = {
-                  "kind": "object#NetworkObj",
-                  "name": obj_name,
-                  "host": {
-                    "kind": OBJECT_TYPES_DICT.get(obj_type),
-                    "value": obj_value
-                  }
-                }
+            "kind": "object#NetworkObj",
+            "name": obj_name,
+            "host": {
+                "kind": OBJECT_TYPES_DICT.get(obj_type),
+                "value": obj_value
+            }
+        }
         try:
-            return self._http_request('POST', '/api/objects/networkobjects', json_data=data, ok_codes=(200,201,204),
-                                  resp_type='response')
+            return self._http_request('POST', '/api/objects/networkobjects', json_data=data, ok_codes=(200, 201, 204),
+                                      resp_type='response')
         except Exception:
             raise ValueError("This network object already exists.")
 
@@ -187,9 +187,6 @@ class Client(BaseClient):
             resp = self._http_request('GET', f'/api/access/{type}')
             interfaces.extend(resp.get('items', []))
         return interfaces
-
-
-
 
 
 '''HELPER COMMANDS'''
@@ -227,7 +224,7 @@ def raw_to_rules(raw_rules):
     :return:
     Gets raw rules as received from API and extracts only the relevant fields
     """
-    rules = []
+    rules = list()
     for rule in raw_rules:
         source_services = rule.get('sourceService', {})
 
@@ -496,6 +493,7 @@ def edit_rule_command(client: Client, args):
         else:
             raise e
 
+
 @logger
 def list_objects_command(client: Client, args: dict):
     objects = client.get_network_obejcts()
@@ -512,6 +510,7 @@ def list_objects_command(client: Client, args: dict):
     ec = {'CiscoASA.NetworkObject(val.ID == obj.ID)': formated_objects}
     hr = tableToMarkdown("Network Objects", formated_objects, headers=['ID', 'Name', 'Host', 'Description'])
     return hr, ec, json.dumps(formated_objects)
+
 
 @logger
 def create_object_command(client: Client, args: dict):
@@ -598,4 +597,3 @@ def main():
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
-
