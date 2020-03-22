@@ -1,7 +1,7 @@
 ## [Unreleased]
 add job status command - for checking the status of a job
 
-## [Unreleased]
+## [20.3.3] - 2020-03-18
 Fixed an issue in the test command, which caused an out of memory error. 
 
 ## [20.3.1] - 2020-03-04
