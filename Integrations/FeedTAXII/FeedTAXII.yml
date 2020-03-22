@@ -70,7 +70,7 @@ configuration:
 - additionalinfo: Collection name to fetch indicators from.
   display: Collection
   name: collection
-  required: true
+  required: false
   type: 0
 - additionalinfo: Subscription ID for the TAXII consumer.
   display: Subscription ID
