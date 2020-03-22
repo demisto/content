@@ -20,7 +20,7 @@ args:
     description: value to search for
 outputs:
   - contextPath: LookupCSV.result
-    description: Dict or list of result
+    description: List of result objects; either a list of dicts (with header_row) or a list of lists (no header row)
 scripttarget: 0
 subtype: python3
 runonce: false
