@@ -2010,7 +2010,7 @@
         {
             "integrations": "AWS - EC2",
             "playbookID": "2142f8de-29d5-4288-8426-0db39abe988b",
-            "memory_threshold": 65
+            "memory_threshold": 75
         },
         {
             "integrations": "AWS - EC2",
@@ -2505,7 +2505,6 @@
         "test_MsGraphFiles": "Issue 22853",
         "TestCofenseFeed": "Issue 22854",
         "RecordedFutureFeed - Test": "Issue 22855",
-        "Indicator Feed - Test": "Issue 22858",
         "Blocklist_de - Test": "Issue 22856",
         "Cybereason Test": "Issue 22683",
         "CVE Search v2 - Test": "Issue 22661",
@@ -2550,8 +2549,7 @@
         "Test Playbook TrendMicroDDA": "Issue 16501",
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633",
-        "TAXII_Feed_Test": "Issue #22423",
-        "palo_alto_panorama_test_pb": "Issue #22835"
+        "TAXII_Feed_Test": "Issue #22423"
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
