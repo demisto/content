@@ -1,2 +1,2 @@
 ## [Unreleased]
-- Moves the PDF reporting mechanism to Docker
+- Moves the PDF reporting mechanism to Docker.
