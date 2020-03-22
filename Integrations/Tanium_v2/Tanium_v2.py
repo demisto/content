@@ -111,14 +111,14 @@ class Client(BaseClient):
             res = self.do_request('POST', 'parse_question', {'text': text}).get('data')[0]
         else:
             # if there are no parameters argument - try to gets the sensors from parse question api
-            text_without_params = re.sub('\[(.*?)\]', '', text)
+            text_without_params = re.sub(r'\[(.*?)\]', '', text)
             res = self.do_request('POST', 'parse_question', {'text': text_without_params}).get('data')[0]
 
             # call sensors/by-name/ for each sensor in the response and update parameters_condition
             # with the correct parameters
             for item in res.get('selects'):
                 sensor = item.get('sensor').get('name')
-                search_results = re.search(f'{sensor}\[(.*?)\]', text)
+                search_results = re.search(rf'{sensor}\[(.*?)\]', text)
                 if search_results:
                     parameters_str = search_results.group(1)
                     parameters = parameters_str.split(',')

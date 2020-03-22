@@ -106,8 +106,7 @@ parse_question_Folder_Contents_res = {
 
 sensor_res = {
     "data": {
-        "parameter_definition": "{\"parameters\":[{\"key\":\"folderPath\"}]}"
-        }
+        "parameter_definition": "{\"parameters\":[{\"key\":\"folderPath\"}]}"}
 }
 
 CREATE_ACTION_BY_TARGET_GROUP_RES = {
