@@ -100,34 +100,47 @@ class Client(BaseClient):
         return question_response
 
     def parse_question(self, text, parameters):
-        text_without_params = re.sub('\[(.*?)\]', '', text)
-        res = self.do_request('POST', 'parse_question', {'text': text_without_params}).get('data')[0]
-
         parameters_condition = []  # type: ignore
-        for item in res.get('selects'):
-            sensor = item.get('sensor').get('name')
-            search_results = re.search(f'{sensor}\[(.*?)\]', text)
-            if search_results:
-                parameters_str = search_results.group(1)
-                parameters = parameters_str.split(',')
-                endpoint_url = f'sensors/by-name/{sensor}'
-                sensor_response = self.do_request('GET', endpoint_url)
-                sensor_response = self.get_sensor_item(sensor_response.get('data'))
 
-                tmp_item = {'sensor': sensor, 'parameters': []}
-                index = 0
-                for param in parameters:
-                    if param:
-                        if param == '""':
-                            param = ''
-                        key = sensor_response['Parameters'][index]['Key']
-                        tmp_item['parameters'].append({
-                            'key': '||' + key + '||',
-                            'value': param
-                        })
+        if parameters:
+            try:
+                parameters_condition = self.parse_sensor_parameters(parameters)
+            except Exception:
+                raise ValueError('Failed to parse question parameters.')
 
-                    index = index + 1
-                parameters_condition.append(tmp_item)
+            res = self.do_request('POST', 'parse_question', {'text': text}).get('data')[0]
+        else:
+            # if there are no parameters argument - try to gets the sensors from parse question api
+            text_without_params = re.sub('\[(.*?)\]', '', text)
+            res = self.do_request('POST', 'parse_question', {'text': text_without_params}).get('data')[0]
+
+            # call sensors/by-name/ for each sensor in the response and update parameters_condition
+            # with the correct parameters
+            for item in res.get('selects'):
+                sensor = item.get('sensor').get('name')
+                search_results = re.search(f'{sensor}\[(.*?)\]', text)
+                if search_results:
+                    parameters_str = search_results.group(1)
+                    parameters = parameters_str.split(',')
+                    endpoint_url = f'sensors/by-name/{sensor}'
+                    sensor_response = self.do_request('GET', endpoint_url)
+                    sensor_response = self.get_sensor_item(sensor_response.get('data'))
+
+                    tmp_item = {'sensor': sensor, 'parameters': []}
+                    index = 0
+                    for param in parameters:
+                        if param:
+                            if param == '""':
+                                param = ''
+                            key = sensor_response['Parameters'][index]['Key']
+                            tmp_item['parameters'].append({
+                                'key': '||' + key + '||',
+                                'value': param
+                            })
+
+                        index = index + 1
+                    parameters_condition.append(tmp_item)
+
         res = self.add_parameters_to_question(res, parameters_condition)
         return res
 
@@ -353,18 +366,18 @@ class Client(BaseClient):
 
     def get_sensor_item(self, sensor):
         item = {
-            'Category': sensor.get('category'),
-            'CreationTime': sensor.get('creation_time'),
-            'Description': sensor.get('description'),
-            'Hash': sensor.get('hash'),
-            'ID': sensor.get('id'),
-            'IgnoreCaseFlag': sensor.get('ignore_case_flag'),
-            'KeepDuplicatesFlag': sensor.get('keep_duplicates_flag'),
-            'LastModifiedBy': sensor.get('last_modified_by'),
-            'MaxAgeSeconds': sensor.get('max_age_seconds'),
-            'ModificationTime': sensor.get('modification_time'),
-            'Name': sensor.get('name'),
-            'SourceId': sensor.get('source_id'),
+            'Category': sensor.get('category', ''),
+            'CreationTime': sensor.get('creation_time', ''),
+            'Description': sensor.get('description', ''),
+            'Hash': sensor.get('hash', ''),
+            'ID': sensor.get('id', ''),
+            'IgnoreCaseFlag': sensor.get('ignore_case_flag', ''),
+            'KeepDuplicatesFlag': sensor.get('keep_duplicates_flag', ''),
+            'LastModifiedBy': sensor.get('last_modified_by', ''),
+            'MaxAgeSeconds': sensor.get('max_age_seconds', ''),
+            'ModificationTime': sensor.get('modification_time', ''),
+            'Name': sensor.get('name', ''),
+            'SourceId': sensor.get('source_id', ''),
             'Parameters': self.get_parameter_item(sensor)
         }
 
