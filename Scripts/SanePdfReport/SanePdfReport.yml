@@ -58,7 +58,7 @@ commonfields:
   id: SanePdfReports
   version: -1
 enabled: true
-name: SanePdf
+name: SanePdfReports
 script: '-'
 system: false
 tags:
