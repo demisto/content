@@ -2502,6 +2502,7 @@
         }
     ],
     "skipped_tests": {
+        "Symantec Deepsight Test": "Issue 22971",
         "test_MsGraphFiles": "Issue 22853",
         "TestCofenseFeed": "Issue 22854",
         "RecordedFutureFeed - Test": "Issue 22855",
@@ -2625,6 +2626,7 @@
 
 
         "_comment": "~~~ OTHER ~~~",
+        "Cofense Intelligence": "Issue 22964",
         "Pentera": "authentication method will not work with testing",
         "EclecticIQ Platform": "Issue 8821",
         "BitDam": "Issue #17247",
