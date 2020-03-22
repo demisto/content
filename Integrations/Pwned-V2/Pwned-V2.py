@@ -28,12 +28,16 @@ HEADERS = {
 DEFAULT_DBOT_SCORE_EMAIL = 2 if demisto.params().get('default_dbot_score_email') == 'SUSPICIOUS' else 3
 DEFAULT_DBOT_SCORE_DOMAIN = 2 if demisto.params().get('default_dbot_score_domain') == 'SUSPICIOUS' else 3
 
-SAMPLE_TEST_SUFFIX = '/breaches?domain=demisto.com'
-PWNED_EMAIL_SUFFIX = '/breachedaccount/'
-PWNED_DOMAIN_SUFFIX = '/breaches?domain='
-PWNED_PASTE_SUFFIX = '/pasteaccount/'
-EMAIL_TRUNCATE_VERIFIED_SUFFIX = '?truncateResponse=false&includeUnverified=true'
-DOMAIN_TRUNCATE_VERIFIED_SUFFIX = '&truncateResponse=false&includeUnverified=true'
+SUFFIXES = {
+    "test": '/breaches?domain=demisto.com',
+    "email": '/breachedaccount/',
+    "domain": '/breaches?domain=',
+    "username": '/breachedaccount/',
+    "paste": '/pasteaccount/',
+    "email_truncate_verified": '?truncateResponse=false&includeUnverified=true',
+    "domain_truncate_verified": '&truncateResponse=false&includeUnverified=true',
+    "username_truncate_verified": '?truncateResponse=false&includeUnverified=true'
+}
 
 RETRIES_END_TIME = datetime.min
 
@@ -218,15 +222,15 @@ def set_retry_end_time():
 
 
 def test_module():
-    http_request('GET', SAMPLE_TEST_SUFFIX)
+    http_request('GET', SUFFIXES.get("test_suffix"))
     demisto.results('ok')
 
 
 def pwned_email_command():
     email_list = argToList(demisto.args().get('email', ''))
     for email in email_list:
-        email_suffix = PWNED_EMAIL_SUFFIX + email + EMAIL_TRUNCATE_VERIFIED_SUFFIX
-        paste_suffix = PWNED_PASTE_SUFFIX + email
+        email_suffix = SUFFIXES.get("email") + email + SUFFIXES.get("email_truncate_verified")
+        paste_suffix = SUFFIXES.get("paste") + email
         pwned_email(email, email_suffix, paste_suffix)
 
 
@@ -242,7 +246,7 @@ def pwned_email(email, email_suffix, paste_suffix):
 def pwned_domain_command():
     domain_list = argToList(demisto.args().get('domain', ''))
     for domain in domain_list:
-        suffix = PWNED_DOMAIN_SUFFIX + domain + DOMAIN_TRUNCATE_VERIFIED_SUFFIX
+        suffix = SUFFIXES.get("domain") + domain + SUFFIXES.get("domain_truncate_verified")
         pwned_domain(domain, suffix)
 
 
@@ -250,6 +254,21 @@ def pwned_domain(domain, suffix):
     api_res = http_request('GET', url_suffix=suffix)
     md = data_to_markdown('Domain', domain, api_res)
     ec = domain_to_entry_context(domain, api_res or [])
+    return_outputs(md, ec, api_res)
+
+
+def pwned_username_command(): # orel
+    username_list = argToList(demisto.args().get('username', ''))
+    for username in username_list:
+        suffix = SUFFIXES.get("username") + username + SUFFIXES.get("username_truncate_verified")
+        pwned_username(username, suffix)
+
+
+def pwned_username(username, suffix): # orel
+    demisto.log(username)
+    api_res = http_request('GET', url_suffix=suffix)
+    md = data_to_markdown('Username', username, api_res)
+    ec = domain_to_entry_context(username, api_res or [])
     return_outputs(md, ec, api_res)
 
 
@@ -266,6 +285,8 @@ try:
         pwned_email_command()
     elif demisto.command() in ['pwned-domain', 'domain']:
         pwned_domain_command()
+    elif demisto.command() in ['pwned-username', 'username']:
+        pwned_username_command()
 
 # Log exceptions
 except Exception as e:
