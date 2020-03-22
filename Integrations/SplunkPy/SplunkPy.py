@@ -25,9 +25,8 @@ VERIFY_CERTIFICATE = not bool(demisto.params().get('unsecure'))
 FETCH_LIMIT = int(demisto.params().get('fetch_limit', 50))
 FETCH_LIMIT = max(min(200, FETCH_LIMIT), 1)
 FETCH_TIME = demisto.params().get('fetch_time')
-TIME_IN_MINUTES_DICT = {'minute': 1, 'minutes': 1, 'hour': 60, 'hours': 60, 'day': 24 * 60, 'days': 24 * 60,
-                        'week': 7 * 24 * 60, 'weeks': 7 * 24 * 60, 'month': 30 * 24 * 60, 'months': 30 * 24 * 60,
-                        'year': 365 * 24 * 60, 'years': 365 * 24 * 60}
+TIME_UNIT_TO_MINUTES = {'minute': 1, 'hour': 60, 'day': 24 * 60, 'week': 7 * 24 * 60, 'month': 30 * 24 * 60,
+                        'year': 365 * 24 * 60}
 
 
 class ResponseReaderWrapper(io.RawIOBase):
@@ -459,7 +458,9 @@ def parse_time_to_minutes():
     else:
         return_error("Error: Invalid fetch time, need to be a positive integer with the time unit afterwards"
                      " e.g '2 months, 4 days'.")
-    time_unit_value_in_minutes = TIME_IN_MINUTES_DICT.get(time_unit.lower())
+    time_unit_value_in_minutes = TIME_UNIT_TO_MINUTES.get(time_unit.lower())
+    if time_unit_value_in_minutes[-1] == 's':
+        time_unit_value_in_minutes = time_unit_value_in_minutes[:-1]
     if time_unit_value_in_minutes:
         return number_of_times * time_unit_value_in_minutes
 
