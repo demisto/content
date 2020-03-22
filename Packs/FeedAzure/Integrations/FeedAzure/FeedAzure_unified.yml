@@ -1,0 +1,602 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: AzureFeed
+  version: -1
+configuration:
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+  defaultvalue: Good
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: A - Completely reliable
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- defaultvalue: indicatorType
+  name: feedExpirationPolicy
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  name: feedExpirationInterval
+  required: false
+  type: 1
+- defaultvalue: '5'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+- defaultvalue: All
+  display: Regions
+  name: regions
+  options:
+  - All
+  - australiacentral
+  - australiacentral2
+  - australiaeast
+  - australiasoutheast
+  - brazilse
+  - brazilsouth
+  - canadacentral
+  - canadaeast
+  - centralfrance
+  - centralindia
+  - centralus
+  - centraluseuap
+  - eastasia
+  - eastus
+  - eastus2
+  - eastus2euap
+  - germanyn
+  - germanywc
+  - japaneast
+  - japanwest
+  - koreacentral
+  - koreasouth
+  - northcentralus
+  - northeurope
+  - norwaye
+  - norwayw
+  - southafricanorth
+  - southafricawest
+  - southcentralus
+  - southeastasia
+  - southfrance
+  - southindia
+  - switzerlandn
+  - switzerlandw
+  - uaecentral
+  - uaenorth
+  - uknorth
+  - uksouth
+  - uksouth2
+  - ukwest
+  - westcentralus
+  - westeurope
+  - westindia
+  - westus
+  - westus2
+  required: true
+  type: 16
+- defaultvalue: All
+  display: Services
+  name: services
+  options:
+  - All
+  - AzureAD
+  - AzureApiManagement
+  - AzureAppService
+  - AzureAppServiceManagement
+  - AzureBackup
+  - AzureConnectors
+  - AzureContainerRegistry
+  - AzureCosmosDB
+  - AzureDataLake
+  - AzureEventHub
+  - AzureFrontDoor
+  - AzureIdentity
+  - AzureIoTHub
+  - AzureKeyVault
+  - AzureMachineLearning
+  - AzureMonitor
+  - AzureSQL
+  - AzureServiceBus
+  - AzureStorage
+  - AzureTrafficManager
+  - BatchNodeManagement
+  - CognitiveServicesManagement
+  - Dynamics365ForMarketingEmail
+  - HDInsight
+  - MicrosoftContainerRegistry
+  - ServiceFabric
+  - SqlManagement
+  required: true
+  type: 16
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: '20'
+  display: Request Timeout
+  hidden: false
+  name: polling_timeout
+  required: false
+  type: 0
+description: Azure.CloudIPs Feed Integration.
+detaileddescription: |-
+  ## Azure.CloudIPs Feed
+  List of Microsoft Azure public IP addresses.
+
+  #### Custom Feed info:
+  To connect a custom Azure.CloudIPs feed you need to provide which Regions and Services you would like to process indicators from.
+display: Azure Feed
+name: AzureFeed
+script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: '10'
+      description: The maximum number of indicators to return. The default value is
+        10.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets indicators from the feed.
+    execution: false
+    name: azure-get-indicators
+  dockerimage: demisto/python3:3.8.1.6120
+  feed: true
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: |-
+    import json
+    from flask import Flask, Response, request
+    from gevent.pywsgi import WSGIServer
+    from tempfile import NamedTemporaryFile
+    from typing import Callable, List, Any, cast, Dict
+    from base64 import b64decode
+
+
+    class Handler:
+        @staticmethod
+        def write(msg):
+            demisto.info(msg)
+
+
+    ''' GLOBAL VARIABLES '''
+    INTEGRATION_NAME: str = 'Export Indicators Service'
+    PAGE_SIZE: int = 200
+    DEMISTO_LOGGER: Handler = Handler()
+    APP: Flask = Flask('demisto-export_iocs')
+    CTX_VALUES_KEY: str = 'dmst_export_iocs_values'
+    CTX_MIMETYPE_KEY: str = 'dmst_export_iocs_mimetype'
+    FORMAT_CSV: str = 'csv'
+    FORMAT_TEXT: str = 'text'
+    FORMAT_JSON_SEQ: str = 'json-seq'
+    FORMAT_JSON: str = 'json'
+    CTX_FORMAT_ERR_MSG: str = 'Please provide a valid format from: text,json,json-seq,csv'
+    CTX_LIMIT_ERR_MSG: str = 'Please provide a valid integer for List Size'
+    CTX_OFFSET_ERR_MSG: str = 'Please provide a valid integer for Starting Index'
+    CTX_MISSING_REFRESH_ERR_MSG: str = 'Refresh Rate must be "number date_range_unit", examples: (2 hours, 4 minutes, ' \
+                                       '6 months, 1 day, etc.)'
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def list_to_str(inp_list: list, delimiter: str = ',', map_func: Callable = str) -> str:
+        """
+        Transforms a list to an str, with a custom delimiter between each list item
+        """
+        str_res = ""
+        if inp_list:
+            if isinstance(inp_list, list):
+                str_res = delimiter.join(map(map_func, inp_list))
+            else:
+                raise AttributeError('Invalid inp_list provided to list_to_str')
+        return str_res
+
+
+    def get_params_port(params: dict = demisto.params()) -> int:
+        """
+        Gets port from the integration parameters
+        """
+        port_mapping: str = params.get('longRunningPort', '')
+        err_msg: str
+        port: int
+        if port_mapping:
+            err_msg = f'Listen Port must be an integer. {port_mapping} is not valid.'
+            if ':' in port_mapping:
+                port = try_parse_integer(port_mapping.split(':')[1], err_msg)
+            else:
+                port = try_parse_integer(port_mapping, err_msg)
+        else:
+            raise ValueError('Please provide a Listen Port.')
+        return port
+
+
+    def refresh_outbound_context(indicator_query: str, out_format: str, limit: int = 0, offset: int = 0) -> str:
+        """
+        Refresh the cache values and format using an indicator_query to call demisto.searchIndicators
+        Returns: List(IoCs in output format)
+        """
+        now = datetime.now()
+        iocs = find_indicators_with_limit(indicator_query, limit, offset)  # poll indicators into list from demisto
+        out_dict = create_values_out_dict(iocs, out_format)
+        out_dict[CTX_MIMETYPE_KEY] = 'application/json' if out_format == FORMAT_JSON else 'text/plain'
+        save_context(now, limit, offset, out_format, indicator_query, out_dict)
+        return out_dict[CTX_VALUES_KEY]
+
+
+    def save_context(now: datetime, limit: int, offset: int, out_format: str, query: str, out_dict: dict):
+        """Saves export_iocs state and refresh time to context"""
+        demisto.setLastRun({
+            'last_run': date_to_timestamp(now),
+            'last_limit': limit,
+            'last_offset': offset,
+            'last_format': out_format,
+            'last_query': query
+        })
+        demisto.setIntegrationContext(out_dict)
+
+
+    def find_indicators_with_limit(indicator_query: str, limit: int, offset: int) -> list:
+        """
+        Finds indicators using demisto.searchIndicators
+        """
+        # calculate the starting page (each page holds 200 entries)
+        if offset:
+            next_page = int(offset / PAGE_SIZE)
+
+            # set the offset from the starting page
+            offset_in_page = offset - (PAGE_SIZE * next_page)
+
+        else:
+            next_page = 0
+            offset_in_page = 0
+
+        iocs, _ = find_indicators_with_limit_loop(indicator_query, limit, next_page=next_page)
+        return iocs[offset_in_page:limit + offset_in_page]
+
+
+    def find_indicators_with_limit_loop(indicator_query: str, limit: int, total_fetched: int = 0, next_page: int = 0,
+                                        last_found_len: int = PAGE_SIZE):
+        """
+        Finds indicators using while loop with demisto.searchIndicators, and returns result and last page
+        """
+        iocs: List[dict] = []
+        if not last_found_len:
+            last_found_len = total_fetched
+        while last_found_len == PAGE_SIZE and limit and total_fetched < limit:
+            fetched_iocs = demisto.searchIndicators(query=indicator_query, page=next_page, size=PAGE_SIZE).get('iocs')
+            iocs.extend(fetched_iocs)
+            last_found_len = len(fetched_iocs)
+            total_fetched += last_found_len
+            next_page += 1
+        return iocs, next_page
+
+
+    def create_values_out_dict(iocs: list, out_format: str) -> dict:
+        """
+        Create a dictionary for output values using the selected format (json, json-seq, text, csv)
+        """
+        if out_format == FORMAT_JSON:  # handle json separately
+            iocs_list = [ioc for ioc in iocs]
+            return {CTX_VALUES_KEY: json.dumps(iocs_list)}
+        else:
+            formatted_indicators = []
+            if out_format == FORMAT_CSV and len(iocs) > 0:  # add csv keys as first item
+                headers = list(iocs[0].keys())
+                formatted_indicators.append(list_to_str(headers))
+            for ioc in iocs:
+                value = ioc.get('value')
+                if value:
+                    if out_format == FORMAT_TEXT:
+                        formatted_indicators.append(value)
+                    elif out_format == FORMAT_JSON_SEQ:
+                        formatted_indicators.append(json.dumps(ioc))
+                    elif out_format == FORMAT_CSV:
+                        # wrap csv values with " to escape them
+                        values = list(ioc.values())
+                        formatted_indicators.append(list_to_str(values, map_func=lambda val: f'"{val}"'))
+        return {CTX_VALUES_KEY: list_to_str(formatted_indicators, '\n')}
+
+
+    def get_outbound_mimetype() -> str:
+        """Returns the mimetype of the export_iocs"""
+        ctx = demisto.getIntegrationContext()
+        return ctx.get(CTX_MIMETYPE_KEY, 'text/plain')
+
+
+    def get_outbound_ioc_values(on_demand, limit, offset, indicator_query='', out_format='text', last_update_data={},
+                                cache_refresh_rate=None) -> str:
+        """
+        Get the ioc list to return in the list
+        """
+        last_update = last_update_data.get('last_run')
+        last_limit = last_update_data.get('last_limit')
+        last_offset = last_update_data.get('last_offset')
+        last_format = last_update_data.get('last_format')
+        last_query = last_update_data.get('last_query')
+        # on_demand ignores cache
+        if on_demand:
+            values_str = get_ioc_values_str_from_context()
+        else:
+            if last_update:
+                # takes the cache_refresh_rate amount of time back since run time.
+                cache_time, _ = parse_date_range(cache_refresh_rate, to_timestamp=True)
+                if last_update <= cache_time or last_limit != limit or last_offset != offset or \
+                        last_format != out_format or indicator_query != last_query:
+                    values_str = refresh_outbound_context(indicator_query, out_format, limit=limit, offset=offset)
+                else:
+                    values_str = get_ioc_values_str_from_context()
+            else:
+                values_str = refresh_outbound_context(indicator_query, out_format, limit=limit, offset=offset)
+        return values_str
+
+
+    def get_ioc_values_str_from_context() -> str:
+        """
+        Extracts output values from cache
+        """
+        cache_dict = demisto.getIntegrationContext()
+        return cache_dict.get(CTX_VALUES_KEY, '')
+
+
+    def try_parse_integer(int_to_parse: Any, err_msg: str) -> int:
+        """
+        Tries to parse an integer, and if fails will throw DemistoException with given err_msg
+        """
+        try:
+            res = int(int_to_parse)
+        except (TypeError, ValueError):
+            raise DemistoException(err_msg)
+        return res
+
+
+    def validate_basic_authentication(headers: dict, username: str, password: str) -> bool:
+        """
+        Checks whether the authentication is valid.
+        :param headers: The headers of the http request
+        :param username: The integration's username
+        :param password: The integration's password
+        :return: Boolean which indicates whether the authentication is valid or not
+        """
+        credentials: str = headers.get('Authorization', '')
+        if not credentials or 'Basic ' not in credentials:
+            return False
+        encoded_credentials: str = credentials.split('Basic ')[1]
+        credentials: str = b64decode(encoded_credentials).decode('utf-8')
+        if ':' not in credentials:
+            return False
+        credentials_list = credentials.split(':')
+        if len(credentials_list) != 2:
+            return False
+        user, pwd = credentials_list
+        return user == username and pwd == password
+
+
+    ''' ROUTE FUNCTIONS '''
+
+
+    def get_request_args(params):
+        limit = try_parse_integer(request.args.get('n', params.get('list_size', 2500)), CTX_LIMIT_ERR_MSG)
+        offset = try_parse_integer(request.args.get('s', params.get('offset', 0)), CTX_OFFSET_ERR_MSG)
+        out_format = request.args.get('v', params.get('format', 'text'))
+        query = request.args.get('q', params.get('indicators_query'))
+
+        if out_format not in ['text', 'json', 'json-seq', 'csv']:
+            raise DemistoException(CTX_FORMAT_ERR_MSG)
+
+        return limit, offset, out_format, query
+
+
+    @APP.route('/', methods=['GET'])
+    def route_list_values() -> Response:
+        """
+        Main handler for values saved in the integration context
+        """
+        params = demisto.params()
+
+        credentials = params.get('credentials') if params.get('credentials') else {}
+        username: str = credentials.get('identifier', '')
+        password: str = credentials.get('password', '')
+        if username and password:
+            headers: dict = cast(Dict[Any, Any], request.headers)
+            if not validate_basic_authentication(headers, username, password):
+                err_msg: str = 'Basic authentication failed. Make sure you are using the right credentials.'
+                demisto.debug(err_msg)
+                return Response(err_msg, status=401)
+
+        limit, offset, out_format, query = get_request_args(params)
+
+        values = get_outbound_ioc_values(
+            out_format=out_format,
+            on_demand=params.get('on_demand'),
+            limit=limit,
+            offset=offset,
+            last_update_data=demisto.getLastRun(),
+            indicator_query=query,
+            cache_refresh_rate=params.get('cache_refresh_rate')
+        )
+
+        mimetype = get_outbound_mimetype()
+        return Response(values, status=200, mimetype=mimetype)
+
+
+    ''' COMMAND FUNCTIONS '''
+
+
+    def test_module(args, params):
+        """
+        Validates:
+            1. Valid port.
+            2. Valid cache_refresh_rate
+        """
+        get_params_port(params)
+        on_demand = params.get('on_demand', None)
+        if not on_demand:
+            try_parse_integer(params.get('list_size'), CTX_LIMIT_ERR_MSG)  # validate export_iocs Size was set
+            query = params.get('indicators_query')  # validate indicators_query isn't empty
+            if not query:
+                raise ValueError('"Indicator Query" is required. Provide a valid query.')
+            cache_refresh_rate = params.get('cache_refresh_rate', '')
+            if not cache_refresh_rate:
+                raise ValueError(CTX_MISSING_REFRESH_ERR_MSG)
+            # validate cache_refresh_rate value
+            range_split = cache_refresh_rate.split(' ')
+            if len(range_split) != 2:
+                raise ValueError(CTX_MISSING_REFRESH_ERR_MSG)
+            try_parse_integer(range_split[0], 'Invalid time value for the Refresh Rate. Must be a valid integer.')
+            if not range_split[1] in ['minute', 'minutes', 'hour', 'hours', 'day', 'days', 'month', 'months', 'year',
+                                      'years']:
+                raise ValueError(
+                    'Invalid time unit for the Refresh Rate. Must be minutes, hours, days, months, or years.')
+            parse_date_range(cache_refresh_rate, to_timestamp=True)
+        return 'ok', {}, {}
+
+
+    def run_long_running(params):
+        """
+        Start the long running server
+        :param params: Demisto params
+        :return: None
+        """
+        certificate: str = params.get('certificate', '')
+        private_key: str = params.get('key', '')
+
+        certificate_path = str()
+        private_key_path = str()
+
+        try:
+            port = get_params_port(params)
+            ssl_args = dict()
+
+            if (certificate and not private_key) or (private_key and not certificate):
+                raise DemistoException('If using HTTPS connection, both certificate and private key should be provided.')
+
+            if certificate and private_key:
+                certificate_file = NamedTemporaryFile(delete=False)
+                certificate_path = certificate_file.name
+                certificate_file.write(bytes(certificate, 'utf-8'))
+                certificate_file.close()
+                ssl_args['certfile'] = certificate_path
+
+                private_key_file = NamedTemporaryFile(delete=False)
+                private_key_path = private_key_file.name
+                private_key_file.write(bytes(private_key, 'utf-8'))
+                private_key_file.close()
+                ssl_args['keyfile'] = private_key_path
+                demisto.debug('Starting HTTPS Server')
+            else:
+                demisto.debug('Starting HTTP Server')
+
+            server = WSGIServer(('', port), APP, **ssl_args, log=DEMISTO_LOGGER)
+            server.serve_forever()
+        except Exception as e:
+            if certificate_path:
+                os.unlink(certificate_path)
+            if private_key_path:
+                os.unlink(private_key_path)
+            demisto.error(f'An error occurred in long running loop: {str(e)}')
+            raise ValueError(str(e))
+
+
+    def update_outbound_command(args, params):
+        """
+        Updates the export_iocs values and format on demand
+        """
+        on_demand = demisto.params().get('on_demand')
+        if not on_demand:
+            raise DemistoException(
+                '"Update exported IOCs On Demand" is off. If you want to update manually please toggle it on.')
+        limit = try_parse_integer(args.get('list_size', params.get('list_size')), CTX_LIMIT_ERR_MSG)
+        print_indicators = args.get('print_indicators')
+        query = args.get('query')
+        out_format = args.get('format')
+        offset = args.get('offset')
+        indicators = refresh_outbound_context(query, out_format, limit=limit, offset=offset)
+        hr = tableToMarkdown('List was updated successfully with the following values', indicators,
+                             ['Indicators']) if print_indicators == 'true' else 'List was updated successfully'
+        return hr, {}, indicators
+
+
+    def main():
+        """
+        Main
+        """
+        params = demisto.params()
+
+        credentials = params.get('credentials') if params.get('credentials') else {}
+        username: str = credentials.get('identifier', '')
+        password: str = credentials.get('password', '')
+        if (username and not password) or (password and not username):
+            err_msg: str = 'If using credentials, both username and password should be provided.'
+            demisto.debug(err_msg)
+            raise DemistoException(err_msg)
+
+        command = demisto.command()
+        demisto.debug('Command being called is {}'.format(command))
+        commands = {
+            'test-module': test_module,
+            'eis-update': update_outbound_command
+        }
+
+        try:
+            if command == 'long-running-execution':
+                run_long_running(params)
+            else:
+                readable_output, outputs, raw_response = commands[command](demisto.args(), params)
+                return_outputs(readable_output, outputs, raw_response)
+        except Exception as e:
+            err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
+            return_error(err_msg)
+
+
+    if __name__ in ['__main__', '__builtin__', 'builtins']:
+        main()
+  subtype: python3
+  type: python
+image: data:image/png;base64,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
+tests:
+- AzureFeed - Test
+fromversion: 5.5.0
