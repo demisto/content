@@ -15,7 +15,6 @@ from typing import Callable, List, Any, Dict, cast, Tuple
 from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
 
 
-
 class Handler:
     @staticmethod
     def write(msg):
