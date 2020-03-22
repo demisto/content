@@ -98,16 +98,12 @@ def stix2_to_demisto_indicator(stix2obj: Dict[str, Any], log):
             demisto_indicator_map = demisto_mapping.get(sixgill_feedid)
             if demisto_indicator_map:
                 indicators_name = demisto_indicator_map.get('name')
-
-                if sixgill_feedid == 'darkfeed_002' or sixgill_feedid == 'darkfeed_012':
-                    indicators_name = indicators_name.get(sub_type) if indicators_name else ""
-
                 value = run_pipeline(value, demisto_indicator_map.get('pipeline', []), log)
                 demisto_indicator = to_demisto_indicator(value, indicators_name, stix2obj)
                 indicators.append(demisto_indicator)
 
         except Exception as e:
-            log.error(f"failed converting STIX object to Anomali indicator: {e}, STIX object: {stix2obj}")
+            log.error(f"failed converting STIX object to Demisto indicator: {e}, STIX object: {stix2obj}")
             continue
 
     return indicators
@@ -115,9 +111,7 @@ def stix2_to_demisto_indicator(stix2obj: Dict[str, Any], log):
 
 demisto_mapping: Dict[str, Dict[str, Any]] = {
     'darkfeed_001': {'name': FeedIndicatorType.Domain, 'pipeline': [strip_http, clean_url]},
-    'darkfeed_002': {'name': {"hashes.MD5": FeedIndicatorType.MD5,
-                              "hashes.'SHA-1'": FeedIndicatorType.SHA1,
-                              "hashes.'SHA-256'": FeedIndicatorType.SHA256}, 'pipeline': []},
+    'darkfeed_002': {'name': FeedIndicatorType.File, 'pipeline': []},
     'darkfeed_003': {'name': FeedIndicatorType.Domain, 'pipeline': [strip_http, clean_url]},
     'darkfeed_004': {'name': FeedIndicatorType.IP, 'pipeline': []},
     'darkfeed_005': {'name': FeedIndicatorType.IP, 'pipeline': []},
@@ -126,9 +120,7 @@ demisto_mapping: Dict[str, Dict[str, Any]] = {
     'darkfeed_008': {'name': FeedIndicatorType.IP, 'pipeline': []},
     'darkfeed_009': {'name': FeedIndicatorType.IP, 'pipeline': []},
     'darkfeed_010': {'name': FeedIndicatorType.URL, 'pipeline': [url_to_rfc3986, clean_url]},
-    'darkfeed_012': {'name': {"hashes.MD5": FeedIndicatorType.MD5,
-                              "hashes.'SHA-1'": FeedIndicatorType.SHA1,
-                              "hashes.'SHA-256'": FeedIndicatorType.SHA256}, 'pipeline': []},
+    'darkfeed_012': {'name': FeedIndicatorType.File, 'pipeline': []},
 
 }
 

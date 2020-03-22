@@ -25,9 +25,34 @@ Fetch Incidents & Events
 | threat_type | Filter by alert threat type | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
-## Commands
+## Fetch incidents
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+## output
+```
+[{
+'name': "<alert name>", 
+'occurred': '<occurred>', 
+'details': '<details>', 
+'severity': <severity>, 
+'rawJSON': '{
+    "alert_name": "<alert name>", 
+    "category": "regular", 
+    "content": "<some content>", 
+    "date": "<date>", 
+    "id": "<id>", 
+    "lang": "English", 
+    "langcode": "en", 
+    "read": false, 
+    "threat_level": "imminent", 
+    "threats": ["Fraud"], 
+    "title": "<title>", 
+    "user_id": "<id>", 
+    "sixgill_severity": 10}'
+}]
+
+```
 ## Additional Information
 Contact us: support@cybersixgill.com
 

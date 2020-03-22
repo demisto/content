@@ -63,7 +63,15 @@ display: Sixgill Deep Insights
 name: Sixgill
 script:
   commands:
-  - deprecated: true
+  - arguments:
+    - default: false
+      defaultValue: '100'
+      description: Max number of indicators that can be fetched
+      isArray: false
+      name: maxIndicators
+      required: false
+      secret: false
+    deprecated: true
     description: Fetching Sixgill's DarkFeed Threat Intelligence indicators
     execution: true
     name: sixgill-get-indicators
