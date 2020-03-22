@@ -458,6 +458,8 @@ def parse_time_to_minutes():
     else:
         return_error("Error: Invalid fetch time, need to be a positive integer with the time unit afterwards"
                      " e.g '2 months, 4 days'.")
+    # If the user input contains a plural of a time unit, for example ‘hours’, we remove the ‘s’ as it doesn’t
+    # impact the minutes in that time unit
     if time_unit[-1] == 's':
         time_unit = time_unit[:-1]
     time_unit_value_in_minutes = TIME_UNIT_TO_MINUTES.get(time_unit.lower())
