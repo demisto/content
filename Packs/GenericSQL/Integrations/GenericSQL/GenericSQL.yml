@@ -77,7 +77,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Runing a sql query
+    description: Running a sql query
     execution: false
     name: query
   - arguments:
@@ -114,7 +114,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Runing a sql query
+    description: Running a sql query
     execution: false
     name: sql-command
   dockerimage: demisto/genericsql:1.0.0.6768
