@@ -137,7 +137,7 @@ class TestSiverfort(object):
         args['upn'] = upn
 
         requests_mock.post(f'{base_url}/updateEntityRisk?apikey={api_key}', json=valid_update_response)
-        assert update_user_entity_risk_command(client, args) == "ok"
+        assert update_user_entity_risk_command(client, args) == "updated successfully!"
 
         requests_mock.post(f'{base_url}/updateEntityRisk?apikey={api_key}', json=bad_response)
         assert update_user_entity_risk_command(client, args) == "Couldn't update the user entity's risk"
@@ -150,7 +150,7 @@ class TestSiverfort(object):
         args['domain_name'] = domain
 
         requests_mock.post(f'{base_url}/updateEntityRisk?apikey={api_key}', json=valid_update_response)
-        assert update_resource_entity_risk_command(client, args) == 'ok'
+        assert update_resource_entity_risk_command(client, args) == 'updated successfully!'
 
         requests_mock.post(f'{base_url}/updateEntityRisk?apikey={api_key}', json=bad_response)
         assert update_resource_entity_risk_command(client, args) == "Couldn't update the resource entity's risk"
