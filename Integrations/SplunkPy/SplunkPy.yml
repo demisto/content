@@ -354,7 +354,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: checking the status of a job.
+    description: Returns a job status.
     execution: false
     name: splunk-job-status
     outputs:

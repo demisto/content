@@ -1,5 +1,5 @@
 ## [Unreleased]
-add job status command - for checking the status of a job
+Added ***splunk-job-status*** command for checking the status of a job
 
 ## [20.3.3] - 2020-03-18
 Fixed an issue in the test command, which caused an out of memory error. 

@@ -547,19 +547,20 @@ def splunk_edit_notable_event_command(proxy):
 
 
 def splunk_job_status(service):
-    job = service.job(demisto.args()['sid'])
-    status = job.state.content['dispatchState']
 
+    job_sid = demisto.args().get('sid')
+    job = service.job(job_sid)
+    status = job.state.content.get('dispatchState')
     entry_context = {
-        'SID': demisto.args()['sid'],
+        'SID': job_sid,
         'Status': status
     }
-    context = {'Splunk.JobStatus(val.ID && val.ID === obj.ID)': entry_context}
+    context = {'Splunk.JobStatus(val.SID && val.ID === obj.SID)': entry_context}
     human_readable = tableToMarkdown('Splunk Job Status', entry_context)
     demisto.results({
-        "Type": 1,
+        "Type": entryTypes['note'],
         "Contents": 'Splunk Job Status',
-        "ContentsFormat": "json",
+        "ContentsFormat": formats["json"],
         "EntryContext": context,
         "HumanReadable": human_readable
     })
