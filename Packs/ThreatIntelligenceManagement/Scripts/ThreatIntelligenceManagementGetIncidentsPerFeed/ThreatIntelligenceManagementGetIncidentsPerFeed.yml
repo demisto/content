@@ -1,12 +1,12 @@
 comment: Summs the number of incident per OOB feed.
 commonfields:
-  id: ThreatIntelligenceManagementGetIncidentsPerFeed
+  id: ThreatIntelManagementGetIncidentsPerFeed
   version: -1
 enabled: false
-name: ThreatIntelligenceManagementGetIncidentsPerFeed
+name: ThreatIntelManagementGetIncidentsPerFeed
 script: '-'
 tags:
-- Threat Intelligence Management
+- Threat Intel Management
 subtype: python3
 system: false
 timeout: '0'
