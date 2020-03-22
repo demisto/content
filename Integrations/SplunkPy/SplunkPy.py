@@ -546,6 +546,25 @@ def splunk_edit_notable_event_command(proxy):
     demisto.results('Splunk ES Notable events: ' + response_info['message'])
 
 
+def splunk_job_status(service):
+    job = service.job(demisto.args()['sid'])
+    status = job.state.content['dispatchState']
+
+    entry_context = {
+        'SID': demisto.args()['sid'],
+        'Status': status
+    }
+    context = {'Splunk.JobStatus(val.ID && val.ID === obj.ID)': entry_context}
+    human_readable = tableToMarkdown('Splunk Job Status', entry_context)
+    demisto.results({
+        "Type": 1,
+        "Contents": 'Splunk Job Status',
+        "ContentsFormat": "json",
+        "EntryContext": context,
+        "HumanReadable": human_readable
+    })
+
+
 def splunk_parse_raw_command():
     raw = demisto.args().get('raw', '')
     rawDict = rawToDict(raw)
@@ -618,6 +637,8 @@ def main():
         splunk_parse_raw_command()
     if demisto.command() == 'splunk-submit-event-hec':
         splunk_submit_event_hec_command()
+    if demisto.command() == 'splunk-job-status':
+        splunk_job_status(service)
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
