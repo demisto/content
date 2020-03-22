@@ -159,6 +159,7 @@ def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, An
             human_readable = "Command executed"
             return human_readable, {}, []
         return_error(err)
+        return "", {}, []
 
 
 def main():
