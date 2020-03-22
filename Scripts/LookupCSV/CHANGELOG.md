@@ -1,5 +1,3 @@
-## [20.03.23]
-
-
-## [20.03.23] - 2019-08-22
- - initial
+## [Unreleased]
+#### New Automation Script
+Use the LookupCSV command to extract rows from a CSV based on a provided value.

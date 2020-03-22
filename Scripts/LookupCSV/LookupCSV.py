@@ -10,19 +10,35 @@ def search_dicts(k, v, data):
     """
     Search a list of dicts by key
     """
+    match = []
     for row in data:
         if k in row:
             if v == row[k]:
-                return row
+                match.append(row)
+
+    if len(match) == 1:
+        # If we only get one result: return just it as a dictr
+        return match[0]
+    else:
+        return match
 
 def search_lists(k, v, data):
     """
     Search a list of lists by index
     """
+    match = []
+
     k = int(k)
     for row in data:
         if row[k] == v:
-            return row
+            match.append(row)
+
+    if len(match) == 1:
+        # If we only get one result: return just it.
+        return match[0]
+    else:
+        return match
+
 
 def main():
     d_args = demisto.args()
