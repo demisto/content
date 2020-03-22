@@ -458,9 +458,9 @@ def parse_time_to_minutes():
     else:
         return_error("Error: Invalid fetch time, need to be a positive integer with the time unit afterwards"
                      " e.g '2 months, 4 days'.")
+    if time_unit[-1] == 's':
+        time_unit = time_unit[:-1]
     time_unit_value_in_minutes = TIME_UNIT_TO_MINUTES.get(time_unit.lower())
-    if time_unit_value_in_minutes[-1] == 's':
-        time_unit_value_in_minutes = time_unit_value_in_minutes[:-1]
     if time_unit_value_in_minutes:
         return number_of_times * time_unit_value_in_minutes
 
