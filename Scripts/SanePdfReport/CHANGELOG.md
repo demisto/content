@@ -1,2 +1,2 @@
 ## [Unreleased]
-- Initial docker
+- Moves the PDF reporting mechanism to Docker
