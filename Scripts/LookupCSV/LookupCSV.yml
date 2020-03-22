@@ -27,5 +27,5 @@ runonce: false
 dockerimage: demisto/python3:3.8.2.6712
 runas: DBotWeakRole
 commonfields:
-  id: ParseCSV
+  id: LookupCSV
   version: -1
