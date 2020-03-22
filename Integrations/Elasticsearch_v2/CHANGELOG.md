@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.3.3] - 2020-03-18
 Added support for API Key authentication.
 
 ## [20.2.3] - 2020-02-18

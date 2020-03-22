@@ -122,7 +122,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Updates values stored in the EDL (only avaialable On-Demand).
+    description: Updates values stored in the EDL (only available On-Demand).
     execution: false
     name: edl-update
   dockerimage: demisto/teams:1.0.0.6483
