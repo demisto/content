@@ -1,6 +1,6 @@
 ## [Unreleased]
-- Fixed an issue that caused the **Critical Assets** field to be populated partially or not at all.
-- Fixed an issue that caused the playbook to fail when certain inputs were missing.
+  - Fixed an issue that caused the **Critical Assets** field to be populated partially or not at all.
+  - Fixed an issue that caused the playbook to fail when certain inputs were missing.
 
 ## [19.10.1] - 2019-10-15
 Added a task that sets all found critical assets to a new incident field.
