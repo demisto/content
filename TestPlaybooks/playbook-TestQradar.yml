@@ -1,19 +1,15 @@
 id: test_Qradar
 version: -1
 fromversion: 5.5.0
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
 name: test_Qradar
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 48db819f-7d0f-4f18-8763-2e2edc9aa258
+    taskid: fd81e983-3acd-4d7e-822f-038c37d21930
     type: start
     task:
-      id: 48db819f-7d0f-4f18-8763-2e2edc9aa258
+      id: fd81e983-3acd-4d7e-822f-038c37d21930
       version: -1
       name: ""
       description: start
@@ -34,20 +30,20 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 1b18f382-2e45-473d-8aa1-18aa2b1e00e6
+    taskid: 0f26641d-569a-4c43-8bdd-c0df09d62e33
     type: regular
     task:
-      id: 1b18f382-2e45-473d-8aa1-18aa2b1e00e6
+      id: 0f26641d-569a-4c43-8bdd-c0df09d62e33
       version: -1
       name: qradar-get-assets
       description: execute command qradar-get-assets
-      script: QRadar|||qradar-get-assets
+      script: '|||qradar-get-assets'
       type: regular
       iscommand: true
-      brand: QRadar
+      brand: ""
     nexttasks:
       '#none#':
       - "39"
@@ -69,20 +65,20 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: ee5496de-02d5-4595-81e8-0c369b0db3b9
+    taskid: dffffbcc-1297-4e65-8efa-bb76eddcf7d6
     type: regular
     task:
-      id: ee5496de-02d5-4595-81e8-0c369b0db3b9
+      id: dffffbcc-1297-4e65-8efa-bb76eddcf7d6
       version: -1
       name: qradar-create-note in existing offense
       description: execute command qradar-create-note
-      script: QRadar|||qradar-create-note
+      script: '|||qradar-create-note'
       type: regular
       iscommand: true
-      brand: QRadar
+      brand: ""
     nexttasks:
       '#none#':
       - "6"
@@ -105,20 +101,20 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: c8be5261-2434-4bf1-8934-17c595694f80
+    taskid: a449e4dd-b4b3-40aa-8bac-7e1131539967
     type: regular
     task:
-      id: c8be5261-2434-4bf1-8934-17c595694f80
+      id: a449e4dd-b4b3-40aa-8bac-7e1131539967
       version: -1
       name: qradar-get-note
       description: execute command qradar-get-note
-      script: QRadar|||qradar-get-note
+      script: '|||qradar-get-note'
       type: regular
       iscommand: true
-      brand: QRadar
+      brand: ""
     nexttasks:
       '#none#':
       - "19"
@@ -141,20 +137,20 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "10":
     id: "10"
-    taskid: 575f8575-0936-4f89-82a6-5d8a45c5c02f
+    taskid: bddb07b4-21d3-435b-8572-1f842b964b0e
     type: regular
     task:
-      id: 575f8575-0936-4f89-82a6-5d8a45c5c02f
+      id: bddb07b4-21d3-435b-8572-1f842b964b0e
       version: -1
       name: qradar-offenses
       description: execute command qradar-offenses
-      script: QRadar|||qradar-offenses
+      script: '|||qradar-offenses'
       type: regular
       iscommand: true
-      brand: QRadar
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
@@ -177,20 +173,20 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: ed33faee-c962-476c-802f-d332c8ed28e7
+    taskid: 3530369a-a2e3-4772-8a9d-cfbd2894bebc
     type: regular
     task:
-      id: ed33faee-c962-476c-802f-d332c8ed28e7
+      id: 3530369a-a2e3-4772-8a9d-cfbd2894bebc
       version: -1
       name: qradar-offense-by-id
       description: execute command qradar-offense-by-id
-      script: QRadar|||qradar-offense-by-id
+      script: '|||qradar-offense-by-id'
       type: regular
       iscommand: true
-      brand: QRadar
+      brand: ""
     nexttasks:
       '#none#':
       - "12"
@@ -212,13 +208,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "12":
     id: "12"
-    taskid: 10a308a3-7e11-41b1-825a-b418ff03c431
+    taskid: 6dc423d9-8d7d-4bd4-8446-58185d4f532c
     type: condition
     task:
-      id: 10a308a3-7e11-41b1-825a-b418ff03c431
+      id: 6dc423d9-8d7d-4bd4-8446-58185d4f532c
       version: -1
       name: Verify offense credibility exists
       description: Verifies offense credibility exists
@@ -250,20 +246,20 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: 18d65cea-4d82-4652-80e9-7eaa37a4ed3f
+    taskid: 8556cc78-c791-480e-8090-d1e23ba8230b
     type: regular
     task:
-      id: 18d65cea-4d82-4652-80e9-7eaa37a4ed3f
+      id: 8556cc78-c791-480e-8090-d1e23ba8230b
       version: -1
       name: Set offense protected to false (qradar-update-offense)
       description: execute command qradar-update-offense
-      script: QRadar|||qradar-update-offense
+      script: '|||qradar-update-offense'
       type: regular
       iscommand: true
-      brand: QRadar
+      brand: ""
     nexttasks:
       '#none#':
       - "14"
@@ -290,13 +286,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "14":
     id: "14"
-    taskid: f9e82c10-cd8c-4327-8717-4533986168c8
+    taskid: 1c7786fd-db69-40b2-8d49-0f736ff282db
     type: condition
     task:
-      id: f9e82c10-cd8c-4327-8717-4533986168c8
+      id: 1c7786fd-db69-40b2-8d49-0f736ff282db
       version: -1
       name: Verify protected was set to false
       description: Verifies protected was set to false
@@ -326,20 +322,20 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "15":
     id: "15"
-    taskid: ad8265de-078b-416a-806d-b77cbca24ea5
+    taskid: b504b0f2-a70f-45b9-8afb-3074d2e55878
     type: regular
     task:
-      id: ad8265de-078b-416a-806d-b77cbca24ea5
+      id: b504b0f2-a70f-45b9-8afb-3074d2e55878
       version: -1
       name: Set offense protected to true (qradar-update-offense)
       description: execute command qradar-update-offense
-      script: QRadar|||qradar-update-offense
+      script: '|||qradar-update-offense'
       type: regular
       iscommand: true
-      brand: QRadar
+      brand: ""
     nexttasks:
       '#none#':
       - "16"
@@ -366,13 +362,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "16":
     id: "16"
-    taskid: c04ad836-22b4-4543-8833-53abfebce4e5
+    taskid: e5cf7441-7a87-438f-86ab-996a3fd87eb5
     type: condition
     task:
-      id: c04ad836-22b4-4543-8833-53abfebce4e5
+      id: e5cf7441-7a87-438f-86ab-996a3fd87eb5
       version: -1
       name: Verify protected was set to true
       description: Verifies protected was set to true
@@ -402,13 +398,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "17":
     id: "17"
-    taskid: 7e688c76-905d-4ebc-804a-4449cfc17874
+    taskid: 78a8bbc7-b89c-4e6e-8b75-707857dcafb5
     type: title
     task:
-      id: 7e688c76-905d-4ebc-804a-4449cfc17874
+      id: 78a8bbc7-b89c-4e6e-8b75-707857dcafb5
       version: -1
       name: Offense test was completed successfully
       description: Offense test end
@@ -427,13 +423,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "18":
     id: "18"
-    taskid: 65b169bd-5957-4ea4-8e5b-cd2aeaf8ddf9
+    taskid: ba4b4214-4a02-474f-8088-70f79e85a9e0
     type: title
     task:
-      id: 65b169bd-5957-4ea4-8e5b-cd2aeaf8ddf9
+      id: ba4b4214-4a02-474f-8088-70f79e85a9e0
       version: -1
       name: Offense test was completed successfully
       description: Offense test end
@@ -452,13 +448,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "19":
     id: "19"
-    taskid: a030ebfc-1eaf-4b86-898f-d1df4be6a3bd
+    taskid: 41367125-ad7b-47a1-8679-8f68ce4dae94
     type: condition
     task:
-      id: a030ebfc-1eaf-4b86-898f-d1df4be6a3bd
+      id: 41367125-ad7b-47a1-8679-8f68ce4dae94
       version: -1
       name: Verify note text matches
       description: Verifies note text matches request
@@ -491,13 +487,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "20":
     id: "20"
-    taskid: f706d3c8-372f-4ee9-8dec-e7b503ac0623
+    taskid: 1bf8e69c-0cad-4808-8643-55724ce5276f
     type: title
     task:
-      id: f706d3c8-372f-4ee9-8dec-e7b503ac0623
+      id: 1bf8e69c-0cad-4808-8643-55724ce5276f
       version: -1
       name: Notes test was completed successfully
       description: Notes test end
@@ -516,13 +512,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "21":
     id: "21"
-    taskid: 7be2857f-c25f-4931-833c-293c891d61a1
+    taskid: d117f26c-c01b-4fcd-8771-ac708f9232fd
     type: regular
     task:
-      id: 7be2857f-c25f-4931-833c-293c891d61a1
+      id: d117f26c-c01b-4fcd-8771-ac708f9232fd
       version: -1
       name: qradar-get-asset-by-id
       description: execute command qradar-get-asset-by-id
@@ -548,13 +544,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "22":
     id: "22"
-    taskid: df72396c-0815-49fd-8bdf-2175a466c6ff
+    taskid: 5be0dfba-3fbe-49fb-837b-6b5ab0e085b3
     type: condition
     task:
-      id: df72396c-0815-49fd-8bdf-2175a466c6ff
+      id: 5be0dfba-3fbe-49fb-837b-6b5ab0e085b3
       version: -1
       name: Verify MACAddress was pulled successfully
       description: Verifies MACAddress was pulled successfully
@@ -584,13 +580,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "23":
     id: "23"
-    taskid: ee3e10d5-2402-4034-87e2-3593a5b2a6bd
+    taskid: b967bc8f-d30b-4f43-881e-a3545db4eb9f
     type: title
     task:
-      id: ee3e10d5-2402-4034-87e2-3593a5b2a6bd
+      id: b967bc8f-d30b-4f43-881e-a3545db4eb9f
       version: -1
       name: Assets test was completed successfully
       description: Assets test end
@@ -609,13 +605,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "24":
     id: "24"
-    taskid: 7d67722b-c417-477c-86e6-5b61410af5d1
+    taskid: 1202ff22-ffad-4f95-8709-8e2b1d94c7fe
     type: title
     task:
-      id: 7d67722b-c417-477c-86e6-5b61410af5d1
+      id: 1202ff22-ffad-4f95-8709-8e2b1d94c7fe
       version: -1
       name: Search test was completed successfully
       description: Search test end
@@ -634,13 +630,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "25":
     id: "25"
-    taskid: cabf5483-ce0f-48ed-80d6-015fb6455d18
+    taskid: eaf49f48-33b7-4541-848d-706081c5b840
     type: regular
     task:
-      id: cabf5483-ce0f-48ed-80d6-015fb6455d18
+      id: eaf49f48-33b7-4541-848d-706081c5b840
       version: -1
       name: Delete All Context
       description: Deletes all the context
@@ -674,13 +670,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "26":
     id: "26"
-    taskid: 316e0d70-eb31-46d2-8a07-a42f6ebfe65c
+    taskid: a36707a0-f752-4594-8883-1618f30e2bd1
     type: playbook
     task:
-      id: 316e0d70-eb31-46d2-8a07-a42f6ebfe65c
+      id: a36707a0-f752-4594-8883-1618f30e2bd1
       version: -1
       name: QRadarFullSearch
       description: Use QRadarFullSearch to initiate a search and get the results
@@ -718,13 +714,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "27":
     id: "27"
-    taskid: "63"
+    taskid: a2a991f2-2e61-464d-8c19-2edc5528fdf4
     type: regular
     task:
-      id: "63"
+      id: a2a991f2-2e61-464d-8c19-2edc5528fdf4
       version: -1
       name: qradar-delete-reference-set
       description: Deletes a reference set corresponding to the name provided.
@@ -751,13 +747,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "28":
     id: "28"
-    taskid: "59"
+    taskid: d9aed30a-2f96-4468-8949-728c289560ff
     type: regular
     task:
-      id: "59"
+      id: d9aed30a-2f96-4468-8949-728c289560ff
       version: -1
       name: qradar-create-reference-set
       description: Creates a new reference set. If the provided name is already in
@@ -788,13 +784,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "29":
     id: "29"
-    taskid: "57"
+    taskid: 2c32e9f6-3e93-4fc0-8e84-cb96896d1cc2
     type: regular
     task:
-      id: "57"
+      id: 2c32e9f6-3e93-4fc0-8e84-cb96896d1cc2
       version: -1
       name: qradar-create-reference-set-value
       description: Add or update a value in a reference set.
@@ -826,13 +822,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "30":
     id: "30"
-    taskid: "58"
+    taskid: 1823de18-0c96-4edc-814a-5ab649a851f9
     type: regular
     task:
-      id: "58"
+      id: 1823de18-0c96-4edc-814a-5ab649a851f9
       version: -1
       name: qradar-get-reference-by-name
       description: Information about the reference set that had data added or updated.
@@ -863,13 +859,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "31":
     id: "31"
-    taskid: a38dfbad-ca3d-445a-8dd8-a46d086b4905
+    taskid: 5a9d804c-36c1-4bfb-8761-10806f22eca4
     type: condition
     task:
-      id: a38dfbad-ca3d-445a-8dd8-a46d086b4905
+      id: 5a9d804c-36c1-4bfb-8761-10806f22eca4
       version: -1
       name: Validate test_value appears in reference set
       description: Validates reference set values are pulled correctly
@@ -902,13 +898,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "32":
     id: "32"
-    taskid: "62"
+    taskid: 3314af08-89c8-4a70-8dba-593de0db804b
     type: regular
     task:
-      id: "62"
+      id: 3314af08-89c8-4a70-8dba-593de0db804b
       version: -1
       name: Delete test_value from reference set
       description: Deletes a value in a reference set.
@@ -938,13 +934,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "33":
     id: "33"
-    taskid: "60"
+    taskid: b59b7a91-47bd-47a3-8655-ac8173bc3cc3
     type: regular
     task:
-      id: "60"
+      id: b59b7a91-47bd-47a3-8655-ac8173bc3cc3
       version: -1
       name: qradar-get-reference-by-name
       description: Information about the reference set that had data added or updated.
@@ -974,13 +970,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "34":
     id: "34"
-    taskid: 44aa6570-5e4c-4de2-803e-675f7f4d943e
+    taskid: 5973198d-0955-49fd-8a9f-ee2216406e4c
     type: condition
     task:
-      id: 44aa6570-5e4c-4de2-803e-675f7f4d943e
+      id: 5973198d-0955-49fd-8a9f-ee2216406e4c
       version: -1
       name: Validate test_playbookk reference set is empty
       description: Validates test_playbookk reference set is empty
@@ -1013,13 +1009,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "35":
     id: "35"
-    taskid: "64"
+    taskid: 997b3d33-c78c-4753-8bb0-3eb19ea644a5
     type: regular
     task:
-      id: "64"
+      id: 997b3d33-c78c-4753-8bb0-3eb19ea644a5
       version: -1
       name: qradar-delete-reference-set
       description: Deletes a reference set corresponding to the name provided.
@@ -1045,13 +1041,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "36":
     id: "36"
-    taskid: bbdc8ba2-4d2a-4c10-83c3-0d311a43e091
+    taskid: 5ef1c5a6-ea34-4b27-8239-eb93aede32c7
     type: title
     task:
-      id: bbdc8ba2-4d2a-4c10-83c3-0d311a43e091
+      id: 5ef1c5a6-ea34-4b27-8239-eb93aede32c7
       version: -1
       name: Reference set was completed successfuly
       description: Reference set was completed successfuly
@@ -1070,13 +1066,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "37":
     id: "37"
-    taskid: fd55c2b2-5d4b-4253-8904-3605ae8cab0f
+    taskid: 746b8fc5-f85e-4fb7-80bb-ad09c2e1af7f
     type: regular
     task:
-      id: fd55c2b2-5d4b-4253-8904-3605ae8cab0f
+      id: 746b8fc5-f85e-4fb7-80bb-ad09c2e1af7f
       version: -1
       name: Test fetch incidents
       scriptName: FetchFromInstance
@@ -1102,13 +1098,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "38":
     id: "38"
-    taskid: e2e8de3a-7af9-4a42-82ce-cb4f65909690
+    taskid: f4f57107-0500-4a3d-8b78-194bffed29c6
     type: title
     task:
-      id: e2e8de3a-7af9-4a42-82ce-cb4f65909690
+      id: f4f57107-0500-4a3d-8b78-194bffed29c6
       version: -1
       name: Fetch test was completed successfuly
       type: title
@@ -1126,13 +1122,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "39":
     id: "39"
-    taskid: 49cb278d-c334-4f28-8e34-e66c643996e2
+    taskid: 7c9cbe29-9a49-4962-8a2d-29cf69bf28da
     type: regular
     task:
-      id: 49cb278d-c334-4f28-8e34-e66c643996e2
+      id: 7c9cbe29-9a49-4962-8a2d-29cf69bf28da
       version: -1
       name: qradar-get-assets-by-fields
       description: List all assets found in the model
@@ -1161,13 +1157,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "40":
     id: "40"
-    taskid: 10c3caf1-79b2-4847-8f7b-5439780ef6ec
+    taskid: 30ffdad4-2654-4aa0-8d03-a5eddcfbb82f
     type: condition
     task:
-      id: 10c3caf1-79b2-4847-8f7b-5439780ef6ec
+      id: 30ffdad4-2654-4aa0-8d03-a5eddcfbb82f
       version: -1
       name: Verify Context
       type: condition
@@ -1196,13 +1192,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "42":
     id: "42"
-    taskid: "61"
+    taskid: d4bfada4-2ab8-425e-8b64-66ba0fb5e490
     type: regular
     task:
-      id: "61"
+      id: d4bfada4-2ab8-425e-8b64-66ba0fb5e490
       version: -1
       name: qradar-upload-indicators
       description: Upload indicators from Demisto to Qradar
@@ -1238,13 +1234,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "43":
     id: "43"
-    taskid: "56"
+    taskid: af03fd24-d839-49b0-85bd-00a77c538a0a
     type: regular
     task:
-      id: "56"
+      id: af03fd24-d839-49b0-85bd-00a77c538a0a
       version: -1
       name: qradar-delete-reference-set
       description: Deletes a reference set corresponding to the name provided.
@@ -1270,7 +1266,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},

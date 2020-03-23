@@ -289,7 +289,8 @@ class Client(BaseClient):
                 fields = demisto.getIntegrationContext().get(str(component_id)).get('fields')
             field_name = fields.get(str(field_key))
             if isinstance(field_val, dict) and field_val.get('DisplayName'):
-                field_val = field_val.get('DisplayName')
+                field_val = {'Value': field_val.get('DisplayName'),
+                             'ID': field_val.get('Id', -1)}
             if not returned_fields or field_name in returned_fields:
                 final_fields[field_name] = field_val
         return final_fields
@@ -422,7 +423,10 @@ def get_records_command(client: Client, args: dict) -> None:
         title += f' \n### with filter "{filter_type}: {filter_value}" on field "{field_name}"'
     records = []
     for record in res:
-        temp_dict = record.get('Fields')
+        temp_dict = record.get('Fields').copy()
+        for key in temp_dict.keys():
+            if isinstance(temp_dict[key], dict):
+                temp_dict[key] = temp_dict[key].get('Value')
         temp_dict['Id'] = record.get("ID")
         temp_dict['DisplayName'] = record.get('DisplayName')
         records.append(temp_dict)
@@ -590,14 +594,11 @@ def fetch_incidents(client: Client, args: dict) -> None:
     incidents = []
     max_fetch_time = last_fetch_time
     for record in res:
-        occurred_at = ''
-        for field in record.get('FieldValues', []):
-            if str(field.get('Key')) == field_id:
-                occurred_at = field.get('Value')
-                break
+        record['Fields'] = client.field_output_to_hr_fields(record.pop('FieldValues'), component_id)
+        occurred_at = record.get('Fields', {}).get(filter_field, datetime.now().strftime("%Y-%m-%dT%H:%M:%S"))
         incident = {'name': f'Keylight record {record.get("DisplayName")}',
                     'occurred': occurred_at.split('.')[0] + 'Z',
-                    'rawJSON': str(record)
+                    'rawJSON': json.dumps(record)
                     }
         if datetime.strptime(occurred_at.split('.')[0], "%Y-%m-%dT%H:%M:%S") > \
                 datetime.strptime(max_fetch_time.split('.')[0], "%Y-%m-%dT%H:%M:%S"):
@@ -617,7 +618,6 @@ def main():
     username = params.get('credentials', {}).get('identifier', '')
     password = params.get('credentials', {}).get('password', '')
     client = Client(address, verify, proxy, headers={'Accept': 'application/json'})
-
     commands = {
         'kl-get-component': get_component_command,
         'kl-get-field-list': get_field_list_command,

@@ -1,1 +1,0 @@
-Add SHA512 to file priorities

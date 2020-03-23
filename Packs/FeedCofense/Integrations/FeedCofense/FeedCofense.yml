@@ -50,7 +50,6 @@ configuration:
 - display: ""
   name: feedExpirationInterval
   defaultvalue: "20160"
-  hidden: true
   type: 1
   required: false
 - defaultvalue: '60'
@@ -118,7 +117,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: cofense-get-indicators
-  dockerimage: demisto/python3:3.8.1.6120
+  dockerimage: demisto/python3:3.8.1.6442
   feed: true
   isfetch: false
   longRunning: false

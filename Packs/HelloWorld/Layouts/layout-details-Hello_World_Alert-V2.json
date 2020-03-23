@@ -9,8 +9,6 @@
 		"id": "Hello World Alert",
 		"kind": "details",
 		"name": "",
-		"propagationLabels": null,
-		"sortValues": null,
 		"system": false,
 		"tabs": [
 			{

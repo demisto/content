@@ -3,7 +3,7 @@ id: Process Url Indicators
 version: -1
 fromversion: 5.5.0
 name: Process Url Indicators
-description: 'This playbook processes indicators by running enrichment, manually reviewing
+description: 'TIM playbook - This playbook processes indicators by running enrichment, manually reviewing
   the indicator, and tagging indicators accordingly based on user preferences or enrichment
   results. Tagging can later be used to update black/white list and other purposes.
   To process indicators, go to playbook inputs, choose From indicators and set your

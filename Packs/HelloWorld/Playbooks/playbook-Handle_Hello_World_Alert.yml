@@ -4,6 +4,7 @@ inputs: []
 name: Handle Hello World Alert
 outputs: []
 starttaskid: "0"
+description: This is playbook that will handle the alerts coming from Hello World service
 tasks:
   "0":
     id: "0"
