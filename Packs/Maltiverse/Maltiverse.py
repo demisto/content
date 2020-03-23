@@ -2,11 +2,9 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
-from typing import Tuple, Dict, Any
+from typing import Tuple, Dict
 from _collections import defaultdict
-import json
 import requests
-import dateparser
 import hashlib
 
 # Disable insecure warnings
@@ -18,12 +16,11 @@ SERVER_URL = 'https://api.maltiverse.com'
 DBOT_SCORE_KEY = 'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'
 
 
-class Client(BaseClient):  # todo: check about auth in init
+class Client(BaseClient):
     """
     Client will implement the service API, and should not contain any Demisto logic.
     Should only do requests and return data.
     """
-    # def __init__(self, url: str, username: str, password: str, use_ssl: bool, use_proxy: bool):
     def __init__(self, url: str, use_ssl: bool, use_proxy: bool, auth_token):
         super().__init__(url, verify=use_ssl, proxy=use_proxy, headers={'Accept': 'application/json'}) 
         self._headers.update({'Authorization': 'Bearer ' + auth_token})
@@ -54,8 +51,7 @@ def test_module(client=None):
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    return 'ok' if client.file_report('edb2f88c29844117cd74acf8bb357edf92487a1b142fe6f60b6ac5e15d2d718f') else \
-            'Connection failed'
+    return 'ok' if client.ip_report('8.8.8.8') else 'Connection failed'
 
 
 def calculate_score(positive_detections: int, classification: str, threshold: int, anti_virus: int = 0) -> int:
@@ -386,15 +382,12 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, any]:
 
 def main():
     params = demisto.params()
-    print(params)
-    credentials = params.get('credentials')
-    print(credentials.get('identifier'))
+    api_key = params.get('api_key')
 
     client = Client(SERVER_URL,
-                    # credentials.get('password'),
                     use_ssl=not params.get('insecure', False),
                     use_proxy=params.get('proxy', False),
-                    auth_token=credentials.get('identifier'))
+                    auth_token=params.get('api_key'))
 
     commands = {
         'ip': ip_command,
