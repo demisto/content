@@ -111,9 +111,9 @@ class Client(BaseClient):
             "rawJSON": item,
             "fields": {
                 "port": item.get("ports", "").split() if isinstance(item.get("ports"), str) else item.get("ports"),
-                "firstseenbyfeed": item.get("first_seen", ""),
-                "lastseenbyfeed": item.get("last_seen", ""),
-                "feedthreattypes": {
+                "firstseenbysource": item.get("first_seen", ""),
+                "lastseenbysource": item.get("last_seen", ""),
+                "threattypes": {
                     "threatcategory": item.get("category_name", ""),
                     "threatcategoryconfidence": item.get("score", "")
                 }
