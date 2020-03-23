@@ -94,6 +94,13 @@ configuration:
   name: hec_url
   required: false
   type: 0
+- defaultvalue: 10 minutes
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
+  hidden: false
+  name: fetch_time
+  required: false
+  type: 0
 description: Run queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy
@@ -353,12 +360,13 @@ script:
     name: splunk-submit-event-hec
   dockerimage45: demisto/splunksdk:1.0
   dockerimage: demisto/splunksdk:1.0.0.6822
+  feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python2
+  type: python
 tests:
-  - SplunkPy-Test-V2
+- SplunkPy-Test-V2
