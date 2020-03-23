@@ -1,21 +1,15 @@
-elasticcommonfields: {}
 id: palo_alto_firewall_test_pb
 version: -1
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
 name: palo_alto_firewall_test_pb
 description: Test playbook for palo alto firewall
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d48a4c25-b4da-42c5-8e51-6bc677797c9f
+    taskid: e41ac918-d3d3-471e-8593-5875ca95872d
     type: start
     task:
-      elasticcommonfields: {}
-      id: d48a4c25-b4da-42c5-8e51-6bc677797c9f
+      id: e41ac918-d3d3-471e-8593-5875ca95872d
       version: -1
       name: ""
       iscommand: false
@@ -35,14 +29,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 8f823ada-910f-4b9a-8e17-9459054d1df0
+    taskid: 57ee0dae-2993-4376-89cd-5bbaf6c72ef7
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 8f823ada-910f-4b9a-8e17-9459054d1df0
+      id: 57ee0dae-2993-4376-89cd-5bbaf6c72ef7
       version: -1
       name: panorama
       description: Run any panorama command supported in api.
@@ -88,14 +81,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "12":
     id: "12"
-    taskid: c14a4ca2-79ae-4b24-83c7-e2bda1c98fd3
+    taskid: 54377650-4548-4cc2-838f-1f92977461f3
     type: regular
     task:
-      elasticcommonfields: {}
-      id: c14a4ca2-79ae-4b24-83c7-e2bda1c98fd3
+      id: 54377650-4548-4cc2-838f-1f92977461f3
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -126,14 +118,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: 10e36204-6c9a-41d2-8d24-29628ccfb313
+    taskid: 28951929-d84a-459f-873a-1ee85b2749e4
     type: title
     task:
-      elasticcommonfields: {}
-      id: 10e36204-6c9a-41d2-8d24-29628ccfb313
+      id: 28951929-d84a-459f-873a-1ee85b2749e4
       version: -1
       name: Addresses
       type: title
@@ -154,14 +145,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "14":
     id: "14"
-    taskid: c56299e9-17b7-49d0-820c-e949a1448b8d
+    taskid: 7b4cef35-1b5c-48df-8ac9-10e5f0aacdd5
     type: title
     task:
-      elasticcommonfields: {}
-      id: c56299e9-17b7-49d0-820c-e949a1448b8d
+      id: 7b4cef35-1b5c-48df-8ac9-10e5f0aacdd5
       version: -1
       name: Addresses and Address Groups
       type: title
@@ -183,14 +173,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "15":
     id: "15"
-    taskid: 378fbb54-e482-452e-8ee5-4cd87d451f35
+    taskid: 1edde7f8-eef5-4537-8b56-4d42ffdda8d1
     type: title
     task:
-      elasticcommonfields: {}
-      id: 378fbb54-e482-452e-8ee5-4cd87d451f35
+      id: 1edde7f8-eef5-4537-8b56-4d42ffdda8d1
       version: -1
       name: Custom URL Category
       type: title
@@ -211,14 +200,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "16":
     id: "16"
-    taskid: f0931525-8c7d-41ec-8d83-12ede6b5372b
+    taskid: 7685ee58-383c-4c30-81c0-6db064dc03b9
     type: regular
     task:
-      elasticcommonfields: {}
-      id: f0931525-8c7d-41ec-8d83-12ede6b5372b
+      id: 7685ee58-383c-4c30-81c0-6db064dc03b9
       version: -1
       name: panorama-address-add
       script: '|||panorama-create-address'
@@ -249,14 +237,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "17":
     id: "17"
-    taskid: 2f14304d-a938-4954-8a34-110cb74e1720
+    taskid: eb003b1e-b650-422e-8bf6-6a81a14df91f
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 2f14304d-a938-4954-8a34-110cb74e1720
+      id: eb003b1e-b650-422e-8bf6-6a81a14df91f
       version: -1
       name: Test panorama-create-address
       type: condition
@@ -292,14 +279,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "18":
     id: "18"
-    taskid: 3b027048-fdbc-480a-8764-76dddd89a61d
+    taskid: cee4e240-ec3b-4fac-8c6f-667be48aca06
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 3b027048-fdbc-480a-8764-76dddd89a61d
+      id: cee4e240-ec3b-4fac-8c6f-667be48aca06
       version: -1
       name: Panorama Addresses get
       script: '|||panorama-list-addresses'
@@ -321,14 +307,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "20":
     id: "20"
-    taskid: f6fe7f1e-ba45-4075-868f-bbf4023a29d9
+    taskid: 121af1c8-87e0-4b63-8770-d5161f4d618e
     type: regular
     task:
-      elasticcommonfields: {}
-      id: f6fe7f1e-ba45-4075-868f-bbf4023a29d9
+      id: 121af1c8-87e0-4b63-8770-d5161f4d618e
       version: -1
       name: panorama-delete-address
       script: '|||panorama-delete-address'
@@ -353,14 +338,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "21":
     id: "21"
-    taskid: 812fd063-efa3-44de-81ba-cbcd1007df3c
+    taskid: 97d9d474-c27b-48c9-82eb-0189ef8ca0f9
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 812fd063-efa3-44de-81ba-cbcd1007df3c
+      id: 97d9d474-c27b-48c9-82eb-0189ef8ca0f9
       version: -1
       name: panorama-list-address-groups
       script: '|||panorama-list-address-groups'
@@ -387,14 +371,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "22":
     id: "22"
-    taskid: 72374c74-2bf9-4b4a-8831-bb914f2487e8
+    taskid: 400da99d-be82-46b4-80bf-591ffae3ac89
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 72374c74-2bf9-4b4a-8831-bb914f2487e8
+      id: 400da99d-be82-46b4-80bf-591ffae3ac89
       version: -1
       name: panorama-create-address-group(dynamic)
       script: '|||panorama-create-address-group'
@@ -426,14 +409,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "24":
     id: "24"
-    taskid: 53a1d36e-5d46-462c-8fee-75e67b8d9645
+    taskid: d5257c83-5ef9-4640-8ba8-702b33ba7929
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 53a1d36e-5d46-462c-8fee-75e67b8d9645
+      id: d5257c83-5ef9-4640-8ba8-702b33ba7929
       version: -1
       name: panorama-create-address-group(static)
       script: '|||panorama-create-address-group'
@@ -468,14 +450,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "25":
     id: "25"
-    taskid: 7c0cba6e-eb96-449c-87c5-88c00c347b92
+    taskid: 70e07a0a-6e10-43a6-81bc-b5b0d843ca61
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 7c0cba6e-eb96-449c-87c5-88c00c347b92
+      id: 70e07a0a-6e10-43a6-81bc-b5b0d843ca61
       version: -1
       name: panorama-get-address-group
       script: '|||panorama-get-address-group'
@@ -500,14 +481,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "26":
     id: "26"
-    taskid: 5f80f946-248e-474e-8c2e-556332e70677
+    taskid: ba3659b5-5288-416e-852f-305fe0a1a714
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 5f80f946-248e-474e-8c2e-556332e70677
+      id: ba3659b5-5288-416e-852f-305fe0a1a714
       version: -1
       name: panorama-address-group-delete
       script: '|||panorama-delete-address-group'
@@ -532,14 +512,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "27":
     id: "27"
-    taskid: 45aff50e-65e0-415d-8d30-efc498b1c2c0
+    taskid: d0130a18-54ed-4a2e-838c-bd672a447bc1
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 45aff50e-65e0-415d-8d30-efc498b1c2c0
+      id: d0130a18-54ed-4a2e-838c-bd672a447bc1
       version: -1
       name: Test panorama-address-group-create(static)
       type: condition
@@ -585,14 +564,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "28":
     id: "28"
-    taskid: ad0261f4-2269-4d4e-8a60-30fd9c381ea3
+    taskid: 032974bc-3452-46be-85bc-9ed28671a241
     type: regular
     task:
-      elasticcommonfields: {}
-      id: ad0261f4-2269-4d4e-8a60-30fd9c381ea3
+      id: 032974bc-3452-46be-85bc-9ed28671a241
       version: -1
       name: panorama-edit-address-group
       script: '|||panorama-edit-address-group'
@@ -625,14 +603,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "29":
     id: "29"
-    taskid: 05c401a5-d6a4-4b9f-88ea-5dd074a670ac
+    taskid: 11a53551-1a85-4625-84d1-e77ddcdb9c37
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 05c401a5-d6a4-4b9f-88ea-5dd074a670ac
+      id: 11a53551-1a85-4625-84d1-e77ddcdb9c37
       version: -1
       name: Test panorama-address-group-edit
       type: condition
@@ -666,14 +643,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "30":
     id: "30"
-    taskid: 2bf44289-4de3-49f7-89a5-b5bdfdba91fd
+    taskid: de265d70-ec5e-4285-86de-4ca009908cff
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 2bf44289-4de3-49f7-89a5-b5bdfdba91fd
+      id: de265d70-ec5e-4285-86de-4ca009908cff
       version: -1
       name: panorama-delete-address-group
       script: '|||panorama-delete-address-group'
@@ -698,14 +674,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "36":
     id: "36"
-    taskid: ac9f9b50-5319-4faf-8b53-8bdc481c7bd9
+    taskid: d386e833-c52e-41cd-813c-3c118613cbd2
     type: regular
     task:
-      elasticcommonfields: {}
-      id: ac9f9b50-5319-4faf-8b53-8bdc481c7bd9
+      id: d386e833-c52e-41cd-813c-3c118613cbd2
       version: -1
       name: panorama-get-custom-url-category
       script: '|||panorama-get-custom-url-category'
@@ -730,14 +705,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "38":
     id: "38"
-    taskid: d3954d7a-6658-43ba-865a-7a709fa5591f
+    taskid: 0ad2b7be-792f-4400-8a3b-411671c2ff1d
     type: regular
     task:
-      elasticcommonfields: {}
-      id: d3954d7a-6658-43ba-865a-7a709fa5591f
+      id: 0ad2b7be-792f-4400-8a3b-411671c2ff1d
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -766,14 +740,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "46":
     id: "46"
-    taskid: 72df248e-638d-44d1-8743-c1e581f25998
+    taskid: 3c8f268f-d86a-452b-843b-46cf59aa29ae
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 72df248e-638d-44d1-8743-c1e581f25998
+      id: 3c8f268f-d86a-452b-843b-46cf59aa29ae
       version: -1
       name: Sleep 14 seconds
       description: Sleep for X seconds
@@ -799,14 +772,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "48":
     id: "48"
-    taskid: bc79003a-9a14-4cc5-889d-65a7ecde6629
+    taskid: 81cbe1f4-5348-41bd-8a54-8015ed4df283
     type: regular
     task:
-      elasticcommonfields: {}
-      id: bc79003a-9a14-4cc5-889d-65a7ecde6629
+      id: 81cbe1f4-5348-41bd-8a54-8015ed4df283
       version: -1
       name: panorama-get-url-category
       script: '|||panorama-get-url-category'
@@ -831,14 +803,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "49":
     id: "49"
-    taskid: 31171877-4674-4694-8235-b0540203d0a1
+    taskid: 77b96a29-a780-41d6-8ad6-a90306788ff3
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 31171877-4674-4694-8235-b0540203d0a1
+      id: 77b96a29-a780-41d6-8ad6-a90306788ff3
       version: -1
       name: Test panorama-url-category-get
       type: condition
@@ -882,14 +853,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "50":
     id: "50"
-    taskid: 134f1fb6-4956-49ea-89bc-f4d6d17ff9d4
+    taskid: 479ac149-f9d9-4667-8f5a-31bb67d8d58d
     type: title
     task:
-      elasticcommonfields: {}
-      id: 134f1fb6-4956-49ea-89bc-f4d6d17ff9d4
+      id: 479ac149-f9d9-4667-8f5a-31bb67d8d58d
       version: -1
       name: Done
       type: title
@@ -907,14 +877,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "52":
     id: "52"
-    taskid: 39c412ed-5f1a-4d55-82f9-a3c5b706918d
+    taskid: 43f28774-3e9d-44c0-842a-287940187853
     type: title
     task:
-      elasticcommonfields: {}
-      id: 39c412ed-5f1a-4d55-82f9-a3c5b706918d
+      id: 43f28774-3e9d-44c0-842a-287940187853
       version: -1
       name: URL Filter
       type: title
@@ -935,14 +904,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "60":
     id: "60"
-    taskid: 883fb2e0-236b-4bd1-8fd6-e6c25146f3a0
+    taskid: 57496e60-f9f1-4891-83ed-b833a13d5397
     type: title
     task:
-      elasticcommonfields: {}
-      id: 883fb2e0-236b-4bd1-8fd6-e6c25146f3a0
+      id: 57496e60-f9f1-4891-83ed-b833a13d5397
       version: -1
       name: Security Rules Creation
       type: title
@@ -963,14 +931,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "61":
     id: "61"
-    taskid: 5c3301b4-894f-4cd1-8ada-b422deb4fc4a
+    taskid: 5846fb47-ba1a-4092-8fc1-7fd8876bc984
     type: title
     task:
-      elasticcommonfields: {}
-      id: 5c3301b4-894f-4cd1-8ada-b422deb4fc4a
+      id: 5846fb47-ba1a-4092-8fc1-7fd8876bc984
       version: -1
       name: Dynamic Address Groups
       type: title
@@ -991,14 +958,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "62":
     id: "62"
-    taskid: 7a17b1da-21cf-4647-8840-9b02063a94ed
+    taskid: 02fc9fa4-94ee-4bc3-8d3a-c48109c6c7da
     type: title
     task:
-      elasticcommonfields: {}
-      id: 7a17b1da-21cf-4647-8840-9b02063a94ed
+      id: 02fc9fa4-94ee-4bc3-8d3a-c48109c6c7da
       version: -1
       name: Static Address Groups
       type: title
@@ -1019,14 +985,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "67":
     id: "67"
-    taskid: c5678180-dbcb-4d68-833d-88cee406999b
+    taskid: 61cf92fd-e516-443b-8298-411aaaaac04c
     type: regular
     task:
-      elasticcommonfields: {}
-      id: c5678180-dbcb-4d68-833d-88cee406999b
+      id: 61cf92fd-e516-443b-8298-411aaaaac04c
       version: -1
       name: panorama-create-rule
       description: Create policy rule in Palo Alto Firewall or Panorama
@@ -1069,14 +1034,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "68":
     id: "68"
-    taskid: 698c01d2-441c-43a2-8206-51128652b783
+    taskid: 7a253422-86c3-4602-8d8a-e7fdf9014439
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 698c01d2-441c-43a2-8206-51128652b783
+      id: 7a253422-86c3-4602-8d8a-e7fdf9014439
       version: -1
       name: panorama-edit-rule
       description: Edit a policy rule in Palo Alto Firewall or Panorama
@@ -1109,14 +1073,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "70":
     id: "70"
-    taskid: bc7c8335-6231-4a72-8606-c4c670a748d8
+    taskid: dbaf963c-b44f-4e05-8108-54144da8282f
     type: regular
     task:
-      elasticcommonfields: {}
-      id: bc7c8335-6231-4a72-8606-c4c670a748d8
+      id: dbaf963c-b44f-4e05-8108-54144da8282f
       version: -1
       name: panorama-rule-delete
       description: Delete a policy rule in Palo Alto Firewall or Panorama
@@ -1145,14 +1108,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "74":
     id: "74"
-    taskid: 0f34f4d4-893d-4d84-8cd4-0e96d384f349
+    taskid: fb3b38a3-abe3-4c78-8850-dca54036bf8b
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 0f34f4d4-893d-4d84-8cd4-0e96d384f349
+      id: fb3b38a3-abe3-4c78-8850-dca54036bf8b
       version: -1
       name: panorama-get-url-filter
       description: Get a URL Filtering rule  from Palo Alto Firewall or Panorama
@@ -1178,14 +1140,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "80":
     id: "80"
-    taskid: 4dfab66e-6eb3-4a75-8592-0254023d4d2f
+    taskid: e9232d57-ac5f-4a78-892e-0d991e41058f
     type: title
     task:
-      elasticcommonfields: {}
-      id: 4dfab66e-6eb3-4a75-8592-0254023d4d2f
+      id: e9232d57-ac5f-4a78-892e-0d991e41058f
       version: -1
       name: PCAPS
       type: title
@@ -1206,14 +1167,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "81":
     id: "81"
-    taskid: b903646a-8a35-43f5-8069-6b9077c8459f
+    taskid: 9fc07495-ef98-49ab-8272-4eafd4e8097f
     type: regular
     task:
-      elasticcommonfields: {}
-      id: b903646a-8a35-43f5-8069-6b9077c8459f
+      id: 9fc07495-ef98-49ab-8272-4eafd4e8097f
       version: -1
       name: panorama-get-pcap
       description: Get panorama pcaps
@@ -1247,14 +1207,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "82":
     id: "82"
-    taskid: 4fee4b6f-2c3f-4a57-8c1b-ea4018ce01f7
+    taskid: fa892625-9ce2-440b-87bf-28531014ce74
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 4fee4b6f-2c3f-4a57-8c1b-ea4018ce01f7
+      id: fa892625-9ce2-440b-87bf-28531014ce74
       version: -1
       name: panorama-list-pcaps
       description: Returns a list of pcap names
@@ -1282,14 +1241,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "83":
     id: "83"
-    taskid: 5d823d12-4caf-471e-8583-b094f1eeec3a
+    taskid: 2644dc79-2140-442d-8382-f5573f7bcee5
     type: title
     task:
-      elasticcommonfields: {}
-      id: 5d823d12-4caf-471e-8583-b094f1eeec3a
+      id: 2644dc79-2140-442d-8382-f5573f7bcee5
       version: -1
       name: EDL
       type: title
@@ -1310,14 +1268,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "84":
     id: "84"
-    taskid: 2802b0b9-85bf-43d8-8184-1b3e584d3b03
+    taskid: ad61df93-73e9-4d88-8349-197afc339cd5
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 2802b0b9-85bf-43d8-8184-1b3e584d3b03
+      id: ad61df93-73e9-4d88-8349-197afc339cd5
       version: -1
       name: panorama-list-edls
       description: Returns a list of external dynamic lists
@@ -1340,14 +1297,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "85":
     id: "85"
-    taskid: 59c9f8c5-a0e8-4ad7-87f7-242fc087f1e8
+    taskid: ca8c1007-8ee9-461e-8c88-ee604cd3c7dc
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 59c9f8c5-a0e8-4ad7-87f7-242fc087f1e8
+      id: ca8c1007-8ee9-461e-8c88-ee604cd3c7dc
       version: -1
       name: panorama-get-edl
       description: Get information for an external dynamic list
@@ -1373,14 +1329,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "86":
     id: "86"
-    taskid: 3704758e-1efb-4924-8a9e-2d0173f56979
+    taskid: c45dc60c-d56d-49ad-8e9e-04d974d978a6
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 3704758e-1efb-4924-8a9e-2d0173f56979
+      id: c45dc60c-d56d-49ad-8e9e-04d974d978a6
       version: -1
       name: Test panorama edl commands
       type: condition
@@ -1414,14 +1369,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "87":
     id: "87"
-    taskid: 10b4c04d-365d-42f6-8858-acff2c2fc8a7
+    taskid: fd9e5d71-93bc-4833-8d77-9a2b29fc2534
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 10b4c04d-365d-42f6-8858-acff2c2fc8a7
+      id: fd9e5d71-93bc-4833-8d77-9a2b29fc2534
       version: -1
       name: panorama-refresh-edl
       description: Refresh a given external dynamic list
@@ -1447,14 +1401,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "88":
     id: "88"
-    taskid: 89f840e2-6154-4396-8643-1a5ee240d04e
+    taskid: 6c46b7b0-0702-40ad-873e-a046adf384af
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 89f840e2-6154-4396-8643-1a5ee240d04e
+      id: 6c46b7b0-0702-40ad-873e-a046adf384af
       version: -1
       name: panorama-register-ip-tag
       description: Register IPs to a tag
@@ -1484,14 +1437,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "89":
     id: "89"
-    taskid: 7c848ab3-0f1f-4ad0-8fee-cbee38076d44
+    taskid: 69e38903-82ae-4ba5-8bbe-f68155ec9374
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 7c848ab3-0f1f-4ad0-8fee-cbee38076d44
+      id: 69e38903-82ae-4ba5-8bbe-f68155ec9374
       version: -1
       name: panorama-unregister-ip-tag
       description: Unregister IPs to a tag
@@ -1519,14 +1471,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "90":
     id: "90"
-    taskid: 5bdb32f5-27d5-47a0-8a31-82a23a993d49
+    taskid: 2665bed0-6c13-4eeb-84ea-8b99c24cde83
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 5bdb32f5-27d5-47a0-8a31-82a23a993d49
+      id: 2665bed0-6c13-4eeb-84ea-8b99c24cde83
       version: -1
       name: panorama-list-rules
       description: Returns a list of predefined Security Rules
@@ -1551,14 +1502,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "92":
     id: "92"
-    taskid: 308dc75c-20d6-4712-829a-8b63d19be4f9
+    taskid: 81eb674b-0e39-4f91-863a-c15d76e5b7a2
     type: playbook
     task:
-      elasticcommonfields: {}
-      id: 308dc75c-20d6-4712-829a-8b63d19be4f9
+      id: 81eb674b-0e39-4f91-863a-c15d76e5b7a2
       version: -1
       name: PAN-OS Commit Configuration
       playbookName: PAN-OS Commit Configuration
@@ -1582,14 +1532,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "93":
     id: "93"
-    taskid: 94e1f6cb-3d61-4f79-8ba3-144c2c48411b
+    taskid: b3502719-f645-4ff8-86ae-60b8aa90416b
     type: title
     task:
-      elasticcommonfields: {}
-      id: 94e1f6cb-3d61-4f79-8ba3-144c2c48411b
+      id: b3502719-f645-4ff8-86ae-60b8aa90416b
       version: -1
       name: Finished Addresses UC
       type: title
@@ -1612,14 +1561,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "94":
     id: "94"
-    taskid: 69435cca-7d9c-4c1c-8fa6-0aa51f496bad
+    taskid: 09d60136-0db4-4d00-81be-f0012b4ecac5
     type: title
     task:
-      elasticcommonfields: {}
-      id: 69435cca-7d9c-4c1c-8fa6-0aa51f496bad
+      id: 09d60136-0db4-4d00-81be-f0012b4ecac5
       version: -1
       name: FInished Objects UC
       type: title
@@ -1642,14 +1590,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "95":
     id: "95"
-    taskid: 9a3a9061-2173-448e-8b9d-bf0a31357d05
+    taskid: db63a64b-6df2-4932-82e7-8a3d9a3d2d48
     type: playbook
     task:
-      elasticcommonfields: {}
-      id: 9a3a9061-2173-448e-8b9d-bf0a31357d05
+      id: db63a64b-6df2-4932-82e7-8a3d9a3d2d48
       version: -1
       name: PAN-OS Commit Configuration
       playbookName: PAN-OS Commit Configuration
@@ -1676,14 +1623,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "96":
     id: "96"
-    taskid: 6edd8337-40e4-4a7d-8ce8-c215ad8c7be3
+    taskid: 07d06314-acfe-4925-8d50-03f3fe290d2c
     type: title
     task:
-      elasticcommonfields: {}
-      id: 6edd8337-40e4-4a7d-8ce8-c215ad8c7be3
+      id: 07d06314-acfe-4925-8d50-03f3fe290d2c
       version: -1
       name: Security Policy Match
       type: title
@@ -1704,14 +1650,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "97":
     id: "97"
-    taskid: 51966f8a-fcb5-4bf0-80b3-5e188a334fad
+    taskid: c13aca1a-d028-405e-854c-64fdd6ee1934
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 51966f8a-fcb5-4bf0-80b3-5e188a334fad
+      id: c13aca1a-d028-405e-854c-64fdd6ee1934
       version: -1
       name: panorama-security-policy-match
       description: Checks whether a session matches the specified security policy.
@@ -1749,14 +1694,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "98":
     id: "98"
-    taskid: 9fde00e2-21b2-4957-84fa-fdb000434633
+    taskid: fbfaba6b-7b34-4716-824e-42b4d4462bcd
     type: title
     task:
-      elasticcommonfields: {}
-      id: 9fde00e2-21b2-4957-84fa-fdb000434633
+      id: fbfaba6b-7b34-4716-824e-42b4d4462bcd
       version: -1
       name: URL FIltering
       type: title
@@ -1777,14 +1721,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "99":
     id: "99"
-    taskid: 805749bc-eeba-43b1-838a-3f2bcf65b947
+    taskid: ab2c113f-e225-4fa5-8528-3f33f9d21e47
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 805749bc-eeba-43b1-838a-3f2bcf65b947
+      id: ab2c113f-e225-4fa5-8528-3f33f9d21e47
       version: -1
       name: panorama-get-url-category-from-cloud
       description: Gets a URL category from URL Filtering.
@@ -1810,14 +1753,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "100":
     id: "100"
-    taskid: e910cf9f-041d-414b-864c-43a6f859cf89
+    taskid: e80c85ee-4f90-4961-8c7e-54b45745e083
     type: title
     task:
-      elasticcommonfields: {}
-      id: e910cf9f-041d-414b-864c-43a6f859cf89
+      id: e80c85ee-4f90-4961-8c7e-54b45745e083
       version: -1
       name: Static Routes (network)
       type: title
@@ -1838,14 +1780,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "101":
     id: "101"
-    taskid: ba1cd5fc-cdd9-4b8a-826d-4eea1186ceb8
+    taskid: 1226a493-89ba-48b3-89cc-9310aca9b250
     type: regular
     task:
-      elasticcommonfields: {}
-      id: ba1cd5fc-cdd9-4b8a-826d-4eea1186ceb8
+      id: 1226a493-89ba-48b3-89cc-9310aca9b250
       version: -1
       name: panorama-list-static-routes
       description: List the static routes of a virtual router.
@@ -1871,14 +1812,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "102":
     id: "102"
-    taskid: e65b0246-c83d-48c0-810d-3ea2e4f17f34
+    taskid: 47109ab8-9303-4d38-80c2-0fa79ad5a7ca
     type: regular
     task:
-      elasticcommonfields: {}
-      id: e65b0246-c83d-48c0-810d-3ea2e4f17f34
+      id: 47109ab8-9303-4d38-80c2-0fa79ad5a7ca
       version: -1
       name: panorama-get-static-route
       description: Get a specific static route of a virtual router.
@@ -1919,14 +1859,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "103":
     id: "103"
-    taskid: c29e0f94-f17f-4627-8e90-0443f4524c9b
+    taskid: f1cc4c12-ca47-4919-8bfd-c7c41aaeb02b
     type: title
     task:
-      elasticcommonfields: {}
-      id: c29e0f94-f17f-4627-8e90-0443f4524c9b
+      id: f1cc4c12-ca47-4919-8bfd-c7c41aaeb02b
       version: -1
       name: DAG
       type: title
@@ -1947,14 +1886,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "104":
     id: "104"
-    taskid: 3aac8cb7-0fa0-440f-86e1-480f718ffc8c
+    taskid: 8c539e18-5188-4a76-8e76-696929cb771a
     type: playbook
     task:
-      elasticcommonfields: {}
-      id: 3aac8cb7-0fa0-440f-86e1-480f718ffc8c
+      id: 8c539e18-5188-4a76-8e76-696929cb771a
       version: -1
       name: PAN-OS Commit Configuration
       description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified
@@ -1984,14 +1922,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "105":
     id: "105"
-    taskid: 98b09314-7613-4188-8324-c49319a361d7
+    taskid: bb93d3b3-a178-4adc-8ee4-ab9bde0267a2
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 98b09314-7613-4188-8324-c49319a361d7
+      id: bb93d3b3-a178-4adc-8ee4-ab9bde0267a2
       version: -1
       name: panorama-edit-rule
       description: Edits a policy rule.
@@ -2026,14 +1963,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "106":
     id: "106"
-    taskid: "3"
+    taskid: e10496f4-4651-4512-8349-a7a6cafc76c4
     type: regular
     task:
-      elasticcommonfields: {}
-      id: "3"
+      id: e10496f4-4651-4512-8349-a7a6cafc76c4
       version: -1
       name: panorama-address-add failed
       description: Prints an error entry with a given message
@@ -2056,14 +1992,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "107":
     id: "107"
-    taskid: "4"
+    taskid: 99cae8e9-3074-4786-8924-7576839ec898
     type: regular
     task:
-      elasticcommonfields: {}
-      id: "4"
+      id: 99cae8e9-3074-4786-8924-7576839ec898
       version: -1
       name: panorama-create-address-group failed
       description: Prints an error entry with a given message
@@ -2086,7 +2021,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
