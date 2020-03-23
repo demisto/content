@@ -7,27 +7,22 @@ configuration:
   name: credentials
   required: true
   type: 9
-- defaultvalue: mongodb://172.16.202.134:27017
-  display: mongodb://<IP/FQDN>:<Port Number>
-  name: URI
+- display: mongodb://<IP/FQDN>:<Port Number>
+  name: uri
   required: true
   type: 0
 - defaultvalue: demisto
   display: MongoDB Database Name
-  name: DB
+  name: database
   required: true
   type: 0
 - defaultvalue: impacted
   display: MongoDB Collection Name
-  name: COLLECTION
+  name: collection
   required: true
   type: 0
-description: "Manipulates a collection of impacted entities -  - utilizing the MongoDB\
-  \ collection named \"impacted\". \n\nThis Integration needs to be run in a Docker\
-  \ container which has the pymongo dependency added.\n\nIntegration uses SCRAM-SHA-1\
-  \ authentication to the backend Mongo database, but functions with noauth as well\
-  \ (MongoDB configuration). This was limited by the supported pymongo, further limited\
-  \ by the Python version supported by Demisto (read: Wanted to use SCRAM-SHA-256)."
+description: Manipulates a collection of impacted entities -  - utilizing the MongoDB
+  collection named "impacted".
 display: MongoDBImpacted
 name: MongoDBImpacted
 script:
@@ -77,7 +72,32 @@ script:
     description: Adds an impacted entity for the incident.  If an impacted record
       already exists, previous values are overwritten.
     execution: false
-    name: WriteImpacted
+    name: mongodb-write-impacted
+    outputs:
+    - contextPath: MongoDB.Entry.Category
+      description: The impacted entry category.
+      type: String
+    - contextPath: MongoDB.Entry.Classification
+      description: Impacted classification.
+      type: String
+    - contextPath: MongoDB.Entry.Created
+      description: Entry create time.
+      type: Date
+    - contextPath: MongoDB.Entry.Entity
+      description: Entity name.
+      type: String
+    - contextPath: MongoDB.Entry.ID
+      description: Entry ID.
+      type: String
+    - contextPath: MongoDB.Entry.Incident
+      description: Incident ID.
+      type: String
+    - contextPath: MongoDB.Entry.Modified
+      description: Entry modified time.
+      type: Date
+    - contextPath: MongoDB.Entry.action
+      description: Action performed.
+      type: String
   - arguments:
     - default: false
       description: Incident ID
@@ -94,7 +114,29 @@ script:
     deprecated: false
     description: Return record of incident's impacted entity.
     execution: false
-    name: GetImpacted
+    name: mongodb-get-impacted
+    outputs:
+    - contextPath: MongoDB.Entry.Action
+      description: Action(s) performed.
+      type: String
+    - contextPath: MongoDB.Entry.Category
+      description: Impacted category.
+      type: String
+    - contextPath: MongoDB.Entry.Classification
+      description: Impacted classification.
+      type: String
+    - contextPath: MongoDB.Entry.Created
+      description: Entry created date.
+      type: Date
+    - contextPath: MongoDB.Entry.Entity
+      description: Entity name.
+      type: String
+    - contextPath: MongoDB.Entry.IncidentID
+      description: Incident ID.
+      type: String
+    - contextPath: MongoDB.Entry.Modified
+      description: Entry modified date.
+      type: Date
   - arguments:
     - default: false
       description: Incident ID
@@ -105,7 +147,29 @@ script:
     deprecated: false
     description: Returns json of impacted entities.
     execution: false
-    name: ListImpacted
+    name: mongodb-list-impacted
+    outputs:
+    - contextPath: MongoDB.Entry.Action
+      description: Action(s) performed.
+      type: String
+    - contextPath: MongoDB.Entry.Category
+      description: Impacted category.
+      type: String
+    - contextPath: MongoDB.Entry.Classification
+      description: Impacted classification.
+      type: String
+    - contextPath: MongoDB.Entry.Created
+      description: Entry created date.
+      type: Date
+    - contextPath: MongoDB.Entry.Entity
+      description: Entity name.
+      type: String
+    - contextPath: MongoDB.Entry.IncidentID
+      description: Incident ID.
+      type: String
+    - contextPath: MongoDB.Entry.Modified
+      description: Entry modified date.
+      type: Date
   - arguments:
     - default: false
       description: Incident ID
@@ -116,7 +180,7 @@ script:
     deprecated: false
     description: Returns the total number of impacted entities for an incident.
     execution: false
-    name: NumImpacted
+    name: mongodb-number-of-impacted
   - arguments:
     - default: false
       description: Incident ID
@@ -133,7 +197,7 @@ script:
     deprecated: false
     description: Deletes an incident's impacted entity.
     execution: false
-    name: DeleteImpacted
+    name: mongodb-delete-impacted
   - arguments:
     - default: false
       description: Incident ID
@@ -145,13 +209,12 @@ script:
     description: Purges ALL impacted entities for an incident.  Possibly called when
       closing an incident to clear entries from database.
     execution: false
-    name: PurgeImpacted
+    name: mongodb-purge-impacted
   dockerimage: demisto/mongoclient1:latest
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: true
   script: '-'
-  subtype: python3
   type: python
 sourcemoduleid: MongoDBImpacted

@@ -7,27 +7,22 @@ configuration:
   name: credentials
   required: true
   type: 9
-- defaultvalue: mongodb://172.16.202.134:27017
-  display: mongodb://<IP/FQDN>:<Port Number>
-  name: URI
+- display: URI (mongodb://<IP/FQDN>:<Port Number>)
+  name: uri
   required: true
   type: 0
 - defaultvalue: demisto
   display: MongoDB Database Name
-  name: DB
+  name: database
   required: true
   type: 0
 - defaultvalue: generic
   display: MongoDB Collection Name
-  name: COLLECTION
+  name: collection
   required: true
   type: 0
-description: "Manipulates key/value pairs by incident - utilizing the MongoDB collection\
-  \ named \"generic\". \n\nThis Integration needs to be run in a Docker container\
-  \ which has the pymongo dependency added.\n\nIntegration uses SCRAM-SHA-1 authentication\
-  \ to the backend Mongo database, but functions with noauth as well (MongoDB configuration).\
-  \  This was limited by the supported pymongo, further limited by the Python version\
-  \ supported by Demisto (read: Wanted to use SCRAM-SHA-256)."
+description: Manipulates key/value pairs by incident - utilizing the MongoDB collection
+  named "generic".
 display: MongoDBKeyValueStore
 name: MongoDBKeyValueStore
 script:
@@ -55,7 +50,23 @@ script:
     description: Adds a key/value record for the incident.  If the key exists, any
       existing value will be overwritten.
     execution: false
-    name: WriteKeyValue
+    name: mongodb-write-key-value
+    outputs:
+    - contextPath: MongoDB.Entry.ID
+      description: Entry ID.
+      type: String
+    - contextPath: MongoDB.Entry.Incident
+      description: Incident ID.
+      type: String
+    - contextPath: MongoDB.Entry.Key
+      description: Incident key.
+      type: String
+    - contextPath: MongoDB.Entry.Value
+      description: Incident value.
+      type: String
+    - contextPath: MongoDB.Entry.Modified
+      description: Incident modified date.
+      type: Date
   - arguments:
     - default: false
       description: Demisto's Incident Number
@@ -72,7 +83,17 @@ script:
     deprecated: false
     description: Returns an Incident's Value stored for the specified Name/Key.
     execution: false
-    name: GetKeyValue
+    name: mongodb-get-key-value
+    outputs:
+    - contextPath: MongoDB.Entry.Incident
+      description: Incident ID.
+      type: String
+    - contextPath: MongoDB.Entry.Key
+      description: Incident key.
+      type: String
+    - contextPath: MongoDB.Entry.Value
+      description: The value of the key.
+      type: String
   - arguments:
     - default: false
       description: Demisto's Incident Number
@@ -83,7 +104,17 @@ script:
     deprecated: false
     description: Lists the keys and their values assigned for specified incident.
     execution: false
-    name: ListKeyValues
+    name: mongodb-list-key-values
+    outputs:
+    - contextPath: MongoDB.Incident.Incident
+      description: Incident ID.
+      type: String
+    - contextPath: MongoDB.Incident.Key
+      description: Incident key.
+      type: String
+    - contextPath: MongoDB.Incident.Value
+      description: The value of the key.
+      type: String
   - arguments:
     - default: false
       description: Demisto's Incident Number
@@ -100,7 +131,7 @@ script:
     deprecated: false
     description: Deletes the key/value record for an incident.
     execution: false
-    name: DeleteKey
+    name: mongodb-delete-key
   - arguments:
     - default: false
       description: Demisto's Incident Number
@@ -112,7 +143,7 @@ script:
     description: Purges ALL key/values for an incident.  Possibly called when closing
       an incident to clear entries from database.
     execution: false
-    name: PurgeKeys
+    name: mongodb-purge-keys
   - arguments:
     - default: false
       description: Demisto's Incident Number
@@ -129,7 +160,20 @@ script:
     deprecated: false
     description: Returns the key/value with last modified timestamp.
     execution: false
-    name: GetKeyInfo
+    name: mongodb-get-key-info
+    outputs:
+    - contextPath: MongoDB.Entry.Key
+      description: The entry key.
+      type: String
+    - contextPath: MongoDB.Entry.Modified
+      description: Entry modified time.
+      type: Date
+    - contextPath: MongoDB.Entry.Value
+      description: The value of the key.
+      type: String
+    - contextPath: MongoDB.Entry.Incident
+      description: Incident ID.
+      type: String
   - arguments:
     - default: false
       description: Demisto's Incident Number
@@ -140,12 +184,11 @@ script:
     deprecated: false
     description: Returns the number of key/value pairs for an incident.
     execution: false
-    name: NumKeys
+    name: mongodb-get-keys-number
   dockerimage: demisto/mongoclient1:latest
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python3
   type: python

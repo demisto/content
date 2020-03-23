@@ -9,25 +9,20 @@ configuration:
   type: 9
 - defaultvalue: mongodb://172.16.202.134:27017
   display: mongodb://<IP/FQDN>:<Port Number>
-  name: URI
+  name: uri
   required: true
   type: 0
 - defaultvalue: demisto
   display: Database Name
-  name: DB
+  name: db
   required: true
   type: 0
 - defaultvalue: log
   display: Collection Name
-  name: COLLECTION
+  name: collection
   required: true
   type: 0
-description: |-
-  Writes Log data out to MongoDB collection named "log".
-
-  This Integration needs to be run in a Docker container which has the pymongo dependency added.
-
-  Integration uses SCRAM-SHA-1 authentication to the backend Mongo database, but functions with noauth as well (MongoDB configuration).  This was limited by the supported pymongo, further limited by the Python version supported by Demisto (read: Wanted to use SCRAM-SHA-256).
+description: Writes Log data out to MongoDB collection.
 display: MongoDBLog
 name: MongoDBLog
 script:
@@ -35,42 +30,64 @@ script:
   - deprecated: false
     description: Returns all log entries.
     execution: false
-    name: ReadMongoLog
+    name: mongodb-read-log
   - arguments:
     - default: false
+      description: The playbook that had been used.
       isArray: false
       name: playbook
       required: true
       secret: false
     - default: false
+      description: Assigned analyst.
       isArray: false
       name: analyst
       required: true
       secret: false
     - default: false
+      description: Entity to write to log.
       isArray: false
       name: entity
       required: true
       secret: false
     - default: false
+      description: Action(s) performed
       isArray: false
       name: action
       required: true
       secret: false
     deprecated: false
-    description: Adds log entry.
+    description: Add log entry.
     execution: false
-    name: WriteMongoLog
+    name: mongodb-write-log
+    outputs:
+    - contextPath: MongoDB.Entry.Action
+      description: Action(s) performed
+      type: String
+    - contextPath: MongoDB.Entry.Analyst
+      description: Assigned analyst.
+      type: String
+    - contextPath: MongoDB.Entry.Entity
+      description: Entity to write to log.
+      type: String
+    - contextPath: MongoDB.Entry.ID
+      description: Entry ID.
+      type: String
+    - contextPath: MongoDB.Entry.Playbook
+      description: The playbook that had been used.
+      type: String
+    - contextPath: MongoDB.Entry.Timestamp
+      description: Entry timestamp.
+      type: Date
   - deprecated: false
     description: Returns the number of log entries.
     execution: false
-    name: NumMongoLog
+    name: mongodb-logs-number
   dockerimage: demisto/mongoclient1:latest
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: true
   script: '-'
-  subtype: python3
   type: python
 sourcemoduleid: Log
