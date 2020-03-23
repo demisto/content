@@ -2,13 +2,14 @@ id: Rasterize Test
 version: -1
 name: Rasterize Test
 starttaskid: "0"
+fromversion: 5.0.0
 tasks:
   "0":
     id: "0"
-    taskid: "20"
+    taskid: e47b5a1b-b1a4-4b38-818f-599d02e14e44
     type: start
     task:
-      id: "20"
+      id: e47b5a1b-b1a4-4b38-818f-599d02e14e44
       version: -1
       name: ""
       iscommand: false
@@ -28,13 +29,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: "25"
+    taskid: cb9f2404-8bcd-4c60-88cc-9fbf1ec10bc6
     type: regular
     task:
-      id: "25"
+      id: cb9f2404-8bcd-4c60-88cc-9fbf1ec10bc6
       version: -1
       name: get vaild email
       description: Sends http request. Returns the response as json.
@@ -73,13 +74,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: "26"
+    taskid: 02ec5945-0854-4f54-88e9-695330981a8e
     type: playbook
     task:
-      id: "26"
+      id: 02ec5945-0854-4f54-88e9-695330981a8e
       version: -1
       name: Process Email - Generic for Rasterize
       playbookName: Process Email - Generic for Rasterize
@@ -101,13 +102,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: "16"
+    taskid: a3d0b053-32d1-46bd-88ca-534bae1d5aa0
     type: regular
     task:
-      id: "16"
+      id: a3d0b053-32d1-46bd-88ca-534bae1d5aa0
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -137,13 +138,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: "21"
+    taskid: 1ac04388-32f8-48c5-8e9e-5db265c29856
     type: regular
     task:
-      id: "21"
+      id: 1ac04388-32f8-48c5-8e9e-5db265c29856
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -173,13 +174,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: "22"
+    taskid: fde94430-5e57-41e6-8f97-39c2cf3905e5
     type: regular
     task:
-      id: "22"
+      id: fde94430-5e57-41e6-8f97-39c2cf3905e5
       version: -1
       name: get corrupt email
       description: Sends http request. Returns the response as json.
@@ -218,13 +219,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: "17"
+    taskid: 6b33a3fc-2c80-4519-81e1-67a2b15df645
     type: playbook
     task:
-      id: "17"
+      id: 6b33a3fc-2c80-4519-81e1-67a2b15df645
       version: -1
       name: Process Email - Generic for Rasterize
       playbookName: Process Email - Generic for Rasterize
@@ -246,13 +247,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: "15"
+    taskid: 4db251ce-d185-4e23-83b7-14debfa0709f
     type: regular
     task:
-      id: "15"
+      id: 4db251ce-d185-4e23-83b7-14debfa0709f
       version: -1
       name: get valid Image
       description: Sends http request. Returns the response as json.
@@ -291,13 +292,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "9":
     id: "9"
-    taskid: "18"
+    taskid: 3a2d7aff-c2cd-49d0-86c5-89caa8b6715f
     type: playbook
     task:
-      id: "18"
+      id: 3a2d7aff-c2cd-49d0-86c5-89caa8b6715f
       version: -1
       name: Process Email - Generic for Rasterize
       playbookName: Process Email - Generic for Rasterize
@@ -319,13 +320,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "10":
     id: "10"
-    taskid: "23"
+    taskid: 6c6fc53c-da73-4101-85ba-085e1105bfb1
     type: regular
     task:
-      id: "23"
+      id: 6c6fc53c-da73-4101-85ba-085e1105bfb1
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -355,13 +356,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: "27"
+    taskid: 7c3c015e-8cda-4295-8652-88c524e20e62
     type: title
     task:
-      id: "27"
+      id: 7c3c015e-8cda-4295-8652-88c524e20e62
       version: -1
       name: Done
       type: title
@@ -379,13 +380,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "12":
     id: "12"
-    taskid: "28"
+    taskid: 5533a172-35f4-4612-8221-ecba2c82d365
     type: regular
     task:
-      id: "28"
+      id: 5533a172-35f4-4612-8221-ecba2c82d365
       version: -1
       name: Rasterize URL to PNG (Github)
       description: Rasterize a URL into image or PDF
@@ -417,13 +418,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "14":
     id: "14"
-    taskid: "19"
+    taskid: db1f0295-28c5-4faa-8f23-6cb0c84cf716
     type: regular
     task:
-      id: "19"
+      id: db1f0295-28c5-4faa-8f23-6cb0c84cf716
       version: -1
       name: Test Image (ImageOCR)
       description: Extracts text from an image.
@@ -473,13 +474,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "15":
     id: "15"
-    taskid: "24"
+    taskid: 5f70c824-d895-433d-8791-7aaa635e5d52
     type: condition
     task:
-      id: "24"
+      id: 5f70c824-d895-433d-8791-7aaa635e5d52
       version: -1
       name: Check Text
       type: condition
@@ -517,13 +518,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "16":
     id: "16"
-    taskid: "50"
+    taskid: 01233f35-0927-4a2c-85a1-358e27d18af4
     type: regular
     task:
-      id: "50"
+      id: 01233f35-0927-4a2c-85a1-358e27d18af4
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -553,13 +554,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "17":
     id: "17"
-    taskid: "58"
+    taskid: 3e20f135-e655-44d7-8c64-3b62a4f6c299
     type: regular
     task:
-      id: "58"
+      id: 3e20f135-e655-44d7-8c64-3b62a4f6c299
       version: -1
       name: Rasterize Large HTML
       description: Converts the body of an email to an image file or a PDF file.
@@ -969,13 +970,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "18":
     id: "18"
-    taskid: "49"
+    taskid: 02ac271b-e918-4014-8cb2-e263082d4d7f
     type: regular
     task:
-      id: "49"
+      id: 02ac271b-e918-4014-8cb2-e263082d4d7f
       version: -1
       name: Test Image (ImageOCR)
       description: Extracts text from an image.
@@ -1025,13 +1026,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "19":
     id: "19"
-    taskid: "55"
+    taskid: 82de6ee7-5ddd-44c9-8ebf-3505c4f5fc52
     type: condition
     task:
-      id: "55"
+      id: 82de6ee7-5ddd-44c9-8ebf-3505c4f5fc52
       version: -1
       name: Check Text
       type: condition
@@ -1069,13 +1070,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "20":
     id: "20"
-    taskid: "48"
+    taskid: 8cc3bfe2-56c2-46cd-8dc2-6deebbfb406a
     type: regular
     task:
-      id: "48"
+      id: 8cc3bfe2-56c2-46cd-8dc2-6deebbfb406a
       version: -1
       name: Error
       description: Prints an error entry with a given message
@@ -1098,13 +1099,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "21":
     id: "21"
-    taskid: "52"
+    taskid: 0a94e058-ce3c-4cce-8c4f-9f60a4b191f7
     type: regular
     task:
-      id: "52"
+      id: 0a94e058-ce3c-4cce-8c4f-9f60a4b191f7
       version: -1
       name: Error Text Validation
       description: Prints an error entry with a given message
@@ -1127,7 +1128,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
