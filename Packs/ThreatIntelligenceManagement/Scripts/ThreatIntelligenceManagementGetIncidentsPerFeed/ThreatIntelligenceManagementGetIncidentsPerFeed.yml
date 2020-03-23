@@ -1,4 +1,4 @@
-comment: Summs the number of incident per OOB feed.
+comment: Total number of incidents per OOTB feed.
 commonfields:
   id: ThreatIntelManagementGetIncidentsPerFeed
   version: -1
