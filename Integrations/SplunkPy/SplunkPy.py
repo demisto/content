@@ -13,7 +13,6 @@ import requests
 import urllib3
 import io
 import re
-
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Define utf8 as default encoding
