@@ -320,7 +320,7 @@ jobs:
             fi
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
               then
-                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or NIghtly run"
+                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
                 exit 0
             fi
             if ./Tests/scripts/is_ami.sh ;
@@ -341,7 +341,7 @@ jobs:
             fi
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
               then
-                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or NIghtly run"
+                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
                 exit 0
             fi
             if ./Tests/scripts/is_ami.sh ;
@@ -362,7 +362,7 @@ jobs:
             fi
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
               then
-                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or NIghtly run"
+                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
                 exit 0
             fi
             if ./Tests/scripts/is_ami.sh ;
@@ -381,6 +381,27 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
+              then
+                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
+                exit 0
+            fi
+            if ./Tests/scripts/is_ami.sh ;
+              then
+                ./Tests/scripts/run_tests.sh "Server Master"
+
+            else
+                echo "Not AMI run, can't run on this version"
+            fi
+      - run:
+          name: Run Tests - Demisto PreGA
+          shell: /bin/bash
+          when: always
+          command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping instance tests for forked PRs"
+              exit 0
+            fi
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
                 echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
@@ -388,7 +409,7 @@ jobs:
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
-                ./Tests/scripts/run_tests.sh "Server Master"
+                ./Tests/scripts/run_tests.sh "Demisto PreGA"
                 export RETVAL=$?
                 cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
                 exit $RETVAL
