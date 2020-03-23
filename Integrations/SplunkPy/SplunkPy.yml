@@ -53,7 +53,7 @@ configuration:
   required: false
   type: 8
 - defaultvalue: false
-  display: Should Replace Dots in Incident Fields
+  display: Replace with Underscore in Incident Fields
   name: replaceKeys
   required: false
   type: 8
