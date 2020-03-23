@@ -82,6 +82,24 @@ class TestLookupCSV:
         result = self.get_demisto_results()
         assert expected == result
 
+    def test_main_csv_missing(self, mocker):
+        from LookupCSV import main
+        with open("./TestData/column_search_missing_results.json") as f:
+            expected = json.load(f)
+
+        args_value = {
+            "entryID": "entry_id",
+            "header_row": "true",
+            "column": "sourceIP",
+            "value": "4.4.4.4"
+        }
+        self.mock_demisto(mocker, file_obj=self.create_file_object("./TestData/column_search.csv"),
+                          args_value=args_value)
+        main()
+        result = self.get_demisto_results()
+        assert expected == result
+
+
     def test_main_csv_search_multi(self, mocker):
         from LookupCSV import main
         with open("./TestData/column_search_multi_results.json") as f:
