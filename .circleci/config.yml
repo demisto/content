@@ -397,7 +397,7 @@ jobs:
             fi
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
-                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
+                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
                 exit 0
             fi
             if ./Tests/scripts/is_ami.sh ;
@@ -407,7 +407,7 @@ jobs:
                 cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
                 exit $RETVAL
 
-              else
+            else
                 echo "Not AMI run, can't run on this version"
             fi
       - store_artifacts:
