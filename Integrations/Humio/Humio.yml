@@ -1,0 +1,202 @@
+commonfields:
+  id: Humio
+  version: -1
+name: Humio
+display: Humio
+category: Analytics & SIEM
+description: Integration with Humio
+configuration:
+- display: ""
+  name: url
+  defaultvalue: https://cloud.humio.com
+  type: 0
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: ""
+  name: API-key
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Fetch incidents from
+  name: queryStartTime
+  defaultvalue: ""
+  type: 0
+  required: false
+  additionalinfo: '%Y-%m-%dT%H:%M:%SZ'
+- display: Query to use to fetch incidents
+  name: queryParameter
+  defaultvalue: ""
+  type: 0
+  required: false
+  additionalinfo: Write the query to use to fetch incidents
+- display: Fetch incidents from repository
+  name: queryRepository
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: TimeZoneOffset in Minutes
+  name: queryTimeZoneOffsetMinutes
+  defaultvalue: ""
+  type: 0
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: humio-query
+    arguments:
+    - name: repository
+      required: true
+    - name: queryString
+      required: true
+    - name: start
+      description: Relative or absolute (epoch)
+      defaultValue: 24hours
+    - name: end
+      description: Relative or absolute (epoch)
+      defaultValue: now
+    - name: isLive
+      description: Answer with true, 1, t, y or yes
+      defaultValue: "false"
+    - name: timeZoneOffsetMinutes
+      defaultValue: "0"
+    - name: arguments
+    description: Query the data from Humio
+  - name: humio-query-job
+    arguments:
+    - name: queryString
+      required: true
+    - name: start
+      description: Relative or absolute (epoch)
+      defaultValue: 24hours
+    - name: end
+      description: Relative or absolute (epoch)
+      defaultValue: now
+    - name: repository
+      required: true
+    - name: isLive
+      defaultValue: "False"
+    - name: timeZoneOffsetMinutes
+      defaultValue: "0"
+    - name: arguments
+  - name: humio-poll
+    arguments:
+    - name: repository
+      required: true
+    - name: id
+      required: true
+    outputs:
+    - contextPath: Humio.Humio-poll
+      type: Unknown
+    - contextPath: Humio.Humio-poll.cancelled
+      type: Unknown
+    - contextPath: Humio.Humio-poll.events
+      type: Unknown
+    - contextPath: Humio.Humio-poll.done
+      type: Unknown
+    - contextPath: Humio.Humio-poll.metaData
+      type: Unknown
+  - name: humio-delete-job
+    arguments:
+    - name: id
+      required: true
+    - name: repository
+      required: true
+  - name: humio-list-alerts
+    arguments:
+    - name: repository
+      required: true
+  - name: humio-get-alert-by-id
+    arguments:
+    - name: repository
+      required: true
+    - name: id
+      required: true
+  - name: humio-create-alert
+    arguments:
+    - name: repository
+      required: true
+    - name: name
+      required: true
+    - name: queryString
+      required: true
+    - name: start
+      required: true
+    - name: description
+      required: true
+    - name: throttleTimeMillis
+      required: true
+    - name: silenced
+      defaultValue: "false"
+    - name: notifiers
+      required: true
+      description: array of notifier ID strings use , as delimiter
+      isArray: true
+    - name: labels
+      required: true
+      description: array of text labels
+      isArray: true
+  - name: humio-list-notifiers
+    arguments:
+    - name: repository
+      required: true
+  - name: humio-update-alert
+    arguments:
+    - name: name
+      required: true
+    - name: queryString
+      required: true
+    - name: start
+      required: true
+    - name: description
+      required: true
+    - name: throttleTimeMillis
+      required: true
+      description: maximum frequency that notifications are sent
+    - name: silenced
+      defaultValue: "false"
+    - name: notifiers
+      required: true
+      isArray: true
+    - name: labels
+      required: true
+      isArray: true
+    - name: repository
+      required: true
+    - name: id
+      required: true
+  - name: humio-delete-alert
+    arguments:
+    - name: repository
+      required: true
+    - name: id
+      required: true
+  - name: humio-get-notifier-by-id
+    arguments:
+    - name: repository
+      required: true
+    - name: id
+      required: true
+  dockerimage: demisto/python3:3.7.4.2245
+  isfetch: true
+  runonce: false
+  subtype: python3
