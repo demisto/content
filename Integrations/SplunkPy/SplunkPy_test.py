@@ -1,6 +1,10 @@
+<<<<<<< HEAD
 from copy import deepcopy
 import pytest
 from SplunkPy import replace_keys, rawToDict
+=======
+RETURN_ERROR_TARGET = 'SplunkPy.return_error'
+>>>>>>> 7a7ddeb60f0ec99ce7ffbd68376d2ee3195763ea
 
 DICT_RAW_RESPONSE = '"1528755951, search_name="NG_SIEM_UC25- High number of hits against ' \
                     'unknown website from same subnet", action="allowed", dest="bb.bbb.bb.bbb , cc.ccc.ccc.cc , ' \
@@ -141,3 +145,31 @@ data_test_replace_keys = [
 def test_replace_keys(dict_in, dict_out):
     out = replace_keys(deepcopy(dict_in))
     assert out == dict_out, 'replace_keys({}) got: {} instead: {}'.format(dict_in, out, dict_out)
+
+
+def test_parse_time_to_minutes_no_error():
+    import SplunkPy as splunk
+    splunk.FETCH_TIME = '3 hours'
+    res = splunk.parse_time_to_minutes()
+    assert res == 180
+
+
+def test_parse_time_to_minutes_invalid_time_integer(mocker):
+    import SplunkPy as splunk
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+
+    splunk.FETCH_TIME = 'abc hours'
+    splunk.parse_time_to_minutes()
+    err_msg = return_error_mock.call_args[0][0]
+    assert err_msg == "Error: Invalid fetch time, need to be a positive integer with the time unit afterwards " \
+                      "e.g '2 months, 4 days'."
+
+
+def test_parse_time_to_minutes_invalid_time_unit(mocker):
+    import SplunkPy as splunk
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+
+    splunk.FETCH_TIME = '3 hoursss'
+    splunk.parse_time_to_minutes()
+    err_msg = return_error_mock.call_args[0][0]
+    assert err_msg == 'Error: Invalid time unit.'

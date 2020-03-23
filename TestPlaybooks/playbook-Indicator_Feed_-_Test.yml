@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: "8"
+    taskid: d31893bf-6f78-4bf4-8ee0-fb7bf0ac360b
     type: start
     task:
-      id: "8"
+      id: d31893bf-6f78-4bf4-8ee0-fb7bf0ac360b
       version: -1
       name: ""
       iscommand: false
@@ -29,13 +29,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: "14"
+    taskid: 7b091dae-0ef3-40bd-8d4a-2ecf6cf0740f
     type: regular
     task:
-      id: "14"
+      id: 7b091dae-0ef3-40bd-8d4a-2ecf6cf0740f
       version: -1
       name: SearchIncidents
       description: Searches Demisto incidents
@@ -79,13 +79,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: "12"
+    taskid: 15cde59f-d800-4fb8-8afd-188ad5ed842c
     type: regular
     task:
-      id: "12"
+      id: 15cde59f-d800-4fb8-8afd-188ad5ed842c
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -115,13 +115,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: "13"
+    taskid: d7485031-59ca-411e-85bb-b23ea5198d64
     type: regular
     task:
-      id: "13"
+      id: d7485031-59ca-411e-85bb-b23ea5198d64
       version: -1
       name: createNewIncident
       description: Create a new incident
@@ -365,13 +365,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: "21"
+    taskid: 6f3502e8-2a98-478c-8d17-a37d279c165e
     type: condition
     task:
-      id: "21"
+      id: 6f3502e8-2a98-478c-8d17-a37d279c165e
       version: -1
       name: Assert Indicator Feed Type
       type: condition
@@ -403,13 +403,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: "16"
+    taskid: 77de436e-5bf5-4545-860b-49b0dba3546c
     type: regular
     task:
-      id: "16"
+      id: 77de436e-5bf5-4545-860b-49b0dba3546c
       version: -1
       name: closeInvestigation
       description: Close the current incident
@@ -436,13 +436,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: "20"
+    taskid: ee72b1cd-fc16-40d2-8750-77866b00a8b9
     type: regular
     task:
-      id: "20"
+      id: ee72b1cd-fc16-40d2-8750-77866b00a8b9
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -455,7 +455,7 @@ tasks:
       - "2"
     scriptarguments:
       seconds:
-        simple: "15"
+        simple: "20"
     separatecontext: false
     view: |-
       {
@@ -468,7 +468,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
