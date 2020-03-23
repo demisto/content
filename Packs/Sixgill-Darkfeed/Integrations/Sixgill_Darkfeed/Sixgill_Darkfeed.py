@@ -68,6 +68,7 @@ def to_demisto_indicator(value, indicators_name, stix2obj):
         "fields": {
             "source": stix2obj.get("sixgill_source"),
             "name": stix2obj.get("sixgill_feedname"),
+            "actor": stix2obj.get("sixgill_actor"),
             "description":
                 f'''description: {stix2obj.get("description")}
 feedid: {stix2obj.get("sixgill_feedid")}

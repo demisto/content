@@ -184,7 +184,7 @@ expected_ioc_output = [{'value': '8f8ff6b696859c3afe7936c345b098bd', 'type': 'Fi
                                     'sixgill_posttitle': 'Credit Card Debt Help,       somewebsite.com',
                                     'sixgill_severity': 70, 'sixgill_source': 'market_magbo', 'spec_version': '2.0',
                                     'type': 'indicator', 'valid_from': '2019-12-07T00:57:04Z'},
-                        'fields': {'source': 'market_magbo', 'name': 'compromised_sites',
+                        'fields': {'source': 'market_magbo', 'name': 'compromised_sites', 'actor': 'some_actor',
                                    'description': "description: Shell access to this domain is being sold on "
                                                   "dark web markets\nfeedid: darkfeed_002\n"
                                                   "title: Credit Card Debt Help,       somewebsite.com\n"
@@ -214,7 +214,7 @@ expected_ioc_output = [{'value': '8f8ff6b696859c3afe7936c345b098bd', 'type': 'Fi
                                     'sixgill_severity': 70, 'sixgill_source': 'market_magbo',
                                     'spec_version': '2.0', 'type': 'indicator',
                                     'valid_from': '2019-12-07T00:57:04Z'},
-                        'fields': {'source': 'market_magbo', 'name': 'compromised_sites',
+                        'fields': {'source': 'market_magbo', 'name': 'compromised_sites', 'actor': 'some_actor',
                                    'description': "description: Shell access to this domain is being sold on "
                                                   "dark web markets\nfeedid: darkfeed_002\n"
                                                   "title: Credit Card Debt Help,       somewebsite.com\n"
@@ -245,7 +245,7 @@ expected_ioc_output = [{'value': '8f8ff6b696859c3afe7936c345b098bd', 'type': 'Fi
                                     'sixgill_posttitle': 'Credit Card Debt Help,       somewebsite.com',
                                     'sixgill_severity': 70, 'sixgill_source': 'market_magbo', 'spec_version': '2.0',
                                     'type': 'indicator', 'valid_from': '2019-12-07T00:57:04Z'},
-                        'fields': {'source': 'market_magbo', 'name': 'compromised_sites',
+                        'fields': {'source': 'market_magbo', 'name': 'compromised_sites', 'actor': 'some_actor',
                                    'description': "description: Shell access to this domain is being sold on "
                                                   "dark web markets\n"
                                                   "feedid: darkfeed_002\n"
@@ -280,7 +280,7 @@ expected_ioc_output = [{'value': '8f8ff6b696859c3afe7936c345b098bd', 'type': 'Fi
                             'spec_version': '2.0',
                             'type': 'indicator',
                             'valid_from': '2019-12-06T17:10:04Z'},
-                        'fields': {'source': 'market_magbo', 'name': 'compromised_sites',
+                        'fields': {'source': 'market_magbo', 'name': 'compromised_sites', 'actor': 'some_actor',
                                    'description': "description: Shell access to this domain is being sold on dark "
                                                   "web markets\nfeedid: darkfeed_004\ntitle: somewebsite.com\n"
                                                   "post_id: 59f08fbf692f84f15353a5e946d2a1cebab92418\n"
@@ -307,7 +307,7 @@ expected_ioc_output = [{'value': '8f8ff6b696859c3afe7936c345b098bd', 'type': 'Fi
                                     'sixgill_posttitle': 'somewebsite.com', 'sixgill_severity': 70,
                                     'sixgill_source': 'market_magbo', 'spec_version': '2.0',
                                     'type': 'indicator', 'valid_from': '2019-12-06T23:24:51Z'},
-                        'fields': {'source': 'market_magbo', 'name': 'compromised_sites',
+                        'fields': {'source': 'market_magbo', 'name': 'compromised_sites', 'actor': 'some_actor',
                                    'description': "description: Shell access to this domain is being sold on dark "
                                                   "web markets\nfeedid: darkfeed_010\ntitle: somewebsite.com\n"
                                                   "post_id: f46cdfc3332d9a04aa63078d82c1e453fd76ba50\n"
@@ -336,7 +336,7 @@ expected_ioc_output = [{'value': '8f8ff6b696859c3afe7936c345b098bd', 'type': 'Fi
                                    'sixgill_source': 'market_magbo',
                                    'spec_version': '2.0', 'type': 'indicator',
                                    'valid_from': '2019-12-06T14:37:16Z'},
-                        'fields': {'source': 'market_magbo', 'name': 'compromised_sites',
+                        'fields': {'source': 'market_magbo', 'name': 'compromised_sites', 'actor': 'some_actor',
                                    'description': "description: Shell access to this domain is being sold on "
                                                   "dark web markets\nfeedid: darkfeed_005\ntitle: somewebsite.com\n"
                                                   "post_id: c3f266e67f163e1a6181c0789e225baba89212a2\n"
@@ -363,7 +363,7 @@ expected_ioc_output = [{'value': '8f8ff6b696859c3afe7936c345b098bd', 'type': 'Fi
                                     'sixgill_posttitle': 'somewebsite.com', 'sixgill_severity': 70,
                                     'sixgill_source': 'market_magbo', 'spec_version': '2.0', 'type': 'indicator',
                                     'valid_from': '2019-12-06T14:37:16Z'},
-                        'fields': {'source': 'market_magbo', 'name': 'compromised_sites',
+                        'fields': {'source': 'market_magbo', 'name': 'compromised_sites', 'actor': 'some_actor',
                                    'description': "description: Shell access to this domain is being sold on "
                                                   "dark web markets\nfeedid: darkfeed_002\ntitle: "
                                                   "somewebsite.com\n"
@@ -390,7 +390,7 @@ expected_ioc_output = [{'value': '8f8ff6b696859c3afe7936c345b098bd', 'type': 'Fi
                                     'sixgill_posttitle': 'somewebsite.com', 'sixgill_severity': 70,
                                     'sixgill_source': 'market_magbo', 'spec_version': '2.0', 'type': 'indicator',
                                     'valid_from': '2019-12-06T14:37:16Z'},
-                        'fields': {'source': 'market_magbo', 'name': 'compromised_sites',
+                        'fields': {'source': 'market_magbo', 'name': 'compromised_sites', 'actor': 'some_actor',
                                    'description': "description: Shell access to this domain is being sold on "
                                                   "dark web markets\nfeedid: darkfeed_002\ntitle: somewebsite.com\n"
                                                   "post_id: c3f266e67f163e1a6181c0789e225baba89212a2\n"
@@ -418,7 +418,7 @@ expected_ioc_output = [{'value': '8f8ff6b696859c3afe7936c345b098bd', 'type': 'Fi
                                     'sixgill_posttitle': 'somewebsite.com', 'sixgill_severity': 70,
                                     'sixgill_source': 'market_magbo', 'spec_version': '2.0', 'type': 'indicator',
                                     'valid_from': '2019-12-06T14:37:16Z'},
-                        'fields': {'source': 'market_magbo', 'name': 'compromised_sites',
+                        'fields': {'source': 'market_magbo', 'name': 'compromised_sites', 'actor': 'some_actor',
                                    'description': "description: Shell access to this domain is being sold on"
                                                   " dark web markets\nfeedid: darkfeed_002\n"
                                                   "title: somewebsite.com\n"
@@ -456,6 +456,7 @@ expected_ioc_output = [{'value': '8f8ff6b696859c3afe7936c345b098bd', 'type': 'Fi
                                                   'spec_version': '2.0', 'type': 'indicator',
                                                   'valid_from': '2020-01-25T21:08:25Z'},
                                       'fields': {'source': 'forum_nulled', 'name': 'proxy_ips',
+                                                 'actor': 'LunarEclipsed',
                                                  'description': "description: IP address was listed as a proxy\n"
                                                                 "feedid: darkfeed_009\n"
                                                                 "title: ✅ 9.7K HTTP/S PROXY LIST (FRESH) ✅\n"
