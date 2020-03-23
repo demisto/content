@@ -239,8 +239,9 @@ class Pack(object):
         """
         task_status = False
         try:
+            os.chmod('/signDirectory', 700)
             args = ('./signDirectory', self._pack_path)
-            popen = subprocess.Popen(args, stdout=subprocess.PIPE)
+            popen = subprocess.Popen(args, stdout=subprocess.PIPE, shell=True)
             popen.wait()
             task_status = True
         except Exception as e:
