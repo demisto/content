@@ -158,8 +158,7 @@ def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, An
         if str(err) == "This result object does not return rows. It has been closed automatically.":
             human_readable = "Command executed"
             return human_readable, {}, []
-        return_error(err)
-        return "", {}, []
+        raise err
 
 
 def main():
