@@ -2502,7 +2502,6 @@
         }
     ],
     "skipped_tests": {
-        "Symantec Deepsight Test": "Issue 22971",
         "test_MsGraphFiles": "Issue 22853",
         "TestCofenseFeed": "Issue 22854",
         "RecordedFutureFeed - Test": "Issue 22855",
@@ -2556,7 +2555,6 @@
         "_comment": "~~~ NO INSTANCE ~~~",
         "RiskSense": "We should get an instance talk to Francesco",
         "Palo Alto Networks Cortex": "Issue 22300",
-        "Claroty": "Issue 22255",
         "AWS - IAM": "Issue 21401",
         "FortiGate": "License expired, and not going to get one (issue 14723)",
         "IronDefense": "Test depends on making requests to a non-public API",
@@ -2623,7 +2621,6 @@
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tenable.sc": "unstable instance",
         "VirusTotal - Private API": "Issue 22638",
-
 
         "_comment": "~~~ OTHER ~~~",
         "Cofense Intelligence": "Issue 22964",
