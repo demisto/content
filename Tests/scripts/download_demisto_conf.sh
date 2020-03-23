@@ -13,6 +13,9 @@ echo ${SECRET_CONF_PATH} > secret_conf_path
 DEMISTO_LIC_PATH="./demisto.lic"
 echo ${DEMISTO_LIC_PATH} > demisto_lic_path
 
+DEMISTO_PACK_SIGNATURE_UTIL_PATH="./signDirectory"
+echo ${DEMISTO_PACK_SIGNATURE_UTIL_PATH} > demisto_pack_sig_util_path
+
 # download configuration files from github repo
 wget --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" -O ./test_configuration.zip "https://github.com/demisto/content-test-conf/archive/$UNDERSCORE_CIRCLE_BRANCH.zip" --no-check-certificate -q
 if [ "$?" != "0" ]; then
@@ -22,6 +25,7 @@ if [ "$?" != "0" ]; then
     cp -r ./content-test-conf-master/awsinstancetool ./Tests/scripts/awsinstancetool
     cp -r ./content-test-conf-master/demisto.lic $DEMISTO_LIC_PATH
     cp -r ./content-test-conf-master/conf.json $SECRET_CONF_PATH
+    cp -r ./content-test-conf-master/signDirectory $DEMISTO_PACK_SIGNATURE_UTIL_PATH
     rm -rf ./content-test-conf-master
     rm -rf ./test_configuration.zip
   else
@@ -29,6 +33,7 @@ if [ "$?" != "0" ]; then
     cp -r ./content-test-conf-$UNDERSCORE_CIRCLE_BRANCH/awsinstancetool ./Tests/scripts/awsinstancetool
     cp -r ./content-test-conf-$UNDERSCORE_CIRCLE_BRANCH/demisto.lic $DEMISTO_LIC_PATH
     cp -r ./content-test-conf-$UNDERSCORE_CIRCLE_BRANCH/conf.json $SECRET_CONF_PATH
+    cp -r ./content-test-conf-$UNDERSCORE_CIRCLE_BRANCH/signDirectory $DEMISTO_PACK_SIGNATURE_UTIL_PATH
     rm -rf ./content-test-conf-$UNDERSCORE_CIRCLE_BRANCH
     rm -rf ./test_configuration.zip
     if [ "$UNDERSCORE_CIRCLE_BRANCH" != "master" ]; then
