@@ -503,16 +503,19 @@ class TAXIIClient(object):
         self.collection = collection
 
         # authentication
-        if credentials:
-            if '_header:' in credentials.get('identifier', None):
-                self.api_header = credentials.get('identifier', None).split('_header:')[1]
-                self.api_key = credentials.get('password', None)
-            else:
-                self.username = credentials.get('identifier', None)
-                self.password = credentials.get('password', None)
+        if not credentials:
+            credentials = {}
+        self.api_head, self.api_key, self.username, self.password = '', '', '', ''
+
+        if '_header:' in credentials.get('identifier', ''):
+            self.api_header = credentials.get('identifier', '').split('_header:')[1]
+            self.api_key = credentials.get('password', '')
+        else:
+            self.username = credentials.get('identifier', '')
+            self.password = credentials.get('password', '')
 
     def _send_request(self, url, headers, data, stream=False):
-        if self.api_key is not None and self.api_header is not None:
+        if self.api_key and self.api_header:
             headers[self.api_header] = self.api_key
 
         rkwargs = dict(
@@ -523,7 +526,7 @@ class TAXIIClient(object):
             data=data
         )
 
-        if self.username is not None and self.password is not None:
+        if self.username and self.password:
             rkwargs['auth'] = (self.username, self.password)
 
         r = requests.post(
