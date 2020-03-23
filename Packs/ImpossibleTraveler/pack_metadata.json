@@ -1,7 +1,7 @@
 {
     "name": "Impossible Traveler",
     "description": "Investigates an event whereby a user has multiple application login attempts from various locations in a short time period (impossible traveler).",
-    "support": "demisto",
+    "support": "Cortex XSOAR",
     "serverMinVersion": "5.0.0",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -30,7 +30,7 @@
         "Active_Directory_Query": {
             "mandatory": false,
             "minVersion": "1.0.0",
-            "name": "Active_Directory_Query",
+            "name": "Active Directory Query v2",
             "certification": "certified",
             "author": "Cortex XSOAR"
           },
@@ -65,7 +65,7 @@
         "rasterize": {
             "mandatory": true,
             "minVersion": "1.0.0",
-            "name": "rasterize",
+            "name": "Rasterize",
             "certification": "certified",
             "author": "Cortex XSOAR"
           }

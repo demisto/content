@@ -100,7 +100,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Gets the indicators from AlientVault OTX.
+    description: Gets the indicators from AlienVault OTX.
     execution: false
     name: alienvaultotx-get-indicators
   dockerimage: demisto/taxii:1.0.0.6243
