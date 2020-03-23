@@ -16,25 +16,25 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Returns the Vendor Name of a MAC Address
+description: Returns the vendor name of the passed MAC address.
 display: MAC Vendors
 name: MACVendors
 script:
   commands:
   - arguments:
     - default: false
-      description: The MAC Address Value
+      description: The MAC address for which to return the vendor name.
       isArray: false
       name: macaddress
       required: true
       secret: false
     deprecated: false
-    description: MAC Address to Query Vendor For
+    description: The MAC address for which to return the vendor name.
     execution: false
     name: MACAddress
     outputs:
     - contextPath: MACVendors.Vendor
-      description: MAC Vendor Name
+      description: Vendor name of the passed Mac address.
       type: String
   dockerimage: demisto/python3:3.8.1.5734
   isfetch: false
