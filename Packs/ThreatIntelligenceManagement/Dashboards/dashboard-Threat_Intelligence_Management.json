@@ -1,7 +1,7 @@
 {
 	"id": "Threat Intelligence Management",
 	"version": -1,
-	"modified": "2020-02-23T17:14:04.927422326Z",
+	"modified": "2020-03-16T09:58:47.497959016Z",
 	"fromDate": "0001-01-01T00:00:00Z",
 	"toDate": "0001-01-01T00:00:00Z",
 	"period": {
@@ -9,12 +9,11 @@
 		"byTo": "",
 		"byFrom": "days",
 		"toValue": null,
-		"fromValue": 180,
+		"fromValue": 30,
 		"field": ""
 	},
 	"fromDateLicense": "0001-01-01T00:00:00Z",
-	"name": "Threat Intelligence Management",
-	"prevName": "Threat Intelligence Management",
+	"name": "Threat Intel Management",
 	"layout": [
 		{
 			"id": "a78dd890-36d0-11ea-bac2-cb1342f8efbb",
@@ -29,7 +28,6 @@
 				"version": 1,
 				"modified": "2020-01-14T13:20:34.180114532Z",
 				"name": "Active Indicator Volumes by Feed",
-				"prevName": "Indicators by Feed",
 				"dataType": "indicators",
 				"widgetType": "line",
 				"query": "expirationStatus:active",
@@ -133,13 +131,12 @@
 			"y": 0,
 			"i": "195929c0-36d1-11ea-bac2-cb1342f8efbb",
 			"w": 3,
-			"h": 2,
+			"h": 1,
 			"widget": {
 				"id": "1c789a4b-d000-4439-85bb-b113dafbfac9",
 				"version": 1,
 				"modified": "2020-01-14T13:23:27.49284693Z",
 				"name": "Number of Active Indicators",
-				"prevName": "Number of Active Indicators",
 				"dataType": "indicators",
 				"widgetType": "trend",
 				"query": "expirationStatus:active",
@@ -236,16 +233,15 @@
 			"id": "4614e260-36d1-11ea-bac2-cb1342f8efbb",
 			"forceRange": false,
 			"x": 0,
-			"y": 2,
+			"y": 1,
 			"i": "4614e260-36d1-11ea-bac2-cb1342f8efbb",
 			"w": 3,
-			"h": 2,
+			"h": 1,
 			"widget": {
 				"id": "530fa858-2e59-4ef9-8b44-f47db1011b36",
 				"version": 1,
 				"modified": "2020-01-14T13:24:57.840603414Z",
 				"name": "Number of Expired Indicators",
-				"prevName": "Number of Expired Indicators",
 				"dataType": "indicators",
 				"widgetType": "trend",
 				"query": "expirationStatus:expired",
@@ -341,17 +337,16 @@
 		{
 			"id": "0295b860-36d2-11ea-bac2-cb1342f8efbb",
 			"forceRange": false,
-			"x": 8,
+			"x": 3,
 			"y": 2,
 			"i": "0295b860-36d2-11ea-bac2-cb1342f8efbb",
-			"w": 4,
+			"w": 3,
 			"h": 2,
 			"widget": {
 				"id": "e0aded97-34a1-45f3-8b5b-a54b43c13f5f",
 				"version": 1,
 				"modified": "2020-01-14T13:30:13.387314353Z",
 				"name": "Active Indicators by Reputation",
-				"prevName": "Active Indicators by Reputation",
 				"dataType": "indicators",
 				"widgetType": "pie",
 				"query": "(expirationStatus:active or expirationStatus:\"\")",
@@ -460,7 +455,6 @@
 				"version": 1,
 				"modified": "2020-01-14T13:32:18.782752002Z",
 				"name": "Indicators by Expiration Status",
-				"prevName": "Indicators by Expiration Status",
 				"dataType": "indicators",
 				"widgetType": "line",
 				"query": "",
@@ -560,17 +554,16 @@
 		{
 			"id": "878dcd60-36d6-11ea-bac2-cb1342f8efbb",
 			"forceRange": false,
-			"x": 4,
+			"x": 0,
 			"y": 2,
 			"i": "878dcd60-36d6-11ea-bac2-cb1342f8efbb",
-			"w": 4,
+			"w": 3,
 			"h": 2,
 			"widget": {
 				"id": "0aaa7c20-668c-4cda-86d5-8e0744f9db1d",
 				"version": 1,
 				"modified": "2020-01-14T14:02:22.181828299Z",
 				"name": "Active Indicators by Type",
-				"prevName": "Active indicators by Type",
 				"dataType": "indicators",
 				"widgetType": "pie",
 				"query": "expirationStatus:active or expirationStatus:\"\"",
@@ -665,7 +658,61 @@
 				"size": 0,
 				"category": ""
 			}
+		},
+		{
+			"id": "34a8d5e0-66e7-11ea-9204-9b2092cbe074",
+			"forceRange": false,
+			"x": 6,
+			"y": 2,
+			"i": "34a8d5e0-66e7-11ea-9204-9b2092cbe074",
+			"w": 6,
+			"h": 2,
+			"widget": {
+				"id": "incidentPerFeed",
+				"version": 7,
+				"modified": "2020-03-15T18:03:00.066866266Z",
+				"propagationLabels": [
+					"all"
+				],
+				"name": "Incidents Per Feed",
+				"dataType": "scripts",
+				"widgetType": "table",
+				"query": "ThreatIntelManagementGetIncidentsPerFeed",
+				"sort": null,
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": null,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"tableColumns": [
+						{
+							"isDefault": true,
+							"key": "Feed Name",
+							"position": 0,
+							"width": 382
+						},
+						{
+							"isDefault": true,
+							"key": "Number Of Incidents",
+							"position": 1
+						}
+					]
+				},
+				"size": 0,
+				"category": ""
+			}
 		}
 	],
+	"system": false,
 	"fromVersion": "5.5.0"
 }

@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.3.3] - 2020-03-18
 Improved handling in cases where a field value is None.
 
 ## [20.2.4] - 2020-02-25
