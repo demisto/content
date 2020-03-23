@@ -57,6 +57,7 @@ class PackStatus(enum.Enum):
     FAILED_METADATA_PARSING = "Failed to parse and create metadata.json"
     FAILED_COLLECT_ITEMS = "Failed to collect pack content items data"
     FAILED_ZIPPING_PACK_ARTIFACTS = "Failed zipping pack artifacts"
+    FAILED_SIGNING_PACKS = "Failed to sign the packs"
     FAILED_PREPARING_INDEX_FOLDER = "Failed in preparing and cleaning necessary index files"
     FAILED_UPDATING_INDEX_FOLDER = "Failed updating index folder"
     FAILED_UPLOADING_PACK = "Failed in uploading pack zip to gcs"
@@ -229,6 +230,22 @@ class Pack(object):
 
         return pack_metadata
 
+    def sign_pack(self):
+        """Signs pack folder and creates signature file.
+
+        Returns:
+            bool: whether the operation succeeded.
+        """
+        task_status = False
+        try:
+            args = ('./signDirectory', self._pack_path)
+            popen = subprocess.Popen(args, stdout=subprocess.PIPE)
+            popen.wait()
+            task_status = True
+        except Exception as e:
+            print_warning(f"Failed to sign pack for {self._pack_name} - {str(e)}")
+        return task_status
+
     def zip_pack(self):
         """Zips pack folder and excludes not wanted directories.
 
@@ -237,9 +254,6 @@ class Pack(object):
             str: full path to created pack zip.
         """
         zip_pack_path = f"{self._pack_path}.zip"
-        args = ('./signDirectory', self._pack_path)
-        popen = subprocess.Popen(args, stdout=subprocess.PIPE)
-        popen.wait()
         task_status = False
 
         try:
@@ -859,6 +873,12 @@ def main():
 
         # todo finish implementation of release notes
         # pack.parse_release_notes()
+
+        task_status = pack.sign_pack()
+        if not task_status:
+            pack.status = PackStatus.FAILED_SIGNING_PACKS.name
+            pack.cleanup()
+            continue
 
         task_status, zip_pack_path = pack.zip_pack()
         if not task_status:
