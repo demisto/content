@@ -1,4 +1,5 @@
 ## [Unreleased]
+- Improved error handlingfor HTML error replies.
 - Fixed an issue where the ***qradar-get-search-results*** and ***qradar-get-search*** ignored the headers argument.
 - You can now supply a comma-separated list for the *value* argument in the ***qradar-update-reference-set-value*** command.
 - Added the ***qradar-upload-indicators*** command, which enables you to add indicators from Cortex SOAR to a QRadar reference set.
