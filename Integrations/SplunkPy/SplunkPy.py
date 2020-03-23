@@ -24,6 +24,9 @@ SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 VERIFY_CERTIFICATE = not bool(demisto.params().get('unsecure'))
 FETCH_LIMIT = int(demisto.params().get('fetch_limit', 50))
 FETCH_LIMIT = max(min(200, FETCH_LIMIT), 1)
+FETCH_TIME = demisto.params().get('fetch_time')
+TIME_UNIT_TO_MINUTES = {'minute': 1, 'hour': 60, 'day': 24 * 60, 'week': 7 * 24 * 60, 'month': 30 * 24 * 60,
+                        'year': 365 * 24 * 60}
 
 
 class ResponseReaderWrapper(io.RawIOBase):
@@ -396,27 +399,30 @@ def splunk_results_command(service):
 
 
 def fetch_incidents(service):
-    lastRun = demisto.getLastRun() and demisto.getLastRun()['time']
+    last_run = demisto.getLastRun() and demisto.getLastRun()['time']
     search_offset = demisto.getLastRun().get('offset', 0)
 
     incidents = []
-    t = datetime.utcnow()
+    current_time_for_fetch = datetime.utcnow()
     if demisto.get(demisto.params(), 'timezone'):
         timezone = demisto.params()['timezone']
-        t = t + timedelta(minutes=int(timezone))
+        current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone))
 
-    now = t.strftime(SPLUNK_TIME_FORMAT)
+    now = current_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
     if demisto.get(demisto.params(), 'useSplunkTime'):
         now = get_current_splunk_time(service)
-        t = datetime.strptime(now, SPLUNK_TIME_FORMAT)
-    if len(lastRun) == 0:
-        t = t - timedelta(minutes=10)
-        lastRun = t.strftime(SPLUNK_TIME_FORMAT)
+        current_time_in_splunk = datetime.strptime(now, SPLUNK_TIME_FORMAT)
+        current_time_for_fetch = current_time_in_splunk
+
+    if len(last_run) == 0:
+        fetch_time_in_minutes = parse_time_to_minutes()
+        start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
+        last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
 
     earliest_fetch_time_fieldname = demisto.params().get("earliest_fetch_time_fieldname", "index_earliest")
     latest_fetch_time_fieldname = demisto.params().get("latest_fetch_time_fieldname", "index_latest")
 
-    kwargs_oneshot = {earliest_fetch_time_fieldname: lastRun,
+    kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
                       latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
 
     searchquery_oneshot = demisto.params()['fetchQuery']
@@ -438,7 +444,29 @@ def fetch_incidents(service):
     if len(incidents) < FETCH_LIMIT:
         demisto.setLastRun({'time': now, 'offset': 0})
     else:
-        demisto.setLastRun({'time': lastRun, 'offset': search_offset + FETCH_LIMIT})
+        demisto.setLastRun({'time': last_run, 'offset': search_offset + FETCH_LIMIT})
+
+
+def parse_time_to_minutes():
+    """
+    Calculate how much time to fetch back in minutes
+    Returns (int): Time to fetch back in minutes
+    """
+    number_of_times, time_unit = FETCH_TIME.split(' ')
+    if str(number_of_times).isdigit():
+        number_of_times = int(number_of_times)
+    else:
+        return_error("Error: Invalid fetch time, need to be a positive integer with the time unit afterwards"
+                     " e.g '2 months, 4 days'.")
+    # If the user input contains a plural of a time unit, for example 'hours', we remove the 's' as it doesn't
+    # impact the minutes in that time unit
+    if time_unit[-1] == 's':
+        time_unit = time_unit[:-1]
+    time_unit_value_in_minutes = TIME_UNIT_TO_MINUTES.get(time_unit.lower())
+    if time_unit_value_in_minutes:
+        return number_of_times * time_unit_value_in_minutes
+
+    return_error('Error: Invalid time unit.')
 
 
 def splunk_get_indexes_command(service):
