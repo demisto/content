@@ -3,11 +3,11 @@ commonfields:
   version: -1
 name: cveReputation
 script: |
-  var resCmd = executeCommand('cve-search', {'cveId': args.input})[0];
+  var resCmd = executeCommand('cve', {'cve_id': args.input})[0];
   var maxTries = 5;
   var counter = 0;
   while (isError(resCmd) && counter < maxTries) {
-      resCmd = executeCommand('cve-search', {'cveId': args.input})[0];
+      resCmd = executeCommand('cve', {'cve_id': args.input})[0];
       counter++;
   }
 
