@@ -88,7 +88,7 @@ def get_domain_issues(domain, severity=None):
     call = requests.get(ENDPOINTURL + '/iRiskQueryIssues', headers=HEADERS, verify=USE_SSL, params=params)
     if call.status_code == requests.codes.ok:
         contexts = []
-        for issue in call.json()['issueList']:
+        for issue in call.json().get('issueList', []):
             if severity and severity != issue['severity']:
                 continue
 
@@ -181,7 +181,8 @@ try:
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
         test = add_domain(demisto.params()['domainName'], newscan='false')
-        if isinstance(test, dict) and "HTTPSConnectionPool" not in test:
+        if isinstance(test, dict) and "HTTPSConnectionPool" not in test and \
+                'error' not in test.get('Contents', {}).get('result', ''):
             demisto.results("ok")
         else:
             demisto.results(test)
