@@ -114,7 +114,7 @@ def get_incidents_by_keys(similar_incident_keys, time_field, incident_time, inci
     similar_keys_query = condition_string.join(
         map(lambda t: '%s:"%s"' % (t[0], t[1]
                                    .replace('\\', '\\\\')
-                                   .replace('"', r'\"')
+                                   .replace('"', '\\"')
                                    .replace("\n", "\\n")
                                    .replace("\r", "\\r")
                                    ),
