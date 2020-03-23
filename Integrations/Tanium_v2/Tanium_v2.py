@@ -649,7 +649,6 @@ def ask_question(client, data_args):
     parameters = data_args.get('parameters')
 
     body = client.parse_question(question_text, parameters)
-    print(body)
     id_, res = client.create_question(body)
     context = {'ID': id_}
     context = createContext(context, removeNull=True)
