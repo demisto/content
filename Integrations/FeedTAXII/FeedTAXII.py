@@ -537,7 +537,11 @@ class TAXIIClient(object):
             else:
                 taxii_client.set_auth(verify_ssl=self.verify_cert)
 
-            all_collections = taxii_client.get_collections()
+            try:
+                all_collections = taxii_client.get_collections()
+            except Exception as e:
+                return_error(f'{INTEGRATION_NAME} - An error occurred when trying to fetch available collections.\n{e}')
+
             return [collection.name for collection in all_collections]
 
         return []
@@ -927,6 +931,10 @@ def interval_in_sec(val):
 
 
 def test_module(client, args):
+    if client.collection not in client.all_collections:
+        return_error(f'Collection could not be found. Here is a list of all accessible collections:'
+                     f' {str(client.all_collections)}')
+
     client._discover_poll_service()
     return 'ok', {}, {}
 
