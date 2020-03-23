@@ -54,17 +54,19 @@ script:
       required: true
       secret: false
     - default: false
-      description: The page width, for example, 50px. If empty, the width is the entire page.
+      description: The page width, for example, 1024px. Specify with or without the px suffix.
       isArray: false
       name: width
       required: false
       secret: false
+      defaultValue: "1024px"
     - default: false
-      description: The page height, for example, 50px. If empty, the height is the entire page.
+      description: The page height, for example, 800px. Specify with or without the px suffix.
       isArray: false
       name: height
       required: false
       secret: false
+      defaultValue: "800px"
     - default: false
       description: The file type to which to convert the contents of the URL. Can be "pdf" or "png". Default is "png".
       isArray: false
@@ -83,17 +85,19 @@ script:
       required: true
       secret: false
     - default: false
-      description: The email width, for example, 50px. If empty, the height is the entire email.
+      description: The html page width, for example, 600px. Specify with or without the px suffix.
       isArray: false
       name: width
       required: false
       secret: false
+      defaultValue: "600px"
     - default: false
-      description: The page height, for example, 50px. If empty, the height is the entire email.
+      description: The html page height, for example, 800px. Specify with or without the px suffix.
       isArray: false
       name: height
       required: false
       secret: false
+      defaultValue: "800px"
     - default: false
       description: The file type to which to convert the email body. Can be "pdf" or "png". Default is "png".
       isArray: false
@@ -118,17 +122,19 @@ script:
       required: true
       secret: false
     - default: false
-      description: The image width, for example, 50px. If empty, the height is the entire image.
+      description: The image width, for example, 600px. Specify with or without the px suffix.
       isArray: false
       name: width
       required: false
       secret: false
+      defaultValue: "600px"
     - default: false
-      description: The image height, for example, 50px. If empty, the height is the entire image.
+      description: The image height, for example, 800px. If empty, the height is the entire image.
       isArray: false
       name: height
       required: false
       secret: false
+      defaultValue: "800px"
     deprecated: false
     description: Converts an image file to a PDF file.
     execution: false
@@ -168,7 +174,7 @@ script:
     description: Converts a PDF file to an image file.
     execution: false
     name: rasterize-pdf
-  dockerimage: demisto/chromium:1.0.0.5952
+  dockerimage: demisto/chromium:1.0.0.6596
   isfetch: false
   runonce: false
   script: ''
