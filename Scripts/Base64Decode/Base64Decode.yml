@@ -8,19 +8,19 @@ tags:
 - Utility
 - transformer
 - string
-comment: Will decode an input using Base64 format.
+comment: Decodes an input in Base64 format.
 enabled: true
 args:
 - name: value
   required: true
   default: true
-  description: to decode in Base64 format
+  description: The value to decode in Base64 format.
 outputs:
 - contextPath: Base64.decoded
-  description: Decoded output of the script.
+  description: The decoded output in Base64 format.
   type: string
 - contextPath: Base64.originalValue
-  description: Original value givven to the script.
+  description: The passed value that was decoded.
   type: string
 scripttarget: 0
 subtype: python3
