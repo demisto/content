@@ -16,6 +16,7 @@ import time
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
 from datetime import datetime, timedelta
+from abc import abstractmethod
 
 import demistomock as demisto
 
@@ -38,6 +39,8 @@ else:
     STRING_OBJ_TYPES = STRING_TYPES  # type: ignore
 # pylint: enable=undefined-variable
 
+
+# DEPRECATED - use EntryType enum instead
 entryTypes = {
     'note': 1,
     'downloadAgent': 2,
@@ -46,13 +49,33 @@ entryTypes = {
     'pinned': 5,
     'userManagement': 6,
     'image': 7,
-    'plagroundError': 8,
     'playgroundError': 8,
     'entryInfoFile': 9,
     'warning': 11,
     'map': 15,
     'widget': 17
 }
+
+
+class EntryType(object):
+    """
+    Enum: contains all the entry types (e.g. NOTE, ERROR, WARNING, FILE, etc.)
+    """
+    NOTE = 1
+    DOWNLOAD_AGENT = 2
+    FILE = 3
+    ERROR = 4
+    PINNED = 5
+    USER_MANAGEMENT = 6
+    IMAGE = 7
+    PLAYGROUND_ERROR = 8
+    ENTRY_INFO_FILE = 9
+    WARNING = 11
+    MAP_ENTRY_TYPE = 15
+    WIDGET = 17
+
+
+# DEPRECATED - use EntryFormat enum instead
 formats = {
     'html': 'html',
     'table': 'table',
@@ -61,6 +84,32 @@ formats = {
     'dbotResponse': 'dbotCommandResponse',
     'markdown': 'markdown'
 }
+
+
+class EntryFormat(object):
+    """
+    Enum: contains all the entry formats (e.g. HTML, TABLE, JSON, etc.)
+    """
+    HTML = 'html'
+    TABLE = 'table'
+    JSON = 'json'
+    TEXT = 'text'
+    DBOT_RESPONSE = 'dbotCommandResponse'
+    MARKDOWN = 'markdown'
+
+    @classmethod
+    def is_valid_type(cls, _type):
+        # type: (str) -> bool
+        return _type in (
+            EntryFormat.HTML,
+            EntryFormat.TABLE,
+            EntryFormat.JSON,
+            EntryFormat.TEXT,
+            EntryFormat.MARKDOWN,
+            EntryFormat.DBOT_RESPONSE
+        )
+
+
 brands = {
     'xfe': 'xfe',
     'vt': 'virustotal',
@@ -80,15 +129,40 @@ thresholds = {
     'vtPositives': 10,
     'vtPositiveUrlsForIP': 30
 }
-# The dictionary below does not represent DBot Scores correctly, and should not be used
-dbotscores = {
-    'Critical': 4,
-    'High': 3,
-    'Medium': 2,
-    'Low': 1,
-    'Unknown': 0,
-    'Informational': 0.5
-}
+
+
+class DBotScoreType(object):
+    """
+    Enum: contains all the indicator types
+
+    DBotScoreType.IP
+    DBotScoreType.FILE
+    DBotScoreType.DOMAIN
+    DBotScoreType.URL
+
+    :return: None
+    :rtype: ``None``
+    """
+    IP = 'ip'
+    FILE = 'file'
+    DOMAIN = 'domain'
+    URL = 'url'
+
+    def __init__(self):
+        # required to create __init__ for create_server_docs.py purpose
+        pass
+
+    @classmethod
+    def is_valid_type(cls, _type):
+        # type: (str) -> bool
+
+        return _type in (
+            DBotScoreType.IP,
+            DBotScoreType.FILE,
+            DBotScoreType.DOMAIN,
+            DBotScoreType.URL
+        )
+
 
 INDICATOR_TYPE_TO_CONTEXT_KEY = {
     'ip': 'Address',
@@ -155,7 +229,7 @@ class FeedIndicatorType(object):
         for key, val in vars(FeedIndicatorType).items():
             if not key.startswith('__') and type(val) == str:
                 indicator_types.append(val)
-        return  indicator_types
+        return indicator_types
 
     @staticmethod
     def ip_to_indicator_type(ip):
@@ -686,7 +760,7 @@ def encode_string_results(text):
         return text
     try:
         return str(text)
-    except UnicodeEncodeError as exception:
+    except UnicodeEncodeError:
         return text.encode("utf8", "replace")
 
 
@@ -708,18 +782,18 @@ def safe_load_json(json_object):
             safe_json = json.loads(json_object)
         except ValueError as e:
             return_error(
-                'Unable to parse JSON string. Please verify the JSON is valid. - '+str(e))
+                'Unable to parse JSON string. Please verify the JSON is valid. - ' + str(e))
     else:
         try:
             path = demisto.getFilePath(json_object)
             with open(path['path'], 'rb') as data:
                 try:
                     safe_json = json.load(data)
-                except:  # lgtm [py/catch-base-exception]
+                except Exception:  # lgtm [py/catch-base-exception]
                     safe_json = json.loads(data.read())
         except Exception as e:
             return_error('Unable to parse JSON file. Please verify the JSON is valid or the Entry'
-                         'ID is correct. - '+str(e))
+                         'ID is correct. - ' + str(e))
     return safe_json
 
 
@@ -1694,6 +1768,780 @@ def is_ip_valid(s, accept_v6_ips=False):
         return True
 
 
+class Indicator(object):
+    """
+    interface class
+    """
+    @abstractmethod
+    def to_context(self):
+        pass
+
+
+class CommandResults:
+    """
+    CommandResults class - use to return results to warroom
+
+    :type outputs_prefix: ``str``
+    :param outputs_prefix: should be identical to the prefix in the yml contextPath in yml file. for example:
+            CortexXDR.Incident
+
+    :type outputs_key_field: ``str``
+    :param outputs_key_field: primary key field in the main object. If the command returns Incidents, and of the
+            properties of Incident is incident_id, then outputs_key_field='incident_id'
+
+    :type outputs: ``list`` or ``dict``
+    :param outputs: the data to be returned and will be set to context
+
+    :type indicators:
+    :param indicators:
+
+    :type readable_output:
+    :param raw_response:
+
+    :return: None
+    :rtype: ``None``
+    """
+    def __init__(self, outputs_prefix, outputs_key_field, outputs, indicators=None, readable_output=None,
+                 raw_response=None):
+
+        # type: (str, str, object, list, str, object) -> None
+        self.indicators = indicators
+
+        self.outputs_prefix = outputs_prefix
+        self.outputs_key_field = outputs_key_field
+        self.outputs = outputs
+
+        self.raw_response = raw_response
+        self.readable_output = readable_output
+
+    def to_context(self):
+        outputs = {}  # type: dict
+        human_readable = None
+        raw_response = None
+
+        if self.indicators:
+            for indicator in self.indicators:
+                outputs.update(indicator.to_context())
+
+        if self.raw_response:
+            raw_response = self.raw_response
+
+        if self.outputs:
+            if not self.readable_output:
+                human_readable = tableToMarkdown('Results', self.outputs)
+            else:
+                human_readable = self.readable_output
+
+            if not self.raw_response:
+                raw_response = self.outputs
+
+            outputs_key = '{}(val.{} == obj.{})'.format(self.outputs_prefix, self.outputs_key_field, self.outputs_key_field)
+            outputs.update({
+                outputs_key: self.outputs
+            })
+
+        return_entry = {
+            'Type': EntryType.NOTE,
+            'ContentsFormat': EntryFormat.JSON,
+            'Contents': raw_response,
+            'HumanReadable': human_readable,
+            'EntryContext': outputs
+        }
+
+        return return_entry
+
+
+class DBotScore(Indicator):
+    """
+    DBotScore class
+
+    :type indicator: ``str``
+    :param indicator: indicator value, ip, hash, domain, url, etc
+
+    :type indicator_type: ``DBotScoreType``
+    :param indicator_type: use DBotScoreType class
+
+    :type integration_name: ``str``
+    :param integration_name: integration name
+
+    :type score: ``DBotScore``
+    :param score: DBotScore.NONE, DBotScore.GOOD, DBotScore.SUSPICIOUS, DBotScore.BAD
+
+    :type malicious_description: ``str``
+    :param malicious_description: if the indicator is malicious and have explanation for it then set it to this field
+
+    :return: None
+    :rtype: ``None``
+    """
+    NONE = 0
+    GOOD = 1
+    SUSPICIOUS = 2
+    BAD = 3
+
+    CONTEXT_PATH = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'
+
+    CONTEXT_PATH_PRIOR_V5_5 = 'DBotScore'
+
+    def __init__(self, indicator, indicator_type, integration_name, score, malicious_description=None):
+
+        if not DBotScoreType.is_valid_type(indicator_type):
+            raise TypeError('indicator_type must be of type DBotScoreType enum')
+
+        if not DBotScore.is_valid_score(score):
+            raise TypeError('indicator_type must be of type DBotScore enum')
+
+        self.indicator = indicator
+        self.indicator_type = indicator_type
+        self.integration_name = integration_name
+        self.score = score
+        self.malicious_description = malicious_description
+
+    @staticmethod
+    def is_valid_score(score):
+        return score in (
+            DBotScore.NONE,
+            DBotScore.GOOD,
+            DBotScore.SUSPICIOUS,
+            DBotScore.BAD
+        )
+
+    @staticmethod
+    def get_context_path():
+        if get_demisto_version().get('version') >= '5.5.0':
+            return DBotScore.CONTEXT_PATH
+        else:
+            DBotScore.CONTEXT_PATH_PRIOR_V5_5
+
+    def to_context(self):
+        return {
+            DBotScore.get_context_path(): {
+                'Indicator': self.indicator,
+                'Type': self.indicator_type,
+                'Vendor': self.integration_name,
+                'Score': self.score
+            }
+        }
+
+
+class IP(Indicator):
+    """
+    IP indicator class - https://xsoar.pan.dev/docs/context-standards#ip
+
+    :type ip: ``str``
+    :param ip: IP address
+
+    :type asn: ``str``
+    :param asn: The autonomous system name for the IP address, for example: "AS8948".
+
+    :type hostname: ``str``
+    :param hostname: The hostname that is mapped to this IP address.
+
+    :type geo_latitude: ``str``
+    :param geo_latitude: The geolocation where the IP address is located, in the format: latitude
+
+    :type geo_longitude: ``str``
+    :param geo_longitude: The geolocation where the IP address is located, in the format: longitude.
+
+    :type geo_country: ``str``
+    :param geo_country: The country in which the IP address is located.
+
+    :type geo_description: ``str``
+    :param geo_description: Additional information about the location.
+
+    :type detection_engines: ``int``
+    :param detection_engines: The total number of engines that checked the indicator.
+
+    :type positive_engines: ``int``
+    :param positive_engines: The number of engines that positively detected the indicator as malicious.
+
+    :type dbot_score: ``DBotScore``
+    :param dbot_score:
+
+    :return: None
+    :rtype: ``None``
+
+    """
+    CONTEXT_PATH = 'IP(val.Address && val.Address == obj.Address)'
+
+    def __init__(self, ip, asn=None, hostname=None, geo_latitude=None, geo_longitude=None, geo_country=None,
+                 geo_description=None, detection_engines=None, positive_engines=None, dbot_score=None):
+
+        self.ip = ip
+        self.asn = asn
+        self.hostname = hostname
+        self.geo_latitude = geo_latitude
+        self.geo_longitude = geo_longitude
+        self.geo_country = geo_country
+        self.geo_description = geo_description
+        self.detection_engines = detection_engines
+        self.positive_engines = positive_engines
+
+        self.dbot_score = None
+        if dbot_score:
+            if not isinstance(dbot_score, DBotScore):
+                raise ValueError('dbot_score must be of type DBotScore')
+
+            self.dbot_score = dbot_score
+
+    def set_dbot_score(self, dbot_score):
+        # type: (DBotScore) -> None
+
+        self.dbot_score = dbot_score
+
+    def to_context(self):
+        ip_context = {
+            'Address': self.ip
+        }
+
+        if self.asn:
+            ip_context['ASN'] = self.asn
+
+        if self.hostname:
+            ip_context['Hostname'] = self.hostname
+
+        if self.geo_latitude or self.geo_country or self.geo_description:
+            ip_context['Geo'] = {}
+
+            if self.geo_latitude and self.geo_longitude:
+                ip_context['Geo']['Location'] = '{}:{}'.format(self.geo_latitude, self.geo_longitude)
+
+            if self.geo_country:
+                ip_context['Geo']['Country'] = self.geo_country
+
+            if self.geo_description:
+                ip_context['Geo']['Description'] = self.geo_description
+
+        if self.detection_engines:
+            ip_context['DetectionEngines'] = self.detection_engines
+
+        if self.positive_engines:
+            ip_context['PositiveDetections'] = self.positive_engines
+
+        if self.dbot_score and self.dbot_score.score == DBotScore.BAD:
+            ip_context['Malicious'] = {
+                'Vendor': self.dbot_score.integration_name,
+                'Description': self.dbot_score.malicious_description
+            }
+
+        ret_value = {
+            IP.CONTEXT_PATH: ip_context
+        }
+
+        if self.dbot_score:
+            ret_value.update(self.dbot_score.to_context())
+
+        return ret_value
+
+
+class FileSignature(object):
+    """
+    FileSignature class
+
+    :type authentihash: ``str``
+    :param authentihash: The authentication hash.
+
+    :type copyright: ``str``
+    :param copyright: Copyright information.
+
+    :type description: ``str``
+    :param description: A description of the signature.
+
+    :type file_version: ``str``
+    :param file_version: The file version.
+
+    :type internal_name: ``str``
+    :param internal_name: The internal name of the file.
+
+    :type original_name: ``str``
+    :param original_name: The original name of the file.
+
+    :return: None
+    :rtype: ``None``
+    """
+    def __init__(self, authentihash, copyright, description, file_version, internal_name, original_name):
+
+        self.authentihash = authentihash
+        self.copyright = copyright
+        self.description = description
+        self.file_version = file_version
+        self.internal_name = internal_name
+        self.original_name = original_name
+
+    def to_context(self):
+        return {
+            'Authentihash': self.authentihash,
+            'Copyright': self.copyright,
+            'Description': self.description,
+            'FileVersion': self.file_version,
+            'InternalName': self.internal_name,
+            'OriginalName': self.original_name,
+        }
+
+
+class File(Indicator):
+    """
+    File indicator class - https://xsoar.pan.dev/docs/context-standards#file
+
+    :type name: ``str``
+    :param name: The full file name (including file extension).
+
+    :type entry_id: ``str``
+    :param entry_id: The ID for locating the file in the War Room.
+
+    :type size: ``int``
+    :param size: The size of the file in bytes.
+
+    :type md5: ``str``
+    :param md5: The MD5 hash of the file.
+
+    :type sha1: ``str``
+    :param sha1: The SHA1 hash of the file.
+
+    :type sha256: ``str``
+    :param sha256: The SHA256 hash of the file.
+
+    :type sha512: ``str``
+    :param sha512: The SHA512 hash of the file.
+
+    :type ssdeep: ``str``
+    :param ssdeep: The ssdeep hash of the file (same as displayed in file entries).
+
+    :type extension: ``str``
+    :param extension: The file extension, for example: "xls".
+
+    :type file_type: ``str``
+    :param file_type: The file type, as determined by libmagic (same as displayed in file entries).
+
+    :type hostname: ``str``
+    :param hostname: The name of the host where the file was found. Should match Path.
+
+    :type path: ``str``
+    :param path: The path where the file is located.
+
+    :type company: ``str``
+    :param company: The name of the company that released a binary.
+
+    :type product_name: ``str``
+    :param product_name: The name of the product to which this file belongs.
+
+    :type digital_signature__publisher: ``str``
+    :param digital_signature__publisher: The publisher of the digital signature for the file.
+
+    :type signature: ``FileSignature``
+    :param signature: File signature class
+
+    :type actor: ``str``
+    :param actor: The actor reference.
+
+    :type tags: ``str``
+    :param tags: Tags of the file.
+
+    :type dbot_score: ``DBotScore``
+    :param dbot_score: If file has a score then create and set a DBotScore object
+
+    :rtype: ``None``
+    :return: None
+    """
+    CONTEXT_PATH = 'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || ' \
+                   'val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || ' \
+                   'val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || ' \
+                   'val.SSDeep && val.SSDeep == obj.SSDeep)'
+
+    def __init__(self, name=None, entry_id=None, size=None, md5=None, sha1=None, sha256=None, sha512=None, ssdeep=None,
+                 extension=None, file_type=None, hostname=None, path=None, company=None, product_name=None,
+                 digital_signature__publisher=None, signature=None, actor=None, tags=None, dbot_score=None):
+
+        self.name = name
+        self.entry_id = entry_id
+        self.size = size
+        self.md5 = md5
+        self.sha1 = sha1
+        self.sha256 = sha256
+        self.sha512 = sha512
+        self.ssdeep = ssdeep
+        self.extension = extension
+        self.file_type = file_type
+        self.hostname = hostname
+        self.path = path
+        self.company = company
+        self.product_name = product_name
+        self.digital_signature__publisher = digital_signature__publisher
+        self.signature = signature
+        self.actor = actor
+        self.tags = tags
+
+        self.dbot_score = dbot_score
+
+    def set_dbot_score(self, dbot_score):
+        # type: (DBotScore) -> None
+
+        self.dbot_score = dbot_score
+
+    def to_context(self):
+        file_context = {}
+
+        if self.name:
+            file_context['Name'] = self.name
+        if self.entry_id:
+            file_context['EntryID'] = self.entry_id
+        if self.size:
+            file_context['Size'] = self.size
+        if self.md5:
+            file_context['MD5'] = self.md5
+        if self.sha1:
+            file_context['SHA1'] = self.sha1
+        if self.sha256:
+            file_context['SHA256'] = self.sha256
+        if self.sha512:
+            file_context['SHA512'] = self.sha512
+        if self.ssdeep:
+            file_context['SSDeep'] = self.ssdeep
+        if self.extension:
+            file_context['Extension'] = self.extension
+        if self.file_type:
+            file_context['Type'] = self.file_type
+        if self.hostname:
+            file_context['Hostname'] = self.hostname
+        if self.path:
+            file_context['Path'] = self.path
+        if self.company:
+            file_context['Company'] = self.company
+        if self.product_name:
+            file_context['ProductName'] = self.product_name
+        if self.digital_signature__publisher:
+            file_context['DigitalSignature'] = {
+                'Published': self.digital_signature__publisher
+            }
+        if self.signature:
+            file_context['Signature'] = self.signature.to_context()
+        if self.actor:
+            file_context['Actor'] = self.actor
+        if self.tags:
+            file_context['Tags'] = self.tags
+
+        if self.dbot_score and self.dbot_score.score == DBotScore.BAD:
+            file_context['Malicious'] = {
+                'Vendor': self.dbot_score.integration_name,
+                'Description': self.dbot_score.malicious_description
+            }
+
+        ret_value = {
+            File.CONTEXT_PATH: file_context
+        }
+
+        if self.dbot_score:
+            ret_value.update(self.dbot_score.to_context())
+
+        return ret_value
+
+
+class CVE(Indicator):
+    """
+    CVE indicator class - https://xsoar.pan.dev/docs/context-standards#cve
+
+    :type id: ``str``
+    :param id: The ID of the CVE, for example: "CVE-2015-1653".
+
+    :type cvss: ``str``
+    :param cvss: The CVSS of the CVE, for example: "10.0".
+
+    :type published: ``str``
+    :param published: The timestamp of when the CVE was published.
+
+    :type modified: ``str``
+    :param modified: The timestamp of when the CVE was last modified.
+
+    :type description: ``str``
+    :param description: A description of the CVE.
+
+    :return: None
+    :rtype: ``None``
+
+    """
+    CONTEXT_PATH = 'URL(val.Data && val.Data == obj.Data)'
+
+    def __init__(self, id, cvss, published, modified, description):
+        # type (str, str, str, str, str) -> None
+
+        self.id = id
+        self.cvss = cvss
+        self.published = published
+        self.modified = modified
+        self.description = description
+
+        self.dbot_score = None
+
+    def set_dbot_score(self, dbot_score):
+        # type: (DBotScore) -> None
+
+        self.dbot_score = dbot_score
+
+    def to_context(self):
+        cve_context = {
+            'ID': self.id
+        }
+
+        if self.cvss:
+            cve_context['CVSS'] = self.cvss
+
+        if self.published:
+            cve_context['Published'] = self.published
+
+        if self.modified:
+            cve_context['Modified'] = self.modified
+
+        if self.description:
+            cve_context['Description'] = self.description
+
+        ret_value = {
+            URL.CONTEXT_PATH: cve_context
+        }
+
+        if self.dbot_score:
+            ret_value.update(self.dbot_score.to_context())
+
+        return ret_value
+
+
+class URL(Indicator):
+    """
+    URL indicator - https://xsoar.pan.dev/docs/context-standards#url
+
+    :type url: ``str``
+    :param url: The URL
+
+    :type detection_engines: ``int``
+    :param detection_engines: The total number of engines that checked the indicator.
+
+    :type positive_detections: ``int``
+    :param positive_detections: The number of engines that positively detected the indicator as malicious.
+
+    :type dbot_score: ``DBotScore``
+    :param dbot_score: If URL has reputation then create DBotScore object
+
+    :return: None
+    :rtype: ``None``
+
+    """
+    CONTEXT_PATH = 'URL(val.Data && val.Data == obj.Data)'
+
+    def __init__(self, url, detection_engines=None, positive_detections=None, dbot_score=None):
+        self.url = url
+        self.detection_engines = detection_engines
+        self.positive_detections = positive_detections
+
+        self.dbot_score = dbot_score
+
+    def set_dbot_score(self, dbot_score):
+        # type: (DBotScore) -> None
+
+        self.dbot_score = dbot_score
+
+    def to_context(self):
+        url_context = {
+            'Data': self.url
+        }
+
+        if self.detection_engines:
+            url_context['DetectionEngines'] = self.detection_engines
+
+        if self.positive_detections:
+            url_context['PositiveDetections'] = self.positive_detections
+
+        if self.dbot_score and self.dbot_score.score == DBotScore.BAD:
+            url_context['Malicious'] = {
+                'Vendor': self.dbot_score.integration_name,
+                'Description': self.dbot_score.malicious_description
+            }
+
+        ret_value = {
+            URL.CONTEXT_PATH: url_context
+        }
+
+        if self.dbot_score:
+            ret_value.update(self.dbot_score.to_context())
+
+        return ret_value
+
+
+class WHOIS(object):
+    """ ignore docstring
+    WHOIS is a class that used with Domain class
+    """
+    def __init__(self, domain_status=None, name_servers=None, creation_date=None, update_date=None,
+                 expiration_date=None, registrar_name=None, registrar_abuse_email=None, registrar_abuse_phone=None,
+                 registrant_name=None, registrant_email=None, registrant_phone=None,
+                 admin_name=None, admin_email=None, admin_phone=None):
+
+        self.domain_status = domain_status
+        self.name_servers = name_servers
+        self.creation_date = creation_date
+        self.update_date = update_date
+        self.expiration_date = expiration_date
+        self.registrar_name = registrar_name
+        self.registrar_abuse_email = registrar_abuse_email
+        self.registrar_abuse_phone = registrar_abuse_phone
+
+        self.registrant_name = registrant_name
+        self.registrant_email = registrant_email
+        self.registrant_phone = registrant_phone
+
+        self.admin_name = admin_name
+        self.admin_email = admin_email
+        self.admin_phone = admin_phone
+
+    def to_context(self):
+        whois_context = {}
+
+        if self.domain_status:
+            whois_context['DomainStatus'] = self.domain_status
+
+        if self.name_servers:
+            whois_context['NameServers'] = self.name_servers
+
+        if self.creation_date:
+            whois_context['CreationDate'] = self.creation_date
+
+        if self.update_date:
+            whois_context['UpdateDate'] = self.update_date
+
+        if self.expiration_date:
+            whois_context['ExpirationDate'] = self.expiration_date
+
+        if self.registrar_name or self.registrar_abuse_email or self.registrar_abuse_phone:
+            whois_context['Registrar'] = {
+                'Name': self.registrar_name,
+                'AbuseEmail': self.registrar_abuse_email,
+                'AbusePhone': self.registrar_abuse_phone
+            }
+
+        if self.registrant_name or self.registrant_phone or self.registrant_email:
+            whois_context['Registrant'] = {
+                'Name': self.registrant_name,
+                'Email': self.registrant_email,
+                'Phone': self.registrant_phone
+            }
+
+        if self.admin_name or self.admin_email or self.admin_phone:
+            whois_context['Admin'] = {
+                'Name': self.admin_name,
+                'Email': self.admin_email,
+                'Phone': self.admin_phone
+            }
+
+        return whois_context
+
+
+class Domain(Indicator):
+    """ ignore docstring
+    Domain indicator - https://xsoar.pan.dev/docs/context-standards#domain
+    """
+    CONTEXT_PATH = 'Domain(val.Name && val.Name == obj.Name)'
+
+    def __init__(self, domain, dns=None, detection_engines=None, positive_detections=None, whois=None,
+                 organization=None, sub_domains=None, creation_date=None, update_date=None, expiration_date=None,
+                 domain_status=None, name_servers=None, dbot_score=None):
+        self.domain = domain
+        self.dns = dns
+        self.detection_engines = detection_engines
+        self.positive_detections = positive_detections
+        self.whois = whois
+        self.organization = organization
+        self.sub_domains = sub_domains
+        self.creation_date = creation_date
+        self.update_date = update_date
+        self.expiration_date = expiration_date
+
+        self.domain_status = domain_status
+        self.name_servers = name_servers
+
+        # DBotScore fields
+        self.dbot_score = dbot_score
+
+    def set_dbot_score(self, dbot_score):
+        # type: (DBotScore) -> None
+
+        self.dbot_score = dbot_score
+
+    def to_context(self):
+        domain_context = {
+            'Name': self.domain
+        }
+
+        if self.dns:
+            domain_context['DNS'] = self.dns
+
+        if self.detection_engines:
+            domain_context['DetectionEngines'] = self.detection_engines
+
+        if self.positive_detections:
+            domain_context['PositiveDetections'] = self.positive_detections
+
+        if self.whois:
+            domain_context['WHOIS'] = self.whois.to_context()
+
+            if 'Admin' in domain_context['WHOIS']:
+                domain_context['Admin'] = domain_context['WHOIS']['Admin']
+
+            if 'Registrant' in domain_context['WHOIS']:
+                domain_context['Registrant'] = domain_context['WHOIS']['Registrant']
+
+        if self.organization:
+            domain_context['Organization'] = self.organization
+
+        if self.sub_domains:
+            domain_context['Subdomains'] = self.sub_domains
+
+        if self.domain_status:
+            domain_context['DomainStatus'] = self.domain_status
+
+        if self.creation_date:
+            domain_context['CreationDate'] = self.creation_date
+
+        if self.update_date:
+            domain_context['UpdateDate'] = self.update_date
+
+        if self.expiration_date:
+            domain_context['ExpirationDate'] = self.expiration_date
+
+        if self.name_servers:
+            domain_context['NameServers'] = self.name_servers
+
+        if self.dbot_score and self.dbot_score.score == DBotScore.BAD:
+            domain_context['Malicious'] = {
+                'Vendor': self.dbot_score.integration_name,
+                'Description': self.dbot_score.malicious_description
+            }
+
+        ret_value = {
+            Domain.CONTEXT_PATH: domain_context
+        }
+
+        if self.dbot_score:
+            ret_value.update(self.dbot_score.to_context())
+
+        return ret_value
+
+
+old_demisto_results = demisto.results
+
+
+def new_demisto_results(results):
+    if results is None:
+        # backward compatibility reasons
+        old_demisto_results(None)
+        return
+
+    if isinstance(results, CommandResults):
+        old_demisto_results(results.to_context())
+        return
+
+    old_demisto_results(results)
+
+
+demisto.results = new_demisto_results
+
+
 def return_outputs(readable_output, outputs=None, raw_response=None, timeline=None):
     """
     This function wraps the demisto.results(), makes the usage of returning results to the user more intuitively.
@@ -1710,7 +2558,7 @@ def return_outputs(readable_output, outputs=None, raw_response=None, timeline=No
     raw response from the 3rd party service (originally Contents)
 
     :type timeline: ``dict`` | ``list``
-    :param timeline: expects a list, if a dict is passed it will be put into a list. used by server to populate an 
+    :param timeline: expects a list, if a dict is passed it will be put into a list. used by server to populate an
     indicator's timeline
 
     :return: None
@@ -1731,6 +2579,7 @@ def return_outputs(readable_output, outputs=None, raw_response=None, timeline=No
     elif outputs and raw_response is None:
         # if raw_response was not provided but outputs were provided then set Contents as outputs
         return_entry["Contents"] = outputs
+
     demisto.results(return_entry)
 
 
@@ -1881,9 +2730,9 @@ regexFlags = re.M  # Multi line matching
 # else, use re.match({regex_format},str)
 
 ipv4Regex = r'\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b'
-ipv4cidrRegex = r'\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\/([0-9]|[1-2][0-9]|3[0-2]))\b'
-ipv6Regex = r'\b(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\b'
-ipv6cidrRegex = r'\b(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))(\/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9]))\b'
+ipv4cidrRegex = r'\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\/([0-9]|[1-2][0-9]|3[0-2]))\b'  # noqa
+ipv6Regex = r'\b(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\b'  # noqa
+ipv6cidrRegex = r'\b(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))(\/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9]))\b'  # noqa
 emailRegex = r'\b[^@]+@[^@]+\.[^@]+\b'
 hashRegex = r'\b[0-9a-fA-F]+\b'
 urlRegex = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
@@ -2622,10 +3471,6 @@ if 'requests' in sys.modules:
             return response.ok
 
 
-class DemistoException(Exception):
-    pass
-
-
 def batch(iterable, batch_size=1):
     """Gets an iterable and yields slices of it.
 
@@ -2644,3 +3489,7 @@ def batch(iterable, batch_size=1):
         yield current_batch
         current_batch = not_batched[:batch_size]
         not_batched = not_batched[batch_size:]
+
+
+class DemistoException(Exception):
+    pass
