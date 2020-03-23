@@ -1,0 +1,215 @@
+{
+  "list_tenant_sites": {
+    "MsGraphFiles.ListSites(val.ID === obj.ID)": {
+      "OdataContext": "test",
+      "Value": [
+        {
+          "CreatedDateTime": "2016-09-14T11:12:59Z",
+          "LastModifiedDateTime": "2016-09-14T11:13:53Z",
+          "Name": "test_name",
+          "WebUrl": "test/test_url/test",
+          "DisplayName": "Demisto Team Site",
+          "Root": {},
+          "SiteCollection": {
+            "Hostname": "test_hostname"
+          },
+          "ID": "test_id"
+        },
+        {
+          "CreatedDateTime": "2019-09-23T15:55:03Z",
+          "Description": "this is a private site",
+          "LastModifiedDateTime": "2019-09-21T08:17:21Z",
+          "Name": "site_test_1",
+          "WebUrl": "test/test_url/test",
+          "DisplayName": "site_test_1",
+          "Root": {},
+          "SiteCollection": {
+            "Hostname": "test_hostname"
+          },
+          "ID": "test_id"
+        }
+      ]
+    }
+  },
+  "list_drive_children": {
+    "MsGraphFiles.ListChildren(val.ItemID == obj.ItemID)": {
+      "ParentID": "123",
+      "Children": {
+        "OdataContext": "test",
+        "Value": [
+          {
+            "CreatedDateTime": "2019-12-08T13:24:58Z",
+            "LastModifiedDateTime": "2019-12-08T13:24:58Z",
+            "Name": "demisto",
+            "WebUrl": "test/test_url/test",
+            "Size": 0,
+            "CreatedBy": {
+              "ID": "test",
+              "DisplayName": "MS Graph Files Dev",
+              "Type": "Application"
+            },
+            "LastModifiedBy": {
+              "ID": "test",
+              "DisplayName": "MS Graph Files Dev",
+              "Type": "Application"
+            },
+            "ParentReference": {
+              "DriveId": "test",
+              "DriveType": "documentLibrary",
+              "Path": "/drive/root:",
+              "ID": "test"
+            },
+            "FileSystemInfo": {
+              "CreatedDateTime": "2019-12-08T13:24:58Z",
+              "LastModifiedDateTime": "2019-12-08T13:24:58Z"
+            },
+            "Folder": {
+              "ChildCount": 0
+            },
+            "ID": "test"
+          }
+        ]
+      }
+    }
+  },
+  "create_new_folder": {
+    "MsGraphFiles.CreatedFolders(val.ID === obj.ID)": {
+      "OdataContext": "test",
+      "CreatedDateTime": "2020-01-12T09:35:50Z",
+      "LastModifiedDateTime": "2020-01-12T09:35:50Z",
+      "Name": "playbook_folder 51",
+      "WebUrl": "test/test_url/test",
+      "Size": 0,
+      "CreatedBy": {
+        "ID": "test",
+        "DisplayName": "MS Graph Files Dev",
+        "Type": "Application"
+      },
+      "LastModifiedBy": {
+        "ID": "test",
+        "DisplayName": "MS Graph Files Dev",
+        "Type": "Application"
+      },
+      "ParentReference": {
+        "DriveId": "test",
+        "DriveType": "documentLibrary",
+        "Path": "/drives/test/root:",
+        "ID": "test"
+      },
+      "FileSystemInfo": {
+        "CreatedDateTime": "2020-01-12T09:35:50Z",
+        "LastModifiedDateTime": "2020-01-12T09:35:50Z"
+      },
+      "Folder": {
+        "ChildCount": 0
+      },
+      "ID": "test"
+    }
+  },
+  "replace_existing_file_context": {
+    "MsGraphFiles.ReplacedFiles(val.ID === obj.ID)": {
+      "OdataContext": "test",
+      "DownloadUrl": "test",
+      "CreatedDateTime": "2020-01-05T15:30:21Z",
+      "LastModifiedDateTime": "2020-01-12T09:48:02Z",
+      "Name": "yaya.txt",
+      "WebUrl": "test/test_url/test",
+      "Size": 1226,
+      "CreatedBy": {
+        "ID": "test",
+        "DisplayName": "SharePoint DEV",
+        "Type": "Application"
+      },
+      "LastModifiedBy": {
+        "ID": "test",
+        "DisplayName": "MS Graph Files Dev",
+        "Type": "Application"
+      },
+      "ParentReference": {
+        "DriveId": "test",
+        "DriveType": "documentLibrary",
+        "Path": "/drives/test/root:",
+        "ID": "test"
+      },
+      "File": {
+        "MimeType": "text/plain",
+        "Hashes": {
+          "QuickXorHash": "test1"
+        }
+      },
+      "FileSystemInfo": {
+        "CreatedDateTime": "2020-01-05T15:30:21Z",
+        "LastModifiedDateTime": "2020-01-12T09:48:02Z"
+      },
+      "ID": "test"
+    }
+  },
+  "list_drives_in_a_site": {
+    "MsGraphFiles.ListDrives(val.ID === obj.ID)":{
+    "OdataContext": "test",
+    "Value": [
+    {
+    "CreatedDateTime": "2019-09-21T08:17:20Z",
+    "Description": "",
+    "LastModifiedDateTime": "2019-09-21T08:17:20Z",
+    "Name": "Documents",
+    "WebUrl": "https://test1/sites/test2/test3",
+    "DriveType": "documentLibrary",
+    "CreatedBy": {
+      "DisplayName": "System Account",
+      "Type": "User"
+    },
+    "Owner": {
+      "Group": {
+        "Email": "site_test2@demistodev.onmicrosoft.com",
+        "DisplayName": "site_test2 Owners",
+        "ID": "test"
+      }
+    },
+    "ID": "test"
+    }
+      ]
+    }
+  },
+
+  "upload_new_file": {
+    "OdataContext": "test",
+    "DownloadUrl": "test",
+    "CreatedDateTime": "2020-01-12T09:57:04Z",
+    "LastModifiedDateTime": "2020-01-12T09:57:04Z",
+    "Name": "playbook1.txt",
+    "WebUrl": "test/test_url/test",
+    "Size": 145,
+    "CreatedBy": {
+      "ID": "test",
+      "DisplayName": "MS Graph Files Dev",
+      "Type": "Application"
+    },
+    "LastModifiedBy": {
+      "ID": "test",
+      "DisplayName": "MS Graph Files Dev",
+      "Type": "Application"
+    },
+    "ParentReference": {
+      "DriveId": "test!@#@$#$",
+      "DriveType": "documentLibrary",
+      "Path": "/drives/test/root:",
+      "ID": "test"
+    },
+    "File": {
+      "MimeType": "text/plain",
+      "Hashes": {
+        "QuickXorHash": "test1"
+      }
+    },
+    "FileSystemInfo": {
+      "CreatedDateTime": "2020-01-12T09:57:04Z",
+      "LastModifiedDateTime": "2020-01-12T09:57:04Z"
+    },
+    "ID": "test"
+  },
+  "test_module": "ok",
+  "download_file": "Item was deleted successfully"
+  }
+
+

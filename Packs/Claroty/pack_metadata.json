@@ -16,6 +16,6 @@
     "certification": "certified",
     "useCases": ["Manage assets and alerts"],
     "keywords": ["Claroty"],
-    "price": "0",
+    "price": 0,
     "dependencies": {}
 }

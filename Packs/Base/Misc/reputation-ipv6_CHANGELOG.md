@@ -1,4 +1,5 @@
 ## [Unreleased]
+Fixed an issue where the "::" string was extracted as an IPv6 address.
 
 
 ## [20.3.1] - 2020-03-04
