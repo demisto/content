@@ -841,7 +841,12 @@ def search_indicator(indicator_type, indicator_value):
     return result_json
 
 
-def parse_indicator_response(res, raw_tags, indicator_type):
+def parse_indicator_response(res, indicator_type):
+    if not res.get('indicator'):
+        raise ValueError('Invalid response for indicator')
+    raw_tags = res.get('tags')
+    res = res['indicator']
+
     indicator = {}
     indicator['IndicatorValue'] = res.get('indicatorValue', '')
     indicator['IndicatorType'] = res.get('indicatorType', '')
@@ -888,7 +893,7 @@ def parse_indicator_response(res, raw_tags, indicator_type):
 
 
 def calculate_dbot_score(indicator_response, indicator_type):
-    latest_pan_verdicts = indicator_response['latestPanVerdicts']
+    latest_pan_verdicts = indicator_response['indicator']['latestPanVerdicts']
     if not latest_pan_verdicts:
         raise Exception('latestPanVerdicts value is empty in indicator response.')
 
@@ -1265,263 +1270,53 @@ def top_tags_results_command():
 def search_ip_command(ip):
     indicator_type = 'IP'
     ip_list = argToList(ip)
-
-    ip_indicators = []
-    outputs = []
-    raw_response = []
-    human_readable = ''
-
+    indicator_details = []
     for ip_address in ip_list:
         raw_res = search_indicator('ipv4_address', ip_address)
-        if not raw_res.get('indicator'):
-            raise ValueError('Invalid response for indicator')
+        score = calculate_dbot_score(raw_res, indicator_type)
+        res = parse_indicator_response(raw_res, indicator_type)
+        indicator_details.append({'raw_response': raw_res, 'value': ip_address, 'score': score, 'response': res})
 
-        indicator = raw_res.get('indicator')
-        raw_tags = raw_res.get('tags')
-
-        score = calculate_dbot_score(indicator, indicator_type)
-        dbot_score = DBotScore(
-            indicator=ip_address,
-            indicator_type=DBotScoreType.IP,
-            integration_name=VENDOR_NAME,
-            score=score
-        )
-
-        ip = IP(
-            ip=ip_address,
-            dbot_score=dbot_score
-        )
-
-        autofocus_ip_output = parse_indicator_response(indicator, raw_tags, indicator_type)
-
-        # create human readable markdown for ip
-        tags = autofocus_ip_output.get('Tags')
-        table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {ip_address}'
-        if tags:
-            indicators_data = autofocus_ip_output.copy()
-            del indicators_data['Tags']
-            md = tableToMarkdown(table_name, indicators_data)
-            md += tableToMarkdown('Indicator Tags:', tags)
-        else:
-            md = tableToMarkdown(table_name, autofocus_ip_output)
-
-        human_readable += md
-
-        ip_indicators.append(ip)
-        outputs.append(autofocus_ip_output)
-        raw_response.append(raw_res)
-
-    command_results = CommandResults(
-        outputs_prefix='AutoFocus.IP',
-        outputs_key_field='IndicatorValue',
-        outputs=outputs,
-
-        readable_output=human_readable,
-        raw_response=raw_response,
-        indicators=ip_indicators
-    )
-
-    return command_results
+    get_indicator_outputs(indicator_type, indicator_details, 'Address')
 
 
-def search_domain_command(args):
+def search_domain_command(domain):
     indicator_type = 'Domain'
-    domain_name_list = argToList(args.get('domain'))
+    domain_list = argToList(domain)
+    indicator_details = []
+    for _domain in domain_list:
+        raw_res = search_indicator('domain', _domain)
+        score = calculate_dbot_score(raw_res, indicator_type)
+        res = parse_indicator_response(raw_res, indicator_type)
+        indicator_details.append({'raw_response': raw_res, 'value': _domain, 'score': score, 'response': res})
 
-    domain_indicator_list = []
-    autofocus_domain_list = []
-    raw_response = []
-    human_readable = ''
-
-    for domain_name in domain_name_list:
-        raw_res = search_indicator('domain', domain_name)
-        if not raw_res.get('indicator'):
-            raise ValueError('Invalid response for indicator')
-
-        indicator = raw_res.get('indicator')
-        raw_tags = raw_res.get('tags')
-
-        score = calculate_dbot_score(indicator, indicator_type)
-
-        dbot_score = DBotScore(
-            indicator=domain_name,
-            indicator_type=DBotScoreType.DOMAIN,
-            integration_name=VENDOR_NAME,
-            score=score
-        )
-        demisto.log(json.dumps(raw_res, indent=4))
-
-        domain = Domain(
-            domain=domain_name,
-            dbot_score=dbot_score,
-            whois=WHOIS(
-                creation_date=indicator.get('whoisDomainCreationDate'),
-                expiration_date=indicator.get('whoisDomainExpireDate'),
-                update_date=indicator.get('whoisDomainUpdateDate'),
-
-                admin_email=indicator.get('whoisAdminEmail'),
-                admin_name=indicator.get('whoisAdminName'),
-
-                registrar_name=indicator.get('whoisRegistrar'),
-
-                registrant_name=indicator.get('whoisRegistrant')
-            )
-        )
-
-        autofocus_domain_output = parse_indicator_response(indicator, raw_tags, indicator_type)
-
-        # create human readable markdown for ip
-        tags = autofocus_domain_output.get('Tags')
-        table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {domain_name}'
-        if tags:
-            indicators_data = autofocus_domain_output.copy()
-            del indicators_data['Tags']
-            md = tableToMarkdown(table_name, indicators_data)
-            md += tableToMarkdown('Indicator Tags:', tags)
-        else:
-            md = tableToMarkdown(table_name, autofocus_domain_output)
-
-        human_readable += md
-
-        domain_indicator_list.append(domain)
-        raw_response.append(raw_res)
-        autofocus_domain_list.append(autofocus_domain_output)
-
-    command_results = CommandResults(
-        outputs_prefix='AutoFocus.Domain',
-        outputs_key_field='IndicatorValue',
-        outputs=autofocus_domain_list,
-
-        readable_output=human_readable,
-        raw_response=raw_response,
-        indicators=domain_indicator_list
-    )
-
-    return command_results
+    get_indicator_outputs(indicator_type, indicator_details, 'Name')
 
 
 def search_url_command(url):
     indicator_type = 'URL'
     url_list = argToList(url)
+    indicator_details = []
+    for _url in url_list:
+        raw_res = search_indicator('url', _url)
+        score = calculate_dbot_score(raw_res, indicator_type)
+        res = parse_indicator_response(raw_res, indicator_type)
+        indicator_details.append({'raw_response': raw_res, 'value': _url, 'score': score, 'response': res})
 
-    url_indicator_list = []
-    autofocus_url_list = []
-    raw_response = []
-    human_readable = ''
-
-    for url_name in url_list:
-
-        raw_res = search_indicator('url', url_name)
-        if not raw_res.get('indicator'):
-            raise ValueError('Invalid response for indicator')
-
-        indicator = raw_res.get('indicator')
-        raw_tags = raw_res.get('tags')
-
-        score = calculate_dbot_score(indicator, indicator_type)
-
-        dbot_score = DBotScore(
-            indicator=url_name,
-            indicator_type=DBotScoreType.URL,
-            integration_name=VENDOR_NAME,
-            score=score
-        )
-
-        url = URL(
-            url=url_name,
-            dbot_score=dbot_score
-        )
-
-        autofocus_url_output = parse_indicator_response(indicator, raw_tags, indicator_type)
-
-        tags = autofocus_url_output.get('Tags')
-        table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {url_name}'
-        if tags:
-            indicators_data = autofocus_url_output.copy()
-            del indicators_data['Tags']
-            md = tableToMarkdown(table_name, indicators_data)
-            md += tableToMarkdown('Indicator Tags:', tags)
-        else:
-            md = tableToMarkdown(table_name, autofocus_url_output)
-
-        human_readable += md
-
-        url_indicator_list.append(url)
-        raw_response.append(raw_res)
-        autofocus_url_list.append(autofocus_url_output)
-
-    command_results = CommandResults(
-        outputs_prefix='AutoFocus.URL',
-        outputs_key_field='IndicatorValue',
-        outputs=autofocus_url_list,
-
-        readable_output=human_readable,
-        raw_response=raw_response,
-        indicators=url_indicator_list
-    )
-
-    return command_results
+    get_indicator_outputs(indicator_type, indicator_details, 'Data')
 
 
 def search_file_command(file):
     indicator_type = 'File'
     file_list = argToList(file)
+    indicator_details = []
+    for _file in file_list:
+        raw_res = search_indicator('sha256', _file)
+        score = calculate_dbot_score(raw_res, indicator_type)
+        res = parse_indicator_response(raw_res, indicator_type)
+        indicator_details.append({'raw_response': raw_res, 'value': _file, 'score': score, 'response': res})
 
-    file_indicator_list = []
-    autofocus_file_list = []
-    raw_response = []
-    human_readable = ''
-
-    for sha256 in file_list:
-        raw_res = search_indicator('sha256', sha256)
-        if not raw_res.get('indicator'):
-            raise ValueError('Invalid response for indicator')
-
-        indicator = raw_res.get('indicator')
-        raw_tags = raw_res.get('tags')
-
-        score = calculate_dbot_score(indicator, indicator_type)
-        dbot_score = DBotScore(
-            indicator=sha256,
-            indicator_type=DBotScoreType.FILE,
-            integration_name=VENDOR_NAME,
-            score=score
-        )
-
-        file = File(
-            sha256=sha256,
-            dbot_score=dbot_score
-        )
-
-        autofocus_file_output = parse_indicator_response(indicator, raw_tags, indicator_type)
-
-        tags = autofocus_file_output.get('Tags')
-        table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {sha256}'
-        if tags:
-            indicators_data = autofocus_file_output.copy()
-            del indicators_data['Tags']
-            md = tableToMarkdown(table_name, indicators_data)
-            md += tableToMarkdown('Indicator Tags:', tags)
-        else:
-            md = tableToMarkdown(table_name, autofocus_file_output)
-
-        human_readable += md
-
-        file_indicator_list.append(file)
-        raw_response.append(raw_res)
-        autofocus_file_list.append(autofocus_file_output)
-
-    command_results = CommandResults(
-        outputs_prefix='AutoFocus.File',
-        outputs_key_field='IndicatorValue',
-        outputs=autofocus_file_list,
-
-        readable_output=human_readable,
-        raw_response=raw_response,
-        indicators=file_indicator_list
-    )
-
-    return command_results
+    get_indicator_outputs(indicator_type, indicator_details, 'SHA256')
 
 
 def get_export_list_command(args):
@@ -1610,51 +1405,52 @@ def get_export_list_command(args):
                    results)
 
 
-def main():
-    demisto.debug('Command being called is %s' % (demisto.command()))
+''' COMMANDS MANAGER / SWITCH PANEL '''
 
-    try:
-        # Remove proxy if not set to true in params
-        handle_proxy()
-        active_command = demisto.command()
+LOG('Command being called is %s' % (demisto.command()))
 
-        args = {k: v for (k, v) in demisto.args().items() if v}
-        if active_command == 'test-module':
-            # This is the call made when pressing the integration test button.
-            test_module()
-            demisto.results('ok')
-        elif active_command == 'autofocus-search-samples':
-            search_samples_command()
-        elif active_command == 'autofocus-search-sessions':
-            search_sessions_command()
-        elif active_command == 'autofocus-samples-search-results':
-            samples_search_results_command()
-        elif active_command == 'autofocus-sessions-search-results':
-            sessions_search_results_command()
-        elif active_command == 'autofocus-get-session-details':
-            get_session_details_command()
-        elif active_command == 'autofocus-sample-analysis':
-            sample_analysis_command()
-        elif active_command == 'autofocus-tag-details':
-            tag_details_command()
-        elif active_command == 'autofocus-top-tags-search':
-            top_tags_search_command()
-        elif active_command == 'autofocus-top-tags-results':
-            top_tags_results_command()
-        elif active_command == 'autofocus-get-export-list-indicators':
-            get_export_list_command(args)
-        elif active_command == 'ip':
-            demisto.results(search_ip_command(**args))
-        elif active_command == 'domain':
-            demisto.results(search_domain_command(args))
-        elif active_command == 'url':
-            demisto.results(search_url_command(**args))
-        elif active_command == 'file':
-            demisto.results(search_file_command(**args))
+try:
+    # Remove proxy if not set to true in params
+    handle_proxy()
+    active_command = demisto.command()
 
-    except Exception as e:
-        return_error(f'Unexpected error: {e}')
+    args = {k: v for (k, v) in demisto.args().items() if v}
+    if active_command == 'test-module':
+        # This is the call made when pressing the integration test button.
+        test_module()
+        demisto.results('ok')
+    elif active_command == 'autofocus-search-samples':
+        search_samples_command()
+    elif active_command == 'autofocus-search-sessions':
+        search_sessions_command()
+    elif active_command == 'autofocus-samples-search-results':
+        samples_search_results_command()
+    elif active_command == 'autofocus-sessions-search-results':
+        sessions_search_results_command()
+    elif active_command == 'autofocus-get-session-details':
+        get_session_details_command()
+    elif active_command == 'autofocus-sample-analysis':
+        sample_analysis_command()
+    elif active_command == 'autofocus-tag-details':
+        tag_details_command()
+    elif active_command == 'autofocus-top-tags-search':
+        top_tags_search_command()
+    elif active_command == 'autofocus-top-tags-results':
+        top_tags_results_command()
+    elif active_command == 'autofocus-get-export-list-indicators':
+        get_export_list_command(args)
+    elif active_command == 'ip':
+        search_ip_command(**args)
+    elif active_command == 'domain':
+        search_domain_command(**args)
+    elif active_command == 'url':
+        search_url_command(**args)
+    elif active_command == 'file':
+        search_file_command(**args)
 
 
-if __name__ == "__builtin__" or __name__ == "builtins":
-    main()
+# Log exceptions
+except Exception as e:
+    LOG(e)
+    LOG.print_log()
+    return_error(f'Unexpected error: {e}')
