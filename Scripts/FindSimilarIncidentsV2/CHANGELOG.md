@@ -1,4 +1,5 @@
 ## [Unreleased]
+Deprecated arguments: similarCustomFields, similarIncidentKeys. Use ***similarIncidentFields*** instead.
 
 
 ## [20.3.3] - 2020-03-18
