@@ -1,5 +1,6 @@
 import json
 import pytest
+import requests_mock
 
 """ helper functions """
 
@@ -95,3 +96,13 @@ class TestCommands:
             with open('FeedTAXII_test/TestCommands/indicators_results.json', 'r') as exp_f:
                 expected = json.load(exp_f)
                 assert res == expected
+
+
+class TestTaxiiClient:
+    # verify that unassigned instance variables are still instantiated
+    def test__send_request(self):
+        from FeedTAXII import TAXIIClient
+        client = TAXIIClient()
+        with requests_mock.Mocker() as m:
+            m.post('http://www.example.com', text='response does not matter')
+            client._send_request('http://www.example.com', {}, {})
