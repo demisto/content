@@ -1,18 +1,14 @@
 id: SplunkPy-Test-V2
 version: -1
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
 name: SplunkPy-Test-V2
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: "48"
+    taskid: 85ee287c-4ebe-49ad-8507-5c2cff19c982
     type: start
     task:
-      id: "48"
+      id: 85ee287c-4ebe-49ad-8507-5c2cff19c982
       version: -1
       name: ""
       iscommand: false
@@ -32,13 +28,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: "47"
+    taskid: fb621622-fbc7-4c65-86e5-c6942e932a49
     type: regular
     task:
-      id: "47"
+      id: fb621622-fbc7-4c65-86e5-c6942e932a49
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -69,13 +65,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: "116"
+    taskid: b04cac04-ea5a-478b-8392-a530870d02ff
     type: regular
     task:
-      id: "116"
+      id: b04cac04-ea5a-478b-8392-a530870d02ff
       version: -1
       name: Splunk search with app
       description: Searches Splunk for events.
@@ -91,7 +87,7 @@ tasks:
         simple: demisto
       batch_limit: {}
       earliest_time:
-        simple: "-1000d"
+        simple: -1000d
       event_limit:
         simple: "1"
       latest_time: {}
@@ -110,13 +106,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: "120"
+    taskid: 3d52d7ff-5882-41cf-8d1d-8d55859a81ff
     type: regular
     task:
-      id: "120"
+      id: 3d52d7ff-5882-41cf-8d1d-8d55859a81ff
       version: -1
       name: Splunk search
       description: Searches Splunk for events.
@@ -149,13 +145,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: "123"
+    taskid: 15277270-d8cf-464a-8e13-0ddd93248a0d
     type: condition
     task:
-      id: "123"
+      id: 15277270-d8cf-464a-8e13-0ddd93248a0d
       version: -1
       name: 'Verify Context '
       type: condition
@@ -187,13 +183,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: "117"
+    taskid: 4b1c5a4a-b00e-4663-8c4a-2eac4cbc0e75
     type: condition
     task:
-      id: "117"
+      id: 4b1c5a4a-b00e-4663-8c4a-2eac4cbc0e75
       version: -1
       name: Verify Context
       type: condition
@@ -222,13 +218,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: "124"
+    taskid: a6d0cd9c-7c35-4e5d-88aa-90250dd5b3b5
     type: regular
     task:
-      id: "124"
+      id: a6d0cd9c-7c35-4e5d-88aa-90250dd5b3b5
       version: -1
       name: Get splunk indexes
       description: Prints all Splunk index names.
@@ -252,13 +248,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: "113"
+    taskid: b293116a-ee77-4fd8-8d6c-a5a5bbff8e7a
     type: regular
     task:
-      id: "113"
+      id: b293116a-ee77-4fd8-8d6c-a5a5bbff8e7a
       version: -1
       name: Splunk Create job
       description: Creates a new search job in Splunk.
@@ -285,13 +281,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: "114"
+    taskid: 4545519c-23bd-4787-86d4-4718dd9c803f
     type: regular
     task:
-      id: "114"
+      id: 4545519c-23bd-4787-86d4-4718dd9c803f
       version: -1
       name: Get job results
       description: Returns the results of a previous Splunk search. You can use this
@@ -318,13 +314,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "9":
     id: "9"
-    taskid: "125"
+    taskid: 2c688e19-58a4-4882-8064-110b9449d924
     type: regular
     task:
-      id: "125"
+      id: 2c688e19-58a4-4882-8064-110b9449d924
       version: -1
       name: Submit event
       description: Creates a new event in Splunk.
@@ -353,13 +349,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "10":
     id: "10"
-    taskid: "121"
+    taskid: 83a12924-c8ff-45d9-81a5-b46f3ea1b437
     type: regular
     task:
-      id: "121"
+      id: 83a12924-c8ff-45d9-81a5-b46f3ea1b437
       version: -1
       name: Parse raw
       description: Parses the raw part of the event.
@@ -384,13 +380,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: "126"
+    taskid: 9c29640f-4bf6-43ce-8c82-57bda30ba17b
     type: condition
     task:
-      id: "126"
+      id: 9c29640f-4bf6-43ce-8c82-57bda30ba17b
       version: -1
       name: Verify Context
       type: condition
@@ -419,13 +415,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "12":
     id: "12"
-    taskid: "115"
+    taskid: dfa984f1-dd31-4e52-81f2-76d07bd74a6a
     type: regular
     task:
-      id: "115"
+      id: dfa984f1-dd31-4e52-81f2-76d07bd74a6a
       version: -1
       name: Add raw data
       description: Sets a value into the context with the given context key
@@ -462,13 +458,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: "127"
+    taskid: 1e8197c1-754d-4fd0-884f-4147425bce1c
     type: regular
     task:
-      id: "127"
+      id: 1e8197c1-754d-4fd0-884f-4147425bce1c
       version: -1
       name: Parse raw example
       description: Parses the raw part of the event.
@@ -494,13 +490,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "14":
     id: "14"
-    taskid: "118"
+    taskid: 7606bb7c-da62-4811-834a-9ab0d3b22ffc
     type: condition
     task:
-      id: "118"
+      id: 7606bb7c-da62-4811-834a-9ab0d3b22ffc
       version: -1
       name: Is the raw parsed?
       description: Check whether the values provided in arguments are equal. If either
@@ -533,13 +529,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "15":
     id: "15"
-    taskid: "119"
+    taskid: cc2ee6f4-c5f9-4ad8-8e52-5fa3221abcea
     type: title
     task:
-      id: "119"
+      id: cc2ee6f4-c5f9-4ad8-8e52-5fa3221abcea
       version: -1
       name: Success!
       type: title
@@ -557,13 +553,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "16":
     id: "16"
-    taskid: "122"
+    taskid: c3bfeed2-77c3-4613-88c7-b39bf598c2d2
     type: regular
     task:
-      id: "122"
+      id: c3bfeed2-77c3-4613-88c7-b39bf598c2d2
       version: -1
       name: Oh No
       description: Prints text to war room (Markdown supported)
@@ -586,7 +582,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
