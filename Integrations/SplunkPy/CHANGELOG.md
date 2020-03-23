@@ -1,5 +1,5 @@
 ## [Unreleased]
-- Added **Should Replace Dots in Incident Fields** parameter key for replacing problematic characters (e.g. - ".") to underscore ("_") in context keys.
+Added the **Replace with Underscore in Incident Fields** parameter key, which replaces problematic characters (e.g., ".") with underscores ("\_") in context keys.
 
 ## [20.3.3] - 2020-03-18
 Fixed an issue in the test command, which caused an out of memory error. 
