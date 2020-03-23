@@ -14,68 +14,66 @@ sys.path.append(CONTENT_DIR + '/Tests/demistomock')
 import demistomock  # noqa: E402
 
 # PrivateFuncs are functions to ignore when running the script
-JS_PRIVATE_FUNCS = ["dqQueryBuilder", "toArray", "indent", "formatTableValuesRecursive", "string_to_array",
-                    "array_to_hex_string", "SHA256_init", "SHA256_write", "SHA256_finalize", "SHA256_hash",
-                    "HMAC_SHA256_init", "HMAC_SHA256_write", "HMAC_SHA256_finalize", "HMAC_SHA256_MAC"]
+jsPrivateFuncs = ["dqQueryBuilder", "toArray", "indent", "formatTableValuesRecursive", "string_to_array",
+                  "array_to_hex_string", "SHA256_init", "SHA256_write", "SHA256_finalize", "SHA256_hash",
+                  "HMAC_SHA256_init", "HMAC_SHA256_write", "HMAC_SHA256_finalize", "HMAC_SHA256_MAC"]
 
-PY_PRIVATE_FUNCS = ["raiseTable", "zoomField", "epochToTimestamp", "formatTimeColumns", "strip_tag", "elem_to_internal",
-                    "internal_to_elem", "json2elem", "elem2json", "json2xml", "OrderedDict", "datetime", "timedelta",
-                    "createContextSingle", "IntegrationLogger", "tblToMd", "DemistoException",
-                    "BaseHTTPClient", "DemistoHandler", "DebugLogger", "FeedIndicatorType", "Indicator",
-                    "IndicatorType", "IP", "Domain", "DBotScore", "EntryType", "EntryFormat", "CommandResults",
-                    "old_demisto_results", "new_demisto_results", "abstractmethod"]
+pyPrivateFuncs = ["raiseTable", "zoomField", "epochToTimestamp", "formatTimeColumns", "strip_tag", "elem_to_internal",
+                  "internal_to_elem", "json2elem", "elem2json", "json2xml", "OrderedDict", "datetime", "timedelta",
+                  "createContextSingle", "IntegrationLogger", "tblToMd", "DemistoException", "BaseClient",
+                  "BaseHTTPClient", "DemistoHandler", "DebugLogger", "FeedIndicatorType"]
 
-PY_IRREGULAR_FUNCS = {"LOG": {"argList": ["message"]}}
+pyIrregularFuncs = {"LOG": {"argList": ["message"]}}
 
-JS_AUTOMATION_ONLY = ["fileNameFromEntry", "closeInvestigation", "setSeverity", "setIncident", "createNewIncident",
-                      "setPlaybookAccordingToType", "setOwner", "taskAssign", "setTaskDueDate", "setPlaybook", "addTask",
-                      "getCSVListAsArray", "getJSONListAsObject"]
+jsAutomationOnly = ["fileNameFromEntry", "closeInvestigation", "setSeverity", "setIncident", "createNewIncident",
+                    "setPlaybookAccordingToType", "setOwner", "taskAssign", "setTaskDueDate", "setPlaybook", "addTask",
+                    "getCSVListAsArray", "getJSONListAsObject"]
 
-MARKDOWN_DESCRIPTION_FUNCS = ["createEntry"]
+markdownDescFuncs = ["createEntry"]
 
 
-def read_json_file(file_path):
-    with open(file_path, 'r') as f:
+def readJsonFile(filepath):
+    with open(filepath, 'r') as f:
         out = json.load(f)
         return out
 
 
-def read_yml_file(filepath):
+def readYmlFile(filepath):
     with open(filepath, 'r') as f:
         out = yaml.safe_load(f)
         return out
 
 
-def reformat_python_output(output, origin, language):
+def reformatPythonOutput(output, origin, language):
     res = []
-    is_error = False
+    isError = False
     for a in output:
         if "deprecated" in a["description"]:
             continue
 
         if a.get("description", "") == "":
             print("Description is missing for Python function", a["name"])
-            is_error = True
+            isError = True
 
         # format arguments
         z = []
-        arg_list = a.get("argList", [])
-        arg_details = a.get("arguments", {})
-        for arg_name in arg_list:
-            arg_info = arg_details.get(arg_name, None)
-            if arg_info is not None:
-                arg_info["name"] = arg_name
-                arg_info["type"] = arg_info["type_name"]
-                if arg_info.get("description", "") == "":
-                    is_error = True
-                    print("Missing description for argument", arg_name, "in python function", a["name"])
-                del arg_info["type_name"]
-                z.append(arg_info)
+        argList = a.get("argList", [])
+        argDetails = a.get("arguments", {})
+        for argName in argList:
+            argInfo = argDetails.get(argName, None)
+            if argInfo is not None:
+                argInfo["name"] = argName
+                argInfo["type"] = argInfo["type_name"]
+                if argInfo.get("description", "") == "":
+                    isError = True
+                    print("Missing description for argument", argName, "in python function", a["name"])
+                del argInfo["type_name"]
+                z.append(argInfo)
 
         a["arguments"] = z
         a["return_value"] = a["return"]
         a["return_value"]["type"] = a["return_value"]["type_name"]
-        if a["name"] in MARKDOWN_DESCRIPTION_FUNCS:
+        if a["name"] in markdownDescFuncs:
             a["markdown"] = True
         a["language"] = language
         a["origin"] = origin
@@ -85,26 +83,26 @@ def reformat_python_output(output, origin, language):
         del a["return_value"]["type_name"]
         res.append(a)
 
-    return res, is_error
+    return res, isError
 
 
-def create_js_documentation(path, origin, language):
-    is_error = False
-    common_server_js = read_json_file(path)
+def createJsDocumentation(path, origin, language):
+    isError = False
+    commonServerJs = readJsonFile(path)
     x = []
-    for a in common_server_js:
-        if (a.get("deprecated", None) is not None) or a.get("name", "") in JS_PRIVATE_FUNCS:
+    for a in commonServerJs:
+        if (a.get("deprecated", None) is not None) or a.get("name", "") in jsPrivateFuncs:
             continue
 
-        y = dict()
+        y = {}
         y["name"] = a.get("name", "")
         if y["name"] == "":
-            print("Error extracting function name for JS function with the following data:\n", a)
-            is_error = True
+            print("Error extracting function name for JS fucntion with the following data:\n", a)
+            isError = True
         y["description"] = a.get("description", "")
         if y["description"] == "":
             print("Description is missing for JS function", y["name"])
-            is_error = True
+            isError = True
 
         for arg in a.get("params", []):
             arg["type"] = " or ".join(arg.get("type", {}).get("names", []))
@@ -113,7 +111,7 @@ def create_js_documentation(path, origin, language):
                 arg["required"] = False
                 del arg["optional"]
             if arg.get("name", "") == "" or arg.get("description", "") == "":
-                is_error = True
+                isError = True
                 print("Missing name/description for argument in JS function", y["name"], ".\n Arg name is",
                       arg.get("name", ""), ", args description is", arg.get("description", ""))
         y["arguments"] = a.get("params", [])
@@ -121,66 +119,51 @@ def create_js_documentation(path, origin, language):
         returns = a.get("returns", None)[0]
         y["return_value"] = {"description": returns.get("description"),
                              "type": " or ".join(returns.get("type", {}).get("names", []))}
-        if y["name"] in MARKDOWN_DESCRIPTION_FUNCS:
+        if y["name"] in markdownDescFuncs:
             y["markdown"] = True
         y["language"] = language
         y["origin"] = origin
-        if y["name"] in JS_AUTOMATION_ONLY:
+        if y["name"] in jsAutomationOnly:
             y["automationOnly"] = True
 
         x.append(y)
-    return x, is_error
+    return x, isError
 
 
-def create_py_documentation(path, origin, language):
-    is_error_py = False
+def createPyDocumentation(path, origin, language):
+    isErrorPy = False
 
     with open(path, 'r') as file:
-        py_script = clean_python_code(file.read(), remove_print_future=False)
+        pyScript = clean_python_code(file.read(), remove_print_future=False)
 
-    code = compile(py_script, '<string>', 'exec')
+    code = compile(pyScript, '<string>', 'exec')
     ns = {'demisto': demistomock}
     exec(code, ns)  # guardrails-disable-line
 
     x = []
 
     for a in ns:
-        if a != 'demisto' and callable(ns.get(a)) and a not in PY_PRIVATE_FUNCS:
+        if a != 'demisto' and callable(ns.get(a)) and a not in pyPrivateFuncs:
             docstring = inspect.getdoc(ns.get(a))
             if not docstring:
                 print("docstring for function {} is empty".format(a))
-                is_error_py = True
-            elif 'ignore docstring' in docstring:
-                continue
+                isErrorPy = True
             else:
-                try:
-                    y = parser.parse_docstring(docstring)
-                    y["name"] = a
+                y = parser.parse_docstring(docstring)
+                y["name"] = a
+                y["argList"] = list(inspect.getargspec(ns.get(a)))[0] if pyIrregularFuncs.get(a, None) is None \
+                    else pyIrregularFuncs[a]["argList"]
 
-                    if inspect.isclass(ns.get(a)):
-                        y["argList"] = list(inspect.getargspec(ns.get(a).__init__))[0] \
-                            if PY_IRREGULAR_FUNCS.get(a, None) is None \
-                            else PY_IRREGULAR_FUNCS[a]["argList"]
+                x.append(y)
 
-                        # init will contains self, so remove the self from the arg list
-                        y["argList"].remove('self')
-                    else:
-                        y["argList"] = list(inspect.getargspec(ns.get(a)))[0] if PY_IRREGULAR_FUNCS.get(a, None) is None \
-                            else PY_IRREGULAR_FUNCS[a]["argList"]
-
-                    x.append(y)
-                except parser.MethodParsingException as ex:
-                    print('Failed to parse {} class/function.\nError: {}'.format(a, str(ex)))
-                    is_error_py = True
-
-    if is_error_py:
-        return None, is_error_py
-    return reformat_python_output(x, origin, language)
+    if isErrorPy:
+        return None, isErrorPy
+    return reformatPythonOutput(x, origin, language)
 
 
-def create_ps_documentation(path, origin, language):
+def createPsDocumentation(path, origin, language):
 
-    is_error_ps = False
+    isErrorPS = False
 
     with open(path, 'r') as file:
         ps_script = file.read()
@@ -200,7 +183,7 @@ def create_ps_documentation(path, origin, language):
 
         description = parameters[0].split('.DESCRIPTION')[1].strip()
         if not description:
-            is_error_ps = True
+            isErrorPS = True
             print("Missing description for PS function {}.\n".format(function_name))
         function_doc['description'] = description
 
@@ -216,7 +199,7 @@ def create_ps_documentation(path, origin, language):
                 param_name = param_name.replace(' (required)', '')
             param_description = split_param[1]
             if not param_description:
-                is_error_ps = True
+                isErrorPS = True
                 print("Missing parameter description for parameter {} for in PS function {}.\n".format(
                     param_name, function_name))
             arguments.append({
@@ -228,26 +211,25 @@ def create_ps_documentation(path, origin, language):
         function_doc['arguments'] = arguments
         function_doc_list.append(function_doc)
 
-    return function_doc_list, is_error_ps
+    return function_doc_list, isErrorPS
 
 
 def main(argv):
-    js_doc, is_error_js = create_js_documentation('./Documentation/commonServerJsDoc.json', 'CommonServerJs',
-                                                  'javascript')
-    py_doc, is_error_py = create_py_documentation('./Packs/Base/Scripts/CommonServerPython/CommonServerPython.py',
-                                                  'CommonServerPython', 'python')
-    ps_doc, is_error_ps = create_ps_documentation('./Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1',
-                                                  'CommonServerPowerShell', 'powershell')
-    final_docs = read_json_file('./Documentation/commonServerConstants.json')
+    jsDoc, isErrorJS = createJsDocumentation('./Documentation/commonServerJsDoc.json', 'CommonServerJs', 'javascript')
+    pyDoc, isErrorPy = createPyDocumentation('./Packs/Base/Scripts/CommonServerPython/CommonServerPython.py',
+                                             'CommonServerPython', 'python')
+    psDoc, isErrorPS = createPsDocumentation('./Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1',
+                                             'CommonServerPowerShell', 'powershell')
+    finalDoc = readJsonFile('./Documentation/commonServerConstants.json')
 
-    if is_error_js or is_error_py or is_error_ps or not final_docs:
+    if isErrorJS or isErrorPy or isErrorPS or not finalDoc:
         print("Errors found in common server docs.")
         sys.exit(1)
     with open('./Documentation/doc-CommonServer.json', 'w') as fp:
-        final_docs += js_doc
-        final_docs += py_doc
-        final_docs += ps_doc
-        json.dump(final_docs, fp)
+        finalDoc += jsDoc
+        finalDoc += pyDoc
+        finalDoc += psDoc
+        json.dump(finalDoc, fp)
 
 
 if __name__ == "__main__":
