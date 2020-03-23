@@ -29,7 +29,7 @@ def options_handler():
     parser.add_argument('-p', '--password', help='The password for the login', required=True)
     parser.add_argument('--ami_env', help='The AMI environment for the current run. Options are '
                                           '"Server Master", "Demisto GA", "Demisto one before GA", "Demisto two before '
-                                          'GA", "Demisto PreGA". The server url is determined by the AMI environment.')
+                                          'GA". The server url is determined by the AMI environment.')
     parser.add_argument('-g', '--git_sha1', help='commit sha1 to compare changes with')
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
