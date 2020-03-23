@@ -67,7 +67,7 @@ jobs:
                 echo "Skipping - running only in container number 0"
                 exit 0
             fi
-            python ./Tests/scripts/update_id_set.py -r
+            demisto-sdk create-id-set -o ./Tests/id_set.json
       - run:
           name: Infrastructure testing
           when: always
