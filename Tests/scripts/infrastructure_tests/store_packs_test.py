@@ -44,6 +44,7 @@ class TestMetadata:
         assert parsed_metadata['description'] == 'Description of test pack'
         assert 'created' in parsed_metadata
         assert 'updated' in parsed_metadata
+        assert parsed_metadata['legacy']
         assert parsed_metadata['support'] == 'demisto'
         assert parsed_metadata['supportDetails']['url'] == 'https://test.com'
         assert parsed_metadata['supportDetails']['email'] == 'test@test.com'

@@ -15,6 +15,7 @@ args:
   name: similarLabelsKeys
   required: false
   secret: false
+  deprecated: true
 - default: false
   description: A comma-separated list of similar context keys. Also supports allowing
     X different words between values (see the labels description).
@@ -29,6 +30,7 @@ args:
   name: similarCustomFields
   required: false
   secret: false
+  deprecated: true
 - auto: PREDEFINED
   default: false
   defaultValue: 'yes'

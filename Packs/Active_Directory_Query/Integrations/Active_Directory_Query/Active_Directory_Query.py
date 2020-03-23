@@ -22,7 +22,7 @@ conn: Optional[Connection] = None
 COOMON_ACCOUNT_CONTROL_FLAGS = {
     512: "Enabled Account",
     514: "Disabled account",
-    544: "Account Enabled - Require user to change password at first logon",
+    544: "Password Not Required",
     4096: "Workstation/server",
     66048: "Enabled, password never expires",
     66050: "Disabled, password never expires",
