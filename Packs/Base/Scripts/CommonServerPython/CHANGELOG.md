@@ -1,21 +1,5 @@
 ## [Unreleased]
-  - Deprecated the following enums: 
-    - *entryTypes*
-    - *formats*
-    - *dbotscores*
-  - Added new enums: 
-    - **DBotScoreType** (replaces *dbotscores*)
-    - **EntryFormat** (replaces *formats*)
-    - **EntryType** (replaces *entryTypes*)
-  - Added new classes to represent reputation outputs:
-    - **DBotScore**
-    - **IP**
-    - **URL**
-    - **CVE**
-    - **File**
-    - **Domain**
-    - **WHOIS**
-    - **CommandResults** (returns results to the War Room)
+
 
 ## [20.3.3] - 2020-03-18
 Added ***remove_empty_elements*** command.

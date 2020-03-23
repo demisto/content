@@ -553,10 +553,7 @@ def handleEntitlementForUser(incidentID, guid, email, content, taskID=""):
     return {}
 
 def demistoVersion():
-    return {
-        'version': '5.5.0',
-        'buildNumber': '12345'
-    }
+    return {}
 
 def integrationInstance():
     return ""
