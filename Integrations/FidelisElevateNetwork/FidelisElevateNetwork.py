@@ -186,7 +186,7 @@ def generate_time_settings(time_frame=None, start_time=None, end_time=None):
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def update_alertstatus_command():
+def update_alert_status_command():
     status_to_explicit_score = {
         'False Positive': 1,
         'Not Interesting': 2,
@@ -340,7 +340,7 @@ def manage_alert_label(data):
         return 1
 
 
-def manage_alert_assignuser_command():
+def alert_assign_user_command():
     args = demisto.args()
     conclusion_id = args['conclusion_id']
     assign_user = args['assign_user']
@@ -376,7 +376,7 @@ def manage_alert_assignuser(data):
     return raw_res
 
 
-def manage_alert_closealert_command():
+def close_alert_command():
     args = demisto.args()
     conclusion_id = args['conclusion_id']
     comment = args.get('comment')
@@ -1205,7 +1205,7 @@ def main():
             get_alert_dpath_command()
 
         elif command == 'fidelis-update-alert-status':
-            update_alertstatus_command()
+            update_alert_status_command()
 
         elif command == 'fidelis-alert-execution-forensics-submission':
             alert_ef_submission_command()
@@ -1214,10 +1214,10 @@ def main():
             add_alert_comment_command()
 
         elif command == 'fidelis-assign-user-to-alert':
-            manage_alert_assignuser_command()
+            alert_assign_user_command()
 
         elif command == 'fidelis-close-alert':
-            manage_alert_closealert_command()
+            close_alert_command()
 
         elif command == 'fidelis-manage-alert-label':
             manage_alert_label_command()
