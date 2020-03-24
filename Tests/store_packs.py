@@ -276,12 +276,16 @@ class Pack(object):
         task_status = False
 
         try:
+            arg = f'./signDirectory {self._pack_path} /signKey'
+            signing_process = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            output, err = signing_process.communicate()
 
-            os.chmod('/signDirectory', 700)
-            args = ('./signDirectory', self._pack_path)
-            popen = subprocess.Popen(args, stdout=subprocess.PIPE, shell=True)
-            popen.wait()
+            if err:
+                print_error(f"Failed to sign pack for {self._pack_name} - {str(err)}")
+                return
 
+            print_warning(output)  # todo remove after the issue is fixed
+            print(f"Signed {self._pack_name} pack successfully")
             task_status = True
         except Exception as e:
             print_error(f"Failed to sign pack for {self._pack_name} - {str(e)}")
