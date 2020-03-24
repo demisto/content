@@ -1,3 +1,4 @@
+elasticcommonfields: {}
 id: Carbon Black Enterprise Protection V2 Test
 version: -1
 name: Carbon Black Enterprise Protection V2 Test
@@ -6,10 +7,11 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 36acaa6e-9052-478b-8a9d-6b519f69f2b9
+    taskid: ec8293b9-6204-4af7-8618-4caee1d9014f
     type: start
     task:
-      id: 36acaa6e-9052-478b-8a9d-6b519f69f2b9
+      elasticcommonfields: {}
+      id: ec8293b9-6204-4af7-8618-4caee1d9014f
       version: -1
       name: ""
       iscommand: false
@@ -40,12 +42,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 09969783-7e3e-4401-816c-f5c432521da5
+    taskid: 8d11fec8-cea2-4784-8951-c736e56eff82
     type: regular
     task:
-      id: 09969783-7e3e-4401-816c-f5c432521da5
+      elasticcommonfields: {}
+      id: 8d11fec8-cea2-4784-8951-c736e56eff82
       version: -1
       name: Search connector
       description: Returns objects that match given criteria
@@ -75,12 +80,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: b0a9c6bf-f061-4e01-84c4-cc5017d66e54
+    taskid: c89c3177-7950-4009-8508-105de4646421
     type: title
     task:
-      id: b0a9c6bf-f061-4e01-84c4-cc5017d66e54
+      elasticcommonfields: {}
+      id: c89c3177-7950-4009-8508-105de4646421
       version: -1
       name: Connector
       type: title
@@ -100,12 +108,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: d54cde88-8966-4417-8e05-644e339ea645
+    taskid: 4f1db350-520c-4cd9-861b-d314892ee589
     type: regular
     task:
-      id: d54cde88-8966-4417-8e05-644e339ea645
+      elasticcommonfields: {}
+      id: 4f1db350-520c-4cd9-861b-d314892ee589
       version: -1
       name: Get 3rd connector
       description: Returns object instance of this class
@@ -131,12 +142,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: 4287cf2d-8e08-4830-8dc6-518b5d367263
+    taskid: 43ff4558-bb5f-400e-8a4f-2b97e3627941
     type: title
     task:
-      id: 4287cf2d-8e08-4830-8dc6-518b5d367263
+      elasticcommonfields: {}
+      id: 43ff4558-bb5f-400e-8a4f-2b97e3627941
       version: -1
       name: Done
       type: title
@@ -153,12 +167,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: e3a594c0-2baf-4c4c-89a5-3945929dacdf
+    taskid: 64a75967-9cfd-4e0b-8e0f-9f6a3dd64c66
     type: title
     task:
-      id: e3a594c0-2baf-4c4c-89a5-3945929dacdf
+      elasticcommonfields: {}
+      id: 64a75967-9cfd-4e0b-8e0f-9f6a3dd64c66
       version: -1
       name: Computer
       type: title
@@ -178,12 +195,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: c8994521-3062-4f16-8588-65b228a59b2b
+    taskid: 23cbbd8c-7366-434b-8b15-b3ebe564afa4
     type: regular
     task:
-      id: c8994521-3062-4f16-8588-65b228a59b2b
+      elasticcommonfields: {}
+      id: 23cbbd8c-7366-434b-8b15-b3ebe564afa4
       version: -1
       name: Search computer
       description: 'Search for computers. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#computer'
@@ -198,12 +218,11 @@ tasks:
       group: {}
       headers: {}
       ipAddress:
-        simple: 34.247.165.10
+        simple: 52.215.53.168
       limit: {}
       macAddress:
         simple: 0A:02:C7:AF:87:7C
-      name:
-        simple: WORKGROUP\\WIN-40PO3OKHP48
+      name: {}
       offset: {}
       query: {}
       sort: {}
@@ -218,12 +237,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    taskid: 68c3d2e7-590d-4a82-85f0-3f17f3dec509
+    taskid: d345b858-b13c-4e50-89e7-3d2e528d1824
     type: condition
     task:
-      id: 68c3d2e7-590d-4a82-85f0-3f17f3dec509
+      elasticcommonfields: {}
+      id: d345b858-b13c-4e50-89e7-3d2e528d1824
       version: -1
       name: Verify context
       type: condition
@@ -245,7 +267,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 34.247.165.10
+              simple: 52.215.53.168
       - - operator: isEqualString
           left:
             value:
@@ -266,12 +288,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    taskid: 301308a7-bf2c-41d2-83e8-bb523ee22e35
+    taskid: c5cb59fd-1d79-48a7-8e78-54a41a8c79ef
     type: regular
     task:
-      id: 301308a7-bf2c-41d2-83e8-bb523ee22e35
+      elasticcommonfields: {}
+      id: c5cb59fd-1d79-48a7-8e78-54a41a8c79ef
       version: -1
       name: Get computer
       description: 'Returns computer. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#computer'
@@ -297,12 +322,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: e16d3463-3035-433f-8fd7-a95faecff69b
+    taskid: 56de5273-118f-4abf-8638-d1a885d2bd0b
     type: condition
     task:
-      id: e16d3463-3035-433f-8fd7-a95faecff69b
+      elasticcommonfields: {}
+      id: 56de5273-118f-4abf-8638-d1a885d2bd0b
       version: -1
       name: Verify context
       type: condition
@@ -324,7 +352,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 34.247.165.10
+              simple: 52.215.53.168
       - - operator: isEqualString
           left:
             value:
@@ -345,12 +373,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
-    taskid: 3a94fe27-2a6b-4a0e-8f77-53690c68b271
+    taskid: 258f69da-4be4-4c9d-8f1b-fe1de80c65ad
     type: title
     task:
-      id: 3a94fe27-2a6b-4a0e-8f77-53690c68b271
+      elasticcommonfields: {}
+      id: 258f69da-4be4-4c9d-8f1b-fe1de80c65ad
       version: -1
       name: File Catalog
       type: title
@@ -370,12 +401,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: 4a60c725-b7e4-460d-874a-4c200ffbf881
+    taskid: e3fe0654-0810-4f6f-815e-e3cc47e05d5e
     type: regular
     task:
-      id: 4a60c725-b7e4-460d-874a-4c200ffbf881
+      elasticcommonfields: {}
+      id: e3fe0654-0810-4f6f-815e-e3cc47e05d5e
       version: -1
       name: Search file catalog using query
       description: 'Search for file catalogs. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#filecatalog'
@@ -405,12 +439,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
-    taskid: 8e6b8fda-ac50-49dd-8a85-11defb1cdebb
+    taskid: 39acf1ef-749f-4977-8079-183fc3157ebe
     type: condition
     task:
-      id: 8e6b8fda-ac50-49dd-8a85-11defb1cdebb
+      elasticcommonfields: {}
+      id: 39acf1ef-749f-4977-8079-183fc3157ebe
       version: -1
       name: Verify context
       type: condition
@@ -463,12 +500,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "15":
     id: "15"
-    taskid: af99c287-b257-4e50-87b2-ddd0da170961
+    taskid: 9c2c6608-62ed-4586-88cc-74dea1139134
     type: title
     task:
-      id: af99c287-b257-4e50-87b2-ddd0da170961
+      elasticcommonfields: {}
+      id: 9c2c6608-62ed-4586-88cc-74dea1139134
       version: -1
       name: File Instance
       type: title
@@ -488,12 +528,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
-    taskid: 4f9ab454-2beb-4cbf-8f8b-9f5e7aaf673e
+    taskid: 1ff538be-9cbf-4e23-82d4-d9fe782db254
     type: regular
     task:
-      id: 4f9ab454-2beb-4cbf-8f8b-9f5e7aaf673e
+      elasticcommonfields: {}
+      id: 1ff538be-9cbf-4e23-82d4-d9fe782db254
       version: -1
       name: Search file instance
       description: 'Search for file instances. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#fileinstance'
@@ -524,12 +567,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "17":
     id: "17"
-    taskid: 06a8a5e3-eff5-4dd4-8677-cb9d5aae501d
+    taskid: f67a0ea9-0a8d-4d08-8b2e-cf97efc50e22
     type: condition
     task:
-      id: 06a8a5e3-eff5-4dd4-8677-cb9d5aae501d
+      elasticcommonfields: {}
+      id: f67a0ea9-0a8d-4d08-8b2e-cf97efc50e22
       version: -1
       name: Verify context
       type: condition
@@ -602,12 +648,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "18":
     id: "18"
-    taskid: cd2d826a-a37c-4ea0-8429-f514134f558d
+    taskid: 97d22ce2-89b8-45ca-8728-2a9d7106f175
     type: title
     task:
-      id: cd2d826a-a37c-4ea0-8429-f514134f558d
+      elasticcommonfields: {}
+      id: 97d22ce2-89b8-45ca-8728-2a9d7106f175
       version: -1
       name: Event
       type: title
@@ -627,12 +676,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "19":
     id: "19"
-    taskid: 11152902-4ca4-47c3-81bd-be544e910e32
+    taskid: 4f3128f6-e11c-4537-80ee-25de08a771b2
     type: regular
     task:
-      id: 11152902-4ca4-47c3-81bd-be544e910e32
+      elasticcommonfields: {}
+      id: 4f3128f6-e11c-4537-80ee-25de08a771b2
       version: -1
       name: Search events using sort and limit
       description: 'Search for events. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#event'
@@ -663,12 +715,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "20":
     id: "20"
-    taskid: 0cc97752-7c37-4373-8e8a-16eb0e43462b
+    taskid: a90ad947-8503-4ece-8984-683417cafe08
     type: condition
     task:
-      id: 0cc97752-7c37-4373-8e8a-16eb0e43462b
+      elasticcommonfields: {}
+      id: a90ad947-8503-4ece-8984-683417cafe08
       version: -1
       name: Verify context
       type: condition
@@ -690,7 +745,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "247"
+              simple: "200"
       - - operator: isEqualNumber
           left:
             value:
@@ -700,7 +755,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "430108"
+              simple: "432798"
     view: |-
       {
         "position": {
@@ -711,12 +766,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "21":
     id: "21"
-    taskid: 1e8e915c-1c44-4116-8a9b-752a2613eda5
+    taskid: ac5d0915-51b3-42da-8f90-42b838422b9f
     type: title
     task:
-      id: 1e8e915c-1c44-4116-8a9b-752a2613eda5
+      elasticcommonfields: {}
+      id: ac5d0915-51b3-42da-8f90-42b838422b9f
       version: -1
       name: File rule
       type: title
@@ -736,12 +794,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "22":
     id: "22"
-    taskid: 7ed2223d-36a8-4fd5-8513-c143c3e74547
+    taskid: 0effadea-0e17-403a-86e2-9ab589333a54
     type: regular
     task:
-      id: 7ed2223d-36a8-4fd5-8513-c143c3e74547
+      elasticcommonfields: {}
+      id: 0effadea-0e17-403a-86e2-9ab589333a54
       version: -1
       name: Create file rule
       description: 'Creates or updates file rule. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#filerule'
@@ -780,12 +841,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "23":
     id: "23"
-    taskid: d1e5a3ef-9c80-4044-8116-a560cb293ef6
+    taskid: 500a0ab6-0560-41ca-8489-1cb1c5ac1011
     type: regular
     task:
-      id: d1e5a3ef-9c80-4044-8116-a560cb293ef6
+      elasticcommonfields: {}
+      id: 500a0ab6-0560-41ca-8489-1cb1c5ac1011
       version: -1
       name: Delete file rule
       description: 'Deletes the file rule. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#filerule'
@@ -813,12 +877,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "24":
     id: "24"
-    taskid: 8b6815f2-300d-49ac-8590-18868e55cf59
+    taskid: 682eed7d-7c0a-4f5a-8ef0-5f8bdb23d403
     type: regular
     task:
-      id: 8b6815f2-300d-49ac-8590-18868e55cf59
+      elasticcommonfields: {}
+      id: 682eed7d-7c0a-4f5a-8ef0-5f8bdb23d403
       version: -1
       name: Get deleted file rule
       description: 'Gets the file rule. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#filerule'
@@ -846,12 +913,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "25":
     id: "25"
-    taskid: 5d9be80c-668b-48b9-8669-78a0f2e2695d
+    taskid: da3ef820-f3bb-4827-8e49-5959023203b6
     type: condition
     task:
-      id: 5d9be80c-668b-48b9-8669-78a0f2e2695d
+      elasticcommonfields: {}
+      id: da3ef820-f3bb-4827-8e49-5959023203b6
       version: -1
       name: Verify file was deleted
       type: condition
@@ -884,12 +954,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "26":
     id: "26"
-    taskid: 604c360b-b525-4b29-8231-1d3435ae982d
+    taskid: 4c834321-6ec0-4b51-8769-18554618c74e
     type: regular
     task:
-      id: 604c360b-b525-4b29-8231-1d3435ae982d
+      elasticcommonfields: {}
+      id: 4c834321-6ec0-4b51-8769-18554618c74e
       version: -1
       name: Search file rule
       description: 'Search for file rules. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#filerule'
@@ -928,12 +1001,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "27":
     id: "27"
-    taskid: d789ea93-2202-43bb-86f1-ca6a262ea4d8
+    taskid: 617ea85e-9487-4b8e-8afa-b702792eabb3
     type: condition
     task:
-      id: d789ea93-2202-43bb-86f1-ca6a262ea4d8
+      elasticcommonfields: {}
+      id: 617ea85e-9487-4b8e-8afa-b702792eabb3
       version: -1
       name: Verify context
       type: condition
@@ -966,12 +1042,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "28":
     id: "28"
-    taskid: 19fe31a1-2ffb-407c-889d-b8886aaa0a65
+    taskid: 3f9f37db-36f7-4adf-8e66-b749a0d35396
     type: title
     task:
-      id: 19fe31a1-2ffb-407c-889d-b8886aaa0a65
+      elasticcommonfields: {}
+      id: 3f9f37db-36f7-4adf-8e66-b749a0d35396
       version: -1
       name: Policy
       type: title
@@ -991,12 +1070,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "29":
     id: "29"
-    taskid: 07cf6419-021e-4273-8a7e-d3cf1d80b58d
+    taskid: cb1ad7b0-a802-4687-8481-4dbaf04dc799
     type: regular
     task:
-      id: 07cf6419-021e-4273-8a7e-d3cf1d80b58d
+      elasticcommonfields: {}
+      id: cb1ad7b0-a802-4687-8481-4dbaf04dc799
       version: -1
       name: Policy query
       description: 'Search for policies. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#policy'
@@ -1026,12 +1108,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "30":
     id: "30"
-    taskid: 22853adf-a2b8-4ad6-8ea0-2b1839e1947b
+    taskid: af5af476-4355-44dc-8716-6c6fb028c6c1
     type: condition
     task:
-      id: 22853adf-a2b8-4ad6-8ea0-2b1839e1947b
+      elasticcommonfields: {}
+      id: af5af476-4355-44dc-8716-6c6fb028c6c1
       version: -1
       name: Verify context
       type: condition
@@ -1078,12 +1163,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "31":
     id: "31"
-    taskid: 58fabbc6-7437-49e9-8af5-14d9a1fc15c1
+    taskid: 6e0a4dbd-4a49-40be-8904-2fc242d80b16
     type: title
     task:
-      id: 58fabbc6-7437-49e9-8af5-14d9a1fc15c1
+      elasticcommonfields: {}
+      id: 6e0a4dbd-4a49-40be-8904-2fc242d80b16
       version: -1
       name: Server Config
       type: title
@@ -1103,12 +1191,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "32":
     id: "32"
-    taskid: cfe29157-443c-44fd-8101-23adfa78082f
+    taskid: 32beb2af-5e25-4632-8ad4-7ea325a48cf9
     type: regular
     task:
-      id: cfe29157-443c-44fd-8101-23adfa78082f
+      elasticcommonfields: {}
+      id: 32beb2af-5e25-4632-8ad4-7ea325a48cf9
       version: -1
       name: Search server config
       description: 'Search in server configurations. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#serverconfig'
@@ -1138,12 +1229,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "33":
     id: "33"
-    taskid: 6e130841-5d60-4207-8f73-2e70a64537e9
+    taskid: 4cca414f-a6ea-4540-8e2a-5652f3e1fe05
     type: condition
     task:
-      id: 6e130841-5d60-4207-8f73-2e70a64537e9
+      elasticcommonfields: {}
+      id: 4cca414f-a6ea-4540-8e2a-5652f3e1fe05
       version: -1
       name: Verify context
       type: condition
@@ -1186,12 +1280,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "34":
     id: "34"
-    taskid: 253d0aa5-696d-48c3-8752-79db9316c2ad
+    taskid: 9f365f78-b60e-4f96-8388-b81a3dfd32c2
     type: title
     task:
-      id: 253d0aa5-696d-48c3-8752-79db9316c2ad
+      elasticcommonfields: {}
+      id: 9f365f78-b60e-4f96-8388-b81a3dfd32c2
       version: -1
       name: Publisher
       type: title
@@ -1211,12 +1308,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "35":
     id: "35"
-    taskid: 28a13fd2-bedf-411e-84b9-3dea449101bd
+    taskid: c017472e-1540-422d-8f2b-b5f71c00a2d1
     type: regular
     task:
-      id: 28a13fd2-bedf-411e-84b9-3dea449101bd
+      elasticcommonfields: {}
+      id: c017472e-1540-422d-8f2b-b5f71c00a2d1
       version: -1
       name: Search publisher
       script: CarbonBlackProtectionV2|||cbp-publisher-search
@@ -1249,12 +1349,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "36":
     id: "36"
-    taskid: e6f38aa1-e9f7-4148-8f53-3f288df51aa2
+    taskid: 6a4cd2c0-3e12-4cb4-8083-6d7cc45cce79
     type: condition
     task:
-      id: e6f38aa1-e9f7-4148-8f53-3f288df51aa2
+      elasticcommonfields: {}
+      id: 6a4cd2c0-3e12-4cb4-8083-6d7cc45cce79
       version: -1
       name: Verify context
       type: condition
@@ -1307,12 +1410,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "37":
     id: "37"
-    taskid: 1282aaed-1459-41eb-8a6f-deda68413bed
+    taskid: 82c0efce-127a-4d7c-8e30-56b13fa86ce0
     type: title
     task:
-      id: 1282aaed-1459-41eb-8a6f-deda68413bed
+      elasticcommonfields: {}
+      id: 82c0efce-127a-4d7c-8e30-56b13fa86ce0
       version: -1
       name: File Analysis
       type: title
@@ -1332,12 +1438,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "38":
     id: "38"
-    taskid: 888a99e8-f160-483e-82a6-1c9a0bb539d3
+    taskid: 681902ac-4e83-4f7d-8fe8-825f6c8c03b2
     type: regular
     task:
-      id: 888a99e8-f160-483e-82a6-1c9a0bb539d3
+      elasticcommonfields: {}
+      id: 681902ac-4e83-4f7d-8fe8-825f6c8c03b2
       version: -1
       name: Create file analysis
       description: Creates or updates file analysis request
@@ -1369,12 +1478,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "39":
     id: "39"
-    taskid: 943deb8d-76ba-4062-8712-88de75811743
+    taskid: eb70d38a-fc1b-47d1-89da-081a2d2dcf7b
     type: condition
     task:
-      id: 943deb8d-76ba-4062-8712-88de75811743
+      elasticcommonfields: {}
+      id: eb70d38a-fc1b-47d1-89da-081a2d2dcf7b
       version: -1
       name: Verify context
       type: condition
@@ -1427,12 +1539,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "40":
     id: "40"
-    taskid: 24a99392-aa63-4e36-8a97-0f955c3e768a
+    taskid: 815efed4-e9b0-4540-84f2-5ccd472095ca
     type: regular
     task:
-      id: 24a99392-aa63-4e36-8a97-0f955c3e768a
+      elasticcommonfields: {}
+      id: 815efed4-e9b0-4540-84f2-5ccd472095ca
       version: -1
       name: Get file analysis
       description: Returns object instance of this class
@@ -1445,7 +1560,7 @@ tasks:
       - "41"
     scriptarguments:
       id:
-        simple: "9"
+        simple: "19"
     separatecontext: false
     view: |-
       {
@@ -1457,12 +1572,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "41":
     id: "41"
-    taskid: c75cfc1e-6f4f-4b22-80da-a286365efc26
+    taskid: c1b0aa22-268f-47f4-8cab-57a0a6d18f77
     type: condition
     task:
-      id: c75cfc1e-6f4f-4b22-80da-a286365efc26
+      elasticcommonfields: {}
+      id: c1b0aa22-268f-47f4-8cab-57a0a6d18f77
       version: -1
       name: Verify context
       type: condition
@@ -1484,7 +1602,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: vccorlib140.dll
+              simple: vcruntime140.dll
     view: |-
       {
         "position": {
@@ -1495,12 +1613,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "42":
     id: "42"
-    taskid: 6a968b58-885f-409d-8df2-f32872ef3214
+    taskid: e24fbc88-8ab5-4544-8521-cedf5f4c968e
     type: title
     task:
-      id: 6a968b58-885f-409d-8df2-f32872ef3214
+      elasticcommonfields: {}
+      id: e24fbc88-8ab5-4544-8521-cedf5f4c968e
       version: -1
       name: File Upload
       type: title
@@ -1520,12 +1641,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "43":
     id: "43"
-    taskid: 14948a98-e911-4c3e-8f71-acdfc50f0e16
+    taskid: 2a487814-d494-4928-8869-91d964ef3a29
     type: regular
     task:
-      id: 14948a98-e911-4c3e-8f71-acdfc50f0e16
+      elasticcommonfields: {}
+      id: 2a487814-d494-4928-8869-91d964ef3a29
       version: -1
       name: Search file upload
       description: Returns objects that match given criteria
@@ -1559,12 +1683,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "44":
     id: "44"
-    taskid: 28d5d9a6-58d6-4178-82a2-032686fd409e
+    taskid: 2ace3fd9-a2c9-4661-8938-6be22e2ce36a
     type: regular
     task:
-      id: 28d5d9a6-58d6-4178-82a2-032686fd409e
+      elasticcommonfields: {}
+      id: 2ace3fd9-a2c9-4661-8938-6be22e2ce36a
       version: -1
       name: Get file upload
       description: Returns object instance of this class
@@ -1578,7 +1705,7 @@ tasks:
     scriptarguments:
       headers: {}
       id:
-        simple: "67"
+        simple: "127"
     separatecontext: false
     view: |-
       {
@@ -1590,12 +1717,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "45":
     id: "45"
-    taskid: 0c7a1d7b-9b65-42db-80e6-266b42f08e14
+    taskid: ba2c54fe-85c5-46c8-89a1-905337f23abc
     type: condition
     task:
-      id: 0c7a1d7b-9b65-42db-80e6-266b42f08e14
+      elasticcommonfields: {}
+      id: ba2c54fe-85c5-46c8-89a1-905337f23abc
       version: -1
       name: Verify context
       type: condition
@@ -1617,7 +1747,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "67"
+              simple: "127"
       - - operator: isEqualString
           left:
             value:
@@ -1625,7 +1755,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: ServerLog-Auto-2018-06-30-010219.bt9
+              simple: svchost.exe
     view: |-
       {
         "position": {
@@ -1636,12 +1766,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "46":
     id: "46"
-    taskid: 4d880e09-24b3-47b0-8e85-5e9ae8ca2b24
+    taskid: cce5d8e7-e734-434d-8f5f-793463758538
     type: title
     task:
-      id: 4d880e09-24b3-47b0-8e85-5e9ae8ca2b24
+      elasticcommonfields: {}
+      id: cce5d8e7-e734-434d-8f5f-793463758538
       version: -1
       name: Connector
       type: title
@@ -1661,12 +1794,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "47":
     id: "47"
-    taskid: b6075620-2279-49c6-8d6e-d0a6cae94fba
+    taskid: 4ceec1b6-5378-46df-8a40-bfdd0f8729b5
     type: regular
     task:
-      id: b6075620-2279-49c6-8d6e-d0a6cae94fba
+      elasticcommonfields: {}
+      id: 4ceec1b6-5378-46df-8a40-bfdd0f8729b5
       version: -1
       name: Search connectors offset 1
       description: Returns objects that match given criteria
@@ -1696,12 +1832,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "48":
     id: "48"
-    taskid: f9b60c55-4303-4268-8251-7cae5fe0c1fc
+    taskid: 68299722-bed6-4b05-8d58-42798e86bc6f
     type: regular
     task:
-      id: f9b60c55-4303-4268-8251-7cae5fe0c1fc
+      elasticcommonfields: {}
+      id: 68299722-bed6-4b05-8d58-42798e86bc6f
       version: -1
       name: Get first connector
       description: Returns object instance of this class
@@ -1727,12 +1866,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "49":
     id: "49"
-    taskid: 551b5dfd-cdeb-4c0a-86b8-ba3707c97459
+    taskid: ac259c69-8973-4f72-8f81-f03d4cb98f2b
     type: condition
     task:
-      id: 551b5dfd-cdeb-4c0a-86b8-ba3707c97459
+      elasticcommonfields: {}
+      id: ac259c69-8973-4f72-8f81-f03d4cb98f2b
       version: -1
       name: Verify context
       type: condition
@@ -1777,12 +1919,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "50":
     id: "50"
-    taskid: a63c2dbd-5053-40bd-84e1-17670335f933
+    taskid: 272a82fa-7c47-4a07-8412-897576644b4a
     type: regular
     task:
-      id: a63c2dbd-5053-40bd-84e1-17670335f933
+      elasticcommonfields: {}
+      id: 272a82fa-7c47-4a07-8412-897576644b4a
       version: -1
       name: Fetch Incidents
       description: Execute FetchIncident for a given instance
@@ -1809,12 +1954,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "51":
     id: "51"
-    taskid: 6a097843-f759-49aa-850c-a4de8b0831f1
+    taskid: e66c7c4f-3539-4c7b-8c18-210a346b0a7d
     type: regular
     task:
-      id: 6a097843-f759-49aa-850c-a4de8b0831f1
+      elasticcommonfields: {}
+      id: e66c7c4f-3539-4c7b-8c18-210a346b0a7d
       version: -1
       name: Search file catalog using specific query args
       description: 'Search for file catalogs. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#filecatalog'
@@ -1851,12 +1999,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "52":
     id: "52"
-    taskid: cdfa5498-7ac8-40cf-85c8-228c66b07f5a
+    taskid: 7e95ae9f-bf8d-43db-8742-20e587e5f2c0
     type: condition
     task:
-      id: cdfa5498-7ac8-40cf-85c8-228c66b07f5a
+      elasticcommonfields: {}
+      id: 7e95ae9f-bf8d-43db-8742-20e587e5f2c0
       version: -1
       name: Verify context
       type: condition
@@ -1887,12 +2038,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "53":
     id: "53"
-    taskid: 03b0f292-070e-47b6-82d2-69cc525856a0
+    taskid: 57b89cb9-be1b-4e24-82b6-546eebf34a79
     type: regular
     task:
-      id: 03b0f292-070e-47b6-82d2-69cc525856a0
+      elasticcommonfields: {}
+      id: 57b89cb9-be1b-4e24-82b6-546eebf34a79
       version: -1
       name: Search file instance using specific query args
       description: 'Search for file instances. For more information, see the Carbon
@@ -1926,12 +2080,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "54":
     id: "54"
-    taskid: 4a359642-6776-4c65-8a4e-3b6a938473cc
+    taskid: 5bdb8694-c0ab-4069-825d-6e27ddc1ff20
     type: regular
     task:
-      id: 4a359642-6776-4c65-8a4e-3b6a938473cc
+      elasticcommonfields: {}
+      id: 5bdb8694-c0ab-4069-825d-6e27ddc1ff20
       version: -1
       name: Search events using specific query arguments
       description: 'Search for events. For more information, see the Carbon Black
@@ -1975,12 +2132,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "55":
     id: "55"
-    taskid: 6f1dd1a1-a9b5-48b7-8903-7de2c1868ae2
+    taskid: 6ea5aed6-5317-4ffa-8643-33be847b98a3
     type: regular
     task:
-      id: 6f1dd1a1-a9b5-48b7-8903-7de2c1868ae2
+      elasticcommonfields: {}
+      id: 6ea5aed6-5317-4ffa-8643-33be847b98a3
       version: -1
       name: Search file analysis using custom filters
       description: Returns objects that match the specified criteria.
@@ -1994,10 +2154,8 @@ tasks:
     scriptarguments:
       analysisResult:
         simple: Not yet available
-      analysisStatus:
-        simple: error
-      connectorId:
-        simple: "1"
+      analysisStatus: {}
+      connectorId: {}
       fileCatalogId:
         simple: "2"
       fileName: {}
@@ -2011,18 +2169,21 @@ tasks:
       {
         "position": {
           "x": 2410,
-          "y": 1060
+          "y": 1050
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "56":
     id: "56"
-    taskid: 352f753c-cfc3-45d0-807c-ce3f55f5a369
+    taskid: eb53536c-e380-49c7-84d0-a945c0d6fa61
     type: condition
     task:
-      id: 352f753c-cfc3-45d0-807c-ce3f55f5a369
+      elasticcommonfields: {}
+      id: eb53536c-e380-49c7-84d0-a945c0d6fa61
       version: -1
       name: Verify context
       type: condition
@@ -2042,7 +2203,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "8"
+              simple: "17"
     view: |-
       {
         "position": {
@@ -2053,12 +2214,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "57":
     id: "57"
-    taskid: 3bce972a-4d21-495a-8ce0-aa8e82d0b472
+    taskid: b663275d-4226-4ea7-8103-2b4cb225e83b
     type: regular
     task:
-      id: 3bce972a-4d21-495a-8ce0-aa8e82d0b472
+      elasticcommonfields: {}
+      id: b663275d-4226-4ea7-8103-2b4cb225e83b
       version: -1
       name: Search with specific query arguments
       description: Returns objects that match the specified criteria.
@@ -2073,9 +2237,9 @@ tasks:
       computerId:
         simple: "1"
       fileCatalogId:
-        simple: "2"
+        simple: "80"
       fileName:
-        simple: vcruntime140.dll
+        simple: svchost.exe
       group: {}
       limit: {}
       offset: {}
@@ -2094,6 +2258,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},

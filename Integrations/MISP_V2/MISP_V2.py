@@ -12,7 +12,7 @@ from CommonServerPython import *
 logging.getLogger("pymisp").setLevel(logging.CRITICAL)
 
 
-def warn(*args, **kwargs):
+def warn(*args):
     """
     Do nothing with warnings
     """

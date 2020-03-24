@@ -8,6 +8,7 @@ import argparse
 import requests
 import threading
 import subprocess
+import os
 from time import sleep
 from datetime import datetime
 
@@ -29,8 +30,6 @@ INTEGRATIONS_CONF = "./Tests/integrations_file.txt"
 
 FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, please select one of them by using the " \
                             "instance_name argument in conf.json. The options are:\n{}"
-
-AMI_NAMES = ["Demisto GA", "Server Master", "Demisto one before GA", "Demisto two before GA"]
 
 SERVICE_RESTART_TIMEOUT = 300
 SERVICE_RESTART_POLLING_INTERVAL = 5
@@ -504,11 +503,11 @@ def set_integration_params(demisto_api_key, integrations, secret_params, instanc
 def collect_integrations(integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations):
     integrations = []
     is_nightly_integration = False
-    has_skipped_integration = False
+    test_skipped_integration = []
     for integration in integrations_conf:
         if integration in skipped_integrations_conf.keys():
             skipped_integration.add("{0} - reason: {1}".format(integration, skipped_integrations_conf[integration]))
-            has_skipped_integration = True
+            test_skipped_integration.append(integration)
 
         if integration in nightly_integrations:
             is_nightly_integration = True
@@ -519,7 +518,7 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
             'params': {}
         })
 
-    return has_skipped_integration, integrations, is_nightly_integration
+    return test_skipped_integration, integrations, is_nightly_integration
 
 
 def extract_filtered_tests(is_nightly):
@@ -549,7 +548,7 @@ def load_conf_files(conf_path, secret_conf_path):
 
 def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                       skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests, is_filter_configured,
-                      filtered_tests, skipped_tests, secret_params, failed_playbooks,
+                      filtered_tests, skipped_tests, secret_params, failed_playbooks, playbook_skipped_integration,
                       unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server, build_name,
                       server_numeric_version, demisto_api_key, prints_manager, thread_index=0, is_ami=True):
     playbook_id = t['playbookID']
@@ -571,8 +570,11 @@ def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_te
     if not isinstance(instance_names_conf, list):
         instance_names_conf = [instance_names_conf, ]
 
-    has_skipped_integration, integrations, is_nightly_integration = collect_integrations(
+    test_skipped_integration, integrations, is_nightly_integration = collect_integrations(
         integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations)
+
+    if playbook_id in filtered_tests:
+        playbook_skipped_integration.update(test_skipped_integration)
 
     skip_nightly_test = True if (nightly_test or is_nightly_integration) and not is_nightly else False
 
@@ -594,7 +596,7 @@ def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_te
         return
 
     # Skip integration
-    if has_skipped_integration:
+    if test_skipped_integration:
         return
 
     # Skip version mismatch test
@@ -716,6 +718,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     succeed_playbooks = []
     skipped_tests = set([])
     skipped_integration = set([])
+    playbook_skipped_integration = set([])
 
     disable_all_integrations(demisto_api_key, server, prints_manager, thread_index=thread_index)
     prints_manager.execute_thread_prints(thread_index)
@@ -734,8 +737,8 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
         for t in mockable_tests:
             run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                               skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
-                              is_filter_configured,
-                              filtered_tests, skipped_tests, secret_params, failed_playbooks,
+                              is_filter_configured, filtered_tests,
+                              skipped_tests, secret_params, failed_playbooks, playbook_skipped_integration,
                               unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
                               build_name, server_numeric_version, demisto_api_key, prints_manager,
                               thread_index=thread_index)
@@ -755,7 +758,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
         run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                           skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
                           is_filter_configured,
-                          filtered_tests, skipped_tests, secret_params, failed_playbooks,
+                          filtered_tests, skipped_tests, secret_params, failed_playbooks, playbook_skipped_integration,
                           unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
                           build_name, server_numeric_version, demisto_api_key,
                           prints_manager, thread_index, is_ami)
@@ -771,6 +774,11 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
         updating_mocks_msg = "Pushing new/updated mock files to mock git repo."
         prints_manager.add_print_job(updating_mocks_msg, print, thread_index)
         ami.upload_mock_files(build_name, build_number)
+
+    if playbook_skipped_integration and build_name == 'master':
+        comment = 'The following integrations are skipped and critical for the test:\n {}'.\
+            format('\n- '.join(playbook_skipped_integration))
+        add_pr_comment(comment)
 
 
 def get_unmockable_tests(tests_settings):
@@ -810,7 +818,6 @@ def manage_tests(tests_settings):
     tests_settings.serverNumericVersion = get_and_print_server_numeric_version(tests_settings)
     instances_ips = get_instances_ips_and_names(tests_settings)
     is_nightly = tests_settings.nightly
-    server_version = tests_settings.serverVersion
     number_of_instances = len(instances_ips)
     prints_manager = ParallelPrintsManager(number_of_instances)
     tests_data_keeper = TestsDataKeeper()
@@ -840,7 +847,7 @@ def manage_tests(tests_settings):
             all_unmockable_tests_list = get_unmockable_tests(tests_settings)
             threads_array = []
             for ami_instance_name, ami_instance_ip in instances_ips:
-                if ami_instance_name == server_version:  # Only run tests for server master
+                if ami_instance_name == tests_settings.serverVersion:  # Only run tests for given AMI Role
                     current_instance = ami_instance_ip
                     tests_allocation_for_instance = test_allocation[current_thread_index]
 
@@ -891,9 +898,7 @@ def manage_tests(tests_settings):
         """
         server_numeric_version = '99.99.98'  # assume latest
         print("Using server version: {} (assuming latest for non-ami)".format(server_numeric_version))
-        with open('./Tests/instance_ips.txt', 'r') as instance_file:
-            instance_ips = instance_file.readlines()
-            instance_ip = [line.strip('\n').split(":")[1] for line in instance_ips][0]
+        instance_ip = instances_ips[0][1]
         all_tests = get_all_tests(tests_settings)
         execute_testing(tests_settings, instance_ip, [], all_tests,
                         tests_data_keeper, prints_manager, thread_index=0, is_ami=False)
@@ -909,6 +914,38 @@ def manage_tests(tests_settings):
         file_path = "./Tests/is_build_passed_{}.txt".format(tests_settings.serverVersion.replace(' ', ''))
         with open(file_path, "w") as is_build_passed_file:
             is_build_passed_file.write('Build passed')
+
+
+def add_pr_comment(comment):
+    token = os.environ['CONTENT_GITHUB_TOKEN']
+    branch_name = os.environ['CIRCLE_BRANCH']
+    sha1 = os.environ['CIRCLE_SHA1']
+
+    query = '?q={}+repo:demisto/content+org:demisto+is:pr+is:open+head:{}+is:open'.format(sha1, branch_name)
+    url = 'https://api.github.com/search/issues'
+    headers = {'Authorization': 'Bearer ' + token}
+    try:
+        res = requests.get(url + query, headers=headers, verify=False)
+        res = handle_github_response(res)
+
+        if res and res.get('total_count', 0) == 1:
+            issue_url = res['items'][0].get('comments_url') if res.get('items', []) else None
+            if issue_url:
+                res = requests.post(issue_url, json={'body': comment}, headers=headers, verify=False)
+                handle_github_response(res)
+        else:
+            print_warning('Add pull request comment failed: There is more then one open pull request for branch {}.'
+                          .format(branch_name))
+    except Exception as e:
+        print_warning('Add pull request comment failed: {}'.format(e))
+
+
+def handle_github_response(response):
+    res_dict = response.json()
+    if not res_dict.ok:
+        print_warning('Add pull request comment failed: {}'.
+                      format(res_dict.get('message')))
+    return res_dict
 
 
 def main():
