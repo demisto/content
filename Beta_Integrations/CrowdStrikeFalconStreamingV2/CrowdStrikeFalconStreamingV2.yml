@@ -3,7 +3,7 @@ commonfields:
   id: CrowdStrike Falcon Streaming v2
   version: -1
 configuration:
-- display: Cloud Base URL (e.g. https://api.crowdstrike.com)
+- display: Cloud Base URL (e.g., https://api.crowdstrike.com)
   defaultvalue: https://api.crowdstrike.com
   hidden: false
   name: base_url
@@ -20,7 +20,7 @@ configuration:
   required: true
   type: 4
 - defaultvalue: true
-  display: Long running instance.
+  display: Long running instance
   name: longRunning
   required: false
   type: 8
@@ -54,7 +54,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Stream detections and audit security events.
+description: Use the CrowdStrike Falcon Stream v2 integration to stream detections and audit security events.
 display: CrowdStrike Falcon Streaming v2
 name: CrowdStrike Falcon Streaming v2
 script:
