@@ -1,18 +1,14 @@
 id: RedLockTest
 version: -1
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
 name: RedLockTest
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a586909f-cbb7-4d72-860e-219b2b7a7b72
+    taskid: 3acf8055-a1b3-480f-8399-f660465a95cd
     type: start
     task:
-      id: a586909f-cbb7-4d72-860e-219b2b7a7b72
+      id: 3acf8055-a1b3-480f-8399-f660465a95cd
       version: -1
       name: ""
       iscommand: false
@@ -32,13 +28,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 2d1678e6-819b-424f-8bb8-816a01c31d77
+    taskid: 09e1000e-9508-4846-8cbd-73bb4a6b9c58
     type: regular
     task:
-      id: 2d1678e6-819b-424f-8bb8-816a01c31d77
+      id: 09e1000e-9508-4846-8cbd-73bb4a6b9c58
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -65,13 +61,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: "7"
+    taskid: e1ae40eb-9866-4dee-8a00-32807e44cc22
     type: regular
     task:
-      id: "7"
+      id: e1ae40eb-9866-4dee-8a00-32807e44cc22
       version: -1
       name: Retrieve all open alerts between 2 given dates
       description: Search alerts on the RedLock platform
@@ -116,13 +112,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "12":
     id: "12"
-    taskid: f7f00d46-71fb-4943-87bc-5471d0f10e6a
+    taskid: 4e4cc1bb-a5be-424e-8a7e-d984edbc7b70
     type: regular
     task:
-      id: f7f00d46-71fb-4943-87bc-5471d0f10e6a
+      id: 4e4cc1bb-a5be-424e-8a7e-d984edbc7b70
       version: -1
       name: get alert P-953 status
       script: '|||redlock-get-alert-details'
@@ -148,13 +144,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: "10"
+    taskid: ebbd789c-de41-43d3-85cf-66faa526224b
     type: condition
     task:
-      id: "10"
+      id: ebbd789c-de41-43d3-85cf-66faa526224b
       version: -1
       name: is alert status open? (will alternate each run)
       type: condition
@@ -187,13 +183,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "14":
     id: "14"
-    taskid: 37a0987f-eccc-41d5-89cc-7f987917a128
+    taskid: 94779245-5d47-4eb2-8efd-a1984077cbcf
     type: regular
     task:
-      id: 37a0987f-eccc-41d5-89cc-7f987917a128
+      id: 94779245-5d47-4eb2-8efd-a1984077cbcf
       version: -1
       name: dismiss the alert
       script: '|||redlock-dismiss-alerts'
@@ -239,13 +235,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "15":
     id: "15"
-    taskid: 8481993b-5c2a-4e36-8ab5-da34951deb42
+    taskid: ee3e17fc-42bd-4111-8787-9408d2116381
     type: regular
     task:
-      id: 8481993b-5c2a-4e36-8ab5-da34951deb42
+      id: ee3e17fc-42bd-4111-8787-9408d2116381
       version: -1
       name: reopen the alert
       script: '|||redlock-reopen-alerts'
@@ -288,13 +284,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "16":
     id: "16"
-    taskid: e0ec9c7e-7d27-45b1-8c1a-d83dd774ec01
+    taskid: 73401718-a958-4a29-84f4-40aed0a48d10
     type: regular
     task:
-      id: e0ec9c7e-7d27-45b1-8c1a-d83dd774ec01
+      id: 73401718-a958-4a29-84f4-40aed0a48d10
       version: -1
       name: get alert P-953 status
       script: '|||redlock-get-alert-details'
@@ -320,13 +316,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "18":
     id: "18"
-    taskid: "8"
+    taskid: d4115e4e-b156-4374-8033-32e7267e2ffc
     type: condition
     task:
-      id: "8"
+      id: d4115e4e-b156-4374-8033-32e7267e2ffc
       version: -1
       name: verify that P-953 statuses concur
       type: condition
@@ -370,13 +366,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "19":
     id: "19"
-    taskid: 3c767729-75c6-4a1d-8a3a-54af50369164
+    taskid: e147a9c4-0a1e-4ed6-8e72-50134c89c48d
     type: regular
     task:
-      id: 3c767729-75c6-4a1d-8a3a-54af50369164
+      id: e147a9c4-0a1e-4ed6-8e72-50134c89c48d
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -403,13 +399,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "21":
     id: "21"
-    taskid: "9"
+    taskid: 597a46fe-1ff8-477f-8759-79023d5d99bb
     type: condition
     task:
-      id: "9"
+      id: 597a46fe-1ff8-477f-8759-79023d5d99bb
       version: -1
       name: Check for response
       type: condition
@@ -443,13 +439,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "22":
     id: "22"
-    taskid: 0c5ef584-57d1-45f7-858d-344ef3aab3e5
+    taskid: 96c149e2-e29e-4a74-80e7-b9d1ca844d90
     type: title
     task:
-      id: 0c5ef584-57d1-45f7-858d-344ef3aab3e5
+      id: 96c149e2-e29e-4a74-80e7-b9d1ca844d90
       version: -1
       name: Test Completed
       type: title
@@ -467,7 +463,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
