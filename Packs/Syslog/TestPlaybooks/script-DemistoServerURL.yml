@@ -15,7 +15,8 @@ script: |-
   scheme = server_url_parts.scheme
 
   server_address = {
-      'Host': f'{scheme}://{host_name}',
+      'Scheme': f'{scheme}',
+      'Host': f'{host_name}',
       'Port': port
   }
 
@@ -31,9 +32,12 @@ outputs:
 - contextPath: ServerURL.Port
   description: The server port.
   type: number
+- contextPath: ServerURL.Scheme
+  description: The server scheme.
+  type: string
 scripttarget: 0
 subtype: python3
 pswd: ""
 runonce: false
-dockerimage: demisto/python3:3.8.1.6120
+dockerimage: demisto/python3:3.8.2.6981
 runas: DBotWeakRole
