@@ -16,7 +16,7 @@ To access the EDL service by instance name, make sure ***Instance execute extern
 ### Modify Request Parameters Through the URL
 Use the following arguments in the URL to change the request:
 
-1. **n** - The maximum number of entries in the output. If no value is provided, will use the value specified in the List Size parameter configured in the instance configuration.
+1. **n** - The maximum number of entries in the output. If no value is provided, will use the value specified in the *List Size* parameter configured in the instance configuration.
  * Example: https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?n=50
 2. **s** - The starting entry index from which to export the indicators.
  * Example: https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?s=10&n=50
@@ -28,9 +28,9 @@ Use the following arguments in the URL to change the request:
  * Example: https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=mwg&t=ip
 6. **sp** - Only with `panosurl` format. If set will strip ports off URLs, otherwise will ignore URLs with ports.
  * Example: https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=panosurl&sp 
-7. **di** -  Only with `panosurl` format. If set will ignore urls which are not compliant with PAN-OS URL format instead of being re-written.
+7. **di** -  Only with `panosurl` format. If set will ignore URLs which are not compliant with PAN-OS URL format instead of being re-written.
  * Example: https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=panosurl&di
 8. **cd** - Only with `proxysg` format. The default category for the exported indicators.
  * Example: https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=proxysg&cd=default_category
-9. **ca** - Only with `proxysg` format. The categories which will be exported. Indicators not falling to these categories will be classified as the default category.
+9. **ca** - Only with `proxysg` format. The categories which will be exported. Indicators not in these categories will be classified as the default category.
  * Example: https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=proxysg&ca=category1,category2
