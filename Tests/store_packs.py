@@ -243,9 +243,10 @@ class Pack(object):
                 dirs[:] = [d for d in dirs if d not in Pack.EXCLUDE_DIRECTORIES]
 
                 for f in files:
+                    full_file_path = os.path.join(root, f)
                     # skipping zipping of unwanted files
                     if f.startswith('.') or f in [Pack.AUTHOR_IMAGE_NAME, Pack.USER_METADATA]:
-                        remove_arg = f'rm {f}'
+                        remove_arg = f'rm {full_file_path}'
                         remove_file = subprocess.Popen(remove_arg, stdout=subprocess.PIPE,
                                                            stderr=subprocess.PIPE, shell=True)
                         outpt, er = remove_file.communicate()
@@ -256,7 +257,7 @@ class Pack(object):
 
                     if current_directory == 'Misc' and not fnmatch.fnmatch(f, 'reputation-*.json'):
                         # reputation in old format aren't supported in 6.0.0 server version
-                        remove_arg = f'rm {f}'
+                        remove_arg = f'rm {full_file_path}'
                         remove_file = subprocess.Popen(remove_arg, stdout=subprocess.PIPE,
                                                        stderr=subprocess.PIPE, shell=True)
                         outpt, er = remove_file.communicate()
