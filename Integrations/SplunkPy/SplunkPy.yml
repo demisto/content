@@ -348,13 +348,13 @@ script:
     name: splunk-submit-event-hec
   - arguments:
     - default: false
-      description: ID of the job.
+      description: ID of the job for which to get the status.
       isArray: false
       name: sid
       required: true
       secret: false
     deprecated: false
-    description: Returns a job status.
+    description: Returns the status of a job.
     execution: false
     name: splunk-job-status
     outputs:
@@ -362,7 +362,7 @@ script:
       description: ID of the job.
       type: String
     - contextPath: Splunk.JobStatus.Status
-      description: status of the job
+      description: Status of the job.
       type: String
   dockerimage: demisto/splunksdk:1.0
   feed: false
