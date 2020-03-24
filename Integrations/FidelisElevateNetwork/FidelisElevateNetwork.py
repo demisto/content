@@ -478,9 +478,6 @@ def get_alert_ef(alert_id):
     return result
 
 
-# Grabs the text version of the forensic data - There are other options so Demisto may want to enhance further
-
-
 def get_alert_forensictext_command():
     args = demisto.args()
     alert_id = args['alert_id']
@@ -521,9 +518,6 @@ def get_alert_forensictext(alert_id):
     )
 
     return res.text
-
-
-# End of fornesic text code block
 
 
 def get_alert_command():
