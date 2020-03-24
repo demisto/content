@@ -240,7 +240,7 @@ class Pack(object):
         task_status = False
         try:
             os.chmod('/signDirectory', 700)
-            args = ('./signDirectory', self._pack_path)
+            args = f'./signDirectory {self._pack_path}'
             popen = subprocess.Popen(args, stdout=subprocess.PIPE, shell=True)
             popen.wait()
             task_status = True
