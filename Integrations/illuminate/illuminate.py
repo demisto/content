@@ -176,7 +176,8 @@ class Client(BaseClient):
 
     @staticmethod
     def is_indicator_malicious(data: dict) -> bool:
-        return not Client.get_nested_data_key(data, 'benign', 'value')
+        benign = Client.get_nested_data_key(data, 'benign', 'value')
+        return False if benign is None or benign is True else True
 
     @staticmethod
     def get_context_from_response(data: dict) -> dict:
@@ -193,6 +194,7 @@ class Client(BaseClient):
             'ActivityDates': Client.get_data_key_as_list_of_values(data, 'activityDates', 'date'),
             'Malwares': Client.get_data_key_as_list_of_dicts(data, 'malwares', lambda d: {'id': d['id'], 'name': d['name']}),
             'Actors': Client.get_data_key_as_list_of_dicts(data, 'actors', lambda d: {'id': d['id'], 'name': d['name']}),
+            'Benign': Client.get_nested_data_key(data, 'benign', 'value'),
             'IlluminateLink': None
         }
 
