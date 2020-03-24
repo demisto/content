@@ -1,3 +1,3 @@
 ## [Unreleased]
 #### New Script
-Extracts FQDNs and Domains from URLs and emails.
+Extracts FQDNs and domains from URLs and emails.
