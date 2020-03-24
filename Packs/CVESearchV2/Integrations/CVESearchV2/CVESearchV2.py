@@ -76,7 +76,7 @@ def cve_latest_command(client: Client, limit) -> Tuple[
     return human_readable, ec, res
 
 
-def cve_command(client: Client, args: dict) -> Tuple[str, Dict[str, Dict[str, str]], Dict[str, Any]]:
+def cve_command(client: Client, args: dict) -> Tuple[Any, Dict[str, List[Dict[str, str]]], List[Dict[str, Any]]]:
     """Search for cve with the given ID and returns the cve data if found.
     Args:
            client: Integration client
@@ -101,6 +101,7 @@ def cve_command(client: Client, args: dict) -> Tuple[str, Dict[str, Dict[str, st
 
     human_readable = tableToMarkdown('CVE Search results', data)
     context = {'CVE(val.ID === obj.ID)': data}
+
     return human_readable, context, res
 
 
