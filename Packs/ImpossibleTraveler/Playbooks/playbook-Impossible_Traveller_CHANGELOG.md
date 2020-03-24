@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed an issue with sending an email to the manager of the user.
 
 ## [20.3.3] - 2020-03-18
 -

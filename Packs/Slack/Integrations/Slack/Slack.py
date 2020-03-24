@@ -109,10 +109,32 @@ def get_current_utc_time() -> datetime:
     return datetime.utcnow()
 
 
-def get_user_by_name(user_to_search: str) -> dict:
+def merge_lists(original_list: List[dict], updated_list: List[dict], key: str) -> List[dict]:
+    """
+    Replace values in a list with those in an updated list.
+    :param original_list: The original list.
+    :param updated_list: The updated list.
+    :param key: The key to replace elements by.
+    :return: The merged list.
+
+    Example:
+    >>> original = [{'id': '1', 'updated': 'n'}, {'id': '2', 'updated': 'n'}]
+    >>> updated = [{'id': '1', 'updated': 'y'}, {'id': '3', 'updated': 'y'}]
+    >>> result = [{'id': '1', 'updated': 'y'}, {'id': '2', 'updated': 'n'}, {'id': '3', 'updated': 'y'}]
+
+    """
+    original_dict = {element[key]: element for element in original_list}
+    updated_dict = {element[key]: element for element in updated_list}
+    original_dict.update(updated_dict)
+
+    return list(original_dict.values())
+
+
+def get_user_by_name(user_to_search: str, update_context: bool = True) -> dict:
     """
     Gets a slack user by a user name
     :param user_to_search: The user name or email
+    :param update_context Whether to update the integration context
     :return: A slack user object
     """
 
@@ -149,8 +171,9 @@ def get_user_by_name(user_to_search: str) -> dict:
 
         if users_filter:
             user = users_filter[0]
-            users.append(user)
-            set_to_latest_integration_context('users', users)
+            if update_context:
+                users.append(user)
+                set_to_latest_integration_context({'users': users})
         else:
             return {}
 
@@ -200,11 +223,10 @@ def find_mirror_by_investigation() -> dict:
     return mirror
 
 
-def set_to_latest_integration_context(key: str, value, wait: bool = False):
+def set_to_latest_integration_context(context: dict, wait: bool = False):
     """
     Sets a key value pair to the integration context right after getting it to have the latest context.
-    :param key: The context key to set.
-    :param value: The value to set.
+    :param context: A dictionary of keys and values to set.
     :param wait: Whether to wait before the operation.
     """
     if wait:
@@ -212,8 +234,12 @@ def set_to_latest_integration_context(key: str, value, wait: bool = False):
 
     integration_context = demisto.getIntegrationContext()
 
-    integration_context[key] = json.dumps(value)
+    for key, value in context.items():
+        demisto.debug(f'Slack - updating context value: {key} = {value}')
+        integration_context[key] = json.dumps(value)
 
+    demisto.info('Slack - Updating integration context.')
+    demisto.debug(f'Slack - integration context: {str(integration_context)}')
     demisto.setIntegrationContext(integration_context)
 
 
@@ -467,7 +493,7 @@ def mirror_investigation():
                 bot_id = integration_context['bot_id']
             else:
                 bot_id = get_bot_id()
-                set_to_latest_integration_context('bot_id', bot_id)
+                set_to_latest_integration_context({'bot_id': bot_id})
 
             invite_users_to_conversation(conversation_id, [bot_id])
 
@@ -536,8 +562,7 @@ def mirror_investigation():
 
     mirrors.append(mirror)
 
-    set_to_latest_integration_context('mirrors', mirrors)
-    set_to_latest_integration_context('conversations', conversations)
+    set_to_latest_integration_context({'mirrors': mirrors, 'conversations': conversations})
 
     if kick_admin:
         body = {
@@ -593,6 +618,7 @@ def check_for_answers():
         users = json.loads(users)
     now = get_current_utc_time()
     now_string = datetime.strftime(now, DATE_FORMAT)
+    updated_questions = []
 
     for question in questions:
         if question.get('last_poll_time'):
@@ -601,6 +627,7 @@ def check_for_answers():
                 expiry = datetime.strptime(question['expiry'], DATE_FORMAT)
                 if expiry < now:
                     answer_question(question.get('default_response'), question, questions)
+                    updated_questions.append(question)
                     continue
             # Check if it has been enough time(determined by the POLL_INTERVAL_MINUTES parameter)
             # since the last polling time. if not, continue to the next question until it has.
@@ -614,6 +641,7 @@ def check_for_answers():
                 continue
         demisto.info('Slack - polling for an answer for entitlement {}'.format(question.get('entitlement')))
         question['last_poll_time'] = now_string
+        updated_questions.append(question)
 
         headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
         add_info_headers(headers, question.get('expiry'))
@@ -653,13 +681,16 @@ def check_for_answers():
                 }
                 user = send_slack_request_sync(CLIENT, 'users.info', http_verb='GET', body=body).get('user', {})
                 users.append(user)
-                set_to_latest_integration_context('users', users)
 
             answer_question(actions[0].get('text', {}).get('text'), question, questions,
                             user.get('profile', {}).get('email'))
 
-    questions = list(filter(lambda q: q.get('remove', False) is False, questions))
-    set_to_latest_integration_context('questions', questions)
+    if updated_questions:
+        integration_context = demisto.getIntegrationContext()
+        latest_questions = json.loads(integration_context.get('questions', '[]'))
+        questions = merge_lists(latest_questions, updated_questions, 'entitlement')
+        questions = list(filter(lambda q: q.get('remove', False) is False, questions))
+        set_to_latest_integration_context({'users': users, 'questions': questions})
 
 
 def get_poll_minutes(current_time: datetime, sent: Optional[str]) -> float:
@@ -712,7 +743,6 @@ def answer_question(text: str, question: dict, questions: list, email: str = '')
     except Exception as e:
         demisto.error('Failed handling entitlement {}: {}'.format(question.get('entitlement'), str(e)))
     question['remove'] = True
-    set_to_latest_integration_context('questions', questions)
 
 
 def check_for_mirrors():
@@ -722,6 +752,8 @@ def check_for_mirrors():
     integration_context = demisto.getIntegrationContext()
     if integration_context.get('mirrors'):
         mirrors = json.loads(integration_context['mirrors'])
+        updated_mirrors = []
+        updated_users = []
         for mirror in mirrors:
             if not mirror['mirrored']:
                 demisto.info('Mirroring: {}'.format(mirror['investigation_id']))
@@ -737,36 +769,44 @@ def check_for_mirrors():
                     users: List[Dict] = demisto.mirrorInvestigation(investigation_id,
                                                                     '{}:{}'.format(mirror_type, direction), auto_close)
                     if mirror_type != 'none':
-                        invite_to_mirrored_channel(channel_id, users)
+                        invited_users = invite_to_mirrored_channel(channel_id, users)
+                        updated_users.extend(invited_users)
 
                     mirror['mirrored'] = True
-                    mirrors.append(mirror)
+                    updated_mirrors.append(mirror)
                 else:
                     demisto.info('Could not mirror {}'.format(mirror['investigation_id']))
 
-                set_to_latest_integration_context('mirrors', mirrors)
+        if updated_mirrors:
+            integration_context = demisto.getIntegrationContext()
+            original_mirrors = json.loads(integration_context.get('mirrors', '[]'))
+            original_users = json.loads(integration_context.get('users', '[]'))
+            mirrors = merge_lists(original_mirrors, updated_mirrors, 'investigation_id')
+            users = merge_lists(original_users, updated_users, 'id')
+            set_to_latest_integration_context({'mirrors': mirrors, 'users': users})
 
 
-def invite_to_mirrored_channel(channel_id: str, users: List[Dict]):
+def invite_to_mirrored_channel(channel_id: str, users: List[Dict]) -> list:
     """
     Invite the relevant users to a mirrored channel
     :param channel_id: The mirrored channel
     :param users: The users to invite, each a dict of username and email
+    :return: users: The slack users that were invited
     """
-    users_to_invite = []
+    slack_users = []
     for user in users:
         slack_user: dict = {}
         # Try to invite by Demisto email
         user_email = user.get('email', '')
         if user_email:
-            slack_user = get_user_by_name(user_email)
+            slack_user = get_user_by_name(user_email, False)
         if not slack_user:
             # Try to invite by Demisto user name
             user_name = user.get('username', '')
             if user_name:
-                slack_user = get_user_by_name(user_name)
+                slack_user = get_user_by_name(user_name, False)
         if slack_user:
-            users_to_invite.append(slack_user.get('id'))
+            slack_users.append(slack_user)
         else:
             demisto.results({
                 'Type': WARNING_ENTRY_TYPE,
@@ -774,7 +814,10 @@ def invite_to_mirrored_channel(channel_id: str, users: List[Dict]):
                 'ContentsFormat': formats['text']
             })
 
+    users_to_invite = [user.get('id') for user in slack_users]
     invite_users_to_conversation(channel_id, users_to_invite)
+
+    return slack_users
 
 
 def extract_entitlement(entitlement: str, text: str) -> Tuple[str, str, str, str]:
@@ -1021,8 +1064,7 @@ async def listen(**payload):
         if subtype == 'bot_message' or message_bot_id or message.get('subtype') == 'bot_message':
             return
 
-        integration_context = demisto.getIntegrationContext()
-        user = await get_user_by_id_async(client, integration_context, user_id)
+        user = await get_user_by_id_async(client, user_id)
         entitlement_reply = await check_and_handle_entitlement(text, user, thread)
         if entitlement_reply:
             body = {
@@ -1036,10 +1078,11 @@ async def listen(**payload):
             # DM
             await handle_dm(user, text, client)
         else:
+            channel_id = data.get('channel')
+            integration_context = demisto.getIntegrationContext()
             if not integration_context or 'mirrors' not in integration_context:
                 return
 
-            channel_id = data.get('channel')
             mirrors = json.loads(integration_context['mirrors'])
             mirror_filter = list(filter(lambda m: m['channel_id'] == channel_id, mirrors))
             if not mirror_filter:
@@ -1064,7 +1107,7 @@ async def listen(**payload):
                                                     auto_close)
                         mirror['mirrored'] = True
                         mirrors.append(mirror)
-                        set_to_latest_integration_context('mirrors', mirrors)
+                        set_to_latest_integration_context({'mirrors': mirrors})
 
                 investigation_id = mirror['investigation_id']
                 await handle_text(client, investigation_id, text, user)
@@ -1074,9 +1117,10 @@ async def listen(**payload):
         await handle_listen_error('Error occurred while listening to Slack: {}'.format(str(e)))
 
 
-async def get_user_by_id_async(client, integration_context, user_id):
+async def get_user_by_id_async(client, user_id):
     user: dict = {}
     users: list = []
+    integration_context = demisto.getIntegrationContext()
     if integration_context.get('users'):
         users = json.loads(integration_context['users'])
         user_filter = list(filter(lambda u: u['id'] == user_id, users))
@@ -1088,7 +1132,7 @@ async def get_user_by_id_async(client, integration_context, user_id):
         }
         user = (await send_slack_request_async(client, 'users.info', http_verb='GET', body=body)).get('user', {})
         users.append(user)
-        set_to_latest_integration_context('users', users)
+        set_to_latest_integration_context({'users': users})
 
     return user
 
@@ -1141,7 +1185,7 @@ async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) ->
                 demisto.handleEntitlementForUser(incident_id, guid, user.get('profile', {}).get('email'), content,
                                                  task_id)
                 questions.remove(question_filter[0])
-                set_to_latest_integration_context('questions', questions)
+                set_to_latest_integration_context({'questions': questions})
 
                 return reply
 
@@ -1188,7 +1232,7 @@ def slack_send():
     """
     message = demisto.args().get('message', '')
     to = demisto.args().get('to')
-    channel = demisto.args().get('channel')
+    original_channel = demisto.args().get('channel')
     group = demisto.args().get('group')
     message_type = demisto.args().get('messageType', '')  # From server
     original_message = demisto.args().get('originalMessage', '')  # From server
@@ -1203,7 +1247,7 @@ def slack_send():
         # return so there will not be a loop of messages
         return
 
-    if (to and group) or (to and channel) or (to and channel and group):
+    if (to and group) or (to and original_channel) or (to and original_channel and group):
         return_error('Only one destination can be provided.')
 
     if severity:
@@ -1213,11 +1257,14 @@ def slack_send():
             severity = None
             pass
 
-    if channel == INCIDENT_NOTIFICATION_CHANNEL or (not channel and message_type == INCIDENT_OPENED):
+    channel = original_channel
+    if original_channel == INCIDENT_NOTIFICATION_CHANNEL or (not original_channel and message_type == INCIDENT_OPENED):
+        original_channel = INCIDENT_NOTIFICATION_CHANNEL
         channel = DEDICATED_CHANNEL
 
-    if channel == DEDICATED_CHANNEL and ((severity is not None and severity < SEVERITY_THRESHOLD)
-                                         or not NOTIFY_INCIDENTS):
+    if (channel == DEDICATED_CHANNEL and original_channel == INCIDENT_NOTIFICATION_CHANNEL
+            and ((severity is not None and severity < SEVERITY_THRESHOLD)
+                 or not NOTIFY_INCIDENTS)):
         channel = None
 
     if not (to or group or channel):
@@ -1296,7 +1343,7 @@ def save_entitlement(entitlement, thread, reply, expiry, default_response):
         'default_response': default_response
     })
 
-    set_to_latest_integration_context('questions', questions)
+    set_to_latest_integration_context({'questions': questions})
 
 
 def slack_send_file():
@@ -1519,7 +1566,7 @@ def slack_send_request(to: str, channel: str, group: str, entry: str = '', ignor
                     if not conversation:
                         return_error('Could not find the Slack conversation {}'.format(destination_name))
                     conversations.append(conversation)
-                    set_to_latest_integration_context('conversations', conversations)
+                    set_to_latest_integration_context({'conversations': conversations})
                     conversation_id = conversation.get('id')
 
             if conversation_id:
@@ -1558,7 +1605,7 @@ def set_channel_topic():
             mirror = mirrors.pop(mirrors.index(mirror))
             mirror['channel_topic'] = topic
             mirrors.append(mirror)
-            set_to_latest_integration_context('mirrors', mirrors)
+            set_to_latest_integration_context({'mirrors': mirrors})
     else:
         channel = get_conversation_by_name(channel)
         channel_id = channel.get('id')
@@ -1595,7 +1642,7 @@ def rename_channel():
             mirror = mirrors.pop(mirrors.index(mirror))
             mirror['channel_name'] = new_name
             mirrors.append(mirror)
-            set_to_latest_integration_context('mirrors', mirrors)
+            set_to_latest_integration_context({'mirrors': mirrors})
     else:
         channel = get_conversation_by_name(channel)
         channel_id = channel.get('id')
@@ -1633,7 +1680,7 @@ def close_channel():
             for mirror in channel_mirrors:
                 mirrors.remove(mirror)
 
-            set_to_latest_integration_context('mirrors', mirrors)
+            set_to_latest_integration_context({'mirrors': mirrors})
     else:
         channel = get_conversation_by_name(channel)
         channel_id = channel.get('id')
