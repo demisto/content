@@ -108,7 +108,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to include a URL to the relevant component in Demisto. Can be "true" or "false". The default value is "false'.
+      description: Whether to include a URL to the relevant component in Demisto.
+        Can be "true" or "false". The default value is "false'.
       isArray: false
       name: ignoreAddURL
       predefined:
@@ -118,7 +119,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The log level to send. Can be "DEBUG", "INFO", "WARNING", "ERROR", or "CRITICAL".
+      description: The log level to send. Can be "DEBUG", "INFO", "WARNING", "ERROR",
+        or "CRITICAL".
       isArray: false
       name: level
       predefined:
@@ -138,11 +140,12 @@ script:
       description: The message content.
       isArray: false
       name: message
-      required: false
+      required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The log level to send. Can be "DEBUG", "INFO", "WARNING", "ERROR", or "CRITICAL".
+      description: The log level to send. Can be "DEBUG", "INFO", "WARNING", "ERROR",
+        or "CRITICAL".
       isArray: false
       name: level
       predefined:
@@ -208,6 +211,7 @@ script:
     execution: false
     name: syslog-send
   dockerimage: demisto/python3:3.8.1.6120
+  feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false
