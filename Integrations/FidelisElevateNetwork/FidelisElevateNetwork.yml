@@ -1120,17 +1120,6 @@ script:
     description: Adds a label to an alert.
     execution: false
     name: fidelis-manage-alert-label
-  - arguments:
-    - default: false
-      description: url
-      isArray: false
-      name: url
-      required: true
-      secret: false
-    deprecated: false
-    description: uploads a URL to Fidelis
-    execution: false
-    name: fidelis-upload-url
   feed: false
   isfetch: true
   longRunning: false
