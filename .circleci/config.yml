@@ -475,6 +475,11 @@ jobs:
       - run:
           name: Upload Packs To Marketplace Storage
           command: |
+            if [[ $CIRCLE_BRANCH != master ]]; then
+              echo "Skipping packs uploading on non master branch"
+              exit 0
+            fi
+
             if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
                 echo 'Skipping - running only in container number 0.'
@@ -486,7 +491,7 @@ jobs:
             echo $GCS_MARKET_KEY > $GCS_PATH
             python3 ./Tests/store_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -s $GCS_PATH -b 'marketplace-dist' -n $CIRCLE_BUILD_NUM -p 'All' -o
             rm $GCS_PATH
-          when: always
+          when: on_success
       - store_artifacts:
           path: artifacts
           destination: artifacts
