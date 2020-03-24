@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: Tanium v2
+  id: Tanium v22
   version: -1
 configuration:
 - display: Hostname, IP address, or server URL.
@@ -24,8 +24,8 @@ configuration:
   required: false
   type: 8
 description: Tanium endpoint security and systems management
-display: Tanium v2
-name: Tanium v2
+display: Tanium v22
+name: Tanium v22
 script:
   commands:
   - arguments:
