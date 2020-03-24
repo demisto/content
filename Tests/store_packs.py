@@ -239,6 +239,26 @@ class Pack(object):
         """
         task_status = False
         try:
+            for root, dirs, files in os.walk(self._pack_path, topdown=True):
+                dirs[:] = [d for d in dirs if d not in Pack.EXCLUDE_DIRECTORIES]
+
+                for f in files:
+                    # skipping zipping of unwanted files
+                    if f.startswith('.') or f in [Pack.AUTHOR_IMAGE_NAME, Pack.USER_METADATA]:
+                        os.remove(f)
+                        print_warning(f"Removing {f} for {self._pack_name} pack")
+                        continue
+
+                    current_directory = root.split(os.path.sep)[-1]
+
+                    if current_directory == 'Misc' and not fnmatch.fnmatch(f, 'reputation-*.json'):
+                        # reputation in old format aren't supported in 6.0.0 server version
+                        os.remove(f)
+                        print_warning(f"Removing {f} for {self._pack_name} pack")
+                        continue
+        except Exception as e:
+            print_error(f"Failed to delete ignored files for pack {self._pack_name} - {str(e)}")
+        try:
             arg = f'./signDirectory {self._pack_path}'
             signing_process = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             output, err = signing_process.communicate()
