@@ -221,7 +221,6 @@ class RefreshToken:
                                 f'Failed to decode successful token retrieval response: {str(res.content)}'
                             )
                     else:
-                        body = await res.json()
                         try:
                             body = await res.json()
                             error = body.get('errors', [{}])
@@ -234,7 +233,7 @@ class RefreshToken:
                                 f'Failed to decode token retrieval failure response: {str(res.content)}'
                             )
             if not body:
-                raise RuntimeError('Failed to retrieve token')
+                raise RuntimeError(f'Failed to retrieve token - got empty response: {str(res.content)}')
             token = body.get('access_token')
             self.expiry_time = body.get('expires_in', MINUTES_30) - TIME_BUFFER_1_MINUTE
         if not token:
