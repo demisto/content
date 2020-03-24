@@ -29,12 +29,27 @@ fi
 
 # test if any of the lint libraries has been updated
 
-DIFF_RES=$(git diff  "$DIFF_COMPARE" -- dev-requirements-py*  | grep -E '\+(flake8|mypy|demisto-sdk|bandit)' )
+DIFF_RES=$(git diff  "$DIFF_COMPARE" -- dev-requirements-py*  | grep -E '\+(flake8|mypy|demisto-sdk|bandit|vulture)' )
 
 if [[ -n "$DIFF_RES" ]]; then
     echo -e "Found modified dependency packages:\n$DIFF_RES"
     exit 0
 fi
+
+# test if CommonServerPython has been modified
+DIFF_RES=$(git diff  "$DIFF_COMPARE" -- Packs/Base/Scripts/CommonServerPython/CommonServerPython.py)
+if [[ -n "$DIFF_RES" ]]; then
+    echo -e "CommonServerPython.py has been modified"
+    exit 0
+fi
+
+# test if CommonServerPython has been modified
+DIFF_RES=$(git diff  "$DIFF_COMPARE" -- Tests/demistomock/demistomock.py)
+if [[ -n "$DIFF_RES" ]]; then
+    echo -e "demistomock.py has been modified"
+    exit 0
+fi
+
 
 # all tests passed return 0
 exit 0
