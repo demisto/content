@@ -15,7 +15,7 @@ script: |
       throw resCmd.Contents;
   }
 
-  var data = resCmd.Contents;
+  var data = resCmd.Contents[0];
   var cvss = (data.cvss) ? parseInt(data.cvss) : -1;
 
   if (cvss === -1) {
