@@ -31,6 +31,7 @@ URL_ERROR_MSG = "Can't access the URL. It might be malicious, or unreachable for
 EMPTY_RESPONSE_ERROR_MSG = "There is nothing to render. This can occur when there is a refused connection." \
                            " Please check your URL."
 DEFAULT_W, DEFAULT_H = '600', '800'
+DEFAULT_W_WIDE = '1024'
 CHROME_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36'  # noqa
 DRIVER_LOG = f'{tempfile.gettempdir()}/chromedriver.log'
 DEFAULT_CHROME_OPTIONS = [
@@ -286,7 +287,7 @@ def convert_pdf_to_jpeg(path: str, max_pages: int, password: str, horizontal: bo
 
 def rasterize_command():
     url = demisto.getArg('url')
-    w = demisto.args().get('width', DEFAULT_W).rstrip('px')
+    w = demisto.args().get('width', DEFAULT_W_WIDE).rstrip('px')
     h = demisto.args().get('height', DEFAULT_H).rstrip('px')
     r_type = demisto.args().get('type', 'png')
     wait_time = int(demisto.args().get('wait_time', 0))

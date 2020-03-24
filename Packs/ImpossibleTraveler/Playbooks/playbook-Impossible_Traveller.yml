@@ -2185,10 +2185,10 @@ tasks:
     ignoreworker: false
   '86':
     id: '86'
-    taskid: 71be37b9-f5a9-448b-8971-c6ae76e6e614
+    taskid: 83895ed8-75d5-4c11-844a-2ed42cfe7943
     type: regular
     task:
-      id: 71be37b9-f5a9-448b-8971-c6ae76e6e614
+      id: 83895ed8-75d5-4c11-844a-2ed42cfe7943
       version: -1
       name: Ask manager if travel was expected
       description: Ask a user a question via email and process the reply directly
@@ -2206,10 +2206,23 @@ tasks:
       bcc: {}
       bodyType: {}
       cc: {}
-      email: {}
+      email:
+        complex:
+          root: Email
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Account.DisplayName
+                iscontext: true
+              right:
+                value:
+                  simple: UserManager
+                iscontext: true
+          accessor: Address
       message:
-        simple: '!Print value="User ${incident.username} traveled ${Geo.Distance}
-          miles in ${(Time.Difference)} minutes. Was this an expected event?"'
+        simple: User ${incident.username} traveled ${Geo.Distance} miles in ${Time.Difference}
+          minutes. Was this an expected event?
       option1: {}
       option2: {}
       persistent: {}
@@ -3215,7 +3228,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {
