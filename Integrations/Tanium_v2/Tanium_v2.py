@@ -111,14 +111,16 @@ class Client(BaseClient):
             res = self.do_request('POST', 'parse_question', {'text': text}).get('data')[0]
         else:
             # if there are no parameters argument - try to gets the sensors from parse question api
+            # for example, if the input text question is: `Get Folder Contents[c:\] from all machines`
+            # after the regex is: `Get Folder Contents from all machines`
             text_without_params = re.sub(r'\[(.*?)\]', '', text)
             res = self.do_request('POST', 'parse_question', {'text': text_without_params}).get('data')[0]
 
             # call sensors/by-name/ for each sensor in the response and update parameters_condition
             # with the correct parameters
-            for item in res.get('selects'):
-                sensor = item.get('sensor').get('name')
-                search_results = re.search(rf'{sensor}\[(.*?)\]', text)
+            for item in res.get('selects', []):
+                sensor = item.get('sensor', {}).get('name')
+                search_results = re.search(rf'{sensor}\[(.*)\]', text)
                 if search_results:
                     parameters_str = search_results.group(1)
                     parameters = parameters_str.split(',')
@@ -127,18 +129,14 @@ class Client(BaseClient):
                     sensor_response = self.get_sensor_item(sensor_response.get('data'))
 
                     tmp_item = {'sensor': sensor, 'parameters': []}
-                    index = 0
-                    for param in parameters:
+                    for param, sensor_key in zip(parameters, sensor_response['Parameters']):
                         if param:
                             if param == '""':
                                 param = ''
-                            key = sensor_response['Parameters'][index]['Key']
                             tmp_item['parameters'].append({
-                                'key': '||' + key + '||',
+                                'key': '||' + sensor_key['Key'] + '||',
                                 'value': param
                             })
-
-                        index = index + 1
                     parameters_condition.append(tmp_item)
 
         res = self.add_parameters_to_question(res, parameters_condition)
@@ -171,7 +169,7 @@ class Client(BaseClient):
         for row in results_sets.get('rows'):
             tmp_row = {}
             for item, column in zip(row.get('data', []), columns):
-                item_value = list(map(lambda x: x.get('text'), item))
+                item_value = list(map(lambda x: x.get('text', ''), item))
                 item_value = ', '.join(item_value)
 
                 if item_value != '[no results]':
