@@ -20,13 +20,14 @@ class MicrosoftClient(BaseClient):
         Microsoft Client class that implements logic to authenticate with oproxy or self deployed applications.
         It also provides common logic to handle responses from Microsoft.
         Args:
-            tenant_id: if self deployed then it's the tenant for the app url, or if oproxy then it's the token
-            auth_id: if self deployed then it's the client id, or if oproxy then it's the auth id and token url
-            enc_key: if self deployed then it's the client secret, or if oproxy then it's the encryption key
-            scope: only if it's self deployed then it's the scope of the application
-            resource: only if it's self deployed then it's the resource of the application
-            verify: demisto insecure parameter
-            self_deployed: indicates whether the integration mode is self deployed or oproxy
+            tenant_id: If self deployed it's the tenant for the app url, otherwise (oproxy) it's the token
+            auth_id: If self deployed it's the client id, otherwise (oproxy) it's the auth id and may also
+            contain the token url
+            enc_key: If self deployed it's the client secret, otherwise (oproxy) it's the encryption key
+            scope: The scope of the application (only if self deployed)
+            resource: The resource of the application (only if self deployed)
+            verify: Demisto insecure parameter
+            self_deployed: Indicates whether the integration mode is self deployed or oproxy
         """
         super().__init__(verify=verify, *args, **kwargs)  # type: ignore[misc]
 
@@ -53,7 +54,7 @@ class MicrosoftClient(BaseClient):
         self.resource = resource
         self.verify = verify
 
-    def http_request(self, *args, **kwargs) -> requests.Response:
+    def http_request(self, *args, **kwargs):
         """
         Overrides Base client request function, retrieves and adds to headers access token before sending the request.
 
