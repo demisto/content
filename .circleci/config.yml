@@ -263,20 +263,6 @@ jobs:
                 ./Tests/lastest_server_build_scripts/download_demisto_conf.sh
             fi
       - run:
-          name: Setup rsyslog
-          when: always
-          command: |
-            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
-              echo "Skipping rsyslog for forked PRs"
-              exit 0
-            fi
-            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
-              then
-                echo 'Skipping - running only in container number 0.'
-                exit 0;
-            fi
-            ./Tests/scripts/setup_rsyslog.sh
-      - run:
           name: Create Instance
           when: always
           command: |
