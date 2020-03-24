@@ -63,7 +63,10 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: inputs.DuplicateMethod
+              complex:
+                root: inputs.DuplicateMethod
+                transformers:
+                - operator: toLowerCase
             iscontext: true
           right:
             value:
@@ -73,7 +76,10 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: inputs.DuplicateMethod
+              complex:
+                root: inputs.DuplicateMethod
+                transformers:
+                - operator: toLowerCase
             iscontext: true
           right:
             value:
@@ -83,7 +89,10 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: inputs.DuplicateMethod
+              complex:
+                root: inputs.DuplicateMethod
+                transformers:
+                - operator: toLowerCase
             iscontext: true
           right:
             value:
@@ -125,7 +134,7 @@ tasks:
       preProcessText: {}
       textFields:
         complex:
-          root: inputs.textFields
+          root: 'inputs.similarIncidentFields '
       threshold:
         complex:
           root: inputs.DuplicateThreshold
@@ -215,7 +224,8 @@ tasks:
       similarContextKeys: {}
       similarCustomFields: {}
       similarIncidentFields:
-        simple: type
+        complex:
+          root: 'inputs.similarIncidentFields '
       similarIncidentKeys: {}
       similarLabelsKeys:
         complex:
@@ -511,13 +521,13 @@ view: |-
 inputs:
 - key: DuplicateMethod
   value:
-    simple: ml
+    simple: text
   required: true
   description: Select a method for identifying duplicate incidents. Can be "ml", "rules",
     or "text".
 - key: DuplicateThreshold
   value:
-    simple: "0.75"
+    simple: "0.9"
   required: true
   description: The similarity threshold to consider an incident as a duplicate (0-1),
     where "1" is a duplicate and "0" is not a duplicate. Use this argument in the
@@ -550,21 +560,20 @@ inputs:
   required: false
   description: 'The Time field by which to query past incidents to check for duplicate
     incident candidates. Values: created, occurred, modified'
-- key: textFields
-  value:
-    simple: name,details
-  required: false
-  description: Text fields to compare. Can be label name, incident fields or custom
-    fields. Comma separated value.
 - key: similarLabelsKeys
-  value:
-    simple: Email/subject:*,Email/from
+  value: {}
   required: false
   description: 'A comma-separated list of similar label keys. Comma separated value.
     Also supports allowing X different words between labels, within the following
     way: label_name:X, where X is the number of words. X can also be ''*'' for contains.
     For example: the value "Email/subject:*" will consider email subject similar,
-    if one is substring of the other.'
+    if one is substring of the other. Relevant for ''Rules'' method.'
+- key: 'similarIncidentFields '
+  value:
+    simple: name,type
+  required: false
+  description: Fields to compare. Can be label name, incident fields or custom fields.
+    Comma separated value. Relevant for 'Text' and 'Rules' methods.
 outputs:
 - contextPath: isSimilarIncidentFound
   description: Whether a similar incident was found? Can be "true" or "false".
