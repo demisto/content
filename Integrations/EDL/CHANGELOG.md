@@ -1,6 +1,6 @@
 ## [Unreleased]
- - Improved test module functionality.
- - Added support for IP collapse to ranges and CIDRs.
+  - Improved test module functionality.
+  - Added support for IP collapse to ranges and CIDRs.
 
 ## [20.3.3] - 2020-03-18
 Add integration parameter options for formatting indicator values to PAN-OS's expected input standards.
