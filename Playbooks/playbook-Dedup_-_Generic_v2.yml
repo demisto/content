@@ -520,8 +520,7 @@ view: |-
   }
 inputs:
 - key: DuplicateMethod
-  value:
-    simple: text
+  value: {}
   required: true
   description: Select a method for identifying duplicate incidents. Can be "ml", "rules",
     or "text".
