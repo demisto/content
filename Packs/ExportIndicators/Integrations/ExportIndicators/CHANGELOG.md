@@ -1,6 +1,6 @@
 ## [Unreleased]
-  - Added support for IP ranges and CIDR collapse
-  - Added URL param *tr* - Indicates whether to collapse IPs to ranges or CIDRs.
+  - Added support for IP ranges and CIDR collapse.
+  - Added the URL parameter *tr*, which indicates whether to collapse IPs to ranges or CIDRs.
 
 ## [20.3.3] - 2020-03-18
   - Added the *offset* parameter to the ***eis-update*** command.
