@@ -1,5 +1,9 @@
 ## [Unreleased]
+Deprecated arguments: similarCustomFields, similarIncidentKeys. Use ***similarIncidentFields*** instead.
 
+
+## [20.3.3] - 2020-03-18
+Added support for the "\\" character in incident fields.
 
 ## [20.1.2] - 2020-01-22
 Shortened the query time range to improve index usage.

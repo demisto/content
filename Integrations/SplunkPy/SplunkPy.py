@@ -1,3 +1,5 @@
+from splunklib.binding import HTTPError
+
 import demistomock as demisto
 from CommonServerPython import *
 import splunklib.client as client
@@ -11,17 +13,22 @@ import requests
 import urllib3
 import io
 import re
-
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Define utf8 as default encoding
 reload(sys)
 sys.setdefaultencoding('utf8')  # pylint: disable=maybe-no-member
-
+params = demisto.params()
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
-VERIFY_CERTIFICATE = not bool(demisto.params().get('unsecure'))
-FETCH_LIMIT = int(demisto.params().get('fetch_limit', 50))
+VERIFY_CERTIFICATE = not bool(params.get('unsecure'))
+FETCH_LIMIT = int(params.get('fetch_limit', 50))
 FETCH_LIMIT = max(min(200, FETCH_LIMIT), 1)
+PROBLEMATIC_CHARACTERS = ['.', '(', ')', '[', ']']
+REPLACE_WITH = '_'
+REPLACE_FLAG = params.get('replaceKeys', False)
+FETCH_TIME = demisto.params().get('fetch_time')
+TIME_UNIT_TO_MINUTES = {'minute': 1, 'hour': 60, 'day': 24 * 60, 'week': 7 * 24 * 60, 'month': 30 * 24 * 60,
+                        'year': 365 * 24 * 60}
 
 
 class ResponseReaderWrapper(io.RawIOBase):
@@ -90,6 +97,9 @@ def rawToDict(raw):
             if '=' in key_value:
                 key_and_val = key_value.split('=', 1)
                 result[key_and_val[0]] = key_and_val[1]
+
+    if REPLACE_FLAG:
+        result = replace_keys(result)
     return result
 
 
@@ -123,7 +133,6 @@ def updateNotableEvents(sessionKey, baseurl, comment, status=None, urgency=None,
     # Make sure that rule IDs and/or a search ID is provided
     if eventIDs is None and searchID is None:
         raise Exception("Either eventIDs of a searchID must be provided (or both)")
-        return False
 
     # These the arguments to the REST handler
     args = {}
@@ -186,6 +195,7 @@ def notable_to_incident(event):
         incident["occurred"] = event["_time"]
     else:
         incident["occurred"] = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.0+00:00')
+    event = replace_keys(event) if REPLACE_FLAG else event
     incident["rawJSON"] = json.dumps(event)
     labels = []
     if demisto.get(demisto.params(), 'parseNotableEventsRaw'):
@@ -207,7 +217,7 @@ def handler(proxy):
     return request
 
 
-def request(url, message, **kwargs):
+def request(url, message):
     method = message['method'].lower()
     data = message.get('body', "") if method == 'post' else None
     headers = dict(message.get('headers', []))
@@ -375,47 +385,50 @@ def splunk_job_create_command(service):
 
 
 def splunk_results_command(service):
-    jobs = service.jobs  # type: ignore
-    found = False
     res = []
-    for job in jobs:
-        if job.sid == demisto.args()['sid']:
-            rr = results.ResultsReader(job.results())
-            for result in rr:
-                if isinstance(result, results.Message):
-                    demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(result.message)})
-                elif isinstance(result, dict):
-                    # Normal events are returned as dicts
-                    res.append(result)
-            found = True
-    if not found:
-        demisto.results("Found no job for sid: " + demisto.args()['sid'])
-    if found:
-        demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res)})
+    try:
+        job = service.job(demisto.args().get('sid', ''))
+    except HTTPError as error:
+        return_error(error.message, error)
+    else:
+        for result in results.ResultsReader(job.results()):
+            if isinstance(result, results.Message):
+                demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(result.message)})
+            elif isinstance(result, dict):
+                # Normal events are returned as dicts
+                res.append(result)
+
+        if not res:
+            demisto.results("Found no job for sid: " + demisto.args()['sid'])
+        else:
+            demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res)})
 
 
 def fetch_incidents(service):
-    lastRun = demisto.getLastRun() and demisto.getLastRun()['time']
+    last_run = demisto.getLastRun() and demisto.getLastRun()['time']
     search_offset = demisto.getLastRun().get('offset', 0)
 
     incidents = []
-    t = datetime.utcnow()
+    current_time_for_fetch = datetime.utcnow()
     if demisto.get(demisto.params(), 'timezone'):
         timezone = demisto.params()['timezone']
-        t = t + timedelta(minutes=int(timezone))
+        current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone))
 
-    now = t.strftime(SPLUNK_TIME_FORMAT)
+    now = current_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
     if demisto.get(demisto.params(), 'useSplunkTime'):
         now = get_current_splunk_time(service)
-        t = datetime.strptime(now, SPLUNK_TIME_FORMAT)
-    if len(lastRun) == 0:
-        t = t - timedelta(minutes=10)
-        lastRun = t.strftime(SPLUNK_TIME_FORMAT)
+        current_time_in_splunk = datetime.strptime(now, SPLUNK_TIME_FORMAT)
+        current_time_for_fetch = current_time_in_splunk
+
+    if len(last_run) == 0:
+        fetch_time_in_minutes = parse_time_to_minutes()
+        start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
+        last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
 
     earliest_fetch_time_fieldname = demisto.params().get("earliest_fetch_time_fieldname", "index_earliest")
     latest_fetch_time_fieldname = demisto.params().get("latest_fetch_time_fieldname", "index_latest")
 
-    kwargs_oneshot = {earliest_fetch_time_fieldname: lastRun,
+    kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
                       latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
 
     searchquery_oneshot = demisto.params()['fetchQuery']
@@ -437,7 +450,29 @@ def fetch_incidents(service):
     if len(incidents) < FETCH_LIMIT:
         demisto.setLastRun({'time': now, 'offset': 0})
     else:
-        demisto.setLastRun({'time': lastRun, 'offset': search_offset + FETCH_LIMIT})
+        demisto.setLastRun({'time': last_run, 'offset': search_offset + FETCH_LIMIT})
+
+
+def parse_time_to_minutes():
+    """
+    Calculate how much time to fetch back in minutes
+    Returns (int): Time to fetch back in minutes
+    """
+    number_of_times, time_unit = FETCH_TIME.split(' ')
+    if str(number_of_times).isdigit():
+        number_of_times = int(number_of_times)
+    else:
+        return_error("Error: Invalid fetch time, need to be a positive integer with the time unit afterwards"
+                     " e.g '2 months, 4 days'.")
+    # If the user input contains a plural of a time unit, for example 'hours', we remove the 's' as it doesn't
+    # impact the minutes in that time unit
+    if time_unit[-1] == 's':
+        time_unit = time_unit[:-1]
+    time_unit_value_in_minutes = TIME_UNIT_TO_MINUTES.get(time_unit.lower())
+    if time_unit_value_in_minutes:
+        return number_of_times * time_unit_value_in_minutes
+
+    return_error('Error: Invalid time unit.')
 
 
 def splunk_get_indexes_command(service):
@@ -555,18 +590,26 @@ def splunk_parse_raw_command():
 
 def test_module(service):
     if demisto.params().get('isFetch'):
-        t = datetime.utcnow() - timedelta(days=3)
+        t = datetime.utcnow() - timedelta(hours=1)
         time = t.strftime(SPLUNK_TIME_FORMAT)
         kwargs_oneshot = {'count': 1, 'earliest_time': time}
         searchquery_oneshot = demisto.params()['fetchQuery']
-        oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
-        reader = results.ResultsReader(oneshotsearch_results)
-        for item in reader:
-            if item:
-                demisto.results('ok')
+        try:
+            service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
+        except HTTPError as error:
+            return_error(str(error))
 
-    if len(service.jobs) >= 0:  # type: ignore
-        demisto.results('ok')
+
+def replace_keys(data):
+    if not isinstance(data, dict):
+        return data
+    for key in list(data.keys()):
+        value = data.pop(key)
+        for character in PROBLEMATIC_CHARACTERS:
+            key = key.replace(character, REPLACE_WITH)
+
+        data[key] = value
+    return data
 
 
 def main():
@@ -602,6 +645,7 @@ def main():
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
         test_module(service)
+        demisto.results('ok')
     if demisto.command() == 'splunk-search':
         splunk_search_command(service)
     if demisto.command() == 'splunk-job-create':

@@ -8,6 +8,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "Plain Text Feed",
+            "playbookID": "PlainText Feed - Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Fastly Feed",
             "playbookID": "Fastly Feed Test",
             "fromversion": "5.5.0"
@@ -21,6 +26,10 @@
             "integrations": "Claroty",
             "playbookID": "Claroty - Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Trend Micro Apex",
+            "playbookID": "Trend Micro Apex - Test"
         },
         {
             "integrations": "Blocklist_de Feed",
@@ -137,6 +146,10 @@
             "timeout": 500
         },
         {
+            "integrations": "Google Vision AI",
+            "playbookID": "Google Vision API - Test"
+        },
+        {
             "integrations": "nmap",
             "playbookID": "Nmap - Test",
             "fromversion": "5.0.0"
@@ -163,6 +176,10 @@
         {
             "integrations": "PhishLabs IOC EIR",
             "playbookID": "PhishlabsIOC_EIR-Test"
+        },
+        {
+            "integrations": "Amazon DynamoDB",
+            "playbookID": "AWS_DynamoDB-Test"
         },
         {
             "integrations": "PhishLabs IOC DRP",
@@ -559,6 +576,7 @@
             "integrations": "google-vault",
             "playbookID": "Google_Vault-Search_And_Display_Results_test",
             "nightly": true,
+            "memory_threshold": 80,
             "timeout": 3600
         },
         {
@@ -712,7 +730,8 @@
                 "VirusTotal - Private API"
             ],
             "instance_names": "virus_total_private_api_general",
-            "timeout": 500
+            "timeout": 500,
+            "pid_threshold": 12
         },
         {
             "playbookID": "CutTransformerTest"
@@ -1249,6 +1268,14 @@
             "instance_names": "virus_total_private_api_general",
             "playbookID": "virusTotalPrivateAPI-test-playbook",
             "timeout": 1400,
+            "nightly": true,
+            "pid_threshold": 12
+        },
+                {
+            "integrations": ["VirusTotal - Private API", "VirusTotal"],
+            "playbookID": "vt-detonate test",
+            "instance_names": ["virus_total_private_api_general", "virus_total_general"],
+            "timeout": 1400,
             "nightly": true
         },
         {
@@ -1314,7 +1341,19 @@
             "playbookID": "Microsoft Graph Groups - Test",
             "instance_names": "ms_graph_groups_prod"
         },
-                {
+        {
+            "integrations": "Microsoft_Graph_Files",
+            "playbookID": "test_MsGraphFiles",
+            "instance_names": "ms_graph_files_dev",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Microsoft_Graph_Files",
+            "playbookID": "test_MsGraphFiles",
+            "instance_names": "ms_graph_files_prod",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Microsoft Graph Calendar",
             "playbookID": "Microsoft Graph Calendar - Test",
             "instance_names": "ms_graph_calendar_dev"
@@ -1561,6 +1600,14 @@
         },
         {
             "playbookID": "STIXParserTest"
+        },
+        {
+            "playbookID": "VerifyJSON - Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "PowerShellCommon-Test",
+            "fromversion": "5.5.0"
         },
         {
             "playbookID": "Detonate URL - Generic Test",
@@ -1968,7 +2015,7 @@
         {
             "integrations": "AWS - EC2",
             "playbookID": "2142f8de-29d5-4288-8426-0db39abe988b",
-            "memory_threshold": 65
+            "memory_threshold": 75
         },
         {
             "integrations": "AWS - EC2",
@@ -2038,7 +2085,13 @@
         },
         {
             "integrations": ["Rasterize","Image OCR"],
-            "playbookID": "Rasterize Test"
+            "playbookID": "Rasterize Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": ["Rasterize","Image OCR"],
+            "playbookID": "Rasterize 4.5 Test",
+            "toversion": "4.5.9"
         },
         {
             "integrations": "Rasterize",
@@ -2183,9 +2236,15 @@
             "playbookID": "Elasticsearch_v2_test"
         },
         {
-            "integrations": "Elasticsearch v2",
-            "instance_names": "es_v7",
-            "playbookID": "Elasticsearch_Fetch_Indicators_Test",
+            "integrations": "ElasticsearchFeed",
+            "instance_names": "es_demisto_feed",
+            "playbookID": "Elasticsearch_Fetch_Demisto_Indicators_Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "ElasticsearchFeed",
+            "instance_names": "es_generic_feed",
+            "playbookID": "Elasticsearch_Fetch_Custom_Indicators_Test",
             "fromversion": "5.5.0"
         },
         {
@@ -2308,7 +2367,8 @@
             "integrations": "Recorded Future Feed",
             "playbookID": "RecordedFutureFeed - Test",
             "timeout": 1000,
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "memory_threshold": 80
         },
         {
             "integrations": "Expanse",
@@ -2388,8 +2448,49 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "Code42",
+            "playbookID": "Code42-Test",
+            "timeout": 600
+        },
+        {
+            "playbookID": "Code42 File Search Test",
+            "integrations": "Code42"
+        },
+        {
             "playbookID": "FetchIndicatorsFromFile-test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Apps - Test"
+        },
+        {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Host Detail - Test"
+        },
+        {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Host Finding Detail - Test"
+        },
+        {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Hosts - Test"
+        },
+        {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Host Findings - Test"
+        },
+        {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Unique Cves - Test"
+        },
+        {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Unique Open Findings - Test"
+        },
+        {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Apps Detail - Test"
         },
         {
             "integrations": "Indeni",
@@ -2404,24 +2505,32 @@
         {
             "playbookID": "DbotPredictOufOfTheBoxTest",
             "fromversion": "4.5.0"
+        },
+        {
+           "integrations": "AlienVault OTX TAXII Feed",
+            "playbookID": "playbook-feedalienvaultotx_test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
+        "Claroty - Test": "Issue 22996",
+        "test_MsGraphFiles": "Issue 22853",
+        "TestCofenseFeed": "Issue 22854",
+        "RecordedFutureFeed - Test": "Issue 22855",
+        "Blocklist_de - Test": "Issue 22856",
+        "Cybereason Test": "Issue 22683",
+        "CVE Search v2 - Test": "Issue 22661",
+        "AbuseIPDB Test": "Issue 22658",
+        "Bluecat Address Manager test": "Issue 22616",
         "Office365_Feed_Test": "Issue 22517",
         "Test XDR Playbook": "Issue 22512",
-        "RasterizeTest": "Issue 20702",
         "Send Investigation Summary Reports": "Issue 22299",
-        "Palo Alto Networks Cortex Test": "Issue 22298",
         "test-Expanse": "Expanse should provide domain that they have in their system",
         "TestProofpointFeed": "Issue 22229",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 22227",
-        "Akamai_WAF_SIEM-Test": "Issue 22225",
-        "EmailReputationTest": "Issue 22187",
         "test_Qradar": "Issue 22186",
-        "IntSights Test": "Issue 22185",
         "Tenable.io test": "Issue 22184",
         "ThreatQ - Test": "Issue 22175",
-        "whois_test": "Issue 22174",
         "PostgreSQL Test": "Issue 22172",
         "Test-Detonate URL - Crowdstrike": "Issue 19439",
         "Git_Integration-Test": "Issue 20029",
@@ -2438,7 +2547,6 @@
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
-        "Carbon Black Enterprise Protection V2 Test": "Issue 19838",
         "get_file_sample_from_path_-_d2_-_test": "Issue 19844",
         "Cofense Triage Test": "Creds only works on demo4",
         "Test - Windows Defender Advanced Threat Protection": "Issue - #18552",
@@ -2452,11 +2560,13 @@
         "Test Playbook TrendMicroDDA": "Issue 16501",
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633",
-        "TAXII_Feed_Test": "Issue #22423"
+        "TAXII_Feed_Test": "Issue #22423",
+        "palo_alto_panorama_test_pb": "Issue #22835"
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
-        "Claroty": "Issue 22255",
+        "RiskSense": "We should get an instance talk to Francesco",
+        "Palo Alto Networks Cortex": "Issue 22300",
         "AWS - IAM": "Issue 21401",
         "FortiGate": "License expired, and not going to get one (issue 14723)",
         "IronDefense": "Test depends on making requests to a non-public API",
@@ -2483,7 +2593,6 @@
         "Preempt": "Issue 20268",
         "iDefense": "Issue 20095",
         "Joe Security": "Issue 17996",
-        "CrowdstrikeFalcon": "Issue 19833",
         "ZeroFox": "Issue 19161",
         "Jask": "Issue 18879",
         "vmray": "Issue 18752",
@@ -2516,13 +2625,14 @@
         "Exabeam": "Issue 19371",
         "McAfee ESM-v10": "Issue 20225",
         "PaloAltoNetworks_PrismaCloudCompute": "Instance not set up yet",
+        "Code42": "Instance not set up yet",
         "LogRhythm": "Issue 21672",
         "SecBI": "Issue 22545",
 
         "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tenable.sc": "unstable instance",
-
+        "VirusTotal - Private API": "Issue 22638",
 
         "_comment": "~~~ OTHER ~~~",
         "Pentera": "authentication method will not work with testing",
@@ -2536,11 +2646,15 @@
         "SafeBreach": "pending rewrite",
 
         "_comment": "~~~ QUOTA ISSUES ~~~",
+        "Google Chronicle Backstory": "Issue 22720",
+        "XFE_v2": "Issue 22715",
+        "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
         "AlphaSOC Wisdom": "API key has expired",
         "AWS - Athena - Beta": "Issue 19834",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
-        "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota."
+        "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
+        "Ipstack": "reached out our monthly quota (08/03/2020)"
     },
     "nightly_integrations": [
         "Lastline v2",
@@ -2589,16 +2703,17 @@
         "Microsoft Graph": "Test direct access to oproxy",
         "MicrosoftGraphMail": "Test direct access to oproxy",
         "Microsoft Graph User": "Test direct access to oproxy",
+        "Microsoft_Graph_Files": "Test direct access to oproxy",
         "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
         "Microsoft Graph Groups": "Test direct access to oproxy",
         "SafeBreach": "SSL Issues",
-        "Feed Office365": "SSl Issues. issue: 21181",
         "AWS - CloudWatchLogs": "Issue 20958",
         "Gmail Single User" : "googleclient sdk has time based challenge exchange",
         "Gmail": "googleclient sdk has time based challenge exchange",
         "GoogleCloudTranslate": "google translate sdk does not support proxy",
         "Kennav2": "HTTPSConnectionPool(host='api.kennasecurity.com', port=443), issue:21233",
-        "Google Chronicle Backstory": "SDK"
+        "Google Chronicle Backstory": "SDK",
+        "Google Vision AI": "SDK"
     },
     "docker_thresholds": {
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",

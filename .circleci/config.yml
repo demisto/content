@@ -6,55 +6,58 @@ jobs:
     resource_class: medium+
     parallelism: 2
     environment:
-      CONTENT_VERSION: "20.3.1"
+      CONTENT_VERSION: "20.3.3"
       SERVER_VERSION: "5.0.1"
-      GIT_SHA1: "7a14892ad6e15e67675289815e957e50b4cc2f09" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "ff7008afef82c5c88470d076f6c6eb673aa0ce51" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - setup_remote_docker
       - restore_cache:
-          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}
+          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
       - run:
           name: Prepare Environment
           when: always
           command: |
-              if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 0 ] ;
-                then
-                  echo "Skipping - instance tests tasks are running only in container number 0"
-                  exit 0
-              fi
-              echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
-              echo 'export PATH="/home/circleci/.local/bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
-              echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
-              echo "=== sourcing $BASH_ENV ==="
-              source $BASH_ENV
-              sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
-              chmod +x ./Tests/scripts/*
-              chmod +x ./Tests/lastest_server_build_scripts/*
-              echo "Parameters: NIGHTLY: $NIGHTLY, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME, INSTANCE_TESTS: $INSTANCE_TESTS"
-              if [ ! -e "venv" ]; then
-                echo "installing venv"
-                NO_HOOKS=1 .hooks/bootstrap
-                source ./venv/bin/activate
-                pip install -r .circleci/build-requirements.txt
-                pip3 install -r .circleci/build-requirements.txt
-              else
-                echo "venv exists (from cache). activating"
-                source ./venv/bin/activate
-              fi
-              # store in bash env so we load our venv in each step
-              echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
-              python --version
-              python3 --version
+            if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo "Skipping - instance tests tasks are running only in container number 0"
+                exit 0
+            fi
+            echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
+            echo 'export PATH="/home/circleci/.local/bin:${PWD}/node_modules/.bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
+            echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
+            echo 'export DEMISTO_README_VALIDATION=true' >> $BASH_ENV
+            echo "=== sourcing $BASH_ENV ==="
+            source $BASH_ENV
+            sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
+            chmod +x ./Tests/scripts/*
+            chmod +x ./Tests/lastest_server_build_scripts/*
+            echo "Parameters: NIGHTLY: $NIGHTLY, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME, INSTANCE_TESTS: $INSTANCE_TESTS"
+            if [ ! -e "venv" ]; then
+              echo "installing venv"
+              NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap
+              source ./venv/bin/activate
+              pip install -r .circleci/build-requirements.txt
+              pip3 install -r .circleci/build-requirements.txt
+            else
+              echo "venv exists (from cache). activating"
+              source ./venv/bin/activate
+            fi
+            # Install node packages
+            npm install .
+            # store in bash env so we load our venv in each step
+            echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
+            python --version
+            python3 --version
       - save_cache:
           paths:
             - venv
-          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}
-
+            - node_modules
+          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
       - add_ssh_keys:
           fingerprints:
-              - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
-              - "f5:25:6a:e5:ac:4b:84:fb:60:54:14:82:f1:e9:6c:f9" # disable-secrets-detection
+            - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
+            - "f5:25:6a:e5:ac:4b:84:fb:60:54:14:82:f1:e9:6c:f9" # disable-secrets-detection
       - run:
           name: Create ID Set
           when: always
@@ -64,7 +67,7 @@ jobs:
                 echo "Skipping - running only in container number 0"
                 exit 0
             fi
-            python ./Tests/scripts/update_id_set.py -r
+            demisto-sdk create-id-set -o ./Tests/id_set.json
       - run:
           name: Infrastructure testing
           when: always
@@ -84,6 +87,7 @@ jobs:
             python3 -m pytest ./Tests/scripts/infrastructure_tests/release_notes_test.py -v
             python -m pytest ./Tests/scripts/infrastructure_tests/validate_files_test.py -v
             python3 -m pytest ./Tests/scripts/infrastructure_tests/update_id_set_test.py -v
+            python3 -m pytest ./Tests/scripts/infrastructure_tests/store_packs_test.py -v
             python -m pytest ./Tests/scripts/test_configure_tests.py -v
       - run:
           name: Validate Files and Yaml
@@ -194,7 +198,14 @@ jobs:
                 echo "Skipping - unit tests are running only in container number 1"
                 exit 0
             fi
-            
+            echo "demisto-sdk version: $(demisto-sdk --version)"
+            echo "mypy version: $(mypy --version)"
+            echo "flake8 py2 version: $(python2 -m flake8 --version)"
+            echo "flake8 py3 version: $(python3 -m flake8 --version)"
+            echo "bandit py2 version: $(python2 -m bandit --version 2>&1)"
+            echo "bandit py3 version: $(python3 -m bandit --version 2>&1)"
+            echo "vulture py2 version: $(python2 -m vulture --version) 2>&1"
+            echo "vulture py3 version: $(python3 -m vulture --version) 2>&1"
             SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
             if [ -n "$SHOULD_LINT_ALL" ]; then
               echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
@@ -307,14 +318,11 @@ jobs:
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
-
                 python ./Tests/scripts/run_content_installation.py
-                python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path) -v $CONTENT_VERSION
-
               else
                 ./Tests/lastest_server_build_scripts/run_installer_on_instance.sh
-                python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path) -v $CONTENT_VERSION --non-ami
             fi
+            python ./Tests/scripts/wait_until_server_ready.py
       - run:
           name: Run Tests - Latest GA
           shell: /bin/bash
@@ -326,7 +334,7 @@ jobs:
             fi
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
               then
-                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or NIghtly run"
+                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
                 exit 0
             fi
             if ./Tests/scripts/is_ami.sh ;
@@ -347,7 +355,7 @@ jobs:
             fi
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
               then
-                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or NIghtly run"
+                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
                 exit 0
             fi
             if ./Tests/scripts/is_ami.sh ;
@@ -368,7 +376,7 @@ jobs:
             fi
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
               then
-                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or NIghtly run"
+                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
                 exit 0
             fi
             if ./Tests/scripts/is_ami.sh ;
@@ -387,6 +395,27 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
+              then
+                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
+                exit 0
+            fi
+            if ./Tests/scripts/is_ami.sh ;
+              then
+                ./Tests/scripts/run_tests.sh "Server Master"
+
+            else
+                echo "Not AMI run, can't run on this version"
+            fi
+      - run:
+          name: Run Tests - Demisto PreGA
+          shell: /bin/bash
+          when: always
+          command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping instance tests for forked PRs"
+              exit 0
+            fi
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
                 echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
@@ -394,7 +423,7 @@ jobs:
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
-                ./Tests/scripts/run_tests.sh "Server Master"
+                ./Tests/scripts/run_tests.sh "Demisto PreGA"
                 export RETVAL=$?
                 cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
                 exit $RETVAL
@@ -457,6 +486,26 @@ jobs:
                 rm -f $CIRCLE_ARTIFACTS/server*.log
             fi
           when: always
+      - run:
+          name: Upload Packs To Marketplace Storage
+          command: |
+            if [[ $CIRCLE_BRANCH != master ]]; then
+              echo "Skipping packs uploading on non master branch"
+              exit 0
+            fi
+
+            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo 'Skipping - running only in container number 0.'
+                exit 0;
+            fi
+            EXTRACT_FOLDER=$(mktemp -d)
+            PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
+            GCS_PATH=$(mktemp)
+            echo $GCS_MARKET_KEY > $GCS_PATH
+            python3 ./Tests/store_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -s $GCS_PATH -b 'marketplace-dist' -n $CIRCLE_BUILD_NUM -p 'All' -o
+            rm $GCS_PATH
+          when: on_success
       - store_artifacts:
           path: artifacts
           destination: artifacts
