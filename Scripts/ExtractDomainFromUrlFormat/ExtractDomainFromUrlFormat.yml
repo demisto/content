@@ -16,6 +16,7 @@ scripttarget: 0
 runonce: false
 dockerimage: demisto/tld
 runas: DBotWeakRole
+subtype: python3
 tests:
 - ExtractDomainFromEmailTest
 - ExtractDomainFromUrlAndEmail-Test
