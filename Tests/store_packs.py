@@ -276,7 +276,7 @@ class Pack(object):
         task_status = False
 
         try:
-            arg = f'./signDirectory {self._pack_path}'
+            arg = f'./signDirectory {self._pack_path} /signKey'
             signing_process = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             output, err = signing_process.communicate()
 
