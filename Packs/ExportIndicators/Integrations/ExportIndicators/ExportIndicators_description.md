@@ -24,7 +24,7 @@ Use the following arguments in the URL to change the request:
 4. **q** - The query used to retrieve indicators from the system.
  * Example: https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?q="type:ip and sourceBrand:my_source"
 5. **tr** - Whether to collapse IPs. 
-    * 0 - To not collapse. 
-    * 1 - To collapse to ranges.
-    * 2 - To collapse to CIDRs.
+    * 0 - Do not collapse. 
+    * 1 - Collapse to ranges.
+    * 2 - Collapse to CIDRs.
  * Example: https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?q="type:ip and sourceBrand:my_source"&tr=1
