@@ -35,11 +35,11 @@ class MsGraphClient:
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
                                          proxy=proxy, ok_codes=ok_codes)
 
-    def pages_puller(self, response: dict, page_count: int) -> list:
+    def pages_puller(self, response: requests.Response, page_count: int) -> list:
         """ Gets first response from API and returns all pages
 
         Args:
-            response (dict):
+            response (requests.Response):
             page_count (int):
 
         Returns:
@@ -48,7 +48,9 @@ class MsGraphClient:
         responses = [response]
         i = page_count
         while i != 0:
-            next_link = response.get('@odata.nextLink')
+            next_link: str = ''
+            if isinstance(response, dict):
+                next_link = response.get('@odata.nextLink')
             if next_link:
                 responses.append(
                     self.ms_client.http_request('GET', full_url=next_link, url_suffix=None)
@@ -100,7 +102,8 @@ class MsGraphClient:
         self.ms_client.http_request('DELETE', suffix)
         return True
 
-    def get_attachment(self, message_id: str, user_id: str, attachment_id: str, folder_id: str = None) -> dict:
+    def get_attachment(self, message_id: str, user_id: str, attachment_id: str, folder_id: str = None) \
+            -> requests.Response:
         """
 
         Args:
@@ -110,7 +113,7 @@ class MsGraphClient:
             folder_id (str):
 
         Returns:
-            dict:
+            requests.Response:
         """
         no_folder = f'/users/{user_id}/messages/{message_id}/attachments/{attachment_id}'
         with_folder = (f'/users/{user_id}/{build_folders_path(folder_id)}/'  # type: ignore
@@ -119,7 +122,7 @@ class MsGraphClient:
         response = self.ms_client.http_request('GET', suffix)
         return response
 
-    def get_message(self, user_id: str, message_id: str, folder_id: str = '', odata: str = '') -> dict:
+    def get_message(self, user_id: str, message_id: str, folder_id: str = '', odata: str = '') -> requests.Response:
         """
 
         Args:
@@ -129,7 +132,7 @@ class MsGraphClient:
             odata (str): OData query
 
         Returns
-            dict: request json
+            requests.Response: request json
         """
         no_folder = f'/users/{user_id}/messages/{message_id}/'
         with_folder = (f'/users/{user_id}/{build_folders_path(folder_id)}'  # type: ignore
@@ -141,10 +144,12 @@ class MsGraphClient:
         response = self.ms_client.http_request('GET', suffix)
 
         # Add user ID
-        response['userId'] = user_id
+        if isinstance(response, dict):
+            response['userId'] = user_id
+
         return response
 
-    def list_attachments(self, user_id: str, message_id: str, folder_id: str) -> dict:
+    def list_attachments(self, user_id: str, message_id: str, folder_id: str) -> requests.Response:
         """Listing all the attachments
 
         Args:
@@ -153,14 +158,14 @@ class MsGraphClient:
             folder_id (str):
 
         Returns:
-            dict:
+            requests.Response:
         """
         no_folder = f'/users/{user_id}/messages/{message_id}/attachments/'
         with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages/{message_id}/attachments/'
         suffix = with_folder if folder_id else no_folder
         return self.ms_client.http_request('GET', suffix)
 
-    def list_folders(self, user_id: str, limit: str = '20') -> dict:
+    def list_folders(self, user_id: str, limit: str = '20') -> requests.Response:
         """List folder under root folder (Top of information store)
 
         Args:
@@ -168,12 +173,12 @@ class MsGraphClient:
             limit (str): Limit number of returned folder collection
 
         Returns:
-            dict: Collection of folders under root folder
+            requests.Response: Collection of folders under root folder
         """
         suffix = f'/users/{user_id}/mailFolders?$top={limit}'
         return self.ms_client.http_request('GET', suffix)
 
-    def list_child_folders(self, user_id: str, parent_folder_id: str, limit: str = '20') -> list:
+    def list_child_folders(self, user_id: str, parent_folder_id: str, limit: str = '20') -> requests.Response:
         """List child folder under specified folder.
 
         Args:
@@ -182,13 +187,13 @@ class MsGraphClient:
             limit (str): Limit number of returned folder collection
 
         Returns:
-            list: Collection of folders under specified folder
+            requests.Response: Collection of folders under specified folder
         """
         # for additional info regarding OData query https://docs.microsoft.com/en-us/graph/query-parameters
         suffix = f'/users/{user_id}/mailFolders/{parent_folder_id}/childFolders?$top={limit}'
         return self.ms_client.http_request('GET', suffix)
 
-    def create_folder(self, user_id: str, new_folder_name: str, parent_folder_id: str = None) -> dict:
+    def create_folder(self, user_id: str, new_folder_name: str, parent_folder_id: str = None) -> requests.Response:
         """Create folder under specified folder with given display name
 
         Args:
@@ -197,7 +202,7 @@ class MsGraphClient:
             parent_folder_id (str): Parent folder id under where created new folder
 
         Returns:
-            dict: Created folder data
+            requests.Response: Created folder data
         """
 
         suffix = f'/users/{user_id}/mailFolders'
@@ -207,7 +212,7 @@ class MsGraphClient:
         json_data = {'displayName': new_folder_name}
         return self.ms_client.http_request('POST', suffix, json_data=json_data)
 
-    def update_folder(self, user_id: str, folder_id: str, new_display_name: str) -> dict:
+    def update_folder(self, user_id: str, folder_id: str, new_display_name: str) -> requests.Response:
         """Update folder under specified folder with new display name
 
         Args:
@@ -216,7 +221,7 @@ class MsGraphClient:
             new_display_name (str): New display name of updated folder
 
         Returns:
-            dict: Updated folder data
+            requests.Response: Updated folder data
         """
 
         suffix = f'/users/{user_id}/mailFolders/{folder_id}'
@@ -234,7 +239,7 @@ class MsGraphClient:
         suffix = f'/users/{user_id}/mailFolders/{folder_id}'
         return self.ms_client.http_request('DELETE', suffix)
 
-    def move_email(self, user_id: str, message_id: str, destination_folder_id: str) -> dict:
+    def move_email(self, user_id: str, message_id: str, destination_folder_id: str) -> requests.Response:
         """Moves email to destination folder
 
         Args:
@@ -243,14 +248,14 @@ class MsGraphClient:
             destination_folder_id (str): Destination folder id
 
         Returns:
-            dict: Moved email data
+            requests.Response: Moved email data
         """
 
         suffix = f'/users/{user_id}/messages/{message_id}/move'
         json_data = {'destinationId': destination_folder_id}
         return self.ms_client.http_request('POST', suffix, json_data=json_data)
 
-    def get_email_as_eml(self, user_id: str, message_id: str) -> str:
+    def get_email_as_eml(self, user_id: str, message_id: str) -> requests.Response:
         """Returns MIME content of specified message
 
         Args:
@@ -258,7 +263,7 @@ class MsGraphClient:
             message_id (str): The message id of the email
 
         Returns:
-            str: MIME content of the email
+            requests.Response: MIME content of the email
         """
 
         suffix = f'/users/{user_id}/messages/{message_id}/$value'
@@ -481,7 +486,8 @@ def get_attachment_command(client: MsGraphClient, args):
     folder_id = args.get('folder_id')
     attachment_id = args.get('attachment_id')
     raw_response = client.get_attachment(message_id, user_id, folder_id=folder_id, attachment_id=attachment_id)
-    entry_context = file_result_creator(raw_response)
+    response: dict = raw_response if isinstance(raw_response, dict) else {}
+    entry_context = file_result_creator(response)
     demisto.results(entry_context)
 
 
@@ -492,7 +498,8 @@ def get_message_command(client: MsGraphClient, args):
     get_body = args.get('get_body') == 'true'
     odata = args.get('odata')
     raw_response = client.get_message(user_id, message_id, folder_id, odata=odata)
-    mail_context = build_mail_object(raw_response, user_id=user_id, get_body=get_body)
+    response: dict = raw_response if isinstance(raw_response, dict) else {}
+    mail_context = build_mail_object(response, user_id=user_id, get_body=get_body)
     entry_context = {'MSGraphMail(val.ID === obj.ID)': mail_context}
     human_readable = tableToMarkdown(
         f'Results for message ID {message_id}',
@@ -511,7 +518,8 @@ def list_attachments_command(client: MsGraphClient, args):
     message_id = args.get('message_id')
     folder_id = args.get('folder_id')
     raw_response = client.list_attachments(user_id, message_id, folder_id)
-    attachments = raw_response.get('value')
+    response: dict = raw_response if isinstance(raw_response, dict) else {}
+    attachments = response.get('value', [])
     if attachments:
         attachment_list = [{
             'ID': attachment.get('id'),
@@ -539,12 +547,13 @@ def list_folders_command(client: MsGraphClient, args):
     limit = args.get('limit', '20')
 
     raw_response = client.list_folders(user_id, limit)
-    parsed_folder_result = parse_folders_list(raw_response.get('value', []))
+    response: dict = raw_response if isinstance(raw_response, dict) else {}
+    parsed_folder_result = parse_folders_list(response.get('value', []))
     human_readable = tableToMarkdown(f'Mail Folder collection under root folder for user {user_id}',
                                      parsed_folder_result)
     entry_context = {CONTEXT_FOLDER_PATH: parsed_folder_result}
 
-    return_outputs(human_readable, entry_context, raw_response)
+    return_outputs(human_readable, entry_context, response)
 
 
 def list_child_folders_command(client: MsGraphClient, args):
@@ -553,12 +562,13 @@ def list_child_folders_command(client: MsGraphClient, args):
     limit = args.get('limit', '20')
 
     raw_response = client.list_child_folders(user_id, parent_folder_id, limit)
-    parsed_child_folders_result = parse_folders_list(raw_response.get('value', []))  # type: ignore
+    response: dict = raw_response if isinstance(raw_response, dict) else {}
+    parsed_child_folders_result = parse_folders_list(response.get('value', []))  # type: ignore
     human_readable = tableToMarkdown(f'Mail Folder collection under {parent_folder_id} folder for user {user_id}',
                                      parsed_child_folders_result)
     entry_context = {CONTEXT_FOLDER_PATH: parsed_child_folders_result}
 
-    return_outputs(human_readable, entry_context, raw_response)
+    return_outputs(human_readable, entry_context, response)
 
 
 def create_folder_command(client: MsGraphClient, args):
@@ -567,13 +577,14 @@ def create_folder_command(client: MsGraphClient, args):
     parent_folder_id = args.get('parent_folder_id')
 
     raw_response = client.create_folder(user_id, new_folder_name, parent_folder_id)
+    response: dict = raw_response if isinstance(raw_response, dict) else {}
     parsed_created_folder = parse_folders_list(raw_response)
     human_readable = tableToMarkdown(
         f'Mail folder was created with display name: {new_folder_name}',
         parsed_created_folder)
     entry_context = {CONTEXT_FOLDER_PATH: parsed_created_folder}
 
-    return_outputs(human_readable, entry_context, raw_response)
+    return_outputs(human_readable, entry_context, response)
 
 
 def update_folder_command(client: MsGraphClient, args):
@@ -582,12 +593,13 @@ def update_folder_command(client: MsGraphClient, args):
     new_display_name = args.get('new_display_name')
 
     raw_response = client.update_folder(user_id, folder_id, new_display_name)
+    response: dict = raw_response if isinstance(raw_response, dict) else {}
     parsed_updated_folder = parse_folders_list(raw_response)
     human_readable = tableToMarkdown(f'Mail folder {folder_id} was updated with display name: {new_display_name}',
                                      parsed_updated_folder)
     entry_context = {CONTEXT_FOLDER_PATH: parsed_updated_folder}
 
-    return_outputs(human_readable, entry_context, raw_response)
+    return_outputs(human_readable, entry_context, response)
 
 
 def delete_folder_command(client: MsGraphClient, args):
@@ -604,7 +616,8 @@ def move_email_command(client: MsGraphClient, args):
     destination_folder_id = args.get('destination_folder_id')
 
     raw_response = client.move_email(user_id, message_id, destination_folder_id)
-    new_message_id = raw_response.get('id')
+    response: dict = raw_response if isinstance(raw_response, dict) else {}
+    new_message_id = response.get('id')
     moved_email_info = {
         'ID': new_message_id,
         'DestinationFolderID': destination_folder_id,
@@ -613,14 +626,14 @@ def move_email_command(client: MsGraphClient, args):
     human_readable = tableToMarkdown('The email was moved successfully. Updated email data:', moved_email_info)
     entry_context = {CONTEXT_COPIED_EMAIL: moved_email_info}
 
-    return_outputs(human_readable, entry_context, raw_response)
+    return_outputs(human_readable, entry_context, response)
 
 
 def get_email_as_eml_command(client: MsGraphClient, args):
     user_id = args.get('user_id')
     message_id = args.get('message_id')
 
-    eml_content = client.get_email_as_eml(user_id, message_id)
+    eml_content = str(client.get_email_as_eml(user_id, message_id))
     file_result = fileResult(f'{message_id}.eml', eml_content)
 
     if is_error(file_result):

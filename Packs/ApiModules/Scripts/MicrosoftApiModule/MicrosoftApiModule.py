@@ -14,10 +14,19 @@ class MicrosoftClient(BaseClient):
 
     def __init__(self, tenant_id: str = '', auth_id: str = '', enc_key: str = '',
                  token_retrieval_url: str = '', app_name: str = '', refresh_token: str = '',
+                 scope: str = 'https://graph.microsoft.com/.default',
                  resource: str = '', verify: bool = True, self_deployed: bool = False, *args, **kwargs):
         """
         Microsoft Client class that implements logic to authenticate with oproxy or self deployed applications.
         It also provides common logic to handle responses from Microsoft.
+        Args:
+            tenant_id: if self deployed then it's the tenant for the app url, or if oproxy then it's the token
+            auth_id: if self deployed then it's the client id, or if oproxy then it's the auth id and token url
+            enc_key: if self deployed then it's the client secret, or if oproxy then it's the encryption key
+            scope: only if it's self deployed then it's the scope of the application
+            resource: only if it's self deployed then it's the resource of the application
+            verify: demisto insecure parameter
+            self_deployed: indicates whether the integration mode is self deployed or oproxy
         """
         super().__init__(verify=verify, *args, **kwargs)  # type: ignore[misc]
 
@@ -30,7 +39,7 @@ class MicrosoftClient(BaseClient):
                 token_retrieval_url = auth_id_and_token_retrieval_url[1]
         else:
             self.app_url = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token'
-            self.scope = 'https://graph.microsoft.com/.default'
+            self.scope = scope
 
         self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
         self.tenant_id = tenant_id
@@ -44,7 +53,7 @@ class MicrosoftClient(BaseClient):
         self.resource = resource
         self.verify = verify
 
-    def http_request(self, *args, **kwargs):
+    def http_request(self, *args, **kwargs) -> requests.Response:
         """
         Overrides Base client request function, retrieves and adds to headers access token before sending the request.
 
