@@ -1,6 +1,6 @@
 ## [Unreleased]
-- Support questions text with parameters instead of using the parameters argument in ***tn-ask-question*** command.
-- Fixed an issue where ***tn-get-question-result*** command returned a list in single column result.
+  - Added support for question text with parameters instead of using the parameters argument in the ***tn-ask-question*** command.
+  - Fixed an issue where the ***tn-get-question-result*** command returned a list in a single-column result.
 
 ## [19.12.1] - 2019-12-25
 Fixed an issue where ***tn-get-question-result*** command returned empty results.
