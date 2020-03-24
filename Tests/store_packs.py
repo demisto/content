@@ -245,16 +245,22 @@ class Pack(object):
                 for f in files:
                     # skipping zipping of unwanted files
                     if f.startswith('.') or f in [Pack.AUTHOR_IMAGE_NAME, Pack.USER_METADATA]:
-                        os.remove(f)
-                        print_warning(f"Removing {f} for {self._pack_name} pack")
+                        remove_arg = f'rm {f}'
+                        remove_file = subprocess.Popen(remove_arg, stdout=subprocess.PIPE,
+                                                           stderr=subprocess.PIPE, shell=True)
+                        outpt, er = remove_file.communicate()
+                        print_warning(f"Removing {f} for {self._pack_name} pack - Error: {er}")
                         continue
 
                     current_directory = root.split(os.path.sep)[-1]
 
                     if current_directory == 'Misc' and not fnmatch.fnmatch(f, 'reputation-*.json'):
                         # reputation in old format aren't supported in 6.0.0 server version
-                        os.remove(f)
-                        print_warning(f"Removing {f} for {self._pack_name} pack")
+                        remove_arg = f'rm {f}'
+                        remove_file = subprocess.Popen(remove_arg, stdout=subprocess.PIPE,
+                                                       stderr=subprocess.PIPE, shell=True)
+                        outpt, er = remove_file.communicate()
+                        print_warning(f"Removing {f} for {self._pack_name} pack - Error: {er}")
                         continue
         except Exception as e:
             print_error(f"Failed to delete ignored files for pack {self._pack_name} - {str(e)}")
