@@ -1128,5 +1128,5 @@ script:
   script: '-'
   subtype: python2
   type: python
-tests:	
+tests:
 - Fidelis-Test
