@@ -224,7 +224,8 @@ def refresh_outbound_context(request_args: RequestArguments) -> str:
         'drop_invalids': request_args.drop_invalids,
         'strip_port': request_args.strip_port,
         'category_default': request_args.category_default,
-        'category_attribute': request_args.category_attribute
+        'category_attribute': request_args.category_attribute,
+        'collapse_ips': request_args.collapse_ips
     })
     return out_dict[CTX_VALUES_KEY]
 
@@ -383,8 +384,9 @@ def panos_url_formatting(iocs: list, drop_invalids: bool, strip_port: bool):
     formatted_indicators = []  # type:List
     for indicator_data in iocs:
         # only format URLs and Domains
+        indicator = indicator_data.get('value')
         if indicator_data.get('indicator_type') in ['URL', 'Domain', 'DomainGlob']:
-            indicator = indicator_data.get('value').lower()
+            indicator = indicator.lower()
 
             # remove initial protocol - http/https/ftp/ftps etc
             indicator = _PROTOCOL_REMOVAL.sub('', indicator)
