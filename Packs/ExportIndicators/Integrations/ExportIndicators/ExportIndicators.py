@@ -173,6 +173,10 @@ def refresh_outbound_context(request_args: RequestArguments) -> str:
     iocs = find_indicators_with_limit(request_args.query, request_args.limit, request_args.offset)
     out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs, request_args)
 
+    # if in CSV format - the "indicator" header
+    if request_args.out_format == FORMAT_CSV:
+        actual_indicator_amount = actual_indicator_amount - 1
+
     # re-polling in case ip collapse caused a lack in results
     if request_args.collapse_ips != DONT_COLLAPSE:
         while actual_indicator_amount < request_args.limit:
@@ -192,6 +196,9 @@ def refresh_outbound_context(request_args: RequestArguments) -> str:
 
             # reformat the output
             out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs, request_args)
+
+            if request_args.out_format == FORMAT_CSV:
+                actual_indicator_amount = actual_indicator_amount - 1
 
     if request_args.out_format == FORMAT_JSON:
         out_dict[CTX_MIMETYPE_KEY] = MIMETYPE_JSON
@@ -361,6 +368,9 @@ def ips_to_ranges(ips: list, collapse_ips):
 
             if not appended:
                 ips_range_groups.append([ip])
+
+    for group in ips_range_groups:
+        sorted(group)
 
     if collapse_ips == COLLAPSE_TO_RANGES:
         return ip_groups_to_ranges(ips_range_groups)
