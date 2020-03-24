@@ -195,15 +195,9 @@ class MsGraphClient:
         rtype: ``list``
         """
         suffix_endpoint = f'users/{user_id}/mailFolders/msgfolderroot/childFolders?$top=250'
-        response: requests.Response = self.ms_client.http_request('GET', suffix_endpoint)
-        root_folder_children = None
-        error_msg = 'No folders found under Top Of Information Store folder'
-        if isinstance(response, dict):
-            root_folder_children = response.get('value', None)
-            if not root_folder_children:
-                raise Exception(error_msg)
-        else:
-            raise Exception(error_msg)
+        root_folder_children = self.ms_client.http_request('GET', suffix_endpoint).get('value', None)
+        if not root_folder_children:
+            raise Exception("No folders found under Top Of Information Store folder")
 
         return root_folder_children
 
@@ -221,10 +215,7 @@ class MsGraphClient:
         :rtype: ``list``
         """
         suffix_endpoint = f'users/{user_id}/mailFolders/{folder_id}/childFolders?$top=250'
-        response: requests.Response = self.ms_client.http_request('GET', suffix_endpoint)
-        folder_children: list = []
-        if isinstance(response, dict):
-            folder_children = response.get('value', [])
+        folder_children = self.ms_client.http_request('GET', suffix_endpoint).get('value', [])
         return folder_children
 
     def _get_folder_info(self, user_id, folder_id):
@@ -325,10 +316,7 @@ class MsGraphClient:
         suffix_endpoint = (f"users/{self._mailbox_to_fetch}/mailFolders/{folder_id}/messages"
                            f"?$filter=lastModifiedDateTime ge {target_modified_time}"
                            f"&$orderby=lastModifiedDateTime &$top={self._emails_fetch_limit}&select=*")
-        response: requests.Response = self.ms_client.http_request('GET', suffix_endpoint)
-        fetched_emails: list = []
-        if isinstance(response, dict):
-            fetched_emails = response.get('value', [])[:self._emails_fetch_limit]
+        fetched_emails = self.ms_client.http_request('GET', suffix_endpoint).get('value', [])[:self._emails_fetch_limit]
 
         if exclude_ids:  # removing emails in order to prevent duplicate incidents
             fetched_emails = [email for email in fetched_emails if email.get('id') not in exclude_ids]
@@ -626,10 +614,7 @@ class MsGraphClient:
 
         attachment_results = []  # type: ignore
         suffix_endpoint = f'users/{self._mailbox_to_fetch}/messages/{message_id}/attachments'
-        response: requests.Response = self.ms_client.http_request('GET', suffix_endpoint)
-        attachments: list = []
-        if isinstance(response, dict):
-            attachments = response.get('value', [])
+        attachments = self.ms_client.http_request('Get', suffix_endpoint).get('value', [])
 
         for attachment in attachments:
             attachment_type = attachment.get('@odata.type', '')
@@ -797,7 +782,7 @@ class MsGraphClient:
         suffix_endpoint = f'users/{self._mailbox_to_fetch}'
         user_response = self.ms_client.http_request('GET', suffix_endpoint)
 
-        if isinstance(user_response, dict) and user_response.get('mail') != '' and user_response.get('id') != '':
+        if user_response.get('mail') != '' and user_response.get('id') != '':
             return_outputs('```✅ Success!```')
         else:
             raise Exception("Failed validating the user.")
@@ -815,7 +800,7 @@ def main():
     proxy = params.get('proxy', False)
     ok_codes = (200, 201, 202)
     refresh_token = params.get('refresh_token', '')
-    auth_and_token_url: str = params.get('auth_id', '')
+    auth_and_token_url = params.get('auth_id', '')
     enc_key = params.get('enc_key', '')
     app_name = 'ms-graph-mail-listener'
 
