@@ -50,7 +50,7 @@ script:
         - name: cve_id
           required: true
           default: true
-          description: 'The CVE ID. For example: CVE-2014-1234.'
+          description: 'Array or comma-separated list of CVE IDs. For example: CVE-2014-1234,CVE-2020-1234.'
       outputs:
         - contextPath: CVE.ID
           description: The ID of the CVE.

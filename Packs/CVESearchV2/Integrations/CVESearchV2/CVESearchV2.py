@@ -85,12 +85,20 @@ def cve_command(client: Client, args: dict) -> Tuple[str, Dict[str, Dict[str, st
         CVE details containing ID, CVSS, modified date, published date and description.
     """
     cve_id = args.get('cve_id', '')
-    if not valid_cve_id_format(cve_id):
-        raise DemistoException(f'"{cve_id}" is not a valid cve ID')
-    res = client.cve(cve_id)
+    cve_ids = argToList(cve_id)
+    data = []
+    res = []
+
+    for _id in cve_ids:
+        if not valid_cve_id_format(_id):
+            raise DemistoException(f'"{_id}" is not a valid cve ID')
+        response = client.cve(_id)
+        res.append(response)
+        data.append(cve_to_context(response))
+
     if not res:
         return 'No results found.', {}, {}
-    data = cve_to_context(res)
+
     human_readable = tableToMarkdown('CVE Search results', data)
     context = {'CVE(val.ID === obj.ID)': data}
     return human_readable, context, res
