@@ -37,8 +37,8 @@ configuration:
   name: connect_parameters
   required: false
   type: 0
-description: Generic SQL for the Databases MYSQL, PostgreSQL,Microsoft SQL Server,
-  Oracle
+description: ' Use the Generic SQL integration to run SQL queries on the following databases: MYSQL, PostgreSQL,Microsoft SQL Server,
+  and Oracle. '
 display: Generic SQL
 name: Generic SQL
 script:
@@ -46,69 +46,69 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: Number of results you would like to get back
+      description: The maximum number of results to return.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: The sql query
+      description: The SQL query to run.
       isArray: false
       name: query
       required: true
       secret: false
     - default: false
       defaultValue: '0'
-      description: Number of results you would like to skip on
+      description: The offset at which to start the results. The default is 0.
       isArray: false
       name: skip
       required: false
       secret: false
     - default: false
-      description: 'e.g: "foo","bar","alpha"'
+      description: 'A comma-separated list of names, for example: "foo","bar","alpha".'
       isArray: true
       name: bind_variables_names
       required: false
       secret: false
     - default: false
-      description: 'e.g: 7,"foo",3'
+      description: 'A comma-separated list of value, for example: 7,"foo",3.'
       isArray: true
       name: bind_variables_values
       required: false
       secret: false
     deprecated: false
-    description: Running a sql query
+    description: Runs a SQL query.
     execution: false
     name: query
   - arguments:
     - default: false
-      description: The sql query
+      description: The SQL query to run.
       isArray: false
       name: query
       required: true
       secret: false
     - default: false
       defaultValue: '50'
-      description: Number of results you would like to get back
+      description: The maximum number of results to return.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: Number of results you would like to skip on
+      description: The offset at which to start the results. The default is 0.
       isArray: false
       name: skip
       required: false
       secret: false
     - default: false
-      description: 'e.g: "foo","bar","alpha"'
+      description: 'A comma-separated list of names, for example: "foo","bar","alpha".'
       isArray: true
       name: bind_variables_names
       required: false
       secret: false
     - default: false
-      description: 'e.g: 7,"foo",3'
+      description: 'A comma-separated list of value, for example: 7,"foo",3.'
       isArray: true
       name: bind_variables_values
       required: false
