@@ -1,3 +1,8 @@
+from copy import deepcopy
+import pytest
+import SplunkPy as splunk
+RETURN_ERROR_TARGET = 'SplunkPy.return_error'
+
 DICT_RAW_RESPONSE = '"1528755951, search_name="NG_SIEM_UC25- High number of hits against ' \
                     'unknown website from same subnet", action="allowed", dest="bb.bbb.bb.bbb , cc.ccc.ccc.cc , ' \
                     'xx.xx.xxx.xx , yyy.yy.yyy.yy , zz.zzz.zz.zzz , aa.aa.aaa.aaa", distinct_hosts="5", ' \
@@ -101,14 +106,13 @@ POSITIVE = {
 
 
 def test_raw_to_dict():
-    from SplunkPy import rawToDict
     actual_raw = DICT_RAW_RESPONSE
-    response = rawToDict(actual_raw)
-    list_response = rawToDict(LIST_RAW)
-    raw_message = rawToDict(RAW_WITH_MESSAGE)
-    empty = rawToDict('')
-    url_test = rawToDict(URL_TESTING_IN)
-    character_check = rawToDict(RESPONSE)
+    response = splunk.rawToDict(actual_raw)
+    list_response = splunk.rawToDict(LIST_RAW)
+    raw_message = splunk.rawToDict(RAW_WITH_MESSAGE)
+    empty = splunk.rawToDict('')
+    url_test = splunk.rawToDict(URL_TESTING_IN)
+    character_check = splunk.rawToDict(RESPONSE)
 
     assert EXPECTED == response
     assert {} == list_response
@@ -118,3 +122,48 @@ def test_raw_to_dict():
     assert empty == {}
     assert URL_TESTING_OUT == url_test
     assert POSITIVE == character_check
+
+
+data_test_replace_keys = [
+    ({}, {}),
+    ({'test': 'test'}, {'test': 'test'}),
+    ({'test.': 'test.'}, {'test_': 'test.'}),
+    ({'te.st': 'te.st'}, {'te_st': 'te.st'}),
+    ({'te[st': 'te[st'}, {'te_st': 'te[st'}),
+    ({'te]st': 'te]st'}, {'te_st': 'te]st'}),
+    ({'te)st': 'te)st'}, {'te_st': 'te)st'}),
+    ({'te(st': 'te(st'}, {'te_st': 'te(st'}),
+    ('', ''),
+    (None, None)
+]
+
+
+@pytest.mark.parametrize('dict_in, dict_out', data_test_replace_keys)
+def test_replace_keys(dict_in, dict_out):
+    out = splunk.replace_keys(deepcopy(dict_in))
+    assert out == dict_out, 'replace_keys({}) got: {} instead: {}'.format(dict_in, out, dict_out)
+
+
+def test_parse_time_to_minutes_no_error():
+    splunk.FETCH_TIME = '3 hours'
+    res = splunk.parse_time_to_minutes()
+    assert res == 180
+
+
+def test_parse_time_to_minutes_invalid_time_integer(mocker):
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+
+    splunk.FETCH_TIME = 'abc hours'
+    splunk.parse_time_to_minutes()
+    err_msg = return_error_mock.call_args[0][0]
+    assert err_msg == "Error: Invalid fetch time, need to be a positive integer with the time unit afterwards " \
+                      "e.g '2 months, 4 days'."
+
+
+def test_parse_time_to_minutes_invalid_time_unit(mocker):
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+
+    splunk.FETCH_TIME = '3 hoursss'
+    splunk.parse_time_to_minutes()
+    err_msg = return_error_mock.call_args[0][0]
+    assert err_msg == 'Error: Invalid time unit.'
