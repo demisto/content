@@ -2508,7 +2508,6 @@
         }
     ],
     "skipped_tests": {
-        "Claroty - Test": "Issue 22996",
         "test_MsGraphFiles": "Issue 22853",
         "TestCofenseFeed": "Issue 22854",
         "RecordedFutureFeed - Test": "Issue 22855",
