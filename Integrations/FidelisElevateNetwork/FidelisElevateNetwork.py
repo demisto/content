@@ -367,7 +367,7 @@ def manage_alert_assignuser_command():
     }
 
     return_outputs("Assigned User: {} to alert with conclusion ID {}".format(assign_user, conclusion_id),
-                   {'Fidelis.Alert(val.ConclusionID && val.ID == obj.ConclusionID)': entry_context}, raw_response)
+                   {'Fidelis.Alert(val.ConclusionID && val.ConclusionID == obj.ConclusionID)': entry_context}, raw_response)
 
 
 def manage_alert_assignuser(data):
@@ -1232,4 +1232,3 @@ def main():
 # python2 uses __builtin__ python3 uses builtins
 if __name__ == "__builtin__" or __name__ == "builtins":
     main()
-
