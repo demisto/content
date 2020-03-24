@@ -19,14 +19,14 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: Use Silverfort integration to get & update Silverfort risk severity.
+description: Use the Silverfort integration to get and update Silverfort risk severity.
 display: Silverfort
 name: Silverfort
 script:
   commands:
   - arguments:
     - default: false
-      description: User principal name
+      description: The user principal name.
       isArray: false
       name: upn
       required: false
@@ -38,7 +38,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Sam account
+      description: The sam account.
       isArray: false
       name: sam_account
       required: false
@@ -55,57 +55,57 @@ script:
     name: silverfort-get-user-risk
     outputs:
     - contextPath: Silverfort.UserRisk.Risk
-      description: Risk level
+      description: The risk level.
       type: String
     - contextPath: Silverfort.UserRisk.Reasons
-      description: Risk reasons
+      description: The reasons for the risk.
       type: Unknown
     - contextPath: Silverfort.UserRisk.UPN
-      description: User principal name
+      description: The user principal name.
       type: String
   - arguments:
     - default: false
-      description: Hostname
+      description: The hostname.
       isArray: false
       name: resource_name
       required: true
       secret: false
     - default: false
-      description: Domain
+      description: The domain.
       isArray: false
       name: domain_name
       required: true
       secret: false
     deprecated: false
-    description: Resource risk commands - get the resource entity risk
+    description: Gets the resource entity risk information.
     execution: false
     name: silverfort-get-resource-risk
     outputs:
     - contextPath: Silverfort.ResourceRisk.Risk
-      description: Resource risk
+      description: The resource risk.
       type: String
     - contextPath: Silverfort.ResourceRisk.Reasons
-      description: Risk reasons
+      description: The reasons for the risk.
       type: Unknown
     - contextPath: Silverfort.ResourceRisk.ResourceName
-      description: Hostname
+      description: The hostname.
       type: String
   - arguments:
     - default: false
-      description: User principal name
+      description: The user principal name.
       isArray: false
       name: upn
       required: false
       secret: false
     - default: false
-      description: Risk name
+      description: The risk name.
       isArray: false
       name: risk_name
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Severity
+      description: The severity.
       isArray: false
       name: severity
       predefined:
@@ -116,61 +116,61 @@ script:
       required: true
       secret: false
     - default: false
-      description: How many days the risk will be valid for
+      description: The number of days that the risk will be valid for.
       isArray: false
       name: valid_for
       required: true
       secret: false
     - default: false
-      description: Risk description
+      description: The risk description.
       isArray: false
       name: description
       required: true
       secret: false
     - default: false
-      description: Email
+      description: The email address.
       isArray: false
       name: email
       required: false
       secret: false
     - default: false
-      description: Sam account
+      description: The sam account.
       isArray: false
       name: sam_account
       required: false
       secret: false
     - default: false
-      description: Domain
+      description: The domain.
       isArray: false
       name: domain
       required: false
       secret: false
     deprecated: false
-    description: User risk commands - update the user entity risk
+    description: Updates the user entity risk.
     execution: false
     name: silverfort-update-user-risk
   - arguments:
     - default: false
-      description: Hostname
+      description: The hostname.
       isArray: false
       name: resource_name
       required: true
       secret: false
     - default: false
-      description: Domain name
+      description: The domain name.
       isArray: false
       name: domain_name
       required: true
       secret: false
     - default: false
-      description: Risk name
+      description: The risk name.
       isArray: false
       name: risk_name
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Severity
+      description: The severity.
       isArray: false
       name: severity
       predefined:
@@ -181,19 +181,19 @@ script:
       required: true
       secret: false
     - default: false
-      description: How many days the severity will be relevant for
+      description: The number of days the severity will be relevant for.
       isArray: false
       name: valid_for
       required: true
       secret: false
     - default: false
-      description: Short description about the risk
+      description: A short description about the risk.
       isArray: false
       name: description
       required: true
       secret: false
     deprecated: false
-    description: Resource risk commands - update the resource entity risk
+    description: Update the resource entity risk.
     execution: false
     name: silverfort-update-resource-risk
   dockerimage: demisto/python3:3.7.4.2245
