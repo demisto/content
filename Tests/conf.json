@@ -9,7 +9,8 @@
         },
         {
             "integrations": "Silverfort",
-            "playbookID": "Silverfort-test"
+            "playbookID": "Silverfort-test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Fastly Feed",
