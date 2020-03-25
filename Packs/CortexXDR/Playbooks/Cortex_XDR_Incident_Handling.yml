@@ -212,7 +212,7 @@ tasks:
     task:
       id: ba8deeb8-0175-4c9f-80ce-e8b974389599
       version: -1
-      name: Perform file analysis with AutoFocus
+      name: Retrieve sample analysis from AutoFocus
       description: Retrieve the sample analysis
       script: '|||autofocus-sample-analysis'
       type: regular
