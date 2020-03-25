@@ -631,6 +631,7 @@ tasks:
       id: c1b6bfd6-729d-4c47-8f96-f9a7527b3c9b
       version: -1
       name: Fix errors and push manually
+      description: '-'
       type: regular
       iscommand: false
       brand: ""
