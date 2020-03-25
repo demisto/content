@@ -1,4 +1,4 @@
-comment: Get the Cortex XSOAR Server URL.
+comment: Get the Server URL.
 commonfields:
   id: GetServerURL
   version: -1
