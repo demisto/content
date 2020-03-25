@@ -189,6 +189,7 @@ jobs:
           destination: artifacts
       - run:
           name: Run Unit Testing and Lint
+          no_output_timeout: 1.5h
           when: always
           command: |
               if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 1 ] ;
