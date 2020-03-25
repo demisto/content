@@ -57,4 +57,5 @@ There is no context output for this command.
 ### EDL was updated successfully with the following values
 |Indicators|
 |---|
-| 1.1.1.1<br>2.2.2.2 |
+| 1.1.1.1
+2.2.2.2 |
