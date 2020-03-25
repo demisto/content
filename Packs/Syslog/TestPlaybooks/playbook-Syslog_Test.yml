@@ -116,7 +116,7 @@ tasks:
       - "4"
     scriptarguments:
       seconds:
-        simple: "60"
+        simple: "70"
     separatecontext: false
     view: |-
       {
@@ -148,7 +148,7 @@ tasks:
       - "5"
     scriptarguments:
       details:
-        simple: This is a test from syslog
+        simple: syslog
       fromclosedate: {}
       fromdate: {}
       fromduedate: {}
