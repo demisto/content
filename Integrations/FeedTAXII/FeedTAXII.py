@@ -522,8 +522,11 @@ class TAXIIClient(object):
             return_error(f"No collection set. Here is a list of all accessible collections: "
                          f"{str(all_collections)}")
 
-    def get_all_collections(self):
+    def get_all_collections(self, is_raise_error=False):
         """Gets a list of all collections listed in the discovery service instance.
+
+        Args:
+            is_raise_error(bool): Whether to raise an error when one occurs.
 
         Returns:
             list. A list of all collection names in discovery service.
@@ -540,6 +543,8 @@ class TAXIIClient(object):
             try:
                 all_collections = taxii_client.get_collections()
             except Exception as e:
+                if is_raise_error:
+                    raise ConnectionError()
                 return_error(f'{INTEGRATION_NAME} - An error occurred when trying to fetch available collections.\n{e}')
 
             return [collection.name for collection in all_collections]
@@ -930,10 +935,14 @@ def interval_in_sec(val):
     return None
 
 
-def test_module(client, args):
-    all_collections = client.get_all_collections()
+def test_module(client):
+    try:
+        all_collections = client.get_all_collections(is_raise_error=True)
+    except ConnectionError:
+        all_collections = [client.collection]
+
     if client.collection not in all_collections:
-        return_error(f'Collection could not be found. Here is a list of all accessible collections:'
+        return_error(f'Collection could not be found at this time. Here is a list of all accessible collections:'
                      f' {str(all_collections)}')
 
     client._discover_poll_service()
