@@ -35,7 +35,7 @@ You can execute these commands from the Demisto CLI, as part of an automation, o
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### silverfort-get-user-risk
 ***
-User risk commands - get the user entity risk
+User risk commands - get the user entity risk.
 
 
 ##### Base Command
@@ -46,14 +46,14 @@ User risk commands - get the user entity risk
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | upn | The user principal name. | Optional | 
-| email | Email | Optional | 
+| email | The email address. | Optional | 
 | sam_account | The sam account. | Optional | 
-| domain | Domain | Optional | 
+| domain | The domain. | Optional | 
 
 Specify one of the following:
 * upn
-* email address and domain, or
-* sam account and domain.
+* email address and domain
+* sam account and domain
 
 ##### Context Output
 
@@ -164,8 +164,8 @@ Updates the user entity risk.
 
 Specify one of the following:
 * upn
-* email address and domain, or
-* sam account and domain.
+* email address and domain
+* sam account and domain
 
 ##### Context Output
 
