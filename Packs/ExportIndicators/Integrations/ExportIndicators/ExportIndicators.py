@@ -881,7 +881,7 @@ def update_outbound_command(args, params):
     print_indicators = args.get('print_indicators')
     query = args.get('query')
     out_format = args.get('format')
-    offset = args.get('offset')
+    offset = try_parse_integer(args.get('offset', 0), CTX_OFFSET_ERR_MSG)
     mwg_type = args.get('mwg_type')
     strip_port = args.get('strip_port') == 'True'
     drop_invalids = args.get('drop_invalids') == 'True'
