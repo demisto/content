@@ -183,7 +183,8 @@
         "DomainReputation"
       ],
       "formatScript": "ExtractDomainFromUrlAndEmail",
-      "fromVersion": "3.6"
+      "fromVersion": "3.6",
+      "toVersion": "5.4.9"
     }
   ]
 }
