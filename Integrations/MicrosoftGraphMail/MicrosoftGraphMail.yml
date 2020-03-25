@@ -33,6 +33,10 @@ configuration:
   name: self_deployed
   required: false
   type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
 description: Microsoft Graph lets your app get authorized access to a user's Outlook
   mail data in a personal or organization account.
 display: Microsoft Graph Mail
