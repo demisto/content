@@ -335,6 +335,14 @@ tasks:
         complex:
           root: inputs.CVE
           accessor: ID
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    results:
+    - CVE
     separatecontext: false
     view: |-
       {
