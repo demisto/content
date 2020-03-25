@@ -517,10 +517,10 @@ class TAXIIClient(object):
                 self.username = credentials.get('identifier', None)
                 self.password = credentials.get('password', None)
 
-        self.all_collections = self.get_all_collections()
         if collection is None or collection == '':
+            all_collections = self.get_all_collections()
             return_error(f"No collection set. Here is a list of all accessible collections: "
-                         f"{str(self.all_collections)}")
+                         f"{str(all_collections)}")
 
     def get_all_collections(self):
         """Gets a list of all collections listed in the discovery service instance.
@@ -931,9 +931,10 @@ def interval_in_sec(val):
 
 
 def test_module(client, args):
-    if client.collection not in client.all_collections:
+    all_collections = client.get_all_collections()
+    if client.collection not in all_collections:
         return_error(f'Collection could not be found. Here is a list of all accessible collections:'
-                     f' {str(client.all_collections)}')
+                     f' {str(all_collections)}')
 
     client._discover_poll_service()
     return 'ok', {}, {}
