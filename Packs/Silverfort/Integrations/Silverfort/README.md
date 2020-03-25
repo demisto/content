@@ -13,31 +13,31 @@ Silverfort protects organizations from data breaches by delivering strong authen
 - Consume Silverfort user and server risk levels
 - Enrich the Silverfort risk engine and trigger MFA on risky entities
 ## Configure Silverfort on Demisto
----
 
-1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Silverfort.
-3. Click __Add instance__ to create and configure a new integration instance.
-    * __Name__: a textual name for the integration instance
-    * __Server URL__
-    * __APIKEY__
-    * __Trust any certificate (not secure)__
-4. Click __Test__ to validate the URL, token, and connection.
+3. Click **Add instance** to create and configure a new integration instance.
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Name | a textual name for the integration instance | True |
+| url | Server URL | True |
+| apikey | APIKEY | True |
+| insecure | Trust any certificate (not secure) | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
 - To generate an API token:
     1. From the Silverfort Admin Console, navigate to __Settings__ > __Advanced__.
     2. In the Authentication Tokens section, click __Generate Token__.
     3. Copy the generated token and save it in a safe place.
 ## Commands
----
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-1. silverfort-get-user-risk
-2. silverfort-get-resource-risk
-3. silverfort-update-user-risk
-4. silverfort-update-resource-risk
-### 1. silverfort-get-user-risk
----
+### silverfort-get-user-risk
+***
 User risk commands - get the user entity risk
+
+
 ##### Base Command
 
 `silverfort-get-user-risk`
@@ -45,9 +45,9 @@ User risk commands - get the user entity risk
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| upn | User principal name | Optional | 
-| email | Email address | Optional | 
-| sam_account | Sam account | Optional | 
+| upn | The user principal name. | Optional | 
+| email | Email | Optional | 
+| sam_account | The sam account. | Optional | 
 | domain | Domain | Optional | 
 
 Specify one of the following:
@@ -59,9 +59,9 @@ Specify one of the following:
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Silverfort.UserRisk.Risk | String | Risk level | 
-| Silverfort.UserRisk.Reasons | Array | Risk reasons | 
-| Silverfort.UserRisk.UPN | String | User principal name | 
+| Silverfort.UserRisk.Risk | String | The risk level. | 
+| Silverfort.UserRisk.Reasons | Unknown | The reasons for the risk. | 
+| Silverfort.UserRisk.UPN | String | The user principal name. | 
 
 
 ##### Command Example
@@ -70,12 +70,15 @@ Specify one of the following:
 ##### Context Example
 ```
 {
-    "Silverfort.UserRisk": {
-        "Reasons": [
-            "Password never expires"
-        ], 
-        "UPN": "sfuser@silverfort.io", 
-        "Risk": "Low"
+    "Silverfort": {
+        "UserRisk": {
+            "Reasons": [
+                "Suspicious activity",
+                "Password never expires"
+            ],
+            "Risk": "Medium",
+            "UPN": "sfuser@silverfort.io"
+        }
     }
 }
 ```
@@ -84,12 +87,14 @@ Specify one of the following:
 ### Silverfort User Risk
 |UPN|Risk|Reasons|
 |---|---|---|
-| sfuser@silverfort.io | Low | Password never expires |
+| sfuser@silverfort.io | Medium | Suspicious activity,<br>Password never expires |
 
 
-### 2. silverfort-get-resource-risk
----
-Resource risk commands - get the resource entity risk
+### silverfort-get-resource-risk
+***
+Gets the resource entity risk information.
+
+
 ##### Base Command
 
 `silverfort-get-resource-risk`
@@ -97,17 +102,17 @@ Resource risk commands - get the resource entity risk
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_name | Hostname | Required | 
-| domain_name | Domain | Required | 
+| resource_name | The hostname. | Required | 
+| domain_name | The domain. | Required | 
 
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Silverfort.ResourceRisk.Risk | String | Resource risk | 
-| Silverfort.ResourceRisk.Reasons | Array | Risk reasons | 
-| Silverfort.ResourceRisk.ResourceName | String | Hostname | 
+| Silverfort.ResourceRisk.Risk | String | The resource risk. | 
+| Silverfort.ResourceRisk.Reasons | Array | The reasons for the risk. | 
+| Silverfort.ResourceRisk.ResourceName | String | The hostname. | 
 
 
 ##### Command Example
@@ -116,12 +121,14 @@ Resource risk commands - get the resource entity risk
 ##### Context Example
 ```
 {
-    "Silverfort.ResourceRisk": {
-        "Reasons": [
-            "Malware detected"
-        ], 
-        "ResourceName": "SF-DC-1", 
-        "Risk": "High"
+    "Silverfort": {
+        "ResourceRisk": {
+            "Reasons": [
+                "Unconstrained Delegation"
+            ],
+            "ResourceName": "SF-DC-1",
+            "Risk": "Low"
+        }
     }
 }
 ```
@@ -130,12 +137,14 @@ Resource risk commands - get the resource entity risk
 ### Silverfort Resource Risk
 |ResourceName|Risk|Reasons|
 |---|---|---|
-| SF-DC-1 | High | Malware detected |
+| SF-DC-1 | Low | Unconstrained Delegation |
 
 
-### 3. silverfort-update-user-risk
----
-User risk commands - update the user entity risk
+### silverfort-update-user-risk
+***
+Updates the user entity risk.
+
+
 ##### Base Command
 
 `silverfort-update-user-risk`
@@ -143,14 +152,14 @@ User risk commands - update the user entity risk
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| upn | User principal name | Optional | 
-| risk_name | Risk name | Required | 
-| severity | Severity | Required | 
-| valid_for | Number of days the risk will be valid for | Required | 
-| description | Risk description | Required | 
-| email | Email | Optional | 
-| sam_account | Sam account | Optional | 
-| domain | Domain | Optional | 
+| upn | The user principal name. | Optional | 
+| risk_name | The risk name. | Required | 
+| severity | The severity. | Required | 
+| valid_for | The number of days that the risk will be valid for. | Required | 
+| description | The risk description. | Required | 
+| email | The email address. | Optional | 
+| sam_account | The sam account. | Optional | 
+| domain | The domain. | Optional | 
 
 
 Specify one of the following:
@@ -165,14 +174,19 @@ There is no context output for this command.
 ##### Command Example
 ```!silverfort-update-user-risk upn="sfuser@silverfort.io" risk_name="activity_risk" severity=medium valid_for=1 description="Suspicious activity"```
 
+##### Context Example
+```
+{}
+```
+
 ##### Human Readable Output
 ok
 
-### 4. silverfort-update-resource-risk
----
-Resource risk commands - update the resource entity risk
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+### silverfort-update-resource-risk
+***
+Update the resource entity risk.
+
+
 ##### Base Command
 
 `silverfort-update-resource-risk`
@@ -180,12 +194,12 @@ Resource risk commands - update the resource entity risk
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_name | Hostname | Required | 
-| domain_name | Domain name | Required | 
-| risk_name | Risk name | Required | 
-| severity | Severity | Required | 
-| valid_for | Number of days the severity will be relevant for | Required | 
-| description | Short description about the risk | Required | 
+| resource_name | The hostname. | Required | 
+| domain_name | The domain name. | Required | 
+| risk_name | The risk name. | Required | 
+| severity | The severity. | Required | 
+| valid_for | The number of days the severity will be relevant for. | Required | 
+| description | A short description about the risk. | Required | 
 
 
 ##### Context Output
@@ -194,6 +208,11 @@ There is no context output for this command.
 
 ##### Command Example
 ```!silverfort-update-resource-risk resource_name="SF-DC-1" domain_name="silverfort.io" risk_name="malware_risk" severity="high" valid_for=1 description="Malware detected"```
+
+##### Context Example
+```
+{}
+```
 
 ##### Human Readable Output
 ok
