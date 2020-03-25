@@ -47,6 +47,8 @@ FORAMT_ARG_XSOAR_JSON_SEQ: str = 'xsoar-seq'
 FORMAT_XSOAR_CSV: str = 'XSOAR csv'
 FORMAT_ARG_XSOAR_CSV: str = 'xsoar-csv'
 
+MWG_TYPE_OPTIONS = ["string", "applcontrol", "dimension", "category", "ip", "mediatype", "number", "regex"]
+
 CTX_FORMAT_ERR_MSG: str = 'Please provide a valid format from: text, json, json-seq, csv, mgw, panosurl and proxysg'
 CTX_LIMIT_ERR_MSG: str = 'Please provide a valid integer for List Size'
 CTX_OFFSET_ERR_MSG: str = 'Please provide a valid integer for Starting Index'
@@ -64,7 +66,7 @@ MIMETYPE_CSV: str = 'text/csv'
 MIMETYPE_TEXT: str = 'text/plain'
 
 DONT_COLLAPSE = "Don't Collapse"
-COLLAPSE_TO_CIDR = "To CIDRS"
+COLLAPSE_TO_CIDR = "To CIDRs"
 COLLAPSE_TO_RANGES = "To Ranges"
 
 _PROTOCOL_REMOVAL = re.compile(r'^(?:[a-z]+:)*//')
@@ -174,31 +176,30 @@ def refresh_outbound_context(request_args: RequestArguments) -> str:
     out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs, request_args)
 
     # if in CSV format - the "indicator" header
-    if request_args.out_format == FORMAT_CSV:
+    if request_args.out_format in [FORMAT_CSV, FORMAT_XSOAR_CSV]:
         actual_indicator_amount = actual_indicator_amount - 1
 
-    # re-polling in case ip collapse caused a lack in results
-    if request_args.collapse_ips != DONT_COLLAPSE:
-        while actual_indicator_amount < request_args.limit:
-            # from where to start the new poll and how many results should be fetched
-            new_offset = len(iocs) + request_args.offset + actual_indicator_amount - 1
-            new_limit = request_args.limit - actual_indicator_amount
+    # re-polling in case formatting or ip collapse caused a lack in results
+    while actual_indicator_amount < request_args.limit:
+        # from where to start the new poll and how many results should be fetched
+        new_offset = len(iocs) + request_args.offset + actual_indicator_amount - 1
+        new_limit = request_args.limit - actual_indicator_amount
 
-            # poll additional indicators into list from demisto
-            new_iocs = find_indicators_with_limit(request_args.query, new_limit, new_offset)
+        # poll additional indicators into list from demisto
+        new_iocs = find_indicators_with_limit(request_args.query, new_limit, new_offset)
 
-            # in case no additional indicators exist - exit
-            if len(new_iocs) == 0:
-                break
+        # in case no additional indicators exist - exit
+        if len(new_iocs) == 0:
+            break
 
-            # add the new results to the existing results
-            iocs += new_iocs
+        # add the new results to the existing results
+        iocs += new_iocs
 
-            # reformat the output
-            out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs, request_args)
+        # reformat the output
+        out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs, request_args)
 
-            if request_args.out_format == FORMAT_CSV:
-                actual_indicator_amount = actual_indicator_amount - 1
+        if request_args.out_format == FORMAT_CSV:
+            actual_indicator_amount = actual_indicator_amount - 1
 
     if request_args.out_format == FORMAT_JSON:
         out_dict[CTX_MIMETYPE_KEY] = MIMETYPE_JSON
@@ -423,7 +424,7 @@ def panos_url_formatting(iocs: list, drop_invalids: bool, strip_port: bool):
                 formatted_indicators.append(indicator[2:])
 
         formatted_indicators.append(indicator)
-    return {CTX_VALUES_KEY: list_to_str(formatted_indicators, '\n')}
+    return {CTX_VALUES_KEY: list_to_str(formatted_indicators, '\n')}, len(formatted_indicators)
 
 
 def create_json_out_format(iocs: list):
@@ -458,6 +459,7 @@ def add_indicator_to_category(indicator, category, category_dict):
 def create_proxysg_out_format(iocs: list, category_attribute: list, category_default='bc_category'):
     formatted_indicators = ''
     category_dict = {}  # type:Dict
+    num_of_returned_indicators = 0
 
     for indicator in iocs:
         if indicator.get('indicator_type') in ['URL', 'Domain', 'DomainGlob']:
@@ -478,11 +480,12 @@ def create_proxysg_out_format(iocs: list, category_attribute: list, category_def
         sub_output_string += list_to_str(indicator_list, '\n')
         sub_output_string += "\nend\n"
         formatted_indicators += sub_output_string
+        num_of_returned_indicators = num_of_returned_indicators + len(indicator_list)
 
     if len(formatted_indicators) == 0:
         raise Exception(CTX_NO_URLS_IN_PROXYSG_FORMAT)
 
-    return {CTX_VALUES_KEY: formatted_indicators}
+    return {CTX_VALUES_KEY: formatted_indicators}, num_of_returned_indicators
 
 
 def create_mwg_out_format(iocs: list, mwg_type: str) -> dict:
@@ -514,10 +517,10 @@ def create_values_for_returned_dict(iocs: list, request_args: RequestArguments) 
     Symantec ProxySG, panosurl)
     """
     if request_args.out_format == FORMAT_PANOSURL:
-        return panos_url_formatting(iocs, request_args.drop_invalids, request_args.strip_port), len(iocs)
+        return panos_url_formatting(iocs, request_args.drop_invalids, request_args.strip_port)
 
     if request_args.out_format == FORMAT_PROXYSG:
-        return create_proxysg_out_format(iocs, request_args.category_attribute, request_args.category_default), len(iocs)
+        return create_proxysg_out_format(iocs, request_args.category_attribute, request_args.category_default)
 
     if request_args.out_format == FORMAT_MWG:
         return create_mwg_out_format(iocs, request_args.mwg_type), len(iocs)
@@ -731,6 +734,10 @@ def get_request_args(params):
 
     elif out_format == FORMAT_ARG_XSOAR_CSV:
         out_format = FORMAT_XSOAR_CSV
+
+    if out_format == FORMAT_MWG:
+        if mwg_type not in MWG_TYPE_OPTIONS:
+            raise DemistoException(CTX_MWG_TYPE_ERR_MSG)
 
     return RequestArguments(query, out_format, limit, offset, mwg_type, strip_port, drop_invalids, category_default,
                             category_attribute, collapse_ips)

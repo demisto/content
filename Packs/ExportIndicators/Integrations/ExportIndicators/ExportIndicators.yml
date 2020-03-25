@@ -23,6 +23,17 @@ configuration:
   - PAN-OS URL
   required: false
   type: 15
+- additionalinfo: Only applies to IPs in text or csv formats.
+  defaultvalue: Don't Collapse
+  display: Should Collapse IPs
+  hidden: false
+  name: collapse_ips
+  options:
+  - Don't Collapse
+  - To CIDRs
+  - To Ranges
+  required: false
+  type: 15
 - defaultvalue: '10000'
   display: List Size
   name: list_size
@@ -87,8 +98,7 @@ configuration:
   required: false
   type: 8
 - additionalinfo: For use with PAN-OS URL format - if selected, any URL entry that
-    is not compliant with PAN-OS EDL URL format is dropped instead of being
-    rewritten.
+    is not compliant with PAN-OS EDL URL format is dropped instead of being rewritten.
   display: PAN-OS URL Format Drop Invalid Entries
   hidden: false
   name: drop_invalids
@@ -109,16 +119,6 @@ configuration:
   name: category_attribute
   required: false
   type: 0
-- defaultvalue: Don't Collapse
-  display: 'Should Collapse IPs:'
-  hidden: false
-  name: collapse_ips
-  options:
-  - Don't Collapse
-  - To CIDRS
-  - To Ranges
-  required: false
-  type: 15
 description: Use the Export Indicators Service integration to provide an endpoint
   with a list of indicators as a service for the system indicators.
 display: Export Indicators Service
@@ -135,8 +135,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: text
-      description: The output format. Can be "text", "json", "json-seq", "csv", "XOSAR json", "XSOAR json-seq", "XSOAR csv", "PAN-OS
-        URL", "McAfee Web Gateway" and "Symantec ProxySG".
+      description: The output format. Can be "text", "json", "json-seq", "csv", "XOSAR
+        json", "XSOAR json-seq", "XSOAR csv", "PAN-OS URL", "McAfee Web Gateway" and
+        "Symantec ProxySG".
       isArray: false
       name: format
       predefined:
@@ -210,9 +211,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: For use with PAN-OS URL format - if True, any URL entry that
-        is not compliant with PAN-OS EDL URL format is dropped instead of
-        being rewritten.
+      description: For use with PAN-OS URL format - if True, any URL entry that is
+        not compliant with PAN-OS EDL URL format is dropped instead of being rewritten.
       isArray: false
       name: drop_invalids
       predefined:
@@ -243,7 +243,7 @@ script:
       name: collapse_ips
       predefined:
       - Don't Collapse
-      - To CIDRS
+      - To CIDRs
       - To Ranges
       required: false
       secret: false
