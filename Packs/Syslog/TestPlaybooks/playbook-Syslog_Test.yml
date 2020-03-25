@@ -1,4 +1,3 @@
-elasticcommonfields: {}
 id: Test Syslog
 version: -1
 name: Test Syslog
@@ -9,7 +8,6 @@ tasks:
     taskid: 45ee5f16-24fb-46f2-8c70-c2e9c55a8380
     type: start
     task:
-      elasticcommonfields: {}
       id: 45ee5f16-24fb-46f2-8c70-c2e9c55a8380
       version: -1
       name: ""
@@ -36,7 +34,6 @@ tasks:
     taskid: 7897b5ec-c981-4fdf-8134-50a915c9991b
     type: regular
     task:
-      elasticcommonfields: {}
       id: 7897b5ec-c981-4fdf-8134-50a915c9991b
       version: -1
       name: Get the server URL
@@ -47,7 +44,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "7"
     separatecontext: false
     view: |-
       {
@@ -66,7 +63,6 @@ tasks:
     taskid: de26d64e-1220-485d-8c5a-d6ed2b66c757
     type: regular
     task:
-      elasticcommonfields: {}
       id: de26d64e-1220-485d-8c5a-d6ed2b66c757
       version: -1
       name: syslog-send
@@ -94,7 +90,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 545
         }
       }
     note: false
@@ -104,13 +100,12 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 52754bf4-8d1c-4388-8f22-c0edff2c8ae3
+    taskid: 8c7b75d8-f763-4790-862c-9a91a13b6b1f
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 52754bf4-8d1c-4388-8f22-c0edff2c8ae3
+      id: 8c7b75d8-f763-4790-862c-9a91a13b6b1f
       version: -1
-      name: Sleep
+      name: Wait for the incident
       description: Sleep for X seconds
       scriptName: Sleep
       type: regular
@@ -121,13 +116,13 @@ tasks:
       - "4"
     scriptarguments:
       seconds:
-        simple: "5"
+        simple: "60"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 720
         }
       }
     note: false
@@ -140,7 +135,6 @@ tasks:
     taskid: 507be312-76f3-4d7b-8569-8c94acc0ca40
     type: regular
     task:
-      elasticcommonfields: {}
       id: 507be312-76f3-4d7b-8569-8c94acc0ca40
       version: -1
       name: SearchIncidentsV2
@@ -178,7 +172,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -191,7 +185,6 @@ tasks:
     taskid: 2a6e2761-3cbd-43fd-8803-2319f7f973e2
     type: condition
     task:
-      elasticcommonfields: {}
       id: 2a6e2761-3cbd-43fd-8803-2319f7f973e2
       version: -1
       name: Found incidents?
@@ -214,7 +207,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
@@ -227,7 +220,6 @@ tasks:
     taskid: cf3d7672-e9cb-4bf6-8126-41574aaeb1f3
     type: title
     task:
-      elasticcommonfields: {}
       id: cf3d7672-e9cb-4bf6-8126-41574aaeb1f3
       version: -1
       name: Done
@@ -239,7 +231,39 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 755092c0-a08c-465b-8e7f-e180b597bfcf
+    type: regular
+    task:
+      id: 755092c0-a08c-465b-8e7f-e180b597bfcf
+      version: -1
+      name: Wait for syslog
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -252,7 +276,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1085,
+        "height": 1260,
         "width": 380,
         "x": 50,
         "y": 50
