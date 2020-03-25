@@ -239,7 +239,7 @@ script:
       type: String
     - contextPath: Domain.WHOIS.Registrar.AbusePhone
       description: The phone number of contact for reporting abuse
-      type: Unknown
+      type: String
     - contextPath: Domain.WHOIS.Admin.Name
       description: The name of the domain administrator
       type: String
@@ -248,7 +248,7 @@ script:
       type: String
     - contextPath: Domain.WHOIS.Admin.Phone
       description: The phone number of the domain administrator
-      type: Unknown
+      type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: string
@@ -356,10 +356,10 @@ script:
       type: Date
     - contextPath: Expanse.Domain.WHOIS.UpdatedDate
       description: The date that the domain was last updated
-      type: String
+      type: Date
     - contextPath: Expanse.Domain.WHOIS.ExpirationDate
       description: The date that the domain expires
-      type: String
+      type: Date
     - contextPath: Expanse.Domain.WHOIS.Registrant.Email
       description: The email address of the registrant
       type: String
