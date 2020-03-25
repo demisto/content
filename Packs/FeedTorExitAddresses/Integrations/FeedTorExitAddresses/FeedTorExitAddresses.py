@@ -52,19 +52,19 @@ class Client(BaseClient):
 
             elif line.startswith('Published'):
                 date = line.split(' ', 1)[1]
-                indicator['firstseenbyfeed'] = self.datestring_to_millisecond_timestamp(date)
+                indicator['firstseenbysource'] = self.datestring_to_millisecond_timestamp(date)
 
             elif line.startswith('LastStatus'):
                 date = line.split(' ', 1)[1]
-                indicator['lastseenbyfeed'] = self.datestring_to_millisecond_timestamp(date)
+                indicator['lastseenbysource'] = self.datestring_to_millisecond_timestamp(date)
 
             elif line.startswith('ExitAddress'):
                 indicator['value'] = line.split()[1]
                 raw_json = indicator.copy()
                 indicator['rawJSON'] = raw_json
                 indicator['fields'] = {
-                    'firstseenbyfeed': indicator.get('firstseenbyfeed'),
-                    'lastseenbyfeed': indicator.get('lastseenbyfeed'),
+                    'firstseenbysource': indicator.get('firstseenbysource'),
+                    'lastseenbysource': indicator.get('lastseenbysource'),
                     'name': indicator.get('name')
                 }
                 indicator_list.append(indicator)
@@ -87,7 +87,7 @@ def get_indicators_command(client: Client, args: dict):
         limit = int(limit)
     indicator_list = fetch_indicators_command(client, limit)
     human_readable = tableToMarkdown("Indicators from Tor Exit Addresses:", indicator_list,
-                                     headers=['value', 'type', 'firstseenbyfeed', 'lastseenbyfeed', 'name'],
+                                     headers=['value', 'type', 'firstseenbysource', 'lastseenbysource', 'name'],
                                      removeNull=True)
     return human_readable, {}, indicator_list
 
