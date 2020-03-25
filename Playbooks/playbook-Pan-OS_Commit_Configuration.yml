@@ -605,7 +605,8 @@ tasks:
     task:
       id: 3e46d493-9404-476d-8d95-68b8ad017a84
       version: -1
-      name: Fix errors and commit manually
+      name: Fix errors and commit manually      
+      description: '-'
       type: regular
       iscommand: false
       brand: ""
