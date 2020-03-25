@@ -13,17 +13,19 @@ import requests
 import urllib3
 import io
 import re
-
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Define utf8 as default encoding
 reload(sys)
 sys.setdefaultencoding('utf8')  # pylint: disable=maybe-no-member
-
+params = demisto.params()
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
-VERIFY_CERTIFICATE = not bool(demisto.params().get('unsecure'))
-FETCH_LIMIT = int(demisto.params().get('fetch_limit', 50))
+VERIFY_CERTIFICATE = not bool(params.get('unsecure'))
+FETCH_LIMIT = int(params.get('fetch_limit', 50))
 FETCH_LIMIT = max(min(200, FETCH_LIMIT), 1)
+PROBLEMATIC_CHARACTERS = ['.', '(', ')', '[', ']']
+REPLACE_WITH = '_'
+REPLACE_FLAG = params.get('replaceKeys', False)
 FETCH_TIME = demisto.params().get('fetch_time')
 TIME_UNIT_TO_MINUTES = {'minute': 1, 'hour': 60, 'day': 24 * 60, 'week': 7 * 24 * 60, 'month': 30 * 24 * 60,
                         'year': 365 * 24 * 60}
@@ -95,6 +97,9 @@ def rawToDict(raw):
             if '=' in key_value:
                 key_and_val = key_value.split('=', 1)
                 result[key_and_val[0]] = key_and_val[1]
+
+    if REPLACE_FLAG:
+        result = replace_keys(result)
     return result
 
 
@@ -190,6 +195,7 @@ def notable_to_incident(event):
         incident["occurred"] = event["_time"]
     else:
         incident["occurred"] = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.0+00:00')
+    event = replace_keys(event) if REPLACE_FLAG else event
     incident["rawJSON"] = json.dumps(event)
     labels = []
     if demisto.get(demisto.params(), 'parseNotableEventsRaw'):
@@ -379,23 +385,23 @@ def splunk_job_create_command(service):
 
 
 def splunk_results_command(service):
-    jobs = service.jobs  # type: ignore
-    found = False
     res = []
-    for job in jobs:
-        if job.sid == demisto.args()['sid']:
-            rr = results.ResultsReader(job.results())
-            for result in rr:
-                if isinstance(result, results.Message):
-                    demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(result.message)})
-                elif isinstance(result, dict):
-                    # Normal events are returned as dicts
-                    res.append(result)
-            found = True
-    if not found:
-        demisto.results("Found no job for sid: " + demisto.args()['sid'])
-    if found:
-        demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res)})
+    try:
+        job = service.job(demisto.args().get('sid', ''))
+    except HTTPError as error:
+        return_error(error.message, error)
+    else:
+        for result in results.ResultsReader(job.results()):
+            if isinstance(result, results.Message):
+                demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(result.message)})
+            elif isinstance(result, dict):
+                # Normal events are returned as dicts
+                res.append(result)
+
+        if not res:
+            demisto.results("Found no job for sid: " + demisto.args()['sid'])
+        else:
+            demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res)})
 
 
 def fetch_incidents(service):
@@ -592,6 +598,18 @@ def test_module(service):
             service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
         except HTTPError as error:
             return_error(str(error))
+
+
+def replace_keys(data):
+    if not isinstance(data, dict):
+        return data
+    for key in list(data.keys()):
+        value = data.pop(key)
+        for character in PROBLEMATIC_CHARACTERS:
+            key = key.replace(character, REPLACE_WITH)
+
+        data[key] = value
+    return data
 
 
 def main():
