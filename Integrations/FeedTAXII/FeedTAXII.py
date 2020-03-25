@@ -994,7 +994,7 @@ def main():
                 demisto.createIndicators(b)
             demisto.setLastRun({'time': client.last_taxii_run})
         else:
-            readable_output, outputs, raw_response = commands[command](client, demisto.args())
+            readable_output, outputs, raw_response = commands[command](client, demisto.args())  # type: ignore
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
