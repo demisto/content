@@ -184,14 +184,21 @@ expected_ioc_output = [{'value': '8f8ff6b696859c3afe7936c345b098bd', 'type': 'Fi
                                     'sixgill_posttitle': 'Credit Card Debt Help,       somewebsite.com',
                                     'sixgill_severity': 70, 'sixgill_source': 'market_magbo', 'spec_version': '2.0',
                                     'type': 'indicator', 'valid_from': '2019-12-07T00:57:04Z'},
-                        'fields': {'source': 'market_magbo', 'name': 'compromised_sites', 'actor': 'some_actor',
-                                   'description': "description: Shell access to this domain is being sold on "
-                                                  "dark web markets\nfeedid: darkfeed_002\n"
-                                                  "title: Credit Card Debt Help,       somewebsite.com\n"
-                                                  "post_id: 6e407c41fe6591d591cd8bbf0d105f7c15ed8991\n"
-                                                  "actor: some_actor\nlang: en\n"
-                                                  "labels: ['compromised', 'shell', 'webshell']\n"
-                                                  "external_reference: {}"},
+                        'fields': {'name': 'compromised_sites', 'actor': 'some_actor',
+                                   'tags': ['compromised', 'shell', 'webshell'],
+                                   'firstseenbysource': '2020-01-09T07:31:16.708Z',
+                                   'description': 'Description: Shell access to this domain is '
+                                                  'being sold on dark web markets\n'
+                                                  'Created On: 2020-01-09T07:31:16.708Z\n'
+                                                  'Post Title: Credit Card Debt Help,       somewebsite.com\n'
+                                                  'Threat Actor Name: some_actor\n'
+                                                  'Source: market_magbo\n'
+                                                  'Sixgill Feed ID: darkfeed_002\n'
+                                                  'Sixgill Feed Name: compromised_sites\n'
+                                                  'Sixgill Post ID: 6e407c41fe6591d591cd8bbf0d105f7c15ed8991\n'
+                                                  'Language: en\n'
+                                                  'Indicator ID: indicator--7fc19d6d-2d58-45d6-a410-85554b12aea9\n'
+                                                  'External references (e.g. MITRE ATT&CK): None\n'},
                         'score': 3},
                        {'value': '9bb88f703e234a89ff523514a5c676ac12ae6225', 'type': 'File',
                         'rawJSON': {'created': '2020-01-09T07:31:16.708Z',
@@ -214,14 +221,21 @@ expected_ioc_output = [{'value': '8f8ff6b696859c3afe7936c345b098bd', 'type': 'Fi
                                     'sixgill_severity': 70, 'sixgill_source': 'market_magbo',
                                     'spec_version': '2.0', 'type': 'indicator',
                                     'valid_from': '2019-12-07T00:57:04Z'},
-                        'fields': {'source': 'market_magbo', 'name': 'compromised_sites', 'actor': 'some_actor',
-                                   'description': "description: Shell access to this domain is being sold on "
-                                                  "dark web markets\nfeedid: darkfeed_002\n"
-                                                  "title: Credit Card Debt Help,       somewebsite.com\n"
-                                                  "post_id: 6e407c41fe6591d591cd8bbf0d105f7c15ed8991\n"
-                                                  "actor: some_actor\nlang: en\n"
-                                                  "labels: ['compromised', 'shell', 'webshell']\n"
-                                                  "external_reference: {}"},
+                        'fields': {'name': 'compromised_sites', 'actor': 'some_actor',
+                                   'tags': ['compromised', 'shell', 'webshell'],
+                                   'firstseenbysource': '2020-01-09T07:31:16.708Z',
+                                   'description': 'Description: Shell access to this domain is being sold '
+                                                  'on dark web markets\n'
+                                                  'Created On: 2020-01-09T07:31:16.708Z\n'
+                                                  'Post Title: Credit Card Debt Help,       somewebsite.com\n'
+                                                  'Threat Actor Name: some_actor\n'
+                                                  'Source: market_magbo\n'
+                                                  'Sixgill Feed ID: darkfeed_002\n'
+                                                  'Sixgill Feed Name: compromised_sites\n'
+                                                  'Sixgill Post ID: 6e407c41fe6591d591cd8bbf0d105f7c15ed8991\n'
+                                                  'Language: en\n'
+                                                  'Indicator ID: indicator--7fc19d6d-2d58-45d6-a410-85554b12aea9\n'
+                                                  'External references (e.g. MITRE ATT&CK): None\n'},
                         'score': 3},
                        {'value': '9cd46027d63c36e53f4347d43554336c2ea050d38be3ff9a608cb94cca6ab74b',
                         'type': 'File',
@@ -245,16 +259,21 @@ expected_ioc_output = [{'value': '8f8ff6b696859c3afe7936c345b098bd', 'type': 'Fi
                                     'sixgill_posttitle': 'Credit Card Debt Help,       somewebsite.com',
                                     'sixgill_severity': 70, 'sixgill_source': 'market_magbo', 'spec_version': '2.0',
                                     'type': 'indicator', 'valid_from': '2019-12-07T00:57:04Z'},
-                        'fields': {'source': 'market_magbo', 'name': 'compromised_sites', 'actor': 'some_actor',
-                                   'description': "description: Shell access to this domain is being sold on "
-                                                  "dark web markets\n"
-                                                  "feedid: darkfeed_002\n"
-                                                  "title: Credit Card Debt Help,       "
-                                                  "somewebsite.com\n"
-                                                  "post_id: 6e407c41fe6591d591cd8bbf0d105f7c15ed8991\n"
-                                                  "actor: some_actor\nlang: en\n"
-                                                  "labels: ['compromised', 'shell', 'webshell']\n"
-                                                  "external_reference: {}"},
+                        'fields': {'name': 'compromised_sites', 'actor': 'some_actor',
+                                   'tags': ['compromised', 'shell', 'webshell'],
+                                   'firstseenbysource': '2020-01-09T07:31:16.708Z',
+                                   'description': 'Description: Shell access to this domain is being sold '
+                                                  'on dark web markets\n'
+                                                  'Created On: 2020-01-09T07:31:16.708Z\n'
+                                                  'Post Title: Credit Card Debt Help,       somewebsite.com\n'
+                                                  'Threat Actor Name: some_actor\n'
+                                                  'Source: market_magbo\n'
+                                                  'Sixgill Feed ID: darkfeed_002\n'
+                                                  'Sixgill Feed Name: compromised_sites\n'
+                                                  'Sixgill Post ID: 6e407c41fe6591d591cd8bbf0d105f7c15ed8991\n'
+                                                  'Language: en\n'
+                                                  'Indicator ID: indicator--7fc19d6d-2d58-45d6-a410-85554b12aea9\n'
+                                                  'External references (e.g. MITRE ATT&CK): None\n'},
                         'score': 3},
                        {'value': '121.165.45.1', 'type': 'IP', 'rawJSON':
                            {'created': '2020-01-09T07:31:16.824Z',
@@ -280,13 +299,21 @@ expected_ioc_output = [{'value': '8f8ff6b696859c3afe7936c345b098bd', 'type': 'Fi
                             'spec_version': '2.0',
                             'type': 'indicator',
                             'valid_from': '2019-12-06T17:10:04Z'},
-                        'fields': {'source': 'market_magbo', 'name': 'compromised_sites', 'actor': 'some_actor',
-                                   'description': "description: Shell access to this domain is being sold on dark "
-                                                  "web markets\nfeedid: darkfeed_004\ntitle: somewebsite.com\n"
-                                                  "post_id: 59f08fbf692f84f15353a5e946d2a1cebab92418\n"
-                                                  "actor: some_actor\nlang: ru\n"
-                                                  "labels: ['compromised', 'shell', 'webshell']\n"
-                                                  "external_reference: {}"},
+                        'fields': {'name': 'compromised_sites', 'actor': 'some_actor',
+                                   'tags': ['compromised', 'shell', 'webshell'],
+                                   'firstseenbysource': '2020-01-09T07:31:16.824Z',
+                                   'description': 'Description: Shell access to this domain is being sold on '
+                                                  'dark web markets\n'
+                                                  'Created On: 2020-01-09T07:31:16.824Z\n'
+                                                  'Post Title: somewebsite.com\n'
+                                                  'Threat Actor Name: some_actor\n'
+                                                  'Source: market_magbo\n'
+                                                  'Sixgill Feed ID: darkfeed_004\n'
+                                                  'Sixgill Feed Name: compromised_sites\n'
+                                                  'Sixgill Post ID: 59f08fbf692f84f15353a5e946d2a1cebab92418\n'
+                                                  'Language: ru\n'
+                                                  'Indicator ID: indicator--67b2378f-cbdd-4263-b1c4-668014d376f2\n'
+                                                  'External references (e.g. MITRE ATT&CK): None\n'},
                         'score': 3},
                        {'value': 'http://somewebsite.rar.html', 'type': 'URL',
                         'rawJSON': {'created': '2020-01-09T07:31:16.757Z',
@@ -307,12 +334,20 @@ expected_ioc_output = [{'value': '8f8ff6b696859c3afe7936c345b098bd', 'type': 'Fi
                                     'sixgill_posttitle': 'somewebsite.com', 'sixgill_severity': 70,
                                     'sixgill_source': 'market_magbo', 'spec_version': '2.0',
                                     'type': 'indicator', 'valid_from': '2019-12-06T23:24:51Z'},
-                        'fields': {'source': 'market_magbo', 'name': 'compromised_sites', 'actor': 'some_actor',
-                                   'description': "description: Shell access to this domain is being sold on dark "
-                                                  "web markets\nfeedid: darkfeed_010\ntitle: somewebsite.com\n"
-                                                  "post_id: f46cdfc3332d9a04aa63078d82c1e453fd76ba50\n"
-                                                  "actor: some_actor\nlang: en\nlabels: ['url']\n"
-                                                  "external_reference: {}"},
+                        'fields': {'name': 'compromised_sites', 'actor': 'some_actor', 'tags': ['url'],
+                                   'firstseenbysource': '2020-01-09T07:31:16.757Z',
+                                   'description': 'Description: Shell access to this domain is being sold '
+                                                  'on dark web markets\n'
+                                                  'Created On: 2020-01-09T07:31:16.757Z\n'
+                                                  'Post Title: somewebsite.com\n'
+                                                  'Threat Actor Name: some_actor\n'
+                                                  'Source: market_magbo\n'
+                                                  'Sixgill Feed ID: darkfeed_010\n'
+                                                  'Sixgill Feed Name: compromised_sites\n'
+                                                  'Sixgill Post ID: f46cdfc3332d9a04aa63078d82c1e453fd76ba50\n'
+                                                  'Language: en\n'
+                                                  'Indicator ID: indicator--6e8b5f57-3ee2-4c4a-9283-8547754dfa09\n'
+                                                  'External references (e.g. MITRE ATT&CK): None\n'},
                         'score': 3},
                        {'value': '31.31.77.83', 'type': 'IP',
                        'rawJSON': {'created': '2020-01-09T07:31:16.834Z',
@@ -336,12 +371,20 @@ expected_ioc_output = [{'value': '8f8ff6b696859c3afe7936c345b098bd', 'type': 'Fi
                                    'sixgill_source': 'market_magbo',
                                    'spec_version': '2.0', 'type': 'indicator',
                                    'valid_from': '2019-12-06T14:37:16Z'},
-                        'fields': {'source': 'market_magbo', 'name': 'compromised_sites', 'actor': 'some_actor',
-                                   'description': "description: Shell access to this domain is being sold on "
-                                                  "dark web markets\nfeedid: darkfeed_005\ntitle: somewebsite.com\n"
-                                                  "post_id: c3f266e67f163e1a6181c0789e225baba89212a2\n"
-                                                  "actor: some_actor\nlang: en\nlabels: ['ip', 'lokibot_c2s']\n"
-                                                  "external_reference: {}"},
+                        'fields': {'name': 'compromised_sites', 'actor': 'some_actor', 'tags': ['ip', 'lokibot_c2s'],
+                                   'firstseenbysource': '2020-01-09T07:31:16.834Z',
+                                   'description': 'Description: Shell access to this domain is being sold on '
+                                                  'dark web markets\n'
+                                                  'Created On: 2020-01-09T07:31:16.834Z\n'
+                                                  'Post Title: somewebsite.com\n'
+                                                  'Threat Actor Name: some_actor\n'
+                                                  'Source: market_magbo\n'
+                                                  'Sixgill Feed ID: darkfeed_005\n'
+                                                  'Sixgill Feed Name: compromised_sites\n'
+                                                  'Sixgill Post ID: c3f266e67f163e1a6181c0789e225baba89212a2\n'
+                                                  'Language: en\n'
+                                                  'Indicator ID: indicator--85d3d87b-76ed-4cab-b709-a43dfbdc5d8d\n'
+                                                  'External references (e.g. MITRE ATT&CK): None\n'},
                         'score': 3},
                        {'value': '2f4e41ea7006099f365942349b05a269', 'type': 'File',
                         'rawJSON': {'created': '2020-01-09T07:31:16.834Z',
@@ -363,13 +406,21 @@ expected_ioc_output = [{'value': '8f8ff6b696859c3afe7936c345b098bd', 'type': 'Fi
                                     'sixgill_posttitle': 'somewebsite.com', 'sixgill_severity': 70,
                                     'sixgill_source': 'market_magbo', 'spec_version': '2.0', 'type': 'indicator',
                                     'valid_from': '2019-12-06T14:37:16Z'},
-                        'fields': {'source': 'market_magbo', 'name': 'compromised_sites', 'actor': 'some_actor',
-                                   'description': "description: Shell access to this domain is being sold on "
-                                                  "dark web markets\nfeedid: darkfeed_002\ntitle: "
-                                                  "somewebsite.com\n"
-                                                  "post_id: c3f266e67f163e1a6181c0789e225baba89212a2\n"
-                                                  "actor: some_actor\nlang: en\n"
-                                                  "labels: ['malware hash', 'hash', 'md5']\nexternal_reference: {}"},
+                        'fields': {'name': 'compromised_sites', 'actor': 'some_actor',
+                                   'tags': ['malware hash', 'hash', 'md5'],
+                                   'firstseenbysource': '2020-01-09T07:31:16.834Z',
+                                   'description': 'Description: Shell access to this domain is being sold on '
+                                                  'dark web markets\n'
+                                                  'Created On: 2020-01-09T07:31:16.834Z\n'
+                                                  'Post Title: somewebsite.com\n'
+                                                  'Threat Actor Name: some_actor\n'
+                                                  'Source: market_magbo\n'
+                                                  'Sixgill Feed ID: darkfeed_002\n'
+                                                  'Sixgill Feed Name: compromised_sites\n'
+                                                  'Sixgill Post ID: c3f266e67f163e1a6181c0789e225baba89212a2\n'
+                                                  'Language: en\n'
+                                                  'Indicator ID: indicator--85d3d87b-76ed-4cab-b709-a43dfbdc5d8d\n'
+                                                  'External references (e.g. MITRE ATT&CK): None\n'},
                         'score': 3},
                        {'value': '835e4574e01c12552c2a3b62b942d177c4d7aaca', 'type': 'File',
                         'rawJSON': {'created': '2020-01-09T07:31:16.834Z',
@@ -390,12 +441,21 @@ expected_ioc_output = [{'value': '8f8ff6b696859c3afe7936c345b098bd', 'type': 'Fi
                                     'sixgill_posttitle': 'somewebsite.com', 'sixgill_severity': 70,
                                     'sixgill_source': 'market_magbo', 'spec_version': '2.0', 'type': 'indicator',
                                     'valid_from': '2019-12-06T14:37:16Z'},
-                        'fields': {'source': 'market_magbo', 'name': 'compromised_sites', 'actor': 'some_actor',
-                                   'description': "description: Shell access to this domain is being sold on "
-                                                  "dark web markets\nfeedid: darkfeed_002\ntitle: somewebsite.com\n"
-                                                  "post_id: c3f266e67f163e1a6181c0789e225baba89212a2\n"
-                                                  "actor: some_actor\nlang: en\n"
-                                                  "labels: ['malware hash', 'hash', 'md5']\nexternal_reference: {}"},
+                        'fields': {'name': 'compromised_sites', 'actor': 'some_actor',
+                                   'tags': ['malware hash', 'hash', 'md5'],
+                                   'firstseenbysource': '2020-01-09T07:31:16.834Z',
+                                   'description': 'Description: Shell access to this domain is being sold on '
+                                                  'dark web markets\n'
+                                                  'Created On: 2020-01-09T07:31:16.834Z\n'
+                                                  'Post Title: somewebsite.com\n'
+                                                  'Threat Actor Name: some_actor\n'
+                                                  'Source: market_magbo\n'
+                                                  'Sixgill Feed ID: darkfeed_002\n'
+                                                  'Sixgill Feed Name: compromised_sites\n'
+                                                  'Sixgill Post ID: c3f266e67f163e1a6181c0789e225baba89212a2\n'
+                                                  'Language: en\n'
+                                                  'Indicator ID: indicator--85d3d87b-76ed-4cab-b709-a43dfbdc5d8d\n'
+                                                  'External references (e.g. MITRE ATT&CK): None\n'},
                         'score': 3},
                        {'value': 'a925164d6c0c479967b3d9870267a03adf65e8145',
                         'type': 'File',
@@ -418,13 +478,21 @@ expected_ioc_output = [{'value': '8f8ff6b696859c3afe7936c345b098bd', 'type': 'Fi
                                     'sixgill_posttitle': 'somewebsite.com', 'sixgill_severity': 70,
                                     'sixgill_source': 'market_magbo', 'spec_version': '2.0', 'type': 'indicator',
                                     'valid_from': '2019-12-06T14:37:16Z'},
-                        'fields': {'source': 'market_magbo', 'name': 'compromised_sites', 'actor': 'some_actor',
-                                   'description': "description: Shell access to this domain is being sold on"
-                                                  " dark web markets\nfeedid: darkfeed_002\n"
-                                                  "title: somewebsite.com\n"
-                                                  "post_id: c3f266e67f163e1a6181c0789e225baba89212a2\n"
-                                                  "actor: some_actor\nlang: en\n"
-                                                  "labels: ['malware hash', 'hash', 'md5']\nexternal_reference: {}"},
+                        'fields': {'name': 'compromised_sites', 'actor': 'some_actor',
+                                   'tags': ['malware hash', 'hash', 'md5'],
+                                   'firstseenbysource': '2020-01-09T07:31:16.834Z',
+                                   'description': 'Description: Shell access to this domain is being sold '
+                                                  'on dark web markets\n'
+                                                  'Created On: 2020-01-09T07:31:16.834Z\n'
+                                                  'Post Title: somewebsite.com\n'
+                                                  'Threat Actor Name: some_actor\n'
+                                                  'Source: market_magbo\n'
+                                                  'Sixgill Feed ID: darkfeed_002\n'
+                                                  'Sixgill Feed Name: compromised_sites\n'
+                                                  'Sixgill Post ID: c3f266e67f163e1a6181c0789e225baba89212a2\n'
+                                                  'Language: en\n'
+                                                  'Indicator ID: indicator--85d3d87b-76ed-4cab-b709-a43dfbdc5d8d\n'
+                                                  'External references (e.g. MITRE ATT&CK): None\n'},
                         'score': 3}, {'value': '182.253.121.14', 'type': 'IP',
                                       'rawJSON': {'created': '2020-02-09T06:41:41.266Z',
                                                   'description': 'IP address was listed as a proxy',
@@ -455,26 +523,34 @@ expected_ioc_output = [{'value': '8f8ff6b696859c3afe7936c345b098bd', 'type': 'Fi
                                                   'sixgill_severity': 40, 'sixgill_source': 'forum_nulled',
                                                   'spec_version': '2.0', 'type': 'indicator',
                                                   'valid_from': '2020-01-25T21:08:25Z'},
-                                      'fields': {'source': 'forum_nulled', 'name': 'proxy_ips',
-                                                 'actor': 'LunarEclipsed',
-                                                 'description': "description: IP address was listed as a proxy\n"
-                                                                "feedid: darkfeed_009\n"
-                                                                "title: ✅ 9.7K HTTP/S PROXY LIST (FRESH) ✅\n"
-                                                                "post_id: 00f74eea142e746415457d0dd4a4fc747add3a1b\n"
-                                                                "actor: LunarEclipsed\nlang: en\n"
-                                                                "labels: ['anonymization', 'ip', "
-                                                                "'proxy', 'Proxy/protocol relays', 'Adversary OPSEC']\n"
-                                                                "external_reference: ["
-                                                                "{'description': 'Mitre attack tactics and"
-                                                                " technique reference', 'mitre_attack_tactic': "
-                                                                "'Adversary OPSEC', 'mitre_attack_tactic_id': 'TA0021',"
-                                                                " 'mitre_attack_tactic_url': "
+                                      'fields': {'name': 'proxy_ips', 'actor': 'LunarEclipsed',
+                                                 'tags': ['anonymization', 'ip', 'proxy', 'Proxy/protocol relays',
+                                                          'Adversary OPSEC'],
+                                                 'firstseenbysource': '2020-02-09T06:41:41.266Z',
+                                                 'description': "Description: IP address was listed as a proxy\n"
+                                                                "Created On: 2020-02-09T06:41:41.266Z\n"
+                                                                "Post Title: ✅ 9.7K HTTP/S PROXY LIST (FRESH) ✅\n"
+                                                                "Threat Actor Name: LunarEclipsed\n"
+                                                                "Source: forum_nulled\n"
+                                                                "Sixgill Feed ID: darkfeed_009\n"
+                                                                "Sixgill Feed Name: proxy_ips\n"
+                                                                "Sixgill Post ID: "
+                                                                "00f74eea142e746415457d0dd4a4fc747add3a1b\n"
+                                                                "Language: en\n"
+                                                                "Indicator ID: "
+                                                                "indicator--2ed98497-cef4-468c-9cee-4f05292b5142\n"
+                                                                "External references (e.g. MITRE ATT&CK): "
+                                                                "[{'description': 'Mitre attack tactics and "
+                                                                "technique reference', "
+                                                                "'mitre_attack_tactic': 'Adversary OPSEC', "
+                                                                "'mitre_attack_tactic_id': 'TA0021', "
+                                                                "'mitre_attack_tactic_url': "
                                                                 "'https://attack.mitre.org/tactics/TA0021/', "
                                                                 "'mitre_attack_technique': 'Proxy/protocol relays', "
                                                                 "'mitre_attack_technique_id': 'T1304', "
                                                                 "'mitre_attack_technique_url': "
                                                                 "'https://attack.mitre.org/techniques/T1304/', "
-                                                                "'source_name': 'mitre-attack'}]"},
+                                                                "'source_name': 'mitre-attack'}]\n"},
                                       'score': 3}]
 
 

@@ -4,6 +4,7 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import requests
+from collections import OrderedDict
 
 from sixgill.sixgill_request_classes.sixgill_auth_request import SixgillAuthRequest
 from sixgill.sixgill_feed_client import SixgillFeedClient
@@ -23,6 +24,17 @@ SUSPICIOUS_FEED_IDS = ["darkfeed_003"]
 DEMISTO_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 VERIFY = not demisto.params().get("insecure", True)
 SESSION = requests.Session()
+DESCRIPTION_FIELD_ORDER = OrderedDict([('Description', 'description'),
+                                       ('Created On', 'created'),
+                                       ('Post Title', 'sixgill_posttitle'),
+                                       ('Threat Actor Name', 'sixgill_actor'),
+                                       ('Source', 'sixgill_source'),
+                                       ('Sixgill Feed ID', 'sixgill_feedid'),
+                                       ('Sixgill Feed Name', 'sixgill_feedname'),
+                                       ('Sixgill Post ID', 'sixgill_postid'),
+                                       ('Language', 'lang'),
+                                       ('Indicator ID', 'id'),
+                                       ('External references (e.g. MITRE ATT&CK)', 'external_reference')])
 
 ''' HELPER FUNCTIONS '''
 
@@ -60,24 +72,25 @@ def to_demisto_score(feed_id: str):
     return 3
 
 
+def get_description(stix_obj):
+    description_string = ""
+    for name, sixgill_name in DESCRIPTION_FIELD_ORDER.items():
+        description_string += f"{name}: {stix_obj.get(sixgill_name)}\n"
+
+    return description_string
+
+
 def to_demisto_indicator(value, indicators_name, stix2obj):
     return {
         "value": value,
         "type": indicators_name,
         "rawJSON": stix2obj,
         "fields": {
-            "source": stix2obj.get("sixgill_source"),
             "name": stix2obj.get("sixgill_feedname"),
             "actor": stix2obj.get("sixgill_actor"),
-            "description":
-                f'''description: {stix2obj.get("description")}
-feedid: {stix2obj.get("sixgill_feedid")}
-title: {stix2obj.get("sixgill_posttitle")}
-post_id: {stix2obj.get("sixgill_postid")}
-actor: {stix2obj.get("sixgill_actor")}
-lang: {stix2obj.get("lang")}
-labels: {stix2obj.get("labels")}
-external_reference: {stix2obj.get("external_reference", {})}'''},
+            "tags": stix2obj.get("labels"),
+            "firstseenbysource": stix2obj.get("created"),
+            "description": get_description(stix2obj)},
         "score": to_demisto_score(stix2obj.get("sixgill_feedid"))}
 
 
