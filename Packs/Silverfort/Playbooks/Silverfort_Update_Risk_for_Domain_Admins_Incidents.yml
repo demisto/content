@@ -3,8 +3,8 @@ version: -1
 rolename:
 - Read-Only
 name: Silverfort Update Risk for Domain Admins Incidents
-description: This playbook Gets Brute Force attack incident, Blocks the user and updates
-  Silverfort.
+description: This playbook gets an incident related to an account. If it is a domain
+  admin, updates Silverfort risk.
 starttaskid: '0'
 tasks:
   '0':
@@ -20,7 +20,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '10'
+      - '18'
     separatecontext: false
     view: |-
       {
@@ -46,13 +46,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '16'
+      - '2'
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -60,13 +60,13 @@ tasks:
     ignoreworker: false
   '2':
     id: '2'
-    taskid: d3e89a7c-5761-4cef-82fb-983658fe6258
+    taskid: 6fc11e93-f83c-44e1-8fe6-e64fb2d27d58
     type: regular
     task:
-      id: d3e89a7c-5761-4cef-82fb-983658fe6258
+      id: 6fc11e93-f83c-44e1-8fe6-e64fb2d27d58
       version: -1
       name: Update the user risk in Silverfort
-      description: ''
+      description: User risk commands - update the user entity risk
       script: '|||silverfort-update-user-risk'
       type: regular
       iscommand: true
@@ -78,7 +78,24 @@ tasks:
       description:
         simple: Suspicious activity
       domain:
-        simple: ${Account.Domain.Domain}
+        complex:
+          root: ${ActiveDirectory
+          accessor: Users.dn}
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: DC=([^,]*)
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: .
       email: {}
       risk_name:
         simple: activity_risk
@@ -108,7 +125,10 @@ tasks:
       id: 5634c03f-b0fc-4b38-872c-26132a8fa9c4
       version: -1
       name: Account Enrichment - Generic v2.1
-      description: ''
+      description: |-
+        Enrich accounts using one or more integrations.
+        Supported integrations:
+        - Active Directory
       playbookName: Account Enrichment - Generic v2.1
       type: playbook
       iscommand: false
@@ -129,8 +149,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 195
+          "x": 60,
+          "y": 370
         }
       }
     note: false
@@ -164,16 +184,16 @@ tasks:
     ignoreworker: false
   '13':
     id: '13'
-    taskid: d15d112a-1639-4ef4-82fa-b25589e55488
+    taskid: 1839c91e-04a8-4f84-8103-6d5df7f3e190
     type: condition
     task:
-      id: d15d112a-1639-4ef4-82fa-b25589e55488
+      id: 1839c91e-04a8-4f84-8103-6d5df7f3e190
       version: -1
       name: Is the Account a Domain Admin?
+      description: Check if the account is a domain admin
       type: condition
       iscommand: false
       brand: ''
-      description: ''
     nexttasks:
       '#default#':
       - '14'
@@ -191,11 +211,12 @@ tasks:
           right:
             value:
               simple: Domain Admins
+          ignorecase: true
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 545
+          "x": 60,
+          "y": 720
         }
       }
     note: false
@@ -221,7 +242,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1215
+          "y": 895
         }
       }
     note: false
@@ -250,46 +271,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '16':
-    id: '16'
-    taskid: 9b0c9557-ffed-49e5-8872-ddbf758da837
-    type: regular
-    task:
-      id: 9b0c9557-ffed-49e5-8872-ddbf758da837
-      version: -1
-      name: Extract Domain from DN
-      scriptName: ExtractDomainFromDN
-      type: regular
-      iscommand: false
-      brand: ''
-      description: ''
-    nexttasks:
-      '#none#':
-      - '2'
-    scriptarguments:
-      dn:
-        simple: ${ActiveDirectory.Users.dn}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 865
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   '17':
     id: '17'
-    taskid: f4d4547a-8882-4198-84a3-f2f6e3dbf1c6
+    taskid: ac1c41e2-21af-4ee1-882a-d779063f1373
     type: regular
     task:
-      id: f4d4547a-8882-4198-84a3-f2f6e3dbf1c6
+      id: ac1c41e2-21af-4ee1-882a-d779063f1373
       version: -1
       name: ExtractADMembership
-      description: ''
-      scriptName: Set
+      description: Extract membership information from Active Directory
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ''
@@ -307,8 +298,63 @@ tasks:
     view: |-
       {
         "position": {
+          "x": 60,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '18':
+    id: '18'
+    taskid: 3e166dca-6dee-472e-8674-7a717b1b33d2
+    type: condition
+    task:
+      id: 3e166dca-6dee-472e-8674-7a717b1b33d2
+      version: -1
+      name: Is Silverfort enabled ?
+      description: Check if Silverfort is enabled
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '14'
+      'yes':
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Silverfort
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
           "x": 265,
-          "y": 370
+          "y": 195
         }
       }
     note: false
@@ -338,6 +384,3 @@ inputs:
   description: Account Username
 outputs: []
 fromversion: 5.0.0
-tests:
-- No test
-
