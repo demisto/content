@@ -82,7 +82,7 @@ script:
     name: silverfort-get-resource-risk
     outputs:
     - contextPath: Silverfort.ResourceRisk.Risk
-      description: The resource risk.
+      description: The risk level.
       type: String
     - contextPath: Silverfort.ResourceRisk.Reasons
       description: The reasons for the risk.
@@ -116,7 +116,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The number of days that the risk will be valid for.
+      description: The number of hours that the risk will be valid for.
       isArray: false
       name: valid_for
       required: true
@@ -181,7 +181,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The number of days the severity will be relevant for.
+      description: The number of hours the severity will be relevant for.
       isArray: false
       name: valid_for
       required: true
