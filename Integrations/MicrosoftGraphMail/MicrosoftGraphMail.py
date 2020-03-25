@@ -29,8 +29,11 @@ FOLDER_MAPPING = {
 
 
 class MsGraphClient:
-    def __init__(self, ms_client):
-        self.ms_client = ms_client
+    def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
+                 ok_codes):
+        self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
+                                         enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
+                                         proxy=proxy, ok_codes=ok_codes)
 
     def pages_puller(self, response: dict, page_count: int) -> list:
         """ Gets first response from API and returns all pages
@@ -627,40 +630,23 @@ def get_email_as_eml_command(client: MsGraphClient, args):
 
 
 def main():
-    """ COMMANDS MANAGER / SWITCH PANEL """
+    args: dict = demisto.args()
+    params: dict = demisto.params()
+    self_deployed: bool = params.get('self_deployed', False)
+    tenant_id: str = params.get('tenant_id', '')
+    auth_and_token_url: str = params.get('auth_id', '')
+    enc_key: str = params.get('enc_key', '')
+    base_url: str = urljoin(params.get('url', ''), '/v1.0')
+    app_name: str = 'ms-graph-mail'
+    ok_codes: tuple = (200, 201, 202)
+    use_ssl: bool = not params.get('insecure', False)
+    proxy: bool = params.get('proxy', False)
+
+    client: MsGraphClient = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url,
+                                          use_ssl, proxy, ok_codes)
+
     command = demisto.command()
-    args = demisto.args()
     LOG(f'Command being called is {command}')
-
-    params = demisto.params()
-    self_deployed = params.get('self_deployed', False)
-    tenant_id = params.get('tenant_id')
-    auth_and_token_url = params.get('auth_id', '')
-    enc_key = params.get('enc_key')
-    # Remove trailing slash to prevent wrong URL path to service
-    url = params.get('url', '')
-    server = url[:-1] if (url and url.endswith('/')) else url
-    # Service base URL
-    base_url = server + '/v1.0'
-    app_name = 'ms-graph-mail'
-    ok_codes = (200, 201, 202)
-    use_ssl = not params.get('insecure', False)
-    proxy = handle_proxy()
-
-    if self_deployed:
-        app_url = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token'
-        ms_client = MicrosoftClient.from_self_deployed(tenant_id, auth_and_token_url,
-                                                       enc_key, app_url=app_url,
-                                                       scope='https://graph.microsoft.com/.default',
-                                                       base_url=base_url, verify=use_ssl,
-                                                       proxy=proxy, ok_codes=ok_codes)
-    else:
-        # params related to oproxy
-        ms_client = MicrosoftClient.from_oproxy(auth_and_token_url, enc_key, app_name,
-                                                tenant_id=tenant_id, base_url=base_url, verify=use_ssl,
-                                                proxy=proxy, ok_codes=ok_codes)
-
-    client = MsGraphClient(ms_client)
 
     try:
         if command == 'test-module':
