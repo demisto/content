@@ -196,7 +196,7 @@ class TestHelperFunctions:
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
-            request_args = ei.RequestArguments(query='', out_format='text')
+            request_args = ei.RequestArguments(query='', out_format='text', limit=38)
             ei_vals = ei.refresh_outbound_context(request_args)
             for ioc in iocs_json:
                 ip = ioc.get('value')
@@ -209,7 +209,7 @@ class TestHelperFunctions:
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
-            request_args = ei.RequestArguments(query='', out_format='XSOAR json')
+            request_args = ei.RequestArguments(query='', out_format='XSOAR json', limit=38)
             ei_vals = ei.refresh_outbound_context(request_args)
             assert isinstance(ei_vals, str)
             ei_vals = json.loads(ei_vals)
@@ -222,11 +222,12 @@ class TestHelperFunctions:
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
-            request_args = ei.RequestArguments(query='', out_format='XSOAR csv')
+            request_args = ei.RequestArguments(query='', out_format='XSOAR csv', limit=38)
             ei_vals = ei.refresh_outbound_context(request_args)
             with open('ExportIndicators_test/TestHelperFunctions/iocs_out_csv.txt', 'r') as iocs_out_f:
                 iocs_out = iocs_out_f.read()
-                assert iocs_out == ei_vals
+                for ioc in iocs_out.split('\n'):
+                    assert ioc in ei_vals
 
     @pytest.mark.refresh_outbound_context
     def test_refresh_outbound_context_4(self, mocker):
@@ -235,7 +236,7 @@ class TestHelperFunctions:
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
-            request_args = ei.RequestArguments(query='', out_format='XSOAR json-seq')
+            request_args = ei.RequestArguments(query='', out_format='XSOAR json-seq', limit=38)
             ei_vals = ei.refresh_outbound_context(request_args)
             with open('ExportIndicators_test/TestHelperFunctions/iocs_out_json_seq.txt', 'r') as iocs_out_f:
                 iocs_out = iocs_out_f.read()
@@ -248,9 +249,8 @@ class TestHelperFunctions:
         with open('ExportIndicators_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
-            request_args = ei.RequestArguments(query='', out_format='json')
+            request_args = ei.RequestArguments(query='', out_format='json', limit=2)
             ei_vals = ei.refresh_outbound_context(request_args)
-            assert isinstance(ei_vals, str)
             ei_vals = json.loads(ei_vals)
             with open('ExportIndicators_test/TestHelperFunctions/iocs_out_json.json', 'r') as iocs_json_out_f:
                 iocs_json_out = json.loads(iocs_json_out_f.read())
@@ -263,7 +263,7 @@ class TestHelperFunctions:
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
-            request_args = ei.RequestArguments(query='', out_format='json-seq')
+            request_args = ei.RequestArguments(query='', out_format='json-seq', limit=38)
             ei_vals = ei.refresh_outbound_context(request_args)
             with open('ExportIndicators_test/TestHelperFunctions/iocs_out_json_seq_old.txt', 'r') as iocs_out_f:
                 iocs_out = iocs_out_f.read()
@@ -277,7 +277,7 @@ class TestHelperFunctions:
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
-            request_args = ei.RequestArguments(query='', out_format='csv')
+            request_args = ei.RequestArguments(query='', out_format='csv', limit=38)
             ei_vals = ei.refresh_outbound_context(request_args)
             with open('ExportIndicators_test/TestHelperFunctions/iocs_out_csv_old.txt', 'r') as iocs_out_f:
                 iocs_out = iocs_out_f.read()
@@ -390,7 +390,7 @@ class TestHelperFunctions:
         """Test JSON out"""
         from ExportIndicators import create_values_for_returned_dict, FORMAT_JSON, CTX_VALUES_KEY, RequestArguments
         with open('ExportIndicators_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
-            iocs_json = json.load(iocs_json_f)
+            iocs_json = json.loads(iocs_json_f.read())
             request_args = RequestArguments(query='', out_format=FORMAT_JSON)
             returned_dict, _ = create_values_for_returned_dict(iocs_json, request_args)
             json_out = json.loads(returned_dict.get(CTX_VALUES_KEY))
@@ -464,14 +464,16 @@ class TestHelperFunctions:
             iocs_json = json.loads(iocs_json_f.read())
 
             # strips port numbers
-            returned_dict = panos_url_formatting(iocs=iocs_json, drop_invalids=True, strip_port=True)
+            returned_dict, num_of_indicators = panos_url_formatting(iocs=iocs_json, drop_invalids=True, strip_port=True)
             returned_output = returned_dict.get(CTX_VALUES_KEY)
             assert returned_output == "1.2.3.4/wget\nwww.demisto.com/cool"
+            assert num_of_indicators == 2
 
             # should ignore indicators with port numbers
-            returned_dict = panos_url_formatting(iocs=iocs_json, drop_invalids=True, strip_port=False)
+            returned_dict, num_of_indicators = panos_url_formatting(iocs=iocs_json, drop_invalids=True, strip_port=False)
             returned_output = returned_dict.get(CTX_VALUES_KEY)
             assert returned_output == 'www.demisto.com/cool'
+            assert num_of_indicators == 1
 
     @pytest.mark.validate_basic_authentication
     def test_create_proxysg_out_format(self):
@@ -480,24 +482,30 @@ class TestHelperFunctions:
             iocs_json = json.loads(iocs_json_f.read())
 
             # classify all categories
-            returned_dict = create_proxysg_out_format(iocs=iocs_json, category_default="default", category_attribute='')
+            returned_dict, num_of_indicators = create_proxysg_out_format(iocs=iocs_json, category_default="default",
+                                                                         category_attribute='')
             returned_output = returned_dict.get(CTX_VALUES_KEY)
             assert returned_output == "define category category2\n1.2.3.4:89/wget\nend\n" \
                                       "define category category1\nhttps://www.demisto.com/cool\nend\n"
 
+            assert num_of_indicators == 2
+
             # listed category does not exist - all results should be in default category
-            returned_dict = create_proxysg_out_format(iocs=iocs_json, category_default="default",
-                                                      category_attribute="category3")
+            returned_dict, num_of_indicators = create_proxysg_out_format(iocs=iocs_json, category_default="default",
+                                                                         category_attribute="category3")
             returned_output = returned_dict.get(CTX_VALUES_KEY)
             assert returned_output == "define category default\n1.2.3.4:89/wget\n" \
                                       "https://www.demisto.com/cool\nend\n"
+            assert num_of_indicators == 2
 
             # list category2 only, the rest go to default
-            returned_dict = create_proxysg_out_format(iocs=iocs_json, category_default="default",
-                                                      category_attribute="category2")
+            returned_dict, num_of_indicators = create_proxysg_out_format(iocs=iocs_json, category_default="default",
+                                                                         category_attribute="category2")
             returned_output = returned_dict.get(CTX_VALUES_KEY)
             assert returned_output == "define category category2\n1.2.3.4:89/wget\nend\n" \
                                       "define category default\nhttps://www.demisto.com/cool\nend\n"
+
+            assert num_of_indicators == 2
 
     @pytest.mark.validate_basic_authentication
     def test_create_mwg_out_format(self):
