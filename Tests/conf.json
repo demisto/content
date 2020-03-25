@@ -5,7 +5,8 @@
         {
             "integrations": ["Syslog Sender", "syslog"],
             "playbookID": "Test Syslog",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "timeout": 1000
         },
         {
             "integrations": "Plain Text Feed",
