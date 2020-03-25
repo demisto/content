@@ -110,7 +110,7 @@ Gets the resource entity risk information.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Silverfort.ResourceRisk.Risk | String | The resource risk. | 
+| Silverfort.ResourceRisk.Risk | String | The risk level. | 
 | Silverfort.ResourceRisk.Reasons | Array | The reasons for the risk. | 
 | Silverfort.ResourceRisk.ResourceName | String | The hostname. | 
 
@@ -155,7 +155,7 @@ Updates the user entity risk.
 | upn | The user principal name. | Optional | 
 | risk_name | The risk name. | Required | 
 | severity | The severity. | Required | 
-| valid_for | The number of days that the risk will be valid for. | Required | 
+| valid_for | The number of hours that the risk will be valid for. | Required | 
 | description | The risk description. | Required | 
 | email | The email address. | Optional | 
 | sam_account | The sam account. | Optional | 
@@ -198,7 +198,7 @@ Update the resource entity risk.
 | domain_name | The domain name. | Required | 
 | risk_name | The risk name. | Required | 
 | severity | The severity. | Required | 
-| valid_for | The number of days the severity will be relevant for. | Required | 
+| valid_for | The number of hours the severity will be relevant for. | Required | 
 | description | A short description about the risk. | Required | 
 
 
