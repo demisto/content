@@ -203,7 +203,7 @@ jobs:
                 echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
                 demisto-sdk lint -p 12 -a --test-xml ./unit-tests --log-path ./artifacts --json-report ./artifacts
               else
-                demisto-sdk lint -p 8 -a --test-xml ./unit-tests --log-path ./artifacts --json-report ./artifacts
+                demisto-sdk lint -p 10 -a --test-xml ./unit-tests --log-path ./artifacts --json-report ./artifacts
               fi
       - run:
           name: Verify Base Branch for Contribution
