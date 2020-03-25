@@ -9,6 +9,7 @@ import yaml
 import enum
 import prettytable
 import fnmatch
+import subprocess
 import google.auth
 from google.cloud import storage
 from distutils.util import strtobool
@@ -27,7 +28,7 @@ CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../..'))  # full pat
 PACKS_FULL_PATH = os.path.join(CONTENT_ROOT_PATH, CONTENT_PACKS_FOLDER)  # full path to Packs folder in content repo
 INTEGRATIONS_FOLDER = "Integrations"  # integrations folder name inside pack
 BASE_PACK = "Base"  # base pack name
-USE_GCS_RELATIVE_PATH = False  # whether to use relative path in uploaded to gcs images
+USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images
 GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
 
 # the format is defined in issue #19786, may change in the future
@@ -56,10 +57,12 @@ class PackStatus(enum.Enum):
     FAILED_METADATA_PARSING = "Failed to parse and create metadata.json"
     FAILED_COLLECT_ITEMS = "Failed to collect pack content items data"
     FAILED_ZIPPING_PACK_ARTIFACTS = "Failed zipping pack artifacts"
+    FAILED_SIGNING_PACKS = "Failed to sign the packs"
     FAILED_PREPARING_INDEX_FOLDER = "Failed in preparing and cleaning necessary index files"
     FAILED_UPDATING_INDEX_FOLDER = "Failed updating index folder"
     FAILED_UPLOADING_PACK = "Failed in uploading pack zip to gcs"
     PACK_ALREADY_EXISTS = "Specified pack already exists in gcs under latest version"
+    FAILED_REMOVING_PACK_SKIPPED_FOLDERS = "Failed to remove pack hidden and skipped folders"
 
 
 class Pack(object):
@@ -188,6 +191,7 @@ class Pack(object):
         pack_metadata['description'] = user_metadata.get('description') if user_metadata.get('description') else pack_id
         pack_metadata['created'] = user_metadata.get('created', datetime.utcnow().strftime(Pack.DATE_FORMAT))
         pack_metadata['updated'] = datetime.utcnow().strftime(Pack.DATE_FORMAT)
+        pack_metadata['legacy'] = user_metadata.get('legacy', True)
         pack_metadata['support'] = user_metadata.get('support', '')
         pack_metadata['supportDetails'] = {}
         support_url = user_metadata.get('url')
@@ -208,7 +212,8 @@ class Pack(object):
         try:
             pack_metadata['price'] = int(user_metadata.get('price'))
         except Exception as e:
-            print_warning(f"{pack_id} pack price is not valid. The price was set to 0. Additional details {e}")
+            print_warning(f"{pack_id} pack price is not valid. The price was set to 0. Additional "
+                          f"details {e}")
             pack_metadata['price'] = 0
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion', '')
         pack_metadata['serverLicense'] = user_metadata.get('serverLicense', '')
@@ -227,8 +232,68 @@ class Pack(object):
 
         return pack_metadata
 
+    def remove_unwanted_files(self):
+        """Iterates over pack folder and removes hidden files and unwanted folders.
+
+        Returns:
+            bool: whether the operation succeeded.
+        """
+        task_status = True
+
+        try:
+            for root, dirs, files in os.walk(self._pack_path, topdown=True):
+                for pack_file in files:
+                    full_file_path = os.path.join(root, pack_file)
+                    # removing unwanted files
+                    if pack_file.startswith('.') or pack_file in [Pack.AUTHOR_IMAGE_NAME, Pack.USER_METADATA]:
+                        os.remove(full_file_path)
+                        print(f"Deleted pack {pack_file} file for {self._pack_name} pack")
+                        continue
+
+                    current_directory = root.split(os.path.sep)[-1]
+
+                    if current_directory in Pack.EXCLUDE_DIRECTORIES and os.path.isdir(root):
+                        shutil.rmtree(root)
+                        print(f"Deleted pack {current_directory} directory for {self._pack_name} pack")
+                        continue
+
+                    if current_directory == 'Misc' and not fnmatch.fnmatch(pack_file, 'reputation-*.json'):
+                        # reputation in old format aren't supported in 6.0.0 server version
+                        os.remove(full_file_path)
+                        print(f"Deleted pack {pack_file} file for {self._pack_name} pack")
+        except Exception as e:
+            task_status = False
+            print_error(f"Failed to delete ignored files for pack {self._pack_name} - {str(e)}")
+        finally:
+            return task_status
+
+    def sign_pack(self):
+        """Signs pack folder and creates signature file.
+
+        Returns:
+            bool: whether the operation succeeded.
+        """
+        task_status = False
+
+        try:
+            arg = f'./signDirectory {self._pack_path} /signKey'
+            signing_process = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            output, err = signing_process.communicate()
+
+            if err:
+                print_error(f"Failed to sign pack for {self._pack_name} - {str(err)}")
+                return
+
+            print_warning(output)  # todo remove after the issue is fixed
+            print(f"Signed {self._pack_name} pack successfully")
+            task_status = True
+        except Exception as e:
+            print_error(f"Failed to sign pack for {self._pack_name} - {str(e)}")
+        finally:
+            return task_status
+
     def zip_pack(self):
-        """Zips pack folder and excludes not wanted directories.
+        """Zips pack folder.
 
         Returns:
             bool: whether the operation succeeded.
@@ -240,21 +305,7 @@ class Pack(object):
         try:
             with ZipFile(zip_pack_path, 'w', ZIP_DEFLATED) as pack_zip:
                 for root, dirs, files in os.walk(self._pack_path, topdown=True):
-                    dirs[:] = [d for d in dirs if d not in Pack.EXCLUDE_DIRECTORIES]
-
                     for f in files:
-                        # skipping zipping of unwanted files
-                        if f.startswith('.') or f in [Pack.AUTHOR_IMAGE_NAME, Pack.USER_METADATA]:
-                            print_warning(f"Skipping zipping {f} for {self._pack_name} pack")
-                            continue
-
-                        current_directory = root.split(os.path.sep)[-1]
-
-                        if current_directory == 'Misc' and not fnmatch.fnmatch(f, 'reputation-*.json'):
-                            # reputation in old format aren't supported in 6.0.0 server version
-                            print_warning(f"Skipped zipping {f} for {self._pack_name} pack")
-                            continue
-
                         full_file_path = os.path.join(root, f)
                         relative_file_path = os.path.relpath(full_file_path, self._pack_path)
                         pack_zip.write(filename=full_file_path, arcname=relative_file_path)
@@ -306,7 +357,7 @@ class Pack(object):
             return task_status, False
         except Exception as e:
             task_status = False
-            print_error(f"Failed in uploading {self._pack_name} pack to gcs.\nAdditional info: {e}")
+            print_error(f"Failed in uploading {self._pack_name} pack to gcs. Additional info:\n {e}")
             return task_status, True
 
     def format_metadata(self, pack_content_items, integration_images, author_image):
@@ -854,6 +905,18 @@ def main():
 
         # todo finish implementation of release notes
         # pack.parse_release_notes()
+
+        task_status = pack.remove_unwanted_files()
+        if not task_status:
+            pack.status = PackStatus.FAILED_REMOVING_PACK_SKIPPED_FOLDERS
+            pack.cleanup()
+            continue
+
+        task_status = pack.sign_pack()
+        if not task_status:
+            pack.status = PackStatus.FAILED_SIGNING_PACKS.name
+            pack.cleanup()
+            continue
 
         task_status, zip_pack_path = pack.zip_pack()
         if not task_status:
