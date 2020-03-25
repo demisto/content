@@ -40,8 +40,8 @@ tasks:
       id: 7897b5ec-c981-4fdf-8134-50a915c9991b
       version: -1
       name: Get the server URL
-      description: Get the Demisto Server URL.
-      scriptName: DemistoServerURL
+      description: Get the Server URL.
+      scriptName: GetServerURL
       type: regular
       iscommand: false
       brand: ""
