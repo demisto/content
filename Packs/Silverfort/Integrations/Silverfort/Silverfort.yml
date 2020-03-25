@@ -32,7 +32,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Email
+      description: The email address.
       isArray: false
       name: email
       required: false
@@ -44,13 +44,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Domain
+      description: The domain.
       isArray: false
       name: domain
       required: false
       secret: false
     deprecated: false
-    description: User risk commands - get the user entity risk
+    description: User risk commands - get the user entity risk.
     execution: false
     name: silverfort-get-user-risk
     outputs:
