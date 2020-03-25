@@ -203,3 +203,5 @@ inputs:
     the xdr-get-endpoints command.
 outputs: []
 fromversion: 4.5.0
+tests:
+  - No Test
