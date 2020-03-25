@@ -7,7 +7,7 @@ def test_get_url(mocker):
     # Set
     mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'https://www.eizelulz.com:8443'})
     mocker.patch.object(demisto, 'results')
-    
+
     # Arrange
     GetServerURL.main()
     output = demisto.results.call_args[0][0]
@@ -23,5 +23,6 @@ def test_get_url(mocker):
             'Host': 'www.eizelulz.com',
             'Port': 8443,
             'URL': 'https://www.eizelulz.com:8443'
-        }}
+        }},
+        'IndicatorTimeline': None
     }
