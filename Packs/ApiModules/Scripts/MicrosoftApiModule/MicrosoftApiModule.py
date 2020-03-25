@@ -14,13 +14,23 @@ class MicrosoftClient(BaseClient):
 
     def __init__(self, tenant_id: str = '', auth_id: str = '', enc_key: str = '',
                  token_retrieval_url: str = '', app_name: str = '', refresh_token: str = '',
-                 client_id: str = '', client_secret: str = '', scope: str = '', resource: str = '', app_url: str = '',
-                 verify: bool = True, self_deployed: bool = False, *args, **kwargs):
+                 scope: str = 'https://graph.microsoft.com/.default',
+                 resource: str = '', verify: bool = True, self_deployed: bool = False, *args, **kwargs):
         """
         Microsoft Client class that implements logic to authenticate with oproxy or self deployed applications.
         It also provides common logic to handle responses from Microsoft.
+        Args:
+            tenant_id: If self deployed it's the tenant for the app url, otherwise (oproxy) it's the token
+            auth_id: If self deployed it's the client id, otherwise (oproxy) it's the auth id and may also
+            contain the token url
+            enc_key: If self deployed it's the client secret, otherwise (oproxy) it's the encryption key
+            scope: The scope of the application (only if self deployed)
+            resource: The resource of the application (only if self deployed)
+            verify: Demisto insecure parameter
+            self_deployed: Indicates whether the integration mode is self deployed or oproxy
         """
         super().__init__(verify=verify, *args, **kwargs)  # type: ignore[misc]
+
         if not self_deployed:
             auth_id_and_token_retrieval_url = auth_id.split('@')
             auth_id = auth_id_and_token_retrieval_url[0]
@@ -28,22 +38,23 @@ class MicrosoftClient(BaseClient):
                 token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # guardrails-disable-line
             else:
                 token_retrieval_url = auth_id_and_token_retrieval_url[1]
+        else:
+            self.app_url = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token'
+            self.scope = scope
 
         self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
-        self.app_url = app_url
         self.tenant_id = tenant_id
         self.auth_id = auth_id
         self.enc_key = enc_key
         self.token_retrieval_url = token_retrieval_url
         self.app_name = app_name
         self.refresh_token = refresh_token
-        self.client_id = client_id
-        self.client_secret = client_secret
-        self.scope = scope
+        self.client_id = auth_id
+        self.client_secret = enc_key
         self.resource = resource
         self.verify = verify
 
-    def http_request(self, *args, **kwargs) -> requests.Response:
+    def http_request(self, *args, **kwargs):
         """
         Overrides Base client request function, retrieves and adds to headers access token before sending the request.
 
