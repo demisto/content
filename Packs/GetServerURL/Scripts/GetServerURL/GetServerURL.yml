@@ -25,6 +25,6 @@ type: python
 dockerimage: demisto/python3:3.8.2.6981
 runas: DBotWeakRole
 runonce: false
-pswd: ''
+tags: []
 test:
   - no test
