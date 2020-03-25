@@ -1,7 +1,6 @@
 import pytest
 import demistomock as demisto
 import json
-from MicrosoftApiModule import *
 from MicrosoftGraphListener import MsGraphClient
 from MicrosoftGraphListener import add_second_to_str_date
 
@@ -11,6 +10,7 @@ def oproxy_client():
     auth_id = "dummy_auth_id"
     enc_key = "dummy_enc_key"
     token_retrieval_url = "url_to_retrieval"
+    auth_and_token_url = f'{auth_id}@{token_retrieval_url}'
     app_name = "ms-graph-mail-listener"
     mailbox_to_fetch = "dummy@mailbox.com"  # disable-secrets-detection
     folder_to_fetch = "Phishing"
@@ -19,32 +19,28 @@ def oproxy_client():
     base_url = "https://graph.microsoft.com/v1.0/"
     ok_codes = (200, 201, 202)
 
-    ms_client = MicrosoftClient.from_oproxy(auth_id, enc_key, token_retrieval_url, app_name,
-                                            refresh_token=refresh_token,
-                                            base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
-
-    return MsGraphClient(ms_client, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit)
+    return MsGraphClient(self_deployed=False, tenant_id='', auth_and_token_url=auth_and_token_url,
+                         enc_key=enc_key, app_name=app_name, base_url=base_url, use_ssl=True, proxy=False,
+                         ok_codes=ok_codes, refresh_token=refresh_token, mailbox_to_fetch=mailbox_to_fetch,
+                         folder_to_fetch=folder_to_fetch, first_fetch_interval=first_fetch_interval,
+                         emails_fetch_limit=emails_fetch_limit)
 
 
 def self_deployed_client():
     tenant_id = "dummy_tenant"
     client_id = "dummy_client_id"
     client_secret = "dummy_secret"
-    app_url = "app_url"
     mailbox_to_fetch = "dummy@mailbox.com"  # disable-secrets-detection
     folder_to_fetch = "Phishing"
     first_fetch_interval = "20 minutes"
     emails_fetch_limit = 50
     base_url = "https://graph.microsoft.com/v1.0/"
-    scope = "https://graph.microsoft.com/.default"
     ok_codes = (200, 201, 202)
 
-    ms_client = MicrosoftClient.from_self_deployed(tenant_id, client_id,
-                                                   client_secret, app_url=app_url,
-                                                   scope=scope,
-                                                   base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
-
-    return MsGraphClient(ms_client, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit)
+    return MsGraphClient(self_deployed=True, tenant_id=tenant_id, auth_and_token_url=client_id, enc_key=client_secret,
+                         base_url=base_url, use_ssl=True, proxy=False, ok_codes=ok_codes, app_name='',
+                         refresh_token='', mailbox_to_fetch=mailbox_to_fetch, folder_to_fetch=folder_to_fetch,
+                         first_fetch_interval=first_fetch_interval, emails_fetch_limit=emails_fetch_limit)
 
 
 @pytest.fixture()
