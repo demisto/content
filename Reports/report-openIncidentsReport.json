@@ -433,6 +433,15 @@
           "status",
           "dueDate"
         ],
+        "readableHeaders": {
+          "name": "Name",
+          "occurred": "Occurred",
+          "type": "Type",
+          "owner": "Owner",
+          "severity": "Severity",
+          "status": "Status",
+          "dueDate": "Due Date"
+        },
         "w": 12
       },
       "query": {
