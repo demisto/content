@@ -2531,7 +2531,6 @@
     ],
     "skipped_tests": {
         "test_MsGraphFiles": "Issue 22853",
-        "TestCofenseFeed": "Issue 22854",
         "RecordedFutureFeed - Test": "Issue 22855",
         "Blocklist_de - Test": "Issue 22856",
         "Cybereason Test": "Issue 22683",
