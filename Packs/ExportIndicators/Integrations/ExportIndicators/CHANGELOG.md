@@ -5,12 +5,13 @@
     - di - Whether to drop invalid URLs in the panosurl format.
     - cd - The default category in the proxysg format.
     - ca - The categories to show in the proxysg format.
+    - tr - Whether to collapse IPs to ranges or CIDRs.
   - Added support for "McAfee Web Gateway", "PAN-OS URL" and "Symantec ProxySG" output formats.
   - Fixed and issue where "json", "json-seq" and "csv" formats did not match the original Minemeld formats.
   - Added support for "XSOAR json", "XSOAR json-seq" and "XSOAR csv" output formats.
   - Added a feature where "csv" and "XSOAR csv" formats now download a .csv file with the indicator information.
   - The "json-seq" and "XSOAR json-seq" functions now download a file with indicator information as a JSON sequence.
-
+  - Added support for IP ranges and CIDR collapse.
 
 ## [20.3.3] - 2020-03-18
   - Added the *offset* parameter to the ***eis-update*** command.

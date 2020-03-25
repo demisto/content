@@ -34,3 +34,8 @@ Use the following arguments in the URL to change the request:
  * Example: https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=proxysg&cd=default_category
 9. **ca** - Only with `proxysg` format. The categories which will be exported. Indicators not in these categories will be classified as the default category.
  * Example: https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=proxysg&ca=category1,category2
+10. **tr** - Whether to collapse IPs. 
+    * 0 - Do not collapse. 
+    * 1 - Collapse to ranges.
+    * 2 - Collapse to CIDRs.
+ * Example: https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?q="type:ip and sourceBrand:my_source"&tr=1
