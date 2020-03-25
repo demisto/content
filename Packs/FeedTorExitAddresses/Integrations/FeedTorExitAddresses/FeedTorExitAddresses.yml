@@ -88,7 +88,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: tor-get-indicators
-  dockerimage: demisto/python3:3.8.1.6120
+  dockerimage: demisto/python3:3.8.2.6981
   feed: true
   isfetch: false
   longRunning: false
