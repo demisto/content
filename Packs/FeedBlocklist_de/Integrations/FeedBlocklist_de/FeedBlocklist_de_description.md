@@ -16,4 +16,4 @@ Gets the daily Threat Feed and Custom feeds from Blocklist.de.
 | strongips | All IP addresses which are older then 2 month and have more then 5.000 attacks. |
 
 ## Custom Feed info:
-To connect a custom Blocklist.de feed you need to specify the sub-feeds from which to process indicators.
+To connect a custom Blocklist.de feed you need to specify the services from which to process indicators.

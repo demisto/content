@@ -2,17 +2,17 @@ import demistomock as demisto
 from CommonServerPython import *
 
 
-def get_feed_config(sub_feeds: list, regions: list):
+def get_feed_config(services: list, regions: list):
     """
-    Creates the configuration for each AWS sub-feed.
+    Creates the configuration for each AWS service.
     Args:
-        sub_feeds: The selected sub-feeds.
+        services: The selected services.
         regions: The selected regions.
 
     Returns:
         The feed configuration.
     """
-    available_feeds = {
+    available_services = {
         'AMAZON',
         'EC2',
         'ROUTE53',
@@ -27,10 +27,10 @@ def get_feed_config(sub_feeds: list, regions: list):
 
     feed_name_to_config = {}
 
-    for feed in available_feeds:
-        feed_name_to_config[feed] = {
+    for service in available_services:
+        feed_name_to_config[service] = {
             'url': 'https://ip-ranges.amazonaws.com/ip-ranges.json',
-            'extractor': f"prefixes[?service=='{feed}'{region_path}]",
+            'extractor': f"prefixes[?service=='{service}'{region_path}]",
             'indicator': 'ip_prefix',
             'indicator_type': FeedIndicatorType.CIDR,
             'fields': ['region', 'service'],
@@ -39,7 +39,7 @@ def get_feed_config(sub_feeds: list, regions: list):
             }
         }
 
-    return {feed_name: feed_name_to_config.get(feed_name) for feed_name in sub_feeds}
+    return {service: feed_name_to_config.get(service) for service in services}
 
 
 from JSONFeedApiModule import *  # noqa: E402
@@ -47,7 +47,7 @@ from JSONFeedApiModule import *  # noqa: E402
 
 def main():
     params = {k: v for k, v in demisto.params().items() if v is not None}
-    params['feed_name_to_config'] = get_feed_config(params.get('sub_feeds', ['AMAZON']),
+    params['feed_name_to_config'] = get_feed_config(params.get('services', ['AMAZON']),
                                                     argToList(params.get('regions', [])))
     feed_main(params, 'AWS Feed', 'aws')
 

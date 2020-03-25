@@ -11,7 +11,7 @@ INTEGRATION_NAME = 'Office 365'
 
 
 def build_urls_dict(regions_list: list, services_list: list, unique_id) -> List[Dict[str, Any]]:
-    """Builds a URL dictionary with the relevant data for each Sub feed
+    """Builds a URL dictionary with the relevant data for each service
 
     Args:
         regions_list: list of regions
@@ -19,7 +19,7 @@ def build_urls_dict(regions_list: list, services_list: list, unique_id) -> List[
         unique_id: unique uuid
 
     Returns:
-        URLs sub feeds list
+        URLs services list
     """
     urls_list = []
     for region in regions_list:
@@ -48,7 +48,7 @@ class Client(BaseClient):
     def __init__(self, urls_list: list, insecure: bool = False, proxy: bool = False):
         """
         Implements class for Office 365 feeds.
-        :param urls_list: List of url, regions and service of each sub feed.
+        :param urls_list: List of url, regions and service of each service.
         :param insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
         :param proxy: boolean, if *false* feed HTTPS server certificate will not use proxies. Default: *false*
         """
@@ -73,7 +73,7 @@ class Client(BaseClient):
                 response.raise_for_status()
                 data = response.json()
                 indicators = [i for i in data if 'ips' in i or 'urls' in i]  # filter empty entries and add metadata]
-                for i in indicators:  # add relevant fields of sub feeds
+                for i in indicators:  # add relevant fields of services
                     i.update({
                         "Region": region,
                         "Service": service,

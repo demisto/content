@@ -3,7 +3,7 @@ commonfields:
   id: Cloudflare Feed
   version: -1
 configuration:
-- display: Sub-Feeds
+- display: Services
   name: url
   options:
   - https://www.cloudflare.com/ips-v4
@@ -37,7 +37,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
+  required: true
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data
 - display: ""
@@ -98,7 +98,7 @@ script:
     execution: false
     description: Gets the feed indicators.
     name: cloudflare-get-indicators
-  dockerimage: demisto/python3:3.8.1.6120
+  dockerimage: demisto/python3:3.8.2.6981
   feed: true
   isfetch: false
   longRunning: false
