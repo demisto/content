@@ -1120,7 +1120,6 @@ script:
     description: Adds a label to an alert.
     execution: false
     name: fidelis-manage-alert-label
-  feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false
