@@ -202,10 +202,10 @@ tasks:
     ignoreworker: false
   '10':
     id: '10'
-    taskid: efc4e726-7279-4c67-8f81-c659f8442a27
+    taskid: 65a1185c-1e4d-4699-8c0e-366ad708e6f8
     type: playbook
     task:
-      id: efc4e726-7279-4c67-8f81-c659f8442a27
+      id: 65a1185c-1e4d-4699-8c0e-366ad708e6f8
       version: -1
       name: Account Enrichment - Generic v2.1
       description: |-
@@ -222,8 +222,7 @@ tasks:
     scriptarguments:
       Username:
         complex:
-          root: Account
-          accessor: Username
+          root: inputs.Username
           transformers:
           - operator: uniq
     separatecontext: false
