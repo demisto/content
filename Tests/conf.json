@@ -501,6 +501,24 @@
             "playbookID": "JSONtoCSV-Test"
         },
         {
+            "integrations": "Generic SQL",
+            "playbookID": "generic-sql",
+            "instance_names": "mysql instance",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Generic SQL",
+            "playbookID": "generic-sql",
+            "instance_names": "postgreSQL instance",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Generic SQL",
+            "playbookID": "generic-sql",
+            "instance_names": "Microsoft SQL instance",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall",
             "playbookID": "palo_alto_firewall_test_pb",
@@ -2505,10 +2523,13 @@
            "integrations": "AlienVault OTX TAXII Feed",
             "playbookID": "playbook-feedalienvaultotx_test",
             "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "ExtractDomainAndFQDNFromUrlAndEmail-Test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
-        "Claroty - Test": "Issue 22996",
         "test_MsGraphFiles": "Issue 22853",
         "TestCofenseFeed": "Issue 22854",
         "RecordedFutureFeed - Test": "Issue 22855",
@@ -2630,7 +2651,6 @@
         "VirusTotal - Private API": "Issue 22638",
 
         "_comment": "~~~ OTHER ~~~",
-        "Cofense Intelligence": "Issue 22964",
         "Pentera": "authentication method will not work with testing",
         "EclecticIQ Platform": "Issue 8821",
         "BitDam": "Issue #17247",
