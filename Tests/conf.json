@@ -506,6 +506,24 @@
             "playbookID": "JSONtoCSV-Test"
         },
         {
+            "integrations": "Generic SQL",
+            "playbookID": "generic-sql",
+            "instance_names": "mysql instance",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Generic SQL",
+            "playbookID": "generic-sql",
+            "instance_names": "postgreSQL instance",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Generic SQL",
+            "playbookID": "generic-sql",
+            "instance_names": "Microsoft SQL instance",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall",
             "playbookID": "palo_alto_firewall_test_pb",
@@ -2510,10 +2528,13 @@
            "integrations": "AlienVault OTX TAXII Feed",
             "playbookID": "playbook-feedalienvaultotx_test",
             "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "ExtractDomainAndFQDNFromUrlAndEmail-Test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
-        "Claroty - Test": "Issue 22996",
         "test_MsGraphFiles": "Issue 22853",
         "TestCofenseFeed": "Issue 22854",
         "RecordedFutureFeed - Test": "Issue 22855",
