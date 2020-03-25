@@ -2530,7 +2530,8 @@
         }
     ],
     "skipped_tests": {
-        "test_MsGraphFiles": "Issue 22853",
+        "test_MsGraphFiles": "Issue 22853 ",
+        "TestCofenseFeed": "Issue 22854",
         "RecordedFutureFeed - Test": "Issue 22855",
         "Blocklist_de - Test": "Issue 22856",
         "Cybereason Test": "Issue 22683",
@@ -2659,6 +2660,7 @@
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "Lockpath KeyLight": "Deprecated. No tests.",
         "SafeBreach": "pending rewrite",
+        "Cymulate": "Partner didn't provided test playbook",
 
         "_comment": "~~~ QUOTA ISSUES ~~~",
         "Google Chronicle Backstory": "Issue 22720",
