@@ -450,3 +450,5 @@ outputs:
 - contextPath: Silverfort.UserRisk.UPN
   description: User principal name
 fromversion: 5.0.0
+tests:
+  - No Tests
