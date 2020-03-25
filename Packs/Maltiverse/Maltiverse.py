@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 from typing import Tuple, Dict
 from _collections import defaultdict
@@ -21,9 +22,11 @@ class Client(BaseClient):
     Client will implement the service API, and should not contain any Demisto logic.
     Should only do requests and return data.
     """
-    def __init__(self, url: str, use_ssl: bool, use_proxy: bool, auth_token):
-        super().__init__(url, verify=use_ssl, proxy=use_proxy, headers={'Accept': 'application/json'}) 
-        self._headers.update({'Authorization': 'Bearer ' + auth_token})
+
+    def __init__(self, url: str, use_ssl: bool, use_proxy: bool, auth_token=None):
+        super().__init__(url, verify=use_ssl, proxy=use_proxy, headers={'Accept': 'application/json'})
+        if auth_token:
+            self._headers.update({'Authorization': 'Bearer ' + auth_token})
 
     def ip_report(self, ip: str) -> dict:
         if not is_ip_valid(ip):
@@ -108,11 +111,11 @@ def create_blacklist_context(blacklist):
         dict - the dictionary that should be added into the context
     """
     all_fields = [blacklist[i][field] for field in
-                      ['description', 'first_seen', 'last_seen', 'source'] for i in range(len(blacklist))]
+                  ['description', 'first_seen', 'last_seen', 'source'] for i in range(len(blacklist))]
     description = all_fields[:len(blacklist)]
-    first_seen = all_fields[len(blacklist): 2*len(blacklist)]
-    last_seen = all_fields[2*len(blacklist): 3*len(blacklist)]
-    source = all_fields[3*len(blacklist):]
+    first_seen = all_fields[len(blacklist): 2 * len(blacklist)]
+    last_seen = all_fields[2 * len(blacklist): 3 * len(blacklist)]
+    source = all_fields[3 * len(blacklist):]
     blacklist_context = {
         'Blacklist': {
             'Description': description,
@@ -150,11 +153,11 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, any]:
         blacklist_context = create_blacklist_context(report.get('blacklist', []))
 
         outputs = {
-                'Address': report['ip_addr'],
-                'Geo.Country': report.get('country_code'),
-                'PositiveDetections': positive_detections,
-                'Malicious.Description': blacklist_context['Blacklist']['Description']
-                }
+            'Address': report['ip_addr'],
+            'Geo.Country': report.get('country_code'),
+            'PositiveDetections': positive_detections,
+            'Malicious.Description': blacklist_context['Blacklist']['Description']
+        }
 
         additional_info = {string_to_context_key(field): report[field] for field in
                            ['classification', 'tag']}
@@ -172,6 +175,9 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, any]:
         # todo: check if it needs to appear as IP.Address and so on
         markdown += tableToMarkdown(f'Maltiverse IP reputation for: {report["ip_addr"]}\n', outputs, removeNull=True)
         reports.append(report)
+
+    # todo: delete next line
+    print(reports)
 
     return markdown, context, reports
 
@@ -200,7 +206,7 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, any]:
         blacklist_context = create_blacklist_context(report.get('blacklist', []))
 
         outputs = {'Data': report['url'],
-                    'PositiveDetections': positive_detections
+                   'PositiveDetections': positive_detections
                    }
 
         dbot_score = {'Indicator': report['hostname'], 'Type': 'url', 'Vendor': 'Maltiverse',
@@ -253,6 +259,7 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, any
     reports = []
 
     for domain in argToList(args.get('domain', '')):
+        print("in for")
         report = client.domain_report(domain)
         positive_detections = len(report.get('blacklist', []))
 
@@ -300,7 +307,10 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, any
                                     md_info, removeNull=True)
         reports.append(report)
 
-        return markdown, context, reports
+    # todo: delete print
+    print(context)
+
+    return markdown, context, reports
 
 
 def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, any]:
@@ -382,12 +392,11 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, any]:
 
 def main():
     params = demisto.params()
-    api_key = params.get('api_key')
 
     client = Client(SERVER_URL,
                     use_ssl=not params.get('insecure', False),
                     use_proxy=params.get('proxy', False),
-                    auth_token=params.get('api_key'))
+                    auth_token=params.get('api_key', None))
 
     commands = {
         'ip': ip_command,
