@@ -130,3 +130,7 @@ class TestCommandsFunctions:
         expected_ec = load_params_from_json(json_path=datadir['get_events_expected_ec_2.json'])
 
         assert entry_context_tested == expected_ec, "Test query response with security events - check only entry context"
+
+
+def test_should_filed():
+    assert 1 == 3
