@@ -292,7 +292,7 @@ tasks:
       '#default#':
       - "2"
       "yes":
-      - "10"
+      - "9"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -314,30 +314,27 @@ tasks:
           "y": 515
         }
       }
-  "10":
-    id: "10"
+  "9":
+    id: "9"
     taskid: f779358d-7e46-4afd-8b42-b48167adb764
     type: regular
     task:
-      elasticcommonfields: {}
       id: f779358d-7e46-4afd-8b42-b48167adb764
       version: -1
       name: Retrieve CVE reputation
       description: Retrieve CVE reputation using one or more integrations.
-      script: '|||cve'
+      scriptName: cveReputation
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "2"
     scriptarguments:
-      cve_id:
+      input:
         complex:
           root: inputs.CVE
           accessor: ID
-      retry-count:
-        simple: "5"
     separatecontext: false
     view: |-
       {
