@@ -1,5 +1,5 @@
 ## [Unreleased]
- - Added the ***ring-user*** command.
+ - Added the ***microsoft-teams-ring-user*** command.
  - Deprecated ***add-user-to-channel*** and ***create-channel*** - Use ***microsoft-teams-add-user-to-channel*** and ***microsoft-teams-create-channel*** instead. 
 
 ## [20.1.2] - 2020-01-22
