@@ -2523,6 +2523,10 @@
            "integrations": "AlienVault OTX TAXII Feed",
             "playbookID": "playbook-feedalienvaultotx_test",
             "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "ExtractDomainAndFQDNFromUrlAndEmail-Test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {

@@ -1,15 +1,10 @@
 import demistomock as demisto
-from CommonServerPython import *
-from tld import get_tld
+from CommonServerPython import *  # lgtm [py/polluting-import]
+from tld import get_tld, get_fld
 from validate_email import validate_email
-from urlparse import urlparse, parse_qs
-from urllib import unquote
+from urllib.parse import urlparse, parse_qs, unquote
 import re
 
-# ============================================================================================================== #
-# This script is highly similar to 'ExtractFQDNFromUrlAndEmail', they are not unified due to run time performance.
-# Please change both scripts respectively.
-# ============================================================================================================== #
 
 PROOFPOINT_PREFIXES = ['https://urldefense.proofpoint.com/v1/url?u=', 'https://urldefense.proofpoint.com/v2/url?u=']
 ATP_LINK_REG = r'(https:\/\/\w*|\w*)\.safelinks\.protection\.outlook\.com\/.*\?url='
@@ -53,7 +48,21 @@ def unescape_url(escaped_url):
     return url
 
 
-def extract_domain(the_input):
+def get_fqdn(the_input):
+    fqdn = None
+    domain = get_tld(the_input, fail_silently=True, as_object=True)
+
+    # handle fqdn if needed
+    if domain:
+        # get the subdomain using tld.subdomain
+        subdomain = domain.subdomain
+        if (subdomain):
+            fqdn = "{}.{}".format(subdomain, domain.fld)
+
+    return fqdn
+
+
+def extract_fqdn_or_domain(the_input, is_fqdn=None, is_domain=None):
     is_url = None
     domain_from_mail = None
     is_email = validate_email(the_input)
@@ -72,32 +81,42 @@ def extract_domain(the_input):
         # Not ATP Link or Proofpoint URL so just unescape
         else:
             the_input = unescape_url(the_input)
-        is_url = domain = get_tld(the_input, fail_silently=True)
+        if is_fqdn:
+            is_url = indicator = get_fqdn(the_input)
+        if is_domain:
+            is_url = indicator = get_fld(the_input, fail_silently=True)
 
     # Extract domain itself from a potential subdomain
     if domain_from_mail or not is_url:
         full_domain = 'https://'
         full_domain += domain_from_mail if domain_from_mail else the_input
         # get_tld fails to parse subdomain since it is not URL, over-ride error by injecting protocol.
-        domain = get_tld(full_domain, fail_silently=True)
+        if is_fqdn:
+            indicator = get_fqdn(full_domain)
+        if is_domain:
+            indicator = get_fld(full_domain, fail_silently=True)
 
     # convert None to empty string if needed
-    domain = '' if not domain else domain
-    if type(domain) == unicode:
-        domain = domain.encode('utf-8', errors='ignore')
-    return domain
+    indicator = '' if not indicator else indicator
+    return indicator
 
 
 def main():
-    domains = []
     the_input = demisto.args().get('input')
+
     # argToList returns the argument as is if it's already a list so no need to check here
     the_input = argToList(the_input)
-
+    entries_list = []
     # Otherwise assumes it's already an array
     for item in the_input:
-        domains.append(extract_domain(item))
-    demisto.results(domains)
+        input_entry = {
+            "Type": entryTypes["note"],
+            "ContentsFormat": formats["json"],
+            "Contents": [extract_fqdn_or_domain(item, is_fqdn=True), extract_fqdn_or_domain(item, is_domain=True)]
+        }
+        entries_list.append(input_entry)
+
+    demisto.results(entries_list)
 
 
 # python2 uses __builtin__ python3 uses builtins
