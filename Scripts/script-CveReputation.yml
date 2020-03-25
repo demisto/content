@@ -49,5 +49,5 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - cve-search
+  - cve
 runonce: false
