@@ -1,16 +1,18 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
+import re
 import json
-from flask import Flask, Response, request
+import traceback
+from base64 import b64decode
+from multiprocessing import Process
 from gevent.pywsgi import WSGIServer
 from tempfile import NamedTemporaryFile
-from typing import Callable, List, Any, cast, Dict
-from base64 import b64decode
+from flask import Flask, Response, request
+from netaddr import IPAddress, iprange_to_cidrs
 from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
-from multiprocessing import Process
-import re
-import traceback
+from typing import Callable, List, Any, cast, Dict, Tuple
 
 
 class Handler:
@@ -45,11 +47,15 @@ FORAMT_ARG_XSOAR_JSON_SEQ: str = 'xsoar-seq'
 FORMAT_XSOAR_CSV: str = 'XSOAR csv'
 FORMAT_ARG_XSOAR_CSV: str = 'xsoar-csv'
 
+MWG_TYPE_OPTIONS = ["string", "applcontrol", "dimension", "category", "ip", "mediatype", "number", "regex"]
+
 CTX_FORMAT_ERR_MSG: str = 'Please provide a valid format from: text, json, json-seq, csv, mgw, panosurl and proxysg'
 CTX_LIMIT_ERR_MSG: str = 'Please provide a valid integer for List Size'
 CTX_OFFSET_ERR_MSG: str = 'Please provide a valid integer for Starting Index'
 CTX_MWG_TYPE_ERR_MSG: str = 'The McAFee Web Gateway type can only be one of the following: string,' \
                             ' applcontrol, dimension, category, ip, mediatype, number, regex'
+CTX_COLLAPSE_ERR_MSG: str = 'The Collapse parameter can only get the following: 0 - Dont Collapse, ' \
+                            '1 - Collapse to Ranges, 2 - Collapse to CIDRS'
 CTX_MISSING_REFRESH_ERR_MSG: str = 'Refresh Rate must be "number date_range_unit", examples: (2 hours, 4 minutes, ' \
                                    '6 months, 1 day, etc.)'
 CTX_NO_URLS_IN_PROXYSG_FORMAT = 'ProxySG format only outputs URLs - no URLs found in the current query'
@@ -58,6 +64,10 @@ MIMETYPE_JSON_SEQ: str = 'application/json-seq'
 MIMETYPE_JSON: str = 'application/json'
 MIMETYPE_CSV: str = 'text/csv'
 MIMETYPE_TEXT: str = 'text/plain'
+
+DONT_COLLAPSE = "Don't Collapse"
+COLLAPSE_TO_CIDR = "To CIDRs"
+COLLAPSE_TO_RANGES = "To Ranges"
 
 _PROTOCOL_REMOVAL = re.compile(r'^(?:[a-z]+:)*//')
 _PORT_REMOVAL = re.compile(r'^([a-z0-9\-\.]+)(?:\:[0-9]+)*')
@@ -70,7 +80,9 @@ _BROAD_PATTERN = re.compile(r'^(?:\*\.)+[a-zA-Z]+(?::[0-9]+)?$')
 class RequestArguments:
     def __init__(self, query: str, out_format: str = FORMAT_TEXT, limit: int = 10000, offset: int = 0,
                  mwg_type: str = 'string', strip_port: bool = False, drop_invalids: bool = False,
-                 category_default: str = 'bc_category', category_attribute: str = ''):
+                 category_default: str = 'bc_category', category_attribute: str = '',
+                 collapse_ips: str = DONT_COLLAPSE):
+
         self.query = query
         self.out_format = out_format
         self.limit = limit
@@ -80,6 +92,7 @@ class RequestArguments:
         self.drop_invalids = drop_invalids
         self.category_default = category_default
         self.category_attribute = []  # type:List
+        self.collapse_ips = collapse_ips
 
         if category_attribute is not None:
             category_attribute_list = category_attribute.split(',')
@@ -110,6 +123,9 @@ class RequestArguments:
             return True
 
         elif self.category_attribute != last_update_data.get('category_attribute'):
+            return True
+
+        elif self.collapse_ips != last_update_data.get('collapse_ips'):
             return True
 
         return False
@@ -157,7 +173,34 @@ def refresh_outbound_context(request_args: RequestArguments) -> str:
     now = datetime.now()
     # poll indicators into list from demisto
     iocs = find_indicators_with_limit(request_args.query, request_args.limit, request_args.offset)
-    out_dict = create_values_out_dict(iocs, request_args)
+    out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs, request_args)
+
+    # if in CSV format - the "indicator" header
+    if request_args.out_format in [FORMAT_CSV, FORMAT_XSOAR_CSV]:
+        actual_indicator_amount = actual_indicator_amount - 1
+
+    # re-polling in case formatting or ip collapse caused a lack in results
+    while actual_indicator_amount < request_args.limit:
+        # from where to start the new poll and how many results should be fetched
+        new_offset = len(iocs) + request_args.offset + actual_indicator_amount - 1
+        new_limit = request_args.limit - actual_indicator_amount
+
+        # poll additional indicators into list from demisto
+        new_iocs = find_indicators_with_limit(request_args.query, new_limit, new_offset)
+
+        # in case no additional indicators exist - exit
+        if len(new_iocs) == 0:
+            break
+
+        # add the new results to the existing results
+        iocs += new_iocs
+
+        # reformat the output
+        out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs, request_args)
+
+        if request_args.out_format == FORMAT_CSV:
+            actual_indicator_amount = actual_indicator_amount - 1
+
     if request_args.out_format == FORMAT_JSON:
         out_dict[CTX_MIMETYPE_KEY] = MIMETYPE_JSON
 
@@ -182,7 +225,8 @@ def refresh_outbound_context(request_args: RequestArguments) -> str:
         'drop_invalids': request_args.drop_invalids,
         'strip_port': request_args.strip_port,
         'category_default': request_args.category_default,
-        'category_attribute': request_args.category_attribute
+        'category_attribute': request_args.category_attribute,
+        'collapse_ips': request_args.collapse_ips
     })
     return out_dict[CTX_VALUES_KEY]
 
@@ -228,12 +272,122 @@ def find_indicators_with_limit_loop(indicator_query: str, limit: int, total_fetc
     return iocs, next_page
 
 
+def ip_groups_to_cidrs(ip_range_groups: list):
+    """Collapse ip groups list to CIDRs
+
+    Args:
+        ip_range_groups (list): a list of lists containing connected IPs
+
+    Returns:
+        list. a list of CIDRs.
+    """
+    ip_ranges = []  # type:List
+    for group in ip_range_groups:
+        # handle single ips
+        if len(group) == 1:
+            ip_ranges.append(str(group[0]))
+            continue
+
+        min_ip = group[0]
+        max_ip = group[-1]
+        moved_ip = False
+        # CIDR must begin with an even LSB
+        # if the first ip does not - separate it from the rest of the range
+        if (int(str(min_ip).split('.')[-1]) % 2) != 0:
+            ip_ranges.append(str(min_ip))
+            min_ip = group[1]
+            moved_ip = True
+
+        # CIDR must end with uneven LSB
+        # if the last ip does not - separate it from the rest of the range
+        if (int(str(max_ip).split('.')[-1]) % 2) == 0:
+            ip_ranges.append(str(max_ip))
+            max_ip = group[-2]
+            moved_ip = True
+
+        # if both min and max ips were shifted and there are only 2 ips in the range
+        # we added both ips by the shift and now we move to the next  range
+        if moved_ip and len(group) == 2:
+            continue
+
+        else:
+            ip_ranges.append(str(iprange_to_cidrs(min_ip, max_ip)[0].cidr))
+
+    return ip_ranges
+
+
+def ip_groups_to_ranges(ip_range_groups: list):
+    """Collapse ip groups list to ranges
+
+    Args:
+        ip_range_groups (list): a list of lists containing connected IPs
+
+    Returns:
+        list. a list of Ranges.
+    """
+    ip_ranges = []  # type:List
+    for group in ip_range_groups:
+        # handle single ips
+        if len(group) == 1:
+            ip_ranges.append(str(group[0]))
+            continue
+
+        min_ip = group[0]
+        max_ip = group[-1]
+        ip_ranges.append(str(min_ip) + "-" + str(max_ip))
+
+    return ip_ranges
+
+
+def ips_to_ranges(ips: list, collapse_ips):
+    """Collapse IPs to Ranges or CIDRs.
+
+    Args:
+        ips (list): a list of IP strings.
+        collapse_ips (str): Whether to collapse to Ranges or CIDRs.
+
+    Returns:
+        list. a list to Ranges or CIDRs.
+    """
+    ips_range_groups = []  # type:List
+    ips = sorted(ips)
+    if len(ips) > 0:
+        ips_range_groups.append([ips[0]])
+
+    if len(ips) > 1:
+        for ip in ips[1:]:
+            appended = False
+
+            if len(ips_range_groups) == 0:
+                ips_range_groups.append([ip])
+                continue
+
+            for group in ips_range_groups:
+                if IPAddress(int(ip) + 1) in group or IPAddress(int(ip) - 1) in group:
+                    group.append(ip)
+                    sorted(group)
+                    appended = True
+
+            if not appended:
+                ips_range_groups.append([ip])
+
+    for group in ips_range_groups:
+        sorted(group)
+
+    if collapse_ips == COLLAPSE_TO_RANGES:
+        return ip_groups_to_ranges(ips_range_groups)
+
+    else:
+        return ip_groups_to_cidrs(ips_range_groups)
+
+
 def panos_url_formatting(iocs: list, drop_invalids: bool, strip_port: bool):
     formatted_indicators = []  # type:List
     for indicator_data in iocs:
         # only format URLs and Domains
+        indicator = indicator_data.get('value')
         if indicator_data.get('indicator_type') in ['URL', 'Domain', 'DomainGlob']:
-            indicator = indicator_data.get('value').lower()
+            indicator = indicator.lower()
 
             # remove initial protocol - http/https/ftp/ftps etc
             indicator = _PROTOCOL_REMOVAL.sub('', indicator)
@@ -270,7 +424,7 @@ def panos_url_formatting(iocs: list, drop_invalids: bool, strip_port: bool):
                 formatted_indicators.append(indicator[2:])
 
         formatted_indicators.append(indicator)
-    return {CTX_VALUES_KEY: list_to_str(formatted_indicators, '\n')}
+    return {CTX_VALUES_KEY: list_to_str(formatted_indicators, '\n')}, len(formatted_indicators)
 
 
 def create_json_out_format(iocs: list):
@@ -305,6 +459,7 @@ def add_indicator_to_category(indicator, category, category_dict):
 def create_proxysg_out_format(iocs: list, category_attribute: list, category_default='bc_category'):
     formatted_indicators = ''
     category_dict = {}  # type:Dict
+    num_of_returned_indicators = 0
 
     for indicator in iocs:
         if indicator.get('indicator_type') in ['URL', 'Domain', 'DomainGlob']:
@@ -325,11 +480,12 @@ def create_proxysg_out_format(iocs: list, category_attribute: list, category_def
         sub_output_string += list_to_str(indicator_list, '\n')
         sub_output_string += "\nend\n"
         formatted_indicators += sub_output_string
+        num_of_returned_indicators = num_of_returned_indicators + len(indicator_list)
 
     if len(formatted_indicators) == 0:
         raise Exception(CTX_NO_URLS_IN_PROXYSG_FORMAT)
 
-    return {CTX_VALUES_KEY: formatted_indicators}
+    return {CTX_VALUES_KEY: formatted_indicators}, num_of_returned_indicators
 
 
 def create_mwg_out_format(iocs: list, mwg_type: str) -> dict:
@@ -355,7 +511,7 @@ def create_mwg_out_format(iocs: list, mwg_type: str) -> dict:
     return {CTX_VALUES_KEY: string_formatted_indicators}
 
 
-def create_values_out_dict(iocs: list, request_args: RequestArguments) -> dict:
+def create_values_for_returned_dict(iocs: list, request_args: RequestArguments) -> Tuple[dict, int]:
     """
     Create a dictionary for output values using the selected format (json, json-seq, text, csv, McAfee Web Gateway,
     Symantec ProxySG, panosurl)
@@ -367,16 +523,18 @@ def create_values_out_dict(iocs: list, request_args: RequestArguments) -> dict:
         return create_proxysg_out_format(iocs, request_args.category_attribute, request_args.category_default)
 
     if request_args.out_format == FORMAT_MWG:
-        return create_mwg_out_format(iocs, request_args.mwg_type)
+        return create_mwg_out_format(iocs, request_args.mwg_type), len(iocs)
 
     if request_args.out_format == FORMAT_JSON:
-        return create_json_out_format(iocs)
+        return create_json_out_format(iocs), len(iocs)
 
     if request_args.out_format == FORMAT_XSOAR_JSON:
         iocs_list = [ioc for ioc in iocs]
-        return {CTX_VALUES_KEY: json.dumps(iocs_list)}
+        return {CTX_VALUES_KEY: json.dumps(iocs_list)}, len(iocs)
 
     else:
+        ipv4_formatted_indicators = []
+        ipv6_formatted_indicators = []
         formatted_indicators = []
         if request_args.out_format == FORMAT_XSOAR_CSV and len(iocs) > 0:  # add csv keys as first item
             headers = list(iocs[0].keys())
@@ -387,9 +545,17 @@ def create_values_out_dict(iocs: list, request_args: RequestArguments) -> dict:
 
         for ioc in iocs:
             value = ioc.get('value')
+            type = ioc.get('indicator_type')
             if value:
                 if request_args.out_format in [FORMAT_TEXT, FORMAT_CSV]:
-                    formatted_indicators.append(value)
+                    if type == 'IP' and request_args.collapse_ips != DONT_COLLAPSE:
+                        ipv4_formatted_indicators.append(IPAddress(value))
+
+                    elif type == 'IPv6' and request_args.collapse_ips != DONT_COLLAPSE:
+                        ipv6_formatted_indicators.append(IPAddress(value))
+
+                    else:
+                        formatted_indicators.append(value)
 
                 elif request_args.out_format == FORMAT_XSOAR_JSON_SEQ:
                     formatted_indicators.append(json.dumps(ioc))
@@ -402,7 +568,16 @@ def create_values_out_dict(iocs: list, request_args: RequestArguments) -> dict:
                     # wrap csv values with " to escape them
                     values = list(ioc.values())
                     formatted_indicators.append(list_to_str(values, map_func=lambda val: f'"{val}"'))
-    return {CTX_VALUES_KEY: list_to_str(formatted_indicators, '\n')}
+
+        if len(ipv4_formatted_indicators) > 0:
+            ipv4_formatted_indicators = ips_to_ranges(ipv4_formatted_indicators, request_args.collapse_ips)
+            formatted_indicators.extend(ipv4_formatted_indicators)
+
+        if len(ipv6_formatted_indicators) > 0:
+            ipv6_formatted_indicators = ips_to_ranges(ipv6_formatted_indicators, request_args.collapse_ips)
+            formatted_indicators.extend(ipv6_formatted_indicators)
+
+    return {CTX_VALUES_KEY: list_to_str(formatted_indicators, '\n')}, len(formatted_indicators)
 
 
 def get_outbound_mimetype() -> str:
@@ -452,7 +627,7 @@ def get_ioc_values_str_from_context(request_args: RequestArguments, iocs=None) -
             return ''
 
         iocs = iocs[request_args.offset: request_args.limit + request_args.offset]
-        returned_dict = create_values_out_dict(iocs, request_args=request_args)
+        returned_dict, _ = create_values_for_returned_dict(iocs, request_args=request_args)
         current_cache = demisto.getIntegrationContext()
         current_cache['last_output'] = returned_dict
         demisto.setIntegrationContext(current_cache)
@@ -509,6 +684,7 @@ def get_request_args(params):
     drop_invalids = request.args.get('di', params.get('drop_invalids', False))
     category_default = request.args.get('cd', params.get('category_default', 'bc_category'))
     category_attribute = request.args.get('ca', params.get('category_attribute', ''))
+    collapse_ips = request.args.get('tr', params.get('collapse_ips', DONT_COLLAPSE))
 
     # handle flags
     if strip_port is not None and strip_port == '':
@@ -516,6 +692,17 @@ def get_request_args(params):
 
     if drop_invalids is not None and drop_invalids == '':
         drop_invalids = True
+
+    if collapse_ips is not None and collapse_ips not in [DONT_COLLAPSE, COLLAPSE_TO_CIDR, COLLAPSE_TO_RANGES]:
+        collapse_ips = try_parse_integer(collapse_ips, CTX_COLLAPSE_ERR_MSG)
+        if collapse_ips == 0:
+            collapse_ips = DONT_COLLAPSE
+
+        elif collapse_ips == 1:
+            collapse_ips = COLLAPSE_TO_RANGES
+
+        elif collapse_ips == 2:
+            collapse_ips = COLLAPSE_TO_CIDR
 
     # prevent given empty params
     if len(query) == 0:
@@ -548,8 +735,12 @@ def get_request_args(params):
     elif out_format == FORMAT_ARG_XSOAR_CSV:
         out_format = FORMAT_XSOAR_CSV
 
+    if out_format == FORMAT_MWG:
+        if mwg_type not in MWG_TYPE_OPTIONS:
+            raise DemistoException(CTX_MWG_TYPE_ERR_MSG)
+
     return RequestArguments(query, out_format, limit, offset, mwg_type, strip_port, drop_invalids, category_default,
-                            category_attribute)
+                            category_attribute, collapse_ips)
 
 
 @APP.route('/', methods=['GET'])
@@ -690,15 +881,16 @@ def update_outbound_command(args, params):
     print_indicators = args.get('print_indicators')
     query = args.get('query')
     out_format = args.get('format')
-    offset = args.get('offset')
+    offset = try_parse_integer(args.get('offset', 0), CTX_OFFSET_ERR_MSG)
     mwg_type = args.get('mwg_type')
     strip_port = args.get('strip_port') == 'True'
     drop_invalids = args.get('drop_invalids') == 'True'
     category_attribute = args.get('category_attribute')
     category_default = args.get('category_default')
+    collapse_ips = args.get('collapse_ips')
 
     request_args = RequestArguments(query, out_format, limit, offset, mwg_type, strip_port, drop_invalids,
-                                    category_default, category_attribute)
+                                    category_default, category_attribute, collapse_ips)
 
     indicators = refresh_outbound_context(request_args)
     hr = tableToMarkdown('List was updated successfully with the following values', indicators,
