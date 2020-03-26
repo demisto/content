@@ -4,6 +4,10 @@
 Use the Fidelis Endpoint integration for advanced endpoint detection and response (EDR) across Windows, Mac and Linux OSes for faster threat remediation.
 This integration was integrated and tested with version 9.2 of Fidelis EDR.
 
+The account must have appropriate permissions to execute API calls. While you could use an administrator account, use an account designated for executing API calls.
+
+
+To Get the appropriate permissions navigate to __Configuration__ > __Roles__ > __Create a role__ > __Permissions__
 ## Use Cases
 ---
 * Fetch Alerts
@@ -58,6 +62,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### 1. fidelis-endpoint-list-alerts
 ---
 Returns all alerts in the system.
+##### Required Permissions
+The required permissions: View Alerts
 ##### Base Command
 
 `fidelis-endpoint-list-alerts`
@@ -318,6 +324,8 @@ Searches for endpoints based on an IP address or hostname.
 ### 3. fidelis-endpoint-file-search
 ---
 Searches for files on multiple hosts, using file hash, file extension, file size, and other search criteria.
+##### Required Permissions
+The required permissions: Scripts, View Executables 
 ##### Base Command
 `fidelis-endpoint-file-search`
 ##### Input
@@ -352,6 +360,8 @@ Searches for files on multiple hosts, using file hash, file extension, file size
 ### 4. fidelis-endpoint-file-search-status
 ---
 Gets the file search job status.
+##### Required Permissions
+The required permissions: View Executables
 ##### Base Command
 `fidelis-endpoint-file-search-status`
 ##### Input
@@ -382,6 +392,8 @@ Fidelis Endpoint file search status is: Completed
 ### 5. fidelis-endpoint-file-search-result-metadata
 ---
 Gets the job results metadata. The maximum is 50 results.
+##### Required Permissions
+The required permissions: View Executables
 ##### Base Command
 `fidelis-endpoint-file-search-result-metadata`
 ##### Input
@@ -437,6 +449,8 @@ Gets the job results metadata. The maximum is 50 results.
 ### 6. fidelis-endpoint-get-file
 ---
 Gets the file stream and download the file.
+##### Required Permissions
+The required permissions: Scripts, View Executables
 ##### Base Command
 `fidelis-endpoint-get-file`
 ##### Input
@@ -463,6 +477,8 @@ Return the file to download
 ### 7. fidelis-endpoint-delete-file-search-job
 ---
 Removes the job to free up space on the server.
+##### Required Permissions
+The required permissions: Scripts, View Executables, Delete Executables
 ##### Base Command
 `fidelis-endpoint-delete-file-search-job`
 ##### Input
@@ -478,6 +494,8 @@ The job was successfully deleted
 ### 8. fidelis-endpoint-list-scripts
 ---
 Gets a list of all script packages.
+##### Required Permissions
+The required permissions: Read groups, View Behaviors
 ##### Base Command
 `fidelis-endpoint-list-scripts`
 ##### Input
@@ -557,6 +575,8 @@ Gets a list of all script packages.
 ### 9. fidelis-endpoint-get-script-manifest
 ---
 Gets the script manifest.
+##### Required Permissions
+The required permissions: View Behaviors
 ##### Base Command
 `fidelis-endpoint-get-script-manifest`
 ##### Input
@@ -666,6 +686,8 @@ Gets the script manifest.
 ### 10. fidelis-endpoint-list-processes
 ---
 Gets a list all processes according to the OS system.
+##### Required Permissions
+The required permissions: Read groups, View Behaviors, View Task Results
 ##### Base Command
 `fidelis-endpoint-list-processes`
 ##### Input
@@ -697,6 +719,8 @@ The job has been executed successfully.
 ### 11. fidelis-endpoint-get-script-result
 ---
 Gets script job results.
+##### Required Permissions
+The required permissions: Read groups, View Behaviors, View Task Results
 ##### Base Command
 `fidelis-endpoint-get-script-result`
 ##### Input
@@ -845,6 +869,8 @@ Gets script job results.
 ### 12. fidelis-endpoint-kill-process
 ---
 Terminates the process that matches the required parameter's process ID.
+##### Required Permissions
+The required permissions: Read groups, View Behaviors, View Task Results
 ##### Base Command
 `fidelis-endpoint-kill-process`
 ##### Input
@@ -877,6 +903,8 @@ The job has been executed successfully.
 ### 13. fidelis-endpoint-delete-file
 ---
 Deletes a file at the specified path.
+##### Required Permissions
+The required permissions: Read groups, View Behaviors, View Task Results
 ##### Base Command
 `fidelis-endpoint-delete-file`
 ##### Input
@@ -900,6 +928,8 @@ Job ID: 4317e979-81df-46d8-8eb1-ab8a023ef4d8
 ### 14. fidelis-endpoint-isolate-network
 ---
 Quarantines an endpoint. While isolated, the endpoint's network communication is restricted to only the allowed servers.
+##### Required Permissions
+The required permissions: Read groups, View Behaviors, View Task Results
 ##### Base Command
 `fidelis-endpoint-isolate-network`
 ##### Input
@@ -923,6 +953,8 @@ Job ID: f25691bd-ba78-4f40-9a25-ab8a02420abc
 ### 15. fidelis-endpoint-remove-network-isolation
 ---
 Removes the endpoint from isolation.
+##### Required Permissions
+The required permissions: Read groups, View Behaviors, View Task Results
 ##### Base Command
 `fidelis-endpoint-remove-network-isolation`
 ##### Input
@@ -945,6 +977,8 @@ Job ID: 7a0a3179-3bce-43d1-80c0-ab8a0242d147
 ### 16. fidelis-endpoint-script-job-status
 ---
 Gets the script execution status.
+##### Required Permissions
+The required permissions: Scripts, View Executables, View Task Results
 ##### Base Command
 `fidelis-endpoint-script-job-status`
 ##### Input
@@ -981,6 +1015,8 @@ Gets the script execution status.
 ### 17. fidelis-endpoint-execute-script
 ---
 Executes a script package from Fidelis endpoint packages.
+##### Required Permissions
+The required permissions: Scripts, View Executables
 ##### Base Command
 `fidelis-endpoint-execute-script`
 ##### Input
@@ -1013,6 +1049,8 @@ The job has been executed successfully.
 ### 18. fidelis-endpoint-query-file
 ---
 Queries a file by file hash.
+##### Required Permissions
+The required permissions: Read groups, View Behaviors, View Task Results.
 ##### Base Command
 `fidelis-endpoint-query-file`
 ##### Input
@@ -1287,6 +1325,8 @@ Queries a file by file hash.
 ### 19. fidelis-endpoint-query-process
 ---
 Query process.
+##### Required Permissions
+The required permissions: Read groups, View Behaviors, View Task Results
 ##### Base Command
 `fidelis-endpoint-query-process`
 ##### Input
@@ -1432,6 +1472,8 @@ Query process.
 ### 20. fidelis-endpoint-query-connection-by-remote-ip
 ---
 Queries a connection by remote IP address.
+##### Required Permissions
+The required permissions: Read groups, View Behaviors, View Task Results
 ##### Base Command
 `fidelis-endpoint-query-connection-by-remote-ip`
 ##### Input
@@ -1558,7 +1600,7 @@ Queries a connection by remote IP address.
 ---
 Queries by DNS request.
 ##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+The required permissions: Read groups, View Behaviors, View Task Results
 ##### Base Command
 `fidelis-endpoint-query-by-dns`
 ##### Input
@@ -1688,7 +1730,7 @@ Queries by DNS request.
 ---
 Queries DNS by server IP address.
 ##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+The required permissions: Read groups, View Behaviors, View Task Results
 ##### Base Command
 `fidelis-endpoint-query-dns-by-server-ip`
 ##### Input
@@ -1841,6 +1883,8 @@ Queries DNS by server IP address.
 ### 23. fidelis-endpoint-query-dns-by-source-ip
 ---
 Queries DNS by source IP address.
+##### Required Permissions
+The required permissions: Read groups, View Behaviors, View Task Results
 ##### Base Command
 `fidelis-endpoint-query-dns-by-source-ip`
 ##### Input
@@ -2008,6 +2052,8 @@ Queries DNS by source IP address.
 ### 24. fidelis-endpoint-query-events
 ---
 Queries events.
+##### Required Permissions
+The required permissions: Read groups, View Behaviors, View Task Results
 ##### Base Command
 `fidelis-endpoint-query-events`
 ##### Input
@@ -2137,28 +2183,3 @@ Queries events.
 | 3376 | fidelis-endpoint-winserver2019 | NT AUTHORITY\SYSTEM | 2020-03-26T09:25:39.883Z | MKH6hK7yr75 | 0 |
 | 2804 | fidelis-endpoint-winserver2019 | NT AUTHORITY\SYSTEM | 2020-03-26T09:08:23.233Z | MKH6hK7yr75 | 0 |
  24  Packs/FidelisEndpoint/pack_metadata.json 
-Viewed
-@@ -0,0 +1,24 @@
-{
-    "displayName": "FidelisEndpoint",
-    "description": "",
-    "support": "demisto",
-    "serverMinVersion": "",
-    "currentVersion": "1.0.0",
-    "author": "",
-    "url": "",
-    "email": "",
-    "categories": [
-        "Endpoint"
-    ],
-    "tags": [
-        ""
-    ],
-    "created": "2020-02-20T10:12:25Z",
-    "updated": "2020-02-20T10:12:25Z",
-    "beta": false,
-    "deprecated": false,
-    "certification": "",
-    "useCases": [],
-    "keywords": [],
-    "dependencies": {}
