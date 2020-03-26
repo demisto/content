@@ -2,8 +2,8 @@ id: Slack - General Failed Logins v2.1
 version: -1
 name: Slack - General Failed Logins v2.1
 description: Investigates a failed login event. The playbook interacts with the user
-  via the Slack integration, checks whether the logins were a result of the user attempts
-  or of an attack, raises the severity and expires the user's password according to
+  via the Slack integration, checks whether the logins were a result of the user's attempts
+  or an attack, raises the severity, and expires the user's password according to
   the user's replies.
 starttaskid: '0'
 tasks:
@@ -417,8 +417,8 @@ tasks:
       id: 76e305e6-94cb-43ed-87c5-0b68dbc946e5
       version: -1
       name: Should we reset the password?
-      description: 'Determines whether to reset the password of the user, according
-        to the user''s reply. '
+      description: 'Determines whether to reset the password, according
+        to the user's reply. '
       type: condition
       iscommand: false
       brand: ''
@@ -466,7 +466,7 @@ tasks:
       id: f631ded5-6337-4bb8-8680-1b906db2d70d
       version: -1
       name: Expire Password
-      description: Expires the password of the user who failed to login, in Active
+      description: Expires the password of the user who failed to login in Active
         Directory.
       script: '|||ad-expire-password'
       clonedfrom: b061d5be-194d-4413-804b-ea47a7f05317
@@ -501,7 +501,7 @@ tasks:
       id: 547bc58c-9bbd-4ed9-87b0-e2efa438d319
       version: -1
       name: Notify User on Slack
-      description: Sends a direct message to. the user on Slack, telling them that
+      description: Sends a direct message to the user on Slack, telling them that
         their password was reset.
       script: '|||send-notification'
       clonedfrom: 5e3d77e5-2172-4f74-87b6-c54e0f70fa62
@@ -558,7 +558,7 @@ tasks:
       closeNotes: {}
       closeReason:
         simple: The user ${inputs.UsernameOrEmail} approved that the failed logins
-          made by him.
+          were attempted by him.
       code42alerttype: {}
       emailclassification: {}
       id: {}
