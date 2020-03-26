@@ -227,7 +227,7 @@ script:
     name: add-user-to-channel
   - arguments:
     - default: false
-      description: The user to call.
+      description: The display name of the member to call.
       isArray: false
       name: username
       required: true
