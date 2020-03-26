@@ -134,7 +134,7 @@ tasks:
       preProcessText: {}
       textFields:
         complex:
-          root: 'inputs.similarIncidentFields '
+          root: inputs.similarIncidentFields
       threshold:
         complex:
           root: inputs.DuplicateThreshold
@@ -225,7 +225,7 @@ tasks:
       similarCustomFields: {}
       similarIncidentFields:
         complex:
-          root: 'inputs.similarIncidentFields '
+          root: inputs.similarIncidentFields
       similarIncidentKeys: {}
       similarLabelsKeys:
         complex:
@@ -573,7 +573,7 @@ inputs:
     way: label_name:X, where X is the number of words. X can also be ''*'' for contains.
     For example: the value "Email/subject:*" will consider email subject similar,
     if one is substring of the other. Relevant for ''Rules'' method.'
-- key: 'similarIncidentFields'
+- key: similarIncidentFields
   value:
     simple: name,type,details
   required: false
