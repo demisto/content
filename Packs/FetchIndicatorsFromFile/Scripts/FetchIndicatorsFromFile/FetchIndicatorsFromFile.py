@@ -116,6 +116,9 @@ def detect_type(indicator):
     Returns:
         str. The type of the indicator.
     """
+    if re.match(sha256Regex, indicator) or re.match(md5Regex, indicator) or re.match(sha1Regex, indicator):
+        return FeedIndicatorType.File
+
     if re.match(ipv4cidrRegex, indicator):
         return FeedIndicatorType.CIDR
 
