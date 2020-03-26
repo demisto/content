@@ -9,7 +9,7 @@ This integration was integrated and tested with version xx of Azure Sentinel
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | isFetch | Fetch incidents | False |
-| fetch_time | First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days) | False |
+| fetch_time | First fetch timestamp ({number} {time unit}, e.g., 12 hours, 7 days) | False |
 | min_severity | The minimum severity of incidents to fetch. | False |
 | incidentType | Incident type | False |
 | url | Server base URL | True |
@@ -260,10 +260,10 @@ Get an incident comments from Azure Sentinel.
 ### Incident b3de6b49-0945-454e-bb59-98087573cfc2 Comments (4 results)
 |ID|Incident ID|Message|Author Email|Created Time UTC|
 |---|---|---|---|---|
-| 295553115212022172880571041415135580062 | b3de6b49-0945-454e-bb59-98087573cfc2 | This is a message | avishai@demistodev.onmicrosoft.com | 2020-03-25T14:05:22Z |
-| 68963242547946961037852832278311632312 | b3de6b49-0945-454e-bb59-98087573cfc2 | hello 123 | avishai@demistodev.onmicrosoft.com | 2020-03-25T11:54:44Z |
-| 129016399225162631970999636732817548146 | b3de6b49-0945-454e-bb59-98087573cfc2 | Test message | avishai@demistodev.onmicrosoft.com | 2020-03-05T10:31:05Z |
-| 205343125729153100039024461040878407049 | b3de6b49-0945-454e-bb59-98087573cfc2 | This is test | avishai@demistodev.onmicrosoft.com | 2020-03-05T10:29:42Z |
+| 295553115212022172880571041415135580062 | b3de6b49-0945-454e-bb59-98087573cfc2 | This is a message | test@demisto.com | 2020-03-25T14:05:22Z |
+| 68963242547946961037852832278311632312 | b3de6b49-0945-454e-bb59-98087573cfc2 | hello 123 | test@demisto.com | 2020-03-25T11:54:44Z |
+| 129016399225162631970999636732817548146 | b3de6b49-0945-454e-bb59-98087573cfc2 | Test message | test@demisto.com | 2020-03-05T10:31:05Z |
+| 205343125729153100039024461040878407049 | b3de6b49-0945-454e-bb59-98087573cfc2 | This is test | test@demisto.com | 2020-03-05T10:29:42Z |
 
 
 ### azure-sentinel-incident-add-comment
@@ -301,7 +301,7 @@ Add a comment to an incident in Azure Sentinel.
 ### Incident b3de6b49-0945-454e-bb59-98087573cfc2 new comment details
 |ID|Incident ID|Message|Author Email|Created Time UTC|
 |---|---|---|---|---|
-| 22830063555802832669755633455570921192 | b3de6b49-0945-454e-bb59-98087573cfc2 | hello | avishai@demistodev.onmicrosoft.com | 2020-03-26T13:25:20Z |
+| 22830063555802832669755633455570921192 | b3de6b49-0945-454e-bb59-98087573cfc2 | hello | test@demisto.com | 2020-03-26T13:25:20Z |
 
 
 ### azure-sentinel-list-incident-relations
