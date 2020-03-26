@@ -1138,83 +1138,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "45":
-    id: "45"
-    taskid: "580"
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: "580"
-      version: -1
-      name: okta-get-failed-logins
-      description: Returnes Failed login events
-      script: Okta v2|||okta-get-failed-logins
-      type: regular
-      iscommand: true
-      brand: Okta v2
-    nexttasks:
-      '#none#':
-      - "46"
-    scriptarguments:
-      limit:
-        simple: "1"
-      since: {}
-      sortOrder: {}
-      until: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1125,
-          "y": 2470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "46":
-    id: "46"
-    taskid: "661"
-    type: condition
-    task:
-      elasticcommonfields: {}
-      id: "661"
-      version: -1
-      name: verify results
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "52"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: Okta
-                accessor: Logs.Events.displayMessage
-            iscontext: true
-          right:
-            value:
-              simple: User login to Okta
-    view: |-
-      {
-        "position": {
-          "x": 1125,
-          "y": 2645
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "47":
     id: "47"
     taskid: "573"
@@ -1347,7 +1270,6 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "45"
       - "47"
       - "53"
     separatecontext: false
