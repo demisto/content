@@ -18,7 +18,7 @@ For example, you can look at “Accessdata: Dump memory for malicious process”
     | Server URL | The URL to the AccessData server, including the scheme. | FQDN or IP address in X.X.X.X format with scheme specified. |
     | Token | A piece of data that servers use to verify for authenticity | eea810f5-a6f6 |
     | Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
-    | Use system proxy settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | https<span>://proxyserver.com |
+    | Use system proxy settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | https://proxyserver.com |
     
 4.  Click **Test** to validate the URLs, token, and connection.
 
@@ -158,12 +158,12 @@ accessdata-read-casefile filepath="\\X.X.X.X\D$\paths\cases\ProcessingHelperCase
 ```
 
 ##### Human Readable Output
-
-\<?xml version="1.0"?>
-\<root>
-\<Process resultitemtype="15">\<Name>addm.exe</Name>\<Path/>\<StartTi ... ress>0</baseAddress>\<ImageSize>0</ImageSize>\<ProcessName/>\<FromAgent/>\</DLL>
-\</root>
-
+```
+<?xml version="1.0"?>
+<root>
+<Process resultitemtype="15">\<Name>addm.exe</Name>\<Path/>\<StartTi ... ress>0</baseAddress>\<ImageSize>0</ImageSize>\<ProcessName/>\<FromAgent/>\</DLL>
+</root>
+```
 ### Check the status of a job
 
 * * *
