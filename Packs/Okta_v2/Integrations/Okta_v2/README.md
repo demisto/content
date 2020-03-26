@@ -21,7 +21,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Unlocks a single user.
 
-
 ##### Base Command
 
 `okta-unlock-user`
