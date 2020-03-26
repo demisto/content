@@ -16,6 +16,13 @@ SAMPLE_FEED_BASE_URL = 'https://autofocus.paloaltonetworks.com/api/v1.0/mm/sampl
 SAMPLE_FEED_REQUEST_BASE_URL = f'{SAMPLE_FEED_BASE_URL}search'
 SAMPLE_FEED_RESPONSE_BASE_URL = f'{SAMPLE_FEED_BASE_URL}results/'
 
+EPOCH_BASE = datetime.datetime.utcfromtimestamp(0)
+
+
+def datetime_to_epoch(dt_to_convert):
+    delta_from_epoch_base = dt_to_convert - EPOCH_BASE
+    return int(delta_from_epoch_base.total_seconds() * 1000)
+
 
 class Client(BaseClient):
     """Client for AutoFocus Feed - gets indicator lists from the Custom and Daily threat feeds
@@ -158,27 +165,19 @@ class Client(BaseClient):
     def create_indicators_from_single_sample_response(single_sample):
         indicators = []
 
-        value = {}
-
-        id_ = single_sample['_id']
-        value['autofocus_id'] = id_
+        value = {
+            'autofocus_id': single_sample['_id']
+        }
 
         item = single_sample['_source']
 
         update_date = item.get('update_date', None)
         if update_date is not None:
             update_date = datetime.strptime(update_date, '%Y-%m-%dT%H:%M:%S')
-            update_date = PACIFIC_TZ.localize(update_date)
-            value['autofocus_update_date'] = dt_to_millisec(update_date)
+            value['autofocus_update_date'] = datetime_to_epoch(update_date)
 
         create_date = datetime.strptime(item['create_date'], '%Y-%m-%dT%H:%M:%S')
-        create_date = PACIFIC_TZ.localize(create_date)
-        value['autofocus_create_date'] = dt_to_millisec(create_date)
-
-        # XXX no more update this on the fly as the aggregation layer in basepoller
-        # XXX wouldn't reset last_create_date in case of Exceptions
-        # if self.last_create_date is None or create_date > self.last_create_date:
-        #     self.last_create_date = create_date
+        value['autofocus_create_date'] = datetime_to_epoch(create_date)
 
         value['autofocus_tags'] = item.get('tag', [])
         value['autofocus_malware'] = item['malware']
@@ -188,7 +187,6 @@ class Client(BaseClient):
         md5_ = item['md5']
 
         if '...' in sha256_:
-            self.statistics['samples.obfuscated'] += 1
             return []
 
         tvalue = copy.copy(value)
