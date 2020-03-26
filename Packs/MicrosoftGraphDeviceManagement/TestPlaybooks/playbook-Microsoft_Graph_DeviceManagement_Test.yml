@@ -1,10 +1,6 @@
 elasticcommonfields: {}
 id: MSGraph_DeviceManagement_Test
 version: -1
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
 name: MSGraph_DeviceManagement_Test
 starttaskid: "0"
 tasks:
@@ -13,7 +9,6 @@ tasks:
     taskid: b68dbaed-dd68-439c-8b3a-f947ef7610a7
     type: start
     task:
-      elasticcommonfields: {}
       id: b68dbaed-dd68-439c-8b3a-f947ef7610a7
       version: -1
       name: ""
@@ -40,7 +35,6 @@ tasks:
     taskid: 05d8abe1-0907-467a-8f20-6f7918c434a1
     type: regular
     task:
-      elasticcommonfields: {}
       id: 05d8abe1-0907-467a-8f20-6f7918c434a1
       version: -1
       name: msgraph-list-managed-devices
@@ -69,11 +63,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: f2a34388-ef32-4552-8792-55dad7a0c993
+    taskid: 71b2efaa-256c-48bd-88d5-f4c9e1e69ace
     type: regular
     task:
-      elasticcommonfields: {}
-      id: f2a34388-ef32-4552-8792-55dad7a0c993
+      id: 71b2efaa-256c-48bd-88d5-f4c9e1e69ace
       version: -1
       name: msgraph-get-managed-device-by-id
       description: Get managed devices
@@ -86,6 +79,8 @@ tasks:
       - "3"
     scriptarguments:
       device-id:
+        simple: ${MSGraphDeviceManagement.Device.ID}
+      device_id:
         simple: ${MSGraphDeviceManagement.Device.ID}
     separatecontext: false
     view: |-
@@ -102,26 +97,24 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 75cf78e1-0c69-4977-8b52-3b308294849b
+    taskid: 8be6c4eb-0057-4623-8e00-712b6dc2c51e
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 75cf78e1-0c69-4977-8b52-3b308294849b
+      id: 8be6c4eb-0057-4623-8e00-712b6dc2c51e
       version: -1
-      name: msgraph-device-windows-defender-scan
-      description: TBD
-      script: Microsoft Graph Device Management|||msgraph-device-windows-defender-scan
+      name: msgraph-windows-device-defender-scan
+      description: Scans the device with windows defender (windows devices only)
+      script: '|||msgraph-windows-device-defender-scan'
       type: regular
       iscommand: true
-      brand: Microsoft Graph Device Management
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
     scriptarguments:
-      device-id:
+      device_id:
         simple: ${MSGraphDeviceManagement.Device.ID}
-      quick-scan:
-        simple: "true"
+      quick_scan: {}
     separatecontext: false
     view: |-
       {
@@ -140,7 +133,6 @@ tasks:
     taskid: 99370a24-51e4-4e2c-8124-49d6015c3066
     type: title
     task:
-      elasticcommonfields: {}
       id: 99370a24-51e4-4e2c-8124-49d6015c3066
       version: -1
       name: Done
@@ -165,7 +157,6 @@ tasks:
     taskid: e1d3135e-a792-4790-84fb-0b04e6efc2c1
     type: regular
     task:
-      elasticcommonfields: {}
       id: e1d3135e-a792-4790-84fb-0b04e6efc2c1
       version: -1
       name: DeleteContext
@@ -202,7 +193,6 @@ tasks:
     taskid: a989651a-fd9e-479a-8fa0-4380cd1eab08
     type: condition
     task:
-      elasticcommonfields: {}
       id: a989651a-fd9e-479a-8fa0-4380cd1eab08
       version: -1
       name: Verify Context
