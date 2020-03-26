@@ -1511,9 +1511,6 @@ def ring_user():
         raise ValueError(
             'Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly.'
         )
-
-    callback_uri = demisto.args().get('callback_url', 'https://callback.url')
-
     # get user to call name and id
     username_to_call = demisto.args().get('username')
     users: list = get_users()
@@ -1527,7 +1524,7 @@ def ring_user():
 
     call_request_data = {
         "@odata.type": "#microsoft.graph.call",
-        "callbackUri": callback_uri,
+        "callbackUri": 'https://callback.url',
         "direction": "outgoing",
         "source": {
             "@odata.type": "#microsoft.graph.participantInfo",

@@ -232,13 +232,6 @@ script:
       name: username
       required: true
       secret: false
-    - default: false
-      description: The callback URL for the call for the bot who will recive a callback
-        from the generated ring. This is the same URL used when registering the calling bot (more info here https://docs.microsoft.com/en-us/microsoftteams/platform/bots/calls-and-meetings/registering-calling-bot#add-microsoft-graph-permissions)
-      isArray: false
-      name: callback_url
-      required: false
-      secret: false
     deprecated: false
     description: 'Ring a user''s Teams account. Note: This is a ring only! no media
       will play in case the generated call is answered.'
