@@ -1329,18 +1329,6 @@
             "instance_names": "microsoft_defender_atp_dev"
         },
         {
-            "integrations": "Microsoft Defender Advanced Threat Protection",
-            "playbookID": "Test_Get_Machine_Action_Status",
-            "instance_names": "microsoft_defender_atp_prod",
-            "fromversion": "4.5.0"
-        },
-        {
-            "integrations": "Microsoft Defender Advanced Threat Protection",
-            "playbookID": "Test_Get_Machine_Action_Status",
-            "instance_names": "microsoft_defender_atp_dev",
-            "fromversion": "4.5.0"
-        },
-        {
             "integrations": "Tanium",
             "playbookID": "Tanium Test Playbook",
             "nightly": true,
