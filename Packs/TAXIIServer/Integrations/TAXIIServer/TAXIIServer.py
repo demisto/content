@@ -481,18 +481,6 @@ TYPE_MAPPING = {
         'indicator_type': stix.common.vocabs.IndicatorType.TERM_DOMAIN_WATCHLIST,
         'mapper': create_stix_domain_observable
     },
-    FeedIndicatorType.SHA256: {
-        'indicator_type': stix.common.vocabs.IndicatorType.TERM_FILE_HASH_WATCHLIST,
-        'mapper': create_stix_hash_observable
-    },
-    FeedIndicatorType.SHA1: {
-        'indicator_type': stix.common.vocabs.IndicatorType.TERM_FILE_HASH_WATCHLIST,
-        'mapper': create_stix_hash_observable
-    },
-    FeedIndicatorType.MD5: {
-        'indicator_type': stix.common.vocabs.IndicatorType.TERM_FILE_HASH_WATCHLIST,
-        'mapper': create_stix_hash_observable
-    },
     FeedIndicatorType.File: {
         'indicator_type': stix.common.vocabs.IndicatorType.TERM_FILE_HASH_WATCHLIST,
         'mapper': create_stix_hash_observable
