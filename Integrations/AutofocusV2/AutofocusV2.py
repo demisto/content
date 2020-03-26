@@ -327,7 +327,8 @@ def run_search(search_object, query, scope=None, size=None, sort=None, order=Non
     status = 'in progress' if in_progress else 'complete'
     search_info = {
         'AFCookie': result.get('af_cookie'),
-        'Status': status
+        'Status': status,
+        'SessionStart': datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
     }
     return search_info
 
@@ -366,6 +367,14 @@ def parse_hits_response(hits, response_dict_name):
 
 def get_search_results(search_object, af_cookie):
     results = run_get_search_results(search_object, af_cookie)
+    retry_count = 0
+    # Checking if the query has no results because the server has not fetched them yet.
+    # In this case, the complete percentage would be 0 (or lower than 100).
+    # In a case where there really aren't results (hits), the af_complete_percentage would be 100.
+    while (not results.get('hits') and (results.get('af_complete_percentage', 0) != 100)) and retry_count < 10:
+        time.sleep(5)
+        results = run_get_search_results(search_object, af_cookie)
+        retry_count += 1
     parsed_results = parse_hits_response(results.get('hits'), 'search_results')
     in_progress = results.get('af_in_progress')
     status = 'in progress' if in_progress else 'complete'
@@ -1136,7 +1145,7 @@ def samples_search_results_command():
     af_cookie = args.get('af_cookie')
     results, status = get_search_results('samples', af_cookie)
     files = get_files_data_from_results(results)
-    if len(results) < 1:
+    if not results:
         md = results = 'No entries found that match the query'
         status = 'complete'
     else:
@@ -1160,7 +1169,7 @@ def sessions_search_results_command():
     af_cookie = args.get('af_cookie')
     results, status = get_search_results('sessions', af_cookie)
     files = get_files_data_from_results(results)
-    if len(results) < 1:
+    if not results:
         md = results = 'No entries found that match the query'
         status = 'complete'
     else:
