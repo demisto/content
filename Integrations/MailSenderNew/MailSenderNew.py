@@ -7,7 +7,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.message import Message
 from email.header import Header
-from smtplib import SMTP
+from smtplib import SMTP, SMTP_SSL
 from smtplib import SMTPRecipientsRefused
 import base64
 import json
@@ -93,7 +93,8 @@ def handle_html(htmlBody):
     attachments = []
     cleanBody = ''
     lastIndex = 0
-    for i, m in enumerate(re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', htmlBody, re.I)):
+    for i, m in enumerate(
+            re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', htmlBody, re.I)):
         maintype, subtype = m.group(2).split('/', 1)
         att = {
             'maintype': maintype,
@@ -333,15 +334,22 @@ def main():
     FROM = demisto.getParam('from')
     FQDN = demisto.params().get('fqdn')
     FQDN = (FQDN and FQDN.strip()) or None
+    TLS = demisto.getParam('tls')
+    FULL_TLS = demisto.getParam('full_tls')
+    if FULL_TLS and TLS:
+        return_error('Cannot configure instance with both TLS and Full TLS')
     stderr_org = None
     try:
         if demisto.command() == 'test-module':
             stderr_org = swap_stderr(LOG)
             smtplib.SMTP.debuglevel = 1
-        SERVER = SMTP(demisto.getParam('host'), int(demisto.params().get('port', 0)), local_hostname=FQDN)
-        SERVER.ehlo()
         # TODO - support for non-valid certs
-        if demisto.getParam('tls'):
+        SERVER = SMTP_SSL(demisto.getParam('host'), int(demisto.params().get('port', 0)),
+                          local_hostname=FQDN) if FULL_TLS else SMTP(demisto.getParam('host'),
+                                                                     int(demisto.params().get('port', 0)),
+                                                                     local_hostname=FQDN)
+        SERVER.ehlo()
+        if TLS:
             SERVER.starttls()
         user, password = get_user_pass()
         if user:
