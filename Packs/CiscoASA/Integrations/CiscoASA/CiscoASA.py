@@ -178,8 +178,8 @@ class Client(BaseClient):
         try:
             return self._http_request('POST', '/api/objects/networkobjects', json_data=data, ok_codes=(200, 201, 204),
                                       resp_type='response')
-        except Exception:
-            raise ValueError("This network object already exists.")
+        except Exception as e:
+            raise
 
     def list_interfaces(self):
         interfaces = list()  # type: ignore
@@ -491,7 +491,7 @@ def edit_rule_command(client: Client, args):
         if '[500]' in str(e):
             raise ValueError("Could not find interface: {}.".format(interface))
         else:
-            raise e
+            raise
 
 
 @logger
@@ -507,9 +507,9 @@ def list_objects_command(client: Client, args: dict):
             formated_obj = camelize(object)
             formated_obj['ID'] = formated_obj.pop('Objectid')
             formated_objects.append(formated_obj)
-    ec = {'CiscoASA.NetworkObject(val.ID == obj.ID)': formated_objects}
+    ec = {'CiscoASA.NetworkObject(val.ID && val.ID == obj.ID)': formated_objects}
     hr = tableToMarkdown("Network Objects", formated_objects, headers=['ID', 'Name', 'Host', 'Description'])
-    return hr, ec, json.dumps(formated_objects)
+    return hr, ec, formated_objects
 
 
 @logger
@@ -533,9 +533,9 @@ def list_interfaces_command(client: Client, args: dict):
                           'ID': interface.get('interface', {}).get('objectId', '-1'),
                           'Name': interface.get('interface', {}).get('name')}
         interface_list.append(temp_interface)
-    ec = {'CiscoASA.Interface(val.ID == obj.ID)': interface_list}
+    ec = {'CiscoASA.Interface(val.ID && val.ID== obj.ID)': interface_list}
     hr = tableToMarkdown('Interfaces', interface_list, ['Type', 'ID', 'Name'])
-    return hr, ec, hr
+    return hr, ec, raw_interfaces
 
 
 @logger
