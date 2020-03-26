@@ -1,25 +1,8 @@
-id: 781f7e97-db7b-4824-8917-ecd91a79e566
-version: 6
+id: VirusTotal - Detonate File
+version: -1
 name: VirusTotal - Detonate File
 description: |-
-  Detonates a File using the McAfee Advanced Threat Defense sandbox.
-  Advanced Threat Defense supports the following File Types:
-  32-bit Portable Executables (PE)files; 64-bit PE+files
-  exe, sys, dll, com, scr, cpl, ocx, cgi
-  Microsoft Office Suite documents
-  doc,dotm, docx, dotx, xls, ppam, xlsx, pps, xlsb, ppsx, xlsm, ppsm, ppt, ppt, pptx, pptm, rtf, shs, xltm, sldm, xltx, sldx, xlam, thmx, docm, xar
-  Just Systems Ichitaro documents
-  jtd, jtdc
-  Adobe
-  pdf, swf
-  Compressed files
-  gz, 7z, tgz, msi, zip, lzh, cab, lzma, rar
-  Android application package
-  apk, Java, JAR, CLASS, Java Script, Java bin files
-  Image files
-  jpeg, png, gif
-  Other file types
-  cmd, ace, bat, arj, vbs, chm, xml, lnk, url, mof, htm, ocx, html, potm, eml, potx, msg, ps1, vb, reg, vba, wsc, vbe, wsf, vbs, wsh
+  Detonates a File using virusTotal
 starttaskid: "0"
 tasks:
   "0":
