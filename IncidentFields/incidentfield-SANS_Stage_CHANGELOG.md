@@ -1,2 +1,2 @@
 ## [Unreleased]
-New incident field, associated to Brute Force incident type.
+New incident field associated to all incident types.
