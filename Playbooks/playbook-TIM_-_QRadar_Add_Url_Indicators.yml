@@ -220,7 +220,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.QRadarBlackListDomainReferenceSetName
+              simple: inputs.QRadarBlackListUrlReferenceSetName
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -243,7 +243,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Domain
+                        simple: URL
                 accessor: value
             iscontext: true
     view: |-
@@ -276,13 +276,13 @@ tasks:
       "yes":
       - "41"
     separatecontext: false
-	conditions:
+    conditions:
     - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.QRadarWhiteListDomainReferenceSetName
+              simple: inputs.QRadarWhiteistUrlReferenceSetName
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -305,7 +305,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Domain
+                        simple: URL
                 accessor: value
             iscontext: true
     view: |-
@@ -544,7 +544,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.QRadarWatchListDomainReferenceSetName
+              simple: inputs.QRadarWatchListUrlReferenceSetName
             iscontext: true
       - - operator: isNotEmpty
           left:
