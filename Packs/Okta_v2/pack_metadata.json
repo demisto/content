@@ -1,18 +1,16 @@
 {
     "displayName": "OktaV2",
-    "description": "Integration with Okta's cloud-based identity management service\n",
-    "support": "demisto",
+    "description": "Integration with Okta's cloud-based identity management service",
+    "support": "Cortex XSOAR",
     "serverMinVersion": "",
     "currentVersion": "1.0.0",
-    "author": "",
+    "author": "Cortex XSOAR",
     "url": "",
     "email": "",
     "categories": [
         "Authentication"
     ],
-    "tags": [
-        ""
-    ],
+    "tags": [],
     "name": "",
     "price": 0,
     "created": "2020-02-27T09:22:37Z",
