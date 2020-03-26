@@ -61,11 +61,6 @@ tasks:
       OrganizationsExternalIPListName:
         simple: ExternalIPaddresses
     separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
     view: |-
       {
         "position": {
@@ -142,11 +137,6 @@ tasks:
       BusinessPartnersIPListName:
         simple: BusinessPartnersIPaddresses
     separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
     view: |-
       {
         "position": {
@@ -222,11 +212,6 @@ tasks:
     scriptarguments:
       ApprovedHashList: {}
     separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
     view: |-
       {
         "position": {
@@ -257,11 +242,6 @@ tasks:
       '#none#':
       - "14"
     separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
     view: |-
       {
         "position": {
@@ -423,11 +403,6 @@ tasks:
     scriptarguments:
       BusinessPartnersDomainsListName: {}
     separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
     view: |-
       {
         "position": {
@@ -500,11 +475,6 @@ tasks:
     scriptarguments:
       BusinessPartnersUrlListName: {}
     separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
     view: |-
       {
         "position": {
