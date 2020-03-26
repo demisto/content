@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Azure Sentinel",
+            "playbookID": "TestAzureSentinelPlaybook"
+        },
+        {
             "integrations": ["Syslog Sender", "syslog"],
             "playbookID": "Test Syslog",
             "fromversion": "5.5.0",
