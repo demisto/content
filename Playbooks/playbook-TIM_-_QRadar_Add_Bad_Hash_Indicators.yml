@@ -95,7 +95,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: QRadar-test
+                        simple: QRadar
                 - - operator: isEqualString
                     left:
                       value:
