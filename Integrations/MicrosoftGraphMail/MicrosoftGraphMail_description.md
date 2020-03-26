@@ -9,7 +9,7 @@ New commands were added to the integration, which require different application 
 - ***send-mail***
 
 To use these commands and to fetch incidents,
-you will need to add to your application the *Mail.Send application* permission (not the delegated one),
+you will need to add to your application the *Mail.Send application* permission (not delegated),
 and re-authorize your integration's instance.
 
 If you do not wish to use these commands, you may keep your integration credentials the same.
