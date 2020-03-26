@@ -1,7 +1,8 @@
 commonfields:
-  id: fake-script
+  id: past-script-1
   version: -1
-name: fake-script
+name: past-script-1
+toversion: "0"
 script: |-
   ''' IMPORTS '''
   import json
