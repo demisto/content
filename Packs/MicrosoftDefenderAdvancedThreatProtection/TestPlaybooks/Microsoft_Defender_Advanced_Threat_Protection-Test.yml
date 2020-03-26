@@ -605,8 +605,6 @@ tasks:
       machine_id: {}
       requestor: {}
       status: {}
-      type:
-        simple: Unisolate
     separatecontext: false
     view: |-
       {
