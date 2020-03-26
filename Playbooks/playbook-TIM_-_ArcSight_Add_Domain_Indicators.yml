@@ -153,7 +153,7 @@ tasks:
       "yes":
       - "59"
     separatecontext: false
-	    conditions:
+    conditions:
     - label: "yes"
       condition:
       - - operator: isNotEmpty
@@ -164,7 +164,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.ArcsightBlackListDomainValueFieldName
+              simple: inputs.ArcsightBlackDomainValueFieldName
             iscontext: true
       - - operator: isNotEmpty
           left:
