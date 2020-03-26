@@ -1,0 +1,532 @@
+id: TIM - Review Indicators Manually
+version: -1
+fromversion: 5.5.0
+name: TIM - Review Indicators Manually
+description: This playbook helps analysts manage the manual
+  process of reviewing indicators. The playbook indicator query is set to search
+  for indicators that have the 'pending review' tag. The playbook's layout displays
+  all of the related indicators in the summary page. While reviewing the indicators,
+  the analyst can go to the summary page and tag the indicators accordingly with tags
+  'such as, 'approved_black', 'approved_white', etc. Once the analyst completes their review,
+  the playbook can optionally send an email with a list of changes done by the analyst which haven't been approved. Once complete,
+  the playbook removes the 'pending review' tag from the indicators.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1eda9e23-416e-493f-88f1-dc38c9ae2c55
+    type: start
+    task:
+      id: 1eda9e23-416e-493f-88f1-dc38c9ae2c55
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 177ca64d-9840-4495-8a2d-2dcc750c92f2
+    type: regular
+    task:
+      id: 177ca64d-9840-4495-8a2d-2dcc750c92f2
+      version: -1
+      name: Associate indicators to incident
+      description: Associates indicators to an incident.
+      script: Builtin|||associateIndicatorToIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      id: {}
+      incidentId:
+        simple: ${incident.id}
+      value:
+        simple: ${playbookQuery.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "2":
+    id: "2"
+    taskid: 67dfa246-28de-4ba4-8372-b632037925ab
+    type: regular
+    task:
+      id: 67dfa246-28de-4ba4-8372-b632037925ab
+      version: -1
+      name: Manually review indicators
+      description: Manually review the indicators. The review process can include running reputation calculation on the
+        indicator, or reviewing the indicator online in various engines. At the end of
+        the process, the analyst needs to add the relevant indicator tags, such as
+        approved_watchlist, approved_white, approved_black, etc. These tags are later used by another playbook
+        to send the indicators to relevant 3rd party systems such as SIEM, EDR, EDL etc.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 8386789e-052d-4ba4-89c5-8d3d61824d99
+    type: title
+    task:
+      id: 8386789e-052d-4ba4-89c5-8d3d61824d99
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 2080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 2af9e2f4-ae74-4a6e-800d-6498698e766f
+    type: regular
+    task:
+      id: 2af9e2f4-ae74-4a6e-800d-6498698e766f
+      version: -1
+      name: Add being reviewed tag to indicators
+      description: Add being reviewed tag to indicators
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: being_reviewed
+      indicatorsValues:
+        simple: ${playbookQuery.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: f730e9d7-0196-417f-8a26-f2fb0b4b7517
+    type: condition
+    task:
+      id: f730e9d7-0196-417f-8a26-f2fb0b4b7517
+      version: -1
+      name: Allow to remove pending review tag from all indicatos
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: e35bb574-2436-4e72-8c41-998958f96425
+    type: regular
+    task:
+      id: e35bb574-2436-4e72-8c41-998958f96425
+      version: -1
+      name: Remove pending review tag from indicators
+      description: Remove pending review tag from indicators
+      script: Builtin|||removeIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: pending_review
+      indicatorsValues:
+        simple: ${playbookQuery.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 03016989-d2b9-4a6d-8b71-1d7cada8ccef
+    type: condition
+    task:
+      id: 03016989-d2b9-4a6d-8b71-1d7cada8ccef
+      version: -1
+      name: Are there query results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: playbookQuery.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 44a2d9a9-abdc-489b-8877-8349b381001f
+    type: regular
+    task:
+      id: 44a2d9a9-abdc-489b-8877-8349b381001f
+      version: -1
+      name: Remove being reviewed tag from indicators
+      description: Removes the 'being_reviewed' tag from the indicator.
+      script: Builtin|||removeIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: being_reviewed
+      indicatorsValues:
+        simple: ${playbookQuery.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 0e322e86-e7f1-49fa-87ca-89c99c4666d1
+    type: regular
+    task:
+      id: 0e322e86-e7f1-49fa-87ca-89c99c4666d1
+      version: -1
+      name: Make changes according the approvers request
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 6fa779c1-bc6e-4a9d-8ce4-f0f7c1644ddb
+    type: collection
+    task:
+      id: 6fa779c1-bc6e-4a9d-8ce4-f0f7c1644ddb
+      version: -1
+      name: Email for indicator changes approval
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${inputs.ApproversEmailAddress}
+      subject:
+        simple: Approve indicator changes
+      body: {}
+      methods:
+      - email
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Specify the indicators that weren't approved
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: List the indicators are are not approved
+      description: The approver reviews the incident and changes made
+        by the analyst. In case the approver needs specific indicators to be changed,
+        they will list the indicators in question.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 77f62830-b1cf-4aba-881e-c33c29eb382c
+    type: condition
+    task:
+      id: 77f62830-b1cf-4aba-881e-c33c29eb382c
+      version: -1
+      name: Was an email address provided for approval?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ApproversEmailAddress
+            iscontext: true
+      - - operator: match
+          left:
+            value:
+              simple: inputs.ApproversEmailAddress
+            iscontext: true
+          right:
+            value:
+              simple: .*@.*\.*
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 587daf14-453f-42c8-8114-e0f8ce0cfb1c
+    type: condition
+    task:
+      id: 587daf14-453f-42c8-8114-e0f8ce0cfb1c
+      version: -1
+      name: Are there indicators that werent approved?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: List the indicators are are not approved.Questions.0
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2095,
+        "width": 1020,
+        "x": -40,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: ""
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+    query: tags:pending_review and -tags:being_reviewed
+    queryEntity: indicators
+    results: null
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue: null
+        fromvalue: null
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: false
+- key: ApproversEmailAddress
+  value: {}
+  required: false
+  description: This input specifies the email address to which to send the approval form
+    if approval is required.
+  playbookInputQuery: null
+outputs: []
+quiet: true
+tests:
+- No test

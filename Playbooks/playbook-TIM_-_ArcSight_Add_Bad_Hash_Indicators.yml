@@ -1,0 +1,1083 @@
+id: TIM - ArcSight Add Bad Hash Indicators
+version: -1
+fromversion: 5.5.0
+name: TIM - ArcSight Add Bad Hash Indicators
+description: This playbook queries indicators based on a pre-defined
+  query or results from a parent playbook, and adds the resulting indicators to an ArcSight
+  Active List. The Active List ID should be defined in the playbook inputs, as
+  well as the field name in the Active list to which to add the indicators.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: "1"
+    type: start
+    task:
+      id: "1"
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": -310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 7701955f-2902-40e4-81db-0249b7febfcd
+    type: title
+    task:
+      id: 7701955f-2902-40e4-81db-0249b7febfcd
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 3c1a518d-1cc5-4a52-88ab-725d979b88b9
+    type: condition
+    task:
+      id: 3c1a518d-1cc5-4a52-88ab-725d979b88b9
+      version: -1
+      name: Is ArcSight Enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "47"
+      - "46"
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ArcSight ESM v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 7c6c7ad1-58e8-4b4b-86e3-938a3a119875
+    type: condition
+    task:
+      id: 7c6c7ad1-58e8-4b4b-86e3-938a3a119875
+      version: -1
+      name: Are there filtered results?
+      description: Checks whether the specified item is in a list. The default list
+        is the Demisto Indicators Whitelist.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: File
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: approved_black
+                accessor: value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 9e29824b-3501-4b2f-831a-cc7596b63992
+    type: condition
+    task:
+      id: 9e29824b-3501-4b2f-831a-cc7596b63992
+      version: -1
+      name: Is there an ArcSight Md5 Active List?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ArcSightMd5ActiveListID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ArcsightMd5ValueFieldName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2570,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: b81338f7-979f-474d-8a95-7829851c1913
+    type: condition
+    task:
+      id: b81338f7-979f-474d-8a95-7829851c1913
+      version: -1
+      name: Is there an ArcSight Sha1 Active List?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.ArcSightSha1ActiveListID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ArcsightSha1ValueFieldName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1730,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: d3c27d9e-a86c-4cc8-88fb-316c12dcbe1c
+    type: condition
+    task:
+      id: d3c27d9e-a86c-4cc8-88fb-316c12dcbe1c
+      version: -1
+      name: Is there an ArcSight Sha256 Active List?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.ArcSightSha256ActiveListID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ArcsightSha256ValueFieldName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: cedd19f7-7425-4d63-88f7-f39b52c8fe88
+    type: condition
+    task:
+      id: cedd19f7-7425-4d63-88f7-f39b52c8fe88
+      version: -1
+      name: Are there Md5 results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: stringHasLength
+          left:
+            value:
+              simple: playbookQuery.value
+            iscontext: true
+          right:
+            value:
+              simple: "32"
+        - operator: isEqualString
+          left:
+            value:
+              simple: playbookQuery.CustomFields.tags
+            iscontext: true
+          right:
+            value:
+              simple: Md5
+    view: |-
+      {
+        "position": {
+          "x": 2890,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 6043e3c5-e2e7-447c-8204-6858b87a3061
+    type: condition
+    task:
+      id: 6043e3c5-e2e7-447c-8204-6858b87a3061
+      version: -1
+      name: Are there Sha1 results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "58"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: stringHasLength
+          left:
+            value:
+              simple: playbookQuery.value
+            iscontext: true
+          right:
+            value:
+              simple: "40"
+        - operator: isEqualString
+          left:
+            value:
+              simple: playbookQuery.CustomFields.tags
+            iscontext: true
+          right:
+            value:
+              simple: Sha1
+    view: |-
+      {
+        "position": {
+          "x": 2030,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 8313aa90-3a93-47d4-884f-8b56929dffe0
+    type: condition
+    task:
+      id: 8313aa90-3a93-47d4-884f-8b56929dffe0
+      version: -1
+      name: Are there Sha256 results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: stringHasLength
+          left:
+            value:
+              simple: playbookQuery.value
+            iscontext: true
+          right:
+            value:
+              simple: "64"
+        - operator: isEqualString
+          left:
+            value:
+              simple: playbookQuery.CustomFields.tags
+            iscontext: true
+          right:
+            value:
+              simple: Sha256
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: ea7f3652-5fd8-41f6-854d-0e9ada3bc216
+    type: title
+    task:
+      id: ea7f3652-5fd8-41f6-854d-0e9ada3bc216
+      version: -1
+      name: Md5
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2570,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: 197a6554-7f88-48bd-8058-242dd4caa9b3
+    type: title
+    task:
+      id: 197a6554-7f88-48bd-8058-242dd4caa9b3
+      version: -1
+      name: Sha1
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1730,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: e453d443-f8fe-4ab8-82e3-0027376632b0
+    type: title
+    task:
+      id: e453d443-f8fe-4ab8-82e3-0027376632b0
+      version: -1
+      name: Sha256
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "57":
+    id: "57"
+    taskid: 747843b9-bf15-4c1b-845c-81452b0caed9
+    type: regular
+    task:
+      id: 747843b9-bf15-4c1b-845c-81452b0caed9
+      version: -1
+      name: Add Md5 to ArcSight Active list
+      description: Adds new entries to the Active List.
+      script: ArcSight ESM v2|||as-add-entries
+      type: regular
+      iscommand: true
+      brand: ArcSight ESM v2
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      entries:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+            - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: Md5
+          accessor: value
+          transformers:
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: (.*)
+              replaceWith:
+                value:
+                  simple: $1
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ':'
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.ArcsightMd5ValueFieldName
+                iscontext: true
+              suffix: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: '"},{"'
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: ':'
+              replaceWith:
+                value:
+                  simple: '":"'
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '[{"'
+              suffix:
+                value:
+                  simple: '"}]'
+      resourceId:
+        simple: ${inputs.ArcSightMd5ActiveListID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2500,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "58":
+    id: "58"
+    taskid: 7130454d-380a-41d7-8ac1-a5367a9d8848
+    type: regular
+    task:
+      id: 7130454d-380a-41d7-8ac1-a5367a9d8848
+      version: -1
+      name: Add Sha1 to ArcSight Active list
+      description: Adds new entries to the Active List.
+      script: ArcSight ESM v2|||as-add-entries
+      type: regular
+      iscommand: true
+      brand: ArcSight ESM v2
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      entries:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+              right:
+                value:
+                  simple: "40"
+            - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: Sha1
+          accessor: value
+          transformers:
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: (.*)
+              replaceWith:
+                value:
+                  simple: $1
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ':'
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.ArcsightSha1ValueFieldName
+                iscontext: true
+              suffix: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: '"},{"'
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: ':'
+              replaceWith:
+                value:
+                  simple: '":"'
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '[{"'
+              suffix:
+                value:
+                  simple: '"}]'
+      resourceId:
+        simple: ${inputs.ArcSightSha1ActiveListID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1640,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "59":
+    id: "59"
+    taskid: ad979067-5322-4347-8be3-66fdd6846b86
+    type: regular
+    task:
+      id: ad979067-5322-4347-8be3-66fdd6846b86
+      version: -1
+      name: Add Sha256 to ArcSight Active list
+      description: Adds new entries to the Active List.
+      script: ArcSight ESM v2|||as-add-entries
+      type: regular
+      iscommand: true
+      brand: ArcSight ESM v2
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      entries:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+            - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: Sha256
+          accessor: value
+          transformers:
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: (.*)
+              replaceWith:
+                value:
+                  simple: $1
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ':'
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.ArcsightSha256ValueFieldName
+                iscontext: true
+              suffix: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: '"},{"'
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: ':'
+              replaceWith:
+                value:
+                  simple: '":"'
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '[{"'
+              suffix:
+                value:
+                  simple: '"}]'
+      resourceId:
+        simple: ${inputs.ArcSightSha256ActiveListID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "60":
+    id: "60"
+    taskid: a5160188-5637-468f-8bdf-6ea6bc0c68be
+    type: regular
+    task:
+      id: a5160188-5637-468f-8bdf-6ea6bc0c68be
+      version: -1
+      name: Add SIEM tag
+      description: Add values to the indicator fields. For example, tags.
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      field: {}
+      fieldValue: {}
+      indicatorsValues:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: approved_black
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: File
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: Sha256
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "61":
+    id: "61"
+    taskid: 8b522f17-d5e9-4dd4-8868-53490581c4cc
+    type: regular
+    task:
+      id: 8b522f17-d5e9-4dd4-8868-53490581c4cc
+      version: -1
+      name: Add SIEM tag
+      description: Add values to the indicator fields. For example, tags.
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      field: {}
+      fieldValue: {}
+      indicatorsValues:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: approved_black
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: File
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: Sha1
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1420,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "62":
+    id: "62"
+    taskid: cc5a4c66-5dc4-4e21-87ea-24b913a0dd58
+    type: regular
+    task:
+      id: cc5a4c66-5dc4-4e21-87ea-24b913a0dd58
+      version: -1
+      name: Add SIEM tag
+      description: Add values to the indicator fields. For example, tags.
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      field: {}
+      fieldValue: {}
+      indicatorsValues:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: approved_black
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: File
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: Md5
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2270,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2045,
+        "width": 2930,
+        "x": 340,
+        "y": -310
+      }
+    }
+  }
+inputs:
+- key: ArcSightMd5ActiveListID
+  value: {}
+  required: false
+  description: ID of the Md5 hash ActiveList resource as it appears in ArcSight.
+  playbookInputQuery: null
+- key: ArcsightMd5ValueFieldName
+  value: {}
+  required: false
+  description: The name of the Active List field to insert the Md5 hash value to.
+  playbookInputQuery: null
+- key: ArcSightSha1ActiveListID
+  value: {}
+  required: false
+  description: ID of the Sha1 hash ActiveList resource as it appears in ArcSight.
+  playbookInputQuery: null
+- key: ArcsightSha1ValueFieldName
+  value: {}
+  required: false
+  description: The name of the Active List field to insert the Sha1 hash value to.
+  playbookInputQuery: null
+- key: ArcSightSha256ActiveListID
+  value: {}
+  required: false
+  description: ID of the Sha256 hash Active List resource as appears in ArcSight.
+  playbookInputQuery: null
+- key: ""
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+    query: ""
+    queryEntity: indicators
+    results: null
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue: null
+        fromvalue: null
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: false
+- key: ArcsightSha256ValueFieldName
+  value: {}
+  required: false
+  description: The name of the Active List field to insert the Sha256 hash value to.
+  playbookInputQuery: null
+outputs: []
+quiet: true
+tests:
+- No test
