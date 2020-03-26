@@ -222,7 +222,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               simple: inputs.QRadarBlackListIPReferenceSetName
@@ -260,7 +260,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               simple: inputs.QRadarWhiteListIPReferenceSetName
@@ -499,7 +499,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               simple: inputs.QRadarWatchListIPReferenceSetName
