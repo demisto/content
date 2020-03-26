@@ -1,8 +1,8 @@
 ## Overview
 ---
 
-Cisco Adaptive Security Appliance Software is the core operating system for the Cisco ASA Family. It delivers enterprise-class firewall capabilities for ASA devices
-This integration was integrated and tested with version xx of Cisco ASA
+Use the Cisco Adaptive Security Appliance Software integration to manage interfaces, rules, and network objects.
+This integration was integrated and tested with version 9.12(3) of Cisco ASA
 
 ## Use Cases
 ---
@@ -37,7 +37,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 9. cisco-asa-list-interfaces
 ### 1. cisco-asa-list-rules
 ---
-List all rules
+Gets a list all rules for the supplied interface.
 
 ##### Base Command
 
@@ -46,8 +46,8 @@ List all rules
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| interface_name | The name of the interface to get rules from. | Optional | 
-| interface_type | The type of interface  | Optional | 
+| interface_name | The name of the interface from which to get rules. | Optional | 
+| interface_type | The interface type. Can be "In", "Out", or "Global"  | Optional | 
 
 
 ##### Context Output
@@ -56,13 +56,13 @@ List all rules
 | --- | --- | --- |
 | CiscoASA.Rules.Source | String | The rule's source. | 
 | CiscoASA.Rules.Dest | String | The rule's destination. | 
-| CiscoASA.Rules.InterfaceType | String | The Interface's type. Could be In/Out/Global | 
-| CiscoASA.Rules.IsActive | Boolean | Indicates if the rule is active. | 
+| CiscoASA.Rules.InterfaceType | String | The interface type. Can be "In", "Out", or "Global". | 
+| CiscoASA.Rules.IsActive | Boolean | Whether the rule is active. | 
 | CiscoASA.Rules.Interface | String | The name of the interface. | 
 | CiscoASA.Rules.Position | Number | The position of the rule. | 
-| CiscoASA.Rules.ID | String | The rule's ID | 
+| CiscoASA.Rules.ID | String | The rule ID. | 
 | CiscoASA.Rules.Remarks | Unknown | A list of all rule remarks. | 
-| CiscoASA.Rules.Permit | Boolean | Is the rule permiting the traffic from source to destination. | 
+| CiscoASA.Rules.Permit | Boolean | Whether the rule permits traffic from source to destination. | 
 | CiscoASA.Rules.DestService | String | The destination service. | 
 | CiscoASA.Rules.SourceService | String | The source service. | 
 
@@ -114,7 +114,7 @@ List all rules
 
 ### 2. cisco-asa-backup
 ---
-Create a backup of current settings. (i.e "backup.cfg")
+Creates a backup of the current settings (i.e., the backup.cfg file).
  
 ##### Base Command
 
@@ -139,7 +139,8 @@ There is no context output for this command.
 
 ### 3. cisco-asa-get-rule-by-id
 ---
-Get a specific rule by its ID
+Gets a specific rule by rule ID.
+
 ##### Base Command
 
 `cisco-asa-get-rule-by-id`
@@ -147,9 +148,9 @@ Get a specific rule by its ID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| rule_id | The rule's ID. | Required | 
+| rule_id | The rule ID. | Required | 
 | interface_name | The name of the interface | Optional | 
-| interface_type | The type of interface | Required | 
+| interface_type | The interface type. Can be "In", "Out", or "Global". | Required | 
 
 
 ##### Context Output
@@ -159,12 +160,12 @@ Get a specific rule by its ID
 | CiscoASA.Rules.Interface | String | The name of the interface. | 
 | CiscoASA.Rules.Source | String | The rule's source. | 
 | CiscoASA.Rules.Dest | String | The rule's destination. | 
-| CiscoASA.Rules.InterfaceType | String | The Interface's type. Could be In/Out/Global | 
-| CiscoASA.Rules.IsActive | Boolean | Indicates if the rule is active. | 
+| CiscoASA.Rules.InterfaceType | String | The interface type. Can be "In", "Out", or "Global". | 
+| CiscoASA.Rules.IsActive | Boolean | Whether the rule is active. | 
 | CiscoASA.Rules.Position | Number | The position of the rule. | 
-| CiscoASA.Rules.ID | String | The rule's ID	 | 
+| CiscoASA.Rules.ID | String | The rule ID.	 | 
 | CiscoASA.Rules.Remarks | Unknown | A list of all rule remarks. | 
-| CiscoASA.Rules.Permit | Boolean | Is the rule permiting the traffic from source to destination. | 
+| CiscoASA.Rules.Permit | Boolean | Whether the rule permits traffic from source to destination. | 
 | CiscoASA.Rules.DestService | String | The destination service. | 
 | CiscoASA.Rules.SourceService | String | The source service. | 
 
@@ -201,7 +202,7 @@ Get a specific rule by its ID
 
 ### 4. cisco-asa-create-rule
 ---
-Create a rule.
+Creates a rule.
  
 ##### Base Command
 
@@ -210,15 +211,15 @@ Create a rule.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| source | The source. Could be IPv4, address block, any or name of network object. | Required | 
-| destination | The destination. Could be IPv4, address block, any or name of network object. | Required | 
-| permit | True if the rule is a permit. | Required | 
+| source | The source. Can be the value of an IPv4, an address block, or the name of a network object. object. | Required | 
+| destination | The destination. Can be the value of an IPv4, an address block, or the name of a network object. object. | Required | 
+| permit | Whether the rule is a permit. If True, the rule is a permit. | Required | 
 | remarks | A list of remarks for the rule. | Optional | 
-| position | The position the rule will be created in.  | Optional | 
-| log_level | The log level of the rule. | Optional | 
-| active | Will the rule be active. | Optional | 
-| interface_type | The type of the interface. | Required | 
-| interface_name | The interface's name. | Optional | 
+| position | The position in which to create the rule.  | Optional | 
+| log_level | The log level of the rule.  Can be "Default", "Emergencies", "Alerts", "Critical", "Errors", "Warnings", "Notifications", "Informational", or "Debugging".| Optional | 
+| active | Whether the rule will be active. If True, the rule will be active. | Optional | 
+| interface_type | The interface type. Can be "In", "Out", or "Global". | Required | 
+| interface_name | The interface name. | Optional | 
 | service | The service of the rule. | Optional | 
 
 
@@ -228,13 +229,13 @@ Create a rule.
 | --- | --- | --- |
 | CiscoASA.Rules.Source | String | The rule's source. | 
 | CiscoASA.Rules.Dest | String | The rule's destination. | 
-| CiscoASA.Rules.InterfaceType | String | The Interface's type. Could be In/Out/Global | 
-| CiscoASA.Rules.IsActive | Boolean | Indicates if the rule is active. | 
+| CiscoASA.Rules.InterfaceType | String | The interface type. Can be "In", "Out", or "Global". | 
+| CiscoASA.Rules.IsActive | Boolean | Whether the rule is active. | 
 | CiscoASA.Rules.Interface | String | The name of the interface. | 
 | CiscoASA.Rules.Position | Number | The position of the rule. | 
-| CiscoASA.Rules.ID | String | The rule's ID | 
+| CiscoASA.Rules.ID | String | The rule ID. | 
 | CiscoASA.Rules.Remarks | Unknown | A list of all rule remarks. | 
-| CiscoASA.Rules.Permit | Boolean | Is the rule permiting the traffic from source to destination. | 
+| CiscoASA.Rules.Permit | Boolean | Whether the rule permits traffic from source to destination. | 
 | CiscoASA.Rules.DestService | String | The destination service. | 
 | CiscoASA.Rules.SourceService | String | The source service. | 
 
@@ -270,7 +271,7 @@ Create a rule.
 
 ### 5. cisco-asa-delete-rule
 ---
-Delete a rule.
+Deletes a rule.
  
 ##### Base Command
 
@@ -279,9 +280,9 @@ Delete a rule.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| rule_id | The rule's ID. | Required | 
-| interface_name | The name of the interface | Optional | 
-| interface_type | The type of interface. | Required | 
+| rule_id | The rule ID. | Required | 
+| interface_name | The name of the interface. | Optional | 
+| interface_type | The interface type. Can be "In", "Out", or "Global". | Required | 
 
 
 ##### Context Output
@@ -296,7 +297,7 @@ There is no context output for this command.
 
 ### 6. cisco-asa-edit-rule
 ---
-Edit an existing rule.
+Updates an existing rule.
 ##### Base Command
 
 `cisco-asa-edit-rule`
@@ -304,16 +305,16 @@ Edit an existing rule.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| interface_type | The type of the interface. | Required | 
-| interface_name | The interface's name. | Optional | 
-| rule_id | The rule ID | Required | 
-| active | Will the rule be active. | Optional | 
-| log_level | The log level of the rule. | Optional | 
+| interface_type | The interface type. Can be "In", "Out", or "Global". | Required | 
+| interface_name | The interface name. | Optional | 
+| rule_id | The rule ID. | Required | 
+| active | Whether the rule will be active. If True, the rule will be active. | Optional | 
+| log_level | The log level of the rule.  Can be "Default", "Emergencies", "Alerts", "Critical", "Errors", "Warnings", "Notifications", "Informational", or "Debugging".| Optional | 
 | position | The position the rule will be in.  | Optional | 
 | remarks | A list of remarks for the rule. | Optional | 
-| permit | True if the rule is a permit. | Optional | 
-| destination | The destination.Could be IPv4, address block, any or name of network object. | Optional | 
-| source | The source. Could be IPv4, address block, any or name of network object. | Optional | 
+| permit | Whether the rule is a permit. If True, the rule is a permit. | Optional | 
+| destination | The destination. Can be the value of an IPv4, an address block, or the name of a network object. | Optional | 
+| source | The source. Can be the value of an IPv4, an address block, or the name of a network object. object. | Optional | 
 | service | The service of the rule. | Optional | 
 
 
@@ -323,13 +324,13 @@ Edit an existing rule.
 | --- | --- | --- |
 | CiscoASA.Rules.Source | String | The rule's source. | 
 | CiscoASA.Rules.Dest | String | The rule's destination. | 
-| CiscoASA.Rules.InterfaceType | String | The Interface's type. Could be In/Out/Global | 
-| CiscoASA.Rules.IsActive | Boolean | Indicates if the rule is active. | 
+| CiscoASA.Rules.InterfaceType | String | The interface type. Can be "In", "Out", or "Global". | 
+| CiscoASA.Rules.IsActive | Boolean | Whether the rule is active. | 
 | CiscoASA.Rules.Interface | String | The name of the interface. | 
 | CiscoASA.Rules.Position | Number | The position of the rule. | 
-| CiscoASA.Rules.ID | String | The rule's ID | 
+| CiscoASA.Rules.ID | String | The rule ID. | 
 | CiscoASA.Rules.Remarks | Unknown | A list of all rule remarks. | 
-| CiscoASA.Rules.Permit | Boolean | Is the rule permiting the traffic from source to destination. | 
+| CiscoASA.Rules.Permit | Boolean | Whether the rule permits traffic from source to destination. | 
 | CiscoASA.Rules.DestService | String | The destination service. | 
 | CiscoASA.Rules.SourceService | String | The source service. | 
 
@@ -368,7 +369,8 @@ Edit an existing rule.
 
 ### 7. cisco-asa-list-network-objects
 ---
-List all configured network objects.
+Gets a list all configured network objects.
+
 ##### Base Command
 
 `cisco-asa-list-network-objects`
@@ -376,8 +378,8 @@ List all configured network objects.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| object_name | Get a specific network object by name. Could be a list of names. | Optional | 
-| object_id | Get a specific network object by ID. Could be a list of IDs. | Optional | 
+| object_name | A comma-separated list of network object names for which to get the network.~~~~ | Optional | 
+| object_id | A comma-separated list of object IDs for which to get the network object. | Optional | 
 
 
 ##### Context Output
@@ -426,7 +428,7 @@ List all configured network objects.
 | CiscoASA | CiscoASA | kind: IPv4Address<br>value:8.8.8.8. | Cisco ASA |
 ### 8. cisco-asa-create-network-object
 ---
-Create network object.
+Creates network object.
 ##### Base Command
 
 `cisco-asa-create-network-object`
@@ -476,7 +478,8 @@ Create network object.
 
 ### 9. cisco-asa-list-interfaces
 ---
-List all interfaces.
+Gets a list of all interfaces.
+
 ##### Base Command
 
 `cisco-asa-list-interfaces`
@@ -488,9 +491,9 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoASA.Interface.ID | String | The interface ID | 
+| CiscoASA.Interface.ID | String | The interface ID. | 
 | CiscoASA.Interface.Name | String | The inteface name. | 
-| CiscoASA.Interface.Type | String | The type of interface. | 
+| CiscoASA.Interface.Type | String | The interface type. Can be "In", "Out", or "Global". | 
 
 
 ##### Command Example
