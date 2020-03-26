@@ -1,0 +1,201 @@
+args:
+- default: false
+  description: The entry_id of the PCAP file to mine.
+  isArray: false
+  name: entry_id
+  required: true
+  secret: false
+- auto: PREDEFINED
+  default: false
+  description: What layers to ouput as context. Could be multiple layers seperated
+    by commas.
+  isArray: true
+  name: context_output
+  predefined:
+  - HTTP
+  - DNS
+  - LLMNR
+  - ' SYSLOG'
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  description: Wether to  extract IP, URL and Email from PCAP file.
+  isArray: false
+  name: extract_strings
+  predefined:
+  - 'True'
+  - 'False'
+  required: false
+  secret: false
+- default: false
+  description: 'Filter to apply on PCAP. Wireshark syntax as can be found here: https://www.wireshark.org/docs/man-pages/wireshark-filter.html'
+  isArray: false
+  name: pcap_filter
+  required: false
+  secret: false
+- default: false
+  description: Your own regex to extract from the PCAP.
+  isArray: false
+  name: custom_regex
+  required: false
+  secret: false
+- default: false
+  description: The name of the PCAP file to save to the war room after applying the
+    `pcap_filter`.  (i.e. `filtered_file.pcap`
+  isArray: false
+  name: filtered_file_name
+  required: false
+  secret: false
+- default: false
+  description: The entry id for a decryption key.
+  isArray: false
+  name: decrypt_key_entry_id
+  required: false
+  secret: false
+- default: false
+  defaultValue: '15'
+  description: Number of conversatinos to display.
+  isArray: false
+  name: convs_to_display
+  required: false
+  secret: false
+- default: false
+  description: The WPA password. By providing the password you will be able to decrypt
+    encrypted traffic data.
+  isArray: false
+  name: wpa_password
+  required: false
+  secret: false
+commonfields:
+  id: 386e2ffc-fcf5-406c-840a-68c3ff2fefe8
+  version: -1
+enabled: true
+name: PcapMinerV2
+outputs:
+- contextPath: PcapResults.Bytes
+  description: The number of bytes transmitted in the PCAP file.
+  type: Number
+- contextPath: PcapResults.Packets
+  description: The number of packets transmitted in the PCAP file.
+  type: Number
+- contextPath: PcapResults.EntryID
+  description: The entryID of the PCAP file.
+  type: String
+- contextPath: PcapResults.StreamCount
+  description: The number of streams in the PCAP file.
+  type: String
+- contextPath: PcapResults.StartTime
+  description: The date and time of the first packet in the PCAP file.
+  type: Date
+- contextPath: PcapResults.EndTime
+  description: The date and time of the last packet in the PCAP file.
+  type: String
+- contextPath: PcapResults.UniqueSourceIP
+  description: The number of unique IPs from which packets were transmitted.
+  type: Number
+- contextPath: PcapResults.UniqueDestIP
+  description: The number of unique IPs from to packets were transmitted.
+  type: Number
+- contextPath: PcapResults.Flow.Bytes
+  description: The number of bytes transmitted in the flow.
+  type: String
+- contextPath: PcapResults.Flow.DestIP
+  description: The destination IP of the flow.
+  type: String
+- contextPath: PcapResults.Flow.SourceIP
+  description: The source IP of the flow.
+  type: String
+- contextPath: PcapResults.Flow.SourcePort
+  description: The source port of the flow.
+  type: String
+- contextPath: PcapResults.Flow.DestPort
+  description: The destination port of the flow.
+  type: String
+- contextPath: PcapResults.Flow.Duration
+  description: The duration of the flow (in seconds).
+  type: String
+- contextPath: PcapResults.Flow.EndTime
+  description: The date time the flow ended.
+  type: Date
+- contextPath: PcapResults.Flow.StartTime
+  description: The date time the flow started.
+  type: Date
+- contextPath: PcapResults.URL
+  description: The URLs extracted from the file.
+  type: String
+- contextPath: PcapResults.IP
+  description: The IPs extracted from the file.
+  type: String
+- contextPath: PcapResults.Email
+  description: The emails extracted from the file.
+  type: String
+- contextPath: PcapResults.Regex
+  description: The regular expressions specified in `extract_regex`,extracted from
+    the file
+  type: String
+- contextPath: PcapResults.HTTP.ResponseStatusCode
+  description: The response code.
+  type: String
+- contextPath: PcapResults.HTTP.RequestVersion
+  description: The request version.
+  type: String
+- contextPath: PcapResults.HTTP.RequestCacheControl
+  description: The chache control of the request.
+  type: String
+- contextPath: PcapResults.HTTP.ResponseDate
+  description: The time and date of the response.
+  type: Date
+- contextPath: PcapResults.HTTP.RequestMethod
+  description: The request method.
+  type: String
+- contextPath: PcapResults.HTTP.RequestSourceIP
+  description: The source IP of the request.
+  type: String
+- contextPath: PcapResults.HTTP.ResponseContentType
+  description: The response content type.
+  type: String
+- contextPath: PcapResults.HTTP.RequestAgent
+  description: The request agent.
+  type: String
+- contextPath: PcapResults.HTTP.RequestHost
+  description: The request host.
+  type: String
+- contextPath: PcapResults.HTTP.ResponseVersion
+  description: The response version.
+  type: String
+- contextPath: PcapResults.HTTP.ID
+  description: The ID of the http interaction.
+  type: String
+- contextPath: PcapResults.HTTP.RequestURI
+  description: The request URI.
+  type: String
+- contextPath: PcapResults.HTTP.ResponseContentLength
+  description: The length of the rescponse content.
+  type: String
+- contextPath: PcapResults.HTTP.ResponseCodeDesc
+  description: The code description of the response.
+  type: String
+- contextPath: PcapResults.DNS.ID
+  description: The ID of the DNS request.
+  type: String
+- contextPath: PcapResults.DNS.Request
+  description: The DNS request.
+  type: String
+- contextPath: PcapResults.DNS.Response
+  description: The DNS response.
+  type: String
+- contextPath: PcapResults.DNS.Type
+  description: The type of the DNS request.
+  type: String
+- contextPath: PcapResults.Protocols
+  description: List of protocls found in the PCAP.
+  type: String
+script: '-'
+system: false
+timeout: '0'
+type: python
+dockerimage: demisto/pcap-http-extractor:1.0.0.4873
+runas: DBotWeakRole
+runonce: false
+subtype: python3
