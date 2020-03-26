@@ -1561,7 +1561,7 @@ def ring_user():
                             url=f'{GRAPH_BASE_URL}/v1.0/communications/calls',
                             json_=call_request_data)
 
-    return_outputs("Calling {}".format(username_to_call), {}, response)
+    return_outputs(f"Calling {username_to_call}", {}, response)
 
 
 def long_running_loop():
