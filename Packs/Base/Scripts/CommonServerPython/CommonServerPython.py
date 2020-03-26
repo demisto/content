@@ -1710,7 +1710,7 @@ def return_outputs(readable_output, outputs=None, raw_response=None, timeline=No
     raw response from the 3rd party service (originally Contents)
 
     :type timeline: ``dict`` | ``list``
-    :param timeline: expects a list, if a dict is passed it will be put into a list. used by server to populate an 
+    :param timeline: expects a list, if a dict is passed it will be put into a list. used by server to populate an
     indicator's timeline
 
     :return: None
@@ -2564,6 +2564,10 @@ if 'requests' in sys.modules:
                         raise DemistoException(err_msg)
                     except ValueError as exception:
                         raise DemistoException(err_msg, exception)
+
+                is_response_empty_and_successful = (res.status_code == 204)
+                if is_response_empty_and_successful:
+                    return res
 
                 resp_type = resp_type.lower()
                 try:
