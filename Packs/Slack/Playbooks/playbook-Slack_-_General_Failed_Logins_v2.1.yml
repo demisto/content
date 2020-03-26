@@ -417,8 +417,7 @@ tasks:
       id: 76e305e6-94cb-43ed-87c5-0b68dbc946e5
       version: -1
       name: Should we reset the password?
-      description: 'Determines whether to reset the password, according
-        to the user's reply. '
+      description: Determines whether to reset the password, according to the user's reply.
       type: condition
       iscommand: false
       brand: ''
