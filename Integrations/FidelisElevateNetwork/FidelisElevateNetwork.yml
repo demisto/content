@@ -638,7 +638,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns the session information related to an alert
+    description: Return the session information related to an alert.
     execution: false
     name: fidelis-get-alert-session-data
     outputs:
@@ -740,7 +740,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Pulls the exectution forensics for an alert.
+    description: Get the exectution forensics for an alert.
     execution: false
     name: fidelis-get-alert-execution-forensics
     outputs:
@@ -842,7 +842,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Pulls the text of the forensic data.
+    description: Get the text of the forensic data.
     execution: false
     name: fidelis-get-alert-forensic-text
     outputs:
@@ -1027,7 +1027,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: adds a comment to an alert
+    description: Adds a comment to an alert.
     execution: false
     name: fidelis-add-alert-comment
   - arguments:
