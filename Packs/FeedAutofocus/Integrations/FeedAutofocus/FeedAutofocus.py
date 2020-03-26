@@ -11,6 +11,10 @@ requests.packages.urllib3.disable_warnings()
 
 # CONSTANTS
 SOURCE_NAME = "AutoFocusFeed"
+DAILY_FEED_BASE_URL = 'https://autofocus.paloaltonetworks.com/api/v1.0/output/threatFeedResult'
+SAMPLE_FEED_BASE_URL = 'https://autofocus.paloaltonetworks.com/api/v1.0/mm/samples/'
+SAMPLE_FEED_REQUEST_BASE_URL = f'{SAMPLE_FEED_BASE_URL}search'
+SAMPLE_FEED_RESPONSE_BASE_URL = f'{SAMPLE_FEED_BASE_URL}results/'
 
 
 class Client(BaseClient):
@@ -21,18 +25,19 @@ class Client(BaseClient):
         insecure(bool): Use SSH on http request.
         proxy(str): Use system proxy.
         indicator_feeds(List): A list of indicator feed types to bring from AutoFocus.
+        scope_type(str): The scope type of the AutoFocus sample feed.
+        sample_query(str): The query to use to fetch indicators from AutoFocus sample feed.
+        sample_size(str): The amount of indicators to fetch from AutoFocus sample feed.
         custom_feed_urls(str): The URLs of the custom feeds to fetch.
     """
 
-    def __init__(self, api_key, insecure, proxy, indicator_feeds, custom_feed_urls=None):
-        self.daily_feed_base_url = "https://autofocus.paloaltonetworks.com/api/v1.0/output/threatFeedResult"
-        self.headers = {
-            "apiKey": api_key,
-            'Content-Type': "application/json"
-        }
+    def __init__(self, api_key, insecure, proxy, indicator_feeds, custom_feed_urls=None,
+                 scope_type=None, sample_query=None, sample_size=None):
+        self.api_key = api_key
         self.indicator_feeds = indicator_feeds
+
         if 'Custom Feed' in indicator_feeds and (custom_feed_urls is None or custom_feed_urls == ''):
-            return_error("Output Feed ID and Name are required for Custom Feed")
+            return_error(f'{SOURCE_NAME} - Output Feed ID and Name are required for Custom Feed')
 
         elif 'Custom Feed' in indicator_feeds:
             url_list = []  # type:List
@@ -40,6 +45,17 @@ class Client(BaseClient):
                 url_list.append(self.url_format(url))
 
             self.custom_feed_url_list = url_list
+
+        if 'Sample Feed' in indicator_feeds:
+            self.scope_type = scope_type
+
+            if not sample_query:
+                return_error(f'{SOURCE_NAME} - Sample Query can not be empty for Sample Feed')
+            self.sample_query = sample_query
+
+            if not str.isdigit(sample_size):
+                return_error(f'{SOURCE_NAME} - Sample Size needs to be a valid integer')
+            self.sample_size = int(sample_size)
 
         self.verify = not insecure
         if proxy:
@@ -65,17 +81,22 @@ class Client(BaseClient):
 
         return url
 
-    def http_request(self, feed_type) -> list:
-        """The HTTP request for the feed.
+    def daily_custom_http_request(self, feed_type) -> list:
+        """The HTTP request for daily and custom feeds.
 
         Args:
-            feed_type(str): The feed type (Daily or Custom feed).
+            feed_type(str): The feed type (Daily / Custom feed / Sample feed).
 
         Returns:
             list. A list of indicators fetched from the feed.
         """
+        headers = {
+            "apiKey": self.api_key,
+            'Content-Type': "application/json"
+        }
+
         if feed_type == "Daily Threat Feed":
-            urls = [self.daily_feed_base_url]
+            urls = [DAILY_FEED_BASE_URL]
 
         else:
             urls = self.custom_feed_url_list
@@ -86,12 +107,156 @@ class Client(BaseClient):
                 method="GET",
                 url=url,
                 verify=self.verify,
-                headers=self.headers
+                headers=headers
             )
             res.raise_for_status()
             indicator_list.extend(res.text.split('\n'))
 
         return indicator_list
+
+    def sample_http_request(self) -> list:
+        """The HTTP request for the sample feed.
+
+        Args:
+
+        Returns:
+            list. A list of indicators fetched from the feed.
+        """
+        request_body = {
+            'apiKey': self.api_key,
+            'artifactSource': 'mm',
+            'scope': self.scope_type,
+            'query': self.sample_query,
+            'type': 'scan',
+            'size': self.sample_size
+        }
+
+        initiate_sample_res = requests.request(
+            method="POST",
+            url=SAMPLE_FEED_REQUEST_BASE_URL,
+            verify=self.verify,
+            data=request_body
+        )
+        initiate_sample_res.raise_for_status()
+
+        af_cookie = initiate_sample_res.json().get('af_cookie')
+        get_results_res = requests.request(
+            method="GET",
+            url=SAMPLE_FEED_RESPONSE_BASE_URL + af_cookie,
+            verify=self.verify,
+            data={'apiKey': self.api_key}
+        )
+        get_results_res.raise_for_status()
+
+        indicator_list = []  # type:List
+
+        # indicator_list.extend(res.text.split('\n'))
+
+        return indicator_list
+
+    @staticmethod
+    def create_indicators_from_single_sample_response(single_sample):
+        indicators = []
+
+        value = {}
+
+        id_ = single_sample['_id']
+        value['autofocus_id'] = id_
+
+        item = single_sample['_source']
+
+        update_date = item.get('update_date', None)
+        if update_date is not None:
+            update_date = datetime.strptime(update_date, '%Y-%m-%dT%H:%M:%S')
+            update_date = PACIFIC_TZ.localize(update_date)
+            value['autofocus_update_date'] = dt_to_millisec(update_date)
+
+        create_date = datetime.strptime(item['create_date'], '%Y-%m-%dT%H:%M:%S')
+        create_date = PACIFIC_TZ.localize(create_date)
+        value['autofocus_create_date'] = dt_to_millisec(create_date)
+
+        # XXX no more update this on the fly as the aggregation layer in basepoller
+        # XXX wouldn't reset last_create_date in case of Exceptions
+        # if self.last_create_date is None or create_date > self.last_create_date:
+        #     self.last_create_date = create_date
+
+        value['autofocus_tags'] = item.get('tag', [])
+        value['autofocus_malware'] = item['malware']
+
+        sha256_ = item['sha256']
+        sha1_ = item.get('sha1', None)
+        md5_ = item['md5']
+
+        if '...' in sha256_:
+            self.statistics['samples.obfuscated'] += 1
+            return []
+
+        tvalue = copy.copy(value)
+        tvalue['type'] = 'sha256'
+        indicators.append([
+            sha256_,
+            tvalue
+        ])
+
+        tvalue = copy.copy(value)
+        tvalue['type'] = 'md5'
+        tvalue['autofocus_sha256'] = sha256_
+        indicators.append([
+            md5_,
+            tvalue
+        ])
+
+        if sha1_ is not None:
+            tvalue = copy.copy(value)
+            tvalue['type'] = 'sha1'
+            tvalue['autofocus_sha256'] = sha256_
+            indicators.append([
+                sha1_,
+                tvalue
+            ])
+
+        artifacts = item.get('artifact', [])
+        for a in artifacts:
+            indicator = a.get('indicator', None)
+            if indicator is None:
+                continue
+
+            type_ = a.get('indicator_type', None)
+            if type_ is None:
+                continue
+
+            if type_ not in AF_TYPES_TO_MM:
+                LOG.error('{} - unhandled indicator type: {}/{!r}'.format(self.name, type_, indicator))
+                continue
+            type_ = AF_TYPES_TO_MM[type_]
+
+            b = a.get('b', 0)
+            g = a.get('g', 0)
+            m = a.get('m', 0)
+
+            confidence = self.confidence_map.get(a.get('confidence', 'interesting'), None)
+            if confidence is None:
+                continue
+
+            tvalue = {
+                'type': type_,
+                'confidence': confidence,
+                'autofocus_id': id_,
+                'autofocus_num_matching_artifacts': len(a.get('mm_artifacts', [])),
+                'autofocus_malware': m,
+                'autofocus_benign': b,
+                'autofocus_grayware': g
+            }
+
+            if type_ == 'IPv4' and ':' in indicator:
+                indicator, port = indicator.split(':', 1)
+                tvalue['autofocus_port'] = port
+
+            tvalue.update(value)
+
+            indicators.append([indicator, tvalue])
+
+        return indicators
 
     def get_ip_type(self, indicator):
         if re.match(ipv4cidrRegex, indicator):
@@ -154,10 +319,13 @@ class Client(BaseClient):
         indicators = []  # type:List
 
         if "Daily Threat Feed" in self.indicator_feeds:
-            indicators.extend(self.http_request(feed_type="Daily Threat Feed"))
+            indicators.extend(self.daily_custom_http_request(feed_type="Daily Threat Feed"))
 
         if "Custom Feed" in self.indicator_feeds:
-            indicators.extend(self.http_request(feed_type="Custom Feed"))
+            indicators.extend(self.daily_custom_http_request(feed_type="Custom Feed"))
+
+        if "Sample Feed" in self.indicator_feeds:
+            indicators.extend(self.sample_http_request())
 
         if limit:
             indicators = indicators[int(offset): int(offset) + int(limit)]
@@ -185,7 +353,7 @@ class Client(BaseClient):
         return parsed_indicators
 
 
-def module_test_command(client: Client, args: dict):
+def module_test_command(client: Client):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
 
@@ -216,6 +384,14 @@ def module_test_command(client: Client, args: dict):
                 exception_list.append(f"Could not fetch Custom Feed {url}\n"
                                       f"\nCheck your API key the URL for the feed and Check "
                                       f"if they are Enabled in AutoFocus.")
+
+    if 'Sample Feed' in indicator_feeds:
+        client.indicator_feeds = ['Sample Feed']
+        try:
+            client.build_iterator(1, 0)
+        except Exception:
+            exception_list.append("Could not fetch Sample Feed\n"
+                                  "\nCheck your instance configuration and your connection to AutoFocus.")
 
     if len(exception_list) > 0:
         raise Exception("\n".join(exception_list))
@@ -274,11 +450,14 @@ def fetch_indicators_command(client: Client, limit=None, offset=None):
 def main():
     params = demisto.params()
 
-    client = Client(params.get('api_key'),
-                    params.get('insecure'),
-                    params.get('proxy'),
-                    params.get('indicator_feeds'),
-                    params.get('custom_feed_urls'))
+    client = Client(api_key=params.get('api_key'),
+                    insecure=params.get('insecure'),
+                    proxy=params.get('proxy'),
+                    indicator_feeds=params.get('indicator_feeds'),
+                    custom_feed_urls=params.get('custom_feed_urls'),
+                    scope_type=params.get('scope_type'),
+                    sample_query=params.get('sample_query'),
+                    sample_size=params.get('sample_size'))
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
@@ -294,7 +473,7 @@ def main():
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
         else:
-            readable_output, outputs, raw_response = commands[command](client, demisto.args())
+            readable_output, outputs, raw_response = commands[command](client, demisto.args())  # type: ignore
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         raise Exception(f'Error in {SOURCE_NAME} Integration [{e}]')
