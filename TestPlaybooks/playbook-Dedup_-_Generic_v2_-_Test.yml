@@ -1,5 +1,6 @@
 id: dedup_-_generic_-_test
-version: 6
+version: -1
+fromversion: 5.0.0
 name: Dedup - Generic v2 - Test
 description: Dedup - Generic - Test
 starttaskid: "0"
