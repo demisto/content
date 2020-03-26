@@ -545,7 +545,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "loginbehavior",
+								"fieldId": "successfullogin",
 								"height": 55,
 								"id": "4d28fae0-6774-11ea-9848-a3492f3eb5ce",
 								"index": 1,
@@ -553,7 +553,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "auditlogin",
+								"fieldId": "successfullogin",
 								"height": 24,
 								"id": "c7864db0-6db4-11ea-a83d-b55060fcded7",
 								"index": 2,
