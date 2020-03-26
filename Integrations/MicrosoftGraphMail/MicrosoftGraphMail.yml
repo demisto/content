@@ -1003,7 +1003,6 @@ script:
       required: true
       secret: false
     - default: false
-      defaultValue: The email address from which to send the draft.
       description: The email address from which to send the draft.
       isArray: false
       name: from
