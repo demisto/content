@@ -65,11 +65,11 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 587ca2a1-bfbb-4a05-81e1-97b2b6c54079
+    taskid: 63897835-c62c-4f6a-8a2f-b9dda2873bda
     type: regular
     task:
       elasticcommonfields: {}
-      id: 587ca2a1-bfbb-4a05-81e1-97b2b6c54079
+      id: 63897835-c62c-4f6a-8a2f-b9dda2873bda
       version: -1
       name: azure-sentinel-get-incident-by-id
       script: '|||azure-sentinel-get-incident-by-id'
@@ -97,11 +97,11 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 96df43d5-1917-47b2-8180-37ee8f3dc232
+    taskid: a771979e-279d-4bf3-8f6e-0cf1434fb719
     type: condition
     task:
       elasticcommonfields: {}
-      id: 96df43d5-1917-47b2-8180-37ee8f3dc232
+      id: a771979e-279d-4bf3-8f6e-0cf1434fb719
       version: -1
       name: Verify Outputs
       type: condition
@@ -126,12 +126,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: test_title
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.Incident.Description
-            iscontext: true
+              simple: DO_NOT_TOUCH-FOR_TEST_PLAYBOOK
       - - operator: isEqualString
           left:
             value:
@@ -147,87 +142,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Closed
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.Incident.AssigneeName
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.Incident.AssigneeEmail
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.Incident.Label.Name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.Incident.Label.Type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.Incident.FirstActivityTimeUTC
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.Incident.LastActivityTimeUTC
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.Incident.LastModifiedTimeUTC
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.Incident.CreatedTimeUTC
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.Incident.IncidentNumber
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.Incident.AlertsCount
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.Incident.BookmarkCount
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.Incident.CommentCount
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.Incident.AlertProductNames
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.Incident.Tactics
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.Incident.FirstActivityTimeGenerated
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.Incident.LastActivityTimeGenerated
-            iscontext: true
+              simple: Active
     view: |-
       {
         "position": {
@@ -242,11 +157,11 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 4790233e-8fd4-43d4-8ac1-730fc5867611
+    taskid: 08e4e845-b700-4c95-8768-20cac20da44d
     type: regular
     task:
       elasticcommonfields: {}
-      id: 4790233e-8fd4-43d4-8ac1-730fc5867611
+      id: 08e4e845-b700-4c95-8768-20cac20da44d
       version: -1
       name: azure-sentinel-list-incidents
       script: '|||azure-sentinel-list-incidents'
@@ -258,7 +173,8 @@ tasks:
       - "5"
     scriptarguments:
       filter:
-        simple: properties/title eq 'test_title'
+        simple: properties/title eq 'DO_NOT_TOUCH-FOR_TEST_PLAYBOOK'
+      limit: {}
       next_link: {}
       top:
         simple: "1"
@@ -277,11 +193,11 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 7aa6d294-740a-4393-8d82-86e91e5cc730
+    taskid: 66715da6-8d45-4b12-8f25-a3dd78b238ae
     type: condition
     task:
       elasticcommonfields: {}
-      id: 7aa6d294-740a-4393-8d82-86e91e5cc730
+      id: 66715da6-8d45-4b12-8f25-a3dd78b238ae
       version: -1
       name: Verify Outputs
       type: condition
@@ -307,52 +223,12 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: AzureSentinel.Incident.Description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: AzureSentinel.Incident.Severity
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
               simple: AzureSentinel.Incident.Status
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.Incident.AssigneeName
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.Incident.AssigneeEmail
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.Incident.Label.Name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.Incident.Label.Type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.Incident.FirstActivityTimeUTC
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.Incident.LastActivityTimeUTC
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.Incident.LastModifiedTimeUTC
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -364,42 +240,7 @@ tasks:
             value:
               simple: AzureSentinel.Incident.IncidentNumber
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.Incident.AlertsCount
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.Incident.BookmarkCount
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.Incident.CommentCount
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.Incident.AlertProductNames
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.Incident.Tactics
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.Incident.FirstActivityTimeGenerated
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.Incident.LastActivityTimeGenerated
-            iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isNotExists
           left:
             value:
               simple: AzureSentinel.NextLink
@@ -418,11 +259,11 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 4fd77599-bdef-4595-818d-9bccae12563c
+    taskid: 717929bf-1f8b-4b51-8f89-eb6ae106259e
     type: regular
     task:
       elasticcommonfields: {}
-      id: 4fd77599-bdef-4595-818d-9bccae12563c
+      id: 717929bf-1f8b-4b51-8f89-eb6ae106259e
       version: -1
       name: azure-sentinel-update-incident
       script: '|||azure-sentinel-update-incident'
@@ -459,11 +300,11 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: e8208ad7-9389-4ce6-8a75-0fb326fb4215
+    taskid: 179f7527-c4e0-4b25-8092-875e33e1755f
     type: condition
     task:
       elasticcommonfields: {}
-      id: e8208ad7-9389-4ce6-8a75-0fb326fb4215
+      id: 179f7527-c4e0-4b25-8092-875e33e1755f
       version: -1
       name: Verify Outputs
       type: condition
@@ -479,7 +320,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: AzureSentinel.Incident.Status
+              simple: AzureSentinel.Incident.Severity
             iscontext: true
           right:
             value:
@@ -549,11 +390,11 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 4c6561ac-7b2c-435f-815d-93cbc01b9103
+    taskid: 250a2635-dd7d-493c-8806-48558ffc8954
     type: condition
     task:
       elasticcommonfields: {}
-      id: 4c6561ac-7b2c-435f-815d-93cbc01b9103
+      id: 250a2635-dd7d-493c-8806-48558ffc8954
       version: -1
       name: Verify Outputs
       type: condition
@@ -581,26 +422,6 @@ tasks:
             value:
               simple: AzureSentinel.IncidentComment.Message
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.IncidentComment.AuthorName
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.IncidentComment.AuthorEmail
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.IncidentComment.CreatedTimeUTC
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.NextLink
-            iscontext: true
     view: |-
       {
         "position": {
@@ -615,11 +436,11 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 79cf45fb-703e-413e-8237-12697129f611
+    taskid: 0abe15ae-0fad-4e3c-827f-54e9960bf206
     type: regular
     task:
       elasticcommonfields: {}
-      id: 79cf45fb-703e-413e-8237-12697129f611
+      id: 0abe15ae-0fad-4e3c-827f-54e9960bf206
       version: -1
       name: azure-sentinel-incident-add-comment
       script: '|||azure-sentinel-incident-add-comment'
@@ -633,7 +454,7 @@ tasks:
       incident_id:
         simple: ${AzureSentinel.Incident.ID}
       message:
-        simple: ${AzureSentinel.Incident.CommentCount}
+        simple: ${AzureSentinel.Incident.CommentsCount}
     separatecontext: false
     view: |-
       {
@@ -649,11 +470,11 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: d19a313e-e930-471e-8ec7-93aafa812482
+    taskid: 0455e6fb-2efd-4506-878a-e26f02fbc39c
     type: condition
     task:
       elasticcommonfields: {}
-      id: d19a313e-e930-471e-8ec7-93aafa812482
+      id: 0455e6fb-2efd-4506-878a-e26f02fbc39c
       version: -1
       name: Verify Outputs
       type: condition
@@ -683,89 +504,13 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: AzureSentinel.Incident.CommentCount
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.IncidentComment.AuthorName
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.IncidentComment.AuthorEmail
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.IncidentComment.CreatedTimeUTC
+              simple: AzureSentinel.Incident.CommentsCount
             iscontext: true
     view: |-
       {
         "position": {
           "x": 50,
           "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "13":
-    id: "13"
-    taskid: 694836e0-57e7-4bb9-8149-0b694d9f1287
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: 694836e0-57e7-4bb9-8149-0b694d9f1287
-      version: -1
-      name: azure-sentinel-get-entity-by-id
-      script: '|||azure-sentinel-get-entity-by-id'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      entity_id:
-        simple: ${AzureSentinel.IncidentRelatedResource.ID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2645
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "14":
-    id: "14"
-    taskid: 05c42c58-949c-4fe9-8001-e25ad60bc576
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: 05c42c58-949c-4fe9-8001-e25ad60bc576
-      version: -1
-      name: azure-sentinel-list-entities
-      script: '|||azure-sentinel-list-entities'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "17"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2820
         }
       }
     note: false
@@ -813,11 +558,11 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: d886a34b-3386-4177-8843-371f2c83bf34
+    taskid: 00fa0a03-3a21-4305-8d95-033a1c60553b
     type: condition
     task:
       elasticcommonfields: {}
-      id: d886a34b-3386-4177-8843-371f2c83bf34
+      id: 00fa0a03-3a21-4305-8d95-033a1c60553b
       version: -1
       name: Verify Outputs
       type: condition
@@ -825,7 +570,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "13"
+      - "17"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -843,11 +588,6 @@ tasks:
           right:
             value:
               simple: SecurityAlert
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.NextLink
-            iscontext: true
       - - operator: isEqualString
           left:
             value:
@@ -886,7 +626,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2995
+          "y": 2645
         }
       }
     note: false
@@ -896,11 +636,11 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 9141c196-25d3-4c0c-8fd9-1851f9851647
+    taskid: ec77bfac-5eb8-4df3-8758-b1a8ac7603b4
     type: regular
     task:
       elasticcommonfields: {}
-      id: 9141c196-25d3-4c0c-8fd9-1851f9851647
+      id: ec77bfac-5eb8-4df3-8758-b1a8ac7603b4
       version: -1
       name: azure-sentinel-update-incident (reset to old values)
       script: '|||azure-sentinel-update-incident'
@@ -919,7 +659,7 @@ tasks:
       severity:
         simple: Medium
       status:
-        simple: Closed
+        simple: Active
       title:
         simple: test_title
     separatecontext: false
@@ -940,7 +680,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3010,
+        "height": 2660,
         "width": 380,
         "x": 50,
         "y": 50
