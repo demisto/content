@@ -459,7 +459,7 @@ tasks:
         simple: occured
       TimeFrameHours:
         simple: "72"
-      'similarIncidentFields':
+      similarIncidentFields:
         simple: name,details
       similarLabelsKeys: {}
     separatecontext: true
@@ -507,7 +507,7 @@ tasks:
         simple: occurred
       TimeFrameHours:
         simple: "72"
-      'similarIncidentFields':
+      similarIncidentFields:
         simple: type
       similarLabelsKeys:
         simple: Email/subject:*,Email/from
@@ -556,7 +556,7 @@ tasks:
         simple: occurred
       TimeFrameHours:
         simple: "72"
-      'similarIncidentFields': {}
+      similarIncidentFields: {}
       similarLabelsKeys: {}
     separatecontext: true
     loop:
