@@ -5,7 +5,7 @@
             "alert_type": "Science Fiction",
             "alert_status": "ACTIVE",
             "severity": 3,
-            "created": 1581982463000,
+            "created": 1581982463,
             "alert_id": "100"
         },
         {
@@ -13,7 +13,7 @@
             "alert_type": "Science Fiction",
             "alert_status": "ACTIVE",
             "severity": 4,
-            "created": 1581982463400,
+            "created": 1581982463,
             "alert_id": "200"
         }
     ]

@@ -170,8 +170,8 @@ def fetch_incidents(client, last_run, first_fetch_time, alert_type, alert_status
 
     Args:
         client (Client): HelloWorld client
-        last_run (dateparser.time): The greatest incident created_time we fetched from last fetch
-        first_fetch_time (dateparser.time): If last_run is None then fetch all incidents since first_fetch_time
+        last_run (dict): The greatest incident created_time we fetched from last fetch (last_fetch key)
+        first_fetch_time (int): If last_run is None then fetch all incidents since first_fetch_time - timestamp in seconds
         alert_type (str): Alert type
         alert_status (str): Alert status - ACTIVE, CLOSED
 
@@ -179,17 +179,19 @@ def fetch_incidents(client, last_run, first_fetch_time, alert_type, alert_status
         next_run: This will be last_run in the next fetch-incidents
         incidents: Incidents that will be created in Demisto
     """
+
     # Get the last fetch time, if exists
     last_fetch = last_run.get('last_fetch')
 
-    # Handle first time fetch
+    # Handle first fetch time
     if last_fetch is None:
-        last_fetch = dateparser.parse(first_fetch_time, settings={'TIMEZONE': 'UTC'})
+        last_fetch = first_fetch_time
     else:
         last_fetch = int(last_fetch)
 
     latest_created_time = last_fetch
     incidents = []
+
     alerts = client.search_alerts(
         alert_type=alert_type,
         alert_status=alert_status,
@@ -197,13 +199,15 @@ def fetch_incidents(client, last_run, first_fetch_time, alert_type, alert_status
         start_time=last_fetch,
         severity=None
     )
+
     for alert in alerts:
         incident_created_time = int(alert['created'])
+        incident_created_time_ms = incident_created_time * 1000
         incident_name = '#{} - {}'.format(alert['alert_id'], alert['name'])
         incident = {
             'name': incident_name,
             'details': alert['name'],
-            'occurred': timestamp_to_datestring(incident_created_time),
+            'occurred': timestamp_to_datestring(incident_created_time_ms),
             'rawJSON': json.dumps(alert)
         }
 
@@ -362,7 +366,7 @@ def arg_to_timestamp(arg, arg_name: str, required: bool = False):
             # if d is None it means dateparser failed to parse it
             raise ValueError(f'Invalid date: {arg_name}')
 
-        return int(date.timestamp() * 1000)
+        return int(date.timestamp())
     if isinstance(arg, (int, float)):
         return arg
 

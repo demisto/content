@@ -10,7 +10,7 @@ def util_load_json(path):
 
 
 def test_say_hello():
-    client = Client(base_url='https://test.com', verify=False, auth=('test', 'test'))
+    client = Client(base_url='https://test.com/api/v1', verify=False, auth=('test', 'test'))
     args = {
         'name': 'Dbot'
     }
@@ -24,13 +24,13 @@ def test_start_scan(requests_mock):
         "scan_id": "7a161a3f-8d53-42de-80cd-92fb017c5a12",
         "status": "RUNNING"
     }
-    requests_mock.get('http://test.com/start_scan?hostname=example.com', json=mock_response)
+    requests_mock.get('http://test.com/api/v1/start_scan?hostname=example.com', json=mock_response)
 
     client = Client(
-        base_url='http://test.com',
+        base_url='http://test.com/api/v1',
         verify=False,
         headers={
-            'Authentication': 'some_api_key'
+            'Authorization': 'Bearer some_api_key'
         }
     )
 
@@ -53,25 +53,25 @@ def test_status_scan(requests_mock):
         "scan_id": "100",
         "status": "COMPLETE"
     }
-    requests_mock.get('http://test.com/check_scan?scan_id=100', json=mock_response)
+    requests_mock.get('http://test.com/api/v1/check_scan?scan_id=100', json=mock_response)
 
     mock_response = {
         "scan_id": "200",
         "status": "RUNNING"
     }
-    requests_mock.get('http://test.com/check_scan?scan_id=200', json=mock_response)
+    requests_mock.get('http://test.com/api/v1/check_scan?scan_id=200', json=mock_response)
 
     mock_response = {
         "scan_id": "300",
         "status": "COMPLETE"
     }
-    requests_mock.get('http://test.com/check_scan?scan_id=300', json=mock_response)
+    requests_mock.get('http://test.com/api/v1/check_scan?scan_id=300', json=mock_response)
 
     client = Client(
-        base_url='http://test.com',
+        base_url='http://test.com/api/v1',
         verify=False,
         headers={
-            'Authentication': 'some_api_key'
+            'Authorization': 'Bearer some_api_key'
         }
     )
 
@@ -102,13 +102,13 @@ def test_status_scan(requests_mock):
 def test_scan_results(mocker, requests_mock):
     import demistomock as demisto
     mock_response = util_load_json('test_data/scan_results.json')
-    requests_mock.get('http://test.com/get_scan_results?scan_id=100', json=mock_response)
+    requests_mock.get('http://test.com/api/v1/get_scan_results?scan_id=100', json=mock_response)
 
     client = Client(
-        base_url='http://test.com',
+        base_url='http://test.com/api/v1',
         verify=False,
         headers={
-            'Authentication': 'some_api_key'
+            'Authorization': 'Bearer some_api_key'
         }
     )
 
@@ -133,14 +133,14 @@ def test_scan_results(mocker, requests_mock):
 
 def test_search_alerts(requests_mock):
     mock_response = util_load_json('test_data/search_alerts.json')
-    requests_mock.get('http://test.com/get_alerts?alert_status=ACTIVE&severity=4&max_results=2&start_time=1581982463',
+    requests_mock.get('http://test.com/api/v1/get_alerts?alert_status=ACTIVE&severity=4&max_results=2&start_time=1581982463',
                       json=mock_response)
 
     client = Client(
-        base_url='http://test.com',
+        base_url='http://test.com/api/v1',
         verify=False,
         headers={
-            'Authentication': 'some_api_key'
+            'Authorization': 'Bearer some_api_key'
         }
     )
 
@@ -160,14 +160,14 @@ def test_search_alerts(requests_mock):
 
 def test_ip(requests_mock):
     mock_response = util_load_json('test_data/ip_reputation.json')
-    requests_mock.get('http://test.com/ip?ip=151.1.1.1',
+    requests_mock.get('http://test.com/api/v1/ip?ip=151.1.1.1',
                       json=mock_response)
 
     client = Client(
-        base_url='http://test.com',
+        base_url='http://test.com/api/v1',
         verify=False,
         headers={
-            'Authentication': 'some_api_key'
+            'Authorization': 'Bearer some_api_key'
         }
     )
 
@@ -185,14 +185,14 @@ def test_ip(requests_mock):
 
 def test_domain(requests_mock):
     mock_response = util_load_json('test_data/domain_reputation.json')
-    requests_mock.get('http://test.com/domain?domain=google.com',
+    requests_mock.get('http://test.com/api/v1/domain?domain=google.com',
                       json=mock_response)
 
     client = Client(
-        base_url='http://test.com',
+        base_url='http://test.com/api/v1',
         verify=False,
         headers={
-            'Authentication': 'some_api_key'
+            'Authorization': 'Bearer some_api_key'
         }
     )
 
@@ -210,19 +210,19 @@ def test_domain(requests_mock):
 
 def test_fetch_incidents(requests_mock):
     mock_response = util_load_json('test_data/search_alerts.json')
-    requests_mock.get('http://test.com/get_alerts?alert_status=ACTIVE&max_results=50&start_time=1582584487883',
+    requests_mock.get('http://test.com/api/v1/get_alerts?alert_status=ACTIVE&max_results=50&start_time=1582584487',
                       json=mock_response['alerts'])
 
     client = Client(
-        base_url='http://test.com',
+        base_url='http://test.com/api/v1',
         verify=False,
         headers={
-            'Authentication': 'some_api_key'
+            'Authorization': 'Bearer some_api_key'
         }
     )
 
     last_run = {
-        'last_fetch': 1582584487883  # Mon Feb 24 2020 22:48:07
+        'last_fetch': 1582584487  # Mon Feb 24 2020
     }
 
     next_run, new_incidents = fetch_incidents(

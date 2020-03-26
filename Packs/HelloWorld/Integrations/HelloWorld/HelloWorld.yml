@@ -34,9 +34,9 @@ configuration:
   defaultvalue: 65
   type: 0
   required: false
-- display: Fetch alerts with status (OPEN, CLOSED)
+- display: Fetch alerts with status (ACTIVE, CLOSED)
   name: alert_status
-  defaultvalue: OPEN
+  defaultvalue: ACTIVE
   type: 0
   required: false
 - display: Fetch alerts with type
