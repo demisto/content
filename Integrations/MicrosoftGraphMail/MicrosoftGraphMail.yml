@@ -767,7 +767,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The email address from which to create the draft.
+      description: The email address from which the draft is created.
       isArray: false
       name: from
       required: true
