@@ -128,17 +128,8 @@ def detect_type(indicator):
     if re.match(ipv6Regex, indicator):
         return FeedIndicatorType.IPv6
 
-    if re.match(sha256Regex, indicator):
-        return FeedIndicatorType.SHA256
-
     if re.match(urlRegex, indicator):
         return FeedIndicatorType.URL
-
-    if re.match(md5Regex, indicator):
-        return FeedIndicatorType.MD5
-
-    if re.match(sha1Regex, indicator):
-        return FeedIndicatorType.SHA1
 
     if re.match(emailRegex, indicator):
         return FeedIndicatorType.Email
