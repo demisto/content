@@ -6,7 +6,6 @@ Per sub-feed name:
 * `jmespath` extractor
 * indicator name
 * indicator type
-* indicator fields
 
 See the below example: 
 
@@ -20,7 +19,6 @@ def main():
             'extractor': "prefixes[?service=='AMAZON']",
             'indicator': 'ip_prefix',
             'indicator_type': FeedIndicatorType.IP,
-            'fields': ['region', 'service']
         }
     }
 
