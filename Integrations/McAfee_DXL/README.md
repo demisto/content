@@ -44,7 +44,7 @@ To configure the ePO server, you need to upload the public key.
 | broker_ca_bundle | Broker CA certificates content (see `brokercerts.crt` in the instructions). | True |
 | cert_file | Client certificates content (see `client.crt` in the instructions). | True |
 | private_key | Client private key content (e.g. `client.key`) | True |
-| broker_urls | Brokers URLs (comma separated list in the form of [ssl://]<hostname>[:port]). Get the hostname & port from the `brokerlist.properties` file in the instructions. Note that the broker should be reachable from the Demisto server. | True |
+| broker_urls | Brokers URLs (comma separated list in the form of [ssl://]&lt;hostname&gt;[:port]). Get the hostname & port from the `brokerlist.properties` file in the instructions. Note that the broker should be reachable from the Demisto server. | True |
 | push_ip_topic | The topic for which to publish the 'dxl-push-ip'. | False |
 | push_url_topic | The topic for which to publish the 'dxl-push-url'. | False |
 | push_domain_topic | The topic for which to publish the 'dxl-push-domain'. | False |

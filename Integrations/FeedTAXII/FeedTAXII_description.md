@@ -3,7 +3,8 @@ TAXII Feed integration is a TAXII client that ingests indicators from TAXII feed
 # Connect the TAXII Feed Integration to a TAXII Server
 To connect the TAXII Feed integration to a TAXII server you'll need to configure the following parameters.
 * **Discovery Service** - Available TAXII services and their use can be communicated via the TAXII Discovery Service. The Discovery Service provides a requester with a list of TAXII Services and how these Services can be invoked.
-* **Collection** - A Collection is an interface to a logical repository of CTI objects provided by a TAXII Server. This will usually be the feed name.
+* **Collection** - A Collection is an interface to a logical repository of CTI objects provided by a TAXII Server. This will usually be the feed name. If you do not know which collections
+are available to you, you can leave it empty and press the Test button. In the error message you will receive a list of available collections for the specified discovery path.
 * **Subscription ID** (Optional) - TAXII defines Subscription IDs. When a Consumer successfully establishes a subscription on a TAXII Server, the server assigns that
 subscription a *Subscription ID* value. From then on, both the Consumer and the Server refer to this subscription in messages using this Subscription ID value.
 * **Poll Service** (Optional) - Used by a TAXII Client to request information from a TAXII Server. If not provided, will be fetched from the discovery service.
