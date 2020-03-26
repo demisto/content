@@ -38,7 +38,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Fidelis Endpoint provides advanced endpoint detection and response (EDR)
+description: Use the Fidelis Endpoint integration for advanced endpoint detection and response (EDR)
   across Windows, Mac and Linux OSes for faster threat remediation.
 display: Fidelis EDR
 name: Fidelis EDR
@@ -47,7 +47,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: Limits the number of alerts returned.
+      description: The maximum number of alerts to return.
       isArray: false
       name: limit
       required: false
@@ -76,7 +76,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns all alert in the system.
+    description: Returns all alerts in the system.
     execution: false
     name: fidelis-endpoint-list-alerts
     outputs:
@@ -87,13 +87,13 @@ script:
       description: Intel name.
       type: String
     - contextPath: FidelisEndpoint.Alert.HasJob
-      description: Is the alert has an open job
+      description: Whether the alert has an open job.
       type: Boolean
     - contextPath: FidelisEndpoint.Alert.EventTime
       description: Alert event time.
       type: Date
     - contextPath: FidelisEndpoint.Alert.ActionsTaken
-      description: The actions taken for this alert
+      description: The actions taken for this alert.
       type: String
     - contextPath: FidelisEndpoint.Alert.CreateDate
       description: Alert creation date.
@@ -132,16 +132,16 @@ script:
       description: Event index.
       type: Number
     - contextPath: FidelisEndpoint.Alert.Telemetry
-      description: Telemetry.
+      description: Telemetry data.
       type: String
     - contextPath: FidelisEndpoint.Alert.Source
-      description: Alert source
+      description: Alert source.
       type: String
     - contextPath: FidelisEndpoint.Alert.ID
       description: Alert ID.
       type: Number
     - contextPath: FidelisEndpoint.Alert.ValidatedDate
-      description: Validate date.
+      description: Validation date.
       type: Date
     - contextPath: FidelisEndpoint.Alert.Description
       description: Alert description.
@@ -169,12 +169,12 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Search for endpoints based on an IP Address or hostname.
+    description: Searches for endpoints based on an IP address or hostname.
     execution: false
     name: fidelis-endpoint-host-info
     outputs:
     - contextPath: FidelisEndpoint.Host.AgentVersion
-      description: The Agent version.
+      description: The agent version.
       type: String
     - contextPath: FidelisEndpoint.Host.MacAddress
       description: Host MAC address.
@@ -183,22 +183,22 @@ script:
       description: Endpoint OS.
       type: String
     - contextPath: FidelisEndpoint.Host.IPAddress
-      description: Endpoint IP Address.
+      description: Endpoint IP address.
       type: String
     - contextPath: FidelisEndpoint.Host.Isolated
-      description: Is the endpoint isolated.
+      description: Whether the endpoint is isolated.
       type: Boolean
     - contextPath: FidelisEndpoint.Host.AV_Enabled
-      description: Is AV Enabled.
+      description: Whether AV is enabled.
       type: Boolean
     - contextPath: FidelisEndpoint.Host.Hostname
       description: Host name.
       type: String
     - contextPath: FidelisEndpoint.Host.AgentInstalled
-      description: Is an agent has been installed
+      description: Whether an agent was installed.
       type: Boolean
     - contextPath: FidelisEndpoint.Host.Groups
-      description: Endpoint groups
+      description: Endpoint groups.
       type: String
     - contextPath: FidelisEndpoint.Host.LastContactDate
       description: Host last contact date.
@@ -210,43 +210,43 @@ script:
       description: Processor name.
       type: String
     - contextPath: FidelisEndpoint.Host.OnNetwork
-      description: Is the host on network.
+      description: Whether the host is on the network.
       type: Boolean
   - arguments:
     - default: false
-      description: The host to search the file in (for multiple hosts use (comma separated)
+      description: A comma-separated list of hosts in which to search for the specified file.
       isArray: true
       name: host
       required: false
       secret: false
     - default: false
-      description: MD5 to search for (for multiple hashes use comma separated). Get
-        the hash from the queries commands.
+      description: A comma-separated list MD5 hashes to search for. Get
+        the hashes from the queries commands.
       isArray: true
       name: md5
       required: true
       secret: false
     - default: false
-      description: The file Extension
+      description: The file extension.
       isArray: false
       name: file_extension
       required: false
       secret: false
     - default: false
-      description: The file path (recommended to lower the search time)
+      description: The file path (recommended to lower the search time).
       isArray: false
       name: file_path
       required: false
       secret: false
     - default: false
       defaultValue: '100'
-      description: The file size greater than.
+      description: The file size greater than. The default is 100.
       isArray: false
       name: file_size
       required: false
       secret: false
     deprecated: false
-    description: Search for files on multiple hosts, using file hash, extension, file
+    description: Searches for files on multiple hosts, using file hash, file extension, file
       size, and other search criteria.
     execution: false
     name: fidelis-endpoint-file-search
@@ -259,19 +259,19 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The job ID (find the id from the file-search command)
+      description: The job ID. Get the ID from the file-search command.
       isArray: false
       name: job_id
       required: true
       secret: false
     - default: false
-      description: The job result ID (find the id from the file-search command)
+      description: The job result ID. Get the ID from the file-search command.
       isArray: false
       name: job_result_id
       required: true
       secret: false
     deprecated: false
-    description: Get the file search job status.
+    description: Gets the file search job status.
     execution: false
     name: fidelis-endpoint-file-search-status
     outputs:
@@ -286,19 +286,19 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Job ID (get the job ID from file-search command).
+      description: The job ID. Get the job ID from the file-search command.
       isArray: false
       name: job_id
       required: true
       secret: false
     - default: false
-      description: Job result ID (get the job result ID from file-search command).
+      description: The job result ID. Get the job result ID from the file-search command.
       isArray: false
       name: job_result_id
       required: true
       secret: false
     deprecated: false
-    description: Get the job results metadata (max 50 results).
+    description: Gets the job results metadata. The maximum is 50 results.
     execution: false
     name: fidelis-endpoint-file-search-result-metadata
     outputs:
@@ -306,28 +306,28 @@ script:
       description: Agent ID.
       type: String
     - contextPath: FidelisEndpoint.File.FileName
-      description: File Name.
+      description: File name.
       type: String
     - contextPath: FidelisEndpoint.File.FilePath
       description: File path.
       type: String
     - contextPath: FidelisEndpoint.File.FileSize
-      description: File Size.
+      description: File size.
       type: Number
     - contextPath: FidelisEndpoint.File.HostIP
-      description: Host IP.
+      description: Host IP address.
       type: String
     - contextPath: FidelisEndpoint.File.HostName
-      description: Host Name.
+      description: Host name.
       type: String
     - contextPath: FidelisEndpoint.File.ID
       description: File ID.
       type: String
     - contextPath: FidelisEndpoint.File.MD5Hash
-      description: File MD5.
+      description: File MD5 hash.
       type: String
     - contextPath: File.Path
-      description: The path where the file is located.
+      description: The file path.
       type: String
     - contextPath: File.Hostname
       description: The name of the host where the file was found.
@@ -343,20 +343,20 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: The file ID (can be found in file-search-result-metadata command)
+      description: The file ID. Get the ID from the file-search-result-metadata command.
       isArray: false
       name: file_id
       required: true
       secret: false
     - default: false
-      description: The file name to download with extension(can be found in file-search-result-metadata
+      description: The file name to download (including extension). Get the file name from the file-search-result-metadata command.
         command).
       isArray: false
       name: file_name
       required: true
       secret: false
     deprecated: false
-    description: Get the file stream and download the file.
+    description: Gets the file stream and download the file.
     execution: false
     name: fidelis-endpoint-get-file
     outputs:
@@ -390,17 +390,17 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Job ID (get the job ID from file-search command).
+      description: The job ID. Get the job ID from the file-search command.
       isArray: false
       name: job_id
       required: true
       secret: false
     deprecated: false
-    description: Removed the job to free-up space on the server.
+    description: Removes the job to free up space on the server.
     execution: false
     name: fidelis-endpoint-delete-file-search-job
   - deprecated: false
-    description: Get a list of all script packages
+    description: Gets a list of all script packages.
     execution: false
     name: fidelis-endpoint-list-scripts
     outputs:
@@ -415,13 +415,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Script ID (get the script id from list-scripts command)
+      description: The script ID. Get the script ID from the list-scripts command.
       isArray: false
       name: script_id
       required: true
       secret: false
     deprecated: false
-    description: Get the script manifest
+    description: Gets the script manifest.
     execution: false
     name: fidelis-endpoint-get-script-manifest
     outputs:
@@ -432,7 +432,7 @@ script:
       description: Script priority.
       type: String
     - contextPath: FidelisEndpoint.Script.ImpersonationUser
-      description: Impersonation User.
+      description: Impersonation user.
       type: String
     - contextPath: FidelisEndpoint.Script.Name
       description: Script name.
@@ -441,16 +441,16 @@ script:
       description: The script commands.
       type: String
     - contextPath: FidelisEndpoint.Script.Questions
-      description: Script questions
+      description: Script questions.
       type: String
     - contextPath: FidelisEndpoint.Script.WizardOverridePassword
-      description: Wizard Override Password
+      description: Wizard override password.
       type: Boolean
     - contextPath: FidelisEndpoint.Script.Platform
-      description: Scripts platforms (only true)
+      description: Scripts platforms (only true).
       type: String
     - contextPath: FidelisEndpoint.Script.ImpersonationPassword
-      description: Impersonation Password
+      description: Impersonation password.
       type: String
     - contextPath: FidelisEndpoint.Script.ID
       description: Script ID.
@@ -459,18 +459,18 @@ script:
       description: The script description.
       type: String
     - contextPath: FidelisEndpoint.Script.TimeoutSeconds
-      description: Script timout in seconds
+      description: Script timeout in seconds.
       type: Number
   - arguments:
     - default: false
-      description: Endpoint IP. Get the endpoint IP from host-info command.
+      description: The endpoint IP. Get the endpoint IP from the host-info command.
       isArray: true
       name: endpoint_ip
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Ths system OS.
+      description: Ths system OS. Can be "Windows", "Linux", or "macOS".
       isArray: false
       name: operating_system
       predefined:
@@ -481,7 +481,7 @@ script:
       secret: false
     - default: false
       defaultValue: '300'
-      description: Script time out in seconds
+      description: Script time out in seconds. The default is 300.
       isArray: false
       name: time_out
       required: false
@@ -493,27 +493,27 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List all processes according to the OS system.
+    description: Gets a list all processes according to the OS system.
     execution: false
     name: fidelis-endpoint-list-processes
     outputs:
     - contextPath: FidelisEndpoint.Process.JobID
-      description: Script data - Job ID
+      description: Job ID.
       type: String
     - contextPath: FidelisEndpoint.Process.ID
       description: Script ID.
       type: String
   - arguments:
     - default: false
-      description: 'The script execution job ID. (Can be found in the following commands:
-        script-exeution, file-search, list-processes, kill-process-by-pid, delete-file,
-        network-siolation, remove-network-isolation).'
+      description: 'The script execution job ID. Get the ID the following commands:
+        script-execution, file-search, list-processes, kill-process-by-pid, delete-file,
+        network-isolation, remove-network-isolation.'
       isArray: false
       name: job_id
       required: true
       secret: false
     deprecated: false
-    description: Get script job results.
+    description: Gets script job results.
     execution: false
     name: fidelis-endpoint-get-script-result
     outputs:
@@ -524,10 +524,10 @@ script:
       description: Parent process ID.
       type: String
     - contextPath: FidelisEndpoint.ScriptResult.Path
-      description: File Path
+      description: File path.
       type: String
     - contextPath: FidelisEndpoint.ScriptResult.SHA1
-      description: File SHA1
+      description: File SHA1 hash.
       type: String
     - contextPath: FidelisEndpoint.ScriptResult.PID
       description: Process ID.
@@ -536,55 +536,55 @@ script:
       description: Process name.
       type: String
     - contextPath: FidelisEndpoint.ScriptResult.User
-      description: Script User
+      description: Script user.
       type: String
     - contextPath: FidelisEndpoint.ScriptResult.StartTime
-      description: Script start time
+      description: Script start time.
       type: Date
     - contextPath: FidelisEndpoint.ScriptResult.EndpointID
       description: Endpoint ID.
       type: String
     - contextPath: FidelisEndpoint.ScriptResult.Matches
-      description: Script matches
+      description: Script matches.
       type: Number
     - contextPath: FidelisEndpoint.ScriptResult.IsHidden
-      description: Is the endpoint hidden.
+      description: Whether the endpoint is hidden.
       type: String
     - contextPath: FidelisEndpoint.ScriptResult.GroupID
       description: Group ID.
       type: String
     - contextPath: FidelisEndpoint.ScriptResult.Tags
-      description: Script tags
+      description: Script tags.
       type: String
     - contextPath: FidelisEndpoint.ScriptResult.ID
-      description: ID
+      description: Script result ID.
       type: String
     - contextPath: FidelisEndpoint.ScriptResult.WorkingDirectory
       description: Working directory.
       type: String
     - contextPath: FidelisEndpoint.ScriptResult.MD5
-      description: File MD5.
+      description: File MD5 hash.
       type: String
     - contextPath: FidelisEndpoint.ScriptResult.CommandLine
-      description: Command line
+      description: Command line.
       type: String
   - arguments:
     - default: false
-      description: The endpoint IP.
+      description: The endpoint IP address.
       isArray: false
       name: endpoint_ip
       required: false
       secret: false
     - default: false
       defaultValue: '300'
-      description: Script time out (in seconds).
+      description: Script time out (in seconds). The default is 300.
       isArray: false
       name: time_out
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: System OS.
+      description: System OS. Can be "Windows", "Linux", or "macOS".
       isArray: false
       name: operating_system
       predefined:
@@ -594,7 +594,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Process ID. (get the pid from script-manifest command).
+      description: Process ID. Get the PID from the script-manifest command.
       isArray: false
       name: pid
       required: true
@@ -619,21 +619,21 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Endpoint IP.
+      description: Endpoint IP address.
       isArray: false
       name: endpoint_ip
       required: false
       secret: false
     - default: false
       defaultValue: '300'
-      description: Script time out (in seconds)
+      description: Script time out (in seconds). The default is 300.
       isArray: false
       name: time_out
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: System OS.
+      description: System OS. Can be "Windows", "Linux", or "macOS".
       isArray: false
       name: operating_system
       predefined:
@@ -655,7 +655,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Delete a file at the specified path.
+    description: Deletes a file at the specified path.
     execution: false
     name: fidelis-endpoint-delete-file
     outputs:
@@ -667,21 +667,21 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The endpoint IP to isolate.
+      description: The endpoint IP address to isolate.
       isArray: false
       name: endpoint_ip
       required: false
       secret: false
     - default: false
       defaultValue: '300'
-      description: Script timeout (in seconds).
+      description: Script timeout (in seconds). The default is 300.
       isArray: false
       name: time_out
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The system OS.
+      description: The system OS. Can be "Windows", "Linux", or "macOS".
       isArray: false
       name: operating_system
       predefined:
@@ -691,8 +691,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The server ip that can communicate with the isolated endpoint.
-        For example: 2.2.2.2'
+      description: 'The server IP address that can communicate with the isolated endpoint.
+        For example: 2.2.2.2.'
       isArray: false
       name: allowed_server
       required: true
@@ -717,21 +717,21 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The isolated endpoint IP.
+      description: The isolated endpoint IP address.
       isArray: false
       name: endpoint_ip
       required: false
       secret: false
     - default: false
       defaultValue: '300'
-      description: Script timeout (in seconds).
+      description: Script timeout (in seconds). The default is 300.
       isArray: false
       name: time_out
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: System OS.
+      description: System OS. Can be "Windows", "Linux", or "macOS".
       isArray: false
       name: operating_system
       predefined:
@@ -747,7 +747,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Remove the endpoint isolation.
+    description: Removes the endpoint from isolation.
     execution: false
     name: fidelis-endpoint-remove-network-isolation
     outputs:
@@ -759,15 +759,15 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'The script execution job result ID. (Can be found in the following
-        commands: script-exeution, file-search, list-processes, kill-process-by-pid,
-        delete-file, network-siolation, remove-network-isolation).'
+      description: 'The script execution job result ID. Get the ID from the following
+        commands: script-execution, file-search, list-processes, kill-process-by-pid,
+        delete-file, network-isolation, remove-network-isolation.'
       isArray: false
       name: job_result_id
       required: true
       secret: false
     deprecated: false
-    description: Get script execution status.
+    description: Gets the script execution status.
     execution: false
     name: fidelis-endpoint-script-job-status
     outputs:
@@ -785,26 +785,26 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Script ID (Get the script id from list-scripts command)
+      description: Script ID. Get the script ID from the list-scripts command.
       isArray: false
       name: script_id
       required: true
       secret: false
     - default: false
       defaultValue: '300'
-      description: Script time out (in seconds)
+      description: Script time out (in seconds). The default is 300.
       isArray: false
       name: time_out
       required: false
       secret: false
     - default: false
-      description: Endpoint IP. The endpoint to run the script on.
+      description: Endpoint IP address on which to run the script.
       isArray: false
       name: endpoint_ip
       required: false
       secret: false
     - default: false
-      description: What script to run. Get the answer from script-manifest command).
+      description: The script to run. Get the answer from the script-manifest command.
       isArray: false
       name: answer
       required: true
@@ -816,7 +816,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Execute script package from Fidelis endpoint packages.
+    description: Executes a script package from Fidelis endpoint packages.
     execution: false
     name: fidelis-endpoint-execute-script
     outputs:
@@ -830,7 +830,7 @@ script:
     - default: false
       description: |-
         The start time of the event in the system in UTC format.
-        Supported values: "2019-10-21T23:45:00" (date)
+        Supported values: "2019-10-21T23:45:00" (date).
       isArray: false
       name: start_time
       required: false
@@ -838,14 +838,14 @@ script:
     - default: false
       description: |-
         The end time of the event in the system in UTC format.
-        Supported values:"2019-10-21T23:45:00" (date)
+        Supported values:"2019-10-21T23:45:00" (date).
       isArray: false
       name: end_time
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The logic of the query.
+      description: The logic of the query. Can be "and" or "or".
       isArray: false
       name: logic
       predefined:
@@ -861,18 +861,18 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Limit of results to return.
+      description: The maximum number of results to return. The default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: Query file by its hash.
+    description: Queries a file by file hash.
     execution: false
     name: fidelis-endpoint-query-file
     outputs:
     - contextPath: FidelisEndpoint.Query.ProcessStartTime
-      description: The process start time
+      description: The process start time.
       type: Date
     - contextPath: FidelisEndpoint.Query.EndpointName
       description: Endpoint name.
@@ -914,13 +914,13 @@ script:
       description: Event start time.
       type: Date
     - contextPath: FidelisEndpoint.Query.HashSHA1
-      description: File SHA1
+      description: File SHA1 hash.
       type: String
     - contextPath: FidelisEndpoint.Query.EventType
       description: Event type.
       type: Number
     - contextPath: FidelisEndpoint.Query.HashSHA256
-      description: File SHA256
+      description: File SHA256 hash.
       type: String
     - contextPath: FidelisEndpoint.Query.ParentName
       description: Process parent name.
@@ -938,7 +938,7 @@ script:
       description: File category.
       type: Number
     - contextPath: FidelisEndpoint.Query.CertificateIssuerName
-      description: Certificate Issuer name.
+      description: Certificate issuer name.
       type: String
     - contextPath: FidelisEndpoint.Query.FileVersion
       description: File version.
@@ -984,7 +984,7 @@ script:
     - default: false
       description: |-
         The start time of the event in the system in UTC format.
-        Supported values: "2019-10-21T23:45:00" (date)
+        Supported values: "2019-10-21T23:45:00" (date).
       isArray: false
       name: start_time
       required: false
@@ -992,14 +992,14 @@ script:
     - default: false
       description: |-
         The end time of the event in the system in UTC format.
-        Supported values:"2019-10-21T23:45:00" (date)
+        Supported values:"2019-10-21T23:45:00" (date).
       isArray: false
       name: end_time
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The logic of the query.
+      description: The logic of the query. Can be "and" or "or".
       isArray: false
       name: logic
       predefined:
@@ -1015,7 +1015,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Limit of results to return.
+      description: The maximum number of results to return. The default is 50.
       isArray: false
       name: limit
       required: false
@@ -1026,7 +1026,7 @@ script:
     name: fidelis-endpoint-query-process
     outputs:
     - contextPath: FidelisEndpoint.Query.ProcessStartTime
-      description: Process start time
+      description: Process start time.
       type: String
     - contextPath: FidelisEndpoint.Query.EndpointName
       description: Endpoint name.
@@ -1074,7 +1074,7 @@ script:
     - default: false
       description: |-
         The start time of the event in the system in UTC format.
-        Supported values: "2019-10-21T23:45:00" (date)
+        Supported values: "2019-10-21T23:45:00" (date).
       isArray: false
       name: start_time
       required: false
@@ -1082,14 +1082,14 @@ script:
     - default: false
       description: |-
         The end time of the event in the system in UTC format.
-        Supported values:"2019-10-21T23:45:00" (date)
+        Supported values:"2019-10-21T23:45:00" (date).
       isArray: false
       name: end_time
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The logic of the query.
+      description: The logic of the query. Can be "and" or "or".
       isArray: false
       name: logic
       predefined:
@@ -1098,20 +1098,20 @@ script:
       required: true
       secret: false
     - default: false
-      description: The remote IP to query on.
+      description: The remote IP address on which to query.
       isArray: false
       name: remote_ip
       required: true
       secret: false
     - default: false
       defaultValue: '50'
-      description: Limit of results to return.
+      description: The maximum number of results to return. The default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: Query connection by remote IP.
+    description: Queries a connection by remote IP address.
     execution: false
     name: fidelis-endpoint-query-connection-by-remote-ip
     outputs:
@@ -1137,7 +1137,7 @@ script:
       description: Target ID.
       type: String
     - contextPath: FidelisEndpoint.Query.RemoteIP
-      description: Remote IP.
+      description: Remote IP address.
       type: String
     - contextPath: FidelisEndpoint.Query.StartTime
       description: Event start time.
@@ -1152,7 +1152,7 @@ script:
       description: Last event time.
       type: Date
     - contextPath: FidelisEndpoint.Query.LocalIP
-      description: Local IP.
+      description: Local IP address.
       type: String
     - contextPath: FidelisEndpoint.Query.EventType
       description: Event type.
@@ -1176,13 +1176,13 @@ script:
       description: Entity type.
       type: Number
     - contextPath: FidelisEndpoint.Query.ParentHashSHA1
-      description: Parent hash SHA1
+      description: Parent SHA1 hash.
       type: String
   - arguments:
     - default: false
       description: |-
         The start time of the event in the system in UTC format.
-        Supported values: "2019-10-21T23:45:00" (date)
+        Supported values: "2019-10-21T23:45:00" (date).
       isArray: false
       name: start_time
       required: false
@@ -1190,14 +1190,14 @@ script:
     - default: false
       description: |-
         The end time of the event in the system in UTC format.
-        Supported values:"2019-10-21T23:45:00" (date)
+        Supported values:"2019-10-21T23:45:00" (date).
       isArray: false
       name: end_time
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The logic of the query.
+      description: The logic of the query. Can be "and" or "or".
       isArray: false
       name: logic
       predefined:
@@ -1206,20 +1206,20 @@ script:
       required: true
       secret: false
     - default: false
-      description: URL or domain to query on.
+      description: URL or domain on which to query.
       isArray: false
       name: url
       required: true
       secret: false
     - default: false
       defaultValue: '50'
-      description: Limit of results to return.
+      description: The maximum number of results to return. The default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: Query by DNS request.
+    description: Queries by DNS request.
     execution: false
     name: fidelis-endpoint-query-by-dns
     outputs:
@@ -1248,7 +1248,7 @@ script:
       description: The target ID.
       type: String
     - contextPath: FidelisEndpoint.Query.RemoteIP
-      description: Remote IP.
+      description: Remote IP address.
       type: String
     - contextPath: FidelisEndpoint.Query.DnsQuestion
       description: The DNS question.
@@ -1257,10 +1257,10 @@ script:
       description: Event start time.
       type: Date
     - contextPath: FidelisEndpoint.Query.NetworkDirection
-      description: Network Direction.
+      description: Network direction.
       type: Number
     - contextPath: FidelisEndpoint.Query.LocalIP
-      description: Local IP.
+      description: Local IP address.
       type: String
     - contextPath: FidelisEndpoint.Query.EventType
       description: Event type.
@@ -1278,7 +1278,7 @@ script:
     - default: false
       description: |-
         The start time of the event in the system in UTC format.
-        Supported values: "2019-10-21T23:45:00" (date)
+        Supported values: "2019-10-21T23:45:00" (date).
       isArray: false
       name: start_time
       required: false
@@ -1286,14 +1286,14 @@ script:
     - default: false
       description: |-
         The end time of the event in the system in UTC format.
-        Supported values:"2019-10-21T23:45:00" (date)
+        Supported values:"2019-10-21T23:45:00" (date).
       isArray: false
       name: end_time
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The logic of the query.
+      description: The logic of the query. Can be "and" or "or".
       isArray: false
       name: logic
       predefined:
@@ -1302,25 +1302,25 @@ script:
       required: true
       secret: false
     - default: false
-      description: The remote IP to query on.
+      description: The remote IP on which to query.
       isArray: false
       name: remote_ip
       required: true
       secret: false
     - default: false
       defaultValue: '50'
-      description: Limit of results to return.
+      description: The maximum number of results to return. The default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: Query DNS by server IP.
+    description: Queries DNS by server IP address.
     execution: false
     name: fidelis-endpoint-query-dns-by-server-ip
     outputs:
     - contextPath: FidelisEndpoint.Query.ProcessStartTime
-      description: Process start time0
+      description: Process start time.
       type: Date
     - contextPath: FidelisEndpoint.Query.EndpointName
       description: Endpoint name.
@@ -1344,7 +1344,7 @@ script:
       description: The target ID.
       type: String
     - contextPath: FidelisEndpoint.Query.RemoteIP
-      description: Remote IP.
+      description: Remote IP address.
       type: String
     - contextPath: FidelisEndpoint.Query.DnsQuestion
       description: The DNS question.
@@ -1353,10 +1353,10 @@ script:
       description: Event start time.
       type: Date
     - contextPath: FidelisEndpoint.Query.NetworkDirection
-      description: Network Direction.
+      description: Network direction.
       type: Number
     - contextPath: FidelisEndpoint.Query.LocalIP
-      description: Local IP.
+      description: Local IP address.
       type: String
     - contextPath: FidelisEndpoint.Query.EventType
       description: Event type.
@@ -1374,7 +1374,7 @@ script:
     - default: false
       description: |-
         The start time of the event in the system in UTC format.
-        Supported values: "2019-10-21T23:45:00" (date)
+        Supported values: "2019-10-21T23:45:00" (date).
       isArray: false
       name: start_time
       required: false
@@ -1382,14 +1382,14 @@ script:
     - default: false
       description: |-
         The end time of the event in the system in UTC format.
-        Supported values:"2019-10-21T23:45:00" (date)
+        Supported values:"2019-10-21T23:45:00" (date).
       isArray: false
       name: end_time
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The logic of the query.
+      description: The logic of the query. Can be "and" or "or".
       isArray: false
       name: logic
       predefined:
@@ -1398,31 +1398,31 @@ script:
       required: true
       secret: false
     - default: false
-      description: The source IP to query.
+      description: The source IP address to query.
       isArray: false
       name: source_ip
       required: true
       secret: false
     - default: false
-      description: The domain to query
+      description: The domain to query.
       isArray: false
       name: domain
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: Limit of results to return.
+      description: The maximum number of results to return. The default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: Query DNS by source IP.
+    description: Queries DNS by source IP address.
     execution: false
     name: fidelis-endpoint-query-dns-by-source-ip
     outputs:
     - contextPath: FidelisEndpoint.Query.ProcessStartTime
-      description: Process start time0
+      description: Process start time.
       type: Date
     - contextPath: FidelisEndpoint.Query.EndpointName
       description: Endpoint name.
@@ -1446,7 +1446,7 @@ script:
       description: The target ID.
       type: String
     - contextPath: FidelisEndpoint.Query.RemoteIP
-      description: Remote IP.
+      description: Remote IP address.
       type: String
     - contextPath: FidelisEndpoint.Query.DnsQuestion
       description: The DNS question.
@@ -1455,10 +1455,10 @@ script:
       description: Event start time.
       type: Date
     - contextPath: FidelisEndpoint.Query.NetworkDirection
-      description: Network Direction.
+      description: Network direction.
       type: Number
     - contextPath: FidelisEndpoint.Query.LocalIP
-      description: Local IP.
+      description: Local IP address.
       type: String
     - contextPath: FidelisEndpoint.Query.EventType
       description: Event type.
@@ -1476,7 +1476,7 @@ script:
     - default: false
       description: |-
         The start time of the event in the system in UTC format.
-        Supported values: "2019-10-21T23:45:00" (date)
+        Supported values: "2019-10-21T23:45:00" (date).
       isArray: false
       name: start_time
       required: false
@@ -1484,14 +1484,14 @@ script:
     - default: false
       description: |-
         The end time of the event in the system in UTC format.
-        Supported values:"2019-10-21T23:45:00" (date)
+        Supported values:"2019-10-21T23:45:00" (date).
       isArray: false
       name: end_time
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The logic of the query.
+      description: The logic of the query. Can be "and" or "or".
       isArray: false
       name: logic
       predefined:
@@ -1501,7 +1501,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Query entity type.
+      description: Query entity type. Can be "antiMalware", "dns", "file", "network", "process", "registry", "remoteThread", "script", "usb", or "windowsevent".
       isArray: false
       name: entity_type
       predefined:
@@ -1518,41 +1518,41 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Column to query (for example: hash, name, remoteIP, dnsQuestion,
-        localIP).'
+      description: 'Column to query. For example: hash, name, remoteIP, dnsQuestion,
+        localIP.'
       isArray: false
       name: column
       required: true
       secret: false
     - default: false
-      description: The value to query (can be ip, hash, file path etc)
+      description: The value to query. Can be an IP address, file hash, file path, and so on.
       isArray: false
       name: value
       required: true
       secret: false
     - default: false
-      description: 'The operator describes how the "value" relates to the "field"
-        (for exmaple: "=", "!=", ">", "<")'
+      description: 'The operator, which describes how the "value" relates to the "field"
+        (for example: "=", "!=", ">", "<").'
       isArray: false
       name: operator
       required: true
       secret: false
     - default: false
       defaultValue: '50'
-      description: Limit of results to return.
+      description: The maximum number of results to return. The default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: 'Add additional filter to the query. for example: pid = 1234, pid
-        > 1233'
+      description: 'An additional filter to use in the query. For example: pid = 1234, pid
+        > 1233'.
       isArray: false
       name: additional_filter
       required: false
       secret: false
     deprecated: false
-    description: Query events.
+    description: Queries events.
     execution: false
     name: fidelis-endpoint-query-events
     outputs:
@@ -1593,7 +1593,7 @@ script:
       description: Target ID.
       type: String
     - contextPath: FidelisEndpoint.Query.RemoteIP
-      description: Remote IP.
+      description: Remote IP address.
       type: String
     - contextPath: FidelisEndpoint.Query.Hash
       description: File hash.
@@ -1608,7 +1608,7 @@ script:
       description: Entropy.
       type: Number
     - contextPath: FidelisEndpoint.Query.LocalIP
-      description: Local IP.
+      description: Local IP address.
       type: String
     - contextPath: FidelisEndpoint.Query.EventType
       description: Event type.
@@ -1634,4 +1634,4 @@ script:
   type: python
   subtype: python3
 tests:
-- no test - test exists in non circle
+- no test - test exists in non circl
