@@ -1546,7 +1546,7 @@ script:
       secret: false
     - default: false
       description: 'An additional filter to use in the query. For example: pid = 1234, pid
-        > 1233'.
+        > 1233.'
       isArray: false
       name: additional_filter
       required: false
