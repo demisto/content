@@ -234,7 +234,8 @@ script:
       secret: false
     deprecated: false
     description: 'Ring a user''s Teams account. Note: This is a ring only! no media
-      will play in case the generated call is answered.'
+      will play in case the generated call is answered. To use this make sure your Bot has the following premissions - 
+      Calls.Initiate.All and Calls.InitiateGroupCall.All'
     execution: false
     name: microsoft-teams-ring-user
   - arguments:
