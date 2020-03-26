@@ -13,6 +13,7 @@ configuration:
   options:
   - Daily Threat Feed
   - Custom Feed
+  - Sample Feed
   required: true
   type: 16
 - display: The AutoFocus API key
@@ -23,6 +24,25 @@ configuration:
     a CSV of Custom feed URLs.
   display: The URL for the custom feed to fetch
   name: custom_feed_urls
+  required: false
+  type: 0
+- additionalinfo: Only necessary in case a Sample Feed is fetched.
+  display: Sample Feed Scope Type
+  name: scope_type
+  options:
+  - Public
+  - Private
+  - Galobal
+  required: false
+  type: 16
+- additionalinfo: Only necessary in case a Sample Feed is fetched.
+  display: Sample Feed Query
+  name: sample_query
+  required: false
+  type: 0
+- additionalinfo: Only necessary in case a Sample Feed is fetched.
+  display: Sample Feed number of results to fetch
+  name: sample_size
   required: false
   type: 0
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
