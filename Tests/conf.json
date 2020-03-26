@@ -999,6 +999,12 @@
             "timeout": 240
         },
         {
+            "integrations": "Okta v2",
+            "playbookID": "OktaV2-Test",
+            "nightly": true,
+            "timeout": 300
+        },
+        {
             "playbookID": "Test filters & transformers scripts"
         },
         {
