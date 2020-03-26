@@ -142,7 +142,7 @@ tasks:
     task:
       id: f48ed3d7-c1ec-453f-847a-c680be0d04ca
       version: -1
-      name: Is there an ArcSight Black list Domain Active List?
+      name: Is there an ArcSight Black list Domain Active List and values?
       type: condition
       iscommand: false
       brand: ""
@@ -281,7 +281,7 @@ tasks:
     task:
       id: 63d6017f-ccef-4f11-8d41-0c5e8dbe4ad5
       version: -1
-      name: Is there an ArcSight White list Domain Active List?
+      name: Is there an ArcSight White list Domain Active List and values?
       type: condition
       iscommand: false
       brand: ""
@@ -292,7 +292,7 @@ tasks:
       "yes":
       - "61"
     separatecontext: false
-    conditions:
+	    conditions:
     - label: "yes"
       condition:
       - - operator: isNotEmpty
@@ -303,7 +303,31 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.ArcsightWhiteListDomainValueFieldName
+              simple: inputs.ArcsightWhiteDomainValueFieldName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: approved_white
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Domain
+                accessor: value
             iscontext: true
     view: |-
       {
@@ -559,7 +583,7 @@ tasks:
     task:
       id: 8e5e172e-ba3d-4cb6-8996-336a2154bd52
       version: -1
-      name: Is there an ArcSight White list Domain Active List?
+      name: Is there an ArcSight watch list Domain Active List and values?
       type: condition
       iscommand: false
       brand: ""
@@ -570,7 +594,7 @@ tasks:
       "yes":
       - "68"
     separatecontext: false
-    conditions:
+	    conditions:
     - label: "yes"
       condition:
       - - operator: isNotEmpty
@@ -582,6 +606,30 @@ tasks:
           left:
             value:
               simple: inputs.ArcsightWatchListDomainValueFieldName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: approved_watchlist
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Domain
+                accessor: value
             iscontext: true
     view: |-
       {

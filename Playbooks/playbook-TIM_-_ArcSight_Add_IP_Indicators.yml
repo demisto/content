@@ -146,7 +146,7 @@ tasks:
     task:
       id: a5dab966-16d7-4140-8d12-3c986b5b23da
       version: -1
-      name: Is there an ArcSight Black list IP Active List?
+      name: Is there an ArcSight Black list IP Active List and values?
       type: condition
       iscommand: false
       brand: ""
@@ -169,6 +169,30 @@ tasks:
           left:
             value:
               simple: inputs.ArcsightBlackIPValueFieldName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: approved_black
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: IP
+                accessor: value
             iscontext: true
     view: |-
       {
@@ -285,7 +309,7 @@ tasks:
     task:
       id: 242b10aa-b4ca-452a-8b4f-2e42167be3d3
       version: -1
-      name: Is there an ArcSight White list IP Active List?
+      name: Is there an ArcSight White list IP Active List and values?
       type: condition
       iscommand: false
       brand: ""
@@ -307,7 +331,31 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.ArcsightWhiteListIPValueFieldName
+              simple: inputs.ArcsightWhiteIPValueFieldName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: approved_white
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: IP
+                accessor: value
             iscontext: true
     view: |-
       {
@@ -563,7 +611,7 @@ tasks:
     task:
       id: 8974d4b1-e46f-4f56-8a02-581bf9ba78d0
       version: -1
-      name: Is there an ArcSight White list IP Active List?
+      name: Is there an ArcSight watch list IP Active List and values?
       type: condition
       iscommand: false
       brand: ""
@@ -585,7 +633,31 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.ArcsightWatchListIPValueFieldName
+              simple: inputs.ArcsightWatchIPValueFieldName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: approved_watchlist
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: IP
+                accessor: value
             iscontext: true
     view: |-
       {

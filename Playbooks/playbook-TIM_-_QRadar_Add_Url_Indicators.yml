@@ -141,7 +141,7 @@ tasks:
     task:
       id: e4fc4908-2e40-4aa3-8e09-d5e174c96535
       version: -1
-      name: Add domains to QRadar black list Url reference set
+      name: Add urls to QRadar black list Url reference set
       description: Add or update a value in a reference set.
       script: '|||qradar-update-reference-set-value'
       type: regular
@@ -203,7 +203,7 @@ tasks:
     task:
       id: 7eed9a8b-352e-4eb9-85cc-3281501bf0fa
       version: -1
-      name: Is there a Qradar black list Url Reference Set?
+      name: Is there a Qradar black list Url Reference Set and values?
       type: condition
       iscommand: false
       brand: ""
@@ -220,7 +220,31 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.QRadarBlackListUrlReferenceSetName
+              simple: inputs.QRadarBlackListDomainReferenceSetName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: approved_black
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Domain
+                accessor: value
             iscontext: true
     view: |-
       {
@@ -241,7 +265,7 @@ tasks:
     task:
       id: 1c35b4d2-3a71-4d34-8e4b-f3f95a147c96
       version: -1
-      name: Is there a Qradar white list Url Reference Set?
+      name: Is there a Qradar white list Url Reference Set and values?
       type: condition
       iscommand: false
       brand: ""
@@ -252,13 +276,37 @@ tasks:
       "yes":
       - "41"
     separatecontext: false
-    conditions:
+	conditions:
     - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.QRadarWhiteListUrlReferenceSetName
+              simple: inputs.QRadarWhiteListDomainReferenceSetName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: approved_white
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Domain
+                accessor: value
             iscontext: true
     view: |-
       {
@@ -279,7 +327,7 @@ tasks:
     task:
       id: 8d116308-62e4-4275-88ab-75fae486c9d5
       version: -1
-      name: Add domains to QRadar white list domain reference set
+      name: Add urls to QRadar white list url reference set
       description: Add or update a value in a reference set.
       script: '|||qradar-update-reference-set-value'
       type: regular
@@ -480,7 +528,7 @@ tasks:
     task:
       id: 5329e280-fb9a-414a-872b-3f95e9c4cf91
       version: -1
-      name: Is there a Qradar watch list Url Reference Set?
+      name: Is there a Qradar watch list Url Reference Set and values?
       type: condition
       iscommand: false
       brand: ""
@@ -491,13 +539,36 @@ tasks:
       "yes":
       - "40"
     separatecontext: false
-    conditions:
     - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.QRadarWatchListUrlReferenceSetName
+              simple: inputs.QRadarWatchListDomainReferenceSetName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: approved_watchlist
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: URL
+                accessor: value
             iscontext: true
     view: |-
       {
@@ -518,7 +589,7 @@ tasks:
     task:
       id: 3b2f97d4-ca7a-4953-815b-4616d6f348fd
       version: -1
-      name: Add domains to QRadar watch list domain reference set
+      name: Add urls to QRadar watch list url reference set
       description: Add or update a value in a reference set.
       script: '|||qradar-update-reference-set-value'
       type: regular
