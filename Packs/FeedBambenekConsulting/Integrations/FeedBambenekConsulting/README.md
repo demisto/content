@@ -21,7 +21,7 @@ Use the Bambenek Consulting feed integration to fetch indicators from the feed.
         * DGA Domain Feed - Domain feed of known DGA domains from -2 to +3 days.
         * High-Confidence DGA Domain Feed - Domain feed of known DGA domains from -2 to +3 days (high-confidence only).
         * Sinkhole Feed - Manually curated list of IPs known to be sinkholes, provided by Bambenek Consulting. Sinkholing is a technique where security researchers or security companies take over network infrastructure used by malware.
-    * **Username + Password** - Credentials to access feeds that require basic authentication. 
+    * **Username + Password** - Credentials to access services that require basic authentication. 
     These fields also support the use of API key headers. To use API key headers, specify the header name and value in the following format:
     `_header:<header_name>` in the **Username** field and the header value in the **Password** field.
     * __Fetch indicators__: boolean flag. If set to true will fetch indicators.
