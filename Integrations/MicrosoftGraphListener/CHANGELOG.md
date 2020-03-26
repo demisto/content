@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+-
 
 ## [20.1.2] - 2020-01-22
 Added support to authenticate using a self-deployed Azure application.

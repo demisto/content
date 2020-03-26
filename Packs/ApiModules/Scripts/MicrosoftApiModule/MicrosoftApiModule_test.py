@@ -17,7 +17,7 @@ OK_CODES = (200, 201, 202)
 
 CLIENT_ID = 'dummy_client'
 CLIENT_SECRET = 'dummy_secret'
-APP_URL = 'mock://app_url'
+APP_URL = 'https://login.microsoftonline.com/dummy_tenant/oauth2/v2.0/token'
 SCOPE = 'https://graph.microsoft.com/.default'
 RESOURCE = 'https://defender.windows.com/shtak'
 
@@ -30,8 +30,8 @@ def oproxy_client_tenant():
     base_url = BASE_URL
     ok_codes = OK_CODES
 
-    return MicrosoftClient.from_oproxy(auth_id, enc_key, app_name, tenant_id=tenant_id,
-                                       base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
+    return MicrosoftClient(self_deployed=False, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
+                           tenant_id=tenant_id, base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
 
 
 def oproxy_client_refresh():
@@ -42,23 +42,20 @@ def oproxy_client_refresh():
     base_url = BASE_URL
     ok_codes = OK_CODES
 
-    return MicrosoftClient.from_oproxy(auth_id, enc_key, app_name, refresh_token=refresh_token,
-                                       base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
+    return MicrosoftClient(self_deployed=False, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
+                           refresh_token=refresh_token, base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
 
 
 def self_deployed_client():
     tenant_id = TENANT
     client_id = CLIENT_ID
     client_secret = CLIENT_SECRET
-    app_url = APP_URL
     base_url = BASE_URL
-    scope = SCOPE
     resource = RESOURCE
     ok_codes = OK_CODES
 
-    return MicrosoftClient.from_self_deployed(tenant_id, client_id, client_secret, app_url=app_url, resource=resource,
-                                              scope=scope, base_url=base_url,
-                                              verify=True, proxy=False, ok_codes=ok_codes)
+    return MicrosoftClient(self_deployed=True, tenant_id=tenant_id, auth_id=client_id, enc_key=client_secret,
+                           resource=resource, base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
 
 
 def test_error_parser():

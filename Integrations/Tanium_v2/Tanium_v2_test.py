@@ -61,6 +61,54 @@ parse_question_res = {
     ]
 }
 
+parse_question_Folder_Contents_res = {
+    "data": [
+        {
+            "from_canonical_text": 0,
+            "question_text": "Get Folder-Contents from all machines",
+            "selects": [
+                {
+                    "sensor": {
+                        "hash": 3881863289,
+                        "name": "Folder-Contents"
+                    }
+                }
+            ],
+            "sensor_references": [
+                {
+                    "name": "Folder-Contents",
+                    "real_ms_avg": 53,
+                    "start_char": "4"
+                }
+            ]
+        },
+        {
+            "from_canonical_text": 0,
+            "question_text": "Get Tanium File Contents from all machines",
+            "selects": [
+                {
+                    "sensor": {
+                        "hash": 4070262781,
+                        "name": "Tanium File Contents"
+                    }
+                }
+            ],
+            "sensor_references": [
+                {
+                    "name": "Folder-Contents",
+                    "real_ms_avg": 53,
+                    "start_char": "4"
+                }
+            ]
+        }
+    ]
+}
+
+sensor_res = {
+    "data": {
+        "parameter_definition": "{\"parameters\":[{\"key\":\"folderPath\"}]}"}
+}
+
 CREATE_ACTION_BY_TARGET_GROUP_RES = {
     'package_spec': {'source_id': 12345},
     'name': 'action-name via Demisto API',
@@ -237,3 +285,15 @@ def test_parse_question_results():
     client = Client(BASE_URL, 'username', 'password', 'domain')
     results = client.parse_question_results(QUESTION_RESULTS_RAW)
     assert results == QUESTION_RESULTS
+
+
+def test_parse_question(requests_mock):
+    client = Client(BASE_URL, 'username', 'password', 'domain')
+    requests_mock.get(BASE_URL + 'session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + 'parse_question', json=parse_question_Folder_Contents_res)
+    requests_mock.get(BASE_URL + 'sensors/by-name/Folder-Contents', json=sensor_res)
+
+    results = client.parse_question('Get Folder-Contents[c:\] from all machines', '')
+    assert results['selects'][0]['sensor']['name'] == 'Folder-Contents'
+    assert results['selects'][0]['sensor']['parameters'][0]['key'] == '||folderPath||'
+    assert results['selects'][0]['sensor']['parameters'][0]['value'] == 'c:\\'

@@ -171,8 +171,8 @@ class Client(BaseClient):
                         "name": threat_id,
                         "malwarefamily": malware_family.get("familyName"),
                         "description": malware_family.get("description"),
-                        "feedoriginalseverity": block.get("impact"),
-                        "feedthreattypes": {
+                        "sourceoriginalseverity": block.get("impact"),
+                        "threattypes": {
                             "threatcategoryconfidence": block.get("confidence"),
                             "threatcategory": block.get("role")
                         },

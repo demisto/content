@@ -31,8 +31,6 @@ INTEGRATIONS_CONF = "./Tests/integrations_file.txt"
 FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, please select one of them by using the " \
                             "instance_name argument in conf.json. The options are:\n{}"
 
-AMI_NAMES = ["Demisto GA", "Server Master", "Demisto one before GA", "Demisto two before GA"]
-
 SERVICE_RESTART_TIMEOUT = 300
 SERVICE_RESTART_POLLING_INTERVAL = 5
 
@@ -820,7 +818,6 @@ def manage_tests(tests_settings):
     tests_settings.serverNumericVersion = get_and_print_server_numeric_version(tests_settings)
     instances_ips = get_instances_ips_and_names(tests_settings)
     is_nightly = tests_settings.nightly
-    server_version = tests_settings.serverVersion
     number_of_instances = len(instances_ips)
     prints_manager = ParallelPrintsManager(number_of_instances)
     tests_data_keeper = TestsDataKeeper()
@@ -850,7 +847,7 @@ def manage_tests(tests_settings):
             all_unmockable_tests_list = get_unmockable_tests(tests_settings)
             threads_array = []
             for ami_instance_name, ami_instance_ip in instances_ips:
-                if ami_instance_name == server_version:  # Only run tests for server master
+                if ami_instance_name == tests_settings.serverVersion:  # Only run tests for given AMI Role
                     current_instance = ami_instance_ip
                     tests_allocation_for_instance = test_allocation[current_thread_index]
 
@@ -901,9 +898,7 @@ def manage_tests(tests_settings):
         """
         server_numeric_version = '99.99.98'  # assume latest
         print("Using server version: {} (assuming latest for non-ami)".format(server_numeric_version))
-        with open('./Tests/instance_ips.txt', 'r') as instance_file:
-            instance_ips = instance_file.readlines()
-            instance_ip = [line.strip('\n').split(":")[1] for line in instance_ips][0]
+        instance_ip = instances_ips[0][1]
         all_tests = get_all_tests(tests_settings)
         execute_testing(tests_settings, instance_ip, [], all_tests,
                         tests_data_keeper, prints_manager, thread_index=0, is_ami=False)

@@ -155,7 +155,7 @@ class Client(BaseClient):
         :return: The feed configuration.
         """
         config = {}
-        if indicator_json is not None:
+        if indicator_json:
             indicator = json.loads(indicator_json)
             if 'regex' in indicator:
                 indicator['regex'] = re.compile(indicator['regex'])
@@ -328,12 +328,12 @@ def fetch_indicators_command(client, itype, **kwargs):
             for line in lines:
                 attributes, value = get_indicator_fields(line, url, client)
                 if value:
-                    if 'lastseenbyfeed' in attributes.keys():
-                        attributes['lastseenbyfeed'] = datestring_to_millisecond_timestamp(attributes['lastseenbyfeed'])
+                    if 'lastseenbysource' in attributes.keys():
+                        attributes['lastseenbysource'] = datestring_to_millisecond_timestamp(attributes['lastseenbysource'])
 
-                    if 'firstseenbyfeed' in attributes.keys():
-                        attributes['firstseenbyfeed'] = datestring_to_millisecond_timestamp(
-                            attributes['firstseenbyfeed'])
+                    if 'firstseenbysource' in attributes.keys():
+                        attributes['firstseenbysource'] = datestring_to_millisecond_timestamp(
+                            attributes['firstseenbysource'])
 
                     indicator_data = {
                         "value": value,

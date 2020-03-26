@@ -202,3 +202,26 @@ def test_illuminate_enrich_http_request_command(requests_mock, mock_client):
 
     enrichment_output: EnrichmentOutput = illuminate_enrich_http_request_command(mock_client, args)[0]
     assert enrichment_output.illuminate_context_data.get('ID') == BASE_MOCK_JSON.get('id')
+
+
+def test_malicious_indicator_check_empty(mock_client):
+    data = {}
+    assert mock_client.is_indicator_malicious(data) is False
+
+
+def test_malicious_indicator_check_benign_false(mock_client):
+    data = {
+        "benign": {
+            "value": False
+        }
+    }
+    assert mock_client.is_indicator_malicious(data) is True
+
+
+def test_malicious_indicator_check_benign_true(mock_client):
+    data = {
+        "benign": {
+            "value": True
+        }
+    }
+    assert mock_client.is_indicator_malicious(data) is False

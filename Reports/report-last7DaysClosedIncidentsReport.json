@@ -243,6 +243,16 @@
           "closed",
           "closeNotes"
         ],
+        "readableHeaders": {
+          "name": "Name",
+          "occurred": "Occurred",
+          "type": "Type",
+          "owner": "Owner",
+          "severity": "Severity",
+          "status": "Status",
+          "closed": "Closed",
+          "closeNotes": "Close Notes"
+        },
         "classes": "striped stackable small very compact",
         "i": "456e8280-0064-11e8-831f-e7429aff1c69",
         "rowPos": 6,

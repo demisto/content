@@ -172,8 +172,11 @@ class MsGraphClient:
     CONTEXT_DRAFT_PATH = 'MicrosoftGraph.Draft(val.ID && val.ID == obj.ID)'
     CONTEXT_SENT_EMAIL_PATH = 'MicrosoftGraph.Email'
 
-    def __init__(self, ms_client, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit):
-        self.ms_client = ms_client
+    def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
+                 ok_codes, refresh_token, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit):
+        self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
+                                         enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
+                                         proxy=proxy, ok_codes=ok_codes, refresh_token=refresh_token)
         self._mailbox_to_fetch = mailbox_to_fetch
         self._folder_to_fetch = folder_to_fetch
         self._first_fetch_interval = first_fetch_interval
@@ -793,9 +796,13 @@ def main():
 
     # params related to common instance configuration
     base_url = 'https://graph.microsoft.com/v1.0/'
-    verify = not params.get('insecure', False)
+    use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     ok_codes = (200, 201, 202)
+    refresh_token = params.get('refresh_token', '')
+    auth_and_token_url = params.get('auth_id', '')
+    enc_key = params.get('enc_key', '')
+    app_name = 'ms-graph-mail-listener'
 
     # params related to mailbox to fetch incidents
     mailbox_to_fetch = params.get('mailbox_to_fetch', '')
@@ -803,25 +810,17 @@ def main():
     first_fetch_interval = params.get('first_fetch', '15 minutes')
     emails_fetch_limit = int(params.get('fetch_limit', '50'))
 
-    if self_deployed:
-        tenant_id = params.get('refresh_token')
-        app_url = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token'
-        ms_client = MicrosoftClient.from_self_deployed(tenant_id, params.get('auth_id'),
-                                                       params.get('enc_key'), app_url=app_url,
-                                                       scope='https://graph.microsoft.com/.default',
-                                                       base_url=base_url, verify=verify, proxy=proxy, ok_codes=ok_codes)
-    else:
-        # params related to oproxy
-        # In case the script is running for the first time, refresh token is retrieved from integration parameters,
-        # in other case it's retrieved from integration context.
-        refresh_token = (demisto.getIntegrationContext().get('current_refresh_token')
-                         or params.get('refresh_token', ''))
-        enc_key = params.get('enc_key')
-        app_name = 'ms-graph-mail-listener'
-        ms_client = MicrosoftClient.from_oproxy(params.get('auth_id', ''), enc_key, app_name,
-                                                refresh_token=refresh_token,
-                                                base_url=base_url, verify=verify, proxy=proxy, ok_codes=ok_codes)
-    client = MsGraphClient(ms_client, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit)
+    # params related to self deployed
+    tenant_id = refresh_token if self_deployed else ''
+
+    # params related to oproxy
+    # In case the script is running for the first time, refresh token is retrieved from integration parameters,
+    # in other case it's retrieved from integration context.
+    refresh_token = (demisto.getIntegrationContext().get('current_refresh_token') or refresh_token)
+
+    client = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
+                           ok_codes, refresh_token, mailbox_to_fetch, folder_to_fetch, first_fetch_interval,
+                           emails_fetch_limit)
     try:
         command = demisto.command()
         args = prepare_args(command, demisto.args())

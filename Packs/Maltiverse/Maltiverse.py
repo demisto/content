@@ -13,7 +13,7 @@ requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-SERVER_URL = 'https://api.maltiverse.com'
+SERVER_URL = 'https://api.maltiverse.com'  # disable-secrets-detection
 DBOT_SCORE_KEY = 'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'
 
 
@@ -54,7 +54,7 @@ def test_module(client=None):
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    return 'ok' if client.ip_report('8.8.8.8') else 'Connection failed'
+    return 'ok' if client.ip_report('8.8.8.8') else 'Connection failed'  # disable-secrets-detection
 
 
 def calculate_score(positive_detections: int, classification: str, threshold: int, anti_virus: int = 0) -> int:

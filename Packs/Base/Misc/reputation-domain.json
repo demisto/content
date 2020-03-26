@@ -1,5 +1,5 @@
 {
-  "id": "domainRep",
+  "id": "domainRepUnified",
   "version": -1,
   "fromVersion": "5.5.0",
   "modified": "2019-07-18T07:37:50.270500504Z",
@@ -21,7 +21,7 @@
   "file": false,
   "updateAfter": 0,
   "mergeContext": false,
-  "formatScript": "ExtractDomainFromUrlAndEmail",
+  "formatScript": "ExtractDomainAndFQDNFromUrlAndEmail",
   "contextPath": "Domain(val.Name \u0026\u0026 val.Name === obj.Name)",
   "contextValue": "Name",
   "excludedBrands": [],
@@ -347,6 +347,66 @@
             "args": {}
           }
         ]
+      }
+    },
+    "associations": {
+      "simple": "",
+      "complex": {
+        "root": "Domain",
+        "filters": [],
+        "accessor": "Associations",
+        "transformers": [{
+          "operator": "uniq",
+          "args": {}
+        }]
+      }
+    },
+    "reportedby": {
+      "simple": "",
+      "complex": {
+        "root": "Domain",
+        "filters": [],
+        "accessor": "ReportedBy",
+        "transformers": [{
+          "operator": "uniq",
+          "args": {}
+        }]
+      }
+    },
+    "threattypes": {
+      "simple": "",
+      "complex": {
+        "root": "Domain",
+        "filters": [],
+        "accessor": "ThreatTypes",
+        "transformers": [{
+          "operator": "uniq",
+          "args": {}
+        }]
+      }
+    },
+    "trafficlightprotocoltlp": {
+      "simple": "",
+      "complex": {
+        "root": "Domain",
+        "filters": [],
+        "accessor": "TrafficLightProtocol",
+        "transformers": [{
+          "operator": "uniq",
+          "args": {}
+        }]
+      }
+    },
+    "tags": {
+      "simple": "",
+      "complex": {
+        "root": "Domain",
+        "filters": [],
+        "accessor": "Tags",
+        "transformers": [{
+          "operator": "uniq",
+          "args": {}
+        }]
       }
     }
   },
