@@ -23,7 +23,7 @@ use an account designated for executing API calls.
     * __Username__
     * __Incident type__
     * __Fetch incidents__
-    * __First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)__
+    * __First fetch timestamp ("number time unit", e.g., 12 hours, 7 days, 3 months, 1 year)__
     * __Fetch limit (minimum 5)__
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
@@ -291,7 +291,7 @@ Searches for endpoints based on an IP address or hostname.
 
 
 ##### Command Example
-```!fidelis-endpoint-host-info ip_address="10.10.0.2"```
+```!fidelis-endpoint-host-info ip_address="2.2.2.2"```
 
 ##### Context Example
 ```
@@ -299,7 +299,7 @@ Searches for endpoints based on an IP address or hostname.
     "Endpoint": [
         {
             "MACAddress": "23:01:0a:50:00:02", 
-            "IPAddress": "10.10.0.2", 
+            "IPAddress": "2.2.2.2", 
             "Hostname": "fidelis-endpoint.windows", 
             "Processor": "Intel(R) Xeon(R) CPU @ 2.30GHz", 
             "OS": "CentOS Linux 7 (Core) Linux x64", 
@@ -319,7 +319,7 @@ Searches for endpoints based on an IP address or hostname.
             "AgentInstalled": true, 
             "OnNetwork": true, 
             "ProcessorName": "Intel(R) Xeon(R) CPU @ 2.30GHz", 
-            "IPAddress": "10.10.0.2", 
+            "IPAddress": "2.2.2.2", 
             "ID": "70815600-2b9c-4cbe-971f-ab5601ed1ce1"
         }
     ]
@@ -359,7 +359,7 @@ Searches for files on multiple hosts, using file hash, file extension, file size
 
 
 ##### Command Example
-```!fidelis-endpoint-file-search host="10.10.0.2" md5="098f6bcd4621d373cade4e832347b4f6" file_extension=".txt" file_size="0"```
+```!fidelis-endpoint-file-search host="2.2.2.2" md5="098f6bcd4621d373cade4e832347b4f6" file_extension=".txt" file_size="0"```
 
 ##### Context Example
 ```
@@ -463,7 +463,7 @@ Gets the job results metadata. The maximum is 50 results.
         "HostName": "fidelis-endpoint-winserver2019", 
         "FileName": "test.txt", 
         "FileSize": 4, 
-        "HostIP": "10.10.0.2", 
+        "HostIP": "2.2.2.2", 
         "AgentID": "4088e5f0-0d18-4daa-a1a3-e0becc34c803", 
         "ID": "eyJOYW1lIjoidGVzdC50eHQiLCJQYXRoIjoiL3Jlc3VsdHMvMGI3MTYxZWQtZmZlOS00Yjg3LWIwMDktYWI4YTAyMDM0ZTBlL2IyUnZPVFl5YjFSUGNqRnZSRTkwYlU1aWQxQnJUemRUZDJkTUwzUmFNbUZWY21wMlJrRjFhRXRwTUQwPSJ90"
     }, 
@@ -481,7 +481,7 @@ Gets the job results metadata. The maximum is 50 results.
 ### Fidelis Endpoint file results metadata
 |ID|FileName|FilePath|MD5Hash|FileSize|HostName|HostIP|AgentID|
 |---|---|---|---|---|---|---|---|
-| eyJOYW1lIjoidGVzdC50eHQiLCJQYXRoIjoiL3Jlc3VsdHMvMGI3MTYxZWQtZmZlOS00Yjg3LWIwMDktYWI4YTAyMDM0ZTBlL2IyUnZPVFl5YjFSUGNqRnZSRTkwYlU1aWQxQnJUemRUZDJkTUwzUmFNbUZWY21wMlJrRjFhRXRwTUQwPSJ90 | test.txt | Users\admin\Documents\test.txt | 098f6bcd4621d373cade4e832347b4f6 | 4 | fidelis-endpoint-winserver2019 | 10.10.0.2 | 4088e5f0-0d18-4daa-a1a3-e0becc34c803 |
+| eyJOYW1lIjoidGVzdC50eHQiLCJQYXRoIjoiL3Jlc3VsdHMvMGI3MTYxZWQtZmZlOS00Yjg3LWIwMDktYWI4YTAyMDM0ZTBlL2IyUnZPVFl5YjFSUGNqRnZSRTkwYlU1aWQxQnJUemRUZDJkTUwzUmFNbUZWY21wMlJrRjFhRXRwTUQwPSJ90 | test.txt | Users\admin\Documents\test.txt | 098f6bcd4621d373cade4e832347b4f6 | 4 | fidelis-endpoint-winserver2019 | 2.2.2.2 | 4088e5f0-0d18-4daa-a1a3-e0becc34c803 |
 
 
 ### 6. fidelis-endpoint-get-file
@@ -776,7 +776,7 @@ Gets a list all processes according to the OS system.
 
 
 ##### Command Example
-```!fidelis-endpoint-list-processes operating_system=Windows endpoint_ip=10.10.0.2```
+```!fidelis-endpoint-list-processes operating_system=Windows endpoint_ip=2.2.2.2```
 
 ##### Context Example
 ```
@@ -977,7 +977,7 @@ Terminates the process that matches the required parameter's process ID.
 
 
 ##### Command Example
-```!fidelis-endpoint-kill-process operating_system=Windows pid=516 endpoint_ip=10.10.0.2```
+```!fidelis-endpoint-kill-process operating_system=Windows pid=516 endpoint_ip=2.2.2.2```
 
 ##### Context Example
 ```
@@ -1019,7 +1019,7 @@ Deletes a file at the specified path.
 
 
 ##### Command Example
-```!fidelis-endpoint-delete-file file_path=c:\\Users\\admin\\Documents\\test.txt operating_system=Windows endpoint_ip=10.10.0.2 ```
+```!fidelis-endpoint-delete-file file_path=c:\\Users\\admin\\Documents\\test.txt operating_system=Windows endpoint_ip=2.2.2.2 ```
 
 ##### Human Readable Output
 The job has been executed successfully.
@@ -1161,7 +1161,7 @@ Executes a script package from Fidelis endpoint packages.
 
 
 ##### Command Example
-```!fidelis-endpoint-execute-script script_id="2d32a530-0716-4542-afdc-8da3bd47d8bf" time_out="300" endpoint_ip="10.10.0.2" answer="true"```
+```!fidelis-endpoint-execute-script script_id="2d32a530-0716-4542-afdc-8da3bd47d8bf" time_out="300" endpoint_ip="2.2.2.2" answer="true"```
 
 ##### Context Example
 ```
@@ -1680,7 +1680,7 @@ Queries a connection by remote IP address.
             "EntityType": 3, 
             "TargetID": "O6ZdOEYU2z8", 
             "ProcessStartTime": "2020-03-12T03:58:09.962Z", 
-            "LocalIP": "10.10.0.2", 
+            "LocalIP": "2.2.2.2", 
             "EndpointName": "fidelis-endpoint-winserver2019", 
             "StartTime": "2020-03-12T03:58:09.962Z", 
             "RemoteIP": "10.10.0.1", 
@@ -1703,7 +1703,7 @@ Queries a connection by remote IP address.
             "EntityType": 3, 
             "TargetID": "Do8ec6zGCEi", 
             "ProcessStartTime": "2020-03-12T03:58:09.962Z", 
-            "LocalIP": "10.10.0.2", 
+            "LocalIP": "2.2.2.2", 
             "EndpointName": "fidelis-endpoint-winserver2019", 
             "StartTime": "2020-03-12T03:58:09.962Z", 
             "RemoteIP": "10.10.0.1", 
@@ -1726,7 +1726,7 @@ Queries a connection by remote IP address.
             "EntityType": 3, 
             "TargetID": "8825LGOTGzf", 
             "ProcessStartTime": "2020-03-12T03:58:09.962Z", 
-            "LocalIP": "10.10.0.2", 
+            "LocalIP": "2.2.2.2", 
             "EndpointName": "fidelis-endpoint-winserver2019", 
             "StartTime": "2020-03-12T03:58:09.962Z", 
             "RemoteIP": "10.10.0.1", 
@@ -1745,12 +1745,12 @@ Queries a connection by remote IP address.
 ### Fidelis Endpoint query results for connection by remote IP
 |EndpointID|EndpointName|PPID|LocalIP|LocalPort|RemoteIP|RemotePort|ProcessStartTime|FirstEventTime|LastEventTime|Protocol|ParentHashSHA1|ParentName|EventType|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 3494cb0f-67ba-41bc-9190-ab5d015dd57c | fidelis-endpoint-winserver2019 | 1196 | 10.10.0.2 | 64669 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | 2020-03-26T09:28:31.148Z | 2020-03-26T09:32:31.172Z | UDP | a1385ce20ad79f55df235effd9780c31442aa234 | svchost.exe | 3 |
-| 3494cb0f-67ba-41bc-9190-ab5d015dd57c | fidelis-endpoint-winserver2019 | 1196 | 10.10.0.2 | 64669 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | 2020-03-26T09:28:31.148Z | 2020-03-26T09:32:31.172Z | UDP | a1385ce20ad79f55df235effd9780c31442aa234 | svchost.exe | 3 |
-| 3494cb0f-67ba-41bc-9190-ab5d015dd57c | fidelis-endpoint-winserver2019 | 1196 | 10.10.0.2 | 53557 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | 2020-03-26T09:28:31.148Z | 2020-03-26T09:32:31.172Z | UDP | a1385ce20ad79f55df235effd9780c31442aa234 | svchost.exe | 3 |
-| 3494cb0f-67ba-41bc-9190-ab5d015dd57c | fidelis-endpoint-winserver2019 | 1196 | 10.10.0.2 | 53557 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | 2020-03-26T09:28:31.148Z | 2020-03-26T09:32:31.172Z | UDP | a1385ce20ad79f55df235effd9780c31442aa234 | svchost.exe | 3 |
-| 3494cb0f-67ba-41bc-9190-ab5d015dd57c | fidelis-endpoint-winserver2019 | 1196 | 10.10.0.2 | 60427 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | 2020-03-26T09:28:31.148Z | 2020-03-26T09:32:31.172Z | UDP | a1385ce20ad79f55df235effd9780c31442aa234 | svchost.exe | 3 |
-| 3494cb0f-67ba-41bc-9190-ab5d015dd57c | fidelis-endpoint-winserver2019 | 1196 | 10.10.0.2 | 60427 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | 2020-03-26T09:28:31.148Z | 2020-03-26T09:32:31.172Z | UDP | a1385ce20ad79f55df235effd9780c31442aa234 | svchost.exe | 3 |
+| 3494cb0f-67ba-41bc-9190-ab5d015dd57c | fidelis-endpoint-winserver2019 | 1196 | 2.2.2.2 | 64669 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | 2020-03-26T09:28:31.148Z | 2020-03-26T09:32:31.172Z | UDP | a1385ce20ad79f55df235effd9780c31442aa234 | svchost.exe | 3 |
+| 3494cb0f-67ba-41bc-9190-ab5d015dd57c | fidelis-endpoint-winserver2019 | 1196 | 2.2.2.2 | 64669 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | 2020-03-26T09:28:31.148Z | 2020-03-26T09:32:31.172Z | UDP | a1385ce20ad79f55df235effd9780c31442aa234 | svchost.exe | 3 |
+| 3494cb0f-67ba-41bc-9190-ab5d015dd57c | fidelis-endpoint-winserver2019 | 1196 | 2.2.2.2 | 53557 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | 2020-03-26T09:28:31.148Z | 2020-03-26T09:32:31.172Z | UDP | a1385ce20ad79f55df235effd9780c31442aa234 | svchost.exe | 3 |
+| 3494cb0f-67ba-41bc-9190-ab5d015dd57c | fidelis-endpoint-winserver2019 | 1196 | 2.2.2.2 | 53557 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | 2020-03-26T09:28:31.148Z | 2020-03-26T09:32:31.172Z | UDP | a1385ce20ad79f55df235effd9780c31442aa234 | svchost.exe | 3 |
+| 3494cb0f-67ba-41bc-9190-ab5d015dd57c | fidelis-endpoint-winserver2019 | 1196 | 2.2.2.2 | 60427 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | 2020-03-26T09:28:31.148Z | 2020-03-26T09:32:31.172Z | UDP | a1385ce20ad79f55df235effd9780c31442aa234 | svchost.exe | 3 |
+| 3494cb0f-67ba-41bc-9190-ab5d015dd57c | fidelis-endpoint-winserver2019 | 1196 | 2.2.2.2 | 60427 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | 2020-03-26T09:28:31.148Z | 2020-03-26T09:32:31.172Z | UDP | a1385ce20ad79f55df235effd9780c31442aa234 | svchost.exe | 3 |
 
 ### 21. fidelis-endpoint-query-by-dns
 ---
@@ -1810,7 +1810,7 @@ Queries by DNS request.
             "EntityType": 6, 
             "TargetID": "UmDG80sJNc6", 
             "DnsQuestion": "{\"dns_questions\":[{\"name\":\"login.live.com\",\"class\":\"IN\",\"type\":\"A\"}]}", 
-            "LocalIP": "10.10.0.2", 
+            "LocalIP": "2.2.2.2", 
             "EndpointName": "fidelis-endpoint-winserver2019", 
             "StartTime": "2020-02-13T03:50:45.515Z", 
             "RemoteIP": "10.10.0.1", 
@@ -1829,14 +1829,14 @@ Queries by DNS request.
             "EntityType": 6, 
             "TargetID": "UmDG80sJNc6", 
             "DnsQuestion": "{\"dns_questions\":[{\"name\":\"login.live.com\",\"class\":\"IN\",\"type\":\"A\"}]}", 
-            "LocalIP": "10.10.0.2", 
+            "LocalIP": "2.2.2.2", 
             "EndpointName": "fidelis-endpoint-winserver2019", 
             "StartTime": "2020-02-13T03:50:45.515Z", 
             "RemoteIP": "10.10.0.1", 
             "EventIndex": 2, 
             "ParentID": "VuFd4n1aut7", 
             "NetworkDirection": "0", 
-            "DnsAnswer": "{\"dns_answers\":[{\"name\":\"login.live.com\",\"class\":\"IN\",\"type\":\"CNAME\",\"alias\":\"login.msa.msidentity.com\",\"IP\":\"\",\"TTL\":\"51\"},{\"name\":\"login.msa.msidentity.com\",\"class\":\"IN\",\"type\":\"CNAME\",\"alias\":\"lgin.msa.trafficmanager.net\",\"IP\":\"\",\"TTL\":\"51\"},{\"name\":\"lgin.msa.trafficmanager.net\",\"class\":\"IN\",\"type\":\"A\",\"alias\":\"\",\"IP\":\"183.22.90.40\",\"TTL\":\"59\"},{\"name\":\"lgin.msa.trafficmanager.net\",\"class\":\"IN\",\"type\":\"A\",\"alias\":\"\",\"IP\":\"187.22.90.40\",\"TTL\":\"59\"},{\"name\":\"lgin.msa.trafficmanager.net\",\"class\":\"IN\",\"type\":\"A\",\"alias\":\"\",\"IP\":\"185.22.90.40\",\"TTL\":\"59\"}]}", 
+            "DnsAnswer": "{\"dns_answers\":[{\"name\":\"login.live.com\",\"class\":\"IN\",\"type\":\"CNAME\",\"alias\":\"login.msa.msidentity.com\",\"IP\":\"\",\"TTL\":\"51\"},{\"name\":\"login.msa.msidentity.com\",\"class\":\"IN\",\"type\":\"CNAME\",\"alias\":\"lgin.msa.trafficmanager.net\",\"IP\":\"\",\"TTL\":\"51\"},{\"name\":\"lgin.msa.trafficmanager.net\",\"class\":\"IN\",\"type\":\"A\",\"alias\":\"\",\"IP\":\"183.22.90.40\",\"TTL\":\"59\"},{\"name\":\"lgin.msa.trafficmanager.net\",\"class\":\"IN\",\"type\":\"A\",\"alias\":\"\",\"IP\":\"187.22.90.40\",\"TTL\":\"59\"},{\"name\":\"lgin.msa.trafficmanager.net\",\"class\":\"IN\",\"type\":\"A\",\"alias\":\"\",\"IP\":\"4.4.4.4\",\"TTL\":\"59\"}]}", 
             "ProcessStartTime": "2020-02-13T03:50:45.515Z"
         }, 
         {
@@ -1848,7 +1848,7 @@ Queries by DNS request.
             "EntityType": 6, 
             "TargetID": "UmDG80sJNc6", 
             "DnsQuestion": "{\"dns_questions\":[{\"name\":\"login.live.com\",\"class\":\"IN\",\"type\":\"A\"}]}", 
-            "LocalIP": "10.10.0.2", 
+            "LocalIP": "2.2.2.2", 
             "EndpointName": "fidelis-endpoint-winserver2019", 
             "StartTime": "2020-02-13T03:50:45.515Z", 
             "RemoteIP": "10.10.0.1", 
@@ -1867,7 +1867,7 @@ Queries by DNS request.
             "EntityType": 6, 
             "TargetID": "UmDG80sJNc6", 
             "DnsQuestion": "{\"dns_questions\":[{\"name\":\"login.live.com\",\"class\":\"IN\",\"type\":\"A\"}]}", 
-            "LocalIP": "10.10.0.2", 
+            "LocalIP": "2.2.2.2", 
             "EndpointName": "fidelis-endpoint-winserver2019", 
             "StartTime": "2020-02-13T03:50:45.515Z", 
             "RemoteIP": "10.10.0.1", 
@@ -1885,12 +1885,12 @@ Queries by DNS request.
 ### Fidelis Endpoint query results for the DNS request
 |EndpointName|LocalIP|LocalPort|RemoteIP|RemotePort|ProcessStartTime|DnsAnswer|EventType|
 |---|---|---|---|---|---|---|---|
-| fidelis-endpoint-winserver2019 | 10.10.0.2 | 49862 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_answers":[{"name":"login.live.com","class":"IN","type":"CNAME","alias":"login.msa.msidentity.com","IP":"","TTL":"299"},{"name":"login.msa.msidentity.com","class":"IN","type":"CNAME","alias":"login.msa.akadns6.net","IP":"","TTL":"299"},{"name":"login.msa.akadns6.net","class":"IN","type":"CNAME","alias":"ipv4.login.msa.akadns6.net","IP":"","TTL":"299"},{"name":"ipv4.login.msa.akadns6.net","class":"IN","type":"A","alias":"","IP":"198.22.90.40","TTL":"299"}]} | 17 |
-| fidelis-endpoint-winserver2019 | 10.10.0.2 | 53712 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_answers":[{"name":"login.live.com","class":"IN","type":"CNAME","alias":"login.msa.msidentity.com","IP":"","TTL":"51"},{"name":"login.msa.msidentity.com","class":"IN","type":"CNAME","alias":"lgin.msa.trafficmanager.net","IP":"","TTL":"51"},{"name":"lgin.msa.trafficmanager.net","class":"IN","type":"A","alias":"","IP":"183.22.90.40","TTL":"59"},{"name":"lgin.msa.trafficmanager.net","class":"IN","type":"A","alias":"","IP":"187.22.90.40","TTL":"59"},{"name":"lgin.msa.trafficmanager.net","class":"IN","type":"A","alias":"","IP":"185.22.90.40","TTL":"59"}]} | 17 |
-| fidelis-endpoint-winserver2019 | 10.10.0.2 | 61574 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_answers":[{"name":"login.live.com","class":"IN","type":"CNAME","alias":"login.msa.msidentity.com","IP":"","TTL":"230"},{"name":"login.msa.msidentity.com","class":"IN","type":"CNAME","alias":"lgin.msa.trafficmanager.net","IP":"","TTL":"235"},{"name":"lgin.msa.trafficmanager.net","class":"IN","type":"A","alias":"","IP":"183.22.90.40","TTL":"56"},{"name":"lgin.msa.trafficmanager.net","class":"IN","type":"A","alias":"","IP":"190.22.90.40","TTL":"56"},{"name":"lgin.msa.trafficmanager.net","class":"IN","type":"A","alias":"","IP":"191.22.90.40","TTL":"56"}]} | 17 |
-| fidelis-endpoint-winserver2019 | 10.10.0.2 | 57803 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_answers":[{"name":"login.live.com","class":"IN","type":"CNAME","alias":"login.msa.msidentity.com","IP":"","TTL":"16"},{"name":"login.msa.msidentity.com","class":"IN","type":"CNAME","alias":"lgin.msa.trafficmanager.net","IP":"","TTL":"197"},{"name":"lgin.msa.trafficmanager.net","class":"IN","type":"A","alias":"","IP":"187.22.90.40","TTL":"59"},{"name":"lgin.msa.trafficmanager.net","class":"IN","type":"A","alias":"","IP":"189.22.90.40","TTL":"59"},{"name":"lgin.msa.trafficmanager.net","class":"IN","type":"A","alias":"","IP":"184.22.90.40","TTL":"59"}]} | 17 |
-| fidelis-endpoint-winserver2019 | 10.10.0.2 | 58656 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_answers":[{"name":"login.live.com","class":"IN","type":"CNAME","alias":"login.msa.msidentity.com","IP":"","TTL":"288"},{"name":"login.msa.msidentity.com","class":"IN","type":"CNAME","alias":"login.msa.akadns6.net","IP":"","TTL":"288"},{"name":"login.msa.akadns6.net","class":"IN","type":"CNAME","alias":"ipv4.login.msa.akadns6.net","IP":"","TTL":"288"},{"name":"ipv4.login.msa.akadns6.net","class":"IN","type":"A","alias":"","IP":"190.22.90.40","TTL":"123"},{"name":"ipv4.login.msa.akadns6.net","class":"IN","type":"A","alias":"","IP":"188.22.90.40","TTL":"123"},{"name":"ipv4.login.msa.akadns6.net","class":"IN","type":"A","alias":"","IP":"189.22.90.40","TTL":"123"}]} | 17 |
-| fidelis-endpoint-winserver2019 | 10.10.0.2 | 59564 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_answers":[{"name":"login.live.com","class":"IN","type":"CNAME","alias":"login.msa.msidentity.com","IP":"","TTL":"238"},{"name":"login.msa.msidentity.com","class":"IN","type":"CNAME","alias":"login.msa.akadns6.net","IP":"","TTL":"238"},{"name":"login.msa.akadns6.net","class":"IN","type":"CNAME","alias":"ipv4.login.msa.akadns6.net","IP":"","TTL":"238"},{"name":"ipv4.login.msa.akadns6.net","class":"IN","type":"A","alias":"","IP":"186.22.90.40","TTL":"238"},{"name":"ipv4.login.msa.akadns6.net","class":"IN","type":"A","alias":"","IP":"192.22.90.40","TTL":"238"},{"name":"ipv4.login.msa.akadns6.net","class":"IN","type":"A","alias":"","IP":"189.22.90.40","TTL":"238"}]} | 17 |
+| fidelis-endpoint-winserver2019 | 2.2.2.2 | 49862 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_answers":[{"name":"login.live.com","class":"IN","type":"CNAME","alias":"login.msa.msidentity.com","IP":"","TTL":"299"},{"name":"login.msa.msidentity.com","class":"IN","type":"CNAME","alias":"login.msa.akadns6.net","IP":"","TTL":"299"},{"name":"login.msa.akadns6.net","class":"IN","type":"CNAME","alias":"ipv4.login.msa.akadns6.net","IP":"","TTL":"299"},{"name":"ipv4.login.msa.akadns6.net","class":"IN","type":"A","alias":"","IP":"198.22.90.40","TTL":"299"}]} | 17 |
+| fidelis-endpoint-winserver2019 | 2.2.2.2 | 53712 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_answers":[{"name":"login.live.com","class":"IN","type":"CNAME","alias":"login.msa.msidentity.com","IP":"","TTL":"51"},{"name":"login.msa.msidentity.com","class":"IN","type":"CNAME","alias":"lgin.msa.trafficmanager.net","IP":"","TTL":"51"},{"name":"lgin.msa.trafficmanager.net","class":"IN","type":"A","alias":"","IP":"183.22.90.40","TTL":"59"},{"name":"lgin.msa.trafficmanager.net","class":"IN","type":"A","alias":"","IP":"187.22.90.40","TTL":"59"},{"name":"lgin.msa.trafficmanager.net","class":"IN","type":"A","alias":"","IP":"4.4.4.4","TTL":"59"}]} | 17 |
+| fidelis-endpoint-winserver2019 | 2.2.2.2 | 61574 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_answers":[{"name":"login.live.com","class":"IN","type":"CNAME","alias":"login.msa.msidentity.com","IP":"","TTL":"230"},{"name":"login.msa.msidentity.com","class":"IN","type":"CNAME","alias":"lgin.msa.trafficmanager.net","IP":"","TTL":"235"},{"name":"lgin.msa.trafficmanager.net","class":"IN","type":"A","alias":"","IP":"183.22.90.40","TTL":"56"},{"name":"lgin.msa.trafficmanager.net","class":"IN","type":"A","alias":"","IP":"190.22.90.40","TTL":"56"},{"name":"lgin.msa.trafficmanager.net","class":"IN","type":"A","alias":"","IP":"191.22.90.40","TTL":"56"}]} | 17 |
+| fidelis-endpoint-winserver2019 | 2.2.2.2 | 57803 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_answers":[{"name":"login.live.com","class":"IN","type":"CNAME","alias":"login.msa.msidentity.com","IP":"","TTL":"16"},{"name":"login.msa.msidentity.com","class":"IN","type":"CNAME","alias":"lgin.msa.trafficmanager.net","IP":"","TTL":"197"},{"name":"lgin.msa.trafficmanager.net","class":"IN","type":"A","alias":"","IP":"187.22.90.40","TTL":"59"},{"name":"lgin.msa.trafficmanager.net","class":"IN","type":"A","alias":"","IP":"189.22.90.40","TTL":"59"},{"name":"lgin.msa.trafficmanager.net","class":"IN","type":"A","alias":"","IP":"184.22.90.40","TTL":"59"}]} | 17 |
+| fidelis-endpoint-winserver2019 | 2.2.2.2 | 58656 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_answers":[{"name":"login.live.com","class":"IN","type":"CNAME","alias":"login.msa.msidentity.com","IP":"","TTL":"288"},{"name":"login.msa.msidentity.com","class":"IN","type":"CNAME","alias":"login.msa.akadns6.net","IP":"","TTL":"288"},{"name":"login.msa.akadns6.net","class":"IN","type":"CNAME","alias":"ipv4.login.msa.akadns6.net","IP":"","TTL":"288"},{"name":"ipv4.login.msa.akadns6.net","class":"IN","type":"A","alias":"","IP":"190.22.90.40","TTL":"123"},{"name":"ipv4.login.msa.akadns6.net","class":"IN","type":"A","alias":"","IP":"188.22.90.40","TTL":"123"},{"name":"ipv4.login.msa.akadns6.net","class":"IN","type":"A","alias":"","IP":"189.22.90.40","TTL":"123"}]} | 17 |
+| fidelis-endpoint-winserver2019 | 2.2.2.2 | 59564 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_answers":[{"name":"login.live.com","class":"IN","type":"CNAME","alias":"login.msa.msidentity.com","IP":"","TTL":"238"},{"name":"login.msa.msidentity.com","class":"IN","type":"CNAME","alias":"login.msa.akadns6.net","IP":"","TTL":"238"},{"name":"login.msa.akadns6.net","class":"IN","type":"CNAME","alias":"ipv4.login.msa.akadns6.net","IP":"","TTL":"238"},{"name":"ipv4.login.msa.akadns6.net","class":"IN","type":"A","alias":"","IP":"186.22.90.40","TTL":"238"},{"name":"ipv4.login.msa.akadns6.net","class":"IN","type":"A","alias":"","IP":"192.22.90.40","TTL":"238"},{"name":"ipv4.login.msa.akadns6.net","class":"IN","type":"A","alias":"","IP":"189.22.90.40","TTL":"238"}]} | 17 |
 
 ### 22. fidelis-endpoint-query-dns-by-server-ip
 ---
@@ -1950,14 +1950,14 @@ Queries DNS by server IP address.
             "EntityType": 6, 
             "TargetID": "9anFqxCrJ3h", 
             "DnsQuestion": "{\"dns_questions\":[{\"name\":\"v10.events.data.microsoft.com\",\"class\":\"IN\",\"type\":\"A\"}]}", 
-            "LocalIP": "10.10.0.2", 
+            "LocalIP": "2.2.2.2", 
             "EndpointName": "fidelis-endpoint-winserver2019", 
             "StartTime": "2020-03-12T03:58:09.962Z", 
             "RemoteIP": "10.10.0.1", 
             "EventIndex": 4, 
             "ParentID": "jE4aX1xPk1i", 
             "NetworkDirection": "0", 
-            "DnsAnswer": "{\"dns_answers\":[{\"name\":\"v10.events.data.microsoft.com\",\"class\":\"IN\",\"type\":\"CNAME\",\"alias\":\"global.events.data.trafficmanager.net\",\"IP\":\"\",\"TTL\":\"1425\"},{\"name\":\"global.events.data.trafficmanager.net\",\"class\":\"IN\",\"type\":\"CNAME\",\"alias\":\"skypedataprdcoleus06.cloudapp.net\",\"IP\":\"\",\"TTL\":\"45\"},{\"name\":\"skypedataprdcoleus06.cloudapp.net\",\"class\":\"IN\",\"type\":\"A\",\"alias\":\"\",\"IP\":\"60.133.114.52\",\"TTL\":\"5\"}]}", 
+            "DnsAnswer": "{\"dns_answers\":[{\"name\":\"v10.events.data.microsoft.com\",\"class\":\"IN\",\"type\":\"CNAME\",\"alias\":\"global.events.data.trafficmanager.net\",\"IP\":\"\",\"TTL\":\"1425\"},{\"name\":\"global.events.data.trafficmanager.net\",\"class\":\"IN\",\"type\":\"CNAME\",\"alias\":\"skypedataprdcoleus06.cloudapp.net\",\"IP\":\"\",\"TTL\":\"45\"},{\"name\":\"skypedataprdcoleus06.cloudapp.net\",\"class\":\"IN\",\"type\":\"A\",\"alias\":\"\",\"IP\":\"10.10.10.10\",\"TTL\":\"5\"}]}", 
             "ProcessStartTime": "2020-03-12T03:58:09.962Z"
         }, 
         {
@@ -1969,14 +1969,14 @@ Queries DNS by server IP address.
             "EntityType": 6, 
             "TargetID": "9anFqxCrJ3h", 
             "DnsQuestion": "{\"dns_questions\":[{\"name\":\"v10.events.data.microsoft.com\",\"class\":\"IN\",\"type\":\"A\"}]}", 
-            "LocalIP": "10.10.0.2", 
+            "LocalIP": "2.2.2.2", 
             "EndpointName": "fidelis-endpoint-winserver2019", 
             "StartTime": "2020-03-12T03:58:09.962Z", 
             "RemoteIP": "10.10.0.1", 
             "EventIndex": 2, 
             "ParentID": "jE4aX1xPk1i", 
             "NetworkDirection": "0", 
-            "DnsAnswer": "{\"dns_answers\":[{\"name\":\"v10.events.data.microsoft.com\",\"class\":\"IN\",\"type\":\"CNAME\",\"alias\":\"global.events.data.trafficmanager.net\",\"IP\":\"\",\"TTL\":\"1390\"},{\"name\":\"global.events.data.trafficmanager.net\",\"class\":\"IN\",\"type\":\"CNAME\",\"alias\":\"skypedataprdcolcus00.cloudapp.net\",\"IP\":\"\",\"TTL\":\"25\"},{\"name\":\"skypedataprdcolcus00.cloudapp.net\",\"class\":\"IN\",\"type\":\"A\",\"alias\":\"\",\"IP\":\"14.160.122.40\",\"TTL\":\"9\"}]}", 
+            "DnsAnswer": "{\"dns_answers\":[{\"name\":\"v10.events.data.microsoft.com\",\"class\":\"IN\",\"type\":\"CNAME\",\"alias\":\"global.events.data.trafficmanager.net\",\"IP\":\"\",\"TTL\":\"1390\"},{\"name\":\"global.events.data.trafficmanager.net\",\"class\":\"IN\",\"type\":\"CNAME\",\"alias\":\"skypedataprdcolcus00.cloudapp.net\",\"IP\":\"\",\"TTL\":\"25\"},{\"name\":\"skypedataprdcolcus00.cloudapp.net\",\"class\":\"IN\",\"type\":\"A\",\"alias\":\"\",\"IP\":\"2.2.2.2\",\"TTL\":\"9\"}]}", 
             "ProcessStartTime": "2020-03-12T03:58:09.962Z"
         }, 
         {
@@ -1988,14 +1988,14 @@ Queries DNS by server IP address.
             "EntityType": 6, 
             "TargetID": "VqzBXZZVzjd", 
             "DnsQuestion": "{\"dns_questions\":[{\"name\":\"logging.googleapis.com\",\"class\":\"IN\",\"type\":\"A\"}]}", 
-            "LocalIP": "10.10.0.2", 
+            "LocalIP": "2.2.2.2", 
             "EndpointName": "fidelis-endpoint-winserver2019", 
             "StartTime": "2020-03-12T03:58:09.962Z", 
             "RemoteIP": "10.10.0.1", 
             "EventIndex": 4, 
             "ParentID": "jE4aX1xPk1i", 
             "NetworkDirection": "0", 
-            "DnsAnswer": "{\"dns_answers\":[{\"name\":\"logging.googleapis.com\",\"class\":\"IN\",\"type\":\"A\",\"alias\":\"\",\"IP\":\"95.129.125.74\",\"TTL\":\"144\"}]}", 
+            "DnsAnswer": "{\"dns_answers\":[{\"name\":\"logging.googleapis.com\",\"class\":\"IN\",\"type\":\"A\",\"alias\":\"\",\"IP\":\"6.6.6.6\",\"TTL\":\"144\"}]}", 
             "ProcessStartTime": "2020-03-12T03:58:09.962Z"
         }, 
         {
@@ -2007,14 +2007,14 @@ Queries DNS by server IP address.
             "EntityType": 6, 
             "TargetID": "9anFqxCrJ3h", 
             "DnsQuestion": "{\"dns_questions\":[{\"name\":\"v10.events.data.microsoft.com\",\"class\":\"IN\",\"type\":\"A\"}]}", 
-            "LocalIP": "10.10.0.2", 
+            "LocalIP": "2.2.2.2", 
             "EndpointName": "fidelis-endpoint-winserver2019", 
             "StartTime": "2020-03-12T03:58:09.962Z", 
             "RemoteIP": "10.10.0.1", 
             "EventIndex": 2, 
             "ParentID": "jE4aX1xPk1i", 
             "NetworkDirection": "0", 
-            "DnsAnswer": "{\"dns_answers\":[{\"name\":\"v10.events.data.microsoft.com\",\"class\":\"IN\",\"type\":\"CNAME\",\"alias\":\"global.events.data.trafficmanager.net\",\"IP\":\"\",\"TTL\":\"862\"},{\"name\":\"global.events.data.trafficmanager.net\",\"class\":\"IN\",\"type\":\"CNAME\",\"alias\":\"skypedataprdcolase00.cloudapp.net\",\"IP\":\"\",\"TTL\":\"19\"},{\"name\":\"skypedataprdcolase00.cloudapp.net\",\"class\":\"IN\",\"type\":\"A\",\"alias\":\"\",\"IP\":\"36.7.114.52\",\"TTL\":\"9\"}]}", 
+            "DnsAnswer": "{\"dns_answers\":[{\"name\":\"v10.events.data.microsoft.com\",\"class\":\"IN\",\"type\":\"CNAME\",\"alias\":\"global.events.data.trafficmanager.net\",\"IP\":\"\",\"TTL\":\"862\"},{\"name\":\"global.events.data.trafficmanager.net\",\"class\":\"IN\",\"type\":\"CNAME\",\"alias\":\"skypedataprdc.cloudapp.net\",\"IP\":\"\",\"TTL\":\"19\"},{\"name\":\"skypedataprdcolase00.cloudapp.net\",\"class\":\"IN\",\"type\":\"A\",\"alias\":\"\",\"IP\":\"3.3.3.3\",\"TTL\":\"9\"}]}", 
             "ProcessStartTime": "2020-03-12T03:58:09.962Z"
         }, 
         {
@@ -2026,14 +2026,14 @@ Queries DNS by server IP address.
             "EntityType": 6, 
             "TargetID": "VqzBXZZVzjd", 
             "DnsQuestion": "{\"dns_questions\":[{\"name\":\"logging.googleapis.com\",\"class\":\"IN\",\"type\":\"A\"}]}", 
-            "LocalIP": "10.10.0.2", 
+            "LocalIP": "2.2.2.2", 
             "EndpointName": "fidelis-endpoint-winserver2019", 
             "StartTime": "2020-03-12T03:58:09.962Z", 
             "RemoteIP": "10.10.0.1", 
             "EventIndex": 5, 
             "ParentID": "jE4aX1xPk1i", 
             "NetworkDirection": "0", 
-            "DnsAnswer": "{\"dns_answers\":[{\"name\":\"logging.googleapis.com\",\"class\":\"IN\",\"type\":\"A\",\"alias\":\"\",\"IP\":\"95.70.125.74\",\"TTL\":\"274\"}]}", 
+            "DnsAnswer": "{\"dns_answers\":[{\"name\":\"logging.googleapis.com\",\"class\":\"IN\",\"type\":\"A\",\"alias\":\"\",\"IP\":\"6.6.6.6\",\"TTL\":\"274\"}]}", 
             "ProcessStartTime": "2020-03-12T03:58:09.962Z"
         }
     ]
@@ -2044,17 +2044,17 @@ Queries DNS by server IP address.
 ### Fidelis Endpoint query results for the DNS request by server IP
 |EndpointName|LocalIP|LocalPort|RemoteIP|RemotePort|ProcessStartTime|DnsAnswer|EventType|
 |---|---|---|---|---|---|---|---|
-| fidelis-endpoint-winserver2019 | 10.10.0.2 | 61597 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | {"dns_answers":[{"name":"v10.events.data.microsoft.com","class":"IN","type":"CNAME","alias":"global.events.data.trafficmanager.net","IP":"","TTL":"1425"},{"name":"global.events.data.trafficmanager.net","class":"IN","type":"CNAME","alias":"skypedataprdcoleus06.cloudapp.net","IP":"","TTL":"45"},{"name":"skypedataprdcoleus06.cloudapp.net","class":"IN","type":"A","alias":"","IP":"60.133.114.52","TTL":"5"}]} | 17 |
-| fidelis-endpoint-winserver2019 | 10.10.0.2 | 55911 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | {"dns_answers":[{"name":"v10.events.data.microsoft.com","class":"IN","type":"CNAME","alias":"global.events.data.trafficmanager.net","IP":"","TTL":"1390"},{"name":"global.events.data.trafficmanager.net","class":"IN","type":"CNAME","alias":"skypedataprdcolcus00.cloudapp.net","IP":"","TTL":"25"},{"name":"skypedataprdcolcus00.cloudapp.net","class":"IN","type":"A","alias":"","IP":"14.160.122.40","TTL":"9"}]} | 17 |
-| fidelis-endpoint-winserver2019 | 10.10.0.2 | 56095 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | {"dns_answers":[{"name":"logging.googleapis.com","class":"IN","type":"A","alias":"","IP":"95.129.125.74","TTL":"144"}]} | 17 |
-| fidelis-endpoint-winserver2019 | 10.10.0.2 | 61769 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | {"dns_answers":[{"name":"v10.events.data.microsoft.com","class":"IN","type":"CNAME","alias":"global.events.data.trafficmanager.net","IP":"","TTL":"862"},{"name":"global.events.data.trafficmanager.net","class":"IN","type":"CNAME","alias":"skypedataprdcolase00.cloudapp.net","IP":"","TTL":"19"},{"name":"skypedataprdcolase00.cloudapp.net","class":"IN","type":"A","alias":"","IP":"36.7.114.52","TTL":"9"}]} | 17 |
-| fidelis-endpoint-winserver2019 | 10.10.0.2 | 53940 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | {"dns_answers":[{"name":"logging.googleapis.com","class":"IN","type":"A","alias":"","IP":"95.70.125.74","TTL":"274"}]} | 17 |
-| fidelis-endpoint-winserver2019 | 10.10.0.2 | 57260 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | {"dns_answers":[{"name":"v10.events.data.microsoft.com","class":"IN","type":"CNAME","alias":"global.events.data.trafficmanager.net","IP":"","TTL":"1698"},{"name":"global.events.data.trafficmanager.net","class":"IN","type":"CNAME","alias":"skypedataprdcolneu00.cloudapp.net","IP":"","TTL":"21"},{"name":"skypedataprdcolneu00.cloudapp.net","class":"IN","type":"A","alias":"","IP":"164.77.114.52","TTL":"9"}]} | 17 |
-| fidelis-endpoint-winserver2019 | 10.10.0.2 | 58832 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | {"dns_answers":[{"name":"logging.googleapis.com","class":"IN","type":"A","alias":"","IP":"95.196.194.173","TTL":"206"}]} | 17 |
-| fidelis-endpoint-winserver2019 | 10.10.0.2 | 60472 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | {"dns_answers":[{"name":"v10.events.data.microsoft.com","class":"IN","type":"CNAME","alias":"global.events.data.trafficmanager.net","IP":"","TTL":"3334"},{"name":"global.events.data.trafficmanager.net","class":"IN","type":"CNAME","alias":"skypedataprdcolweu05.cloudapp.net","IP":"","TTL":"58"},{"name":"skypedataprdcolweu05.cloudapp.net","class":"IN","type":"A","alias":"","IP":"79.75.114.52","TTL":"8"}]} | 17 |
-| fidelis-endpoint-winserver2019 | 10.10.0.2 | 54309 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | {"dns_answers":[{"name":"v10.events.data.microsoft.com","class":"IN","type":"CNAME","alias":"global.events.data.trafficmanager.net","IP":"","TTL":"2327"},{"name":"global.events.data.trafficmanager.net","class":"IN","type":"CNAME","alias":"skypedataprdcoluks05.cloudapp.net","IP":"","TTL":"44"},{"name":"skypedataprdcoluks05.cloudapp.net","class":"IN","type":"A","alias":"","IP":"29.88.114.52","TTL":"7"}]} | 17 |
-| fidelis-endpoint-winserver2019 | 10.10.0.2 | 61757 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | {"dns_answers":[{"name":"logging.googleapis.com","class":"IN","type":"A","alias":"","IP":"95.202.125.74","TTL":"273"}]} | 17 |
-| fidelis-endpoint-winserver2019 | 10.10.0.2 | 49681 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | {"dns_answers":[{"name":"v10.events.data.microsoft.com","class":"IN","type":"CNAME","alias":"global.events.data.trafficmanager.net","IP":"","TTL":"798"},{"name":"global.events.data.trafficmanager.net","class":"IN","type":"CNAME","alias":"skypedataprdcolwus08.cloudapp.net","IP":"","TTL":"40"},{"name":"fe2.update.microsoft.com.nsatc.net","class":"IN","type":"A","alias":"","IP":"70.218.36.20","TTL":"175"}]} | 17 |
+| fidelis-endpoint-winserver2019 | 2.2.2.2 | 61597 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | {"dns_answers":[{"name":"v10.events.data.microsoft.com","class":"IN","type":"CNAME","alias":"global.events.data.trafficmanager.net","IP":"","TTL":"1425"},{"name":"global.events.data.trafficmanager.net","class":"IN","type":"CNAME","alias":"skypedataprdcoleus06.cloudapp.net","IP":"","TTL":"45"},{"name":"skypedataprdcoleus06.cloudapp.net","class":"IN","type":"A","alias":"","IP":"60.133.114.52","TTL":"5"}]} | 17 |
+| fidelis-endpoint-winserver2019 | 2.2.2.2 | 55911 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | {"dns_answers":[{"name":"v10.events.data.microsoft.com","class":"IN","type":"CNAME","alias":"global.events.data.trafficmanager.net","IP":"","TTL":"1390"},{"name":"global.events.data.trafficmanager.net","class":"IN","type":"CNAME","alias":"skypedataprdcolcus00.cloudapp.net","IP":"","TTL":"25"},{"name":"skypedataprdcolcus00.cloudapp.net","class":"IN","type":"A","alias":"","IP":"14.160.122.40","TTL":"9"}]} | 17 |
+| fidelis-endpoint-winserver2019 | 2.2.2.2 | 56095 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | {"dns_answers":[{"name":"logging.googleapis.com","class":"IN","type":"A","alias":"","IP":"3.3.3.3","TTL":"144"}]} | 17 |
+| fidelis-endpoint-winserver2019 | 2.2.2.2 | 61769 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | {"dns_answers":[{"name":"v10.events.data.microsoft.com","class":"IN","type":"CNAME","alias":"global.events.data.trafficmanager.net","IP":"","TTL":"862"},{"name":"global.events.data.trafficmanager.net","class":"IN","type":"CNAME","alias":"skypedataprdcolase00.cloudapp.net","IP":"","TTL":"19"},{"name":"skypedataprdcolase00.cloudapp.net","class":"IN","type":"A","alias":"","IP":"36.7.114.52","TTL":"9"}]} | 17 |
+| fidelis-endpoint-winserver2019 | 2.2.2.2 | 53940 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | {"dns_answers":[{"name":"logging.googleapis.com","class":"IN","type":"A","alias":"","IP":"3.3.3.3","TTL":"274"}]} | 17 |
+| fidelis-endpoint-winserver2019 | 2.2.2.2 | 57260 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | {"dns_answers":[{"name":"v10.events.data.microsoft.com","class":"IN","type":"CNAME","alias":"global.events.data.trafficmanager.net","IP":"","TTL":"1698"},{"name":"global.events.data.trafficmanager.net","class":"IN","type":"CNAME","alias":"skypedataprdcolneu00.cloudapp.net","IP":"","TTL":"21"},{"name":"skypedataprdcolneu00.cloudapp.net","class":"IN","type":"A","alias":"","IP":"164.77.114.52","TTL":"9"}]} | 17 |
+| fidelis-endpoint-winserver2019 | 2.2.2.2 | 58832 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | {"dns_answers":[{"name":"logging.googleapis.com","class":"IN","type":"A","alias":"","IP":"3.3.3.3","TTL":"206"}]} | 17 |
+| fidelis-endpoint-winserver2019 | 2.2.2.2 | 60472 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | {"dns_answers":[{"name":"v10.events.data.microsoft.com","class":"IN","type":"CNAME","alias":"global.events.data.trafficmanager.net","IP":"","TTL":"3334"},{"name":"global.events.data.trafficmanager.net","class":"IN","type":"CNAME","alias":"skypedataprdcolweu05.cloudapp.net","IP":"","TTL":"58"},{"name":"skypedataprdcolweu05.cloudapp.net","class":"IN","type":"A","alias":"","IP":"79.75.114.52","TTL":"8"}]} | 17 |
+| fidelis-endpoint-winserver2019 | 2.2.2.2 | 54309 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | {"dns_answers":[{"name":"v10.events.data.microsoft.com","class":"IN","type":"CNAME","alias":"global.events.data.trafficmanager.net","IP":"","TTL":"2327"},{"name":"global.events.data.trafficmanager.net","class":"IN","type":"CNAME","alias":"skypedataprdcoluks05.cloudapp.net","IP":"","TTL":"44"},{"name":"skypedataprdcoluks05.cloudapp.net","class":"IN","type":"A","alias":"","IP":"29.88.114.52","TTL":"7"}]} | 17 |
+| fidelis-endpoint-winserver2019 | 2.2.2.2 | 61757 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | {"dns_answers":[{"name":"logging.googleapis.com","class":"IN","type":"A","alias":"","IP":"3.3.3.3","TTL":"273"}]} | 17 |
+| fidelis-endpoint-winserver2019 | 2.2.2.2 | 49681 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | {"dns_answers":[{"name":"v10.events.data.microsoft.com","class":"IN","type":"CNAME","alias":"global.events.data.trafficmanager.net","IP":"","TTL":"798"},{"name":"global.events.data.trafficmanager.net","class":"IN","type":"CNAME","alias":"skypedataprdcolwus08.cloudapp.net","IP":"","TTL":"40"},{"name":"fe2.update.microsoft.com.nsatc.net","class":"IN","type":"A","alias":"","IP":"70.218.36.20","TTL":"175"}]} | 17 |
 
 
 ### 23. fidelis-endpoint-query-dns-by-source-ip
@@ -2114,14 +2114,14 @@ Queries DNS by source IP address.
             "EntityType": 6, 
             "TargetID": "VqzBXZZVzjd", 
             "DnsQuestion": "{\"dns_questions\":[{\"name\":\"logging.googleapis.com\",\"class\":\"IN\",\"type\":\"A\"}]}", 
-            "LocalIP": "10.10.0.2", 
+            "LocalIP": "2.2.2.2", 
             "EndpointName": "fidelis-endpoint-winserver2019", 
             "StartTime": "2020-02-13T03:50:45.515Z", 
             "RemoteIP": "10.10.0.1", 
             "EventIndex": 2, 
             "ParentID": "VuFd4n1aut7", 
             "NetworkDirection": "0", 
-            "DnsAnswer": "{\"dns_answers\":[{\"name\":\"logging.googleapis.com\",\"class\":\"IN\",\"type\":\"A\",\"alias\":\"\",\"IP\":\"95.234.85.209\",\"TTL\":\"87\"}]}", 
+            "DnsAnswer": "{\"dns_answers\":[{\"name\":\"logging.googleapis.com\",\"class\":\"IN\",\"type\":\"A\",\"alias\":\"\",\"IP\":\"6.6.6.6\",\"TTL\":\"87\"}]}", 
             "ProcessStartTime": "2020-02-13T03:50:45.515Z"
         }, 
         {
@@ -2133,14 +2133,14 @@ Queries DNS by source IP address.
             "EntityType": 6, 
             "TargetID": "VqzBXZZVzjd", 
             "DnsQuestion": "{\"dns_questions\":[{\"name\":\"logging.googleapis.com\",\"class\":\"IN\",\"type\":\"A\"}]}", 
-            "LocalIP": "10.10.0.2", 
+            "LocalIP": "2.2.2.2", 
             "EndpointName": "fidelis-endpoint-winserver2019", 
             "StartTime": "2020-02-13T03:50:45.515Z", 
             "RemoteIP": "10.10.0.1", 
             "EventIndex": 2, 
             "ParentID": "VuFd4n1aut7", 
             "NetworkDirection": "0", 
-            "DnsAnswer": "{\"dns_answers\":[{\"name\":\"logging.googleapis.com\",\"class\":\"IN\",\"type\":\"A\",\"alias\":\"\",\"IP\":\"95.145.85.209\",\"TTL\":\"105\"}]}", 
+            "DnsAnswer": "{\"dns_answers\":[{\"name\":\"logging.googleapis.com\",\"class\":\"IN\",\"type\":\"A\",\"alias\":\"\",\"IP\":\"6.6.6.6\",\"TTL\":\"105\"}]}", 
             "ProcessStartTime": "2020-02-13T03:50:45.515Z"
         }, 
         {
@@ -2152,14 +2152,14 @@ Queries DNS by source IP address.
             "EntityType": 6, 
             "TargetID": "VqzBXZZVzjd", 
             "DnsQuestion": "{\"dns_questions\":[{\"name\":\"logging.googleapis.com\",\"class\":\"IN\",\"type\":\"A\"}]}", 
-            "LocalIP": "10.10.0.2", 
+            "LocalIP": "2.2.2.2", 
             "EndpointName": "fidelis-endpoint-winserver2019", 
             "StartTime": "2020-02-13T03:50:45.515Z", 
             "RemoteIP": "10.10.0.1", 
             "EventIndex": 2, 
             "ParentID": "VuFd4n1aut7", 
             "NetworkDirection": "0", 
-            "DnsAnswer": "{\"dns_answers\":[{\"name\":\"logging.googleapis.com\",\"class\":\"IN\",\"type\":\"A\",\"alias\":\"\",\"IP\":\"95.121.177.108\",\"TTL\":\"253\"}]}", 
+            "DnsAnswer": "{\"dns_answers\":[{\"name\":\"logging.googleapis.com\",\"class\":\"IN\",\"type\":\"A\",\"alias\":\"\",\"IP\":\"6.6.6.6\",\"TTL\":\"253\"}]}", 
             "ProcessStartTime": "2020-02-13T03:50:45.515Z"
         }, 
         {
@@ -2171,14 +2171,14 @@ Queries DNS by source IP address.
             "EntityType": 6, 
             "TargetID": "VqzBXZZVzjd", 
             "DnsQuestion": "{\"dns_questions\":[{\"name\":\"logging.googleapis.com\",\"class\":\"IN\",\"type\":\"A\"}]}", 
-            "LocalIP": "10.10.0.2", 
+            "LocalIP": "2.2.2.2", 
             "EndpointName": "fidelis-endpoint-winserver2019", 
             "StartTime": "2020-02-13T03:50:45.515Z", 
             "RemoteIP": "10.10.0.1", 
             "EventIndex": 2, 
             "ParentID": "VuFd4n1aut7", 
             "NetworkDirection": "0", 
-            "DnsAnswer": "{\"dns_answers\":[{\"name\":\"logging.googleapis.com\",\"class\":\"IN\",\"type\":\"A\",\"alias\":\"\",\"IP\":\"95.200.85.209\",\"TTL\":\"282\"}]}", 
+            "DnsAnswer": "{\"dns_answers\":[{\"name\":\"logging.googleapis.com\",\"class\":\"IN\",\"type\":\"A\",\"alias\":\"\",\"IP\":\"6.6.6.6\",\"TTL\":\"282\"}]}", 
             "ProcessStartTime": "2020-02-13T03:50:45.515Z"
         }, 
         {
@@ -2190,14 +2190,14 @@ Queries DNS by source IP address.
             "EntityType": 6, 
             "TargetID": "VqzBXZZVzjd", 
             "DnsQuestion": "{\"dns_questions\":[{\"name\":\"logging.googleapis.com\",\"class\":\"IN\",\"type\":\"A\"}]}", 
-            "LocalIP": "10.10.0.2", 
+            "LocalIP": "2.2.2.2", 
             "EndpointName": "fidelis-endpoint-winserver2019", 
             "StartTime": "2020-02-13T03:50:45.515Z", 
             "RemoteIP": "10.10.0.1", 
             "EventIndex": 5, 
             "ParentID": "VuFd4n1aut7", 
             "NetworkDirection": "0", 
-            "DnsAnswer": "{\"dns_answers\":[{\"name\":\"logging.googleapis.com\",\"class\":\"IN\",\"type\":\"A\",\"alias\":\"\",\"IP\":\"95.74.194.173\",\"TTL\":\"61\"}]}", 
+            "DnsAnswer": "{\"dns_answers\":[{\"name\":\"logging.googleapis.com\",\"class\":\"IN\",\"type\":\"A\",\"alias\":\"\",\"IP\":\"6.6.6.6\",\"TTL\":\"61\"}]}", 
             "ProcessStartTime": "2020-02-13T03:50:45.515Z"
         }, 
         {
@@ -2209,14 +2209,14 @@ Queries DNS by source IP address.
             "EntityType": 6, 
             "TargetID": "VqzBXZZVzjd", 
             "DnsQuestion": "{\"dns_questions\":[{\"name\":\"logging.googleapis.com\",\"class\":\"IN\",\"type\":\"A\"}]}", 
-            "LocalIP": "10.10.0.2", 
+            "LocalIP": "2.2.2.2", 
             "EndpointName": "fidelis-endpoint-winserver2019", 
             "StartTime": "2020-02-13T03:50:45.515Z", 
             "RemoteIP": "10.10.0.1", 
             "EventIndex": 2, 
             "ParentID": "VuFd4n1aut7", 
             "NetworkDirection": "0", 
-            "DnsAnswer": "{\"dns_answers\":[{\"name\":\"logging.googleapis.com\",\"class\":\"IN\",\"type\":\"A\",\"alias\":\"\",\"IP\":\"95.219.217.172\",\"TTL\":\"12\"}]}", 
+            "DnsAnswer": "{\"dns_answers\":[{\"name\":\"logging.googleapis.com\",\"class\":\"IN\",\"type\":\"A\",\"alias\":\"\",\"IP\":\"6.6.6.6\",\"TTL\":\"12\"}]}", 
             "ProcessStartTime": "2020-02-13T03:50:45.515Z"
         }
     ]
@@ -2227,12 +2227,12 @@ Queries DNS by source IP address.
 ### Fidelis Endpoint query results for the DNS request by source IP
 |EndpointName|LocalIP|LocalPort|RemoteIP|RemotePort|ProcessStartTime|DnsQuestion|DnsAnswer|
 |---|---|---|---|---|---|---|---|
-| fidelis-endpoint-winserver2019 | 10.10.0.2 | 51663 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_questions":[{"name":"logging.googleapis.com","class":"IN","type":"A"}]} | {"dns_answers":[{"name":"logging.googleapis.com","class":"IN","type":"A","alias":"","IP":"95.234.85.209","TTL":"87"}]} |
-| fidelis-endpoint-winserver2019 | 10.10.0.2 | 65002 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_questions":[{"name":"logging.googleapis.com","class":"IN","type":"A"}]} | {"dns_answers":[{"name":"logging.googleapis.com","class":"IN","type":"A","alias":"","IP":"95.145.85.209","TTL":"105"}]} |
-| fidelis-endpoint-winserver2019 | 10.10.0.2 | 49412 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_questions":[{"name":"logging.googleapis.com","class":"IN","type":"A"}]} | {"dns_answers":[{"name":"logging.googleapis.com","class":"IN","type":"A","alias":"","IP":"95.121.177.108","TTL":"253"}]} |
-| fidelis-endpoint-winserver2019 | 10.10.0.2 | 63755 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_questions":[{"name":"logging.googleapis.com","class":"IN","type":"A"}]} | {"dns_answers":[{"name":"logging.googleapis.com","class":"IN","type":"A","alias":"","IP":"95.200.85.209","TTL":"282"}]} |
-| fidelis-endpoint-winserver2019 | 10.10.0.2 | 60331 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_questions":[{"name":"logging.googleapis.com","class":"IN","type":"A"}]} | {"dns_answers":[{"name":"logging.googleapis.com","class":"IN","type":"A","alias":"","IP":"95.74.194.173","TTL":"61"}]} |
-| fidelis-endpoint-winserver2019 | 10.10.0.2 | 58452 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_questions":[{"name":"logging.googleapis.com","class":"IN","type":"A"}]} | {"dns_answers":[{"name":"logging.googleapis.com","class":"IN","type":"A","alias":"","IP":"95.219.217.172","TTL":"12"}]} |
+| fidelis-endpoint-winserver2019 | 2.2.2.2 | 51663 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_questions":[{"name":"logging.googleapis.com","class":"IN","type":"A"}]} | {"dns_answers":[{"name":"logging.googleapis.com","class":"IN","type":"A","alias":"","IP":"6.6.6.6","TTL":"87"}]} |
+| fidelis-endpoint-winserver2019 | 2.2.2.2 | 65002 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_questions":[{"name":"logging.googleapis.com","class":"IN","type":"A"}]} | {"dns_answers":[{"name":"logging.googleapis.com","class":"IN","type":"A","alias":"","IP":"6.6.6.6","TTL":"105"}]} |
+| fidelis-endpoint-winserver2019 | 2.2.2.2 | 49412 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_questions":[{"name":"logging.googleapis.com","class":"IN","type":"A"}]} | {"dns_answers":[{"name":"logging.googleapis.com","class":"IN","type":"A","alias":"","IP":"6.6.6.6","TTL":"253"}]} |
+| fidelis-endpoint-winserver2019 | 2.2.2.2 | 63755 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_questions":[{"name":"logging.googleapis.com","class":"IN","type":"A"}]} | {"dns_answers":[{"name":"logging.googleapis.com","class":"IN","type":"A","alias":"","IP":"6.6.6.6","TTL":"282"}]} |
+| fidelis-endpoint-winserver2019 | 2.2.2.2 | 60331 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_questions":[{"name":"logging.googleapis.com","class":"IN","type":"A"}]} | {"dns_answers":[{"name":"logging.googleapis.com","class":"IN","type":"A","alias":"","IP":"6.6.6.6","TTL":"61"}]} |
+| fidelis-endpoint-winserver2019 | 2.2.2.2 | 58452 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_questions":[{"name":"logging.googleapis.com","class":"IN","type":"A"}]} | {"dns_answers":[{"name":"logging.googleapis.com","class":"IN","type":"A","alias":"","IP":"6.6.6.6","TTL":"12"}]} |
 ### 24. fidelis-endpoint-query-events
 ---
 Queries events.
