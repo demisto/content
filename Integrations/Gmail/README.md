@@ -25,10 +25,6 @@
 <p>&nbsp;</p>
 <h3 id="h_83620016031534851645646">Get a New Private Key</h3>
 <ol>
-  <ol>
-    <ol>
-      <ol>
-        <ol>
           <li>
             Access your
             <a href="https://console.developers.google.com/projectselector/iam-admin/serviceaccounts%C2%A0" target="_blank" rel="noopener">Google Service Account</a>.
@@ -77,14 +73,14 @@
             In the <strong>Actions</strong> column, select the service
             and then click <strong>edit</strong>.
             <p>
-              <img src="/hc/article_attachments/360047607593/mceclip1.png" alt="mceclip1.png">
+              <img src="https://github.com/demisto/content/raw/6d9ac954729a6dffd6be51b658e7987824238462/Integrations/Gmail/doc_imgs/gmail-enable.png" alt="mceclip1.png">
             </p>
           </li>
           <li>
             Under the show domain wide delegation, select
             <strong>Enable G Suite Domain-wide Delegation</strong>.
             <p class="wysiwyg-text-align-left">
-              <img src="/hc/article_attachments/360047608933/gmail-_enable.png" alt="gmail-_enable.png">
+              <img src="https://github.com/demisto/content/raw/6d9ac954729a6dffd6be51b658e7987824238462/Integrations/Gmail/doc_imgs/gmail-enable.png" alt="gmail-_enable.png">
             </p>
             <p>
               &nbsp;NOTE: Copy the value of the Unique ID for the client
@@ -98,20 +94,12 @@
           </li>
           <li>
             Click&nbsp;<strong>Enable</strong>.
-          </li>
-        </ol>
-      </ol>
-    </ol>
-  </ol>
+          </li> 
 </ol>
 <p>&nbsp;</p>
 <h3 id="h_55847897541534851652027">Delegate Domain-wide Authority to Your Service Account</h3>
 <hr>
 <ol>
-  <ol>
-    <ol>
-      <ol>
-        <ol>
           <li>
             Access the
             <a href="http://admin.google.com/%C2%A0" target="_blank" rel="noopener">Google Administrator Console</a>.
@@ -123,13 +111,10 @@
               https://www.googleapis.com/auth/gmail.settings.basic,https://www.googleapis.com/auth/admin.directory.user,https://www.googleapis.com/auth/admin.directory.device.mobile.action,https://www.googleapis.com/auth/admin.directory.device.mobile.readonly,https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/gmail.settings.sharing,https://www.googleapis.com/auth/gmail.send,https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/admin.directory.device.chromeos,https://www.googleapis.com/auth/admin.directory.user.readonly,https://www.googleapis.com/auth/admin.directory.user.security,https://www.googleapis.com/auth/admin.directory.rolemanagement,https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly,https://www.googleapis.com/auth/gmail.readonly,https://mail.google.com
             </p>
             <p class="wysiwyg-text-align-left">
-              <img src="/hc/article_attachments/115005717893/mceclip1.png" width="734" height="191">
+              <img src="https://github.com/demisto/content/raw/6d9ac954729a6dffd6be51b658e7987824238462/Integrations/Gmail/doc_imgs/mceclip1.png" width="734" height="191">
             </p>
           </li>
-        </ol>
-      </ol>
-    </ol>
-  </ol>
+        
 </ol>
 <p>&nbsp;</p>
 <h3 id="h_1988526951041534851657765">Get an Immutable Google Apps ID Parameters</h3>
@@ -138,10 +123,6 @@
   In order to revoke/fetch a user role, you need an Immutable Google Apps ID param.
 </div>
 <ol>
-  <ol>
-    <ol>
-      <ol>
-        <ol>
           <li>
             Open&nbsp;<a href="https://admin.google.com/" target="_blank" rel="noopener noreferrer">https://admin.google.com</a>&nbsp;(as
             in step 2).
@@ -155,21 +136,14 @@
             Record the SSO URL, which is the Immutable Google Apps ID,
             and copy it for later use.<br>
             <p>
-              <img src="/hc/article_attachments/115005720253/mceclip2.png" width="492" height="158">
+              <img src="https://github.com/demisto/content/raw/6d9ac954729a6dffd6be51b658e7987824238462/Integrations/Gmail/doc_imgs/mceclip2.png" width="492" height="158">
             </p>
           </li>
-        </ol>
-      </ol>
-    </ol>
-  </ol>
+        
 </ol>
 <p>&nbsp;</p>
 <h2>Configure the Gmail Integration on Demisto</h2>
 <ol>
-  <ol>
-    <ol>
-      <ol>
-        <ol>
           <li>
             Navigate to <strong>Settings</strong> &gt;
             <strong>Integrations</strong> &gt;
@@ -207,7 +181,7 @@
                   <label class="checkbox-label" title="Import events as incidents"><strong>Events user key</strong>- Use this&nbsp;<label class="checkbox-label" title="Import events as incidents">to specify the email account to search for messages. By default, the integration uses the email address specified in the admin instance</label>.&nbsp;&nbsp;</label>
                 </div>
                 <div class="demisto-checkbox ui checkbox ">
-                  <label class="checkbox-label" title="Import events as incidents"><label class="checkbox-label" title="Import events as incidents"><img src="/hc/article_attachments/360003150494/mceclip0.png" width="263" height="113"></label></label>
+                  <label class="checkbox-label" title="Import events as incidents"><label class="checkbox-label" title="Import events as incidents"><img src="https://github.com/demisto/content/raw/6d9ac954729a6dffd6be51b658e7987824238462/Integrations/Gmail/doc_imgs/mceclip0.png" width="263" height="113"></label></label>
                 </div>
               </li>
               <li>
@@ -222,18 +196,11 @@
             Click&nbsp;<strong>Test</strong> to validate the URLs and
             connection.
           </li>
-        </ol>
-      </ol>
-    </ol>
-  </ol>
+        
 </ol>
 <p>&nbsp;</p>
 <h2>Use Cases</h2>
 <ol>
-  <ol>
-    <ol>
-      <ol>
-        <ul>
           <li>
             Monitors a mailbox by using&nbsp;the integration fetch incident
             capability to monitor a mailbox and create incidents for
@@ -250,18 +217,10 @@
             <code>!gmail-delete-mail user-id=admin@demisto.com
       message-id=164d2110e0152660</code>
           </li>
-        </ul>
-      </ol>
-    </ol>
-  </ol>
 </ol>
 <p>&nbsp;</p>
 <h2>Fetched Incidents Data</h2>
 <ol>
-  <ol>
-    <ol>
-      <ol>
-        <ul>
           <li>Incident Name</li>
           <li>Occurred</li>
           <li>Owner</li>
@@ -275,10 +234,6 @@
           <li>Attachment Name</li>
           <li>Email Body</li>
           <li>Email Body Format</li>
-        </ul>
-      </ol>
-    </ol>
-  </ol>
 </ol>
 <p>&nbsp;</p>
 <h2>Commands</h2>
@@ -288,10 +243,6 @@
   in the War Room with the command details.
 </p>
 <ol>
-  <ol>
-    <ol>
-      <ol>
-        <ol>
           <li>
             <a href="#h_b0254633-137e-4270-a589-a3b35fdd5bdb" target="_self">Delete a user: gmail-delete-user</a>
           </li>
@@ -376,10 +327,6 @@
           <li>
             <a href="#h_426da8de-404c-432d-9080-b476cf896g9a" target="_self">Get details of a specific role: gmail-get-role</a>
           </li>
-        </ol>
-      </ol>
-    </ol>
-  </ol>
 </ol>
 <h3 id="h_b0254633-137e-4270-a589-a3b35fdd5bdb">1. Delete a user</h3>
 <hr>
