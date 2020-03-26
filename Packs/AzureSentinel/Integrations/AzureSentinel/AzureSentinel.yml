@@ -3,6 +3,25 @@ commonfields:
   id: Azure Sentinel
   version: -1
 configuration:
+- display: ID (received from the authorization step - see Detailed Instructions (?)
+    section)
+  name: auth_id
+  required: true
+  type: 4
+- display: Token (received from the authorization step - see Detailed Instructions
+    (?) section)
+  name: refresh_token
+  required: true
+  type: 4
+- display: Key (received from the authorization step - see Detailed Instructions (?)
+    section)
+  name: enc_key
+  required: true
+  type: 4
+- display: Use a self-deployed Azure application
+  name: self_deployed
+  required: false
+  type: 8
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -26,28 +45,6 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: https://management.azure.com
-  display: Server base URL
-  name: url
-  required: true
-  type: 0
-- display: Tenant ID
-  name: tenant_id
-  required: true
-  type: 4
-- display: Client ID
-  name: client_id
-  required: true
-  type: 4
-- display: Client Secret
-  name: client_secret
-  required: true
-  type: 4
-- display: Authorization Code (Click on the integration tips button on the top of
-    the window ('?') for details)
-  name: auth_code
-  required: true
-  type: 4
 - display: Subscription ID
   name: subscriptionID
   required: true

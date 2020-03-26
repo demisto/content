@@ -12,6 +12,8 @@ requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
+APP_NAME = 'ms-azure-sentinel'
+
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 API_VERSION = '2019-01-01-preview'
@@ -32,72 +34,26 @@ ENTITIES_RETENTION_PERIOD_MESSAGE = '\nNotice that in the current Azure Sentinel
                                     'for GetEntityByID is 30 days.'
 
 
-class Client(BaseClient):
-    def __init__(self, url, tenant_id, client_id, client_secret, auth_code,
-                 subscription_id, resource_group_name, workspace_name, **kwargs):
-        self.base_url = f'{url}/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/' \
-            f'Microsoft.OperationalInsights/workspaces/{workspace_name}/providers/Microsoft.SecurityInsights'
-        self.tenant_id = tenant_id
-        self.client_id = client_id
-        self.client_secret = client_secret
-        self.auth_code = auth_code
-        self.access_token = self.get_access_token()
-        super(Client, self).__init__(self.base_url, **kwargs)
+class Client:
+    def __init__(self, self_deployed, refresh_token, auth_and_token_url, enc_key,
+                 subscription_id, resource_group_name, workspace_name, verify, proxy):
 
-    def get_access_token(self):
-        integration_context = demisto.getIntegrationContext()
-        access_token = integration_context.get('access_token')
-        refresh_token = integration_context.get('refresh_token')
-        access_token_expiration_time = dateparser.parse(integration_context.get('access_token_expiration_time', '0'))
+        tenant_id = refresh_token if self_deployed else ''
+        refresh_token = (demisto.getIntegrationContext().get('current_refresh_token') or refresh_token)
+        base_url = f'https://management.azure.com/subscriptions/{subscription_id}/' \
+                   f'resourceGroups/{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/' \
+                   f'{workspace_name}/providers/Microsoft.SecurityInsights'
 
-        if not access_token or datetime.now() - access_token_expiration_time > timedelta(seconds=-5):
-            access_token = self.make_access_token_request(refresh_token)
-
-        return access_token
-
-    def make_access_token_request(self, refresh_token=None, retry=False):
-        data = self.get_access_token_request_data(refresh_token)
-        res = requests.post(f'https://login.microsoftonline.com/common/oauth2/token',  # disable-secrets-detection
-                            headers={'Content-Type': 'application/x-www-form-urlencoded'},
-                            data=data)
-
-        if res.status_code != 200:  # Refresh token has expired
-            if not retry:  # Try again using auth_code
-                return self.make_access_token_request(refresh_token=None, retry=True)
-            else:
-                raise Exception(AUTHORIZATION_ERROR_MSG)
-
-        try:
-            res_json = res.json()
-            self.update_tokens_in_context(res_json)
-            return res_json.get('access_token')
-        except ValueError:
-            raise Exception(AUTHORIZATION_ERROR_MSG)
-
-    def get_access_token_request_data(self, refresh_token=None):
-        data = {
-            'client_id': self.client_id,
-            'client_secret': self.client_secret,
-            'redirect_uri': 'https://localhost/myapp',
-            'resource': 'https://management.core.windows.net'
-        }
-
-        if refresh_token:
-            data['grant_type'] = 'refresh_token'
-            data['refresh_token'] = refresh_token
-        else:
-            data['grant_type'] = 'authorization_code'
-            data['code'] = self.auth_code
-
-        return data
-
-    def update_tokens_in_context(self, res):
-        integration_context = {
-            'access_token': res.get('access_token'),
-            'refresh_token': res.get('refresh_token'),
-            'access_token_expiration_time': res.get('expires_on', '0')
-        }
-        demisto.setIntegrationContext(integration_context)
+        self.ms_client = MicrosoftClient(self_deployed=self_deployed,
+                                         tenant_id=tenant_id,
+                                         auth_id=auth_and_token_url,
+                                         enc_key=enc_key,
+                                         app_name=APP_NAME,
+                                         base_url=base_url,
+                                         verify=verify,
+                                         proxy=proxy,
+                                         ok_codes=(200, 201, 202, 204, 400, 401, 403, 404),
+                                         refresh_token=refresh_token)
 
     def http_request(self, method, url_suffix=None, full_url=None, params=None, data=None, is_get_entity_cmd=False):
         if not params:
@@ -105,14 +61,12 @@ class Client(BaseClient):
         if not full_url:
             params['api-version'] = API_VERSION
 
-        res = self._http_request(method=method,
-                                 url_suffix=url_suffix,
-                                 full_url=full_url,
-                                 headers={'Authorization': 'Bearer ' + self.access_token},
-                                 json_data=data,
-                                 params=params,
-                                 resp_type='response',
-                                 ok_codes=(200, 201, 202, 204, 400, 401, 403, 404))
+        res = self.ms_client.http_request(method=method,
+                                          url_suffix=url_suffix,
+                                          full_url=full_url,
+                                          json_data=data,
+                                          params=params,
+                                          resp_type='response')
         res_json = res.json()
 
         if res.status_code in (400, 401, 403, 404):
@@ -251,7 +205,7 @@ def severity_to_level(severity):
 
 def test_module(client):
     try:
-        list_incidents_command(client, {'limit': '1'})
+        # client.ms_client.get_access_token()
         return 'ok'
     except Exception:
         raise ValueError('Please check your instance configuration.')
@@ -603,11 +557,10 @@ def main():
     LOG(f'Command being called is {demisto.command()}')
     try:
         client = Client(
-            url=params['url'],
-            tenant_id=params['tenant_id'],
-            client_id=params['client_id'],
-            client_secret=params['client_secret'],
-            auth_code=params['auth_code'],
+            self_deployed=params.get('self_deployed', False),
+            refresh_token=params['refresh_token'],
+            auth_and_token_url=params['auth_id'],
+            enc_key=params['enc_key'],
             subscription_id=params['subscriptionID'],
             resource_group_name=params['resourceGroupName'],
             workspace_name=params['workspaceName'],
@@ -654,6 +607,9 @@ def main():
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+
+
+from MicrosoftApiModule import *  # noqa: E402
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

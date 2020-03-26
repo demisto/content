@@ -74,7 +74,10 @@ Get a single incident from Azure Sentinel.
 ```!azure-sentinel-get-incident-by-id incident_id=b3de6b49-0945-454e-bb59-98087573cfc2```
 
 ##### Human Readable Output
-
+### Incident b3de6b49-0945-454e-bb59-98087573cfc2 details
+|ID|Incident Number|Title|Description|Severity|Status|Last Modified Time UTC|Created Time UTC|Alerts Count|Bookmarks Count|Comments Count|Alert Product Names|First Activity Time Generated|Last Activity Time Generated|Etag|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| b3de6b49-0945-454e-bb59-98087573cfc2 | 214 | test_title | test description | Medium | Active | 2020-03-26T12:57:57Z | 2020-02-02T14:10:01Z | 1 | 0 | 14 | Azure Sentinel | 2020-02-02T14:10:01Z | 2020-02-02T14:10:01Z | "7301797c-0000-0100-0000-5e7ca6d50000" |
 
 ### azure-sentinel-list-incidents
 ***
@@ -127,6 +130,14 @@ Get a list of incidents from Azure Sentinel.
 ```!azure-sentinel-list-incidents limit=5```
 
 ##### Human Readable Output
+### Incidents List (5 results)
+|ID|Incident Number|Title|Description|Severity|Status|First Activity Time UTC|Last Activity Time UTC|Last Modified Time UTC|Created Time UTC|Alerts Count|Bookmarks Count|Comments Count|Alert Product Names|First Activity Time Generated|Last Activity Time Generated|Etag|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 35bc3532-494c-44c1-adb8-3d733d966471 | 1 | SharePointFileOperation via previously unseen IPs | Identifies when the volume of documents uploaded to or downloaded from Sharepoint by new IP addresses<br>exceeds a threshold (default is 100). | Medium | New | 2020-01-15T07:54:05Z | 2020-01-15T08:54:05Z | 2020-01-15T09:29:12Z | 2020-01-15T09:29:12Z | 1 | 0 | 0 | Azure Sentinel | 2020-01-15T09:29:12Z | 2020-01-15T09:29:12Z | "19008ba5-0000-0100-0000-5e1edb680000" |
+| 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 | 2 | SharePointFileOperation via previously unseen IPs | Identifies when the volume of documents uploaded to or downloaded from Sharepoint by new IP addresses<br>exceeds a threshold (default is 100). | Medium | New | 2020-01-15T08:24:05Z | 2020-01-15T09:24:05Z | 2020-01-15T09:29:14Z | 2020-01-15T09:29:14Z | 1 | 0 | 0 | Azure Sentinel | 2020-01-15T09:29:14Z | 2020-01-15T09:29:14Z | "190093a5-0000-0100-0000-5e1edb6a0000" |
+| e0b06d71-b5a3-43a9-997f-f25b45085cb7 | 4 | SharePointFileOperation via previously unseen IPs | Identifies when the volume of documents uploaded to or downloaded from Sharepoint by new IP addresses<br>exceeds a threshold (default is 100). | Medium | New | 2020-01-15T07:59:05Z | 2020-01-15T08:59:05Z | 2020-01-15T09:34:12Z | 2020-01-15T09:34:12Z | 1 | 0 | 0 | Azure Sentinel | 2020-01-15T09:34:12Z | 2020-01-15T09:34:12Z | "1900fda9-0000-0100-0000-5e1edc940000" |
+| 0c16e64d-3bf5-4f7f-a965-cbab1e5ffcc4 | 5 | SharePointFileOperation via previously unseen IPs | Identifies when the volume of documents uploaded to or downloaded from Sharepoint by new IP addresses<br>exceeds a threshold (default is 100). | Medium | New | 2020-01-15T08:34:06Z | 2020-01-15T09:34:06Z | 2020-01-15T09:39:13Z | 2020-01-15T09:39:13Z | 1 | 0 | 0 | Azure Sentinel | 2020-01-15T09:39:12Z | 2020-01-15T09:39:12Z | "190094ae-0000-0100-0000-5e1eddc10000" |
+| a7977be7-1008-419b-877b-6793b7402a80 | 6 | SharePointFileOperation via previously unseen IPs | Identifies when the volume of documents uploaded to or downloaded from Sharepoint by new IP addresses<br>exceeds a threshold (default is 100). | Medium | New | 2020-01-15T08:04:05Z | 2020-01-15T09:04:05Z | 2020-01-15T09:40:09Z | 2020-01-15T09:40:09Z | 1 | 0 | 0 | Azure Sentinel | 2020-01-15T09:40:09Z | 2020-01-15T09:40:09Z | "19007eaf-0000-0100-0000-5e1eddf90000" |
 
 
 ### azure-sentinel-update-incident
@@ -180,6 +191,10 @@ Update a single incident in Azure Sentinel.
 ```!azure-sentinel-update-incident incident_id=b3de6b49-0945-454e-bb59-98087573cfc2 severity=Medium```
 
 ##### Human Readable Output
+### Updated incidents b3de6b49-0945-454e-bb59-98087573cfc2 details
+|ID|Incident Number|Title|Description|Severity|Status|Last Modified Time UTC|Created Time UTC|Alerts Count|Bookmarks Count|Comments Count|Alert Product Names|First Activity Time Generated|Last Activity Time Generated|Etag|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| b3de6b49-0945-454e-bb59-98087573cfc2 | 214 | Test Incident | test description | Medium | Active | 2020-03-26T12:53:02Z | 2020-02-02T14:10:01Z | 1 | 0 | 13 | Azure Sentinel | 2020-02-02T14:10:01Z | 2020-02-02T14:10:01Z | "7301806b-0000-0100-0000-5e7ca5ae0000" |
 
 
 ### azure-sentinel-delete-incident
@@ -205,7 +220,7 @@ There is no context output for this command.
 ```!azure-sentinel-delete-incident incident_id=ca5ffab9-25ff-413d-8000-12d3894b8468```
 
 ##### Human Readable Output
-
+Incident ca5ffab9-25ff-413d-8000-12d3894b8468 was deleted successfully.
 
 ### azure-sentinel-list-incident-comments
 ***
@@ -242,6 +257,13 @@ Get an incident comments from Azure Sentinel.
 ```!azure-sentinel-list-incident-comments incident_id=b3de6b49-0945-454e-bb59-98087573cfc2```
 
 ##### Human Readable Output
+### Incident b3de6b49-0945-454e-bb59-98087573cfc2 Comments (4 results)
+|ID|Incident ID|Message|Author Email|Created Time UTC|
+|---|---|---|---|---|
+| 295553115212022172880571041415135580062 | b3de6b49-0945-454e-bb59-98087573cfc2 | This is a message | avishai@demistodev.onmicrosoft.com | 2020-03-25T14:05:22Z |
+| 68963242547946961037852832278311632312 | b3de6b49-0945-454e-bb59-98087573cfc2 | hello 123 | avishai@demistodev.onmicrosoft.com | 2020-03-25T11:54:44Z |
+| 129016399225162631970999636732817548146 | b3de6b49-0945-454e-bb59-98087573cfc2 | Test message | avishai@demistodev.onmicrosoft.com | 2020-03-05T10:31:05Z |
+| 205343125729153100039024461040878407049 | b3de6b49-0945-454e-bb59-98087573cfc2 | This is test | avishai@demistodev.onmicrosoft.com | 2020-03-05T10:29:42Z |
 
 
 ### azure-sentinel-incident-add-comment
@@ -276,6 +298,10 @@ Add a comment to an incident in Azure Sentinel.
 ```!azure-sentinel-incident-add-comment incident_id=b3de6b49-0945-454e-bb59-98087573cfc2 message="hello"```
 
 ##### Human Readable Output
+### Incident b3de6b49-0945-454e-bb59-98087573cfc2 new comment details
+|ID|Incident ID|Message|Author Email|Created Time UTC|
+|---|---|---|---|---|
+| 22830063555802832669755633455570921192 | b3de6b49-0945-454e-bb59-98087573cfc2 | hello | avishai@demistodev.onmicrosoft.com | 2020-03-26T13:25:20Z |
 
 
 ### azure-sentinel-list-incident-relations
@@ -312,6 +338,10 @@ Get a list of an incident's related entities from Azure Sentinel.
 ```!azure-sentinel-list-incident-relations incident_id=b3de6b49-0945-454e-bb59-98087573cfc2```
 
 ##### Human Readable Output
+### Incident b3de6b49-0945-454e-bb59-98087573cfc2 Relations (1 results)
+|ID|Incident ID|Kind|
+|---|---|---|
+| f8f7a4c4-b617-4c7f-bdb2-321756dd1d21 | b3de6b49-0945-454e-bb59-98087573cfc2 | SecurityAlert |
 
 
 ### azure-sentinel-get-entity-by-id
@@ -337,6 +367,10 @@ There is no context output for this command.
 ```!azure-sentinel-get-entity-by-id entity_id=a7bb8825-64f4-87ba-b0f4-97b7784e28e5```
 
 ##### Human Readable Output
+### Entity a7bb8825-64f4-87ba-b0f4-97b7784e28e5 details
+|ID|Kind|Friendly Name|Resource Id|
+|---|---|---|---|
+| a7bb8825-64f4-87ba-b0f4-97b7784e28e5 | AzureResource | alerts | /subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourcegroups/cloud-shell-storage-eastus/providers/microsoft.compute/virtualmachines/alerts |
 
 
 ### azure-sentinel-list-entity-relations
@@ -370,7 +404,9 @@ Get a list of an entity's relations from Azure Sentinel.
 
 
 ##### Command Example
-```!azure-sentinel-list-entity-relations entity_id=sdfdsf```
+```!azure-sentinel-list-entity-relations entity_id=a7bb8825-64f4-87ba-b0f4-97b7784e28e5```
 
 ##### Human Readable Output
+### Entity a7bb8825-64f4-87ba-b0f4-97b7784e28e5 Relations (0 results)
+**No entries.**
 
