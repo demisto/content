@@ -8,7 +8,7 @@
   - ***fidelis-close-alert*** - Close an alert.
   - ***fidelis-assign-user-to-alert*** - Assign a user to an alert.
   - ***fidelis-get-alert-forensic-text*** - Gets the forensic text of an alert
-  - ***fidelis-alert-execution-forensics-submission*** - ￿Submit an alert with an executable file for execution foresnsics.
+  - ***fidelis-alert-execution-forensics-submission*** - Submit an alert with an executable file for execution foresnsics.
   - ***fidelis-manage-alert-label*** - Add, remove or change an alert label.
 
 ## [19.8.0] - 2019-08-06
