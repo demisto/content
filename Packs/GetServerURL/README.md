@@ -24,7 +24,6 @@ None
 
 ## Outputs
 ---
-There are no outputs for this script.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
