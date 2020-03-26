@@ -4562,9 +4562,9 @@ inputs:
   value:
     simple: "4"
   required: false
-  description: "The threshold for the severity value from which an automatic remediation\
-    \ takes place. \nSpecify the severity number (default is Critical):\n0 - Unknown\n\
-    0.5 - Informational\n1 - Low\n2 - Medium\n3 - High\n4 - Critical"
+  description: "The threshold for the severity value from which an automatic remediation
+    takes place. Specify the severity number (default is Critical): 0 - Unknown,
+    0.5 - Informational. 1 - Low, 2 - Medium, 3 - High, 4 - Critical"
 - key: internal_range
   value: {}
   required: false
