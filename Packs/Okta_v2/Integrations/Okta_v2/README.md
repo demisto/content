@@ -568,7 +568,7 @@ Searches for Okta users.
  ### Additional Data
 |Activated|Created|Credentials|ID|Last Login|Last Updated|Password Changed|Status|Status Changed|Type|_links|
 |---|---|---|---|---|---|---|---|---|---|---|
-| 2020-02-12T14:03:51.000Z | 2020-02-12T14:03:50.000Z | provider: {"type": "OKTA", "name": "OKTA"} | 00uppjeleqJQ2kkN80h7 |  | 2020-02-12T14:03:51.000Z |  | PROVISIONED |  | id: oty66lckcvDyVcGzS0h7 | self: {"href": "https://dev-725178.oktapreview.com/api/v1/users/00uppjeleqJQ2kkN80h7"} |
+| 2020-02-12T14:03:51.000Z | 2020-02-12T14:03:50.000Z | provider: {"type": "OKTA", "name": "OKTA"} | 00uppjeleqJQ2kkN80h7 |  | 2020-02-12T14:03:51.000Z |  | PROVISIONED |  | id: oty66lckcvDyVcGzS0h7 | self: {"href": "https://yourdomain.okta.com/api/v1/users/00uppjeleqJQ2kkN80h7"} |
 ### User:test@that.com
 ### Profile
 |Email|First Name|Last Name|Login|Mobile Phone|Second Email|
@@ -578,7 +578,7 @@ Searches for Okta users.
  ### Additional Data
 |Activated|Created|Credentials|ID|Last Login|Last Updated|Password Changed|Status|Status Changed|Type|_links|
 |---|---|---|---|---|---|---|---|---|---|---|
-| 2020-02-19T12:33:20.000Z | 2018-07-31T12:48:33.000Z | provider: {"type": "OKTA", "name": "OKTA"} | 00ufufhqits3y78Ju0h7 |  | 2020-02-19T12:33:20.000Z | 2020-02-06T13:32:56.000Z | PROVISIONED |  | id: oty66lckcvDyVcGzS0h7 | self: {"href": "https://dev-725178.oktapreview.com/api/v1/users/00ufufhqits3y78Ju0h7"} |
+| 2020-02-19T12:33:20.000Z | 2018-07-31T12:48:33.000Z | provider: {"type": "OKTA", "name": "OKTA"} | 00ufufhqits3y78Ju0h7 |  | 2020-02-19T12:33:20.000Z | 2020-02-06T13:32:56.000Z | PROVISIONED |  | id: oty66lckcvDyVcGzS0h7 | self: {"href": "https://yourdomain.okta.com/api/v1/users/00ufufhqits3y78Ju0h7"} |
 ### User:testForDocs@test.com
 ### Profile
 |Email|First Name|Last Name|Login|Mobile Phone|Second Email|
@@ -588,7 +588,7 @@ Searches for Okta users.
  ### Additional Data
 |Activated|Created|Credentials|ID|Last Login|Last Updated|Password Changed|Status|Status Changed|Type|_links|
 |---|---|---|---|---|---|---|---|---|---|---|
-| 2020-03-26T13:56:52.000Z | 2020-03-26T13:56:49.000Z | password: {}<br>recovery_question: {"question": "whats is your favourite integration"}<br>provider: {"type": "OKTA", "name": "OKTA"} | 00uqk1qesl3k0SRbH0h7 |  | 2020-03-26T13:56:52.000Z | 2020-03-26T13:56:50.000Z | ACTIVE |  | id: oty66lckcvDyVcGzS0h7 | self: {"href": "https://dev-725178.oktapreview.com/api/v1/users/00uqk1qesl3k0SRbH0h7"} |
+| 2020-03-26T13:56:52.000Z | 2020-03-26T13:56:49.000Z | password: {}recovery_question: {"question": "whats is your favourite integration"}provider: {"type": "OKTA", "name": "OKTA"} | 00uqk1qesl3k0SRbH0h7 |  | 2020-03-26T13:56:52.000Z | 2020-03-26T13:56:50.000Z | ACTIVE |  | id: oty66lckcvDyVcGzS0h7 | self: {"href": "https://yourdomain.okta.com/api/v1/users/00uqk1qesl3k0SRbH0h7"} |
 
 ### okta-get-user
 ***
@@ -652,7 +652,7 @@ Fetches information for a single user. You must enter one or more parameters for
  ### Additional Data
 |Activated|Created|Credentials|ID|Last Login|Last Updated|Password Changed|Status|Status Changed|Type|_links|
 |---|---|---|---|---|---|---|---|---|---|---|
-| 2020-03-26T13:56:52.000Z | 2020-03-26T13:56:49.000Z | password: {}<br>recovery_question: {"question": "whats is your favourite integration"}<br>provider: {"type": "OKTA", "name": "OKTA"} | 00uqk1qesl3k0SRbH0h7 |  | 2020-03-26T13:56:52.000Z | 2020-03-26T13:56:50.000Z | ACTIVE |  | id: oty66lckcvDyVcGzS0h7 | suspend: {"href": "https://dev-725178.oktapreview.com/api/v1/users/00uqk1qesl3k0SRbH0h7/lifecycle/suspend", "method": "POST"}<br>schema: {"href": "https://dev-725178.oktapreview.com/api/v1/meta/schemas/user/osc66lckcvDyVcGzS0h7"}<br>resetPassword: {"href": "https://dev-725178.oktapreview.com/api/v1/users/00uqk1qesl3k0SRbH0h7/lifecycle/reset_password", "method": "POST"}<br>forgotPassword: {"href": "https://dev-725178.oktapreview.com/api/v1/users/00uqk1qesl3k0SRbH0h7/credentials/forgot_password", "method": "POST"}<br>expirePassword: {"href": "https://dev-725178.oktapreview.com/api/v1/users/00uqk1qesl3k0SRbH0h7/lifecycle/expire_password", "method": "POST"}<br>changeRecoveryQuestion: {"href": "https://dev-725178.oktapreview.com/api/v1/users/00uqk1qesl3k0SRbH0h7/credentials/change_recovery_question", "method": "POST"}<br>self: {"href": "https://dev-725178.oktapreview.com/api/v1/users/00uqk1qesl3k0SRbH0h7"}<br>type: {"href": "https://dev-725178.oktapreview.com/api/v1/meta/types/user/oty66lckcvDyVcGzS0h7"}<br>changePassword: {"href": "https://dev-725178.oktapreview.com/api/v1/users/00uqk1qesl3k0SRbH0h7/credentials/change_password", "method": "POST"}<br>deactivate: {"href": "https://dev-725178.oktapreview.com/api/v1/users/00uqk1qesl3k0SRbH0h7/lifecycle/deactivate", "method": "POST"} |
+| 2020-03-26T13:56:52.000Z | 2020-03-26T13:56:49.000Z | password: {}recovery_question: {"question": "whats is your favourite integration"} provider: {"type": "OKTA", "name": "OKTA"} | 00uqk1qesl3k0SRbH0h7 |  | 2020-03-26T13:56:52.000Z | 2020-03-26T13:56:50.000Z | ACTIVE |  | id: oty66lckcvDyVcGzS0h7 | links|
 
 
 ### okta-create-user
@@ -879,7 +879,7 @@ Enumerates all users that are members of a group.
  ### Additional Data
 |Activated|Created|Credentials|ID|Last Login|Last Updated|Password Changed|Status|Status Changed|Type|_links|
 |---|---|---|---|---|---|---|---|---|---|---|
-|  | 2016-04-12T15:01:52.000Z | password: {}<br>recovery_question: {"question": "born city"}<br>provider: {"type": "OKTA", "name": "OKTA"} | 00u66lckd7lpjidYi0h7 | 2020-03-12T09:54:36.000Z | 2020-02-24T11:42:22.000Z | 2020-02-24T11:40:08.000Z | ACTIVE |  | id: oty66lckcyVcGzS0h7 | self: {"href": "https://dev-725178.oktapreview.com/api/v1/users/00uclpjidYi0h7"} |
+|  | 2016-04-12T15:01:52.000Z | password: {} recovery_question: {"question": "born city"} provider: {"type": "OKTA", "name": "OKTA"} | 00u66lckd7lpjidYi0h7 | 2020-03-12T09:54:36.000Z | 2020-02-24T11:42:22.000Z | 2020-02-24T11:40:08.000Z | ACTIVE |  | id: oty66lckcyVcGzS0h7 | self: {"href": "https://yourdomain.okta.com/api/v1/users/00uclpjidYi0h7"} |
 
 
 ### okta-list-groups
@@ -895,7 +895,7 @@ Lists groups in your organization. A subset of groups can be returned that match
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | Searches the name property of groups for matching values. | Optional | 
-| filter | Useful for performing structured queries where constraints on group attribute values can be explicitly targeted. <br>The following expressions are supported(among others) for groups with the filter query parameter: <br>type eq "OKTA_GROUP" - Groups that have a type of OKTA_GROUP; lastUpdated lt "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with profile last updated before a specific timestamp; lastMembershipUpdated eq "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with memberships last updated at a specific timestamp; id eq "00g1emaKYZTWRYYRRTSK" - Group with a specified ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering | Optional | 
+| filter | Useful for performing structured queries where constraints on group attribute values can be explicitly targeted. The following expressions are supported(among others) for groups with the filter query parameter: type eq "OKTA_GROUP" - Groups that have a type of OKTA_GROUP; lastUpdated lt "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with profile last updated before a specific timestamp; lastMembershipUpdated eq "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with memberships last updated at a specific timestamp; id eq "00g1emaKYZTWRYYRRTSK" - Group with a specified ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering | Optional | 
 | limit | The maximum number of results to return. The default is 200. | Optional | 
 
 
@@ -1120,8 +1120,8 @@ Gets logs by providing optional filters.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Useful for performing structured queries where constraints on LogEvent attribute values can be explicitly targeted.  <br>The following expressions are supported for events with the filter query parameter: eventType eq " :eventType" <br>-Events that have a specific action; eventType target.id eq ":id" <br>- Events published with a specific target id; actor.id eq ":id"<br>- Events published with a specific actor ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering | Optional | 
-| query | The query parameter can be used to perform keyword matching against a LogEvents object’s attribute values. In order to satisfy the constraint, all supplied keywords must be matched exactly. Note that matching is case-insensitive.  The following are some examples of common keyword filtering: <br>Events that mention a specific city: query=San Francisco; <br>Events that mention a specific url: query=interestingURI.com; <br>Events that mention a specific person: query=firstName lastName. | Optional | 
+| filter | Useful for performing structured queries where constraints on LogEvent attribute values can be explicitly targeted.   The following expressions are supported for events with the filter query parameter: eventType eq " :eventType"  -Events that have a specific action; eventType target.id eq ":id"  - Events published with a specific target id; actor.id eq ":id" - Events published with a specific actor ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering | Optional | 
+| query | The query parameter can be used to perform keyword matching against a LogEvents object’s attribute values. In order to satisfy the constraint, all supplied keywords must be matched exactly. Note that matching is case-insensitive.  The following are some examples of common keyword filtering:  Events that mention a specific city: query=San Francisco;  Events that mention a specific url: query=interestingURI.com;  Events that mention a specific person: query=firstName lastName. | Optional | 
 | since | Filters the lower time bound of the log events in the Internet Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z. | Optional | 
 | until | Filters the upper  time bound of the log events in the Internet Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z. | Optional | 
 | sortOrder | The order of the returned events. Can be "ASCENDING" or "DESCENDING". The default is "ASCENDING". | Optional | 
@@ -1288,7 +1288,7 @@ Gets logs by providing optional filters.
 ### Okta Events
 |Actor|ActorAlternaneId|ChainIP|Client|EventInfo|EventOutcome|EventSeverity|RequestIP|Targets|Time|
 |---|---|---|---|---|---|---|---|---|---|
-| Test Demisto (User) | Test@demisto.com | 127.0.0.1 | Unknown browser on Unknown OS Unknown device | Remove user from group membership | SUCCESS | INFO | 127.0.0.1 | test this (User)<br>test1 (UserGroup)<br> | 03/03/2020, 20:23:17 |
+| Test Demisto (User) | Test@demisto.com | 127.0.0.1 | Unknown browser on Unknown OS Unknown device | Remove user from group membership | SUCCESS | INFO | 127.0.0.1 | test this (User) test1 (UserGroup)  | 03/03/2020, 20:23:17 |
 
 
 ### okta-get-group-assignments
@@ -1468,7 +1468,7 @@ Gets events for when a user was added to a group.
 ### Group Assignment Events
 |Actor|ActorAlternaneId|ChainIP|Client|EventInfo|EventOutcome|EventSeverity|RequestIP|Targets|Time|
 |---|---|---|---|---|---|---|---|---|---|
-| Test Demisto (User) | Test@demisto.com | 127.0.0.1 | Unknown browser on Unknown OS Unknown device | Add user to group membership | SUCCESS | INFO | 127.0.0.1 | test this (User)<br>test1 (UserGroup)<br> | 09/29/2019, 03:47:46 |
+| Test Demisto (User) | Test@demisto.com | 127.0.0.1 | Unknown browser on Unknown OS Unknown device | Add user to group membership | SUCCESS | INFO | 127.0.0.1 | test this (User) test1 (UserGroup)  | 09/29/2019, 03:47:46 |
 
 
 ### okta-get-application-assignments
@@ -1656,7 +1656,7 @@ Returns events for when a user was assigned to an application.
 ### Application Assignment Events
 |Actor|ActorAlternaneId|ChainIP|Client|EventInfo|EventOutcome|EventSeverity|RequestIP|Targets|Time|
 |---|---|---|---|---|---|---|---|---|---|
-| Test Demisto (User) | Test@demisto.com | 127.0.0.1 | Unknown browser on Unknown OS Unknown device | Add user to application membership | SUCCESS | INFO | 127.0.0.1 | Test 1 that (AppUser)<br>ShrikSAML (AppInstance)<br>Test 1 that (User)<br> | 02/27/2020, 17:55:12 |
+| Test Demisto (User) | Test@demisto.com | 127.0.0.1 | Unknown browser on Unknown OS Unknown device | Add user to application membership | SUCCESS | INFO | 127.0.0.1 | Test 1 that (AppUser) ShrikSAML (AppInstance) Test 1 that (User)  | 02/27/2020, 17:55:12 |
 
 
 ### okta-get-application-authentication
@@ -1841,7 +1841,7 @@ Returns logs using specified filters.
 ### Application Authentication Events
 |Actor|ActorAlternaneId|ChainIP|Client|EventInfo|EventOutcome|EventSeverity|RequestIP|Targets|Time|
 |---|---|---|---|---|---|---|---|---|---|
-| Test Demisto (User) | Test@demisto.com | 127.0.0.1 | CHROME on Mac OS X Computer | User single sign on to app | SUCCESS | INFO | 127.0.0.1 | BenziPermanent (AppInstance)<br>Test Demisto (AppUser)<br> | 10/14/2019, 12:16:53 |
+| Test Demisto (User) | Test@demisto.com | 127.0.0.1 | CHROME on Mac OS X Computer | User single sign on to app | SUCCESS | INFO | 127.0.0.1 | BenziPermanent (AppInstance) Test Demisto (AppUser)  | 10/14/2019, 12:16:53 |
 
 
 ### okta-delete-user
