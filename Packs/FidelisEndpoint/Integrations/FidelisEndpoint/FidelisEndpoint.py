@@ -771,9 +771,9 @@ def host_info_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
         })
 
         context_standards.append({
-            'HostName': host.get('hostName'),
+            'Hostname': host.get('hostName'),
             'ID': host.get('id'),
-            'IpAddress': host.get('ipAddress'),
+            'IPAddress': host.get('ipAddress'),
             'OS': host.get('os'),
             'MACAddress': host.get('macAddress'),
             'Processor': host.get('processorName')
