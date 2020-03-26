@@ -29,7 +29,7 @@ Microsoft Defender Advanced Threat Protection Get Machine Action Status
     * __Severity to filter out alerts for fetching as incidents. The property values are: Informational,Low,Medium,High (Comma separated values supported, e.g. Medium,High)__
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
-    * __First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)__
+    * __First fetch timestamp (*number* *time unit*, e.g., 12 hours, 7 days)__
 4. Click __Test__ to validate the URLs, token, and connection.
 ## Fetched Incidents Data
 1. id
