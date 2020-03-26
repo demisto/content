@@ -1,5 +1,6 @@
 {
     "displayName": "FidelisEndpoint",
+    "name": "FidelisEndpoint",
     "description": "",
     "support": "demisto",
     "serverMinVersion": "",
@@ -20,5 +21,6 @@
     "certification": "",
     "useCases": [],
     "keywords": [],
-    "dependencies": {}
+    "dependencies": {},
+    "price": 0
 }
