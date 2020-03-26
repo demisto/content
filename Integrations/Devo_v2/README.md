@@ -226,7 +226,7 @@ Devo get alerts results
 
 |eventdate|alertHost|domain|priority|context|category|status|alertId|srcIp|srcPort|srcHost|dstIp|dstPort|dstHost|protocol|username|application|engine|extraData|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-|2019-10-23T18:18:07.320000|backoffice|helloworld|5.0|my.alert.helloworld.simultaneous_login|my.context|4|6715552||||||||||pilot.my.alert.helloworld.simultaneous_login|duration_seconds: 30.142<br>cluster: -<br>prev_timestamp: 2019-10-23+18:17:29.652<br>instance: -<br>distance: 294.76<br>level: info<br>city: Secaucus<br>srcHost: 1.2.3.4<br>prev_city: Waltham<br>format: output_qs9n126lnvh<br>prev_geolocation: 42°23'49.925537109375"N+71°14'36.2420654296875"W<br>message: 0,9,31,49,69,77,123,136,149,156,204,217,231<>ANOMALOUSjohn.doe@devo.com294.755774516937950.008372777777777778Secaucus40°47'15.36529541015625"N+74°3'35.9912109375"W15718546797941.2.3.4Waltham42°23'49.925537109375"N+71°14'36.2420654296875"W157185464965250.204.142.130<br>eventdate: 2019-10-23+18:18:02.087<br>prev_srcHost: 50.204.142.130<br>duration: 0.008372777777777778<br>indices: 0,9,31,49,69,77,123,136,149,156,204,217,231<br>payload: ANOMALOUSjohn.doe@devo.com294.755774516937950.008372777777777778Secaucus40°47'15.36529541015625"N+74°3'35.9912109375"W15718546797941.2.3.4Waltham42°23'49.925537109375"N+71°14'36.2420654296875"W157185464965250.204.142.130<br>state: ANOMALOUS<br>category: modelserverdev<br>facility: user<br>username: john.doe@devo.com<br>geolocation: 40°47'15.36529541015625"N+74°3'35.9912109375"W<br>timestamp: 2019-10-23+18:17:59.794|
+|2019-10-23T18:18:07.320000|backoffice|helloworld|5.0|my.alert.helloworld.simultaneous_login|my.context|4|6715552||||||||||pilot.my.alert.helloworld.simultaneous_login|duration_seconds: 30.142<br/>cluster: -<br/>prev_timestamp: 2019-10-23+18:17:29.652<br/>instance: -<br/>distance: 294.76<br/>level: info<br/>city: Secaucus<br/>srcHost: 1.2.3.4<br/>prev_city: Waltham<br/>format: output_qs9n126lnvh<br/>prev_geolocation: 42°23'49.925537109375"N+71°14'36.2420654296875"W<br/>message: 0,9,31,49,69,77,123,136,149,156,204,217,231&lt;&gt;ANOMALOUSjohn.doe@devo.com294.755774516937950.008372777777777778Secaucus40°47'15.36529541015625"N+74°3'35.9912109375"W15718546797941.2.3.4Waltham42°23'49.925537109375"N+71°14'36.2420654296875"W157185464965250.204.142.130<br/>eventdate: 2019-10-23+18:18:02.087<br/>prev_srcHost: 50.204.142.130<br/>duration: 0.008372777777777778<br/>indices: 0,9,31,49,69,77,123,136,149,156,204,217,231<br/>payload: ANOMALOUSjohn.doe@devo.com294.755774516937950.008372777777777778Secaucus40°47'15.36529541015625"N+74°3'35.9912109375"W15718546797941.2.3.4Waltham42°23'49.925537109375"N+71°14'36.2420654296875"W157185464965250.204.142.130<br/>state: ANOMALOUS<br/>category: modelserverdev<br/>facility: user<br/>username: john.doe@devo.com<br/>geolocation: 40°47'15.36529541015625"N+74°3'35.9912109375"W<br/>timestamp: 2019-10-23+18:17:59.794|
 
 |DevoTableLink|
 |---|
@@ -378,7 +378,7 @@ N/A
 ## Additional Information
 ---
 #### Youtube Video Demo (Click Image, Will redirect to youtube)
-[![Devo-Demisto Plugin Demo](http://img.youtube.com/vi/jyUqEcWOXfU/0.jpg)](http://www.youtube.com/watch?v=jyUqEcWOXfU "Devo Demisto Demo")
+[![Devo-Demisto Plugin Demo](https://img.youtube.com/vi/jyUqEcWOXfU/0.jpg)](https://www.youtube.com/watch?v=jyUqEcWOXfU "Devo Demisto Demo")
 
 ## Known Limitations
 ---
