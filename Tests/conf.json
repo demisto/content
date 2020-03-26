@@ -2536,6 +2536,7 @@
         }
     ],
     "skipped_tests": {
+        "IntSights Test": "Issue 22185",
         "test_MsGraphFiles": "Issue 22853 ",
         "TestCofenseFeed": "Issue 22854",
         "RecordedFutureFeed - Test": "Issue 22855",
