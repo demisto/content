@@ -524,6 +524,12 @@ inputs:
   required: true
   description: Select a method for identifying duplicate incidents. Can be "ml", "rules",
     or "text".
+    'rules' - defines specific rules, such as similar incident fields & labels. This method would work best if you
+    know the exact logic to find similar incidents.
+    'text' - text similarity, based on TF-IDF - unique word frequency in the incidents
+    (based on similar incident fields)
+    'ml' - machine learning model, was trained on similar phishing incidents. considers similar labels,
+    incident fields and indicators.
 - key: DuplicateThreshold
   value:
     simple: "0.9"
@@ -569,7 +575,7 @@ inputs:
     if one is substring of the other. Relevant for ''Rules'' method.'
 - key: 'similarIncidentFields '
   value:
-    simple: name,type
+    simple: name,type,details
   required: false
   description: Fields to compare. Can be label name, incident fields or custom fields.
     Comma separated value. Relevant for 'Text' and 'Rules' methods.
@@ -581,4 +587,4 @@ outputs:
   description: The similar incident.
   type: unknown
 tests:
-  - dedup_-_generic_-_test
+  - dedup_-_generic_v2_-_test
