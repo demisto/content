@@ -2,7 +2,6 @@
 ---
 
 Microsoft Defender Advanced Threat Protection (ATP) is a unified platform for preventative protection, post-breach detection, automated investigation, and response.
-This integration was integrated and tested with version xx of Microsoft Defender Advanced Threat Protection
 ## Microsoft Defender Advanced Threat Protection Playbook
 ---
 Microsoft Defender Advanced Threat Protection Get Machine Action Status
@@ -2171,7 +2170,7 @@ Retrieves a collection of alerts related to a given user ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | The user ID.  Note that the ID is not the full UPN, but only the user name.<br> (e.g., to retrieve alerts for user1@test.com use user1) | Required | 
+| username | The user ID.  Note that the ID is not the full UPN, but only the user name. (e.g., to retrieve alerts for user1@test.com use user1) | Required | 
 
 
 ##### Context Output
@@ -2349,7 +2348,7 @@ Retrieves a collection of machines related to a given user ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | The user ID.  Note that the id is not the full UPN, but only the user name.<br>(e.g., to retrieve machines for user1@test.com use user1) | Required | 
+| username | The user ID.  Note that the id is not the full UPN, but only the user name. (e.g., to retrieve machines for user1@test.com use user1) | Required | 
 
 
 ##### Context Output
