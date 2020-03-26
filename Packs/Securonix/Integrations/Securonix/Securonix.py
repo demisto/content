@@ -916,7 +916,7 @@ def perform_action_on_incident(client: Client, args: Dict) -> Tuple[str, Dict, D
     """
     incident_id = str(args.get('incident_id'))
     action = str(args.get('action'))
-    action_parameters = str(args.get('action_parameters'))
+    action_parameters = str(args.get('action_parameters', ''))
     incident_result = client.perform_action_on_incident_request(incident_id, action, action_parameters)
     if incident_result != 'submitted':
         raise Exception(f'Failed to perform the action {action} on incident {incident_id}.')
