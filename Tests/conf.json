@@ -9,6 +9,11 @@
             "timeout": 1000
         },
         {
+            "integrations": "Cisco Firepower",
+            "playbookID": "Cisco Firepower - Test",
+            "timeout": 1000
+        },
+        {
             "integrations": "Plain Text Feed",
             "playbookID": "PlainText Feed - Test",
             "fromversion": "5.5.0"
