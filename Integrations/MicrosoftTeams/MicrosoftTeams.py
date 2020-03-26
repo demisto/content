@@ -1499,6 +1499,7 @@ def ring_user_request(call_request_data):
     return http_request(method='POST', url=f'{GRAPH_BASE_URL}/v1.0/communications/calls',
                         json_=call_request_data)
 
+
 def ring_user():
     """Rings a user on Teams.
 
