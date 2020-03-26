@@ -8,7 +8,7 @@ configuration:
   name: url
   required: true
   type: 0
-- display: ID (received from the admin consent - see Detailed Instructions (?)
+- display: ID (received from the admin consent - see Detailed Instructions (?) section)
   name: auth_id
   required: true
   type: 4
@@ -17,7 +17,7 @@ configuration:
   name: tenant_id
   required: true
   type: 4
-- display: Key (received from the admin consent - see Detailed Instructions (?)
+- display: Key (received from the admin consent - see Detailed Instructions (?) section)
   name: enc_key
   required: true
   type: 4
@@ -80,14 +80,14 @@ script:
       required: true
       secret: false
     - default: false
-      description: Comment to associate with the action.
+      description: A comment to associate with the action.
       isArray: false
       name: comment
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Full isolation or selective isolation (Restrict only limited set
+      description: Full isolation or Selective isolation (Restrict only limited set
         of applications from accessing the network)
       isArray: false
       name: isolation_type
@@ -169,7 +169,7 @@ script:
       description: The ID of the user that executed the action
       type: String
     - contextPath: MicrosoftATP.MachineAction.RequestorComment
-      description: Comment that was written when issuing the action.
+      description: The comment that was written when issuing the action
       type: String
     - contextPath: MicrosoftATP.MachineAction.Status
       description: The current status of the command
@@ -181,34 +181,34 @@ script:
       description: The machine DNS name on which the action was executed
       type: String
     - contextPath: MicrosoftATP.MachineAction.CreationDateTimeUtc
-      description: The date and time when the action was created.
+      description: The date and time when the action was created
       type: Date
     - contextPath: MicrosoftATP.MachineAction.LastUpdateTimeUtc
-      description: The last date and time when the action status was updated.
+      description: The last date and time when the action status was updated
       type: Date
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier
       description: The fileIdentifier
       type: String
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
-      description: 'The type of the file identifier with the possible values: "Sha1"
-        ,"Sha256" and "Md5"'
+      description: 'The type of the file identifier with the possible values: "SHA1"
+        ,"SHA256" and "MD5"'
       type: String
   - arguments:
     - default: false
-      description: Computer DNS name
+      description: The computer DNS name.
       isArray: false
       name: hostname
       required: false
       secret: false
     - default: false
-      description: Machine last external IP address
+      description: The last machine IP to access the internet.
       isArray: false
       name: ip
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Machine risk score
+      description: The machine risk score.
       isArray: false
       name: risk_score
       predefined:
@@ -219,7 +219,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Machine health status
+      description: The machine health status.
       isArray: false
       name: health_status
       predefined:
@@ -228,7 +228,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Machine's OS platform, only one can be added
+      description: The machine's OS platform. Only a single platform can be added.
       isArray: false
       name: os_platform
       required: false
@@ -246,39 +246,39 @@ script:
       description: The machine DNS name
       type: String
     - contextPath: MicrosoftATP.Machine.FirstSeen
-      description: First date and time where the machine was observed by Microsoft
+      description: The first date and time where the machine was observed by Microsoft
         Defender ATP
       type: Date
     - contextPath: MicrosoftATP.Machine.LastSeen
-      description: Last date and time where the machine was observed by Microsoft
+      description: The last date and time where the machine was observed by Microsoft
         Defender ATP
       type: Date
     - contextPath: MicrosoftATP.Machine.OSPlatform
-      description: Operating system platform
+      description: The operating system platform
       type: String
     - contextPath: MicrosoftATP.Machine.OSVersion
-      description: Operating system Version
+      description: The operating system Version
       type: String
     - contextPath: MicrosoftATP.Machine.OSProcessor
-      description: Operating system processor
+      description: The operating system processor
       type: String
     - contextPath: MicrosoftATP.Machine.LastIPAddress
-      description: Last IP on the machine
+      description: The last IP on the machine
       type: String
     - contextPath: MicrosoftATP.Machine.LastExternalIPAddress
-      description: Last IP through which the machine accessed the internet
+      description: The last machine IP to access the internet
       type: String
     - contextPath: MicrosoftATP.Machine.OSBuild
-      description: Operating system build number
+      description: The operating system build number
       type: Number
     - contextPath: MicrosoftATP.Machine.HealthStatus
-      description: Machine health status
+      description: The machine health status
       type: String
     - contextPath: MicrosoftATP.Machine.RBACGroupID
-      description: Machine RBAC group ID
+      description: The machine RBAC group ID
       type: Number
     - contextPath: MicrosoftATP.Machine.RBACGroupName
-      description: Machine RBAC group Name
+      description: The machine RBAC group Name
       type: String
     - contextPath: MicrosoftATP.Machine.RiskScore
       description: The machine risk score
@@ -287,10 +287,10 @@ script:
       description: The machine exposure score
       type: String
     - contextPath: MicrosoftATP.Machine.IsAADJoined
-      description: True if machine is AAD joined, else false
+      description: True if machine is AAD joined, False otherwise
       type: Boolean
     - contextPath: MicrosoftATP.Machine.AADDeviceID
-      description: AAD Device ID
+      description: The AAD Device ID
       type: String
     - contextPath: MicrosoftATP.Machine.MachineTags
       description: Set of machine tags
@@ -308,45 +308,45 @@ script:
     name: microsoft-atp-get-file-related-machines
     outputs:
     - contextPath: MicrosoftATP.FileMachine.Machines.ID
-      description: Machine ID
+      description: The machine ID
       type: String
     - contextPath: MicrosoftATP.FileMachine.Machines.ComputerDNSName
-      description: Machine fully qualified name
+      description: The machine DNS name
       type: String
     - contextPath: MicrosoftATP.FileMachine.Machines.FirstSeen
-      description: First date and time where the machine was observed by Microsoft
+      description: The first date and time where the machine was observed by Microsoft
         Defender ATP
       type: Date
     - contextPath: MicrosoftATP.FileMachine.Machines.LastSeen
-      description: Last date and time where the machine was observed by Microsoft
+      description: The last date and time where the machine was observed by Microsoft
         Defender ATP
       type: Date
     - contextPath: MicrosoftATP.FileMachine.Machines.OSPlatform
-      description: Operating system platform
+      description: The operating system platform
       type: String
     - contextPath: MicrosoftATP.FileMachine.Machines.OSVersion
-      description: Operating system Version
+      description: The operating system Version
       type: String
     - contextPath: MicrosoftATP.Machine.OSProcessor
-      description: Operating system processor
+      description: The operating system processor
       type: String
     - contextPath: MicrosoftATP.FileMachine.Machines.OSBuild
       description: Operating system build number
       type: Number
     - contextPath: MicrosoftATP.FileMachine.Machines.LastIPAddress
-      description: Last IP on the machine
+      description: The last IP on the machine
       type: String
     - contextPath: MicrosoftATP.FileMachine.Machines.LastExternalIPAddress
-      description: Last IP through which the machine accessed the internet
+      description: The last machine IP to access the internet
       type: String
     - contextPath: MicrosoftATP.FileMachine.Machines.HelathStatus
-      description: Machine health status
+      description: The machine health status
       type: String
     - contextPath: MicrosoftATP.FileMachine.Machines.RBACGroupID
-      description: Machine RBAC group ID
+      description: The machine RBAC group ID
       type: Number
     - contextPath: MicrosoftATP.FileMachine.Machines.RBACGroupName
-      description: Machine RBAC group Name
+      description: The machine RBAC group Name
       type: String
     - contextPath: MicrosoftATP.FileMachine.Machines.RiskScore
       description: The machine risk score
@@ -355,16 +355,16 @@ script:
       description: The machine exposure score
       type: String
     - contextPath: MicrosoftATP.FileMachine.Machines.IsAADJoined
-      description: True if machine is AAD joined, else false
+      description: True if machine is AAD joined, False otherwise
       type: Boolean
     - contextPath: MicrosoftATP.FileMachine.Machines.AADDeviceID
-      description: AAD Device ID
+      description: The AAD Device ID
       type: string
     - contextPath: MicrosoftATP.FileMachine.Machines.MachineTags
       description: Set of machine tags
       type: String
     - contextPath: MicrosoftATP.FileMachine.File
-      description: Machine related file hash
+      description: The machine related file hash
       type: String
   - arguments:
     - default: true
@@ -385,39 +385,39 @@ script:
       description: The machine DNS name
       type: String
     - contextPath: MicrosoftATP.Machine.FirstSeen
-      description: First date and time where the machine was observed by Microsoft
+      description: The first date and time where the machine was observed by Microsoft
         Defender ATP
       type: Date
     - contextPath: MicrosoftATP.Machine.LastSeen
-      description: Last date and time where the machine was observed by Microsoft
+      description: The last date and time where the machine was observed by Microsoft
         Defender ATP
       type: Date
     - contextPath: MicrosoftATP.Machine.OSPlatform
-      description: Operating system platform
+      description: The operating system platform
       type: String
     - contextPath: MicrosoftATP.Machine.OSVersion
-      description: Operating system Version
+      description: The operating system Version
       type: String
     - contextPath: MicrosoftATP.Machine.OSProcessor
-      description: Operating system processor
+      description: The operating system processor
       type: String
     - contextPath: MicrosoftATP.Machine.LastIPAddress
-      description: Last IP on the machine
+      description: The last IP on the machine
       type: String
     - contextPath: MicrosoftATP.Machine.LastExternalIPAddress
-      description: Last IP through which the machine accessed the internet
+      description: The last machine IP to access the internet
       type: String
     - contextPath: MicrosoftATP.Machine.OSBuild
-      description: Operating system build number
+      description: The operating system build number
       type: Number
     - contextPath: MicrosoftATP.Machine.HealthStatus
-      description: Machine health status
+      description: The machine health status
       type: String
     - contextPath: MicrosoftATP.Machine.RBACGroupID
-      description: Machine RBAC group ID
+      description: The machine RBAC group ID
       type: Number
     - contextPath: MicrosoftATP.Machine.RBACGroupName
-      description: Machine RBAC group Name
+      description: The machine RBAC group Name
       type: String
     - contextPath: MicrosoftATP.Machine.RiskScore
       description: The machine risk score
@@ -426,30 +426,30 @@ script:
       description: The machine exposure level
       type: String
     - contextPath: MicrosoftATP.Machine.IsAADJoined
-      description: True if machine is AAD joined, else false
+      description: True if machine is AAD joined, False otherwise
       type: Boolean
     - contextPath: MicrosoftATP.Machine.AADDeviceID
-      description: AAD Device ID
+      description: The AAD Device ID
       type: String
     - contextPath: MicrosoftATP.Machine.MachineTags
       description: Set of machine tags
       type: String
   - arguments:
     - default: false
-      description: Machine ID to run the scan on
+      description: The machine ID to run the scan on.
       isArray: false
       name: machine_id
       required: true
       secret: false
     - default: false
-      description: Comment to associate with the action
+      description: A comment to associate with the action.
       isArray: false
       name: comment
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Defines the type of the scan
+      description: Defines the type of the scan.
       isArray: false
       name: scan_type
       predefined:
@@ -458,7 +458,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Initiate Microsoft Defender Antivirus scan on a machine
+    description: Initiate Microsoft Defender Antivirus scan on a machine.
     execution: false
     name: microsoft-atp-run-antivirus-scan
     outputs:
@@ -466,22 +466,22 @@ script:
       description: The machine action ID
       type: String
     - contextPath: MicrosoftATP.MachineAction.Type
-      description: Type of the action
+      description: The type of the action
       type: String
     - contextPath: MicrosoftATP.MachineAction.Scope
-      description: Scope of the action
+      description: The scope of the action
       type: Unknown
     - contextPath: MicrosoftATP.MachineAction.Requestor
-      description: The ID of the user that executed the action.
+      description: The ID of the user that executed the action
       type: String
     - contextPath: MicrosoftATP.MachineAction.RequestorComment
-      description: Comment that was written when issuing the action.
+      description: The comment that was written when issuing the action
       type: String
     - contextPath: MicrosoftATP.MachineAction.Status
       description: The current status of the command
       type: String
     - contextPath: MicrosoftATP.MachineAction.MachineID
-      description: The machine ID on which the action was executed.
+      description: The machine ID on which the action was executed
       type: String
     - contextPath: MicrosoftATP.MachineAction.ComputerDNSName
       description: The machine DNS name on which the action was executed
@@ -493,16 +493,16 @@ script:
       description: The last date and time when the action status was updated
       type: Date
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier
-      description: The fileIdentifier
+      description: The file identifier
       type: String
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
-      description: 'The type of the file identifier with the possible values: "Sha1"
-        ,"Sha256" and "Md5"'
+      description: 'The type of the file identifier with the possible values: "SHA1"
+        ,"SHA256" and "MD5"'
       type: String
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Alert severity
+      description: Alert severity.
       isArray: false
       name: severity
       predefined:
@@ -514,7 +514,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Alert status
+      description: Alert status.
       isArray: false
       name: status
       predefined:
@@ -524,19 +524,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: Alert category, only one can be added
+      description: Alert category, only one can be added.
       isArray: false
       name: category
       required: false
       secret: false
     deprecated: false
     description: Get a list of alerts present on the system. Filtering can be done
-      only on one argument
+      only on one argument.
     execution: false
     name: microsoft-atp-list-alerts
     outputs:
     - contextPath: MicrosoftATP.Alert.ID
-      description: Alert ID
+      description: The alert ID
       type: String
     - contextPath: MicrosoftATP.Alert.IncidentID
       description: The Incident ID of the Alert
@@ -563,19 +563,19 @@ script:
       description: The determination of the alert
       type: String
     - contextPath: MicrosoftATP.Alert.DetectionSource
-      description: Detection source
+      description: The detection source
       type: String
     - contextPath: MicrosoftATP.Alert.Category
-      description: Category of the alert
+      description: The category of the alert
       type: String
     - contextPath: MicrosoftATP.Alert.ThreatFamilyName
-      description: Threat family
+      description: The threat family
       type: String
     - contextPath: MicrosoftATP.Alert.Title
-      description: Alert title
+      description: The alert title
       type: String
     - contextPath: MicrosoftATP.Alert.Description
-      description: Alert description
+      description: The alert description
       type: String
     - contextPath: MicrosoftATP.Alert.AlertCreationTime
       description: The date and time the alert was created
@@ -594,33 +594,33 @@ script:
         to 'Resolved'
       type: Date
     - contextPath: MicrosoftATP.Alert.MachineID
-      description: The mahine ID that is associated with the alert
+      description: The machine ID that is associated with the alert
       type: String
     - contextPath: MicrosoftATP.Alert.ComputerDNSName
       description: The machine DNS name
       type: String
     - contextPath: MicrosoftATP.Alert.AADTenantID
-      description: AAD Tenant ID
+      description: The AAD tenant ID
       type: String
     - contextPath: MicrosoftATP.Alert.Comments.Comment
-      description: Alert Comment string
+      description: The alert comment string
       type: String
     - contextPath: MicrosoftATP.Alert.Comments.CreatedBy
-      description: Alert Comment created by string
+      description: The alert comment created by string
       type: String
     - contextPath: MicrosoftATP.Alert.Comments.CreatedTime
-      description: Alert Comment create time date
+      description: The alert comment create time date
       type: Date
   - arguments:
     - default: false
-      description: Alert ID to update
+      description: Alert ID to update.
       isArray: false
       name: alert_id
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Alert status to update
+      description: Alert status to update.
       isArray: false
       name: status
       predefined:
@@ -630,14 +630,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Owner of the alert
+      description: Owner of the alert.
       isArray: false
       name: assigned_to
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specifies the specification of the alert
+      description: Specifies the specification of the alert.
       isArray: false
       name: classification
       predefined:
@@ -648,7 +648,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specifies the determination of the alert
+      description: Specifies the determination of the alert.
       isArray: false
       name: determination
       predefined:
@@ -668,18 +668,18 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Update the properties of an alert entity
+    description: Update the properties of an alert entity.
     execution: false
     name: microsoft-atp-update-alert
     outputs:
     - contextPath: MicrosoftATP.Alert.ID
-      description: Alert ID
+      description: The alert ID
       type: String
     - contextPath: MicrosoftATP.Alert.IncidentID
-      description: The Incident ID of the Alert
+      description: The Incident ID of the alert
       type: Number
     - contextPath: MicrosoftATP.Alert.InvestigationID
-      description: The Investigation ID related to the Alert
+      description: The Investigation ID related to the alert
       type: Number
     - contextPath: MicrosoftATP.Alert.InvestigationState
       description: The current state of the Investigation
@@ -694,25 +694,25 @@ script:
       description: The current status of the alert
       type: String
     - contextPath: MicrosoftATP.Alert.Classification
-      description: The alert Classification
+      description: The alert classification
       type: String
     - contextPath: MicrosoftATP.Alert.Determination
       description: The determination of the alert
       type: String
     - contextPath: MicrosoftATP.Alert.DetectionSource
-      description: Detection source
+      description: The detection source
       type: String
     - contextPath: MicrosoftATP.Alert.Category
-      description: Category of the alert
+      description: The category of the alert
       type: String
     - contextPath: MicrosoftATP.Alert.ThreatFamilyName
-      description: Threat family
+      description: The threat family
       type: String
     - contextPath: MicrosoftATP.Alert.Title
-      description: Alert title
+      description: The alert title
       type: String
     - contextPath: MicrosoftATP.Alert.Description
-      description: Alert description
+      description: The alert description
       type: String
     - contextPath: MicrosoftATP.Alert.AlertCreationTime
       description: The date and time the alert was created
@@ -737,16 +737,16 @@ script:
       description: The machine DNS name
       type: String
     - contextPath: MicrosoftATP.Alert.AADTenantID
-      description: AAD Tenant ID
+      description: The AAD tenant ID
       type: String
     - contextPath: MicrosoftATP.Alert.Comments.Comment
-      description: Alert Comment string
+      description: The alert comment string
       type: String
     - contextPath: MicrosoftATP.Alert.Comments.CreatedBy
-      description: Alert Comment created by string
+      description: The alert comment created by string
       type: String
     - contextPath: MicrosoftATP.Alert.Comments.CreatedTime
-      description: Alert Comment create time date
+      description: The alert comment create time date
       type: Date
   - arguments:
     - default: true
@@ -760,16 +760,16 @@ script:
       ATP Portal (https://securitycenter.windows.com/hunting). Limitations: You can
       only run a query on data from the last 30 days, The results will include a maximum
       of 10,000 rows, The number of executions is limited (up to 15 calls per minute,
-      15 minutes of running time every hour and 4 hours of running time a day)'
+      15 minutes of running time every hour and 4 hours of running time a day).'
     execution: false
     name: microsoft-atp-advanced-hunting
     outputs:
     - contextPath: MicrosoftATP.Hunt.Result
-      description: Results of the query.
+      description: The query results.
       type: String
   - arguments:
     - default: false
-      description: Id of the machine on which the event was identified. Required.
+      description: Id of the machine on which the event was identified.
       isArray: false
       name: machine_id
       required: true
@@ -863,13 +863,13 @@ script:
     name: microsoft-atp-create-alert
     outputs:
     - contextPath: MicrosoftATP.Alert.ID
-      description: Alert ID
+      description: The alert ID
       type: String
     - contextPath: MicrosoftATP.Alert.IncidentID
-      description: The Incident ID of the Alert
+      description: The Incident ID of the alert
       type: Number
     - contextPath: MicrosoftATP.Alert.InvestigationID
-      description: The Investigation ID related to the Alert
+      description: The Investigation ID related to the alert
       type: Number
     - contextPath: MicrosoftATP.Alert.InvestigationState
       description: The current state of the Investigation
@@ -890,19 +890,19 @@ script:
       description: The determination of the alert
       type: String
     - contextPath: MicrosoftATP.Alert.DetectionSource
-      description: Detection source
+      description: The detection source
       type: String
     - contextPath: MicrosoftATP.Alert.Category
-      description: Category of the alert
+      description: The category of the alert
       type: String
     - contextPath: MicrosoftATP.Alert.ThreatFamilyName
-      description: Threat family
+      description: The threat family
       type: String
     - contextPath: MicrosoftATP.Alert.Title
-      description: Alert title
+      description: The alert title
       type: String
     - contextPath: MicrosoftATP.Alert.Description
-      description: Alert description
+      description: The alert description
       type: String
     - contextPath: MicrosoftATP.Alert.AlertCreationTime
       description: The date and time the alert was created
@@ -927,16 +927,16 @@ script:
       description: The machine DNS name
       type: String
     - contextPath: MicrosoftATP.Alert.AADTenantID
-      description: AAD Tenant ID
+      description: The AAD tenant ID
       type: String
     - contextPath: MicrosoftATP.Alert.Comments.Comment
-      description: Alert Comment string
+      description: The alert Comment string
       type: String
     - contextPath: MicrosoftATP.Alert.Comments.CreatedBy
-      description: Alert Comment created by string
+      description: The alert comment created by string
       type: String
     - contextPath: MicrosoftATP.Alert.Comments.CreatedTime
-      description: Alert Comment create time date
+      description: The alert comment create time date
       type: Date
   - arguments:
     - default: false
@@ -981,10 +981,10 @@ script:
       description: The count of user logon
       type: Number
     - contextPath: MicrosoftATP.AlertUser.User.DomainAdmin
-      description: True if domain admin, else False
+      description: True if domain admin, False otherwise
       type: Number
     - contextPath: MicrosoftATP.AlertUser.User.NetworkUser
-      description: True if domain admin, else False
+      description: True if domain admin, False otherwise
       type: Number
     - contextPath: MicrosoftATP.AlertUser.AlertID
       description: The alert ID
@@ -1016,47 +1016,47 @@ script:
     name: microsoft-atp-get-alert-related-files
     outputs:
     - contextPath: MicrosoftATP.AlertFile.Files.FilePublisher
-      description: File publisher
+      description: The file's publisher
       type: String
     - contextPath: MicrosoftATP.AlertFile.Files.Size
-      description: Size of the file
+      description: The size of the file
       type: Number
     - contextPath: MicrosoftATP.AlertFile.Files.GlobalLastObserved
-      description: Last time the file was observed
+      description: The last time the file was observed
       type: Date
     - contextPath: MicrosoftATP.AlertFile.Files.Sha1
-      description: Sha1 hash of the file
+      description: The SHA1 hash of the file
       type: String
     - contextPath: MicrosoftATP.AlertFile.Files.IsValidCertificate
       description: Was signing certificate successfully verified by Microsoft Defender
         ATP agent.
       type: Number
     - contextPath: MicrosoftATP.AlertFile.Files.Sha256
-      description: Sha256 hash of the file
+      description: The SHA256 hash of the file
       type: String
     - contextPath: MicrosoftATP.AlertFile.Files.Signer
       description: The file signer
       type: String
     - contextPath: MicrosoftATP.AlertFile.Files.GlobalPrevalence
-      description: File prevalence across organization
+      description: The file prevalence across organization
       type: Number
     - contextPath: MicrosoftATP.AlertFile.Files.DeterminationValue
       description: The file determination value
       type: String
     - contextPath: MicrosoftATP.AlertFile.Files.GlobalFirstObserved
-      description: First time the file was observed
+      description: The first time the file was observed
       type: Date
     - contextPath: MicrosoftATP.AlertFile.Files.FileType
-      description: Type of the file
+      description: The type of the file
       type: String
     - contextPath: MicrosoftATP.AlertFile.Files.SignerHash
-      description: Hash of the signing certificate
+      description: The hash of the signing certificate
       type: String
     - contextPath: MicrosoftATP.AlertFile.Files.Issuer
-      description: File issuer
+      description: The file issuer
       type: String
     - contextPath: MicrosoftATP.AlertFile.Files.IsPeFile
-      description: True if the file is portable executable
+      description: True if the file is portable executable, False otherwise
       type: Number
     - contextPath: MicrosoftATP.AlertFile.Files.DeterminationType
       description: The file determination type
@@ -1065,7 +1065,7 @@ script:
       description: The file product name
       type: Unknown
     - contextPath: MicrosoftATP.AlertFile.Files.Md5
-      description: Md5 hash of the file
+      description: The MD5 hash of the file
       type: String
   - arguments:
     - default: false
@@ -1076,14 +1076,14 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The limit of IPs to display
+      description: The limit of IPs to display.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: The page from which to get the related IPs
+      description: The page from which to get the related IPs.
       isArray: false
       name: offset
       required: false
@@ -1108,14 +1108,14 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The limit of domains to display
+      description: The limit of domains to display.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: The page from which to get the related domains
+      description: The page from which to get the related domains.
       isArray: false
       name: offset
       required: false
@@ -1133,14 +1133,14 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: ID of the action
+      description: ID of the action.
       isArray: false
       name: id
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Machine action status
+      description: The machine action status.
       isArray: false
       name: status
       predefined:
@@ -1161,7 +1161,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Machine action type
+      description: The machine action type.
       isArray: false
       name: type
       predefined:
@@ -1176,15 +1176,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The ID of the user that executed the action, only one can be added
+      description: The ID of the user that executed the action, only one can be added.
       isArray: false
       name: requestor
       required: false
       secret: false
     deprecated: false
     description: |-
-      Return the machine's actions. If you set an action id it will return the info on the specific action
-      Filtering can be done only on one argument
+      Return the machine's actions. If you set an action id it will return the info on the specific action.
+      Filtering can be done only on one argument.
     execution: false
     name: microsoft-atp-list-machine-actions-details
     outputs:
@@ -1192,22 +1192,22 @@ script:
       description: The machine action ID
       type: String
     - contextPath: MicrosoftATP.MachineAction.Type
-      description: Type of the action
+      description: The type of the action
       type: String
     - contextPath: MicrosoftATP.MachineAction.Scope
-      description: Scope of the action
+      description: The scope of the action
       type: String
     - contextPath: MicrosoftATP.MachineAction.Requestor
-      description: The ID of the user that executed the action.
+      description: The ID of the user that executed the action
       type: String
     - contextPath: MicrosoftATP.MachineAction.RequestorComment
-      description: Comment that was written when issuing the action.
+      description: The comment that was written when issuing the action
       type: String
     - contextPath: MicrosoftATP.MachineAction.Status
       description: The current status of the command
       type: String
     - contextPath: MicrosoftATP.MachineAction.MachineID
-      description: The machine ID on which the action was executed.
+      description: The machine ID on which the action was executed
       type: String
     - contextPath: MicrosoftATP.MachineAction.ComputerDNSName
       description: The machine DNS name on which the action was executed
@@ -1222,18 +1222,18 @@ script:
       description: The file identifier
       type: String
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
-      description: 'The type of the file identifier with the possible values: "Sha1"
-        ,"Sha256" and "Md5"'
+      description: 'The type of the file identifier with the possible values: "SHA1"
+        ,"SHA256" and "MD5"'
       type: String
   - arguments:
     - default: false
-      description: The machine ID
+      description: The machine ID.
       isArray: false
       name: machine_id
       required: true
       secret: false
     - default: false
-      description: Comment to associate with the action
+      description: Comment to associate with the action.
       isArray: false
       name: comment
       required: true
@@ -1247,16 +1247,16 @@ script:
       description: The machine action ID
       type: String
     - contextPath: MicrosoftATP.MachineAction.Type
-      description: Type of the action
+      description: The type of the action
       type: String
     - contextPath: MicrosoftATP.MachineAction.Scope
-      description: Scope of the action
+      description: The scope of the action
       type: String
     - contextPath: MicrosoftATP.MachineAction.Requestor
       description: The ID of the user that executed the action.
       type: String
     - contextPath: MicrosoftATP.MachineAction.RequestorComment
-      description: Comment that was written when issuing the action.
+      description: The comment that was written when issuing the action.
       type: String
     - contextPath: MicrosoftATP.MachineAction.Status
       description: The current status of the command
@@ -1277,33 +1277,33 @@ script:
       description: The file identifier
       type: String
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
-      description: 'The type of the file identifier with the possible values: "Sha1"
-        ,"Sha256" and "Md5"'
+      description: 'The type of the file identifier with the possible values: "SHA1"
+        ,"SHA256" and "MD5"'
       type: String
   - arguments:
     - default: false
-      description: machine action ID
+      description: machine action ID.
       isArray: false
       name: action_id
       required: true
       secret: false
     deprecated: false
-    description: Get a URI that allows downloading of an Investigation package
+    description: Get a URI that allows downloading of an investigation package.
     execution: false
     name: microsoft-atp-get-investigation-package-sas-uri
     outputs:
     - contextPath: MicrosoftATP.InvestigationURI.Link
-      description: Investigation package URI
+      description: The investigation package URI
       type: String
   - arguments:
     - default: false
-      description: The machine ID
+      description: The machine ID.
       isArray: false
       name: machine_id
       required: true
       secret: false
     - default: false
-      description: Comment to associate with the action
+      description: Comment to associate with the action.
       isArray: false
       name: comment
       required: false
@@ -1318,25 +1318,25 @@ script:
       description: The machine action ID
       type: String
     - contextPath: MicrosoftATP.MachineAction.Type
-      description: Type of the action
+      description: The type of the action
       type: String
     - contextPath: MicrosoftATP.MachineAction.Scope
-      description: Scope of the action
+      description: The scope of the action
       type: String
     - contextPath: MicrosoftATP.MachineAction.Requestor
-      description: The ID of the user that executed the action.
+      description: The ID of the user that executed the action
       type: String
     - contextPath: MicrosoftATP.MachineAction.RequestorComment
-      description: Comment that was written when issuing the action.
+      description: The comment that was written when issuing the action
       type: String
     - contextPath: MicrosoftATP.MachineAction.Status
       description: The current status of the command
       type: String
     - contextPath: MicrosoftATP.MachineAction.MachineID
-      description: The machine ID on which the action was executed.
+      description: The machine ID on which the action was executed
       type: String
     - contextPath: MicrosoftATP.MachineAction.ComputerDNSName
-      description: The machine DNs name on which the action was executed
+      description: The machine DNS name on which the action was executed
       type: String
     - contextPath: MicrosoftATP.MachineAction.CreationDateTimeUtc
       description: The date and time when the action was created
@@ -1348,18 +1348,18 @@ script:
       description: The file identifier
       type: String
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
-      description: 'The type of the file identifier with the possible values: "Sha1"
-        ,"Sha256" and "Md5"'
+      description: 'The type of the file identifier with the possible values: "SHA1"
+        ,"SHA256" and "MD5"'
       type: String
   - arguments:
     - default: false
-      description: The machine ID
+      description: The machine ID.
       isArray: false
       name: machine_id
       required: true
       secret: false
     - default: false
-      description: Comment to associate with the action
+      description: Comment to associate with the action.
       isArray: false
       name: comment
       required: true
@@ -1373,25 +1373,25 @@ script:
       description: The machine action ID
       type: String
     - contextPath: MicrosoftATP.MachineAction.Type
-      description: Type of the action
+      description: The type of the action
       type: String
     - contextPath: MicrosoftATP.MachineAction.Scope
-      description: Scope of the action
+      description: The scope of the action
       type: String
     - contextPath: MicrosoftATP.MachineAction.Requestor
-      description: The ID of the user that executed the action.
+      description: The ID of the user that executed the action
       type: String
     - contextPath: MicrosoftATP.MachineAction.RequestorComment
-      description: Comment that was written when issuing the action.
+      description: The comment that was written when issuing the action
       type: String
     - contextPath: MicrosoftATP.MachineAction.Status
       description: The current status of the command
       type: String
     - contextPath: MicrosoftATP.MachineAction.MachineID
-      description: The machine ID on which the action was executed.
+      description: The machine ID on which the action was executed
       type: String
     - contextPath: MicrosoftATP.MachineAction.ComputerDNSName
-      description: The machine DNs name on which the action was executed
+      description: The machine DNS name on which the action was executed
       type: String
     - contextPath: MicrosoftATP.MachineAction.CreationDateTimeUtc
       description: The date and time when the action was created
@@ -1403,12 +1403,12 @@ script:
       description: The file identifier
       type: String
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
-      description: 'The type of the file identifier with the possible values: "Sha1"
-        ,"Sha256" and "Md5"'
+      description: 'The type of the file identifier with the possible values: "SHA1"
+        ,"SHA256" and "MD5"'
       type: String
   - arguments:
     - default: false
-      description: The machine ID
+      description: The machine ID.
       isArray: false
       name: machine_id
       required: true
@@ -1434,25 +1434,25 @@ script:
       description: The machine action ID
       type: String
     - contextPath: MicrosoftATP.MachineAction.Type
-      description: Type of the action
+      description: The type of the action
       type: String
     - contextPath: MicrosoftATP.MachineAction.Scope
-      description: Scope of the action
+      description: The scope of the action
       type: String
     - contextPath: MicrosoftATP.MachineAction.Requestor
-      description: The ID of the user that executed the action.
+      description: The ID of the user that executed the action
       type: String
     - contextPath: MicrosoftATP.MachineAction.RequestorComment
-      description: Comment that was written when issuing the action.
+      description: The comment that was written when issuing the action
       type: String
     - contextPath: MicrosoftATP.MachineAction.Status
       description: The current status of the command
       type: String
     - contextPath: MicrosoftATP.MachineAction.MachineID
-      description: The machine ID on which the action was executed.
+      description: The machine ID on which the action was executed
       type: String
     - contextPath: MicrosoftATP.MachineAction.ComputerDNSName
-      description: The machine DNs name on which the action was executed
+      description: The machine DNS name on which the action was executed
       type: String
     - contextPath: MicrosoftATP.MachineAction.CreationDateTimeUtc
       description: The date and time when the action was created
@@ -1464,27 +1464,27 @@ script:
       description: The file identifier
       type: String
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
-      description: 'The type of the file identifier with the possible values: "Sha1"
-        ,"Sha256" and "Md5"'
+      description: 'The type of the file identifier with the possible values: "SHA1"
+        ,"SHA256" and "MD5"'
       type: String
   - arguments:
     - default: false
       description: ID can be the investigation ID or the investigation triggering
-        alert ID
+        alert ID.
       isArray: false
       name: id
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: The limit of investigations to display
+      description: The limit of investigations to display.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: The page from which to get the investigations
+      description: The page from which to get the investigations.
       isArray: false
       name: offset
       predefined:
@@ -1492,8 +1492,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieves a collection of Investigations or retrieves specific Investigation
-      by its ID
+    description: Retrieves a collection of investigations or retrieves specific investigation
+      by its ID.
     execution: false
     name: microsoft-atp-list-investigations
     outputs:
@@ -1526,7 +1526,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The machine's ID
+      description: The machine's ID.
       isArray: false
       name: machine_id
       required: true
@@ -1595,13 +1595,13 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: The domain address
+      description: The domain address.
       isArray: false
       name: domain
       required: true
       secret: false
     deprecated: false
-    description: Retrieves a collection of Alerts related to a given domain address.
+    description: Retrieves a collection of alerts related to a given domain address.
     execution: false
     name: microsoft-atp-get-domain-alerts
     outputs:
@@ -1609,16 +1609,16 @@ script:
       description: The domain address
       type: String
     - contextPath: MicrosoftATP.DomainAlert.Alerts.ID
-      description: Alert ID
+      description: The alert ID
       type: String
     - contextPath: MicrosoftATP.DomainAlert.Alerts.IncidentID
-      description: The Incident ID of the Alert
+      description: The incident ID of the alert
       type: Number
     - contextPath: MicrosoftATP.DomainAlert.Alerts.InvestigationID
-      description: The Investigation ID related to the Alert
+      description: The investigation ID related to the alert
       type: Number
     - contextPath: MicrosoftATP.DomainAlert.Alerts.InvestigationState
-      description: The current state of the Investigation
+      description: The current state of the investigation
       type: String
     - contextPath: MicrosoftATP.DomainAlert.Alerts.AssignedTo
       description: The owner of the alert
@@ -1630,25 +1630,25 @@ script:
       description: The current status of the alert
       type: String
     - contextPath: MicrosoftATP.DomainAlert.Alerts.Classification
-      description: The alert Classification
+      description: The alert classification
       type: String
     - contextPath: MicrosoftATP.DomainAlert.Alerts.Determination
       description: The determination of the alert
       type: String
     - contextPath: MicrosoftATP.DomainAlert.Alerts.DetectionSource
-      description: Detection source
+      description: The detection source
       type: String
     - contextPath: MicrosoftATP.DomainAlert.Alerts.Category
-      description: Category of the alert
+      description: The category of the alert
       type: String
     - contextPath: MicrosoftATP.DomainAlert.Alerts.ThreatFamilyName
-      description: Threat family
+      description: The threat family name
       type: String
     - contextPath: MicrosoftATP.DomainAlert.Alerts.Title
-      description: Alert title
+      description: The alert title
       type: String
     - contextPath: MicrosoftATP.DomainAlert.Alerts.Description
-      description: Alert description
+      description: The alert description
       type: String
     - contextPath: MicrosoftATP.DomainAlert.Alerts.AlertCreationTime
       description: The date and time the alert was created
@@ -1673,16 +1673,16 @@ script:
       description: The machine DNS name
       type: String
     - contextPath: MicrosoftATP.DomainAlert.Alerts.AADTenantID
-      description: AAD Tenant ID
+      description: The AAD tenant ID
       type: String
     - contextPath: MicrosoftATP.DomainAlert.Alerts.Comments.Comment
-      description: Alert Comment string
+      description: The alert comment string
       type: String
     - contextPath: MicrosoftATP.DomainAlert.Alerts.Comments.CreatedBy
-      description: Alert Comment created by string
+      description: The alert comment created by string
       type: String
     - contextPath: MicrosoftATP.DomainAlert.Alerts.Comments.CreatedTime
-      description: Alert Comment create time date
+      description: The alert comment create time date
       type: Date
   - arguments:
     - default: false
@@ -1692,7 +1692,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieves a collection of Machines that have communicated to or from
+    description: Retrieves a collection of machines that have communicated to or from
       a given domain address.
     execution: false
     name: microsoft-atp-get-domain-machines
@@ -1707,39 +1707,39 @@ script:
       description: The machine DNS name
       type: String
     - contextPath: MicrosoftATP.DomainMachine.Machines.FirstSeen
-      description: First date and time where the machine was observed by Microsoft
+      description: The first date and time where the machine was observed by Microsoft
         Defender ATP
       type: Date
     - contextPath: MicrosoftATP.DomainMachine.Machines.LastSeen
-      description: Last date and time where the machine was observed by Microsoft
+      description: The last date and time where the machine was observed by Microsoft
         Defender ATP
       type: Date
     - contextPath: MicrosoftATP.DomainMachine.Machines.OSPlatform
-      description: Operating system platform
+      description: The operating system platform
       type: String
     - contextPath: MicrosoftATP.DomainMachine.Machines.OSVersion
-      description: Operating system Version
+      description: The operating system Version
       type: String
     - contextPath: MicrosoftATP.DomainMachine.Machines.OSProcessor
-      description: Operating system processor
+      description: The operating system processor
       type: String
     - contextPath: MicrosoftATP.DomainMachine.Machines.LastIPAddress
-      description: Last IP on the machine
+      description: The last IP on the machine
       type: String
     - contextPath: MicrosoftATP.DomainMachine.Machines.LastExternalIPAddress
-      description: Last IP through which the machine accessed the internet
+      description: The last IP through which the machine accessed the internet
       type: String
     - contextPath: MicrosoftATP.DomainMachine.Machines.OSBuild
-      description: Operating system build number
+      description: The operating system build number
       type: Number
     - contextPath: MicrosoftATP.DomainMachine.Machines.HealthStatus
-      description: Machine health status
+      description: The machine health status
       type: String
     - contextPath: MicrosoftATP.DomainMachine.Machines.RBACGroupID
-      description: Machine RBAC group ID
+      description: The machine RBAC group ID
       type: Number
     - contextPath: MicrosoftATP.DomainMachine.Machines.RBACGroupName
-      description: Machine RBAC group Name
+      description: The machine RBAC group Name
       type: String
     - contextPath: MicrosoftATP.DomainMachine.Machines.RiskScore
       description: The machine risk score
@@ -1748,17 +1748,17 @@ script:
       description: The machine exposure level
       type: String
     - contextPath: MicrosoftATP.DomainMachine.Machines.IsAADJoined
-      description: True if machine is AAD joined, else false
+      description: True if machine is AAD joined, False otherwise
       type: Boolean
     - contextPath: MicrosoftATP.DomainMachine.Machines.AADDeviceID
-      description: AAD Device ID
+      description: The AAD Device ID
       type: String
     - contextPath: MicrosoftATP.DomainMachine.Machines.MachineTags
       description: Set of machine tags
       type: String
   - arguments:
     - default: false
-      description: File SHA1 hash to get statistics on
+      description: File SHA1 hash to get statistics on.
       isArray: false
       name: file_hash
       required: true
@@ -1794,7 +1794,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: File SHA1 hash to get statistics on
+      description: File SHA1 hash to get statistics on.
       isArray: false
       name: file_hash
       required: true
@@ -1805,10 +1805,10 @@ script:
     name: microsoft-atp-get-file-alerts
     outputs:
     - contextPath: MicrosoftATP.FileAlert.Sha1
-      description: The File SHA1 hash
+      description: The file SHA1 hash
       type: String
     - contextPath: MicrosoftATP.FileAlert.Alerts.ID
-      description: Alert ID
+      description: The alert ID
       type: String
     - contextPath: MicrosoftATP.FileAlert.Alerts.IncidentID
       description: The Incident ID of the Alert
@@ -1835,19 +1835,19 @@ script:
       description: The determination of the alert
       type: String
     - contextPath: MicrosoftATP.FileAlert.Alerts.DetectionSource
-      description: Detection source
+      description: The detection source
       type: String
     - contextPath: MicrosoftATP.FileAlert.Alerts.Category
-      description: Category of the alert
+      description: The category of the alert
       type: String
     - contextPath: MicrosoftATP.FileAlert.Alerts.ThreatFamilyName
-      description: Threat family
+      description: The threat family name
       type: String
     - contextPath: MicrosoftATP.FileAlert.Alerts.Title
-      description: Alert title
+      description: The alert title
       type: String
     - contextPath: MicrosoftATP.FileAlert.Alerts.Description
-      description: Alert description
+      description: The alert description
       type: String
     - contextPath: MicrosoftATP.FileAlert.Alerts.AlertCreationTime
       description: The date and time the alert was created
@@ -1872,20 +1872,20 @@ script:
       description: The machine DNS name
       type: String
     - contextPath: MicrosoftATP.FileAlert.Alerts.AADTenantID
-      description: AAD Tenant ID
+      description: The AAD tenant ID
       type: String
     - contextPath: MicrosoftATP.FileAlert.Alerts.Comments.Comment
-      description: Alert Comment string
+      description: The alert comment string
       type: String
     - contextPath: MicrosoftATP.FileAlert.Alerts.Comments.CreatedBy
-      description: Alert Comment created by string
+      description: The alert comment created by string
       type: String
     - contextPath: MicrosoftATP.FileAlert.Alerts.Comments.CreatedTime
-      description: Alert Comment create time date
+      description: The alert comment create time date
       type: Date
   - arguments:
     - default: false
-      description: The IP address
+      description: The IP address.
       isArray: false
       name: ip
       required: true
@@ -1909,7 +1909,7 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: The Ip address
+      description: The Ip address.
       isArray: false
       name: ip
       required: true
@@ -1923,16 +1923,16 @@ script:
       description: The IP address
       type: String
     - contextPath: MicrosoftATP.IPAlert.Alerts.ID
-      description: Alert ID
+      description: The alert ID
       type: String
     - contextPath: MicrosoftATP.IPAlert.Alerts.IncidentID
-      description: The Incident ID of the Alert
+      description: The incident ID of the alert
       type: Number
     - contextPath: MicrosoftATP.IPAlert.Alerts.InvestigationID
-      description: The Investigation ID related to the Alert
+      description: The investigation ID related to the alert
       type: Number
     - contextPath: MicrosoftATP.IPAlert.Alerts.InvestigationState
-      description: The current state of the Investigation
+      description: The current state of the investigation
       type: String
     - contextPath: MicrosoftATP.IPAlert.Alerts.AssignedTo
       description: The owner of the alert
@@ -1944,25 +1944,25 @@ script:
       description: The current status of the alert
       type: String
     - contextPath: MicrosoftATP.IPAlert.Alerts.Classification
-      description: The alert Classification
+      description: The alert classification
       type: String
     - contextPath: MicrosoftATP.IPAlert.Alerts.Determination
       description: The determination of the alert
       type: String
     - contextPath: MicrosoftATP.IPAlert.Alerts.DetectionSource
-      description: Detection source
+      description: The detection source
       type: String
     - contextPath: MicrosoftATP.IPAlert.Alerts.Category
-      description: Category of the alert
+      description: The category of the alert
       type: String
     - contextPath: MicrosoftATP.IPAlert.Alerts.ThreatFamilyName
-      description: Threat family
+      description: The threat family name
       type: String
     - contextPath: MicrosoftATP.IPAlert.Alerts.Title
-      description: Alert title
+      description: The alert title
       type: String
     - contextPath: MicrosoftATP.IPAlert.Alerts.Description
-      description: Alert description
+      description: The alert description
       type: String
     - contextPath: MicrosoftATP.IPAlert.Alerts.AlertCreationTime
       description: The date and time the alert was created
@@ -1981,27 +1981,27 @@ script:
         to 'Resolved'
       type: Date
     - contextPath: MicrosoftATP.IPAlert.Alerts.MachineID
-      description: The mahine ID that is associated with the alert
+      description: The machine ID that is associated with the alert
       type: String
     - contextPath: MicrosoftATP.IPAlert.Alerts.ComputerDNSName
       description: The machine DNS name
       type: String
     - contextPath: MicrosoftATP.IPAlert.Alerts.AADTenantID
-      description: AAD Tenant ID
+      description: The AAD tenant ID
       type: String
     - contextPath: MicrosoftATP.IPAlert.Alerts.Comments.Comment
-      description: Alert Comment string
+      description: The alert comment string
       type: String
     - contextPath: MicrosoftATP.IPAlert.Alerts.Comments.CreatedBy
-      description: Alert Comment created by string
+      description: The alert comment created by string
       type: String
     - contextPath: MicrosoftATP.IPAlert.Alerts.Comments.CreatedTime
-      description: Alert Comment create time date
+      description: The alert comment create time date
       type: Date
   - arguments:
     - default: false
       description: |-
-        The user ID.  Note that the id is not the full UPN, but only the user name.
+        The user ID.  Note that the ID is not the full UPN, but only the user name.
          (e.g., to retrieve alerts for user1@test.com use user1)
       isArray: false
       name: username
@@ -2016,16 +2016,16 @@ script:
       description: The user name
       type: String
     - contextPath: MicrosoftATP.UserAlert.Alerts.ID
-      description: Alert ID
+      description: The alert ID
       type: String
     - contextPath: MicrosoftATP.UserAlert.Alerts.IncidentID
-      description: The Incident ID of the Alert
+      description: The incident ID of the alert
       type: Number
     - contextPath: MicrosoftATP.UserAlert.Alerts.InvestigationID
-      description: The Investigation ID related to the Alert
+      description: The investigation ID related to the alert
       type: Number
     - contextPath: MicrosoftATP.UserAlert.Alerts.InvestigationState
-      description: The current state of the Investigation
+      description: The current state of the investigation
       type: String
     - contextPath: MicrosoftATP.UserAlert.Alerts.AssignedTo
       description: The owner of the alert
@@ -2037,25 +2037,25 @@ script:
       description: The current status of the alert
       type: String
     - contextPath: MicrosoftATP.UserAlert.Alerts.Classification
-      description: The alert Classification
+      description: The alert classification
       type: String
     - contextPath: MicrosoftATP.UserAlert.Alerts.Determination
       description: The determination of the alert
       type: String
     - contextPath: MicrosoftATP.UserAlert.Alerts.DetectionSource
-      description: Detection source
+      description: The detection source
       type: String
     - contextPath: MicrosoftATP.UserAlert.Alerts.Category
-      description: Category of the alert
+      description: The category of the alert
       type: String
     - contextPath: MicrosoftATP.UserAlert.Alerts.ThreatFamilyName
-      description: Threat family
+      description: The threat family name
       type: String
     - contextPath: MicrosoftATP.UserAlert.Alerts.Title
-      description: Alert title
+      description: The alert title
       type: String
     - contextPath: MicrosoftATP.UserAlert.Alerts.Description
-      description: Alert description
+      description: The alert description
       type: String
     - contextPath: MicrosoftATP.UserAlert.Alerts.AlertCreationTime
       description: The date and time the alert was created
@@ -2080,16 +2080,16 @@ script:
       description: The machine DNS name
       type: String
     - contextPath: MicrosoftATP.UserAlert.Alerts.AADTenantID
-      description: AAD Tenant ID
+      description: The AAD tenant ID
       type: String
     - contextPath: MicrosoftATP.UserAlert.Alerts.Comments.Comment
-      description: Alert Comment string
+      description: The alert comment string
       type: String
     - contextPath: MicrosoftATP.UserAlert.Alerts.Comments.CreatedBy
-      description: Alert Comment created by string
+      description: The alert comment created by string
       type: String
     - contextPath: MicrosoftATP.UserAlert.Alerts.Comments.CreatedTime
-      description: Alert Comment create time date
+      description: The alert comment create time date
       type: Date
   - arguments:
     - default: false
@@ -2115,39 +2115,39 @@ script:
       description: The machine DNS name
       type: String
     - contextPath: MicrosoftATP.UserMachine.Machines.FirstSeen
-      description: First date and time where the machine was observed by Microsoft
+      description: The first date and time where the machine was observed by Microsoft
         Defender ATP
       type: Date
     - contextPath: MicrosoftATP.UserMachine.Machines.LastSeen
-      description: Last date and time where the machine was observed by Microsoft
+      description: The last date and time where the machine was observed by Microsoft
         Defender ATP
       type: Date
     - contextPath: MicrosoftATP.UserMachine.Machines.OSPlatform
-      description: Operating system platform
+      description: The operating system platform
       type: String
     - contextPath: MicrosoftATP.UserMachine.Machines.OSVersion
-      description: Operating system Version
+      description: The operating system Version
       type: String
     - contextPath: MicrosoftATP.UserMachine.Machines.OSProcessor
-      description: Operating system processor
+      description: The operating system processor
       type: String
     - contextPath: MicrosoftATP.v.Machines.LastIPAddress
-      description: Last IP on the machine
+      description: The last IP on the machine
       type: String
     - contextPath: MicrosoftATP.UserMachine.Machines.LastExternalIPAddress
-      description: Last IP through which the machine accessed the internet
+      description: The last IP through which the machine accessed the internet
       type: String
     - contextPath: MicrosoftATP.UserMachine.Machines.OSBuild
-      description: Operating system build number
+      description: The operating system build number
       type: Number
     - contextPath: MicrosoftATP.UserMachine.Machines.HealthStatus
-      description: Machine health status
+      description: The machine health status
       type: String
     - contextPath: MicrosoftATP.UserMachine.Machines.RBACGroupID
-      description: Machine RBAC group ID
+      description: The machine RBAC group ID
       type: Number
     - contextPath: MicrosoftATP.UserMachine.Machines.RBACGroupName
-      description: Machine RBAC group Name
+      description: The machine RBAC group Name
       type: String
     - contextPath: MicrosoftATP.UserMachine.Machines.RiskScore
       description: The machine risk score
@@ -2156,24 +2156,24 @@ script:
       description: The machine exposure level
       type: String
     - contextPath: MicrosoftATP.UserMachine.Machines.IsAADJoined
-      description: True if machine is AAD joined, else false
+      description: True if machine is AAD joined, False otherwise
       type: Boolean
     - contextPath: MicrosoftATP.UserMachine.Machines.AADDeviceID
-      description: AAD Device ID
+      description: The AAD device ID
       type: String
     - contextPath: MicrosoftATP.UserMachine.Machines.MachineTags
       description: Set of machine tags
       type: String
   - arguments:
     - default: false
-      description: The machine ID
+      description: The machine ID.
       isArray: false
       name: machine_id
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The action to use for the tag
+      description: The action to use for the tag.
       isArray: false
       name: action
       predefined:
@@ -2182,7 +2182,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The tag name
+      description: The tag name.
       isArray: false
       name: tag
       required: true
@@ -2199,39 +2199,39 @@ script:
       description: The machine DNS name
       type: String
     - contextPath: MicrosoftATP.Machine.FirstSeen
-      description: First date and time where the machine was observed by Microsoft
+      description: The first date and time where the machine was observed by Microsoft
         Defender ATP
       type: Date
     - contextPath: MicrosoftATP.Machine.LastSeen
-      description: Last date and time where the machine was observed by Microsoft
+      description: The last date and time where the machine was observed by Microsoft
         Defender ATP
       type: Date
     - contextPath: MicrosoftATP.Machine.OSPlatform
-      description: Operating system platform
+      description: The operating system platform
       type: String
     - contextPath: MicrosoftATP.Machine.OSVersion
-      description: Operating system Version
+      description: The operating system Version
       type: String
     - contextPath: MicrosoftATP.Machine.OSProcessor
-      description: Operating system processor
+      description: The operating system processor
       type: String
     - contextPath: MicrosoftATP.Machine.LastIPAddress
-      description: Last IP on the machine
+      description: The last IP on the machine
       type: String
     - contextPath: MicrosoftATP.Machine.LastExternalIPAddress
-      description: Last IP through which the machine accessed the internet
+      description: The last IP through which the machine accessed the internet
       type: String
     - contextPath: MicrosoftATP.Machine.OSBuild
-      description: Operating system build number
+      description: The operating system build number
       type: Number
     - contextPath: MicrosoftATP.Machine.HealthStatus
-      description: Machine health status
+      description: The machine health status
       type: String
     - contextPath: MicrosoftATP.Machine.RBACGroupID
-      description: Machine RBAC group ID
+      description: The machine RBAC group ID
       type: Number
     - contextPath: MicrosoftATP.Machine.RBACGroupName
-      description: Machine RBAC group Name
+      description: The machine RBAC group Name
       type: String
     - contextPath: MicrosoftATP.Machine.RiskScore
       description: The machine risk score
@@ -2240,10 +2240,10 @@ script:
       description: The machine exposure level
       type: String
     - contextPath: MicrosoftATP.Machine.IsAADJoined
-      description: True if machine is AAD joined, else false
+      description: True if machine is AAD joined, False otherwise
       type: Boolean
     - contextPath: MicrosoftATP.Machine.AADDeviceID
-      description: AAD Device ID
+      description: The AAD device ID
       type: String
     - contextPath: MicrosoftATP.Machine.MachineTags
       description: Set of machine tags
