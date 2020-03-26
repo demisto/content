@@ -2,7 +2,7 @@ import pytest
 from Maltiverse import Client, ip_command, url_command, domain_command, file_command
 from test_data.response_constants import IP_RESPONSE
 from test_data.result_constants import EXPECTED_IP_RESULT
-import requests_mock
+
 
 @pytest.mark.parametrize('command, response, expected_result', [
     (ip_command, IP_RESPONSE, EXPECTED_IP_RESULT)

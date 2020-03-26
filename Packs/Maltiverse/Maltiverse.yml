@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: d407264e-7bf8-4122-841c-a56dd99e2851
+  id: Maltiverse
   version: -1
 configuration:
 - display: API Key
@@ -21,7 +21,7 @@ detaileddescription: |-
   - This text is markdown
   - Here you should explain how to configure the instance in Demisto
 display: Maltiverse
-name: d407264e-7bf8-4122-841c-a56dd99e2851
+name: Maltiverse
 script:
   commands:
   - arguments:
@@ -415,3 +415,5 @@ script:
   script: '-'
   subtype: python3
   type: python
+tests:
+  - No test
