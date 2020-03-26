@@ -3,6 +3,12 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": ["Syslog Sender", "syslog"],
+            "playbookID": "Test Syslog",
+            "fromversion": "5.5.0",
+            "timeout": 1000
+        },
+        {
             "integrations": "Plain Text Feed",
             "playbookID": "PlainText Feed - Test",
             "fromversion": "5.5.0"
@@ -2730,7 +2736,9 @@
         "GoogleCloudTranslate": "google translate sdk does not support proxy",
         "Kennav2": "HTTPSConnectionPool(host='api.kennasecurity.com', port=443), issue:21233",
         "Google Chronicle Backstory": "SDK",
-        "Google Vision AI": "SDK"
+        "Google Vision AI": "SDK",
+        "Syslog Sender": "syslog",
+        "syslog": "syslog"
     },
     "docker_thresholds": {
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
