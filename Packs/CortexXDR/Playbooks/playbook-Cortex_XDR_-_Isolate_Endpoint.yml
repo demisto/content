@@ -1,0 +1,207 @@
+id: Cortex XDR - Isolate Endpoint
+version: -1
+name: Cortex XDR - Isolate Endpoint
+description: This playbook accepts an XDR endpoint ID and isolates it using
+  the 'Palo Alto Networks Cortex XDR - Investigation and Response' integration.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: f1adb14a-4677-41e4-8e31-6efc7047c635
+    type: start
+    task:
+      id: f1adb14a-4677-41e4-8e31-6efc7047c635
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: 60e9a464-30ac-4e06-8e7b-f6c1c49fec14
+    type: regular
+    task:
+      id: 60e9a464-30ac-4e06-8e7b-f6c1c49fec14
+      version: -1
+      name: xdr - isolate endpoint
+      description: Isolates the specified endpoint.
+      script: Cortex XDR - IR|||xdr-isolate-endpoint
+      type: regular
+      iscommand: true
+      brand: Cortex XDR - IR
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      endpoint_id:
+        complex:
+          root: inputs.endpoint_id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: 134733fc-c9c4-40ea-86a0-4a48dcb7dbb8
+    type: condition
+    task:
+      id: 134733fc-c9c4-40ea-86a0-4a48dcb7dbb8
+      version: -1
+      name: Is 'Palo Alto Networks Cortex XDR - Investigation and Response' integration
+        enabled?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '3'
+      'yes':
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cortex XDR - IR
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '3':
+    id: '3'
+    taskid: 559a6fdc-20c3-44c7-82ab-726499c93163
+    type: title
+    task:
+      id: 559a6fdc-20c3-44c7-82ab-726499c93163
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '4':
+    id: '4'
+    taskid: caf55581-c3c0-4c2f-8354-85cd47a11d4a
+    type: condition
+    task:
+      id: caf55581-c3c0-4c2f-8354-85cd47a11d4a
+      version: -1
+      name: Is there an endpoint to isolate?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '3'
+      'yes':
+      - '1'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.endpoint_id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_3_#default#": 0.52,
+      "4_3_#default#": 0.32
+    },
+    "paper": {
+      "dimensions": {
+        "height": 705,
+        "width": 950,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: endpoint_id
+  value:
+    complex:
+      root: PaloAltoNetworksXDR
+      accessor: Endpoint.endpoint_id
+  required: false
+  description: The endpoint ID (string) to isolate. You can retrieve the ID using
+    the xdr-get-endpoints command.
+outputs: []
+fromversion: 4.5.0
+tests:
+  - No Test
