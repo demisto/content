@@ -3,7 +3,7 @@ commonfields:
   id: Cisco Firepower
   version: -1
 configuration:
-- display: Server URL (e.g. https://192.168.0.1)
+- display: Server URL (e.g., https://192.168.0.1)
   name: url
   required: true
   type: 0
@@ -19,8 +19,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Cisco Firepower provides complete and unified management of firewalls,
-  application control, intrusion prevention, URL filtering, and advanced malware protection
+description: Use the Cisco Firepower integration for unified management of firewalls,
+  application control, intrusion prevention, URL filtering, and advanced malware protection.
 display: Cisco Firepower
 name: Cisco Firepower
 script:
@@ -28,45 +28,45 @@ script:
   - arguments:
     - default: false
       description: |-
-        Number of items to return.
-        by default is 50
+        The number of items to return.
+        The default is 50
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       description: |-
-        Index of first item to return.
-        by default is 0
+        Index of the first item to return.
+        The default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     deprecated: false
-    description: Retrieves list of all security zone objects.
+    description: Retrieves a list of all security zone objects.
     execution: false
     name: ciscofp-list-zones
     outputs:
     - contextPath: CiscoFP.Zone.ID
-      description: Zone ID
+      description: Zone ID.
       type: String
     - contextPath: CiscoFP.Zone.Name
-      description: Zone Name
+      description: Zone name.
       type: String
     - contextPath: CiscoFP.Zone.InterfaceMode
-      description: Zone Interface mode
+      description: Zone interface mode.
       type: String
     - contextPath: CiscoFP.Zone.Interfaces.Name
-      description: Name of interfaces belonging to security zone.
+      description: Name of interfaces belonging to the security zone.
       type: String
     - contextPath: CiscoFP.Zone.Interfaces.ID
-      description: ID of interfaces belonging to security zone.
+      description: ID of interfaces belonging to the security zone.
       type: String
   - arguments:
     - default: true
       description: |-
-        Number of items to return.
-        by default is 50
+        The number of items to return.
+        The default is 50.
       isArray: false
       name: limit
       required: false
@@ -85,23 +85,23 @@ script:
     name: ciscofp-list-ports
     outputs:
     - contextPath: CiscoFP.Port.ID
-      description: ID of port
+      description: Port ID.
       type: String
     - contextPath: CiscoFP.Port.Name
-      description: Name of port
+      description: Port name.
       type: String
     - contextPath: CiscoFP.Port.Protocol
-      description: protocol of port
+      description: Port protocol.
       type: String
     - contextPath: CiscoFP.Port.Port
-      description: port number
+      description: Port number.
       type: String
   - arguments:
     - default: true
       defaultValue: '50'
       description: |-
-        Number of items to return.
-        by default is 50
+        The number of items to return.
+        The default is 50.
       isArray: false
       name: limit
       required: false
@@ -109,33 +109,33 @@ script:
     - default: false
       description: |-
         Index of first item to return.
-        by default is 0
+        The default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     deprecated: false
-    description: Retrieves list of all url category objects.
+    description: Retrieves a list of all URL category objects.
     execution: false
     name: ciscofp-list-url-categories
     outputs:
     - contextPath: CiscoFP.Category.ID
-      description: ID of category
+      description: ID of the category.
       type: String
     - contextPath: CiscoFP.Category.Name
-      description: Name of category
+      description: Name of the category.
       type: String
   - arguments:
     - default: false
-      description: Object ID
+      description: Object ID.
       isArray: false
       name: object_id
       required: false
       secret: false
     - default: false
       description: |-
-        Number of items to return.
-        by default is 50
+        The number of items to return.
+        The default is 50.
       isArray: false
       name: limit
       required: false
@@ -143,14 +143,14 @@ script:
     - default: false
       description: |-
         Index of first item to return.
-        by default is 0
+        The default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     deprecated: false
     description: Retrieves the network objects associated with the specified ID. If
-      not input ID retrieves list of all network objects.
+      not supplied, retrieves a list of all network objects.
     execution: false
     name: ciscofp-get-network-object
     outputs:
@@ -163,15 +163,15 @@ script:
     - contextPath: CiscoFP.Network.Value
       description: CIDR
       type: String
-    - contextPath: CiscoFP.Network.Overridable
+    - contextPath: CiscoFP.Network.Overrideable
       description: Boolean indicating whether object can be overridden.
       type: String
     - contextPath: CiscoFP.Network.Description
-      description: Description of network object
+      description: Description of the network object.
       type: String
   - arguments:
     - default: false
-      description: Set the name of the new object.
+      description: The name of the new object.
       isArray: false
       name: name
       required: true
@@ -183,7 +183,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: object description.
+      description: The object description.
       isArray: false
       name: description
       required: false
@@ -191,7 +191,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Boolean indicating whether object can be overridden.
+      description: Boolean indicating whether objects can be overridden. Can be "true" or "false". The default is "false".
       isArray: false
       name: overridable
       predefined:
@@ -200,24 +200,24 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Creats network object
+    description: Creates a network object.
     execution: false
     name: ciscofp-create-network-object
     outputs:
     - contextPath: CiscoFP.Network.ID
-      description: ID of network object
+      description: ID of network object.
       type: String
     - contextPath: CiscoFP.Network.Name
-      description: Name of network object
+      description: Name of network object.
       type: String
     - contextPath: CiscoFP.Network.Value
-      description: CIDR
+      description: CIDR.
       type: String
     - contextPath: CiscoFP.Network.Overridable
-      description: Boolean indicating whether object can be overridden.
+      description: Boolean indicating whether the object can be overridden.
       type: String
     - contextPath: CiscoFP.Network.Description
-      description: Description of network object
+      description: Description of the network object.
       type: String
   - arguments:
     - default: false
@@ -227,7 +227,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Name of the object.
+      description: The object name.
       isArray: false
       name: name
       required: true
@@ -239,15 +239,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: Description of the object.
+      description: The object description.
       isArray: false
       name: description
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'false'
-      description: Boolean indicating whether object can be overridden.
+      defaultValue: false
+      description: Boolean indicating whether the object can be overridden.
       isArray: false
       name: overridable
       predefined:
@@ -256,111 +256,111 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Update network object
+    description: Updates the specified network object.
     execution: false
     name: ciscofp-update-network-object
     outputs:
     - contextPath: CiscoFP.Network.ID
-      description: ID of network object
+      description: ID of the network object.
       type: String
     - contextPath: CiscoFP.Network.Name
-      description: Name of network object
+      description: Name of the network object.
       type: String
     - contextPath: CiscoFP.Network.Value
-      description: CIDR
+      description: CIDR.
       type: String
     - contextPath: CiscoFP.Network.Overridable
-      description: Boolean indicating whether object can be overridden.
+      description: Boolean indicating whether the object can be overridden.
       type: String
     - contextPath: CiscoFP.Network.Description
-      description: Description of network object
+      description: Description of the network object.
       type: String
   - arguments:
     - default: false
-      description: ID of the object group you are interested
+      description: ID of the object group for which to return groups and addresses.
       isArray: false
       name: id
       required: false
       secret: false
     - default: false
       description: |-
-        Number of items to return.
-        by default is 50
+        The number of items to return.
+        The default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       description: |-
-        Index of first item to return.
-        by default is 0
+        Index of the first item to return.
+        The default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     deprecated: false
     description: Retrieves the groups of network objects and addresses associated
-      with the specified ID. If not input ID retrieves list of all network objects.
+      with the specified ID. If not supplied, retrieves a list of all network objects.
     execution: false
     name: ciscofp-get-network-groups-object
     outputs:
     - contextPath: CiscoFP.NetworkGroups.ID
-      description: id of the group
+      description: The group ID.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Name
-      description: Name of the group
+      description: The group name.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Overridable
-      description: Boolean indicating whether object can be overridden.
+      description: Boolean indicating whether the object can be overridden.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Description
-      description: Description of the group
+      description: The group description.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Addresses.Value
-      description: IP address / CIDR range
+      description: IP address / CIDR range.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Addresses.Type
-      description: Address type
+      description: The address type.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Objects.Name
-      description: Object name
+      description: The object name.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Objects.ID
-      description: Object id
+      description: The object ID.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Objects.Type
-      description: Object type
+      description: The object type.
       type: String
   - arguments:
     - default: false
-      description: The name of the group
+      description: The group name.
       isArray: false
       name: name
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of object id to add to the group
+      description: A comma-separated list of object IDs to add to the group.
       isArray: false
       name: network_objects_id_list
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of ip addresses or CIDR ranges to add the
-        group
+      description: A comma-separated list of IP addresses or CIDR ranges to add the
+        group.
       isArray: false
       name: network_address_list
       required: false
       secret: false
     - default: false
-      description: object description.
+      description: The object description.
       isArray: false
       name: description
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'false'
-      description: Boolean indicating whether object values can be overridden.
+      defaultValue: false
+      description: Boolean indicating whether object values can be overridden. Can be "true" or "false". The default is "false".
       isArray: false
       name: overridable
       predefined:
@@ -369,67 +369,67 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Create group of network objects
+    description: Creates a group of network objects.
     execution: false
     name: ciscofp-create-network-groups-objects
     outputs:
     - contextPath: CiscoFP.NetworkGroups.ID
-      description: ID of the group
+      description: The group ID.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Name
-      description: Name of the group
+      description: The group name.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Overridable
-      description: Boolean indicating whether object can be overridden.
+      description: Boolean indicating whether the object can be overridden.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Description
-      description: Description of the group
+      description: The group description.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Addresses.Value
-      description: IP address / CIDR range
+      description: IP address or CIDR range.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Addresses.Type
-      description: Address type
+      description: The address type.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Objects.Name
-      description: Object name
+      description: The object name.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Objects.ID
-      description: Object id
+      description: The object ID.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Objects.Type
-      description: Object type
+      description: The object type.
       type: String
   - arguments:
     - default: false
-      description: The id of the group you want to update
+      description: The ID of the group to update.
       isArray: false
       name: id
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of object id to add the group
+      description: A comma-separated list of object IDs to add the group.
       isArray: false
       name: network_objects_id_list
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of ip addresses or CIDR ranges to add the
-        group
+      description: A comma-separated list of IP addresses or CIDR ranges to add the
+        group.
       isArray: false
       name: network_address_list
       required: false
       secret: false
     - default: false
-      description: New object description.
+      description: The new description for the object.
       isArray: false
       name: description
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'false'
-      description: Boolean indicating whether object values can be overridden.
+      defaultValue: false
+      description: Boolean indicating whether object values can be overridden. Can be "true" or "false". The default is "false".
       isArray: false
       name: overridable
       predefined:
@@ -438,42 +438,42 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the group
+      description: The group name.
       isArray: false
       name: name
       required: true
       secret: false
     deprecated: false
-    description: Update group of network objects
+    description: Updates a group of network objects.
     execution: false
     name: ciscofp-update-network-groups-objects
     outputs:
     - contextPath: CiscoFP.NetworkGroups.ID
-      description: ID of the group
+      description: The group ID.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Name
-      description: Name of the group
+      description: The group name.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Overridable
-      description: Boolean indicating whether object can be overridden.
+      description: Boolean indicating whether objects can be overridden.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Description
-      description: Description of the group
+      description: The group description.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Addresses.Value
-      description: IP address / CIDR range
+      description: IP address or CIDR range.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Addresses.Type
-      description: Address type
+      description: The address type.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Objects.Name
-      description: Object name
+      description: The object name.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Objects.ID
-      description: Object id
+      description: The object ID.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Objects.Type
-      description: Object type
+      description: The object type.
       type: String
   - arguments:
     - default: false
@@ -483,40 +483,40 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Delete group of network objects
+    description: Deletes a group of network objects.
     execution: false
     name: ciscofp-delete-network-groups-objects
     outputs:
     - contextPath: CiscoFP.NetworkGroups.ID
-      description: Id of the group
+      description: The group ID.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Name
-      description: Iame of the group
+      description: The group name.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Overridable
-      description: boolean indicating whether object values can be overridden.
+      description: Boolean indicating whether object values can be overridden.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Description
-      description: Description of the group
+      description: The group description.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Addresses.Value
-      description: IP address CIDR range
+      description: IP address or CIDR range.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Addresses.Type
-      description: Address type
+      description: The address type.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Objects.Name
-      description: Object name
+      description: The object name
       type: String
     - contextPath: CiscoFP.NetworkGroups.Objects.ID
-      description: Object id
+      description: The object ID.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Objects.Type
-      description: Object type
+      description: The object type.
       type: String
   - arguments:
     - default: false
-      description: ID of the object you are interested
+      description: ID of the object for which to retrieve host objects.
       isArray: false
       name: object_id
       required: false
@@ -524,55 +524,55 @@ script:
     - default: false
       description: |-
         Number of items to return.
-        by default is 50
+        The default is 50
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       description: |-
-        Index of first item to return.
-        by default is 0
+        Index of the first item to return.
+        The default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     deprecated: false
     description: Retrieves the groups of host objects associated with the specified
-      ID. If not input ID retrieves list of all network objects.
+      ID. If no ID is passed, the input ID retrieves a list of all network objects.
     execution: false
     name: ciscofp-get-host-object
     outputs:
     - contextPath: CiscoFP.Host.ID
-      description: ID of host object
+      description: ID of the host object.
       type: String
     - contextPath: CiscoFP.Host.Name
-      description: Name of host object
+      description: Name of host object.
       type: String
     - contextPath: CiscoFP.Host.Value
-      description: IP address
+      description: The IP address.
       type: String
     - contextPath: CiscoFP.Host.Overridable
-      description: Boolean indicating whether object can be overridden.
+      description: Boolean indicating whether object values can be overridden.
       type: String
     - contextPath: CiscoFP.Host.Description
-      description: Description of host object
+      description: A description of the host object.
       type: String
   - arguments:
     - default: false
-      description: Set the name of the new object
+      description: The name of the new object.
       isArray: false
       name: name
       required: true
       secret: false
     - default: false
-      description: IP address.
+      description: The IP address.
       isArray: false
       name: value
       required: true
       secret: false
     - default: false
-      description: New object description.
+      description: A description of the new object.
       isArray: false
       name: description
       required: false
@@ -580,7 +580,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Boolean indicating whether object can be overridden.
+      description: Boolean indicating whether object values can be overridden. Can be "true" or "false". The default is "false".
       isArray: false
       name: overridable
       predefined:
@@ -589,24 +589,24 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Create host object
+    description: Creates a host object.
     execution: false
     name: ciscofp-create-host-object
     outputs:
     - contextPath: CiscoFP.Host.ID
-      description: ID of host object
+      description: ID of the host object.
       type: String
     - contextPath: CiscoFP.Host.Name
-      description: Name of host object
+      description: Name of the host object.
       type: String
     - contextPath: CiscoFP.Host.Value
-      description: IP address
+      description: The IP address.
       type: String
     - contextPath: CiscoFP.Host.Overridable
-      description: Boolean indicating whether object can be overridden.
+      description: Boolean indicating whether object values can be overridden.
       type: String
     - contextPath: CiscoFP.Host.Description
-      description: Description of host object
+      description: Description of the host object.
       type: String
   - arguments:
     - default: false
@@ -622,7 +622,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: ip address.
+      description: The IP address.
       isArray: false
       name: value
       required: true
@@ -635,8 +635,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'false'
-      description: Boolean indicating whether object can be overridden.
+      defaultValue: false
+      description: Boolean indicating whether object values can be overridden. Can be "true" or "false". The default is "false".
       isArray: false
       name: overridable
       predefined:
@@ -645,24 +645,24 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Update host object
+    description: Updates the specified host object.
     execution: false
     name: ciscofp-update-host-object
     outputs:
     - contextPath: CiscoFP.Host.ID
-      description: ID of host object
+      description: ID of the host object.
       type: String
     - contextPath: CiscoFP.Host.Name
-      description: Name of host object
+      description: Name of the host object.
       type: String
     - contextPath: CiscoFP.Host.Value
-      description: IP address
+      description: The IP address.
       type: String
     - contextPath: CiscoFP.Host.Overridable
-      description: Boolean indicating whether object can be overridden.
+      description: Boolean indicating whether object values can be overridden.
       type: String
     - contextPath: CiscoFP.Host.Description
-      description: Description of host object
+      description: Description of the host object.
       type: String
   - arguments:
     - default: false
@@ -672,63 +672,63 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: delete network object
+    description: Deletes the specified network object.
     execution: false
     name: ciscofp-delete-network-object
     outputs:
     - contextPath: CiscoFP.Network.ID
-      description: ID of network object
+      description: ID of the network object.
       type: String
     - contextPath: CiscoFP.Network.Name
-      description: Name of network object
+      description: Name of the network object.
       type: String
     - contextPath: CiscoFP.Network.Value
-      description: CISR range
+      description: CISR range.
       type: String
     - contextPath: CiscoFP.Network.Overridable
       description: Boolean indicating whether object values can be overridden.
       type: String
     - contextPath: CiscoFP.Network.Description
-      description: Description of network object
+      description: Description of the network object.
       type: String
   - arguments:
     - default: false
-      description: ID of the object to delete.
+      description: ID of the host object to delete.
       isArray: false
       name: id
       required: true
       secret: false
     deprecated: false
-    description: Delete host object
+    description: Deletes the specified host object.
     execution: false
     name: ciscofp-delete-host-object
     outputs:
     - contextPath: CiscoFP.Host.ID
-      description: ID of host object
+      description: ID of the host object.
       type: String
     - contextPath: CiscoFP.Host.Name
-      description: Name of host object
+      description: Name of the host object.
       type: String
     - contextPath: CiscoFP.Host.Value
-      description: cidr range
+      description: CIDR range.
       type: String
     - contextPath: CiscoFP.Host.Overridable
-      description: ‘true’ if the object can be overridden, ‘false’ otherwise.
+      description: Whether the  object can be overridden.
       type: String
     - contextPath: CiscoFP.Host.Description
-      description: Description of host object
+      description: Description of the host object.
       type: String
   - arguments:
     - default: false
-      description: ID of the access policy
+      description: ID of the access policy.
       isArray: false
       name: id
       required: false
       secret: false
     - default: false
       description: |-
-        Number of items to return.
-        by default is 50
+        The maximum number of items to return.
+        The default is 50.
       isArray: false
       name: limit
       required: false
@@ -736,36 +736,36 @@ script:
     - default: false
       description: |-
         Index of first item to return.
-        by default is 0
+        The default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     deprecated: false
     description: Retrieves the access control policy associated with the specified
-      ID. Also, retrieves list of all access control policies
+      ID. If no access policy ID is passed, all access control policies are returned.
     execution: false
     name: ciscofp-get-access-policy
     outputs:
     - contextPath: CiscoFP.Policy.ID
-      description: The id of policy
+      description: The policy ID.
       type: String
     - contextPath: CiscoFP.Policy.Name
-      description: the name of the policy
+      description: The name of the policy.
       type: String
     - contextPath: CiscoFP.Policy.DefaultActionID
-      description: Default action id of policy
+      description: The default action ID of the policy.
       type: String
   - arguments:
     - default: false
-      description: Set the name of the new access policy.
+      description: The name of the new access policy.
       isArray: false
       name: name
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: rule action
+      description: The action to take. Can be "BLOCK", "TRUST", "PERMIT", or "NETWORK_DISCOVERY".
       isArray: false
       name: action
       predefined:
@@ -776,41 +776,41 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Create access control policy
+    description: Creates an access control policy.
     execution: false
     name: ciscofp-create-access-policy
     outputs:
     - contextPath: CiscoFP.Policy.ID
-      description: The id of policy
+      description: The policy ID.
       type: String
     - contextPath: CiscoFP.Policy.Name
-      description: The name of the policy
+      description: The name of the policy.
       type: String
     - contextPath: CiscoFP.Policy.DefaultActionID
-      description: Default action id of policy
+      description: The default action ID of the policy.
       type: String
   - arguments:
     - default: false
-      description: Access policy name
+      description: The access policy name.
       isArray: false
       name: name
       required: true
       secret: false
     - default: false
-      description: ID of access policy
+      description: ID of the access policy.
       isArray: false
       name: id
       required: true
       secret: false
     - default: false
-      description: ID of default action
+      description: ID of the default action.
       isArray: false
       name: default_action_id
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Action to take
+      description: The action to take. Can be "BLOCK", "TRUST", "PERMIT", or "NETWORK_DISCOVERY".
       isArray: false
       name: action
       predefined:
@@ -821,45 +821,45 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Update access control policy
+    description: Updates the specified access control policy.
     execution: false
     name: ciscofp-update-access-policy
     outputs:
     - contextPath: CiscoFP.Policy.ID
-      description: The id of policy
+      description: The policy ID.
       type: String
     - contextPath: CiscoFP.Policy.Name
-      description: The name of the policy
+      description: The name of the policy.
       type: String
     - contextPath: CiscoFP.Policy.DefaultActionID
-      description: Default action id of policy
+      description: The default action ID of the policy.
       type: String
   - arguments:
     - default: false
-      description: ID of access policy
+      description: ID of the access policy.
       isArray: false
       name: id
       required: true
       secret: false
     deprecated: false
-    description: Delete access control policy
+    description: Deletes the specified access control policy.
     execution: false
     name: ciscofp-delete-access-policy
     outputs:
     - contextPath: CiscoFP.Policy.ID
-      description: The id of policy
+      description: The policy ID.
       type: String
     - contextPath: CiscoFP.Policy.Name
-      description: The name of the policy
+      description: The name of the policy.
       type: String
     - contextPath: CiscoFP.Policy.DefaultActionID
-      description: Default action id of policy
+      description: The default action ID of the policy.
       type: String
   - arguments:
     - default: false
       description: |-
-        Number of items to return.
-        by default is 50
+        The maximum number of items to return.
+        The default is 50
       isArray: false
       name: limit
       required: false
@@ -867,30 +867,30 @@ script:
     - default: false
       description: |-
         Index of first item to return.
-        by default is 0
+        The default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     deprecated: false
-    description: Retrieves list of all custom security group tag objects.
+    description: Retrieves a list of all custom security group tag objects.
     execution: false
     name: ciscofp-list-security-group-tags
     outputs:
     - contextPath: CiscoFP.SecurityGroupTags.ID
-      description: ID of security group tag
+      description: ID of security group tag.
       type: String
     - contextPath: CiscoFP.SecurityGroupTags.Name
-      description: Name of security group tag
+      description: Name of security group tag.
       type: String
     - contextPath: CiscoFP.SecurityGroupTags.Tag
-      description: Tag number
+      description: The tag number.
       type: Number
   - arguments:
     - default: false
       description: |-
-        Number of items to return.
-        by default is 50
+        The maximum number of items to return.
+        The default is 50.
       isArray: false
       name: limit
       required: false
@@ -898,30 +898,30 @@ script:
     - default: false
       description: |-
         Index of first item to return.
-        by default is 0
+        The default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     deprecated: false
-    description: Retrieves list of all ISE security group tag objects.
+    description: Retrieves a list of all ISE security group tag objects.
     execution: false
     name: ciscofp-list-ise-security-group-tag
     outputs:
     - contextPath: CiscoFP.SecurityGroupTags.ID
-      description: ID of security group tag
+      description: ID of security group tag.
       type: String
     - contextPath: CiscoFP.SecurityGroupTags.Name
-      description: Name of security group tag
+      description: Name of security group tag.
       type: String
     - contextPath: CiscoFP.SecurityGroupTags.Tag
-      description: Tag namber
+      description: The tag number.
       type: Number
   - arguments:
     - default: false
       description: |-
-        Number of items to return.
-        by default is 50
+        The maximum number of items to return.
+        The default is 50.
       isArray: false
       name: limit
       required: false
@@ -929,39 +929,39 @@ script:
     - default: false
       description: |-
         Index of first item to return.
-        by default is 0
+        The default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     deprecated: false
-    description: Retrieves list of all vlantag objects.
+    description: Retrieves a list of all vlantag objects.
     execution: false
     name: ciscofp-list-vlan-tags
     outputs:
     - contextPath: CiscoFP.VlanTags.ID
-      description: ID of vlan tag
+      description: ID of the vlan tag.
       type: String
     - contextPath: CiscoFP.VlanTags.Name
-      description: Name of vlan tag
-      type: String
+      description: Name of the vlan tag.
+      type: Unknown
     - contextPath: CiscoFP.VlanTags.Overridable
-      description: Boolean indicating whether object values can be overridden
-      type: Boolean
+      description: Boolean indicating whether object values can be overridden.
+      type: Unknown
     - contextPath: CiscoFP.VlanTags.Description
-      description: Description of vlan tag
-      type: String
+      description: Description of the vlan tag.
+      type: Unknown
     - contextPath: CiscoFP.VlanTags.StartTag
-      description: Start tag number
+      description: Start tag number.
       type: Number
     - contextPath: CiscoFP.VlanTags.EndTag
-      description: End tag number
+      description: End tag number.
       type: Number
   - arguments:
     - default: false
       description: |-
-        Number of items to return.
-        by default is 50
+        The maximum number of items to return.
+        The default is 50.
       isArray: false
       name: limit
       required: false
@@ -969,51 +969,51 @@ script:
     - default: false
       description: |-
         Index of first item to return.
-        by default is 0
+        The default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     deprecated: false
-    description: Retrieves list of all vlan group tag objects.
+    description: Retrieves a list of all vlan group tag objects.
     execution: false
     name: ciscofp-list-vlan-tags-group
     outputs:
     - contextPath: CiscoFP.VlanTagsGroup.Name
-      description: Name of group
-      type: String
+      description: Name of the group.
+      type: Unknown
     - contextPath: CiscoFP.VlanTagsGroup.ID
-      description: ID of group
-      type: String
+      description: ID of the group.
+      type: Unknown
     - contextPath: CiscoFP.VlanTagsGroup.Description
-      description: Description of object
-      type: String
+      description: Description of the object.
+      type: Unknown
     - contextPath: CiscoFP.VlanTagsGroup.Overridable
-      description: Boolean indicating whether object values can be overridden
-      type: Boolean
+      description: Boolean indicating whether object values can be overridden.
+      type: Unknown
     - contextPath: CiscoFP.VlanTagsGroup.Objects.Name
-      description: Name of object
+      description: Name of the object.
       type: String
     - contextPath: CiscoFP.VlanTagsGroup.Objects.ID
-      description: ID of object
-      type: String
+      description: ID of the object.
+      type: Unknown
     - contextPath: CiscoFP.VlanTagsGroup.Objects.Description
-      description: Description of vlan tag
-      type: String
+      description: Description of the vlan tag.
+      type: Unknown
     - contextPath: CiscoFP.VlanTagsGroup.Objects.Overridable
-      description: Boolean indicating whether object values can be overridden
-      type: Boolean
+      description: Boolean indicating whether object values can be overridden.
+      type: Unknown
     - contextPath: CiscoFP.VlanTagsGroup.Objects.StartTag
-      description: Start tag number
-      type: Number
+      description: Start tag number.
+      type: Unknown
     - contextPath: CiscoFP.VlanTagsGroup.Objects.EndTag
-      description: End tag number
-      type: Number
+      description: End tag number.
+      type: Unknown
   - arguments:
     - default: false
       description: |-
-        Number of items to return.
-        by default is 50
+        The maximum number of items to return.
+        The default is 50.
       isArray: false
       name: limit
       required: false
@@ -1021,211 +1021,211 @@ script:
     - default: false
       description: |-
         Index of first item to return.
-        by default is 0
+        The default is 0
       isArray: false
       name: offset
       required: false
       secret: false
     deprecated: false
-    description: Retrieves list of all application objects.
+    description: Retrieves a list of all application objects.
     execution: false
     name: ciscofp-list-applications
     outputs:
     - contextPath: CiscoFP.Applications.Name
-      description: Name of Application
+      description: Name of the application.
       type: String
     - contextPath: CiscoFP.Applications.ID
-      description: ID of Application
+      description: ID of the application.
       type: String
     - contextPath: CiscoFP.Applications.Risk
-      description: Risk of Application
+      description: Risk of the application.
       type: String
     - contextPath: CiscoFP.Applications.AppProductivity
-      description: AppProductivity of Application
-      type: String
+      description: AppProductivity of the application.
+      type: Unknown
     - contextPath: CiscoFP.Applications.ApplicationTypes
-      description: Application Type
+      description: The application type.
       type: String
     - contextPath: CiscoFP.Applications.AppCategories.ID
-      description: AppCategory id
+      description: AppCategory ID.
       type: String
     - contextPath: CiscoFP.Applications.AppCategories.Name
-      description: AppCategory name
+      description: AppCategory name.
       type: String
     - contextPath: CiscoFP.Applications.AppCategories.Count
-      description: AppCategory count
+      description: AppCategory count.
       type: String
   - arguments:
     - default: false
-      description: Policy id
+      description: Policy ID.
       isArray: false
       name: policy_id
       required: true
       secret: false
     - default: false
-      description: Rule ID
+      description: Rule ID.
       isArray: false
       name: rule_id
       required: false
       secret: false
     deprecated: false
     description: Retrieves the access control rule associated with the specified policy
-      ID and rule ID. If no rule ID is specified, retrieves list of all access rules
+      ID and rule ID. If no rule ID is specified, retrieves a list of all access rules
       associated with the specified policy ID.
     execution: false
     name: ciscofp-get-access-rules
     outputs:
     - contextPath: CiscoFP.Rule.Action
-      description: Rule Action
+      description: Rule action.
       type: String
     - contextPath: CiscoFP.Rule.Applications.ID
-      description: Application object id
+      description: Application object ID.
       type: String
     - contextPath: CiscoFP.Rule.Applications.Name
-      description: Application object name
+      description: Application object name.
       type: String
     - contextPath: CiscoFP.Rule.Category
-      description: Category of rule
+      description: Category of rule.
       type: String
     - contextPath: CiscoFP.Rule.DestinationNetworks.Addresses.Type
-      description: Address type
+      description: Address type.
       type: String
     - contextPath: CiscoFP.Rule.DestinationNetworks.Addresses.Value
-      description: ip Address / CIDR range
+      description: IP address or CIDR range.
       type: String
     - contextPath: CiscoFP.Rule.DestinationNetworks.Objects.ID
-      description: Object id
+      description: Object ID.
       type: String
     - contextPath: CiscoFP.Rule.DestinationNetworks.Objects.Name
-      description: Object name
+      description: Object name.
       type: String
     - contextPath: CiscoFP.Rule.DestinationNetworks.Objects.Type
-      description: Object type
+      description: Object type.
       type: String
     - contextPath: CiscoFP.Rule.DestinationPorts.Addresses.Port
-      description: port number
+      description: Port number.
       type: String
     - contextPath: CiscoFP.Rule.DestinationPorts.Addresses.Protocol
-      description: port Protocol
+      description: Port protocol.
       type: String
     - contextPath: CiscoFP.Rule.DestinationPorts.Objects.ID
-      description: port object id
+      description: Port object ID.
       type: String
     - contextPath: CiscoFP.Rule.DestinationPorts.Objects.Name
-      description: port object name
+      description: Port object name.
       type: String
     - contextPath: CiscoFP.Rule.DestinationPorts.Objects.Protocol
-      description: port object protocol
+      description: Port object protocol.
       type: String
     - contextPath: CiscoFP.Rule.DestinationPorts.Objects.Type
-      description: port object type
+      description: Port object type.
       type: String
     - contextPath: CiscoFP.Rule.DestinationZones.Objects.ID
-      description: zone id
+      description: Zone ID.
       type: String
     - contextPath: CiscoFP.Rule.DestinationZones.Objects.Name
-      description: zone name
+      description: Zone name.
       type: String
     - contextPath: CiscoFP.Rule.DestinationZones.Objects.Type
-      description: zone type
+      description: Zone type.
       type: String
     - contextPath: CiscoFP.Rule.Enabled
-      description: is rule enable or not
+      description: Whether the rule is enabled.
       type: Number
     - contextPath: CiscoFP.Rule.ID
-      description: rule id
+      description: Rule ID.
       type: String
     - contextPath: CiscoFP.Rule.Name
-      description: rule name
+      description: Rule name.
       type: String
     - contextPath: CiscoFP.Rule.RuleIndex
-      description: the index of the rule
+      description: The index of the rule.
       type: Number
     - contextPath: CiscoFP.Rule.Section
-      description: the section of the rule
+      description: The section of the rule.
       type: String
     - contextPath: CiscoFP.Rule.SendEventsToFMC
-      description: Boolean indicating whether the device will send events to the Firepower
+      description: Boolean indicating whether the device will send events to Cisco Firepower.
       type: Number
     - contextPath: CiscoFP.Rule.SourceNetworks.Addresses.Type
-      description: address type
+      description: The address type.
       type: String
     - contextPath: CiscoFP.Rule.SourceNetworks.Addresses.Value
-      description: address ip / CIDR range
+      description: IP address or CIDR range.
       type: String
     - contextPath: CiscoFP.Rule.SourceNetworks.Objects.ID
-      description: object id
+      description: Object ID.
       type: String
     - contextPath: CiscoFP.Rule.SourceNetworks.Objects.Name
-      description: object name
+      description: Object name.
       type: String
     - contextPath: CiscoFP.Rule.SourceNetworks.Objects.Type
-      description: object type
+      description: Object type.
       type: String
     - contextPath: CiscoFP.Rule.SourcePorts.Addresses.Port
-      description: port number
+      description: Port number.
       type: String
     - contextPath: CiscoFP.Rule.SourcePorts.Addresses.Protocol
-      description: port protocol
+      description: Port protocol.
       type: String
     - contextPath: CiscoFP.Rule.SourcePorts.Objects.ID
-      description: object id
+      description: Object ID.
       type: String
     - contextPath: CiscoFP.Rule.SourcePorts.Objects.Name
-      description: object name
+      description: Object name.
       type: String
     - contextPath: CiscoFP.Rule.SourcePorts.Objects.Protocol
-      description: object protocol
+      description: Object protocol.
       type: String
     - contextPath: CiscoFP.Rule.SourcePorts.Objects.Type
-      description: object type
+      description: Object type.
       type: String
     - contextPath: CiscoFP.Rule.SourceSecurityGroupTags.Objects.ID
-      description: object id
+      description: Object ID.
       type: String
     - contextPath: CiscoFP.Rule.SourceSecurityGroupTags.Objects.Name
-      description: object name
+      description: Object name.
       type: String
     - contextPath: CiscoFP.Rule.SourceSecurityGroupTags.Objects.Type
-      description: object type
+      description: Object type.
       type: String
     - contextPath: CiscoFP.Rule.SourceZones.Objects.ID
-      description: object id
+      description: Object ID.
       type: String
     - contextPath: CiscoFP.Rule.SourceZones.Objects.Name
-      description: object name
+      description: Object name.
       type: String
     - contextPath: CiscoFP.Rule.SourceZones.Objects.Type
-      description: object type
+      description: Object type.
       type: String
     - contextPath: CiscoFP.Rule.Uels.Addresses.URL
-      description: url address
+      description: URL address.
       type: String
     - contextPath: CiscoFP.Rule.Uels.Objects.ID
-      description: url object id
+      description: URL object ID.
       type: String
     - contextPath: CiscoFP.Rule.Uels.Objects.Name
-      description: url object name
+      description: URL object name.
       type: String
     - contextPath: CiscoFP.Rule.VlanTags.Numbers.EndTag
-      description: vlan tag number end tag
+      description: The vlan tag number end tag.
       type: Number
     - contextPath: CiscoFP.Rule.VlanTags.Numbers.StartTag
-      description: vlan tag number start tag
+      description: The vlan tag number start tag.
       type: Number
     - contextPath: CiscoFP.Rule.VlanTags.Objects.ID
-      description: object id
+      description: Object ID.
       type: String
     - contextPath: CiscoFP.Rule.VlanTags.Objects.Name
-      description: object name
+      description: Object name.
       type: String
     - contextPath: CiscoFP.Rule.VlanTags.Objects.Type
-      description: object type
+      description: Object type.
       type: String
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: rule's traffic
+      description: The rule's traffic. Can be "ALLOW", "TRUST", "BLOCK", "MONITOR", "BLOCK_RESET", "BLOCK_INTERACTIVE", or "BLOCK_RESET_INTERACTIVE".
       isArray: false
       name: action
       predefined:
@@ -1239,14 +1239,14 @@ script:
       required: true
       secret: false
     - default: false
-      description: the role name
+      description: The rule name.
       isArray: false
       name: rule_name
       required: true
       secret: false
     - auto: PREDEFINED
       default: true
-      description: Boolean indicating to enable or not.
+      description: Boolean indicating whether to enable the access control rule.
       isArray: false
       name: enabled
       predefined:
@@ -1255,248 +1255,250 @@ script:
       required: false
       secret: false
     - default: false
-      description: list of source Zones object id - use ciscofp-list-zones command
+      description: A list of source zone object IDs. To get IDs use the ciscofp-list-zones command.
       isArray: true
       name: source_zone_object_ids
       required: false
       secret: false
     - default: false
-      description: policy id to create there the new role
+      description: The policy ID in which to create the new rule.
       isArray: false
       name: policy_id
       required: true
       secret: false
     - default: false
-      description: list of destination Zones object id - use ciscofp-list-zones
+      description: A list of destination zone object IDs. To get IDs, use the ciscofp-list-zones command.
       isArray: true
       name: destination_zone_object_ids
       required: false
       secret: false
     - default: false
-      description: list of vlan Tags object id - use ciscofp-list-vlan-tags
+      description: A list of vlan tag object IDs. To get IDs, use the ciscofp-list-vlan-tags command.
       isArray: true
       name: vlan_tag_object_ids
       required: false
       secret: false
     - default: false
-      description: list of network object id  - use ciscofp-get-network-groups-object
+      description: A list of network object IDs. To get IDs, use the ciscofp-get-network-groups-object command.
       isArray: true
       name: source_network_object_ids
       required: false
       secret: false
     - default: false
-      description: list of IP addresses / CIDR ranges - use ciscofp-get-network-object
-        / ciscofp-get-host-object
+      description: A list of source IP addresses or CIDR ranges. To get the addresses or ranges, use the ciscofp-get-network-object
+        or ciscofp-get-host-object command, respectively.
       isArray: true
       name: source_network_addresses
       required: false
       secret: false
     - default: false
-      description: source_network_object_ids  - use ciscofp-get-network-object / ciscofp-get-host-object
+      description: A list of destination IP addresses or CIDR ranges. To get the addresses or ranges, use the ciscofp-get-network-object
+        or ciscofp-get-host-object command, respectively.
       isArray: true
       name: destination_network_object_ids
       required: false
       secret: false
     - default: false
-      description: list of addresses
+      description: A list of destination addresses.
       isArray: true
       name: destination_network_addresses
       required: false
       secret: false
     - default: false
-      description: list of port object id - use ciscofp-get-network-object / ciscofp-get-host-object
+      description: A list of port object IDs. To get IDs,  use the ciscofp-get-network-object or ciscofp-get-host-object commands.
       isArray: false
       name: source_port_object_ids
       required: false
       secret: false
     - default: false
-      description: list of port object id - use ciscofp-list-ports
+      description: A list of port object IDs. To get IDs, use the ciscofp-list-ports command.
       isArray: false
       name: destination_port_object_ids
       required: false
       secret: false
     - default: false
-      description: list of security group tag object id - use ciscofp-list-security-group-tags
+      description: A list of security group tag object IDs. To get IDs, use the ciscofp-list-security-group-tags command.
       isArray: false
       name: source_security_group_tag_object_ids
       required: false
       secret: false
     - default: false
-      description: list of application object id - use ciscofp-list-applications
+      description: A list of application object IDs. To get IDs, use the ciscofp-list-applications command.
       isArray: true
       name: application_object_ids
       required: false
       secret: false
     - default: false
-      description: list of url object id - use ciscofp-list-url-categories
+      description: A list of URL object IDs. To get IDs, use the ciscofp-list-url-categories command.
       isArray: true
       name: url_object_ids
       required: false
       secret: false
     - default: false
-      description: list of url addresses
+      description: A list of URL addresses.
       isArray: true
       name: url_addresses
       required: false
       secret: false
     deprecated: false
-    description: create access control rule
+    description: Creates an access control rule.
     execution: false
     name: ciscofp-create-access-rules
     outputs:
     - contextPath: CiscoFP.Rule.Action
-      description: action determines how the system handles matching traffic
+      description: The action that determines how the system handles matching traffic.
       type: String
     - contextPath: CiscoFP.Rule.Applications.ID
-      description: application object id
+      description: The application object ID.
       type: String
     - contextPath: CiscoFP.Rule.Applications.Name
-      description: application object name
+      description: The application object name.
       type: String
     - contextPath: CiscoFP.Rule.Category
-      description: category of rule
+      description: The category of rule.
       type: String
     - contextPath: CiscoFP.Rule.DestinationNetworks.Addresses.Type
-      description: address type
+      description: The address type.
       type: String
     - contextPath: CiscoFP.Rule.DestinationNetworks.Addresses.Value
-      description: address value
+      description: The address value.
       type: String
     - contextPath: CiscoFP.Rule.DestinationNetworks.Objects.ID
-      description: object id
+      description: The object ID.
       type: String
     - contextPath: CiscoFP.Rule.DestinationNetworks.Objects.Name
-      description: object name
+      description: The object name.
       type: String
     - contextPath: CiscoFP.Rule.DestinationNetworks.Objects.Type
-      description: object type
+      description: The object type.
       type: String
     - contextPath: CiscoFP.Rule.DestinationPorts.Addresses.Port
-      description: the port
+      description: The port number.
       type: String
     - contextPath: CiscoFP.Rule.DestinationPorts.Addresses.Protocol
-      description: protocol
+      description: The port protocol.
       type: String
     - contextPath: CiscoFP.Rule.DestinationPorts.Objects.ID
-      description: port object id
+      description: The port object ID.
       type: String
     - contextPath: CiscoFP.Rule.DestinationPorts.Objects.Name
-      description: port object name
+      description: The port object name.
       type: String
     - contextPath: CiscoFP.Rule.DestinationPorts.Objects.Protocol
-      description: port object protocol
+      description: The port object protocol.
       type: String
     - contextPath: CiscoFP.Rule.DestinationPorts.Objects.Type
-      description: port object type
+      description: The port object type.
       type: String
     - contextPath: CiscoFP.Rule.DestinationZones.Objects.ID
-      description: zone id
+      description: The zone ID.
       type: String
     - contextPath: CiscoFP.Rule.DestinationZones.Objects.Name
-      description: zone name
+      description: The zone name.
       type: String
     - contextPath: CiscoFP.Rule.DestinationZones.Objects.Type
-      description: zone type
+      description: The zone type.
       type: String
     - contextPath: CiscoFP.Rule.Enabled
-      description: Boolean indicating to enable or not
+      description: Boolean indicating whether to enable the rule.
       type: Number
     - contextPath: CiscoFP.Rule.ID
-      description: rule id
+      description: The rule ID.
       type: String
     - contextPath: CiscoFP.Rule.Name
-      description: rule name
+      description: The rule name.
       type: String
     - contextPath: CiscoFP.Rule.RuleIndex
-      description: the index of the rule
+      description: The index of the rule.
       type: Number
     - contextPath: CiscoFP.Rule.Section
-      description: the section of the rule
+      description: The section of the rule.
       type: String
     - contextPath: CiscoFP.Rule.SendEventsToFMC
-      description: Boolean indicating whether the device will send events to the Firepower
+      description: Boolean indicating whether the device will send events to Cisco Firepower.
       type: Number
     - contextPath: CiscoFP.Rule.SourceNetworks.Addresses.Type
-      description: address type
+      description: The address type.
       type: String
     - contextPath: CiscoFP.Rule.SourceNetworks.Addresses.Value
-      description: address value
+      description: The address value.
       type: String
     - contextPath: CiscoFP.Rule.SourceNetworks.Objects.ID
-      description: object id
+      description: The object ID.
       type: String
     - contextPath: CiscoFP.Rule.SourceNetworks.Objects.Name
-      description: object name
+      description: The object name.
       type: String
     - contextPath: CiscoFP.Rule.SourceNetworks.Objects.Type
-      description: object type
+      description: The object type.
       type: String
     - contextPath: CiscoFP.Rule.SourcePorts.Addresses.Port
-      description: address port
+      description: The address port.
       type: String
     - contextPath: CiscoFP.Rule.SourcePorts.Addresses.Protocol
-      description: address protocol
+      description: The address protocol.
       type: String
     - contextPath: CiscoFP.Rule.SourcePorts.Objects.ID
-      description: object id
+      description: The object ID.
       type: String
     - contextPath: CiscoFP.Rule.SourcePorts.Objects.Name
-      description: object name
+      description: The object name.
       type: String
     - contextPath: CiscoFP.Rule.SourcePorts.Objects.Protocol
-      description: object protocol
+      description: The object protocol.
       type: String
     - contextPath: CiscoFP.Rule.SourcePorts.Objects.Type
-      description: object type
+      description: The object type.
       type: String
     - contextPath: CiscoFP.Rule.SourceSecurityGroupTags.Objects.ID
-      description: object id
+      description: The object ID.
       type: String
     - contextPath: CiscoFP.Rule.SourceSecurityGroupTags.Objects.Name
-      description: object name
+      description: The object name.
       type: String
     - contextPath: CiscoFP.Rule.SourceSecurityGroupTags.Objects.Type
-      description: object type
+      description: The object type.
       type: String
     - contextPath: CiscoFP.Rule.SourceZones.Objects.ID
-      description: object id
+      description: The object ID.
       type: String
     - contextPath: CiscoFP.Rule.SourceZones.Objects.Name
-      description: object name
+      description: The object name.
       type: String
     - contextPath: CiscoFP.Rule.SourceZones.Objects.Type
-      description: object type
+      description: The object type.
       type: String
     - contextPath: CiscoFP.Rule.Uels.Addresses.URL
-      description: url
+      description: The URL address.
       type: String
     - contextPath: CiscoFP.Rule.Uels.Objects.ID
-      description: url object id
+      description: The URL object ID.
       type: String
     - contextPath: CiscoFP.Rule.Uels.Objects.Name
-      description: url object name
+      description: The URL object name.
       type: String
     - contextPath: CiscoFP.Rule.VlanTags.Numbers.EndTag
-      description: vlan tag number end tag
+      description: The vlan tag number end tag.
       type: Number
     - contextPath: CiscoFP.Rule.VlanTags.Numbers.StartTag
-      description: vlan tag number start tag
+      description: The vlan tag number start tag.
       type: Number
     - contextPath: CiscoFP.Rule.VlanTags.Objects.ID
-      description: object id
+      description: The object ID.
       type: String
     - contextPath: CiscoFP.Rule.VlanTags.Objects.Name
-      description: object name
+      description: The object name.
       type: String
     - contextPath: CiscoFP.Rule.VlanTags.Objects.Type
-      description: object type
+      description: The object type.
       type: String
   - arguments:
     - auto: PREDEFINED
       default: false
       description: |-
-        merge will add the changes requested to the existing rule
-        override will override the fields with the inputs provided, and will delete any fields that were not provided
+        The method by which to update the rule. Can be "merge" or "override".
+        If merge, will add the changes requested to the existing rule.
+        If override, will override the fields with the inputs provided and will delete any fields that were not provided.
       isArray: false
       name: update_strategy
       predefined:
@@ -1506,8 +1508,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Action—A rule's action determines how the system handles matching
-        traffic
+      description: The rule action that determines how the system handles matching
+        traffic. Can be "ALLOW", "TRUST", "BLOCK", "MONITOR", "BLOCK_RESET", "BLOCK_INTERACTIVE", or "BLOCK_RESET_INTERACTIVE".
       isArray: false
       name: action
       predefined:
@@ -1521,14 +1523,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: the role name
+      description: The rule name.
       isArray: false
       name: rule_name
       required: false
       secret: false
     - auto: PREDEFINED
       default: true
-      description: Boolean indicating to enable or not.
+      description: Boolean indicating whether to enable the rule. The default is "true".
       isArray: false
       name: enabled
       predefined:
@@ -1537,417 +1539,417 @@ script:
       required: false
       secret: false
     - default: false
-      description: list of source Zones object id
+      description: A list of source zones object IDs.
       isArray: true
       name: source_zone_object_ids
       required: false
       secret: false
     - default: false
-      description: policy id to create there the new role
+      description: The policy ID for which to create the new rule.
       isArray: false
       name: policy_id
       required: true
       secret: false
     - default: false
-      description: list of destination Zones object id
+      description: A list of destination zones object IDs.
       isArray: true
       name: destination_zone_object_ids
       required: false
       secret: false
     - default: false
-      description: list of vlan Tags object id
+      description: A list of vlan tag object IDs.
       isArray: true
       name: vlan_tag_object_ids
       required: false
       secret: false
     - default: false
-      description: list of network object id
+      description: A list of source network object IDs.
       isArray: true
       name: source_network_object_ids
       required: false
       secret: false
     - default: false
-      description: list of addresses
+      description: A list of addresses.
       isArray: true
       name: source_network_addresses
       required: false
       secret: false
     - default: false
-      description: source_network_object_ids
+      description: A list of destination network object IDs.
       isArray: true
       name: destination_network_object_ids
       required: false
       secret: false
     - default: false
-      description: list of addresses
+      description: A list of addresses.
       isArray: true
       name: destination_network_addresses
       required: false
       secret: false
     - default: false
-      description: list of port object id
+      description: A list of port object IDs.
       isArray: false
       name: source_port_object_ids
       required: false
       secret: false
     - default: false
-      description: list of port object id
+      description: A list of port object IDs.
       isArray: false
       name: destination_port_object_ids
       required: false
       secret: false
     - default: false
-      description: list of security group tag object id
+      description: A list of security group tag object IDs.
       isArray: false
       name: source_security_group_tag_object_ids
       required: false
       secret: false
     - default: false
-      description: list of application object id
+      description: A list of application object IDs.
       isArray: true
       name: application_object_ids
       required: false
       secret: false
     - default: false
-      description: list of url object id
+      description: A list of URL object IDs.
       isArray: true
       name: url_object_ids
       required: false
       secret: false
     - default: false
-      description: list of url_addresses
+      description: A list of URL addresses.
       isArray: true
       name: url_addresses
       required: false
       secret: false
     - default: false
-      description: the id of the rule to update
+      description: The ID of the rule to update.
       isArray: false
       name: rule_id
       required: true
       secret: false
     deprecated: false
-    description: update access control rule
+    description: Updates the specified access control rule.
     execution: false
     name: ciscofp-update-access-rules
     outputs:
     - contextPath: CiscoFP.Rule.Action
-      description: action determines how the system handles matching traffic
+      description: The action that determines how the system handles matching traffic.
       type: String
     - contextPath: CiscoFP.Rule.Applications.ID
-      description: application object id
+      description: The application object ID.
       type: String
     - contextPath: CiscoFP.Rule.Applications.Name
-      description: application object name
+      description: The application object name.
       type: String
     - contextPath: CiscoFP.Rule.Category
-      description: category of rule
+      description: The category of the rule.
       type: String
     - contextPath: CiscoFP.Rule.DestinationNetworks.Addresses.Type
-      description: address type
+      description: The address type.
       type: String
     - contextPath: CiscoFP.Rule.DestinationNetworks.Addresses.Value
-      description: address value
+      description: The address value.
       type: String
     - contextPath: CiscoFP.Rule.DestinationNetworks.Objects.ID
-      description: object id
+      description: The object ID.
       type: String
     - contextPath: CiscoFP.Rule.DestinationNetworks.Objects.Name
-      description: object name
+      description: The object name.
       type: String
     - contextPath: CiscoFP.Rule.DestinationNetworks.Objects.Type
-      description: object type
+      description: The object type.
       type: String
     - contextPath: CiscoFP.Rule.DestinationPorts.Addresses.Port
-      description: the port
+      description: The port number.
       type: String
     - contextPath: CiscoFP.Rule.DestinationPorts.Addresses.Protocol
-      description: protocol
+      description: The port protocol.
       type: String
     - contextPath: CiscoFP.Rule.DestinationPorts.Objects.ID
-      description: port object id
+      description: The port object ID.
       type: String
     - contextPath: CiscoFP.Rule.DestinationPorts.Objects.Name
-      description: port object name
+      description: The port object name.
       type: String
     - contextPath: CiscoFP.Rule.DestinationPorts.Objects.Protocol
-      description: port object protocol
+      description: The port object protocol.
       type: String
     - contextPath: CiscoFP.Rule.DestinationPorts.Objects.Type
-      description: port object type
+      description: The port object type.
       type: String
     - contextPath: CiscoFP.Rule.DestinationZones.Objects.ID
-      description: zones id
+      description: The destination zone object IDs.
       type: String
     - contextPath: CiscoFP.Rule.DestinationZones.Objects.Name
-      description: zones name
+      description: The destination zone object names.
       type: String
     - contextPath: CiscoFP.Rule.DestinationZones.Objects.Type
-      description: zones type
+      description: The destination zone object types.
       type: String
     - contextPath: CiscoFP.Rule.Enabled
-      description: Boolean indicating to enable or not
+      description: Boolean indicating whether the rule is enabled.
       type: Number
     - contextPath: CiscoFP.Rule.ID
-      description: rule id
+      description: The rule ID.
       type: String
     - contextPath: CiscoFP.Rule.Name
-      description: rule name
+      description: The rule name.
       type: String
     - contextPath: CiscoFP.Rule.RuleIndex
-      description: the index of the rule
+      description: The index of the rule.
       type: Number
     - contextPath: CiscoFP.Rule.Section
-      description: the section of the rule
+      description: The section of the rule.
       type: String
     - contextPath: CiscoFP.Rule.SendEventsToFMC
-      description: Boolean indicating whether the device will send events to the Firepower
+      description: Boolean indicating whether the device will send events to Cisco Firepower.
       type: Number
     - contextPath: CiscoFP.Rule.SourceNetworks.Addresses.Type
-      description: address type
+      description: The address type.
       type: String
     - contextPath: CiscoFP.Rule.SourceNetworks.Addresses.Value
-      description: address value
+      description: The address value.
       type: String
     - contextPath: CiscoFP.Rule.SourceNetworks.Objects.ID
-      description: object id
+      description: The object ID.
       type: String
     - contextPath: CiscoFP.Rule.SourceNetworks.Objects.Name
-      description: object name
+      description: The object name.
       type: String
     - contextPath: CiscoFP.Rule.SourceNetworks.Objects.Type
-      description: object type
+      description: The object type.
       type: String
     - contextPath: CiscoFP.Rule.SourcePorts.Addresses.Port
-      description: address port
+      description: The address port.
       type: String
     - contextPath: CiscoFP.Rule.SourcePorts.Addresses.Protocol
-      description: address protocol
+      description: The address protocol.
       type: String
     - contextPath: CiscoFP.Rule.SourcePorts.Objects.ID
-      description: object id
+      description: The object ID.
       type: String
     - contextPath: CiscoFP.Rule.SourcePorts.Objects.Name
-      description: object name
+      description: The object name.
       type: String
     - contextPath: CiscoFP.Rule.SourcePorts.Objects.Protocol
-      description: object protocol
+      description: The object protocol.
       type: String
     - contextPath: CiscoFP.Rule.SourcePorts.Objects.Type
-      description: object type
+      description: The object type.
       type: String
     - contextPath: CiscoFP.Rule.SourceSecurityGroupTags.Objects.ID
-      description: object id
+      description: The object ID.
       type: String
     - contextPath: CiscoFP.Rule.SourceSecurityGroupTags.Objects.Name
-      description: object name
+      description: The object name.
       type: String
     - contextPath: CiscoFP.Rule.SourceSecurityGroupTags.Objects.Type
-      description: object type
+      description: The object type.
       type: String
     - contextPath: CiscoFP.Rule.SourceZones.Objects.ID
-      description: object id
+      description: The object ID.
       type: String
     - contextPath: CiscoFP.Rule.SourceZones.Objects.Name
-      description: object name
+      description: The object name.
       type: String
     - contextPath: CiscoFP.Rule.SourceZones.Objects.Type
-      description: object type
+      description: The object type.
       type: String
     - contextPath: CiscoFP.Rule.Uels.Addresses.URL
-      description: url
+      description: The URL address.
       type: String
     - contextPath: CiscoFP.Rule.Uels.Objects.ID
-      description: url object id
+      description: The URL object ID.
       type: String
     - contextPath: CiscoFP.Rule.Uels.Objects.Name
-      description: url object name
+      description: The URL object name.
       type: String
     - contextPath: CiscoFP.Rule.VlanTags.Numbers.EndTag
-      description: vlan tag number end tag
+      description: The vlan tag number end tag.
       type: Number
     - contextPath: CiscoFP.Rule.VlanTags.Numbers.StartTag
-      description: vlan tag number start tag
+      description: The vlan tag number start tag.
       type: Number
     - contextPath: CiscoFP.Rule.VlanTags.Objects.ID
-      description: object id
+      description: The object ID.
       type: String
     - contextPath: CiscoFP.Rule.VlanTags.Objects.Name
-      description: object name
+      description: The object name.
       type: String
     - contextPath: CiscoFP.Rule.VlanTags.Objects.Type
-      description: object type
+      description: The object type.
       type: String
   - arguments:
     - default: false
-      description: the policy id
+      description: The policy ID.
       isArray: false
       name: policy_id
       required: true
       secret: false
     - default: false
-      description: the role id to delete
+      description: The ID of the rule to delete.
       isArray: false
       name: rule_id
       required: true
       secret: false
     deprecated: false
-    description: delete access control rule
+    description: Deletes the specified access control rule.
     execution: false
     name: ciscofp-delete-access-rules
     outputs:
     - contextPath: CiscoFP.Rule.Action
-      description: action determines how the system handles matching traffic
+      description: The action that determines how the system handles matching traffic.
       type: String
     - contextPath: CiscoFP.Rule.Applications.ID
-      description: application object id
+      description: The application object ID.
       type: String
     - contextPath: CiscoFP.Rule.Applications.Name
-      description: application object name
+      description: The application object name.
       type: String
     - contextPath: CiscoFP.Rule.Category
-      description: category of rule
+      description: The category of the rule.
       type: String
     - contextPath: CiscoFP.Rule.DestinationNetworks.Addresses.Type
-      description: address type
+      description: The address type.
       type: String
     - contextPath: CiscoFP.Rule.DestinationNetworks.Addresses.Value
-      description: address value
+      description: The address value.
       type: String
     - contextPath: CiscoFP.Rule.DestinationNetworks.Objects.ID
-      description: object id
+      description: The object ID.
       type: String
     - contextPath: CiscoFP.Rule.DestinationNetworks.Objects.Name
-      description: object name
+      description: The object name.
       type: String
     - contextPath: CiscoFP.Rule.DestinationNetworks.Objects.Type
-      description: object type
+      description: The object type.
       type: String
     - contextPath: CiscoFP.Rule.DestinationPorts.Addresses.Port
-      description: the port
+      description: The port number.
       type: String
     - contextPath: CiscoFP.Rule.DestinationPorts.Addresses.Protocol
-      description: protocol
+      description: The port protocol.
       type: String
     - contextPath: CiscoFP.Rule.DestinationPorts.Objects.ID
-      description: port object id
+      description: The port object ID.
       type: String
     - contextPath: CiscoFP.Rule.DestinationPorts.Objects.Name
-      description: port object name
+      description: The port object name.
       type: String
     - contextPath: CiscoFP.Rule.DestinationPorts.Objects.Protocol
-      description: port object protocol
+      description: The port object protocol.
       type: String
     - contextPath: CiscoFP.Rule.DestinationPorts.Objects.Type
-      description: port object type
+      description: The port object type.
       type: String
     - contextPath: CiscoFP.Rule.DestinationZones.Objects.ID
-      description: zones id
+      description: The zone IDs.
       type: String
     - contextPath: CiscoFP.Rule.DestinationZones.Objects.Name
-      description: zones name
+      description: The zone names.
       type: String
     - contextPath: CiscoFP.Rule.DestinationZones.Objects.Type
-      description: zones type
+      description: The zone types.
       type: String
     - contextPath: CiscoFP.Rule.Enabled
-      description: Boolean indicating to enable or not
+      description: Boolean indicating whether the rule is enabled.
       type: Number
     - contextPath: CiscoFP.Rule.ID
-      description: rule id
+      description: The rule ID.
       type: String
     - contextPath: CiscoFP.Rule.Name
-      description: rule name
+      description: The rule name.
       type: String
     - contextPath: CiscoFP.Rule.RuleIndex
-      description: the index of the rule
+      description: The index of the rule.
       type: Number
     - contextPath: CiscoFP.Rule.Section
-      description: the section of the rule
+      description: The section of the rule.
       type: String
     - contextPath: CiscoFP.Rule.SendEventsToFMC
-      description: Boolean indicating whether the device will send events to the Firepower
+      description: Boolean indicating whether the device will send events to Cisco Firepower.
       type: Number
     - contextPath: CiscoFP.Rule.SourceNetworks.Addresses.Type
-      description: address type
+      description: The address type.
       type: String
     - contextPath: CiscoFP.Rule.SourceNetworks.Addresses.Value
-      description: address value
+      description: The address value.
       type: String
     - contextPath: CiscoFP.Rule.SourceNetworks.Objects.ID
-      description: object id
+      description: The object ID.
       type: String
     - contextPath: CiscoFP.Rule.SourceNetworks.Objects.Name
-      description: object name
+      description: The object name.
       type: String
     - contextPath: CiscoFP.Rule.SourceNetworks.Objects.Type
-      description: object type
+      description: The object type.
       type: String
     - contextPath: CiscoFP.Rule.SourcePorts.Addresses.Port
-      description: address port
+      description: The address port.
       type: String
     - contextPath: CiscoFP.Rule.SourcePorts.Addresses.Protocol
-      description: address protocol
+      description: The address protocol.
       type: String
     - contextPath: CiscoFP.Rule.SourcePorts.Objects.ID
-      description: object id
+      description: The object ID.
       type: String
     - contextPath: CiscoFP.Rule.SourcePorts.Objects.Name
-      description: object name
+      description: The object name.
       type: String
     - contextPath: CiscoFP.Rule.SourcePorts.Objects.Protocol
-      description: object protocol
+      description: The object protocol.
       type: String
     - contextPath: CiscoFP.Rule.SourcePorts.Objects.Type
-      description: object type
+      description: The object type.
       type: String
     - contextPath: CiscoFP.Rule.SourceSecurityGroupTags.Objects.ID
-      description: object id
+      description: The object ID.
       type: String
     - contextPath: CiscoFP.Rule.SourceSecurityGroupTags.Objects.Name
-      description: object name
+      description: The object name.
       type: String
     - contextPath: CiscoFP.Rule.SourceSecurityGroupTags.Objects.Type
-      description: object type
+      description: The object type.
       type: String
     - contextPath: CiscoFP.Rule.SourceZones.Objects.ID
-      description: object id
+      description: The object ID.
       type: String
     - contextPath: CiscoFP.Rule.SourceZones.Objects.Name
-      description: object name
+      description: The object name.
       type: String
     - contextPath: CiscoFP.Rule.SourceZones.Objects.Type
-      description: object type
+      description: The object type.
       type: String
     - contextPath: CiscoFP.Rule.Uels.Addresses.URL
-      description: url
+      description: The URL address.
       type: String
     - contextPath: CiscoFP.Rule.Uels.Objects.ID
-      description: url object id
+      description: The URL object ID.
       type: String
     - contextPath: CiscoFP.Rule.Uels.Objects.Name
-      description: url object name
+      description: The URL object name.
       type: String
     - contextPath: CiscoFP.Rule.VlanTags.Numbers.EndTag
-      description: vlan tag number end tag
+      description: The vlan tag number end tag.
       type: Number
     - contextPath: CiscoFP.Rule.VlanTags.Numbers.StartTag
-      description: vlan tag number start tag
+      description: The vlan tag number start tag.
       type: Number
     - contextPath: CiscoFP.Rule.VlanTags.Objects.ID
-      description: object id
+      description: The object ID.
       type: String
     - contextPath: CiscoFP.Rule.VlanTags.Objects.Name
-      description: object name
+      description: The object name.
       type: String
     - contextPath: CiscoFP.Rule.VlanTags.Objects.Type
-      description: object type
+      description: The object type.
       type: String
   - arguments:
     - default: false
       description: |-
-        Number of items to return.
-        by default is 50
+        The maximum number of items to return.
+        The default is 50
       isArray: false
       name: limit
       required: false
@@ -1955,141 +1957,141 @@ script:
     - default: false
       description: |-
         Index of first item to return.
-        by default is 0
+        The default is 0
       isArray: false
       name: offset
       required: false
       secret: false
     deprecated: false
-    description: retrieves list of all policy assignments to target devices.
+    description: Retrieves a list of all policy assignments to target devices.
     execution: false
     name: ciscofp-list-policy-assignments
     outputs:
     - contextPath: CiscoFP.PolicyAssignments.ID
-      description: policy assignments id
+      description: The policy assignments ID.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.Name
-      description: policy assignments name
-      type: String
+      description: The policy assignments name.
+      type: Unknown
     - contextPath: CiscoFP.PolicyAssignments.PolicyDescription
-      description: policy description
+      description: The policy description.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.PolicyID
-      description: policy id
+      description: The policy ID.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.PolicyName
-      description: policy name
+      description: The policy name.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.Targets.ID
-      description: targets id
+      description: The targets ID.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.Targets.Name
-      description: targets name
+      description: The targets name.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.Targets.Type
-      description: targets type
+      description: The targets type.
       type: String
   - arguments:
     - default: false
-      description: policy id
+      description: The policy ID.
       isArray: false
       name: policy_id
       required: true
       secret: false
     - default: false
-      description: list of device id
+      description: A list of device IDs.
       isArray: true
       name: device_ids
       required: false
       secret: false
     - default: false
-      description: list of device group id
+      description: A list of device group IDs.
       isArray: true
       name: device_group_ids
       required: false
       secret: false
     deprecated: false
-    description: create policy assignments to target devices.
+    description: Creates policy assignments to target devices.
     execution: false
     name: ciscofp-create-policy-assignments
     outputs:
     - contextPath: CiscoFP.PolicyAssignments.ID
-      description: policy assignments id
+      description: The policy assignments ID.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.Name
-      description: policy assignments name
-      type: String
+      description: The policy assignments name.
+      type: Unknown
     - contextPath: CiscoFP.PolicyAssignments.PolicyDescription
-      description: policy description
+      description: The policy description.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.PolicyID
-      description: policy id
+      description: The policy ID.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.PolicyName
-      description: policy name
+      description: The policy name.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.Targets.ID
-      description: targets id
+      description: The targets ID.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.Targets.Name
-      description: targets name
+      description: The targets name.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.Targets.Type
-      description: targets type
+      description: The targets type.
       type: String
   - arguments:
     - default: false
-      description: polisy id
+      description: The policy ID.
       isArray: false
       name: policy_id
       required: false
       secret: false
     - default: false
-      description: list of device id
+      description: A list of device IDs.
       isArray: false
       name: device_ids
       required: false
       secret: false
     - default: false
-      description: list of device group id
+      description: A list of device group IDs.
       isArray: false
       name: device_group_ids
       required: false
       secret: false
     deprecated: false
-    description: Update policy assignments to target devices.
+    description: Updates the specified policy assignments to target devices.
     execution: false
     name: ciscofp-update-policy-assignments
     outputs:
     - contextPath: CiscoFP.PolicyAssignments.ID
-      description: policy assignments id
+      description: The policy assignments ID.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.Name
-      description: policy assignments name
-      type: String
+      description: The policy assignments name.
+      type: Unknown
     - contextPath: CiscoFP.PolicyAssignments.PolicyDescription
-      description: policy description
+      description: The policy description.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.PolicyID
-      description: policy id
+      description: The policy ID.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.PolicyName
-      description: policy name
+      description: The policy name.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.Targets.ID
-      description: targets id
+      description: The targets ID.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.Targets.Name
-      description: targets name
+      description: The targets name.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.Targets.Type
-      description: targets type
+      description: The targets type.
       type: String
   - arguments:
     - default: false
       description: |-
-        Number of items to return.
-        by default is 50
+        The maximum number of items to return.
+        The default is 50.
       isArray: false
       name: limit
       required: false
@@ -2097,40 +2099,40 @@ script:
     - default: false
       description: |-
         Index of first item to return.
-        by default is 0
+        The default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     deprecated: false
-    description: Retrieves list of all devices with configuration changes, ready to
-      be deployed.
+    description: Retrieves a list of all devices with configuration changes that are ready to
+      deploy.
     execution: false
     name: ciscofp-get-deployable-devices
     outputs:
     - contextPath: CiscoFP.DeployableDevices.CanBeDeployed
-      description: can be deployed
+      description: Can be deployed.
       type: String
     - contextPath: CiscoFP.DeployableDevices.UpToDate
-      description: up to date
+      description: Up to date.
       type: String
     - contextPath: CiscoFP.DeployableDevices.DeviceID
-      description: device Id
+      description: Device ID.
       type: String
     - contextPath: CiscoFP.DeployableDevices.DeviceName
-      description: device name
+      description: Device name.
       type: String
     - contextPath: CiscoFP.DeployableDevices.DeviceType
-      description: device type
+      description: Device type.
       type: String
     - contextPath: CiscoFP.DeployableDevices.Version
-      description: version
+      description: Device version.
       type: String
   - arguments:
     - default: false
       description: |-
-        Number of items to return.
-        by default is 50
+        The maximum number of items to return.
+        The default is 50.
       isArray: false
       name: limit
       required: false
@@ -2138,35 +2140,35 @@ script:
     - default: false
       description: |-
         Index of first item to return.
-        by default is 0
+        The default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     deprecated: false
-    description: retrieves list of all device records.
+    description: Retrieves list of all device records.
     execution: false
     name: ciscofp-get-device-records
     outputs:
     - contextPath: CiscoFP.DeviceRecords.DeviceGroupID
-      description: device group id
+      description: The device group ID.
       type: String
     - contextPath: CiscoFP.DeviceRecords.HostName
-      description: device host
+      description: The device host.
       type: String
     - contextPath: CiscoFP.DeviceRecords.ID
-      description: device id
+      description: The device ID.
       type: String
     - contextPath: CiscoFP.DeviceRecords.Name
-      description: device name
+      description: The device name.
       type: String
     - contextPath: CiscoFP.DeviceRecords.Type
-      description: device type
+      description: The device type.
       type: String
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Boolean of force deploy
+      description: Boolean indicating whether to force deployment. Can be "true" or "false". 
       isArray: false
       name: force_deploy
       predefined:
@@ -2176,7 +2178,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Boolean of ignore warning
+      description: Boolean indicating whether to ignore warning. Can be "true" or "false".
       isArray: false
       name: ignore_warning
       predefined:
@@ -2185,13 +2187,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: list of device id
+      description: A list of device IDs.
       isArray: true
       name: device_ids
       required: true
       secret: false
     - default: false
-      description: the version to deploy - use ciscofp-get-deployable-devices
+      description: The version to deploy. To get versions, use the ciscofp-get-deployable-devices command.
       isArray: false
       name: version
       required: true
@@ -2202,36 +2204,36 @@ script:
     name: ciscofp-deploy-to-devices
     outputs:
     - contextPath: CiscoFP.Deploy.TaskID
-      description: task id
+      description: The task ID.
       type: String
     - contextPath: CiscoFP.Deploy.ForceDeploy
-      description: force deploy
+      description: Whether to force deploy.
       type: String
     - contextPath: CiscoFP.Deploy.IgnoreWarning
-      description: ignore warning
+      description: Whether to ignore warning.
       type: String
     - contextPath: CiscoFP.Deploy.Version
-      description: The version of the policy
+      description: The version of the policy.
       type: String
     - contextPath: CiscoFP.Deploy.DeviceList
-      description: device list
+      description: The list of devices.
       type: String
   - arguments:
     - default: false
-      description: the id of the task to check the status
+      description: The ID of the task for which to check the status.
       isArray: false
       name: task_id
       required: true
       secret: false
     deprecated: false
-    description: Retrieves information about a previously submitted pending job/task
-      with the specified ID. Used for deploying
+    description: Retrieves information about a previously submitted pending job or task
+      with the specified ID. Used for deploying.
     execution: false
     name: ciscofp-get-task-status
     outputs:
     - contextPath: CiscoFP.TaskStatus.Status
       description: task status
-      type: String
+      type: Unknown
   dockerimage: demisto/python3:3.8.1.5734
   feed: false
   isfetch: false
