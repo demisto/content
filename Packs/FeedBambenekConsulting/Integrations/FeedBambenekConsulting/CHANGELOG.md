@@ -1,5 +1,10 @@
 ## [Unreleased]
-- Added **C2 All Indicator Feed**, **High-Confidence C2 All Indicator Feed**, **DGA Domain Feed**, **High-Confidence DGA Domain Feed**, **Sinkhole Feed** feeds.
+- Added 5 new feeds:
+    - **C2 All Indicator Feed**
+    - **High-Confidence C2 All Indicator Feed**
+    - **DGA Domain Feed**
+    - **High-Confidence DGA Domain Feed**
+    - **Sinkhole Feed** feeds.
 - Feeds are now represented by their names, instead of their url addresses.
 
 
