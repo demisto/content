@@ -328,12 +328,12 @@ def fetch_indicators_command(client, itype, **kwargs):
             for line in lines:
                 attributes, value = get_indicator_fields(line, url, client)
                 if value:
-                    if 'lastseenbyfeed' in attributes.keys():
-                        attributes['lastseenbyfeed'] = datestring_to_millisecond_timestamp(attributes['lastseenbyfeed'])
+                    if 'lastseenbysource' in attributes.keys():
+                        attributes['lastseenbysource'] = datestring_to_millisecond_timestamp(attributes['lastseenbysource'])
 
-                    if 'firstseenbyfeed' in attributes.keys():
-                        attributes['firstseenbyfeed'] = datestring_to_millisecond_timestamp(
-                            attributes['firstseenbyfeed'])
+                    if 'firstseenbysource' in attributes.keys():
+                        attributes['firstseenbysource'] = datestring_to_millisecond_timestamp(
+                            attributes['firstseenbysource'])
 
                     indicator_data = {
                         "value": value,
