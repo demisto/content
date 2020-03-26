@@ -5,8 +5,9 @@
     - ***msgraph-mail-send-draft***
     - ***msgraph-mail-reply-ro***
     - ***send-mail***
-- Added the ability to ***fetch incidents***.
-- Note: the newly added commands require more permissions, please read the detailed description of the integration for some guidance.
+    - Note: the newly added commands require more permissions, please read the detailed description of the integration for some guidance.
+- Added the ability to fetch mails as incidents.
+  
 
 
 ## [20.2.0] - 2020-02-04
