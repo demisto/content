@@ -227,9 +227,10 @@ def ip_reputation_command(client, args, default_threshold):
 
     for ip in ips:
         ip_data = client.get_ip_reputation(ip)
+        ip_data['ip'] = ip
 
         score = 0
-        reputation = ip_data.get('reputation')
+        reputation = ip_data.get('score')
         if reputation >= threshold:
             score = 3  # bad
         elif reputation >= threshold / 2:
@@ -245,14 +246,14 @@ def ip_reputation_command(client, args, default_threshold):
         }
         ip_standard_context = {
             'Address': ip,
-            'ASN': ip_data.get('ip')
+            'ASN': ip_data.get('asn')
         }
 
         if score == 3:
             # if score is bad
             ip_standard_context['Malicious'] = {
                 'Vendor': 'HelloWorld',
-                'Desciption': f'Hello World returned reputation {reputation}'
+                'Description': f'Hello World returned reputation {reputation}'
             }
 
         ip_standard_list.append(ip_standard_context)
@@ -275,7 +276,60 @@ def ip_reputation_command(client, args, default_threshold):
 
 
 def domain_reputation_command(client, args, default_threshold_domain):
-    pass
+    domains = argToList(args.get('domain'))
+    threshold = int(args.get('threshold', default_threshold_domain))
+
+    dbot_score_list = []
+    domain_standard_list = []
+    domain_data_list = []
+
+    for domain in domains:
+        domain_data = client.get_domain_reputation(domain)
+        domain_data['domain'] = domain
+
+        score = 0
+        reputation = domain_data.get('score')
+        if reputation >= threshold:
+            score = 3  # bad
+        elif reputation >= threshold / 2:
+            score = 2  # suspicious
+        else:
+            score = 1  # good
+
+        dbot_score = {
+            'Indicator': domain,
+            'Vendor': 'HelloWorld',
+            'Type': 'domain',
+            'Score': score
+        }
+        domain_standard_context = {
+            'Name': domain,
+        }
+
+        if score == 3:
+            # if score is bad
+            domain_standard_context['Malicious'] = {
+                'Vendor': 'HelloWorld',
+                'Description': f'Hello World returned reputation {reputation}'
+            }
+
+        domain_standard_list.append(domain_standard_context)
+        dbot_score_list.append(dbot_score)
+        domain_data_list.append(domain_data)
+
+    outputs = {
+        'DBotScore(val.Vendor == obj.Vendor && val.Indicator == obj.Indicator)': dbot_score_list,
+        outputPaths['domain']: domain_standard_list,
+        'HelloWorld.Domain(val.domain == obj.domain)': domain_data_list
+    }
+
+    readable_output = tableToMarkdown('Domain List', domain_standard_list)
+
+    return (
+        readable_output,
+        outputs,
+        domain_data_list
+    )
 
 
 def arg_to_int(arg, arg_name: str, required: bool = False):
