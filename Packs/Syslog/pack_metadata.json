@@ -1,0 +1,22 @@
+{
+    "name": "Syslog Sender",
+    "description": "Use the Syslog Sender integration to send messages and mirror incident War Room entries to Syslog.",
+    "support": "Cortex XSOAR",
+    "serverMinVersion": "5.5.0",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Messaging"
+    ],
+    "tags": ["Syslog"],
+    "created": "2020-03-15T17:02:40Z",
+    "beta": false,
+    "deprecated": false,
+    "certification": "certified",
+    "useCases": [],
+    "keywords": ["Syslog"],
+    "price": "0",
+    "dependencies": {}
+}
