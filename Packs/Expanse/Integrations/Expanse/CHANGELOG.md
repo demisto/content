@@ -2,6 +2,9 @@
   - Shortened the period of time that tokens are considered valid, to avoid authorization errors.
   - Fixed an issue related to the ***ip*** command where an error is generated if the API returns a partial response.
   - Added friendly values for various empty fields returned by the ***domain*** command.
+  - Added Support for pulling behavior data to create new incidents.
+  - Added Support for the **behavior** command.
+  - Added Support for the **certificate** command.
 
 ## [20.3.3] - 2020-03-18
   - Updated the Authorization header for the Events API to use the correct token.

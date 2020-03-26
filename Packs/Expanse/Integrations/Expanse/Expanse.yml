@@ -24,6 +24,10 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Include Behavior data in incidents
+  name: behavior
+  required: false
+  type: 8
 - defaultvalue: '10'
   display: How many events to pull from Expander per run
   hidden: false
@@ -386,6 +390,201 @@ script:
       type: String
     - contextPath: Expanse.Domain.WHOIS.Admin.Phone
       description: The phone number of the domain administrator
+      type: String
+  - arguments:
+    - default: true
+      description: domain to search
+      isArray: true
+      name: common_name
+      required: true
+      secret: false
+    deprecated: false
+    description: certificate command
+    execution: false
+    name: certificate
+    outputs:
+    - contextPath: Certificate.SearchTerm
+      description: Domain used to search
+      type: String
+    - contextPath: Certificate.CommonName
+      description: Certificate common name
+      type: String
+    - contextPath: Certificate.Provider
+      description: Certificate Provider
+      type: String
+    - contextPath: Certificate.NotValidBefore
+      description: Certificate Not-valid-before date
+      type: Date
+    - contextPath: Certificate.NotValidAfter
+      description: Certificate Not-valid-after date
+      type: Date
+    - contextPath: Certificate.Properties
+      description: Certificate properties (expired)
+      type: String
+    - contextPath: Certificate.MD5Hash
+      description: MD5 hash
+      type: String
+    - contextPath: Certificate.PublicKeyAlgorithm
+      description: Public Key Algorithm used
+      type: String
+    - contextPath: Certificate.PublicKeyBits
+      description: Public Key size
+      type: String
+    - contextPath: Certificate.Issuer.Name
+      description: Name of issuer
+      type: String
+    - contextPath: Certificate.Issuer.Email
+      description: Email of issuer
+      type: String
+    - contextPath: Certificate.Issuer.Country
+      description: Country of issuer
+      type: String
+    - contextPath: Certificate.Subject.Name
+      description: Name of subject
+      type: String
+    - contextPath: Certificate.Subject.Email
+      description: Email of subject
+      type: String
+    - contextPath: Certificate.Subject.Country
+      description: Country of subject
+      type: String
+    - contextPath: Expanse.Certificate.SearchTerm
+      description: Domain used to search
+      type: String
+    - contextPath: Expanse.Certificate.CommonName
+      description: Certificate common name
+      type: String
+    - contextPath: Expanse.Certificate.FirstObserved
+      description: Certificate first observation date
+      type: Date
+    - contextPath: Expanse.Certificate.LastObserved
+      description: Certificate last observation date
+      type: Date
+    - contextPath: Expanse.Certificate.DateAdded
+      description: Certificate data added to Expanse
+      type: Date
+    - contextPath: Expanse.Certificate.Provider
+      description: Certificate Provider
+      type: String
+    - contextPath: Expanse.Certificate.NotValidBefore
+      description: Certificate Not-valid-before date
+      type: Date
+    - contextPath: Expanse.Certificate.NotValidAfter
+      description: Certificate Not-valid-after date
+      type: Date
+    - contextPath: Expanse.Certificate.Properties
+      description: Certificate properties (expired)
+      type: String
+    - contextPath: Expanse.Certificate.MD5Hash
+      description: MD5 hash
+      type: String
+    - contextPath: Expanse.Certificate.PublicKeyAlgorithm
+      description: Public Key Algorithm used
+      type: String
+    - contextPath: Expanse.Certificate.PublicKeyBits
+      description: Public Key size
+      type: String
+    - contextPath: Expanse.Certificate.BusinessUnits
+      description: Expanse Business units for certificate
+      type: String
+    - contextPath: Expanse.Certificate.CertificateAdvertisementStatus
+      description: Is the certificate advertised
+      type: String
+    - contextPath: Expanse.Certificate.ServiceStatus
+      description: Any detected services for the certificate
+      type: String
+    - contextPath: Expanse.Certificate.RecentIPs
+      description: Any IPs returning the certificate
+      type: String
+    - contextPath: Expanse.Certificate.CloudResources
+      description: Any Cloud Resources returning the certificate
+      type: String
+    - contextPath: Expanse.Certificate.PemSha1
+      description: Sha1 hash of certificate pem
+      type: String
+    - contextPath: Expanse.Certificate.PemSha256
+      description: Sha256 hash of certificate pem
+      type: String
+    - contextPath: Expanse.Certificate.Issuer.Name
+      description: Name of issuer
+      type: String
+    - contextPath: Expanse.Certificate.Issuer.Email
+      description: Email of issuer
+      type: String
+    - contextPath: Expanse.Certificate.Issuer.Country
+      description: Country of issuer
+      type: String
+    - contextPath: Expanse.Certificate.Issuer.Org
+      description: Organization of issuer
+      type: String
+    - contextPath: Expanse.Certificate.Issuer.Unit
+      description: Organizational Unit of issuer
+      type: String
+    - contextPath: Expanse.Certificate.Issuer.AltNames
+      description: Alternative names from issuer
+      type: String
+    - contextPath: Expanse.Certificate.Issuer.Raw
+      description: Raw issuer details
+      type: String
+    - contextPath: Expanse.Certificate.Subject.Name
+      description: Name of subject
+      type: String
+    - contextPath: Expanse.Certificate.Subject.Email
+      description: Email of subject
+      type: String
+    - contextPath: Expanse.Certificate.Subject.Country
+      description: Country of subject
+      type: String
+    - contextPath: Expanse.Certificate.Subject.Org
+      description: Organization of subject
+      type: String
+    - contextPath: Expanse.Certificate.Subject.Unit
+      description: Organizational Unit of subject
+      type: String
+    - contextPath: Expanse.Certificate.Subject.AltNames
+      description: Alternative names from subject
+      type: String
+    - contextPath: Expanse.Certificate.Subject.Raw
+      description: Raw subject details
+      type: String
+  - arguments:
+    - default: true
+      description: ip to search
+      isArray: true
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns Risky Flows for specified IP (truncated to 20 results)
+    execution: false
+    name: behavior
+    outputs:
+    - contextPath: Expanse.Behavior.SearchTerm
+      description: IP used to search
+      type: String
+    - contextPath: Expanse.Behavior.InternalAddress
+      description: Internal IP Address
+      type: String
+    - contextPath: Expanse.Behavior.InternalCountryCode
+      description: Internal IP Country Geolocation
+      type: String
+    - contextPath: Expanse.Behavior.BusinessUnit
+      description: Buisness unit of IP
+      type: String
+    - contextPath: Expanse.Behavior.InternalDomains
+      description: Known domains associated with IP
+      type: String
+    - contextPath: Expanse.Behavior.InternalIPRanges
+      description: Known Internal IP ranges containing IP
+      type: String
+    - contextPath: Expanse.Behavior.InternalExposureTypes
+      description: Known Exposures for IP
+      type: String
+    - contextPath: Expanse.Behavior.Flows
+      description: Summary of 20 most recents risky flows for IP
+      type: String
+    - contextPath: Expanse.Behavior.ExternalAddresses
+      description: External IP addresses with known communication to IP
       type: String
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
