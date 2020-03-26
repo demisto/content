@@ -649,8 +649,7 @@ view: |-
   }
 inputs:
 - key: QRadarBlackListIPReferenceSetName
-  value:
-    simple: {}
+  value: {}
   required: false
   description: The name of the QRadar black list IP reference set to insert the data
     to.
