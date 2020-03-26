@@ -2479,7 +2479,7 @@ if 'requests' in sys.modules:
 
         def _http_request(self, method, url_suffix, full_url=None, headers=None,
                           auth=None, json_data=None, params=None, data=None, files=None,
-                          timeout=10, resp_type='json', ok_codes=None, **kwargs):
+                          timeout=10, resp_type='json', ok_codes=None, return_empty_response = False, **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
             :type method: ``str``
@@ -2566,7 +2566,7 @@ if 'requests' in sys.modules:
                         raise DemistoException(err_msg, exception)
 
                 is_response_empty_and_successful = (res.status_code == 204)
-                if is_response_empty_and_successful:
+                if is_response_empty_and_successful and return_empty_response:
                     return res
 
                 resp_type = resp_type.lower()
