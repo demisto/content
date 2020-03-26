@@ -8,7 +8,7 @@ This integration was integrated and tested with version xx of Okta v2
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Okta URL (https://<domain>.okta.com) | True |
+| url | Okta URL (https://yourdomain.okta.com) | True |
 | apitoken | API Token (see Detailed Instructions) | True |
 | insecure | Trust any certificate (not secure) | False |
 | proxy | Use system proxy settings | False |
