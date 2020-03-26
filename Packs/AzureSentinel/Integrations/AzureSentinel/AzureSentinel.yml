@@ -601,7 +601,7 @@ script:
     - contextPath: AzureSentinel.EntityRelatedResource.EntityID
       description: The entity ID.
       type: String
-  dockerimage: demisto/python3:3.7.4.2245
+  dockerimage: demisto/crypto:1.0.0.303
   isfetch: true
   longRunning: false
   longRunningPort: false
