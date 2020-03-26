@@ -153,7 +153,7 @@ tasks:
       "yes":
       - "59"
     separatecontext: false
-    conditions:
+	    conditions:
     - label: "yes"
       condition:
       - - operator: isNotEmpty
@@ -164,7 +164,31 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.ArcsightBlackDomainValueFieldName
+              simple: inputs.ArcsightBlackListDomainValueFieldName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: approved_black
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Domain
+                accessor: value
             iscontext: true
     view: |-
       {
