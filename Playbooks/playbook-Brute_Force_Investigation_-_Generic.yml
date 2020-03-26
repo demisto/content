@@ -2756,14 +2756,6 @@ tasks:
       id: 0cdb9cb7-05ec-4376-8748-a7179ff2dbea
       version: -1
       name: Block Indicators - Generic v2
-      description: |+
-        This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
-
-        - Block URL - Generic
-        - Block Account - Generic
-        - Block IP - Generic v2
-        - Block File - Generic v2
-
       playbookName: Block Indicators - Generic v2
       type: playbook
       iscommand: false
