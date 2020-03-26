@@ -56,7 +56,62 @@ Fetching Sixgill DarkFeed indicators
 | https://dropmefiles.com/TgvuH | URL | created: 2020-02-06T10:03:54.091Z<br>description: Malware available for download from file-sharing sites<br>external_reference: <br>{'description': 'Mitre attack tactics and technique reference', 'mitre_attack_tactic': 'Build Capabilities', 'mitre_attack_tactic_id': 'TA0024', 'mitre_attack_tactic_url': 'https://attack.mitre.org/tactics/TA0024/', 'mitre_attack_technique': 'Obtain/re-use payloads', 'mitre_attack_technique_id': 'T1346', 'mitre_attack_technique_url': 'https://attack.mitre.org/techniques/T1346/', 'source_name': 'mitre-attack'}<br>id: indicator--7a39257a-83d4-4f39-90d1-5b81ce1156e9<br>labels: malicious-activity,<br>malware,<br>Build Capabilities,<br>Obtain/re-use payloads<br>lang: en<br>modified: 2020-02-06T10:03:54.091Z<br>object_marking_refs: marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4,<br>marking-definition--f88d31f6-486f-44da-b317-01333bde0b82<br>pattern: [url:value = 'https://dropmefiles.com/TgvuH']<br>sixgill_actor: vvv555<br>sixgill_confidence: 80<br>sixgill_feedid: darkfeed_010<br>sixgill_feedname: malware_download_urls<br>sixgill_postid: 2f1dcc205421d20a4038b9f51b9d2c5b0b7451d1<br>sixgill_posttitle: SOCKS  socks4<br>sixgill_severity: 80<br>sixgill_source: forum_bhf<br>spec_version: 2.0<br>type: indicator<br>valid_from: 2020-01-06T03:00:59Z | 3 |
 
 ### Output:
-```[{'value': 'https://dropmefiles.com/TgvuH', 'type': 'URL', 'rawJSON': {'created': '2020-02-06T10:03:54.091Z', 'description': 'Malware available for download from file-sharing sites', 'external_reference': [{'description': 'Mitre attack tactics and technique reference', 'mitre_attack_tactic': 'Build Capabilities', 'mitre_attack_tactic_id': 'TA0024', 'mitre_attack_tactic_url': 'https://attack.mitre.org/tactics/TA0024/', 'mitre_attack_technique': 'Obtain/re-use payloads', 'mitre_attack_technique_id': 'T1346', 'mitre_attack_technique_url': 'https://attack.mitre.org/techniques/T1346/', 'source_name': 'mitre-attack'}], 'id': 'indicator--7a39257a-83d4-4f39-90d1-5b81ce1156e9', 'labels': ['malicious-activity', 'malware', 'Build Capabilities', 'Obtain/re-use payloads'], 'lang': 'en', 'modified': '2020-02-06T10:03:54.091Z', 'object_marking_refs': ['marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4', 'marking-definition--f88d31f6-486f-44da-b317-01333bde0b82'], 'pattern': "[url:value = 'https://dropmefiles.com/TgvuH']", 'sixgill_actor': 'vvv555', 'sixgill_confidence': 80, 'sixgill_feedid': 'darkfeed_010', 'sixgill_feedname': 'malware_download_urls', 'sixgill_postid': '2f1dcc205421d20a4038b9f51b9d2c5b0b7451d1', 'sixgill_posttitle': 'SOCKS  socks4', 'sixgill_severity': 80, 'sixgill_source': 'forum_bhf', 'spec_version': '2.0', 'type': 'indicator', 'valid_from': '2020-01-06T03:00:59Z'}, 'fields': {'source': 'forum_bhf', 'name': 'malware_download_urls', 'description': "description: Malware available for download from file-sharing sites\nfeedid: darkfeed_010\ntitle: SOCKS  socks4\npost_id: 2f1dcc205421d20a4038b9f51b9d2c5b0b7451d1\nactor: vvv555\nlang: en\nlabels: ['malicious-activity', 'malware', 'Build Capabilities', 'Obtain/re-use payloads']\nexternal_reference: [{'description': 'Mitre attack tactics and technique reference', 'mitre_attack_tactic': 'Build Capabilities', 'mitre_attack_tactic_id': 'TA0024', 'mitre_attack_tactic_url': 'https://attack.mitre.org/tactics/TA0024/', 'mitre_attack_technique': 'Obtain/re-use payloads', 'mitre_attack_technique_id': 'T1346', 'mitre_attack_technique_url': 'https://attack.mitre.org/techniques/T1346/', 'source_name': 'mitre-attack'}]"}, 'score': 3}]```
+```[{
+'value': 'https://dropmefiles.com/TgvuH', 
+'type': 'URL', 
+'rawJSON': 
+    {'created': '2020-02-06T10:03:54.091Z', 
+    'description': 'Malware available for download from file-sharing sites', 
+    'external_reference': [{
+        'description': 'Mitre attack tactics and technique reference', 
+        'mitre_attack_tactic': 'Build Capabilities', 
+        'mitre_attack_tactic_id': 'TA0024', 
+        'mitre_attack_tactic_url': 'https://attack.mitre.org/tactics/TA0024/', 
+        'mitre_attack_technique': 'Obtain/re-use payloads', 
+        'mitre_attack_technique_id': 'T1346', 
+        'mitre_attack_technique_url': 'https://attack.mitre.org/techniques/T1346/', 
+        'source_name': 'mitre-attack'
+        }], 
+    'id': 'indicator--7a39257a-83d4-4f39-90d1-5b81ce1156e9', 
+    'labels': ['malicious-activity', 'malware', 'Build Capabilities', 'Obtain/re-use payloads'], 
+    'lang': 'en', 
+    'modified': '2020-02-06T10:03:54.091Z', 
+    'object_marking_refs': [
+        'marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4', 
+        'marking-definition--f88d31f6-486f-44da-b317-01333bde0b82'
+        ], 
+    'pattern': "[url:value = 'https://dropmefiles.com/TgvuH']", 
+    'sixgill_actor': 'vvv555', 
+    'sixgill_confidence': 80, 
+    'sixgill_feedid': 'darkfeed_010', 
+    'sixgill_feedname': 'malware_download_urls', 
+    'sixgill_postid': '2f1dcc205421d20a4038b9f51b9d2c5b0b7451d1', 
+    'sixgill_posttitle': 'SOCKS  socks4', 
+    'sixgill_severity': 80, 
+    'sixgill_source': 'forum_bhf', 
+    'spec_version': '2.0', 
+    'type': 'indicator', 
+    'valid_from': '2020-01-06T03:00:59Z'
+    }, 
+'fields': {
+    'source': 'forum_bhf', 
+    'name': 'malware_download_urls', 
+    'description': "description: Malware available for download from file-sharing sites\n
+    feedid: darkfeed_010\n
+    title: SOCKS  socks4\n
+    post_id: 2f1dcc205421d20a4038b9f51b9d2c5b0b7451d1\n
+    actor: vvv555\nlang: en\n
+    labels: ['malicious-activity', 'malware', 'Build Capabilities', 'Obtain/re-use payloads']\n
+    external_reference: [{'description': 'Mitre attack tactics and technique reference', 
+    'mitre_attack_tactic': 'Build Capabilities', 
+    'mitre_attack_tactic_id': 'TA0024', 
+    'mitre_attack_tactic_url': 'https://attack.mitre.org/tactics/TA0024/', 
+    'mitre_attack_technique': 'Obtain/re-use payloads', 
+    'mitre_attack_technique_id': 'T1346', 
+    'mitre_attack_technique_url': 'https://attack.mitre.org/techniques/T1346/', 
+    'source_name': 'mitre-attack'}]"}, 
+    'score': 3
+}]```
 
 ## Additional Information
 Contact us: support@cybersixgill.com
