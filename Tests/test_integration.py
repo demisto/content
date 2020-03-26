@@ -11,8 +11,8 @@ from demisto_client.demisto_api.rest import ApiException
 import demisto_client
 import json
 
-from Tests.test_utils import print_error, print_warning, print_color, LOG_COLORS, Docker
-from Tests.scripts.constants import PB_Status
+from demisto_sdk.commands.common.tools import print_error, print_warning, print_color, LOG_COLORS, Docker
+from demisto_sdk.commands.common.constants import PB_Status
 
 # Disable insecure warnings
 urllib3.disable_warnings()
