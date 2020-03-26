@@ -1495,6 +1495,10 @@ def messages() -> Response:
     return Response(status=200)
 
 
+def ring_user_request(call_request_data)
+    return http_request(method='POST', url=f'{GRAPH_BASE_URL}/v1.0/communications/calls',
+                        json_=call_request_data)
+
 def ring_user():
     """Rings a user on Teams.
 
@@ -1557,9 +1561,7 @@ def ring_user():
         },
         "tenantId": tenant_id
     }
-    response = http_request(method='POST',
-                            url=f'{GRAPH_BASE_URL}/v1.0/communications/calls',
-                            json_=call_request_data)
+    response = ring_user_request(call_request_data)
 
     return_outputs(f"Calling {username_to_call}", {}, response)
 
