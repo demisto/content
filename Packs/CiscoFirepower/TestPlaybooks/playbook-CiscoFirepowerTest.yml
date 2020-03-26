@@ -818,7 +818,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "33"
+      - "63"
     separatecontext: false
     view: |-
       {
@@ -832,10 +832,10 @@ tasks:
     ignoreworker: false
   "31":
     id: "31"
-    taskid: 80dcba1f-9baf-4bbb-8df7-7494c4fd3e42
+    taskid: 64ad8ae4-4472-486c-8497-12d2cfb7bc35
     type: regular
     task:
-      id: 80dcba1f-9baf-4bbb-8df7-7494c4fd3e42
+      id: 64ad8ae4-4472-486c-8497-12d2cfb7bc35
       version: -1
       name: ciscofp-create-policy-assignments
       script: '|||ciscofp-create-policy-assignments'
@@ -847,8 +847,7 @@ tasks:
       - "82"
     scriptarguments:
       device_group_ids: {}
-      device_ids:
-        simple: ${CiscoFP.DeviceRecords.ID}
+      device_ids: {}
       policy_id:
         simple: ${CiscoFP.Policy(val.Name == "playbookTestUpdate4").ID}
     separatecontext: false
@@ -857,58 +856,6 @@ tasks:
         "position": {
           "x": 1340,
           "y": 9935
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "33":
-    id: "33"
-    taskid: 9fe8303f-55ee-4d81-8eac-cff812fed34c
-    type: regular
-    task:
-      id: 9fe8303f-55ee-4d81-8eac-cff812fed34c
-      version: -1
-      name: ciscofp-get-deployable-devices
-      script: '|||ciscofp-get-deployable-devices'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "100"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 10460
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "34":
-    id: "34"
-    taskid: bcb4eafd-17ed-4d39-87ec-137abbb01f1e
-    type: regular
-    task:
-      id: bcb4eafd-17ed-4d39-87ec-137abbb01f1e
-      version: -1
-      name: ciscofp-get-device-records
-      script: '|||ciscofp-get-device-records'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "81"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 9585
         }
       }
     note: false
@@ -2393,9 +2340,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-    nexttasks:
-      "yes":
-      - "34"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2533,55 +2477,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "81":
-    id: "81"
-    taskid: f06ed711-92d8-40da-857c-938a7624ca79
-    type: condition
-    task:
-      id: f06ed711-92d8-40da-857c-938a7624ca79
-      version: -1
-      name: verify -get-device-records
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "31"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: CiscoFP.DeviceRecords.ID
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: CiscoFP.DeviceRecords.Name
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: CiscoFP.DeviceRecords.Type
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 9760
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "82":
     id: "82"
-    taskid: e257e4a3-11ee-4b48-808a-821e12d85ac9
+    taskid: 2be9e83a-64f5-4681-81a7-97f0299152e2
     type: condition
     task:
-      id: e257e4a3-11ee-4b48-808a-821e12d85ac9
+      id: 2be9e83a-64f5-4681-81a7-97f0299152e2
       version: -1
       name: verify-create-policy-assignments
       type: condition
@@ -2603,11 +2504,6 @@ tasks:
           left:
             value:
               simple: CiscoFP.PolicyAssignments.PolicyID
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: CiscoFP.PolicyAssignments.Targets.ID
             iscontext: true
     view: |-
       {
@@ -3052,38 +2948,6 @@ tasks:
         "position": {
           "x": 1340,
           "y": 340
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "100":
-    id: "100"
-    taskid: 4f93a2f6-cb2b-4ac9-8689-5ffc71abc708
-    type: regular
-    task:
-      id: 4f93a2f6-cb2b-4ac9-8689-5ffc71abc708
-      version: -1
-      name: ciscofp-create-policy-assignments
-      script: '|||ciscofp-create-policy-assignments'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "63"
-    scriptarguments:
-      device_group_ids: {}
-      device_ids:
-        simple: ${CiscoFP.DeviceRecords.ID}
-      policy_id:
-        simple: ${CiscoFP.Policy(val.Name == "to test").ID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 10635
         }
       }
     note: false
