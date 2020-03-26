@@ -5,6 +5,7 @@ node_modules
 _site
 TestData/EmailWithNonUnicodeAttachmentName.eml
 TestData/EmailWithNonUnicodeSubject.eml
+Integrations/SymantecMSS/test_data/SymantecXML.txt
 *.pyc
 .pytest_cache
 .python-version
