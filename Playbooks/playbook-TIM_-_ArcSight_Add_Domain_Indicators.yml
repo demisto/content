@@ -316,7 +316,7 @@ tasks:
       "yes":
       - "61"
     separatecontext: false
-	conditions:
+    conditions:
     - label: "yes"
       condition:
       - - operator: isNotEmpty
@@ -618,7 +618,7 @@ tasks:
       "yes":
       - "68"
     separatecontext: false
-	    conditions:
+    conditions:
     - label: "yes"
       condition:
       - - operator: isNotEmpty
@@ -629,7 +629,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.ArcsightWatchListDomainValueFieldName
+              simple: inputs.ArcsightWatchDomainValueFieldName
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -644,7 +644,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: approved_watchlist
+                        simple: approved_white
                 - - operator: isEqualString
                     left:
                       value:
