@@ -100,7 +100,7 @@ class TestCommands:
 
 class TestTaxiiClient:
     # verify that unassigned instance variables are still instantiated
-    def test__send_request(self):
+    def test_send_request(self):
         from FeedTAXII import TAXIIClient
         client = TAXIIClient()
         with requests_mock.Mocker() as m:
