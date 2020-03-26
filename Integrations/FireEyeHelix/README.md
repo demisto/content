@@ -13,14 +13,14 @@ The API key can be found and generated in the **API KEYS** section. You can navi
    | **Parameter** | **Description** | **Example** |
    | ---------             | -----------           | -------            |
    | Name | A meaningful name for the integration instance. | FireEyeHelix_instance_1 |
-   | Server URL | The URL to the FireEye server, including the scheme. | https:/<span>/apps.fireeye<span>.com |
+   | Server URL | The URL to the FireEye server, including the scheme. | https:/<span></span>/apps.fireeye<span></span>.com |
    | Customer ID | The ID used by the customer to gain access to the integration. | N/A |
    | API Token  | The private token granting access to the integration. | N/A  |
-   | First Fetch Timestamp | The time period for which to fetch incidents in \<number> \<time unit> format. | 12 hours, 7 days, 3 months, 1 year |
+   | First Fetch Timestamp | The time period for which to fetch incidents in \&lt;number&gt; \&lt;time unit&gt; format. | 12 hours, 7 days, 3 months, 1 year |
    | Fetch Incident Query | Whether to fetch the incidents or not.  | N/A |
    | Incident Type  | The type of incident to select.  |  Phishing |
    | Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
-   | Use System Proxy Settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  https:/<span>/proxyserver.com |
+   | Use System Proxy Settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  https:/<span></span>/proxyserver.com |
 
 
 4. Click __Test__ to validate the URLs, token, and connection.
@@ -202,7 +202,7 @@ Returns alert details, by alert ID.
 ##### FireEye Helix - Alert 3232:
 |AlertTypeID|ClosedState|Confidence|CreatedTime|CreatorID|CreatorName|Description|EventsCount|FileName|FirstEventTime|Hostname|ID|LastEventTime|MD5|MalwareType|Message|ModifiedTime|Name|NotesCount|PID|ProcessPath|Products|Result|Risk|SHA1|Severity|State|Tags|Type|UpdaterID|UpdaterName|Virus|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1793 | Unknown | high | 2019-03-30T19:40:16.132456Z | id | System User | FireEye HX detected and quarantined malware on this system. | 2 | c:\users\demon\appdata\local\temp | 2019-03-30T14:07:34.132456ZZ | helix<span>.apps.fireeye<span>.com | 123 | 2019-03-31T14:08:07.132456ZZ | md5 | malware | FIREEYE H | 2019-10-20T12:35:02.132456Z | HX | 0 | 11 | c:\windows\microsoft<span>.net\framework\v7.0.30319\csc.exe | hx: 2 | quarantined | Medium | sha1 | Medium | Open | fireeye | fireeye_rule | id | George | gen:variant.ursu |
+| 1793 | Unknown | high | 2019-03-30T19:40:16.132456Z | id | System User | FireEye HX detected and quarantined malware on this system. | 2 | c:\users\demon\appdata\local\temp | 2019-03-30T14:07:34.132456ZZ | helix<span></span>.apps.fireeye<span></span>.com | 123 | 2019-03-31T14:08:07.132456ZZ | md5 | malware | FIREEYE H | 2019-10-20T12:35:02.132456Z | HX | 0 | 11 | c:\windows\microsoft<span></span>.net\framework\v7.0.30319\csc.exe | hx: 2 | quarantined | Medium | sha1 | Medium | Open | fireeye | fireeye_rule | id | George | gen:variant.ursu |
 
 ### Create an alert note
 ---
@@ -794,8 +794,8 @@ Executes a search in FireEye Helix using MQL.
 ##### FireEye Helix - Search result for domain:google.com and meta_ts>=2019-10-25T09:07:43.810Z {page_size:2 offset:1 limit:1} | groupby subject sep=`|%$,$%|`
 |Class|Domain|Event Time|From|ID|In Reply To|Source Domain|Source I Pv 4|Source ISP|Source Latitude|Source Longitude|Status|To|Type|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| fireeye_etp | mx.google<span>.com | 2019-10-28T10:43:11.000Z | de@demisto<span>.com | demisto | demisto | google<span>.com | 8.8.8.8 | google llc | 37.40599060058594 | -122.0785140991211 | delivered | demisto@demisto<span>.com | trace |
-| fireeye_etp | gmr-mx.google<span>.com | 2019-10-29T05:08:39.000Z | dem@demisto<span>.com | demisto | demisto@demisto<dspan>.com | google<span>.com | 8.8.8.8 | google llc | 37.40599060058594 | -122.0785140991211 | delivered | demisto@demisto<span>.com | trace |
+| fireeye_etp | mx.google<span></span>.com | 2019-10-28T10:43:11.000Z | de@demisto<span></span>.com | demisto | demisto | google<span></span>.com | 8.8.8.8 | google llc | 37.40599060058594 | -122.0785140991211 | delivered | demisto@demisto<span></span>.com | trace |
+| fireeye_etp | gmr-mx.google<span></span>.com | 2019-10-29T05:08:39.000Z | dem@demisto<span></span>.com | demisto | demisto@demisto<span></span>.com | google<span></span>.com | 8.8.8.8 | google llc | 37.40599060058594 | -122.0785140991211 | delivered | demisto@demisto<span></span>.com | trace |
 
 ##### Group By
 |subject|DocCount|
@@ -1001,10 +1001,10 @@ Fetches archive search results.
 ##### FireEye Helix - Search result for domain:[google,com] | groupby eventtype sep=`|%$,$%|`
 |Class|Domain|Event Time|From|ID|In Reply To|Source Domain|Source I Pv 4|Source ISP|Source Latitude|Source Longitude|Status|To|Type|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| fireeye_etp | domain<span>.com | 2019-10-06T10:48:13.000Z | squidward@demisto<span>.com | evenid | squidward squidward@demisto<span>.com |  | 8.8.8.8 |  | 51.8594 | -0.12574 | delivered | demisto@demisto<span>.com | trace |
-| fireeye_etp | demisto<span>.com | 2019-10-06T11:02:01.000Z | squidward@demisto<span>.com | demisto | \"squidward\" <fsquidward@demisto<span>.com> | squidward<span>.com | 8.8.8.8 | squidward | 40.282958 | -75.19625 | delivered | squidward@demisto.com | trace |
-| fireeye_etp | demisto<span>.com | 2019-10-06T11:02:18.000Z | squidward@demisto<span>.com | dwasdkffv | squidward <squidward@demisto<span>.com> | demisto<span>.com | 8.8.8.8 | demistos | 33.5 | -93.119 | delivered | squidward@demisto<span>.com | trace |
-| fireeye_etp | demisto<span>.com | 2019-10-06T11:03:00.000Z | squidward@demisto<span>.com | 93730 | geroge <hello@demisto<span>.com> | demisto<span>.com | 8.8.8.8 | the demisto group | 33.770843 | -84.377 | delivered | squidward@demisto<span>.com | trace |
+| fireeye_etp | domain<span></span>.com | 2019-10-06T10:48:13.000Z | squidward@demisto<span></span>.com | evenid | squidward squidward@demisto<span></span>.com |  | 8.8.8.8 |  | 51.8594 | -0.12574 | delivered | demisto@demisto<span></span>.com | trace |
+| fireeye_etp | demisto<span></span>.com | 2019-10-06T11:02:01.000Z | squidward@demisto<span></span>.com | demisto | \"squidward\" &lt;fsquidward@demisto<span></span>.com&gt; | squidward<span></span>.com | 8.8.8.8 | squidward | 40.282958 | -75.19625 | delivered | squidward@demisto.com | trace |
+| fireeye_etp | demisto<span></span>.com | 2019-10-06T11:02:18.000Z | squidward@demisto<span></span>.com | dwasdkffv | squidward &lt;squidward@demisto<span></span>.com&gt; | demisto<span></span>.com | 8.8.8.8 | demistos | 33.5 | -93.119 | delivered | squidward@demisto<span></span>.com | trace |
+| fireeye_etp | demisto<span></span>.com | 2019-10-06T11:03:00.000Z | squidward@demisto<span></span>.com | 93730 | geroge &lt;hello@demisto<span></span>.com&gt; | demisto<span></span>.com | 8.8.8.8 | the demisto group | 33.770843 | -84.377 | delivered | squidward@demisto<span></span>.com | trace |
 
 ### Create an archive from a query
 ---
@@ -1061,7 +1061,7 @@ Gets the status of an archive search.
 ##### Context Output
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FireEyeHelixSearch<span>.ID | Number | The archive search's ID. | 
+| FireEyeHelixSearch<span></span>.ID | Number | The archive search's ID. | 
 | FireEyeHelixSearch.PercentComplete | String | The percentage of the search that was completed. | 
 | FireEyeHelixSearch.Query | String | The search query. | 
 | FireEyeHelixSearch.State | String | The state of the search. | 
