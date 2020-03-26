@@ -155,7 +155,7 @@ class Client(BaseClient):
         :return: The feed configuration.
         """
         config = {}
-        if indicator_json is not None:
+        if indicator_json:
             indicator = json.loads(indicator_json)
             if 'regex' in indicator:
                 indicator['regex'] = re.compile(indicator['regex'])
