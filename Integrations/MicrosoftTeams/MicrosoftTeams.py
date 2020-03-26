@@ -1523,7 +1523,7 @@ def ring_user():
         if username_to_call in {user.get('displayName', ''), user.get('mail'), user.get('userPrincipalName')}:
             user_id = user.get('id', '')
             break
-    if not used_id:
+    if not user_id:
         raise ValueError(f'User {username_to_call} was not found')
 
     call_request_data = {
