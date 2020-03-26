@@ -142,7 +142,7 @@ tasks:
     task:
       id: cfce5c74-05e4-4119-8b56-36b7af7e6bd9
       version: -1
-      name: Is there an ArcSight Black list Url Active List?
+      name: Is there an ArcSight Black list Url Active List and values?
       type: condition
       iscommand: false
       brand: ""
@@ -165,6 +165,30 @@ tasks:
           left:
             value:
               simple: inputs.ArcsightBlackUrlValueFieldName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: approved_black
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: URL
+                accessor: value
             iscontext: true
     view: |-
       {
@@ -281,7 +305,7 @@ tasks:
     task:
       id: b0fa0dd1-44a2-43b3-8d12-4a0f7126e492
       version: -1
-      name: Is there an ArcSight White list Url Active List?
+      name: Is there an ArcSight White list Url Active List and values?
       type: condition
       iscommand: false
       brand: ""
@@ -303,7 +327,31 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.ArcsightWhiteListUrlValueFieldName
+              simple: inputs.ArcsightWhiteUrlValueFieldName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: approved_white
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: URL
+                accessor: value
             iscontext: true
     view: |-
       {
@@ -503,7 +551,7 @@ tasks:
       id: b4d1988d-98ee-4df1-8468-0fa6acac98cd
       version: -1
       name: Add SIEM tag
-      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      description: Adds the SIEM tag to the indicator.
       script: Builtin|||appendIndicatorField
       type: regular
       iscommand: true
@@ -559,7 +607,7 @@ tasks:
     task:
       id: 0fd68f0f-026b-4d7d-8b31-5f566030492d
       version: -1
-      name: Is there an ArcSight White list Url Active List?
+      name: Is there an ArcSight watch list Url Active List and values?
       type: condition
       iscommand: false
       brand: ""
@@ -581,7 +629,31 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.ArcsightWatchListUrlValueFieldName
+              simple: inputs.ArcsightWatchUrlValueFieldName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: approved_watchlist
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: URL
+                accessor: value
             iscontext: true
     view: |-
       {

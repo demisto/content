@@ -208,7 +208,7 @@ tasks:
     task:
       id: 22f3d335-ddda-4b60-88ea-69c9de1f0de3
       version: -1
-      name: Is there a Qradar black list IP Reference Set?
+      name: Is there a Qradar black list IP Reference Set and values?
       type: condition
       iscommand: false
       brand: ""
@@ -226,6 +226,30 @@ tasks:
           left:
             value:
               simple: inputs.QRadarBlackListIPReferenceSetName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: approved_black
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: IP
+                accessor: value
             iscontext: true
     view: |-
       {
@@ -246,7 +270,7 @@ tasks:
     task:
       id: 5c2a1583-8de8-4372-8120-38dd52762e4b
       version: -1
-      name: Is there a Qradar white list IP Reference Set?
+      name: Is there a Qradar white list IP Reference Set and values?
       type: condition
       iscommand: false
       brand: ""
@@ -264,6 +288,30 @@ tasks:
           left:
             value:
               simple: inputs.QRadarWhiteListIPReferenceSetName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: approved_white
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: IP
+                accessor: value
             iscontext: true
     view: |-
       {
@@ -485,7 +533,7 @@ tasks:
     task:
       id: b9ebb60f-b9c0-44b7-8f16-95b69ab25146
       version: -1
-      name: Is there a Qradar watch list IP Reference Set?
+      name: Is there a Qradar watch list IP Reference Set and values?
       type: condition
       iscommand: false
       brand: ""
@@ -503,6 +551,30 @@ tasks:
           left:
             value:
               simple: inputs.QRadarWatchListIPReferenceSetName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: approved_watchlist
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: IP
+                accessor: value
             iscontext: true
     view: |-
       {
