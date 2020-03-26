@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed an issue with handling attachments.
 
 ## [20.2.0] - 2020-02-04
 Added handling for EML files with no Content-Type header. The script will treat the file as email text with no attachments.
