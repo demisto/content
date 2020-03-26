@@ -68,8 +68,8 @@ tasks:
     task:
       id: 2fb5213b-3f7f-4c3e-828c-866866e3ccb8
       version: -1
-      name: VirusTotal - Detonate File
-      playbookName: VirusTotal - Detonate File
+      name: Detonate File - VirusTotal
+      playbookName: Detonate File - VirusTotal
       type: playbook
       iscommand: false
       brand: ""
