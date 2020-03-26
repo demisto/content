@@ -13,7 +13,7 @@ def test_commands(command, response, expected_result, requests_mock):
     requests.packages.urllib3.disable_warnings()
 
     requests_mock.patch.object(Client)
-    client = Client('https://api.maltiverse.com', verify=True, proxy=True, headers={'Accept': 'application/json'})
+    client = Client('https://api.maltiverse.com', verify=True, proxy=True, headers={'Accept': 'application/json'})  # disable-secrets-detection
 
     requests_mock.patch.object(client, '_http_request', return_value=response)
     result = command(client)

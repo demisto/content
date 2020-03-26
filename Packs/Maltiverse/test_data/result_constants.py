@@ -2,9 +2,9 @@ EXPECTED_IP_RESULT = {
     'IP(val.Address && val.Address == obj.Address)': [
         {
             'Address': '1.2.3.4',
-             'Geo.Country': 'US',
-             'PositiveDetections': 2,
-             'Malicious.Description': ['Malware site', 'HTTP Spammer']
+            'Geo.Country': 'US',
+            'PositiveDetections': 2,
+            'Malicious.Description': ['Malware site', 'HTTP Spammer']
         }
     ],
 
