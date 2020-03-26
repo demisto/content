@@ -914,6 +914,9 @@
             "playbookID": "dedup_-_generic_-_test"
         },
         {
+            "playbookID": "dedup_-_generic_v2_-_test"
+        },
+        {
             "playbookID": "TestDedupIncidentsPlaybook"
         },
         {
