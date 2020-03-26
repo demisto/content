@@ -1,10 +1,10 @@
 from HelloWorld import Client, say_hello_command, scan_start_command, scan_results_command, scan_status_command, \
-search_alerts_command, ip_reputation_command, fetch_incidents
+    search_alerts_command, ip_reputation_command, domain_reputation_command, fetch_incidents
 import json
 import io
 
 
-def testutil_load_json(path):
+def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
@@ -101,7 +101,7 @@ def test_status_scan(requests_mock):
 
 def test_scan_results(mocker, requests_mock):
     import demistomock as demisto
-    mock_response = testutil_load_json('test_data/scan_results.json')
+    mock_response = util_load_json('test_data/scan_results.json')
     requests_mock.get('http://test.com/get_scan_results?scan_id=100', json=mock_response)
 
     client = Client(
@@ -132,7 +132,7 @@ def test_scan_results(mocker, requests_mock):
 
 
 def test_search_alerts(requests_mock):
-    mock_response = testutil_load_json('test_data/search_alerts.json')
+    mock_response = util_load_json('test_data/search_alerts.json')
     requests_mock.get('http://test.com/get_alerts?alert_status=ACTIVE&severity=4&max_results=2&start_time=1581982463',
                       json=mock_response)
 
@@ -158,10 +158,60 @@ def test_search_alerts(requests_mock):
     }
 
 
-def test_fetch_incidents(requests_mock):
-    mock_response = testutil_load_json('test_data/search_alerts.json')
-    requests_mock.get('http://test.com/get_alerts?alert_status=ACTIVE&max_results=50&start_time=1582584487883',
+def test_ip(requests_mock):
+    mock_response = util_load_json('test_data/ip_reputation.json')
+    requests_mock.get('http://test.com/ip?ip=151.1.1.1',
                       json=mock_response)
+
+    client = Client(
+        base_url='http://test.com',
+        verify=False,
+        headers={
+            'Authentication': 'some_api_key'
+        }
+    )
+
+    args = {
+        'ip': "151.1.1.1",
+        'threshold': 65,
+    }
+
+    _, outputs, _ = ip_reputation_command(client, args, 65)
+
+    assert outputs['HelloWorld.IP(val.ip == obj.ip)']
+    assert outputs['HelloWorld.IP(val.ip == obj.ip)'][0]
+    assert outputs['HelloWorld.IP(val.ip == obj.ip)'][0] == mock_response
+
+
+def test_domain(requests_mock):
+    mock_response = util_load_json('test_data/domain_reputation.json')
+    requests_mock.get('http://test.com/domain?domain=google.com',
+                      json=mock_response)
+
+    client = Client(
+        base_url='http://test.com',
+        verify=False,
+        headers={
+            'Authentication': 'some_api_key'
+        }
+    )
+
+    args = {
+        'domain': "google.com",
+        'threshold': 65,
+    }
+
+    _, outputs, _ = domain_reputation_command(client, args, 65)
+
+    assert outputs['HelloWorld.Domain(val.domain == obj.domain)']
+    assert outputs['HelloWorld.Domain(val.domain == obj.domain)'][0]
+    assert outputs['HelloWorld.Domain(val.domain == obj.domain)'][0] == mock_response
+
+
+def test_fetch_incidents(requests_mock):
+    mock_response = util_load_json('test_data/search_alerts.json')
+    requests_mock.get('http://test.com/get_alerts?alert_status=ACTIVE&max_results=50&start_time=1582584487883',
+                      json=mock_response['alerts'])
 
     client = Client(
         base_url='http://test.com',
@@ -187,13 +237,13 @@ def test_fetch_incidents(requests_mock):
         {
             'name': '#100 - Hello World Alert 100',
             'details': 'Hello World Alert 100',
-            'occurred': '2020-02-18T01:34:23.000Z',
-            'rawJSON': json.dumps(mock_response[0])
+            'occurred': '2020-02-17T23:34:23.000Z',
+            'rawJSON': json.dumps(mock_response['alerts'][0])
         },
         {
             'name': '#200 - Hello World Alert 200',
             'details': 'Hello World Alert 200',
-            'occurred': '2020-02-18T01:34:23.000Z',
-            'rawJSON': json.dumps(mock_response[1])
+            'occurred': '2020-02-17T23:34:23.000Z',
+            'rawJSON': json.dumps(mock_response['alerts'][1])
         }
     ]
