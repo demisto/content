@@ -46,6 +46,8 @@ def auto_detect_indicator_type(indicator_value):
 
     try:
         if tldextract.extract(indicator_value).suffix:
+            if '*' in indicator_value:
+                return FeedIndicatorType.DomainGlob
             return FeedIndicatorType.Domain
     except Exception:
         pass
