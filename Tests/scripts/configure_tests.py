@@ -14,8 +14,8 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
 sys.path.append(CONTENT_DIR)
 
-from Tests.scripts.constants import *  # noqa: E402
-from Tests.test_utils import get_yaml, str2bool, get_from_version, get_to_version, \
+from demisto_sdk.commands.common.constants import *  # noqa: E402
+from demisto_sdk.commands.common.tools import get_yaml, str2bool, get_from_version, get_to_version, \
     collect_ids, get_script_or_integration_id, run_command, LOG_COLORS, print_error, print_color, \
     print_warning  # noqa: E402
 
