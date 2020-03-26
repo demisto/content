@@ -6,6 +6,7 @@ Use the AlienVault Reputation feed integration to fetch indicators from the feed
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for AlienVault Reputation Feed.
 3. Click __Add instance__ to create and configure a new integration instance.
+
    | Parameter | Description | Example |
    | --- | --- | ---| 
    | Name | A meaningful name for the integration instance. | alienvault_domain |
