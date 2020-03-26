@@ -1,7 +1,4 @@
 ## [Unreleased]
-
-
-## [20.3.3] - 2020-03-18
 Added ***remove_empty_elements*** command.
 Added ***datetime_to_string*** command.
 Added ***safe_load_json*** command.
