@@ -539,6 +539,7 @@ tasks:
       "yes":
       - "40"
     separatecontext: false
+    conditions:
     - label: "yes"
       condition:
       - - operator: isNotEmpty
