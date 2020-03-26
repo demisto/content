@@ -400,21 +400,29 @@ class Client(BaseClient):
         incident = self.http_request('GET', '/incident/get', headers={'token': self._token}, params=params)
         return incident.get('result')
 
-    def perform_action_on_incident_request(self, incident_id, action: str) -> Dict:
+    def perform_action_on_incident_request(self, incident_id, action: str, action_parameters: str) -> Dict:
         """get incident available actions by sending a GET request.
 
         Args:
             incident_id: incident ID.
-            action: action to perform on the incident
+            action: action to perform on the incident.
+            action_parameters: parameters needed in order to perform the action.
 
         Returns:
             Response from API.
         """
+
         params = {
             'type': 'actionInfo',
             'incidentId': incident_id,
             'actionName': action
         }
+        if action_parameters:
+            action_parameters_dict = {
+                k: v.strip('"') for k, v in [i.split("=", 1) for i in action_parameters.split(',')]
+            }
+            params.update(action_parameters_dict)
+
         possible_action = self.http_request('GET', '/incident/get', headers={'token': self._token}, params=params)
 
         if 'error' in possible_action:
@@ -908,7 +916,8 @@ def perform_action_on_incident(client: Client, args: Dict) -> Tuple[str, Dict, D
     """
     incident_id = str(args.get('incident_id'))
     action = str(args.get('action'))
-    incident_result = client.perform_action_on_incident_request(incident_id, action)
+    action_parameters = str(args.get('action_parameters'))
+    incident_result = client.perform_action_on_incident_request(incident_id, action, action_parameters)
     if incident_result != 'submitted':
         raise Exception(f'Failed to perform the action {action} on incident {incident_id}.')
     return f'Action {action} was performed on incident {incident_id}.', {}, incident_result

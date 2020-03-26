@@ -1,16 +1,17 @@
 import pytest
 from Securonix import reformat_resource_groups_outputs, reformat_outputs, parse_data_arr, Client, list_workflows,\
     get_default_assignee_for_workflow, list_possible_threat_actions, list_resource_groups, list_users,\
-    list_incidents, get_incident, create_incident, list_watchlists, get_watchlist, create_watchlist,\
-    check_entity_in_watchlist, add_entity_to_watchlist
+    list_incidents, get_incident, create_incident, perform_action_on_incident, list_watchlists, get_watchlist, \
+    create_watchlist, check_entity_in_watchlist, add_entity_to_watchlist
 from test_data.response_constants import RESPONSE_LIST_WORKFLOWS, RESPONSE_DEFAULT_ASSIGNEE,\
     RESPONSE_POSSIBLE_THREAT_ACTIONS, RESPONSE_LIST_RESOURCE_GROUPS, RESPONSE_LIST_USERS, RESPONSE_LIST_INCIDENT,\
-    RESPONSE_GET_INCIDENT, RESPONSE_CREATE_INCIDENT, RESPONSE_LIST_WATCHLISTS, RESPONSE_GET_WATCHLIST,\
-    RESPONSE_CREATE_WATCHLIST, RESPONSE_ENTITY_IN_WATCHLIST, RESPONSE_ADD_ENTITY_TO_WATCHLIST
+    RESPONSE_GET_INCIDENT, RESPONSE_CREATE_INCIDENT, RESPONSE_PERFORM_ACTION_ON_INCIDENT, RESPONSE_LIST_WATCHLISTS, \
+    RESPONSE_GET_WATCHLIST, RESPONSE_CREATE_WATCHLIST, RESPONSE_ENTITY_IN_WATCHLIST, RESPONSE_ADD_ENTITY_TO_WATCHLIST
 from test_data.result_constants import EXPECTED_LIST_WORKFLOWS, EXPECTED_DEFAULT_ASSIGNEE,\
     EXPECTED_POSSIBLE_THREAT_ACTIONS, EXPECTED_LIST_RESOURCE_GROUPS, EXPECTED_LIST_USERS, EXPECTED_LIST_INCIDENT,\
-    EXPECTED_GET_INCIDENT, EXPECTED_CREATE_INCIDENT, EXPECTED_LIST_WATCHLISTS, EXPECTED_GET_WATCHLIST,\
-    EXPECTED_CREATE_WATCHLIST, EXPECTED_ENTITY_IN_WATCHLIST, EXPECTED_ADD_ENTITY_TO_WATCHLIST
+    EXPECTED_GET_INCIDENT, EXPECTED_CREATE_INCIDENT, EXPECTED_PERFORM_ACTION_ON_INCIDENT, \
+    EXPECTED_LIST_WATCHLISTS, EXPECTED_GET_WATCHLIST, EXPECTED_CREATE_WATCHLIST, EXPECTED_ENTITY_IN_WATCHLIST, \
+    EXPECTED_ADD_ENTITY_TO_WATCHLIST
 
 
 def test_reformat_resource_groups_outputs():
@@ -65,6 +66,9 @@ def test_parse_data_arr():
                        'entity_type': 'Users', 'resource_group': "BLUECOAT", 'resource_name': "BLUECOAT",
                        'violation_name': "Uploads to personal Websites", 'workflow': "SOCTeamReview"},
      RESPONSE_CREATE_INCIDENT, EXPECTED_CREATE_INCIDENT),
+    (perform_action_on_incident, {'action': "ASSIGN TO ANALYST", 'incident_id': '1234',
+                                  'action_parameters': "assigntouserid={user_id},assignedTo=USER"},
+     RESPONSE_PERFORM_ACTION_ON_INCIDENT, EXPECTED_PERFORM_ACTION_ON_INCIDENT),
     (list_watchlists, {}, RESPONSE_LIST_WATCHLISTS, EXPECTED_LIST_WATCHLISTS),
     (get_watchlist, {'watchlist_name': 'test'}, RESPONSE_GET_WATCHLIST, EXPECTED_GET_WATCHLIST),
     (create_watchlist, {'watchlist_name': 'test234'}, RESPONSE_CREATE_WATCHLIST, EXPECTED_CREATE_WATCHLIST),
