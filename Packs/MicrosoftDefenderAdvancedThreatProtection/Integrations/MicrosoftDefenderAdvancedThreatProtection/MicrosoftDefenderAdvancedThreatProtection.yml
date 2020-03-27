@@ -97,7 +97,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Isolates a machine from accessing external network.
+    description: Isolates a machine from accessing external networks.
     execution: true
     name: microsoft-atp-isolate-machine
     outputs:
@@ -135,8 +135,8 @@ script:
       description: The file identifier
       type: String
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
-      description: 'The type of the file identifier with the possible values: "Sha1"
-        ,"Sha256" and "Md5".'
+      description: 'The type of the file identifier with the possible values: "SHA1"
+        ,"SHA256" and "MD5".'
       type: String
   - arguments:
     - default: false
@@ -152,7 +152,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Undo an isolation of a machine
+    description: Undo an isolation of a machine.
     execution: false
     name: microsoft-atp-unisolate-machine
     outputs:
@@ -235,7 +235,7 @@ script:
       secret: false
     deprecated: false
     description: Retrieves a collection of machines that have communicated with WDATP
-      cloud on the last 30 days
+      cloud on the last 30 days.
     execution: false
     name: microsoft-atp-get-machines
     outputs:
@@ -458,7 +458,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Initiate Microsoft Defender Antivirus scan on a machine.
+    description: Initiate a Microsoft Defender Antivirus scan on a machine.
     execution: false
     name: microsoft-atp-run-antivirus-scan
     outputs:
@@ -531,7 +531,7 @@ script:
       secret: false
     deprecated: false
     description: Get a list of alerts present on the system. Filtering can be done
-      only on one argument.
+      only on a single argument.
     execution: false
     name: microsoft-atp-list-alerts
     outputs:
@@ -1089,7 +1089,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieves the ips associated to a specific alert.
+    description: Retrieves the IPs associated to a specific alert.
     execution: false
     name: microsoft-atp-get-alert-related-ips
     outputs:
@@ -1239,7 +1239,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Collect investigation package from a machine.
+    description: Collect an investigation package from a machine.
     execution: false
     name: microsoft-atp-collect-investigation-package
     outputs:
@@ -1288,7 +1288,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get a URI that allows downloading of an investigation package.
+    description: Get a URI that allows downloading an investigation package.
     execution: false
     name: microsoft-atp-get-investigation-package-sas-uri
     outputs:
@@ -1309,7 +1309,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Restrict execution of all applications on the machine except a predefined
+    description: Restrict the execution of all applications on the machine except a predefined
       set.
     execution: false
     name: microsoft-atp-restrict-app-execution
@@ -1365,7 +1365,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Enable execution of any application on the machine.
+    description: Enable the execution of any application on the machine.
     execution: false
     name: microsoft-atp-remove-app-restriction
     outputs:
@@ -1426,7 +1426,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Stop execution of a file on a machine and delete it.
+    description: Stop the execution of a file on a machine and delete it.
     execution: false
     name: microsoft-atp-stop-and-quarantine-file
     outputs:
@@ -1538,7 +1538,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Start automated investigation on a machine.
+    description: Start an automated investigation on a machine.
     execution: false
     name: microsoft-atp-start-investigation
     outputs:
@@ -1588,10 +1588,10 @@ script:
       description: The prevalnce of the domain in the organizetion
       type: String
     - contextPath: MicrosoftATP.DomainStatistics.Statistics.OrgFirstSeen
-      description: The first date and time the domain has seen in the organizetion
+      description: The first date and time the domain was in the organizetion
       type: Date
     - contextPath: MicrosoftATP.DomainStatistics.Statistics.OrgLastSeen
-      description: The last date and time the domain has seen in the organizetion
+      description: The last date and time the domain was in the organizetion
       type: Date
   - arguments:
     - default: false
@@ -1775,10 +1775,10 @@ script:
       description: The prevalnce of the file in the organizetion
       type: String
     - contextPath: MicrosoftATP.FileStatistics.Statistics.OrgFirstSeen
-      description: The first date and time the file has seen in the organizetion
+      description: The first date and time the file was in the organizetion
       type: Date
     - contextPath: MicrosoftATP.FileStatistics.Statistics.OrgLastSeen
-      description: The last date and time the file has seen in the organizetion
+      description: The last date and time the file was in the organizetion
       type: Date
     - contextPath: MicrosoftATP.FileStatistics.Statistics.GlobalPrevalence
       description: The global prevalnce of the file
@@ -1902,10 +1902,10 @@ script:
       description: The prevalnce of the IP on the organizetion
       type: String
     - contextPath: MicrosoftATP.IPStatistics.Statistics.OrgFirstSeen
-      description: The first date and time the IP has seen in the organizetion
+      description: The first date and time the IP was in the organizetion
       type: Date
     - contextPath: MicrosoftATP.IPStatistics.Statistics.OrgLastSeen
-      description: The last date and time the IP has seen in the organizetion
+      description: The last date and time the IP was in the organizetion
       type: Date
   - arguments:
     - default: false
@@ -2188,7 +2188,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Adds or remove tag to a specific Machine.
+    description: Adds or removes a tag on a specific Machine.
     execution: false
     name: microsoft-atp-add-remove-machine-tag
     outputs:
