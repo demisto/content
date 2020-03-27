@@ -415,22 +415,22 @@
                             },
                             {
                                 "displayed": true,
-                                "key": "Feed Original Severity",
+                                "key": "Source Original Severity",
                                 "width": 200
                             },
                             {
                                 "displayed": true,
-                                "key": "Feed Threat Types",
+                                "key": "Threat Types",
                                 "width": 200
                             },
                             {
                                 "displayed": true,
-                                "key": "First Seen By Feed",
+                                "key": "First Seen By Source",
                                 "width": 200
                             },
                             {
                                 "displayed": true,
-                                "key": "Last Seen By Feed",
+                                "key": "Last Seen By Source",
                                 "width": 200
                             },
                             {
