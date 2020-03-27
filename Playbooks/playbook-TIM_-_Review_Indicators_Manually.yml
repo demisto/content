@@ -368,7 +368,11 @@ tasks:
       subject:
         simple: Approve indicator changes
       body:
-        simple: Please review this incident
+        simple: |-
+          Please review this incident
+          ${demistoUrls.investigation}
+          And approve the changes made to the indicators.
+          Related indicators will appear in the Indicators tab.
       methods:
       - email
       format: html
