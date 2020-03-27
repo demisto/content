@@ -733,7 +733,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: Sha256
+                  simple: File
           - - operator: isEqualString
               left:
                 value:
@@ -742,6 +742,14 @@ tasks:
               right:
                 value:
                   simple: approved_black
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: Sha1
           accessor: value
           transformers:
           - operator: uniq
