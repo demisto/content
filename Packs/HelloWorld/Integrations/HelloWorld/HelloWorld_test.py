@@ -1,15 +1,15 @@
-from HelloWorld import Client, say_hello_command, scan_start_command, scan_results_command, scan_status_command, \
-search_alerts_command, ip_reputation_command, fetch_incidents
 import json
 import io
 
 
-def testutil_load_json(path):
+def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def test_say_hello():
+    from HelloWorld import Client, say_hello_command
+
     client = Client(base_url='https://test.com', verify=False, auth=('test', 'test'))
     args = {
         'name': 'Dbot'
@@ -20,6 +20,8 @@ def test_say_hello():
 
 
 def test_start_scan(requests_mock):
+    from HelloWorld import Client, scan_start_command
+
     mock_response = {
         "scan_id": "7a161a3f-8d53-42de-80cd-92fb017c5a12",
         "status": "RUNNING"
@@ -49,6 +51,8 @@ def test_start_scan(requests_mock):
 
 
 def test_status_scan(requests_mock):
+    from HelloWorld import Client, scan_status_command
+
     mock_response = {
         "scan_id": "100",
         "status": "COMPLETE"
@@ -100,8 +104,9 @@ def test_status_scan(requests_mock):
 
 
 def test_scan_results(mocker, requests_mock):
+    from HelloWorld import Client, scan_results_command
     import demistomock as demisto
-    mock_response = testutil_load_json('test_data/scan_results.json')
+    mock_response = util_load_json('test_data/scan_results.json')
     requests_mock.get('http://test.com/get_scan_results?scan_id=100', json=mock_response)
 
     client = Client(
@@ -132,7 +137,9 @@ def test_scan_results(mocker, requests_mock):
 
 
 def test_search_alerts(requests_mock):
-    mock_response = testutil_load_json('test_data/search_alerts.json')
+    from HelloWorld import Client, search_alerts_command
+
+    mock_response = util_load_json('test_data/search_alerts.json')
     requests_mock.get('http://test.com/get_alerts?alert_status=ACTIVE&severity=4&max_results=2&start_time=1581982463',
                       json=mock_response)
 
@@ -159,7 +166,9 @@ def test_search_alerts(requests_mock):
 
 
 def test_fetch_incidents(requests_mock):
-    mock_response = testutil_load_json('test_data/search_alerts.json')
+    from HelloWorld import Client, fetch_incidents
+
+    mock_response = util_load_json('test_data/search_alerts.json')
     requests_mock.get('http://test.com/get_alerts?alert_status=ACTIVE&max_results=50&start_time=1582584487883',
                       json=mock_response)
 
@@ -187,13 +196,13 @@ def test_fetch_incidents(requests_mock):
         {
             'name': '#100 - Hello World Alert 100',
             'details': 'Hello World Alert 100',
-            'occurred': '2020-02-18T01:34:23.000Z',
+            'occurred': '2020-02-17T23:34:23.000Z',
             'rawJSON': json.dumps(mock_response[0])
         },
         {
             'name': '#200 - Hello World Alert 200',
             'details': 'Hello World Alert 200',
-            'occurred': '2020-02-18T01:34:23.000Z',
+            'occurred': '2020-02-17T23:34:23.000Z',
             'rawJSON': json.dumps(mock_response[1])
         }
     ]
