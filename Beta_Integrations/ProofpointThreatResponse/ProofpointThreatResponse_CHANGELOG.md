@@ -1,5 +1,5 @@
 ## [Unreleased]
-  - Improved the description of the *expiration* argument.
+  - Improved the description of the *expiration* argument in all relevant commands.
   - The following were removed as integration parameters and are now command arguments.
     - *blacklist_ip*
     - *blacklist_url*
