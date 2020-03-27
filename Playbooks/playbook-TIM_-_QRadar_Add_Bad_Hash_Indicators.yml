@@ -9,10 +9,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 65d05933-9eba-42d2-8f6b-189892a23f2b
+    taskid: 4f1764f4-d8e4-4a73-883e-a7e2f8e2046b
     type: start
     task:
-      id: 65d05933-9eba-42d2-8f6b-189892a23f2b
+      id: 4f1764f4-d8e4-4a73-883e-a7e2f8e2046b
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 4b789a00-9288-4603-8c2d-fdfbedb5a0ff
+    taskid: 3174d8a8-8be4-497a-8d4d-110c701f4e07
     type: title
     task:
-      id: 4b789a00-9288-4603-8c2d-fdfbedb5a0ff
+      id: 3174d8a8-8be4-497a-8d4d-110c701f4e07
       version: -1
       name: Done
       type: title
@@ -61,10 +61,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 3316e680-e6f3-4c12-8d0e-3ebcf966d904
+    taskid: 9414d6b5-94dc-4b24-843b-cdfc6eecd46e
     type: condition
     task:
-      id: 3316e680-e6f3-4c12-8d0e-3ebcf966d904
+      id: 9414d6b5-94dc-4b24-843b-cdfc6eecd46e
       version: -1
       name: Is QRadarEnabled?
       type: condition
@@ -120,16 +120,16 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 66ae0283-ad6b-4e58-8684-027bdfae6105
+    taskid: c644aaac-dfaf-4da2-8d41-90ccfadef4b7
     type: condition
     task:
-      id: 66ae0283-ad6b-4e58-8684-027bdfae6105
+      id: c644aaac-dfaf-4da2-8d41-90ccfadef4b7
       version: -1
       name: Are there filtered results?
-      description: ''
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "3"
@@ -177,10 +177,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: f407fa15-9658-44cd-82f8-7c5aba6a3ccb
+    taskid: 89624abb-440c-4cdd-881b-fce9b8462f2b
     type: regular
     task:
-      id: f407fa15-9658-44cd-82f8-7c5aba6a3ccb
+      id: 89624abb-440c-4cdd-881b-fce9b8462f2b
       version: -1
       name: Add Sha256 to QRadar reference set
       description: Add or update a value in a reference set.
@@ -203,19 +203,11 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: playbookQuery.indicator_type
+                  simple: playbookQuery.CustomFields.tags
                 iscontext: true
               right:
                 value:
                   simple: Sha256
-            - operator: stringHasLength
-              left:
-                value:
-                  simple: playbookQuery.value
-                iscontext: true
-              right:
-                value:
-                  simple: "64"
           - - operator: isEqualString
               left:
                 value:
@@ -224,6 +216,14 @@ tasks:
               right:
                 value:
                   simple: approved_black
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: File
           accessor: value
           transformers:
           - operator: uniq
@@ -246,8 +246,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 860,
-          "y": 1130
+          "x": 800,
+          "y": 1055
         }
       }
     note: false
@@ -257,50 +257,12 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: 774e7065-e732-4306-8643-20c17e552a21
+    taskid: 7a99bf47-5cb4-4355-8dc4-aa2cabe3614f
     type: condition
     task:
-      id: 774e7065-e732-4306-8643-20c17e552a21
+      id: 7a99bf47-5cb4-4355-8dc4-aa2cabe3614f
       version: -1
-      name: Is there a Qradar Sha256 Reference Set?
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#default#':
-      - "3"
-      "yes":
-      - "35"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.QRadarSha256ReferenceSetName
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 920,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "35":
-    id: "35"
-    taskid: 1767af56-1f3e-4b58-8ef8-f1e5c76662f4
-    type: condition
-    task:
-      id: 1767af56-1f3e-4b58-8ef8-f1e5c76662f4
-      version: -1
-      name: Are there Sha256 results?
+      name: Is there a Qradar Sha256 Reference Set and values?
       type: condition
       iscommand: false
       brand: ""
@@ -317,25 +279,22 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
+              simple: inputs.QRadarSha256ReferenceSetName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
               complex:
                 root: playbookQuery
                 filters:
-                - - operator: stringHasLength
+                - - operator: isEqualString
                     left:
                       value:
-                        simple: playbookQuery.value
+                        simple: playbookQuery.indicator_type
                       iscontext: true
                     right:
                       value:
-                        simple: "64"
-                  - operator: isEqualString
-                    left:
-                      value:
-                        simple: playbookQuery.CustomFields.tags
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Sha256
+                        simple: File
                 - - operator: isEqualString
                     left:
                       value:
@@ -349,8 +308,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1230,
-          "y": 960
+          "x": 800,
+          "y": 700
         }
       }
     note: false
@@ -360,50 +319,12 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: 85512dc5-e523-4c34-8276-e44194bb7400
+    taskid: 960739c4-90dc-4145-8b68-e5362e870fab
     type: condition
     task:
-      id: 85512dc5-e523-4c34-8276-e44194bb7400
+      id: 960739c4-90dc-4145-8b68-e5362e870fab
       version: -1
-      name: Is there a Qradar Sha1 Reference Set?
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#default#':
-      - "3"
-      "yes":
-      - "37"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.QRadarSha1ReferenceSetName
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1710,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "37":
-    id: "37"
-    taskid: 1df74856-3bc7-4efd-8e55-e936f0d2b0c0
-    type: condition
-    task:
-      id: 1df74856-3bc7-4efd-8e55-e936f0d2b0c0
-      version: -1
-      name: Are there Sha1 results?
+      name: Is there a Qradar Sha1 Reference Set and values?
       type: condition
       iscommand: false
       brand: ""
@@ -420,25 +341,22 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
+              simple: inputs.QRadarSha1ReferenceSetName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
               complex:
                 root: playbookQuery
                 filters:
-                - - operator: stringHasLength
-                    left:
-                      value:
-                        simple: playbookQuery.value
-                      iscontext: true
-                    right:
-                      value:
-                        simple: "40"
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: playbookQuery.CustomFields.tags
+                        simple: playbookQuery.indicator_type
                       iscontext: true
                     right:
                       value:
-                        simple: Sha1
+                        simple: File
                 - - operator: isEqualString
                     left:
                       value:
@@ -447,13 +365,21 @@ tasks:
                     right:
                       value:
                         simple: approved_black
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Sha1
                 accessor: value
             iscontext: true
     view: |-
       {
         "position": {
-          "x": 2050,
-          "y": 960
+          "x": 1580,
+          "y": 700
         }
       }
     note: false
@@ -463,10 +389,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: d62471ca-49c6-4d61-8c7a-cc89e58da0f4
+    taskid: 1cc5c04b-a56c-46c7-8136-cc82f6e58544
     type: regular
     task:
-      id: d62471ca-49c6-4d61-8c7a-cc89e58da0f4
+      id: 1cc5c04b-a56c-46c7-8136-cc82f6e58544
       version: -1
       name: Add Sha1 to QRadar reference set
       description: Add or update a value in a reference set.
@@ -486,15 +412,7 @@ tasks:
         complex:
           root: playbookQuery
           filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: playbookQuery.value
-                iscontext: true
-              right:
-                value:
-                  simple: "40"
-            - operator: isEqualString
+          - - operator: isEqualString
               left:
                 value:
                   simple: playbookQuery.CustomFields.tags
@@ -510,6 +428,14 @@ tasks:
               right:
                 value:
                   simple: approved_black
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: File
           accessor: value
           transformers:
           - operator: uniq
@@ -532,8 +458,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1660,
-          "y": 1130
+          "x": 1580,
+          "y": 1055
         }
       }
     note: false
@@ -543,50 +469,12 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: 4afd17b4-fabe-4984-8f3a-65decee07ed8
+    taskid: 35f7ec07-4008-44ce-8b62-02312a7a339a
     type: condition
     task:
-      id: 4afd17b4-fabe-4984-8f3a-65decee07ed8
+      id: 35f7ec07-4008-44ce-8b62-02312a7a339a
       version: -1
-      name: Is there a Qradar Md5 Reference Set?
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#default#':
-      - "3"
-      "yes":
-      - "40"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.QRadarMd5ReferenceSetName
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 2560,
-          "y": 710
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "40":
-    id: "40"
-    taskid: d4df9a62-2d77-4f6e-8b79-0fb170d34164
-    type: condition
-    task:
-      id: d4df9a62-2d77-4f6e-8b79-0fb170d34164
-      version: -1
-      name: Are there Md5 results?
+      name: Is there a Qradar Md5 Reference Set and values?
       type: condition
       iscommand: false
       brand: ""
@@ -603,18 +491,23 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
+              simple: inputs.QRadarMd5ReferenceSetName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
               complex:
                 root: playbookQuery
                 filters:
-                - - operator: stringHasLength
+                - - operator: isEqualString
                     left:
                       value:
-                        simple: playbookQuery.value
+                        simple: playbookQuery.indicator_type
                       iscontext: true
                     right:
                       value:
-                        simple: "32"
-                  - operator: isEqualString
+                        simple: File
+                - - operator: isEqualString
                     left:
                       value:
                         simple: playbookQuery.CustomFields.tags
@@ -635,8 +528,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2880,
-          "y": 960
+          "x": 2560,
+          "y": 710
         }
       }
     note: false
@@ -646,10 +539,10 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: 3bb81028-f888-44f3-8267-a4e1f0240fc9
+    taskid: bf09c33b-b18f-4753-801e-1c953599ccee
     type: regular
     task:
-      id: 3bb81028-f888-44f3-8267-a4e1f0240fc9
+      id: bf09c33b-b18f-4753-801e-1c953599ccee
       version: -1
       name: Add Md5 to QRadar reference set
       description: Add or update a value in a reference set.
@@ -677,14 +570,6 @@ tasks:
               right:
                 value:
                   simple: Md5
-            - operator: stringHasLength
-              left:
-                value:
-                  simple: playbookQuery.value
-                iscontext: true
-              right:
-                value:
-                  simple: "32"
           - - operator: isEqualString
               left:
                 value:
@@ -693,6 +578,14 @@ tasks:
               right:
                 value:
                   simple: approved_black
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: File
           accessor: value
           transformers:
           - operator: uniq
@@ -715,8 +608,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2520,
-          "y": 1130
+          "x": 2560,
+          "y": 1055
         }
       }
     note: false
@@ -726,10 +619,10 @@ tasks:
     quietmode: 0
   "49":
     id: "49"
-    taskid: 7195254d-6057-4ee3-852d-9ffb8ad62265
+    taskid: 38d68455-33df-4d69-8d34-e33d49da30c8
     type: title
     task:
-      id: 7195254d-6057-4ee3-852d-9ffb8ad62265
+      id: 38d68455-33df-4d69-8d34-e33d49da30c8
       version: -1
       name: Sha256
       type: title
@@ -743,7 +636,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
+          "x": 800,
           "y": 550
         }
       }
@@ -754,10 +647,10 @@ tasks:
     quietmode: 0
   "50":
     id: "50"
-    taskid: c88d9831-13c8-49fb-8e49-a5a9fe9b8b66
+    taskid: 4d6da770-b066-46b7-80b4-ae44a3083999
     type: title
     task:
-      id: c88d9831-13c8-49fb-8e49-a5a9fe9b8b66
+      id: 4d6da770-b066-46b7-80b4-ae44a3083999
       version: -1
       name: Sha1
       type: title
@@ -771,7 +664,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1710,
+          "x": 1580,
           "y": 550
         }
       }
@@ -782,10 +675,10 @@ tasks:
     quietmode: 0
   "51":
     id: "51"
-    taskid: 3c57bcd9-6855-437c-86e9-53d954945de6
+    taskid: c2c41c02-1ab4-4f9f-85c5-3d743f1d65f8
     type: title
     task:
-      id: 3c57bcd9-6855-437c-86e9-53d954945de6
+      id: c2c41c02-1ab4-4f9f-85c5-3d743f1d65f8
       version: -1
       name: Md5
       type: title
@@ -799,7 +692,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2660,
+          "x": 2560,
           "y": 550
         }
       }
@@ -810,10 +703,10 @@ tasks:
     quietmode: 0
   "52":
     id: "52"
-    taskid: 80a523cf-5d4a-4651-8455-333ee88c27a5
+    taskid: 7ce87557-da19-44e2-8ed9-16e7c501f6b3
     type: regular
     task:
-      id: 80a523cf-5d4a-4651-8455-333ee88c27a5
+      id: 7ce87557-da19-44e2-8ed9-16e7c501f6b3
       version: -1
       name: Add SIEM tag
       description: Adds the SIEM tag to the indicator.
@@ -856,8 +749,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
-          "y": 1300
+          "x": 800,
+          "y": 1290
         }
       }
     note: false
@@ -867,10 +760,10 @@ tasks:
     quietmode: 0
   "53":
     id: "53"
-    taskid: f6ab4e64-779d-400f-8bab-fa21b4e16a4a
+    taskid: 5b8cc0f8-0973-4d3e-8e17-3bb7ae0bd7fe
     type: regular
     task:
-      id: f6ab4e64-779d-400f-8bab-fa21b4e16a4a
+      id: 5b8cc0f8-0973-4d3e-8e17-3bb7ae0bd7fe
       version: -1
       name: Add SIEM tag
       description: Adds the SIEM tag to the indicator.
@@ -897,7 +790,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: Sha1
+                  simple: File
           - - operator: isEqualString
               left:
                 value:
@@ -906,6 +799,14 @@ tasks:
               right:
                 value:
                   simple: approved_black
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: Sha1
           accessor: value
           transformers:
           - operator: uniq
@@ -913,7 +814,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1560,
+          "x": 1580,
           "y": 1300
         }
       }
@@ -924,10 +825,10 @@ tasks:
     quietmode: 0
   "54":
     id: "54"
-    taskid: 79f3b533-142b-439f-8447-e33c31b9b1ac
+    taskid: 35b1c16b-1db9-4265-8a34-3bcfd8b825f1
     type: regular
     task:
-      id: 79f3b533-142b-439f-8447-e33c31b9b1ac
+      id: 35b1c16b-1db9-4265-8a34-3bcfd8b825f1
       version: -1
       name: Add SIEM tag
       description: Adds the SIEM tag to the indicator.
@@ -954,7 +855,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: Md5
+                  simple: File
           - - operator: isEqualString
               left:
                 value:
@@ -963,6 +864,14 @@ tasks:
               right:
                 value:
                   simple: approved_black
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: Md5
           accessor: value
           transformers:
           - operator: uniq
@@ -970,7 +879,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2410,
+          "x": 2560,
           "y": 1300
         }
       }
@@ -985,7 +894,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1885,
-        "width": 2990,
+        "width": 2600,
         "x": 340,
         "y": -310
       }
