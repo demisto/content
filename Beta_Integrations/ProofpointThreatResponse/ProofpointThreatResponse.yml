@@ -77,7 +77,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The comma-separated list of indicator values. Can be IP addresses,
+      description: 'A comma-separated list of indicator values. Can be IP addresses,
         URLs, domains, or file hashes. For example: "192.168.1.1,192.168.1.2".'
       isArray: true
       name: indicator
@@ -156,13 +156,13 @@ script:
       secret: false
     - default: false
       description: The filter for the indicator search. For example, "1.1" will return
-        [1.1.1.1, 22.22.1.1,1.1.22.22]
+        [1.1.1.1, 22.22.1.1, 1.1.22.22]
       isArray: false
       name: filter
       required: true
       secret: false
     deprecated: false
-    description: Returns indicators for the specified list, according to the defined
+    description: Returns indicators from the specified list, according to the defined
       filter.
     execution: false
     name: proofpoint-tr-search-indicator
@@ -192,7 +192,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Date and time when the supplied IP addresses should be removed
+      description: 'Date and time when the supplied URLs should be removed
         from the blacklist, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z'
       isArray: false
       name: expiration
@@ -216,7 +216,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Date and time when the supplied IP addresses should be removed
+      description: 'Date and time when the supplied file hashes should be removed
         from the blacklist, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z'
       isArray: false
       name: expiration
@@ -248,7 +248,7 @@ script:
       secret: false
     - default: false
       description: 'Retrieve incidents that were created after this date, in ISO 8601
-        format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z.'
+        format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z'
       isArray: false
       name: created_after
       predefined:
@@ -257,14 +257,14 @@ script:
       secret: false
     - default: false
       description: 'Retrieve incidents that were created before this date, in ISO
-        8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z.'
+        8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z'
       isArray: false
       name: created_before
       required: false
       secret: false
     - default: false
       description: 'Retrieve incidents that were closed after this date, in ISO 8601
-        format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z.'
+        format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z'
       isArray: false
       name: closed_after
       required: false
@@ -723,7 +723,7 @@ script:
     name: proofpoint-tr-add-user-to-incident
   - arguments:
     - default: false
-      description: 'POST URL of the JSON alert source. You can find it by navigatinf
+      description: 'POST URL of the JSON alert source. You can find it by navigating
         to Sources -> JSON event source -> POST URL '
       isArray: false
       name: json_source_id
@@ -768,44 +768,41 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The Command and Control host information in a json format : "{"cnc_hosts":
-        [..]}", as every item of the list is a json of the format : "{"host" : "-",
-        "port": "-"}". For more information, please see Proofpoint TRAP documentation
-        under "JSON Alert Source 2.0".'
+      description: 'The Command and Control host information in a JSON format : "{"cnc_hosts":
+        [{"host" : "-", "port": "-"}, ...]}". Note: Every item of the "cnc_hosts" list is in JSON format. 
+        For more information, please see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
       isArray: false
       name: cnc_hosts
       required: false
       secret: false
     - default: false
-      description: The threat detection tool such as Firewall and IPS/IDS systems
-        (in a json format), which generated the original alert which was then collected
-        by solutions integrated with Threat Response such as a SIEM (e.g. Splunk).
-        To see all relevant json fields and for more information, please see Proofpoint
-        TRAP documentation under "JSON Alert Source 2.0".
+      description: 'The threat detection tool such as Firewall and IPS/IDS systems
+        (in a JSON format), which generated the original alert. 
+        To see all relevant JSON fields and for more information, please see Proofpoint
+        TRAP documentation under "JSON Alert Source 2.0".'
       isArray: false
       name: detector
       required: false
       secret: false
     - default: false
-      description: 'The email metadata related to the alert, in a json format: "{"email":
-        {...}}". To see all relevant json fields and for more information, please
+      description: 'The email metadata related to the alert, in a JSON format: "{"email":
+        {...}}". To see all relevant JSON fields and for more information, please
         see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
       isArray: false
       name: email
       required: false
       secret: false
     - default: false
-      description: 'The forensics host information in a json format : "{"forensics_hosts":
-        [..]}", as every item of the list is a json of the format : "{"host" : "-",
-        "port": "-"}". For more information, please see Proofpoint TRAP documentation
-        under "JSON Alert Source 2.0".'
+      description: 'The forensics host information in a JSON format : "{"forensics_hosts":
+        [{"host" : "-", "port": "-"}...]}". Note: Every item of the "forensics_hosts" list is in JSON format. 
+        For more information, please see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
       isArray: false
       name: forensics_hosts
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The attribute to link alerts on.
+      description: The attribute to link alerts to.
       isArray: false
       name: link_attribute
       predefined:
@@ -846,33 +843,32 @@ script:
       required: false
       secret: false
     - default: false
-      description: The alert summary that will populate the Alert Details field, in
-        a string format.
+      description: The alert summary. This will populate the Alert Details field.
       isArray: false
       name: summary
       required: false
       secret: false
     - default: false
-      description: 'The target host information in the json format : "{"target": {...}}".
-        To see all relevant json fields and for more information, please see Proofpoint
+      description: 'The target host information in the JSON format : "{"target": {...}}".
+        To see all relevant JSON fields and for more information, please see Proofpoint
         TRAP documentation under "JSON Alert Source 2.0".'
       isArray: false
       name: target
       required: false
       secret: false
     - default: false
-      description: 'The threat information in a json format: "{"threat_info": {...}}".
-        To see all relevant json fields and for more information, please see Proofpoint
+      description: 'The threat information in a JSON format: "{"threat_info": {...}}".
+        To see all relevant JSON fields and for more information, please see Proofpoint
         TRAP documentation under "JSON Alert Source 2.0".'
       isArray: false
       name: threat_info
       required: false
       secret: false
     - default: false
-      description: 'A JSON object for collecting custom name value pairs as part of
+      description: 'A JSON object for collecting custom name-value pairs as part of
         the JSON alert sent to Threat Response, in the format: "{"custom_fields":
         {..}}". Although there is no limit to the number of custom fields, Proofpoint
-        recommends keeping it to 10 or fewer fields. To see all relevant json fields
+        recommends keeping it to 10 or fewer fields. To see all relevant JSON fields
         and for more information, please see Proofpoint TRAP documentation under "JSON
         Alert Source 2.0".'
       isArray: false
