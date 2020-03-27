@@ -116,12 +116,20 @@
                                 "id": "indicator-type"
                             },
                             {
-                                "index": 5,
+                                "index": 4,
                                 "endCol": 2,
                                 "height": 48,
                                 "startCol": 0,
                                 "fieldId": "comment",
                                 "id": "indicator-comment"
+                            },
+                            {
+                                "index": 5,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+                                "fieldId": "aggregatedreliability",
+                                "id": "b49a3ba0-6f8d-11ea-aeac-6dbd1bcce63e"
                             }
                         ],
                         "moved": false,
