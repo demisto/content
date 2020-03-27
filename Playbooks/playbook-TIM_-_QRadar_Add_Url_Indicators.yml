@@ -180,7 +180,7 @@ tasks:
           - operator: uniq
       values:
         complex:
-          root: playbookQuery.value
+          root: playbookQuery
           transformers:
           - operator: uniq
     separatecontext: false
@@ -366,7 +366,7 @@ tasks:
           - operator: uniq
       values:
         complex:
-          root: inputs.playbookQuery.value
+          root: inputs.playbookQuery
           transformers:
           - operator: uniq
     separatecontext: false
@@ -629,7 +629,7 @@ tasks:
           - operator: uniq
       values:
         complex:
-          root: inputs.playbookQuery.value
+          root: inputs.playbookQuery
           transformers:
           - operator: uniq
     separatecontext: false
