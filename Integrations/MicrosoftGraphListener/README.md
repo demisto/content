@@ -586,8 +586,8 @@ The following permissions are required for all commands:
   <tbody>
     <tr>
       <td>  </td>
-      <td> content: <h1>Added inline</h1> <img src=\<br>contentType: HTML </td>
-      <td> <h1>Added inline</h1> <img src=\ </td>
+      <td> content: <h1>Added inline</h1><br>contentType: HTML </td>
+      <td> <h1>Added inline</h1></td>
       <td>  </td>
       <td> flagStatus: flagged </td>
       <td> Normal </td>
