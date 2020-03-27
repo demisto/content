@@ -1,0 +1,195 @@
+elasticcommonfields: {}
+id: DbotPredictOufOfTheBoxTest
+version: 2
+name: DbotPredictOufOfTheBoxTest
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e93817b4-04c5-43f5-8e0f-ec7fb0e44e4e
+    type: start
+    task:
+      elasticcommonfields: {}
+      id: e93817b4-04c5-43f5-8e0f-ec7fb0e44e4e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 09bc3c85-b312-46bf-8e5e-a6ab6bd71e98
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 09bc3c85-b312-46bf-8e5e-a6ab6bd71e98
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 301a29e6-a9f4-461c-8d0d-f894852eee6c
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 301a29e6-a9f4-461c-8d0d-f894852eee6c
+      version: -1
+      name: Predict Using Out Of The Box Model
+      scriptName: DBotPredictOutOfTheBox
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      emailBody: {}
+      emailBodyHTML: {}
+      emailSubject:
+        simple: want to lose weight? best diet click here for free
+      labelProbabilityThreshold: {}
+      minTextLength: {}
+      returnError: {}
+      topWordsLimit: {}
+      wordThreshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: f9592464-35d0-453f-830e-e080c5e3feaa
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: f9592464-35d0-453f-830e-e080c5e3feaa
+      version: -1
+      name: Check Prediction
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "YES":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "YES"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotPredictPhishingWords.Label
+            iscontext: true
+          right:
+            value:
+              simple: spam
+      - - operator: greaterThan
+          left:
+            value:
+              simple: DBotPredictPhishingWords.Probability
+            iscontext: true
+          right:
+            value:
+              simple: "0.9"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 446acd1a-f953-420e-832b-3547957f51fd
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: 446acd1a-f953-420e-832b-3547957f51fd
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 895,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

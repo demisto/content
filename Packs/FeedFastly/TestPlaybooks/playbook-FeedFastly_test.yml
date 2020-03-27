@@ -1,0 +1,181 @@
+elasticcommonfields: {}
+id: Fastly Feed Test
+version: -1
+name: Fastly Feed Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6aac6b92-8cfe-4ac2-89bc-beec334da0ba
+    type: start
+    task:
+      elasticcommonfields: {}
+      id: 6aac6b92-8cfe-4ac2-89bc-beec334da0ba
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: b2854659-f445-4ca9-8630-95a72705a167
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: b2854659-f445-4ca9-8630-95a72705a167
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 9f408646-8b26-496a-8c61-bfaf1c870743
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 9f408646-8b26-496a-8c61-bfaf1c870743
+      version: -1
+      name: get-indicators-ip
+      description: Fetches indicators from the feed.
+      script: Fastly Feed|||fastly-get-indicators
+      type: regular
+      iscommand: true
+      brand: Fastly Feed
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      extend-context:
+        simple: Indicator=.[0]
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 3ede471a-55ea-4514-834c-50d5ec142333
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 3ede471a-55ea-4514-834c-50d5ec142333
+      version: -1
+      name: verify get indicators
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Indicator.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 2232e537-326e-4c21-8ce8-648d51595106
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: 2232e537-326e-4c21-8ce8-648d51595106
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0

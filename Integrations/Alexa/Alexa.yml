@@ -25,7 +25,11 @@ script:
   commands:
   - arguments:
     - default: true
+<<<<<<< HEAD
       description: domain to search
+=======
+      description: Domain to search.
+>>>>>>> upstream/master
       isArray: false
       name: domain
       required: true

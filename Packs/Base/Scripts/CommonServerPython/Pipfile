@@ -1,0 +1,18 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+pytest = "*"
+flake8 = "*"
+pytest-mock = "*"
+requests-mock = "*"
+
+[packages]
+lxml = "*"
+requests = "*"
+
+[requires]
+python_version = "2.7"

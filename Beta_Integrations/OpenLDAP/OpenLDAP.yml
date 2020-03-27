@@ -92,7 +92,11 @@ script:
           secret: true
       deprecated: false
       description: ''
+<<<<<<< HEAD
       execution: true
+=======
+      execution: false
+>>>>>>> upstream/master
       name: ad-authenticate
     - arguments:
         - default: false
@@ -103,7 +107,11 @@ script:
           secret: false
       deprecated: false
       description: ''
+<<<<<<< HEAD
       execution: true
+=======
+      execution: false
+>>>>>>> upstream/master
       name: ad-groups
     - arguments:
         - default: false
@@ -145,7 +153,11 @@ script:
           secret: false
       deprecated: false
       description: ''
+<<<<<<< HEAD
       execution: true
+=======
+      execution: false
+>>>>>>> upstream/master
       name: ad-authenticate-and-roles
   dockerimage: demisto/ldap:1.0.0.4710
   isfetch: false

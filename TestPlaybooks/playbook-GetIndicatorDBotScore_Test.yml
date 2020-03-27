@@ -84,7 +84,11 @@ tasks:
         simple: Test Indicator
       sourceTimeStamp: {}
       type:
+<<<<<<< HEAD
         simple: SHA1
+=======
+        simple: File
+>>>>>>> upstream/master
       value:
         simple: e1112134b6dcc8bed54e0e34d8ac272795e73d74
     separatecontext: false

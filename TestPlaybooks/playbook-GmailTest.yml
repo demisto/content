@@ -1645,6 +1645,7 @@ tasks:
       max_symbols: {}
       max_ucase: {}
       min_digits:
+<<<<<<< HEAD
         simple: "1"
       min_lcase:
         simple: "1"
@@ -1652,6 +1653,15 @@ tasks:
         simple: "1"
       min_ucase:
         simple: "1"
+=======
+        simple: "2"
+      min_lcase:
+        simple: "2"
+      min_symbols:
+        simple: "2"
+      min_ucase:
+        simple: "2"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {

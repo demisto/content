@@ -32,7 +32,11 @@
 	"type": "shortText",
 	"unmapped": false,
 	"unsearchable": false,
+<<<<<<< HEAD
 	"useAsKpi": false,
+=======
+	"useAsKpi": true,
+>>>>>>> upstream/master
 	"validationRegex": "",
 	"version": -1,
 	"fromVersion": "5.0.0"

@@ -35,12 +35,10 @@ configuration:
   required: false
 - display: Fetch incidents
   name: isFetch
-  defaultvalue: ""
   type: 8
   required: false
 - display: Incident type
   name: incidentType
-  defaultvalue: ""
   type: 13
   required: false
 - display: Timezone offset in minutes of the RSA Archer server machine (+60, -60,
@@ -241,12 +239,21 @@ script:
                         // breaking the lock after 1 minute
                         locked = false;
                     }
+<<<<<<< HEAD
                 }
                 if (Object.keys(cache).indexOf("valid") > -1 && cache["valid"] === true && cache["token"] !== currentToken){
                     currentToken = cache["token"];
                 } else {
                     currentToken = getAuthToken();
                 }
+=======
+                }
+                if (Object.keys(cache).indexOf("valid") > -1 && cache["valid"] === true && cache["token"] !== currentToken){
+                    currentToken = cache["token"];
+                } else {
+                    currentToken = getAuthToken();
+                }
+>>>>>>> upstream/master
 
                 var dic = {};
                 dic["token"] = currentToken;
@@ -2612,7 +2619,7 @@ script:
         }
         var incidentId = dataArgs.incidentId;
         if (incidentId){
-            contentId = getContentIdsFromIncIds(appId, incidentId)[0];
+            contentId = getContentIdsFromIncIds(appId, incidentId.toString())[0];
         }
         if (fieldsToValue === null || typeof fieldsToValue !== 'object') {
             throw 'Invalid Argument fieldToValue';
@@ -2736,7 +2743,7 @@ script:
         var incidentId = args.incidentId;
 
         if (incidentId){
-            contentId = getContentIdsFromIncIds(applicationId, incidentId)[0];
+            contentId = getContentIdsFromIncIds(applicationId, incidentId.toString())[0];
         }
         extendAppIdMapping(applicationId);
         var rawResponse = getRecordSendSoapRequest(command, applicationId, contentId);
@@ -3012,7 +3019,7 @@ script:
         var contentId = dataArgs.contentId;
         var incidentId = dataArgs.incidentId;
         if (incidentId){
-            contentId = getContentIdsFromIncIds(appId, incidentId)[0];
+            contentId = getContentIdsFromIncIds(appId, incidentId.toString())[0];
         }
         var token = getAuthToken();
         var soap =  deleteContentSoapRequest(token, appId, contentId);
@@ -3320,7 +3327,7 @@ script:
         var associatedField = args.associatedField;
 
         if (incidentId){
-            contentIdsFromInc = getContentIdsFromIncIds(applicationId, incidentId);
+            contentIdsFromInc = getContentIdsFromIncIds(applicationId, incidentId.toString());
             if (contentIdsFromInc.length > 0){
                 contentId = contentIdsFromInc[0];
             } else {
@@ -3377,7 +3384,7 @@ script:
         }
 
         if (incidentId){
-            contentId = getContentIdsFromIncIds(applicationId, incidentId)[0];
+            contentId = getContentIdsFromIncIds(applicationId, incidentId.toString())[0];
         }
         var value = args.value;
 

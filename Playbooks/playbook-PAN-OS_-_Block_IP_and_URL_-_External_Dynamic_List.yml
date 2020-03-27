@@ -25,8 +25,13 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 387.5,
           "y": -210
+=======
+          "x": 162.5,
+          "y": 50
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -78,8 +83,13 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": -252.5,
           "y": 580
+=======
+          "x": 387.5,
+          "y": 880
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -87,10 +97,17 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
+<<<<<<< HEAD
     taskid: 3b58c187-0f80-4fe1-86e9-7e39f7e073db
     type: regular
     task:
       id: 3b58c187-0f80-4fe1-86e9-7e39f7e073db
+=======
+    taskid: dd261023-08d2-4dcf-8da6-2c04d6ccdbaf
+    type: regular
+    task:
+      id: dd261023-08d2-4dcf-8da6-2c04d6ccdbaf
+>>>>>>> upstream/master
       version: -1
       name: PAN-OS - Refresh IP EDL
       description: Refreshes the specified external dynamic list
@@ -100,18 +117,32 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
+<<<<<<< HEAD
       - "9"
+=======
+      - "5"
+>>>>>>> upstream/master
     scriptarguments:
       device-group: {}
       name:
         complex:
+<<<<<<< HEAD
           root: inputs.IPListName
+=======
+          root: Panorama
+          accessor: EDL.Name
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": -252.5,
           "y": 1150
+=======
+          "x": 387.5,
+          "y": 1460
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -136,8 +167,13 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 67.5,
           "y": 100
+=======
+          "x": 660,
+          "y": 370
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -162,8 +198,13 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 707.5,
           "y": 100
+=======
+          "x": 660,
+          "y": 1630
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -216,8 +257,13 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 980,
           "y": 580
+=======
+          "x": 940,
+          "y": 2140
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -225,10 +271,17 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
+<<<<<<< HEAD
     taskid: 133163e9-86c8-4e91-87e1-94c4dd3b5362
     type: regular
     task:
       id: 133163e9-86c8-4e91-87e1-94c4dd3b5362
+=======
+    taskid: dabf9bdf-2d0d-4ed2-8953-2602abcce0e2
+    type: regular
+    task:
+      id: dabf9bdf-2d0d-4ed2-8953-2602abcce0e2
+>>>>>>> upstream/master
       version: -1
       name: PAN-OS - Refresh URL EDL
       description: Refreshes the specified external dynamic list
@@ -241,15 +294,29 @@ tasks:
       - "9"
     scriptarguments:
       device-group: {}
+<<<<<<< HEAD
       name:
         complex:
           root: inputs.URLListName
+=======
+      extend-context:
+        simple: panorama.model=response.result.system.model
+      name:
+        complex:
+          root: Panorama
+          accessor: EDL.Name
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 980,
           "y": 1150
+=======
+          "x": 940,
+          "y": 2700
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -271,8 +338,13 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 387.5,
           "y": 1320
+=======
+          "x": 162.5,
+          "y": 2880
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -292,9 +364,15 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
+<<<<<<< HEAD
       - "9"
       "yes":
       - "13"
+=======
+      - "5"
+      "yes":
+      - "24"
+>>>>>>> upstream/master
     separatecontext: false
     conditions:
     - label: "yes"
@@ -308,8 +386,13 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 67.5,
           "y": 240
+=======
+          "x": 660,
+          "y": 530
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -331,7 +414,11 @@ tasks:
       '#default#':
       - "9"
       "yes":
+<<<<<<< HEAD
       - "12"
+=======
+      - "23"
+>>>>>>> upstream/master
     separatecontext: false
     conditions:
     - label: "yes"
@@ -345,6 +432,7 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 707.5,
           "y": 240
         }
@@ -476,6 +564,10 @@ tasks:
         "position": {
           "x": -252.5,
           "y": 410
+=======
+          "x": 660,
+          "y": 1780
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -530,8 +622,13 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 387.5,
           "y": -70
+=======
+          "x": 162.5,
+          "y": 195
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -561,6 +658,11 @@ tasks:
       command: {}
       dst: {}
       element: {}
+<<<<<<< HEAD
+=======
+      extend-context:
+        simple: panorama.model=response.result.system.model
+>>>>>>> upstream/master
       from: {}
       job-id: {}
       key: {}
@@ -582,8 +684,13 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 980,
           "y": 760
+=======
+          "x": 940,
+          "y": 2315
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -613,6 +720,11 @@ tasks:
       command: {}
       dst: {}
       element: {}
+<<<<<<< HEAD
+=======
+      extend-context:
+        simple: panorama.model=response.result.system.model
+>>>>>>> upstream/master
       from: {}
       job-id: {}
       key: {}
@@ -634,8 +746,13 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": -252.5,
           "y": 760
+=======
+          "x": 387.5,
+          "y": 1060
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -673,8 +790,13 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 980,
           "y": 930
+=======
+          "x": 940,
+          "y": 2500
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -696,7 +818,11 @@ tasks:
       '#default#':
       - "3"
       "yes":
+<<<<<<< HEAD
       - "9"
+=======
+      - "5"
+>>>>>>> upstream/master
     separatecontext: false
     conditions:
     - label: "yes"
@@ -712,8 +838,151 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": -252.5,
           "y": 930
+=======
+          "x": 387.5,
+          "y": 1235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 64abcdd1-7114-4e08-8014-062f9db40a08
+    type: playbook
+    task:
+      id: 64abcdd1-7114-4e08-8014-062f9db40a08
+      version: -1
+      name: PAN-OS EDL Setup v2
+      description: |-
+        Configures an external dynamic list in PAN-OS.
+        In the event that the file exists on the web server, it will sync it to demisto. Then it will create an EDL object and a matching rule.
+      playbookName: PAN-OS EDL Setup v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      action-type:
+        simple: drop
+      auto-commit:
+        complex:
+          root: inputs.AutoCommit
+      device-group:
+        complex:
+          root: inputs.device-group
+      inbound-or-outbound-rule:
+        complex:
+          root: inputs.inbound-or-outbound-rule
+      ioc-type:
+        simple: url
+      list-items:
+        complex:
+          root: inputs.URL
+      list-name:
+        complex:
+          root: inputs.URLListName
+      log-forwarding-object-name:
+        complex:
+          root: inputs.LogForwarding
+      pre-post-rulebase:
+        complex:
+          root: inputs.url-pre-post-rulebase
+      relative-rule-name: {}
+      rule-name:
+        complex:
+          root: inputs.URLListName
+      rule-position:
+        complex:
+          root: inputs.url-rule-position
+      web-server-ip:
+        complex:
+          root: inputs.EDLServerIP
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 14bfbeb6-b140-48c2-8c2a-dc708d5e492b
+    type: playbook
+    task:
+      id: 14bfbeb6-b140-48c2-8c2a-dc708d5e492b
+      version: -1
+      name: PAN-OS EDL Setup v2
+      description: |-
+        Configures an external dynamic list in PAN-OS.
+        In the event that the file exists on the web server, it will sync it to demisto. Then it will create an EDL object and a matching rule.
+      playbookName: PAN-OS EDL Setup v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      action-type:
+        simple: drop
+      auto-commit:
+        complex:
+          root: inputs.AutoCommit
+      device-group:
+        complex:
+          root: inputs.device-group
+      inbound-or-outbound-rule:
+        complex:
+          root: inputs.inbound-or-outbound-rule
+      ioc-type:
+        simple: ip
+      list-items:
+        complex:
+          root: inputs.IP
+      list-name:
+        complex:
+          root: inputs.IPListName
+      log-forwarding-object-name:
+        complex:
+          root: inputs.LogForwarding
+      pre-post-rulebase:
+        complex:
+          root: inputs.ip-pre-post-rulebase
+      relative-rule-name: {}
+      rule-name:
+        complex:
+          root: inputs.IPListName
+      rule-position:
+        complex:
+          root: inputs.ip-rule-position
+      web-server-ip:
+        complex:
+          root: inputs.EDLServerIP
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 700
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -722,6 +991,7 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
+<<<<<<< HEAD
       "10_9_#default#": 0.21,
       "11_9_#default#": 0.21,
       "14_9_#default#": 0.28,
@@ -734,6 +1004,18 @@ view: |-
         "width": 1612.5,
         "x": -252.5,
         "y": -210
+=======
+      "11_9_#default#": 0.21,
+      "14_9_#default#": 0.28,
+      "17_9_yes": 0.45
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2895,
+        "width": 1157.5,
+        "x": 162.5,
+        "y": 50
+>>>>>>> upstream/master
       }
     }
   }
@@ -807,6 +1089,7 @@ inputs:
   required: false
   description: Either pre-rulebase or post-rulebase,  according to the rule structure.
 - key: url-rule-position
+<<<<<<< HEAD
   value: {}
   required: false
   description: |-
@@ -824,6 +1107,36 @@ inputs:
       * Bottom
       * Before
       * After
+=======
+  value:
+    simple: "top"
+  required: false
+  description: |-
+    The position of the rule in the ruleset. Valid values are:
+      * top
+      * bottom
+      * before
+      * after
+- key: ip-rule-position
+  value:
+    simple: "top"
+  required: false
+  description: |-
+    The position of the rule in the ruleset. Valid values are:
+      * top
+      * bottom
+      * before
+      * after
+- key: inbound-or-outbound-rule
+  value:
+    simple: outbound
+  required: false
+  description: Determines if the rule is inbound or outbound.
+- key: device-group
+  value: {}
+  required: false
+  description: The device group to work on. Exists only in panorama!
+>>>>>>> upstream/master
 outputs: []
 tests:
   - PAN-OS - Block IP and URL - External Dynamic List Test

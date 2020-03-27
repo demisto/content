@@ -24,6 +24,10 @@ Symantec Data Loss Prevention let's you discover, monitor and protect your sensi
    <li><strong>Saved Report ID</strong></li>
    <li><strong>Fetch limit</strong></li>
     </ul>
+<<<<<<< HEAD
+=======
+    <p> Please note that for Active Directoy accounts, the username must follow the format <code>username:DOMAIN</code>.
+>>>>>>> upstream/master
   </li>
   <li>
     Click&nbsp;<strong>Test</strong>&nbsp;to validate the new instance.

@@ -11,6 +11,10 @@ requests-mock = "*"
 pytest-asyncio = "*"
 pytest-xdist = "*"
 freezegun = "*"
+<<<<<<< HEAD
+=======
+pytest-datadir-ng = "*"
+>>>>>>> upstream/master
 
 [packages]
 

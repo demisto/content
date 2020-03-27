@@ -427,5 +427,8 @@ outputs:
   description: Extracted SHA256
 - contextPath: IP.Address
   description: Extracted IPs
+<<<<<<< HEAD
 tests:
   - Extract Indicators From File - test
+=======
+>>>>>>> upstream/master

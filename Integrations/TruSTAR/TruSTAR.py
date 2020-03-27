@@ -565,7 +565,10 @@ def get_correlated_reports(indicators, enclave_ids, distribution_type, page_size
         current_report['updated'] = normalize_time(current_report['updated'])
         current_report['created'] = normalize_time(current_report['created'])
         current_report['timeBegan'] = normalize_time(current_report['timeBegan'])
+<<<<<<< HEAD
         return current_report
+=======
+>>>>>>> upstream/master
         correlated_reports.append(current_report)
     if correlated_reports:
         title = 'TruSTAR correlated reports'

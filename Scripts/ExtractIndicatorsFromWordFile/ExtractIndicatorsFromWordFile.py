@@ -58,12 +58,21 @@ class WordParser:
             self.all_data += self.get_tables(document)
             self.all_data += self.get_core_properties(document)
             self.all_data += self.get_hyperlinks(document)
+<<<<<<< HEAD
         except PackageNotFoundError as e:
             self.errEntry["Contents"] = "Input file is not a valid docx/doc file."
             self.res = self.errEntry
         except BaseException as e:
             self.errEntry["Contents"] = "Error occurred while parsing input file.\nException info: " + str(e)
             self.res = self.errEntry
+=======
+        except PackageNotFoundError:
+            self.errEntry["Contents"] = "Input file is not a valid docx/doc file."
+            self.res = self.errEntry  # type: ignore
+        except BaseException as e:
+            self.errEntry["Contents"] = "Error occurred while parsing input file.\nException info: " + str(e)
+            self.res = self.errEntry  # type: ignore
+>>>>>>> upstream/master
 
     def get_paragraphs(self, document):
         return '\n'.join([para.text for para in document.paragraphs])

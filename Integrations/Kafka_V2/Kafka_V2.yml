@@ -59,7 +59,11 @@ configuration:
   required: false
   type: 13
 description: The Open source distributed streaming platform
+<<<<<<< HEAD
 display: Kafka V2
+=======
+display: Kafka v2
+>>>>>>> upstream/master
 name: Kafka V2
 script:
   commands:
@@ -146,7 +150,11 @@ script:
       required: false
       secret: false
     deprecated: false
+<<<<<<< HEAD
     description: Print all partitions for a topic
+=======
+    description: Fetch partitions for a topic.
+>>>>>>> upstream/master
     execution: false
     name: kafka-fetch-partitions
     outputs:

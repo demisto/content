@@ -25,11 +25,21 @@
     "hidden": false,
     "associatedTypes": [
         "Malware",
+<<<<<<< HEAD
         "Traps"
     ],
     "systemAssociatedTypes": [
         "Malware",
         "Traps"
+=======
+        "Traps",
+        "Cortex XDR Port Scan"
+    ],
+    "systemAssociatedTypes": [
+        "Malware",
+        "Traps",
+        "Cortex XDR Port Scan"
+>>>>>>> upstream/master
     ],
     "associatedToAll": false,
     "unmapped": false,

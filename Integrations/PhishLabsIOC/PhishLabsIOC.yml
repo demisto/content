@@ -38,7 +38,11 @@ configuration:
   name: incidentType
   required: false
   type: 13
+<<<<<<< HEAD
 description: Get live feeds of IOC data from PhishLabs.
+=======
+description: Get indicators of compromise from PhishLabs.
+>>>>>>> upstream/master
 display: PhishLabs IOC
 name: PhishLabs IOC
 script:

@@ -3612,6 +3612,18 @@ def create_email_output(email_data, attached_emails):
     return res
 
 
+<<<<<<< HEAD
+=======
+def is_email_data_populated(email_data):
+    # checks if email data has any item populated to it
+    if email_data:
+        for key, val in email_data.iteritems():
+            if val:
+                return True
+    return False
+
+
+>>>>>>> upstream/master
 def main():
     file_type = ''
     entry_id = demisto.args()['entryid']
@@ -3678,7 +3690,24 @@ def main():
                                                                  max_depth=max_depth)
                         output = create_email_output(email_data, attached_emails)
                     else:
+<<<<<<< HEAD
                         return_error("Could not extract email from file. Base64 decode did not include rfc 822 strings")
+=======
+                        try:
+                            # Try to open
+                            email_data, attached_emails = handle_eml(file_path, b64=False, file_name=file_name,
+                                                                     parse_only_headers=parse_only_headers,
+                                                                     max_depth=max_depth)
+                            is_data_populated = is_email_data_populated(email_data)
+                            if not is_data_populated:
+                                raise DemistoException("No email_data found")
+                            output = create_email_output(email_data, attached_emails)
+                        except Exception as e:
+                            demisto.debug("ParseEmailFiles failed with {}".format(str(e)))
+                            return_error("Could not extract email from file. Possible reasons for this error are:\n"
+                                         "- Base64 decode did not include rfc 822 strings.\n"
+                                         "- Email contained no Content-Type and no data.")
+>>>>>>> upstream/master
 
             except Exception as e:
                 return_error("Exception while trying to decode email from within base64: {}\n\nTrace:\n{}"

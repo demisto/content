@@ -34,7 +34,11 @@ configuration:
   type: 8
 description: Uses the Have I Been Pwned? service to check whether email addresses
   or domains were compromised in previous breaches.
+<<<<<<< HEAD
 display: Have I Been Pwned? V2
+=======
+display: Have I Been Pwned? v2
+>>>>>>> upstream/master
 name: Have I Been Pwned? V2
 script:
   commands:

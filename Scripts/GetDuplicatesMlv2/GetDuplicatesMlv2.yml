@@ -5,6 +5,10 @@ name: GetDuplicatesMlv2
 fromversion: "3.5.0"
 script: ''
 type: python
+<<<<<<< HEAD
+=======
+subtype: python2
+>>>>>>> upstream/master
 tags:
 - dedup
 - incidents

@@ -1,0 +1,1540 @@
+id: Employee Offboarding - Retain & Delete
+version: -1
+fromversion: 5.0.0
+name: Employee Offboarding - Retain & Delete
+description: This playbook playbook performs retention and deletion of user information
+  as part of the IT - Employee Offboarding playbook.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: a99d2982-2041-46a5-876a-d2eab2ebb4ac
+    type: start
+    task:
+      id: a99d2982-2041-46a5-876a-d2eab2ebb4ac
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '34'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 795,
+          "y": -50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '25':
+    id: '25'
+    taskid: 75c4aee6-e94e-42ce-820b-ee5904b0a7e3
+    type: regular
+    task:
+      id: 75c4aee6-e94e-42ce-820b-ee5904b0a7e3
+      version: -1
+      name: Wait 30 days
+      description: Wait a number of days before permanently deleting all of the user's
+        information to ensure that all of the necessary information has been delegated
+        or copied. 30 days is the recommended period, but you can determine a longer
+        or shorter wait period.
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '80'
+      - '82'
+      - '84'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 795,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '34':
+    id: '34'
+    taskid: 748d7681-460f-4a41-83c9-b408e2731ad2
+    type: title
+    task:
+      id: 748d7681-460f-4a41-83c9-b408e2731ad2
+      version: -1
+      name: Retention & Deletion
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '117'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 795,
+          "y": 120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '38':
+    id: '38'
+    taskid: 1972ce36-b37d-459d-8e28-153cdd7ee63d
+    type: condition
+    task:
+      id: 1972ce36-b37d-459d-8e28-153cdd7ee63d
+      version: -1
+      name: Is Google Vault enabled?
+      description: Checks whether the Google Vault integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '25'
+      'yes':
+      - '39'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: google-vault
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1195,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '39':
+    id: '39'
+    taskid: 267e8231-f5b1-48e1-817b-a8094d1870f8
+    type: regular
+    task:
+      id: 267e8231-f5b1-48e1-817b-a8094d1870f8
+      version: -1
+      name: Create a matter to store user data
+      description: Creates a new matter with the specified name and description.
+      script: '|||gvault-create-matter'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '40'
+      - '98'
+    scriptarguments:
+      description: {}
+      name:
+        simple: Matter for ${inputs.OffboardingUserEmail}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1195,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '40':
+    id: '40'
+    taskid: b3c92968-748e-4e24-844d-d66e913d8498
+    type: regular
+    task:
+      id: b3c92968-748e-4e24-844d-d66e913d8498
+      version: -1
+      name: Create a hold to store user emails
+      description: Creates a hold in the given matter. Holds are used to preserve
+        data in the organization.
+      script: '|||gvault-create-hold'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments:
+      accountID:
+        complex:
+          root: OffboardingUserID
+          transformers:
+          - operator: uniq
+      corpus:
+        simple: Mail
+      endTime: {}
+      holdName:
+        simple: Mail hold for ${inputs.OffboardingUserEmail}
+      matterID:
+        complex:
+          root: GoogleVault
+          accessor: Matter.MatterID
+          transformers:
+          - operator: uniq
+      startTime: {}
+      terms: {}
+      timeFrame: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1195,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Google Mail Status
+      output:
+        simple: On Hold
+  '44':
+    id: '44'
+    taskid: 0f069a35-9d75-49ca-8c69-8cf0ec3cbd52
+    type: regular
+    task:
+      id: 0f069a35-9d75-49ca-8c69-8cf0ec3cbd52
+      version: -1
+      name: Disable user in Active Directory
+      description: Disables an Active Directory user account.
+      script: '|||ad-disable-account'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments:
+      base-dn: {}
+      username:
+        complex:
+          root: Account
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Account.Type
+                iscontext: true
+              right:
+                value:
+                  simple: AD
+              ignorecase: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Account.Email
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.OffboardingUserEmail
+                iscontext: true
+          accessor: Username
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 425,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Active Directory Account Status
+      output:
+        simple: Disabled
+  '48':
+    id: '48'
+    taskid: d7098881-c88d-4c32-8de7-d892bea84e96
+    type: condition
+    task:
+      id: d7098881-c88d-4c32-8de7-d892bea84e96
+      version: -1
+      name: Is Active Directory enabled?
+      description: Checks whether the Active Directory integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '25'
+      'yes':
+      - '50'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 425,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '50':
+    id: '50'
+    taskid: 84d05217-69e6-46ff-8afe-a528ec4fe5ab
+    type: condition
+    task:
+      id: 84d05217-69e6-46ff-8afe-a528ec4fe5ab
+      version: -1
+      name: Was a username found for the account in Active Directory?
+      description: Determines if the username was found in Active Directory.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '25'
+      'yes':
+      - '44'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Account
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AD
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Email
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.OffboardingUserEmail
+                      iscontext: true
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: Username
+                - operator: uniq
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 425,
+          "y": 785
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '51':
+    id: '51'
+    taskid: d9af7725-f470-42fa-826d-358ac18f6299
+    type: regular
+    task:
+      id: d9af7725-f470-42fa-826d-358ac18f6299
+      version: -1
+      name: Delete user account from Active Directory
+      description: Deletes an Active Directory user.
+      script: '|||ad-delete-user'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '62'
+    scriptarguments:
+      user-dn:
+        complex:
+          root: ActiveDirectory
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: mail
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.OffboardingUserEmail
+                iscontext: true
+              ignorecase: true
+          accessor: Users
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: dn
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 1880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Active Directory Account Status
+      output:
+        simple: Deleted
+  '52':
+    id: '52'
+    taskid: 3211a7d1-bd27-4c40-8be1-01e4f5a49479
+    type: regular
+    task:
+      id: 3211a7d1-bd27-4c40-8be1-01e4f5a49479
+      version: -1
+      name: Delete Google user account
+      description: Deletes the user account from Google.
+      script: '|||gmail-delete-user'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '62'
+    scriptarguments:
+      user-id:
+        complex:
+          root: inputs.OffboardingUserEmail
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1280,
+          "y": 1880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Google Account Status
+      output:
+        simple: Deleted
+  '60':
+    id: '60'
+    taskid: 29e4706c-0619-4f5f-8f36-1b35086333b9
+    type: regular
+    task:
+      id: 29e4706c-0619-4f5f-8f36-1b35086333b9
+      version: -1
+      name: Delete Google Vault Holds
+      description: Removes a Hold by ID. This will release any Held Accounts on this
+        Hold.
+      script: '|||gvault-delete-hold'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '100'
+    scriptarguments:
+      holdID:
+        complex:
+          root: GoogleVault
+          accessor: Hold.ID
+          transformers:
+          - operator: uniq
+      matterID:
+        complex:
+          root: GoogleVault
+          accessor: Matter.MatterID
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 795,
+          "y": 1830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Google Mail Status
+      output:
+        simple: Hold Deleted
+    - incidentfield: Google Drive Status
+      output:
+        simple: Hold Deleted
+  '61':
+    id: '61'
+    taskid: a0efe502-9673-4889-86c7-d1b5f728891d
+    type: condition
+    task:
+      id: a0efe502-9673-4889-86c7-d1b5f728891d
+      version: -1
+      name: Is Google Vault enabled?
+      description: Checks whether the Google Vault integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '62'
+      'yes':
+      - '60'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: google-vault
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 795,
+          "y": 1615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '62':
+    id: '62'
+    taskid: b186d738-9cb3-4bab-82a5-ac039995d0af
+    type: condition
+    task:
+      id: b186d738-9cb3-4bab-82a5-ac039995d0af
+      version: -1
+      name: Can the manager be updated that the user was offboarded?
+      description: Checks whether the email of the manager of the user you are offboarding
+        was retrieved or configured in the playbook inputs, and whether an email sender
+        integration is enabled.
+      type: condition
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#default#':
+      - '128'
+      'yes':
+      - '129'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: UserManagerEmail
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: EWS Mail Sender
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Gmail
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 795,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '77':
+    id: '77'
+    taskid: 29bd7afe-b108-465e-8428-069f3a5fa1e8
+    type: title
+    task:
+      id: 29bd7afe-b108-465e-8428-069f3a5fa1e8
+      version: -1
+      name: Google Vault
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '38'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1195,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '78':
+    id: '78'
+    taskid: 4253231f-132d-4f96-8114-7c90c1faaa5a
+    type: title
+    task:
+      id: 4253231f-132d-4f96-8114-7c90c1faaa5a
+      version: -1
+      name: Active Directory
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '48'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 425,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '80':
+    id: '80'
+    taskid: d085a534-6cff-4ab7-8405-4f7dc827ca2a
+    type: title
+    task:
+      id: d085a534-6cff-4ab7-8405-4f7dc827ca2a
+      version: -1
+      name: Active Directory
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '81'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '81':
+    id: '81'
+    taskid: 2af58c0f-4619-4a1e-8c7e-1fdd3d418178
+    type: condition
+    task:
+      id: 2af58c0f-4619-4a1e-8c7e-1fdd3d418178
+      version: -1
+      name: Is Active Directory enabled?
+      description: Checks whether the Active Directory integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '62'
+      'yes':
+      - '94'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 1545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '82':
+    id: '82'
+    taskid: b166b916-7514-4d3b-8764-400b21c52ffe
+    type: title
+    task:
+      id: b166b916-7514-4d3b-8764-400b21c52ffe
+      version: -1
+      name: Gmail
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '83'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1280,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '83':
+    id: '83'
+    taskid: ef54c80f-c348-4035-88fb-5d2bf9c9226c
+    type: condition
+    task:
+      id: ef54c80f-c348-4035-88fb-5d2bf9c9226c
+      version: -1
+      name: Can the Google account be deleted?
+      description: Checks whether the Gmail integration is enabled, and whether the
+        PerformPotentiallyHarmfulActions playbook input is set to True.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '131'
+      'yes':
+      - '52'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Gmail
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.PerformPotentiallyHarmfulActions
+            iscontext: true
+          right:
+            value:
+              simple: 'True'
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 1280,
+          "y": 1545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '84':
+    id: '84'
+    taskid: 308d2310-f97d-47b8-8399-1a25a09f0e19
+    type: title
+    task:
+      id: 308d2310-f97d-47b8-8399-1a25a09f0e19
+      version: -1
+      name: Google Vault
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '61'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 795,
+          "y": 1485
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '94':
+    id: '94'
+    taskid: f36e894b-ae0f-4868-8009-8b7a59a11699
+    type: condition
+    task:
+      id: f36e894b-ae0f-4868-8009-8b7a59a11699
+      version: -1
+      name: Can the user be added to the "Old Employees" group?
+      description: Checks whether a value was entered in the OldEmployeeGroupName
+        playbook input.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '51'
+      'yes':
+      - '95'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.OldEmployeeGroupName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Account
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Account.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AD
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Account.Email
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.OffboardingUserEmail
+                      iscontext: true
+                accessor: Username
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '95':
+    id: '95'
+    taskid: 59de0cd9-8d6b-4bdb-83ee-bac22fdc420c
+    type: regular
+    task:
+      id: 59de0cd9-8d6b-4bdb-83ee-bac22fdc420c
+      version: -1
+      name: Add user to "Old Employees" group
+      description: Adds the Active Directory user or computer to the group configured
+        in the OldEmployeeGroupName playbook input.
+      script: '|||ad-add-to-group'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '62'
+    scriptarguments:
+      base-dn: {}
+      computer-name: {}
+      group-cn:
+        complex:
+          root: inputs.OldEmployeeGroupName
+      username:
+        complex:
+          root: Account
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Account.Type
+                iscontext: true
+              right:
+                value:
+                  simple: AD
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Account.Email
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.OffboardingUserEmail
+                iscontext: true
+          accessor: Username
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -105,
+          "y": 1890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Active Directory Account Status
+      output:
+        simple: Moved to Old Employees
+  '98':
+    id: '98'
+    taskid: 98609a4f-dd47-4636-8fe9-2208ac269e7e
+    type: regular
+    task:
+      id: 98609a4f-dd47-4636-8fe9-2208ac269e7e
+      version: -1
+      name: Create a Hold to store user Drive files
+      description: Creates a Hold in the given matter. Holds are used to preserve
+        data in the organization.
+      script: '|||gvault-create-hold'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments:
+      accountID:
+        complex:
+          root: OffboardingUserID
+          transformers:
+          - operator: uniq
+      corpus:
+        simple: Drive
+      endTime: {}
+      holdName:
+        simple: Drive hold for ${inputs.OffboardingUserEmail}
+      matterID:
+        complex:
+          root: GoogleVault
+          accessor: Matter.MatterID
+          transformers:
+          - operator: uniq
+      startTime: {}
+      terms: {}
+      timeFrame: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1620,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Google Drive Status
+      output:
+        simple: On Hold
+  '100':
+    id: '100'
+    taskid: 44a37167-3905-491d-8b2c-9339087244f5
+    type: regular
+    task:
+      id: 44a37167-3905-491d-8b2c-9339087244f5
+      version: -1
+      name: Delete Google Vault matter
+      description: Deletes the user matter.
+      script: '|||gvault-matter-update-state'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '62'
+    scriptarguments:
+      matterID:
+        complex:
+          root: GoogleVault
+          accessor: Matter.MatterID
+          transformers:
+          - operator: uniq
+      state:
+        simple: DELETE
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 795,
+          "y": 1985
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '117':
+    id: '117'
+    taskid: 1ec48c23-bc66-4fba-8821-99aed5fc6e28
+    type: regular
+    task:
+      id: 1ec48c23-bc66-4fba-8821-99aed5fc6e28
+      version: -1
+      name: Update offboarding stage
+      description: Updates the stage of the offboarding process in the incident details.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '77'
+      - '78'
+    scriptarguments:
+      account: {}
+      accountid: {}
+      activedirectoryaccountstatus: {}
+      activedirectorypasswordstatus: {}
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      agentid: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      blockedaction: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      commandline: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      companypropertystatus: {}
+      contactaddress: {}
+      contactname: {}
+      coordinates: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      deleteEmptyField: {}
+      dest: {}
+      destinationip: {}
+      destntdomain: {}
+      details: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionticketed: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      devicegsuiteaccountstatus: {}
+      devicename: {}
+      dpoemailaddress: {}
+      duoaccountstatus: {}
+      duration: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailautoreply: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      extrahopapplianceid: {}
+      extrahophostname: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstseen: {}
+      globaldirectoryvisibility: {}
+      googleaccountstatus: {}
+      googleadminrolesstatus: {}
+      googledrivestatus: {}
+      googlemailstatus: {}
+      googlepasswordstatus: {}
+      hostname: {}
+      id: {}
+      infectedhosts: {}
+      isolated: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastseen: {}
+      likelyimpact: {}
+      mailboxdelegation: {}
+      maliciousbehavior: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      measurestomitigate: {}
+      name: {}
+      niststage: {}
+      occurred: {}
+      offboardingstage:
+        simple: Retention & Deletion
+      oktaaccountstatus: {}
+      owner: {}
+      parentprocessid: {}
+      participants: {}
+      phase: {}
+      phishingsubtype: {}
+      pid: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      previouscoordinates: {}
+      previouscountry: {}
+      previoussignindatetime: {}
+      previoussourceip: {}
+      prismacloudid: {}
+      prismacloudreason: {}
+      prismacloudrules: {}
+      prismacloudstatus: {}
+      prismacloudtime: {}
+      rating: {}
+      rawparticipants: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      resourceapiname: {}
+      resourcecloudtype: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      rrn: {}
+      sectorofaffectedparty: {}
+      severity: {}
+      signature: {}
+      signindatetime: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourceip: {}
+      src: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      subscriptionassignedby: {}
+      subscriptioncreatedby: {}
+      subscriptioncreatedon: {}
+      subscriptiondescription: {}
+      subscriptionid: {}
+      subscriptionname: {}
+      subscriptiontype: {}
+      subscriptionupdatedby: {}
+      subscriptionupdatedon: {}
+      subtype: {}
+      systemdefault: {}
+      systems: {}
+      telephoneno: {}
+      terminatedaction: {}
+      threatactor: {}
+      trapsid: {}
+      travelmaplink: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      urlsslverification: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vpcid: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrurl: {}
+      xdrusercount: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 795,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '128':
+    id: '128'
+    taskid: 279a6521-9cb6-4740-8662-19277964de3c
+    type: title
+    task:
+      id: 279a6521-9cb6-4740-8662-19277964de3c
+      version: -1
+      name: Finalize Offboarding
+      type: title
+      iscommand: false
+      brand: Builtin
+      description: ''
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 795,
+          "y": 2550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '129':
+    id: '129'
+    taskid: d4f88cd3-ad47-425c-8fbb-fe5f9a318a58
+    type: regular
+    task:
+      id: d4f88cd3-ad47-425c-8fbb-fe5f9a318a58
+      version: -1
+      name: Update the manager that the user was offboarded
+      description: Sends an email to the user's manager that the user was offboarded.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '128'
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: The user ${OffboardingUserEmail} finished the offboarding process.
+      cc: {}
+      from: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: Offboarding Status Update
+      templateParams: {}
+      to:
+        complex:
+          root: UserManagerEmail
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 2380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '131':
+    id: '131'
+    taskid: 0f6b7d50-e6c3-4014-80bd-3be471da279f
+    type: regular
+    task:
+      id: 0f6b7d50-e6c3-4014-80bd-3be471da279f
+      version: -1
+      name: Delete Google user account
+      description: Please delete the Google user account, manually.
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '62'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1650,
+          "y": 1735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "38_25_#default#": 0.34,
+      "38_39_yes": 0.62,
+      "48_25_#default#": 0.39,
+      "50_25_#default#": 0.67,
+      "50_44_yes": 0.45,
+      "61_60_yes": 0.58,
+      "61_62_#default#": 0.14,
+      "62_128_#default#": 0.32,
+      "62_129_yes": 0.46,
+      "81_62_#default#": 0.33,
+      "83_131_#default#": 0.41,
+      "83_52_yes": 0.46
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2665,
+        "width": 2135,
+        "x": -105,
+        "y": -50
+      }
+    }
+  }
+inputs:
+- key: UserManagerEmail
+  value:
+    complex:
+      root: incident
+      accessor: employeemanageremail
+  required: false
+  description: The email of the manager of the user you are offboarding.
+- key: OffboardingUserEmail
+  value:
+    complex:
+      root: incident
+      accessor: employeeemail
+  required: true
+  description: The email address of the user that you are offboarding.
+- key: OldEmployeeGroupName
+  value:
+    simple: Old Employees
+  required: false
+  description: The name of the group in Active Directory that contains old employee
+    user accounts. If a group name is specified, the user will be added to that group
+    instead of getting deleted at the end of the offboarding process.
+- key: PerformPotentiallyHarmfulActions
+  value:
+    simple: 'False'
+  required: true
+  description: Whether to perform potentially harmful actions, such as revoking user
+    permissions and deleting the user. Taking the actions is necessary for a more
+    complete offboarding process, and if set to False - the actions will have to be
+    taken manually.
+outputs: []
+sourceplaybookid: IT - Employee Offboarding
+tests:
+  - no test

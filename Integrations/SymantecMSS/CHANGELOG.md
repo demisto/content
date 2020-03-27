@@ -1,5 +1,9 @@
 ## [Unreleased]
+<<<<<<< HEAD
 
+=======
+Fixed an issue where **fetch-incidents** failed on data containing special characters.
+>>>>>>> upstream/master
 
 ## [19.12.0] - 2019-12-10
 Added support for special characters in ***symantec-mss-update-incident*** comments.

@@ -58,7 +58,6 @@ outputs:
   description: For malicious files, the vendor that made the decision
 - contextPath: File.Malicious.Description
   description: For malicious files, the reason for the vendor to make the decision
-  description: Bad hash SHA256
 - contextPath: DBotScore.Indicator
   description: The indicator we tested
 - contextPath: DBotScore.Type
@@ -78,3 +77,5 @@ dependson:
   - pt-whois
   - pt-ssl-cert
 timeout: 0s
+tests:
+  - No test

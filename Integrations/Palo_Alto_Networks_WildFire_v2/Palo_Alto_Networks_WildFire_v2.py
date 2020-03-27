@@ -73,6 +73,15 @@ VERDICTS_TO_DBOTSCORE = {
 ''' HELPER FUNCTIONS '''
 
 
+<<<<<<< HEAD
+=======
+class NotFoundError(Exception):
+    """ Report or File not found. """
+    def __init__(self, *args):  # real signature unknown
+        pass
+
+
+>>>>>>> upstream/master
 def http_request(url, method, headers=None, body=None, params=None, files=None):
     LOG('running request with url=%s' % url)
     result = requests.request(
@@ -86,6 +95,7 @@ def http_request(url, method, headers=None, body=None, params=None, files=None):
     )
 
     if str(result.reason) == 'Not Found':
+<<<<<<< HEAD
         # sample not found
         if url.find(URL_DICT["sample"]) != -1:
             demisto.results(
@@ -97,6 +107,9 @@ def http_request(url, method, headers=None, body=None, params=None, files=None):
         if url.find(URL_DICT["report"]) != -1:
             demisto.results('Report not found.')
             sys.exit(0)
+=======
+        raise NotFoundError('Not Found.')
+>>>>>>> upstream/master
 
     if result.status_code < 200 or result.status_code >= 300:
         if str(result.status_code) in ERROR_DICT:
@@ -620,17 +633,31 @@ def wildfire_get_report(file_hash):
         'format': 'xml',
         'hash': file_hash
     }
+<<<<<<< HEAD
     json_res = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params)
 
+=======
+>>>>>>> upstream/master
     # necessarily one of them as passed the hash_args_handler
     hash_type = 'SHA256' if sha256Regex.match(file_hash) else 'MD5'
     entry_context = {hash_type: file_hash}
 
+<<<<<<< HEAD
     if not json_res:
+=======
+    try:
+        json_res = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params)
+    except NotFoundError:
+>>>>>>> upstream/master
         entry_context['Status'] = 'NotFound'
         demisto.results({
             'Type': entryTypes['note'],
             'HumanReadable': 'Report not found.',
+<<<<<<< HEAD
+=======
+            'Contents': None,
+            'ContentsFormat': formats['json'],
+>>>>>>> upstream/master
             'ReadableContentsFormat': formats['text'],
             'EntryContext': {
                 "WildFire.Report(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5)": entry_context
@@ -646,6 +673,11 @@ def wildfire_get_report(file_hash):
         entry_context['Status'] = 'Pending'
         demisto.results({
             'Type': entryTypes['note'],
+<<<<<<< HEAD
+=======
+            'Contents': json_res,
+            'ContentsFormat': formats['json'],
+>>>>>>> upstream/master
             'HumanReadable': 'The sample is still being analyzed. Please wait to download the report.',
             'ReadableContentsFormat': formats['text'],
             'EntryContext': {
@@ -693,13 +725,20 @@ def wildfire_get_sample(file_hash):
         'apikey': TOKEN,
         'hash': file_hash
     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> upstream/master
     result = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params)
     return result
 
 
 def wildfire_get_sample_command():
+<<<<<<< HEAD
     if 'sha256' or 'hash' in demisto.args():
+=======
+    if 'sha256' in demisto.args() or 'hash' in demisto.args():
+>>>>>>> upstream/master
         sha256 = demisto.args().get('sha256', None)
     else:
         sha256 = None
@@ -707,6 +746,7 @@ def wildfire_get_sample_command():
     inputs = hash_args_handler(sha256, md5)
 
     for element in inputs:
+<<<<<<< HEAD
         result = wildfire_get_sample(element)
 
         headers_string = str(result.headers)
@@ -716,6 +756,20 @@ def wildfire_get_sample_command():
         file_entry = fileResult(file_name, result.content)
 
         demisto.results(file_entry)
+=======
+        try:
+            result = wildfire_get_sample(element)
+            headers_string = str(result.headers)
+            file_name = headers_string.split("filename=", 1)[1]
+            # will be saved under 'File' in the context, can be farther investigated.
+            file_entry = fileResult(file_name, result.content)
+            demisto.results(file_entry)
+        except NotFoundError:
+            demisto.results(
+                'Sample was not found. '
+                'Please note that grayware and benign samples are available for 14 days only. '
+                'For more info contact your WildFire representative.')
+>>>>>>> upstream/master
 
 
 ''' EXECUTION '''

@@ -40,6 +40,10 @@ GLOBAL VARS
 SERVER_URL = demisto.params()['server']
 USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
+<<<<<<< HEAD
+=======
+PASSWORD = PASSWORD.encode('utf-8')
+>>>>>>> upstream/master
 USE_SSL = not demisto.params()['insecure']
 VERSION = demisto.params()['version']
 GET_HEADERS = {

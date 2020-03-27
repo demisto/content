@@ -1,4 +1,10 @@
 ## [Unreleased]
+<<<<<<< HEAD
+=======
+
+
+## [20.1.0] - 2020-01-07
+>>>>>>> upstream/master
   - Added the ***threatq-advanced-search*** command, which runs an advanced indicator search.
   - Added TLP values to indicator outputs.
 

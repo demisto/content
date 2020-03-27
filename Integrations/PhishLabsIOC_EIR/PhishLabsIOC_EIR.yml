@@ -34,7 +34,11 @@ configuration:
   name: proxy
   required: false
   type: 8
+<<<<<<< HEAD
 description: Get live feeds data from PhishLabs Email Incident Report
+=======
+description: Get Email Incident Reports from PhishLabs
+>>>>>>> upstream/master
 display: PhishLabs IOC EIR
 name: PhishLabs IOC EIR
 script:

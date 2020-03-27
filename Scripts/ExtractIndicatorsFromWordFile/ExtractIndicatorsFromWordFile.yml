@@ -24,9 +24,16 @@ tags:
 - word
 timeout: '0'
 type: python
+<<<<<<< HEAD
 dockerimage: demisto/office-utils:1.0.0.91
 runas: DBotWeakRole
 runonce: false
 tests:
 - Extract Indicators From File - test
+=======
+subtype: python2
+dockerimage: demisto/office-utils:1.0.0.91
+runas: DBotWeakRole
+runonce: false
+>>>>>>> upstream/master
 fromversion: 4.1.0

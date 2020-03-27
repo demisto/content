@@ -1,4 +1,10 @@
 ## [Unreleased]
+<<<<<<< HEAD
+=======
+- Improved handling of proxy and insecure parameters.
+- Fixed issue where `symantec-dlp-get-incident-details` would in some cases return an error.
+- Improved documentation to describe format required for Active Directory accounts.
+>>>>>>> upstream/master
 
 
 ## [19.11.1] - 2019-11-26

@@ -1,4 +1,9 @@
 ## [Unreleased]
+<<<<<<< HEAD
+=======
+- Fixed an issue with unescaped 'https' URLs.
+- Fixed an issue with the ATP link regex.
+>>>>>>> upstream/master
 
 
 ## [19.12.0] - 2019-12-10

@@ -1,7 +1,11 @@
 id: Prisma Cloud Remediation - AWS Security Groups Allows Internet Traffic To TCP
 version: -1
+<<<<<<< HEAD
 name: Prisma Cloud Remediation - AWS Security Groups Allows Internet Traffic To TCP
   Port
+=======
+name: Prisma Cloud Remediation - AWS Security Groups Allows Internet Traffic To TCP Port
+>>>>>>> upstream/master
 description: "This playbook extracts the TCP public Security Groups rule and provides
   manual/automatic options to have the rules revoked."
 starttaskid: "0"

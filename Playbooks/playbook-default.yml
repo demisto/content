@@ -2,6 +2,7 @@ id: playbook0
 version: -1
 name: Default
 fromversion: 3.5.0
+toversion: 4.9.9
 description: Default playbook, Enrich indicators in incident using one or more integrations
 starttaskid: "0"
 tasks:

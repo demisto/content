@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 from mock import patch
 from Tests.mock_server import AMIConnection, clean_filename, get_mock_file_path, get_log_file_path, get_folder_path
 from Tests.test_content import organize_tests
+=======
+from __future__ import print_function
+from mock import patch
+from Tests.mock_server import AMIConnection, clean_filename, get_mock_file_path, get_log_file_path, get_folder_path
+>>>>>>> upstream/master
 
 
 def test_clean_filename():
@@ -30,6 +36,7 @@ with patch('Tests.mock_server.AMIConnection._get_docker_ip') as mock:
     def test_ami():
         assert ami.public_ip == '1.1.1.1'
         assert ami.docker_ip == '2.2.2.2'
+<<<<<<< HEAD
 
 
 def test_integration_list_split_by_unmockable():
@@ -47,3 +54,5 @@ def test_integration_list_split_by_unmockable():
 
     assert mockable == [test3]
     assert unmockable == [test1, test2]
+=======
+>>>>>>> upstream/master

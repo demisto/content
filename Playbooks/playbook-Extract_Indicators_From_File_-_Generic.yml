@@ -748,5 +748,10 @@ outputs:
 - contextPath: URL.Data
   description: List of URLs that were extracted from the PDF file
   type: unknown
+<<<<<<< HEAD
 tests:
   - Extract Indicators From File - test
+=======
+tests: 
+  - No test - deprecated playbook
+>>>>>>> upstream/master

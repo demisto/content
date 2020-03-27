@@ -1,4 +1,13 @@
 ## [Unreleased]
+<<<<<<< HEAD
+=======
+
+
+## [20.3.3] - 2020-03-18
+-
+
+## [20.1.0] - 2020-01-07
+>>>>>>> upstream/master
 - Fixed an issue in which the ***wildfire-report*** was not returning outputs for non-malicious URLs.
 
 ## [19.11.1] - 2019-11-26

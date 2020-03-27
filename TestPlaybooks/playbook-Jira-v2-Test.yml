@@ -1,15 +1,27 @@
 id: Jira-v2-Test
 version: -1
+<<<<<<< HEAD
+=======
+contentitemfields:
+  propagationLabels: []
+>>>>>>> upstream/master
 name: Jira-v2-Test
 starttaskid: "0"
 fromversion: 5.0.0
 tasks:
   "0":
     id: "0"
+<<<<<<< HEAD
     taskid: dba45c76-d4b8-423e-8507-da910a986a0a
     type: start
     task:
       id: dba45c76-d4b8-423e-8507-da910a986a0a
+=======
+    taskid: a1107485-481e-4ace-8904-b72068f4483d
+    type: start
+    task:
+      id: a1107485-481e-4ace-8904-b72068f4483d
+>>>>>>> upstream/master
       version: -1
       name: ""
       iscommand: false
@@ -28,12 +40,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "1":
     id: "1"
     taskid: 9695f51e-d54f-4dda-89bd-c7216b24ed3f
     type: regular
     task:
       id: 9695f51e-d54f-4dda-89bd-c7216b24ed3f
+=======
+    skipunavailable: false
+  "1":
+    id: "1"
+    taskid: 1c585eee-2e16-4a68-84ea-af29782c5462
+    type: regular
+    task:
+      id: 1c585eee-2e16-4a68-84ea-af29782c5462
+>>>>>>> upstream/master
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -59,12 +81,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "2":
     id: "2"
     taskid: 29324ef0-6bcd-46f5-8329-5268f144e77f
     type: regular
     task:
       id: 29324ef0-6bcd-46f5-8329-5268f144e77f
+=======
+    skipunavailable: false
+  "2":
+    id: "2"
+    taskid: da890fe0-fd6a-43f7-8b89-3a8897f9b340
+    type: regular
+    task:
+      id: da890fe0-fd6a-43f7-8b89-3a8897f9b340
+>>>>>>> upstream/master
       version: -1
       name: jira-create-issue
       description: Create a new issue on Jira
@@ -106,12 +138,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "3":
     id: "3"
     taskid: 3a4230e7-07e9-4b79-8c77-e6e2bbd3f2fa
     type: regular
     task:
       id: 3a4230e7-07e9-4b79-8c77-e6e2bbd3f2fa
+=======
+    skipunavailable: false
+  "3":
+    id: "3"
+    taskid: 3b86db93-98a7-46fa-8aeb-b2a7bbbd9c94
+    type: regular
+    task:
+      id: 3b86db93-98a7-46fa-8aeb-b2a7bbbd9c94
+>>>>>>> upstream/master
       version: -1
       name: jira-get-issue
       description: Fetch issue from Jira
@@ -128,7 +170,13 @@ tasks:
       getAttachments: {}
       headers: {}
       issueId:
+<<<<<<< HEAD
         simple: ${Ticket.Id}
+=======
+        complex:
+          root: Ticket
+          accessor: Id
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
@@ -140,6 +188,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "4":
     id: "4"
     taskid: 53c14246-24ff-44cb-8431-7b2ba6befcc7
@@ -169,6 +218,41 @@ tasks:
       value3: {}
       value4: {}
     separatecontext: false
+=======
+    skipunavailable: false
+  "4":
+    id: "4"
+    taskid: e738a022-6fef-4dc8-8082-d2a86d408118
+    type: condition
+    task:
+      id: e738a022-6fef-4dc8-8082-d2a86d408118
+      version: -1
+      name: VerifyContextFields
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Ticket
+                accessor: Status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Ticket
+                accessor: Summary
+            iscontext: true
+>>>>>>> upstream/master
     view: |-
       {
         "position": {
@@ -179,12 +263,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "5":
     id: "5"
     taskid: 4bd14937-933b-4514-81ad-f2a01e46214d
     type: regular
     task:
       id: 4bd14937-933b-4514-81ad-f2a01e46214d
+=======
+    skipunavailable: false
+  "5":
+    id: "5"
+    taskid: ee923a46-7da3-4716-8d4f-031588fd08d0
+    type: regular
+    task:
+      id: ee923a46-7da3-4716-8d4f-031588fd08d0
+>>>>>>> upstream/master
       version: -1
       name: jira-issue-add-comment
       description: Add new comment to existing Jira issue
@@ -199,7 +293,13 @@ tasks:
       comment:
         simple: Test Comment
       issueId:
+<<<<<<< HEAD
         simple: ${Ticket.Id}
+=======
+        complex:
+          root: Ticket
+          accessor: Id
+>>>>>>> upstream/master
       visibility: {}
     separatecontext: false
     view: |-
@@ -212,12 +312,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "6":
     id: "6"
     taskid: a866d23d-1c6e-4e40-8516-f609a705fe8b
     type: regular
     task:
       id: a866d23d-1c6e-4e40-8516-f609a705fe8b
+=======
+    skipunavailable: false
+  "6":
+    id: "6"
+    taskid: 9e3e96db-151b-4083-8a2d-ba77689d9150
+    type: regular
+    task:
+      id: 9e3e96db-151b-4083-8a2d-ba77689d9150
+>>>>>>> upstream/master
       version: -1
       name: jira-issue-add-link
       description: Creates (or updates) issue link
@@ -229,9 +339,19 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
+<<<<<<< HEAD
       globalId: {}
       issueId:
         simple: ${Ticket.Id}
+=======
+      applicationName: {}
+      applicationType: {}
+      globalId: {}
+      issueId:
+        complex:
+          root: Ticket
+          accessor: Id
+>>>>>>> upstream/master
       relationship: {}
       summary: {}
       title:
@@ -249,12 +369,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "9":
     id: "9"
     taskid: 92ac5ce5-d7d8-4e2e-8cc6-cd472a33f756
     type: regular
     task:
       id: 92ac5ce5-d7d8-4e2e-8cc6-cd472a33f756
+=======
+    skipunavailable: false
+  "9":
+    id: "9"
+    taskid: 6dfb9e1d-e5a4-4cbb-8b13-9e79ff281a87
+    type: regular
+    task:
+      id: 6dfb9e1d-e5a4-4cbb-8b13-9e79ff281a87
+>>>>>>> upstream/master
       version: -1
       name: jira-issue-upload-file
       description: Upload a file attachments to an issue
@@ -269,7 +399,13 @@ tasks:
       attachmentName:
         simple: testfile.txt
       issueId:
+<<<<<<< HEAD
         simple: ${Ticket.Id}
+=======
+        complex:
+          root: Ticket
+          accessor: Id
+>>>>>>> upstream/master
       upload:
         simple: ${File.EntryID}
     separatecontext: false
@@ -283,6 +419,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "11":
     id: "11"
     taskid: 7dfb63bd-0b64-4085-89f9-02b5f14681d8
@@ -312,6 +449,41 @@ tasks:
       value3: {}
       value4: {}
     separatecontext: false
+=======
+    skipunavailable: false
+  "11":
+    id: "11"
+    taskid: f6afb873-a85a-48ab-87cc-c9e8c565efb0
+    type: condition
+    task:
+      id: f6afb873-a85a-48ab-87cc-c9e8c565efb0
+      version: -1
+      name: VerifyContextFields
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Ticket
+                accessor: Summary
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Ticket
+                accessor: Creator
+            iscontext: true
+>>>>>>> upstream/master
     view: |-
       {
         "position": {
@@ -322,12 +494,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "12":
     id: "12"
     taskid: 6c20a65d-722a-4780-85e0-29387a4b1cbc
     type: regular
     task:
       id: 6c20a65d-722a-4780-85e0-29387a4b1cbc
+=======
+    skipunavailable: false
+  "12":
+    id: "12"
+    taskid: 51934d70-54a0-410e-864c-6b430b902509
+    type: regular
+    task:
+      id: 51934d70-54a0-410e-864c-6b430b902509
+>>>>>>> upstream/master
       version: -1
       name: jira-issue-query
       description: Query Jira issues
@@ -355,12 +537,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "13":
     id: "13"
     taskid: 2f0b1862-ae7e-4998-8113-860f61bcfa54
     type: regular
     task:
       id: 2f0b1862-ae7e-4998-8113-860f61bcfa54
+=======
+    skipunavailable: false
+  "13":
+    id: "13"
+    taskid: f23d8452-44fa-48ae-8e23-dccb74753cd1
+    type: regular
+    task:
+      id: f23d8452-44fa-48ae-8e23-dccb74753cd1
+>>>>>>> upstream/master
       version: -1
       name: FileCreateAndUpload
       description: |
@@ -388,12 +580,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "14":
     id: "14"
     taskid: ee7d30df-0f17-4dae-8a32-764321ec87fb
     type: regular
     task:
       id: ee7d30df-0f17-4dae-8a32-764321ec87fb
+=======
+    skipunavailable: false
+  "14":
+    id: "14"
+    taskid: d3b08c82-12bc-47d3-8588-ce1fbd6df2c8
+    type: regular
+    task:
+      id: d3b08c82-12bc-47d3-8588-ce1fbd6df2c8
+>>>>>>> upstream/master
       version: -1
       name: jira-edit-issue
       script: '|||jira-edit-issue'
@@ -408,7 +610,13 @@ tasks:
       description: {}
       dueDate: {}
       issueId:
+<<<<<<< HEAD
         simple: ${Ticket.Id}
+=======
+        complex:
+          root: Ticket
+          accessor: Id
+>>>>>>> upstream/master
       issueJson: {}
       labels: {}
       priority: {}
@@ -427,6 +635,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "18":
     id: "18"
     taskid: bb6875d7-2c53-41df-8a62-81ffdfc5f91b
@@ -481,22 +690,77 @@ tasks:
       path:
         simple: Ticket.[0].Status
     separatecontext: false
+=======
+    skipunavailable: false
+  "18":
+    id: "18"
+    taskid: 41ea27ee-d174-4451-8764-a5522c086cf9
+    type: condition
+    task:
+      id: 41ea27ee-d174-4451-8764-a5522c086cf9
+      version: -1
+      name: VerifyContext - Summary and Status
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Ticket
+                accessor: Status
+            iscontext: true
+          right:
+            value:
+              simple: Done
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Ticket
+                accessor: Summary
+            iscontext: true
+          right:
+            value:
+              simple: please delete this issue
+>>>>>>> upstream/master
     view: |-
       {
         "position": {
           "x": 50,
+<<<<<<< HEAD
           "y": 2295
+=======
+          "y": 2120
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "22":
     id: "22"
     taskid: a539b38b-c417-4011-853e-98b5d24f5c4a
     type: regular
     task:
       id: a539b38b-c417-4011-853e-98b5d24f5c4a
+=======
+    skipunavailable: false
+  "22":
+    id: "22"
+    taskid: 7345691f-d65d-48ed-8164-0a81ef9151ba
+    type: regular
+    task:
+      id: 7345691f-d65d-48ed-8164-0a81ef9151ba
+>>>>>>> upstream/master
       version: -1
       name: jira-get-comments
       script: '|||jira-get-comments'
@@ -508,18 +772,29 @@ tasks:
       - "23"
     scriptarguments:
       issueId:
+<<<<<<< HEAD
         simple: ${Ticket.Id}
+=======
+        complex:
+          root: Ticket
+          accessor: Id
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
+<<<<<<< HEAD
           "y": 2820
+=======
+          "y": 2645
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "23":
     id: "23"
     taskid: 2d740c9c-5416-449d-821b-5853cb147503
@@ -542,28 +817,76 @@ tasks:
       path:
         simple: Ticket.Comment.Comment
     separatecontext: false
+=======
+    skipunavailable: false
+  "23":
+    id: "23"
+    taskid: 93d52d18-3500-425e-863a-faf106ca0e2f
+    type: condition
+    task:
+      id: 93d52d18-3500-425e-863a-faf106ca0e2f
+      version: -1
+      name: VerifyContext - comment
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Ticket
+                accessor: Comment.Comment
+            iscontext: true
+>>>>>>> upstream/master
     view: |-
       {
         "position": {
           "x": 50,
+<<<<<<< HEAD
           "y": 2995
+=======
+          "y": 2820
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "24":
     id: "24"
     taskid: 664772b5-0b10-4651-88bf-fd003f309c6d
     type: regular
     task:
       id: 664772b5-0b10-4651-88bf-fd003f309c6d
+=======
+    skipunavailable: false
+  "24":
+    id: "24"
+    taskid: e60b2abd-a5fc-48e3-842c-b86211852ff9
+    type: regular
+    task:
+      id: e60b2abd-a5fc-48e3-842c-b86211852ff9
+>>>>>>> upstream/master
       version: -1
       name: delete-issue
       script: '|||jira-delete-issue'
       type: regular
       iscommand: true
       brand: ""
+<<<<<<< HEAD
+=======
+    nexttasks:
+      '#none#':
+      - "27"
+>>>>>>> upstream/master
     scriptarguments:
       issueIdOrKey:
         simple: ${Ticket.Id}
@@ -572,18 +895,32 @@ tasks:
       {
         "position": {
           "x": 50,
+<<<<<<< HEAD
           "y": 3170
+=======
+          "y": 2995
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "25":
     id: "25"
     taskid: 0cb252db-9391-4295-8436-f2d85d71c72e
     type: regular
     task:
       id: 0cb252db-9391-4295-8436-f2d85d71c72e
+=======
+    skipunavailable: false
+  "25":
+    id: "25"
+    taskid: ef3c1cef-0bc4-4d27-894b-692991815cb0
+    type: regular
+    task:
+      id: ef3c1cef-0bc4-4d27-894b-692991815cb0
+>>>>>>> upstream/master
       version: -1
       name: jira-get-issue with getAttachments
       script: '|||jira-get-issue'
@@ -594,22 +931,38 @@ tasks:
       '#none#':
       - "26"
     scriptarguments:
+<<<<<<< HEAD
       getAttachments:
         simple: '"true"'
       headers: {}
       issueId:
         simple: ${Ticket.[0].Id}
+=======
+      expandLinks: {}
+      getAttachments:
+        simple: "true"
+      headers: {}
+      issueId:
+        complex:
+          root: Ticket
+          accessor: Id
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
+<<<<<<< HEAD
           "y": 2470
+=======
+          "y": 2295
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "26":
     id: "26"
     taskid: 6dfdac4d-b9f0-4bf7-855f-9de512952a96
@@ -618,6 +971,17 @@ tasks:
       id: 6dfdac4d-b9f0-4bf7-855f-9de512952a96
       version: -1
       name: check attachment name
+=======
+    skipunavailable: false
+  "26":
+    id: "26"
+    taskid: ddb712ce-511a-4ba0-83d4-d6efd53f86ac
+    type: condition
+    task:
+      id: ddb712ce-511a-4ba0-83d4-d6efd53f86ac
+      version: -1
+      name: check attachment name and issue attachment
+>>>>>>> upstream/master
       type: condition
       iscommand: false
       brand: ""
@@ -636,22 +1000,70 @@ tasks:
           right:
             value:
               simple: testfile.txt
+<<<<<<< HEAD
+=======
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Name
+            iscontext: true
+          right:
+            value:
+              simple: testfile.txt
+>>>>>>> upstream/master
     view: |-
       {
         "position": {
           "x": 50,
+<<<<<<< HEAD
           "y": 2645
+=======
+          "y": 2470
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+  "27":
+    id: "27"
+    taskid: 519dcf93-922e-488b-89b0-dedbe4080006
+    type: title
+    task:
+      id: 519dcf93-922e-488b-89b0-dedbe4080006
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3180
+>>>>>>> upstream/master
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+<<<<<<< HEAD
+=======
+    skipunavailable: false
+>>>>>>> upstream/master
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
+<<<<<<< HEAD
         "height": 3215,
+=======
+        "height": 3195,
+>>>>>>> upstream/master
         "width": 380,
         "x": 50,
         "y": 50
@@ -659,4 +1071,8 @@ view: |-
     }
   }
 inputs: []
+<<<<<<< HEAD
 outputs: []
+=======
+outputs: []
+>>>>>>> upstream/master

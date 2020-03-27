@@ -429,7 +429,12 @@ class Client:
                 'Bcc': bcc,
                 'Subject': subject,
                 'Body': body,
+<<<<<<< HEAD
                 'Mailbox': to
+=======
+                'Mailbox': to,
+                'BodyHTML': bodyHtml
+>>>>>>> upstream/master
             })
 
         headers = ['Type', 'ID', 'To', 'From', 'Cc', 'Bcc', 'Subject', 'Body', 'Labels',

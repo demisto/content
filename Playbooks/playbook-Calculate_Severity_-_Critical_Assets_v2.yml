@@ -5,15 +5,23 @@ name: Calculate Severity - Critical Assets v2
 description: |-
   Determines if a critical assest is associated with the invesigation. The playbook returns a severity level of "Critical" if at least one critical asset is associated with the investigation.
   Critical assets refer to: users, user groups, endpoints and endpoint groups.
+<<<<<<< HEAD
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
+=======
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+>>>>>>> upstream/master
     taskid: 3eded69b-617e-4212-86b7-2537474285f3
     type: start
     task:
       id: 3eded69b-617e-4212-86b7-2537474285f3
       version: -1
+<<<<<<< HEAD
       name: ""
       description: ""
       iscommand: false
@@ -21,6 +29,17 @@ tasks:
     nexttasks:
       '#none#':
       - "27"
+=======
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '21'
+      - '19'
+      - '20'
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
@@ -32,18 +51,28 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "8":
     id: "8"
     taskid: 2c486317-f20e-4b4a-86cc-91efde156f01
     type: condition
     task:
       id: 2c486317-f20e-4b4a-86cc-91efde156f01
+=======
+  '8':
+    id: '8'
+    taskid: 424aaa79-feb8-4351-8818-b15b2999b7a6
+    type: condition
+    task:
+      id: 424aaa79-feb8-4351-8818-b15b2999b7a6
+>>>>>>> upstream/master
       version: -1
       name: Do required user inputs exist?
       description: Checks whether there is at least one user involved in the incident
         and at least one user defined as a critical asset.
       type: condition
       iscommand: false
+<<<<<<< HEAD
       brand: ""
     nexttasks:
       '#default#':
@@ -56,11 +85,29 @@ tasks:
     - label: "yes"
       condition:
       - - operator: isExists
+=======
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '43'
+      'yes':
+      - '34'
+      - '50'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+>>>>>>> upstream/master
           left:
             value:
               simple: inputs.Account.Username
             iscontext: true
+<<<<<<< HEAD
       - - operator: isExists
+=======
+      - - operator: isNotEmpty
+>>>>>>> upstream/master
           left:
             value:
               simple: inputs.CriticalUsers
@@ -69,24 +116,38 @@ tasks:
       {
         "position": {
           "x": 1680,
+<<<<<<< HEAD
           "y": 375
+=======
+          "y": -5
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "9":
     id: "9"
     taskid: c9a031f3-ec9f-49f4-8f4a-871c4219e358
     type: condition
     task:
       id: c9a031f3-ec9f-49f4-8f4a-871c4219e358
+=======
+  '9':
+    id: '9'
+    taskid: ae8f3642-3d2e-46e9-80e7-806b6cfbeca3
+    type: condition
+    task:
+      id: ae8f3642-3d2e-46e9-80e7-806b6cfbeca3
+>>>>>>> upstream/master
       version: -1
       name: Is a critical user involved in the incident?
       description: Checks if at least one of the usernames involved in the incident
         is listed in the "CriticalUsers" list.
       type: condition
       iscommand: false
+<<<<<<< HEAD
       brand: ""
     nexttasks:
       '#default#':
@@ -99,6 +160,19 @@ tasks:
     - label: "yes"
       condition:
       - - operator: isExists
+=======
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '43'
+      'yes':
+      - '54'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+>>>>>>> upstream/master
           left:
             value:
               complex:
@@ -118,47 +192,77 @@ tasks:
       {
         "position": {
           "x": 1680,
+<<<<<<< HEAD
           "y": 800
+=======
+          "y": 420
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "10":
     id: "10"
+=======
+  '10':
+    id: '10'
+>>>>>>> upstream/master
     taskid: 3e771227-3718-4714-89ac-51e80b242f8b
     type: title
     task:
       id: 3e771227-3718-4714-89ac-51e80b242f8b
       version: -1
       name: Done
+<<<<<<< HEAD
       description: ""
       type: title
       iscommand: false
       brand: ""
+=======
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 612.5,
+<<<<<<< HEAD
           "y": 2011
+=======
+          "y": 1631
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "13":
     id: "13"
     taskid: 9a724e04-a52d-4b62-8de8-681ef944d8f3
     type: condition
     task:
       id: 9a724e04-a52d-4b62-8de8-681ef944d8f3
+=======
+  '13':
+    id: '13'
+    taskid: e94c9609-239f-4032-827a-8dc4b44b987a
+    type: condition
+    task:
+      id: e94c9609-239f-4032-827a-8dc4b44b987a
+>>>>>>> upstream/master
       version: -1
       name: Is a critical endpoint involved in the incident?
       description: Checks if at least one of the endpoints involved in the incident
         is listed in the "CriticalEndpoints" list.
       type: condition
       iscommand: false
+<<<<<<< HEAD
       brand: ""
     nexttasks:
       '#default#':
@@ -171,6 +275,19 @@ tasks:
     - label: "yes"
       condition:
       - - operator: isExists
+=======
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '42'
+      'yes':
+      - '51'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+>>>>>>> upstream/master
           left:
             value:
               complex:
@@ -190,20 +307,30 @@ tasks:
       {
         "position": {
           "x": -445,
+<<<<<<< HEAD
           "y": 800
+=======
+          "y": 420
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "19":
     id: "19"
+=======
+  '19':
+    id: '19'
+>>>>>>> upstream/master
     taskid: f62d3761-4856-44ee-80f1-668a0d53ce9d
     type: title
     task:
       id: f62d3761-4856-44ee-80f1-668a0d53ce9d
       version: -1
       name: Critical Users
+<<<<<<< HEAD
       description: ""
       type: title
       iscommand: false
@@ -211,25 +338,44 @@ tasks:
     nexttasks:
       '#none#':
       - "8"
+=======
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '8'
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1680,
+<<<<<<< HEAD
           "y": 165
+=======
+          "y": -215
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "20":
     id: "20"
+=======
+  '20':
+    id: '20'
+>>>>>>> upstream/master
     taskid: fd271425-66a0-48f9-8c71-fe1032820013
     type: title
     task:
       id: fd271425-66a0-48f9-8c71-fe1032820013
       version: -1
       name: Critical Endpoints
+<<<<<<< HEAD
       description: ""
       type: title
       iscommand: false
@@ -237,25 +383,44 @@ tasks:
     nexttasks:
       '#none#':
       - "37"
+=======
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '37'
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
           "x": -445,
+<<<<<<< HEAD
           "y": 165
+=======
+          "y": -215
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "21":
     id: "21"
+=======
+  '21':
+    id: '21'
+>>>>>>> upstream/master
     taskid: c59f6491-e15c-43aa-86ed-dad7d70cdf22
     type: title
     task:
       id: c59f6491-e15c-43aa-86ed-dad7d70cdf22
       version: -1
       name: Critical Groups
+<<<<<<< HEAD
       description: ""
       type: title
       iscommand: false
@@ -264,19 +429,37 @@ tasks:
       '#none#':
       - "36"
       - "35"
+=======
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '27'
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 612.5,
+<<<<<<< HEAD
           "y": 500
+=======
+          "y": -245
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "22":
     id: "22"
+=======
+  '22':
+    id: '22'
+>>>>>>> upstream/master
     taskid: d199396a-b6cd-49e6-8eed-f8c40dbf6022
     type: regular
     task:
@@ -287,10 +470,17 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
+<<<<<<< HEAD
       brand: ""
     nexttasks:
       '#none#':
       - "23"
+=======
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '23'
+>>>>>>> upstream/master
     scriptarguments:
       append: {}
       key:
@@ -338,24 +528,38 @@ tasks:
       {
         "position": {
           "x": 232.5,
+<<<<<<< HEAD
           "y": 957
+=======
+          "y": 577
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "23":
     id: "23"
     taskid: 36611410-f7a4-45d6-82a0-9bc851628f66
     type: condition
     task:
       id: 36611410-f7a4-45d6-82a0-9bc851628f66
+=======
+  '23':
+    id: '23'
+    taskid: 3f7ea2b9-d2c9-400c-8972-e64ec0ec7863
+    type: condition
+    task:
+      id: 3f7ea2b9-d2c9-400c-8972-e64ec0ec7863
+>>>>>>> upstream/master
       version: -1
       name: Is a critical endpoint group involved in the incident?
       description: Checks if at least one critical endpoint group is involved in the
         incident.
       type: condition
       iscommand: false
+<<<<<<< HEAD
       brand: ""
     nexttasks:
       '#default#':
@@ -368,6 +572,19 @@ tasks:
     - label: "yes"
       condition:
       - - operator: isExists
+=======
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '44'
+      'yes':
+      - '52'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+>>>>>>> upstream/master
           left:
             value:
               complex:
@@ -387,14 +604,23 @@ tasks:
       {
         "position": {
           "x": 232.5,
+<<<<<<< HEAD
           "y": 1122
+=======
+          "y": 742
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "24":
     id: "24"
+=======
+  '24':
+    id: '24'
+>>>>>>> upstream/master
     taskid: 7160e3e9-7200-4ba5-808f-ac28e7ef86f6
     type: condition
     task:
@@ -404,6 +630,7 @@ tasks:
       description: Checks if there is at least one user group involved in the incident.
       type: condition
       iscommand: false
+<<<<<<< HEAD
       brand: ""
     nexttasks:
       '#default#':
@@ -413,6 +640,17 @@ tasks:
     separatecontext: false
     conditions:
     - label: "yes"
+=======
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '44'
+      'yes':
+      - '29'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+>>>>>>> upstream/master
       condition:
       - - operator: isExists
           left:
@@ -425,14 +663,23 @@ tasks:
       {
         "position": {
           "x": 992.5,
+<<<<<<< HEAD
           "y": 765
+=======
+          "y": 385
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "25":
     id: "25"
+=======
+  '25':
+    id: '25'
+>>>>>>> upstream/master
     taskid: babf3f91-5d9c-47e8-870d-c236b9c68346
     type: condition
     task:
@@ -442,6 +689,7 @@ tasks:
       description: Checks whether there is at least one group for an involved endpoint.
       type: condition
       iscommand: false
+<<<<<<< HEAD
       brand: ""
     nexttasks:
       '#default#':
@@ -451,6 +699,17 @@ tasks:
     separatecontext: false
     conditions:
     - label: "yes"
+=======
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '44'
+      'yes':
+      - '22'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+>>>>>>> upstream/master
       condition:
       - - operator: isExists
           left:
@@ -463,14 +722,23 @@ tasks:
       {
         "position": {
           "x": 232.5,
+<<<<<<< HEAD
           "y": 765
+=======
+          "y": 385
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "26":
     id: "26"
+=======
+  '26':
+    id: '26'
+>>>>>>> upstream/master
     taskid: a0e5a630-df39-4346-846b-d67653fee2ec
     type: regular
     task:
@@ -481,12 +749,20 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
+<<<<<<< HEAD
       brand: ""
     nexttasks:
       '#none#':
       - "19"
       - "20"
       - "21"
+=======
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '36'
+      - '35'
+>>>>>>> upstream/master
     scriptarguments:
       append: {}
       key:
@@ -506,24 +782,38 @@ tasks:
       {
         "position": {
           "x": 612.5,
+<<<<<<< HEAD
           "y": -30
+=======
+          "y": 90
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "27":
     id: "27"
     taskid: 497768b6-c9ad-4dbf-8fbc-72d4a4c2c81f
     type: condition
     task:
       id: 497768b6-c9ad-4dbf-8fbc-72d4a4c2c81f
+=======
+  '27':
+    id: '27'
+    taskid: f43d598e-ba8f-4dc0-8405-46fbbd12ec79
+    type: condition
+    task:
+      id: f43d598e-ba8f-4dc0-8405-46fbbd12ec79
+>>>>>>> upstream/master
       version: -1
       name: Are there user-defined critical groups?
       description: Checks if there are any user-defined critical groups in the playbook
         inputs.
       type: condition
       iscommand: false
+<<<<<<< HEAD
       brand: ""
     nexttasks:
       '#default#':
@@ -535,6 +825,19 @@ tasks:
     - label: "yes"
       condition:
       - - operator: isExists
+=======
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '44'
+      'yes':
+      - '26'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+>>>>>>> upstream/master
           left:
             value:
               simple: inputs.CriticalGroups
@@ -543,14 +846,23 @@ tasks:
       {
         "position": {
           "x": 612.5,
+<<<<<<< HEAD
           "y": -240
+=======
+          "y": -100
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "29":
     id: "29"
+=======
+  '29':
+    id: '29'
+>>>>>>> upstream/master
     taskid: 80d01617-682f-4dbb-8e9a-5bb7660d03b7
     type: regular
     task:
@@ -561,10 +873,17 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
+<<<<<<< HEAD
       brand: ""
     nexttasks:
       '#none#':
       - "30"
+=======
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '30'
+>>>>>>> upstream/master
     scriptarguments:
       append: {}
       key:
@@ -612,23 +931,37 @@ tasks:
       {
         "position": {
           "x": 992.5,
+<<<<<<< HEAD
           "y": 957
+=======
+          "y": 577
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "30":
     id: "30"
     taskid: 19675484-6881-45fb-8785-ba3c942921d9
     type: condition
     task:
       id: 19675484-6881-45fb-8785-ba3c942921d9
+=======
+  '30':
+    id: '30'
+    taskid: 09afd6ef-f9b2-4be1-80a6-f294243dc89a
+    type: condition
+    task:
+      id: 09afd6ef-f9b2-4be1-80a6-f294243dc89a
+>>>>>>> upstream/master
       version: -1
       name: Is a critical user group involved in the incident?
       description: Checks whether at least one user group is involved in the incident.
       type: condition
       iscommand: false
+<<<<<<< HEAD
       brand: ""
     nexttasks:
       '#default#':
@@ -641,6 +974,19 @@ tasks:
     - label: "yes"
       condition:
       - - operator: isExists
+=======
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '44'
+      'yes':
+      - '53'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+>>>>>>> upstream/master
           left:
             value:
               complex:
@@ -660,14 +1006,23 @@ tasks:
       {
         "position": {
           "x": 992.5,
+<<<<<<< HEAD
           "y": 1122
+=======
+          "y": 742
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "34":
     id: "34"
+=======
+  '34':
+    id: '34'
+>>>>>>> upstream/master
     taskid: b93fb183-5e45-442b-8083-6706d301202c
     type: regular
     task:
@@ -678,10 +1033,17 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
+<<<<<<< HEAD
       brand: ""
     nexttasks:
       '#none#':
       - "9"
+=======
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+>>>>>>> upstream/master
     scriptarguments:
       append: {}
       key:
@@ -698,20 +1060,30 @@ tasks:
       {
         "position": {
           "x": 1890,
+<<<<<<< HEAD
           "y": 615
+=======
+          "y": 235
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "35":
     id: "35"
+=======
+  '35':
+    id: '35'
+>>>>>>> upstream/master
     taskid: 53feba0a-5f2f-410c-882f-b95cbd9c5fbb
     type: title
     task:
       id: 53feba0a-5f2f-410c-882f-b95cbd9c5fbb
       version: -1
       name: Critical Endpoint Groups
+<<<<<<< HEAD
       description: ""
       type: title
       iscommand: false
@@ -719,25 +1091,44 @@ tasks:
     nexttasks:
       '#none#':
       - "25"
+=======
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '25'
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 232.5,
+<<<<<<< HEAD
           "y": 645
+=======
+          "y": 265
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "36":
     id: "36"
+=======
+  '36':
+    id: '36'
+>>>>>>> upstream/master
     taskid: 37f291a8-8336-412f-8f0f-26bfa0fa7e7d
     type: title
     task:
       id: 37f291a8-8336-412f-8f0f-26bfa0fa7e7d
       version: -1
       name: Critical User Groups
+<<<<<<< HEAD
       description: ""
       type: title
       iscommand: false
@@ -745,29 +1136,52 @@ tasks:
     nexttasks:
       '#none#':
       - "24"
+=======
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '24'
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 992.5,
+<<<<<<< HEAD
           "y": 645
+=======
+          "y": 265
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "37":
     id: "37"
     taskid: 77a335ad-2d43-4d77-8cfe-013184f3fcb0
     type: condition
     task:
       id: 77a335ad-2d43-4d77-8cfe-013184f3fcb0
+=======
+  '37':
+    id: '37'
+    taskid: d0e85e0c-9d5f-46a2-8f7d-37c5cccfb2af
+    type: condition
+    task:
+      id: d0e85e0c-9d5f-46a2-8f7d-37c5cccfb2af
+>>>>>>> upstream/master
       version: -1
       name: Do required endpoint inputs exist?
       description: Checks whether there is at least one endpoint involved in the incident
         and at least one hostname defined as a critical asset.
       type: condition
       iscommand: false
+<<<<<<< HEAD
       brand: ""
     nexttasks:
       '#default#':
@@ -780,13 +1194,31 @@ tasks:
     - label: "yes"
       condition:
       - - operator: isExists
+=======
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '42'
+      'yes':
+      - '39'
+      - '49'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+>>>>>>> upstream/master
           left:
             value:
               complex:
                 root: inputs.Endpoint
                 accessor: Hostname
             iscontext: true
+<<<<<<< HEAD
       - - operator: isExists
+=======
+      - - operator: isNotEmpty
+>>>>>>> upstream/master
           left:
             value:
               simple: inputs.CriticalEndpoints
@@ -795,14 +1227,23 @@ tasks:
       {
         "position": {
           "x": -445,
+<<<<<<< HEAD
           "y": 375
+=======
+          "y": -5
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "39":
     id: "39"
+=======
+  '39':
+    id: '39'
+>>>>>>> upstream/master
     taskid: 86e2054c-c8b2-4c83-8d2b-40afd339203a
     type: regular
     task:
@@ -813,10 +1254,17 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
+<<<<<<< HEAD
       brand: ""
     nexttasks:
       '#none#':
       - "13"
+=======
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+>>>>>>> upstream/master
     scriptarguments:
       append: {}
       key:
@@ -833,20 +1281,30 @@ tasks:
       {
         "position": {
           "x": -260,
+<<<<<<< HEAD
           "y": 600
+=======
+          "y": 220
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "42":
     id: "42"
+=======
+  '42':
+    id: '42'
+>>>>>>> upstream/master
     taskid: fab539ae-ff25-486e-82b4-9c94f0426de4
     type: title
     task:
       id: fab539ae-ff25-486e-82b4-9c94f0426de4
       version: -1
       name: No Critical Endpoints
+<<<<<<< HEAD
       description: ""
       type: title
       iscommand: false
@@ -854,25 +1312,44 @@ tasks:
     nexttasks:
       '#none#':
       - "10"
+=======
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '10'
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
           "x": -875,
+<<<<<<< HEAD
           "y": 1580
+=======
+          "y": 1200
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "43":
     id: "43"
+=======
+  '43':
+    id: '43'
+>>>>>>> upstream/master
     taskid: 33b118b1-2ecc-47bc-8eed-ce8e53b5a160
     type: title
     task:
       id: 33b118b1-2ecc-47bc-8eed-ce8e53b5a160
       version: -1
       name: No Critical Users
+<<<<<<< HEAD
       description: ""
       type: title
       iscommand: false
@@ -880,25 +1357,44 @@ tasks:
     nexttasks:
       '#none#':
       - "10"
+=======
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '10'
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 2140,
+<<<<<<< HEAD
           "y": 1580
+=======
+          "y": 1200
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "44":
     id: "44"
+=======
+  '44':
+    id: '44'
+>>>>>>> upstream/master
     taskid: 008bea76-3889-4e55-894b-058dbb6dda36
     type: title
     task:
       id: 008bea76-3889-4e55-894b-058dbb6dda36
       version: -1
       name: No Critical Groups
+<<<<<<< HEAD
       description: ""
       type: title
       iscommand: false
@@ -906,19 +1402,37 @@ tasks:
     nexttasks:
       '#none#':
       - "10"
+=======
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '10'
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 612.5,
+<<<<<<< HEAD
           "y": 1325
+=======
+          "y": 945
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "46":
     id: "46"
+=======
+  '46':
+    id: '46'
+>>>>>>> upstream/master
     taskid: 7f151914-046a-4f0a-8594-90ac5447ddca
     type: regular
     task:
@@ -929,10 +1443,17 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
+<<<<<<< HEAD
       brand: ""
     nexttasks:
       '#none#':
       - "55"
+=======
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '55'
+>>>>>>> upstream/master
     scriptarguments:
       append: {}
       key:
@@ -945,14 +1466,23 @@ tasks:
       {
         "position": {
           "x": 612.5,
+<<<<<<< HEAD
           "y": 1645
+=======
+          "y": 1265
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "49":
     id: "49"
+=======
+  '49':
+    id: '49'
+>>>>>>> upstream/master
     taskid: 5a9cf941-59dd-4d46-8153-8b76a30c4168
     type: regular
     task:
@@ -963,10 +1493,17 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
+<<<<<<< HEAD
       brand: ""
     nexttasks:
       '#none#':
       - "13"
+=======
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+>>>>>>> upstream/master
     scriptarguments:
       append: {}
       key:
@@ -987,14 +1524,23 @@ tasks:
       {
         "position": {
           "x": -670,
+<<<<<<< HEAD
           "y": 600
+=======
+          "y": 220
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "50":
     id: "50"
+=======
+  '50':
+    id: '50'
+>>>>>>> upstream/master
     taskid: 0db98f70-66d9-4ba3-8616-5af419630189
     type: regular
     task:
@@ -1005,10 +1551,17 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
+<<<<<<< HEAD
       brand: ""
     nexttasks:
       '#none#':
       - "9"
+=======
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+>>>>>>> upstream/master
     scriptarguments:
       append: {}
       key:
@@ -1029,14 +1582,23 @@ tasks:
       {
         "position": {
           "x": 1480,
+<<<<<<< HEAD
           "y": 615
+=======
+          "y": 235
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "51":
     id: "51"
+=======
+  '51':
+    id: '51'
+>>>>>>> upstream/master
     taskid: a680f6b3-2306-407d-8a2b-a8a7bf1a4df6
     type: regular
     task:
@@ -1048,6 +1610,7 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
+<<<<<<< HEAD
       brand: ""
     nexttasks:
       '#none#':
@@ -1055,6 +1618,15 @@ tasks:
     scriptarguments:
       append:
         simple: "true"
+=======
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '46'
+    scriptarguments:
+      append:
+        simple: 'true'
+>>>>>>> upstream/master
       key:
         simple: CriticalAssets.CriticalEndpoints
       value:
@@ -1076,14 +1648,23 @@ tasks:
       {
         "position": {
           "x": -445,
+<<<<<<< HEAD
           "y": 1122
+=======
+          "y": 742
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "52":
     id: "52"
+=======
+  '52':
+    id: '52'
+>>>>>>> upstream/master
     taskid: 7c4d5151-dc5e-40c3-8697-440b4e3e9cae
     type: regular
     task:
@@ -1095,6 +1676,7 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
+<<<<<<< HEAD
       brand: ""
     nexttasks:
       '#none#':
@@ -1102,6 +1684,15 @@ tasks:
     scriptarguments:
       append:
         simple: "true"
+=======
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '46'
+    scriptarguments:
+      append:
+        simple: 'true'
+>>>>>>> upstream/master
       key:
         simple: CriticalAssets.CriticalEndpointGroups
       value:
@@ -1123,14 +1714,23 @@ tasks:
       {
         "position": {
           "x": 232.5,
+<<<<<<< HEAD
           "y": 1420
+=======
+          "y": 1040
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "53":
     id: "53"
+=======
+  '53':
+    id: '53'
+>>>>>>> upstream/master
     taskid: 82bd69bb-ecc0-4438-8aa3-79626adf62a9
     type: regular
     task:
@@ -1142,6 +1742,7 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
+<<<<<<< HEAD
       brand: ""
     nexttasks:
       '#none#':
@@ -1149,6 +1750,15 @@ tasks:
     scriptarguments:
       append:
         simple: "true"
+=======
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '46'
+    scriptarguments:
+      append:
+        simple: 'true'
+>>>>>>> upstream/master
       key:
         simple: CriticalAssets.UserGroups
       value:
@@ -1169,14 +1779,23 @@ tasks:
       {
         "position": {
           "x": 992.5,
+<<<<<<< HEAD
           "y": 1420
+=======
+          "y": 1040
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "54":
     id: "54"
+=======
+  '54':
+    id: '54'
+>>>>>>> upstream/master
     taskid: 40a52d56-8468-4161-8832-9f3a8edbdc20
     type: regular
     task:
@@ -1188,6 +1807,7 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
+<<<<<<< HEAD
       brand: ""
     nexttasks:
       '#none#':
@@ -1195,6 +1815,15 @@ tasks:
     scriptarguments:
       append:
         simple: "true"
+=======
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '46'
+    scriptarguments:
+      append:
+        simple: 'true'
+>>>>>>> upstream/master
       key:
         simple: CriticalAssets.Users
       value:
@@ -1216,14 +1845,23 @@ tasks:
       {
         "position": {
           "x": 1680,
+<<<<<<< HEAD
           "y": 1122
+=======
+          "y": 742
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "55":
     id: "55"
+=======
+  '55':
+    id: '55'
+>>>>>>> upstream/master
     taskid: 9337a013-1493-4943-8d8f-42fe0feb437e
     type: regular
     task:
@@ -1235,10 +1873,17 @@ tasks:
       scriptName: PopulateCriticalAssets
       type: regular
       iscommand: false
+<<<<<<< HEAD
       brand: ""
     nexttasks:
       '#none#':
       - "10"
+=======
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '10'
+>>>>>>> upstream/master
     scriptarguments:
       critical_assets:
         complex:
@@ -1251,7 +1896,11 @@ tasks:
       {
         "position": {
           "x": 612.5,
+<<<<<<< HEAD
           "y": 1820
+=======
+          "y": 1440
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -1261,29 +1910,47 @@ view: |-
   {
     "linkLabelsPosition": {
       "13_42_#default#": 0.34,
+<<<<<<< HEAD
       "13_46_yes": 0.2,
       "23_44_#default#": 0.54,
       "23_46_yes": 0.27,
+=======
+      "13_51_yes": 0.53,
+      "23_44_#default#": 0.52,
+>>>>>>> upstream/master
       "23_52_yes": 0.58,
       "24_29_yes": 0.55,
       "24_44_#default#": 0.32,
       "25_22_yes": 0.61,
       "25_44_#default#": 0.33,
       "27_26_yes": 0.56,
+<<<<<<< HEAD
       "27_44_#default#": 0.2,
       "30_44_#default#": 0.53,
       "30_46_yes": 0.22,
+=======
+      "27_44_#default#": 0.58,
+      "30_44_#default#": 0.58,
+>>>>>>> upstream/master
       "37_39_yes": 0.55,
       "37_42_#default#": 0.45,
       "8_34_yes": 0.34,
       "8_43_#default#": 0.45,
       "8_50_yes": 0.33,
       "9_43_#default#": 0.36,
+<<<<<<< HEAD
       "9_46_yes": 0.1
     },
     "paper": {
       "dimensions": {
         "height": 2476,
+=======
+      "9_54_yes": 0.43
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2096,
+>>>>>>> upstream/master
         "width": 3395,
         "x": -875,
         "y": -400

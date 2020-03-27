@@ -1,0 +1,1 @@
+Pack for the generic Plain Text feed integration.

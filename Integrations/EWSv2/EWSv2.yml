@@ -45,7 +45,11 @@ configuration:
   required: false
   type: 13
 - display: |-
+<<<<<<< HEAD
     ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
+=======
+    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
+>>>>>>> upstream/master
     ‎                                           Manual Mode
     Exchange Server Hostname or IP address
   name: ewsServer
@@ -65,7 +69,11 @@ configuration:
   required: false
   type: 8
 - display: |-
+<<<<<<< HEAD
     ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
+=======
+    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
+>>>>>>> upstream/master
     ‎                                         Advanced Mode
     Override Authentication Type (NTLM, Basic, or Digest).
   name: authType

@@ -1,0 +1,44 @@
+commonfields:
+  id: SetAndHandleEmpty
+  version: -1
+name: SetAndHandleEmpty
+fromversion: 4.5.0
+type: python
+tags:
+- Utility
+comment: Checks if the specified value exists in context.
+  If the value exists, it will be set in context, otherwise
+  no value will be set in context.
+enabled: true
+args:
+- name: key
+  required: true
+  default: true
+  description: The key to set in context.
+- name: value
+  description: The value of the key to set in context.
+    The value is usually a DQ expression. Can be an array.
+  isArray: true
+- name: append
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Whether to append the new context key to the
+    existing context key. If "false", then the existing context
+    key will be overwritten with the new context key.
+- name: stringify
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Whether to save the argument as a string. The default value is "false".
+  defaultValue: "false"
+scripttarget: 0
+script: '-'
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.7.4.2728
+runas: DBotWeakRole
+tests:
+  - SetAndHandleEmpty test

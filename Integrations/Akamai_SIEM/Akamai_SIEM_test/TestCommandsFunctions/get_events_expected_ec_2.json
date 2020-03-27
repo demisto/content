@@ -1,0 +1,75 @@
+{
+  "Akamai.SIEM(val.HttpMessage.RequestId && val.HttpMessage.RequestId == obj.HttpMessage.RequestId)": [
+    {
+      "AttackData": {
+        "ConfigID": "50170",
+        "PolicyID": "1234",
+        "ClientIP": "8.8.8.8"
+      },
+      "HttpMessage": {
+        "RequestId": "3fbce3e",
+        "Start": "1576002507",
+        "Protocol": "HTTP/1.1",
+        "Method": "HEAD",
+        "Host": "google.com",
+        "Port": "80",
+        "Path": "index",
+        "RequestHeaders": "Test",
+        "Status": "403",
+        "Bytes": "0",
+        "ResponseHeaders": "Server"
+      },
+      "Geo": {
+        "Continent": "NA",
+        "Country": "US",
+        "City": "LOSANGELES",
+        "RegionCode": "CA",
+        "Asn": "5650"
+      }
+    },
+    {
+      "AttackData": {
+        "ConfigID": "50170",
+        "PolicyID": "1234",
+        "ClientIP": "8.8.8.8"
+      },
+      "HttpMessage": {
+        "RequestId": "3fbd757",
+        "Start": "1576002506",
+        "Protocol": "HTTP/1.1",
+        "Method": "HEAD",
+        "Host": "google.com",
+        "Port": "80",
+        "Path": "index",
+        "RequestHeaders": "Test",
+        "Status": "403",
+        "Bytes": "0",
+        "ResponseHeaders": "Server"
+      },
+      "Geo": {
+        "Continent": "NA",
+        "Country": "US",
+        "City": "LOSANGELES",
+        "RegionCode": "CA",
+        "Asn": "5650"
+      }
+    }
+  ]
+,
+"IP(val.Address && val.Address == obj.Address)": [
+{
+"Address": "8.8.8.8",
+"ASN": "5650",
+"Geo": {
+"Country": "US"
+}
+},
+{
+"Address": "8.8.8.8",
+"ASN": "5650",
+"Geo": {
+"Country": "US"
+}
+}
+]
+}

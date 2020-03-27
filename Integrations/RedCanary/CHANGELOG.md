@@ -1,6 +1,15 @@
 ## [Unreleased]
 
 
+<<<<<<< HEAD
+=======
+## [20.3.3] - 2020-03-18
+-
+
+## [20.2.0] - 2020-02-04
+Fixed fetch-incidents to fetch detections properly.
+
+>>>>>>> upstream/master
 ## [19.11.1] - 2019-11-26
 Added Reason, EndpointID, and EndpointUserID to detections context.
 

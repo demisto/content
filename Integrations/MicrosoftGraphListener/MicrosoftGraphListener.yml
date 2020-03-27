@@ -22,7 +22,11 @@ configuration:
   name: isFetch
   required: false
   type: 8
+<<<<<<< HEAD
 - display: Email address from which to fetch incidents  (e.g. "example@demisto.com")
+=======
+- display: Email address from which to fetch incidents (e.g. "example@demisto.com")
+>>>>>>> upstream/master
   name: mailbox_to_fetch
   required: true
   type: 0
@@ -38,7 +42,11 @@ configuration:
   required: false
   type: 0
 - defaultvalue: '50'
+<<<<<<< HEAD
   display: Maximum number of emails to pull per fetch.
+=======
+  display: Maximum number of emails to pull per fetch
+>>>>>>> upstream/master
   name: fetch_limit
   required: false
   type: 0
@@ -50,27 +58,52 @@ configuration:
   name: proxy
   required: false
   type: 8
+<<<<<<< HEAD
 description: Microsoft Graph allows Demisto authorized access to a user's Outlook
   mail data in a personal or organization account.
+=======
+- display: Use a self-deployed Azure application
+  name: self_deployed
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: Microsoft Graph grants Demisto authorized access to a user's Microsoft Outlook
+  mail data in a personal account or organization account.
+>>>>>>> upstream/master
 display: Microsoft Graph Mail Single User
 name: Microsoft Graph Mail Single User
 script:
   commands:
   - arguments:
     - default: false
+<<<<<<< HEAD
       description: A comma separated list of email addresses for the 'to' field.
+=======
+      description: A comma-separated list of email addresses for the 'to' field.
+>>>>>>> upstream/master
       isArray: true
       name: to
       required: false
       secret: false
     - default: false
+<<<<<<< HEAD
       description: A comma separated list of email addresses for the 'cc' field.
+=======
+      description: A comma-separated list of email addresses for the 'cc' field.
+>>>>>>> upstream/master
       isArray: true
       name: cc
       required: false
       secret: false
     - default: false
+<<<<<<< HEAD
       description: A comma separated list of email addresses for the 'bcc' field.
+=======
+      description: A comma-separated list of email addresses for the 'bcc' field.
+>>>>>>> upstream/master
       isArray: true
       name: bcc
       required: false
@@ -101,7 +134,12 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: notFlagged
+<<<<<<< HEAD
       description: 'The flag value that indicates the status for the draft. Can be: "notFlagged", "complete", or "flagged".'
+=======
+      description: 'The flag value that indicates the status of the draft. Can be:
+        "notFlagged", "complete", or "flagged".'
+>>>>>>> upstream/master
       isArray: false
       name: flag
       predefined:
@@ -123,38 +161,63 @@ script:
       required: false
       secret: false
     - default: false
+<<<<<<< HEAD
       description: 'A comma separated list of additional headers in the format, headerName:headerValue.
         For example, "headerName1:headerValue1,headerName2:headerValue2".'
+=======
+      description: A comma-separated list of additional headers in the format, headerName:headerValue.
+        For example, "headerName1:headerValue1,headerName2:headerValue2".
+>>>>>>> upstream/master
       isArray: true
       name: headers
       required: false
       secret: false
     - default: false
+<<<<<<< HEAD
       description: 'A comma separated list of War Room entry IDs that contain files, which are used
         to attach files to the draft. For example, attachIDs=15@8,19@8.'
+=======
+      description: A comma-separated list of War Room entry IDs that contain files,
+        which are used to attach files to the draft. For example, attachIDs=15@8,19@8.
+>>>>>>> upstream/master
       isArray: true
       name: attach_ids
       required: false
       secret: false
     - default: false
+<<<<<<< HEAD
       description: A comma separated list of names of attachments to be displayed in the draft. 
         Must be the same number of elements as attachIDs.
+=======
+      description: A comma-separated list of names of attachments to be displayed
+        in the draft. Must be the same number of elements as attachIDs.
+>>>>>>> upstream/master
       isArray: true
       name: attach_names
       required: false
       secret: false
     - default: false
+<<<<<<< HEAD
       description: A comma separated list of CIDs to embed attachments within the email itself.
+=======
+      description: A comma-separated list of CIDs to embed attachments within the actual
+        email.
+>>>>>>> upstream/master
       isArray: true
       name: attach_cids
       required: false
       secret: false
     deprecated: false
+<<<<<<< HEAD
     description: Creates a draft message in a user's mailbox.
+=======
+    description: Creates a draft message in the specified user's mailbox.
+>>>>>>> upstream/master
     execution: false
     name: msgraph-mail-create-draft
     outputs:
     - contextPath: MicrosoftGraph.Draft.Cc
+<<<<<<< HEAD
       description: Cc of the draft email.
       type: String
     - contextPath: MicrosoftGraph.Draft.IsRead
@@ -162,12 +225,25 @@ script:
       type: String
     - contextPath: MicrosoftGraph.Draft.Bcc
       description: The Bcc of the draft email.
+=======
+      description: The CC recipients of the draft email.
+      type: String
+    - contextPath: MicrosoftGraph.Draft.IsRead
+      description: The "Is read" status of the draft email.
+      type: String
+    - contextPath: MicrosoftGraph.Draft.Bcc
+      description: The BCC recipients of the draft email.
+>>>>>>> upstream/master
       type: String
     - contextPath: MicrosoftGraph.Draft.Body
       description: The body of the draft email.
       type: String
     - contextPath: MicrosoftGraph.Draft.MessageID
+<<<<<<< HEAD
       description: The message id of the draft email.
+=======
+      description: The message ID of the draft email.
+>>>>>>> upstream/master
       type: String
     - contextPath: MicrosoftGraph.Draft.SentTime
       description: The created time of the draft email.
@@ -176,7 +252,11 @@ script:
       description: The headers of the draft email.
       type: String
     - contextPath: MicrosoftGraph.Draft.From
+<<<<<<< HEAD
       description: The from of the draft email.
+=======
+      description: The user that sent the draft email.
+>>>>>>> upstream/master
       type: String
     - contextPath: MicrosoftGraph.Draft.Subject
       description: The subject of the draft email.
@@ -197,13 +277,21 @@ script:
       description: The modified time of the draft email.
       type: Date
     - contextPath: MicrosoftGraph.Draft.IsDraft
+<<<<<<< HEAD
       description: Indicates whether it is a draft email.
+=======
+      description: Whether it is a draft email.
+>>>>>>> upstream/master
       type: Boolean
     - contextPath: MicrosoftGraph.Draft.ID
       description: The ID of the draft email.
       type: String
     - contextPath: MicrosoftGraph.Draft.To
+<<<<<<< HEAD
       description: The to recipients of the draft.
+=======
+      description: The 'to' recipients of the draft email.
+>>>>>>> upstream/master
       type: String
     - contextPath: MicrosoftGraph.Draft.BodyType
       description: The body type of the draft email.
@@ -213,19 +301,31 @@ script:
       type: String
   - arguments:
     - default: false
+<<<<<<< HEAD
       description: A comma separated list of email addresses for the 'to' field.
+=======
+      description: A comma-separated list of email addresses for the 'to' field.
+>>>>>>> upstream/master
       isArray: true
       name: to
       required: false
       secret: false
     - default: false
+<<<<<<< HEAD
       description: A comma separated list of email addresses for the 'cc' field.
+=======
+      description: A comma-separated list of email addresses for the 'cc' field.
+>>>>>>> upstream/master
       isArray: true
       name: cc
       required: false
       secret: false
     - default: false
+<<<<<<< HEAD
       description: A comma separated list of email addresses for the 'bcc' field.
+=======
+      description: A comma-separated list of email addresses for the 'bcc' field.
+>>>>>>> upstream/master
       isArray: true
       name: bcc
       required: false
@@ -255,7 +355,12 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: notFlagged
+<<<<<<< HEAD
       description: 'The flag value that indicates the status for the email. Can be: "notFlagged", "complete", or "flagged".'
+=======
+      description: 'The flag value that indicates the status for the email. Can be:
+        "notFlagged", "complete", or "flagged".'
+>>>>>>> upstream/master
       isArray: false
       name: flag
       predefined:
@@ -277,28 +382,47 @@ script:
       required: false
       secret: false
     - default: false
+<<<<<<< HEAD
       description: 'A comma separated list of additional headers in the format: headerName:headerValue.
+=======
+      description: 'A comma-separated list of additional headers in the format: headerName:headerValue.
+>>>>>>> upstream/master
         For example: "headerName1:headerValue1,headerName2:headerValue2".'
       isArray: true
       name: headers
       required: false
       secret: false
     - default: false
+<<<<<<< HEAD
       description: 'A comma separated list of War Room entry IDs that contain files, which are used
         to attach files for the email to send. For example, attachIDs=15@8,19@8.'
+=======
+      description: A comma-separated list of War Room entry IDs that contain files,
+        which are used to attach files for the email to send. For example, attachIDs=15@8,19@8.
+>>>>>>> upstream/master
       isArray: true
       name: attach_ids
       required: false
       secret: false
     - default: false
+<<<<<<< HEAD
       description: A comma separated list of names of attachments to be displayed in the email
         to send. Must be the same number of elements as attachIDs.
+=======
+      description: A comma-separated list of names of attachments to display
+        in the email to send. Must be the same number of elements as attachIDs.
+>>>>>>> upstream/master
       isArray: true
       name: attach_names
       required: false
       secret: false
     - default: false
+<<<<<<< HEAD
       description: A comma separated list of CIDs to embed attachments within the email.
+=======
+      description: A comma-separated list of CIDs to embed attachments within the
+        actual email.
+>>>>>>> upstream/master
       isArray: true
       name: attach_cids
       required: false
@@ -327,6 +451,7 @@ script:
       description: The importance status of the email.
       type: String
     - contextPath: MicrosoftGraph.Email.toRecipients
+<<<<<<< HEAD
       description: The to recipients of the email.
       type: String
     - contextPath: MicrosoftGraph.Email.ccRecipients
@@ -334,6 +459,15 @@ script:
       type: String
     - contextPath: MicrosoftGraph.Email.bccRecipients
       description: The bcc recipients of the email.
+=======
+      description: The 'to' recipients of the email.
+      type: String
+    - contextPath: MicrosoftGraph.Email.ccRecipients
+      description: The CC recipients of the email.
+      type: String
+    - contextPath: MicrosoftGraph.Email.bccRecipients
+      description: The BCC recipients of the email.
+>>>>>>> upstream/master
       type: String
   - arguments:
     - default: false
@@ -349,7 +483,11 @@ script:
       required: true
       secret: false
     - default: false
+<<<<<<< HEAD
       description: A comma separated list of email addresses for the 'to' field.
+=======
+      description: A comma-separated list of email addresses for the 'to' field.
+>>>>>>> upstream/master
       isArray: true
       name: to
       required: true
@@ -382,4 +520,9 @@ script:
   type: python
   subtype: python3
 tests:
+<<<<<<< HEAD
 - No test - manual test playbook-Microsoft_Graph_Mail_Sender_test is available in NonCircleTests folder
+=======
+- No test - manual test playbook-Microsoft_Graph_Mail_Sender_test is available in
+  NonCircleTests folder
+>>>>>>> upstream/master

@@ -48,6 +48,12 @@ class EventSender:
         self.client = DxlClient(self.get_client_config())
         self.client.connect()
 
+<<<<<<< HEAD
+=======
+    def __del__(self):
+        self.client.disconnect()
+
+>>>>>>> upstream/master
     def push_ip(self, ip, trust_level, topic):
         if not is_ip_valid(ip):
             raise ValueError(f'argument ip {ip} is not a valid IP')
@@ -108,11 +114,40 @@ class EventSender:
         return 'Successfully sent event'
 
 
+<<<<<<< HEAD
 def main():
     args = demisto.args()
     command = demisto.command()
     event_sender = EventSender(demisto.params())
     try:
+=======
+def validate_certificates_format():
+    if '-----BEGIN PRIVATE KEY-----' not in demisto.params()['private_key']:
+        return_error(
+            "The private key content seems to be incorrect as it doesn't start with -----BEGIN PRIVATE KEY-----")
+    if '-----END PRIVATE KEY-----' not in demisto.params()['private_key']:
+        return_error(
+            "The private key content seems to be incorrect as it doesn't end with -----END PRIVATE KEY-----")
+    if '-----BEGIN CERTIFICATE-----' not in demisto.params()['cert_file']:
+        return_error("The client certificates content seem to be "
+                     "incorrect as they don't start with '-----BEGIN CERTIFICATE-----'")
+    if '-----END CERTIFICATE-----' not in demisto.params()['cert_file']:
+        return_error(
+            "The client certificates content seem to be incorrect as it doesn't end with -----END CERTIFICATE-----")
+    if not demisto.params()['broker_ca_bundle'].lstrip(" ").startswith('-----BEGIN CERTIFICATE-----'):
+        return_error(
+            "The broker certificate seem to be incorrect as they don't start with '-----BEGIN CERTIFICATE-----'")
+    if not demisto.params()['broker_ca_bundle'].rstrip(" ").endswith('-----END CERTIFICATE-----'):
+        return_error(
+            "The broker certificate seem to be incorrect as they don't end with '-----END CERTIFICATE-----'")
+
+
+def main():
+    args = demisto.args()
+    command = demisto.command()
+    try:
+        event_sender = EventSender(demisto.params())
+>>>>>>> upstream/master
         result = ''
         if command == 'test-module':
             event_sender.send_event('TEST', 'test')
@@ -140,9 +175,14 @@ def main():
 
         return_outputs(result)
     except Exception as error:
+<<<<<<< HEAD
         return_error(f'error in {INTEGRATION_NAME} {str(error)}.', error)
     finally:
         event_sender.client.disconnect()
+=======
+        validate_certificates_format()
+        return_error(f'error in {INTEGRATION_NAME} {str(error)}.', error)
+>>>>>>> upstream/master
 
 
 if __name__ in ('__builtin__', 'builtins'):

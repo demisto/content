@@ -1,4 +1,10 @@
 ## [Unreleased]
+<<<<<<< HEAD
+=======
+
+
+## [20.1.0] - 2020-01-07
+>>>>>>> upstream/master
 Fix for failed Convert file hash to corresponding hashes.
 Simplified playbook structure by removing set tasks.
 

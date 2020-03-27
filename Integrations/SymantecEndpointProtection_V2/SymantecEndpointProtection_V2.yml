@@ -16,12 +16,20 @@ configuration:
   required: false
   type: 0
 - defaultvalue: 'false'
+<<<<<<< HEAD
   display: Trust any certificate (unsecure)
+=======
+  display: Trust any certificate (not secure)
+>>>>>>> upstream/master
   name: insecure
   required: false
   type: 8
 - defaultvalue: 'false'
+<<<<<<< HEAD
   display: Use proxy system settings
+=======
+  display: Use system proxy settings
+>>>>>>> upstream/master
   name: proxy
   required: false
   type: 8
@@ -31,7 +39,11 @@ configuration:
   type: 0
 description: Query the Symantec Endpoint Protection Manager using the official REST
   API.
+<<<<<<< HEAD
 display: Symantec Endpoint Protection V2
+=======
+display: Symantec Endpoint Protection v2
+>>>>>>> upstream/master
 name: Symantec Endpoint Protection V2
 script:
   commands:

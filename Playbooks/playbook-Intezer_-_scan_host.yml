@@ -1,7 +1,10 @@
 id: Intezer - scan host
 version: -1
+<<<<<<< HEAD
 rolename:
   - Administrator
+=======
+>>>>>>> upstream/master
 fromversion: 4.0.0
 name: Intezer - scan host
 description: |-

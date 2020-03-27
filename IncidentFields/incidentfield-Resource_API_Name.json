@@ -1,7 +1,14 @@
 {
 	"associatedToAll": false,
 	"associatedTypes": [
+<<<<<<< HEAD
 		"Prisma Cloud"
+=======
+		"Prisma Cloud",
+		"AWS CloudTrail Misconfiguration",
+		"AWS IAM Policy Misconfiguration",
+		"AWS EC2 Instance Misconfiguration"
+>>>>>>> upstream/master
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
@@ -36,4 +43,9 @@
 	"validationRegex": "",
 	"version": -1,
 	"fromVersion": "5.0.0"
+<<<<<<< HEAD
 }
+=======
+}
+
+>>>>>>> upstream/master

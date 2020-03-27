@@ -233,3 +233,12 @@ def test_dict_no_stix(mocker):
     finally:
         if not is_exception:
             pytest.fail("System error not thrown!")
+<<<<<<< HEAD
+=======
+
+
+def test_missing_firstSeen(mocker):
+    from StixParser import main
+    TestStix1.mock_demisto_with_file("./TestData/missing_firstSeen.json", mocker)
+    main()
+>>>>>>> upstream/master

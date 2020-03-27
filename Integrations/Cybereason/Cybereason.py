@@ -24,10 +24,17 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
+<<<<<<< HEAD
 USERNAME = demisto.params().get('credentials').get('identifier')
 PASSWORD = demisto.params().get('credentials').get('password')
 USE_SSL = not demisto.params().get('unsecure', False)
 CERTIFICATE = demisto.params().get('credentials').get('credentials').get('sshkey')
+=======
+USERNAME = demisto.params().get('credentials', {}).get('identifier')
+PASSWORD = demisto.params().get('credentials', {}).get('password')
+USE_SSL = not demisto.params().get('unsecure', False)
+CERTIFICATE = demisto.params().get('credentials', {}).get('credentials', {}).get('sshkey')
+>>>>>>> upstream/master
 FETCH_TIME_DEFAULT = '3 days'
 FETCH_TIME = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT)
 FETCH_TIME = FETCH_TIME if FETCH_TIME and FETCH_TIME.strip() else FETCH_TIME_DEFAULT
@@ -124,7 +131,11 @@ def http_request(method, url_suffix, data=None, json=None, headers=HEADERS):
         )
         if res.status_code not in {200, 204}:
             raise Exception('Your request failed with the following error: ' + res.content + str(res.status_code))
+<<<<<<< HEAD
     except Exception, e:
+=======
+    except Exception as e:
+>>>>>>> upstream/master
         LOG(e)
         raise
     return res
@@ -729,7 +740,11 @@ def add_comment_command():
     try:
         add_comment(malop_guid, comment.encode('utf-8'))
         demisto.results('Comment added successfully')
+<<<<<<< HEAD
     except Exception, e:
+=======
+    except Exception as e:
+>>>>>>> upstream/master
         return_error('Failed to add new comment. Orignal Error: ' + e.message)
 
 
@@ -995,17 +1010,28 @@ def query_file_command():
         file_outputs = []
         endpoint_outputs = []
         files = data.get('resultIdToElementDataMap')
+<<<<<<< HEAD
         for file in files.keys():
 
             raw_machine_details = get_file_machine_details(file)['data']['resultIdToElementDataMap']
             machine_details = raw_machine_details[raw_machine_details.keys()[0]]
             simple_values = files[file]['simpleValues']
 
+=======
+        for file_ in files.keys():
+            raw_machine_details = get_file_machine_details(file_)['data']['resultIdToElementDataMap']
+            machine_details = raw_machine_details[raw_machine_details.keys()[0]]
+            simple_values = files[file_]['simpleValues']
+>>>>>>> upstream/master
             file_name = simple_values['elementDisplayName']['values'][0]
             md5 = simple_values['md5String']['values'][0]
             sha1 = simple_values['sha1String']['values'][0]
             path = simple_values['correctedPath']['values'][0]
+<<<<<<< HEAD
             machine = files[file].get('elementValues', {}).get('ownerMachine', {}).get('elementValues')[0]['name']
+=======
+            machine = files[file_].get('elementValues', {}).get('ownerMachine', {}).get('elementValues')[0]['name']
+>>>>>>> upstream/master
 
             machine_element_values = machine_details['elementValues']
             machine_simple_values = machine_details['simpleValues']
@@ -1029,11 +1055,31 @@ def query_file_command():
             if 'companyName' in simple_values:
                 company_name = simple_values['companyName']['values'][0]
 
+<<<<<<< HEAD
             cybereason_outputs.append({
                 'Name': file_name,
                 'CreationTime': timestamp_to_datestring(simple_values['createdTime']['values'][0]),
                 'ModifiedTime': timestamp_to_datestring(simple_values['modifiedTime']['values'][0]),
                 'Malicious': files[file]['isMalicious'],
+=======
+            created_time = None
+            if 'createdTime' in simple_values:
+                created_time = timestamp_to_datestring(simple_values.get('createdTime', {}).get('values')[0])
+
+            modified_time = None
+            if 'modifiedTime' in simple_values:
+                modified_time = timestamp_to_datestring(simple_values.get('modifiedTime', {}).get('values')[0])
+
+            is_signed = None
+            if 'isSigned' in simple_values:
+                is_signed = True if simple_values.get('isSigned', {}).get('values')[0] == 'true' else False
+
+            cybereason_outputs.append({
+                'Name': file_name,
+                'CreationTime': created_time,
+                'ModifiedTime': modified_time,
+                'Malicious': files[file_].get('isMalicious'),
+>>>>>>> upstream/master
                 'MD5': md5,
                 'SHA1': sha1,
                 'Path': path,
@@ -1043,7 +1089,11 @@ def query_file_command():
                 'OSVersion': os_version,
                 'Suspicion': suspicions,
                 'Evidence': evidences,
+<<<<<<< HEAD
                 'Signed': True if simple_values['isSigned']['values'][0] == 'true' else False,
+=======
+                'Signed': is_signed,
+>>>>>>> upstream/master
                 'Company': company_name
             })
 
@@ -1058,6 +1108,7 @@ def query_file_command():
                 'Hostname': machine,
                 'OSVersion': os_version
             })
+<<<<<<< HEAD
 
             ec = {
                 'Cybereason.File(val.MD5 && val.MD5===obj.MD5 || val.SHA1 && val.SHA1===obj.SHA1)': cybereason_outputs,
@@ -1073,6 +1124,22 @@ def query_file_command():
                 'HumanReadable': tableToMarkdown('Cybereason file query results', cybereason_outputs),
                 'EntryContext': ec
             })
+=======
+        ec = {
+            'Cybereason.File(val.MD5 && val.MD5===obj.MD5 || val.SHA1 && val.SHA1===obj.SHA1)': cybereason_outputs,
+            'Endpoint(val.Hostname===obj.Hostname)': endpoint_outputs
+        }
+        ec[outputPaths['file']] = file_outputs
+
+        demisto.results({
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': data,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Cybereason file query results', cybereason_outputs, removeNull=True),
+            'EntryContext': ec
+        })
+>>>>>>> upstream/master
     else:
         demisto.results('No results found.')
 
@@ -1166,6 +1233,7 @@ def query_domain_command():
                 'Name': domain_input,
             })
 
+<<<<<<< HEAD
             ec = {
                 'Cybereason.Domain(val.Name && val.Name===obj.Name)': cybereason_outputs
             }
@@ -1182,6 +1250,24 @@ def query_domain_command():
                                                   'SuspicionsCount']),
                 'EntryContext': ec
             })
+=======
+        ec = {
+            'Cybereason.Domain(val.Name && val.Name===obj.Name)': cybereason_outputs
+        }
+        ec[outputPaths['domain']] = domain_outputs
+
+        demisto.results({
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': data,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Cybereason domain query results', cybereason_outputs,
+                                             ['Name', 'Reputation', 'IsInternalDomain', 'WasEverResolved',
+                                              'WasEverResolvedAsASecondLevelDomain', 'Malicious',
+                                              'SuspicionsCount']),
+            'EntryContext': ec
+        })
+>>>>>>> upstream/master
     else:
         demisto.results('No results found.')
 
@@ -1396,6 +1482,7 @@ LOG('command is %s' % (demisto.command(), ))
 session = requests.session()
 
 
+<<<<<<< HEAD
 if CERTIFICATE:
     client_certificate()
     AUTH = 'CERT'
@@ -1474,3 +1561,88 @@ finally:
     if AUTH == 'CERT':
         os.remove(os.path.abspath('client.pem'))
         os.remove(os.path.abspath('client.cert'))
+=======
+def main():
+    if CERTIFICATE:
+        client_certificate()
+        AUTH = 'CERT'
+    if USERNAME and PASSWORD:
+        login()
+        AUTH = 'BASIC'
+    else:
+        return_error('No credentials were provided')
+
+    try:
+        if demisto.command() == 'test-module':
+            # Tests connectivity and credentails on login
+            query_user([])
+            demisto.results('ok')
+
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents()
+
+        elif demisto.command() == 'cybereason-is-probe-connected':
+            is_probe_connected_command()
+
+        elif demisto.command() == 'cybereason-query-processes':
+            query_processes_command()
+
+        elif demisto.command() == 'cybereason-query-malops':
+            query_malops_command()
+
+        elif demisto.command() == 'cybereason-query-connections':
+            query_connections_command()
+
+        elif demisto.command() == 'cybereason-isolate-machine':
+            isolate_machine_command()
+
+        elif demisto.command() == 'cybereason-unisolate-machine':
+            unisolate_machine_command()
+
+        elif demisto.command() == 'cybereason-malop-processes':
+            malop_processes_command()
+
+        elif demisto.command() == 'cybereason-add-comment':
+            add_comment_command()
+
+        elif demisto.command() == 'cybereason-update-malop-status':
+            update_malop_status_command()
+
+        elif demisto.command() == 'cybereason-prevent-file':
+            prevent_file_command()
+
+        elif demisto.command() == 'cybereason-unprevent-file':
+            unprevent_file_command()
+
+        elif demisto.command() == 'cybereason-kill-process':  # To be added as a command in the future
+            kill_process_command()
+
+        elif demisto.command() == 'cybereason-quarantine-file':  # To be added as a command in the future
+            quarantine_file_command()
+
+        elif demisto.command() == 'cybereason-delete-registry-key':  # To be added as a command in the future
+            delete_registry_key_command()
+
+        elif demisto.command() == 'cybereason-query-file':
+            query_file_command()
+
+        elif demisto.command() == 'cybereason-query-domain':
+            query_domain_command()
+
+        elif demisto.command() == 'cybereason-query-user':
+            query_user_command()
+
+    except Exception as e:
+        LOG(e.message)
+        LOG.print_log()
+        return_error(e.message)
+    finally:
+        logout()
+        if AUTH == 'CERT':
+            os.remove(os.path.abspath('client.pem'))
+            os.remove(os.path.abspath('client.cert'))
+
+
+if __name__ in ('__builtin__', 'builtins'):
+    main()
+>>>>>>> upstream/master

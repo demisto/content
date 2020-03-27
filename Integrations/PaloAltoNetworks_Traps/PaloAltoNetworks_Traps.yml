@@ -94,6 +94,12 @@ script:
     - contextPath: Traps.Endpoint.LastUser
       description: The last active user on the machine.
       type: String
+<<<<<<< HEAD
+=======
+    - contextPath: Traps.Endpoint.ScanStatus
+      description: The status of the last scan run on the machine.
+      type: String
+>>>>>>> upstream/master
   - arguments:
     - default: false
       description: The ID of the endpoint.
@@ -236,8 +242,13 @@ script:
       type: String
   - arguments:
     - default: false
+<<<<<<< HEAD
       description: A comma-separated list of SHA256 file hashes for which to return the
         blacklist status.
+=======
+      description: A comma-separated list of SHA256 file hashes for which to return
+        the blacklist status.
+>>>>>>> upstream/master
       isArray: true
       name: hash_ids
       required: true
@@ -378,10 +389,21 @@ script:
       description: The status of the scan.
       type: String
   dockerimage: demisto/pyjwt3:1.0.0.1284
+<<<<<<< HEAD
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
+=======
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+>>>>>>> upstream/master
 tests:
 - Traps test

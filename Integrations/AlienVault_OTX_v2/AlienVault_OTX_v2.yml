@@ -74,10 +74,17 @@ script:
       description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
+<<<<<<< HEAD
       description: The type of indicator.
       type: String
     - contextPath: DBotScore.Vendor
       description: The AlienVault OTX vendor.
+=======
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+>>>>>>> upstream/master
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -118,10 +125,17 @@ script:
       description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
+<<<<<<< HEAD
       description: The type of indicator.
       type: String
     - contextPath: DBotScore.Vendor
       description: The AlienVault OTX vendor.
+=======
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+>>>>>>> upstream/master
       type: String
   - arguments:
     - default: true
@@ -159,10 +173,17 @@ script:
       description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
+<<<<<<< HEAD
       description: The type of the indicator.
       type: String
     - contextPath: DBotScore.Vendor
       description: The AlienVault OTX vendor.
+=======
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+>>>>>>> upstream/master
       type: String
   - arguments:
     - default: true
@@ -200,10 +221,17 @@ script:
       description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
+<<<<<<< HEAD
       description: The type of the indicator.
       type: String
     - contextPath: DBotScore.Vendor
       description: The AlienVault OTX vendor.
+=======
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+>>>>>>> upstream/master
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -257,10 +285,17 @@ script:
       description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
+<<<<<<< HEAD
       description: The type of the indicator.
       type: String
     - contextPath: DBotScore.Vendor
       description: The AlienVault OTX vendor.
+=======
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+>>>>>>> upstream/master
       type: String
   - arguments:
     - default: true
@@ -301,10 +336,17 @@ script:
       description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
+<<<<<<< HEAD
       description: The type of indicator.
       type: String
     - contextPath: DBotScore.Vendor
       description: The AlienVault OTX vendor.
+=======
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+>>>>>>> upstream/master
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -312,7 +354,11 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
+<<<<<<< HEAD
       description: 'The type of the indicator. Can be: "IPv4", "IPv6", "domain", "hostname",
+=======
+      description: 'The indicator type. Can be: "IPv4", "IPv6", "domain", "hostname",
+>>>>>>> upstream/master
         or "url".'
       isArray: false
       name: indicator_type
@@ -347,7 +393,11 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
+<<<<<<< HEAD
       description: 'The type of the indicator. Can be: "IPv4", "IPv6", "domain", or
+=======
+      description: 'The indicator type. Can be: "IPv4", "IPv6", "domain", or
+>>>>>>> upstream/master
         "hostname".'
       isArray: false
       name: indicator_type
@@ -369,7 +419,11 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
+<<<<<<< HEAD
       description: 'The type of the indicator. Can be: "IPv4", "IPv6", "domain", or
+=======
+      description: 'The indicator type. Can be: "IPv4", "IPv6", "domain", or
+>>>>>>> upstream/master
         "hostname".'
       isArray: false
       name: indicator_type
@@ -529,10 +583,17 @@ script:
       description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
+<<<<<<< HEAD
       description: The type of indicator.
       type: String
     - contextPath: DBotScore.Vendor
       description: The AlienVault OTX vendor.
+=======
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+>>>>>>> upstream/master
       type: String
   dockerimage: demisto/python3:3.7.4.1150
   isfetch: false

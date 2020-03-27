@@ -1,6 +1,13 @@
 ## [Unreleased]
 
 
+<<<<<<< HEAD
+=======
+## [20.1.0] - 2020-01-07
+Fixed an issue with email subject unicode for the ***send-mail*** command.
+
+
+>>>>>>> upstream/master
 ## [19.12.1] - 2019-12-25
 Improved performance and functionality of the integration.
 

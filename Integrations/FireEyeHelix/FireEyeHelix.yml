@@ -23,7 +23,11 @@ configuration:
   name: fetch_time
   required: false
   type: 0
+<<<<<<< HEAD
 - display: Fetch incidents query
+=======
+- display: Fetch incidents
+>>>>>>> upstream/master
   name: isFetch
   required: false
   type: 8

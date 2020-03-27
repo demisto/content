@@ -8241,6 +8241,7 @@ def get_whois(domain, normalized=None):
 # Drops the mic disable-secrets-detection-end
 
 
+<<<<<<< HEAD
 '''COMMANDS'''
 
 
@@ -8250,6 +8251,9 @@ def whois_command():
 
     whois_result = get_whois(domain)
 
+=======
+def create_outputs(whois_result, domain):
+>>>>>>> upstream/master
     md = {'Name': domain}
     ec = {'Name': domain}
     standard_ec = {}  # type:dict
@@ -8266,22 +8270,42 @@ def whois_command():
         standard_ec['NameServers'] = whois_result.get('nameservers')
         standard_ec['WHOIS']['NameServers'] = whois_result.get('nameservers')
         md['NameServers'] = whois_result.get('nameservers')
+<<<<<<< HEAD
 
+=======
+>>>>>>> upstream/master
     try:
         if 'creation_date' in whois_result:
             ec['CreationDate'] = whois_result.get('creation_date')[0].strftime('%d-%m-%Y')
             standard_ec['CreationDate'] = whois_result.get('creation_date')[0].strftime('%d-%m-%Y')
+<<<<<<< HEAD
             standard_ec['WHOIS']['CreationDate'] = whois_result.get('creation_date')[0].strftime('%d-%m-%Y')
+=======
+            standard_ec['WHOIS']['CreationDate'] = whois_result.get('creation_date')[0].strftime(
+                '%d-%m-%Y')
+>>>>>>> upstream/master
             md['Creation Date'] = whois_result.get('creation_date')[0].strftime('%d-%m-%Y')
         if 'updated_date' in whois_result:
             ec['UpdatedDate'] = whois_result.get('updated_date')[0].strftime('%d-%m-%Y')
             standard_ec['UpdatedDate'] = whois_result.get('updated_date')[0].strftime('%d-%m-%Y')
+<<<<<<< HEAD
             standard_ec['WHOIS']['UpdatedDate'] = whois_result.get('updated_date')[0].strftime('%d-%m-%Y')
             md['Updated Date'] = whois_result.get('updated_date')[0].strftime('%d-%m-%Y')
         if 'expiration_date' in whois_result:
             ec['ExpirationDate'] = whois_result.get('expiration_date')[0].strftime('%d-%m-%Y')
             standard_ec['ExpirationDate'] = whois_result.get('expiration_date')[0].strftime('%d-%m-%Y')
             standard_ec['WHOIS']['ExpirationDate'] = whois_result.get('expiration_date')[0].strftime(
+=======
+            standard_ec['WHOIS']['UpdatedDate'] = whois_result.get('updated_date')[0].strftime(
+                '%d-%m-%Y')
+            md['Updated Date'] = whois_result.get('updated_date')[0].strftime('%d-%m-%Y')
+        if 'expiration_date' in whois_result:
+            ec['ExpirationDate'] = whois_result.get('expiration_date')[0].strftime('%d-%m-%Y')
+            standard_ec['ExpirationDate'] = whois_result.get('expiration_date')[0].strftime(
+                '%d-%m-%Y')
+            standard_ec['WHOIS']['ExpirationDate'] = whois_result.get('expiration_date')[
+                0].strftime(
+>>>>>>> upstream/master
                 '%d-%m-%Y')
             md['Expiration Date'] = whois_result.get('expiration_date')[0].strftime('%d-%m-%Y')
     except ValueError as e:
@@ -8320,25 +8344,78 @@ def whois_command():
     standard_ec['Name'] = domain
     standard_ec['Whois'] = ec
 
+<<<<<<< HEAD
     context = ({
         outputPaths['domain']: standard_ec
     })
 
+=======
+    dbot_score = {
+        'Score': 0,
+        'Indicator': domain,
+        'Type': 'domain',
+        'Vendor': 'Whois'
+    }
+    return md, standard_ec, dbot_score
+
+
+'''COMMANDS'''
+
+
+def domain_command():
+    domain = demisto.args().get('domain')
+    whois_result = get_whois(domain)
+    md, standard_ec, dbot_score = create_outputs(whois_result, domain)
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['markdown'],
         'Contents': str(whois_result),
         'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
+        'EntryContext': {
+            'Domain(val.Name && val.Name == obj.Name)': standard_ec,
+            'DBotScore(val.Indicator && val.Indicator == obj.Indicator)': dbot_score
+        }
+    })
+
+
+def whois_command():
+    domain = demisto.args().get('query')
+    whois_result = get_whois(domain)
+    md, standard_ec, dbot_score = create_outputs(whois_result, domain)
+>>>>>>> upstream/master
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['markdown'],
+        'Contents': str(whois_result),
+        'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
+<<<<<<< HEAD
         'EntryContext': context
+=======
+        'EntryContext': {
+            'Domain(val.Name && val.Name == obj.Name)': standard_ec,
+            'DBotScore(val.Indicator && val.Indicator == obj.Indicator)': dbot_score
+        }
+>>>>>>> upstream/master
     })
 
 
 def test_command():
+<<<<<<< HEAD
     whois_result = get_whois('google.com')
 
     domain_test = whois_result['id'][0]
 
     if domain_test == '2138514_DOMAIN_COM-VRSN':
+=======
+    whois_result = get_whois('google.co.uk')
+
+    try:
+        domain_test = whois_result['nameservers'][0]
+    except ValueError as e:
+        return_error('Whois did not return the correct result: {}'.format(str(e)))
+
+    if domain_test == 'ns1.google.com':
+>>>>>>> upstream/master
         demisto.results('ok')
 
 
@@ -8360,7 +8437,11 @@ def setup_proxy():
     if not proxy_url:
         return
     scheme, host = (def_scheme, proxy_url) if '://' not in proxy_url else proxy_url.split('://')
+<<<<<<< HEAD
     host, port = (host, None) if ':'  not in host else host.split(':')
+=======
+    host, port = (host, None) if ':' not in host else host.split(':')
+>>>>>>> upstream/master
     if port:
         port = int(port)
     proxy_type = scheme_to_proxy_type.get(scheme)
@@ -8368,6 +8449,7 @@ def setup_proxy():
         raise ValueError("Un supported proxy scheme: {}".format(scheme))
     socks.set_default_proxy(proxy_type[0], host, port, proxy_type[1])
     socket.socket = socks.socksocket  # type: ignore
+<<<<<<< HEAD
     
 
 ''' EXECUTION CODE '''
@@ -8380,6 +8462,25 @@ def main():
             test_command()
         elif demisto.command() == 'whois':
             whois_command()
+=======
+
+
+''' EXECUTION CODE '''
+
+
+def main():
+    LOG('command is {}'.format(str(demisto.command())))
+    org_socket = socket.socket
+    command = demisto.command()
+    try:
+        setup_proxy()
+        if command == 'test-module':
+            test_command()
+        elif command == 'whois':
+            whois_command()
+        elif command == 'domain':
+            domain_command()
+>>>>>>> upstream/master
     except Exception as e:
         LOG(e)
         return_error(str(e))
@@ -8389,4 +8490,8 @@ def main():
 
 # python2 uses __builtin__ python3 uses builtins
 if __name__ == "__builtin__" or __name__ == "builtins":
+<<<<<<< HEAD
     main()
+=======
+    main()
+>>>>>>> upstream/master

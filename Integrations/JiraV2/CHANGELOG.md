@@ -1,6 +1,19 @@
 ## [Unreleased]
 
 
+<<<<<<< HEAD
+=======
+## [20.3.1] - 2020-03-04
+Fixed an issue in the ***jira-create-issue*** and ***jira-edit-issue*** commands where the due date was not set correctly.
+
+## [20.2.0] - 2020-02-04
+Fixed an issue in ***jira-get-issue*** where trying to get the attachment of the issue would fail.
+
+## [20.1.2] - 2020-01-22
+Fixed the description of the *reporter* argument in the ***jira-create-issue*** command.
+Fixed an issue where trying to fetch incidents when the idOffset was not configured would raise an error.
+
+>>>>>>> upstream/master
 ## [19.12.0] - 2019-12-10
 - API token parameter is now encrypted.
 - Improved authentication methods support - Basic, OAuth 1.0 (only from 5.0) 
@@ -12,4 +25,8 @@ Added the _attachmentName_ parameter to the ___jira-issue-upload-file___ command
 API token parameter is now encrypted.
 
 ## [19.8.2] - 2019-08-22
+<<<<<<< HEAD
 - Add support for remote application links.
+=======
+- Add support for remote application links.
+>>>>>>> upstream/master

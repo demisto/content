@@ -18,6 +18,7 @@ from Tests.scripts.validate_files import FilesValidator
 
 CONTENT_LIB_PATH = "./"
 
+NEXT_VERSION = "5.5.0"
 NEW_RN = "New"
 MODIFIED_RN = "Improved"
 IGNORE_RN = '-'
@@ -43,6 +44,12 @@ RELEASE_NOTES_ORDER = [INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR
 
 
 def add_dot(text):
+<<<<<<< HEAD
+=======
+    if not text or len(text) < 2:
+        return ''
+
+>>>>>>> upstream/master
     text = text.rstrip().replace('```', '***').replace('`', '*')
 
     if '\n' in text:
@@ -64,7 +71,12 @@ def add_dot(text):
         return '\n'.join(formatted_text)
 
     # single record release notes
+<<<<<<< HEAD
     return text[0].upper() + text[1:].rstrip('.') + '.'
+=======
+    text = text[0].upper() + text[1:]
+    return text if text.endswith('.') else text + '.'
+>>>>>>> upstream/master
 
 
 def release_notes_item(header, body):
@@ -141,11 +153,16 @@ class Content(object):  # pylint: disable=useless-object-inheritance
     # create a release notes section for store (add or modified) - return None if found missing release notes
     def release_notes_section(self, store, title_prefix, current_server_version):
         res = ""
+<<<<<<< HEAD
+=======
+        beta_rn_paths = list()
+>>>>>>> upstream/master
         if store:
             new_str = ""
             new_count = 0
             for path in store:
                 with open(path, 'r') as file_obj:
+<<<<<<< HEAD
                     print(' - adding release notes ({}) for file - [{}]... '.format(path, title_prefix), end='')
                     raw_content = file_obj.read()
                     cnt = self.load_data(raw_content)
@@ -155,6 +172,23 @@ class Content(object):  # pylint: disable=useless-object-inheritance
                         print("Skipped because of version differences")
                         continue
 
+=======
+                    raw_content = file_obj.read()
+                    cnt = self.load_data(raw_content)
+
+                    from_version = cnt.get("fromversion") or cnt.get("fromVersion")
+                    to_version = cnt.get("toversion") or cnt.get("toVersion")
+                    if from_version is not None and server_version_compare(current_server_version, from_version) < 0:
+                        print(f'{path}: Skipped because from version: {from_version}'
+                              f' is greater than current server version: {current_server_version}')
+                        beta_rn_paths.append(path)
+                        print(f"{path} has added to beta release notes")
+                        continue
+                    if to_version is not None and server_version_compare(to_version, current_server_version) < 0:
+                        print(f'{path}: Skipped because of to version" {to_version}'
+                              f' is smaller: than current server version: {current_server_version}')
+                        continue
+>>>>>>> upstream/master
                     if title_prefix == NEW_RN:
                         ans = self.added_release_notes(path, cnt)
                     elif title_prefix == MODIFIED_RN:
@@ -171,9 +205,12 @@ class Content(object):  # pylint: disable=useless-object-inheritance
                     elif ans:
                         new_count += 1
                         new_str += ans
+<<<<<<< HEAD
                         print("Success")
                     else:
                         print("Skipped")
+=======
+>>>>>>> upstream/master
 
             if new_str:
                 if self.show_secondary_header:
@@ -183,16 +220,22 @@ class Content(object):  # pylint: disable=useless-object-inheritance
 
                     res = "\n#### %s %s %s\n" % (count_str, title_prefix, self.get_header())
                 res += new_str
+        print("Collected {} beta notes".format(len(beta_rn_paths)))
+        return res, beta_rn_paths
 
+<<<<<<< HEAD
         return res
 
+=======
+>>>>>>> upstream/master
     def generate_release_notes(self, current_server_version):
         res = ""
-
+        beta_res = ""
         if len(self.modified_store) + len(self.deleted_store) + len(self.added_store) > 0:
             print("starting {} RN".format(self.get_header()))
 
             # Added files
+<<<<<<< HEAD
             add_rn = self.release_notes_section(self.added_store, NEW_RN, current_server_version)
 
             # Modified files
@@ -200,9 +243,17 @@ class Content(object):  # pylint: disable=useless-object-inheritance
 
             if add_rn is None or modified_rn is None:
                 return None
+=======
+            add_rn, add_beta_paths = self.release_notes_section(self.added_store, NEW_RN, current_server_version,)
+            # Modified files
+            modified_rn, mod_beta_paths = self.release_notes_section(self.modified_store, MODIFIED_RN,
+                                                                     current_server_version)
+            add_beta_res, _ = self.release_notes_section(add_beta_paths, NEW_RN, NEXT_VERSION)
+            mod_beta_res, _ = self.release_notes_section(mod_beta_paths, MODIFIED_RN, NEXT_VERSION)
+>>>>>>> upstream/master
 
             section_body = add_rn + modified_rn
-
+            beta_section_body = add_beta_res + mod_beta_res
             # Deleted files
             if self.deleted_store:
                 section_body += "\n##### Removed {}\n".format(self.get_header())
@@ -214,8 +265,10 @@ class Content(object):  # pylint: disable=useless-object-inheritance
             if section_body:
                 res = "### {}\n".format(self.get_header())
                 res += section_body
+                beta_res = "### {}\n".format(self.get_header())
+                beta_res += beta_section_body
 
-        return res
+        return res, beta_res
 
 
 class ScriptContent(Content):
@@ -227,6 +280,7 @@ class ScriptContent(Content):
 
     def added_release_notes(self, file_path, data):
         return release_notes_item(data["name"], data["comment"])
+<<<<<<< HEAD
 
     def modified_release_notes(self, file_path, data):
         release_note = super(ScriptContent, self).modified_release_notes(file_path, data)
@@ -234,6 +288,15 @@ class ScriptContent(Content):
         if release_note:
             return release_notes_item(data["name"], release_note)
 
+=======
+
+    def modified_release_notes(self, file_path, data):
+        release_note = super(ScriptContent, self).modified_release_notes(file_path, data)
+
+        if release_note:
+            return release_notes_item(data["name"], release_note)
+
+>>>>>>> upstream/master
         # error or ignored release_note
         return release_note
 
@@ -307,6 +370,7 @@ class WidgetContent(Content):
 
     def added_release_notes(self, file_path, data):
         return release_notes_item(data["name"], data["description"])
+<<<<<<< HEAD
 
     def modified_release_notes(self, file_path, data):
         release_note = super(WidgetContent, self).modified_release_notes(file_path, data)
@@ -314,6 +378,15 @@ class WidgetContent(Content):
         if release_note:
             return release_notes_item(data["name"], release_note)
 
+=======
+
+    def modified_release_notes(self, file_path, data):
+        release_note = super(WidgetContent, self).modified_release_notes(file_path, data)
+
+        if release_note:
+            return release_notes_item(data["name"], release_note)
+
+>>>>>>> upstream/master
         # error or ignored release_note
         return release_note
 
@@ -341,6 +414,7 @@ class IncidentFieldContent(Content):
 
         # error or ignored release_note
         return release_note
+<<<<<<< HEAD
 
     def modified_release_notes(self, file_path, data):
         release_note = super(IncidentFieldContent, self).modified_release_notes(file_path, data)
@@ -348,6 +422,15 @@ class IncidentFieldContent(Content):
         if release_note:
             return add_dot(release_note) + "\n"
 
+=======
+
+    def modified_release_notes(self, file_path, data):
+        release_note = super(IncidentFieldContent, self).modified_release_notes(file_path, data)
+
+        if release_note:
+            return add_dot(release_note) + "\n"
+
+>>>>>>> upstream/master
         # error or ignored release_note
         return release_note
 
@@ -357,7 +440,7 @@ class LayoutContent(Content):
         return json.loads(data)
 
     def get_header(self):
-        return "Incident Layouts"
+        return "Layouts"
 
     def get_release_notes(self, file_path, data):
         release_note = super(LayoutContent, self).get_release_notes(file_path, data)
@@ -375,6 +458,7 @@ class LayoutContent(Content):
             return None
 
         return release_notes_item('{} - {}'.format(layout_type, layout_kind), release_note)
+<<<<<<< HEAD
 
     def added_release_notes(self, file_path, data):
         return self.get_release_notes(file_path, data)
@@ -385,6 +469,18 @@ class LayoutContent(Content):
         if release_note:
             return self.get_release_notes(file_path, data)
 
+=======
+
+    def added_release_notes(self, file_path, data):
+        return self.get_release_notes(file_path, data)
+
+    def modified_release_notes(self, file_path, data):
+        release_note = super(LayoutContent, self).modified_release_notes(file_path, data)
+
+        if release_note:
+            return self.get_release_notes(file_path, data)
+
+>>>>>>> upstream/master
         # error or ignored release_note
         return release_note
 
@@ -444,10 +540,17 @@ class ReputationContent(Content):
 
     def modified_release_notes(self, file_path, data):
         release_note = super(ReputationContent, self).modified_release_notes(file_path, data)
+<<<<<<< HEAD
 
         if release_note:
             return add_dot(release_note) + "\n"
 
+=======
+
+        if release_note:
+            return add_dot(release_note) + "\n"
+
+>>>>>>> upstream/master
         return release_note
 
 
@@ -519,6 +622,7 @@ def create_file_release_notes(change_type, full_file_name):
     base_name = os.path.basename(full_file_name)
     file_suffix = os.path.splitext(base_name)[-1]
     file_type_mapping = RELEASE_NOTE_GENERATOR.get(file_type)
+<<<<<<< HEAD
 
     if file_type_mapping is None or file_suffix not in CONTENT_FILE_SUFFIXES:
         print_warning("Unsupported file type: {}".format(full_file_name))
@@ -571,9 +675,67 @@ def get_release_notes_draft(github_token, asset_id):
         print_warning('Too many drafts to choose from ({}), skipping update.'.format(len(drafts)))
 
     return ''
+=======
+
+    if file_type_mapping is None or file_suffix not in CONTENT_FILE_SUFFIXES:
+        print_warning("Unsupported file type: {}".format(full_file_name))
+        return
+
+    if change_type != "R100":  # only file name has changed (no actual data was modified
+        if 'R' in change_type:
+            # handle the same as modified
+            change_type = 'M'
+
+        file_type_mapping.add(change_type, CONTENT_LIB_PATH + full_file_name)
 
 
+def get_release_notes_draft(github_token, asset_id):
+    """
+    if possible, download current release draft from content repository in github.
+
+    :param github_token: github token with push permission (in order to get the draft).
+    :param asset_id: content build's asset id.
+    :return: draft text (or empty string on error).
+    """
+    if github_token is None:
+        print_warning('unable to download draft without github token.')
+        return ''
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+
+    try:
+        res = requests.get('https://api.github.com/repos/demisto/content/releases',
+                           verify=False,  # guardrails-disable-line
+                           headers={'Authorization': 'token {}'.format(github_token)})
+    except requests.exceptions.ConnectionError as exc:
+        print_warning('unable to get release draft, reason:\n{}'.format(str(exc)))
+        return ''
+
+    if res.status_code != 200:
+        print_warning('unable to get release draft ({}), reason:\n{}'.format(res.status_code, res.text))
+        return ''
+
+    drafts = [release for release in res.json() if release.get('draft', False)]
+    if drafts:
+        if len(drafts) == 1:
+            draft_body = drafts[0]['body']
+            raw_asset = re.findall(r'Release Notes for version .* \((\d{5,}|xxxxx)\)', draft_body, re.IGNORECASE)
+            if raw_asset:
+                draft_body = draft_body.replace(raw_asset[0], asset_id)
+            return draft_body
+
+        print_warning('Too many drafts to choose from ({}), skipping update.'.format(len(drafts)))
+>>>>>>> upstream/master
+
+    return ''
+
+<<<<<<< HEAD
 def create_content_descriptor(version, asset_id, res, github_token):
+=======
+
+def create_content_descriptor(version, asset_id, res, github_token, beta_rn=None):
+>>>>>>> upstream/master
     # time format example 2017 - 06 - 11T15:25:57.0 + 00:00
     date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.0+00:00")
     release_notes = '## Demisto Content Release Notes for version {} ({})\n'.format(version, asset_id)
@@ -600,6 +762,16 @@ def create_content_descriptor(version, asset_id, res, github_token):
     with open('release-notes.md', 'w') as outfile:
         outfile.write(release_notes)
 
+<<<<<<< HEAD
+=======
+    print("saving beta release notes")
+    with open('beta-release-notes.md', 'w') as outfile:
+        beta_release_notes = '## Demisto Content Beta Release Notes for version {}\n'.format(NEXT_VERSION)
+        beta_release_notes += '##### Published on {}\n{}'.format(datetime.datetime.now().strftime("%d %B %Y"),
+                                                                 beta_rn)
+        outfile.write(beta_rn)
+
+>>>>>>> upstream/master
 
 def main():
     arg_parser = argparse.ArgumentParser()
@@ -615,6 +787,7 @@ def main():
 
     # get changed yaml/json files (filter only relevant changed files)
     file_validator = FilesValidator()
+<<<<<<< HEAD
     change_log = run_command('git diff --name-status {}'.format(args.git_sha1))
     modified_files, added_files, removed_files, _ = file_validator.get_modified_files(change_log)
     modified_files, added_files, removed_files = filter_packagify_changes(modified_files, added_files,
@@ -646,6 +819,52 @@ def main():
     if missing_release_notes:
         print_error("Error: some release notes are missing. See previous errors.")
         sys.exit(1)
+=======
+    try:
+        change_log = run_command('git diff --name-status {}'.format(args.git_sha1), exit_on_error=False)
+        modified_files, added_files, removed_files, _ = file_validator.get_modified_files(change_log)
+        modified_files, added_files, removed_files = filter_packagify_changes(modified_files, added_files,
+                                                                              removed_files, tag=tag)
+
+        for file_path in added_files:
+            create_file_release_notes('A', file_path)
+
+        for file_path in modified_files:
+            create_file_release_notes('M', file_path)
+
+        for file_path in removed_files:
+            handle_deleted_file(file_path, tag)
+
+        # join all release notes
+        res = []
+        beta_res = []
+        missing_release_notes = False
+        for key in RELEASE_NOTES_ORDER:
+            value = RELEASE_NOTE_GENERATOR[key]
+            ans, beta_ans = value.generate_release_notes(args.server_version)
+            if ans is None or value.is_missing_release_notes:
+                missing_release_notes = True
+            if ans:
+                res.append(ans)
+            if beta_ans:
+                beta_res.append(beta_ans)
+
+        release_notes = "\n---\n".join(res)
+        beta_release_notes = "\n---\n".join(beta_res)
+        create_content_descriptor(args.version, args.asset_id, release_notes, args.github_token, beta_rn=beta_release_notes)
+
+        if missing_release_notes:
+            print_error("Error: some release notes are missing. See previous errors.")
+            sys.exit(1)
+    except RuntimeError:
+        print_error('Unable to get the SHA1 of the commit in which the version was released. This can happen if your '
+                    'branch is not updated with origin master. Merge from origin master and, try again.\n'
+                    'If you\'re not on a fork, run "git merge origin/master".\n'
+                    'If you are on a fork, first set https://github.com/demisto/content to be '
+                    'your upstream by running "git remote add upstream https://github.com/demisto/content". After '
+                    'setting the upstream, run "git fetch upstream", and then run "git merge upstream/master". Doing '
+                    'these steps will merge your branch with content master as a base.')
+>>>>>>> upstream/master
 
 
 if __name__ == "__main__":

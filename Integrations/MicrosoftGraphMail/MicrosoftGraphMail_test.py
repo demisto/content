@@ -1,6 +1,10 @@
 from CommonServerPython import *
+<<<<<<< HEAD
 from MicrosoftGraphMail import build_mail_object, assert_pages, build_folders_path, error_parser, epoch_seconds
 from requests.models import Response
+=======
+from MicrosoftGraphMail import build_mail_object, assert_pages, build_folders_path
+>>>>>>> upstream/master
 
 
 def test_build_mail_object():
@@ -31,6 +35,7 @@ def test_build_folders_path():
     inp = 'i,s,f,q'
     response = build_folders_path(inp)
     assert response == 'mailFolders/i/childFolders/s/childFolders/f/childFolders/q'
+<<<<<<< HEAD
 
 
 def test_error_parser():
@@ -44,3 +49,5 @@ def test_error_parser():
 def test_epoch_seconds():
     integer = epoch_seconds()
     assert isinstance(integer, int)
+=======
+>>>>>>> upstream/master

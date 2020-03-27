@@ -134,6 +134,24 @@ tasks:
                         simple: csv
                     ignorecase: true
             iscontext: true
+<<<<<<< HEAD
+=======
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: text/csv
+            iscontext: true
+>>>>>>> upstream/master
     view: |-
       {
         "position": {
@@ -144,6 +162,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "5":
     id: "5"
     taskid: fcd7e62a-1b1a-4bb1-8427-f7c2b3760a6f
@@ -203,6 +222,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+=======
+>>>>>>> upstream/master
   "6":
     id: "6"
     taskid: 0f8b61fe-bd84-439a-8acc-51a166db74b8
@@ -300,7 +321,12 @@ tasks:
       '#default#':
       - "7"
       "yes":
+<<<<<<< HEAD
       - "5"
+=======
+      - "6"
+      - "13"
+>>>>>>> upstream/master
     separatecontext: false
     conditions:
     - label: "yes"
@@ -426,10 +452,13 @@ inputs:
   value: {}
   required: false
   description: The column number that contains hashes. (First column is column 0).
+<<<<<<< HEAD
 - key: Miner
   value: {}
   required: false
   description: Miner name to upload the indicators to in MineMeld.
+=======
+>>>>>>> upstream/master
 - key: IPListName
   value:
     simple: Demisto Remediation - IP EDL
@@ -465,6 +494,7 @@ inputs:
   description: Either pre-rulebase or post-rulebase,  according to the rule structure.
 - key: rule-position
   value:
+<<<<<<< HEAD
     simple: Top
   required: false
   description: |-
@@ -473,6 +503,16 @@ inputs:
       * Bottom
       * Before
       * After
+=======
+    simple: top
+  required: false
+  description: |-
+    The position of the rule in the ruleset. Valid values are:
+      * top
+      * bottom
+      * before
+      * after
+>>>>>>> upstream/master
 outputs: []
 tests:
   - No Test

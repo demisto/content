@@ -219,7 +219,11 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
     result_object = {
         'from': account.primary_smtp_address,
         'to': to,
+<<<<<<< HEAD
         'subject': subject,
+=======
+        'subject': subject.encode('utf-8'),
+>>>>>>> upstream/master
         'attachments': attachments_names
     }
 

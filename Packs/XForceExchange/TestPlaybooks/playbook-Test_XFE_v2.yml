@@ -1,0 +1,1057 @@
+id: Test_XFE_v2
+version: -1
+name: Test_XFE_v2
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c65d0090-0563-4d66-8294-12495370f821
+    type: start
+    task:
+      id: c65d0090-0563-4d66-8294-12495370f821
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: c07be386-6b85-4cc5-8ed2-23550da1adc5
+    type: regular
+    task:
+      id: c07be386-6b85-4cc5-8ed2-23550da1adc5
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: da523f16-9f5b-433a-8289-3ef5fa6f0b00
+    type: regular
+    task:
+      id: da523f16-9f5b-433a-8289-3ef5fa6f0b00
+      version: -1
+      name: ip
+      description: IP to check
+      script: XFE_v2|||ip
+      type: regular
+      iscommand: true
+      brand: XFE_v2
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      fullResponse: {}
+      ip:
+        simple: 8.8.8.8
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 19760593-ed15-4091-819a-822841088fd3
+    type: condition
+    task:
+      id: 19760593-ed15-4091-819a-822841088fd3
+      version: -1
+      name: Verify Outputs for IP
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: ip
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+          right:
+            value:
+              simple: XFE
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.IP.Reason
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.IP.Reasondescription
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.IP.Subnets
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 507db1c8-58da-4af8-8d24-c2dc47402e7a
+    type: regular
+    task:
+      id: 507db1c8-58da-4af8-8d24-c2dc47402e7a
+      version: -1
+      name: url
+      description: Check the given URL reputation
+      script: XFE_v2|||url
+      type: regular
+      iscommand: true
+      brand: XFE_v2
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      long: {}
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
+      url:
+        simple: https://google.com
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 8d9dd840-41a2-41f4-861f-b95171ea9563
+    type: condition
+    task:
+      id: 8d9dd840-41a2-41f4-861f-b95171ea9563
+      version: -1
+      name: Verify Outputs for URL
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+          right:
+            value:
+              simple: https://google.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.[1].Indicator
+            iscontext: true
+          right:
+            value:
+              simple: URL.Data
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.[1].Type
+            iscontext: true
+          right:
+            value:
+              simple: url
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.[1].Vendor
+            iscontext: true
+          right:
+            value:
+              simple: XFE
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.[1].Score
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 334227c0-7a19-4d0c-8699-a28003a80bcf
+    type: regular
+    task:
+      id: 334227c0-7a19-4d0c-8699-a28003a80bcf
+      version: -1
+      name: file
+      description: Check file reputation
+      script: XFE_v2|||file
+      type: regular
+      iscommand: true
+      brand: XFE_v2
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      file:
+        simple: 474B9CCF5AB9D72CA8A333889BBB34F0
+      long: {}
+      retries: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: ae6ed8f5-8b71-42b6-81a4-29e5ad76c9f1
+    type: condition
+    task:
+      id: ae6ed8f5-8b71-42b6-81a4-29e5ad76c9f1
+      version: -1
+      name: Verify Outputs for File
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: File.Malicious.Vendor
+            iscontext: true
+          right:
+            value:
+              simple: XFE
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.[2].Indicator
+            iscontext: true
+          right:
+            value:
+              simple: File.MD5
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.[2].Type
+            iscontext: true
+          right:
+            value:
+              simple: file
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.[2].Vendor
+            iscontext: true
+          right:
+            value:
+              simple: XFE
+      - - operator: InRange
+          left:
+            value:
+              simple: DBotScore.[2].Score
+            iscontext: true
+          right:
+            value:
+              simple: 1,3
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 3c0008bf-8b13-41fb-8b3e-80f8b35c9206
+    type: regular
+    task:
+      id: 3c0008bf-8b13-41fb-8b3e-80f8b35c9206
+      version: -1
+      name: domain
+      description: Check domain reputation
+      script: XFE_v2|||domain
+      type: regular
+      iscommand: true
+      brand: XFE_v2
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      domain:
+        simple: ibm.com
+      fullResponse: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 53ae7009-9d15-471f-87bd-a8e1fca84caa
+    type: regular
+    task:
+      id: 53ae7009-9d15-471f-87bd-a8e1fca84caa
+      version: -1
+      name: cve-search
+      description: Search for details about the given CVE
+      script: XFE_v2|||cve-search
+      type: regular
+      iscommand: true
+      brand: XFE_v2
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      cve_id:
+        simple: CVE-2013-3893
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 7ac31e31-2647-408b-8f04-878a216261e4
+    type: condition
+    task:
+      id: 7ac31e31-2647-408b-8f04-878a216261e4
+      version: -1
+      name: Verify Outputs for CVE
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CVE.ID
+            iscontext: true
+          right:
+            value:
+              simple: CVE-2013-3893
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CVE.CVSS
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CVE.Published
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CVE.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Xfdbid
+            iscontext: true
+      - - operator: InRange
+          left:
+            value:
+              simple: XFE.CVE.RiskLevel
+            iscontext: true
+          right:
+            value:
+              simple: 1,10
+      - - operator: isEqualString
+          left:
+            value:
+              simple: XFE.CVE.Reported
+            iscontext: true
+          right:
+            value:
+              simple: CVE.Published
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Cvss
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Stdcode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.PlatformsAffected
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Exploitability
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 728ca2b2-5227-4d4b-8374-ce11393df13d
+    type: regular
+    task:
+      id: 728ca2b2-5227-4d4b-8374-ce11393df13d
+      version: -1
+      name: cve-latest
+      description: Return the latest vulnerabilities found
+      script: XFE_v2|||cve-latest
+      type: regular
+      iscommand: true
+      brand: XFE_v2
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      end_date: {}
+      limit: {}
+      start_date: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 80f418a0-df66-4c70-818b-69021981830f
+    type: condition
+    task:
+      id: 80f418a0-df66-4c70-818b-69021981830f
+      version: -1
+      name: Verify Outputs for Recent CVEs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CVE.[1].ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CVE.[1].CVSS
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CVE.[1].Published
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CVE.[1].Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Xfdbid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.RiskLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Reported
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Cvss
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Stdcode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.PlatformsAffected
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Exploitability
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 7d11f1b1-7a5d-4994-8ece-02a1c74ada2b
+    type: regular
+    task:
+      id: 7d11f1b1-7a5d-4994-8ece-02a1c74ada2b
+      version: -1
+      name: xfe-whois
+      description: Gets information about the given host address
+      script: XFE_v2|||xfe-whois
+      type: regular
+      iscommand: true
+      brand: XFE_v2
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      host:
+        simple: demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 2650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 01fef1a5-fb7a-4660-8c80-aac9ccd4db6e
+    type: condition
+    task:
+      id: 01fef1a5-fb7a-4660-8c80-aac9ccd4db6e
+      version: -1
+      name: Verify Outputs for Whois
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: XFE.Whois.Host
+            iscontext: true
+          right:
+            value:
+              simple: demisto.com
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.Whois.RegistrarName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.Whois.Created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.Whois.Updated
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.Whois.Expires
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.Whois.Email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.Whois.Contact
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 7f50921c-2c14-41f1-84d2-d3f12cd6ac3c
+    type: regular
+    task:
+      id: 7f50921c-2c14-41f1-84d2-d3f12cd6ac3c
+      version: -1
+      name: xfe-search-cves
+      description: Gets list of all vulnerabilities associated with the search term.
+      script: XFE_v2|||xfe-search-cves
+      type: regular
+      iscommand: true
+      brand: XFE_v2
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      bookmark: {}
+      end_date: {}
+      q:
+        simple: Windows
+      start_date: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 9abc6339-f007-489b-8ba6-2f0426263d5c
+    type: condition
+    task:
+      id: 9abc6339-f007-489b-8ba6-2f0426263d5c
+      version: -1
+      name: Verify Outputs for Search CVEs by Query
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CVE.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CVE.CVSS
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CVE.Published
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CVE.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Xfdbid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.RiskLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Reported
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Cvss
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Stdcode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.PlatformsAffected
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Exploitability
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVESearch.TotalRows
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVESearch.Bookmark
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: b1b8f0ab-2dc5-4dfa-85a8-82acd53f312d
+    type: title
+    task:
+      id: b1b8f0ab-2dc5-4dfa-85a8-82acd53f312d
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: fd13df92-92c8-4837-80fd-ee99d7a39370
+    type: condition
+    task:
+      id: fd13df92-92c8-4837-80fd-ee99d7a39370
+      version: -1
+      name: Verify Outputs for Domain
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+          right:
+            value:
+              simple: ibm.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: domain
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+          right:
+            value:
+              simple: XFE
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: ibm.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 568004bf-577b-4068-8035-e1cf07384830
+    type: regular
+    task:
+      id: 568004bf-577b-4068-8035-e1cf07384830
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3360,
+        "width": 390,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: InstanceName
+  value: {}
+  required: false
+  description: ""
+outputs: []

@@ -25,7 +25,12 @@
   "shouldCommit": false,
   "shouldPublish": false,
   "associatedTypes": [
+<<<<<<< HEAD
     "IP"
+=======
+    "IP",
+    "IPv6"
+>>>>>>> upstream/master
   ],
   "caseInsensitive": true,
   "columns": null,

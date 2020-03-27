@@ -187,7 +187,11 @@ def search_indicator_by_params(params, searchable_value):
 
     if not indicators_data['objects']:
         demisto.results(F"No intelligence has been found for {searchable_value}")
+<<<<<<< HEAD
         sys.exit()
+=======
+        return None
+>>>>>>> upstream/master
 
     return find_worst_indicator(indicators_data['objects'])
 
@@ -395,6 +399,12 @@ def get_ip_reputation(ip, threshold=None, status="active,inactive"):
     """
     params = build_params(value=ip, type="ip", status=status, limit=0)
     indicator = search_indicator_by_params(params, ip)
+<<<<<<< HEAD
+=======
+    if not indicator:
+        return
+
+>>>>>>> upstream/master
     threshold = threshold or DEFAULT_THRESHOLD
     dbot_context = get_dbot_context(indicator, threshold)
     ip_context = get_ip_context(indicator, threshold)
@@ -426,6 +436,12 @@ def get_domain_reputation(domain, threshold=None, status="active,inactive"):
     """
     params = build_params(value=domain, type="domain", status=status, limit=0)
     indicator = search_indicator_by_params(params, domain)
+<<<<<<< HEAD
+=======
+    if not indicator:
+        return
+
+>>>>>>> upstream/master
     threshold = threshold or DEFAULT_THRESHOLD
     dbot_context = get_dbot_context(indicator, threshold)
     domain_context = get_domain_context(indicator, threshold)
@@ -457,6 +473,12 @@ def get_file_reputation(file, threshold=None, status="active,inactive"):
     """
     params = build_params(value=file, type="md5", status=status, limit=0)
     indicator = search_indicator_by_params(params, file)
+<<<<<<< HEAD
+=======
+    if not indicator:
+        return
+
+>>>>>>> upstream/master
     threshold = threshold or DEFAULT_THRESHOLD
     dbot_context = get_dbot_context(indicator, threshold)
     file_context = get_file_context(indicator, threshold)
@@ -492,6 +514,12 @@ def get_url_reputation(url, threshold=None, status="active,inactive"):
     """
     params = build_params(value=url, type="url", status=status, limit=0)
     indicator = search_indicator_by_params(params, url)
+<<<<<<< HEAD
+=======
+    if not indicator:
+        return
+
+>>>>>>> upstream/master
     threshold = threshold or DEFAULT_THRESHOLD
     dbot_context = get_dbot_context(indicator, threshold)
     domain_context = get_url_context(indicator, threshold)
@@ -515,6 +543,12 @@ def get_email_reputation(email, threshold=None, status="active,inactive"):
     """
     params = build_params(value=email, type="email", status=status, limit=0)
     indicator = search_indicator_by_params(params, email)
+<<<<<<< HEAD
+=======
+    if not indicator:
+        return
+
+>>>>>>> upstream/master
     threshold = threshold or DEFAULT_THRESHOLD
     dbot_context = get_dbot_context(indicator, threshold)
     threat_email_context = get_threat_generic_context(indicator)
@@ -844,6 +878,7 @@ def get_indicators(**kwargs):
 
 
 def main():
+<<<<<<< HEAD
     ''' COMMANDS MANAGER / SWITCH PANEL '''
 
     LOG('Command being called is %s' % (demisto.command()))
@@ -897,6 +932,62 @@ def main():
             return_error("The server is not reachable.")
         else:
             return_error(e)
+=======
+    """
+    Initiate integration command
+    """
+    command = demisto.command()
+    LOG(f'Command being called is {command}')
+    try:
+        handle_proxy()
+        args = prepare_args(demisto.args())
+        if command == 'test-module':
+            test_module()
+        elif command == 'ip':
+            ips_reputation_command(**args)
+        elif command == 'domain':
+            domains_reputation_command(**args)
+        elif command == 'file':
+            files_reputation_command(**args)
+        elif command == 'url':
+            urls_reputation_command(**args)
+        elif command == 'threatstream-email-reputation':
+            get_email_reputation(**args)
+        elif command == 'threatstream-get-passive-dns':
+            get_passive_dns(**args)
+        elif command == 'threatstream-import-indicator-with-approval':
+            import_ioc_with_approval(**args)
+        elif command == 'threatstream-get-model-list':
+            get_model_list(**args)
+        elif command == 'threatstream-get-model-description':
+            get_model_description(**args)
+        elif command == 'threatstream-get-indicators-by-model':
+            get_iocs_by_model(**args)
+        elif command == 'threatstream-create-model':
+            create_model(**args)
+        elif command == 'threatstream-update-model':
+            update_model(**args)
+        elif command == 'threatstream-submit-to-sandbox':
+            submit_report(**args)
+        elif command == 'threatstream-get-analysis-status':
+            get_submission_status(**args)
+        elif command == 'threatstream-analysis-report':
+            get_report(**args)
+        elif command == 'threatstream-supported-platforms':
+            supported_platforms(**args)
+        elif command == 'threatstream-get-indicators':
+            get_indicators(**args)
+        elif command == 'threatstream-add-tag-to-model':
+            add_tag_to_model(**args)
+
+    except Exception as err:
+        if isinstance(err, MissingSchema):
+            return_error("Not valid server url. Check url format")
+        elif isinstance(err, ConnectionError):
+            return_error("The server is not reachable.")
+        else:
+            return_error(err)
+>>>>>>> upstream/master
 
 
 # python2 uses __builtin__ python3 uses builtins

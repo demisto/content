@@ -47,7 +47,11 @@ tasks:
       {
         "position": {
           "x": 480,
+<<<<<<< HEAD
           "y": 1420
+=======
+          "y": 1770
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -74,21 +78,25 @@ tasks:
       fromPart:
         simple: both
       fromType:
-        simple: internal_addresses
+        simple: email_domain
       fromValue:
-        simple: google.com
+        simple: gmail.com
       option:
         simple: no_action
       toType:
-        simple: internal_addresses
+        simple: email_domain
       toValue:
-        simple: google.com
+        simple: gmail.com
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 480,
+<<<<<<< HEAD
           "y": 370
+=======
+          "y": 360
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -117,7 +125,11 @@ tasks:
       {
         "position": {
           "x": 480,
+<<<<<<< HEAD
           "y": 1070
+=======
+          "y": 1420
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -146,7 +158,11 @@ tasks:
       {
         "position": {
           "x": 480,
+<<<<<<< HEAD
           "y": 720
+=======
+          "y": 1070
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -188,7 +204,11 @@ tasks:
       {
         "position": {
           "x": 50,
+<<<<<<< HEAD
           "y": 720
+=======
+          "y": 1070
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -250,7 +270,11 @@ tasks:
       {
         "position": {
           "x": 50,
+<<<<<<< HEAD
           "y": 1420
+=======
+          "y": 1770
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -296,7 +320,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 2120
         }
       }
     note: false
@@ -325,7 +349,11 @@ tasks:
       {
         "position": {
           "x": 50,
+<<<<<<< HEAD
           "y": 2120
+=======
+          "y": 2470
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -360,7 +388,11 @@ tasks:
       {
         "position": {
           "x": 910,
+<<<<<<< HEAD
           "y": 370
+=======
+          "y": 720
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -393,7 +425,11 @@ tasks:
       {
         "position": {
           "x": 910,
+<<<<<<< HEAD
           "y": 720
+=======
+          "y": 1070
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -430,7 +466,11 @@ tasks:
       {
         "position": {
           "x": 910,
+<<<<<<< HEAD
           "y": 1070
+=======
+          "y": 1420
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -464,7 +504,11 @@ tasks:
       {
         "position": {
           "x": 910,
+<<<<<<< HEAD
           "y": 1420
+=======
+          "y": 1770
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -548,7 +592,11 @@ tasks:
       {
         "position": {
           "x": 50,
+<<<<<<< HEAD
           "y": 2470
+=======
+          "y": 2820
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -574,7 +622,11 @@ tasks:
       {
         "position": {
           "x": 910,
+<<<<<<< HEAD
           "y": 1770
+=======
+          "y": 2120
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -600,7 +652,11 @@ tasks:
       {
         "position": {
           "x": 480,
+<<<<<<< HEAD
           "y": 1770
+=======
+          "y": 2120
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -670,7 +726,11 @@ tasks:
       {
         "position": {
           "x": 480,
+<<<<<<< HEAD
           "y": 2295
+=======
+          "y": 2645
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -699,7 +759,11 @@ tasks:
       {
         "position": {
           "x": 480,
+<<<<<<< HEAD
           "y": 1945
+=======
+          "y": 2295
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -743,7 +807,11 @@ tasks:
       {
         "position": {
           "x": 50,
+<<<<<<< HEAD
           "y": 895
+=======
+          "y": 1245
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -779,7 +847,11 @@ tasks:
       {
         "position": {
           "x": 50,
+<<<<<<< HEAD
           "y": 1245
+=======
+          "y": 1595
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -815,7 +887,11 @@ tasks:
       {
         "position": {
           "x": 50,
+<<<<<<< HEAD
           "y": 1595
+=======
+          "y": 1945
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -851,7 +927,11 @@ tasks:
       {
         "position": {
           "x": 50,
+<<<<<<< HEAD
           "y": 1945
+=======
+          "y": 2295
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -895,7 +975,11 @@ tasks:
       {
         "position": {
           "x": 50,
+<<<<<<< HEAD
           "y": 2295
+=======
+          "y": 2645
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -931,7 +1015,11 @@ tasks:
       {
         "position": {
           "x": 480,
+<<<<<<< HEAD
           "y": 2470
+=======
+          "y": 2820
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -964,7 +1052,11 @@ tasks:
       {
         "position": {
           "x": 910,
+<<<<<<< HEAD
           "y": 2120
+=======
+          "y": 2470
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -1000,7 +1092,11 @@ tasks:
       {
         "position": {
           "x": 480,
+<<<<<<< HEAD
           "y": 2120
+=======
+          "y": 2470
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -1036,7 +1132,11 @@ tasks:
       {
         "position": {
           "x": 480,
+<<<<<<< HEAD
           "y": 1595
+=======
+          "y": 1945
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -1072,7 +1172,11 @@ tasks:
       {
         "position": {
           "x": 910,
+<<<<<<< HEAD
           "y": 1595
+=======
+          "y": 1945
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -1105,7 +1209,11 @@ tasks:
       {
         "position": {
           "x": 480,
+<<<<<<< HEAD
           "y": 1245
+=======
+          "y": 1595
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -1141,7 +1249,11 @@ tasks:
       {
         "position": {
           "x": 910,
+<<<<<<< HEAD
           "y": 1245
+=======
+          "y": 1595
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -1177,7 +1289,11 @@ tasks:
       {
         "position": {
           "x": 910,
+<<<<<<< HEAD
           "y": 895
+=======
+          "y": 1245
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -1210,7 +1326,11 @@ tasks:
       {
         "position": {
           "x": 480,
+<<<<<<< HEAD
           "y": 895
+=======
+          "y": 1245
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -1229,7 +1349,11 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
+<<<<<<< HEAD
       - "4"
+=======
+      - "48"
+>>>>>>> upstream/master
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1407,7 +1531,11 @@ tasks:
       {
         "position": {
           "x": 1340,
+<<<<<<< HEAD
           "y": 1420
+=======
+          "y": 1770
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -1438,12 +1566,20 @@ tasks:
             iscontext: true
           right:
             value:
+<<<<<<< HEAD
               simple: mimecastapi@demistolab.com
+=======
+              simple: johnnydepp@gmail.com
+>>>>>>> upstream/master
     view: |-
       {
         "position": {
           "x": 1340,
+<<<<<<< HEAD
           "y": 1595
+=======
+          "y": 1945
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -1476,7 +1612,11 @@ tasks:
       {
         "position": {
           "x": 1340,
+<<<<<<< HEAD
           "y": 1770
+=======
+          "y": 2120
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -1512,7 +1652,11 @@ tasks:
       {
         "position": {
           "x": 1340,
+<<<<<<< HEAD
           "y": 1945
+=======
+          "y": 2295
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -1545,7 +1689,11 @@ tasks:
       {
         "position": {
           "x": 1340,
+<<<<<<< HEAD
           "y": 2470
+=======
+          "y": 2820
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -1578,7 +1726,11 @@ tasks:
       {
         "position": {
           "x": 1340,
+<<<<<<< HEAD
           "y": 2120
+=======
+          "y": 2470
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -1619,7 +1771,95 @@ tasks:
       {
         "position": {
           "x": 1340,
+<<<<<<< HEAD
           "y": 2295
+=======
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "48":
+    id: "48"
+    taskid: a74827ae-d72f-4f29-880b-48e3ab3509a3
+    type: regular
+    task:
+      id: a74827ae-d72f-4f29-880b-48e3ab3509a3
+      version: -1
+      name: mimecast-update-policy
+      description: update policy
+      script: '|||mimecast-update-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      description:
+        simple: newnew
+      fromPart: {}
+      fromType:
+        simple: free_mail_domains
+      fromValue: {}
+      option: {}
+      policy_id:
+        simple: ${Mimecast.Policy.ID}
+      toType: {}
+      toValue: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "49":
+    id: "49"
+    taskid: c608fec7-594a-4d04-8c16-855cb332fac5
+    type: condition
+    task:
+      id: c608fec7-594a-4d04-8c16-855cb332fac5
+      version: -1
+      name: Test mimecast-create-policy context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Mimecast.Policy.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Mimecast.Policy.Sender.Type
+            iscontext: true
+          right:
+            value:
+              simple: free_mail_domains
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -1630,7 +1870,11 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
+<<<<<<< HEAD
         "height": 2660,
+=======
+        "height": 3010,
+>>>>>>> upstream/master
         "width": 1670,
         "x": 50,
         "y": 50

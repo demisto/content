@@ -1,5 +1,9 @@
 ## [Unreleased]
+<<<<<<< HEAD
 
+=======
+-
+>>>>>>> upstream/master
 
 ## [19.11.1] - 2019-11-26
 #### New Integration

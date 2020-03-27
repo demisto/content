@@ -7,8 +7,11 @@ import requests
 import base64
 import os
 import json
+<<<<<<< HEAD
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from datetime import timezone
+=======
+>>>>>>> upstream/master
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -47,6 +50,7 @@ EMAIL_DATA_MAPPING = {
 ''' HELPER FUNCTIONS '''
 
 
+<<<<<<< HEAD
 def epoch_seconds(d=None):
     """
     Return the number of seconds for given date. If no date, return current.
@@ -108,6 +112,8 @@ def get_encrypted(content, key):
     return encrypted
 
 
+=======
+>>>>>>> upstream/master
 def get_now_utc():
     """
     Creates UTC current time of format Y-m-dTH:M:SZ (e.g. 2019-11-06T09:06:39Z)
@@ -159,7 +165,11 @@ def upload_file(filename, content, attachments_list):
 
     attachments_list.append({
         'path': file_result['FileID'],
+<<<<<<< HEAD
         'name': file_result['File'],
+=======
+        'name': file_result['File']
+>>>>>>> upstream/master
     })
 
 
@@ -226,7 +236,11 @@ def prepare_args(command, args):
 ''' MICROSOFT GRAPH MAIL CLIENT '''
 
 
+<<<<<<< HEAD
 class MsGraphClient(BaseClient):
+=======
+class MsGraphClient:
+>>>>>>> upstream/master
     """
     Microsoft Graph Mail Client enables authorized access to a user's Office 365 mail data in a personal account.
     """
@@ -235,6 +249,7 @@ class MsGraphClient(BaseClient):
     CONTEXT_DRAFT_PATH = 'MicrosoftGraph.Draft(val.ID && val.ID == obj.ID)'
     CONTEXT_SENT_EMAIL_PATH = 'MicrosoftGraph.Email'
 
+<<<<<<< HEAD
     def __init__(self, refresh_token, auth_id, enc_key, token_retrieval_url, app_name,
                  mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -243,11 +258,19 @@ class MsGraphClient(BaseClient):
         self._enc_key = enc_key
         self._token_retrieval_url = token_retrieval_url
         self._app_name = app_name
+=======
+    def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
+                 ok_codes, refresh_token, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit):
+        self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
+                                         enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
+                                         proxy=proxy, ok_codes=ok_codes, refresh_token=refresh_token)
+>>>>>>> upstream/master
         self._mailbox_to_fetch = mailbox_to_fetch
         self._folder_to_fetch = folder_to_fetch
         self._first_fetch_interval = first_fetch_interval
         self._emails_fetch_limit = emails_fetch_limit
 
+<<<<<<< HEAD
     def _get_access_token(self):
         """
         Obtains access and refresh token from Oprxoy server. Access token is used and stored in the integration context
@@ -328,6 +351,8 @@ class MsGraphClient(BaseClient):
         }
         return super()._http_request(*args, headers=headers, **kwargs)  # type: ignore
 
+=======
+>>>>>>> upstream/master
     def _get_root_folder_children(self, user_id):
         """
         Get the root folder (Top Of Information Store) children collection.
@@ -341,7 +366,11 @@ class MsGraphClient(BaseClient):
         rtype: ``list``
         """
         suffix_endpoint = f'users/{user_id}/mailFolders/msgfolderroot/childFolders?$top=250'
+<<<<<<< HEAD
         root_folder_children = self._http_request('GET', suffix_endpoint).get('value', None)
+=======
+        root_folder_children = self.ms_client.http_request('GET', suffix_endpoint).get('value', None)
+>>>>>>> upstream/master
         if not root_folder_children:
             raise Exception("No folders found under Top Of Information Store folder")
 
@@ -361,7 +390,11 @@ class MsGraphClient(BaseClient):
         :rtype: ``list``
         """
         suffix_endpoint = f'users/{user_id}/mailFolders/{folder_id}/childFolders?$top=250'
+<<<<<<< HEAD
         folder_children = self._http_request('GET', suffix_endpoint).get('value', [])
+=======
+        folder_children = self.ms_client.http_request('GET', suffix_endpoint).get('value', [])
+>>>>>>> upstream/master
         return folder_children
 
     def _get_folder_info(self, user_id, folder_id):
@@ -381,7 +414,11 @@ class MsGraphClient(BaseClient):
         """
 
         suffix_endpoint = f'users/{user_id}/mailFolders/{folder_id}'
+<<<<<<< HEAD
         folder_info = self._http_request('GET', suffix_endpoint)
+=======
+        folder_info = self.ms_client.http_request('GET', suffix_endpoint)
+>>>>>>> upstream/master
         if not folder_info:
             raise Exception(f'No info found for folder {folder_id}')
         return folder_info
@@ -462,7 +499,11 @@ class MsGraphClient(BaseClient):
         suffix_endpoint = (f"users/{self._mailbox_to_fetch}/mailFolders/{folder_id}/messages"
                            f"?$filter=lastModifiedDateTime ge {target_modified_time}"
                            f"&$orderby=lastModifiedDateTime &$top={self._emails_fetch_limit}&select=*")
+<<<<<<< HEAD
         fetched_emails = self._http_request('GET', suffix_endpoint).get('value', [])[:self._emails_fetch_limit]
+=======
+        fetched_emails = self.ms_client.http_request('GET', suffix_endpoint).get('value', [])[:self._emails_fetch_limit]
+>>>>>>> upstream/master
 
         if exclude_ids:  # removing emails in order to prevent duplicate incidents
             fetched_emails = [email for email in fetched_emails if email.get('id') not in exclude_ids]
@@ -743,7 +784,11 @@ class MsGraphClient(BaseClient):
         :rtype: ``str``
         """
         suffix_endpoint = f'users/{self._mailbox_to_fetch}/messages/{message_id}/attachments/{attachment_id}/$value'
+<<<<<<< HEAD
         mime_content = self._http_request('GET', suffix_endpoint, resp_type='text')
+=======
+        mime_content = self.ms_client.http_request('GET', suffix_endpoint, resp_type='text')
+>>>>>>> upstream/master
 
         return mime_content
 
@@ -760,7 +805,11 @@ class MsGraphClient(BaseClient):
 
         attachment_results = []  # type: ignore
         suffix_endpoint = f'users/{self._mailbox_to_fetch}/messages/{message_id}/attachments'
+<<<<<<< HEAD
         attachments = self._http_request('Get', suffix_endpoint).get('value', [])
+=======
+        attachments = self.ms_client.http_request('Get', suffix_endpoint).get('value', [])
+>>>>>>> upstream/master
 
         for attachment in attachments:
             attachment_type = attachment.get('@odata.type', '')
@@ -858,7 +907,11 @@ class MsGraphClient(BaseClient):
         suffix_endpoint = f'/users/{self._mailbox_to_fetch}/messages'
         draft = MsGraphClient._build_message(**kwargs)
 
+<<<<<<< HEAD
         created_draft = self._http_request('POST', suffix_endpoint, json_data=draft)
+=======
+        created_draft = self.ms_client.http_request('POST', suffix_endpoint, json_data=draft)
+>>>>>>> upstream/master
         parsed_draft = MsGraphClient._parse_item_as_dict(created_draft)
         human_readable = tableToMarkdown(f'Created draft with id: {parsed_draft.get("ID", "")}', parsed_draft)
         ec = {self.CONTEXT_DRAFT_PATH: parsed_draft}
@@ -871,8 +924,13 @@ class MsGraphClient(BaseClient):
         """
         suffix_endpoint = f'/users/{self._mailbox_to_fetch}/sendMail'
         message_content = MsGraphClient._build_message(**kwargs)
+<<<<<<< HEAD
         self._http_request('POST', suffix_endpoint, json_data={'message': message_content},
                            resp_type="text")
+=======
+        self.ms_client.http_request('POST', suffix_endpoint, json_data={'message': message_content},
+                                    resp_type="text")
+>>>>>>> upstream/master
 
         message_content.pop('attachments', None)
         message_content.pop('internet_message_headers', None)
@@ -899,7 +957,11 @@ class MsGraphClient(BaseClient):
         """
         suffix_endpoint = f'/users/{self._mailbox_to_fetch}/messages/{message_id}/reply'
         reply = MsGraphClient._build_reply(to_recipients, comment)
+<<<<<<< HEAD
         self._http_request('POST', suffix_endpoint, json_data=reply, resp_type="text")
+=======
+        self.ms_client.http_request('POST', suffix_endpoint, json_data=reply, resp_type="text")
+>>>>>>> upstream/master
 
         return f'### Replied to: {", ".join(to_recipients)} with comment: {comment}'
 
@@ -914,7 +976,11 @@ class MsGraphClient(BaseClient):
         :rtype: ``str``
         """
         suffix_endpoint = f'/users/{self._mailbox_to_fetch}/messages/{draft_id}/send'
+<<<<<<< HEAD
         self._http_request('POST', suffix_endpoint, resp_type="text")
+=======
+        self.ms_client.http_request('POST', suffix_endpoint, resp_type="text")
+>>>>>>> upstream/master
 
         return f'### Draft with: {draft_id} id was sent successfully.'
 
@@ -926,7 +992,11 @@ class MsGraphClient(BaseClient):
         rtype: ``str`` or Exception
         """
         suffix_endpoint = f'users/{self._mailbox_to_fetch}'
+<<<<<<< HEAD
         user_response = self._http_request('GET', suffix_endpoint)
+=======
+        user_response = self.ms_client.http_request('GET', suffix_endpoint)
+>>>>>>> upstream/master
 
         if user_response.get('mail') != '' and user_response.get('id') != '':
             return_outputs('```✅ Success!```')
@@ -938,6 +1008,7 @@ def main():
     """ COMMANDS MANAGER / SWITCH PANEL """
     params = demisto.params()
 
+<<<<<<< HEAD
     # params related to oproxy
     auth_id_and_token_retrieval_url = params.get('auth_id', '').split('@')
     auth_id = auth_id_and_token_retrieval_url[0]
@@ -955,18 +1026,46 @@ def main():
     base_url = 'https://graph.microsoft.com/v1.0/'
     verify = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+=======
+    self_deployed = params.get('self_deployed', False)
+
+    # params related to common instance configuration
+    base_url = 'https://graph.microsoft.com/v1.0/'
+    use_ssl = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
+    ok_codes = (200, 201, 202)
+    refresh_token = params.get('refresh_token', '')
+    auth_and_token_url = params.get('auth_id', '')
+    enc_key = params.get('enc_key', '')
+    app_name = 'ms-graph-mail-listener'
+>>>>>>> upstream/master
 
     # params related to mailbox to fetch incidents
     mailbox_to_fetch = params.get('mailbox_to_fetch', '')
     folder_to_fetch = params.get('folder_to_fetch', 'Inbox')
     first_fetch_interval = params.get('first_fetch', '15 minutes')
     emails_fetch_limit = int(params.get('fetch_limit', '50'))
+<<<<<<< HEAD
     ok_codes = (200, 201, 202)
 
     client = MsGraphClient(refresh_token, auth_id, enc_key, token_retrieval_url, app_name, mailbox_to_fetch,
                            folder_to_fetch, first_fetch_interval, emails_fetch_limit, base_url=base_url, verify=verify,
                            proxy=proxy, ok_codes=ok_codes)
 
+=======
+
+    # params related to self deployed
+    tenant_id = refresh_token if self_deployed else ''
+
+    # params related to oproxy
+    # In case the script is running for the first time, refresh token is retrieved from integration parameters,
+    # in other case it's retrieved from integration context.
+    refresh_token = (demisto.getIntegrationContext().get('current_refresh_token') or refresh_token)
+
+    client = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
+                           ok_codes, refresh_token, mailbox_to_fetch, folder_to_fetch, first_fetch_interval,
+                           emails_fetch_limit)
+>>>>>>> upstream/master
     try:
         command = demisto.command()
         args = prepare_args(command, demisto.args())
@@ -997,5 +1096,11 @@ def main():
         return_error(str(e))
 
 
+<<<<<<< HEAD
+=======
+from MicrosoftApiModule import *  # noqa: E402
+
+
+>>>>>>> upstream/master
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()

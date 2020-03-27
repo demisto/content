@@ -1,0 +1,276 @@
+{
+  "Host(val.ID == obj.ID)": [
+    {
+      "ID": 3571259,
+      "Hostname": "test hostname",
+      "IP": "test ip",
+      "OS": "os name"
+    }
+  ],
+  "RiskSense.Host(val.ID == obj.ID)": [
+    {
+      "ID": 3571259,
+      "ClientID": 747,
+      "GroupID": 7990,
+      "GroupName": "group name",
+      "Group": [
+        {
+          "ID": 7990,
+          "Name": "group name"
+        }
+      ],
+      "Rs3": 351,
+      "Xrs3": null,
+      "Criticality": 5,
+      "Tag": [
+        {
+          "ID": 215552,
+          "Name": "tag name 1",
+          "Category": "category 1",
+          "Description": "",
+          "Created": "2019-04-24T21:37:06",
+          "Updated": "2019-04-24T21:37:06",
+          "Color": "color 1"
+        },
+        {
+          "ID": 215557,
+          "Name": "tag name 2",
+          "Category": "category 2",
+          "Description": "",
+          "Created": "2019-04-24T21:42:34",
+          "Updated": "2019-04-24T21:42:34",
+          "Color": "color 2"
+        },
+        {
+          "ID": 229865,
+          "Name": "tag name 3",
+          "Category": "category 3",
+          "Description": "",
+          "Created": "2019-10-29T20:22:25",
+          "Updated": "2019-10-29T20:22:25",
+          "Color": "color 3"
+        },
+        {
+          "ID": 232940,
+          "Name": "tag name 4",
+          "Category": "category 4",
+          "Description": "",
+          "Created": "2019-12-30T11:27:57",
+          "Updated": "2019-12-30T11:28:00",
+          "Color": "color 4"
+        }
+      ],
+      "NetworkID": 78038,
+      "NetworkName": "network name",
+      "NetworkType": "network type",
+      "DiscoveredOn": "2007-01-23",
+      "LastFoundOn": "2019-11-01",
+      "LastScanTime": "2007-01-23T16:46:50",
+      "HostName": "test hostname",
+      "IpAddress": "test ip",
+      "PortNumbers": "135, 1025, 1494, 80, 139, 3389, 5353, 445",
+      "OS": {
+        "Name": "os name",
+        "Family": "os family",
+        "Class": "os class",
+        "Vendor": "os vendor"
+      },
+      "CMDB": [
+        {
+          "Order": 1,
+          "Key": "busines_criticality",
+          "Value": "",
+          "Label": "Asset Criticality"
+        },
+        {
+          "Order": 2,
+          "Key": "os",
+          "Value": "",
+          "Label": "Operating System"
+        },
+        {
+          "Order": 3,
+          "Key": "manufacturer",
+          "Value": "",
+          "Label": "Manufactured By"
+        },
+        {
+          "Order": 4,
+          "Key": "model_id",
+          "Value": "",
+          "Label": "Model"
+        },
+        {
+          "Order": 5,
+          "Key": "location",
+          "Value": "",
+          "Label": "Location"
+        },
+        {
+          "Order": 6,
+          "Key": "managed_by",
+          "Value": "",
+          "Label": "Managed By"
+        },
+        {
+          "Order": 7,
+          "Key": "owned_by",
+          "Value": "",
+          "Label": "Owned By"
+        },
+        {
+          "Order": 8,
+          "Key": "supported_by",
+          "Value": "",
+          "Label": "Supported By"
+        },
+        {
+          "Order": 9,
+          "Key": "support_group",
+          "Value": "",
+          "Label": "Support Group"
+        },
+        {
+          "Order": 10,
+          "Key": "sys_updated_on",
+          "Value": "",
+          "Label": "Last Scanned"
+        },
+        {
+          "Order": 11,
+          "Key": "asset_tag",
+          "Value": "",
+          "Label": "Asset tags"
+        },
+        {
+          "Order": 12,
+          "Key": "mac_address",
+          "Value": "",
+          "Label": "Mac Address"
+        },
+        {
+          "Order": 16,
+          "Key": "sys_id",
+          "Value": "",
+          "Label": "Unique Id"
+        },
+        {
+          "Order": 18,
+          "Key": "cf_1",
+          "Value": "",
+          "Label": "Custom Field 1"
+        },
+        {
+          "Order": 19,
+          "Key": "cf_2",
+          "Value": "",
+          "Label": "Custom Field 2"
+        },
+        {
+          "Order": 20,
+          "Key": "cf_3",
+          "Value": "",
+          "Label": "Custom Field 3"
+        },
+        {
+          "Order": 21,
+          "Key": "cf_4",
+          "Value": "",
+          "Label": "Custom Field 4"
+        },
+        {
+          "Order": 22,
+          "Key": "cf_5",
+          "Value": "",
+          "Label": "Custom Field 5"
+        },
+        {
+          "Order": 23,
+          "Key": "cf_6",
+          "Value": "",
+          "Label": "Custom Field 6"
+        },
+        {
+          "Order": 24,
+          "Key": "cf_7",
+          "Value": "",
+          "Label": "Custom Field 7"
+        },
+        {
+          "Order": 25,
+          "Key": "cf_8",
+          "Value": "",
+          "Label": "Custom Field 8"
+        },
+        {
+          "Order": 26,
+          "Key": "cf_9",
+          "Value": "",
+          "Label": "Custom Field 9"
+        },
+        {
+          "Order": 29,
+          "Key": "cf_10",
+          "Value": "",
+          "Label": "Custom Field 10"
+        },
+        {
+          "Order": 13,
+          "Key": "Asset Compliance",
+          "Value": "",
+          "Label": "Asset Compliance"
+        }
+      ],
+      "Services": "service1, service2, service3, service4",
+      "Note": [
+        {
+          "UserID": 5969,
+          "UserName": "username",
+          "Note": "Testing note\n",
+          "Date": "2019-12-30T11:35:41"
+        },
+        {
+          "UserID": 5969,
+          "UserName": "username",
+          "Note": "This is second note for testing",
+          "Date": "2019-12-30T11:38:25"
+        }
+      ],
+      "Source": [
+        {
+          "Name": "source name",
+          "UuID": "uuid",
+          "ScannerType": null
+        }
+      ],
+      "Ticket": [
+        {
+          "TicketNumber": "ticket number",
+          "TicketStatus": "To Do",
+          "DeepLink": "test deep link",
+          "Type": "test type",
+          "ConnectorName": "Test",
+          "DetailedStatus": ""
+        }
+      ],
+      "LastVulnTrendingOn": null,
+      "LastThreatTrendingOn": null,
+      "OldestOpenFindingWithThreatDiscoveredOn": "2014-09-24",
+      "Xrs3date": null,
+      "DiscoveredByRS": false,
+      "Href": "reference link",
+      "Total": 2,
+      "Critical": 2,
+      "High": 0,
+      "Medium": 0,
+      "Low": 0,
+      "Info": 0
+    }
+  ],
+  "Ticket(val.ID == obj.ID)": [
+    {
+      "ID": "ticket number",
+      "State": "To Do"
+    }
+  ]
+}

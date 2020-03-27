@@ -1,0 +1,43 @@
+{
+	"id": "incident_devicegsuiteaccountstatus",
+	"version": -1,
+	"fromVersion": "5.0.0",
+	"modified": "2020-01-05T15:51:35.880235683Z",
+	"name": "Device G-Suite Account Status",
+	"ownerOnly": false,
+	"placeholder": "",
+	"description": "Whether the G-Suite data of the user account was wiped from the user's device. Can be either \"Unchanged\" or \"Wiped\".",
+	"cliName": "devicegsuiteaccountstatus",
+	"type": "singleSelect",
+	"closeForm": false,
+	"editForm": true,
+	"required": false,
+	"script": "",
+	"fieldCalcScript": "",
+	"neverSetAsRequired": false,
+	"isReadOnly": false,
+	"selectValues": [
+		"Unchanged",
+		"Wiped"
+	],
+	"validationRegex": "",
+	"useAsKpi": false,
+	"locked": false,
+	"system": false,
+	"content": true,
+	"group": 0,
+	"hidden": false,
+	"associatedTypes": [
+		"Employee Offboarding"
+	],
+	"systemAssociatedTypes": null,
+	"associatedToAll": false,
+	"unmapped": false,
+	"unsearchable": false,
+	"caseInsensitive": true,
+	"columns": null,
+	"defaultRows": null,
+	"sla": 0,
+	"threshold": 72,
+	"breachScript": ""
+}

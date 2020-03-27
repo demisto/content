@@ -630,7 +630,11 @@ script:
 
     //Quick Scan commands
     function quickScanUrl(scan_type, url, endpoint) {
+<<<<<<< HEAD
         var body = 'scan_type=' + scan_type + '&url=' + url;
+=======
+        var body = 'scan_type=' + scan_type + '&url=' + encodeURIComponent(url);
+>>>>>>> upstream/master
         return sendRequest('POST', endpoint, body);
     }
 

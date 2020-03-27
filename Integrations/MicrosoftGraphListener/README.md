@@ -586,8 +586,13 @@ The following permissions are required for all commands:
   <tbody>
     <tr>
       <td>  </td>
+<<<<<<< HEAD
       <td> content: <h1>Added inline</h1> <img src=\<br>contentType: HTML </td>
       <td> <h1>Added inline</h1> <img src=\ </td>
+=======
+      <td> content: <h1>Added inline</h1><br>contentType: HTML </td>
+      <td> <h1>Added inline</h1></td>
+>>>>>>> upstream/master
       <td>  </td>
       <td> flagStatus: flagged </td>
       <td> Normal </td>

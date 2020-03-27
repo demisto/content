@@ -6,7 +6,11 @@
 		"TypeName": "",
 		"id": "Phishing",
 		"kind": "details",
+<<<<<<< HEAD
 		"modified": "2019-10-16T12:35:43.807823117Z",
+=======
+		"modified": "2020-01-01T11:31:16.144585093Z",
+>>>>>>> upstream/master
 		"name": "",
 		"system": false,
 		"tabs": [
@@ -838,6 +842,51 @@
 						"static": false,
 						"w": 1,
 						"x": 0,
+<<<<<<< HEAD
+=======
+						"y": 12
+					},
+					{
+						"description": "",
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "swtuqptgvs-7852ea30-2c7f-11ea-a369-15269a1bf356",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "dbotprediction",
+								"height": 24,
+								"id": "90af2300-2c89-11ea-a369-15269a1bf356",
+								"index": 0,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotpredictionprobability",
+								"height": 24,
+								"id": "92854290-2c89-11ea-a369-15269a1bf356",
+								"index": 1,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbottextsuggestionhighlighted",
+								"height": 24,
+								"id": "9332c0a0-2c89-11ea-a369-15269a1bf356",
+								"index": 2,
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Machine-learning Predictions",
+						"static": false,
+						"w": 1,
+						"x": 0,
+>>>>>>> upstream/master
 						"y": 6
 					}
 				],

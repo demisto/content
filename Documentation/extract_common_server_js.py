@@ -11,7 +11,7 @@ def readFile(filepath):
 
 def main(argv):
     # create commonServer js file to extract doc from
-    commonServer = readFile('./Scripts/script-CommonServer.yml')
+    commonServer = readFile('./Packs/Base/Scripts/script-CommonServer.yml')
     jsScript = commonServer.get("script", "")
     with open('./Documentation/commonServerJsDoc.js', 'w') as fp:
         fp.write(jsScript)

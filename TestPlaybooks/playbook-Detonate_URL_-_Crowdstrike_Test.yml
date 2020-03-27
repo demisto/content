@@ -76,7 +76,11 @@ tasks:
       key:
         simple: URL.Data
       value:
+<<<<<<< HEAD
         simple: https://www.facebook.com
+=======
+        simple: https://www.google.com
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {

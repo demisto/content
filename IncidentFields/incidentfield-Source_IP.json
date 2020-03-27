@@ -2,7 +2,12 @@
 	"fromVersion": "5.0.0",
 	"associatedToAll": false,
 	"associatedTypes": [
+<<<<<<< HEAD
 		"Impossible Traveler"
+=======
+		"Impossible Traveler",
+		"Cortex XDR Port Scan"
+>>>>>>> upstream/master
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

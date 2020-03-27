@@ -9,6 +9,7 @@ USER="ec2-user"
 echo "[`date`] ${PUBLIC_IP}: add instance to known hosts"
 ssh-keyscan -H ${PUBLIC_IP} >> ~/.ssh/known_hosts
 
+<<<<<<< HEAD
 # copy content files
 ssh ${USER}@${PUBLIC_IP} 'mkdir ~/content'
 ssh ${USER}@${PUBLIC_IP} 'mkdir ~/TestPlaybooks'
@@ -35,6 +36,8 @@ fi
 
 ssh -t ${USER}@${PUBLIC_IP} ${COPY_CONTENT_COMMAND}
 
+=======
+>>>>>>> upstream/master
 echo "[`date`] ${PUBLIC_IP}: start server"
 
 START_SERVER_COMMAND="sudo systemctl start demisto"
@@ -44,4 +47,8 @@ echo "[`date`] ${PUBLIC_IP}: wait for server to start on ip"
 
 wget --retry-connrefused --no-check-certificate -T 60 "https://${PUBLIC_IP}:443"
 
+<<<<<<< HEAD
 echo "[`date`] ${PUBLIC_IP}: server started!"
+=======
+echo "[`date`] ${PUBLIC_IP}: server started!"
+>>>>>>> upstream/master

@@ -389,6 +389,11 @@ tasks:
       command: {}
       dst: {}
       element: {}
+<<<<<<< HEAD
+=======
+      extend-context:
+        simple: panorama.model=response.result.system.model
+>>>>>>> upstream/master
       from: {}
       job-id: {}
       key: {}

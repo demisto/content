@@ -28,9 +28,16 @@
     "Account",
     "Domain",
     "Email",
+<<<<<<< HEAD
     "IP",
     "URL",
     "Host"
+=======
+    "URL",
+    "Host",
+    "IP",
+    "IPv6"
+>>>>>>> upstream/master
   ],
   "caseInsensitive": true,
   "columns": null,

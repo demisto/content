@@ -227,6 +227,10 @@ def docker_run(project_dir, docker_image, no_test, no_lint, keep_container, use_
     if no_lint:
         run_params.extend(['-e', 'PYLINT_SKIP=1'])
     run_params.extend(['-e', 'CPU_NUM={}'.format(cpu_num)])
+<<<<<<< HEAD
+=======
+    run_params.extend(['-e', 'CI={}'.format(os.getenv("CI", "false"))])
+>>>>>>> upstream/master
     run_params.extend([docker_image, 'sh', './{}'.format(RUN_SH_FILE_NAME)])
     container_id = subprocess.check_output(run_params, universal_newlines=True).strip()
     try:
@@ -277,7 +281,11 @@ def setup_dev_files(project_dir):
     shutil.rmtree(project_dir + '/__pycache__', ignore_errors=True)
     shutil.copy(CONTENT_DIR + '/Tests/scripts/dev_envs/pytest/conftest.py', project_dir)
     if "/Scripts/CommonServerPython" not in project_dir:  # Otherwise we already have the CommonServerPython.py file
+<<<<<<< HEAD
         shutil.copy(CONTENT_DIR + '/Scripts/CommonServerPython/CommonServerPython.py', project_dir)
+=======
+        shutil.copy(CONTENT_DIR + '/Packs/Base/Scripts/CommonServerPython/CommonServerPython.py', project_dir)
+>>>>>>> upstream/master
 
 
 def main():

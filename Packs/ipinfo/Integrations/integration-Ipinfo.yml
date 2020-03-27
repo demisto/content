@@ -1,0 +1,107 @@
+commonfields:
+  id: ipinfo
+  version: -1
+name: ipinfo
+system: true
+display: ipinfo
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
+description: Use the ipinfo.io API to get data about an IP address
+defaultEnabled: false
+configuration:
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: API Token (optional)
+  name: token
+  defaultvalue: ""
+  type: 4
+  required: false
+script:
+  script: |-
+    var sendRequest = function(url, json) {
+        var res = http(
+                url,
+                {
+                    Method: 'GET',
+                },
+                false,
+                params.proxy
+            );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Failed to query ipinfo, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+        }
+        return json && res.Body ? JSON.parse(res.Body) : res.Body;
+    }
+
+    var base = 'http://ipinfo.io/';
+    var token = params.token ? '?token=' + params.token : '';
+    var jsonSuffix = '/json' + token;
+    switch (command) {
+        case 'test-module':
+            if (sendRequest(base+'8.8.8.8'+jsonSuffix, true)) {
+                return 'ok';
+            }
+            return 'not cool';
+        case 'ip':
+            var o = sendRequest(base + args.ip + jsonSuffix, true);
+            var ec = {IP: {Address: o.ip, Hostname: o.hostname, ASN: o.org, Geo: {
+                Location: o.loc, Country: o.country, Description: o.city + ', ' + o.region + ', ' + o.postal + ', ' + o.country}}};
+            ec.DBotScore = {Indicator: args.ip, Type: 'ip', Vendor: 'ipinfo', Score: 0};
+            var reply = [{Type: entryTypes.note, Contents: o, ContentsFormat: formats.json, HumanReadable: objToMd(o), EntryContext: ec}];
+            if (o.loc) {
+                var parts = o.loc.split(',');
+                reply.push({Type: entryTypes.map, Contents: {lat: parseFloat(parts[0]), lng: parseFloat(parts[1])}, ContentsFormat: formats.json});
+            }
+            return reply;
+        case 'ipinfo_field':
+            return sendRequest(base + args.ip + '/' + args.field + token, false);
+    }
+  type: javascript
+  commands:
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: IP address to query. E.g. !ip 1.1.1.1
+    outputs:
+    - contextPath: IP.Address
+      description: The IP address
+    - contextPath: IP.Hostname
+      description: The IP hostname
+    - contextPath: IP.ASN
+      description: The IP ASN
+    - contextPath: IP.Geo.Location
+      description: The IP geographic location in coordinates
+    - contextPath: IP.Geo.Country
+      description: The IP country
+    - contextPath: IP.Geo.Description
+      description: The IP location as <City, Region, Postal Code, Country>
+    description: Check IP reputation (when information is available, returns a JSON
+      with details).  Uses all configured Threat Intelligence feeds
+  - name: ipinfo_field
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: IP address to query. E.g. !ip 1.1.1.1
+    - name: field
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - geo
+      - loc
+      - city
+      - region
+      - country
+      - org
+      - hostname
+      - phone
+      description: Name of the field to retrieve. Can be org, city, geo, etc.
+    description: Retrieve value for a specific field from the IP address information
+  runonce: false
+tests:
+  - IPInfoTest

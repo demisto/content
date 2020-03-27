@@ -5,6 +5,10 @@ SERVER_MOCK_URL = 'https://demisto.mock.mybrz.net/xapi/v1/'
 integration_params = {
     "application_id": "bcab5b57-6ca4-43ee-a4c0-618a2246d4ac",
     "insecure": True,
+<<<<<<< HEAD
+=======
+    # fake data
+>>>>>>> upstream/master
     "private_key": "-----BEGIN PRIVATE KEY-----\nMIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAyf1wyfSTygQ/Ogl/\n"
                    "B9DfMIszhnV/TwlygafjvwzruekpHDnJUQ9u+A7BD8zLAnLOaWgL94ioGlUpAXBa\n"
                    "ewC/0wIDAQABAkEAo+egaoConDkuBS5HglQfiAis2uLlV4FXBZby28jkT4pNqs/J\n"
@@ -25,6 +29,10 @@ def test_create_headers(mocker):
     headers = create_headers(True)
     expect_headers = {
         'Content-Type': 'application/json',
+<<<<<<< HEAD
+=======
+        # fake data
+>>>>>>> upstream/master
         'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhcHBJZCI6ImJj'
                          'YWI1YjU3LTZjYTQtNDNlZS1hNGMwLTYxOGEyMjQ2ZDRhYyJ9.iM26FZt0FL6b7Eq95DMq'
                          'hoNzBCS06dPfayZTaBzFElycBbR0BSyXhmkzudOPui5NCEtyvJ3YxkpZvLK8LuIRYA'
@@ -75,6 +83,10 @@ def test_parse_data_from_response(mocker):
         'Domain': 'WORKGROUP',
         'Platform': 'windows',
         'Status': 'active',
+<<<<<<< HEAD
+=======
+        'ScanStatus': 'success',
+>>>>>>> upstream/master
         'IP': 'xxx.xx.xx.xxx',
         'ComputerSid': 'S-1-5-21-202186053-2642234773-3690463397',
         'IsCompromised': False,

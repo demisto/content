@@ -9,10 +9,18 @@ import requests
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
+<<<<<<< HEAD
 BASE_URL = '{}/openapi/v3'.format(demisto.params()['domain'])
 API_KEY = demisto.params()['api_key']
 USE_SSL = not demisto.params().get('insecure', False)
 
+=======
+BASE_URL = ''
+API_KEY = ''
+USE_SSL = False
+
+TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+>>>>>>> upstream/master
 ''' HELPER FUNCTIONS '''
 
 
@@ -39,7 +47,11 @@ def get_time_obj(t, time_format=None):
             return datetime.strptime(t, '%Y-%m-%dT%H:%M:%S.%fZ')
         else:
             # in case of "2018-09-14T13:27:18.123456Z"
+<<<<<<< HEAD
             return datetime.strptime(t, '%Y-%m-%dT%H:%M:%SZ')
+=======
+            return datetime.strptime(t, TIME_FORMAT)
+>>>>>>> upstream/master
 
 
 def get_time_str(time_obj, time_format=None):
@@ -84,19 +96,28 @@ def http_request(requests_func, url_suffix, **kwargs):
     return res.json()
 
 
+<<<<<<< HEAD
 @logger
+=======
+>>>>>>> upstream/master
 def http_get(url_suffix, params=None, data=None):
     headers = {'X-Api-Key': API_KEY}
     return http_request(requests.get, url_suffix, headers=headers, params=params, data=data)
 
 
+<<<<<<< HEAD
 @logger
+=======
+>>>>>>> upstream/master
 def http_patch(url_suffix, params=None, data=None):
     headers = {'X-Api-Key': API_KEY}
     return http_request(requests.patch, url_suffix, headers=headers, params=params, data=data)
 
 
+<<<<<<< HEAD
 @logger
+=======
+>>>>>>> upstream/master
 def http_post(url_suffix, params=None, data=None):
     headers = {'X-Api-Key': API_KEY}
     return http_request(requests.post, url_suffix, headers=headers, params=params, data=data)
@@ -164,7 +185,11 @@ def get_full_timeline(detection_id, per_page=100):
                            'per_page': per_page,
         })
 
+<<<<<<< HEAD
         if len(res['data']) == 0 or True:
+=======
+        if len(res['data']) == 0:
+>>>>>>> upstream/master
             done = True
 
         activities.extend(res['data'])
@@ -304,6 +329,7 @@ def detections_to_entry(detections, show_timeline=False):
     }
 
 
+<<<<<<< HEAD
 def get_unacknowledge_detections(t, per_page=50):
     ''' iterate over all unacknowledged detections later then time t'''
     page = 1
@@ -325,6 +351,31 @@ def get_unacknowledge_detections(t, per_page=50):
             yield detection
 
         page += 1
+=======
+def get_unacknowledged_detections(t, per_page=50):
+    # type: (datetime, int) -> Generator[dict, None, None]
+    """ iterate over all unacknowledged detections later then time t
+
+    Args:
+        t : last fetched time
+        per_page: how many detections per page
+
+    Yields:
+        dict: A detection from api
+    """
+    page = 1
+    res = list_detections(page=page, per_page=per_page, since=t)
+    while res:
+        for detection in res:
+            attributes = detection.get('attributes', {})
+            # If 'last_acknowledged_at' and 'last_acknowledged_by' are in attributes,
+            # the detection is acknowledged and should not create a new incident.
+            if attributes.get('last_acknowledged_at') and attributes.get('last_acknowledged_by'):
+                yield detection
+
+        page += 1
+        res = list_detections(page=page, per_page=per_page, since=t)
+>>>>>>> upstream/master
 
 
 @logger
@@ -354,12 +405,24 @@ def list_detections_command():
 
 
 @logger
+<<<<<<< HEAD
 def list_detections(page, per_page):
     res = http_get('/detections',
                    data={
                        'page': page,
                        'per_page': per_page
                    },
+=======
+def list_detections(page, per_page, since=None):
+    if isinstance(since, datetime):
+        since = datetime.strftime(since, TIME_FORMAT)
+    res = http_get('/detections',
+                   data=assign_params(
+                       page=page,
+                       per_page=per_page,
+                       since=since
+                   ),
+>>>>>>> upstream/master
                    )
     return res['data']
 
@@ -518,6 +581,7 @@ def execute_playbook(playbook_id, detection_id):
 
 def fetch_incidents():
     last_run = demisto.getLastRun()
+<<<<<<< HEAD
     last_fetch = last_run.get('time')
 
     # handle first time fetch
@@ -529,12 +593,27 @@ def fetch_incidents():
     LOG('iterating on detections, looking for more recent than {}'.format(last_fetch))
     incidents = []
     for raw_detection in get_unacknowledge_detections(last_fetch, per_page=2):
+=======
+    if last_run and 'time' in last_run:
+        last_fetch = last_run.get('time')
+        last_fetch = datetime.strptime(last_fetch, TIME_FORMAT)
+    else:
+        last_fetch = parse_date_range(demisto.params().get('fetch_time', '3 days'), TIME_FORMAT)[0]
+
+    LOG('iterating on detections, looking for more recent than {}'.format(last_fetch))
+    incidents = []
+    for raw_detection in get_unacknowledged_detections(last_fetch, per_page=2):
+>>>>>>> upstream/master
         LOG('found detection #{}'.format(raw_detection['id']))
         incident = detection_to_incident(raw_detection)
 
         incidents.append(incident)
 
+<<<<<<< HEAD
     if len(incidents) != 0:
+=======
+    if incidents:
+>>>>>>> upstream/master
         last_fetch = max([get_time_obj(incident['occurred']) for incident in incidents])  # noqa:F812
         demisto.setLastRun({'time': get_time_str(last_fetch + timedelta(seconds=1))})
     demisto.incidents(incidents)
@@ -546,6 +625,7 @@ def test_integration():
     return 'ok'
 
 
+<<<<<<< HEAD
 ''' EXECUTION CODE '''
 COMMANDS = {
     'test-module': test_integration,
@@ -575,3 +655,43 @@ except Exception as e:
     if demisto.command() != 'test-module':
         LOG.print_log()
     return_error('error has occurred: {}'.format(e.message, ))
+=======
+def main():
+    global BASE_URL, API_KEY, USE_SSL
+    BASE_URL = urljoin(demisto.params().get('domain', ''), '/openapi/v3')
+    API_KEY = demisto.params().get('api_key')
+    USE_SSL = not demisto.params().get('insecure', False)
+    ''' EXECUTION CODE '''
+    COMMANDS = {
+        'test-module': test_integration,
+        'fetch-incidents': fetch_incidents,
+        'redcanary-list-detections': list_detections_command,
+        'redcanary-list-endpoints': list_endpoints_command,
+        'redcanary-get-endpoint': get_endpoint_command,
+        'redcanary-get-endpoint-detections': get_endpoint_detections_command,
+        'redcanary-get-detection': get_detection_command,
+        'redcanary-acknowledge-detection': acknowledge_detection_command,
+        'redcanary-update-remediation-state': remediate_detection_command,
+        'redcanary-execute-playbook': execute_playbook_command,
+    }
+
+    try:
+        handle_proxy()
+        LOG('command is %s' % (demisto.command(),))
+        command_func = COMMANDS.get(demisto.command())
+        if command_func is not None:
+            if demisto.command() == 'fetch-incidents':
+                demisto.incidents(fetch_incidents())
+            else:
+                demisto.results(command_func())
+
+    except Exception as e:
+        LOG(e.message)
+        if demisto.command() != 'test-module':
+            LOG.print_log()
+        return_error('error has occurred: {}'.format(e.message, ))
+
+
+if __name__ in ('__builtin__', 'builtins'):
+    main()
+>>>>>>> upstream/master

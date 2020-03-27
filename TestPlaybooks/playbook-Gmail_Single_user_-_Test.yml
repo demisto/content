@@ -276,8 +276,18 @@ tasks:
       append: {}
       key:
         simple: Testmail.ID
+<<<<<<< HEAD
       value:
         simple: ${Email.[0].ID}
+=======
+      stringify: {}
+      value:
+        complex:
+          root: Email
+          accessor: ID
+          transformers:
+            - operator: FirstArrayElement
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {

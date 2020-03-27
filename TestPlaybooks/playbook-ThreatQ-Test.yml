@@ -1,15 +1,27 @@
 id: ThreatQ - Test
 version: -1
+<<<<<<< HEAD
+=======
+contentitemfields:
+  propagationLabels: []
+>>>>>>> upstream/master
 name: ThreatQ - Test
 description: Test playbook for Threat Quotient
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
+<<<<<<< HEAD
     taskid: f4455ea1-1772-40d2-8020-c8a175bf2900
     type: start
     task:
       id: f4455ea1-1772-40d2-8020-c8a175bf2900
+=======
+    taskid: 493baf25-a0bc-4858-857a-1c3b43c2976c
+    type: start
+    task:
+      id: 493baf25-a0bc-4858-857a-1c3b43c2976c
+>>>>>>> upstream/master
       version: -1
       name: ""
       iscommand: false
@@ -28,12 +40,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "1":
     id: "1"
     taskid: 49e23461-f2d5-47de-8fac-2193e1cd8436
     type: regular
     task:
       id: 49e23461-f2d5-47de-8fac-2193e1cd8436
+=======
+    skipunavailable: false
+  "1":
+    id: "1"
+    taskid: 345b1119-a0eb-40e6-82b3-46dce626377c
+    type: regular
+    task:
+      id: 345b1119-a0eb-40e6-82b3-46dce626377c
+>>>>>>> upstream/master
       version: -1
       name: Create adversary with sources
       description: Creates a new adversary in ThreatQ.
@@ -47,27 +69,51 @@ tasks:
     scriptarguments:
       attribute_names: {}
       attribute_values: {}
+<<<<<<< HEAD
       name:
         simple: TestAdversary-26-08
+=======
+      attributes_names: {}
+      attributes_values: {}
+      name:
+        simple: TestAdversary-26-08
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
       sources:
         simple: Test Source,arian@demisto.com
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 1340,
           "y": 1330
+=======
+          "x": 797.5,
+          "y": 1680
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "2":
     id: "2"
     taskid: f7c324f0-9a68-4556-8691-5f2396743bf1
     type: regular
     task:
       id: f7c324f0-9a68-4556-8691-5f2396743bf1
+=======
+    skipunavailable: false
+  "2":
+    id: "2"
+    taskid: fed74012-79c9-4421-8c3d-26bbf64666d0
+    type: regular
+    task:
+      id: fed74012-79c9-4421-8c3d-26bbf64666d0
+>>>>>>> upstream/master
       version: -1
       name: Create event
       description: Creates a new event in ThreatQ.
@@ -83,6 +129,11 @@ tasks:
       attributes_values: {}
       date:
         simple: "2019-08-26 04:23:55"
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
       sources: {}
       title:
         simple: NewEvent-26-08
@@ -92,19 +143,34 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 480,
           "y": 1330
+=======
+          "x": 347.5,
+          "y": 1680
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "4":
     id: "4"
     taskid: a9bee9ea-d211-4204-88ad-545ebf11b3e6
     type: regular
     task:
       id: a9bee9ea-d211-4204-88ad-545ebf11b3e6
+=======
+    skipunavailable: false
+  "4":
+    id: "4"
+    taskid: 0df48b01-d936-40e6-8037-3daea9627998
+    type: regular
+    task:
+      id: 0df48b01-d936-40e6-8037-3daea9627998
+>>>>>>> upstream/master
       version: -1
       name: Add an attribute to the event
       description: Adds an attribute to an object in ThreatQ.
@@ -122,25 +188,45 @@ tasks:
         simple: ${ThreatQ.Event.ID}
       obj_type:
         simple: event
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
       value:
         simple: TestAttributeValue
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 480,
           "y": 1680
+=======
+          "x": 460,
+          "y": 2030
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "5":
     id: "5"
     taskid: 27dd99cf-1535-4caf-8eef-66d07f65e638
     type: regular
     task:
       id: 27dd99cf-1535-4caf-8eef-66d07f65e638
+=======
+    skipunavailable: false
+  "5":
+    id: "5"
+    taskid: b1ee37b6-271d-4ff8-83d4-1ed0e6fd7ecd
+    type: regular
+    task:
+      id: b1ee37b6-271d-4ff8-83d4-1ed0e6fd7ecd
+>>>>>>> upstream/master
       version: -1
       name: Delete the event's attribute
       description: Deletes an attribute from an object in ThreatQ.
@@ -158,23 +244,43 @@ tasks:
         simple: ${ThreatQ.Event.ID}
       obj_type:
         simple: event
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 480,
           "y": 2555
+=======
+          "x": 460,
+          "y": 2905
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "6":
     id: "6"
     taskid: 40cb5b95-12d7-42d0-8fdc-282ac216fd5f
     type: regular
     task:
       id: 40cb5b95-12d7-42d0-8fdc-282ac216fd5f
+=======
+    skipunavailable: false
+  "6":
+    id: "6"
+    taskid: 43019a88-d8ba-4c3a-8b11-16278e7eed2b
+    type: regular
+    task:
+      id: 43019a88-d8ba-4c3a-8b11-16278e7eed2b
+>>>>>>> upstream/master
       version: -1
       name: Add a source to the adversary
       description: Adds a source to an object in ThreatQ.
@@ -190,25 +296,45 @@ tasks:
         simple: ${ThreatQ.Adversary.ID}
       obj_type:
         simple: adversary
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
       source:
         simple: Test Source 2
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 1340,
           "y": 1680
+=======
+          "x": 910,
+          "y": 2030
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "7":
     id: "7"
     taskid: 3408b24a-d51b-4c6f-8fd4-aa3d815fe6ee
     type: regular
     task:
       id: 3408b24a-d51b-4c6f-8fd4-aa3d815fe6ee
+=======
+    skipunavailable: false
+  "7":
+    id: "7"
+    taskid: 2911835d-16e6-4dc4-84b4-23f5d62b60ed
+    type: regular
+    task:
+      id: 2911835d-16e6-4dc4-84b4-23f5d62b60ed
+>>>>>>> upstream/master
       version: -1
       name: Delete a source of the adversary
       description: Deletes a source from an object in ThreatQ.
@@ -224,6 +350,11 @@ tasks:
         simple: ${ThreatQ.Adversary.ID}
       obj_type:
         simple: adversary
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
       source:
         simple: Test Source
       source_id:
@@ -246,19 +377,34 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 1340,
           "y": 2030
+=======
+          "x": 910,
+          "y": 2380
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "10":
     id: "10"
     taskid: 7b0d0206-15e2-4c0a-86a7-b313689daa13
     type: regular
     task:
       id: 7b0d0206-15e2-4c0a-86a7-b313689daa13
+=======
+    skipunavailable: false
+  "10":
+    id: "10"
+    taskid: 970a838a-f80b-4d1f-8834-ca40adc5082b
+    type: regular
+    task:
+      id: 970a838a-f80b-4d1f-8834-ca40adc5082b
+>>>>>>> upstream/master
       version: -1
       name: Update indicator status
       description: Updates an indicator status in ThreatQ.
@@ -274,25 +420,45 @@ tasks:
         complex:
           root: ThreatQ
           accessor: Indicator.ID
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
       status:
         simple: Whitelisted
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 910,
           "y": 2030
+=======
+          "x": 1360,
+          "y": 2380
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "12":
     id: "12"
     taskid: af36c0a7-6c30-48d9-8315-06a3b9b35402
     type: regular
     task:
       id: af36c0a7-6c30-48d9-8315-06a3b9b35402
+=======
+    skipunavailable: false
+  "12":
+    id: "12"
+    taskid: 096bebeb-8fe8-48be-8dfb-486b7d42c5fe
+    type: regular
+    task:
+      id: 096bebeb-8fe8-48be-8dfb-486b7d42c5fe
+>>>>>>> upstream/master
       version: -1
       name: Link event + indicator
       description: Links two objects together in ThreatQ.
@@ -321,23 +487,42 @@ tasks:
           - operator: FirstArrayElement
       obj2_type:
         simple: indicator
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 910,
+<<<<<<< HEAD
           "y": 2875
+=======
+          "y": 3225
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "13":
     id: "13"
     taskid: 02f021c6-47b1-470a-835f-9361fb9eb3b6
     type: regular
     task:
       id: 02f021c6-47b1-470a-835f-9361fb9eb3b6
+=======
+    skipunavailable: false
+  "13":
+    id: "13"
+    taskid: 5007a27b-d5db-400e-8468-6475851db8db
+    type: regular
+    task:
+      id: 5007a27b-d5db-400e-8468-6475851db8db
+>>>>>>> upstream/master
       version: -1
       name: Run generic command - domain
       description: |-
@@ -357,6 +542,11 @@ tasks:
       fullResponse: {}
       long: {}
       retries: {}
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
       sampleSize: {}
       threshold: {}
       wait: {}
@@ -364,19 +554,33 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 910,
+=======
+          "x": 50,
+>>>>>>> upstream/master
           "y": 515
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "14":
     id: "14"
     taskid: 977c9eca-004c-4d7f-810a-5e4b583d5bd5
     type: regular
     task:
       id: 977c9eca-004c-4d7f-810a-5e4b583d5bd5
+=======
+    skipunavailable: false
+  "14":
+    id: "14"
+    taskid: 72eec0f4-1e14-47de-8e3f-3277abe4f074
+    type: regular
+    task:
+      id: 72eec0f4-1e14-47de-8e3f-3277abe4f074
+>>>>>>> upstream/master
       version: -1
       name: Run generic command - ip
       description: Checks the reputation of an IP address in ThreatQ.
@@ -393,6 +597,11 @@ tasks:
         simple: 4.4.4.4
       long: {}
       retries: {}
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
       sampleSize: {}
       threshold: {}
       wait: {}
@@ -400,19 +609,33 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 50,
+=======
+          "x": 910,
+>>>>>>> upstream/master
           "y": 515
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "16":
     id: "16"
     taskid: c5831f3e-362f-4190-8719-02017ff25802
     type: regular
     task:
       id: c5831f3e-362f-4190-8719-02017ff25802
+=======
+    skipunavailable: false
+  "16":
+    id: "16"
+    taskid: a8cc814c-d6ce-4ce3-8fef-470f3f0aa921
+    type: regular
+    task:
+      id: a8cc814c-d6ce-4ce3-8fef-470f3f0aa921
+>>>>>>> upstream/master
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -445,12 +668,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "18":
     id: "18"
     taskid: 7f44bad5-91a6-4d08-85e9-4ea7535d803c
     type: regular
     task:
       id: 7f44bad5-91a6-4d08-85e9-4ea7535d803c
+=======
+    skipunavailable: false
+  "18":
+    id: "18"
+    taskid: a0126aac-a585-48b9-8bce-066ce13dcb9c
+    type: regular
+    task:
+      id: a0126aac-a585-48b9-8bce-066ce13dcb9c
+>>>>>>> upstream/master
       version: -1
       name: Run generic command - email
       description: Checks the reputation of an email address in ThreatQ.
@@ -464,6 +697,11 @@ tasks:
     scriptarguments:
       email:
         simple: rony@demisto.com
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
@@ -475,12 +713,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "21":
     id: "21"
     taskid: bb43e986-6173-4702-88c5-a5f31ab39d8f
     type: regular
     task:
       id: bb43e986-6173-4702-88c5-a5f31ab39d8f
+=======
+    skipunavailable: false
+  "21":
+    id: "21"
+    taskid: 8ffbac8c-94b7-4750-8607-b79e7544547e
+    type: regular
+    task:
+      id: 8ffbac8c-94b7-4750-8607-b79e7544547e
+>>>>>>> upstream/master
       version: -1
       name: Run generic command - file
       description: Checks the reputation of a file in ThreatQ.
@@ -496,6 +744,11 @@ tasks:
         simple: a94a8fe5ccb19ba61c4c0873d391e987982fbbd3
       long: {}
       retries: {}
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
       threshold: {}
       wait: {}
     separatecontext: false
@@ -509,12 +762,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "22":
     id: "22"
     taskid: 5dbb3867-c548-4a6a-8326-e285995ae857
     type: regular
     task:
       id: 5dbb3867-c548-4a6a-8326-e285995ae857
+=======
+    skipunavailable: false
+  "22":
+    id: "22"
+    taskid: afe37731-5bd0-43b0-82d2-992cd696823b
+    type: regular
+    task:
+      id: afe37731-5bd0-43b0-82d2-992cd696823b
+>>>>>>> upstream/master
       version: -1
       name: Run generic command - url
       description: Checks the reputation of a URL in ThreatQ.
@@ -528,6 +791,11 @@ tasks:
     scriptarguments:
       long: {}
       retries: {}
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
       sampleSize: {}
       submitWait: {}
       threshold: {}
@@ -545,12 +813,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "25":
     id: "25"
     taskid: ab048247-2f0f-4265-8c5b-bc917ec8030a
     type: condition
     task:
       id: ab048247-2f0f-4265-8c5b-bc917ec8030a
+=======
+    skipunavailable: false
+  "25":
+    id: "25"
+    taskid: 7c9a8647-f2e0-4a77-8a43-0fd93d965177
+    type: condition
+    task:
+      id: 7c9a8647-f2e0-4a77-8a43-0fd93d965177
+>>>>>>> upstream/master
       version: -1
       name: Verify domain context
       description: |-
@@ -612,19 +890,33 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 910,
+=======
+          "x": 50,
+>>>>>>> upstream/master
           "y": 690
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "27":
     id: "27"
     taskid: 282f406a-f8a3-4f70-8b8b-89fa963cf106
     type: condition
     task:
       id: 282f406a-f8a3-4f70-8b8b-89fa963cf106
+=======
+    skipunavailable: false
+  "27":
+    id: "27"
+    taskid: 1aa30799-3dd0-473b-8f30-1386cd337b41
+    type: condition
+    task:
+      id: 1aa30799-3dd0-473b-8f30-1386cd337b41
+>>>>>>> upstream/master
       version: -1
       name: Verify email context
       description: Email is in the database, therefore ThreatQ contains now data.
@@ -683,12 +975,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "28":
     id: "28"
     taskid: 1716ab98-661b-4689-8457-49c06897ed68
     type: condition
     task:
       id: 1716ab98-661b-4689-8457-49c06897ed68
+=======
+    skipunavailable: false
+  "28":
+    id: "28"
+    taskid: 61a3c9e9-bede-47f4-8102-967192967b57
+    type: condition
+    task:
+      id: 61a3c9e9-bede-47f4-8102-967192967b57
+>>>>>>> upstream/master
       version: -1
       name: Verify IP context
       description: |-
@@ -738,19 +1040,33 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 50,
+=======
+          "x": 910,
+>>>>>>> upstream/master
           "y": 690
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "29":
     id: "29"
     taskid: 94b776ca-353f-4819-82ab-25853c7eb509
     type: condition
     task:
       id: 94b776ca-353f-4819-82ab-25853c7eb509
+=======
+    skipunavailable: false
+  "29":
+    id: "29"
+    taskid: 3f9dac14-aed2-4432-889a-0a264564b88a
+    type: condition
+    task:
+      id: 3f9dac14-aed2-4432-889a-0a264564b88a
+>>>>>>> upstream/master
       version: -1
       name: Verify file context
       description: File as SHA1 type exists, therefore ThreatQ has size 3
@@ -806,12 +1122,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "30":
     id: "30"
     taskid: 22bf4b1f-2aa8-419a-8c2a-08bd993f0db6
     type: condition
     task:
       id: 22bf4b1f-2aa8-419a-8c2a-08bd993f0db6
+=======
+    skipunavailable: false
+  "30":
+    id: "30"
+    taskid: 075b7187-e0a4-4fbe-869e-590a95e42425
+    type: condition
+    task:
+      id: 075b7187-e0a4-4fbe-869e-590a95e42425
+>>>>>>> upstream/master
       version: -1
       name: Verify URL context
       type: condition
@@ -844,12 +1170,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "36":
     id: "36"
     taskid: ff220ad5-e8b6-4073-8b64-5d70e6a011dc
     type: regular
     task:
       id: ff220ad5-e8b6-4073-8b64-5d70e6a011dc
+=======
+    skipunavailable: false
+  "36":
+    id: "36"
+    taskid: ea4acd68-3bba-4558-8494-ab0fc0a6fcf4
+    type: regular
+    task:
+      id: ea4acd68-3bba-4558-8494-ab0fc0a6fcf4
+>>>>>>> upstream/master
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -880,12 +1216,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "37":
     id: "37"
     taskid: d395ba59-bd98-45f8-8c57-f01dc7c24373
     type: regular
     task:
       id: d395ba59-bd98-45f8-8c57-f01dc7c24373
+=======
+    skipunavailable: false
+  "37":
+    id: "37"
+    taskid: d78463ea-dae1-4825-8dba-3a88e3232d30
+    type: regular
+    task:
+      id: d78463ea-dae1-4825-8dba-3a88e3232d30
+>>>>>>> upstream/master
       version: -1
       name: Create indicator with attributes
       description: Creates a new indicator in ThreatQ.
@@ -901,6 +1247,11 @@ tasks:
         simple: test_attr,another Attr
       attributes_values:
         simple: test_attr_val,another Value
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
       sources: {}
       status:
         simple: Indirect
@@ -912,19 +1263,34 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 910,
           "y": 1330
+=======
+          "x": 1247.5,
+          "y": 1680
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "42":
     id: "42"
     taskid: 381e703b-aa90-4460-84ef-ee8ddf927857
     type: regular
     task:
       id: 381e703b-aa90-4460-84ef-ee8ddf927857
+=======
+    skipunavailable: false
+  "42":
+    id: "42"
+    taskid: 48fc56a5-b7fc-42a9-8fcc-1e5f52466cdd
+    type: regular
+    task:
+      id: 48fc56a5-b7fc-42a9-8fcc-1e5f52466cdd
+>>>>>>> upstream/master
       version: -1
       name: Get indicator related events
       description: Retrieves related events of an object in ThreatQ.
@@ -944,23 +1310,42 @@ tasks:
           - operator: FirstArrayElement
       obj_type:
         simple: indicator
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 695,
+<<<<<<< HEAD
           "y": 3050
+=======
+          "y": 3400
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "43":
     id: "43"
     taskid: 325efe1b-644c-41bb-8163-a3f3604d2df0
     type: condition
     task:
       id: 325efe1b-644c-41bb-8163-a3f3604d2df0
+=======
+    skipunavailable: false
+  "43":
+    id: "43"
+    taskid: ad83406a-90e3-4460-80d2-e44979aaea69
+    type: condition
+    task:
+      id: ad83406a-90e3-4460-80d2-e44979aaea69
+>>>>>>> upstream/master
       version: -1
       name: Verify linking
       description: Check whether the values provided in arguments are equal. If either
@@ -996,18 +1381,32 @@ tasks:
       {
         "position": {
           "x": 695,
+<<<<<<< HEAD
           "y": 3225
+=======
+          "y": 3575
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "44":
     id: "44"
     taskid: 700f56fb-d62f-44ca-8063-8cb3c41a840a
     type: condition
     task:
       id: 700f56fb-d62f-44ca-8063-8cb3c41a840a
+=======
+    skipunavailable: false
+  "44":
+    id: "44"
+    taskid: ca76fe83-cd32-4ee4-80d7-9dc53f8cfc33
+    type: condition
+    task:
+      id: ca76fe83-cd32-4ee4-80d7-9dc53f8cfc33
+>>>>>>> upstream/master
       version: -1
       name: Verify score update
       type: condition
@@ -1031,19 +1430,34 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 910,
           "y": 2380
+=======
+          "x": 1360,
+          "y": 2730
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "46":
     id: "46"
     taskid: bc136b62-90f8-429e-856b-3c12122dcf24
     type: regular
     task:
       id: bc136b62-90f8-429e-856b-3c12122dcf24
+=======
+    skipunavailable: false
+  "46":
+    id: "46"
+    taskid: d8c47a6f-7870-4f57-88d5-dbb39fcf2573
+    type: regular
+    task:
+      id: d8c47a6f-7870-4f57-88d5-dbb39fcf2573
+>>>>>>> upstream/master
       version: -1
       name: Modify the event's attribute
       description: Modifies an attribute for an object in ThreatQ.
@@ -1065,23 +1479,43 @@ tasks:
         simple: ${ThreatQ.Event.ID}
       obj_type:
         simple: event
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 480,
           "y": 2030
+=======
+          "x": 460,
+          "y": 2380
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "51":
     id: "51"
     taskid: 732f1a49-3090-4119-8d57-94f6f94ec260
     type: condition
     task:
       id: 732f1a49-3090-4119-8d57-94f6f94ec260
+=======
+    skipunavailable: false
+  "51":
+    id: "51"
+    taskid: 89f18bb4-abce-499a-8b0c-088cbd5bff5a
+    type: condition
+    task:
+      id: 89f18bb4-abce-499a-8b0c-088cbd5bff5a
+>>>>>>> upstream/master
       version: -1
       name: Verify modify attribute
       type: condition
@@ -1122,19 +1556,34 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 480,
           "y": 2380
+=======
+          "x": 460,
+          "y": 2730
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "53":
     id: "53"
     taskid: abddd285-ec2f-4fc3-8333-705bde580c95
     type: regular
     task:
       id: abddd285-ec2f-4fc3-8333-705bde580c95
+=======
+    skipunavailable: false
+  "53":
+    id: "53"
+    taskid: 57c41474-8b82-4031-83a6-b658f72ee107
+    type: regular
+    task:
+      id: 57c41474-8b82-4031-83a6-b658f72ee107
+>>>>>>> upstream/master
       version: -1
       name: Update context (search by ID)
       description: Searches for an object by object type and ID. Generic and DBotScore
@@ -1151,23 +1600,43 @@ tasks:
         simple: ${ThreatQ.Adversary.ID}
       obj_type:
         simple: adversary
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 1340,
           "y": 1855
+=======
+          "x": 910,
+          "y": 2205
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "55":
     id: "55"
     taskid: 76ea06e1-5c40-4e15-89dd-59fb5e10d1ea
     type: regular
     task:
       id: 76ea06e1-5c40-4e15-89dd-59fb5e10d1ea
+=======
+    skipunavailable: false
+  "55":
+    id: "55"
+    taskid: effa7df3-c139-4f12-824b-e82d78baf050
+    type: regular
+    task:
+      id: effa7df3-c139-4f12-824b-e82d78baf050
+>>>>>>> upstream/master
       version: -1
       name: Update context (search by ID)
       description: Searches for an object by object type and ID. Generic and DBotScore
@@ -1184,23 +1653,43 @@ tasks:
         simple: ${ThreatQ.Adversary.ID}
       obj_type:
         simple: adversary
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 1340,
           "y": 2205
+=======
+          "x": 910,
+          "y": 2555
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "56":
     id: "56"
     taskid: b8c86a5a-3c97-4068-8683-af401cc962e8
     type: condition
     task:
       id: b8c86a5a-3c97-4068-8683-af401cc962e8
+=======
+    skipunavailable: false
+  "56":
+    id: "56"
+    taskid: 3bb58ce0-df34-48d7-82c8-b462dc556895
+    type: condition
+    task:
+      id: 3bb58ce0-df34-48d7-82c8-b462dc556895
+>>>>>>> upstream/master
       version: -1
       name: Verify delete source
       type: condition
@@ -1236,19 +1725,34 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 1340,
           "y": 2380
+=======
+          "x": 910,
+          "y": 2730
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "58":
     id: "58"
     taskid: 646d2023-431c-48cf-8163-ee5518a8fd5a
     type: regular
     task:
       id: 646d2023-431c-48cf-8163-ee5518a8fd5a
+=======
+    skipunavailable: false
+  "58":
+    id: "58"
+    taskid: 0369eec4-4d92-4d66-87c6-33e1f32a553c
+    type: regular
+    task:
+      id: 0369eec4-4d92-4d66-87c6-33e1f32a553c
+>>>>>>> upstream/master
       version: -1
       name: Delete event
       description: Deletes an object in ThreatQ.
@@ -1264,23 +1768,43 @@ tasks:
         simple: ${ThreatQ.Event.ID}
       obj_type:
         simple: event
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 1125,
           "y": 4565
+=======
+          "x": 695,
+          "y": 4915
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "59":
     id: "59"
     taskid: 838571ea-ba87-43e6-84da-7a49e8855357
     type: regular
     task:
       id: 838571ea-ba87-43e6-84da-7a49e8855357
+=======
+    skipunavailable: false
+  "59":
+    id: "59"
+    taskid: 51345c78-e817-4e74-8222-9416220c1e0c
+    type: regular
+    task:
+      id: 51345c78-e817-4e74-8222-9416220c1e0c
+>>>>>>> upstream/master
       version: -1
       name: Update context  - event (Search by name)
       description: Searches for objects by name in the ThreatQ repository.
@@ -1295,23 +1819,43 @@ tasks:
       limit: {}
       name:
         simple: NewEvent-01-08
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 1125,
           "y": 4915
+=======
+          "x": 695,
+          "y": 5265
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "60":
     id: "60"
     taskid: 30e9d381-1a23-4262-8b15-f067ef9ab78a
     type: regular
     task:
       id: 30e9d381-1a23-4262-8b15-f067ef9ab78a
+=======
+    skipunavailable: false
+  "60":
+    id: "60"
+    taskid: bb51d465-e90d-4391-868c-4ec0f48d36a1
+    type: regular
+    task:
+      id: bb51d465-e90d-4391-868c-4ec0f48d36a1
+>>>>>>> upstream/master
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1335,18 +1879,32 @@ tasks:
       {
         "position": {
           "x": 910,
+<<<<<<< HEAD
           "y": 4740
+=======
+          "y": 5090
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "61":
     id: "61"
     taskid: 56780d40-29a8-4308-85c3-e14f7b4690b2
     type: condition
     task:
       id: 56780d40-29a8-4308-85c3-e14f7b4690b2
+=======
+    skipunavailable: false
+  "61":
+    id: "61"
+    taskid: a701a8af-a004-447b-8d88-b3137316cc15
+    type: condition
+    task:
+      id: a701a8af-a004-447b-8d88-b3137316cc15
+>>>>>>> upstream/master
       version: -1
       name: Verify deletion - event + indicator
       type: condition
@@ -1369,18 +1927,32 @@ tasks:
       {
         "position": {
           "x": 910,
+<<<<<<< HEAD
           "y": 5090
+=======
+          "y": 5440
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "62":
     id: "62"
     taskid: 0fcb73e9-6b2b-4244-8502-137035ff33a3
     type: regular
     task:
       id: 0fcb73e9-6b2b-4244-8502-137035ff33a3
+=======
+    skipunavailable: false
+  "62":
+    id: "62"
+    taskid: e22df18f-7f5a-4e17-8f61-1e3755d4a3fe
+    type: regular
+    task:
+      id: e22df18f-7f5a-4e17-8f61-1e3755d4a3fe
+>>>>>>> upstream/master
       version: -1
       name: Get event related indicators
       description: Retrieves related indicators for an object in ThreatQ.
@@ -1400,23 +1972,42 @@ tasks:
           - operator: FirstArrayElement
       obj_type:
         simple: event
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1125,
+<<<<<<< HEAD
           "y": 3050
+=======
+          "y": 3400
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "63":
     id: "63"
     taskid: cd12fffd-8a25-434e-87d0-29298e4e676a
     type: condition
     task:
       id: cd12fffd-8a25-434e-87d0-29298e4e676a
+=======
+    skipunavailable: false
+  "63":
+    id: "63"
+    taskid: c73488fa-f6db-406f-8b23-89f55d1b0265
+    type: condition
+    task:
+      id: c73488fa-f6db-406f-8b23-89f55d1b0265
+>>>>>>> upstream/master
       version: -1
       name: Verify linking
       description: Check whether the values provided in arguments are equal. If either
@@ -1452,18 +2043,32 @@ tasks:
       {
         "position": {
           "x": 1125,
+<<<<<<< HEAD
           "y": 3225
+=======
+          "y": 3575
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "64":
     id: "64"
     taskid: 02961f20-9311-490e-8558-5cb95c1be24d
     type: regular
     task:
       id: 02961f20-9311-490e-8558-5cb95c1be24d
+=======
+    skipunavailable: false
+  "64":
+    id: "64"
+    taskid: 453ee6a7-c775-4604-873c-73c07e8b5d9d
+    type: regular
+    task:
+      id: 453ee6a7-c775-4604-873c-73c07e8b5d9d
+>>>>>>> upstream/master
       version: -1
       name: Unlink event + indicator
       description: Unlinks two objects in ThreatQ.
@@ -1491,23 +2096,42 @@ tasks:
           - operator: FirstArrayElement
       obj2_type:
         simple: event
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 910,
+<<<<<<< HEAD
           "y": 3545
+=======
+          "y": 3895
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "65":
     id: "65"
     taskid: c10db494-7223-44eb-858d-4b38eef6bce1
     type: title
     task:
       id: c10db494-7223-44eb-858d-4b38eef6bce1
+=======
+    skipunavailable: false
+  "65":
+    id: "65"
+    taskid: 52695713-18bb-48d3-8dbf-edc00f380d39
+    type: title
+    task:
+      id: 52695713-18bb-48d3-8dbf-edc00f380d39
+>>>>>>> upstream/master
       version: -1
       name: Unlinking Objects
       type: title
@@ -1521,18 +2145,32 @@ tasks:
       {
         "position": {
           "x": 910,
+<<<<<<< HEAD
           "y": 3400
+=======
+          "y": 3750
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "66":
     id: "66"
     taskid: 72323a28-d02b-4e2b-8964-e5af15d2eb05
     type: regular
     task:
       id: 72323a28-d02b-4e2b-8964-e5af15d2eb05
+=======
+    skipunavailable: false
+  "66":
+    id: "66"
+    taskid: 2f7c38c8-6300-416c-8afd-bf22055bb2f8
+    type: regular
+    task:
+      id: 2f7c38c8-6300-416c-8afd-bf22055bb2f8
+>>>>>>> upstream/master
       version: -1
       name: Get indicator related events
       description: Retrieves related events of an object in ThreatQ.
@@ -1552,23 +2190,42 @@ tasks:
           - operator: FirstArrayElement
       obj_type:
         simple: indicator
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 695,
+<<<<<<< HEAD
           "y": 4070
+=======
+          "y": 4420
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "67":
     id: "67"
     taskid: 43759ace-891b-4c25-8300-50ee7eb319a4
     type: condition
     task:
       id: 43759ace-891b-4c25-8300-50ee7eb319a4
+=======
+    skipunavailable: false
+  "67":
+    id: "67"
+    taskid: af2ad438-8d9c-4879-84be-41d872519971
+    type: condition
+    task:
+      id: af2ad438-8d9c-4879-84be-41d872519971
+>>>>>>> upstream/master
       version: -1
       name: Verify unlinking
       description: Check whether the values provided in arguments are equal. If either
@@ -1601,18 +2258,32 @@ tasks:
       {
         "position": {
           "x": 910,
+<<<<<<< HEAD
           "y": 4245
+=======
+          "y": 4595
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "68":
     id: "68"
     taskid: 9bf509f7-d6ca-4f50-88b5-fbcc1be6d4f7
     type: regular
     task:
       id: 9bf509f7-d6ca-4f50-88b5-fbcc1be6d4f7
+=======
+    skipunavailable: false
+  "68":
+    id: "68"
+    taskid: bbb132e3-e928-46af-8fa9-43ce7507e222
+    type: regular
+    task:
+      id: bbb132e3-e928-46af-8fa9-43ce7507e222
+>>>>>>> upstream/master
       version: -1
       name: Update context - indicator (search by ID)
       description: Searches for an object by object type and ID. Generic and DBotScore
@@ -1629,23 +2300,43 @@ tasks:
         simple: ${ThreatQ.Indicator.ID}
       obj_type:
         simple: indicator
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 910,
           "y": 2205
+=======
+          "x": 1360,
+          "y": 2555
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "69":
     id: "69"
     taskid: 9ee86c1c-895d-438e-8f16-c20665aded42
     type: regular
     task:
       id: 9ee86c1c-895d-438e-8f16-c20665aded42
+=======
+    skipunavailable: false
+  "69":
+    id: "69"
+    taskid: d37bc90d-3899-42a7-8f64-04adfe033a2d
+    type: regular
+    task:
+      id: d37bc90d-3899-42a7-8f64-04adfe033a2d
+>>>>>>> upstream/master
       version: -1
       name: Delete adversary
       description: Deletes an object in ThreatQ.
@@ -1661,23 +2352,43 @@ tasks:
         simple: ${ThreatQ.Adversary.ID}
       obj_type:
         simple: adversary
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 1340,
           "y": 2555
+=======
+          "x": 910,
+          "y": 2905
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "70":
     id: "70"
     taskid: 4895e54f-f4a3-4812-82e2-43574170750d
     type: regular
     task:
       id: 4895e54f-f4a3-4812-82e2-43574170750d
+=======
+    skipunavailable: false
+  "70":
+    id: "70"
+    taskid: d2d3c404-d636-40b0-8590-1830d590a5f5
+    type: regular
+    task:
+      id: d2d3c404-d636-40b0-8590-1830d590a5f5
+>>>>>>> upstream/master
       version: -1
       name: Delete indicator
       description: Deletes an object in ThreatQ.
@@ -1693,23 +2404,43 @@ tasks:
         simple: ${ThreatQ.Indicator.ID}
       obj_type:
         simple: indicator
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 695,
           "y": 4565
+=======
+          "x": 1125,
+          "y": 4915
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "71":
     id: "71"
     taskid: bec64cb1-a65f-41e3-8c67-59a6442bba64
     type: regular
     task:
       id: bec64cb1-a65f-41e3-8c67-59a6442bba64
+=======
+    skipunavailable: false
+  "71":
+    id: "71"
+    taskid: e5e125a0-13ab-4ccd-81ba-6aab87917540
+    type: regular
+    task:
+      id: e5e125a0-13ab-4ccd-81ba-6aab87917540
+>>>>>>> upstream/master
       version: -1
       name: Update context  - indicator (Search by name)
       description: Searches for objects by name in the ThreatQ repository.
@@ -1724,23 +2455,43 @@ tasks:
       limit: {}
       name:
         simple: 9.9.4.4
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 695,
           "y": 4915
+=======
+          "x": 1125,
+          "y": 5265
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "72":
     id: "72"
     taskid: 772a202b-3bae-4237-8381-c870166a045b
     type: regular
     task:
       id: 772a202b-3bae-4237-8381-c870166a045b
+=======
+    skipunavailable: false
+  "72":
+    id: "72"
+    taskid: 67a6692b-c9b4-4756-8a76-ad8e8574530a
+    type: regular
+    task:
+      id: 67a6692b-c9b4-4756-8a76-ad8e8574530a
+>>>>>>> upstream/master
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1764,18 +2515,32 @@ tasks:
       {
         "position": {
           "x": 910,
+<<<<<<< HEAD
           "y": 3720
+=======
+          "y": 4070
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "73":
     id: "73"
     taskid: 8d712c89-e84a-4450-8416-e6394e55ac54
     type: regular
     task:
       id: 8d712c89-e84a-4450-8416-e6394e55ac54
+=======
+    skipunavailable: false
+  "73":
+    id: "73"
+    taskid: f89851d5-7d52-4318-83f7-b4013562b89e
+    type: regular
+    task:
+      id: f89851d5-7d52-4318-83f7-b4013562b89e
+>>>>>>> upstream/master
       version: -1
       name: Get event related indicators
       description: Retrieves related indicators for an object in ThreatQ.
@@ -1793,23 +2558,42 @@ tasks:
           accessor: Event.ID
       obj_type:
         simple: event
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1125,
+<<<<<<< HEAD
           "y": 4070
+=======
+          "y": 4420
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "74":
     id: "74"
     taskid: ab6b48a2-eefa-4ccc-844a-6f8140ebcc60
     type: title
     task:
       id: ab6b48a2-eefa-4ccc-844a-6f8140ebcc60
+=======
+    skipunavailable: false
+  "74":
+    id: "74"
+    taskid: 10c5d66a-facb-4464-81cd-2ca700f3e870
+    type: title
+    task:
+      id: 10c5d66a-facb-4464-81cd-2ca700f3e870
+>>>>>>> upstream/master
       version: -1
       name: Done
       type: title
@@ -1820,18 +2604,32 @@ tasks:
       {
         "position": {
           "x": 910,
+<<<<<<< HEAD
           "y": 6605
+=======
+          "y": 6955
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "75":
     id: "75"
     taskid: fa10ed8f-5c3f-4163-8c88-5ef34ea2229e
     type: regular
     task:
       id: fa10ed8f-5c3f-4163-8c88-5ef34ea2229e
+=======
+    skipunavailable: false
+  "75":
+    id: "75"
+    taskid: 8df8fab7-a9f8-4956-8fcf-dc9d881002c2
+    type: regular
+    task:
+      id: 8df8fab7-a9f8-4956-8fcf-dc9d881002c2
+>>>>>>> upstream/master
       version: -1
       name: Update context  - event (Search by name)
       description: Searches for objects by name in the ThreatQ repository.
@@ -1847,23 +2645,42 @@ tasks:
         simple: "7"
       name:
         simple: NewEvent-01-08
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1125,
+<<<<<<< HEAD
           "y": 3895
+=======
+          "y": 4245
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "76":
     id: "76"
     taskid: a71bead5-c93f-42b3-8015-d6c4ab50b7d6
     type: regular
     task:
       id: a71bead5-c93f-42b3-8015-d6c4ab50b7d6
+=======
+    skipunavailable: false
+  "76":
+    id: "76"
+    taskid: a612b602-e0e5-4fe8-8923-3dfe5c5dfded
+    type: regular
+    task:
+      id: a612b602-e0e5-4fe8-8923-3dfe5c5dfded
+>>>>>>> upstream/master
       version: -1
       name: Update context - indicator (Search by name)
       description: Searches for objects by name in the ThreatQ repository.
@@ -1879,23 +2696,42 @@ tasks:
         simple: "7"
       name:
         simple: 9.9.4.4
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 695,
+<<<<<<< HEAD
           "y": 3895
+=======
+          "y": 4245
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "77":
     id: "77"
     taskid: 16835061-2060-4ee4-8809-c9714c418dbe
     type: regular
     task:
       id: 16835061-2060-4ee4-8809-c9714c418dbe
+=======
+    skipunavailable: false
+  "77":
+    id: "77"
+    taskid: 1ceb1342-6eff-405b-8e7d-5c92eec31aca
+    type: regular
+    task:
+      id: 1ceb1342-6eff-405b-8e7d-5c92eec31aca
+>>>>>>> upstream/master
       version: -1
       name: Edit adversary
       description: Updates an adversary name in ThreatQ.
@@ -1911,23 +2747,43 @@ tasks:
         simple: ${ThreatQ.Adversary.ID}
       name:
         simple: TestAdversary-01-08
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 1340,
           "y": 1505
+=======
+          "x": 910,
+          "y": 1855
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "78":
     id: "78"
     taskid: edc3509e-964c-4baf-8f7d-2bb09771d5af
     type: regular
     task:
       id: edc3509e-964c-4baf-8f7d-2bb09771d5af
+=======
+    skipunavailable: false
+  "78":
+    id: "78"
+    taskid: 2cf423e1-dc14-4fb7-86cc-176a422128e5
+    type: regular
+    task:
+      id: 2cf423e1-dc14-4fb7-86cc-176a422128e5
+>>>>>>> upstream/master
       version: -1
       name: Edit event
       description: Updates an event in ThreatQ.
@@ -1944,6 +2800,11 @@ tasks:
       description: {}
       id:
         simple: ${ThreatQ.Event.ID}
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
       title:
         simple: NewEvent-01-08
       type:
@@ -1952,19 +2813,34 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 480,
           "y": 1505
+=======
+          "x": 460,
+          "y": 1855
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "80":
     id: "80"
     taskid: 71d12a53-9827-443b-832c-2a83a4e4d9da
     type: regular
     task:
       id: 71d12a53-9827-443b-832c-2a83a4e4d9da
+=======
+    skipunavailable: false
+  "80":
+    id: "80"
+    taskid: 22fd29af-9de6-463b-8b6a-02c92b6cc3d0
+    type: regular
+    task:
+      id: 22fd29af-9de6-463b-8b6a-02c92b6cc3d0
+>>>>>>> upstream/master
       version: -1
       name: Update indicator score
       description: Modifies an indicator's score in ThreatQ. The final indicator score
@@ -1979,25 +2855,45 @@ tasks:
     scriptarguments:
       id:
         simple: ${ThreatQ.Indicator.ID}
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
       score:
         simple: "8"
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 910,
           "y": 1855
+=======
+          "x": 1360,
+          "y": 2205
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "82":
     id: "82"
     taskid: e415c7d0-6311-4b45-8ebd-4ebda02bfe7d
     type: condition
     task:
       id: e415c7d0-6311-4b45-8ebd-4ebda02bfe7d
+=======
+    skipunavailable: false
+  "82":
+    id: "82"
+    taskid: b947b37d-b417-46eb-84c6-ea829015fb8a
+    type: condition
+    task:
+      id: b947b37d-b417-46eb-84c6-ea829015fb8a
+>>>>>>> upstream/master
       version: -1
       name: Verify status update
       type: condition
@@ -2021,19 +2917,34 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 910,
           "y": 2555
+=======
+          "x": 1360,
+          "y": 2905
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "83":
     id: "83"
     taskid: 5d6c850f-0517-47ee-8f1f-bb00857d18b8
     type: regular
     task:
       id: 5d6c850f-0517-47ee-8f1f-bb00857d18b8
+=======
+    skipunavailable: false
+  "83":
+    id: "83"
+    taskid: 6b2156a5-1174-4747-8cb1-4c643af878fd
+    type: regular
+    task:
+      id: 6b2156a5-1174-4747-8cb1-4c643af878fd
+>>>>>>> upstream/master
       version: -1
       name: Edit indicator
       description: Updates an indicator in ThreatQ.
@@ -2048,6 +2959,11 @@ tasks:
       description: {}
       id:
         simple: ${ThreatQ.Indicator.ID}
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
       type:
         simple: IP Address
       value: {}
@@ -2055,19 +2971,34 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 910,
           "y": 1505
+=======
+          "x": 1360,
+          "y": 1855
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "84":
     id: "84"
     taskid: 6ca74ccd-08f0-4eea-8437-9e2d5e49b4f2
     type: condition
     task:
       id: 6ca74ccd-08f0-4eea-8437-9e2d5e49b4f2
+=======
+    skipunavailable: false
+  "84":
+    id: "84"
+    taskid: 5ec160b6-0748-48c6-8dfe-71b3d68dc10e
+    type: condition
+    task:
+      id: 5ec160b6-0748-48c6-8dfe-71b3d68dc10e
+>>>>>>> upstream/master
       version: -1
       name: Verify indicator editing
       type: condition
@@ -2093,19 +3024,34 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 910,
           "y": 1680
+=======
+          "x": 1360,
+          "y": 2030
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "86":
     id: "86"
     taskid: 309adec5-c1f0-4be7-85d7-bcc6cf954702
     type: regular
     task:
       id: 309adec5-c1f0-4be7-85d7-bcc6cf954702
+=======
+    skipunavailable: false
+  "86":
+    id: "86"
+    taskid: 5260a961-781d-431c-8ff5-75aa65d1089a
+    type: regular
+    task:
+      id: 5260a961-781d-431c-8ff5-75aa65d1089a
+>>>>>>> upstream/master
       version: -1
       name: Upload file to war room
       description: Sends http request. Returns the response as json.
@@ -2126,6 +3072,11 @@ tasks:
         simple: GET
       password: {}
       proxy: {}
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
       saveAsFile:
         simple: "yes"
       unsecure: {}
@@ -2137,18 +3088,32 @@ tasks:
       {
         "position": {
           "x": 910,
+<<<<<<< HEAD
           "y": 5905
+=======
+          "y": 6255
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "87":
     id: "87"
     taskid: 2bd76e83-a9d7-4836-871c-927f478eda45
     type: regular
     task:
       id: 2bd76e83-a9d7-4836-871c-927f478eda45
+=======
+    skipunavailable: false
+  "87":
+    id: "87"
+    taskid: 9c1dd3d4-e0b6-4a72-8640-42a2d8b88294
+    type: regular
+    task:
+      id: 9c1dd3d4-e0b6-4a72-8640-42a2d8b88294
+>>>>>>> upstream/master
       version: -1
       name: Upload file to ThreatQ
       description: Uploads a file in ThreatQ.
@@ -2166,6 +3131,11 @@ tasks:
         simple: Cuckoo
       malware_safety_lock:
         simple: "off"
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
       source: {}
       title:
         simple: TestFile
@@ -2174,18 +3144,32 @@ tasks:
       {
         "position": {
           "x": 910,
+<<<<<<< HEAD
           "y": 6080
+=======
+          "y": 6430
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "88":
     id: "88"
     taskid: 983fbb8b-4359-48fd-846d-b015dd9afc55
     type: regular
     task:
       id: 983fbb8b-4359-48fd-846d-b015dd9afc55
+=======
+    skipunavailable: false
+  "88":
+    id: "88"
+    taskid: 8c2e2280-1fcb-434b-87f4-2438bea49c4c
+    type: regular
+    task:
+      id: 8c2e2280-1fcb-434b-87f4-2438bea49c4c
+>>>>>>> upstream/master
       version: -1
       name: Delete the file
       description: Deletes an object in ThreatQ.
@@ -2201,23 +3185,42 @@ tasks:
         simple: ${ThreatQ.File.ID}
       obj_type:
         simple: attachment
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 910,
+<<<<<<< HEAD
           "y": 6430
+=======
+          "y": 6780
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "89":
     id: "89"
     taskid: cfb02fcf-3807-4101-84cb-dbd505e70414
     type: regular
     task:
       id: cfb02fcf-3807-4101-84cb-dbd505e70414
+=======
+    skipunavailable: false
+  "89":
+    id: "89"
+    taskid: ce58da27-52b8-406d-81a2-fb63b08c98b2
+    type: regular
+    task:
+      id: ce58da27-52b8-406d-81a2-fb63b08c98b2
+>>>>>>> upstream/master
       version: -1
       name: Download file
       description: Downloads a file from ThreatQ to Demisto.
@@ -2231,23 +3234,42 @@ tasks:
     scriptarguments:
       id:
         simple: ${ThreatQ.File.ID}
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 910,
+<<<<<<< HEAD
           "y": 6255
+=======
+          "y": 6605
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "90":
     id: "90"
     taskid: 062f4d26-a5d4-438a-8028-ceb892104d19
     type: regular
     task:
       id: 062f4d26-a5d4-438a-8028-ceb892104d19
+=======
+    skipunavailable: false
+  "90":
+    id: "90"
+    taskid: b0e541e6-1fe3-41c9-84a4-27b12df16121
+    type: regular
+    task:
+      id: b0e541e6-1fe3-41c9-84a4-27b12df16121
+>>>>>>> upstream/master
       version: -1
       name: Get all indicators
       description: Retrieves all indicators in ThreatQ.
@@ -2261,23 +3283,42 @@ tasks:
     scriptarguments:
       limit: {}
       page: {}
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 480,
+<<<<<<< HEAD
           "y": 5410
+=======
+          "y": 5760
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "91":
     id: "91"
     taskid: e50cfd73-341d-4b16-8341-d38b8b92148f
     type: regular
     task:
       id: e50cfd73-341d-4b16-8341-d38b8b92148f
+=======
+    skipunavailable: false
+  "91":
+    id: "91"
+    taskid: 3aa239f9-6921-4e74-8c1f-c896f52c1374
+    type: regular
+    task:
+      id: 3aa239f9-6921-4e74-8c1f-c896f52c1374
+>>>>>>> upstream/master
       version: -1
       name: Get all adveraries
       description: Retrieves all adversaries in ThreatQ.
@@ -2291,23 +3332,42 @@ tasks:
     scriptarguments:
       limit: {}
       page: {}
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 910,
+<<<<<<< HEAD
           "y": 5410
+=======
+          "y": 5760
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "92":
     id: "92"
     taskid: 0ca72876-dec3-4567-82ff-a7e7f3626ae9
     type: regular
     task:
       id: 0ca72876-dec3-4567-82ff-a7e7f3626ae9
+=======
+    skipunavailable: false
+  "92":
+    id: "92"
+    taskid: 0fb621a1-e93a-489d-8676-456e5ca15c73
+    type: regular
+    task:
+      id: 0fb621a1-e93a-489d-8676-456e5ca15c73
+>>>>>>> upstream/master
       version: -1
       name: Get all events
       description: Retrieves all events in ThreatQ.
@@ -2323,23 +3383,42 @@ tasks:
         simple: "10"
       page:
         simple: "5"
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1340,
+<<<<<<< HEAD
           "y": 5410
+=======
+          "y": 5760
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "93":
     id: "93"
     taskid: b078359b-e925-4a1f-814b-9d134ff52ec0
     type: condition
     task:
       id: b078359b-e925-4a1f-814b-9d134ff52ec0
+=======
+    skipunavailable: false
+  "93":
+    id: "93"
+    taskid: cf1ec2c3-b7b8-4775-8869-4345619a2bf6
+    type: condition
+    task:
+      id: cf1ec2c3-b7b8-4775-8869-4345619a2bf6
+>>>>>>> upstream/master
       version: -1
       name: Verify get-all-objects commands
       type: condition
@@ -2371,18 +3450,32 @@ tasks:
       {
         "position": {
           "x": 910,
+<<<<<<< HEAD
           "y": 5585
+=======
+          "y": 5935
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "97":
     id: "97"
     taskid: 6e51797b-d6ef-4d93-88a1-4bad12d1acc7
     type: regular
     task:
       id: 6e51797b-d6ef-4d93-88a1-4bad12d1acc7
+=======
+    skipunavailable: false
+  "97":
+    id: "97"
+    taskid: a50cefbf-19d9-41de-86ec-901c8424caf7
+    type: regular
+    task:
+      id: a50cefbf-19d9-41de-86ec-901c8424caf7
+>>>>>>> upstream/master
       version: -1
       name: Update context (search by ID)
       description: Searches for an object by object type and ID. Generic and DBotScore
@@ -2399,23 +3492,43 @@ tasks:
         simple: ${ThreatQ.Event.ID}
       obj_type:
         simple: event
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 480,
           "y": 2205
+=======
+          "x": 460,
+          "y": 2555
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "99":
     id: "99"
     taskid: db140f3e-9dfc-41a4-8363-e8f761b08357
     type: title
     task:
       id: db140f3e-9dfc-41a4-8363-e8f761b08357
+=======
+    skipunavailable: false
+  "99":
+    id: "99"
+    taskid: e2be5cfd-8242-46b0-8b9f-ac5ceb1b4e5c
+    type: title
+    task:
+      id: e2be5cfd-8242-46b0-8b9f-ac5ceb1b4e5c
+>>>>>>> upstream/master
       version: -1
       name: ThreatQ Commands Tests
       type: title
@@ -2435,12 +3548,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "101":
     id: "101"
     taskid: 12ab3a9d-4185-467c-85d3-94aefaac6fbe
     type: title
     task:
       id: 12ab3a9d-4185-467c-85d3-94aefaac6fbe
+=======
+    skipunavailable: false
+  "101":
+    id: "101"
+    taskid: 6c1a9965-db0f-4ed7-8fbb-e8633214de28
+    type: title
+    task:
+      id: 6c1a9965-db0f-4ed7-8fbb-e8633214de28
+>>>>>>> upstream/master
       version: -1
       name: Generic Commands Tests
       type: title
@@ -2460,12 +3583,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "103":
     id: "103"
     taskid: 9a87fd3e-fedc-44c2-8419-bcf693c1ddcc
     type: title
     task:
       id: 9a87fd3e-fedc-44c2-8419-bcf693c1ddcc
+=======
+    skipunavailable: false
+  "103":
+    id: "103"
+    taskid: 8f0a49e6-6ce7-4e36-8257-c558b28a74ae
+    type: title
+    task:
+      id: 8f0a49e6-6ce7-4e36-8257-c558b28a74ae
+>>>>>>> upstream/master
       version: -1
       name: Linking Objects
       type: title
@@ -2479,18 +3612,32 @@ tasks:
       {
         "position": {
           "x": 910,
+<<<<<<< HEAD
           "y": 2730
+=======
+          "y": 3080
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "104":
     id: "104"
     taskid: 4fd49a7d-b061-43e7-819f-6f75d8757f97
     type: title
     task:
       id: 4fd49a7d-b061-43e7-819f-6f75d8757f97
+=======
+    skipunavailable: false
+  "104":
+    id: "104"
+    taskid: 587dd008-1de3-42fe-867d-dd6a04b0faab
+    type: title
+    task:
+      id: 587dd008-1de3-42fe-867d-dd6a04b0faab
+>>>>>>> upstream/master
       version: -1
       name: Delete Objects
       type: title
@@ -2505,18 +3652,32 @@ tasks:
       {
         "position": {
           "x": 910,
+<<<<<<< HEAD
           "y": 4420
+=======
+          "y": 4770
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "105":
     id: "105"
     taskid: 65ba50b4-1f27-4c5b-84eb-8226a1e642f7
     type: title
     task:
       id: 65ba50b4-1f27-4c5b-84eb-8226a1e642f7
+=======
+    skipunavailable: false
+  "105":
+    id: "105"
+    taskid: c39c3ada-5f8e-4301-8f52-ec36f6387784
+    type: title
+    task:
+      id: c39c3ada-5f8e-4301-8f52-ec36f6387784
+>>>>>>> upstream/master
       version: -1
       name: Uploading a File
       type: title
@@ -2530,18 +3691,32 @@ tasks:
       {
         "position": {
           "x": 910,
+<<<<<<< HEAD
           "y": 5760
+=======
+          "y": 6110
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "106":
     id: "106"
     taskid: e100b7ad-0dd6-4195-859a-fbb323a6cb06
     type: title
     task:
       id: e100b7ad-0dd6-4195-859a-fbb323a6cb06
+=======
+    skipunavailable: false
+  "106":
+    id: "106"
+    taskid: b0b4a061-b795-40e6-8043-49c87e3b9c02
+    type: title
+    task:
+      id: b0b4a061-b795-40e6-8043-49c87e3b9c02
+>>>>>>> upstream/master
       version: -1
       name: Events Tests
       type: title
@@ -2549,24 +3724,42 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
+<<<<<<< HEAD
       - "2"
+=======
+      - "115"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 480,
+=======
+          "x": 460,
+>>>>>>> upstream/master
           "y": 1185
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "107":
     id: "107"
     taskid: 5282b769-d29d-4e1a-85ad-7b475283abf7
     type: title
     task:
       id: 5282b769-d29d-4e1a-85ad-7b475283abf7
+=======
+    skipunavailable: false
+  "107":
+    id: "107"
+    taskid: c6d805d7-e5c7-4eb4-8e84-b588cfd0c0eb
+    type: title
+    task:
+      id: c6d805d7-e5c7-4eb4-8e84-b588cfd0c0eb
+>>>>>>> upstream/master
       version: -1
       name: Indicator Tests
       type: title
@@ -2574,24 +3767,42 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
+<<<<<<< HEAD
       - "37"
+=======
+      - "113"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 910,
+=======
+          "x": 1360,
+>>>>>>> upstream/master
           "y": 1185
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "108":
     id: "108"
     taskid: 81d3c045-3703-4347-8b8c-0980128eea43
     type: title
     task:
       id: 81d3c045-3703-4347-8b8c-0980128eea43
+=======
+    skipunavailable: false
+  "108":
+    id: "108"
+    taskid: e926be1a-d8b3-4cd2-869a-12d7ee4a523b
+    type: title
+    task:
+      id: e926be1a-d8b3-4cd2-869a-12d7ee4a523b
+>>>>>>> upstream/master
       version: -1
       name: Adversary Tests
       type: title
@@ -2599,24 +3810,42 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
+<<<<<<< HEAD
       - "1"
+=======
+      - "111"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 1340,
+=======
+          "x": 910,
+>>>>>>> upstream/master
           "y": 1185
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "109":
     id: "109"
     taskid: 242e8b7b-de6f-414e-8485-b1f21a8590c8
     type: title
     task:
       id: 242e8b7b-de6f-414e-8485-b1f21a8590c8
+=======
+    skipunavailable: false
+  "109":
+    id: "109"
+    taskid: fa0aedfd-ace6-4d97-8c4d-2ae3aa02bbd0
+    type: title
+    task:
+      id: fa0aedfd-ace6-4d97-8c4d-2ae3aa02bbd0
+>>>>>>> upstream/master
       version: -1
       name: Get all objects commands
       type: title
@@ -2632,18 +3861,32 @@ tasks:
       {
         "position": {
           "x": 910,
+<<<<<<< HEAD
           "y": 5265
+=======
+          "y": 5615
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "110":
     id: "110"
     taskid: be6bac5d-8520-4ba7-8404-f9c25cfbc5e5
     type: regular
     task:
       id: be6bac5d-8520-4ba7-8404-f9c25cfbc5e5
+=======
+    skipunavailable: false
+  "110":
+    id: "110"
+    taskid: 082c97ed-6ec4-46cf-8a0a-dfe0a45ffe0f
+    type: regular
+    task:
+      id: 082c97ed-6ec4-46cf-8a0a-dfe0a45ffe0f
+>>>>>>> upstream/master
       version: -1
       name: Update context (search by ID)
       description: Searches for an object by object type and ID. Generic and DBotScore
@@ -2660,23 +3903,251 @@ tasks:
         simple: ${ThreatQ.Event.ID}
       obj_type:
         simple: event
+<<<<<<< HEAD
+=======
+      retry-count:
+        simple: "3"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 480,
           "y": 1855
+=======
+          "x": 460,
+          "y": 2205
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+  "111":
+    id: "111"
+    taskid: ba9b4b93-97aa-4cd8-8e7e-8426a09ee1be
+    type: regular
+    task:
+      id: ba9b4b93-97aa-4cd8-8e7e-8426a09ee1be
+      version: -1
+      name: Search adversary
+      description: Searches for objects by name in the ThreatQ repository.
+      script: ThreatQ v2|||threatq-search-by-name
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "112"
+    scriptarguments:
+      limit: {}
+      name:
+        simple: TestAdversary-26-08
+      retry-count:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "112":
+    id: "112"
+    taskid: ebc18f5d-c7e4-4196-8ea4-4d506405d381
+    type: condition
+    task:
+      id: ebc18f5d-c7e4-4196-8ea4-4d506405d381
+      version: -1
+      name: Does adversary exist?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "77"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatQ.Adversary
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "113":
+    id: "113"
+    taskid: 2dd9a685-d140-4d62-8b97-a8411e41b439
+    type: regular
+    task:
+      id: 2dd9a685-d140-4d62-8b97-a8411e41b439
+      version: -1
+      name: Search indicator
+      description: Searches for objects by name in the ThreatQ repository.
+      script: ThreatQ v2|||threatq-search-by-name
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "114"
+    scriptarguments:
+      limit: {}
+      name:
+        simple: 9.9.4.4
+      retry-count:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1360,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "114":
+    id: "114"
+    taskid: 8a4d32bb-3fa1-428c-8a78-35cd503a8220
+    type: condition
+    task:
+      id: 8a4d32bb-3fa1-428c-8a78-35cd503a8220
+      version: -1
+      name: Does indicator exist?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "37"
+      "yes":
+      - "83"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatQ.Indicator
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1360,
+          "y": 1505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "115":
+    id: "115"
+    taskid: 78ec0b0e-53b5-4dc2-890d-c3e011f181e9
+    type: regular
+    task:
+      id: 78ec0b0e-53b5-4dc2-890d-c3e011f181e9
+      version: -1
+      name: Search event
+      description: Searches for objects by name in the ThreatQ repository.
+      script: ThreatQ v2|||threatq-search-by-name
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "116"
+    scriptarguments:
+      limit: {}
+      name:
+        simple: NewEvent-26-08
+      retry-count:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "116":
+    id: "116"
+    taskid: 1526e68d-578b-4f92-87f3-87018919b77d
+    type: condition
+    task:
+      id: 1526e68d-578b-4f92-87f3-87018919b77d
+      version: -1
+      name: Does event exist?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "78"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatQ.Event
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1505
+>>>>>>> upstream/master
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+<<<<<<< HEAD
+=======
+    skipunavailable: false
+>>>>>>> upstream/master
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
+<<<<<<< HEAD
         "height": 6620,
+=======
+        "height": 6970,
+>>>>>>> upstream/master
         "width": 2100,
         "x": 50,
         "y": 50

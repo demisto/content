@@ -165,7 +165,7 @@ script:
         if (facets) {
             queryParams.facets = facets;
         }
-        let response = sendRequest('/v1/alert', 'GET', encodeToURLQuery(queryParams));
+        let response = sendRequest('/v2/alert', 'GET', encodeToURLQuery(queryParams));
         try {
             return JSON.parse(response.Body).results;
         } catch (err) {
@@ -279,7 +279,7 @@ script:
         if (setIgnored) {
             queryParams.set_ignored = setIgnored;
         }
-        let response = sendRequest(`/v1/alerts`, 'POST', queryParams).Body;
+        let response = sendRequest('/v1/alerts', 'POST', queryParams).Body;
         try {
             return JSON.parse(response);
         } catch (err) {

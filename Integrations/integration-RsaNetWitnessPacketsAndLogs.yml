@@ -593,6 +593,7 @@ script:
             }
             //query must have select statement
             else if(args[QUERY].toLowerCase().indexOf('select') > -1) {
+<<<<<<< HEAD
                 args[QUERY] = args[QUERY].toLowerCase().split('group by')[0];
 
                 if (args[QUERY].toLowerCase().indexOf('where') > -1)
@@ -602,6 +603,17 @@ script:
 
                 if (args[QUERY].toLowerCase().indexOf('group by') > -1)
                     args[QUERY] += ' group by ' + args[QUERY].toLowerCase().split('group by')[1];
+=======
+                sql_query = args[QUERY].toLowerCase().split('group by');
+
+                if (sql_query[0].toLowerCase().indexOf('where') > -1)
+                    args[QUERY] = sql_query[0] + ' && time = "' + buildDateFormat();
+                else
+                    args[QUERY] = sql_query[0] + ' where time = "' + buildDateFormat();
+
+                if (sql_query.length > 1)
+                    args[QUERY] += ' group by ' + sql_query[1].trim();
+>>>>>>> upstream/master
             }
         }
     }

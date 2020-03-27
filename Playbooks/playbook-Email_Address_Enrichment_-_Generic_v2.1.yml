@@ -6,15 +6,23 @@ description: |-
   Enrich email addresses.
   - Get information from Active Directory for internal addresses
   - Get the domain-squatting reputation for external addresses
+<<<<<<< HEAD
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
+=======
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+>>>>>>> upstream/master
     taskid: 10b003be-68f2-4e57-8f11-d0475f1aac42
     type: start
     task:
       id: 10b003be-68f2-4e57-8f11-d0475f1aac42
       version: -1
+<<<<<<< HEAD
       name: ""
       description: ""
       iscommand: false
@@ -22,6 +30,15 @@ tasks:
     nexttasks:
       '#none#':
       - "5"
+=======
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '5'
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
@@ -33,18 +50,30 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "4":
     id: "4"
+=======
+  '4':
+    id: '4'
+>>>>>>> upstream/master
     taskid: 01ab9a35-e60e-4331-826d-48194fb5a771
     type: title
     task:
       id: 01ab9a35-e60e-4331-826d-48194fb5a771
       version: -1
       name: Done
+<<<<<<< HEAD
       description: ""
       type: title
       iscommand: false
       brand: ""
+=======
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+>>>>>>> upstream/master
     scriptarguments:
       details: {}
       fromclosedate: {}
@@ -77,18 +106,28 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "5":
     id: "5"
     taskid: db8113cf-a721-49a6-83dd-152e83c7d962
     type: condition
     task:
       id: db8113cf-a721-49a6-83dd-152e83c7d962
+=======
+  '5':
+    id: '5'
+    taskid: 43ea7e61-2e1e-4d4c-835c-623055112691
+    type: condition
+    task:
+      id: 43ea7e61-2e1e-4d4c-835c-623055112691
+>>>>>>> upstream/master
       version: -1
       name: Are there email addresses to check?
       description: Determines whether the playbook's input contains at least one email
         address.
       type: condition
       iscommand: false
+<<<<<<< HEAD
       brand: ""
     nexttasks:
       '#default#':
@@ -98,6 +137,17 @@ tasks:
     separatecontext: false
     conditions:
     - label: "yes"
+=======
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '20'
+      'yes':
+      - '9'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+>>>>>>> upstream/master
       condition:
       - - operator: isExists
           left:
@@ -105,6 +155,14 @@ tasks:
               simple: inputs.Email
             iscontext: true
           ignorecase: true
+<<<<<<< HEAD
+=======
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Email
+            iscontext: true
+>>>>>>> upstream/master
     view: |-
       {
         "position": {
@@ -115,12 +173,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "9":
     id: "9"
     taskid: 17c82691-cc28-445a-8aea-129217f589d6
     type: regular
     task:
       id: 17c82691-cc28-445a-8aea-129217f589d6
+=======
+  '9':
+    id: '9'
+    taskid: 7aa90f8f-bdf1-4d72-88ae-f0d7d2d0142f
+    type: regular
+    task:
+      id: 7aa90f8f-bdf1-4d72-88ae-f0d7d2d0142f
+>>>>>>> upstream/master
       version: -1
       name: Classify email addresses as internal or external
       description: Adds a NetworkType attribute to all email addresses. The NetworkType
@@ -130,11 +197,19 @@ tasks:
       scriptName: IsEmailAddressInternal
       type: regular
       iscommand: false
+<<<<<<< HEAD
       brand: ""
     nexttasks:
       '#none#':
       - "13"
       - "14"
+=======
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+      - '14'
+>>>>>>> upstream/master
     scriptarguments:
       domain:
         complex:
@@ -144,8 +219,20 @@ tasks:
       email:
         complex:
           root: inputs.Email
+<<<<<<< HEAD
           transformers:
           - operator: uniq
+=======
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.Email
+                iscontext: true
+          transformers:
+          - operator: uniq
+      include_subdomains: {}
+>>>>>>> upstream/master
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -158,14 +245,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "10":
     id: "10"
+=======
+  '10':
+    id: '10'
+>>>>>>> upstream/master
     taskid: e82515ea-9f9a-4273-8182-e6a84b24e4d6
     type: title
     task:
       id: e82515ea-9f9a-4273-8182-e6a84b24e4d6
       version: -1
       name: Internal
+<<<<<<< HEAD
       description: ""
       type: title
       iscommand: false
@@ -173,6 +266,15 @@ tasks:
     nexttasks:
       '#none#':
       - "17"
+=======
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '17'
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
@@ -184,14 +286,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "11":
     id: "11"
+=======
+  '11':
+    id: '11'
+>>>>>>> upstream/master
     taskid: d501d6f3-d086-40fa-8c28-052fc32787fb
     type: title
     task:
       id: d501d6f3-d086-40fa-8c28-052fc32787fb
       version: -1
       name: External
+<<<<<<< HEAD
       description: ""
       type: title
       iscommand: false
@@ -199,6 +307,15 @@ tasks:
     nexttasks:
       '#none#':
       - "18"
+=======
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '18'
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
@@ -210,8 +327,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "12":
     id: "12"
+=======
+  '12':
+    id: '12'
+>>>>>>> upstream/master
     taskid: 266c8054-586a-4b62-811b-d13147f12e54
     type: regular
     task:
@@ -223,10 +345,17 @@ tasks:
       script: '|||ad-get-user'
       type: regular
       iscommand: true
+<<<<<<< HEAD
       brand: ""
     nexttasks:
       '#none#':
       - "4"
+=======
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+>>>>>>> upstream/master
     scriptarguments:
       attributes: {}
       custom-field-data: {}
@@ -265,14 +394,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "13":
     id: "13"
+=======
+  '13':
+    id: '13'
+>>>>>>> upstream/master
     taskid: 2d740d11-a326-4913-83f1-8df803c0a3eb
     type: condition
     task:
       id: 2d740d11-a326-4913-83f1-8df803c0a3eb
       version: -1
       name: Are there any external email addresses?
+<<<<<<< HEAD
       description: Checks whether there is at least one email address with a NetworkType attribute set to "Internal".
       scriptName: Exists
       type: condition
@@ -283,6 +418,19 @@ tasks:
       - "4"
       "yes":
       - "11"
+=======
+      description: Checks whether there are email addresses with a NetworkType attribute
+        value of "External".
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '4'
+      'yes':
+      - '11'
+>>>>>>> upstream/master
     scriptarguments:
       value:
         complex:
@@ -311,25 +459,43 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "14":
     id: "14"
+=======
+  '14':
+    id: '14'
+>>>>>>> upstream/master
     taskid: e521733d-b152-4a1f-8050-e7658405a187
     type: condition
     task:
       id: e521733d-b152-4a1f-8050-e7658405a187
       version: -1
+<<<<<<< HEAD
       name: Are there internal email addresses?
+=======
+      name: Are there any internal email addresses?
+>>>>>>> upstream/master
       description: Checks whether there are email addresses with a NetworkType attribute
         value of "Internal".
       scriptName: Exists
       type: condition
       iscommand: false
+<<<<<<< HEAD
       brand: ""
     nexttasks:
       '#default#':
       - "4"
       "yes":
       - "10"
+=======
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '4'
+      'yes':
+      - '10'
+>>>>>>> upstream/master
     scriptarguments:
       value:
         complex:
@@ -358,8 +524,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "15":
     id: "15"
+=======
+  '15':
+    id: '15'
+>>>>>>> upstream/master
     taskid: 7d4c6562-651c-487d-834e-f3921527c76e
     type: regular
     task:
@@ -371,20 +542,35 @@ tasks:
       scriptName: EmailDomainSquattingReputation
       type: regular
       iscommand: false
+<<<<<<< HEAD
       brand: ""
     nexttasks:
       '#none#':
       - "4"
+=======
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+>>>>>>> upstream/master
     scriptarguments:
       domain:
         complex:
           root: inputs.Domain
           filters:
+<<<<<<< HEAD
             - - operator: isNotEmpty
                 left:
                   value:
                     simple: inputs.Domain
                   iscontext: true
+=======
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.Domain
+                iscontext: true
+>>>>>>> upstream/master
           transformers:
           - operator: uniq
       email:
@@ -417,8 +603,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "17":
     id: "17"
+=======
+  '17':
+    id: '17'
+>>>>>>> upstream/master
     taskid: 71e0fb34-e1c8-4606-8462-1f83a0a2cb56
     type: condition
     task:
@@ -430,12 +621,21 @@ tasks:
       scriptName: Exists
       type: condition
       iscommand: false
+<<<<<<< HEAD
       brand: ""
     nexttasks:
       '#default#':
       - "4"
       "yes":
       - "12"
+=======
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '4'
+      'yes':
+      - '12'
+>>>>>>> upstream/master
     scriptarguments:
       value:
         complex:
@@ -471,8 +671,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "18":
     id: "18"
+=======
+  '18':
+    id: '18'
+>>>>>>> upstream/master
     taskid: 1f1a6cd8-5aaa-4b0a-8147-e91dc6beec49
     type: condition
     task:
@@ -483,22 +688,39 @@ tasks:
       scriptName: Exists
       type: condition
       iscommand: false
+<<<<<<< HEAD
       brand: ""
     nexttasks:
       '#default#':
       - "4"
       "yes":
       - "15"
+=======
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '4'
+      'yes':
+      - '15'
+>>>>>>> upstream/master
     scriptarguments:
       value:
         complex:
           root: inputs.Domain
           filters:
+<<<<<<< HEAD
             - - operator: isNotEmpty
                 left:
                   value:
                     simple: inputs.Domain
                   iscontext: true
+=======
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.Domain
+                iscontext: true
+>>>>>>> upstream/master
           transformers:
           - operator: uniq
     separatecontext: false
@@ -512,14 +734,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "20":
     id: "20"
+=======
+  '20':
+    id: '20'
+>>>>>>> upstream/master
     taskid: 3ecf1917-78f6-4350-84bb-704fdaa1bf05
     type: title
     task:
       id: 3ecf1917-78f6-4350-84bb-704fdaa1bf05
       version: -1
       name: No Email Addresses
+<<<<<<< HEAD
       description: ""
       type: title
       iscommand: false
@@ -527,6 +755,15 @@ tasks:
     nexttasks:
       '#none#':
       - "4"
+=======
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '4'
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
@@ -538,6 +775,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
+=======
+system: true
+>>>>>>> upstream/master
 view: |-
   {
     "linkLabelsPosition": {
@@ -582,11 +823,19 @@ inputs:
     complex:
       root: inputs.Domain
       filters:
+<<<<<<< HEAD
         - - operator: isNotEmpty
             left:
               value:
                 simple: inputs.Domain
               iscontext: true
+=======
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Domain
+            iscontext: true
+>>>>>>> upstream/master
       transformers:
       - operator: uniq
   required: false

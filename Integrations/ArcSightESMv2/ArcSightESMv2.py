@@ -698,7 +698,12 @@ def get_entries_command():
     if 'entryList' in raw_entries:
         entry_list = raw_entries['entryList'] if isinstance(raw_entries['entryList'], list) else [
             raw_entries['entryList']]
+<<<<<<< HEAD
         entry_list = [d['entry'] for d in entry_list if 'entry' in d]
+=======
+        entry_list = [(d['entry'] if not isinstance(d['entry'], STRING_TYPES) else (d['entry'],)) for d in entry_list if
+                      'entry' in d]
+>>>>>>> upstream/master
         keys = raw_entries.get('columns')
         entries = [dict(zip(keys, values)) for values in entry_list]
 

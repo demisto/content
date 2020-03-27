@@ -1,5 +1,9 @@
 ## [Unreleased]
+<<<<<<< HEAD
 
+=======
+Fixed an issue when the last time of the fetch was not updated correctly.
+>>>>>>> upstream/master
 
 ## [19.11.0] - 2019-11-12
 Added ability to fetch alerts as incidents.

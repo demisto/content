@@ -263,7 +263,11 @@ tasks:
       {
         "position": {
           "x": 480,
+<<<<<<< HEAD
           "y": 1150
+=======
+          "y": 1200
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -286,7 +290,11 @@ tasks:
       {
         "position": {
           "x": 690,
+<<<<<<< HEAD
           "y": 1320
+=======
+          "y": 1370
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -357,7 +365,11 @@ tasks:
       {
         "position": {
           "x": 480,
+<<<<<<< HEAD
           "y": 970
+=======
+          "y": 1010
+>>>>>>> upstream/master
         }
       }
     note: false
@@ -365,10 +377,17 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
+<<<<<<< HEAD
     taskid: 6cf1c5ce-fa0f-41a7-8b34-fb7a04147861
     type: condition
     task:
       id: 6cf1c5ce-fa0f-41a7-8b34-fb7a04147861
+=======
+    taskid: 47348d70-6e0a-4efc-80d8-4f1f37d9561a
+    type: condition
+    task:
+      id: 47348d70-6e0a-4efc-80d8-4f1f37d9561a
+>>>>>>> upstream/master
       version: -1
       name: Get Prisma Cloud policy id
       description: Verify that a Prisma Cloud policy ID exists.
@@ -378,6 +397,7 @@ tasks:
     nexttasks:
       '#default#':
       - "6"
+<<<<<<< HEAD
       "yes":
       - "11"
     separatecontext: false
@@ -386,11 +406,40 @@ tasks:
     - label: "yes"
       condition:
       - - operator: isNotEmpty
+=======
+      passwdPolicy:
+      - "11"
+      userPolicy:
+      - "12"
+    separatecontext: false
+    defaultassigneecomplex: {}
+    conditions:
+    - label: passwdPolicy
+      condition:
+      - - operator: isNotEqualString
           left:
             value:
               complex:
                 root: inputs.policyId
             iscontext: true
+          right:
+            value:
+              simple: e809c246-2ef5-4319-bba9-2c5735d88aa8
+    - label: userPolicy
+      condition:
+      - - operator: isEqualString
+>>>>>>> upstream/master
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+<<<<<<< HEAD
+=======
+          right:
+            value:
+              simple: e809c246-2ef5-4319-bba9-2c5735d88aa8
+>>>>>>> upstream/master
     view: |-
       {
         "position": {
@@ -403,6 +452,7 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
+<<<<<<< HEAD
     taskid: ee45afd1-410b-4809-87b7-abc09bfb8146
     type: playbook
     task:
@@ -410,6 +460,27 @@ tasks:
       version: -1
       name: Prisma Cloud Remediation - AWS IAM Password Policy Misconfiguration
       description: ""
+=======
+    taskid: 95edff8c-bcac-4296-80c9-293d77209f66
+    type: playbook
+    task:
+      id: 95edff8c-bcac-4296-80c9-293d77209f66
+      version: -1
+      name: Prisma Cloud Remediation - AWS IAM Password Policy Misconfiguration
+      description: |-
+        This playbook remediates the following Prisma Cloud AWS IAM password policy alerts.
+
+        Prisma Cloud policies remediated:
+        - AWS IAM password policy allows password reuse
+        - AWS IAM password policy does not expire in 90 days
+        - AWS IAM password policy does not have a lowercase character
+        - AWS IAM password policy does not have a minimum of 14 characters
+        - AWS IAM password policy does not have a number
+        - AWS IAM password policy does not have a symbol
+        - AWS IAM password policy does not have a uppercase character
+        - AWS IAM password policy does not have password expiration period
+        - AWS IAM Password policy is insecure
+>>>>>>> upstream/master
       playbookName: Prisma Cloud Remediation - AWS IAM Password Policy Misconfiguration
       type: playbook
       iscommand: false
@@ -429,7 +500,51 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": -100,
+=======
+          "x": 10,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: ac6bdd4a-0d17-49b5-8d5e-ca830175b5a9
+    type: playbook
+    task:
+      id: ac6bdd4a-0d17-49b5-8d5e-ca830175b5a9
+      version: -1
+      name: Prisma Cloud Remediation - AWS IAM User Policy Misconfiguration
+      description: |-
+        This playbook remediates the following Prisma Cloud AWS IAM User alerts.
+
+        Prisma Cloud policies remediated:
+
+         - AWS IAM user has two active Access Keys
+      playbookName: Prisma Cloud Remediation - AWS IAM User Policy Misconfiguration
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      policyId:
+        complex:
+          root: inputs.policyId
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": -450,
+>>>>>>> upstream/master
           "y": 800
         }
       }
@@ -439,8 +554,13 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
+<<<<<<< HEAD
       "10_11_yes": 0.53,
       "10_6_#default#": 0.51,
+=======
+      "10_11_passwdPolicy": 0.39,
+      "10_6_#default#": 0.54,
+>>>>>>> upstream/master
       "1_2_yes": 0.49,
       "1_8_#default#": 0.21,
       "3_10_yes": 0.48,
@@ -450,9 +570,15 @@ view: |-
     },
     "paper": {
       "dimensions": {
+<<<<<<< HEAD
         "height": 1565,
         "width": 1170,
         "x": -100,
+=======
+        "height": 1615,
+        "width": 1520,
+        "x": -450,
+>>>>>>> upstream/master
         "y": -180
       }
     }

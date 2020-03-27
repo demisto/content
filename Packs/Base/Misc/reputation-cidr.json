@@ -1,0 +1,199 @@
+{
+    "id": "CIDR",
+    "version": -1,
+    "fromVersion": "5.5.0",
+    "modified": "2019-07-18T07:17:53.843554502Z",
+    "sortValues": null,
+    "commitMessage": "",
+    "shouldPublish": false,
+    "shouldCommit": false,
+    "regex": "\\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\\[\\.\\]|\\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\/([0-9]|[1-2][0-9]|3[0-2]))\\b",
+    "details": "CIDR",
+    "prevDetails": "CIDR",
+    "reputationScriptName": "",
+    "reputationCommand": "cidr",
+    "enhancementScriptNames": [],
+    "system": true,
+    "locked": false,
+    "disabled": false,
+    "file": false,
+    "updateAfter": 0,
+    "mergeContext": false,
+    "formatScript": "",
+    "contextPath": "CIDR(val.Address \u0026\u0026 val.Range === obj.Address)",
+    "contextValue": "Address",
+    "excludedBrands": [],
+    "expiration": 10080,
+    "defaultMapping": {
+        "asn": {
+            "simple": "",
+            "complex": {
+                "root": "CIDR",
+                "filters": [],
+                "accessor": "ASN",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "blocked": {
+            "simple": "",
+            "complex": {
+                "root": "CIDR",
+                "filters": [],
+                "accessor": "Blocked",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "detectionengines": {
+            "simple": "",
+            "complex": {
+                "root": "CIDR",
+                "filters": [],
+                "accessor": "DetectionEngines",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "geocountry": {
+            "simple": "",
+            "complex": {
+                "root": "CIDR",
+                "filters": [],
+                "accessor": "Geo.Country",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "geolocation": {
+            "simple": "",
+            "complex": {
+                "root": "CIDR",
+                "filters": [],
+                "accessor": "Geo.Location",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "internal": {
+            "simple": "",
+            "complex": {
+                "root": "CIDR",
+                "filters": [],
+                "accessor": "Internal",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "positivedetections": {
+            "simple": "",
+            "complex": {
+                "root": "CIDR",
+                "filters": [],
+                "accessor": "PositiveDetections",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "region": {
+            "simple": "",
+            "complex": {
+                "root": "CIDR",
+                "filters": [],
+                "accessor": "Region",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "associations": {
+            "simple": "",
+            "complex": {
+                "root": "CIDR",
+                "filters": [],
+                "accessor": "Associations",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "reportedby": {
+            "simple": "",
+            "complex": {
+                "root": "CIDR",
+                "filters": [],
+                "accessor": "ReportedBy",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "threattypes": {
+            "simple": "",
+            "complex": {
+                "root": "CIDR",
+                "filters": [],
+                "accessor": "ThreatTypes",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "trafficlightprotocoltlp": {
+            "simple": "",
+            "complex": {
+                "root": "CIDR",
+                "filters": [],
+                "accessor": "TrafficLightProtocol",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        }
+    },
+    "manualMapping": null,
+    "fileHashesPriority": null
+}

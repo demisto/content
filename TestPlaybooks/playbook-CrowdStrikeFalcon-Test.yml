@@ -6,10 +6,17 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
+<<<<<<< HEAD
     taskid: e8316381-4811-44a6-8808-155aeaa8e65f
     type: start
     task:
       id: e8316381-4811-44a6-8808-155aeaa8e65f
+=======
+    taskid: 11da572b-d3e4-4fbd-808c-1f417395fc30
+    type: start
+    task:
+      id: 11da572b-d3e4-4fbd-808c-1f417395fc30
+>>>>>>> upstream/master
       version: -1
       name: ""
       iscommand: false
@@ -28,12 +35,23 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "1":
     id: "1"
     taskid: 807db417-fab5-4cd4-8242-4606dc508f3d
     type: regular
     task:
       id: 807db417-fab5-4cd4-8242-4606dc508f3d
+=======
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: b7ba7676-3078-46e3-8128-0ae003caeef0
+    type: regular
+    task:
+      id: b7ba7676-3078-46e3-8128-0ae003caeef0
+>>>>>>> upstream/master
       version: -1
       name: Fetch from instance
       scriptName: FetchFromInstance
@@ -57,6 +75,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "2":
     id: "2"
     taskid: 1238a501-92ac-41b0-86e4-739ff45a8e04
@@ -65,6 +84,18 @@ tasks:
       id: 1238a501-92ac-41b0-86e4-739ff45a8e04
       version: -1
       name: Get multiple detections by IDs
+=======
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 489d4591-4790-4f82-8c4f-620365af58c7
+    type: regular
+    task:
+      id: 489d4591-4790-4f82-8c4f-620365af58c7
+      version: -1
+      name: Get detections by filter
+>>>>>>> upstream/master
       script: '|||cs-falcon-search-detection'
       type: regular
       iscommand: true
@@ -73,9 +104,15 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
+<<<<<<< HEAD
       filter: {}
       ids:
         simple: ldt:07893fedd2604bc66c3f7de8d1f537e3:1898376850347,ldt:68b5432856c1496d7547947fc7d1aae4:1092318056279064902
+=======
+      filter:
+        simple: created_timestamp:>'2020-03-05T15:25:00Z'
+      ids: {}
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
@@ -87,6 +124,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "3":
     id: "3"
     taskid: ac92cafe-0520-4e3c-8ea5-5c93ffe836c8
@@ -95,6 +133,18 @@ tasks:
       id: ac92cafe-0520-4e3c-8ea5-5c93ffe836c8
       version: -1
       name: Assert 2 detections were fetched
+=======
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: ae1e50c1-bbac-4166-8dd7-ce7fa9628474
+    type: condition
+    task:
+      id: ae1e50c1-bbac-4166-8dd7-ce7fa9628474
+      version: -1
+      name: Assert detections were fetched
+>>>>>>> upstream/master
       type: condition
       iscommand: false
       brand: ""
@@ -105,7 +155,11 @@ tasks:
     conditions:
     - label: "yes"
       condition:
+<<<<<<< HEAD
       - - operator: isEqualNumber
+=======
+      - - operator: greaterThanOrEqual
+>>>>>>> upstream/master
           left:
             value:
               complex:
@@ -116,7 +170,11 @@ tasks:
             iscontext: true
           right:
             value:
+<<<<<<< HEAD
               simple: "2"
+=======
+              simple: "1"
+>>>>>>> upstream/master
     view: |-
       {
         "position": {
@@ -127,12 +185,23 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "4":
     id: "4"
     taskid: b1360fcb-1a45-42f2-80e6-0ec5ce15961d
     type: regular
     task:
       id: b1360fcb-1a45-42f2-80e6-0ec5ce15961d
+=======
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 22600588-7b3c-4244-8dbc-4e3e2cefb67a
+    type: regular
+    task:
+      id: 22600588-7b3c-4244-8dbc-4e3e2cefb67a
+>>>>>>> upstream/master
       version: -1
       name: Get behavior
       script: '|||cs-falcon-get-behavior'
@@ -144,7 +213,11 @@ tasks:
       - "5"
     scriptarguments:
       behavior_id:
+<<<<<<< HEAD
         simple: "3206"
+=======
+        simple: "5702"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
@@ -156,6 +229,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "5":
     id: "5"
     taskid: 64819739-42c5-42ab-87da-641aeaf5ea42
@@ -164,6 +238,18 @@ tasks:
       id: 64819739-42c5-42ab-87da-641aeaf5ea42
       version: -1
       name: Assert 'known_malware' scenario
+=======
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 3405e0c7-e9a5-4a5c-8b5b-cf6be0040fd5
+    type: condition
+    task:
+      id: 3405e0c7-e9a5-4a5c-8b5b-cf6be0040fd5
+      version: -1
+      name: Assert 'NGAV' scenario
+>>>>>>> upstream/master
       type: condition
       iscommand: false
       brand: ""
@@ -183,7 +269,11 @@ tasks:
             iscontext: true
           right:
             value:
+<<<<<<< HEAD
               simple: known_malware
+=======
+              simple: NGAV
+>>>>>>> upstream/master
     view: |-
       {
         "position": {
@@ -194,12 +284,23 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "6":
     id: "6"
     taskid: 37ae0724-0403-4092-83e3-e213aa9114fe
     type: regular
     task:
       id: 37ae0724-0403-4092-83e3-e213aa9114fe
+=======
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 6d9f5236-f872-424b-86b0-f1b8b9ae0438
+    type: regular
+    task:
+      id: 6d9f5236-f872-424b-86b0-f1b8b9ae0438
+>>>>>>> upstream/master
       version: -1
       name: Get multiple devices
       script: '|||cs-falcon-search-device'
@@ -213,7 +314,12 @@ tasks:
       filter: {}
       hostname: {}
       ids:
+<<<<<<< HEAD
         simple: 336474ea6a524e7c68575f6508d84781,459146dbe524472e73751a43c63324f3
+=======
+        simple: c1a4575cd124419db5ed3c1e8ddc2c04,15dbb9d8f06b45fe9f61eb46e829d986
+      platform_name: {}
+>>>>>>> upstream/master
       platfrom_name: {}
       site_name: {}
       status: {}
@@ -228,6 +334,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "7":
     id: "7"
     taskid: 50e7f322-a706-4c43-89c0-9e4a394e3bcc
@@ -236,6 +343,18 @@ tasks:
       id: 50e7f322-a706-4c43-89c0-9e4a394e3bcc
       version: -1
       name: Assert 1 device was fetched
+=======
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: a75e1835-6c4e-4066-89a2-06350584debc
+    type: condition
+    task:
+      id: a75e1835-6c4e-4066-89a2-06350584debc
+      version: -1
+      name: Assert devices were fetched
+>>>>>>> upstream/master
       type: condition
       iscommand: false
       brand: ""
@@ -246,7 +365,11 @@ tasks:
     conditions:
     - label: "yes"
       condition:
+<<<<<<< HEAD
       - - operator: isEqualNumber
+=======
+      - - operator: greaterThanOrEqual
+>>>>>>> upstream/master
           left:
             value:
               complex:
@@ -268,12 +391,23 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "8":
     id: "8"
     taskid: 4aee1efa-ebfd-43cc-83a8-51993dbb46e2
     type: title
     task:
       id: 4aee1efa-ebfd-43cc-83a8-51993dbb46e2
+=======
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 4d1d9ed6-a9af-4683-8125-cf6a5d027d97
+    type: title
+    task:
+      id: 4d1d9ed6-a9af-4683-8125-cf6a5d027d97
+>>>>>>> upstream/master
       version: -1
       name: Done
       type: title
@@ -290,12 +424,23 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
   "9":
     id: "9"
     taskid: d1c3894a-f0f1-479c-8881-fff8b000eb33
     type: regular
     task:
       id: d1c3894a-f0f1-479c-8881-fff8b000eb33
+=======
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: e20d55a4-bb06-4ef5-8802-487830b1efea
+    type: regular
+    task:
+      id: e20d55a4-bb06-4ef5-8802-487830b1efea
+>>>>>>> upstream/master
       version: -1
       name: Clear context
       scriptName: DeleteContext
@@ -324,6 +469,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+<<<<<<< HEAD
+=======
+    skipunavailable: false
+    quietmode: 0
+>>>>>>> upstream/master
 view: |-
   {
     "linkLabelsPosition": {},

@@ -1,5 +1,15 @@
 ## [Unreleased]
+<<<<<<< HEAD
 
+=======
+ - Fixed an issue where the listing emails were not comparing the mail ID.
+
+## [20.2.0] - 2020-02-04
+Fixed an issue where the listing emails were not comparing the mail ID.
+
+## [20.1.2] - 2020-01-22
+Added support to authenticate using a self-deployed Azure application.
+>>>>>>> upstream/master
 
 ## [19.12.1] - 2019-12-25
 Added content-version and content-name headers to Oproxy request.

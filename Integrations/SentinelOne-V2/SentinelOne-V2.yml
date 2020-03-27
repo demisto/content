@@ -45,7 +45,11 @@ configuration:
   required: false
   type: 0
 description: End point protection
+<<<<<<< HEAD
 display: SentinelOne V2
+=======
+display: SentinelOne v2
+>>>>>>> upstream/master
 name: SentinelOne V2
 script:
   commands:

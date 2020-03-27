@@ -53,7 +53,7 @@ tasks:
       htmlBody: {}
       replyTo: {}
       subject:
-        simple: test
+        simple: test_rešňa
       to:
         simple: buildtests@demisto.int
     separatecontext: false
@@ -86,7 +86,7 @@ tasks:
     scriptarguments:
       body: {}
       filename:
-        simple: test_file
+        simple: test_file_пожалуйста
       headers: {}
       insecure: {}
       method:

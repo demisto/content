@@ -6,7 +6,7 @@ name: DomainTools
 fromversion: 3.0.0
 display: DomainTools
 category: Data Enrichment & Threat Intelligence
-image: data:image/png;base64,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
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAARCAMAAAAhQZhyAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAYBQTFRFenp6u7u72trasLCwRkZGxcXFv7+/hoaGqamp1tbWlpaWdXV1PDw8Xl5eZmZmrq6ulJSU0NDQi4uLn5+fg4ODCwsLtbW1jo6OExMToKCgIiIiAQEBa2trJiYmLi4ukpKSHh4eQEBAWVlZYWFhOTk5NjY2Kioq/////v7+/f39/Pz8+fn5+/v7f39/9PT0+vr63NzcfHx8eHh4jY2N9vb2gYGB5+fnw8PD8/PziYmJ8vLyd3d38fHx+Pj47e3t6enpwsLC4eHh3t7era2tq6urgICAdnZ2vLy8m5ubhYWF2dnZt7e3fn5+7u7utra2xsbGpqameXl59fX1fX194ODgkJCQwcHB5eXlz8/P6+vr1NTUhISEycnJsrKy9/f37+/v0tLSpKSk4+PjmZmZ8PDw6Ojox8fH6urq5OTkzs7O4uLis7Ozvb29uLi4nJyc5ubm3d3dysrK2NjY1dXVjIyMrKyswMDAqqqqmpqaiIiIp6enTU1N39/fo6Ojzc3N////mmwwVQAAAIB0Uk5T/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////wA4BUtnAAADRklEQVR42ryVZ0MiMRCGF1BB0LOBolFOvdPJ7gpIly5KB8Heey/Xe5+/fpOw+BPIh+Ql2cwzmZkEBRF9nwDVHyvY0aYgavnkU+xXMLLQafBaM7QRHDkZdObCWkfBeKiMLQHCwY7jqnNkBTLvy8koQsKP3Ka0wJla3vKJS6l9q4xnhFjZBeqH9uXsyls5rMXI39IZqd5thNzn6mLvIVmAg+5mBuQX4YfdbWGILxpH0vebUY7gSyl7g456gdJ78bKh8lBUrlrYi363JyXqbmLKOstMpCLsAfGOdYl1Ps0EDU0uQM6mafesFyH2fUzJ23SEUW+PSakJsjloiYV2/IhqMNXiHj3Fjj4ibFeVrz3DdS9tNe1dN/Dmp3TM8po+feEhz2b6yd8mW0PcYW4NXrN+sf55qn9LjMsTBJ5nrwAnQzIQV6I/LBAprVQRN4tZ8vJinS6Nd0mCF4dpQiXrmnK8e2wrHiDun6NNh5CTJJ7MUbfJopgQSERPmU7seBUZ6LP/Fr+73iwxvQ2errnXDfCinToY6xX6nx3wdkQoX9D/DE4kSxluFBdvflNWAfes3RE/rjp62mCVVTEq7eNsAHFrWGcsVRKhzrA09NnaYFc2y+69X1pgii8vyHzl4oC1UaEWlPAzGNe+Fpx7RlWHLbbkH1TNt3eI5QFuhBpzzIc6OxcpdZUQ6wo2BnFVgK3M42ETvA1ewVXXnP0ZDOMloUe/U8lZRaLfB1QC+9rlzA+3uHGdogOBwGOrCJPHYjjx+PWqy0oq5HpU05PTlPnABgJgfoYKhN1eXm67qL53JfgDwiR79wzGjOMD5+ZigoJ2VNP4dWCIlPdOVVXAm48a3Nfb4FQwEki+TanqmX2jIbaamNvl/isUp5piXSJM3oAwLU68PiPUSB9gbKp1YtTmWye+kpfovmKtxLNCnZYjP70PNKnGj+LxShgT5cqY87L9ZC6vF8cvisH4sLLhdOREek/Dp6oRGT2bkNYW5IuqUs7TsvJ5mGo1TZFNC/81ucqNy8o3N1sVhHDqk3OwQM0vEqH71PbLBecN8013bGSrHurp/nHdwScTfAjZ5eMvwRyYlzr5VreC8iZfeOzsv5PRht798ncQ/F+AAQCqnR8RUnHvswAAAABJRU5ErkJggg==
 description: Domain name, DNS and Internet OSINT-based cyber threat intelligence and
   cybercrime forensics products and data
 configuration:
@@ -25,7 +25,7 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: Open authentication (less secure)
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
   type: 8
@@ -376,7 +376,7 @@ script:
       description: The number of samples from each type (resolutions, detections,
         etc.) to display for long format
     - name: threshold
-      description: ' If number of positive detected domains is bigger than the threshold
+      description: 'If number of positive detected domains is bigger than the threshold
         we will consider it malicious'
     - name: wait
       description: Wait time between tries if we reach the API rate limit in seconds
@@ -390,13 +390,13 @@ script:
     - contextPath: Domain.Malicious.Vendor
       description: For malicious domains, the vendor that made the decision
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
     - contextPath: DBotScore.Type
-      description: The type of the indicator
-    - contextPath: ' DBotScore.Vendor'
-      description: Vendor used to calculate the score
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
     description: Retrieve domain information.
   - name: domainSearch
     arguments:
@@ -406,7 +406,7 @@ script:
       description: (mandatory and default) Query strings. Each term in the query string
         must be at least three characters long. Use spaces to separate multiple terms
     - name: pageNumber
-      description: ' Sets the page of results to retrieve from the server. Each page
+      description: 'Sets the page of results to retrieve from the server. Each page
         is limited to 100 results. Default: 1'
       defaultValue: "1"
     - name: maxLength
@@ -416,16 +416,16 @@ script:
       description: 'Limit the minimum domain character count. Default: 1'
       defaultValue: "1"
     - name: hesHyphen
-      description: ' (true or false) Return results with hyphens in the domain name.
+      description: '(true or false) Return results with hyphens in the domain name.
         Default: true'
     - name: exclude
-      description: ' Terms to exclude from matching'
+      description: Terms to exclude from matching
     - name: activeOnly
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: ' (true or false) Return only domains currently registered.Default:
+      description: '(true or false) Return only domains currently registered.Default:
         false'
       defaultValue: "false"
     - name: deletedOnly
@@ -441,7 +441,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: ' (true or false) Return only domains that start with the query
+      description: '(true or false) Return only domains that start with the query
         term. Default: false'
       defaultValue: "false"
     - name: anchorRight
@@ -449,7 +449,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: ' (true or false) Return only domains that end with the query term.
+      description: '(true or false) Return only domains that end with the query term.
         Default: false'
       defaultValue: "false"
     - name: hasNumber
@@ -470,7 +470,7 @@ script:
       default: true
       description: (default) specify IP address
     - name: domain
-      description: ' If you provide a domain name, DomainTools will respond with the
+      description: 'If you provide a domain name, DomainTools will respond with the
         list of other domains that share the same IP'
     - name: limit
       description: Limits the size of the domain list than can appear in a response.
@@ -486,7 +486,7 @@ script:
     - name: nameServer
       required: true
       default: true
-      description: ' (default and mandatory) specify the name of the primary or secondary
+      description: '(default and mandatory) specify the name of the primary or secondary
         name server'
     - name: limit
       description: Limit the size of the domain list than can appear in a response
@@ -499,7 +499,7 @@ script:
     - name: terms
       required: true
       default: true
-      description: ' (mandatory and default) List of one or more terms to search for
+      description: '(mandatory and default) List of one or more terms to search for
         in the Whois record, separated with the pipe character ( | ).'
     - name: exclude
       description: Domain names with Whois records that match these terms will be
@@ -510,7 +510,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: ' Show only historic records'
+      description: Show only historic records
       defaultValue: "false"
     - name: quoteMode
       description: 'Only lists the size and retail price of the query if you have
@@ -526,8 +526,8 @@ script:
     - name: query
       required: true
       default: true
-      description: ' (mandatory and default) enter domain (do not use full URL). e.g.
-        !whois [query=]demisto.com '
+      description: '(mandatory and default) enter domain (do not use full URL). e.g.
+        !whois [query=]demisto.com'
     - name: parsed
       description: Should return parsed or raw response. Default is true
       auto: PREDEFINED

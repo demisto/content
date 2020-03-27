@@ -7,4 +7,10 @@ rsa==3.4.2
 paramiko==2.6.0
 boto3==1.10.0
 pyminizip===0.2.4
+<<<<<<< HEAD
 requests_mock==1.7.0
+=======
+requests_mock==1.7.0
+google-cloud-storage==1.24.1
+prettytable==0.7.2
+>>>>>>> upstream/master

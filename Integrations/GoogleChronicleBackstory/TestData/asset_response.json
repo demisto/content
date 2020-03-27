@@ -1,0 +1,94 @@
+{
+  "assets": [
+    {
+      "asset": {
+        "assetIpAddress": "10.0.9.117"
+      },
+      "firstSeenArtifactInfo": {
+        "artifactIndicator": {
+          "domainName": "www.google.com"
+        },
+        "seenTime": "2020-01-22T07:08:39.930255Z"
+      },
+      "lastSeenArtifactInfo": {
+        "artifactIndicator": {
+          "domainName": "www.google.com"
+        },
+        "seenTime": "2020-01-24T07:51:25.083668Z"
+      }
+    },
+    {
+      "asset": { "unknownIdentifier":  "Unknown Identifier"},
+      "firstSeenArtifactInfo": {
+        "artifactIndicator": {
+          "domainName": "www.google.com"
+        },
+        "seenTime": "2020-01-22T07:08:39.930255Z"
+      },
+      "lastSeenArtifactInfo": {
+        "artifactIndicator": {
+          "domainName": "www.google.com"
+        },
+        "seenTime": "2020-01-24T07:51:25.083668Z"
+      }
+    },
+    {
+      "firstSeenArtifactInfo": {
+        "artifactIndicator": {
+          "domainName": "www.google.com"
+        },
+        "seenTime": "2020-01-22T07:08:39.930255Z"
+      },
+      "lastSeenArtifactInfo": {
+        "artifactIndicator": {
+          "domainName": "www.google.com"
+        },
+        "seenTime": "2020-01-24T07:51:25.083668Z"
+      }
+    },
+    {
+      "asset": {
+        "assetIpAddress": "10.0.9.117"
+      },
+      "lastSeenArtifactInfo": {
+        "artifactIndicator": {
+          "domainName": "www.google.com"
+        }
+      }
+    },
+    {
+      "asset": {
+        "assetMACAddress": "00:1B:44:11:3A:B7"
+      },
+      "firstSeenArtifactInfo": {
+        "artifactIndicator": {
+          "domainName": "www.google.com"
+        },
+        "seenTime": "2020-01-12T07:08:39.930255Z"
+      },
+      "lastSeenArtifactInfo": {
+        "artifactIndicator": {
+          "domainName": "www.google.com"
+        },
+        "seenTime": "2020-01-14T07:51:25.083668Z"
+      }
+    },
+    {
+      "asset": {
+        "product_id": "B17"
+      },
+      "firstSeenArtifactInfo": {
+        "artifactIndicator": {
+          "domainName": "www.google.com"
+        },
+        "seenTime": "2020-01-10T07:08:39.930255Z"
+      },
+      "lastSeenArtifactInfo": {
+        "artifactIndicator": {
+          "domainName": "www.google.com"
+        },
+        "seenTime": "2020-01-11T07:51:25.083668Z"
+      }
+    }
+  ]
+}

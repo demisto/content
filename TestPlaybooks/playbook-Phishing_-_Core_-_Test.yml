@@ -101,9 +101,15 @@ tasks:
       - "3"
     scriptarguments:
       command:
+<<<<<<< HEAD
         simple: '!taskComplete id=manual parentPlaybookID=27'
       cron:
         simple: '*/12 * * * *'
+=======
+        simple: '!CompleteManualTask id=${incident.id}'
+      cron:
+        simple: '*/1 * * * *'
+>>>>>>> upstream/master
       endDate: {}
       times:
         simple: "15"

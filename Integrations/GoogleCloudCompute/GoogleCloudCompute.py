@@ -56,7 +56,10 @@ def parse_firewall_rule(rule_str):
         match = regex.match(f)
         if match is None:
             raise ValueError('Could not parse field: %s' % (f,))
+<<<<<<< HEAD
             continue
+=======
+>>>>>>> upstream/master
 
         rules.append({'IPProtocol': match.group(1), 'ports': match.group(2).split(',')})
 
@@ -76,7 +79,10 @@ def parse_metadata_items(tags_str):
         match = regex.match(f)
         if match is None:
             raise ValueError('Could not parse field: %s' % (f,))
+<<<<<<< HEAD
             continue
+=======
+>>>>>>> upstream/master
 
         tags.append({'key': match.group(1), 'value': match.group(2)})
 
@@ -96,7 +102,10 @@ def parse_named_ports(tags_str):
         match = regex.match(f)
         if match is None:
             raise ValueError('Could not parse field: %s' % (f,))
+<<<<<<< HEAD
             continue
+=======
+>>>>>>> upstream/master
 
         tags.append({'name': match.group(1).lower(), 'port': match.group(2)})
 

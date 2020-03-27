@@ -1,6 +1,13 @@
 ## [Unreleased]
 
 
+<<<<<<< HEAD
+=======
+## [20.2.0] - 2020-02-04
+Fixed an issue where the script was returning the file metadata instead of the file contents.
+
+
+>>>>>>> upstream/master
 ## [19.12.1] - 2019-12-25
 The file size (in bytes) is returned as expected.
 

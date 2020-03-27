@@ -108,7 +108,40 @@ class Client(BaseClient):
             except Exception:
                 raise ValueError('Failed to parse question parameters.')
 
+<<<<<<< HEAD
         res = self.do_request('POST', 'parse_question', {'text': text}).get('data')[0]
+=======
+            res = self.do_request('POST', 'parse_question', {'text': text}).get('data')[0]
+        else:
+            # if there are no parameters argument - try to gets the sensors from parse question api
+            # for example, if the input text question is: `Get Folder Contents[c:\] from all machines`
+            # after the regex is: `Get Folder Contents from all machines`
+            text_without_params = re.sub(r'\[(.*?)\]', '', text)
+            res = self.do_request('POST', 'parse_question', {'text': text_without_params}).get('data')[0]
+
+            # call sensors/by-name/ for each sensor in the response and update parameters_condition
+            # with the correct parameters
+            for item in res.get('selects', []):
+                sensor = item.get('sensor', {}).get('name')
+                search_results = re.search(rf'{sensor}\[(.*)\]', text)
+                if search_results:
+                    parameters_str = search_results.group(1)
+                    parameters = parameters_str.split(',')
+                    endpoint_url = f'sensors/by-name/{sensor}'
+                    sensor_response = self.do_request('GET', endpoint_url)
+                    sensor_response = self.get_sensor_item(sensor_response.get('data'))
+
+                    tmp_item = {'sensor': sensor, 'parameters': []}
+                    for param, sensor_key in zip(parameters, sensor_response['Parameters']):
+                        if param:
+                            if param == '""':
+                                param = ''
+                            tmp_item['parameters'].append({
+                                'key': '||' + sensor_key['Key'] + '||',
+                                'value': param
+                            })
+                    parameters_condition.append(tmp_item)
+>>>>>>> upstream/master
 
         res = self.add_parameters_to_question(res, parameters_condition)
         return res
@@ -140,7 +173,13 @@ class Client(BaseClient):
         for row in results_sets.get('rows'):
             tmp_row = {}
             for item, column in zip(row.get('data', []), columns):
+<<<<<<< HEAD
                 item_value = item[0].get('text')
+=======
+                item_value = list(map(lambda x: x.get('text', ''), item))
+                item_value = ', '.join(item_value)
+
+>>>>>>> upstream/master
                 if item_value != '[no results]':
                     tmp_row[column] = item_value
             rows.append(tmp_row)
@@ -333,6 +372,7 @@ class Client(BaseClient):
 
     def get_sensor_item(self, sensor):
         item = {
+<<<<<<< HEAD
             'Category': sensor.get('category'),
             'CreationTime': sensor.get('creation_time'),
             'Description': sensor.get('description'),
@@ -345,6 +385,20 @@ class Client(BaseClient):
             'ModificationTime': sensor.get('modification_time'),
             'Name': sensor.get('name'),
             'SourceId': sensor.get('source_id'),
+=======
+            'Category': sensor.get('category', ''),
+            'CreationTime': sensor.get('creation_time', ''),
+            'Description': sensor.get('description', ''),
+            'Hash': sensor.get('hash', ''),
+            'ID': sensor.get('id', ''),
+            'IgnoreCaseFlag': sensor.get('ignore_case_flag', ''),
+            'KeepDuplicatesFlag': sensor.get('keep_duplicates_flag', ''),
+            'LastModifiedBy': sensor.get('last_modified_by', ''),
+            'MaxAgeSeconds': sensor.get('max_age_seconds', ''),
+            'ModificationTime': sensor.get('modification_time', ''),
+            'Name': sensor.get('name', ''),
+            'SourceId': sensor.get('source_id', ''),
+>>>>>>> upstream/master
             'Parameters': self.get_parameter_item(sensor)
         }
 

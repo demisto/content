@@ -3,23 +3,47 @@ commonfields:
   version: -1
 name: CompleteManualTask
 script: |
+<<<<<<< HEAD
   task_type = demisto.args().get('type', 'regular')
   args =  {
               "incidentId": demisto.args()['id'],
+=======
+  args = demisto.args()
+  task_type = args.get('type', 'regular')
+  task_name = args.get('name')
+
+  search_args =  {
+              "incidentId": args['id'],
+>>>>>>> upstream/master
               "states": "Waiting",
               "raw-response": "true"
           }
 
-  resCmdName = demisto.executeCommand("DemistoGetIncidentTasksByState", args)
+  resCmdName = demisto.executeCommand("DemistoGetIncidentTasksByState", search_args)
   contents = resCmdName[0].get("Contents", {})
+<<<<<<< HEAD
   tasks = [i.get('id', 0) for i in contents if i.get('type', '') == task_type]
 
   if len(tasks) > 0:
+=======
+  demisto.debug('found the following waiting commands on investigation {}:\n{}'.format(args['id'], contents))
+  tasks = [i.get('id', 0) for i in contents if i.get('type', '') == task_type]
+  if task_name:
+      tasks = [i.get('id', 0) for i in contents if i.get('name') == task_name]
+
+  if tasks:
+>>>>>>> upstream/master
       closing_args = { "id": tasks[0] }
       if task_type == 'condition':
           closing_args['input'] = demisto.args().get('closing_option')
 
+<<<<<<< HEAD
+=======
+      demisto.debug('closing command: {}'.format(closing_args))
+>>>>>>> upstream/master
       demisto.executeCommand("taskComplete", closing_args)
+  else:
+      demisto.debug('not closing anything...')
 type: python
 tags: []
 comment: Script that will allow to close Manual task on the current investigation
@@ -32,7 +56,18 @@ args:
   description: Type of manual task. Can be regular or condition.
 - name: closing_option
   description: Relevant only for conditional tasks.
+<<<<<<< HEAD
+=======
+- name: name
+  description: Name of manual task.
+>>>>>>> upstream/master
 scripttarget: 0
+subtype: python3
+pswd: ""
 runonce: false
 tests:
+<<<<<<< HEAD
   - No test
+=======
+  - No test
+>>>>>>> upstream/master

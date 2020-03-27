@@ -34,6 +34,10 @@ configuration:
 script:
   script: '-'
   type: python
+<<<<<<< HEAD
+=======
+  subtype: python3
+>>>>>>> upstream/master
   commands:
   - name: irisk-add-domain
     arguments:

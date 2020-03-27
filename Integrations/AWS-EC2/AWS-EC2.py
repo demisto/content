@@ -238,6 +238,14 @@ def describe_instances_command(args):
         kwargs.update({'InstanceIds': parse_resource_ids(args.get('instanceIds'))})
 
     response = client.describe_instances(**kwargs)
+<<<<<<< HEAD
+=======
+
+    if len(response['Reservations']) == 0:
+        demisto.results('No reservations were found.')
+        return
+
+>>>>>>> upstream/master
     for i, reservation in enumerate(response['Reservations']):
         for instance in reservation['Instances']:
             try:
@@ -296,6 +304,14 @@ def describe_images_command(args):
         kwargs.update({'ExecutableUsers': parse_resource_ids(args.get('executableUsers'))})
 
     response = client.describe_images(**kwargs)
+<<<<<<< HEAD
+=======
+
+    if len(response['Images']) == 0:
+        demisto.results('No images were found.')
+        return
+
+>>>>>>> upstream/master
     for i, image in enumerate(response['Images']):
         data.append({
             'CreationDate': image['CreationDate'],
@@ -347,6 +363,13 @@ def describe_addresses_command(args):
 
     response = client.describe_addresses(**kwargs)
 
+<<<<<<< HEAD
+=======
+    if len(response['Addresses']) == 0:
+        demisto.results('No addresses were found.')
+        return
+
+>>>>>>> upstream/master
     for i, address in enumerate(response['Addresses']):
         data.append({
             'PublicIp': address['PublicIp'],
@@ -398,6 +421,13 @@ def describe_snapshots_command(args):
 
     response = client.describe_snapshots(**kwargs)
 
+<<<<<<< HEAD
+=======
+    if len(response['Snapshots']) == 0:
+        demisto.results('No snapshots were found.')
+        return
+
+>>>>>>> upstream/master
     for i, snapshot in enumerate(response['Snapshots']):
         try:
             start_time = datetime.strftime(snapshot['StartTime'], '%Y-%m-%dT%H:%M:%SZ')
@@ -451,6 +481,13 @@ def describe_volumes_command(args):
 
     response = client.describe_volumes(**kwargs)
 
+<<<<<<< HEAD
+=======
+    if len(response['Volumes']) == 0:
+        demisto.results('No EC2 volumes were found.')
+        return
+
+>>>>>>> upstream/master
     for i, volume in enumerate(response['Volumes']):
         try:
             create_date = datetime.strftime(volume['CreateTime'], '%Y-%m-%dT%H:%M:%SZ')
@@ -501,6 +538,13 @@ def describe_launch_templates_command(args):
 
     response = client.describe_launch_templates(**kwargs)
 
+<<<<<<< HEAD
+=======
+    if len(response['LaunchTemplates']) == 0:
+        demisto.results('No launch templates were found.')
+        return
+
+>>>>>>> upstream/master
     for i, template in enumerate(response['LaunchTemplates']):
         try:
             create_time = datetime.strftime(template['CreateTime'], '%Y-%m-%dT%H:%M:%SZ')
@@ -583,6 +627,13 @@ def describe_vpcs_command(args):
 
     response = client.describe_vpcs(**kwargs)
 
+<<<<<<< HEAD
+=======
+    if len(response['Vpcs']) == 0:
+        demisto.results('No VPCs were found.')
+        return
+
+>>>>>>> upstream/master
     for i, vpc in enumerate(response['Vpcs']):
         data.append({
             'CidrBlock': vpc['CidrBlock'],
@@ -630,6 +681,13 @@ def describe_subnets_command(args):
 
     response = client.describe_subnets(**kwargs)
 
+<<<<<<< HEAD
+=======
+    if len(response['Subnets']) == 0:
+        demisto.results('No Subnets were found.')
+        return
+
+>>>>>>> upstream/master
     for i, subnet in enumerate(response['Subnets']):
         data.append({
             'AvailabilityZone': subnet['AvailabilityZone'],
@@ -680,6 +738,13 @@ def describe_security_groups_command(args):
 
     response = client.describe_security_groups(**kwargs)
 
+<<<<<<< HEAD
+=======
+    if len(response['SecurityGroups']) == 0:
+        demisto.results('No security groups were found.')
+        return
+
+>>>>>>> upstream/master
     for i, sg in enumerate(response['SecurityGroups']):
         data.append({
             'Description': sg['Description'],
@@ -1236,6 +1301,14 @@ def run_instances_command(args):
 
     response = client.run_instances(**kwargs)
     data = []
+<<<<<<< HEAD
+=======
+
+    if len(response['Instances']) == 0:
+        demisto.results('No instances were found.')
+        return
+
+>>>>>>> upstream/master
     for i, instance in enumerate(response['Instances']):
         try:
             launch_date = datetime.strftime(instance['LaunchTime'], '%Y-%m-%dT%H:%M:%SZ')
@@ -1689,6 +1762,14 @@ def describe_reserved_instances_command(args):
         kwargs.update({'ReservedInstancesIds': parse_resource_ids(args.get('reservedInstancesIds'))})
 
     response = client.describe_reserved_instances(**kwargs)
+<<<<<<< HEAD
+=======
+
+    if len(response['ReservedInstances']) == 0:
+        demisto.results('No reserved instances were found.')
+        return
+
+>>>>>>> upstream/master
     for i, reservation in enumerate(response['ReservedInstances']):
         try:
             start_time = datetime.strftime(reservation['Start'], '%Y-%m-%dT%H:%M:%SZ')
@@ -2152,6 +2233,7 @@ def delete_fleet_command(args):
         kwargs.update({'TerminateInstances': bool(args.get('TerminateInstances'))})
 
     response = client.delete_fleets(**kwargs)
+<<<<<<< HEAD
     for i, item in enumerate(response['SuccessfulFleetDeletions']):
         data.append({'SuccessfulFleetDeletions': {
             'CurrentFleetState': item['CurrentFleetState'],
@@ -2168,6 +2250,28 @@ def delete_fleet_command(args):
             'Region': obj['_user_provided_options']['region_name'],
         }})
         output.append(item)
+=======
+
+    if len(response['SuccessfulFleetDeletions']) > 0:
+        for i, item in enumerate(response['SuccessfulFleetDeletions']):
+            data.append({'SuccessfulFleetDeletions': {
+                'CurrentFleetState': item['CurrentFleetState'],
+                'PreviousFleetState': item['PreviousFleetState'],
+                'FleetId': item['FleetId'],
+                'Region': obj['_user_provided_options']['region_name'],
+            }})
+            output.append(item)
+
+    if len(response['UnsuccessfulFleetDeletions']) > 0:
+        for i, item in enumerate(response['UnsuccessfulFleetDeletions']):
+            data.append({'UnsuccessfulFleetDeletions': {
+                'Error-Code': item['Error']['Code'],
+                'Error-Message': item['Error']['Message'],
+                'FleetId': item['FleetId'],
+                'Region': obj['_user_provided_options']['region_name'],
+            }})
+            output.append(item)
+>>>>>>> upstream/master
 
     try:
         raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
@@ -2199,6 +2303,14 @@ def describe_fleets_command(args):
         kwargs.update({'NextToken': args.get('NextToken')})
 
     response = client.describe_fleets(**kwargs)
+<<<<<<< HEAD
+=======
+
+    if len(response['Fleets']) == 0:
+        demisto.results('No fleets were found.')
+        return
+
+>>>>>>> upstream/master
     for i, item in enumerate(response['Fleets']):
 
         data.append({
@@ -2255,6 +2367,14 @@ def describe_fleet_instances_command(args):
         kwargs.update({'NextToken': args.get('NextToken')})
 
     response = client.describe_fleet_instances(**kwargs)
+<<<<<<< HEAD
+=======
+
+    if len(response['ActiveInstances']) == 0:
+        demisto.results('No active instances were found.')
+        return
+
+>>>>>>> upstream/master
     for i, item in enumerate(response['ActiveInstances']):
         demisto.log(str(item))
         data.append({

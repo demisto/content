@@ -65,6 +65,20 @@ args:
   name: minTextLength
   required: false
   secret: false
+<<<<<<< HEAD
+=======
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: Whether to pre-process text (removing HTML, normilize words)
+  isArray: false
+  name: preProcessText
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+>>>>>>> upstream/master
 comment: |
   Find similar incidents by text comparison - the algorithm based on TF-IDF method.
   To read more about this method: https://en.wikipedia.org/wiki/Tf%E2%80%93idf
@@ -87,6 +101,10 @@ outputs:
   description: Similar incident name.
   type: string
 script: '-'
+<<<<<<< HEAD
+=======
+subtype: python2
+>>>>>>> upstream/master
 system: false
 tags:
 - ml
@@ -98,4 +116,8 @@ type: python
 dockerimage: demisto/machine-learning
 runonce: false
 tests:
+<<<<<<< HEAD
   - dedup_-_generic_-_test
+=======
+- dedup_-_generic_-_test
+>>>>>>> upstream/master

@@ -553,9 +553,15 @@
 							{
 								"dropEffect": "move",
 								"endCol": 2,
+<<<<<<< HEAD
 								"fieldId": "account",
 								"height": 24,
 								"id": "c264f4a0-93c4-11e9-9dd5-3b4f6f9f1bae",
+=======
+								"fieldId": "accountname",
+								"height": 24,
+								"id": "209fc340-3066-11ea-9aa4-0df78411179a",
+>>>>>>> upstream/master
 								"index": 4,
 								"listId": "9c8d74a0-93c4-11e9-9dd5-3b4f6f9f1bae",
 								"startCol": 0
@@ -802,7 +808,11 @@
 			}
 		],
 		"typeId": "Prisma Cloud",
+<<<<<<< HEAD
 		"version": 21
+=======
+		"version": -1
+>>>>>>> upstream/master
 	},
 	"typeId": "Prisma Cloud",
 	"version": -1

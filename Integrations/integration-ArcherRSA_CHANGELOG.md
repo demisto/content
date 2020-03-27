@@ -1,6 +1,17 @@
 ## [Unreleased]
 
 
+<<<<<<< HEAD
+=======
+## [20.3.3] - 2020-03-18
+Fixed an issue where the following commands failed on numeric incident IDs.
+  - ***archer-update-record***
+  - ***archer-delete-record*** 
+  - ***archer-upload-file***
+  - ***archer-add-to-detailed-analysis***
+  - ***archer-get-record***
+
+>>>>>>> upstream/master
 ## [19.12.1] - 2019-12-25
 Fixed an issue where reports generated from the **GenerateInvestigationReport** script failed to upload to RSA Archer.
 

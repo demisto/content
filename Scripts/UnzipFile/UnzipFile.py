@@ -11,8 +11,16 @@ import shutil
 import shlex
 
 
+<<<<<<< HEAD
 def main(dir_path):
     args = demisto.args()  # type: dict
+=======
+def get_zip_path(args):
+    """
+    :param args: arg from demisto
+    :return: path of zip file
+    """
+>>>>>>> upstream/master
     file_entry_id = ''
     if args.get('fileName') or args.get('lastZipFileInWarroom'):
         entries = demisto.executeCommand('getEntries', {})
@@ -30,6 +38,7 @@ def main(dir_path):
                 if args.get('lastZipFileInWarroom'):
                     file_entry_id = entry['ID']
 
+<<<<<<< HEAD
             if not file_entry_id:
                 if args.get('fileName'):
                     demisto.results({
@@ -45,6 +54,23 @@ def main(dir_path):
                     })
 
                 sys.exit(0)
+=======
+        # after the for loop above checks if a entry was found
+        if not file_entry_id:
+            if args.get('fileName'):
+                demisto.results({
+                    'Type': entryTypes['error'],
+                    'ContentsFormat': formats['text'],
+                    'Contents': args.get('fileName', '') + ' not such file in war room'
+                })
+            if args.get('lastZipFileInWarroom'):
+                demisto.results({
+                    'Type': entryTypes['error'],
+                    'ContentsFormat': formats['text'],
+                    'Contents': 'Not found zip file in war room'
+                })
+            sys.exit(0)
+>>>>>>> upstream/master
     if 'entryID' in args:
         file_entry_id = args.get('entryID')  # type: ignore
 
@@ -60,11 +86,26 @@ def main(dir_path):
         })
         sys.exit(0)
 
+<<<<<<< HEAD
     file_path = res[0]['Contents']['path']
 
     password = args.get('password', None)
 
     filenames = []
+=======
+    return res[0]['Contents']['path']
+
+
+def extract(file_path, dir_path, password=None):
+    """
+    :param file_path: the zip file path.
+    :param dir_path: directory  that the file will be extract to
+    :param password: password if the zip file is encrypted
+    :return:
+        excluded_dirs: the excluded dirs which are in dir_path
+        excluded_files: the excludedfiles which are in dir_path
+    """
+>>>>>>> upstream/master
     # remembering which files and dirs we currently have so we add them later as newly extracted files.
     excluded_files = [f for f in os.listdir('.') if isfile(f)]
     excluded_dirs = [d for d in os.listdir('.') if isdir(d)]
@@ -75,9 +116,28 @@ def main(dir_path):
     stdout, stderr = process.communicate()
     if stderr:
         return_error(str(stderr))
+<<<<<<< HEAD
     if 'Wrong password?' in stdout:
         demisto.debug(str(stdout))
         return_error("Data Error in encrypted file. Wrong password?")
+=======
+    stdout = str(stdout)
+    if 'Wrong password?' in stdout:
+        demisto.debug(stdout)
+        return_error("Data Error in encrypted file. Wrong password?")
+    return excluded_dirs, excluded_files
+
+
+def upload_files(excluded_dirs, excluded_files, dir_path):
+    """
+    :param excluded_dirs: excluded dirs
+    :param excluded_files: excluded files
+    :param dir_path: dir path for the files
+    :return:
+    """
+    filenames = []  # type: ignore
+    file_entry_id = dir_path
+>>>>>>> upstream/master
     # recursive call over the file system top down
     for root, directories, files in os.walk(dir_path):
         # removing the previously existing dirs from the search
@@ -101,7 +161,12 @@ def main(dir_path):
         files_base_names = [os.path.basename(file_path) for file_path in filenames]  # noqa[F812]
         files_dic = {file_path: os.path.basename(file_path) for file_path in filenames}
         for file_path, file_name in files_dic.items():
+<<<<<<< HEAD
             demisto.results(fileResult(file_path, file_name))
+=======
+            with open(file_path, 'rb') as _file:
+                demisto.results(fileResult(file_name, _file.read()))
+>>>>>>> upstream/master
         results.append(
             {
                 'Type': entryTypes['note'],
@@ -118,11 +183,29 @@ def main(dir_path):
         demisto.results(results)
 
 
+<<<<<<< HEAD
 if __name__ in ('__builtin__', 'builtins'):
     dir_path = mkdtemp()
     try:
         main(dir_path)
+=======
+def main():
+    dir_path = mkdtemp()
+    try:
+        args = demisto.args()
+        file_path = get_zip_path(args)
+        excluded_dirs, excluded_files = extract(file_path=file_path, dir_path=dir_path, password=args.get('password'))
+        upload_files(excluded_dirs, excluded_files, dir_path)
+
+>>>>>>> upstream/master
     except Exception as e:
         return_error(str(e))
     finally:
         shutil.rmtree(dir_path)
+<<<<<<< HEAD
+=======
+
+
+if __name__ in ('__builtin__', 'builtins'):
+    main()
+>>>>>>> upstream/master

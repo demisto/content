@@ -12,7 +12,11 @@ import re
 # ============================================================================================================== #
 
 PROOFPOINT_PREFIXES = ['https://urldefense.proofpoint.com/v1/url?u=', 'https://urldefense.proofpoint.com/v2/url?u=']
+<<<<<<< HEAD
 ATP_LINK_REG = r'(https:\/\/\w*|\w*)\.safelinks\.protection\.outlook\.com\/\?url='
+=======
+ATP_LINK_REG = r'(https:\/\/\w*|\w*)\.safelinks\.protection\.outlook\.com\/.*\?url='
+>>>>>>> upstream/master
 
 
 def atp_get_original_url(safe_url):

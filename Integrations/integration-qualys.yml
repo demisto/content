@@ -347,6 +347,10 @@ script:
             'scan': [
                     {to: 'ID', from: 'ID'},
                     {to: 'Reference', from: 'REFERENCE'},
+<<<<<<< HEAD
+=======
+                    {to: 'Ref', from: 'REF'},
+>>>>>>> upstream/master
                     {to: 'Title', from: 'TITLE'},
                     {to: 'Type', from: 'TYPE'},
                     {to: 'LaunchDatetime', from: 'LAUNCH_DATETIME'},
@@ -1109,7 +1113,9 @@ script:
     - contextPath: Qualys.Scan.ID
       description: Scan ID
     - contextPath: Qualys.Scan.Reference
-      description: Sacn ref
+      description: Scan ref
+    - contextPath: Qualys.Scan.REF
+      description: Scan REF
     - contextPath: Qualys.Scan.Type
       description: Scan type
     - contextPath: Qualys.Scan.Title
@@ -1326,7 +1332,9 @@ script:
     - contextPath: Qualys.Scan.ID
       description: Scan ID
     - contextPath: Qualys.Scan.Reference
-      description: Sacn ref
+      description: Scan ref
+    - contextPath: Qualys.Scan.REF
+      description: Scan REF
     - contextPath: Qualys.Scan.Type
       description: Scan type
     - contextPath: Qualys.Scan.Title
@@ -1495,7 +1503,7 @@ script:
     arguments:
     - name: id
       description: The ID of the scan schedule you want to display.
-    - name: The ID of the scan schedule you want to display.
+    - name: active
       auto: PREDEFINED
       predefined:
       - "0"
@@ -1506,7 +1514,9 @@ script:
     - contextPath: Qualys.Scan.ID
       description: Scan ID
     - contextPath: Qualys.Scan.Reference
-      description: Sacn ref
+      description: Scan ref
+    - contextPath: Qualys.Scan.REF
+      description: Scan REF
     - contextPath: Qualys.Scan.Type
       description: Scan type
     - contextPath: Qualys.Scan.Title
@@ -1944,7 +1954,9 @@ script:
     - contextPath: Qualys.Scan.ID
       description: Scan ID
     - contextPath: Qualys.Scan.Reference
-      description: Sacn ref
+      description: Scan ref
+    - contextPath: Qualys.Scan.REF
+      description: Scan REF
     - contextPath: Qualys.Scan.Type
       description: Scan type
     - contextPath: Qualys.Scan.Title

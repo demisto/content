@@ -1,6 +1,16 @@
 ## [Unreleased]
 
 
+<<<<<<< HEAD
+=======
+## [20.2.3] - 2020-02-18
+- Fixed issue with task inputs.
+- Added new sub-playbooks.
+
+## [20.1.2] - 2020-01-22
+- Fixed an issue with EDL refresh for Panorama.
+
+>>>>>>> upstream/master
 ## [19.12.1] - 2019-12-25
 - Added new playbook inputs.
 - Fixed an issue with EDL refresh for Panorama.

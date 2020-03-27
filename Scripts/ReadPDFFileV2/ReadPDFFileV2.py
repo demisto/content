@@ -7,6 +7,10 @@ import os
 import re
 import errno
 import shutil
+<<<<<<< HEAD
+=======
+import json
+>>>>>>> upstream/master
 from typing import List
 
 
@@ -65,11 +69,14 @@ def run_shell_command(command, *args):
         raise ShellException(f'Failed with the following error code: {completed_process.returncode}.'
                              f' Error: {completed_process.stderr}')
     elif completed_process.stderr:
+<<<<<<< HEAD
         # raise only if stderr contains non warning messages
         lines = completed_process.stderr.splitlines()
         for l in lines:
             if 'warning:' not in l.lower():
                 raise ShellException(f'{completed_process.stderr}Error code: {completed_process.returncode}')
+=======
+>>>>>>> upstream/master
         demisto.debug(f'ReadPDFFilev2: exec of [{cmd}] completed with warnings: {completed_process.stderr}')
     return completed_process.stdout
 
@@ -157,7 +164,11 @@ def get_pdf_htmls_content(pdf_path, output_folder):
     return html_content
 
 
+<<<<<<< HEAD
 def build_readpdf_entry_object(pdf_file, metadata, text, urls, images):
+=======
+def build_readpdf_entry_object(pdf_file, metadata, text, urls, emails, images):
+>>>>>>> upstream/master
     """Builds an entry object for the main script flow"""
     # Add Text to file entity
     pdf_file["Text"] = text
@@ -202,6 +213,7 @@ def build_readpdf_entry_object(pdf_file, metadata, text, urls, images):
             all_pdf_data += u
 
     # Extract indicators (omitting context output, letting auto-extract work)
+<<<<<<< HEAD
     indicators_hr = demisto.executeCommand("extractIndicators", {
         "text": all_pdf_data})[0][u"Contents"]
     results.append({
@@ -209,15 +221,54 @@ def build_readpdf_entry_object(pdf_file, metadata, text, urls, images):
         "ContentsFormat": formats["json"],
         "Contents": indicators_hr,
         "HumanReadable": indicators_hr
+=======
+    try:
+        indicators_map = demisto.executeCommand("extractIndicators", {"text": all_pdf_data})[0][u"Contents"]
+        indicators_map = json.loads(indicators_map)
+        if emails:
+            indicators_map["Email"] = emails
+    except json.JSONDecodeError:
+        pass
+    ec = build_readpdf_entry_context(indicators_map)
+    results.append({
+        "Type": entryTypes["note"],
+        "ContentsFormat": formats["json"],
+        "Contents": indicators_map,
+        "HumanReadable": indicators_map,
+        "EntryContext": ec
+>>>>>>> upstream/master
     })
     return results
 
 
+<<<<<<< HEAD
+=======
+def build_readpdf_entry_context(indicators_map):
+    ec = {}
+    if isinstance(indicators_map, dict):
+        if 'URL' in indicators_map:
+            ec_url = []
+            for url in indicators_map['URL']:
+                ec_url.append({'Data': url})
+            ec['URL'] = ec_url
+        if 'Email' in indicators_map:
+            ec_email = []
+            for email in indicators_map['Email']:
+                ec_email.append({'Email': email})
+            ec['Account'] = ec_email
+    return ec
+
+
+>>>>>>> upstream/master
 def get_urls_from_binary_file(file_path):
     """Reading from the binary pdf in the pdf_text_output_path and returns a list of the urls in the file"""
     with open(file_path, 'rb') as file:
         # the urls usually appear in the form: '/URI (url)'
+<<<<<<< HEAD
         urls = re.findall(r'/URI \((.*?)\)', str(file.read()))
+=======
+        urls = re.findall(r'/URI ?\((.*?)\)', str(file.read()))
+>>>>>>> upstream/master
 
     binary_file_urls = set()
     # make sure the urls match the url regex
@@ -238,6 +289,10 @@ def main():
 
     # URLS
     urls_ec = []
+<<<<<<< HEAD
+=======
+    emails_ec = []
+>>>>>>> upstream/master
     folders_to_remove = []
     try:
         path = demisto.getFilePath(entry_id).get('path')
@@ -267,15 +322,31 @@ def main():
                 pdf_html_content = get_pdf_htmls_content(cpy_file_path, output_folder)
                 urls = re.findall(urlRegex, pdf_html_content)
                 urls_set = set(urls)
+<<<<<<< HEAD
                 emails = re.findall(EMAIL_REGXEX, pdf_html_content)
 
                 urls_set = urls_set.union(binary_file_urls)
                 urls_set = urls_set.union(set(emails))
+=======
+                emails_set = set(re.findall(EMAIL_REGXEX, pdf_html_content))
+
+                urls_set = urls_set.union(binary_file_urls)
+>>>>>>> upstream/master
 
                 # this url is always generated with the pdf html file, and that's why we remove it
                 urls_set.remove('http://www.w3.org/1999/xhtml')
                 for url in urls_set:
+<<<<<<< HEAD
                     urls_ec.append({"Data": url})
+=======
+                    if re.match(emailRegex, url):
+                        emails_set.add(url)
+                    else:
+                        urls_ec.append({"Data": url})
+
+                for email in emails_set:
+                    emails_ec.append(email)
+>>>>>>> upstream/master
 
                 # Get images:
                 images = get_images_paths_in_path(output_folder)
@@ -286,7 +357,11 @@ def main():
                     "Contents": f"Could not load pdf file in EntryID {entry_id}\nError: {str(e)}"
                 })
                 raise e
+<<<<<<< HEAD
             readpdf_entry_object = build_readpdf_entry_object(pdf_file, metadata, text, urls_ec, images)
+=======
+            readpdf_entry_object = build_readpdf_entry_object(pdf_file, metadata, text, urls_ec, emails_ec, images)
+>>>>>>> upstream/master
             demisto.results(readpdf_entry_object)
         else:
             demisto.results({

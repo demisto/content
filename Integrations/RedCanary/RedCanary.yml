@@ -20,14 +20,27 @@ configuration:
   required: true
 - display: Fetch incidents
   name: isFetch
+<<<<<<< HEAD
   defaultvalue: ""
+=======
+>>>>>>> upstream/master
   type: 8
   required: false
 - display: Incident type
   name: incidentType
+<<<<<<< HEAD
   defaultvalue: ""
   type: 13
   required: false
+=======
+  type: 13
+  required: false
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
+>>>>>>> upstream/master
 - display: Use system proxy settings
   name: proxy
   defaultvalue: ""

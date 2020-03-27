@@ -1,6 +1,12 @@
+elasticcommonfields: {}
 id: Mail Sender (New) Test
+<<<<<<< HEAD
 version: 8
 name: Email Sender Python
+=======
+version: -1
+name: Mail Sender (New) Test
+>>>>>>> upstream/master
 description: |-
   Email sender - python.
   Tested against googleapps mail.
@@ -9,10 +15,18 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
+<<<<<<< HEAD
     taskid: a9a75a06-3272-4ed7-8a1f-15540b4be4bd
     type: start
     task:
       id: a9a75a06-3272-4ed7-8a1f-15540b4be4bd
+=======
+    taskid: 5c56b3de-66e8-4647-8d54-b8583e01c22c
+    type: start
+    task:
+      elasticcommonfields: {}
+      id: 5c56b3de-66e8-4647-8d54-b8583e01c22c
+>>>>>>> upstream/master
       version: -1
       name: ""
       iscommand: false
@@ -24,18 +38,35 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 285,
+=======
+          "x": 387.5,
+>>>>>>> upstream/master
           "y": 50
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "1":
     id: "1"
     taskid: 64b259dc-4df1-4e39-8f9d-ec7a588a67be
     type: regular
     task:
       id: 64b259dc-4df1-4e39-8f9d-ec7a588a67be
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: fb37ab5e-fd08-474f-8f58-07c73c78bbfe
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: fb37ab5e-fd08-474f-8f58-07c73c78bbfe
+>>>>>>> upstream/master
       version: -1
       name: Delete context
       scriptName: DeleteContext
@@ -44,7 +75,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "38"
     scriptarguments:
       all:
         simple: "yes"
@@ -53,18 +84,35 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 285,
+=======
+          "x": 387.5,
+>>>>>>> upstream/master
           "y": 195
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "2":
     id: "2"
     taskid: b50230b2-bcbf-4d7c-8fce-7038b1166428
     type: regular
     task:
       id: b50230b2-bcbf-4d7c-8fce-7038b1166428
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: a417aeff-baa6-4ff8-873a-230c8d98ac94
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: a417aeff-baa6-4ff8-873a-230c8d98ac94
+>>>>>>> upstream/master
       version: -1
       name: Send mail using python
       script: Mail Sender (New)|||send-mail
@@ -98,18 +146,36 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 285,
           "y": 370
+=======
+          "x": 387.5,
+          "y": 545
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "3":
     id: "3"
     taskid: 85285c64-ff34-4c22-86df-b8ab1cdff2f9
     type: regular
     task:
       id: 85285c64-ff34-4c22-86df-b8ab1cdff2f9
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 11f35515-9f91-4e83-8c70-40d47ced7e7b
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 11f35515-9f91-4e83-8c70-40d47ced7e7b
+>>>>>>> upstream/master
       version: -1
       name: Wait for mail to be received
       scriptName: Sleep
@@ -126,55 +192,114 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 285,
           "y": 545
+=======
+          "x": 387.5,
+          "y": 720
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "4":
     id: "4"
     taskid: 7114d4c3-5ff1-4134-8be5-03912c75fa68
     type: regular
     task:
       id: 7114d4c3-5ff1-4134-8be5-03912c75fa68
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 255a48fb-ebc3-4d1a-89b8-d0fb2216f095
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 255a48fb-ebc3-4d1a-89b8-d0fb2216f095
+>>>>>>> upstream/master
       version: -1
       name: Search for email sent and get ID
-      script: google|||googleapps-gmail-search
+      description: Searches for Gmail records of a specified Google user.
+      script: '|||gmail-search'
       type: regular
       iscommand: true
-      brand: google
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
     scriptarguments:
+      after: {}
+      before: {}
       fields: {}
+      filename: {}
+      from: {}
+      has-attachments: {}
+      in: {}
       include-spam-trash:
         simple: "true"
       labels-ids: {}
       max-results: {}
       page-token: {}
       query:
-        simple: from:avishai@demistodev.onmicrosoft.com subject:special test via playbook
-          newer_than:1d
-      user-key:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: division
+            args:
+              by:
+                value:
+                  simple: "1000"
+          - operator: floor
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'from:avishai@demistodev.onmicrosoft.com subject:special
+                    test via playbook after:'
+              suffix: {}
+      subject: {}
+      to: {}
+      user-id:
         simple: yarden@demistodev.com
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 285,
           "y": 720
+=======
+          "x": 387.5,
+          "y": 895
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "5":
     id: "5"
     taskid: a22a6e17-b6f7-43ea-8ef7-ef846b5b5a09
     type: condition
     task:
       id: a22a6e17-b6f7-43ea-8ef7-ef846b5b5a09
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 691a134f-0053-4842-8235-2e9e98b57772
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 691a134f-0053-4842-8235-2e9e98b57772
+>>>>>>> upstream/master
       version: -1
       name: Check if email was found (if ID exists)
       type: condition
@@ -192,23 +317,41 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: Email.ID
+              simple: Gmail.ID
             iscontext: true
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 285,
           "y": 895
+=======
+          "x": 387.5,
+          "y": 1070
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "6":
     id: "6"
     taskid: 20fb26c6-b602-4b74-8b5e-19526f84e94c
     type: regular
     task:
       id: 20fb26c6-b602-4b74-8b5e-19526f84e94c
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: a000128a-6995-4004-8133-bbd9b9c95432
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: a000128a-6995-4004-8133-bbd9b9c95432
+>>>>>>> upstream/master
       version: -1
       name: Delete email list from context
       description: |-
@@ -224,24 +367,45 @@ tasks:
       - "11"
     scriptarguments:
       all: {}
+      index: {}
       key:
-        simple: Email
+        simple: Gmail
+      keysToKeep: {}
+      subplaybook: {}
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 397.5,
           "y": 2295
+=======
+          "x": 387.5,
+          "y": 2470
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "7":
     id: "7"
     taskid: eed7199f-c448-457a-87b4-5632ab45c7af
     type: regular
     task:
       id: eed7199f-c448-457a-87b4-5632ab45c7af
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 3b67355e-23b0-4f55-873a-8610c6dcac32
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 3b67355e-23b0-4f55-873a-8610c6dcac32
+>>>>>>> upstream/master
       version: -1
       name: Save the retrieved mail's ID under a key for search in inbox
       scriptName: Set
@@ -255,24 +419,43 @@ tasks:
       append: {}
       key:
         simple: Testmail.ID
+      stringify: {}
       value:
-        simple: ${Email.[0].ID}
+        simple: ${Gmail.ID}
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 397.5,
           "y": 2120
+=======
+          "x": 387.5,
+          "y": 2295
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "8":
     id: "8"
     taskid: 568ed454-da71-4fb3-8ff8-8958a9c84502
     type: regular
     task:
       id: 568ed454-da71-4fb3-8ff8-8958a9c84502
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 24c91340-d8d4-45e9-8954-3433f72eb0f9
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 24c91340-d8d4-45e9-8954-3433f72eb0f9
+>>>>>>> upstream/master
       version: -1
       name: Wait for mail to receive
       scriptName: Sleep
@@ -281,7 +464,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "39"
     scriptarguments:
       seconds:
         simple: "10"
@@ -289,6 +472,7 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 70,
           "y": 1070
         }
@@ -327,17 +511,33 @@ tasks:
       {
         "position": {
           "x": 70,
+=======
+          "x": 172.5,
+>>>>>>> upstream/master
           "y": 1245
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "10":
     id: "10"
     taskid: 161fab74-9799-4e8b-80cd-3b1d6808521b
     type: condition
     task:
       id: 161fab74-9799-4e8b-80cd-3b1d6808521b
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 515ecea7-c29d-4e6a-8d47-0c021ceae141
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 515ecea7-c29d-4e6a-8d47-0c021ceae141
+>>>>>>> upstream/master
       version: -1
       name: Check if email was found
       type: condition
@@ -355,55 +555,91 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: Email.ID
+              simple: Gmail.ID
             iscontext: true
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 70,
           "y": 1420
+=======
+          "x": 172.5,
+          "y": 1595
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "11":
     id: "11"
     taskid: 45b73bd6-a398-4a20-882b-184960dedc43
     type: regular
     task:
       id: 45b73bd6-a398-4a20-882b-184960dedc43
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 605ba140-4d63-4b87-8c2a-9f2ec6da4657
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 605ba140-4d63-4b87-8c2a-9f2ec6da4657
+>>>>>>> upstream/master
       version: -1
       name: Fetch email from google mail using message ID
-      script: google|||googleapps-gmail-get-mail
+      description: Retrieves the Gmail message sent to a specified user.
+      script: '|||gmail-get-mail'
       type: regular
       iscommand: true
-      brand: google
+      brand: ""
     nexttasks:
       '#none#':
       - "12"
     scriptarguments:
-      fields: {}
       format: {}
       message-id:
         simple: ${Testmail.ID}
-      user-key:
+      user-id:
         simple: yarden@demistodev.com
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 397.5,
           "y": 2470
+=======
+          "x": 387.5,
+          "y": 2645
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "12":
     id: "12"
     taskid: a1306498-0c68-4a16-8543-346d26a64acd
     type: condition
     task:
       id: a1306498-0c68-4a16-8543-346d26a64acd
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 84aacec3-8bf4-4584-833e-3a4c218df551
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 84aacec3-8bf4-4584-833e-3a4c218df551
+>>>>>>> upstream/master
       version: -1
       name: Check for attachments
       type: condition
@@ -421,12 +657,12 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: Email.Attachments
+              simple: Gmail.Attachments
             iscontext: true
       - - operator: isEqualString
           left:
             value:
-              simple: Email.[0].ID
+              simple: Gmail.ID
             iscontext: true
           right:
             value:
@@ -435,18 +671,36 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 397.5,
           "y": 2645
+=======
+          "x": 387.5,
+          "y": 2820
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "13":
     id: "13"
     taskid: 44957696-c783-4252-862b-44057742e48d
     type: title
     task:
       id: 44957696-c783-4252-862b-44057742e48d
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 97ed74e5-c972-40c6-89c4-fd437f755d5d
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: 97ed74e5-c972-40c6-89c4-fd437f755d5d
+>>>>>>> upstream/master
       version: -1
       name: Test email was found with the attachment!
       type: title
@@ -460,11 +714,16 @@ tasks:
       {
         "position": {
           "x": 705,
+<<<<<<< HEAD
           "y": 2835
+=======
+          "y": 3010
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "14":
     id: "14"
     taskid: 881121a3-6850-41d1-8c48-4182c8e70f18
@@ -474,6 +733,21 @@ tasks:
       version: -1
       name: Email found without attachment
       scriptName: RaiseError
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 9b2c91fc-c5a6-45c6-82e2-c3bbe5f90f89
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 9b2c91fc-c5a6-45c6-82e2-c3bbe5f90f89
+      version: -1
+      name: Email found without attachment
+      script: RaiseError
+>>>>>>> upstream/master
       type: regular
       iscommand: false
       brand: ""
@@ -485,11 +759,16 @@ tasks:
       {
         "position": {
           "x": 275,
+<<<<<<< HEAD
           "y": 2820
+=======
+          "y": 2995
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "15":
     id: "15"
     taskid: 9e1cab3b-9302-408f-86df-c12d6c8c3395
@@ -499,6 +778,21 @@ tasks:
       version: -1
       name: Test failed
       scriptName: RaiseError
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: b164952d-d965-4ce6-80ec-e93b19a206b2
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: b164952d-d965-4ce6-80ec-e93b19a206b2
+      version: -1
+      name: Test failed
+      script: RaiseError
+>>>>>>> upstream/master
       type: regular
       iscommand: false
       brand: ""
@@ -513,17 +807,34 @@ tasks:
       {
         "position": {
           "x": 50,
+<<<<<<< HEAD
           "y": 5095
+=======
+          "y": 5445
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "16":
     id: "16"
     taskid: 18db611a-1571-40f6-856b-8ffbe287aeb3
     type: regular
     task:
       id: 18db611a-1571-40f6-856b-8ffbe287aeb3
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 998a9c40-7570-41f4-8417-8853ae34742d
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 998a9c40-7570-41f4-8417-8853ae34742d
+>>>>>>> upstream/master
       version: -1
       name: Wait for mail to receive
       scriptName: Sleep
@@ -541,28 +852,52 @@ tasks:
       {
         "position": {
           "x": 50,
+<<<<<<< HEAD
           "y": 1595
+=======
+          "y": 1770
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "17":
     id: "17"
     taskid: 2dff647f-dccc-4dae-87eb-142dfde8e288
     type: regular
     task:
       id: 2dff647f-dccc-4dae-87eb-142dfde8e288
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: f99bc32d-c0cd-4fc9-8b51-2f1e7b8fcbd4
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: f99bc32d-c0cd-4fc9-8b51-2f1e7b8fcbd4
+>>>>>>> upstream/master
       version: -1
       name: Search for email sent (ID)
-      script: google|||googleapps-gmail-search
+      description: Searches for Gmail records of a specified Google user.
+      script: '|||gmail-search'
       type: regular
       iscommand: true
-      brand: google
+      brand: ""
     nexttasks:
       '#none#':
       - "18"
     scriptarguments:
+      after: {}
+      before: {}
       fields: {}
+      filename: {}
+      from: {}
+      has-attachments: {}
+      in: {}
       include-spam-trash:
         simple: "true"
       labels-ids: {}
@@ -571,24 +906,43 @@ tasks:
       query:
         simple: from:avishai@demistodev.onmicrosoft.com subject:special test via playbook
           newer_than:1d
-      user-key:
+      subject: {}
+      to: {}
+      user-id:
         simple: yarden@demistodev.com
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
+<<<<<<< HEAD
           "y": 1770
+=======
+          "y": 1945
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "18":
     id: "18"
     taskid: a0a68c29-6e8c-4402-831c-2ea33911e94e
     type: condition
     task:
       id: a0a68c29-6e8c-4402-831c-2ea33911e94e
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: e2f3828c-5de6-491d-863d-c59cfbe1ce7c
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: e2f3828c-5de6-491d-863d-c59cfbe1ce7c
+>>>>>>> upstream/master
       version: -1
       name: Check if email was found
       type: condition
@@ -604,25 +958,31 @@ tasks:
     - label: "yes"
       condition:
       - - operator: isExists
+<<<<<<< HEAD
+=======
           left:
             value:
-              simple: Email.ID
+              simple: Gmail.ID
             iscontext: true
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2120
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "19":
     id: "19"
-    taskid: 75830b28-b9dc-43ed-844b-13b434bdefb2
+    taskid: 051ed3ef-03a9-4fd1-8efd-ed04fd17df7d
     type: regular
     task:
-      id: 75830b28-b9dc-43ed-844b-13b434bdefb2
+      elasticcommonfields: {}
+      id: 051ed3ef-03a9-4fd1-8efd-ed04fd17df7d
       version: -1
       name: Start Over - Send several files
       scriptName: DeleteContext
@@ -644,11 +1004,307 @@ tasks:
       {
         "position": {
           "x": 705,
-          "y": 2995
+          "y": 3170
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: bfdf880e-a29c-40af-8d56-643fba9869bb
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: bfdf880e-a29c-40af-8d56-643fba9869bb
+      version: -1
+      name: Send mail using python
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      iscommand: true
+      brand: Mail Sender (New)
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      attachCIDs: {}
+      attachIDs:
+        simple: ${File.EntryID}
+      attachNames:
+        simple: attach.txt
+      bcc: {}
+      body:
+        simple: this is a test by playbook
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: special test via playbook (2)
+      templateParams: {}
+      to:
+        simple: yarden@demistodev.com
+      transientFile:
+        simple: test.txt,test2.txt
+      transientFileCID: {}
+      transientFileContent:
+        simple: this is a test text inside a test attachment mail!,another mail content.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: cc5cdfd5-0f4f-4c57-8359-44fe9585c75e
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: cc5cdfd5-0f4f-4c57-8359-44fe9585c75e
+      version: -1
+      name: Wait for mail to be received
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: b1ecba8c-589f-458b-85e5-aae41b2ba13d
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: b1ecba8c-589f-458b-85e5-aae41b2ba13d
+      version: -1
+      name: Check if email was found (if ID exists)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Gmail.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: f4aabdcd-bafb-4ec7-8537-e82785a0448d
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: f4aabdcd-bafb-4ec7-8537-e82785a0448d
+      version: -1
+      name: Wait for mail to be received
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: b1aeb046-6820-4e3f-8ea8-10d6d242ca9d
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: b1aeb046-6820-4e3f-8ea8-10d6d242ca9d
+      version: -1
+      name: Check if email was found (if ID exists)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Gmail.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 9d80f631-82ac-4a16-8716-84fcc35bce86
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 9d80f631-82ac-4a16-8716-84fcc35bce86
+      version: -1
+      name: Check if email was found (if ID exists)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+>>>>>>> upstream/master
+          left:
+            value:
+              simple: Gmail.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+<<<<<<< HEAD
+          "x": 50,
+          "y": 1945
+=======
+          "x": 490,
+          "y": 5270
+>>>>>>> upstream/master
+        }
+      }
+    note: false
+    timertriggers: []
+<<<<<<< HEAD
+  "19":
+    id: "19"
+    taskid: 75830b28-b9dc-43ed-844b-13b434bdefb2
+    type: regular
+    task:
+      id: 75830b28-b9dc-43ed-844b-13b434bdefb2
+      version: -1
+      name: Start Over - Send several files
+      scriptName: DeleteContext
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 360b4950-6c8a-47d3-8dcf-cd55fbef899e
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 360b4950-6c8a-47d3-8dcf-cd55fbef899e
+      version: -1
+      name: Wait for mail to be received
+      scriptName: Sleep
+>>>>>>> upstream/master
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+<<<<<<< HEAD
+      - "33"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+=======
+      - "44"
+    scriptarguments:
+      seconds:
+        simple: "10"
+>>>>>>> upstream/master
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+<<<<<<< HEAD
+          "x": 705,
+          "y": 2995
+=======
+          "x": 490,
+          "y": 4920
+>>>>>>> upstream/master
+        }
+      }
+    note: false
+    timertriggers: []
+<<<<<<< HEAD
   "20":
     id: "20"
     taskid: 21873270-125e-4bfd-8498-d168e9dd6b43
@@ -686,16 +1342,50 @@ tasks:
       transientFileCID: {}
       transientFileContent:
         simple: this is a test text inside a test attachment mail!,another mail content.
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: ed8ec23c-3419-4d27-8fab-bea26678c10d
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: ed8ec23c-3419-4d27-8fab-bea26678c10d
+      version: -1
+      name: Save the retrieved mail's ID under a key for search in inbox
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Testmail.ID
+      stringify: {}
+      value:
+        simple: ${Gmail.[0].ID}
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 705,
           "y": 3345
+=======
+          "x": 725,
+          "y": 5445
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "21":
     id: "21"
     taskid: b5b8d104-6bfc-4b4c-83a4-4cc413b8c70f
@@ -705,25 +1395,58 @@ tasks:
       version: -1
       name: Wait for mail to be received
       scriptName: Sleep
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 0d9d5a42-f7fc-417c-81f9-b100be2d5d90
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 0d9d5a42-f7fc-417c-81f9-b100be2d5d90
+      version: -1
+      name: Delete email list from context
+      description: |-
+        Because of how the gmail integration is built, both fetching meta-data about the email ID and fetching the email itself, create record under Email key, which in turn duplicated a record with the same key&value of ID, thus preventing us from verifying our data later.
+
+        The simple solution: delete the old entry after the ID was stored in the context.
+      scriptName: DeleteContext
+>>>>>>> upstream/master
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
+<<<<<<< HEAD
       - "22"
     scriptarguments:
       seconds:
         simple: "10"
+=======
+      - "32"
+    scriptarguments:
+      all: {}
+      key:
+        simple: Email
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 705,
           "y": 3520
+=======
+          "x": 725,
+          "y": 5620
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "22":
     id: "22"
     taskid: 66f4f4d8-7a98-4d32-8992-7177b1ba7263
@@ -750,17 +1473,85 @@ tasks:
         simple: from:avishai@demistodev.onmicrosoft.com subject:special test via playbook
           newer_than:1d
       user-key:
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 1eebeb5a-2522-45c5-8b7c-47a1d090a1a4
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 1eebeb5a-2522-45c5-8b7c-47a1d090a1a4
+      version: -1
+      name: Fetch email from google mail using message ID
+      description: Retrieves the Gmail message sent to a specified user.
+      script: '|||gmail-get-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      format: {}
+      message-id:
+        simple: ${Testmail.ID}
+      user-id:
+>>>>>>> upstream/master
         simple: yarden@demistodev.com
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 705,
           "y": 3695
+=======
+          "x": 725,
+          "y": 5795
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: a9255df5-6ea0-4161-87a1-209833de4800
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: a9255df5-6ea0-4161-87a1-209833de4800
+      version: -1
+      name: Create a new File
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      data:
+        simple: WarRoom File
+      entryId: {}
+      filename:
+        simple: attachment1.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 3345
+>>>>>>> upstream/master
+        }
+      }
+    note: false
+    timertriggers: []
+<<<<<<< HEAD
   "23":
     id: "23"
     taskid: 472d295d-768f-4948-84ff-fdbab47636a1
@@ -769,14 +1560,34 @@ tasks:
       id: 472d295d-768f-4948-84ff-fdbab47636a1
       version: -1
       name: Check if email was found (if ID exists)
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: ba397166-fa82-4327-81cf-28d5b4a5038c
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: ba397166-fa82-4327-81cf-28d5b4a5038c
+      version: -1
+      name: Check for attachments
+>>>>>>> upstream/master
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
+<<<<<<< HEAD
       - "24"
       "yes":
       - "30"
+=======
+      - "35"
+      "yes":
+      - "37"
+>>>>>>> upstream/master
     separatecontext: false
     conditions:
     - label: "yes"
@@ -784,17 +1595,36 @@ tasks:
       - - operator: isExists
           left:
             value:
+<<<<<<< HEAD
               simple: Email.ID
+=======
+              simple: Gmail.Attachments
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Gmail.[0].ID
+            iscontext: true
+          right:
+            value:
+              simple: Testmail.ID
+>>>>>>> upstream/master
             iscontext: true
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 705,
           "y": 3870
+=======
+          "x": 725,
+          "y": 5970
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "24":
     id: "24"
     taskid: f87abe99-c97d-4778-8f93-56ffe3ac7de1
@@ -813,16 +1643,57 @@ tasks:
     scriptarguments:
       seconds:
         simple: "10"
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 87c8d93a-c024-4717-8754-986e245bcdb1
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 87c8d93a-c024-4717-8754-986e245bcdb1
+      version: -1
+      name: Email found without attachment
+      script: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      actual:
+        complex:
+          root: Email
+          accessor: Attachments
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: ID
+          - operator: count
+      details: {}
+      error:
+        simple: Not all attachments found.
+      expected:
+        simple: "3"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 602.5,
           "y": 4045
+=======
+          "x": 520,
+          "y": 6320
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "25":
     id: "25"
     taskid: 9c31e109-9111-495e-8791-ed52b941c47a
@@ -850,16 +1721,39 @@ tasks:
           newer_than:1d
       user-key:
         simple: yarden@demistodev.com
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: cccc5e70-d26c-4cdd-8921-66918a14c9e7
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: cccc5e70-d26c-4cdd-8921-66918a14c9e7
+      version: -1
+      name: Finished Successfully
+      type: title
+      iscommand: false
+      brand: ""
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 602.5,
           "y": 4220
+=======
+          "x": 940,
+          "y": 6510
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "26":
     id: "26"
     taskid: d85febe0-d7c4-436e-855a-c9acd0b726a8
@@ -868,14 +1762,34 @@ tasks:
       id: d85febe0-d7c4-436e-855a-c9acd0b726a8
       version: -1
       name: Check if email was found (if ID exists)
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 885b8c9e-c122-4a77-895e-7c957e7ecb06
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 885b8c9e-c122-4a77-895e-7c957e7ecb06
+      version: -1
+      name: Check for attachments
+>>>>>>> upstream/master
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
+<<<<<<< HEAD
       - "28"
       "yes":
       - "30"
+=======
+      - "46"
+      "yes":
+      - "36"
+>>>>>>> upstream/master
     separatecontext: false
     conditions:
     - label: "yes"
@@ -883,6 +1797,7 @@ tasks:
       - - operator: isExists
           left:
             value:
+<<<<<<< HEAD
               simple: Email.ID
             iscontext: true
     view: |-
@@ -924,10 +1839,32 @@ tasks:
         "position": {
           "x": 490,
           "y": 4920
+=======
+              simple: Gmail.Attachments
+            iscontext: true
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: Gmail
+                accessor: '[0].Attachments'
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 6145
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "28":
     id: "28"
     taskid: 949e9362-4c92-407b-8dbe-48b2bbce1b1b
@@ -937,25 +1874,60 @@ tasks:
       version: -1
       name: Wait for mail to be received
       scriptName: Sleep
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: aa0af7d5-2538-4e3d-8d6e-0720b18d9f14
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: aa0af7d5-2538-4e3d-8d6e-0720b18d9f14
+      version: -1
+      name: Get Time Now
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+>>>>>>> upstream/master
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
+<<<<<<< HEAD
       - "29"
     scriptarguments:
       seconds:
         simple: "10"
+=======
+      - "2"
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat:
+        simple: ISO
+      hoursAgo: {}
+      minutesAgo: {}
+      monthsAgo: {}
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 490,
           "y": 4570
+=======
+          "x": 387.5,
+          "y": 370
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "29":
     id: "29"
     taskid: 5ffb18a9-3156-4b2a-8d63-9012cb1981a6
@@ -973,26 +1945,84 @@ tasks:
       - "27"
     scriptarguments:
       fields: {}
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 1d202fbd-9212-43cd-828a-839e0a6f8e1d
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 1d202fbd-9212-43cd-828a-839e0a6f8e1d
+      version: -1
+      name: Search for email sent and get ID
+      description: Searches for Gmail records of a specified Google user.
+      script: '|||gmail-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      after: {}
+      before: {}
+      fields: {}
+      filename: {}
+      from: {}
+      has-attachments: {}
+      in: {}
+>>>>>>> upstream/master
       include-spam-trash:
         simple: "true"
       labels-ids: {}
       max-results: {}
       page-token: {}
       query:
+<<<<<<< HEAD
         simple: from:avishai@demistodev.onmicrosoft.com subject:special test via playbook
           newer_than:1d
       user-key:
+=======
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: division
+            args:
+              by:
+                value:
+                  simple: "1000"
+          - operator: floor
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'from:avishai@demistodev.onmicrosoft.com subject:special
+                    test via playbook after:'
+              suffix: {}
+      subject: {}
+      to: {}
+      user-id:
+>>>>>>> upstream/master
         simple: yarden@demistodev.com
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 490,
           "y": 4745
+=======
+          "x": 172.5,
+          "y": 1420
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "30":
     id: "30"
     taskid: 43e9ed8d-2444-456f-8b13-e27cfaffad11
@@ -1002,11 +2032,29 @@ tasks:
       version: -1
       name: Save the retrieved mail's ID under a key for search in inbox
       scriptName: Set
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: fafc0856-c9d1-419a-88ba-7b32446f3465
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: fafc0856-c9d1-419a-88ba-7b32446f3465
+      version: -1
+      name: Get Time Now
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+>>>>>>> upstream/master
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
+<<<<<<< HEAD
       - "31"
     scriptarguments:
       append: {}
@@ -1014,16 +2062,34 @@ tasks:
         simple: Testmail.ID
       value:
         simple: ${Email.[0].ID}
+=======
+      - "42"
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat:
+        simple: ISO
+      hoursAgo: {}
+      minutesAgo:
+        simple: "2"
+      monthsAgo: {}
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 622.5,
           "y": 5095
+=======
+          "x": 705,
+          "y": 3870
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "31":
     id: "31"
     taskid: f8000a22-4984-41b1-8838-6631aab9aedf
@@ -1047,16 +2113,78 @@ tasks:
       all: {}
       key:
         simple: Email
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 4ebd7ffb-d5c0-4696-836d-e42db7e2050e
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 4ebd7ffb-d5c0-4696-836d-e42db7e2050e
+      version: -1
+      name: Search for email sent and get ID
+      description: Searches for Gmail records of a specified Google user.
+      script: '|||gmail-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      after: {}
+      before: {}
+      fields: {}
+      filename: {}
+      from: {}
+      has-attachments: {}
+      in: {}
+      include-spam-trash:
+        simple: "true"
+      labels-ids: {}
+      max-results: {}
+      page-token: {}
+      query:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: division
+            args:
+              by:
+                value:
+                  simple: "1000"
+          - operator: floor
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'from:avishai@demistodev.onmicrosoft.com subject:special
+                    test via playbook after:'
+              suffix: {}
+      subject: {}
+      to: {}
+      user-id:
+        simple: yarden@demistodev.com
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 622.5,
           "y": 5270
+=======
+          "x": 705,
+          "y": 4045
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "32":
     id: "32"
     taskid: 3a2756e2-6875-4eaa-8130-67890d3fd901
@@ -1078,17 +2206,78 @@ tasks:
       message-id:
         simple: ${Testmail.ID}
       user-key:
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: dff1b46b-1e87-4952-84c2-599d0997700f
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: dff1b46b-1e87-4952-84c2-599d0997700f
+      version: -1
+      name: Search for email sent and get ID
+      description: Searches for Gmail records of a specified Google user.
+      script: '|||gmail-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      after: {}
+      before: {}
+      fields: {}
+      filename: {}
+      from: {}
+      has-attachments: {}
+      in: {}
+      include-spam-trash:
+        simple: "true"
+      labels-ids: {}
+      max-results: {}
+      page-token: {}
+      query:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: division
+            args:
+              by:
+                value:
+                  simple: "1000"
+          - operator: floor
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'from:avishai@demistodev.onmicrosoft.com subject:special
+                    test via playbook after:'
+              suffix: {}
+      subject: {}
+      to: {}
+      user-id:
+>>>>>>> upstream/master
         simple: yarden@demistodev.com
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 622.5,
           "y": 5445
+=======
+          "x": 602.5,
+          "y": 4570
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "33":
     id: "33"
     taskid: fb37566c-84d2-4c4c-8242-137b3df7732b
@@ -1213,22 +2402,96 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: f9d49068-d8a5-43b2-8abe-a7f48fb7b55d
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: f9d49068-d8a5-43b2-8abe-a7f48fb7b55d
+      version: -1
+      name: Search for email sent and get ID
+      description: Searches for Gmail records of a specified Google user.
+      script: '|||gmail-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      after: {}
+      before: {}
+      fields: {}
+      filename: {}
+      from: {}
+      has-attachments: {}
+      in: {}
+      include-spam-trash:
+        simple: "true"
+      labels-ids: {}
+      max-results: {}
+      page-token: {}
+      query:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: division
+            args:
+              by:
+                value:
+                  simple: "1000"
+          - operator: floor
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'from:avishai@demistodev.onmicrosoft.com subject:special
+                    test via playbook after:'
+              suffix: {}
+      subject: {}
+      to: {}
+      user-id:
+        simple: yarden@demistodev.com
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 1052.5,
           "y": 5985
+=======
+          "x": 490,
+          "y": 5095
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "37":
     id: "37"
     taskid: 3ab06c3a-c8ff-446d-88c3-dda32748692d
     type: condition
     task:
       id: 3ab06c3a-c8ff-446d-88c3-dda32748692d
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: 0338cd34-59b3-4bc5-826e-55ed8cdba492
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 0338cd34-59b3-4bc5-826e-55ed8cdba492
+>>>>>>> upstream/master
       version: -1
       name: Check for attachments
       type: condition
@@ -1246,14 +2509,23 @@ tasks:
       - - operator: isExists
           left:
             value:
+<<<<<<< HEAD
               simple: Email.Attachments
+=======
+              simple: Gmail.Attachments
+>>>>>>> upstream/master
             iscontext: true
       - - operator: isEqualNumber
           left:
             value:
               complex:
+<<<<<<< HEAD
                 root: Email
                 accessor: Attachments
+=======
+                root: Gmail
+                accessor: '[1].Attachments'
+>>>>>>> upstream/master
                 transformers:
                 - operator: count
             iscontext: true
@@ -1263,12 +2535,23 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 837.5,
           "y": 5795
+=======
+          "x": 1052.5,
+          "y": 6320
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+>>>>>>> upstream/master
 view: |-
   {
     "linkLabelsPosition": {
@@ -1278,7 +2561,11 @@ view: |-
     },
     "paper": {
       "dimensions": {
+<<<<<<< HEAD
         "height": 6015,
+=======
+        "height": 6525,
+>>>>>>> upstream/master
         "width": 1382.5,
         "x": 50,
         "y": 50

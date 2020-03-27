@@ -394,7 +394,11 @@ tasks:
       - "18"
     scriptarguments:
       id:
+<<<<<<< HEAD
         simple: "87"
+=======
+        simple: "1"
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {

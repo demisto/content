@@ -1,2 +1,11 @@
 ## [Unreleased]
+<<<<<<< HEAD
+=======
+-
+
+## [20.2.4] - 2020-02-25
+Updated registry key indicator layout.
+
+## [19.8.2] - 2019-08-22
+>>>>>>> upstream/master
 - Added registryKey indicator layout.

@@ -21,8 +21,12 @@ configuration:
   name: dex_account
   required: false
   type: 0
+<<<<<<< HEAD
 - defaultvalue: 'true'
   display: Trust any certificate (not secure)
+=======
+- display: Trust any certificate (not secure)
+>>>>>>> upstream/master
   name: insecure
   required: false
   type: 8

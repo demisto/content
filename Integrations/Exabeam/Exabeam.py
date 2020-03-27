@@ -1,12 +1,20 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+<<<<<<< HEAD
 from typing import Tuple, Dict, List, Any, Optional, MutableMapping
 import requests
 import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
+=======
+from typing import Tuple, Dict, List, Any, Optional
+import requests
+
+# disable insecure warnings
+requests.packages.urllib3.disable_warnings()
+>>>>>>> upstream/master
 
 
 def convert_unix_to_date(timestamp):
@@ -26,8 +34,13 @@ class Client(BaseClient):
     Client to use in the Exabeam integration. Overrides BaseClient
     """
     def __init__(self, base_url: str, username: str, password: str, verify: bool,
+<<<<<<< HEAD
                  proxies: Optional[MutableMapping[str, str]], headers):
         super().__init__(base_url=f'{base_url}', headers=headers, verify=verify, proxy=proxies)
+=======
+                 proxy: bool, headers):
+        super().__init__(base_url=f'{base_url}', headers=headers, verify=verify, proxy=proxy)
+>>>>>>> upstream/master
         self.username = username
         self.password = password
         self.session = requests.Session()
@@ -50,7 +63,10 @@ class Client(BaseClient):
                 headers=self._headers,
                 verify=self._verify,
                 data=data,
+<<<<<<< HEAD
                 proxies=self._proxies,
+=======
+>>>>>>> upstream/master
                 params=params
             )
             if not res.ok:
@@ -514,7 +530,11 @@ def main():
     base_url = demisto.params().get('url')
     verify_certificate = not demisto.params().get('insecure', False)
     headers = {'Accept': 'application/json'}
+<<<<<<< HEAD
     proxies = handle_proxy()
+=======
+    proxy = demisto.params().get('proxy', False)
+>>>>>>> upstream/master
 
     commands = {
         'test-module': test_module,
@@ -536,7 +556,11 @@ def main():
 
     try:
         client = Client(base_url.rstrip('/'), verify=verify_certificate, username=username,
+<<<<<<< HEAD
                         password=password, proxies=proxies, headers=headers)
+=======
+                        password=password, proxy=proxy, headers=headers)
+>>>>>>> upstream/master
         command = demisto.command()
         LOG(f'Command being called is {command}.')
         if command in commands:

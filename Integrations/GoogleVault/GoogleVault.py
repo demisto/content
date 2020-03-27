@@ -202,7 +202,12 @@ def create_hold_query(hold_name, corpus, accounts, terms, time_frame="", start_t
     if mail_query:
         request['query'] = {'mailQuery': mail_query}  # Adding the ready mail query
     for acc_id in accounts:
+<<<<<<< HEAD
         accounts_for_query.append({'accountId': acc_id})
+=======
+        acc_entry = {'accountId': acc_id} if '@' not in acc_id else {'email': acc_id}
+        accounts_for_query.append(acc_entry)
+>>>>>>> upstream/master
     request['accounts'] = accounts_for_query
     return request
 

@@ -1,0 +1,43 @@
+{
+	"id": "incident_companypropertystatus",
+	"version": -1,
+	"fromVersion": "5.0.0",
+	"modified": "2019-12-24T17:33:31.288546884Z",
+	"name": "Company Property Status",
+	"ownerOnly": false,
+	"placeholder": "",
+	"description": "Whether company property was returned by the employee. Can be either \"Missing\" or \"Returned\".",
+	"cliName": "companypropertystatus",
+	"type": "singleSelect",
+	"closeForm": false,
+	"editForm": true,
+	"required": false,
+	"script": "",
+	"fieldCalcScript": "",
+	"neverSetAsRequired": false,
+	"isReadOnly": false,
+	"selectValues": [
+		"Missing",
+		"Returned"
+	],
+	"validationRegex": "",
+	"useAsKpi": true,
+	"locked": false,
+	"system": false,
+	"content": true,
+	"group": 0,
+	"hidden": false,
+	"associatedTypes": [
+		"Employee Offboarding"
+	],
+	"systemAssociatedTypes": null,
+	"associatedToAll": false,
+	"unmapped": false,
+	"unsearchable": false,
+	"caseInsensitive": true,
+	"columns": null,
+	"defaultRows": null,
+	"sla": 0,
+	"threshold": 72,
+	"breachScript": ""
+}

@@ -2,6 +2,7 @@ commonfields:
   id: CVE Search
   version: -1
 name: CVE Search
+deprecated: true
 system: true
 display: CVE Search
 category: Vulnerability Management

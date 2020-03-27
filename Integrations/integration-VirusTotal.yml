@@ -365,13 +365,14 @@ script:
     }
     function calcRecentDownloads(checks) {
         var badDownloads = 0;
+        var millisec_in_day = 1000 * 60 * 60 * 24;
         var now = Date.now();
         for (var c=0; c<checks.length; c++) {
             if (checks[c]) {
                 for (var ci=0; ci<checks[c].length; ci++) {
                     if (checks[c][ci].date) {
                         var d = new Date(checks[c][ci].date.replace(' ', 'T'));
-                        if ((now - d.getTime()) / 1000 / 60 / 60 / 24 < 30) {
+                        if (((now - d.getTime()) / millisec_in_day < 30) && (checks[c][ci].positives > 0)) {
                             badDownloads++;
                         }
                     }

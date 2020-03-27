@@ -560,3 +560,15 @@ def integrationInstance():
 
 def createIndicators(indicators_batch):
     return ""
+<<<<<<< HEAD
+=======
+
+def searchIndicators(fromdate = '', query = '', size = 100, page = 0, todate = '', value = ''):
+    return {}
+
+def getIndexHash():
+    return ''
+
+def getLicenseID():
+    return ''
+>>>>>>> upstream/master

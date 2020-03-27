@@ -1,6 +1,15 @@
 ## [Unreleased]
 
 
+<<<<<<< HEAD
+=======
+## [20.3.3] - 2020-03-18
+Added support for training on a boolean target field.
+
+## [20.1.2] - 2020-01-22
+Added error messages for cases when the total number of incidents is lower than the default threshold.
+
+>>>>>>> upstream/master
 ## [19.12.1] - 2019-12-25
 Added new evaluation methodology and metrics to the logic of the trained model.
 

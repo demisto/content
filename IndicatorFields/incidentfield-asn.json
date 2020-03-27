@@ -26,7 +26,11 @@
   "shouldPublish": false,
   "associatedTypes": [
     "IP",
+<<<<<<< HEAD
     "IP_tmp"
+=======
+    "IPv6"
+>>>>>>> upstream/master
   ],
   "caseInsensitive": true,
   "columns": null,

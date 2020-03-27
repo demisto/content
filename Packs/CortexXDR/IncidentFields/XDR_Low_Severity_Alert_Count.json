@@ -1,7 +1,12 @@
 {
 	"associatedToAll": false,
 	"associatedTypes": [
+<<<<<<< HEAD
 		"Cortex XDR Incident"
+=======
+		"Cortex XDR Incident",
+		"Cortex XDR Port Scan"
+>>>>>>> upstream/master
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

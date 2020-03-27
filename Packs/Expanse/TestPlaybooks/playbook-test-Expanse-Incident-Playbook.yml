@@ -1,0 +1,347 @@
+id: test-Expanse-Playbook
+version: -1
+name: test-Expanse-Playbook
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: d58c41a6-6efd-4040-8f92-551c3b03d572
+    type: start
+    task:
+      id: d58c41a6-6efd-4040-8f92-551c3b03d572
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: 2b593807-a167-4a4a-81a0-8994ca39bce0
+    type: regular
+    task:
+      id: 2b593807-a167-4a4a-81a0-8994ca39bce0
+      version: -1
+      name: Delete Context
+      description: ''
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: a02797e7-bd74-4ff5-8e45-5f545bbecf2f
+    type: playbook
+    task:
+      id: a02797e7-bd74-4ff5-8e45-5f545bbecf2f
+      version: -1
+      name: Expanse Incident Playbook
+      playbookName: Expanse Incident Playbook
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '3':
+    id: '3'
+    taskid: 8a3eb857-638a-4482-8670-9202ecc8c1ff
+    type: regular
+    task:
+      id: 8a3eb857-638a-4482-8670-9202ecc8c1ff
+      version: -1
+      name: Populate Incident Data
+      description: ''
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      account: {}
+      accountid: {}
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      agentid: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      blockedaction: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      commandline: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      contactaddress: {}
+      contactname: {}
+      coordinates: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      deleteEmptyField: {}
+      dest: {}
+      destinationip: {}
+      destntdomain: {}
+      details: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionticketed: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      devicename: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      expanseexposuretype: {}
+      expanserawjsonevent:
+        simple: '{"businessUnit": {"id": "a1f0f39b-f358-3c8c-947b-926887871b88", "name":
+          "VanDelay Import-Export"}, "eventType": "ON_PREM_EXPOSURE_REAPPEARANCE",
+          "eventTime": "2020-02-09T00:00:00Z", "payload": {"geolocation": {"latitude":
+          30.95, "city": "TONGLING", "countryCode": "CN", "longitude": 117.78, "regionCode":
+          "AH"}, "_type": "ExposurePayload", "exposureType": "RDP_SERVER", "providers":
+          ["InternallyHosted"], "severity": "CRITICAL", "domainName": false, "ip":
+          "61.132.170.14", "exposureId": "2c23500a-6466-330f-996c-1e4657d72452", "tags":
+          {"ipRange": ["untagged"]}, "certificatePem": false, "port": 3389, "scanned":
+          "2020-02-09T00:00:00Z", "remediationStatuses": [], "portProtocol": "TCP",
+          "configuration": {"sslProtocol": false, "_type": "RdpServerConfiguration",
+          "certificateId": false, "credSspProtocol": false, "nativeRdpProtocol": true,
+          "nativeRdpAlgorithms": ["56-bit-RC4", "128-bit-RC4", "40-bit-RC4"]}, "id":
+          "6752a761-0cb4-3b23-85f1-61ea48d3e1b5"}, "id": "98df4bb9-ab17-33f5-87ed-ce851e591d79"}'
+      expanseseverity: {}
+      extrahopapplianceid: {}
+      extrahophostname: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstseen: {}
+      id:
+        simple: ${incident.id}
+      infectedhosts: {}
+      isolated: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastseen: {}
+      likelyimpact: {}
+      maliciousbehavior: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      measurestomitigate: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      parentprocessid: {}
+      participants: {}
+      phase: {}
+      phishingsubtype: {}
+      pid: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      previouscoordinates: {}
+      previoussignindatetime: {}
+      previoussourceip: {}
+      prismacloudid: {}
+      prismacloudreason: {}
+      prismacloudrules: {}
+      prismacloudstatus: {}
+      prismacloudtime: {}
+      rating: {}
+      rawparticipants: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      resourceapiname: {}
+      resourcecloudtype: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      rrn: {}
+      sectorofaffectedparty: {}
+      severity: {}
+      signature: {}
+      signindatetime: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourceip: {}
+      src: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      subscriptionassignedby: {}
+      subscriptioncreatedby: {}
+      subscriptioncreatedon: {}
+      subscriptiondescription: {}
+      subscriptionid: {}
+      subscriptionname: {}
+      subscriptiontype: {}
+      subscriptionupdatedby: {}
+      subscriptionupdatedon: {}
+      subtype: {}
+      systemdefault: {}
+      systems: {}
+      telephoneno: {}
+      terminatedaction: {}
+      trapsid: {}
+      travelmaplink: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      urlsslverification: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vpcid: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrurl: {}
+      xdrusercount: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 745,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+description: ''
+fromversion: 5.0.0

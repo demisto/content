@@ -17,14 +17,14 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "false"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "false"
+  defaultvalue: ""
   type: 8
   required: false
 script:
@@ -338,7 +338,7 @@ script:
   type: javascript
   commands:
   - name: hpsm-create-incident
-    description: Creates new incident in the system
+    description: 'Creates a new incident.'
     arguments:
     - name: title
       description: The title of incident
@@ -430,7 +430,6 @@ error message, job failed, hardware failure, etc."
       description: Incident update time
     - contextPath: HPSM.Incidents.Urgency
       description: Incident urgency
-    description: 'Creating new incident '
   - name: hpsm-list-incidents
     arguments:
     - name: query
@@ -504,7 +503,7 @@ error message, job failed, hardware failure, etc."
     - contextPath: HPSM.Incidents.Urgency
       description: Incident urgency
   - name: hpsm-list-devices
-    description: Returns list of devices filtered according to query.
+    description: 'Returns a list of devices, filtered according to query.'
     arguments:
     - name: query
       description: 'OPTIONAL example (field1=value1&field2=value2)  Also see here:
@@ -512,7 +511,6 @@ error message, job failed, hardware failure, etc."
     outputs:
     - contextPath: HPSM.DeviceIDs
       description: "All the ids(configurationItems) of the devices"
-    description: Returns list of devices ids
   - name: hpsm-get-device
     description: Find and return device by id
     arguments:

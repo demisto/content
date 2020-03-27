@@ -3,7 +3,11 @@ commonfields:
   id: VulnDB
   version: -1
 configuration:
+<<<<<<< HEAD
 - defaultvalue: https://vulndb.cyberriskanalytics.com/
+=======
+- defaultvalue: https://vulndb.cyberriskanalytics.com/api/v1
+>>>>>>> upstream/master
   display: Hostname, IP address, or server URL
   name: api_url
   required: true
@@ -16,7 +20,11 @@ configuration:
   name: client_secret
   required: true
   type: 0
+<<<<<<< HEAD
 - display: Trust any certificate (unsecure)
+=======
+- display: Trust any certificate (not secure)
+>>>>>>> upstream/master
   name: insecure
   required: false
   type: 8
@@ -141,7 +149,11 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
+<<<<<<< HEAD
       description: Maximum number of entries to return. A high number of entries might effect performance.
+=======
+      description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
+>>>>>>> upstream/master
       isArray: false
       name: max_size
       required: false
@@ -178,7 +190,11 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
+<<<<<<< HEAD
       description: Maximum number of entries to return. A high number of entries might effect performance.
+=======
+      description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
+>>>>>>> upstream/master
       isArray: false
       name: max_size
       required: false
@@ -209,7 +225,11 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
+<<<<<<< HEAD
       description: Maximum number of entries to return. A high number of entries might effect performance.
+=======
+      description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
+>>>>>>> upstream/master
       isArray: false
       name: max_size
       required: false
@@ -246,7 +266,11 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
+<<<<<<< HEAD
       description: Maximum number of entries to return. A high number of entries might effect performance.
+=======
+      description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
+>>>>>>> upstream/master
       isArray: false
       name: max_size
       required: false
@@ -355,7 +379,11 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
+<<<<<<< HEAD
       description: Maximum number of entries to return. A high number of entries might effect performance.
+=======
+      description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
+>>>>>>> upstream/master
       isArray: false
       name: max_size
       required: false
@@ -465,7 +493,11 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
+<<<<<<< HEAD
       description: Maximum number of entries to return. A high number of entries might effect performance.
+=======
+      description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
+>>>>>>> upstream/master
       isArray: false
       name: max_size
       required: false
@@ -569,7 +601,11 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
+<<<<<<< HEAD
       description: Maximum number of entries to return. A high number of entries might effect performance.
+=======
+      description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
+>>>>>>> upstream/master
       isArray: false
       name: max_size
       required: false
@@ -672,7 +708,11 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
+<<<<<<< HEAD
       description: Maximum number of entries to return. A high number of entries might effect performance.
+=======
+      description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
+>>>>>>> upstream/master
       isArray: false
       name: max_size
       required: false
@@ -775,7 +815,11 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
+<<<<<<< HEAD
       description: Maximum number of entries to return. A high number of entries might effect performance.
+=======
+      description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
+>>>>>>> upstream/master
       isArray: false
       name: max_size
       required: false
@@ -869,6 +913,7 @@ script:
     - contextPath: VulnDB.Classification.Description
       description: Classification description (human readable).
       type: string
+<<<<<<< HEAD
   dockerimage: demisto/python3:3.7.3.373
   isfetch: false
   runonce: false
@@ -876,3 +921,49 @@ script:
   type: python
 tests:
 - "Test-VulnDB"
+=======
+  - arguments:
+    - default: true
+      description: CVE ID.
+      isArray: false
+      name: cve_id
+      required: true
+      secret: false
+    - default: false
+      description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
+      isArray: false
+      name: max_size
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns CVE information by CVE ID.
+    execution: false
+    name: cve
+    outputs:
+    - contextPath: CVE.ID
+      description: CVE ID.
+      type: String
+    - contextPath: CVE.CVSS
+      description: The CVSS of the CVE.
+      type: String
+    - contextPath: CVE.Published
+      description: The timestamp of when the CVE was published.
+      type: Date
+    - contextPath: CVE.Modified
+      description: The timestamp of when the CVE was last modified.
+      type: Date
+    - contextPath: CVE.Description
+      description: A description of the CVE.
+      type: String
+  dockerimage: demisto/python3:3.7.3.373
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- Test-VulnDB
+>>>>>>> upstream/master

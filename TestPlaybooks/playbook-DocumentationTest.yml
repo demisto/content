@@ -55,7 +55,11 @@ tasks:
         simple: "yes"
       unsecure: {}
       url:
+<<<<<<< HEAD
         simple: https://github.com/demisto/content/raw/master/Integrations/integration-Ipinfo.yml
+=======
+        simple: https://github.com/demisto/content/raw/master/Packs/ipinfo/Integrations/integration-Ipinfo.yml
+>>>>>>> upstream/master
       username: {}
     separatecontext: false
     view: |-

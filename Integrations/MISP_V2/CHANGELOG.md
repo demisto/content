@@ -1,6 +1,15 @@
 ## [Unreleased]
 
 
+<<<<<<< HEAD
+=======
+## [20.3.3] - 2020-03-18
+-
+
+## [20.2.4] - 2020-02-25
+Fixed default value for the ***PREDEFINED*** argument in the ***misp-search*** command.
+
+>>>>>>> upstream/master
 ## [19.12.0] - 2019-12-10
 Added support to filter an event by attribute data fields.
 

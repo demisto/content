@@ -5,10 +5,17 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
+<<<<<<< HEAD
     taskid: a586909f-cbb7-4d72-860e-219b2b7a7b72
     type: start
     task:
       id: a586909f-cbb7-4d72-860e-219b2b7a7b72
+=======
+    taskid: 3acf8055-a1b3-480f-8399-f660465a95cd
+    type: start
+    task:
+      id: 3acf8055-a1b3-480f-8399-f660465a95cd
+>>>>>>> upstream/master
       version: -1
       name: ""
       iscommand: false
@@ -20,18 +27,30 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "1":
     id: "1"
     taskid: 2d1678e6-819b-424f-8bb8-816a01c31d77
     type: regular
     task:
       id: 2d1678e6-819b-424f-8bb8-816a01c31d77
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 09e1000e-9508-4846-8cbd-73bb4a6b9c58
+    type: regular
+    task:
+      id: 09e1000e-9508-4846-8cbd-73bb4a6b9c58
+>>>>>>> upstream/master
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -50,26 +69,37 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 195
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "2":
     id: "2"
     taskid: 8914bb6a-d9be-43bd-85dc-130a48b3feda
     type: regular
     task:
       id: 8914bb6a-d9be-43bd-85dc-130a48b3feda
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: e1ae40eb-9866-4dee-8a00-32807e44cc22
+    type: regular
+    task:
+      id: e1ae40eb-9866-4dee-8a00-32807e44cc22
+>>>>>>> upstream/master
       version: -1
       name: Retrieve all open alerts between 2 given dates
-      description: Check IP reputation (when information is available, returns a JSON
-        with details).  Uses all configured Threat Intelligence feeds
-      script: RedLock|||redlock-search-alerts
+      description: Search alerts on the RedLock platform
+      script: '|||redlock-search-alerts'
       type: regular
       iscommand: true
-      brand: RedLock
+      brand: ""
     nexttasks:
       '#none#':
       - "21"
@@ -99,12 +129,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 370
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "12":
     id: "12"
     taskid: f7f00d46-71fb-4943-87bc-5471d0f10e6a
@@ -113,6 +144,19 @@ tasks:
       id: f7f00d46-71fb-4943-87bc-5471d0f10e6a
       version: -1
       name: get alert P-576 status
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 4e4cc1bb-a5be-424e-8a7e-d984edbc7b70
+    type: regular
+    task:
+      id: 4e4cc1bb-a5be-424e-8a7e-d984edbc7b70
+      version: -1
+      name: get alert P-953 status
+>>>>>>> upstream/master
       script: '|||redlock-get-alert-details'
       type: regular
       iscommand: true
@@ -122,26 +166,46 @@ tasks:
       - "13"
     scriptarguments:
       alert-id:
+<<<<<<< HEAD
         simple: P-576
+=======
+        simple: P-953
+>>>>>>> upstream/master
       detailed: {}
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 50,
+=======
+          "x": 265,
+>>>>>>> upstream/master
           "y": 895
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "13":
     id: "13"
     taskid: 37488f7a-c6e0-438a-888f-d96ef00d81b7
     type: condition
     task:
       id: 37488f7a-c6e0-438a-888f-d96ef00d81b7
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: ebbd789c-de41-43d3-85cf-66faa526224b
+    type: condition
+    task:
+      id: ebbd789c-de41-43d3-85cf-66faa526224b
+>>>>>>> upstream/master
       version: -1
-      name: is status open?
+      name: is alert status open? (will alternate each run)
       type: condition
       iscommand: false
       brand: ""
@@ -157,25 +221,45 @@ tasks:
       - - operator: isEqualString
           left:
             value:
+<<<<<<< HEAD
               simple: ${Redlock.Alert(val.ID === 'P-576').Status}
+=======
+              simple: ${Redlock.Alert(val.ID === 'P-953').Status}
+>>>>>>> upstream/master
           right:
             value:
               simple: open
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 50,
+=======
+          "x": 265,
+>>>>>>> upstream/master
           "y": 1070
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "14":
     id: "14"
     taskid: 37a0987f-eccc-41d5-89cc-7f987917a128
     type: regular
     task:
       id: 37a0987f-eccc-41d5-89cc-7f987917a128
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 94779245-5d47-4eb2-8efd-a1984077cbcf
+    type: regular
+    task:
+      id: 94779245-5d47-4eb2-8efd-a1984077cbcf
+>>>>>>> upstream/master
       version: -1
       name: dismiss the alert
       script: '|||redlock-dismiss-alerts'
@@ -187,7 +271,11 @@ tasks:
       - "24"
     scriptarguments:
       alert-id:
+<<<<<<< HEAD
         simple: P-576
+=======
+        simple: P-953
+>>>>>>> upstream/master
       alert-rule-name: {}
       alert-status: {}
       cloud-account: {}
@@ -219,12 +307,24 @@ tasks:
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "15":
     id: "15"
     taskid: 8481993b-5c2a-4e36-8ab5-da34951deb42
     type: regular
     task:
       id: 8481993b-5c2a-4e36-8ab5-da34951deb42
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: ee3e17fc-42bd-4111-8787-9408d2116381
+    type: regular
+    task:
+      id: ee3e17fc-42bd-4111-8787-9408d2116381
+>>>>>>> upstream/master
       version: -1
       name: reopen the alert
       script: '|||redlock-reopen-alerts'
@@ -233,10 +333,17 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
+<<<<<<< HEAD
       - "23"
     scriptarguments:
       alert-id:
         simple: P-576
+=======
+      - "16"
+    scriptarguments:
+      alert-id:
+        simple: P-953
+>>>>>>> upstream/master
       alert-rule-name: {}
       alert-status: {}
       cloud-account: {}
@@ -259,12 +366,17 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 162.5,
+=======
+          "x": 480,
+>>>>>>> upstream/master
           "y": 1245
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "16":
     id: "16"
     taskid: e0ec9c7e-7d27-45b1-8c1a-d83dd774ec01
@@ -273,6 +385,19 @@ tasks:
       id: e0ec9c7e-7d27-45b1-8c1a-d83dd774ec01
       version: -1
       name: get alert P-576 status
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 73401718-a958-4a29-84f4-40aed0a48d10
+    type: regular
+    task:
+      id: 73401718-a958-4a29-84f4-40aed0a48d10
+      version: -1
+      name: get alert P-953 status
+>>>>>>> upstream/master
       script: '|||redlock-get-alert-details'
       type: regular
       iscommand: true
@@ -282,18 +407,28 @@ tasks:
       - "18"
     scriptarguments:
       alert-id:
+<<<<<<< HEAD
         simple: P-576
+=======
+        simple: P-953
+>>>>>>> upstream/master
       detailed: {}
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 50,
           "y": 1945
+=======
+          "x": 265,
+          "y": 1420
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "18":
     id: "18"
     taskid: 66d57546-2be4-44c2-85da-bb8d8e65479e
@@ -302,6 +437,19 @@ tasks:
       id: 66d57546-2be4-44c2-85da-bb8d8e65479e
       version: -1
       name: verify that P-576 is dismissed
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: d4115e4e-b156-4374-8033-32e7267e2ffc
+    type: condition
+    task:
+      id: d4115e4e-b156-4374-8033-32e7267e2ffc
+      version: -1
+      name: verify that P-953 statuses concur
+>>>>>>> upstream/master
       type: condition
       iscommand: false
       brand: ""
@@ -315,6 +463,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
+<<<<<<< HEAD
               simple: ${Redlock.Alert(val.ID === 'P-576').Status}
           right:
             value:
@@ -324,16 +473,52 @@ tasks:
         "position": {
           "x": 50,
           "y": 2120
+=======
+              complex:
+                root: Redlock
+                accessor: Alert.Status
+            iscontext: true
+          right:
+            value:
+              simple: dismissed
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Redlock
+                accessor: Alert.Status
+            iscontext: true
+          right:
+            value:
+              simple: open
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1595
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
   "19":
     id: "19"
     taskid: 3c767729-75c6-4a1d-8a3a-54af50369164
     type: regular
     task:
       id: 3c767729-75c6-4a1d-8a3a-54af50369164
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: e147a9c4-0a1e-4ed6-8e72-50134c89c48d
+    type: regular
+    task:
+      id: e147a9c4-0a1e-4ed6-8e72-50134c89c48d
+>>>>>>> upstream/master
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -344,6 +529,7 @@ tasks:
     nexttasks:
       '#none#':
       - "12"
+<<<<<<< HEAD
     scriptarguments:
       all:
         simple: "yes"
@@ -464,16 +650,96 @@ tasks:
     scriptarguments:
       seconds:
         simple: "5"
+=======
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+>>>>>>> upstream/master
     separatecontext: false
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 50,
+=======
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 597a46fe-1ff8-477f-8759-79023d5d99bb
+    type: condition
+    task:
+      id: 597a46fe-1ff8-477f-8759-79023d5d99bb
+      version: -1
+      name: Check for response
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              complex:
+                root: Redlock
+                accessor: Alert
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 96c149e2-e29e-4a74-80e7-b9d1ca844d90
+    type: title
+    task:
+      id: 96c149e2-e29e-4a74-80e7-b9d1ca844d90
+      version: -1
+      name: Test Completed
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+>>>>>>> upstream/master
           "y": 1770
         }
       }
     note: false
     timertriggers: []
+<<<<<<< HEAD
+=======
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+>>>>>>> upstream/master
 view: |-
   {
     "linkLabelsPosition": {
@@ -482,8 +748,13 @@ view: |-
     },
     "paper": {
       "dimensions": {
+<<<<<<< HEAD
         "height": 2310,
         "width": 492.5,
+=======
+        "height": 1785,
+        "width": 810,
+>>>>>>> upstream/master
         "x": 50,
         "y": 50
       }

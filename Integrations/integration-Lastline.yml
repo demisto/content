@@ -1,6 +1,7 @@
 commonfields:
   id: Lastline
   version: -1
+deprecated: true
 name: Lastline
 display: Lastline
 category: Data Enrichment & Threat Intelligence

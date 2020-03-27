@@ -7,10 +7,17 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
+<<<<<<< HEAD
     taskid: 8fbb9485-d8b9-4c28-846d-36e89582f7c9
     type: start
     task:
       id: 8fbb9485-d8b9-4c28-846d-36e89582f7c9
+=======
+    taskid: 068d2e11-d07a-4ce8-831a-fb3f447cf178
+    type: start
+    task:
+      id: 068d2e11-d07a-4ce8-831a-fb3f447cf178
+>>>>>>> upstream/master
       version: -1
       name: ""
       iscommand: false
@@ -22,7 +29,11 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 450,
+=======
+          "x": 50,
+>>>>>>> upstream/master
           "y": 50
         }
       }
@@ -30,12 +41,22 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+<<<<<<< HEAD
   "1":
     id: "1"
     taskid: 3cd14e16-2976-41a3-8faa-b8e4c8e28f6e
     type: regular
     task:
       id: 3cd14e16-2976-41a3-8faa-b8e4c8e28f6e
+=======
+    quiet: false
+  "1":
+    id: "1"
+    taskid: b73ef49f-afb5-458c-8de4-aa0cefb724fa
+    type: regular
+    task:
+      id: b73ef49f-afb5-458c-8de4-aa0cefb724fa
+>>>>>>> upstream/master
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -57,20 +78,35 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 450,
           "y": 220
+=======
+          "x": 50,
+          "y": 195
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+<<<<<<< HEAD
   "2":
     id: "2"
     taskid: 6b20c52a-8bfd-46b1-8c66-d202cd8b4fba
     type: regular
     task:
       id: 6b20c52a-8bfd-46b1-8c66-d202cd8b4fba
+=======
+    quiet: false
+  "2":
+    id: "2"
+    taskid: 2fc912e5-21a8-45c6-881d-4b089b2476b3
+    type: regular
+    task:
+      id: 2fc912e5-21a8-45c6-881d-4b089b2476b3
+>>>>>>> upstream/master
       version: -1
       name: Command get events
       description: Get security events from Akamai WAF
@@ -80,7 +116,11 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
+<<<<<<< HEAD
       - "3"
+=======
+      - "4"
+>>>>>>> upstream/master
     scriptarguments:
       config_ids:
         simple: "50170"
@@ -95,6 +135,7 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 450,
           "y": 430
         }
@@ -131,18 +172,32 @@ tasks:
         "position": {
           "x": 450,
           "y": 640
+=======
+          "x": 50,
+          "y": 370
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+<<<<<<< HEAD
   "4":
     id: "4"
     taskid: 30e726e1-c9ae-4cd2-8738-95a696e0e08f
     type: regular
     task:
       id: 30e726e1-c9ae-4cd2-8738-95a696e0e08f
+=======
+    quiet: false
+  "4":
+    id: "4"
+    taskid: cf1614be-f954-46b1-818f-9849edafaf02
+    type: regular
+    task:
+      id: cf1614be-f954-46b1-818f-9849edafaf02
+>>>>>>> upstream/master
       version: -1
       name: Fetch incidents
       description: Execute FetchIncident for a given instance
@@ -161,22 +216,37 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 450,
           "y": 860
+=======
+          "x": 50,
+          "y": 545
+>>>>>>> upstream/master
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+<<<<<<< HEAD
+=======
+    quiet: false
+>>>>>>> upstream/master
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
+<<<<<<< HEAD
         "height": 905,
         "width": 380,
         "x": 450,
+=======
+        "height": 590,
+        "width": 380,
+        "x": 50,
+>>>>>>> upstream/master
         "y": 50
       }
     }

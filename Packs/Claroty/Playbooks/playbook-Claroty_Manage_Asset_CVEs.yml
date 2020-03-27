@@ -1,0 +1,610 @@
+id: Claroty Manage Asset CVEs
+inputs: []
+name: Claroty Manage Asset CVEs
+outputs: []
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: d98bd2ff-2dff-4912-8a59-2477524ad23b
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: d98bd2ff-2dff-4912-8a59-2477524ad23b
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    scriptarguments:
+      criticality:
+        simple: High
+      fields: {}
+      insight_name: {}
+      should_enrich_assets:
+        simple: 'true'
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 9d2e2b1c-10b8-4d3e-8ffa-8542957d2b40
+      iscommand: true
+      name: Get Claroty High Criticality Asset and CVE Information
+      script: '|||claroty-get-assets'
+      type: regular
+      version: -1
+    taskid: 9d2e2b1c-10b8-4d3e-8ffa-8542957d2b40
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  '2':
+    id: '2'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '3'
+      - '4'
+    note: false
+    scriptarguments:
+      append: {}
+      key:
+        simple: ClarotyAsset
+      value:
+        simple: ${Claroty.Asset}
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: edc6a8a1-8444-4a2a-825a-5e0232f858ec
+      iscommand: false
+      name: Set ClarotyAsset Context key in Context
+      script: Set
+      type: regular
+      version: -1
+    taskid: edc6a8a1-8444-4a2a-825a-5e0232f858ec
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+  '3':
+    id: '3'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    scriptarguments:
+      append: {}
+      key:
+        simple: ClarotyHighSeverityAsset
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ClarotyAsset.HighestCVEScore
+              operator: greaterThanOrEqual
+              right:
+                value:
+                  simple: '7.0'
+          root: ClarotyAsset
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: '[]'
+            operator: SetIfEmpty
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: bf0aac68-4af0-45d8-868a-7b3427ce66fc
+      iscommand: false
+      name: Filter Assets with High Score CVEs (>= 7.0)
+      script: Set
+      type: regular
+      version: -1
+    taskid: bf0aac68-4af0-45d8-868a-7b3427ce66fc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+  '4':
+    id: '4'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    scriptarguments:
+      append: {}
+      key:
+        simple: ClarotyLowSeverityAsset
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ClarotyAsset.HighestCVEScore
+              operator: lessThan
+              right:
+                value:
+                  simple: '7'
+          root: ClarotyAsset
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: '[]'
+            operator: SetIfEmpty
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 9c773fa9-5ff4-4e49-8cc7-7c3db4705d06
+      iscommand: false
+      name: Filter Other Assets (Score < 7.0)
+      script: Set
+      type: regular
+      version: -1
+    taskid: 9c773fa9-5ff4-4e49-8cc7-7c3db4705d06
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  '5':
+    id: '5'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: fc98b065-2163-4c88-8991-8ba7f526932d
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+    taskid: fc98b065-2163-4c88-8991-8ba7f526932d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+  '6':
+    id: '6'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 8ccd27b0-c874-4851-8e60-7e625f766487
+      iscommand: false
+      name: Open IT Ticket to resolve issues
+      type: regular
+      version: -1
+    taskid: 8ccd27b0-c874-4851-8e60-7e625f766487
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  '7':
+    id: '7'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    scriptarguments:
+      account: {}
+      accountid: {}
+      accountname: {}
+      activedirectoryaccountstatus: {}
+      activedirectorydisplayname: {}
+      activedirectorypasswordstatus: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      agentid: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      axoniuslink: {}
+      blockedaction: {}
+      bugtraq: {}
+      city: {}
+      clarotyalertresolved: {}
+      clarotyalerttype: {}
+      clarotydepartment: {}
+      clarotynetworkid: {}
+      clarotyrelatedassets: {}
+      clarotyresourceid: {}
+      clienthello: {}
+      cloudtype: {}
+      commandline: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      companypropertystatus: {}
+      contactaddress: {}
+      contactname: {}
+      coordinates: {}
+      cortexreceivetime: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      dest: {}
+      destinationip: {}
+      destinationport: {}
+      destntdomain: {}
+      details:
+        complex:
+          root: ${ClarotyHighSeverityAsset}
+          transformers:
+          - args:
+              dt:
+                value:
+                  simple: |-
+                    .=ff(val); function cleanString(input) {
+                        var output = "";
+                        for (var i=0; i<input.length; i++) {
+                            if (input.charCodeAt(i) <= 127) {
+                                output += input.charAt(i);
+                            }
+                        }
+                        return output;
+                    }; function ff(asset) { ret= 'Site ID: ' + asset.SiteID + '\n' + 'Asset ID: ' + asset.AssetID + '\n\n';
+                    for(cve of asset.CVE) {
+                       ret += cve.ID + ' (Score: ' + cve.CVSS + ')\nDescription: ' + cleanString(cve.Description) + '\n\n';} return ret;
+
+
+                    }
+            operator: DT
+      detectionendtime: {}
+      detectionid: {}
+      detectionticketed: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      devicegsuiteaccountstatus: {}
+      devicehostname: {}
+      devicename: {}
+      domain: {}
+      dpoemailaddress: {}
+      duoaccountstatus: {}
+      duration: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailautoreply: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      entryIDs: {}
+      extrahopapplianceid: {}
+      extrahophostname: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstseen: {}
+      globaldirectoryvisibility: {}
+      googleaccountstatus: {}
+      googleadminrolesstatus: {}
+      googledisplayname: {}
+      googledrivestatus: {}
+      googlemailstatus: {}
+      googlepasswordstatus: {}
+      hostname: {}
+      infectedhosts: {}
+      isolated: {}
+      isthedatasubjecttodpia: {}
+      ja3: {}
+      ja3s: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastseen: {}
+      likelyimpact: {}
+      mailboxdelegation: {}
+      maliciousbehavior: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      measurestomitigate: {}
+      name:
+        simple: Claroty High Score CVE Vulnerability for Asset
+      ngfwaction: {}
+      ngfwcategoryofapp: {}
+      ngfwcategoryofthreatid: {}
+      ngfwdestinationport: {}
+      ngfwdestinationzone: {}
+      ngfwdomain: {}
+      ngfwhostname: {}
+      ngfwhttpmethod: {}
+      ngfwinboundinterface: {}
+      ngfwnameofthreatid: {}
+      ngfwoutboundinterface: {}
+      ngfwpcap: {}
+      ngfwprotocol: {}
+      ngfwriskofapp: {}
+      ngfwrule: {}
+      ngfwsessionid: {}
+      ngfwsourceport: {}
+      ngfwsourcezone: {}
+      ngfwsrcuser: {}
+      ngfwsubcategoryofapp: {}
+      ngfwsubtype: {}
+      ngfwtechnologyofapp: {}
+      ngfwthreatid: {}
+      ngfwtrafficdirection: {}
+      ngfwvsys: {}
+      niststage: {}
+      o365endpoints: {}
+      o365instance: {}
+      o365servicesareas: {}
+      occurred:
+        simple: ${incident.occurred}
+      offboardingstage: {}
+      oktaaccountstatus: {}
+      owner: {}
+      parentprocessid: {}
+      participants: {}
+      phase: {}
+      phishingsubtype: {}
+      pid: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      previouscoordinates: {}
+      previouscountry: {}
+      previoussignindatetime: {}
+      previoussourceip: {}
+      prismacloudid: {}
+      prismacloudreason: {}
+      prismacloudrules: {}
+      prismacloudstatus: {}
+      prismacloudtime: {}
+      rating: {}
+      rawparticipants: {}
+      redlockpolicy: {}
+      region: {}
+      regionid: {}
+      remediable: {}
+      reporteremailaddress: {}
+      resourceapiname: {}
+      resourcecloudtype: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      rrn: {}
+      score: {}
+      sectorofaffectedparty: {}
+      severity:
+        simple: '4'
+      signature: {}
+      signindatetime: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourceip: {}
+      sourceport: {}
+      src: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      sslversion: {}
+      subscriptionassignedby: {}
+      subscriptioncreatedby: {}
+      subscriptioncreatedon: {}
+      subscriptiondescription: {}
+      subscriptionid: {}
+      subscriptionname: {}
+      subscriptiontype: {}
+      subscriptionupdatedby: {}
+      subscriptionupdatedon: {}
+      subtype: {}
+      systemdefault: {}
+      systems: {}
+      telephoneno: {}
+      terminatedaction: {}
+      threatactor: {}
+      threatvaultlink: {}
+      trapsid: {}
+      travelmaplink: {}
+      triggeredsecurityprofile: {}
+      type:
+        simple: Vulnerability
+      url: {}
+      urlsslverification: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vpcid: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      xdractivityfirstseen: {}
+      xdractivitylastseen: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrcategory: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrdevicehostname: {}
+      xdrdeviceip: {}
+      xdrexternaldestinations: {}
+      xdrfileartifacts: {}
+      xdrfirstdetected: {}
+      xdrhighseverityalertcount: {}
+      xdrid: {}
+      xdrincidentid: {}
+      xdripranges: {}
+      xdrips: {}
+      xdrirquerybydestinations: {}
+      xdrlastdetected: {}
+      xdrlink: {}
+      xdrlowseverityalertcount: {}
+      xdrmac: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdros: {}
+      xdrostype: {}
+      xdrresolvecomment: {}
+      xdrseverity: {}
+      xdrstatus: {}
+      xdrtype: {}
+      xdrurl: {}
+      xdrusercount: {}
+      xdruserdisplayname: {}
+      xdrusername: {}
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: ''
+      id: ebb429c2-fc3a-44d9-8a99-05ded946c54b
+      iscommand: true
+      name: Create Demisto Incidents
+      script: Builtin|||createNewIncident
+      type: regular
+      version: -1
+    taskid: ebb429c2-fc3a-44d9-8a99-05ded946c54b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+description: ''
+fromversion: 5.0.0
+tests:
+  - No Test

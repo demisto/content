@@ -21,7 +21,11 @@ jsPrivateFuncs = ["dqQueryBuilder", "toArray", "indent", "formatTableValuesRecur
 pyPrivateFuncs = ["raiseTable", "zoomField", "epochToTimestamp", "formatTimeColumns", "strip_tag", "elem_to_internal",
                   "internal_to_elem", "json2elem", "elem2json", "json2xml", "OrderedDict", "datetime", "timedelta",
                   "createContextSingle", "IntegrationLogger", "tblToMd", "DemistoException", "BaseClient",
+<<<<<<< HEAD
                   "BaseHTTPClient", "DemistoHandler", "DebugLogger"]
+=======
+                  "BaseHTTPClient", "DemistoHandler", "DebugLogger", "FeedIndicatorType"]
+>>>>>>> upstream/master
 
 pyIrregularFuncs = {"LOG": {"argList": ["message"]}}
 
@@ -216,9 +220,15 @@ def createPsDocumentation(path, origin, language):
 
 def main(argv):
     jsDoc, isErrorJS = createJsDocumentation('./Documentation/commonServerJsDoc.json', 'CommonServerJs', 'javascript')
+<<<<<<< HEAD
     pyDoc, isErrorPy = createPyDocumentation('./Scripts/CommonServerPython/CommonServerPython.py',
                                              'CommonServerPython', 'python')
     psDoc, isErrorPS = createPsDocumentation('./Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1',
+=======
+    pyDoc, isErrorPy = createPyDocumentation('./Packs/Base/Scripts/CommonServerPython/CommonServerPython.py',
+                                             'CommonServerPython', 'python')
+    psDoc, isErrorPS = createPsDocumentation('./Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1',
+>>>>>>> upstream/master
                                              'CommonServerPowerShell', 'powershell')
     finalDoc = readJsonFile('./Documentation/commonServerConstants.json')
 

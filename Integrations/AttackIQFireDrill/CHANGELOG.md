@@ -1,4 +1,10 @@
 ## [Unreleased]
+<<<<<<< HEAD
+=======
+-
+
+## [20.1.2] - 2020-01-22
+>>>>>>> upstream/master
 Added 4 new commands.
   - ***attackiq-list-assessment-templates***: Lists all available assessment templates.
   - ***attackiq-list-assets***: Lists all assets.

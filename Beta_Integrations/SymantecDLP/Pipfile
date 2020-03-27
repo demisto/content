@@ -11,9 +11,17 @@ requests-mock = "*"
 pytest-asyncio = "*"
 python-dateutil = "*"
 bs4 = "*"
+<<<<<<< HEAD
+=======
+autopep8 = "*"
+>>>>>>> upstream/master
 
 [packages]
 zeep = "*"
 
 [requires]
+<<<<<<< HEAD
 python_version = "3.7"
+=======
+python_version = "3.7"
+>>>>>>> upstream/master
