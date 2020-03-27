@@ -8,9 +8,9 @@ Microsoft Defender Advanced Threat Protection Get Machine Action Status
 
 ## Use Cases
 ---
-1. Fetch incidents
-2. Managing machines and performing actions on them
-3. Blocking files and applications
+1. Fetch incidentsץ
+2. Managing machines and performing actions on themץ
+3. Blocking files and applicationsץ
 
 ## Configure Microsoft Defender Advanced Threat Protection on Demisto
 ---
@@ -127,7 +127,7 @@ Machine.Isolate
 | MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. | 
 | MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. | 
 | MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier | 
-| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier with the possible values: "Sha1" ,"Sha256" and "Md5". | 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier with the possible values: "SHA1" ,"SHA256" and "MD5". | 
 
 
 ##### Command Example
@@ -230,7 +230,7 @@ Machine.Isolate
 
 ### 3. microsoft-atp-get-machines
 ---
-Retrieves a collection of machines that have communicated with WDATP cloud on the last 30 days
+Retrieves a collection of machines that have communicated with WDATP cloud on the last 30 days.
 
 ##### Base Command
 
@@ -266,7 +266,7 @@ Retrieves a collection of machines that have communicated with WDATP cloud on th
 | MicrosoftATP.Machine.RiskScore | String | The machine risk score | 
 | MicrosoftATP.Machine.ExposureLevel | String | The machine exposure score | 
 | MicrosoftATP.Machine.IsAADJoined | Boolean | True if machine is AAD joined, False otherwise | 
-| MicrosoftATP.Machine.AADDeviceID | String | The AAD Device ID | 
+| MicrosoftATP.Machine.AADDeviceID | String | The AAD device ID | 
 | MicrosoftATP.Machine.MachineTags | String | Set of machine tags | 
 
 
@@ -337,7 +337,7 @@ Get a collection of machines related to a given file SHA1 hash.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_hash | File SHA1 hash to get the related machines | Required | 
+| file_hash | File SHA1 hash to get the related machines. | Required | 
 
 
 ##### Context Output
@@ -360,7 +360,7 @@ Get a collection of machines related to a given file SHA1 hash.
 | MicrosoftATP.FileMachine.Machines.RiskScore | String | The machine risk score | 
 | MicrosoftATP.FileMachine.Machines.ExposureLevel | String | The machine exposure score | 
 | MicrosoftATP.FileMachine.Machines.IsAADJoined | Boolean | True if machine is AAD joined, False otherwise | 
-| MicrosoftATP.FileMachine.Machines.AADDeviceID | string | The AAD Device ID | 
+| MicrosoftATP.FileMachine.Machines.AADDeviceID | string | The AAD device ID | 
 | MicrosoftATP.FileMachine.Machines.MachineTags | String | Set of machine tags | 
 | MicrosoftATP.FileMachine.File | String | The machine related file hash | 
 
@@ -465,7 +465,7 @@ Get a machine details by its identity.
 | MicrosoftATP.Machine.RiskScore | String | The machine risk score | 
 | MicrosoftATP.Machine.ExposureLevel | String | The machine exposure level | 
 | MicrosoftATP.Machine.IsAADJoined | Boolean | True if machine is AAD joined, False otherwise | 
-| MicrosoftATP.Machine.AADDeviceID | String | The AAD Device ID | 
+| MicrosoftATP.Machine.AADDeviceID | String | The AAD device ID | 
 | MicrosoftATP.Machine.MachineTags | String | Set of machine tags | 
 
 
@@ -575,7 +575,7 @@ Machine.Scan
 
 ### 7. microsoft-atp-list-alerts
 ---
-Get a list of alerts present on the system. Filtering can be done only on one argument.
+Get a list of alerts present on the system. Filtering can be done only on a single argument.
 
 ##### Base Command
 
@@ -594,13 +594,13 @@ Get a list of alerts present on the system. Filtering can be done only on one ar
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicrosoftATP.Alert.ID | String | The alert ID | 
-| MicrosoftATP.Alert.IncidentID | Number | The Incident ID of the Alert | 
-| MicrosoftATP.Alert.InvestigationID | Number | The Investigation ID related to the Alert | 
-| MicrosoftATP.Alert.InvestigationState | String | The current state of the Investigation | 
+| MicrosoftATP.Alert.IncidentID | Number | The incident ID of the alert | 
+| MicrosoftATP.Alert.InvestigationID | Number | The investigation ID related to the alert | 
+| MicrosoftATP.Alert.InvestigationState | String | The current state of the investigation | 
 | MicrosoftATP.Alert.AssignedTo | String | The owner of the alert | 
 | MicrosoftATP.Alert.Severity | String | The severity of the alert | 
 | MicrosoftATP.Alert.Status | String | The current status of the alert | 
-| MicrosoftATP.Alert.Classification | String | The alert Classification | 
+| MicrosoftATP.Alert.Classification | String | The alert classification | 
 | MicrosoftATP.Alert.Determination | String | The determination of the alert | 
 | MicrosoftATP.Alert.DetectionSource | String | The detection source | 
 | MicrosoftATP.Alert.Category | String | The category of the alert | 
@@ -727,9 +727,9 @@ Update the properties of an alert entity.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicrosoftATP.Alert.ID | String | The alert ID | 
-| MicrosoftATP.Alert.IncidentID | Number | The Incident ID of the alert | 
-| MicrosoftATP.Alert.InvestigationID | Number | The Investigation ID related to the alert | 
-| MicrosoftATP.Alert.InvestigationState | String | The current state of the Investigation | 
+| MicrosoftATP.Alert.IncidentID | Number | The incident ID of the alert | 
+| MicrosoftATP.Alert.InvestigationID | Number | The investigation ID related to the alert | 
+| MicrosoftATP.Alert.InvestigationState | String | The current state of the investigation | 
 | MicrosoftATP.Alert.AssignedTo | String | The owner of the alert | 
 | MicrosoftATP.Alert.Severity | String | The severity of the alert | 
 | MicrosoftATP.Alert.Status | String | The current status of the alert | 
@@ -771,7 +771,7 @@ The alert da637200417169017725_183736971 has been updated successfully
 
 ### 9. microsoft-atp-advanced-hunting
 ---
-Allows you to run programmatic queries like in Microsoft Defender ATP Portal (https://securitycenter.windows.com/hunting). Limitations: You can only run a query on data from the last 30 days, The results will include a maximum of 10,000 rows, The number of executions is limited (up to 15 calls per minute, 15 minutes of running time every hour and 4 hours of running time a day)
+Allows you to run programmatic queries like in Microsoft Defender ATP Portal (https://securitycenter.windows.com/hunting). Limitations: You can only run a query on data from the last 30 days, The results will include a maximum of 10,000 rows, The number of executions is limited (up to 15 calls per minute, 15 minutes of running time every hour and 4 hours of running time a day).
 
 ##### Base Command
 
@@ -824,7 +824,7 @@ Create a new alert entity using event data, as obtained from the Advanced Huntin
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| machine_id | Id of the machine on which the event was identified. | Required | 
+| machine_id | ID of the machine on which the event was identified. | Required | 
 | severity | Severity of the alert. | Required | 
 | title | Title for the alert. | Required | 
 | description | Description of the alert. | Required | 
@@ -839,13 +839,13 @@ Create a new alert entity using event data, as obtained from the Advanced Huntin
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicrosoftATP.Alert.ID | String | The alert ID | 
-| MicrosoftATP.Alert.IncidentID | Number | The Incident ID of the alert | 
-| MicrosoftATP.Alert.InvestigationID | Number | The Investigation ID related to the alert | 
-| MicrosoftATP.Alert.InvestigationState | String | The current state of the Investigation | 
+| MicrosoftATP.Alert.IncidentID | Number | The incident ID of the alert | 
+| MicrosoftATP.Alert.InvestigationID | Number | The investigation ID related to the alert | 
+| MicrosoftATP.Alert.InvestigationState | String | The current state of the investigation | 
 | MicrosoftATP.Alert.AssignedTo | String | The owner of the alert | 
 | MicrosoftATP.Alert.Severity | String | The severity of the alert | 
 | MicrosoftATP.Alert.Status | String | The current status of the alert | 
-| MicrosoftATP.Alert.Classification | String | The alert Classification | 
+| MicrosoftATP.Alert.Classification | String | The alert classification | 
 | MicrosoftATP.Alert.Determination | String | The determination of the alert | 
 | MicrosoftATP.Alert.DetectionSource | String | The detection source | 
 | MicrosoftATP.Alert.Category | String | The category of the alert | 
@@ -991,8 +991,8 @@ Retrieves the files associated to a specific alert.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | ID of the alert. | Required | 
-| limit | The limit of files to display | Optional | 
-| offset | The page from which to get the related files | Optional | 
+| limit | The limit of files to display. | Optional | 
+| offset | The page from which to get the related files. | Optional | 
 
 
 ##### Context Output
@@ -1072,7 +1072,7 @@ Retrieves the files associated to a specific alert.
 
 ### 13. microsoft-atp-get-alert-related-ips
 ---
-Retrieves the ips associated to a specific alert.
+Retrieves the IPs associated to a specific alert.
 
 ##### Base Command
 
@@ -1152,8 +1152,8 @@ Alert da637175364995825348_1865170845 Related Domains: []
 
 ### 15. microsoft-atp-list-machine-actions-details
 ---
-Return the machine's actions. If you set an action id it will return the info on the specific action
-Filtering can be done only on one argument
+Return the machine's actions. If you set an action ID it will return the info on the specific action.
+Filtering can be done only on a single argument.
 
 ##### Base Command
 
@@ -1240,7 +1240,7 @@ Filtering can be done only on one argument
 
 ### 16. microsoft-atp-collect-investigation-package
 ---
-Collect investigation package from a machine.
+Collect an investigation package from a machine.
 ##### Required Permissions
 Machine.CollectForensics
 ##### Base Command
@@ -1316,7 +1316,7 @@ Machine.CollectForensics
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action_id | machine action ID. | Required | 
+| action_id | Machine action ID. | Required | 
 
 
 ##### Context Output
@@ -1344,7 +1344,7 @@ Success. This link is valid for a very short time and should be used immediately
 
 ### 18. microsoft-atp-restrict-app-execution
 ---
-Restrict execution of all applications on the machine except a predefined set.
+Restrict the execution of all applications on the machine except a predefined set.
 ##### Required Permissions
 Machine.RestrictExecution
 ##### Base Command
@@ -1410,7 +1410,7 @@ Machine.RestrictExecution
 
 ### 19. microsoft-atp-remove-app-restriction
 ---
-Enable execution of any application on the machine.
+Enable the execution of any application on the machine.
 ##### Required Permissions
 Machine.RestrictExecution
 ##### Base Command
@@ -1476,7 +1476,7 @@ Machine.RestrictExecution
 
 ### 20. microsoft-atp-stop-and-quarantine-file
 ---
-Stop execution of a file on a machine and delete it.
+Stop the execution of a file on a machine and delete it.
 ##### Required Permissions
 Machine.StopAndQuarantine	
 ##### Base Command
@@ -1621,7 +1621,7 @@ Retrieves a collection of investigations or retrieves specific investigation by 
 
 ### 22. microsoft-atp-start-investigation
 ---
-Start automated investigation on a machine.
+Start an automated investigation on a machine.
 
 ##### Base Command
 
@@ -1687,7 +1687,7 @@ Retrieves the statistics on the given domain.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | The domain address | Required | 
+| domain | The domain address. | Required | 
 
 
 ##### Context Output
@@ -1696,8 +1696,8 @@ Retrieves the statistics on the given domain.
 | --- | --- | --- |
 | MicrosoftATP.DomainStatistics.Statistics.Host | String | The domain host | 
 | MicrosoftATP.DomainStatistics.Statistics.OrgPrevalence | String | The prevalnce of the domain in the organizetion | 
-| MicrosoftATP.DomainStatistics.Statistics.OrgFirstSeen | Date | The first date and time the domain has seen in the organizetion | 
-| MicrosoftATP.DomainStatistics.Statistics.OrgLastSeen | Date | The last date and time the domain has seen in the organizetion | 
+| MicrosoftATP.DomainStatistics.Statistics.OrgFirstSeen | Date | The first date and time the domain was seen in the organizetion | 
+| MicrosoftATP.DomainStatistics.Statistics.OrgLastSeen | Date | The last date and time the domain was seen in the organizetion | 
 
 
 ##### Command Example
@@ -1764,7 +1764,7 @@ Retrieves a collection of alerts related to a given domain address.
 | MicrosoftATP.DomainAlert.Alerts.LastEventTime | Date | The last event time that triggered the alert on that machine | 
 | MicrosoftATP.DomainAlert.Alerts.LastUpdateTime | Date | The first event time that triggered the alert on that machine | 
 | MicrosoftATP.DomainAlert.Alerts.ResolvedTime | Date | The date and time in which the status of the alert was changed to 'Resolved' | 
-| MicrosoftATP.DomainAlert.Alerts.MachineID | String | The mahine ID that is associated with the alert | 
+| MicrosoftATP.DomainAlert.Alerts.MachineID | String | The machine ID that is associated with the alert | 
 | MicrosoftATP.DomainAlert.Alerts.ComputerDNSName | String | The machine DNS name | 
 | MicrosoftATP.DomainAlert.Alerts.AADTenantID | String | The AAD tenant ID | 
 | MicrosoftATP.DomainAlert.Alerts.Comments.Comment | String | The alert comment string | 
@@ -1825,7 +1825,7 @@ Retrieves a collection of machines that have communicated to or from a given dom
 | MicrosoftATP.DomainMachine.Machines.RiskScore | String | The machine risk score | 
 | MicrosoftATP.DomainMachine.Machines.ExposureLevel | String | The machine exposure level | 
 | MicrosoftATP.DomainMachine.Machines.IsAADJoined | Boolean | True if machine is AAD joined, False otherwise | 
-| MicrosoftATP.DomainMachine.Machines.AADDeviceID | String | The AAD Device ID | 
+| MicrosoftATP.DomainMachine.Machines.AADDeviceID | String | The AAD device ID | 
 | MicrosoftATP.DomainMachine.Machines.MachineTags | String | Set of machine tags | 
 
 
@@ -1892,8 +1892,8 @@ Retrieves the statistics for the given file.
 | --- | --- | --- |
 | MicrosoftATP.FileStatistics.Sha1 | String | The file SHA1 hash | 
 | MicrosoftATP.FileStatistics.Statistics.OrgPrevalence | String | The prevalnce of the file in the organizetion | 
-| MicrosoftATP.FileStatistics.Statistics.OrgFirstSeen | Date | The first date and time the file has seen in the organizetion | 
-| MicrosoftATP.FileStatistics.Statistics.OrgLastSeen | Date | The last date and time the file has seen in the organizetion | 
+| MicrosoftATP.FileStatistics.Statistics.OrgFirstSeen | Date | The first date and time the file was seen in the organizetion | 
+| MicrosoftATP.FileStatistics.Statistics.OrgLastSeen | Date | The last date and time the file was seen in the organizetion | 
 | MicrosoftATP.FileStatistics.Statistics.GlobalPrevalence | String | The global prevalnce of the file | 
 | MicrosoftATP.FileStatistics.Statistics.GlobalFirstObserved | Date | The global first observetion date and time of the file | 
 | MicrosoftATP.FileStatistics.Statistics.GlobalLastObserved | Date | The global last observetion date and time of the file | 
@@ -1948,13 +1948,13 @@ Retrieves a collection of alerts related to a given file hash.
 | --- | --- | --- |
 | MicrosoftATP.FileAlert.Sha1 | String | The file SHA1 hash | 
 | MicrosoftATP.FileAlert.Alerts.ID | String | The alert ID | 
-| MicrosoftATP.FileAlert.Alerts.IncidentID | Number | The Incident ID of the Alert | 
-| MicrosoftATP.FileAlert.Alerts.InvestigationID | Number | The Investigation ID related to the Alert | 
-| MicrosoftATP.FileAlert.Alerts.InvestigationState | String | The current state of the Investigation | 
+| MicrosoftATP.FileAlert.Alerts.IncidentID | Number | The incident ID of the alert | 
+| MicrosoftATP.FileAlert.Alerts.InvestigationID | Number | The investigation ID related to the alert | 
+| MicrosoftATP.FileAlert.Alerts.InvestigationState | String | The current state of the investigation | 
 | MicrosoftATP.FileAlert.Alerts.AssignedTo | String | The owner of the alert | 
 | MicrosoftATP.FileAlert.Alerts.Severity | String | The severity of the alert | 
 | MicrosoftATP.FileAlert.Alerts.Status | String | The current status of the alert | 
-| MicrosoftATP.FileAlert.Alerts.Classification | String | The alert Classification | 
+| MicrosoftATP.FileAlert.Alerts.Classification | String | The alert classification | 
 | MicrosoftATP.FileAlert.Alerts.Determination | String | The determination of the alert | 
 | MicrosoftATP.FileAlert.Alerts.DetectionSource | String | The detection source | 
 | MicrosoftATP.FileAlert.Alerts.Category | String | The category of the alert | 
@@ -2067,8 +2067,8 @@ Retrieves the statistics for the given IP.
 | --- | --- | --- |
 | MicrosoftATP.IPStatistics.Statistics.IPAddress | String | The IP address | 
 | MicrosoftATP.IPStatistics.Statistics.OrgPrevalence | String | The prevalnce of the IP on the organizetion | 
-| MicrosoftATP.IPStatistics.Statistics.OrgFirstSeen | Date | The first date and time the IP has seen in the organizetion | 
-| MicrosoftATP.IPStatistics.Statistics.OrgLastSeen | Date | The last date and time the IP has seen in the organizetion | 
+| MicrosoftATP.IPStatistics.Statistics.OrgFirstSeen | Date | The first date and time the IP was seen in the organizetion | 
+| MicrosoftATP.IPStatistics.Statistics.OrgLastSeen | Date | The last date and time the IP was seen in the organizetion | 
 
 
 ##### Command Example
@@ -2170,7 +2170,7 @@ Retrieves a collection of alerts related to a given user ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | The user ID.  Note that the ID is not the full UPN, but only the user name. (e.g., to retrieve alerts for user1@test.com use user1) | Required | 
+| username | The user ID. Note that the ID is not the full UPN, but only the user name. (e.g., to retrieve alerts for user1@test.com use user1) | Required | 
 
 
 ##### Context Output
@@ -2348,7 +2348,7 @@ Retrieves a collection of machines related to a given user ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | The user ID.  Note that the id is not the full UPN, but only the user name. (e.g., to retrieve machines for user1@test.com use user1) | Required | 
+| username | The user ID. Note that the id is not the full UPN, but only the user name. (e.g., to retrieve machines for user1@test.com use user1) | Required | 
 
 
 ##### Context Output
