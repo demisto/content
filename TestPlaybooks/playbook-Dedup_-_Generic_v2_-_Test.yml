@@ -351,7 +351,8 @@ tasks:
       - - operator: isTrue
           left:
             value:
-              simple: isSimilarIncidentFound
+              complex:
+                root: isSimilarIncidentFound
             iscontext: true
     view: |-
       {
@@ -384,7 +385,8 @@ tasks:
       - - operator: isTrue
           left:
             value:
-              simple: isSimilarIncidentFound
+              complex:
+                root: isSimilarIncidentFound
             iscontext: true
     view: |-
       {
@@ -417,7 +419,8 @@ tasks:
       - - operator: isTrue
           left:
             value:
-              simple: isSimilarIncidentFound
+              complex:
+                root: isSimilarIncidentFound
             iscontext: true
     view: |-
       {
@@ -450,7 +453,7 @@ tasks:
       DuplicateMethod:
         simple: text
       DuplicateThreshold:
-        simple: "0.9"
+        simple: "0.5"
       IgnoreCloseIncidents:
         simple: "yes"
       MaxNumberOfCandidates:
@@ -461,7 +464,8 @@ tasks:
         simple: "72"
       similarIncidentFields:
         simple: name,details
-      similarLabelsKeys: {}
+      similarLabelsKeys:
+        simple: Email/subject:*,Email/from
     separatecontext: true
     loop:
       iscommand: false
@@ -498,7 +502,7 @@ tasks:
       DuplicateMethod:
         simple: rules
       DuplicateThreshold:
-        simple: "0.9"
+        simple: "0.5"
       IgnoreCloseIncidents:
         simple: "yes"
       MaxNumberOfCandidates:
@@ -547,7 +551,7 @@ tasks:
       DuplicateMethod:
         simple: ml
       DuplicateThreshold:
-        simple: "0.9"
+        simple: "0.5"
       IgnoreCloseIncidents:
         simple: "yes"
       MaxNumberOfCandidates:
@@ -556,8 +560,10 @@ tasks:
         simple: occurred
       TimeFrameHours:
         simple: "72"
-      similarIncidentFields: {}
-      similarLabelsKeys: {}
+      similarIncidentFields:
+        simple: type
+      similarLabelsKeys:
+        simple: Email/subject:*,Email/from
     separatecontext: true
     loop:
       iscommand: false
