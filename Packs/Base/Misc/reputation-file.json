@@ -382,7 +382,7 @@
           }]
         }
       },
-      "trafficlightprotocoltlp": {
+      "trafficlightprotocol": {
         "simple": "",
         "complex": {
           "root": "File",
