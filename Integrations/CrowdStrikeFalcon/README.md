@@ -88,7 +88,7 @@ Searches for devices that match the query.
             {
                 "ExternalIP": "94.188.164.68", 
                 "MacAddress": "8c-85-90-3d-ed-3e", 
-                "Hostname": "164.188.94-binat-smaug.in-addr.arpa", 
+                "Hostname": "154.132.82-test-co.in-addr.arpa", 
                 "LocalIP": "192.168.1.76", 
                 "LastSeen": "2019-03-28T02:36:41Z", 
                 "OS": "Mojave (10.14)", 
@@ -98,7 +98,7 @@ Searches for devices that match the query.
             {
                 "ExternalIP": "94.188.164.68", 
                 "MacAddress": "f0-18-98-74-8c-31", 
-                "Hostname": "164.188.94-binat-smaug.in-addr.arpa", 
+                "Hostname": "154.132.82-test-co.in-addr.arpa", 
                 "LocalIP": "172.22.14.237", 
                 "LastSeen": "2019-03-17T10:03:17Z", 
                 "OS": "Mojave (10.14)", 
@@ -114,8 +114,8 @@ Searches for devices that match the query.
 
 | ID | Hostname | OS | Mac Address | Local IP | External IP | First Seen | Last Seen |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 336474ea6a524e7c68575f6508d84781 | 164.188.94-binat-smaug.in-addr.arpa | Mojave (10.14) | 8c-85-90-3d-ed-3e | 192.168.1.76 | 94.188.164.68 | 2017-12-28T22:38:11Z | 2019-03-28T02:36:41Z |
-| 459146dbe524472e73751a43c63324f3 | 164.188.94-binat-smaug.in-addr.arpa | Mojave (10.14) | f0-18-98-74-8c-31 | 172.22.14.237 | 94.188.164.68 | 2017-12-10T11:01:20Z | 2019-03-17T10:03:17Z |
+| 336474ea6a524e7c68575f6508d84781 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | 8c-85-90-3d-ed-3e | 192.168.1.76 | 94.188.164.68 | 2017-12-28T22:38:11Z | 2019-03-28T02:36:41Z |
+| 459146dbe524472e73751a43c63324f3 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | f0-18-98-74-8c-31 | 172.22.14.237 | 94.188.164.68 | 2017-12-10T11:01:20Z | 2019-03-17T10:03:17Z |
 
  
 
@@ -477,7 +477,7 @@ Sends commands to hosts.
 ### Command ls C:\\ results
 |BaseCommand|Command|HostID|Stderr|Stdout|
 |---|---|---|---|---|
-| ls | ls C:\ | 284771ee197e422d5176d6634a62b934 |  | Directory listing for C:\ -<br><br>Name                                     Type         Size (bytes)    Size (MB)       Last Modified (UTC-5)     Created (UTC-5)          <br>----                                     ----         ------------    ---------       ---------------------     ---------------          <br>$Recycle.Bin                             <Directory>  --              --              11/27/2018 10:54:44 AM    9/15/2017 3:33:40 AM     <br>ITAYDI                                   <Directory>  --              --              11/19/2018 1:31:42 PM     11/19/2018 1:31:42 PM     |
+| ls | ls C:\ | 284771ee197e422d5176d6634a62b934 |  | Directory listing for C:\ -<br/><br/>Name                                     Type         Size (bytes)    Size (MB)       Last Modified (UTC-5)     Created (UTC-5)          <br/>----                                     ----         ------------    ---------       ---------------------     ---------------          <br/>$Recycle.Bin                             &lt;Directory&gt;  --              --              11/27/2018 10:54:44 AM    9/15/2017 3:33:40 AM     <br/>ITAYDI                                   &lt;Directory&gt;  --              --              11/19/2018 1:31:42 PM     11/19/2018 1:31:42 PM     |
 
 ### 8. cs-falcon-upload-script
 ---
@@ -850,4 +850,4 @@ Runs a script on the agent host.
 ### Command runscript -Raw=Write-Output 'Hello, World! results
 |BaseCommand|Command|HostID|Stderr|Stdout|
 |---|---|---|---|---|
-| runscript | runscript -Raw=Write-Output 'Hello, World! | 284771ee197e422d5176d6634a62b934 |  | Hello, World! |                                    Type         Size (bytes)    Size (MB)       Last Modified (UTC-5)     Created (UTC-5)          <br>----                                     ----         ------------    ---------       ---------------------     ---------------          <br>$Recycle.Bin                             <Directory>  --              --              11/27/2018 10:54:44 AM    9/15/2017 3:33:40 AM     <br>ITAYDI                                   <Directory>  --              --              11/19/2018 1:31:42 PM     11/19/2018 1:31:42 PM     |
+| runscript | runscript -Raw=Write-Output 'Hello, World! | 284771ee197e422d5176d6634a62b934 |  | Hello, World! |                                    Type         Size (bytes)    Size (MB)       Last Modified (UTC-5)     Created (UTC-5)          <br/>----                                     ----         ------------    ---------       ---------------------     ---------------          <br/>$Recycle.Bin                             &lt;Directory&gt;  --              --              11/27/2018 10:54:44 AM    9/15/2017 3:33:40 AM     <br/>ITAYDI                                   &lt;Directory&gt;  --              --              11/19/2018 1:31:42 PM     11/19/2018 1:31:42 PM     |

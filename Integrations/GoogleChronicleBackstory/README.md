@@ -20,7 +20,7 @@ Use the Google Chronicle Backstory integration to retrieve Asset alerts or IOC D
     * __Select the confidence score level. If the indicator's confidence score level is equal or above the configured level, it would be considered as "malicious". The confidence level configured should have higher precedence than the suspicious level. This configuration is applicable to reputation commands only. Refer the "confidence score" level precedence UNKNOWN_SEVERITY < INFORMATIONAL < LOW < MEDIUM < HIGH.__
     * __Select the confidence score level. If the indicator's confidence score level is equal or above the configured level, it would be considered as "suspicious". The confidence level configured should have lesser precedence than the malicious level. This configuration is applicable to reputation commands only. Refer the "confidence score" level precedence UNKNOWN_SEVERITY < INFORMATIONAL < LOW < MEDIUM < HIGH.__
     * __Fetches incidents__
-    * __First fetch time interval. The time range to consider for initial data fetch.(<number> <unit>, e.g., 1 day, 7 days, 3 months, 1 year).__
+    * __First fetch time interval. The time range to consider for initial data fetch.(&lt;number&gt; &lt;unit&gt;, e.g., 1 day, 7 days, 3 months, 1 year).__
     * __How many incidents to fetch each time__
     * __Backstory Alert Type (Select the type of data to consider for fetch incidents).__
     * __Select the severity of asset alerts to be filtered for Fetch Incidents. Available options are 'High', 'Medium', 'Low' and 'Unspecified' (Default-No Selection).__
@@ -34,7 +34,7 @@ Fetch-incidents feature can pull events from Google Chronicle which can be conve
 
 The list of alerts (gcb-list-alerts) or IOC domain matches (gcb-list-iocs) are the two choices that can be configured.
 #### Configuration Parameters for Fetch-incidents
- - First fetch time interval. The time range to consider for initial data fetch.(\<number> \<unit>, e.g. 1 day, 7 days, 3 months, 1 year): **Default** 3 days
+ - First fetch time interval. The time range to consider for initial data fetch.(&lt;number&gt; &lt;unit&gt;, e.g. 1 day, 7 days, 3 months, 1 year): **Default** 3 days
  - How many incidents to fetch each time: **Default** 10
  - Select the severity of asset alerts to be filtered for Fetch Incidents. Available options are 'High', 'Medium', 'Low' and 'Unspecified' (Default-No Selection). **Only applicable for asset alerts**.
  - Backstory Alert Type (Select the type of data to consider for fetch incidents):
@@ -43,7 +43,7 @@ The list of alerts (gcb-list-alerts) or IOC domain matches (gcb-list-iocs) are t
  
 | **Name** | **Initial Value** |
 | --- | --- |
-| First fetch time interval. The time range to consider for initial data fetch.(\<number> \<unit>, e.g. 1 day, 7 days, 3 months, 1 year). | 3 days |
+| First fetch time interval. The time range to consider for initial data fetch.(&lt;number&gt; &lt;unit&gt;, e.g. 1 day, 7 days, 3 months, 1 year). | 3 days |
 | How many incidents to fetch each time. | 10 |
 | Select the severity of asset alerts to be filtered for Fetch Incidents. Available options are 'High', 'Medium', 'Low' and 'Unspecified' (Default-No Selection). *Only applicable for asset alerts.* | Default No Selection |
 | Backstory Alert Type (Select the type of data to consider for fetch incidents). | IOC Domain matches (Default), Assets with alerts | 
@@ -51,7 +51,7 @@ The list of alerts (gcb-list-alerts) or IOC domain matches (gcb-list-iocs) are t
 #### Incident field mapping - Asset Alerts
 | **Name** | **Initial Value** |
 | --- | --- |
-| name | \<AlertName> for \<Asset> |
+| name | &lt;AlertName&gt; for &lt;Asset&gt; |
 | rawJSON | Single Raw JSON |
 | details | Single Raw JSON |
 | severity | Severity of Alert |
@@ -59,7 +59,7 @@ The list of alerts (gcb-list-alerts) or IOC domain matches (gcb-list-iocs) are t
 #### Incident field mapping - IOC Domain matches
 | **Name** | **Initial Value** |
 | --- | --- |
-| name | IOC Domain Match: \<Artifact> |
+| name | IOC Domain Match: &lt;Artifact&gt; |
 | rawJSON | Single Raw JSON |
 | details | Single Raw JSON |
 
