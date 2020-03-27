@@ -200,7 +200,7 @@ tasks:
       id: d29928d3-1c1f-40b9-8a9a-f148cd10ecff
       version: -1
       name: Create duplicate incident
-      script: CreateDuplicateIncident
+      scriptName: CreateDuplicateIncident
       type: regular
       iscommand: false
       brand: ""
