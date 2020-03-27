@@ -1,3 +1,4 @@
+
 import demistomock as demisto
 from CommonServerPython import *
 
@@ -619,9 +620,10 @@ def add_user_to_incident_command():
 
 
 def parse_json_argument(argument_string_value, argument_name):
+    parsed_arg = {}
     try:
         parsed_arg = json.loads(argument_string_value)
-    except Exception as error:
+    except ValueError as error:
         return_error("The '{}' argument is not a valid json. Error: {}".format(argument_name, error))
     if not parsed_arg.get(argument_name):
         return_error("The '{}' json argument should start with a key named '{}'".format(argument_name, argument_name))
