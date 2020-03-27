@@ -13,7 +13,6 @@
     - ***proofpoint-tr-ingest-alert***
 
 
-
 ## [19.12.1] - 2019-12-25
 -
 
