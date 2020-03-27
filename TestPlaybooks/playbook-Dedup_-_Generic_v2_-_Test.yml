@@ -456,7 +456,7 @@ tasks:
       MaxNumberOfCandidates:
         simple: "1000"
       TimeField:
-        simple: occured
+        simple: occurred
       TimeFrameHours:
         simple: "72"
       similarIncidentFields:
