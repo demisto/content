@@ -1,7 +1,7 @@
 import pytest
 from CommonServerPython import *
 from ProofpointThreatResponse import create_incident_field_context, get_emails_context, pass_sources_list_filter, \
-    pass_abuse_disposition_filter, filter_incidents
+    pass_abuse_disposition_filter, filter_incidents, prepare_ingest_alert_request_body
 
 MOCK_INCIDENT = {
     "id": 1,
@@ -188,18 +188,35 @@ def test_filter_incidents(mocker, demisto_params, expected_answer):
     assert filtered_incidents == expected_answer
 
 
-# ARGUMENTS_INPUTS = [
-#     ("{\"attacker\":{\"key\":\"value\"}}", 'attacker', {'attacker': {'key': 'value'}}, True),
-#     ("{\"other_name\":{\"key\":\"value\"}}", 'attacker',
-#      "The 'attacker' json argument should start with a key named 'attacker'", False),
-#     ("{\"invalid_json\":{\"key\":\"value\"}", 'attacker', "The 'attacker' argument is not a valid json.", False)]
-#
-# RETURN_ERROR_TARGET = 'ProofpointThreatResponse.return_error'
-#
+INGEST_ALERT_ARGS = {
+    "attacker": "{\"attacker\":{\"key\":\"value\"}}",
+    "cnc_host": "{\"cnc_host\":{\"key\":\"value\"}}",
+    "detector": "{\"detector\":{\"key\":\"value\"}}",
+    "email": "{\"email\":{\"key\":\"value\"}}",
+    "forensics_hosts": "{\"forensics_hosts\":{\"key\":\"value\"}}",
+    "target": "{\"target\":{\"key\":\"value\"}}",
+    "threat_info": "{\"threat_info\":{\"key\":\"value\"}}",
+    "custom_fields": "{\"custom_fields\":{\"key\":\"value\"}}",
+    "json_source_id": "value",
+    "json_version": "value",
+    "summary": "value"
+}
 
-# @pytest.mark.parametrize('argument_string_value, argument_name, expected answer, is_valid', ARGUMENTS_INPUTS)
-# def test_parse_json_argument(mocker, argument_string_value, argument_name, expected, is_valid):
-#     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
-#     result =
-#     # call_args last call with a tuple of args list and kwargs
-#     err_msg = return_error_mock.call_args[0][0]
+EXPECTED_RESULT = {
+    "attacker": {"key": "value"},
+    "cnc_host": {"key": "value"},
+    "detector": {"key": "value"},
+    "email": {"key": "value"},
+    "forensics_hosts": {"key": "value"},
+    "target": {"key": "value"},
+    "threat_info": {"key": "value"},
+    "custom_fields": {"key": "value"},
+    "json_source_id": "value",
+    "json_version": "value",
+    "summary": "value"
+}
+
+
+def test_prepare_ingest_alert_request_body():
+    prepared_body = prepare_ingest_alert_request_body(INGEST_ALERT_ARGS)
+    assert prepared_body == EXPECTED_RESULT
