@@ -2,22 +2,22 @@ id: TIM - Review Indicators Manually
 version: -1
 fromversion: 5.5.0
 name: TIM - Review Indicators Manually
-description: This playbook helps analysts manage the manual
-  process of reviewing indicators. The playbook indicator query is set to search
-  for indicators that have the 'pending review' tag. The playbook's layout displays
-  all of the related indicators in the summary page. While reviewing the indicators,
-  the analyst can go to the summary page and tag the indicators accordingly with tags
-  'such as, 'approved_black', 'approved_white', etc. Once the analyst completes their review,
-  the playbook can optionally send an email with a list of changes done by the analyst which haven't been approved. Once complete,
-  the playbook removes the 'pending review' tag from the indicators.
+description: This playbook helps analysts manage the manual process of reviewing indicators.
+  The playbook indicator query is set to search for indicators that have the 'pending
+  review' tag. The playbook's layout displays all of the related indicators in the
+  summary page. While reviewing the indicators, the analyst can go to the summary
+  page and tag the indicators accordingly with tags 'such as, 'approved_black', 'approved_white',
+  etc. Once the analyst completes their review, the playbook can optionally send an
+  email with a list of changes done by the analyst which haven't been approved. Once
+  complete, the playbook removes the 'pending review' tag from the indicators.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 1eda9e23-416e-493f-88f1-dc38c9ae2c55
+    taskid: f162095d-8a2a-4284-8067-de9cc4e1f2b2
     type: start
     task:
-      id: 1eda9e23-416e-493f-88f1-dc38c9ae2c55
+      id: f162095d-8a2a-4284-8067-de9cc4e1f2b2
       version: -1
       name: ""
       iscommand: false
@@ -41,10 +41,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 177ca64d-9840-4495-8a2d-2dcc750c92f2
+    taskid: f0d90b34-79f7-4b83-838d-90536bd85b72
     type: regular
     task:
-      id: 177ca64d-9840-4495-8a2d-2dcc750c92f2
+      id: f0d90b34-79f7-4b83-838d-90536bd85b72
       version: -1
       name: Associate indicators to incident
       description: Associates indicators to an incident.
@@ -73,20 +73,21 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 2
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 67dfa246-28de-4ba4-8372-b632037925ab
+    taskid: 22a51e47-818d-4bdb-84b7-2ce46c053108
     type: regular
     task:
-      id: 67dfa246-28de-4ba4-8372-b632037925ab
+      id: 22a51e47-818d-4bdb-84b7-2ce46c053108
       version: -1
       name: Manually review indicators
-      description: Manually review the indicators. The review process can include running reputation calculation on the
-        indicator, or reviewing the indicator online in various engines. At the end of
-        the process, the analyst needs to add the relevant indicator tags, such as
-        approved_watchlist, approved_white, approved_black, etc. These tags are later used by another playbook
-        to send the indicators to relevant 3rd party systems such as SIEM, EDR, EDL etc.
+      description: Manually review the indicators. The review process can include
+        running reputation calculation on the indicator, or reviewing the indicator
+        online in various engines. At the end of the process, the analyst needs to
+        add the relevant indicator tags, such as approved_watchlist, approved_white,
+        approved_black, etc. These tags are later used by another playbook to send
+        the indicators to relevant 3rd party systems such as SIEM, EDR, EDL etc.
       type: regular
       iscommand: false
       brand: ""
@@ -108,10 +109,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 8386789e-052d-4ba4-89c5-8d3d61824d99
+    taskid: d6303bc0-484d-4642-8678-d74488ed3d91
     type: title
     task:
-      id: 8386789e-052d-4ba4-89c5-8d3d61824d99
+      id: d6303bc0-484d-4642-8678-d74488ed3d91
       version: -1
       name: Done
       type: title
@@ -133,10 +134,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 2af9e2f4-ae74-4a6e-800d-6498698e766f
+    taskid: 673fbda5-c8c1-4628-8167-b550c3e36013
     type: regular
     task:
-      id: 2af9e2f4-ae74-4a6e-800d-6498698e766f
+      id: 673fbda5-c8c1-4628-8167-b550c3e36013
       version: -1
       name: Add being reviewed tag to indicators
       description: Add being reviewed tag to indicators
@@ -169,10 +170,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: f730e9d7-0196-417f-8a26-f2fb0b4b7517
+    taskid: dca3b3a9-aba8-449b-8947-899260a923d6
     type: condition
     task:
-      id: f730e9d7-0196-417f-8a26-f2fb0b4b7517
+      id: dca3b3a9-aba8-449b-8947-899260a923d6
       version: -1
       name: Allow to remove pending review tag from all indicatos
       type: condition
@@ -199,10 +200,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: e35bb574-2436-4e72-8c41-998958f96425
+    taskid: f4ec900c-87b6-4144-844d-8d9355f3882b
     type: regular
     task:
-      id: e35bb574-2436-4e72-8c41-998958f96425
+      id: f4ec900c-87b6-4144-844d-8d9355f3882b
       version: -1
       name: Remove pending review tag from indicators
       description: Remove pending review tag from indicators
@@ -235,10 +236,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 03016989-d2b9-4a6d-8b71-1d7cada8ccef
+    taskid: 988f9d8e-1eed-4246-8a33-90f7301be80c
     type: condition
     task:
-      id: 03016989-d2b9-4a6d-8b71-1d7cada8ccef
+      id: 988f9d8e-1eed-4246-8a33-90f7301be80c
       version: -1
       name: Are there query results?
       type: condition
@@ -273,10 +274,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 44a2d9a9-abdc-489b-8877-8349b381001f
+    taskid: 69a24474-140a-4fce-8fc3-770b257a3cc3
     type: regular
     task:
-      id: 44a2d9a9-abdc-489b-8877-8349b381001f
+      id: 69a24474-140a-4fce-8fc3-770b257a3cc3
       version: -1
       name: Remove being reviewed tag from indicators
       description: Removes the 'being_reviewed' tag from the indicator.
@@ -309,10 +310,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 0e322e86-e7f1-49fa-87ca-89c99c4666d1
+    taskid: d7d97ca9-8558-4063-8d5f-e2cb8fc97087
     type: regular
     task:
-      id: 0e322e86-e7f1-49fa-87ca-89c99c4666d1
+      id: d7d97ca9-8558-4063-8d5f-e2cb8fc97087
       version: -1
       name: Make changes according the approvers request
       type: regular
@@ -337,10 +338,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 6fa779c1-bc6e-4a9d-8ce4-f0f7c1644ddb
+    taskid: 689ca540-4687-441f-8971-0202ce7d004d
     type: collection
     task:
-      id: 6fa779c1-bc6e-4a9d-8ce4-f0f7c1644ddb
+      id: 689ca540-4687-441f-8971-0202ce7d004d
       version: -1
       name: Email for indicator changes approval
       type: collection
@@ -366,10 +367,11 @@ tasks:
         simple: ${inputs.ApproversEmailAddress}
       subject:
         simple: Approve indicator changes
-      body: {}
+      body:
+        simple: Please review this incident
       methods:
       - email
-      format: ""
+      format: html
       bcc: null
       cc: null
       timings:
@@ -395,20 +397,20 @@ tasks:
         tooltip: ""
         readonly: false
       title: List the indicators are are not approved
-      description: The approver reviews the incident and changes made
-        by the analyst. In case the approver needs specific indicators to be changed,
-        they will list the indicators in question.
+      description: The approver reviews the incident and changes made by the analyst.
+        In case the approver needs specific indicators to be changed, they will list
+        the indicators in question.
       sender: ""
       expired: false
       totalanswers: 0
     skipunavailable: false
-    quietmode: 0
+    quietmode: 2
   "16":
     id: "16"
-    taskid: 77f62830-b1cf-4aba-881e-c33c29eb382c
+    taskid: c3cd5682-a73d-4725-8685-c3b54dacb587
     type: condition
     task:
-      id: 77f62830-b1cf-4aba-881e-c33c29eb382c
+      id: c3cd5682-a73d-4725-8685-c3b54dacb587
       version: -1
       name: Was an email address provided for approval?
       type: condition
@@ -451,10 +453,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 587daf14-453f-42c8-8114-e0f8ce0cfb1c
+    taskid: 12758c44-b346-4c69-86fe-83e72d221b4c
     type: condition
     task:
-      id: 587daf14-453f-42c8-8114-e0f8ce0cfb1c
+      id: 12758c44-b346-4c69-86fe-83e72d221b4c
       version: -1
       name: Are there indicators that werent approved?
       type: condition
@@ -473,7 +475,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: List the indicators are are not approved.Questions.0
+              simple: List the indicators are are not approved.Answers.0
             iscontext: true
     view: |-
       {
@@ -486,7 +488,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
+    quietmode: 2
 view: |-
   {
     "linkLabelsPosition": {},
@@ -521,10 +523,11 @@ inputs:
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: false
 - key: ApproversEmailAddress
-  value: {}
+  value:
+    simple: dbaumstein@paloaltonetworks.com
   required: false
-  description: This input specifies the email address to which to send the approval form
-    if approval is required.
+  description: This input specifies the email address to which to send the approval
+    form if approval is required.
   playbookInputQuery: null
 outputs: []
 quiet: true
