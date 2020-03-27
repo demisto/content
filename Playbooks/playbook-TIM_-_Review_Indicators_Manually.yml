@@ -370,7 +370,7 @@ tasks:
       body:
         simple: |-
           Please review this incident
-          ${demistoUrls.investigation}
+          ${demistoUrls.server}/#/Custom/indeooemoh/${incident.investigationId}
           And approve the changes made to the indicators.
           Related indicators will appear in the Indicators tab.
       methods:
@@ -527,8 +527,7 @@ inputs:
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: false
 - key: ApproversEmailAddress
-  value:
-    simple: dbaumstein@paloaltonetworks.com
+  value: {}
   required: false
   description: This input specifies the email address to which to send the approval
     form if approval is required.
