@@ -170,17 +170,17 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: playbookQuery.type
+                  simple: playbookQuery.indicator_type
                 iscontext: true
               right:
                 value:
-                  simple: Domain
+                  simple: URL
           accessor: value
           transformers:
           - operator: uniq
       values:
         complex:
-          root: inputs.ParentPlaybookIndicators
+          root: playbookQuery.value
           transformers:
           - operator: uniq
     separatecontext: false
@@ -356,7 +356,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: playbookQuery.type
+                  simple: playbookQuery.indicator_type
                 iscontext: true
               right:
                 value:
@@ -366,7 +366,7 @@ tasks:
           - operator: uniq
       values:
         complex:
-          root: inputs.ParentPlaybookIndicators
+          root: inputs.playbookQuery.value
           transformers:
           - operator: uniq
     separatecontext: false
@@ -619,17 +619,17 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: playbookQuery.type
+                  simple: playbookQuery.indicator_type
                 iscontext: true
               right:
                 value:
-                  simple: approved_watchlist
+                  simple: URL
           accessor: value
           transformers:
           - operator: uniq
       values:
         complex:
-          root: inputs.ParentPlaybookIndicators
+          root: inputs.playbookQuery.value
           transformers:
           - operator: uniq
     separatecontext: false

@@ -170,7 +170,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: playbookQuery.type
+                  simple: playbookQuery.indicator_type
                 iscontext: true
               right:
                 value:
@@ -180,7 +180,7 @@ tasks:
           - operator: uniq
       values:
         complex:
-          root: inputs.ParentPlaybookIndicators
+          root: playbookQuery.value
           transformers:
           - operator: uniq
     separatecontext: false
@@ -356,7 +356,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: playbookQuery.type
+                  simple: playbookQuery.indicator_type
                 iscontext: true
               right:
                 value:
@@ -366,7 +366,7 @@ tasks:
           - operator: uniq
       values:
         complex:
-          root: inputs.ParentPlaybookIndicators
+          root: playbookQuery.value
           transformers:
           - operator: uniq
     separatecontext: false
@@ -619,7 +619,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: playbookQuery.type
+                  simple: playbookQuery.indicator_type
                 iscontext: true
               right:
                 value:
@@ -629,7 +629,7 @@ tasks:
           - operator: uniq
       values:
         complex:
-          root: inputs.ParentPlaybookIndicators
+          root: playbookQuery.value
           transformers:
           - operator: uniq
     separatecontext: false

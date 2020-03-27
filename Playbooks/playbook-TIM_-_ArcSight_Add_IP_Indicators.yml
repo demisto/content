@@ -401,7 +401,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: playbookQuery.type
+                  simple: playbookQuery.indicator_type
                 iscontext: true
               right:
                 value:
@@ -703,7 +703,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: playbookQuery.type
+                  simple: playbookQuery.indicator_type
                 iscontext: true
               right:
                 value:
