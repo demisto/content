@@ -2,7 +2,7 @@ id: Cisco Firepower - Test
 version: -1
 contentitemfields:
   propagationLabels: []
-name: Cisco Firepower - Test
+name: TestFirePowerPlaybook
 starttaskid: "0"
 tasks:
   "0":
@@ -2340,6 +2340,9 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+    nexttasks:
+      "yes":
+      - "31"
     separatecontext: false
     conditions:
     - label: "yes"

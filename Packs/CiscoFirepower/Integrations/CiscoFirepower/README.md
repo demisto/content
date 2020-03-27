@@ -132,8 +132,8 @@ Retrieves a list of all URL category objects.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The number of items to return.<br>The default is 50. | Optional | 
-| offset | Index of first item to return.<br>The default is 0. | Optional | 
+| limit | The number of items to return The default is 50. | Optional | 
+| offset | Index of first item to returnThe default is 0. | Optional | 
 
 
 ##### Context Output
