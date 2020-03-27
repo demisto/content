@@ -5,7 +5,7 @@
     - *blacklist_url*
     - *blacklist_domain*
     - *blacklist_hash* 
-  - Added 4 commands.
+  - Added 5 commands.
     - ***proofpoint-tr-list-incidents***
     - ***proofpoint-tr-get-incident***
     - ***proofpoint-tr-update-incident-comment***
