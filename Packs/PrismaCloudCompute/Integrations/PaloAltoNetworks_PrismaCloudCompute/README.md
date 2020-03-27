@@ -27,12 +27,12 @@ To send alerts from Prisma Cloud Compute to Demisto, you need to create an alert
    
    | Parameter Name | Description | Default |
    | -------------- | ----------- | ------- |
-   | **Name** | A meaningful name for the integration instance. | Prisma Cloud Compute_<alertProfileName> |
+   | **Name** | A meaningful name for the integration instance. | Prisma Cloud Compute_&lt;alertProfileName&gt; |
    | **Fetches incidents** | Configures this integration instance to fetch alerts from Prisma Cloud Compute. | N/A |
-   | **Prisma Cloud Compute Console URL** | URL address and port of your Prisma Cloud Compute console. Copy the address from the alert profile created in Prisma Cloud Compute. | https:/<span>/proxyserver.com |
+   | **Prisma Cloud Compute Console URL** | URL address and port of your Prisma Cloud Compute console. Copy the address from the alert profile created in Prisma Cloud Compute. | https:/<span></span>/proxyserver.com |
    | **Prisma Cloud Compute Project Name (if applicable)** | Copy the project name from the alert profile created in Prisma Cloud Compute and enter paste in this field. | N/A |
    | **Trust any certificate (not secure)** | Skips verification of the CA certificate (not recommended). | N/A |
-   | **Use system proxy settings** | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | <span>https://proxyserver.com |
+   | **Use system proxy settings** | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | <span></span>https://proxyserver.com |
    | **Credentials** | Prisma Cloud Compute login credentials. | N/A |
    | **Prisma Cloud Compute CA Certificate** | CA Certificate used by Prisma Cloud Compute. Copy the certificate from the alert profile created in Prisma Cloud Compute. | N/A |
 4. Click **Test** to validate the integration.
