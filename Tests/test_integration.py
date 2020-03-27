@@ -395,7 +395,7 @@ def __print_investigation_error(client, playbook_id, investigation_id, prints_ma
                                              message_color=color)
                 prints_manager.add_print_job('  Command: ' + entry['parentContent'].encode('utf-8'), print_color,
                                              thread_index, message_color=color)
-                body_contents_str = '  Body:\n' + entry['contents'].decode('utf-8') + '\n'
+                body_contents_str = '  Body:\n' + entry['contents'].encode('utf-8').decode('utf-8') + '\n'
                 prints_manager.add_print_job(body_contents_str, print_color,
                                              thread_index, message_color=color)
 
