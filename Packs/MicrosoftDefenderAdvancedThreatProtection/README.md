@@ -8,9 +8,9 @@ Microsoft Defender Advanced Threat Protection Get Machine Action Status
 
 ## Use Cases
 ---
-1. Fetch incidentsץ
-2. Managing machines and performing actions on themץ
-3. Blocking files and applicationsץ
+1. Fetch incidents.
+2. Managing machines and performing actions on them.
+3. Blocking files and applications.
 
 ## Configure Microsoft Defender Advanced Threat Protection on Demisto
 ---
@@ -2443,7 +2443,7 @@ Retrieves a collection of machines related to a given user ID.
 
 ### 32. microsoft-atp-add-remove-machine-tag
 ---
-Adds or remove tag to a specific Machine.
+Adds or removes a tag on a specific Machine.
 
 ##### Base Command
 
