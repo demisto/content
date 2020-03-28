@@ -87,7 +87,7 @@ Specify one of the following:
 ### Silverfort User Risk
 |UPN|Risk|Reasons|
 |---|---|---|
-| sfuser@silverfort.io | Medium | Suspicious activity,<br>Password never expires |
+| sfuser@silverfort.io | Medium | Suspicious activity,<br/>Password never expires |
 
 
 ### silverfort-get-resource-risk
