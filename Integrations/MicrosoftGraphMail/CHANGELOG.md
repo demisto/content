@@ -1,5 +1,14 @@
 ## [Unreleased]
  - Fixed an issue where the listing emails were not comparing the mail ID.
+- Added 4 commands:
+    - ***msgraph-mail-create-draft***
+    - ***msgraph-mail-send-draft***
+    - ***msgraph-mail-reply-ro***
+    - ***send-mail***
+    - Note: the newly added commands require more permissions, please read the detailed description of the integration for some guidance.
+- Added the ability to fetch mails as incidents.
+  
+
 
 ## [20.2.0] - 2020-02-04
 Fixed an issue where the listing emails were not comparing the mail ID.

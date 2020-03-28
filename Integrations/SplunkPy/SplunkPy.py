@@ -410,10 +410,14 @@ def splunk_job_create_command(service):
 
 def splunk_results_command(service):
     res = []
+    sid = demisto.args().get('sid', '')
     try:
-        job = service.job(demisto.args().get('sid', ''))
+        job = service.job(sid)
     except HTTPError as error:
-        return_error(error.message, error)
+        if error.message == 'HTTP 404 Not Found -- Unknown sid.':
+            demisto.results("Found no job for sid: {}".format(sid))
+        else:
+            return_error(error.message, error)
     else:
         for result in results.ResultsReader(job.results()):
             if isinstance(result, results.Message):
@@ -422,10 +426,7 @@ def splunk_results_command(service):
                 # Normal events are returned as dicts
                 res.append(result)
 
-        if not res:
-            demisto.results("Found no job for sid: " + demisto.args()['sid'])
-        else:
-            demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res)})
+        demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res)})
 
 
 def fetch_incidents(service):

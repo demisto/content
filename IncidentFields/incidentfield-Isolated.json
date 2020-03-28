@@ -2,7 +2,8 @@
 	"associatedToAll": false,
 	"associatedTypes": [
 		"Traps",
-		"Malware"
+		"Malware",
+		"Brute Force"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
