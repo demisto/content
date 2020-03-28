@@ -27,7 +27,7 @@ ALERT_STATUS_TO_FETCH = demisto.params().get('fetch_status')
 ALERT_TIME_TO_FETCH = demisto.params().get('first_fetch_timestamp', '3 days')
 
 if len(AUTH_AND_TOKEN_URL) != 2:
-    TOKEN_RETRIEVAL_URL = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
+    TOKEN_RETRIEVAL_URL = 'https://oproxy.demisto.ninja/obtain-token'  # guardrails-disable-line disable-secrets-detection
 else:
     TOKEN_RETRIEVAL_URL = AUTH_AND_TOKEN_URL[1]
 APP_NAME = 'ms-defender-atp'
