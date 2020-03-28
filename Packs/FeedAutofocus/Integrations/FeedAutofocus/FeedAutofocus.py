@@ -318,6 +318,7 @@ class Client(BaseClient):
         if "Custom Feed" in self.indicator_feeds:
             indicators.extend(self.daily_custom_http_request(feed_type="Custom Feed"))
 
+        # for get_indicator_command only
         if limit:
             indicators = indicators[int(offset): int(offset) + int(limit)]
 
@@ -344,6 +345,7 @@ class Client(BaseClient):
         if "Sample Feed" in self.indicator_feeds:
             parsed_indicators.extend(self.sample_http_request())
 
+        # for get_indicator_command only
         if limit:
             parsed_indicators = parsed_indicators[int(offset): int(offset) + int(limit)]
 

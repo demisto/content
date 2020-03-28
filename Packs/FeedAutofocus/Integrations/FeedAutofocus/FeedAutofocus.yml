@@ -35,7 +35,7 @@ configuration:
   - global
   required: false
   type: 15
-- additionalinfo: JSON styled AutoFocus query. Only necessary in case a Sample Feed is fetched.
+- additionalinfo: JSON styled AutoFocus query, an example can be found in the description (?). Only necessary in case a Sample Feed is fetched.
   display: Sample Feed Query
   name: sample_query
   required: false
