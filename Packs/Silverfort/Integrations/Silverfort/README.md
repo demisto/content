@@ -27,7 +27,7 @@ Silverfort protects organizations from data breaches by delivering strong authen
 
 4. Click **Test** to validate the URLs, token, and connection.
 - To generate an API token:
-    1. From the Silverfort Admin Console, navigate to __Settings__ > __Advanced__.
+    1. From the Silverfort Admin Console, navigate to __Settings__, __Advanced__.
     2. In the Authentication Tokens section, click __Generate Token__.
     3. Copy the generated token and save it in a safe place.
 ## Commands
@@ -225,4 +225,3 @@ ok
 
 ## Troubleshooting
 ---
-
