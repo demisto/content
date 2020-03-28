@@ -18,7 +18,7 @@ Creating incidents and watchlists is currently not supported due to API limitati
     * __Fetch incidents__
     * __Incidents to fetch__
     * __Incident type__
-    * __First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)__
+    * __First fetch time range (`<number> <time unit>`, e.g., 1 hour, 30 minutes)__
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
 4. Click __Test__ to validate the URLs, token, and connection.
@@ -384,7 +384,7 @@ List incidents.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| from |  from time range (<number> <time unit>, e.g., 1 hour, 30 minutes) | Required | 
+| from |  from time range (`<number> <time unit>`, e.g., 1 hour, 30 minutes) | Required | 
 | to | To time of incident to pull. e.g: 2019-11-25 09:01:46. Default is current time. | Optional | 
 | incident_types | Incident range. can be 1 or more from: updated,opened,closed | Optional | 
 

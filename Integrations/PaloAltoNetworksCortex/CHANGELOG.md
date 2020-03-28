@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+- Deprecated. Use Cortex Data Lake integration instead.
 
 ## [19.12.1] - 2019-12-25
 Fixed an issue with the fetch incidents function in which failed jobs raised an exception.
