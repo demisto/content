@@ -1,13 +1,8 @@
-from MicrosoftApiModule import MicrosoftClient
-from AzureSentinel import Client
-import requests_mock
+from AzureSentinel import Client, list_incidents_command, list_incident_relations_command, incident_add_comment_command
 import pytest
 
 
-@requests_mock.Mocker()
-def mock_client(requests_mock):
-    requests_mock.post(f'https://login.microsoftonline.com/common/oauth2/token',  # disable-secrets-detection
-                       json={'access_token': 'mocked_access_token'})
+def mock_client():
     client = Client(
         self_deployed=False,
         refresh_token='refresh_token',
@@ -23,8 +18,6 @@ def mock_client(requests_mock):
 
 
 API_VERSION = '2019-01-01-preview'
-
-CLIENT = mock_client()
 
 MOCKED_INCIDENTS_OUTPUT = {
     'value': [{
@@ -86,19 +79,14 @@ MOCKED_ADD_COMMENT_OUTPUT = {
 }
 
 
-@pytest.mark.parametrize('args,url_to_mock', [  # disable-secrets-detection
-    ({'limit': '1'},
-     CLIENT.base_url + f'/incidents?$top=1&$orderby=properties/'  # disable-secrets-detection
-     f'createdTimeUtc asc&api-version={API_VERSION}'),  # disable-secrets-detection
-    ({'limit': '1', 'next_link': 'https://test.com'}, 'https://test.com')
+@pytest.mark.parametrize('args,client', [  # disable-secrets-detection
+    ({'limit': '1'}, mock_client()),
+    ({'limit': '1', 'next_link': 'https://test.com'}, mock_client())
 ])
-def test_list_incidents(args, url_to_mock, requests_mock, mocker):
-    from AzureSentinel import list_incidents_command
+def test_list_incidents(args, client, mocker):
+    mocker.patch.object(client, 'http_request', return_value=MOCKED_INCIDENTS_OUTPUT)
 
-    mocker.patch.object(MicrosoftClient, 'get_access_token', return_value='fake_token')
-    requests_mock.get(url_to_mock, json=MOCKED_INCIDENTS_OUTPUT)
-
-    readable_output, outputs, result = list_incidents_command(CLIENT, args=args)
+    readable_output, outputs, result = list_incidents_command(client, args=args)
     next_link = outputs['AzureSentinel.NextLink(val.Description == "NextLink for listing commands")']['URL']
     context = outputs['AzureSentinel.Incident(val.ID === obj.ID)'][0]
 
@@ -110,18 +98,14 @@ def test_list_incidents(args, url_to_mock, requests_mock, mocker):
     assert len(result['value']) == 1
 
 
-@pytest.mark.parametrize('args,url_to_mock', [  # disable-secrets-detection
-    ({'incident_id': 'inc_id', 'limit': '1'},
-     CLIENT.base_url + f'/incidents/inc_id/relations?$top=1&api-version={API_VERSION}'),  # disable-secrets-detection
-    ({'incident_id': 'inc_id', 'next_link': 'https://test.com', 'limit': '1'}, 'https://test.com')
+@pytest.mark.parametrize('args,client', [  # disable-secrets-detection
+    ({'incident_id': 'inc_id', 'limit': '1'}, mock_client()),
+    ({'incident_id': 'inc_id', 'next_link': 'https://test.com', 'limit': '1'}, mock_client()),
 ])
-def test_list_incident_relations_command(args, url_to_mock, requests_mock, mocker):
-    from AzureSentinel import list_incident_relations_command
+def test_list_incident_relations_command(args, client, mocker):
+    mocker.patch.object(client, 'http_request', return_value=MOCKED_RELATIONS_OUTPUT)
 
-    mocker.patch.object(MicrosoftClient, 'get_access_token', return_value='fake_token')
-    requests_mock.get(url_to_mock, json=MOCKED_RELATIONS_OUTPUT)
-
-    readable_output, outputs, result = list_incident_relations_command(CLIENT, args=args)
+    readable_output, outputs, result = list_incident_relations_command(client, args=args)
     next_link = outputs['AzureSentinel.NextLink(val.Description == "NextLink for listing commands")']['URL']
     context = outputs['AzureSentinel.IncidentRelatedResource(val.ID === obj.ID && val.IncidentID == inc_id)'][0]
 
@@ -132,18 +116,16 @@ def test_list_incident_relations_command(args, url_to_mock, requests_mock, mocke
     assert next_link == 'https://test.com'
     assert len(result['value']) == 1
 
-
-def test_incident_add_comment_command(mocker, requests_mock):
-    from AzureSentinel import incident_add_comment_command
+@pytest.mark.parametrize('args,client', [  # disable-secrets-detection
+    ({'incident_id': 'inc_id', 'message': 'test_message'}, mock_client())])
+def test_incident_add_comment_command(args, client, mocker):
     import random
 
-    mocker.patch.object(MicrosoftClient, 'get_access_token', return_value='fake_token')
     mocker.patch.object(random, 'getrandbits', return_value=1234)
-    requests_mock.put(CLIENT.base_url + f'/incidents/inc_id/comments/1234?api-version={API_VERSION}',
-                      json=MOCKED_ADD_COMMENT_OUTPUT)
+    mocker.patch.object(client, 'http_request', return_value=MOCKED_ADD_COMMENT_OUTPUT)
 
     args = {'incident_id': 'inc_id', 'message': 'test_message'}
-    readable_output, outputs, _ = incident_add_comment_command(CLIENT, args=args)
+    readable_output, outputs, _ = incident_add_comment_command(client, args=args)
     context = outputs['AzureSentinel.IncidentComment(val.ID === obj.ID && val.IncidentID === inc_id)']
 
     assert 'Incident inc_id new comment details' in readable_output
