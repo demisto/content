@@ -1,5 +1,5 @@
 elasticcommonfields: {}
-id: f9cec181-90bf-4b61-8f2c-1f6b76c38bb2
+id: Tanium Threat Response - Request File Download
 version: -1
 name: Tanium Threat Response - Request File Download
 description: Request file download from Tanium.
@@ -34,11 +34,11 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 37898cab-ef34-4cb2-8120-77459d73ec0a
+    taskid: f4ec667e-ea1b-4dc2-852b-71f8430e65c4
     type: regular
     task:
       elasticcommonfields: {}
-      id: 37898cab-ef34-4cb2-8120-77459d73ec0a
+      id: f4ec667e-ea1b-4dc2-852b-71f8430e65c4
       version: -1
       name: tanium-tr-request-file-download
       description: Request a new file download
@@ -52,6 +52,8 @@ tasks:
     scriptarguments:
       connection-id:
         simple: ${inputs.connection-id}
+      connection-name:
+        simple: ${inputs.connection-name}
       path:
         simple: ${inputs.path}
     separatecontext: false
@@ -69,11 +71,11 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: ba08ebe9-6939-4b3e-85ce-ea9cd96b8311
+    taskid: b7d8cc10-03f7-4409-89ee-9a238281bbdc
     type: playbook
     task:
       elasticcommonfields: {}
-      id: ba08ebe9-6939-4b3e-85ce-ea9cd96b8311
+      id: b7d8cc10-03f7-4409-89ee-9a238281bbdc
       version: -1
       name: GenericPolling
       description: |-
@@ -93,9 +95,9 @@ tasks:
       - "12"
     scriptarguments:
       AdditionalPollingCommandArgNames:
-        simple: host,path
+        simple: connection-name,path
       AdditionalPollingCommandArgValues:
-        simple: ${inputs.connection-id},${inputs.path}
+        simple: ${inputs.connection-name},${inputs.path}
       Ids:
         simple: ${Tanium.FileDownload.Downloaded}
       Interval:
@@ -153,11 +155,11 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 3f60da64-6615-4342-881e-dfbaa0321ae8
+    taskid: e16c8bc0-4d21-47bd-8687-7ed108effcbb
     type: regular
     task:
       elasticcommonfields: {}
-      id: 3f60da64-6615-4342-881e-dfbaa0321ae8
+      id: e16c8bc0-4d21-47bd-8687-7ed108effcbb
       version: -1
       name: tanium-tr-delete-connection
       description: Delete a connection by connection name.
@@ -170,7 +172,7 @@ tasks:
       - "3"
     scriptarguments:
       connection-name:
-        simple: ${inputs.connection-id}
+        simple: ${inputs.connection-name}
     separatecontext: false
     view: |-
       {
@@ -227,11 +229,11 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 766877f7-638d-45ca-8d30-274da1f6aeaf
+    taskid: 068c142a-e9c8-4b53-8bb5-db190ddcf269
     type: regular
     task:
       elasticcommonfields: {}
-      id: 766877f7-638d-45ca-8d30-274da1f6aeaf
+      id: 068c142a-e9c8-4b53-8bb5-db190ddcf269
       version: -1
       name: Get downloaded file
       description: Get the actual content of a downloaded file by file ID.
@@ -259,11 +261,11 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: Tanium.FileDownload.Host
+                  simple: Tanium.FileDownload.ConnectionName
                 iscontext: true
               right:
                 value:
-                  simple: inputs.connection-id
+                  simple: inputs.connection-name
                 iscontext: true
           accessor: FileDownload.ID
     separatecontext: false
@@ -456,3 +458,5 @@ outputs:
 - contextPath: File.ID
   description: File download entry ID.
   type: string
+tests:
+  - No test

@@ -173,4 +173,4 @@ inputs:
   description: ""
 outputs: []
 tests:
-- Tanium Threat Response Test
+  - No test
