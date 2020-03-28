@@ -1,4 +1,5 @@
 ## [Unreleased]
+- Renamed the **Sub-Feeds** parameter to **Services** in the instance configuration.
 - Added 5 new services:
     - **C2 All Indicator Feed**
     - **High-Confidence C2 All Indicator Feed**
