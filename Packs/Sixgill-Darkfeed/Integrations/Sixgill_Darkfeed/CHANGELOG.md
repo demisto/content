@@ -1,4 +1,4 @@
 ## [Unreleased]
 
-## 1.0.0
-- Added Sixgill DarkFeed™ Threat Intelligence 
+## [20.3.2] - 2020-03-28
+  - Added Sixgill DarkFeed™ Threat Intelligence 
