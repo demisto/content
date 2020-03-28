@@ -197,7 +197,7 @@ INGEST_ALERT_ARGS = {
     "target": "{\"target\":{\"key\":\"value\"}}",
     "threat_info": "{\"threat_info\":{\"key\":\"value\"}}",
     "custom_fields": "{\"custom_fields\":{\"key\":\"value\"}}",
-    "json_source_id": "value",
+    "post_url_id": "value",
     "json_version": "value",
     "summary": "value"
 }
@@ -211,7 +211,7 @@ EXPECTED_RESULT = {
     "target": {"key": "value"},
     "threat_info": {"key": "value"},
     "custom_fields": {"key": "value"},
-    "json_source_id": "value",
+    "post_url_id": "value",
     "json_version": "value",
     "summary": "value"
 }

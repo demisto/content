@@ -52,6 +52,13 @@ configuration:
   - ignored
   required: false
   type: 16
+- additionalinfo: You can find this value by navigating to Sources -> JSON event source
+    -> POST URL.
+  display: POST URL of the JSON alert source.
+  hidden: false
+  name: post_url_id
+  required: false
+  type: 0
 description: Use the Proofpoint Threat Response integration to orchestrate and automate
   incident response.
 display: Proofpoint Threat Response (Beta)
@@ -192,8 +199,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Date and time when the supplied URLs should be removed
-        from the blacklist, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z'
+      description: 'Date and time when the supplied URLs should be removed from the
+        blacklist, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z'
       isArray: false
       name: expiration
       required: false
@@ -723,17 +730,21 @@ script:
     name: proofpoint-tr-add-user-to-incident
   - arguments:
     - default: false
-      description: 'POST URL of the JSON alert source. You can find it by navigating
-        to Sources -> JSON event source -> POST URL '
+      description: POST URL of the JSON alert source. You can find it by navigating
+        to Sources -> JSON event source -> POST URL.
       isArray: false
-      name: json_source_id
-      required: true
+      name: post_url_id
+      required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       defaultValue: '2.0'
-      description: The Threat Response JSON version.
+      description: The Threat Response JSON version. Default is :"2.0".
       isArray: false
       name: json_version
+      predefined:
+      - '2.0'
+      - '1.0'
       required: true
       secret: false
     - default: false
@@ -753,31 +764,32 @@ script:
       name: classification
       predefined:
       - malware
-      - ' policy-violation'
-      - ' vulnerability'
-      - ' network'
-      - ' spam'
-      - ' phish'
-      - ' command-and-control'
-      - ' data-match'
-      - ' authentication'
-      - ' system-behavior'
-      - ' impostor'
-      - ' reported-abuse'
-      - ' unknown'
+      - policy-violation
+      - vulnerability
+      - network
+      - spam
+      - phish
+      - command-and-control
+      - data-match
+      - authentication
+      - system-behavior
+      - impostor
+      - reported-abuse
+      - unknown
       required: false
       secret: false
     - default: false
       description: 'The Command and Control host information in a JSON format : "{"cnc_hosts":
-        [{"host" : "-", "port": "-"}, ...]}". Note: Every item of the "cnc_hosts" list is in JSON format. 
-        For more information, please see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
+        [{"host" : "-", "port": "-"}, ...]}". Note: Every item of the "cnc_hosts"
+        list is in JSON format. For more information, please see Proofpoint TRAP documentation
+        under "JSON Alert Source 2.0".'
       isArray: false
       name: cnc_hosts
       required: false
       secret: false
     - default: false
       description: 'The threat detection tool such as Firewall and IPS/IDS systems
-        (in a JSON format), which generated the original alert. 
+        (in the format: "{"detector" : {...}}"), which generated the original alert.
         To see all relevant JSON fields and for more information, please see Proofpoint
         TRAP documentation under "JSON Alert Source 2.0".'
       isArray: false
@@ -794,8 +806,9 @@ script:
       secret: false
     - default: false
       description: 'The forensics host information in a JSON format : "{"forensics_hosts":
-        [{"host" : "-", "port": "-"}...]}". Note: Every item of the "forensics_hosts" list is in JSON format. 
-        For more information, please see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
+        [{"host" : "-", "port": "-"}...]}". Note: Every item of the "forensics_hosts"
+        list is in JSON format. For more information, please see Proofpoint TRAP documentation
+        under "JSON Alert Source 2.0".'
       isArray: false
       name: forensics_hosts
       required: false
@@ -807,21 +820,21 @@ script:
       name: link_attribute
       predefined:
       - target_ip_address
-      - ' target_hostname'
-      - ' target_machine_name'
-      - ' target_user'
-      - ' target_mac_address'
-      - ' attacker_ip_address'
-      - ' attacker_hostname'
-      - ' attacker_machine_name'
-      - ' attacker_user'
-      - ' attacker_mac_address'
-      - ' email_recipient'
-      - ' email_sender'
-      - ' email_subject'
-      - ' message_id'
-      - ' threat_filename'
-      - ' threat_filehash'
+      - target_hostname
+      - target_machine_name
+      - target_user
+      - target_mac_address
+      - attacker_ip_address
+      - attacker_hostname
+      - attacker_machine_name
+      - attacker_user
+      - attacker_mac_address
+      - email_recipient
+      - email_sender
+      - email_subject
+      - message_id
+      - threat_filename
+      - threat_filehash
       required: false
       secret: false
     - auto: PREDEFINED
@@ -831,19 +844,20 @@ script:
       name: severity
       predefined:
       - info
-      - ' minor'
-      - ' moderate'
-      - ' major'
-      - ' critical'
-      - ' Informational'
-      - ' Low'
-      - ' Medium'
-      - ' High'
-      - ' Critical'
+      - minor
+      - moderate
+      - major
+      - critical
+      - Informational
+      - Low
+      - Medium
+      - High
+      - Critical
       required: false
       secret: false
     - default: false
-      description: The alert summary. This will populate the Alert Details field.
+      description: The alert summary. This argument will populate the Alert Details
+        field.
       isArray: false
       name: summary
       required: false
