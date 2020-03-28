@@ -176,7 +176,6 @@ def get_entry_by_id_command(
         return 'MongoDB: No results found', {}, raw_response
 
 
-
 def search_query(
     client: Client, collection: str, query: str, limit: str, **kwargs
 ) -> Tuple[str, dict, list]:
