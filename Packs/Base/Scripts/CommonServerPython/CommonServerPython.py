@@ -115,9 +115,6 @@ class FeedIndicatorType(object):
     Email = "Email"
     File = "File"
     FQDN = "Domain"
-    MD5 = "File MD5"
-    SHA1 = "File SHA-1"
-    SHA256 = "File SHA-256"
     Host = "Host"
     IP = "IP"
     CIDR = "CIDR"
@@ -136,9 +133,6 @@ class FeedIndicatorType(object):
             FeedIndicatorType.DomainGlob,
             FeedIndicatorType.Email,
             FeedIndicatorType.File,
-            FeedIndicatorType.MD5,
-            FeedIndicatorType.SHA1,
-            FeedIndicatorType.SHA256,
             FeedIndicatorType.Host,
             FeedIndicatorType.IP,
             FeedIndicatorType.CIDR,
