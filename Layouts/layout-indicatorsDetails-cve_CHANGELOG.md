@@ -1,5 +1,5 @@
 ## [Unreleased]
-- 
+Added Custom details and Extended details sections.
 
 ## [20.2.4] - 2020-02-25
 Updated cve indicator layout.
