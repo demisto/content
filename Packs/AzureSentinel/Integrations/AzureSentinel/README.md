@@ -1,7 +1,6 @@
 <!-- disable-secrets-detection-start -->
 
 Azure Sentinel is a cloud-native security information and event manager (SIEM) platform that uses built-in AI to help analyze large volumes of data across an enterprise.
-This integration was integrated and tested with version xx of Azure Sentinel
 ## Configure Azure Sentinel on Demisto
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -18,7 +17,7 @@ This integration was integrated and tested with version xx of Azure Sentinel
 | tenant_id | Tenant ID | True |
 | client_id | Client ID | True |
 | client_secret | Client Secret | True |
-| auth_code | Authorization Code (Click on the integration tips button on the top of the window ('?') for details) | True |
+| auth_code | Authorization Code | True |
 | subscriptionID | Subscription ID | True |
 | resourceGroupName | Resource Group Name | True |
 | workspaceName | Workspace Name | True |
@@ -107,19 +106,19 @@ Get a list of incidents from Azure Sentinel.
 | AzureSentinel.Incident.Description | String | Description about the incident. | 
 | AzureSentinel.Incident.Severity | String | The incident's severity. | 
 | AzureSentinel.Incident.Status | String | The status of the incident. | 
-| AzureSentinel.Incident.AssigneeName | String | The assignee name of the incident. | 
-| AzureSentinel.Incident.AssigneeEmail | String | The assignee email of the incident. | 
-| AzureSentinel.Incident.Label.Name | String | The label's name of the incident. | 
-| AzureSentinel.Incident.Label.Type | String | The label's type of the incident. | 
+| AzureSentinel.Incident.AssigneeName | String | The name of the incident's assignee. | 
+| AzureSentinel.Incident.AssigneeEmail | String | The email of the incident's assignee. | 
+| AzureSentinel.Incident.Label.Name | String | The name of the incident's label. | 
+| AzureSentinel.Incident.Label.Type | String | The type of the incident's label. | 
 | AzureSentinel.Incident.FirstActivityTimeUTC | Date | The incident's first activity time. | 
 | AzureSentinel.Incident.LastActivityTimeUTC | Date | The incident's last activity time. | 
 | AzureSentinel.Incident.LastModifiedTimeUTC | Date | The incident's last modification time. | 
 | AzureSentinel.Incident.CreatedTimeUTC | Date | The incident's creation time. | 
 | AzureSentinel.Incident.IncidentNumber | Number | The incident's number. | 
-| AzureSentinel.Incident.AlertsCount | Number | Number of the alerts in the incident. | 
-| AzureSentinel.Incident.BookmarkCount | Number | Number of bookmarks in the incident. | 
-| AzureSentinel.Incident.CommentCount | Number | Number of comments in the incident. | 
-| AzureSentinel.Incident.AlertProductNames | String | Alert product names of the incident. | 
+| AzureSentinel.Incident.AlertsCount | Number | The number of the alerts in the incident. | 
+| AzureSentinel.Incident.BookmarkCount | Number | The number of bookmarks in the incident. | 
+| AzureSentinel.Incident.CommentCount | Number | The number of comments in the incident. | 
+| AzureSentinel.Incident.AlertProductNames | String | The alert product names of the incident. | 
 | AzureSentinel.Incident.Tactics | String | The incident's tactics. | 
 | AzureSentinel.Incident.FirstActivityTimeGenerated | Date | The incident's generated first activity time. | 
 | AzureSentinel.Incident.LastActivityTimeGenerated | Date | The incident's generated last activity time. | 
