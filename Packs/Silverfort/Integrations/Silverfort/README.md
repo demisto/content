@@ -1,8 +1,8 @@
 ## Overview
 ---
 Silverfort protects organizations from data breaches by delivering strong authentication across entire corporate networks and cloud environments, without requiring any modifications to endpoints or servers. Using patent-pending technology, Silverfort's agentless approach enables multi-factor authentication and AI-driven adaptive authentication even for systems that don’t support it today, including proprietary systems, critical infrastructure, shared folders, IoT devices, and more.
-<br>Use Silverfort integration to get & update Silverfort risk severity.
-<br>This integration was integrated and tested with Silverfort version 2.12.
+<br>Use Silverfort integration to get & update Silverfort risk severity.</br>
+<br>This integration was integrated and tested with Silverfort version 2.12.</br>
 ## Silverfort Playbook
 ---
 - Get risk information and block the user if the risk is 'high' or 'critical'
@@ -27,7 +27,7 @@ Silverfort protects organizations from data breaches by delivering strong authen
 
 4. Click **Test** to validate the URLs, token, and connection.
 - To generate an API token:
-    1. From the Silverfort Admin Console, navigate to __Settings__, __Advanced__.
+    1. From the Silverfort Admin Console, navigate to __Settings__ > __Advanced__.
     2. In the Authentication Tokens section, click __Generate Token__.
     3. Copy the generated token and save it in a safe place.
 ## Commands
@@ -87,7 +87,7 @@ Specify one of the following:
 ### Silverfort User Risk
 |UPN|Risk|Reasons|
 |---|---|---|
-| sfuser@silverfort.io | Medium | Suspicious activity,<br/>Password never expires |
+| sfuser@silverfort.io | Medium | Suspicious activity,Password never expires |
 
 
 ### silverfort-get-resource-risk
@@ -225,3 +225,4 @@ ok
 
 ## Troubleshooting
 ---
+
