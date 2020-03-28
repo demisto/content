@@ -32,7 +32,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: Informational
-  display: The minimum severity of incidents to fetch.
+  display: The minimum severity of incidents to fetch
   name: min_severity
   options:
   - Informational
@@ -100,16 +100,16 @@ script:
       description: The status of the incident.
       type: String
     - contextPath: AzureSentinel.Incident.AssigneeName
-      description: The assignee name of the incident.
+      description: The name of the incident's assignee.
       type: String
     - contextPath: AzureSentinel.Incident.AssigneeEmail
-      description: The assignee email of the incident.
+      description: The email of the incideint's assignee.
       type: String
     - contextPath: AzureSentinel.Incident.Label.Name
-      description: The label's name of the incident.
+      description: The name of the incident's label.
       type: String
     - contextPath: AzureSentinel.Incident.Label.Type
-      description: The label's type of the incident.
+      description: The type of the incident's label.
       type: String
     - contextPath: AzureSentinel.Incident.FirstActivityTimeUTC
       description: The incident's first activity time.
@@ -127,16 +127,16 @@ script:
       description: The incident's number.
       type: Number
     - contextPath: AzureSentinel.Incident.AlertsCount
-      description: Number of the alerts in the incident.
+      description: The number of the alerts in the incident.
       type: Number
     - contextPath: AzureSentinel.Incident.BookmarkCount
-      description: Number of bookmarks in the incident.
+      description: The number of bookmarks in the incident.
       type: Number
     - contextPath: AzureSentinel.Incident.CommentCount
-      description: Number of comments in the incident.
+      description: The number of comments in the incident.
       type: Number
     - contextPath: AzureSentinel.Incident.AlertProductNames
-      description: Alert product names of the incident.
+      description: The alert product names of the incident.
       type: String
     - contextPath: AzureSentinel.Incident.Tactics
       description: The incident's tactics.
@@ -148,7 +148,7 @@ script:
       description: The incident's generated last activity time.
       type: Date
     - contextPath: AzureSentinel.Incident.Etag
-      description: Etag of the incident.
+      description: The Etag of the incident.
       type: String
   - arguments:
     - default: false
@@ -194,16 +194,16 @@ script:
       description: The status of the incident.
       type: String
     - contextPath: AzureSentinel.Incident.AssigneeName
-      description: The assignee name of the incident.
+      description: The name of the incideint's assignee.
       type: String
     - contextPath: AzureSentinel.Incident.AssigneeEmail
-      description: The assignee email of the incident.
+      description: The email of the incideint's assignee.
       type: String
     - contextPath: AzureSentinel.Incident.Label.Name
-      description: The label's name of the incident.
+      description: The nsme of the incideint's label.
       type: String
     - contextPath: AzureSentinel.Incident.Label.Type
-      description: The label's type of the incident.
+      description: The type of the incideint's label.
       type: String
     - contextPath: AzureSentinel.Incident.FirstActivityTimeUTC
       description: The incident's first activity time.
@@ -221,16 +221,16 @@ script:
       description: The incident's number.
       type: Number
     - contextPath: AzureSentinel.Incident.AlertsCount
-      description: Number of the alerts in the incident.
+      description: The number of the alerts in the incident.
       type: Number
     - contextPath: AzureSentinel.Incident.BookmarkCount
-      description: Number of bookmarks in the incident.
+      description: The number of bookmarks in the incident.
       type: Number
     - contextPath: AzureSentinel.Incident.CommentCount
-      description: Number of comments in the incident.
+      description: The number of comments in the incident.
       type: Number
     - contextPath: AzureSentinel.Incident.AlertProductNames
-      description: Alert product names of the incident.
+      description: The alert product names of the incident.
       type: String
     - contextPath: AzureSentinel.Incident.Tactics
       description: The incident's tactics.
@@ -242,15 +242,15 @@ script:
       description: The incident's generated last activity time.
       type: Date
     - contextPath: AzureSentinel.NextLink.Description
-      description: Description about NextLink.
+      description: The description about NextLink.
       type: String
     - contextPath: AzureSentinel.NextLink.URL
-      description: Used if an operation returns a partial result. If a response contains
+      description: Used if an operation returns partial results. If a response contains
         a NextLink element, its value specifies a starting point to use for subsequent
         calls.
       type: String
     - contextPath: AzureSentinel.Incident.Etag
-      description: Etag of the incident.
+      description: The Etag of the incident.
       type: String
   - arguments:
     - default: false
@@ -260,7 +260,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The incident title.
+      description: The incident's title.
       isArray: false
       name: title
       required: false
@@ -315,16 +315,16 @@ script:
       description: The status of the incident.
       type: String
     - contextPath: AzureSentinel.Incident.AssigneeName
-      description: The assignee name of the incident.
+      description: The name of the incideint's assignee.
       type: String
     - contextPath: AzureSentinel.Incident.AssigneeEmail
-      description: The assignee email of the incident.
+      description: The email of the incideint's assignee.
       type: String
     - contextPath: AzureSentinel.Incident.Label.Name
-      description: The label's name of the incident.
+      description: The name of the incideint's label.
       type: String
     - contextPath: AzureSentinel.Incident.Label.Type
-      description: The label's type of the incident.
+      description: The type of the incideint's label.
       type: String
     - contextPath: AzureSentinel.Incident.FirstActivityTimeUTC
       description: The incident's first activity time.
@@ -342,16 +342,16 @@ script:
       description: The incident's number.
       type: Number
     - contextPath: AzureSentinel.Incident.AlertsCount
-      description: Number of the alerts in the incident.
+      description: The number of the alerts in the incident.
       type: Number
     - contextPath: AzureSentinel.Incident.BookmarkCount
-      description: Number of bookmarks in the incident.
+      description: The number of bookmarks in the incident.
       type: Number
     - contextPath: AzureSentinel.Incident.CommentCount
-      description: Number of comments in the incident.
+      description: The number of comments in the incident.
       type: Number
     - contextPath: AzureSentinel.Incident.AlertProductNames
-      description: Alert product names of the incident.
+      description: The alert product names of the incident.
       type: String
     - contextPath: AzureSentinel.Incident.Tactics
       description: The incident's tactics.
@@ -363,7 +363,7 @@ script:
       description: The incident's generated last activity time.
       type: Date
     - contextPath: AzureSentinel.Incident.Etag
-      description: Etag of the incident.
+      description: The Etag of the incident.
       type: String
   - arguments:
     - default: false
@@ -414,16 +414,16 @@ script:
       description: The incident comment.
       type: String
     - contextPath: AzureSentinel.IncidentComment.AuthorName
-      description: Comment's author name.
+      description: The author name of the incident comment.
       type: String
     - contextPath: AzureSentinel.IncidentComment.AuthorEmail
-      description: Comment's author email.
+      description: The author email of the incident comment.
       type: String
     - contextPath: AzureSentinel.IncidentComment.CreatedTimeUTC
-      description: Comment's creation time.
+      description: The creation time of the incident comment.
       type: Date
     - contextPath: AzureSentinel.NextLink.Description
-      description: Description about NextLink.
+      description: The description about NextLink.
       type: String
     - contextPath: AzureSentinel.NextLink.URL
       description: Used if an operation returns a partial result. If a response contains
@@ -458,13 +458,13 @@ script:
       description: The incident comment.
       type: String
     - contextPath: AzureSentinel.IncidentComment.AuthorName
-      description: Comment's author name.
+      description: The author name of the incident comment.
       type: String
     - contextPath: AzureSentinel.IncidentComment.AuthorEmail
-      description: Comment's author email.
+      description: The author email of the incident comment.
       type: String
     - contextPath: AzureSentinel.IncidentComment.CreatedTimeUTC
-      description: Comment's creation time.
+      description: The creation time of the incident comment.
       type: Date
   - arguments:
     - default: false
@@ -490,7 +490,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Comma-separated list of entity kinds to filter by. By default, the result won't be filtered by kind.
+        A comma-separated list of entity kinds to filter by. By default, the result won't be filtered by kind.
         The optional kinds are: Account, Host, File, AzureResource, CloudApplication, DnsResolution, FileHash, Ip, Malware, Process, RegistryKey, RegistryValue, SecurityGroup, Url, IoTDevice, SecurityAlert, Bookmark.
       isArray: true
       name: entity_kinds
@@ -517,7 +517,7 @@ script:
       description: The kind of the incident's related resource.
       type: String
     - contextPath: AzureSentinel.NextLink.Description
-      description: Description about NextLink.
+      description: The description about NextLink.
       type: String
     - contextPath: AzureSentinel.NextLink.URL
       description: Used if an operation returns a partial result. If a response contains
@@ -564,7 +564,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Comma-separated list of entity kinds to filter by. By default, the result won't be filtered by kind.
+        A comma-separated list of entity kinds to filter by. By default, the result won't be filtered by kind.
         The optional kinds are: Account, Host, File, AzureResource, CloudApplication, DnsResolution, FileHash, Ip, Malware, Process, RegistryKey, RegistryValue, SecurityGroup, Url, IoTDevice, SecurityAlert, Bookmark.
       isArray: true
       name: entity_kinds
