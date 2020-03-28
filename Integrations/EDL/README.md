@@ -19,7 +19,7 @@ This integration provides External Dynamic List (EDL) as a service for the syste
 | Indicator Query | The query to run to update its list. To view expected results, you can run the following command from the Demisto CLI `!findIndicators query=<your query>` | False |
 | EDL Size | Max amount of entries in the service instance. | True |
 | Update EDL On Demand Only | When set to true, will only update the service indicators via **edl-update** command. | False |
-| Refresh Rate | How often to refresh the export indicators list (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3 months, 1 year) | False |
+| Refresh Rate | How often to refresh the export indicators list (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | False |
 | Long Running Instance | Must be set to true, otherwise the service will not be available. | False |
 | Listen Port | Will run the *External Dynamic List* on this port from within Demisto | True |
 | Certificate (Required for HTTPS) | HTTPS Certificate provided by pasting its value into this field. | False |
@@ -57,5 +57,9 @@ There is no context output for this command.
 ### EDL was updated successfully with the following values
 |Indicators|
 |---|
+<<<<<<< HEAD
+| 1.1.1.1<br/>2.2.2.2 |
+=======
 | 1.1.1.1
 2.2.2.2 |
+>>>>>>> origin/master
