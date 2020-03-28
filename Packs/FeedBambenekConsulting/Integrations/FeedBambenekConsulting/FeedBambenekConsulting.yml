@@ -69,7 +69,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Sub-Feeds
+- display: Services
   name: url
   options:
   - C2 IP Feed

@@ -11,7 +11,7 @@ Use the Bambenek Consulting feed integration to fetch indicators from the feed.
 2. Search for Bambenek Consulting Feed.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
-    * __Sub-Feeds__: Sub-Feeds of Bambenek Consulting to fetch indicators from:
+    * __Services__: Services of Bambenek Consulting to fetch indicators from:
         * C2 IP Feed - Master Feed of known, active, and non-sinkholed C&Cs IP addresses.
         * High-Confidence C2 IP Feed - Master Feed of known, active, and non-sinkholed C&Cs IP addresses (high-confidence only).
         * C2 Domain Feed - Master Feed of known, active, and non-sinkholed C&Cs domain names.

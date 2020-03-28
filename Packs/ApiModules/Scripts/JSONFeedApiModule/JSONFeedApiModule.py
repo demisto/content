@@ -154,8 +154,8 @@ def fetch_indicators_command(client: Client, indicator_type: str, **kwargs) -> U
     """
     indicators = []
     for result in client.build_iterator(**kwargs):
-        for sub_feed_name, items in result.items():
-            feed_config = client.feed_name_to_config.get(sub_feed_name, {})
+        for service_name, items in result.items():
+            feed_config = client.feed_name_to_config.get(service_name, {})
             indicator_field = feed_config.get('indicator', 'indicator')
             indicator_type = feed_config.get('indicator_type', indicator_type)
             for item in items:
@@ -167,7 +167,7 @@ def fetch_indicators_command(client: Client, indicator_type: str, **kwargs) -> U
 
                 indicator = {'value': indicator_value, 'type': current_indicator_type, 'fields': {}}
 
-                attributes = {'source_name': sub_feed_name, 'value': indicator_value,
+                attributes = {'source_name': service_name, 'value': indicator_value,
                               'type': current_indicator_type}
 
                 attributes.update(extract_all_fields_from_indicator(item, indicator_field))
