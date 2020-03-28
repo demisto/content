@@ -198,7 +198,7 @@ script:
       name: team
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Creates a new channel in a Microsoft Teams team.
     execution: false
     name: create-channel
@@ -221,11 +221,71 @@ script:
       name: member
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Adds a member (user) to a private channel.
     execution: false
     name: add-user-to-channel
-  dockerimage: demisto/teams:1.0.0.1701
+  - arguments:
+    - default: false
+      description: The display name of the member to call.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    deprecated: false
+    description: 'Ring a user''s Teams account. Note: This is a ring only! no media
+      will play in case the generated call is answered. To use this make sure your Bot has the following premissions - 
+      Calls.Initiate.All and Calls.InitiateGroupCall.All'
+    execution: false
+    name: microsoft-teams-ring-user
+  - arguments:
+    - default: false
+      description: The channel to which to add the add the member to this channel
+      isArray: false
+      name: channel
+      required: true
+      secret: false
+    - default: false
+      description: The channel's team.
+      isArray: false
+      name: team
+      required: true
+      secret: false
+    - default: false
+      description: The display name of the member to add to the channel.
+      isArray: false
+      name: member
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds a member (user) to a private channel.
+    execution: false
+    name: microsoft-teams-add-user-to-channel
+  - arguments:
+    - default: false
+      description: The name of the channel.
+      isArray: false
+      name: channel_name
+      required: true
+      secret: false
+    - default: false
+      description: The description of the channel.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: The team in which to create the channel.
+      isArray: false
+      name: team
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a new channel in a Microsoft Teams team.
+    execution: false
+    name: microsoft-teams-create-channel
+  dockerimage: demisto/teams:1.0.0.6483
+  feed: false
   isfetch: false
   longRunning: true
   longRunningPort: true

@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added additional playbook inputs.
 
 ## [19.11.0] - 2019-11-12
 #### New Playbook
