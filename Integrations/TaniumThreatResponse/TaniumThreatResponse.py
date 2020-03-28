@@ -161,10 +161,9 @@ def get_evidence_item(raw_item):
         'CreatedAt': raw_item.get('created'),
         'UpdatedAt': raw_item.get('lastModified'),
         'User': raw_item.get('user'),
-        'Host': raw_item.get('host'),
-        'ConnectionName': raw_item.get('connId'),
+        'ConnectionName': raw_item.get('host'),
         'Type': evidence_type_number_to_name(try_parse_integer(raw_item.get('type'))),
-        'ProcessTableId': raw_item.get('sID'),
+        'ProcessTableId': raw_item.get('sId'),
         'Timestamp': raw_item.get('sTimestamp'),
         'Summary': raw_item.get('summary'),
         'Comments': raw_item.get('comments'),
@@ -232,37 +231,38 @@ def get_process_item(raw_process):
 
 def get_event_header(event_type):
     if event_type == "combined":
-        headers = ['ID', 'ProcessName', 'Detail', 'Type', 'Timestamp', 'Operation']
+        headers = ['ID', 'Type', 'ProcessName', 'Detail', 'Timestamp', 'Operation']
 
     elif event_type == "file":
-        headers = ['ID', 'File', 'Timestamp', 'Domain', 'ProcessTableID', 'ProcessID', 'ProcessName', 'Username']
+        headers = ['ID', 'Type', 'File', 'Timestamp', 'Domain', 'ProcessTableID', 'ProcessID', 'ProcessName',
+                   'Username']
 
     elif event_type == "network":
-        headers = ['ID', 'Timestamp', 'Domain', 'ProcessTableID', 'ProcessID', 'ProcessName', 'Username', 'Operation',
-                   'DestinationAddress', 'DestinationPort', 'SourceAddress', 'SourcePort']
+        headers = ['ID', 'Type', 'Timestamp', 'Domain', 'ProcessTableID', 'ProcessID', 'ProcessName', 'Username',
+                   'Operation', 'DestinationAddress', 'DestinationPort', 'SourceAddress', 'SourcePort']
 
     elif event_type == "registry":
-        headers = ['ID', 'Timestamp', 'Domain', 'ProcessTableID', 'ProcessID', 'ProcessName', 'Username', 'KeyPath',
-                   'ValueName']
+        headers = ['ID', 'Type', 'Timestamp', 'Domain', 'ProcessTableID', 'ProcessID', 'ProcessName', 'Username',
+                   'KeyPath', 'ValueName']
 
     elif event_type == "process":
-        headers = ['Domain', 'ProcessTableID', 'ProcessCommandLine', 'ProcessID', 'ProcessName', 'ExitCode', 'SID',
-                   'Username', 'CreationTime', 'EndTime']
+        headers = ['Domain', 'Type', 'ProcessTableID', 'ProcessCommandLine', 'ProcessID', 'ProcessName', 'ExitCode',
+                   'SID', 'Username', 'CreationTime', 'EndTime']
 
     elif event_type == "driver":
-        headers = ['ID', 'Timestamp', 'ProcessTableID', 'SID', 'Hashes', 'ImageLoaded', 'Signature', 'Signed',
+        headers = ['ID', 'Type', 'Timestamp', 'ProcessTableID', 'SID', 'Hashes', 'ImageLoaded', 'Signature', 'Signed',
                    'EventID', 'EventOpcode', 'EventRecordID', 'EventTaskID']
 
     elif event_type == "security":
-        headers = ['ID', 'Timestamp', 'EventID', 'EventTaskName', 'ProcessTableID']
+        headers = ['ID', 'Type', 'Timestamp', 'EventID', 'EventTaskName', 'ProcessTableID']
 
     elif event_type == "dns":
-        headers = ['ID', 'Timestamp', 'Domain', 'ProcessTableID', 'ProcessID', 'ProcessName', 'Username',
+        headers = ['ID', 'Type', 'Timestamp', 'Domain', 'ProcessTableID', 'ProcessID', 'ProcessName', 'Username',
                    'Operation', 'Query', 'Response']
 
     else:  # if event_type == "image"
-        headers = ['ID', 'Timestamp', 'ImagePath', 'ProcessTableID', 'ProcessID', 'ProcessName', 'Username', 'Hash',
-                   'Signature']
+        headers = ['ID', 'Type', 'Timestamp', 'ImagePath', 'ProcessTableID', 'ProcessID', 'ProcessName', 'Username',
+                   'Hash', 'Signature']
     return headers
 
 
@@ -622,7 +622,7 @@ def alert_update_state(client, data_args):
 def get_snapshots(client, data_args):
     limit = int(data_args.get('limit'))
     offset = int(data_args.get('offset'))
-    conn_name = data_args.get('connection_name')
+    conn_name = data_args.get('connection-name')
 
     raw_response = client.do_request('GET', '/plugin/products/trace/snapshots/')
     snapshots = get_snapshot_items(raw_response, limit, offset, conn_name)
@@ -656,7 +656,7 @@ def delete_snapshot(client, data_args):
 def get_local_snapshots(client, data_args):
     limit = int(data_args.get('limit'))
     offset = int(data_args.get('offset'))
-    conn_name = data_args.get('connection_name')
+    conn_name = data_args.get('connection-name')
     raw_response = client.do_request('GET', '/plugin/products/trace/locals/')
     snapshots = get_local_snapshot_items(raw_response, limit, offset, conn_name)
     context = createContext(snapshots, removeNull=True)
@@ -670,15 +670,15 @@ def get_local_snapshots(client, data_args):
 
 
 def delete_local_snapshot(client, data_args):
-    directory_name = data_args.get('directory-name')
+    connection_name = data_args.get('connection-name')
     file_name = data_args.get('file-name')
-    client.do_request('DELETE', f'/plugin/products/trace/locals/{directory_name}/{file_name}', resp_type='content')
+    client.do_request('DELETE', f'/plugin/products/trace/locals/{connection_name}/{file_name}', resp_type='content')
     context = {
         'FileName': file_name,
         'Deleted': True
     }
     outputs = {'Tanium.LocalSnapshot(val.FileName === obj.FileName)': context}
-    return f"Local snapshot from Directory {directory_name} and File {file_name} is deleted successfully.", outputs, {}
+    return f"Local snapshot {file_name} of connection {connection_name} was deleted successfully.", outputs, {}
 
 
 def get_connections(client, data_args):
@@ -695,7 +695,7 @@ def get_connections(client, data_args):
 
     context = createContext(connections, removeNull=True)
     outputs = {'Tanium.Connection(val.Name && val.Name === obj.Name)': context}
-    headers = ['Name', 'State', 'Remote', 'CreateTime', 'DST', 'DestinationType', 'OsName']
+    headers = ['Name', 'State', 'Remote', 'CreateTime', 'DST', 'DestinationType', 'OSName']
     human_readable = tableToMarkdown('Connections', connections, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
@@ -719,7 +719,7 @@ def get_connection(client, data_args):
 
     context = createContext(connection, removeNull=True)
     outputs = {'Tanium.Connection(val.Name && val.Name === obj.Name)': context}
-    headers = ['Name', 'State', 'Remote', 'CreateTime', 'DST', 'DestinationType', 'OsName']
+    headers = ['Name', 'State', 'Remote', 'CreateTime', 'DST', 'DestinationType', 'OSName']
     human_readable = tableToMarkdown('Connection information', connection, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, connection_raw_response
@@ -863,7 +863,7 @@ def get_events_by_connection(client, data_args):
         events.append(event)
 
     context = createContext(events, removeNull=True)
-    outputs = {'TaniumEvent(val.ID && val.ID === obj.ID)': context}
+    outputs = {'TaniumEvent(val.ID === obj.ID)': context}
     headers = get_event_header(event_type)
     human_readable = tableToMarkdown(f'Events for {connection}', events, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
@@ -1041,7 +1041,7 @@ def list_evidence(client, data_args):
 
     context = createContext(evidences, removeNull=True)
     outputs = {'Tanium.Evidence(val.ID && val.ID === obj.ID)': context}
-    headers = ['ID', 'Timestamp', 'Host', 'User', 'Summary', 'ConntectionID', 'Type', 'CreatedAt', 'UpdatedAt',
+    headers = ['ID', 'Timestamp', 'ConnectionName', 'User', 'Summary', 'Type', 'CreatedAt', 'UpdatedAt',
                'ProcessTableId', 'Comments', 'Tags']
     human_readable = tableToMarkdown('Evidence list', evidences, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
@@ -1105,11 +1105,11 @@ def request_file_download(client, data_args):
 
     # context object will help us to verify the request has succeed in the download file playbook.
     context = {
-        'Host': con_name,
+        'ConnectionName': con_name,
         'Path': path,
         'Downloaded': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S.%f')
     }
-    outputs = {'Tanium.FileDownload(val.Path === obj.Path && val.Host === obj.Host)': context}
+    outputs = {'Tanium.FileDownload(val.Path === obj.Path && val.ConnectionName === obj.ConnectionName)': context}
 
     data = {
         'path': path,
@@ -1122,7 +1122,7 @@ def request_file_download(client, data_args):
 
 def get_file_download_request_status(client, data_args):
     downloaded = str(data_args.get('request-date')).replace('T', ' ')
-    host = data_args.get('host')
+    host = data_args.get('connection-name')
     path = data_args.get('path')
 
     params = {'downloaded>': downloaded}
@@ -1136,21 +1136,23 @@ def get_file_download_request_status(client, data_args):
         file_id = raw_response[0].get('id')
         status = 'Completed'
         downloaded = raw_response[0].get('downloaded')
+        path = path if path else raw_response[0].get('path')
+        host = host if host else raw_response[0].get('host')
     else:
         file_id = None
         status = 'Not found'
 
     file_download_request = {
         'ID': file_id,
-        'Host': host,
+        'ConnectionName': host,
         'Path': path,
         'Status': status,
         'Downloaded': downloaded
     }
 
     context = createContext(file_download_request, removeNull=True)
-    outputs = {'Tanium.FileDownload(val.Path === obj.Path && val.Host === obj.Host)': context}
-    headers = ['ID', 'Host', 'Status', 'Path', 'Downloaded']
+    outputs = {'Tanium.FileDownload(val.Path === obj.Path && val.ConnectionName === obj.ConnectionName)': context}
+    headers = ['ID', 'ConnectionName', 'Status', 'Path', 'Downloaded']
     human_readable = tableToMarkdown('File download request status', file_download_request,
                                      headers=headers, headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
