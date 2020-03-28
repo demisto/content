@@ -18,10 +18,10 @@ This integration was integrated and tested with AttackIQ FireDrill v2.15.96.
     | **Parameter** | **Description** | **Example** |
     | ---------             | -----------           | -------            |
     | Name | A meaningful name for the integration instance. | AttackIQFireDrill_instance_2 |
-    | Server URL | The URL to the Proofpoint server, including the scheme.  |  https:/<span>/example.net |
+    | Server URL | The URL to the Proofpoint server, including the scheme.  |  https:/<span></span>/example.net |
     |  API Token | Account's private token (as appears in attackIQ UI). | N/A  |
     | Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
-    | Use System Proxy Settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  https:/<span>/proxyserver.com |
+    | Use System Proxy Settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  https:/<span></span>/proxyserver.com |
 
 4.  Click **Test** to validate the new instance.
 
@@ -121,7 +121,7 @@ Returns all assessment information by ID.
 
 | **Id** | **Name** | **Description** | **User** | **Created** | **Modified** |
 | --- | --- | --- | --- | --- | --- |
-| c4e352ae-1506-4c74-bd90-853f02dd765a | Arseny's ransomware project | Test of common ransomware variants | akrupnik<span>@paloaltonetworks.com | 2019-08-27T10:17:09.809036Z | 2019-09-18T08:16:23.079961Z |
+| c4e352ae-1506-4c74-bd90-853f02dd765a | Arseny's ransomware project | Test of common ransomware variants | akrupnik<span></span>@paloaltonetworks.com | 2019-08-27T10:17:09.809036Z | 2019-09-18T08:16:23.079961Z |
 
 ### Get all assessments details by page
 
@@ -187,11 +187,11 @@ Returns all assessment details by page.
 
 | **Id** | **Name** | **Description** | **User** | **Created** | **Modified** |
 | --- | --- | --- | --- | --- | --- |
-| c4e352ae-1506-4c74-bd90-853f02dd765a | Arseny's ransomware project | Test of common ransomware variants | akrupnik<span>@paloaltonetworks.com | 2019-08-27T10:17:09.809036Z | 2019-09-18T08:16:23.079961Z |
-| f57edb34-ccb2-4695-b79c-bb739cab70a1 | Arseny's ransomware project | Test of common ransomware variants | akrupnik<span>@paloaltonetworks.com | 2019-09-02T11:52:09.915614Z | 2019-09-16T09:02:59.401994Z |
-| 8978fe24-607a-4815-a36a-89fb6191b318 | ATT&CK by the Numbers @ NOVA BSides 2019 | AttackIQ’s analysis and mapping of the “ATT&CK by the Numbers” @ NOVA BSides 2019 | akrupnik<span>@paloaltonetworks.com | 2019-09-05T08:47:38.243320Z | 2019-09-10T11:16:25.619197Z |
-| 5baca9b4-e55c-497f-a05a-8004b9a36efe | Custom | Custom project | darbel<span>@paloaltonetworks.com | 2019-09-10T08:38:55.165853Z | 2019-09-10T08:38:55.165874Z |
-| 58440d47-d7b5-4f57-913f-3e13903fa2fc | Arseny's ransomware project | Test of common ransomware variants | akrupnik<span>@paloaltonetworks.com | 2019-09-02T11:52:13.933084Z | 2019-09-02T11:52:16.100942Z |
+| c4e352ae-1506-4c74-bd90-853f02dd765a | Arseny's ransomware project | Test of common ransomware variants | akrupnik<span></span>@paloaltonetworks.com | 2019-08-27T10:17:09.809036Z | 2019-09-18T08:16:23.079961Z |
+| f57edb34-ccb2-4695-b79c-bb739cab70a1 | Arseny's ransomware project | Test of common ransomware variants | akrupnik<span></span>@paloaltonetworks.com | 2019-09-02T11:52:09.915614Z | 2019-09-16T09:02:59.401994Z |
+| 8978fe24-607a-4815-a36a-89fb6191b318 | ATT&CK by the Numbers @ NOVA BSides 2019 | AttackIQ’s analysis and mapping of the “ATT&CK by the Numbers” @ NOVA BSides 2019 | akrupnik<span></span>@paloaltonetworks.com | 2019-09-05T08:47:38.243320Z | 2019-09-10T11:16:25.619197Z |
+| 5baca9b4-e55c-497f-a05a-8004b9a36efe | Custom | Custom project | darbel<span></span>@paloaltonetworks.com | 2019-09-10T08:38:55.165853Z | 2019-09-10T08:38:55.165874Z |
+| 58440d47-d7b5-4f57-913f-3e13903fa2fc | Arseny's ransomware project | Test of common ransomware variants | akrupnik<span></span>@paloaltonetworks.com | 2019-09-02T11:52:13.933084Z | 2019-09-02T11:52:16.100942Z |
 
 ### Activate an assessment 
 
@@ -911,7 +911,7 @@ There are no input arguments for this command.
 
 | **ID** | **Hostname** | **IPv4** | **MacAddress** | **Domain** | **Description** | **User** | **Status** |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 03e17460-849e-4b86-b6c6-ef0db72823ff | ec2amaz-g4iu5no | 172.31.39.254 | 06-FB-B8-38-E2-2A | workgroup |  | agent_7377e1fa-d49d-44bf-84ef-4e1dfb8e4748<span>@demisto.com | Active |
+| 03e17460-849e-4b86-b6c6-ef0db72823ff | ec2amaz-g4iu5no | 172.31.39.254 | 06-FB-B8-38-E2-2A | workgroup |  | agent_7377e1fa-d49d-44bf-84ef-4e1dfb8e4748<span></span>@demisto.com | Active |
 
 ### Create an assessment
 
@@ -1006,7 +1006,7 @@ Creates a new assesment.
 
 | **Id** | **Name** | **Description** | **User** | **Created** | **Modified** |
 | --- | --- | --- | --- | --- | --- |
-| 08023e86-3b8c-4f98-ab46-7c931d759157 | Assessment from test playbook | Custom project | olichter<span>@paloaltonetworks.com | 2019-10-29T08:37:22.187577Z | 2019-10-29T08:37:22.187603Z |
+| 08023e86-3b8c-4f98-ab46-7c931d759157 | Assessment from test playbook | Custom project | olichter<span></span>@paloaltonetworks.com | 2019-10-29T08:37:22.187577Z | 2019-10-29T08:37:22.187603Z |
 
 ### Add assets to an assesment
 
