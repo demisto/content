@@ -1,5 +1,6 @@
 ## [Unreleased]
-Changed the domain ID to the new domain indicator ID.
+- Added Custom details and Extended details sections.
+- Changed the domain ID to the new domain indicator ID.
 
 ## [20.3.3] - 2020-03-18
 -

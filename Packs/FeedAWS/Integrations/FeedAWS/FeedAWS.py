@@ -2,11 +2,11 @@ import demistomock as demisto
 from CommonServerPython import *
 
 
-def get_feed_config(sub_feeds: list, regions: list):
+def get_feed_config(services: list, regions: list):
     """
-    Creates the configuration for each AWS sub-feed.
+    Creates the configuration for each AWS service.
     Args:
-        sub_feeds: The selected sub-feeds.
+        services: The selected services.
         regions: The selected regions.
 
     Returns:
@@ -39,7 +39,7 @@ def get_feed_config(sub_feeds: list, regions: list):
             }
         }
 
-    return {feed_name: feed_name_to_config.get(feed_name) for feed_name in sub_feeds}
+    return {feed_name: feed_name_to_config.get(feed_name) for feed_name in services}
 
 
 from JSONFeedApiModule import *  # noqa: E402
@@ -47,7 +47,7 @@ from JSONFeedApiModule import *  # noqa: E402
 
 def main():
     params = {k: v for k, v in demisto.params().items() if v is not None}
-    params['feed_name_to_config'] = get_feed_config(params.get('sub_feeds', ['AMAZON']),
+    params['feed_name_to_config'] = get_feed_config(params.get('services', ['AMAZON']),
                                                     argToList(params.get('regions', [])))
     feed_main(params, 'AWS Feed', 'aws')
 
