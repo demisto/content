@@ -6,17 +6,25 @@ from CommonServerUserPython import *
 import re
 import requests
 from typing import List
+from datetime import datetime
+
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 # CONSTANTS
 SOURCE_NAME = "AutoFocusFeed"
 DAILY_FEED_BASE_URL = 'https://autofocus.paloaltonetworks.com/api/v1.0/output/threatFeedResult'
-SAMPLE_FEED_BASE_URL = 'https://autofocus.paloaltonetworks.com/api/v1.0/mm/samples/'
+SAMPLE_FEED_BASE_URL = 'https://autofocus.paloaltonetworks.com/api/v1.0/samples/'
 SAMPLE_FEED_REQUEST_BASE_URL = f'{SAMPLE_FEED_BASE_URL}search'
 SAMPLE_FEED_RESPONSE_BASE_URL = f'{SAMPLE_FEED_BASE_URL}results/'
 
-EPOCH_BASE = datetime.datetime.utcfromtimestamp(0)
+EPOCH_BASE = datetime.utcfromtimestamp(0)
+
+af_indicator_type_to_demisto = {
+    'Domain': FeedIndicatorType.Domain,
+    'Url': FeedIndicatorType.URL,
+    'IPv4': FeedIndicatorType.IP
+}
 
 
 def datetime_to_epoch(dt_to_convert):
@@ -58,7 +66,10 @@ class Client(BaseClient):
 
             if not sample_query:
                 return_error(f'{SOURCE_NAME} - Sample Query can not be empty for Sample Feed')
-            self.sample_query = sample_query
+            try:
+                self.sample_query = json.loads(sample_query)
+            except Exception:
+                return_error(f'{SOURCE_NAME} - Sample Query is not a well formed JSON object')
 
             if not str.isdigit(sample_size):
                 return_error(f'{SOURCE_NAME} - Sample Size needs to be a valid integer')
@@ -131,7 +142,7 @@ class Client(BaseClient):
         """
         request_body = {
             'apiKey': self.api_key,
-            'artifactSource': 'mm',
+            'artifactSource': 'af',
             'scope': self.scope_type,
             'query': self.sample_query,
             'type': 'scan',
@@ -140,24 +151,28 @@ class Client(BaseClient):
 
         initiate_sample_res = requests.request(
             method="POST",
+            headers={'Content-Type': "application/json"},
             url=SAMPLE_FEED_REQUEST_BASE_URL,
             verify=self.verify,
-            data=request_body
+            json=request_body
         )
         initiate_sample_res.raise_for_status()
 
-        af_cookie = initiate_sample_res.json().get('af_cookie')
+        af_cookie = initiate_sample_res.json()['af_cookie']
+        time.sleep(20)
+
         get_results_res = requests.request(
-            method="GET",
+            method="POST",
             url=SAMPLE_FEED_RESPONSE_BASE_URL + af_cookie,
             verify=self.verify,
-            data={'apiKey': self.api_key}
+            json={'apiKey': self.api_key}
         )
         get_results_res.raise_for_status()
 
         indicator_list = []  # type:List
 
-        # indicator_list.extend(res.text.split('\n'))
+        for single_sample in get_results_res.json()['hits']:
+            indicator_list.extend(self.create_indicators_from_single_sample_response(single_sample))
 
         return indicator_list
 
@@ -165,94 +180,101 @@ class Client(BaseClient):
     def create_indicators_from_single_sample_response(single_sample):
         indicators = []
 
-        value = {
-            'autofocus_id': single_sample['_id']
-        }
-
-        item = single_sample['_source']
-
-        update_date = item.get('update_date', None)
-        if update_date is not None:
-            update_date = datetime.strptime(update_date, '%Y-%m-%dT%H:%M:%S')
-            value['autofocus_update_date'] = datetime_to_epoch(update_date)
-
-        create_date = datetime.strptime(item['create_date'], '%Y-%m-%dT%H:%M:%S')
-        value['autofocus_create_date'] = datetime_to_epoch(create_date)
-
-        value['autofocus_tags'] = item.get('tag', [])
-        value['autofocus_malware'] = item['malware']
-
-        sha256_ = item['sha256']
-        sha1_ = item.get('sha1', None)
-        md5_ = item['md5']
-
-        if '...' in sha256_:
+        single_sample_data = single_sample.get('_source', {})
+        if not single_sample_data:
             return []
 
-        tvalue = copy.copy(value)
-        tvalue['type'] = 'sha256'
-        indicators.append([
-            sha256_,
-            tvalue
-        ])
+        raw_json_data = {
+            'autofocus_id': single_sample.get('_id'),
+            'autofocus_region': single_sample_data.get('region', []),
+            'autofocus_malware': single_sample_data.get('malware', 0),
+            'autofocus_tags': single_sample_data.get('tag', []),
+            'autofocus_tags_groups': single_sample_data.get('tag_groups', []),
+        }
 
-        tvalue = copy.copy(value)
-        tvalue['type'] = 'md5'
-        tvalue['autofocus_sha256'] = sha256_
-        indicators.append([
-            md5_,
-            tvalue
-        ])
+        update_date = single_sample_data.get('update_date', None)
+        if update_date is not None:
+            update_date = datetime.strptime(update_date, '%Y-%m-%dT%H:%M:%S')
+            raw_json_data['autofocus_update_date'] = datetime_to_epoch(update_date)
 
-        if sha1_ is not None:
-            tvalue = copy.copy(value)
-            tvalue['type'] = 'sha1'
-            tvalue['autofocus_sha256'] = sha256_
-            indicators.append([
-                sha1_,
-                tvalue
-            ])
+        create_date = datetime.strptime(single_sample_data['create_date'], '%Y-%m-%dT%H:%M:%S')
+        raw_json_data['autofocus_create_date'] = datetime_to_epoch(create_date)
 
-        artifacts = item.get('artifact', [])
-        for a in artifacts:
-            indicator = a.get('indicator', None)
-            if indicator is None:
+        # raw_json_data['autofocus_malware'] = item['malware']
+
+        # sha256_ = item['sha256']
+        # sha1_ = item.get('sha1', None)
+        # md5_ = item['md5']
+        #
+        # if '...' in sha256_:
+        #     return []
+        #
+        # tvalue = copy.copy(rawJSON_data)
+        # tvalue['type'] = 'sha256'
+        # indicators.append([
+        #     sha256_,
+        #     tvalue
+        # ])
+        #
+        # tvalue = copy.copy(rawJSON_data)
+        # tvalue['type'] = 'md5'
+        # tvalue['autofocus_sha256'] = sha256_
+        # indicators.append([
+        #     md5_,
+        #     tvalue
+        # ])
+        #
+        # if sha1_ is not None:
+        #     tvalue = copy.copy(rawJSON_data)
+        #     tvalue['type'] = 'sha1'
+        #     tvalue['autofocus_sha256'] = sha256_
+        #     indicators.append([
+        #         sha1_,
+        #         tvalue
+        #     ])
+
+        artifacts = single_sample_data.get('artifact', [])
+        artifacts_count = len(artifacts)
+
+        for artifact in artifacts:
+            indicator_value = artifact.get('indicator', None)
+            if indicator_value is None:
                 continue
 
-            type_ = a.get('indicator_type', None)
-            if type_ is None:
+            autofocus_indicator_type = artifact.get('indicator_type', None)
+            indicator_type = af_indicator_type_to_demisto.get(autofocus_indicator_type)
+            if not indicator_type:
                 continue
 
-            if type_ not in AF_TYPES_TO_MM:
-                LOG.error('{} - unhandled indicator type: {}/{!r}'.format(self.name, type_, indicator))
-                continue
-            type_ = AF_TYPES_TO_MM[type_]
+            autofocus_benign = artifact.get('b', 0)
+            autofocus_grayware = artifact.get('g', 0)
+            autofocus_malware = artifact.get('m', 0)
+            autofocus_confidence = artifact.get('confidence', '')
 
-            b = a.get('b', 0)
-            g = a.get('g', 0)
-            m = a.get('m', 0)
+            indicator_raw_json = raw_json_data
+            indicator_raw_json.update(
+                {
+                    'value': indicator_value,
+                    'type': indicator_type,
+                    'confidence': autofocus_confidence,
+                    'autofocus_num_matching_artifacts': artifacts_count,
+                    'autofocus_malware': autofocus_malware,
+                    'autofocus_benign': autofocus_benign,
+                    'autofocus_grayware': autofocus_grayware
+                }
+            )
 
-            confidence = self.confidence_map.get(a.get('confidence', 'interesting'), None)
-            if confidence is None:
-                continue
+            if indicator_type == FeedIndicatorType.IP and ':' in indicator_value:
+                indicator_value, port = indicator_value.split(':', 1)
+                indicator_raw_json['autofocus_port'] = port
 
-            tvalue = {
-                'type': type_,
-                'confidence': confidence,
-                'autofocus_id': id_,
-                'autofocus_num_matching_artifacts': len(a.get('mm_artifacts', [])),
-                'autofocus_malware': m,
-                'autofocus_benign': b,
-                'autofocus_grayware': g
+            single_indicator = {
+                'value': indicator_raw_json['value'],
+                'type': indicator_raw_json['type'],
+                'rawJSON': indicator_raw_json
             }
 
-            if type_ == 'IPv4' and ':' in indicator:
-                indicator, port = indicator.split(':', 1)
-                tvalue['autofocus_port'] = port
-
-            tvalue.update(value)
-
-            indicators.append([indicator, tvalue])
+            indicators.append(single_indicator)
 
         return indicators
 
@@ -322,9 +344,6 @@ class Client(BaseClient):
         if "Custom Feed" in self.indicator_feeds:
             indicators.extend(self.daily_custom_http_request(feed_type="Custom Feed"))
 
-        if "Sample Feed" in self.indicator_feeds:
-            indicators.extend(self.sample_http_request())
-
         if limit:
             indicators = indicators[int(offset): int(offset) + int(limit)]
 
@@ -348,15 +367,22 @@ class Client(BaseClient):
                     }
                 })
 
-        return parsed_indicators
+        if "Sample Feed" in self.indicator_feeds:
+            parsed_indicators.extend(self.sample_http_request())
+
+        if limit:
+            parsed_indicators = parsed_indicators[int(offset): int(offset) + int(limit)]
+
+        return parsed_indicators[:10]
 
 
-def module_test_command(client: Client):
+def module_test_command(client: Client, args: dict):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
 
     Args:
-        client: Autofocus Feed client
+        client(Client): Autofocus Feed client
+        args(Dict): The instance parameters
 
     Returns:
         'ok' if test passed, anything else will fail the test.
@@ -415,12 +441,13 @@ def get_indicators_command(client: Client, args: dict):
     hr_indicators = []
     for indicator in indicators:
         hr_indicators.append({
-            "Value": indicator.get('value'),
-            "Type": indicator.get('type')
+            'Value': indicator.get('value'),
+            'Type': indicator.get('type'),
+            'rawJSON': indicator.get('rawJSON')
         })
 
     human_readable = tableToMarkdown("Indicators from AutoFocus:", hr_indicators,
-                                     headers=['Value', 'Type'], removeNull=True)
+                                     headers=['Value', 'Type', 'rawJSON'], removeNull=True)
 
     if args.get('limit'):
         human_readable = human_readable + f"\nTo bring the next batch of indicators run:\n!autofocus-get-indicators " \
