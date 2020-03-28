@@ -14,7 +14,7 @@ This integration was integrated and tested with version xx of Tanium Threat Resp
 | credentials | Username | True |
 | insecure | Trust any certificate (not secure) | False |
 | proxy | Use system proxy settings | False |
-| fetch_time | First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days) | False |
+| fetch_time | First fetch timestamp ({number} {time unit}, e.g., 12 hours, 7 days) | False |
 | filter_alerts_by_state | A comma-separated list of alert states to filter by in fetch incidents command. Possible options are: unresolved, in progress, resolved or suppressed. Empty list won't filter the incidents by state. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
