@@ -42,12 +42,11 @@ class Client(BaseClient):
         indicator_feeds(List): A list of indicator feed types to bring from AutoFocus.
         scope_type(str): The scope type of the AutoFocus sample feed.
         sample_query(str): The query to use to fetch indicators from AutoFocus sample feed.
-        sample_size(str): The amount of indicators to fetch from AutoFocus sample feed.
         custom_feed_urls(str): The URLs of the custom feeds to fetch.
     """
 
     def __init__(self, api_key, insecure, proxy, indicator_feeds, custom_feed_urls=None,
-                 scope_type=None, sample_query=None, sample_size=10):
+                 scope_type=None, sample_query=None):
         self.api_key = api_key
         self.indicator_feeds = indicator_feeds
 
@@ -70,10 +69,6 @@ class Client(BaseClient):
                 self.sample_query = json.loads(sample_query)
             except Exception:
                 return_error(f'{SOURCE_NAME} - Sample Query is not a well formed JSON object')
-
-            if not str.isdigit(sample_size):
-                return_error(f'{SOURCE_NAME} - Sample Size needs to be a valid integer')
-            self.sample_size = int(sample_size)
 
         self.verify = not insecure
         if proxy:
@@ -146,7 +141,6 @@ class Client(BaseClient):
             'scope': self.scope_type,
             'query': self.sample_query,
             'type': 'scan',
-            'size': self.sample_size
         }
 
         initiate_sample_res = requests.request(
@@ -177,12 +171,44 @@ class Client(BaseClient):
         return indicator_list
 
     @staticmethod
-    def create_indicators_from_single_sample_response(single_sample):
-        indicators = []
+    def create_indicator_from_artifact(raw_json_data: dict, artifact: dict):
+        indicator_value = artifact.get('indicator', None)
+        if indicator_value is None:
+            return None
 
+        autofocus_indicator_type = artifact.get('indicator_type', None)
+        indicator_type = af_indicator_type_to_demisto.get(autofocus_indicator_type)
+        if not indicator_type:
+            return None
+
+        raw_json_data.update(
+            {
+                'value': indicator_value,
+                'type': indicator_type,
+                'confidence': artifact.get('confidence', ''),
+                'autofocus_malware': artifact.get('m', 0),
+                'autofocus_benign': artifact.get('b', 0),
+                'autofocus_grayware': artifact.get('g', 0)
+            }
+        )
+
+        if indicator_type == FeedIndicatorType.IP and ':' in indicator_value:
+            indicator_value, port = indicator_value.split(':', 1)
+            raw_json_data['autofocus_port'] = port
+
+        return {
+            'value': raw_json_data['value'],
+            'type': raw_json_data['type'],
+            'rawJSON': raw_json_data
+        }
+
+    @staticmethod
+    def create_indicators_from_single_sample_response(single_sample):
         single_sample_data = single_sample.get('_source', {})
         if not single_sample_data:
             return []
+
+        artifacts = single_sample_data.get('artifact', [])
 
         raw_json_data = {
             'autofocus_id': single_sample.get('_id'),
@@ -190,6 +216,7 @@ class Client(BaseClient):
             'autofocus_malware': single_sample_data.get('malware', 0),
             'autofocus_tags': single_sample_data.get('tag', []),
             'autofocus_tags_groups': single_sample_data.get('tag_groups', []),
+            'autofocus_num_matching_artifacts': len(artifacts),
         }
 
         update_date = single_sample_data.get('update_date', None)
@@ -197,84 +224,31 @@ class Client(BaseClient):
             update_date = datetime.strptime(update_date, '%Y-%m-%dT%H:%M:%S')
             raw_json_data['autofocus_update_date'] = datetime_to_epoch(update_date)
 
-        create_date = datetime.strptime(single_sample_data['create_date'], '%Y-%m-%dT%H:%M:%S')
-        raw_json_data['autofocus_create_date'] = datetime_to_epoch(create_date)
+        create_date = single_sample_data.get('update_date', None)
+        if create_date is not None:
+            create_date = datetime.strptime(create_date, '%Y-%m-%dT%H:%M:%S')
+            raw_json_data['autofocus_create_date'] = datetime_to_epoch(create_date)
 
-        # raw_json_data['autofocus_malware'] = item['malware']
+        sha256 = single_sample_data.get('sha256', '...')
+        sha1 = single_sample_data.get('sha1', None)
+        md5 = single_sample_data.get('md5')
 
-        # sha256_ = item['sha256']
-        # sha1_ = item.get('sha1', None)
-        # md5_ = item['md5']
-        #
-        # if '...' in sha256_:
-        #     return []
-        #
-        # tvalue = copy.copy(rawJSON_data)
-        # tvalue['type'] = 'sha256'
-        # indicators.append([
-        #     sha256_,
-        #     tvalue
-        # ])
-        #
-        # tvalue = copy.copy(rawJSON_data)
-        # tvalue['type'] = 'md5'
-        # tvalue['autofocus_sha256'] = sha256_
-        # indicators.append([
-        #     md5_,
-        #     tvalue
-        # ])
-        #
-        # if sha1_ is not None:
-        #     tvalue = copy.copy(rawJSON_data)
-        #     tvalue['type'] = 'sha1'
-        #     tvalue['autofocus_sha256'] = sha256_
-        #     indicators.append([
-        #         sha1_,
-        #         tvalue
-        #     ])
+        if '...' in sha256:
+            return []
 
-        artifacts = single_sample_data.get('artifact', [])
-        artifacts_count = len(artifacts)
+        indicators = [
+            {
+                'value': file_indicator,
+                'type': FeedIndicatorType.File,
+                'rawJSON': raw_json_data
+            }
+            for file_indicator in [sha256, sha1, md5] if file_indicator
+        ]
 
         for artifact in artifacts:
-            indicator_value = artifact.get('indicator', None)
-            if indicator_value is None:
-                continue
-
-            autofocus_indicator_type = artifact.get('indicator_type', None)
-            indicator_type = af_indicator_type_to_demisto.get(autofocus_indicator_type)
-            if not indicator_type:
-                continue
-
-            autofocus_benign = artifact.get('b', 0)
-            autofocus_grayware = artifact.get('g', 0)
-            autofocus_malware = artifact.get('m', 0)
-            autofocus_confidence = artifact.get('confidence', '')
-
-            indicator_raw_json = raw_json_data
-            indicator_raw_json.update(
-                {
-                    'value': indicator_value,
-                    'type': indicator_type,
-                    'confidence': autofocus_confidence,
-                    'autofocus_num_matching_artifacts': artifacts_count,
-                    'autofocus_malware': autofocus_malware,
-                    'autofocus_benign': autofocus_benign,
-                    'autofocus_grayware': autofocus_grayware
-                }
-            )
-
-            if indicator_type == FeedIndicatorType.IP and ':' in indicator_value:
-                indicator_value, port = indicator_value.split(':', 1)
-                indicator_raw_json['autofocus_port'] = port
-
-            single_indicator = {
-                'value': indicator_raw_json['value'],
-                'type': indicator_raw_json['type'],
-                'rawJSON': indicator_raw_json
-            }
-
-            indicators.append(single_indicator)
+            indicator_from_artifact = Client.create_indicator_from_artifact(raw_json_data, artifact)
+            if indicator_from_artifact:
+                indicators.append(indicator_from_artifact)
 
         return indicators
 
@@ -373,7 +347,7 @@ class Client(BaseClient):
         if limit:
             parsed_indicators = parsed_indicators[int(offset): int(offset) + int(limit)]
 
-        return parsed_indicators[:10]
+        return parsed_indicators
 
 
 def module_test_command(client: Client, args: dict):
@@ -481,8 +455,7 @@ def main():
                     indicator_feeds=params.get('indicator_feeds'),
                     custom_feed_urls=params.get('custom_feed_urls'),
                     scope_type=params.get('scope_type'),
-                    sample_query=params.get('sample_query'),
-                    sample_size=params.get('sample_size'))
+                    sample_query=params.get('sample_query'))
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')

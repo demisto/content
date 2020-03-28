@@ -40,11 +40,6 @@ configuration:
   name: sample_query
   required: false
   type: 0
-- additionalinfo: Number of results to fetch. Default is 10. Only necessary in case a Sample Feed is fetched.
-  display: Sample Feed number of results to fetch
-  name: sample_size
-  required: false
-  type: 0
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: Bad
   display: Indicator Reputation
