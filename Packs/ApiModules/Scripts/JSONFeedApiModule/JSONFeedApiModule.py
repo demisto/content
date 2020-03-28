@@ -194,7 +194,15 @@ def extract_all_fields_from_indicator(indicator, indicator_key):
     Returns:
         dict. A dictionary of the fields in the JSON object.
     """
-    fields = {}
+    fields = {}  # type: dict
+
+    def insert_value_to_fields(key, value):
+        if key in fields:
+            if not isinstance(fields[key], list):
+                fields[key] = [fields[key]]
+            fields[key].append(value)
+        else:
+            fields[key] = value
 
     def extract(json_element):
         if isinstance(json_element, dict):
@@ -202,16 +210,17 @@ def extract_all_fields_from_indicator(indicator, indicator_key):
                 if value and isinstance(value, dict):
                     extract(value)
                 elif key != indicator_key:
-                    fields[key] = value
+                    insert_value_to_fields(key, value)
+
         elif json_element and indicator_key not in json_element:
-            fields.update(json_element)
+            for key, value in json_element:
+                insert_value_to_fields(key, value)
 
     extract(indicator)
     return fields
 
 
 def feed_main(params, feed_name, prefix):
-    # handle proxy settings
     handle_proxy()
 
     client = Client(**params)
