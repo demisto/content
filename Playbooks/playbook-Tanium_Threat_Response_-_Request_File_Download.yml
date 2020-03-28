@@ -1,6 +1,7 @@
 elasticcommonfields: {}
 id: Tanium Threat Response - Request File Download
 version: -1
+fromversion: ""
 name: Tanium Threat Response - Request File Download
 description: Request file download from Tanium.
 starttaskid: "0"
@@ -13,6 +14,7 @@ tasks:
       elasticcommonfields: {}
       id: d8c82418-fe27-4e68-880d-a871016a49af
       version: -1
+      description: ""
       name: ""
       iscommand: false
       brand: ""
@@ -137,6 +139,7 @@ tasks:
       id: 544e1dad-1998-4feb-84e9-d6d564ffb89e
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -195,6 +198,7 @@ tasks:
       id: 85c86dac-494b-45e0-8f8b-57c96feaac15
       version: -1
       name: Delete connection?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -290,6 +294,7 @@ tasks:
       id: 64bba2d4-252f-4a4a-8ed2-287d40c94def
       version: -1
       name: Should the file be downloaded?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -367,6 +372,7 @@ tasks:
       elasticcommonfields: {}
       id: 6b52dd00-5f7e-468b-8b8a-ba9161b7378e
       version: -1
+      description: ""
       name: Tanium Threat Response - Create Connection
       playbookName: Tanium Threat Response - Create Connection
       type: playbook
