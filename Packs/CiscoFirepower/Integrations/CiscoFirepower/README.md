@@ -70,8 +70,8 @@ Retrieves a list of all security zone objects.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The number of items to return.<br>The default is 50. | Optional | 
-| offset | Index of first item to return.<br>The default is 0. | Optional | 
+| limit | The number of items to return. The default is 50. | Optional | 
+| offset | Index of first item to return. The default is 0. | Optional | 
 
 ##### Context Output
 
@@ -101,8 +101,8 @@ Retrieves list of all port objects.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The number of items to return.<br>The default is 50. | Optional | 
-| offset | Index of first item to return.<br>The default is 0. | Optional | 
+| limit | The number of items to return. The default is 50. | Optional | 
+| offset | Index of first item to return. The default is 0. | Optional | 
 
 
 ##### Context Output
@@ -132,8 +132,8 @@ Retrieves a list of all URL category objects.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The number of items to return.<br>The default is 50. | Optional | 
-| offset | Index of first item to return.<br>The default is 0. | Optional | 
+| limit | The number of items to return. The default is 50. | Optional | 
+| offset | Index of first item to return. The default is 0. | Optional | 
 
 
 ##### Context Output
@@ -162,8 +162,8 @@ Retrieves the network objects associated with the specified ID. If not supplied,
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | object_id | Object ID. | Optional | 
-| limit | The number of items to return.<br>The default is 50. | Optional | 
-| offset | Index of first item to return.<br>The default is 0. | Optional | 
+| limit | The number of items to return. The default is 50. | Optional | 
+| offset | Index of first item to return. The default is 0. | Optional | 
 
 
 ##### Context Output
@@ -264,8 +264,8 @@ Retrieves the groups of network objects and addresses associated with the specif
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | ID of the object group for which to return groups and addresses. | Optional | 
-| limit | The number of items to return.<br>The default is 50. | Optional | 
-| offset | Index of the first item to return.<br>The default is 0. | Optional | 
+| limit | The number of items to return. The default is 50. | Optional | 
+| offset | Index of the first item to return. The default is 0. | Optional | 
 
 
 ##### Context Output
@@ -415,8 +415,8 @@ Retrieves the groups of host objects associated with the specified ID. If no ID 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | object_id | ID of the object for which to retrieve host objects. | Optional | 
-| limit | Number of items to return.<br>The default is 50 | Optional | 
-| offset | Index of the first item to return.<br>The default is 0. | Optional | 
+| limit | Number of items to return. The default is 50 | Optional | 
+| offset | Index of the first item to return. The default is 0. | Optional | 
 
 
 ##### Context Output
@@ -578,8 +578,8 @@ Retrieves the access control policy associated with the specified ID. If no acce
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | ID of the access policy. | Optional | 
-| limit | The maximum number of items to return.<br>The default is 50. | Optional | 
-| offset | Index of first item to return.<br>The default is 0. | Optional | 
+| limit | The maximum number of items to return. The default is 50. | Optional | 
+| offset | Index of first item to return. The default is 0. | Optional | 
 
 
 ##### Context Output
@@ -699,8 +699,8 @@ Retrieves a list of all custom security group tag objects.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of items to return.<br>The default is 50 | Optional | 
-| offset | Index of first item to return.<br>The default is 0. | Optional | 
+| limit | The maximum number of items to return. The default is 50 | Optional | 
+| offset | Index of first item to return. The default is 0. | Optional | 
 
 
 ##### Context Output
@@ -729,8 +729,8 @@ Retrieves a list of all ISE security group tag objects.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of items to return.<br>The default is 50. | Optional | 
-| offset | Index of first item to return.<br>The default is 0. | Optional | 
+| limit | The maximum number of items to return. The default is 50. | Optional | 
+| offset | Index of first item to return. The default is 0. | Optional | 
 
 
 ##### Context Output
@@ -760,8 +760,8 @@ Retrieves a list of all vlantag objects.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of items to return.<br>The default is 50. | Optional | 
-| offset | Index of first item to return.<br>The default is 0. | Optional | 
+| limit | The maximum number of items to return. The default is 50. | Optional | 
+| offset | Index of first item to return. The default is 0. | Optional | 
 
 
 ##### Context Output
@@ -793,8 +793,8 @@ Retrieves a list of all vlan group tag objects.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of items to return.<br>The default is 50. | Optional | 
-| offset | Index of first item to return.<br>The default is 0. | Optional | 
+| limit | The maximum number of items to return. The default is 50. | Optional | 
+| offset | Index of first item to return. The default is 0. | Optional | 
 
 
 ##### Context Output
@@ -830,8 +830,8 @@ Retrieves a list of all application objects.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of items to return.<br>The default is 50. | Optional | 
-| offset | Index of first item to return.<br>The default is 0 | Optional | 
+| limit | The maximum number of items to return. The default is 50. | Optional | 
+| offset | Index of first item to return. The default is 0 | Optional | 
 
 
 ##### Context Output
@@ -1031,7 +1031,7 @@ Updates the specified access control rule.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| update_strategy | The method by which to update the rule. Can be "merge" or "override".<br>If merge, will add the changes requested to the existing rule.<br>If override, will override the fields with the inputs provided and will delete any fields that were not provided. | Required | 
+| update_strategy | The method by which to update the rule. Can be "merge" or "override". If merge, will add the changes requested to the existing rule. If override, will override the fields with the inputs provided and will delete any fields that were not provided. | Required | 
 | action | The rule action that determines how the system handles matching traffic. Can be "ALLOW", "TRUST", "BLOCK", "MONITOR", "BLOCK_RESET", "BLOCK_INTERACTIVE", or "BLOCK_RESET_INTERACTIVE". | Optional | 
 | rule_name | The rule name. | Optional | 
 | enabled | Boolean indicating whether to enable the rule. The default is "true". | Optional | 
@@ -1199,8 +1199,8 @@ Retrieves a list of all policy assignments to target devices.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of items to return.<br>The default is 50 | Optional | 
-| offset | Index of first item to return.<br>The default is 0 | Optional | 
+| limit | The maximum number of items to return. The default is 50 | Optional | 
+| offset | Index of first item to return. The default is 0 | Optional | 
 
 
 ##### Context Output
@@ -1303,8 +1303,8 @@ Retrieves a list of all devices with configuration changes that are ready to dep
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of items to return.<br>The default is 50. | Optional | 
-| offset | Index of first item to return.<br>The default is 0. | Optional | 
+| limit | The maximum number of items to return. The default is 50. | Optional | 
+| offset | Index of first item to return. The default is 0. | Optional | 
 
 
 ##### Context Output
@@ -1337,8 +1337,8 @@ Retrieves list of all device records.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of items to return.<br>The default is 50. | Optional | 
-| offset | Index of first item to return.<br>The default is 0. | Optional | 
+| limit | The maximum number of items to return. The default is 50. | Optional | 
+| offset | Index of first item to return. The default is 0. | Optional | 
 
 
 ##### Context Output
