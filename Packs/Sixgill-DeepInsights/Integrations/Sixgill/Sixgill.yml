@@ -56,6 +56,14 @@ configuration:
   name: insecure
   required: false
   type: 8
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
 description: Define key assets relevant to your brand, industry and geolocation. Obtain
   bespoke threat intelligence automatically gathered from exclusive deep, dark and
   surface web sources-delivered straight into the Demisto platform. Detailed actionable
