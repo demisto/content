@@ -1,4 +1,5 @@
 ## [Unreleased]
+Renamed the **Sub-Feeds** parameter to **Services** in the instance configuration.
 
 
 ## [20.3.3] - 2020-03-18

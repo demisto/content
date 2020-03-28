@@ -14,9 +14,19 @@
             "timeout": 1000
         },
         {
+            "integrations": "JSON Feed",
+            "playbookID": "JSON_Feed_Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Plain Text Feed",
             "playbookID": "PlainText Feed - Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Silverfort",
+            "playbookID": "Silverfort-test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Fastly Feed",
