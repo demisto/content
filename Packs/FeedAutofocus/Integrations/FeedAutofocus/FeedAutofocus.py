@@ -47,7 +47,7 @@ class Client(BaseClient):
     """
 
     def __init__(self, api_key, insecure, proxy, indicator_feeds, custom_feed_urls=None,
-                 scope_type=None, sample_query=None, sample_size=None):
+                 scope_type=None, sample_query=None, sample_size=10):
         self.api_key = api_key
         self.indicator_feeds = indicator_feeds
 
