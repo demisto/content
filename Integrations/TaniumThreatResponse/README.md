@@ -1383,14 +1383,14 @@ Gets the children of this process instance.
         "ProcessChildren": [
             {
                 "ID": 667681,
-                "Name": "0: <Unknown Process>",
+                "Name": "0: Unknown Process",
                 "PID": 0,
                 "PTID": 667681,
                 "Parent": "4: System"
             },
             {
                 "ID": 667682,
-                "Name": "1: <Pruned Process>",
+                "Name": "1: Pruned Process",
                 "PID": 1,
                 "PTID": 667682,
                 "Parent": "4: System"
@@ -1411,8 +1411,8 @@ Gets the children of this process instance.
 ### Children for process with PTID 667680
 |ID|Name|PID|PTID|Parent|Children Count|
 |---|---|---|---|---|---|
-| 667681 | 0: <Unknown Process> | 0 | 667681 | 4: System | 0 |
-| 667682 | 1: <Pruned Process> | 1 | 667682 | 4: System | 0 |
+| 667681 | 0: Unknown Process | 0 | 667681 | 4: System | 0 |
+| 667682 | 1: Pruned Process | 1 | 667682 | 4: System | 0 |
 | 667683 | 392: smss.exe | 392 | 667683 | 4: System | 0 |
 
 
@@ -1516,7 +1516,7 @@ Gets the parent process tree for the process instance.
                 {
                     "Children": [],
                     "ID": 667681,
-                    "Name": "0: <Unknown Process>",
+                    "Name": "0: Unknown Process",
                     "PID": 0,
                     "PTID": 667681,
                     "Parent": "4: System"
@@ -1524,7 +1524,7 @@ Gets the parent process tree for the process instance.
                 {
                     "Children": [],
                     "ID": 667682,
-                    "Name": "1: <Pruned Process>",
+                    "Name": "1: Pruned Process",
                     "PID": 1,
                     "PTID": 667682,
                     "Parent": "4: System"
@@ -1555,8 +1555,8 @@ Gets the parent process tree for the process instance.
 ### Processes with the same parent
 |ID|Name|PID|PTID|Parent|Children Count|
 |---|---|---|---|---|---|
-| 667681 | 0: <Unknown Process> | 0 | 667681 | 4: System | 0 |
-| 667682 | 1: <Pruned Process> | 1 | 667682 | 4: System | 0 |
+| 667681 | 0: Unknown Process | 0 | 667681 | 4: System | 0 |
+| 667682 | 1: Pruned Process | 1 | 667682 | 4: System | 0 |
 | 667683 | 392: smss.exe | 392 | 667683 | 4: System | 0 |
 
 
@@ -1600,7 +1600,7 @@ Gets the process tree for the process instance.
                 {
                     "Children": [],
                     "ID": 667681,
-                    "Name": "0: <Unknown Process>",
+                    "Name": "0: Unknown Process",
                     "PID": 0,
                     "PTID": 667681,
                     "Parent": "4: System"
@@ -1608,7 +1608,7 @@ Gets the process tree for the process instance.
                 {
                     "Children": [],
                     "ID": 667682,
-                    "Name": "1: <Pruned Process>",
+                    "Name": "1: Pruned Process",
                     "PID": 1,
                     "PTID": 667682,
                     "Parent": "4: System"
@@ -1639,8 +1639,8 @@ Gets the process tree for the process instance.
 ### Children for process with PTID 667680
 |ID|Name|PID|PTID|Parent|Children Count|
 |---|---|---|---|---|---|
-| 667681 | 0: <Unknown Process> | 0 | 667681 | 4: System | 0 |
-| 667682 | 1: <Pruned Process> | 1 | 667682 | 4: System | 0 |
+| 667681 | 0: Unknown Process | 0 | 667681 | 4: System | 0 |
+| 667682 | 1: Pruned Process | 1 | 667682 | 4: System | 0 |
 | 667683 | 392: smss.exe | 392 | 667683 | 4: System | 0 |
 
 
