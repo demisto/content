@@ -40,10 +40,7 @@ Fetching Sixgill DarkFeed indicators
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Devo.AlertsResults | list of dictionaries | List of dictionary alerts in specified time range |
-| Devo.QueryLink | string | Link back to Devo table for executed query |
+There is no context output for this command.
 
 ##### Command Example
 ```!sixgill-get-indicators ```
