@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Tanium Threat Response",
+            "playbookID": "Tanium Threat Response Test"
+        },
+        {
             "integrations": ["Syslog Sender", "syslog"],
             "playbookID": "Test Syslog",
             "fromversion": "5.5.0",

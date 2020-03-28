@@ -371,7 +371,7 @@ script:
     - default: false
       description: The connection name.
       isArray: false
-      name: connection_name
+      name: connection-name
       required: true
       secret: false
     deprecated: false
@@ -451,7 +451,7 @@ script:
     - default: false
       description: The connection name.
       isArray: false
-      name: connection_name
+      name: connection-name
       required: true
       secret: false
     deprecated: false
@@ -467,9 +467,9 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The directory name.
+      description: The connection name.
       isArray: false
-      name: directory-name
+      name: connection-name
       required: true
       secret: false
     - default: false
@@ -479,7 +479,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Deletes a local snapshot by directory name and file name.
+    description: Deletes a local snapshot by connection name and file name.
     execution: false
     name: tanium-tr-delete-local-snapshot
     outputs:
@@ -531,6 +531,9 @@ script:
     - contextPath: Tanium.Connection.DST
       description: The connection's DST.
       type: String
+    - contextPath: Tanium.Connection.OSName
+      description: The connection's operating system.
+      type: String
   - arguments:
     - default: false
       description: The connection name.
@@ -564,6 +567,9 @@ script:
       type: String
     - contextPath: Tanium.Connection.DST
       description: The connection's DST.
+      type: String
+    - contextPath: Tanium.Connection.OSName
+      description: The connection's operating system.
       type: String
   - arguments:
     - auto: PREDEFINED
@@ -1326,9 +1332,6 @@ script:
     - contextPath: Tanium.Evidence.User
       description: The user of the evidence.
       type: String
-    - contextPath: Tanium.Evidence.Host
-      description: The evidence host.
-      type: String
     - contextPath: Tanium.Evidence.ConnectionName
       description: The evidence connection name.
       type: String
@@ -1376,9 +1379,6 @@ script:
       type: Date
     - contextPath: Tanium.Evidence.User
       description: The user of the evidence.
-      type: String
-    - contextPath: Tanium.Evidence.Host
-      description: The evidence host.
       type: String
     - contextPath: Tanium.Evidence.ConnectionName
       description: The evidence connection name.
@@ -1460,7 +1460,7 @@ script:
     - contextPath: Tanium.FileDownload.Path
       description: The file download path.
       type: String
-    - contextPath: Tanium.FileDownload.Host
+    - contextPath: Tanium.FileDownload.ConnectionName
       description: The file download host.
       type: String
     - contextPath: Tanium.FileDownload.Downloaded
@@ -1684,9 +1684,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The host to which the request was made.
+      description: The connection to which the request was made.
       isArray: false
-      name: host
+      name: connection-name
       required: false
       secret: false
     - default: false
@@ -1703,7 +1703,7 @@ script:
     - contextPath: Tanium.DownloadFile.ID
       description: ID of the file download.
       type: Number
-    - contextPath: Tanium.DownloadFile.Host
+    - contextPath: Tanium.DownloadFile.ConnectionName
       description: Host of the file.
       type: String
     - contextPath: Tanium.DownloadFile.Path
