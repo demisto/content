@@ -1381,7 +1381,7 @@ script:
     - contextPath: Account.Email
       description: Okta account emails returned by search.
       type: string
-    - contextPath: Accout.DisplayName
+    - contextPath: Account.DisplayName
       description: Okta account display names returned by search.
       type: string
     - contextPath: Account.Type
