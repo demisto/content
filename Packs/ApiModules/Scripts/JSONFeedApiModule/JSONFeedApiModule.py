@@ -177,7 +177,7 @@ def fetch_indicators_command(client: Client, indicator_type: str, **kwargs) -> U
                         if map_key in attributes:
                             indicator['fields'][mapping[map_key]] = attributes.get(map_key)
 
-                indicator['rawJSON'] = attributes
+                indicator['rawJSON'] = item
 
                 indicators.append(indicator)
 
