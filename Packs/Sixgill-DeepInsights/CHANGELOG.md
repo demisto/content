@@ -1,6 +1,6 @@
 ## [Unreleased]
 
-## [20.3.2] - 2020-03-28
+## 1.0.0
   - Updated Readme
   - Updated DockerImage
   - Deprecated get-indicators command
