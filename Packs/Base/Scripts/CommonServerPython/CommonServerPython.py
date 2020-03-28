@@ -115,9 +115,6 @@ class FeedIndicatorType(object):
     Email = "Email"
     File = "File"
     FQDN = "Domain"
-    MD5 = "File MD5"
-    SHA1 = "File SHA-1"
-    SHA256 = "File SHA-256"
     Host = "Host"
     IP = "IP"
     CIDR = "CIDR"
@@ -136,9 +133,6 @@ class FeedIndicatorType(object):
             FeedIndicatorType.DomainGlob,
             FeedIndicatorType.Email,
             FeedIndicatorType.File,
-            FeedIndicatorType.MD5,
-            FeedIndicatorType.SHA1,
-            FeedIndicatorType.SHA256,
             FeedIndicatorType.Host,
             FeedIndicatorType.IP,
             FeedIndicatorType.CIDR,
@@ -1710,7 +1704,7 @@ def return_outputs(readable_output, outputs=None, raw_response=None, timeline=No
     raw response from the 3rd party service (originally Contents)
 
     :type timeline: ``dict`` | ``list``
-    :param timeline: expects a list, if a dict is passed it will be put into a list. used by server to populate an 
+    :param timeline: expects a list, if a dict is passed it will be put into a list. used by server to populate an
     indicator's timeline
 
     :return: None
@@ -2479,7 +2473,7 @@ if 'requests' in sys.modules:
 
         def _http_request(self, method, url_suffix, full_url=None, headers=None,
                           auth=None, json_data=None, params=None, data=None, files=None,
-                          timeout=10, resp_type='json', ok_codes=None, **kwargs):
+                          timeout=10, resp_type='json', ok_codes=None, return_empty_response = False, **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
             :type method: ``str``
@@ -2564,6 +2558,10 @@ if 'requests' in sys.modules:
                         raise DemistoException(err_msg)
                     except ValueError as exception:
                         raise DemistoException(err_msg, exception)
+
+                is_response_empty_and_successful = (res.status_code == 204)
+                if is_response_empty_and_successful and return_empty_response:
+                    return res
 
                 resp_type = resp_type.lower()
                 try:

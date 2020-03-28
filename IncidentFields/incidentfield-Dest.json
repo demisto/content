@@ -25,11 +25,13 @@
     "hidden": false,
     "associatedTypes": [
         "Access",
-        "Malware"
+        "Malware",
+        "Brute Force"
     ],
     "systemAssociatedTypes": [
         "Access",
-        "Malware"
+        "Malware",
+        "Brute Force"
     ],
     "associatedToAll": false,
     "unmapped": false,
