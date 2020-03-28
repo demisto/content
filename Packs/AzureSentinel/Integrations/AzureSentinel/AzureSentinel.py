@@ -61,7 +61,7 @@ class Client:
         if not full_url:
             params['api-version'] = API_VERSION
 
-        res = self.ms_client.http_request(method=method,
+        res = self.ms_client.http_request(method=method,  # disable-secrets-detection
                                           url_suffix=url_suffix,
                                           full_url=full_url,
                                           json_data=data,
@@ -238,6 +238,7 @@ def list_incidents_command(client, args, is_fetch_incidents=False):
     next_link = args.get('next_link')
 
     if next_link:
+        next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
         result = client.http_request('GET', full_url=next_link)
     else:
         url_suffix = 'incidents'
@@ -257,7 +258,8 @@ def list_incidents_command(client, args, is_fetch_incidents=False):
 
     outputs = {'AzureSentinel.Incident(val.ID === obj.ID)': incidents}
 
-    next_link = result.get('nextLink')
+    # we don't want whitespaces in this value, so it won't be considered as two arguments in the CLI by mistake
+    next_link = result.get('nextLink', '').replace(' ', '%20')
     if next_link:
         next_link_item = {
             'Description': NEXTLINK_DESCRIPTION,
@@ -320,6 +322,7 @@ def list_incident_comments_command(client, args):
     next_link = args.get('next_link')
 
     if next_link:
+        next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
         result = client.http_request('GET', full_url=next_link)
     else:
         url_suffix = f'incidents/{inc_id}/comments'
@@ -332,7 +335,8 @@ def list_incident_comments_command(client, args):
 
     outputs = {f'AzureSentinel.IncidentComment(val.ID === obj.ID && val.IncidentID === {inc_id})': comments}
 
-    next_link = result.get('nextLink')
+    # we don't want whitespaces in this value, so it won't be considered as two arguments in the CLI by mistake
+    next_link = result.get('nextLink', '').replace(' ', '%20')
     if next_link:
         next_link_item = {
             'Description': NEXTLINK_DESCRIPTION,
@@ -414,6 +418,7 @@ def list_entity_relations_command(client, args):
     filter_expression = args.get('filter', '')
 
     if next_link:
+        next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
         result = client.http_request('GET', full_url=next_link)
     else:
         # Handle entity kinds to filter by
@@ -435,7 +440,8 @@ def list_entity_relations_command(client, args):
 
     outputs = {f'AzureSentinel.EntityRelatedResource(val.ID === obj.ID && val.EntityID == {entity_id})': relations}
 
-    next_link = result.get('nextLink')
+    # we don't want whitespaces in this value, so it won't be considered as two arguments in the CLI by mistake
+    next_link = result.get('nextLink', '').replace(' ', '%20')
     if next_link:
         next_link_item = {
             'Description': NEXTLINK_DESCRIPTION,
@@ -462,6 +468,7 @@ def list_incident_relations_command(client, args):
     filter_expression = args.get('filter', '')
 
     if next_link:
+        next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
         result = client.http_request('GET', full_url=next_link)
     else:
         # Handle entity kinds to filter by
@@ -483,7 +490,8 @@ def list_incident_relations_command(client, args):
 
     outputs = {f'AzureSentinel.IncidentRelatedResource(val.ID === obj.ID && val.IncidentID == {inc_id})': relations}
 
-    next_link = result.get('nextLink')
+    # we don't want whitespaces in this value, so it won't be considered as two arguments in the CLI by mistake
+    next_link = result.get('nextLink', '').replace(' ', '%20')
     if next_link:
         next_link_item = {
             'Description': NEXTLINK_DESCRIPTION,

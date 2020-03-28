@@ -103,7 +103,7 @@ script:
       description: The name of the incident's assignee.
       type: String
     - contextPath: AzureSentinel.Incident.AssigneeEmail
-      description: The email of the incideint's assignee.
+      description: The email of the incident's assignee.
       type: String
     - contextPath: AzureSentinel.Incident.Label.Name
       description: The name of the incident's label.
@@ -166,9 +166,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A link that specifies a strating point to use for subsequent calls.
-        Using this argument overrides all of the other command arguments. Note: wrap
-        your input with backticks, as the link might have space characters.'
+      description: 'A link that specifies a starting point to use for subsequent calls.
+        Using this argument overrides all of the other command arguments.'
       isArray: false
       name: next_link
       required: false
@@ -194,16 +193,16 @@ script:
       description: The status of the incident.
       type: String
     - contextPath: AzureSentinel.Incident.AssigneeName
-      description: The name of the incideint's assignee.
+      description: The name of the incident's assignee.
       type: String
     - contextPath: AzureSentinel.Incident.AssigneeEmail
-      description: The email of the incideint's assignee.
+      description: The email of the incident's assignee.
       type: String
     - contextPath: AzureSentinel.Incident.Label.Name
-      description: The nsme of the incideint's label.
+      description: The nsme of the incident's label.
       type: String
     - contextPath: AzureSentinel.Incident.Label.Type
-      description: The type of the incideint's label.
+      description: The type of the incident's label.
       type: String
     - contextPath: AzureSentinel.Incident.FirstActivityTimeUTC
       description: The incident's first activity time.
@@ -315,16 +314,16 @@ script:
       description: The status of the incident.
       type: String
     - contextPath: AzureSentinel.Incident.AssigneeName
-      description: The name of the incideint's assignee.
+      description: The name of the incident's assignee.
       type: String
     - contextPath: AzureSentinel.Incident.AssigneeEmail
-      description: The email of the incideint's assignee.
+      description: The email of the incident's assignee.
       type: String
     - contextPath: AzureSentinel.Incident.Label.Name
-      description: The name of the incideint's label.
+      description: The name of the incident's label.
       type: String
     - contextPath: AzureSentinel.Incident.Label.Type
-      description: The type of the incideint's label.
+      description: The type of the incident's label.
       type: String
     - contextPath: AzureSentinel.Incident.FirstActivityTimeUTC
       description: The incident's first activity time.
@@ -392,9 +391,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A link that specifies a strating point to use for subsequent calls.
-        Using this argument overrides all of the other command arguments. Note: wrap
-        your input with backticks, as the link might have space characters.'
+      description: 'A link that specifies a starting point to use for subsequent calls.
+        Using this argument overrides all of the other command arguments.'
       isArray: false
       name: next_link
       required: false
@@ -481,9 +479,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A link that specifies a strating point to use for subsequent calls.
-        Using this argument overrides all of the other command arguments. Note: wrap
-        your input with backticks, as the link might have space characters.'
+      description: 'A link that specifies a starting point to use for subsequent calls.
+        Using this argument overrides all of the other command arguments.'
       isArray: false
       name: next_link
       required: false
@@ -555,9 +552,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A link that specifies a strating point to use for subsequent calls.
-        Using this argument overrides all of the other command arguments. Note: wrap
-        your input with backticks, as the link might have space characters.'
+      description: 'A link that specifies a starting point to use for subsequent calls.
+        Using this argument overrides all of the other command arguments.'
       isArray: false
       name: next_link
       required: false
