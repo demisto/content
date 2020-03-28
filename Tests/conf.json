@@ -19,6 +19,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "Silverfort",
+            "playbookID": "Silverfort-test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Fastly Feed",
             "playbookID": "Fastly Feed Test",
             "fromversion": "5.5.0"
@@ -2636,6 +2641,7 @@
         "Fidelis Elevate Network": "Issue 20735",
         "Minerva Labs Anti-Evasion Platform": "Issue 18835",
         "PolySwarm": "contribution",
+        "Silverfort": "contribution",
         "fireeye": "Issue 19839",
         "DomainTools": "Issue 8298",
         "Remedy On-Demand": "Issue 19835",
