@@ -17,7 +17,7 @@ Use the Export Indicators Service integration to provide an endpoint with a list
     * __Outbound Format__: The default format of the entries in the service. Supported formats: text, json, json-seq, csv, XSAOR json, XSAOR json-seq, XSOAR csv, PAN-OS URL, Symantec ProxySG and McAfee Web Gateway.
     * __List Size__: Max amount of entries in the service instance.
     * __Update On Demand Only__: When set to true, will only update the service indicators via **eis-update** command.
-    * __Refresh Rate__: How often to refresh the export indicators list (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3
+    * __Refresh Rate__: How often to refresh the export indicators list (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3
     months, 1 year)
     * __Collapse IPs__: Whether to collapse IPs and if so - to ranges or CIDRs
     * __Long Running Instance__: Must be set to true, otherwise the service will be available.

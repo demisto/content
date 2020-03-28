@@ -21,7 +21,7 @@ Fetch indicators stored in an Elasticsearch database.
         configured enviornment. Cortex XSOAR MT Shared Feed are indicators shared by a
         tenant in a MT env. Generic Feed is a feed in a format dictated by the user
     * __Fetch indicators__: Enable/Disable
-    * __First Fetch Time__: Determine how far to look back for fetched indicators (<number> <time unit>, e.g., 12 hours, 7 days).
+    * __First Fetch Time__: Determine how far to look back for fetched indicators (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days).
     * __Indicator Reputation__: Indicators from this integration instance will be marked with this reputation.
     * __Source Reliability__: Reliability of the source providing the intelligence data.
     * __Indicator Value Field__: Source field that contains the indicator value in the index.
