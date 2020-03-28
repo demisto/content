@@ -650,7 +650,11 @@ def ingest_alert_command():
         Ingest an alert into Threat Response.
     """
     args = demisto.args()
-    json_source_id = args.pop('json_source_id')
+    json_source_id = args.pop('post_url_id', demisto.params().get('post_url_id'))
+
+    if not json_source_id:
+        return_error("To ingest alert into TRAP, you mast specify a post_url_id,"
+                     "either as an argument or as an integration parameter.")
 
     request_body = prepare_ingest_alert_request_body(assign_params(**args))
     fullurl = BASE_URL + 'threat/json_event/events/{}'.format(json_source_id)
