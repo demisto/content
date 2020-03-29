@@ -24,16 +24,15 @@ username_req = [
         u' data breach they titled "50 days of lulz"</a>. The compromised data came from'
         u' sources such as AT&T, Battlefield Heroes and the <a href="http://hackforums.'
         u'net" target="_blank" rel="noopener">hackforums.net website</a>. The leaked '
-        u'Hack Forums data included credentials and personal information of nearly '
-        u'200,000 registered forum users.'
-                               }
+        u'Hack Forums data included credentials and personal information of nearly 200,000 registered forum users.'
+    }
 ]
 
 domain_req = [
     {
         u'PwnCount': 152445165, u'Domain': u'adobe.com', u'IsSensitive': False, u'Name': u'Adobe', u'Title':
-        u'Adobe', u'DataClasses': [u'Email addresses', u'Password hints', u'Passwords', u'Usernames'], u'IsRetired': False,
-        u'IsSpamList': False, u'BreachDate': u'2013-10-04', u'IsFabricated': False, u'ModifiedDate':
+        u'Adobe', u'DataClasses': [u'Email addresses', u'Password hints', u'Passwords', u'Usernames'], u'IsRetired':
+        False, 'IsSpamList': False, u'BreachDate': u'2013-10-04', u'IsFabricated': False, u'ModifiedDate':
         u'2013-12-04T00:00:00Z', u'LogoPath': u'https://haveibeenpwned.com/Content/Images/PwnedLogos/Adobe'
         u'.png', u'AddedDate': u'2013-12-04T00:00:00Z', u'IsVerified':
         True, u'Description': u'In October 2013, 153 million Adobe accounts were breached with each'
