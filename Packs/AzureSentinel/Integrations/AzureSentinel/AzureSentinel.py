@@ -205,7 +205,7 @@ def severity_to_level(severity):
 
 def test_module(client):
     try:
-        # client.ms_client.get_access_token()
+        client.ms_client.get_access_token()
         return 'ok'
     except Exception:
         raise ValueError('Please check your instance configuration.')
