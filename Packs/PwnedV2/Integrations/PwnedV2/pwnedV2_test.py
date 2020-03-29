@@ -27,5 +27,7 @@ def test_pwned_commands(command, args, response, expected_result, mocker):
     validate the expected_result and the created context
     """
     mocker.patch('pwnedV2.http_request', return_value=response)
-    result = command(args)
-    assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
+    for args in command(args):
+        hr, outputs, raw = args
+        assert expected_result == outputs  # entry context is found in the 2nd place in the result of the command
+
