@@ -4,7 +4,7 @@ import time
 from pprint import pformat
 import uuid
 import ast
-import urllib
+import urllib.parse
 import urllib3
 import requests.exceptions
 from demisto_client.demisto_api.rest import ApiException
@@ -350,7 +350,7 @@ def __delete_incident(client, incident, prints_manager, thread_index=0):
 def __delete_integration_instance(client, instance_id, prints_manager, thread_index=0):
     try:
         res = demisto_client.generic_request_func(self=client, method='DELETE',
-                                                  path='/settings/integration/' + urllib.quote(
+                                                  path='/settings/integration/' + urllib.parse.quote(
                                                       instance_id))
     except requests.exceptions.RequestException as conn_err:
         error_message = 'Failed to delete integration instance, error trying to communicate with demisto ' \
@@ -379,7 +379,7 @@ def __print_investigation_error(client, playbook_id, investigation_id, prints_ma
     try:
         empty_json = {"pageSize": 1000}
         res = demisto_client.generic_request_func(self=client, method='POST',
-                                                  path='/investigation/' + urllib.quote(
+                                                  path='/investigation/' + urllib.parse.quote(
                                                       investigation_id), body=empty_json)
     except requests.exceptions.RequestException as conn_err:
         error_message = 'Failed to print investigation error, error trying to communicate with demisto ' \
