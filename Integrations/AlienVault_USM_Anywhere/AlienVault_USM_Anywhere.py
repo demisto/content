@@ -306,7 +306,7 @@ def search_alarms_command():
 def search_alarms(start_time=None, end_time=None, status=None, priority=None, show_suppressed=None,
                   limit=100, rule_intent=None, rule_method=None, rule_strategy=None, direction='desc'):
     params = {
-        'page': 1,
+        'page': 0,
         'size': limit,
         'sort': 'timestamp_occured,{}'.format(direction),
         'suppressed': show_suppressed
