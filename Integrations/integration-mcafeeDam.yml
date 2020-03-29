@@ -8,7 +8,7 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAiCAYAAACUcR1DAAAAAXN
 description: McAfee Database Activity Monitoring
 detaileddescription: |-
   ## McAfee DAM
-  Make sure that the XML API interface is enabled on your McAfee DAM server (Settings -> Interfaces -> XML API), and that the configured user has read permissions to query DAM Alerts and Sensors (XML API).
+  Make sure that the XML API interface is enabled on your McAfee DAM server (Settings > Interfaces > XML API), and that the configured user has read permissions to query DAM Alerts and Sensors (XML API).
 
   **Important:** The user configured in McAfee DAM must have the *Use XML API* permission as documented [here](https://docs.mcafee.com/bundle/database-security-4.6.5-product-guide/page/GUID-9018582C-321F-46A3-AB12-FABF16FCE12B.html).
 
@@ -313,65 +313,65 @@ script:
     - name: id
       required: true
       default: true
-      description: The alert ID
+      description: The alert ID.
     outputs:
     - contentPath: id
       contextPath: AlertId
-      description: DAM Alert ID
+      description: DAM alert ID.
     - contentPath: accessedObjects.object.name
       contextPath: alertAccessedObjects
-      description: DAM Accessed Objects
+      description: DAM accessed objects.
     - contentPath: execUser
       contextPath: dbUser
-      description: DAM Database User
+      description: DAM database user.
     - contentPath: osUser
       contextPath: Account.Username
-      description: DAM OS User
+      description: DAM OS user.
     - contentPath: database
       contextPath: database
-      description: DAM Database
+      description: DAM database.
     - contentPath: identifyingSensor
       contextPath: sensor
-      description: DAM Sensor
+      description: DAM sensor.
     - contentPath: rules
       contextPath: rules
-      description: DAM Rules
-    description: Get a DAM alert from McAfee Database Activity Monitoring by alert
-      ID
+      description: DAM rules.
+    description: Gets a DAM alert from McAfee Database Activity Monitoring by alert
+      ID.
   - name: dam-get-latest-by-rule
     arguments:
     - name: ruleName
       required: true
       default: true
-      description: Name of the rule that triggered the alert
+      description: Name of the rule that triggered the alert.
     - name: count
-      description: Number of alerts to retrieve, defaults to 10
+      description: Number of alerts to retrieve. The default is 10.
     - name: timeBack
       description: Filter DAM alerts and import alerts that where created only in
-        the last given minutes, defaults to last 10 minutes
+        the last X minutes. The default is the last 10 minutes.
     outputs:
     - contentPath: id
       contextPath: AlertId
-      description: DAM Alert ID
+      description: DAM alert ID.
     - contentPath: accessedObjects.object.name
       contextPath: alertAccessedObjects
-      description: DAM Accessed Objects
+      description: DAM accessed objects.
     - contentPath: execUser
       contextPath: dbUser
-      description: DAM Database User
+      description: DAM database user.
     - contentPath: osUser
       contextPath: Account.Username
-      description: DAM OS User
+      description: DAM OS user.
     - contentPath: database
       contextPath: database
-      description: DAM Database
+      description: DAM database.
     - contentPath: identifyingSensor
       contextPath: sensor
-      description: DAM Sensor
+      description: DAM sensor.
     - contentPath: rules
       contextPath: rules
       description: DAM Rules
-    description: Get latest DAM alerts by rule name
+    description: Gets the latest DAM alerts by rule name.
   isfetch: true
   runonce: false
 tests:
