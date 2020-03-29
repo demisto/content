@@ -238,7 +238,7 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, any]:
                                     md_info, removeNull=True)
         reports.append(report)
 
-        return markdown, context, reports
+    return markdown, context, reports
 
 
 def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, any]:
@@ -307,9 +307,6 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, any
                                     md_info, removeNull=True)
         reports.append(report)
 
-    # todo: delete print
-    print(context)
-
     return markdown, context, reports
 
 
@@ -344,7 +341,7 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, any]:
 
         dbot_score = {'Indicator': report['filename'][0], 'Type': 'File', 'Vendor': 'Maltiverse',
                       'Score': calculate_score(positive_detections, report.get('classification', ' '), threshold,
-                                               len(report['antivirus']))}
+                                               len(report.get('antivirus', [])))}
 
         blacklist_context = create_blacklist_context(report.get('blacklist', []))
 
@@ -361,7 +358,7 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, any]:
             }
         }
 
-        maltiverse_file = {string_to_context_key(field): report[field] for field in
+        maltiverse_file = {string_to_context_key(field): report.get(field, '') for field in
                            ['score', 'classification', 'modification_time', 'creation_time', 'size', 'contacted_host',
                             'dns_request']}
         maltiverse_file['PositiveDetections'] = positive_detections
@@ -387,6 +384,7 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, any]:
         markdown += tableToMarkdown(f'Maltiverse File Reputation for: {report["filename"][0]}\n',
                                     md_info, removeNull=True)
         reports.append(report)
+
     return markdown, context, reports
 
 

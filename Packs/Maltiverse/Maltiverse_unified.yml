@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: d407264e-7bf8-4122-841c-a56dd99e2851
+  id: Maltiverse
   version: -1
 configuration:
 - display: API Key
@@ -21,7 +21,7 @@ detaileddescription: |-
   - This text is markdown
   - Here you should explain how to configure the instance in Demisto
 display: Maltiverse
-name: d407264e-7bf8-4122-841c-a56dd99e2851
+name: Maltiverse
 script:
   commands:
   - arguments:
@@ -465,7 +465,7 @@ script:
         Returns:
             'ok' if test passed, anything else will fail the test.
         """
-        return 'ok' if client.ip_report('8.8.8.8') else 'Connection failed'   # disable-secrets-detection
+        return 'ok' if client.ip_report('8.8.8.8') else 'Connection failed'  # disable-secrets-detection
 
 
     def calculate_score(positive_detections: int, classification: str, threshold: int, anti_virus: int = 0) -> int:
@@ -649,7 +649,7 @@ script:
                                         md_info, removeNull=True)
             reports.append(report)
 
-            return markdown, context, reports
+        return markdown, context, reports
 
 
     def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, any]:
@@ -718,9 +718,6 @@ script:
                                         md_info, removeNull=True)
             reports.append(report)
 
-        # todo: delete print
-        print(context)
-
         return markdown, context, reports
 
 
@@ -755,7 +752,7 @@ script:
 
             dbot_score = {'Indicator': report['filename'][0], 'Type': 'File', 'Vendor': 'Maltiverse',
                           'Score': calculate_score(positive_detections, report.get('classification', ' '), threshold,
-                                                   len(report['antivirus']))}
+                                                   len(report.get('antivirus', [])))}
 
             blacklist_context = create_blacklist_context(report.get('blacklist', []))
 
@@ -772,7 +769,7 @@ script:
                 }
             }
 
-            maltiverse_file = {string_to_context_key(field): report[field] for field in
+            maltiverse_file = {string_to_context_key(field): report.get(field, '') for field in
                                ['score', 'classification', 'modification_time', 'creation_time', 'size', 'contacted_host',
                                 'dns_request']}
             maltiverse_file['PositiveDetections'] = positive_detections
@@ -798,6 +795,7 @@ script:
             markdown += tableToMarkdown(f'Maltiverse File Reputation for: {report["filename"][0]}\n',
                                         md_info, removeNull=True)
             reports.append(report)
+
         return markdown, context, reports
 
 
@@ -826,12 +824,13 @@ script:
                 return_outputs(*commands[command](client, demisto.args()))
             else:
                 return_error('Command not found.')
-        except Exception as e:  # todo: remove raise and uncomment return_error
-            raise e
-            # return_error(f'Failed to execute {command} command. Error: {e}')
+        except Exception as e:
+            return_error(f'Failed to execute {command} command. Error: {e}')
 
 
     if __name__ in ('__main__', '__builtin__', 'builtins'):
         main()
   subtype: python3
   type: python
+tests:
+- No test
