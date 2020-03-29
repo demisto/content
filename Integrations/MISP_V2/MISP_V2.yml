@@ -41,20 +41,6 @@ configuration:
   - Type
   - UUID
   - Value
-  defaultvalue:
-  - Category
-  - Comment
-  - Deleted
-  - DisableCorrelation
-  - Distribution
-  - EventID
-  - ID
-  - ObjectID
-  - Timestamp
-  - ToIDs
-  - Type
-  - UUID
-  - Value
   required: false
   type: 16
 description: Malware information sharing platform and threat sharing.
