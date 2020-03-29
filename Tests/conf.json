@@ -441,7 +441,8 @@
         },
         {
             "integrations": "MISP V2",
-            "playbookID": "MISP V2 Test"
+            "playbookID": "MISP V2 Test",
+            "memory_threshold": 150
         },
         {
             "playbookID": "test-LinkIncidentsWithRetry"
