@@ -1,0 +1,33 @@
+microsoft-atp-isolate-machine machine_id=f70f9fe6b29cd9511652434919c6530618f06606 comment="test isolate machine" isolation_type=Selective
+microsoft-atp-unisolate-machine machine_id=f70f9fe6b29cd9511652434919c6530618f06606 comment="test unisolate machine"
+microsoft-atp-get-machines health_status=Active risk_score=Medium
+microsoft-atp-get-file-related-machines file_hash=36c5d12033b2eaf251bae61c00690ffb17fddc87
+microsoft-atp-get-machine-details machine_id=f70f9fe6b29cd9511652434919c6530618f06606
+microsoft-atp-run-antivirus-scan machine_id=f70f9fe6b29cd9511652434919c6530618f06606 comment="testing anti virus" scan_type=Quick
+microsoft-atp-list-alerts severity=Low
+microsoft-atp-update-alert alert_id=da637200417169017725_183736971 status=InProgress
+microsoft-atp-advanced-hunting query="LogonEvents | take 1 | project MachineId, ReportId, tostring(EventTime)"
+microsoft-atp-create-alert category=Backdoor description="test" report_id=20279 event_time=2020-02-23T07:22:07.1532018Z
+machine_id=4899036531e374137f63289c3267bad772c13fef recommended_action="runAntiVirusScan" severity=Low title="testing alert"
+microsoft-atp-get-alert-related-user id=da637175364995825348_1865170845
+microsoft-atp-get-alert-related-files id=da637175364995825348_1865170845
+microsoft-atp-get-alert-related-ips id=da637200417169017725_183736971 limit=3 offset=0
+microsoft-atp-get-alert-related-domains id=da637175364995825348_1865170845 limit=2 offset=0
+microsoft-atp-list-machine-actions-details type=RestrictCodeExecution
+microsoft-atp-collect-investigation-package comment="testing" machine_id=f70f9fe6b29cd9511652434919c6530618f06606
+microsoft-atp-get-investigation-package-sas-uri action_id=6ae51f8f-68e6-4259-abae-0018fdf2e418
+microsoft-atp-restrict-app-execution machine_id=f70f9fe6b29cd9511652434919c6530618f06606 comment="test restrict app"
+microsoft-atp-remove-app-restriction machine_id=f70f9fe6b29cd9511652434919c6530618f06606 comment="testing remove restriction"
+microsoft-atp-stop-and-quarantine-file comment="testing" file_hash=9fe3ba25e5660c23dfe478d577cfacde5795870c machine_id=f70f9fe6b29cd9511652434919c6530618f06606
+microsoft-atp-list-investigations limit=3 offset=0
+microsoft-atp-start-investigation comment="testing" machine_id=f70f9fe6b29cd9511652434919c6530618f06606
+microsoft-atp-get-domain-statistics domain=google.com
+microsoft-atp-get-domain-alerts
+microsoft-atp-get-domain-machines
+microsoft-atp-get-file-statistics file_hash=9fe3ba25e5660c23dfe478d577cfacde5795870c
+microsoft-atp-get-file-alerts file_hash=9fe3ba25e5660c23dfe478d577cfacde5795870c
+microsoft-atp-get-ip-statistics ip=8.8.8.8
+microsoft-atp-get-ip-alerts
+microsoft-atp-get-user-alerts username=demisto
+microsoft-atp-get-user-machines username=demisto
+microsoft-atp-add-remove-machine-tag action=Add machine_id=f70f9fe6b29cd9511652434919c6530618f06606 tag="test add tag"

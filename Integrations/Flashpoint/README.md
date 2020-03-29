@@ -9,10 +9,10 @@ Use the Flashpoint integration to access intelligence reports, technical data, a
     | **Parameter** | **Description** | **Example** |
     | ---------             | -----------           | -------            |
     | Name | A meaningful name for the integration instance. | Flashpoint_instance_1 |
-    | URL  | The URL to the Flashpoint server, including the scheme.  |  https:/<span>/fp.tools |
+    | URL  | The URL to the Flashpoint server, including the scheme.  |  https:/<span></span>/fp.tools |
     | API Key  |  Your Flashpoint API key. | N/A  |
     | Trust any certificate (not secure)  | When selected, certificates are not checked. | N/A |
-    | Use system proxy settings |  Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  https:/<span>/proxyserver.com |
+    | Use system proxy settings |  Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  https:/<span></span>/proxyserver.com |
 
 4.  Click **Test** to validate the new instance.
 
@@ -119,7 +119,7 @@ Reputation: Malicious
 | Feb 12, 2018 21:46 | Lazarus Resurfaces, Targets Global Banks and Bitcoin Users | source:OSINT |
 
 All events and details (fp-tools):
-https:/<span>/fp.tools/home/search/iocs?group=indicator&ioc_type=ip-dst%2Cip-src&ioc_value=210.122.7.129
+https:/<span></span>/fp.tools/home/search/iocs?group=indicator&ioc_type=ip-dst%2Cip-src&ioc_value=210.122.7.129
 
 ### Get the reputation of a domain
 
@@ -227,7 +227,7 @@ Returns the reputation of a domain. The domain is considered malicious if there�
 
 ##### Human Readable Output
 
-##### Flashpoint Domain reputation for subaat<span>.com
+##### Flashpoint Domain reputation for subaat<span></span>.com
 
 Reputation: Malicious
 
@@ -238,7 +238,7 @@ Reputation: Malicious
 | Sep 25, 2019 19:51 | Gorgon Group actor profile | misp-galaxy:mitre-enterprise-attack-attack-pattern=“Spearphishing Attachment - T1193”, misp-galaxy:mitre-enterprise-attack-attack-pattern=“Scripting - T1064”, misp-galaxy:mitre-enterprise-attack-attack-pattern=“Command-Line Interface - T1059”, misp-galaxy:mitre-enterprise-attack-attack-pattern=“System Information Discovery - T1082”, misp-galaxy:mitre-enterprise-attack-attack-pattern=“Remote Services - T1021”, misp-galaxy:mitre-enterprise-attack-attack-pattern=“Exfiltration Over Command and Control Channel - T1041”, os:Windows, source:phishing, type:RAT, malware:rat:Quasar, malware:banker:Lokibot, file_name: njrat.exe, file_name: excel_.exe |
 
 All events and details (fp-tools):
-https:/<span>/fp.tools/home/search/iocs?group=indicator&ioc_type=domain&ioc_value=subaat<span>.com
+https:/<span></span>/fp.tools/home/search/iocs?group=indicator&ioc_type=domain&ioc_value=subaat<span></span>.com
 
 ### Get the reputation of the filename
 
@@ -344,7 +344,7 @@ Reputation: Malicious
 | Oct 24, 2019 16:30 | LockerGoga | malware:ransomware:lockergoga, report:lKyimEX1TWS8x6AtdiJ_vA, report:jEteM4YxQZCdm4macbE3vQ, report:w0fL5MgoQ_Wih8XyB6Lowg, report:7t-BsuFKTL-HJWbid8nupg |
 
 All events and details (fp-tools):
-https:/<span>/fp.tools/home/search/iocs?group=indicator&ioc_type=filename&ioc_value=.locked
+https:/<span></span>/fp.tools/home/search/iocs?group=indicator&ioc_type=filename&ioc_value=.locked
 
 ### Get the reputation of the URL
 
@@ -448,7 +448,7 @@ Reputation: Malicious
 | Oct 24, 2019 16:30 | GandCrab 2019 | malware:ransomware:GandCrab, report:lKyimEX1TWS8x6AtdiJ_vA, report:7t-BsuFKTL-HJWbid8nupg |
 
 All events and details (fp-tools):
-https:/<span>/fp.tools/home/search/iocs?group=indicator&ioc_type=url&ioc_value=92.63.197.153/krabaldento.exe
+https:/<span></span>/fp.tools/home/search/iocs?group=indicator&ioc_type=url&ioc_value=92.63.197.153/krabaldento.exe
 
 ### Get the reputation of the file-hash
 
@@ -608,7 +608,7 @@ Reputation: Malicious
 | Jul 17, 2019 18:02 | win_ransomware_generic | source:VirusTotal, type:Ransomware, win_ransomware_generic, os:Windows |
 
 All events and details (fp-tools):
-https:/<span>/fp.tools/home/search/iocs?group=indicator&ioc_type=md5%2Csha1%2Csha256%2Csha512&ioc_value=ab09761ad832efb9359fac985d1a2ab74f8a8d182d7b71188a121b850b80dfe5
+https:/<span></span>/fp.tools/home/search/iocs?group=indicator&ioc_type=md5%2Csha1%2Csha256%2Csha512&ioc_value=ab09761ad832efb9359fac985d1a2ab74f8a8d182d7b71188a121b850b80dfe5
 
 ### Get the reputation of an Email
 
@@ -704,7 +704,7 @@ Returns the reputation of an email. The email is considered malicious if there�
 
 ##### Human Readable Output
 
-##### Flashpoint Email reputation for qicifomuejijika<span>@o2.pl
+##### Flashpoint Email reputation for qicifomuejijika<span></span>@o2.pl
 
 Reputation: Malicious
 
@@ -715,7 +715,7 @@ Reputation: Malicious
 | Oct 24, 2019 16:30 | LockerGoga | malware:ransomware:lockergoga, report:lKyimEX1TWS8x6AtdiJ_vA, report:jEteM4YxQZCdm4macbE3vQ, report:w0fL5MgoQ_Wih8XyB6Lowg, report:7t-BsuFKTL-HJWbid8nupg |
 
 All events and details (fp-tools):
-https:/<span>/fp.tools/home/search/iocs?group=indicator&ioc_type=email-dst%2Cemail-src%2Cemail-src-display-name%2Cemail-subject&ioc_value=qicifomuejijika%40o2<span>.pl
+https:/<span></span>/fp.tools/home/search/iocs?group=indicator&ioc_type=email-dst%2Cemail-src%2Cemail-src-display-name%2Cemail-subject&ioc_value=qicifomuejijika%40o2<span></span>.pl
 
 ### Search for intelligence reports
 
@@ -832,7 +832,7 @@ Top 5 reports:
     later, ISIS confirmed al-Baghdadi?s death, and announced that Abu
     Ibrahim al-Hashimi al-Qurashi is the group?s new leader. Link to
     Report-search on Flashpoint platform:
-    https:/<span>/fp.tools/home/search/reports?query=isis
+    https:/<span></span>/fp.tools/home/search/reports?query=isis
 
 ### Get a single report
 
@@ -1010,7 +1010,7 @@ Top 5 related reports:
     call ?meme war 2020??content spread via social media focused on
     left-leaning targets?in the lead up to the 2020 U.S. presidential
     election. Link to the given Report on Flashpoint platform:
-    https:/<span>/fp.tools/home/intelligence/reports/report/tiPqg51OQpOTsoFyTaYa_w#detail
+    https:/<span></span>/fp.tools/home/intelligence/reports/report/tiPqg51OQpOTsoFyTaYa_w#detail
 
 ### Get a single event's details
 
@@ -1296,7 +1296,7 @@ Returns all the details of an event.
 | Dec 10, 2019 17:24 | zeroclear Oilrig | origin:Iran, actor:APT34, malware:ransomware:zeroclear |
 
 All events and details (fp-tools):
-https:/<span>/fp.tools/home/search/iocs
+https:/<span></span>/fp.tools/home/search/iocs
 
 ### Get any type of indicator
 
@@ -1342,7 +1342,7 @@ Returns any type of indicator by searching common terms.
 
 ##### Human Readable Output
 
-##### Flashpoint reputation for mondns<span>.myftp<span>.biz
+##### Flashpoint reputation for mondns<span></span>.myftp<span></span>.biz
 
 Reputation: Malicious
 
@@ -1436,7 +1436,7 @@ Returns the details of the forum.
 
 | **Name** | **Hostname** | **Tags** |
 | --- | --- | --- |
-| 0hack | bbs<span>.0hack<span>.com | Chinese, Cyber Threat, Hacking, Language |
+| 0hack | bbs<span></span>.0hack<span></span>.com | Chinese, Cyber Threat, Hacking, Language |
 
 ### Get the details of a room
 
@@ -1632,7 +1632,7 @@ Gets details on the user.
 
 | **Forum Name** | **Name** | **URL** |
 | --- | --- | --- |
-| Crdpro | IllWillPub | http:/<span>/www<span>.crdpro.su/member<span>.php?s=9f099a0eebc5f7c79e36fc688af2f697&u=50678 |
+| Crdpro | IllWillPub | http:/<span></span>/www<span></span>.crdpro.su/member<span></span>.php?s=9f099a0eebc5f7c79e36fc688af2f697&u=50678 |
 
 ### Get the details of a post
 
@@ -1744,7 +1744,7 @@ Returns the details of a post.
 
 | **Published at** | **Forum Name** | **Room Title** | **Author Name** | **Thread Title** | **URL** | **Platform url** |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2019-12-10T01:17:00+00:00 | Ord-UA | Форум | Дубовик | ДСНС на чолі з Бочковським і К…. | 2014/10/22/dsns-na-choli-z-bochkovskim-i-k/?lpage=1&page=580 | https:/<span>/fp.tools/home/ddw/forums/threads/M3NorvmYVoG6rVFHnP3T9w?id=PDo1xGiKXDebHGc8fZme6g |
+| 2019-12-10T01:17:00+00:00 | Ord-UA | Форум | Дубовик | ДСНС на чолі з Бочковським і К…. | 2014/10/22/dsns-na-choli-z-bochkovskim-i-k/?lpage=1&page=580 | https:/<span></span>/fp.tools/home/ddw/forums/threads/M3NorvmYVoG6rVFHnP3T9w?id=PDo1xGiKXDebHGc8fZme6g |
 
 ### Search forum sites
 
@@ -1796,7 +1796,7 @@ Top 10 sites:
 
 | **Name** | **Hostname** | **Description** |
 | --- | --- | --- |
-| 0hack | bbs<span>.0hack<span>.com | 0hack (零黑联盟) is a Chinese-language hacker training forum. The forum appears to be affiliated with 非凡安全网, 803389<span>.com. |
+| 0hack | bbs<span></span>.0hack<span></span>.com | 0hack (零黑联盟) is a Chinese-language hacker training forum. The forum appears to be affiliated with 非凡安全网, 803389<span></span>.com. |
 
 ### Search forum posts
 
@@ -2473,15 +2473,15 @@ Top 10 posts:
 
 | **Forum Name** | **Thread Title** | **Room Title** | **Author Name** | **Platform URL** |
 | --- | --- | --- | --- | --- |
-| The Sammyboy Times | Fleeting Pleasures… | The Courtyard Café | glockman | https:/<span>/fp.tools/home/ddw/foru… |
-| The Sammyboy Times | smoke on the water, fire in th… | The Courtyard Café | syed putra | https:/<span>/fp.tools/home/ddw/foru… |
-| The Sammyboy Times | [Singapore] - French girl kena… | The Courtyard Café | laksaboy | https:/<span>/fp.tools/home/ddw/foru… |
-| The Sammyboy Times | smoke on the water, fire in th… | The Courtyard Café | laksaboy | https:/<span>/fp.tools/home/ddw/foru… |
-| The Sammyboy Times | smoke on the water, fire in th… | The Courtyard Café | Leongsam | https:/<span>/fp.tools/home/ddw/foru… |
-| The Sammyboy Times | smoke on the water, fire in th… | The Courtyard Café | rambo22 | https:/<span>/fp.tools/home/ddw/foru… |
-| The Sammyboy Times | Fleeting Pleasures… | The Courtyard Café | nightsafari | https:/<span>/fp.tools/home/ddw/foru… |
-| The Sammyboy Times | [Singapore] - French girl kena… | The Courtyard Café | nightsafari | https:/<span>/fp.tools/home/ddw/foru… |
-| The Sammyboy Times | [Singapore] - French girl kena… | The Courtyard Café | nightsafari | https:/<span>/fp.tools/home/ddw/foru… |
-| The Sammyboy Times | HTHT… | The Courtyard Café | Claire | https:/<span>/fp.tools/home/ddw/foru… |
+| The Sammyboy Times | Fleeting Pleasures… | The Courtyard Café | glockman | https:/<span></span>/fp.tools/home/ddw/foru… |
+| The Sammyboy Times | smoke on the water, fire in th… | The Courtyard Café | syed putra | https:/<span></span>/fp.tools/home/ddw/foru… |
+| The Sammyboy Times | [Singapore] - French girl kena… | The Courtyard Café | laksaboy | https:/<span></span>/fp.tools/home/ddw/foru… |
+| The Sammyboy Times | smoke on the water, fire in th… | The Courtyard Café | laksaboy | https:/<span></span>/fp.tools/home/ddw/foru… |
+| The Sammyboy Times | smoke on the water, fire in th… | The Courtyard Café | Leongsam | https:/<span></span>/fp.tools/home/ddw/foru… |
+| The Sammyboy Times | smoke on the water, fire in th… | The Courtyard Café | rambo22 | https:/<span></span>/fp.tools/home/ddw/foru… |
+| The Sammyboy Times | Fleeting Pleasures… | The Courtyard Café | nightsafari | https:/<span></span>/fp.tools/home/ddw/foru… |
+| The Sammyboy Times | [Singapore] - French girl kena… | The Courtyard Café | nightsafari | https:/<span></span>/fp.tools/home/ddw/foru… |
+| The Sammyboy Times | [Singapore] - French girl kena… | The Courtyard Café | nightsafari | https:/<span></span>/fp.tools/home/ddw/foru… |
+| The Sammyboy Times | HTHT… | The Courtyard Café | Claire | https:/<span></span>/fp.tools/home/ddw/foru… |
 
 Follow this [link](https://fp.tools/home/search/forums?query=The%20Courtyard%20Caf%C3%A9) to forum post-search on Flashpoint platform.

@@ -395,7 +395,7 @@ Queries the illuminate REST API and enriches the given file with illuminate indi
 ### illuminate File Information
 |Active|ActivityDates|Actors|EvidenceCount|ID|IlluminateLink|Indicator|ReportedDates|
 |---|---|---|---|---|---|---|---|
-| true | 2018-08-02,<br>2019-09-01 | id = -4, name = Multiple Actors Extracted,<br>id = 150, name = FIN8 | 2 | 1527155 | https://partner.analystplatform.com/indicators/1527155 | 00000000000000000000000000000000 | 2019-06-25,<br>2020-01-09 |
+| true | 2018-08-02,<br/>2019-09-01 | id = -4, name = Multiple Actors Extracted,<br/>id = 150, name = FIN8 | 2 | 1527155 | https://partner.analystplatform.com/indicators/1527155 | 00000000000000000000000000000000 | 2019-06-25,<br/>2020-01-09 |
 
 
 ### 5. illuminate-enrich-string
@@ -474,7 +474,7 @@ Queries the illuminate REST API and enriches the given string with illuminate in
 ### illuminate String Information
 |Active|ActivityDates|Actors|EvidenceCount|ID|IlluminateLink|Indicator|ReportedDates|
 |---|---|---|---|---|---|---|---|
-| true | 2014-12-11,<br>2014-12-14,<br>2014-12-19,<br>2014-12-20 | id = -2, name = Unknown | 15 | 90548 | https://partner.analystplatform.com/indicators/90548 | ?? | 2014-12-12,<br>2014-12-14,<br>2014-12-19,<br>2014-12-20 |
+| true | 2014-12-11,<br/>2014-12-14,<br/>2014-12-19,<br/>2014-12-20 | id = -2, name = Unknown | 15 | 90548 | https://partner.analystplatform.com/indicators/90548 | ?? | 2014-12-12,<br/>2014-12-14,<br/>2014-12-19,<br/>2014-12-20 |
 
 
 ### 6. illuminate-enrich-ipv6
@@ -624,7 +624,7 @@ Queries the illuminate REST API and enriches the given mutex with illuminate ind
 ### illuminate Mutex Information
 |Active|ActivityDates|Actors|EvidenceCount|ID|IlluminateLink|Indicator|ReportedDates|
 |---|---|---|---|---|---|---|---|
-| true | 2015-01-06,<br>2015-01-07,<br>2015-01-14,<br>2015-02-23,<br>2017-08-05,<br>2017-08-06 | id = -2, name = Unknown | 6 | 95267 | https://partner.analystplatform.com/indicators/95267 | ?? | 2015-01-07,<br>2015-01-14,<br>2015-02-23,<br>2017-08-05,<br>2017-08-06 |
+| true | 2015-01-06,<br/>2015-01-07,<br/>2015-01-14,<br/>2015-02-23,<br/>2017-08-05,<br/>2017-08-06 | id = -2, name = Unknown | 6 | 95267 | https://partner.analystplatform.com/indicators/95267 | ?? | 2015-01-07,<br/>2015-01-14,<br/>2015-02-23,<br/>2017-08-05,<br/>2017-08-06 |
 
 
 ### 8. illuminate-enrich-http-request
