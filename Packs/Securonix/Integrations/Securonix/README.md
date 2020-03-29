@@ -1,10 +1,11 @@
-Use the Securonix integration to manage incidents and watchlists.
-Integration was build and tested with SNYPR Version 6.3.
+## Overview
+<br>Use the Securonix integration to manage incidents and watchlists.</br>
+<br>Integration was build and tested with SNYPR Version 6.3.</br>
 
 ## Configure Securonix on Demisto
-Navigate to **Settings** > **Integrations** > **Servers & Services**.
-Search for Securonix.
-Click **Add instance** to create and configure a new integration instance.
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for Securonix.
+3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -15,11 +16,11 @@ Click **Add instance** to create and configure a new integration instance.
 | isFetch | Fetch incidents | False |
 | incident_status | Incidents to fetch | False |
 | incidentType | Incident type | False |
-| fetch_time | First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes) | False |
+| fetch_time | First fetch time range (`<number> <time unit>`, e.g., 1 hour, 30 minutes) | False |
 | unsecure | Trust any certificate (not secure) | False |
 | proxy | Use system proxy settings | False |
 
-Click **Test** to validate the URLs, token, and connection.
+4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -576,7 +577,7 @@ Gets a list of incidents.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| from |  Start time range for which to return incidents (<number> <time unit>, e.g., 1 hour, 30 minutes) | Required | 
+| from |  Start time range for which to return incidents (`<number> <time unit>`, e.g., 1 hour, 30 minutes) | Required | 
 | to | End date/time for which to retrieve incidents (in the format MM/dd/yyyy HH:mm:ss) Default is current time. | Optional | 
 | incident_types | The incident type. Can be "updated", "opened", or "closed". Supports multiple selections. | Optional | 
 
@@ -695,7 +696,7 @@ Gets details of the specified incident.
 ### Incident:
 |Assigned User|Casecreatetime|Entity|Incident Status|Incident Type|IncidentID|Is Whitelisted|Last Update Date|Priority|Reason|Riskscore|Sand Box Policy|Status Completed|Tenant Info|Url|Violator Sub Text|Violator Text|ViolatorID|Watchlisted|Workflow Name|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Admin Admin | 1579687173702 | Users | Open | Policy | 30107 | false | 1579687173702 | Critical | Resource: BLUECOAT,<br>Policy: Uploads to personal websites,<br>Threat: Data egress via network uploads | 0.0 | false | false | tenantid: 1<br>tenantname: Securonix<br>tenantcolor: #000000<br>tenantshortcode: SE | {url} | 1009 | john smith | 9 | false | SOCTeamReview |
+| Admin Admin | 1579687173702 | Users | Open | Policy | 30107 | false | 1579687173702 | Critical | Resource: BLUECOAT,Policy: Uploads to personal websites,Threat: Data egress via network uploads | 0.0 | false | false | tenantid: 1 tenantname: {name} | {url} | 1009 | john smith | 9 | false | SOCTeamReview |
 
 
 ### securonix-get-incident-status
@@ -1167,5 +1168,5 @@ Creates an incident. For more information about the required arguments, see the 
 ### Incident was created successfully
 |Entity|Incident Status|Incident Type|IncidentID|Priority|Reason|Url|
 |---|---|---|---|---|---|---|
-| Users | Open | Policy | 30134 | Critical | Resource: BLUECOAT,<br>Policy: Uploads to personal websites,<br>Threat: Data egress via network uploads | {url} |
+| Users | Open | Policy | 30134 | Critical | Resource: BLUECOAT,Policy: Uploads to personal websites,Threat: Data egress via network uploads | {url} |
 
