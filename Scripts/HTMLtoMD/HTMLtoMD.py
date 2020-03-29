@@ -4,10 +4,18 @@ from markdownify import markdownify as md
 
 
 def html_to_md_command(args):
-    html = str(args.get('html'))
+    """
+    Converts HTML to MD formatted string.
+    :type args: ``dict``
+    :param args: Demisto args object.
+
+    :rtype: ``tuple``
+    :return: Tuple of Demisto response parts.
+    """
+    html = str(args.get('html', ''))
     markdown = md(html)
     result = {
-        "Original": str(html),
+        "Original": html,
         "Result": str(markdown)
     }
     outputs = {
