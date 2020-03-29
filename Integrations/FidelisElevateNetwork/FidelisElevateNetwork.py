@@ -1,15 +1,16 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 import json
 import shutil
 import requests
 import random
 import urllib
+
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
-
 
 ''' GLOBALS / PARAMS '''
 IS_FETCH = demisto.params().get('isFetch')
@@ -21,8 +22,16 @@ FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 SESSION_ID = None
 ALERT_UUID_REGEX = re.compile('[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}')
 
-
 ''' HELPER FUNCTIONS '''
+
+
+def capitalize_first_letter(raw_dict):
+    parsed_dict = {}
+    for key in raw_dict.keys():
+        cap_key = key[0].capitalize() + key[1:]
+        parsed_dict[cap_key] = raw_dict[key]
+
+    return parsed_dict
 
 
 def http_request(method, url_suffix, params=None, data=None, files=None, is_json=True):
@@ -42,6 +51,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, is_json
         files=files,
         verify=not INSECURE,
     )
+
     # Handle error responses gracefully
     if res.status_code not in {200, 201}:
         if res.status_code == 500:
@@ -175,6 +185,340 @@ def generate_time_settings(time_frame=None, start_time=None, end_time=None):
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
+
+
+def update_alertstatus_command():
+    status_to_explicit_score = {
+        'False Positive': 1,
+        'Not Interesting': 2,
+        'Interesting': 3,
+        'Actionable': 4
+    }
+    args = demisto.args()
+    alert_id = args['alert_id']
+    status = args['status']
+
+    data = {
+        'alertIds': [alert_id],
+        'explicitScore': status_to_explicit_score[status]
+    }
+
+    raw_res = update_alertstatus(data)
+    return_outputs("Alert {} has been updated to {} status".format(alert_id, status.capitalize()),
+                   {}, raw_res)
+
+
+@logger
+def update_alertstatus(data):
+    url = '/j/rest/v1/alert/feedback/'
+
+    return http_request('PUT', url, data=data)
+
+
+def get_alert_dpath_command():
+    args = demisto.args()
+    alert_id = args['alert_id']
+
+    result = get_alert_dpath(alert_id)
+    context_result = capitalize_first_letter(result)
+
+    output = {
+        'ID': alert_id,
+        'DecodingPath': context_result
+    }
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('Alert {}'.format(alert_id), context_result, headerTransform=pascalToSpace,
+                                         removeNull=True),
+        'EntryContext': {
+            'Fidelis.Alert(val.ID && val.ID == obj.ID)': output,
+        },
+    })
+
+
+@logger
+def get_alert_dpath(alert_id):
+    result = http_request('GET', '/j/rest/v1/alert/dpath/{}/'.format(alert_id))
+
+    return result
+
+
+def alert_ef_submission_command():
+    args = demisto.args()
+
+    alert_id = args['alert_id']
+
+    result = alert_ef_submission(alert_id)
+    context_result = capitalize_first_letter(result)
+
+    output = {
+        'ID': alert_id,
+        'ExecutionForensics': context_result
+    }
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('Alert {}'.format(alert_id), context_result, headerTransform=pascalToSpace,
+                                         removeNull=True),
+        'EntryContext': {
+            'Fidelis.Alert(val.ID && val.ID == obj.ID)': output,
+        },
+    })
+
+
+@logger
+def alert_ef_submission(alert_id):
+    result = http_request('GET', '/j/rest/v1/alert/efsubmit/{}/'.format(alert_id))
+
+    return result
+
+
+def add_alert_comment_command():
+    args = demisto.args()
+    alert_id = args['alert_id']
+    comment = args['comment']
+
+    data = {
+        'type': "byAlertID",
+        'alertIds': [alert_id],
+        'comment': comment
+    }
+
+    add_alert_comment(alert_id, data)
+    return_outputs("Added this comment: {}\n To alert ID: {}".format(comment, alert_id), {}, {})
+
+
+@logger
+def add_alert_comment(alert_id, data):
+    url = '/j/rest/v1/alert/mgmt/'
+    http_request('PUT', url, data=data)
+
+
+def manage_alert_label_command():
+    args = demisto.args()
+    alert_id = args['alert_id']
+    label = args['label']
+    action = args['action']
+
+    label_action = {
+        'Add': 'LABEL_ADD',
+        'Remove': 'LABEL_REMOVE'
+    }
+
+    data = {
+        'type': "byAlertID",
+        'alertIds': [alert_id],
+        'labels': [label],
+        'labelAction': label_action[action],
+    }
+
+    bad_res = manage_alert_label(data)
+    if bad_res and action == 'Add':
+        return_error("Was not able to add the label {} to alert {}".format(label, alert_id))
+
+    elif bad_res and action == 'Remove':
+        return_error("Was not able to remove the label {} to alert {}".format(label, alert_id))
+
+    else:
+        return_outputs("Assigned label: {} to alert {}".format(label, alert_id), {}, {})
+
+
+@logger
+def manage_alert_label(data):
+    url = '/j/rest/v1/alert/mgmt/'
+    res = http_request('PUT', url, data=data)
+    if res.get('Console') == 'OK':
+        return 0
+
+    else:
+        return 1
+
+
+def manage_alert_assignuser_command():
+    args = demisto.args()
+    conclusion_id = args['conclusion_id']
+    assign_user = args['assign_user']
+    comment = args.get('comment')
+
+    data = {
+        'alertIds': ['Console-' + str(conclusion_id)],
+        'assignToUser': assign_user,
+        'searchParams': None,
+        'byId': True,
+        'purgeEvents': False,
+        'resolution': None,
+        'comment': comment,
+        'labels': None,
+        'rating': None,
+        'status': 'OPEN',
+        'action': "ASSIGN",
+    }
+
+    raw_response = manage_alert_assignuser(data)
+    entry_context = {
+        'AssignedUser': assign_user,
+        'ConclusionID': conclusion_id
+    }
+
+    return_outputs("Assigned User: {} to alert with conclusion ID {}".format(assign_user, conclusion_id),
+                   {'Fidelis.Alert(val.ConclusionID && val.ConclusionID == obj.ConclusionID)': entry_context}, raw_response)
+
+
+def manage_alert_assignuser(data):
+    url = '/j/rest/v2/alert/mgmt/'
+    raw_res = http_request('POST', url, data=data)
+    return raw_res
+
+
+def manage_alert_closealert_command():
+    args = demisto.args()
+    conclusion_id = args['conclusion_id']
+    comment = args.get('comment')
+    resolution = args['resolution']
+
+    data = {
+        'alertIds': ['Console-' + str(conclusion_id)],
+        # This field is not used by Fidelis when closing alerts / So setting it doesn't matter
+        'searchParams': None,
+        'byId': True,
+        'purgeEvents': False,
+        'resolution': resolution,
+        'comment': comment,
+        'labels': None,
+        'rating': None,
+        'status': 'CLOSED',
+        'action': "STATUS",
+    }
+
+    raw_response = manage_alert_closealert(data)
+
+    return_outputs("Closed alert conclusion ID {}".format(conclusion_id), {}, raw_response)
+
+
+@logger
+def manage_alert_closealert(data):
+    url = '/j/rest/v2/alert/mgmt/'
+    raw_res = http_request('POST', url, data=data)
+    return raw_res
+
+
+def get_alert_sessiondata_command():
+    args = demisto.args()
+    alert_id = args['alert_id']
+
+    result = get_alert_sessiondata(alert_id)
+    context_result = capitalize_first_letter(result)
+
+    # The API has typos built in "serverDomaniName" - should be ServerDomainName,
+    # clientDomaniName - should be ClientDomainName,
+    context_result['ServerDomainName'] = context_result['ServerDomaniName']
+    del context_result['ServerDomaniName']
+    context_result['ClientDomainName'] = context_result['ClientDomaniClient']
+    del context_result['ClientDomaniClient']
+
+    output = {
+        'ID': alert_id,
+        'SessionData': context_result
+    }
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('Alert {}'.format(alert_id), context_result, headerTransform=pascalToSpace,
+                                         removeNull=True),
+        'EntryContext': {
+            'Fidelis.Alert(val.ID && val.ID == obj.ID)': output,
+        },
+    })
+
+
+@logger
+def get_alert_sessiondata(alert_id):
+    result = http_request('GET', '/j/rest/v2/event/sessiondata/{}/'.format(alert_id))
+
+    return result
+
+
+def get_alert_ef_command():
+    args = demisto.args()
+    alert_id = args['alert_id']
+
+    result = get_alert_ef(alert_id)
+    context_result = capitalize_first_letter(result)
+    output = {
+        'ID': alert_id,
+        'ExecutionForensics': context_result
+    }
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('Alert {}'.format(alert_id), context_result, headerTransform=pascalToSpace,
+                                         removeNull=True),
+        'EntryContext': {
+            'Fidelis.Alert(val.ID && val.ID == obj.ID)': output,
+        },
+    })
+
+
+@logger
+def get_alert_ef(alert_id):
+    result = http_request('GET', '/j/rest/v1/alert/ef/{}/'.format(alert_id))
+
+    return result
+
+
+def get_alert_forensictext_command():
+    args = demisto.args()
+    alert_id = args['alert_id']
+
+    result = get_alert_forensictext(alert_id)
+    output = {
+        'ID': alert_id,
+        'ForensicText': result
+
+    }
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['text'],
+        'Contents': str(result),
+        'EntryContext': {
+            'Fidelis.Alert(val.ID && val.ID == obj.ID)': output,
+        },
+        'HumanReadable': 'Alert {}'.format(alert_id) + "\nForensic Text: " + str(result)
+    })
+
+
+@logger
+def get_alert_forensictext(alert_id):
+    headers = {}  # type: Dict[str, str]
+    if SESSION_ID is not None:
+        headers['x-uid'] = SESSION_ID
+    headers['Content-Type'] = 'application/json'
+
+    res = requests.request(
+        method='GET',
+        url=SERVER_URL + '/j/rest/v1/alert/file/forensic/text/{}/'.format(alert_id),
+        data=None,
+        headers=headers,
+        params=None,
+        files=None,
+        verify=not INSECURE,
+    )
+
+    return res.text
 
 
 def get_alert_command():
@@ -412,7 +756,6 @@ def list_alerts(time_frame=None, start_time=None, end_time=None, severity=None, 
 
 
 def list_alerts_by_ip_request(time_frame=None, start_time=None, end_time=None, src_ip=None, dest_ip=None):
-
     filters = []
     if src_ip is not None:
         filters.append({'simple': {'column': 'SRC_IP', 'operator': 'IN', 'value': src_ip}})
@@ -484,7 +827,6 @@ def list_alerts_by_ip():
 
 
 def get_alert_by_uuid():
-
     alert_uuid = demisto.args().get('alert_uuid')
 
     results = list_alerts(ioc=alert_uuid)
@@ -551,7 +893,7 @@ def run_pcap(component_ip, file_names):
         'component': component_ip,
         'files': file_names
     }
-    res = http_request('POST', '/j/rest/policy/pcap/run/', data=data)  # noqa
+    http_request('POST', '/j/rest/policy/pcap/run/', data=data)  # noqa
 
 
 def list_pcap_components_command():
@@ -580,7 +922,6 @@ def list_pcap_components():
 
 def list_metadata_request(time_frame=None, start_time=None, end_time=None, client_ip=None, server_ip=None,
                           request_direction=None):
-
     filters = []
     if client_ip is not None:
         filters.append({'simple': {'column': 'ClientIP', 'operator': '=', 'value': client_ip}})
@@ -618,7 +959,6 @@ def list_metadata_request(time_frame=None, start_time=None, end_time=None, clien
 
 
 def list_metadata():
-
     args = demisto.args()
     time_frame = args.get('time_frame')
     start_time = args.get('start_time')
@@ -677,7 +1017,6 @@ def list_metadata():
 
 
 def request_dpath(alert_id):
-
     res = http_request('GET', '/j/rest/v1/alert/dpath/{}/'.format(alert_id))
     dpath = res.get('decodingPaths')[0]
     link_path = dpath.get('linkPath')
@@ -686,7 +1025,6 @@ def request_dpath(alert_id):
 
 
 def download_malware_file_request(alert_id):
-
     dpath = request_dpath(alert_id)
     query_params = {
         'uid': SESSION_ID,
@@ -719,7 +1057,6 @@ def download_malware_file():
 
 
 def download_pcap_request(alert_id):
-
     query_params = {
         'uid': SESSION_ID,
         'alert_id': alert_id,
@@ -834,16 +1171,51 @@ def main():
 
         elif command == 'fidelis-list-pcap-components':
             list_pcap_components_command()
+
         elif command == 'fidelis-get-alert-by-uuid':
             get_alert_by_uuid()
+
         elif command == 'fidelis-list-metadata':
             list_metadata()
+
         elif command == 'fidelis-list-alerts-by-ip':
             list_alerts_by_ip()
+
         elif command == 'fidelis-download-malware-file':
             download_malware_file()
+
         elif command == 'fidelis-download-pcap-file':
             download_pcap_file()
+
+        elif command == 'fidelis-get-alert-session-data':
+            get_alert_sessiondata_command()
+
+        elif command == 'fidelis-get-alert-execution-forensics':
+            get_alert_ef_command()
+
+        elif command == 'fidelis-get-alert-forensic-text':
+            get_alert_forensictext_command()
+
+        elif command == 'fidelis-get-alert-decoding-path':
+            get_alert_dpath_command()
+
+        elif command == 'fidelis-update-alert-status':
+            update_alertstatus_command()
+
+        elif command == 'fidelis-alert-execution-forensics-submission':
+            alert_ef_submission_command()
+
+        elif command == 'fidelis-add-alert-comment':
+            add_alert_comment_command()
+
+        elif command == 'fidelis-assign-user-to-alert':
+            manage_alert_assignuser_command()
+
+        elif command == 'fidelis-close-alert':
+            manage_alert_closealert_command()
+
+        elif command == 'fidelis-manage-alert-label':
+            manage_alert_label_command()
 
     except Exception as e:
         return_error('error has occurred: {}'.format(str(e)))

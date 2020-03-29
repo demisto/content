@@ -88,7 +88,7 @@ GET_INDICATOR_INPUTS = [
 
 @pytest.mark.parametrize('indicator_type, build_iterator_answer, value, type', GET_INDICATOR_INPUTS)
 def test_get_indicators_command(mocker, indicator_type, build_iterator_answer, value, type):
-    client = Client(indicator_type=indicator_type, api_token='123', sub_feeds='fusion')
+    client = Client(indicator_type=indicator_type, api_token='123', services='fusion')
     args = {
         'indicator_type': indicator_type,
         'limit': 1
@@ -110,6 +110,6 @@ CALCULATE_DBOT_SCORE_INPUTS = [
 
 @pytest.mark.parametrize('risk_from_feed, threshold, expected_score', CALCULATE_DBOT_SCORE_INPUTS)
 def test_calculate_dbot_score(risk_from_feed, threshold, expected_score):
-    client = Client(indicator_type='ip', api_token='123', sub_feeds=['fusion'], threshold=threshold)
+    client = Client(indicator_type='ip', api_token='123', services=['fusion'], threshold=threshold)
     score = client.calculate_indicator_score(risk_from_feed)
     assert score == expected_score
