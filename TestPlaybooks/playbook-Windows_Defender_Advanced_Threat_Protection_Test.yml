@@ -514,10 +514,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: 067a0cc3-862d-4ca8-8e30-72156ec176cb
+    taskid: 1315306a-4800-488e-84ce-3e942bcf6246
     type: regular
     task:
-      id: 067a0cc3-862d-4ca8-8e30-72156ec176cb
+      id: 1315306a-4800-488e-84ce-3e942bcf6246
       version: -1
       name: Advance query
       script: '|||microsoft-atp-advanced-hunting'
@@ -529,7 +529,8 @@ tasks:
       - "21"
     scriptarguments:
       query:
-        simple: RegistryEvents | take 1 | project MachineId, ReportId, tostring(EventTime)
+        simple: RegistryEvents | where MachineId contains '4899036531e374137f63289c3267bad772c13fef'
+          | take 1 | project MachineId, ReportId, tostring(EventTime)
     separatecontext: false
     view: |-
       {
@@ -545,10 +546,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: a63a677a-abb6-47f3-8c8a-b7cd315a8578
+    taskid: c5fc6a78-2853-4c0e-8769-35136b520785
     type: condition
     task:
-      id: a63a677a-abb6-47f3-8c8a-b7cd315a8578
+      id: c5fc6a78-2853-4c0e-8769-35136b520785
       version: -1
       name: Assert query results
       type: condition
@@ -562,16 +563,6 @@ tasks:
     - label: "yes"
       condition:
       - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: MicrosoftATP
-                accessor: Hunt.Result.MachineId
-            iscontext: true
-          right:
-            value:
-              simple: f70f9fe6b29cd9511652434919c6530618f06606
-        - operator: isEqualString
           left:
             value:
               simple: MicrosoftATP.Hunt.Result.MachineId
@@ -738,4 +729,3 @@ view: |-
   }
 inputs: []
 outputs: []
-
