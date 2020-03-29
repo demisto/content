@@ -2578,7 +2578,13 @@
         }
     ],
     "skipped_tests": {
+        "Send Investigation Summary Reports - Test": "Issue 22299",
+        "Symantec Deepsight Test": "Issue 22971",
+        "OTRS Test": "Issue 23167",
+        "Akamai_WAF_SIEM-Test": "Issue 22225",
+        "Cloaken-Test": "Issue 20036",
         "Test-VulnDB": "Issue 23138",
+        "Sixgill-Test": "Issue ",
         "test_MsGraphFiles": "Issue 22853 ",
         "TestCofenseFeed": "Issue 22854",
         "RecordedFutureFeed - Test": "Issue 22855",
