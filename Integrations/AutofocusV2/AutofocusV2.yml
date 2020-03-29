@@ -639,6 +639,9 @@ script:
     - contextPath: AutoFocus.TopTagsSearch.Status
       description: The search status. Can be "in progress" or "complete".
       type: String
+    - contextPath: AutoFocus.SamplesSearch.SessionStart
+      description: The time when the session began.
+      type: Date
   - arguments:
     - default: false
       description: 'The AF Cookie for retrieving results of previous search. Note:
