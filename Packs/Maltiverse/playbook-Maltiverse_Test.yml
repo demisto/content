@@ -84,7 +84,7 @@ tasks:
     scriptarguments:
       fullResponse: {}
       ip:
-        simple: 8.8.8.8
+        simple: 8.8.8.8  # disable-secrets-detection
       long: {}
       threshold: {}
     separatecontext: false
@@ -121,7 +121,7 @@ tasks:
       left:
         simple: ${IP.Address}
       right:
-        simple: 8.8.8.8
+        simple: 8.8.8.8  # disable-secrets-detection
     results:
     - AreValuesEqual
     separatecontext: false
@@ -195,7 +195,7 @@ tasks:
       long: {}
       threshold: {}
       url:
-        simple: https://dv-expert.org
+        simple: https://dv-expert.org  # disable-secrets-detection
     separatecontext: false
     view: |-
       {
