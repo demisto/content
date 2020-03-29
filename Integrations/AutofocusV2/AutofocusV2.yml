@@ -149,7 +149,7 @@ script:
       description: The search status. Can be "in progress" or "complete".
       type: String
     - contextPath: AutoFocus.SamplesSearch.SessionStart
-      description: The time in which the session began
+      description: The time when the session began.
       type: Date
   - arguments:
     - default: false
@@ -267,7 +267,7 @@ script:
       description: The search status. Can be "in progress" or "complete".
       type: String
     - contextPath: AutoFocus.SessionsSearch.SessionStart
-      description: The time in which the session began
+      description: The time when the session began.
       type: Date
   - arguments:
     - default: false
