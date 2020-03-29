@@ -16,7 +16,6 @@ import time
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
 from datetime import datetime, timedelta
-from time import sleep, time
 
 import demistomock as demisto
 
@@ -194,23 +193,6 @@ except Exception:
 
 
 # ====================================================================================
-
-
-def add(num1, num2):
-    """
-    Adds two integers.
-
-    Known limitations:
-     - The sum of both numbers cannot exceed 300.
-     - May take some time to count.
-    :param num1: First number.
-    :param num2: Second number.
-    :return: result of two numbers
-    """
-    start = time()
-    sleep(num1)
-    sleep(num2)
-    return int(time() - start)
 
 
 def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False):
