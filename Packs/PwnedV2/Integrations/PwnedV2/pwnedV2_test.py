@@ -12,7 +12,7 @@ args1 = {
 
 @pytest.mark.parametrize('command, args, response, expected_result', [
     (pwned_username_command, args1, username_req, username_context),
-    # (pwned_domain_command, args1, domain_req, domain_context)
+    (pwned_domain_command, args1, domain_req, domain_context)
 ])
 def test_pwned_commands(command, args, response, expected_result, mocker):
     """Unit test ///fix!!!!!
