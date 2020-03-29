@@ -173,7 +173,7 @@
             "integrations": "AutoFocus V2",
             "playbookID": "Autofocus Query Samples, Sessions and Tags Test Playbook",
             "fromversion": "4.5.0",
-            "timeout": 500
+            "timeout": 1000
         },
         {
             "integrations": "HelloWorld",
@@ -2189,7 +2189,9 @@
         {
             "integrations": "AutoFocus V2",
             "playbookID": "AutoFocus V2 test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 1000
+
         },
         {
             "playbookID": "Process Email - Generic for Rasterize"
@@ -2576,6 +2578,7 @@
         }
     ],
     "skipped_tests": {
+        "Test-VulnDB": "Issue 23138",
         "test_MsGraphFiles": "Issue 22853 ",
         "TestCofenseFeed": "Issue 22854",
         "RecordedFutureFeed - Test": "Issue 22855",
@@ -2723,7 +2726,8 @@
     "nightly_integrations": [
         "Lastline v2",
         "TruSTAR",
-        "SlackV2"
+        "SlackV2",
+        "VulnDB"
     ],
     "unmockable_integrations": {
         "Cortex Data Lake": "Integration requires SSL",
