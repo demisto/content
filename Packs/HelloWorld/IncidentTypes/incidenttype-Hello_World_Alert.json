@@ -12,7 +12,7 @@
 	"id": "Hello World Alert",
 	"locked": false,
 	"name": "Hello World Alert",
-	"playbookId": "011794c9-b546-4946-8ef4-4645cd65e7f6",
+	"playbookId": "Handle Hello World Alert",
 	"preProcessingScript": "",
 	"propagationLabels": [
 		"all"

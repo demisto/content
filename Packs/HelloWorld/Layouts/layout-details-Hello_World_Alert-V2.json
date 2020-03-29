@@ -17,6 +17,89 @@
 				"type": "summary"
 			},
 			{
+				"hidden": false,
+				"id": "gzwilepj4y",
+				"name": "Hello World",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "gzwilepj4y-6eb55f90-4bdc-11ea-b133-95a0e83f73e4",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "name",
+								"height": 24,
+								"id": "229a5320-4be3-11ea-ba78-e35cab9015ef",
+								"index": 0,
+								"listId": "gzwilepj4y-6eb55f90-4bdc-11ea-b133-95a0e83f73e4",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "helloworldstatus",
+								"height": 24,
+								"id": "8035cfc0-4bdc-11ea-b133-95a0e83f73e4",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "helloworldtype",
+								"height": 24,
+								"id": "810b4830-4bdc-11ea-b133-95a0e83f73e4",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "details",
+								"height": 48,
+								"id": "8de38d10-4bdc-11ea-b133-95a0e83f73e4",
+								"index": 4,
+								"listId": "gzwilepj4y-6eb55f90-4bdc-11ea-b133-95a0e83f73e4",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "severity",
+								"height": 24,
+								"id": "938819c0-4bdc-11ea-b133-95a0e83f73e4",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "helloworldid",
+								"height": 24,
+								"id": "7ee3ad40-4bdc-11ea-b133-95a0e83f73e4",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Hello World",
+						"static": false,
+						"w": 2,
+						"x": 0,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
+			{
 				"id": "caseinfoid",
 				"name": "Incident Info",
 				"sections": [
@@ -311,89 +394,6 @@
 				"id": "canvas",
 				"name": "Canvas",
 				"type": "canvas"
-			},
-			{
-				"hidden": false,
-				"id": "gzwilepj4y",
-				"name": "Hello World",
-				"sections": [
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
-						"i": "gzwilepj4y-6eb55f90-4bdc-11ea-b133-95a0e83f73e4",
-						"items": [
-							{
-								"dropEffect": "move",
-								"endCol": 4,
-								"fieldId": "name",
-								"height": 24,
-								"id": "229a5320-4be3-11ea-ba78-e35cab9015ef",
-								"index": 0,
-								"listId": "gzwilepj4y-6eb55f90-4bdc-11ea-b133-95a0e83f73e4",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "helloworldstatus",
-								"height": 24,
-								"id": "8035cfc0-4bdc-11ea-b133-95a0e83f73e4",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "helloworldtype",
-								"height": 24,
-								"id": "810b4830-4bdc-11ea-b133-95a0e83f73e4",
-								"index": 3,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "details",
-								"height": 48,
-								"id": "8de38d10-4bdc-11ea-b133-95a0e83f73e4",
-								"index": 4,
-								"listId": "gzwilepj4y-6eb55f90-4bdc-11ea-b133-95a0e83f73e4",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "severity",
-								"height": 24,
-								"id": "938819c0-4bdc-11ea-b133-95a0e83f73e4",
-								"index": 5,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "helloworldid",
-								"height": 24,
-								"id": "7ee3ad40-4bdc-11ea-b133-95a0e83f73e4",
-								"index": 6,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Hello World",
-						"static": false,
-						"w": 2,
-						"x": 0,
-						"y": 0
-					}
-				],
-				"type": "custom"
 			}
 		],
 		"typeId": "Hello World Alert",

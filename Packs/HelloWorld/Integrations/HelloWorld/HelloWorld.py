@@ -164,6 +164,15 @@ def say_hello_command(client, args):
     )
 
 
+def convert_to_demisto_severity(severity):
+    return {
+        '0': 1,  # low severity
+        '1': 2,  # medium severity
+        '2': 3,  # high severity
+        '3': 4   # critical severity
+    }[str(severity)]
+
+
 def fetch_incidents(client, last_run, first_fetch_time, alert_type, alert_status):
     """
     This function will execute each interval (default is 1 minute).
@@ -181,10 +190,9 @@ def fetch_incidents(client, last_run, first_fetch_time, alert_type, alert_status
     """
     # Get the last fetch time, if exists
     last_fetch = last_run.get('last_fetch')
-
     # Handle first time fetch
     if last_fetch is None:
-        last_fetch = dateparser.parse(first_fetch_time, settings={'TIMEZONE': 'UTC'})
+        last_fetch = first_fetch_time
     else:
         last_fetch = int(last_fetch)
 
@@ -204,7 +212,14 @@ def fetch_incidents(client, last_run, first_fetch_time, alert_type, alert_status
             'name': incident_name,
             'details': alert['name'],
             'occurred': timestamp_to_datestring(incident_created_time),
-            'rawJSON': json.dumps(alert)
+            'rawJSON': json.dumps(alert),
+            'type': 'Hello World Alert',
+            'severity': convert_to_demisto_severity(alert.get('severity')),
+            'CustomFields': {
+                'helloworldid': alert.get('alert_id'),
+                'helloworldstatus': alert.get('alert_status'),
+                'helloworldtype': alert.get('alert_type')
+            }
         }
 
         incidents.append(incident)
@@ -507,8 +522,8 @@ def main():
 
     # Log exceptions
     except Exception as e:
-        demisto.error(traceback.format_exc())
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+        # demisto.error(traceback.format_exc())
+        return_error(traceback.format_exc())
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

@@ -1,104 +1,126 @@
+category: Authentication
 commonfields:
   id: HelloWorld
   version: -1
-name: HelloWorld
-display: HelloWorld
-category: Authentication
-description: This is the Hello World integration for getting started.
 configuration:
-- display: Server URL (e.g. https://soar.monstersofhack.com)
+- defaultvalue: https://soar.monstersofhack.com
+  display: Server URL (e.g. https://soar.monstersofhack.com)
   name: url
-  defaultvalue: https://soar.monstersofhack.com
-  type: 0
   required: true
+  type: 0
 - display: Fetch incidents
   name: isFetch
-  type: 8
   required: false
+  type: 8
 - display: Incident type
   name: incidentType
-  type: 13
   required: false
+  type: 13
 - display: API Key
   name: apikey
-  defaultvalue: ""
-  type: 4
   required: true
-- display: Score threshold for ip reputation command (0-100)
+  type: 4
+- defaultvalue: '65'
+  display: Score threshold for ip reputation command (0-100)
   name: threshold_ip
-  defaultvalue: 65
-  type: 0
   required: false
-- display: Score threshold for domain reputation command (0-100)
+  type: 0
+- defaultvalue: '65'
+  display: Score threshold for domain reputation command (0-100)
   name: threshold_domain
-  defaultvalue: 65
-  type: 0
   required: false
-- display: Fetch alerts with status (OPEN, CLOSED)
+  type: 0
+- defaultvalue: ACTIVE
+  display: Fetch alerts with status (ACTIVE, CLOSED)
   name: alert_status
-  defaultvalue: OPEN
-  type: 0
+  options:
+  - ACTIVE
+  - CLOSED
   required: false
+  type: 15
 - display: Fetch alerts with type
   name: alert_type
-  type: 0
   required: false
-- display: First fetch time
+  type: 0
+- defaultvalue: 3 days
+  display: First fetch time
   name: first_fetch
-  defaultvalue: 3 days
-  type: 0
   required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
+description: This is the Hello World integration for getting started.
+display: HelloWorld
+name: HelloWorld
 script:
-  script: ''
-  type: python
   commands:
-  - name: helloworld-say-hello
-    arguments:
-    - name: name
+  - arguments:
+    - default: false
       description: The name of whom you want to say hello to.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    deprecated: false
+    description: Hello command - prints hello to anyone
+    execution: false
+    name: helloworld-say-hello
     outputs:
     - contextPath: hello
       description: Should be Hello **something** here
       type: String
-    description: Hello command - prints hello to anyone
-  - name: helloworld-search-alerts
-    arguments:
-    - name: severity
-      auto: PREDEFINED
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Filter by alert severity (0 to 3). 0-low, 1-medium, 2-high, 3-critical
+      isArray: false
+      name: severity
       predefined:
-      - "1"
-      - "2"
-      - "3"
-      - "4"
-      description: Filter by alert severity (0 to 4). 0-low, 1-medium, 2-high, 3-critical
-    - name: status
-      auto: PREDEFINED
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Filter by alert status
+      isArray: false
+      name: status
       predefined:
       - OPEN
       - CLOSED
-    - name: alert_type
+      required: false
+      secret: false
+    - default: false
       description: Filter by alert type
-    - name: max_results
+      isArray: false
+      name: alert_type
+      required: false
+      secret: false
+    - default: false
       description: Maximum results to return
-    - name: start_time
-      description: |-
-        Filter by start time. 
-        Examples:
-          "3 days ago"
-          "1 month"
-          "2019-10-10T12:22:00"
-          "2019-10-10"
+      isArray: false
+      name: max_results
+      required: false
+      secret: false
+    - default: false
+      description: "Filter by start time. \nExamples:\n  \"3 days ago\"\n  \"1 month\"\
+        \n  \"2019-10-10T12:22:00\"\n  \"2019-10-10\""
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve alerts
+    execution: false
+    name: helloworld-search-alerts
     outputs:
     - contextPath: HelloWorld.Alert.id
       description: Alert id
@@ -118,12 +140,17 @@ script:
     - contextPath: HelloWorld.Alert.type
       description: 'Alert type. '
       type: string
-    description: Retrieve alerts
-  - name: helloworld-get-alert
-    arguments:
-    - name: alert_id
-      required: true
+  - arguments:
+    - default: false
       description: alert id
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve alert by id
+    execution: false
+    name: helloworld-get-alert
     outputs:
     - contextPath: HelloWorld.Alert.id
       description: Alert id
@@ -143,16 +170,26 @@ script:
     - contextPath: HelloWorld.Alert.type
       description: Alert type.
       type: string
-    description: Retrieve alert by id
-  - name: ip
-    arguments:
-    - name: ip
+  - arguments:
+    - default: false
       description: List of IPs
       isArray: true
-    - name: threshold
-      description: If the ip has reputation above the treshold then the ip defined as malicious. 
-        If threshold not set, then threshold from instance configuration is used.
-      defaultValue: 65
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '65'
+      description: If the ip has reputation above the treshold then the ip defined
+        as malicious. If threshold not set, then threshold from instance configuration
+        is used.
+      isArray: false
+      name: threshold
+      required: false
+      secret: false
+    deprecated: false
+    description: Return IP reputation
+    execution: false
+    name: ip
     outputs:
     - contextPath: IP.Address
       description: IP address
@@ -187,23 +224,32 @@ script:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
-    description: Return IP reputation
-  - name: helloworld-scan-start
-    arguments:
-    - name: hostname
-      required: true
+  - arguments:
+    - default: false
       description: Just pass any hostname you want
+      isArray: false
+      name: hostname
+      required: true
+      secret: false
+    deprecated: false
+    description: Start scan on an asset
+    execution: false
+    name: helloworld-scan-start
     outputs:
     - contextPath: HelloWorld.Scan.scan_id
       description: Unique id of the scan
       type: string
-    description: Start scan on an asset
-  - name: helloworld-scan-status
-    arguments:
-    - name: scan_id
-      required: true
+  - arguments:
+    - default: false
       description: List of Scan IDs. helloworld-scan-start returns "scan_id"
       isArray: true
+      name: scan_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve scan status
+    execution: false
+    name: helloworld-scan-status
     outputs:
     - contextPath: HelloWorld.Scan.scan_id
       description: The id of the scan
@@ -211,20 +257,28 @@ script:
     - contextPath: HelloWorld.Scan.status
       description: Can be "running", "completed"
       type: string
-    description: Retrieve scan status
-  - name: helloworld-scan-results
-    arguments:
-    - name: format
-      required: true
-      auto: PREDEFINED
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: file
+      description: Results format
+      isArray: false
+      name: format
       predefined:
       - json
       - file
-      description: Results format
-      defaultValue: file
-    - name: scan_id
       required: true
+      secret: false
+    - default: false
       description: The id of the scan
+      isArray: false
+      name: scan_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns scan results
+    execution: false
+    name: helloworld-scan-results
     outputs:
     - contextPath: HelloWorld.ScanResults.id
       description: Scan id
@@ -237,6 +291,7 @@ script:
       type: string
     - contextPath: InfoFile.EntryID
       description: The EntryID of the report file
+      type: Unknown
     - contextPath: InfoFile.Extension
       description: The extension of the report file
       type: string
@@ -252,8 +307,11 @@ script:
     - contextPath: InfoFile.Type
       description: The type of the report file
       type: string
-    description: Returns scan results
   dockerimage: demisto/python3:3.7.4.2245
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
+  script: '-'
   subtype: python3
+  type: python
