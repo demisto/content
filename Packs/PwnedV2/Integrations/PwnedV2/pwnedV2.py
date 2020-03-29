@@ -279,7 +279,6 @@ try:
     handle_proxy()
     set_retry_end_time()
     commands = {
-        'test-module': test_module,
         'email': pwned_email_command,
         'pwned-email': pwned_email_command,
         'domain': pwned_domain_command,
@@ -288,7 +287,9 @@ try:
         'pwned-username': pwned_username_command
     }
 
-    if command in commands:
+    if command == 'test-module':
+        test_module()
+    elif command in commands:
         return_outputs(*commands[command](demisto.args()))
 # Log exceptions
 except Exception as e:
