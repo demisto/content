@@ -1,2 +1,2 @@
 ## [Unreleased]
-Updated detailed description.
+Updated the detailed description.
