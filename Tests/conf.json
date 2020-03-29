@@ -2576,6 +2576,7 @@
         }
     ],
     "skipped_tests": {
+        "Test-VulnDB": "Issue 23138",
         "test_MsGraphFiles": "Issue 22853 ",
         "TestCofenseFeed": "Issue 22854",
         "RecordedFutureFeed - Test": "Issue 22855",
@@ -2723,7 +2724,8 @@
     "nightly_integrations": [
         "Lastline v2",
         "TruSTAR",
-        "SlackV2"
+        "SlackV2",
+        "VulnDB"
     ],
     "unmockable_integrations": {
         "Cortex Data Lake": "Integration requires SSL",
