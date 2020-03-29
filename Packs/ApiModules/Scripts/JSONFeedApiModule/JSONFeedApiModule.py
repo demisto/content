@@ -1,17 +1,64 @@
 from CommonServerPython import *
+
 ''' IMPORTS '''
-from typing import List, Dict, Union, Optional
-import jmespath
 import urllib3
+import jmespath
+import tldextract
+from typing import List, Dict, Union, Optional
 
 # disable insecure warnings
 urllib3.disable_warnings()
 
 
+def auto_detect_indicator_type(indicator_value):
+    """Infer the type of the indicator.
+    Args:
+        indicator_value(str): The indicator whose type we want to check.
+    Returns:
+        str. The type of the indicator.
+    """
+    if re.match(ipv4cidrRegex, indicator_value):
+        return FeedIndicatorType.CIDR
+
+    if re.match(ipv6cidrRegex, indicator_value):
+        return FeedIndicatorType.IPv6CIDR
+
+    if re.match(ipv4Regex, indicator_value):
+        return FeedIndicatorType.IP
+
+    if re.match(ipv6Regex, indicator_value):
+        return FeedIndicatorType.IPv6
+
+    if re.match(sha256Regex, indicator_value):
+        return FeedIndicatorType.File
+
+    if re.match(urlRegex, indicator_value):
+        return FeedIndicatorType.URL
+
+    if re.match(md5Regex, indicator_value):
+        return FeedIndicatorType.File
+
+    if re.match(sha1Regex, indicator_value):
+        return FeedIndicatorType.File
+
+    if re.match(emailRegex, indicator_value):
+        return FeedIndicatorType.Email
+
+    try:
+        if tldextract.extract(indicator_value).suffix:
+            if '*' in indicator_value:
+                return FeedIndicatorType.DomainGlob
+            return FeedIndicatorType.Domain
+    except Exception:
+        pass
+
+    return None
+
+
 class Client:
     def __init__(self, url: str = '', credentials: dict = None,
                  feed_name_to_config: Dict[str, dict] = None, source_name: str = 'JSON',
-                 extractor: str = '', indicator: str = 'indicator', fields: Union[List, str] = None,
+                 extractor: str = '', indicator: str = 'indicator',
                  insecure: bool = False, cert_file: str = None, key_file: str = None, headers: dict = None, **_):
         """
         Implements class for miners of JSON feeds over http/https.
@@ -21,7 +68,6 @@ class Client:
         :param extractor: JMESPath expression for extracting the indicators from
         :param indicator: the JSON attribute to use as indicator. Default: indicator
         :param source_name: feed source name
-        :param fields: list of JSON attributes to include in the indicator value.
         If None no additional attributes will be extracted.
         :param insecure: if *False* feed HTTPS server certificate will be verified
         Hidden parameters:
@@ -36,7 +82,6 @@ class Client:
                 'url': 'https://ip-ranges.amazonaws.com/ip-ranges.json',
                 'extractor': "prefixes[?service=='AMAZON']",
                 'indicator': 'ip_prefix',
-                'fields': ['region', 'service']
             }
         """
 
@@ -49,7 +94,6 @@ class Client:
                     'url': url,
                     'indicator': indicator or 'indicator',
                     'extractor': extractor or '@',
-                    'fields': argToList(fields)
                 }}
 
         # Request related attributes
@@ -98,28 +142,6 @@ class Client:
 
 
 def test_module(client, params) -> str:
-    indicator_type = params.get('indicator_type')
-    if 'feed_name_to_config' not in params and not FeedIndicatorType.is_valid_type(indicator_type):
-        supported_values = ', '.join((
-            FeedIndicatorType.Account,
-            FeedIndicatorType.CVE,
-            FeedIndicatorType.Domain,
-            FeedIndicatorType.Email,
-            FeedIndicatorType.File,
-            FeedIndicatorType.MD5,
-            FeedIndicatorType.SHA1,
-            FeedIndicatorType.SHA256,
-            FeedIndicatorType.Host,
-            FeedIndicatorType.IP,
-            FeedIndicatorType.CIDR,
-            FeedIndicatorType.IPv6,
-            FeedIndicatorType.IPv6CIDR,
-            FeedIndicatorType.Registry,
-            FeedIndicatorType.SSDeep,
-            FeedIndicatorType.URL
-        ))
-        raise ValueError(f'Indicator type of {indicator_type} is not supported. Supported values are:'
-                         f' {supported_values}')
     client.build_iterator()
     return 'ok'
 
@@ -132,30 +154,73 @@ def fetch_indicators_command(client: Client, indicator_type: str, **kwargs) -> U
     """
     indicators = []
     for result in client.build_iterator(**kwargs):
-        for sub_feed_name, items in result.items():
-            feed_config = client.feed_name_to_config.get(sub_feed_name, {})
+        for service_name, items in result.items():
+            feed_config = client.feed_name_to_config.get(service_name, {})
             indicator_field = feed_config.get('indicator', 'indicator')
             indicator_type = feed_config.get('indicator_type', indicator_type)
-            fields = feed_config.get('fields', [])
             for item in items:
                 mapping = feed_config.get('mapping')
                 indicator_value = item.get(indicator_field)
-                indicator = {'value': indicator_value, 'type': indicator_type, 'fields': {}}
-                attributes = {'source_name': sub_feed_name, 'value': indicator_value, 'type': indicator_type}
-                for f in fields:
-                    attributes[f] = item.get(f)
-                    if mapping and f in mapping:
-                        indicator['fields'][mapping[f]] = item.get(f)
+                current_indicator_type = indicator_type or auto_detect_indicator_type(indicator_value)
+                if not current_indicator_type:
+                    continue
 
-                indicator['rawJSON'] = attributes
+                indicator = {'value': indicator_value, 'type': current_indicator_type, 'fields': {}}
+
+                attributes = {'source_name': service_name, 'value': indicator_value,
+                              'type': current_indicator_type}
+
+                attributes.update(extract_all_fields_from_indicator(item, indicator_field))
+
+                if mapping:
+                    for map_key in mapping:
+                        if map_key in attributes:
+                            indicator['fields'][mapping[map_key]] = attributes.get(map_key)
+
+                indicator['rawJSON'] = item
 
                 indicators.append(indicator)
 
     return indicators
 
 
+def extract_all_fields_from_indicator(indicator, indicator_key):
+    """Flattens the JSON object to create one dictionary of values
+
+    Args:
+        indicator(dict): JSON object that holds indicator full data.
+        indicator_key(str): The key that holds the indicator value.
+
+    Returns:
+        dict. A dictionary of the fields in the JSON object.
+    """
+    fields = {}  # type: dict
+
+    def insert_value_to_fields(key, value):
+        if key in fields:
+            if not isinstance(fields[key], list):
+                fields[key] = [fields[key]]
+            fields[key].append(value)
+        else:
+            fields[key] = value
+
+    def extract(json_element):
+        if isinstance(json_element, dict):
+            for key, value in json_element.items():
+                if value and isinstance(value, dict):
+                    extract(value)
+                elif key != indicator_key:
+                    insert_value_to_fields(key, value)
+
+        elif json_element and indicator_key not in json_element:
+            for key, value in json_element:
+                insert_value_to_fields(key, value)
+
+    extract(indicator)
+    return fields
+
+
 def feed_main(params, feed_name, prefix):
-    # handle proxy settings
     handle_proxy()
 
     client = Client(**params)
