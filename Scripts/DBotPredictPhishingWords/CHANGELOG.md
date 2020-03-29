@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added option for automatically mapping output to incidents fields
 
 ## [20.2.3] - 2020-02-18
 -
