@@ -1,5 +1,5 @@
 import pytest
-from Maltiverse import Client, ip_command, url_command, domain_command, file_command
+from Maltiverse import Client, ip_command  #    , url_command, domain_command, file_command
 from test_data.response_constants import IP_RESPONSE
 from test_data.result_constants import EXPECTED_IP_RESULT
 
@@ -7,13 +7,13 @@ from test_data.result_constants import EXPECTED_IP_RESULT
 @pytest.mark.parametrize('command, response, expected_result', [
     (ip_command, IP_RESPONSE, EXPECTED_IP_RESULT)
 ])
-# @requests_mock.Mocker()
 def test_commands(command, response, expected_result, requests_mock):
     import requests
     requests.packages.urllib3.disable_warnings()
 
     requests_mock.patch.object(Client)
-    client = Client('https://api.maltiverse.com', verify=True, proxy=True, headers={'Accept': 'application/json'})  # disable-secrets-detection
+    client = Client('https://api.maltiverse.com', verify=True, proxy=True, headers={'Accept': 'application/json'})
+    # disable-secrets-detection
 
     requests_mock.patch.object(client, '_http_request', return_value=response)
     result = command(client)
