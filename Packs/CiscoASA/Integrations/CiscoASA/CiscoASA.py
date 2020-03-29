@@ -178,7 +178,7 @@ class Client(BaseClient):
         try:
             return self._http_request('POST', '/api/objects/networkobjects', json_data=data, ok_codes=(200, 201, 204),
                                       resp_type='response')
-        except Exception as e:
+        except Exception:
             raise
 
     def list_interfaces(self):
