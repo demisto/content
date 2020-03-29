@@ -36,10 +36,10 @@ tasks:
     ignoreworker: false
   '8':
     id: '8'
-    taskid: 2c486317-f20e-4b4a-86cc-91efde156f01
+    taskid: 424aaa79-feb8-4351-8818-b15b2999b7a6
     type: condition
     task:
-      id: 2c486317-f20e-4b4a-86cc-91efde156f01
+      id: 424aaa79-feb8-4351-8818-b15b2999b7a6
       version: -1
       name: Do required user inputs exist?
       description: Checks whether there is at least one user involved in the incident
@@ -57,12 +57,12 @@ tasks:
     conditions:
     - label: 'yes'
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               simple: inputs.Account.Username
             iscontext: true
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               simple: inputs.CriticalUsers
@@ -79,10 +79,10 @@ tasks:
     ignoreworker: false
   '9':
     id: '9'
-    taskid: c9a031f3-ec9f-49f4-8f4a-871c4219e358
+    taskid: ae8f3642-3d2e-46e9-80e7-806b6cfbeca3
     type: condition
     task:
-      id: c9a031f3-ec9f-49f4-8f4a-871c4219e358
+      id: ae8f3642-3d2e-46e9-80e7-806b6cfbeca3
       version: -1
       name: Is a critical user involved in the incident?
       description: Checks if at least one of the usernames involved in the incident
@@ -99,7 +99,7 @@ tasks:
     conditions:
     - label: 'yes'
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
@@ -150,10 +150,10 @@ tasks:
     ignoreworker: false
   '13':
     id: '13'
-    taskid: 9a724e04-a52d-4b62-8de8-681ef944d8f3
+    taskid: e94c9609-239f-4032-827a-8dc4b44b987a
     type: condition
     task:
-      id: 9a724e04-a52d-4b62-8de8-681ef944d8f3
+      id: e94c9609-239f-4032-827a-8dc4b44b987a
       version: -1
       name: Is a critical endpoint involved in the incident?
       description: Checks if at least one of the endpoints involved in the incident
@@ -170,7 +170,7 @@ tasks:
     conditions:
     - label: 'yes'
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
@@ -345,10 +345,10 @@ tasks:
     ignoreworker: false
   '23':
     id: '23'
-    taskid: 36611410-f7a4-45d6-82a0-9bc851628f66
+    taskid: 3f7ea2b9-d2c9-400c-8972-e64ec0ec7863
     type: condition
     task:
-      id: 36611410-f7a4-45d6-82a0-9bc851628f66
+      id: 3f7ea2b9-d2c9-400c-8972-e64ec0ec7863
       version: -1
       name: Is a critical endpoint group involved in the incident?
       description: Checks if at least one critical endpoint group is involved in the
@@ -365,7 +365,7 @@ tasks:
     conditions:
     - label: 'yes'
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
@@ -511,10 +511,10 @@ tasks:
     ignoreworker: false
   '27':
     id: '27'
-    taskid: 497768b6-c9ad-4dbf-8fbc-72d4a4c2c81f
+    taskid: f43d598e-ba8f-4dc0-8405-46fbbd12ec79
     type: condition
     task:
-      id: 497768b6-c9ad-4dbf-8fbc-72d4a4c2c81f
+      id: f43d598e-ba8f-4dc0-8405-46fbbd12ec79
       version: -1
       name: Are there user-defined critical groups?
       description: Checks if there are any user-defined critical groups in the playbook
@@ -531,7 +531,7 @@ tasks:
     conditions:
     - label: 'yes'
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               simple: inputs.CriticalGroups
@@ -617,10 +617,10 @@ tasks:
     ignoreworker: false
   '30':
     id: '30'
-    taskid: 19675484-6881-45fb-8785-ba3c942921d9
+    taskid: 09afd6ef-f9b2-4be1-80a6-f294243dc89a
     type: condition
     task:
-      id: 19675484-6881-45fb-8785-ba3c942921d9
+      id: 09afd6ef-f9b2-4be1-80a6-f294243dc89a
       version: -1
       name: Is a critical user group involved in the incident?
       description: Checks whether at least one user group is involved in the incident.
@@ -636,7 +636,7 @@ tasks:
     conditions:
     - label: 'yes'
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
@@ -754,10 +754,10 @@ tasks:
     ignoreworker: false
   '37':
     id: '37'
-    taskid: 77a335ad-2d43-4d77-8cfe-013184f3fcb0
+    taskid: d0e85e0c-9d5f-46a2-8f7d-37c5cccfb2af
     type: condition
     task:
-      id: 77a335ad-2d43-4d77-8cfe-013184f3fcb0
+      id: d0e85e0c-9d5f-46a2-8f7d-37c5cccfb2af
       version: -1
       name: Do required endpoint inputs exist?
       description: Checks whether there is at least one endpoint involved in the incident
@@ -775,14 +775,14 @@ tasks:
     conditions:
     - label: 'yes'
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
                 root: inputs.Endpoint
                 accessor: Hostname
             iscontext: true
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               simple: inputs.CriticalEndpoints
@@ -1253,7 +1253,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {
