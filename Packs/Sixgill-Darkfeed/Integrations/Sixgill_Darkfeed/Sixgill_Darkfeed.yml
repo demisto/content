@@ -87,6 +87,7 @@ description: Leverage the power of Sixgill to supercharge Demisto with real-time
 display: Sixgill DarkFeed™ Threat Intelligence
 name: Sixgill_Darkfeed
 script:
+  script: '-'
   commands:
   - arguments:
     - default: true
@@ -106,7 +107,6 @@ script:
   longRunning: false
   longRunningPort: false
   runonce: false
-  script: '-'
   subtype: python3
   type: python
 fromversion: 5.5.0

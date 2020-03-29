@@ -1,1 +1,23 @@
-[]
+{
+  "name": "Code42",
+  "description": "Use the Code42 integration to identify potential data exfiltration from insider threats while speeding investigation and response by providing fast access to file events and metadata across physical and cloud environments.",
+  "support": "partner",
+  "beta": false,
+  "deprecated": false,
+  "serverMinVersion": "5.5.0",
+  "currentVersion": "1.0.0",
+  "author": "Code42 - Nathan Hunstad",
+  "url": "https://support.code42.com/Administrator/Cloud/Monitoring_and_managing",
+  "email": "",
+  "categories": [
+    "Endpoint"
+  ],
+  "tags": [],
+  "created": "2020-03-10T08:37:18Z",
+  "updated": "2020-03-10T08:37:18Z",
+  "certification": "certified",
+  "useCases": [],
+  "keywords": [],
+  "price": 0,
+  "dependencies": {}
+}

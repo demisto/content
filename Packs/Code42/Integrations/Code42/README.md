@@ -27,7 +27,7 @@ This integration was integrated and tested with the fully-hosted SaaS implementa
 2. Search for Code42.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
-    * __credentials__
+    * __Credentials__
     * __Code42 Console URL for the pod your Code42 instance is running in__: This defaults to console.us.code42.com for U.S. SaaS Pod customers; replace with the domain that you use to log into your Code42 console if located in a different SaaS pod.
     * __Fetch incidents__: Check this box to enable fetching of incidents
     * __Incident type__: Select which Demisto incident type to map ingested Code42 alerts to
