@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+- Added a `Palo Alto Networks` prefix to the integration's name.
 
 ## [20.3.3] - 2020-03-18
  - Removed the PORT parameter from the configuration. **Note**: This will not effect currently configured instances.
