@@ -686,3 +686,5 @@ outputs:
   description: The display name of the user's manager.
   type: unknown
 fromversion: 4.5.0
+tests:
+  - Active Directory - Get User Manager Details - Test
