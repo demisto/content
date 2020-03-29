@@ -84,9 +84,9 @@ configuration:
   required: true
   type: 4
 - defaultvalue: connectApi
-  display: Sub-Feeds
+  display: Services
   hidden: false
-  name: sub_feeds
+  name: services
   options:
   - connectApi
   - fusion
@@ -95,7 +95,7 @@ configuration:
 - additionalinfo: |-
     Limit the indicators list to a specific risk rule. To see available
     risk rules run the rf-feed-get-risk-rules command. This parameter will only be
-    used for the 'connectApi' sub-feed.
+    used for the 'connectApi' service.
   display: Risk Rule
   hidden: false
   name: risk_rule
@@ -104,7 +104,7 @@ configuration:
 - additionalinfo: |-
     Load a custom risklist from a specified Recorded Future file path.
     If no file path is specified, the default risklist file is used. This parameter
-    will only be used for the 'fusion' sub-feed.
+    will only be used for the 'fusion' service.
   display: Fusion File Path
   hidden: false
   name: fusion_file_path
@@ -170,7 +170,7 @@ script:
     deprecated: false
     description: |-
       Get a list of the risk rules available for an indicator,
-      To limit the 'connectApi' sub feed indicators list.
+      To limit the 'connectApi' service indicators list.
     execution: false
     name: rf-feed-get-risk-rules
     outputs:
@@ -183,7 +183,7 @@ script:
     - contextPath: RecordedFutureFeed.RiskRule.Criticality
       description: The risk rule criticality.
       type: String
-  dockerimage: demisto/python3:3.8.1.6442
+  dockerimage: demisto/python3:3.8.2.6981
   feed: true
   isfetch: false
   longRunning: false

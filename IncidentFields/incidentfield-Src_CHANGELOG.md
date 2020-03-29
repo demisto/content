@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Associated to Brute Force incident type.
 
 ## [19.10.1] - 2019-10-15
 Associated to Traps incident type.
