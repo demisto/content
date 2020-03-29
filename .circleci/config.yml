@@ -261,7 +261,7 @@ jobs:
 
               else
                 ./Tests/lastest_server_build_scripts/download_demisto_conf.sh
-            f
+            fi
       - run:
           name: Slack Notifier
           shell: /bin/bash
