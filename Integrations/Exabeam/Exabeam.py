@@ -31,6 +31,9 @@ class Client(BaseClient):
         self.password = password
         self.session = requests.Session()
         self.session.headers = headers
+        if not proxy:
+            self.session.trust_env = False
+
         self._login()
 
     def __del__(self):
