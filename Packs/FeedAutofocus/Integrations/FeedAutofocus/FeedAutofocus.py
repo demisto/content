@@ -171,6 +171,25 @@ class Client(BaseClient):
         return indicator_list
 
     @staticmethod
+    def create_indicators_for_file(raw_json_data: dict, file_hashes: list):
+        indicators = []  # type: list
+        for file_indicator in file_hashes:
+            if file_indicator:
+                raw_json_data_copy = raw_json_data
+                raw_json_data_copy['value'] = file_indicator
+                raw_json_data_copy['type'] = FeedIndicatorType.File
+
+                indicators.append(
+                    {
+                        'value': raw_json_data_copy['value'],
+                        'type': raw_json_data_copy['type'],
+                        'rawJSON': raw_json_data_copy
+                    }
+                )
+
+        return indicators
+
+    @staticmethod
     def create_indicator_from_artifact(raw_json_data: dict, artifact: dict):
         indicator_value = artifact.get('indicator', None)
         if indicator_value is None:
@@ -199,12 +218,7 @@ class Client(BaseClient):
         return {
             'value': raw_json_data['value'],
             'type': raw_json_data['type'],
-            'rawJSON': raw_json_data.update(
-                {
-                    'value': raw_json_data['value'],
-                    'type': raw_json_data['type']
-                }
-            )
+            'rawJSON': raw_json_data
         }
 
     @staticmethod
@@ -241,19 +255,7 @@ class Client(BaseClient):
         if '...' in sha256:
             return []
 
-        indicators = [
-            {
-                'value': file_indicator,
-                'type': FeedIndicatorType.File,
-                'rawJSON': raw_json_data.update(
-                    {
-                        'value': file_indicator,
-                        'type': FeedIndicatorType.File
-                    }
-                )
-            }
-            for file_indicator in [sha256, sha1, md5] if file_indicator
-        ]
+        indicators = Client.create_indicators_for_file(raw_json_data, [sha256, sha1, md5])
 
         for artifact in artifacts:
             indicator_from_artifact = Client.create_indicator_from_artifact(raw_json_data, artifact)
