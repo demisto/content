@@ -11,14 +11,13 @@ username_req = [
         u' password reuse, many victims of the breach <a href="http://www.troyhunt.com/2011/01/why-your-apps-security'
         u'-design-could.html" target="_blank" rel="noopener">then had their Twitter accounts compromised to send Acai'
         u' berry spam</a>.'}, {
-        u'PwnCount': 191540, u'Domain': u'hackforums.net', u'IsSensitive': False, u'Name':
-        u'HackForums', u'Title': u'hackforums.net', u'DataClasses': [u'Dates of birth', u'Email addresses',
-        u'Instant messenger identities', u'IP addresses', u'Passwords', u'Social connections',
-        u'Spoken languages', u'Time zones', u'User website URLs', u'Usernames', u'Website activity'], u'IsRetired':
-        False, u'IsSpamList': False, u'BreachDate': u'2011-06-25', u'IsFabricated': False, u'ModifiedDate':
-        u'2014-05-11T10:30:43Z', u'LogoPath': u'https://haveibeenpwned.com/Content/Images/PwnedLogos/HackForums.png',
-        u'AddedDate': u'2014-05-11T10:30:43Z', u'IsVerified': True, u'Description':
-        u'In June 2011, the hacktivist group known as "LulzSec" leaked <a href='
+        u'PwnCount': 191540, u'Domain': u'hackforums.net', u'IsSensitive': False, u'Name': 'HackForums', u'Title':
+        u'hackforums.net', u'DataClasses': [u'Dates of birth', u'Email addresses', 'Instant messenger identities',
+        u'IP addresses', u'Passwords', u'Social connections', 'Spoken languages', u'Time zones', u'User website URLs',
+        u'Usernames', u'Website activity'], u'IsRetired': False, u'IsSpamList': False, u'BreachDate': u'2011-06-25',
+        u'IsFabricated': False, u'ModifiedDate': '2014-05-11T10:30:43Z', u'LogoPath': u'https://haveibeenpwned.com/'
+        u'Content/Images/PwnedLogos/HackForums.png', 'AddedDate': u'2014-05-11T10:30:43Z', u'IsVerified': True,
+        u'Description': 'In June 2011, the hacktivist group known as "LulzSec" leaked <a href='
         u'"http://www.forbes.com/sites/andygreenberg/2011/06/25/lulzsec-says-goodbye-'
         u'dumping-nato-att-gamer-data/" target="_blank" rel="noopener">one final large'
         u' data breach they titled "50 days of lulz"</a>. The compromised data came from'
