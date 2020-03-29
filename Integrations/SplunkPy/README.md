@@ -20,7 +20,7 @@ This integration was integrated and tested with Splunk v6.5.
     * __Username__
     * __Port__
     * __Fetch notable events ES query__
-    * __Fetch Limit (No more than 50)__
+    * __Fetch Limit (Max.- 200, Recommended less than 50)__
     * __Fetch incidents__
     * __First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)__ 
     * __Incident type__
@@ -34,7 +34,8 @@ This integration was integrated and tested with Splunk v6.5.
 By default when you run a search from the CLI, the search use~~~~s All Time as the time          range. You can specify time ranges using one of the CLI search parameters, such  as earliest_time, index_earliest, or latest_time.
     * __The app context of the namespace__
     * __HEC Token (HTTP Event Collector)__
-    * __HEC URL (e.g: https://localhost:8088)__    * __Use Splunk Clock Time For Fetch__
+    * __HEC URL (e.g: https://localhost:8088)__
+    * __Use Splunk Clock Time For Fetch__
     * __Use Splunk Clock Time For Fetch__
     * __Trust any certificate (unsecure)__
 4. Click __Test__ to validate the URLs, token, and connection.
@@ -114,7 +115,10 @@ Searches Splunk for events.
 | latest_time |  Specifies the latest time in the time range to search. The time string can be a UTC time (with fractional seconds), a relative time specifier (to now), or a formatted time string. For example: "2014-06-19T12:00:00.000-07:00" or "-3d" (for time 3 days before now) | Optional | 
 | event_limit | Maximum number of events to return. Default is 100. If "0", all results are returned. | Optional | 
 | app | A string that contains the application namespace in which to restrict searches. | Optional|
-
+6	
+| batch_limit | The maximum number of returned results to  process at a time. For example, if 100 results are returned, and you specify a batch_limit of 10, the results will be processed 10 at a time over 10 iterations. This does not effect the search or the context and outputs returned. In some cases, specifying a batch_size enhances search performance. If you think that the search execution is suboptimal, we recommend trying several batch_size values to determine which works best for your search. Default is 25,000. | Optional |
+97	
+| update_context | Determines whether the results will be entered into the context. | Optional |
 
 ##### Context Output
 
@@ -127,8 +131,10 @@ Searches Splunk for events.
 ```!splunk-search query="* | head 3" earliest_time="-1000d" ```
 
 ##### Human Readable Output
-![image](https://user-images.githubusercontent.com/50324325/63268326-9f036f80-c29c-11e9-80dc-5fe4e3e19916.png)
-
+### Splunk Search results for query: * | head 3
+|_bkt|_cd|_indextime|_kv|_raw|_serial|_si|_sourcetype|_time|host|index|linecount|source|sourcetype|splunk_server|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| main~445~66D21DF4-F4FD-4886-A986-82E72ADCBFE9 | 445:897774 | 1585462906 | 1 | InsertedAt=\"2020-03-29 06:21:43\"; EventID=\"837005\"; EventType=\"Application control\"; Action=\"None\"; ComputerName=\"ACME-code-007\"; ComputerDomain=\"DOMAIN\"; ComputerIPAddress=\"127.0.0.1\"; EventTime=\"2020-03-29 06:21:43\"; EventTypeID=\"5\"; Name=\"LogMeIn\"; EventName=\"LogMeIn\"; UserName=\""; ActionID=\"6\"; ScanTypeID=\"200\"; ScanType=\"Unknown\"; SubTypeID=\"23\"; SubType=\"Remote management tool\"; GroupName=\"";\u003cbr\u003e | 2 | ip-172-31-44-193,<br>main | sophos:appcontrol | 2020-03-28T23:21:43.000-07:00 | 127.0.0.1 | main | 2 | eventgen | sophos:appcontrol | ip-172-31-44-193 |
 ### 3. splunk-submit-event
 ---
 Creates a new event in Splunk.
@@ -188,7 +194,7 @@ Update an existing Notable event in Splunk ES
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| eventIDs | A CSV list of event IDs of notable events.s | Required | 
+| eventIDs | A comma-separated list of event IDs of notable events.s | Required | 
 | owner | A Splunk user to assign to the notable event. | Optional | 
 | comment | Comment to add to the notable event. | Required | 
 | urgency | Notable event urgency. | Optional | 
@@ -230,6 +236,13 @@ Creates a new search job in Splunk.
 ##### Command Example
 ```!splunk-job-create query="index=* | head 3" ```
 
+1	
+##### Context Example	
+```	
+{
+    "Splunk.Job": "1566221733.1628"
+}
+```
 ##### Human Readable Output
 ![image](https://user-images.githubusercontent.com/50324325/63269769-75981300-c29f-11e9-950a-6ca77bcf564c.png)
 
@@ -260,9 +273,7 @@ Parses the raw part of the event.
 
 ### 8. splunk-submit-event-hec
 ---
-Send events to HTTP Event Collector using the Splunk platform JSON event protocol.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+Sends events to an HTTP Event Collector using the Splunk platform JSON event protocol.
 ##### Base Command
 
 `splunk-submit-event-hec`
@@ -270,14 +281,13 @@ Send events to HTTP Event Collector using the Splunk platform JSON event protoco
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| event | Event payload key-value. Value can be a string or a JSON object. JSON example: {"event": {"message":"Access log test message"}} String example: "event": "Access log test message." | Optional | 
-| fields | Fields for indexing that do not occur in the event payload itself. | Optional | 
-| index | Index name. | Optional | 
-| host | host name. | Optional | 
-| source_type | User-defined event sourcetype | Optional | 
+| event | Event payload key-value.<br>String example: "event": "Access log test message." | Required |
+| fields | Fields for indexing that do not occur in the event payload itself. Accepts multiple comma separated fields. | Optional |
+| index | The index name. | Optional |
+| host | The hostname. | Optional |
+| source_type | User-defined event source type. | Optional |
 | source | User-defined event source. | Optional | 
 | time | Epoch-formatted time | Optional | 
-
 
 ##### Context Output
 
