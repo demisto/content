@@ -38,7 +38,7 @@ if [[ -n "$DIFF_RES" ]]; then
     echo -e "Found modified README files:\n$DIFF_RES"
     # if [ "$CIRCLE_BRANCH" == "master" ]; then
         if [ -n "${NETLIFY_BUILD_HOOK}" ]; then
-            curl -X POST -d '{}' "${NETLIFY_BUILD_HOOK}&trigger_title=triggered+by+Content+Reference+Docs+Update"
+            curl -X POST -d '{}' "${NETLIFY_BUILD_HOOK}?trigger_title=triggered+by+Content+Reference+Docs+Update"
         else
             echo "NETLIFY_BUILD_HOOK not set!!!"
         fi
