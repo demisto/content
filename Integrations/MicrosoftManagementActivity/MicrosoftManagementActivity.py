@@ -9,6 +9,7 @@ requests.packages.urllib3.disable_warnings()
 
 # CONSTANTS
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
+APP_NAME = 'ms-management-api'
 
 CONTENT_TYPE_TO_TYPE_ID_MAPPING = {
     "ExchangeAdmin": 1,
@@ -66,27 +67,31 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url: str, username: str, password: str, verify: bool,
-                 proxy: bool, headers):
+                 proxy: bool, headers, self_deployed, refresh_token, auth_and_token_url,
+                 enc_key):
+        # TODO : understand how the client_id and client_secret in MicrosoftApiModule are correct
         super().__init__(base_url=f'{base_url}', headers=headers, verify=verify, proxy=proxy)
         self.username = username
         self.password = password
-        self.session = requests.Session()
-        self.session.headers = headers
         self.tenant_id = None
         self.suffix_template = "{}/activity/feed/subscriptions/{}"
         self.tenant_id_suffix = ''
         self.access_token = None
-        # TODO : add support for ms client
-        self.ms_client = MicrosoftClient(self_deployed=self_deployed,
-                                         tenant_id=tenant_id,
-                                         auth_id=auth_and_token_url,
-                                         enc_key=enc_key,
+        self.self_deployed = self_deployed
+        self.refresh_token = refresh_token
+        self.auth_and_token_url = auth_and_token_url
+        self.enc_key = enc_key
+        self.ms_client = MicrosoftClient(self_deployed=self.self_deployed,
+                                         tenant_id=self.refresh_token,
+                                         auth_id=self.auth_and_token_url,
+                                         enc_key=self.enc_key,
                                          app_name=APP_NAME,
                                          base_url=base_url,
                                          verify=verify,
                                          proxy=proxy,
-                                         ok_codes=(200, 201, 202, 204, 400, 401, 403, 404),
-                                         refresh_token=refresh_token)
+                                         refresh_token=self.refresh_token,
+                                         ok_codes=(200, 201, 202, 204))
+
 
     @staticmethod
     def is_token_expired(integration_context):
@@ -161,8 +166,10 @@ class Client(BaseClient):
         return response
 
     def get_access_token_data(self):
-        refresh_token_response = self.get_access_token_request()
-        access_token_jwt = refresh_token_response.get('access_token')
+        access_token_jwt = self.ms_client.get_access_token()
+        # TODO : remove two lines below
+        # refresh_token_response = self.get_access_token_request()
+        # access_token_jwt = refresh_token_response.get('access_token')
         token_data = jwt.decode(access_token_jwt, verify=False)
         return access_token_jwt, token_data
 
@@ -550,11 +557,16 @@ def main():
     LOG(f'Command being called is {demisto.command()}')
     try:
         args = demisto.args()
-        # TODO : change this to include all relevant params, and the self deployed option
+        params = demisto.params()
+
         client = Client(
             base_url, username='', password='',
             verify=verify_certificate,
-            proxy=proxy, headers='')
+            proxy=proxy, headers={},
+            self_deployed=params.get('self_deployed', False),
+            refresh_token=params['refresh_token'],
+            auth_and_token_url=params['auth_id'],
+            enc_key=params['enc_key'],)
 
         access_token, token_data = client.get_access_token_data()
         client.access_token = access_token
@@ -591,6 +603,7 @@ def main():
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
+from MicrosoftApiModule import *
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
