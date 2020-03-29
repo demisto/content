@@ -144,6 +144,15 @@
                 "startCol": 0,
                 "fieldId": "malwarefamily",
                 "id": "2c4d6340-ac6e-11e9-8443-17259235cee7"
+              },
+              {
+                "index": 6,
+                "endCol": 2,
+                "height": 24,
+                "startCol": 0,
+                "sectionItemType": "field",
+                "fieldId": "aggregatedreliability",
+                "id": "b49a3ba0-6f8d-11ea-aeac-6dbd1bcce63e"
               }
             ],
             "moved": false,
