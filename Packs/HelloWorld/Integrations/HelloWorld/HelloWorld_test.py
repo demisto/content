@@ -140,7 +140,7 @@ def test_search_alerts(requests_mock):
     from HelloWorld import Client, search_alerts_command
 
     mock_response = util_load_json('test_data/search_alerts.json')
-    requests_mock.get('http://test.com/get_alerts?alert_status=ACTIVE&severity=4&max_results=2&start_time=1581982463',
+    requests_mock.get('http://test.com/get_alerts?alert_status=ACTIVE&severity=3&max_results=2&start_time=1581982463',
                       json=mock_response)
 
     client = Client(
@@ -152,7 +152,7 @@ def test_search_alerts(requests_mock):
     )
 
     args = {
-        'severity': 4,
+        'severity': 3,
         'start_time': 1581982463,
         'max_results': 2,
         'status': 'ACTIVE'
@@ -197,12 +197,26 @@ def test_fetch_incidents(requests_mock):
             'name': '#100 - Hello World Alert 100',
             'details': 'Hello World Alert 100',
             'occurred': '2020-02-17T23:34:23.000Z',
-            'rawJSON': json.dumps(mock_response[0])
+            'rawJSON': json.dumps(mock_response[0]),
+            'severity': 4,  # critical
+            'type': 'Hello World Alert',
+            'CustomFields': {
+                'helloworldid': '100',
+                'helloworldtype': 'Science Fiction',
+                'helloworldstatus': 'ACTIVE'
+            }
         },
         {
             'name': '#200 - Hello World Alert 200',
             'details': 'Hello World Alert 200',
             'occurred': '2020-02-17T23:34:23.000Z',
-            'rawJSON': json.dumps(mock_response[1])
+            'rawJSON': json.dumps(mock_response[1]),
+            'severity': 1,  # critical
+            'type': 'Hello World Alert',
+            'CustomFields': {
+                'helloworldid': '200',
+                'helloworldtype': 'Science Fiction',
+                'helloworldstatus': 'ACTIVE'
+            }
         }
     ]
