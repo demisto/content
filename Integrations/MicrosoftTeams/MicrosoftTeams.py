@@ -506,7 +506,7 @@ def http_request(
             raise ValueError(f'Error in API call to Microsoft Teams: [{response.status_code}] - {error}')
 
         if response.status_code in {202, 204}:
-            # Delete channel returns 204 if successful
+            # Delete channel or remove user from channel return 204 if successful
             # Update message returns 202 if the request has been accepted for processing
             return {}
         if response.status_code == 201:
@@ -1495,6 +1495,78 @@ def messages() -> Response:
     return Response(status=200)
 
 
+def ring_user_request(call_request_data):
+    return http_request(method='POST', url=f'{GRAPH_BASE_URL}/v1.0/communications/calls',
+                        json_=call_request_data)
+
+
+def ring_user():
+    """Rings a user on Teams.
+
+    Notes:
+        This is a ring only! no media plays in case the generated call is answered.
+
+    Returns:
+        None.
+    """
+    bot_id = demisto.params().get('bot_id')
+    integration_context: dict = demisto.getIntegrationContext()
+    tenant_id: str = integration_context.get('tenant_id', '')
+    if not tenant_id:
+        raise ValueError(
+            'Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly.'
+        )
+    # get user to call name and id
+    username_to_call = demisto.args().get('username')
+    users: list = get_users()
+    user_id: str = str()
+    for user in users:
+        if username_to_call in {user.get('displayName', ''), user.get('mail'), user.get('userPrincipalName')}:
+            user_id = user.get('id', '')
+            break
+    if not user_id:
+        raise ValueError(f'User {username_to_call} was not found')
+
+    call_request_data = {
+        "@odata.type": "#microsoft.graph.call",
+        "callbackUri": 'https://callback.url',
+        "direction": "outgoing",
+        "source": {
+            "@odata.type": "#microsoft.graph.participantInfo",
+            "identity": {
+                "@odata.type": "#microsoft.graph.identitySet",
+                "application": {
+                    "@odata.type": "#microsoft.graph.identity",
+                    "id": bot_id
+                }
+            }
+        },
+        "targets": [
+            {
+                "@odata.type": "#microsoft.graph.invitationParticipantInfo",
+                "identity": {
+                    "@odata.type": "#microsoft.graph.identitySet",
+                    "user": {
+                        "@odata.type": "#microsoft.graph.identity",
+                        "displayName": username_to_call,
+                        "id": user_id
+                    }
+                }
+            }
+        ],
+        "requestedModalities": [
+            "audio"
+        ],
+        "mediaConfig": {
+            "@odata.type": "#microsoft.graph.serviceHostedMediaConfig",
+        },
+        "tenantId": tenant_id
+    }
+    response = ring_user_request(call_request_data)
+
+    return_outputs(f"Calling {username_to_call}", {}, response)
+
+
 def long_running_loop():
     """
     The infinite loop which runs the mirror loop and the bot app in two different threads
@@ -1571,6 +1643,10 @@ def main():
         'add-user-to-channel': add_user_to_channel_command,
         # 'microsoft-teams-create-team': create_team,
         # 'microsoft-teams-send-file': send_file,
+        'microsoft-teams-ring-user': ring_user,
+        'microsoft-teams-create-channel': create_channel_command,
+        'microsoft-teams-add-user-to-channel': add_user_to_channel_command,
+
     }
 
     ''' EXECUTION '''
