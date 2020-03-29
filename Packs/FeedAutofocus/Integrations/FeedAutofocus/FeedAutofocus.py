@@ -199,7 +199,12 @@ class Client(BaseClient):
         return {
             'value': raw_json_data['value'],
             'type': raw_json_data['type'],
-            'rawJSON': raw_json_data
+            'rawJSON': raw_json_data.update(
+                {
+                    'value': raw_json_data['value'],
+                    'type': raw_json_data['type']
+                }
+            )
         }
 
     @staticmethod
@@ -240,7 +245,12 @@ class Client(BaseClient):
             {
                 'value': file_indicator,
                 'type': FeedIndicatorType.File,
-                'rawJSON': raw_json_data
+                'rawJSON': raw_json_data.update(
+                    {
+                        'value': file_indicator,
+                        'type': FeedIndicatorType.File
+                    }
+                )
             }
             for file_indicator in [sha256, sha1, md5] if file_indicator
         ]
