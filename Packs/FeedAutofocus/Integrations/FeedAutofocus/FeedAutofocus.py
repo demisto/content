@@ -204,7 +204,7 @@ class Client(BaseClient):
             {
                 'value': indicator_value,
                 'type': indicator_type,
-                'confidence': artifact.get('confidence', ''),
+                'autofocus_confidence': artifact.get('confidence', ''),
                 'autofocus_malware': artifact.get('m', 0),
                 'autofocus_benign': artifact.get('b', 0),
                 'autofocus_grayware': artifact.get('g', 0)
