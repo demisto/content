@@ -26,12 +26,14 @@
     "associatedTypes": [
         "Access",
         "Malware",
-        "Traps"
+        "Traps",
+        "Brute Force"
     ],
     "systemAssociatedTypes": [
         "Access",
         "Malware",
-        "Traps"
+        "Traps",
+        "Brute Force"
     ],
     "associatedToAll": false,
     "unmapped": false,
