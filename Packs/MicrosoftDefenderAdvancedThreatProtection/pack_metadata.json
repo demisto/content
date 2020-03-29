@@ -18,5 +18,7 @@
     "certification": "",
     "useCases": [],
     "keywords": [],
-    "dependencies": {}
+    "dependencies": {
+        "displayed_images": []
+    }
 }

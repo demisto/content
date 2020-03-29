@@ -20,54 +20,52 @@
     "keywords": [],
     "price": 0,
     "dependencies": {
-        "Base": {
-            "mandatory": true,
-            "minVersion": "1.0.0",
-            "name": "Base",
-            "certification": "certified",
-            "author": "Cortex XSOAR"
-          },
-        "Active_Directory_Query": {
+        "XForceExchange": {
             "mandatory": false,
-            "minVersion": "1.0.0",
-            "name": "Active Directory Query v2",
-            "certification": "certified",
-            "author": "Cortex XSOAR"
-          },
-        "CalculateGeoDistance": {
-            "mandatory": true,
-            "minVersion": "1.0.0",
-            "name": "CalculateGeoDistance",
-            "certification": "certified",
-            "author": "Cortex XSOAR"
-          },
-        "CalculateTimeDifference": {
-            "mandatory": true,
-            "minVersion": "1.0.0",
-            "name": "CalculateTimeDifference",
-            "certification": "certified",
-            "author": "Cortex XSOAR"
-          },
-        "Ipstack": {
-            "mandatory": false,
-            "minVersion": "1.0.0",
-            "name": "Ipstack",
-            "certification": "certified",
-            "author": "Cortex XSOAR"
-          },
-        "ipinfo": {
-            "mandatory": false,
-            "minVersion": "1.0.0",
-            "name": "ipinfo",
-            "certification": "certified",
-            "author": "Cortex XSOAR"
-          },
+            "display_name": "IBM X-Force Exchange (v2)"
+        },
         "rasterize": {
             "mandatory": true,
-            "minVersion": "1.0.0",
-            "name": "Rasterize",
-            "certification": "certified",
-            "author": "Cortex XSOAR"
-          }
+            "display_name": "Rasterize"
+        },
+        "CalculateGeoDistance": {
+            "mandatory": false,
+            "display_name": "Calculate Geo Distance"
+        },
+        "Ipstack": {
+            "mandatory": false,
+            "display_name": "Ipstack"
+        },
+        "Zscaler": {
+            "mandatory": false,
+            "display_name": "Zscaler"
+        },
+        "Active_Directory_Query": {
+            "mandatory": true,
+            "display_name": "Active Directory Query v2"
+        },
+        "CalculateTimeDifference": {
+            "mandatory": false,
+            "display_name": "Calculate Time Difference"
+        },
+        "Expanse": {
+            "mandatory": false,
+            "display_name": "Expanse"
+        },
+        "ipinfo": {
+            "mandatory": false,
+            "display_name": "ipinfo"
+        },
+        "displayed_images": [
+            "XForceExchange",
+            "rasterize",
+            "CalculateGeoDistance",
+            "Ipstack",
+            "Zscaler",
+            "Active_Directory_Query",
+            "CalculateTimeDifference",
+            "Expanse",
+            "ipinfo"
+        ]
     }
 }

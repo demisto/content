@@ -19,5 +19,7 @@
     "useCases": [],
     "keywords": [],
     "price": 0,
-    "dependencies": {}
+    "dependencies": {
+        "displayed_images": []
+    }
 }
