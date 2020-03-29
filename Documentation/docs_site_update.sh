@@ -37,11 +37,15 @@ DIFF_RES=$(git diff --name-only  "$DIFF_COMPARE"  | grep -E '(Integrations|Scrip
 if [[ -n "$DIFF_RES" ]]; then
     echo -e "Found modified README files:\n$DIFF_RES"
     # if [ "$CIRCLE_BRANCH" == "master" ]; then
-        curl -X POST -d '{}' "${NETLIFY_BUILD_HOOK}&trigger_title=triggered+by+Content+Reference+Docs+Update"
+        if [ -n "${NETLIFY_BUILD_HOOK}" ]; then
+            curl -X POST -d '{}' "${NETLIFY_BUILD_HOOK}&trigger_title=triggered+by+Content+Reference+Docs+Update"
+        else
+            echo "NETLIFY_BUILD_HOOK not set!!!"
+        fi
     # else
         # echo "Not on master. Skipping update. Content Docs will be updated when merged to master."
     # fi
 else
     echo "No modified README files found. Content Docs are not updated."
 fi
-
+exit 0
