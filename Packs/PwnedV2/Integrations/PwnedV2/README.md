@@ -453,18 +453,6 @@ In June 2011, the hacktivist group known as "LulzSec" leaked [one final large da
 Data breached: **Dates of birth,Email addresses,Instant messenger identities,IP addresses,Passwords,Social connections,Spoken languages,Time zones,User website URLs,Usernames,Website activity**
 
 
-## Additional Information
----
-
-## Known Limitations
----
-
-## Troubleshooting
----
-
-
-## Possible Errors (DO NOT PUBLISH ON ZENDESK):
+## Possible Errors:
 * 'Max retry time has exceeded.'
-* 'Max retry time has exceeded.'
-* 'Error in API call to Pwned Integration [%d] - %s' % (res.status_code, res.reason
-* str(e
+* 'Error in API call to Pwned Integration'
