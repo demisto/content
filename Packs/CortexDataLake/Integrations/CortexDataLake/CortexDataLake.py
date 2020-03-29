@@ -581,9 +581,8 @@ def query_timestamp(args: dict) -> Tuple[datetime, datetime]:
         # parses user input to datetime object
         query_start_time = parser.parse(start_time)
         # if end_time is not given- will be replaced with current time
-        query_end_time = parser.parse(end_time) if end_time \
-            else datetime.fromtimestamp(time.time()).replace(microsecond=0)
-    return query_start_time, query_end_time
+        query_end_time = parser.parse(end_time) if end_time else datetime.fromtimestamp(time.time())
+    return query_start_time.replace(microsecond=0), query_end_time.replace(microsecond=0)
 
 
 def get_social_applications_command(args: dict,
