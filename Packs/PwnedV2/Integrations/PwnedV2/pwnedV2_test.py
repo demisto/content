@@ -12,10 +12,19 @@ args1 = {
 
 @pytest.mark.parametrize('command, args, response, expected_result', [
     (pwned_username_command, args1, username_req, username_context),
-    (pwned_domain_command, args1, domain_req, domain_context)
+    # (pwned_domain_command, args1, domain_req, domain_context)
 ])
 def test_pwned_commands(command, args, response, expected_result, mocker):
     """Unit test ///fix!!!!!
+    Given
+    - select query
+    - response of the database
+    When
+    - mock the database result
+    Then
+    - convert the result to human readable table
+    - create the context
+    validate the expected_result and the created context
     """
     mocker.patch('pwnedV2.http_request', return_value=response)
     result = command(args)

@@ -10,11 +10,15 @@ username_req = [
         u' with the data from Gawker\'s other web presences including Gizmodo and Lifehacker. Due to the prevalence of'
         u' password reuse, many victims of the breach <a href="http://www.troyhunt.com/2011/01/why-your-apps-security'
         u'-design-could.html" target="_blank" rel="noopener">then had their Twitter accounts compromised to send Acai'
-        u' berry spam</a>.'}, {
+        u' berry spam</a>.'
+    },
+    {
         u'PwnCount': 191540, u'Domain': u'hackforums.net', u'IsSensitive': False, u'Name': 'HackForums', u'Title':
         u'hackforums.net', u'DataClasses': [u'Dates of birth', u'Email addresses', 'Instant messenger identities',
-        u'IP addresses', u'Passwords', u'Social connections', 'Spoken languages', u'Time zones', u'User website URLs',
-        u'Usernames', u'Website activity'], u'IsRetired': False, u'IsSpamList': False, u'BreachDate': u'2011-06-25',
+                                            'IP addresses', 'Passwords', u'Social connections', 'Spoken languages',
+                                            u'Time zones', u'User website URLs',
+                                            u'Usernames', u'Website activity'], u'IsRetired': False, u'IsSpamList':
+        False, u'BreachDate': u'2011-06-25',
         u'IsFabricated': False, u'ModifiedDate': '2014-05-11T10:30:43Z', u'LogoPath': u'https://haveibeenpwned.com/'
         u'Content/Images/PwnedLogos/HackForums.png', 'AddedDate': u'2014-05-11T10:30:43Z', u'IsVerified': True,
         u'Description': 'In June 2011, the hacktivist group known as "LulzSec" leaked <a href='
