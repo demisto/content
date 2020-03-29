@@ -2949,9 +2949,9 @@ Name: Default Group
 
 ### Host Finding Description:
 Solaris 10 and 11 hosts are vulnerable to a telnet daemon flaw.
-<P>
+<P/>
 The telnet daemon passes switches directly to the login process which looks for a switch that allows root to login to any account without a password. If your telnet daemon is running as root it allows unauthenticated remote logins.
-<P>
+<P/>
 Telnet poses a risk because data transferred between clients may not be encrypted. Telnet is also a frequent target for port scanners.
 
 ### 8. risksense-get-app-detail

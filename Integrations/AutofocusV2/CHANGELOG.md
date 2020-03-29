@@ -1,5 +1,9 @@
 ## [Unreleased]
-
+  - Fixed an issue where *get_search_results* mistakenly returns "no results".
+  - Added the *SessionStart* context output to the following commands.
+    - ***autofocus-search-samples***
+    - ***autofocus-search-Sessions***
+    - ***autofocus-top-tags-search***
 
 ## [20.3.3] - 2020-03-18
 -

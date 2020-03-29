@@ -207,7 +207,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: File SHA-256
+              simple: File
     view: |-
       {
         "position": {

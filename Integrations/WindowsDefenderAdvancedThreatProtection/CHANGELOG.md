@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Deprecated the integration - use Microsoft Defender Advanced Threat Protection integration instead.
 
 ## [19.12.1] - 2019-12-25
 Added content-version and content-name headers to Oproxy request.

@@ -3,15 +3,29 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Tanium Threat Response",
+            "playbookID": "Tanium Threat Response Test"
+        },
+        {
             "integrations": ["Syslog Sender", "syslog"],
             "playbookID": "Test Syslog",
             "fromversion": "5.5.0",
             "timeout": 1000
         },
         {
+            "integrations": "JSON Feed",
+            "playbookID": "JSON_Feed_Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Plain Text Feed",
             "playbookID": "PlainText Feed - Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Silverfort",
+            "playbookID": "Silverfort-test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Fastly Feed",
@@ -159,7 +173,7 @@
             "integrations": "AutoFocus V2",
             "playbookID": "Autofocus Query Samples, Sessions and Tags Test Playbook",
             "fromversion": "4.5.0",
-            "timeout": 500
+            "timeout": 1000
         },
         {
             "integrations": "HelloWorld",
@@ -914,6 +928,10 @@
             "playbookID": "dedup_-_generic_-_test"
         },
         {
+            "playbookID": "Dedup - Generic v2 - Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "playbookID": "TestDedupIncidentsPlaybook"
         },
         {
@@ -1317,6 +1335,16 @@
             "integrations": "Windows Defender Advanced Threat Protection",
             "playbookID": "Test - Windows Defender Advanced Threat Protection",
             "instance_names": "windows_defender_atp_prod"
+        },
+        {
+            "integrations": "Microsoft Defender Advanced Threat Protection",
+            "playbookID": "Microsoft Defender Advanced Threat Protection - Test",
+            "instance_names": "microsoft_defender_atp_prod"
+        },
+        {
+            "integrations": "Microsoft Defender Advanced Threat Protection",
+            "playbookID": "Microsoft Defender Advanced Threat Protection - Test",
+            "instance_names": "microsoft_defender_atp_dev"
         },
         {
             "integrations": "Tanium",
@@ -2161,7 +2189,9 @@
         {
             "integrations": "AutoFocus V2",
             "playbookID": "AutoFocus V2 test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 1000
+
         },
         {
             "playbookID": "Process Email - Generic for Rasterize"
@@ -2533,10 +2563,22 @@
         {
             "playbookID": "ExtractDomainAndFQDNFromUrlAndEmail-Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Cortex Data Lake",
+            "playbookID": "Cortex Data Lake Test",
+            "instance_names": "cdl_prod",
+            "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "Cortex Data Lake",
+            "playbookID": "Cortex Data Lake Test",
+            "instance_names": "cdl_dev",
+            "fromversion": "4.5.0"
         }
     ],
     "skipped_tests": {
-        "IntSights Test": "Issue 22185",
+        "Test-VulnDB": "Issue 23138",
         "test_MsGraphFiles": "Issue 22853 ",
         "TestCofenseFeed": "Issue 22854",
         "RecordedFutureFeed - Test": "Issue 22855",
@@ -2606,6 +2648,7 @@
         "Fidelis Elevate Network": "Issue 20735",
         "Minerva Labs Anti-Evasion Platform": "Issue 18835",
         "PolySwarm": "contribution",
+        "Silverfort": "contribution",
         "fireeye": "Issue 19839",
         "DomainTools": "Issue 8298",
         "Remedy On-Demand": "Issue 19835",
@@ -2683,9 +2726,11 @@
     "nightly_integrations": [
         "Lastline v2",
         "TruSTAR",
-        "SlackV2"
+        "SlackV2",
+        "VulnDB"
     ],
     "unmockable_integrations": {
+        "Cortex Data Lake": "Integration requires SSL",
         "Google Key Management Service": "The API requires an SSL secure connection to work.",
         "McAfee ESM-v10": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
         "mysql": "Does not use http",
