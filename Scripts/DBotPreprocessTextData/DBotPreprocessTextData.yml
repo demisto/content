@@ -118,6 +118,7 @@ tags:
 - ml
 timeout: 120µs
 type: python
+subtype: python2
 dockerimage: demisto/dl:1.4
 runonce: true
 tests:
