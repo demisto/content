@@ -247,8 +247,12 @@ def arrange_context_according_to_user_selection(context_data):
     remove_unselected_context_keys(context_data[0])
 
     # each related event has it's own attributes
-    for obj in context_data[0]['Object']:
-        remove_unselected_context_keys(obj)
+    for event in context_data:
+        # Remove attributes in Objects
+        for obj in event['Object']:
+            remove_unselected_context_keys(obj)
+        # Remove attributes om event
+        remove_unselected_context_keys(event)
 
 
 def build_context(response: Union[dict, requests.Response]) -> dict:  # type: ignore
