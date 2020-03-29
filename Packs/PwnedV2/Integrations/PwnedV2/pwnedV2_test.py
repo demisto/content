@@ -30,4 +30,3 @@ def test_pwned_commands(command, args, response, expected_result, mocker):
     for args in command(args):
         hr, outputs, raw = args
         assert expected_result == outputs  # entry context is found in the 2nd place in the result of the command
-
