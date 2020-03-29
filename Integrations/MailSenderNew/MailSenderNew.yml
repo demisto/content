@@ -25,18 +25,14 @@ configuration:
   name: fqdn
   required: false
   type: 0
-- defaultvalue: 'false'
-  display: Use Full TLS for connection
-  name: full_tls
-  required: false
-  type: 8
-  additionalinfo: Initiate the connection to the SMTP server in a TLS mode (SSL encrypted) from the begining.
-- defaultvalue: 'false'
-  display: Use TLS for connection
+- display: Use TLS for connection
   name: tls
+  defaultvalue: ""
+  type: 15
   required: false
-  type: 8
-  additionalinfo: Converts the connection to the SMTP server to a TLS mode (SSL encrypted).
+  options:
+    - TLS
+    - FULL TLS
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure

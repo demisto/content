@@ -335,21 +335,22 @@ def main():
     FQDN = demisto.params().get('fqdn')
     FQDN = (FQDN and FQDN.strip()) or None
     TLS = demisto.getParam('tls')
-    FULL_TLS = demisto.getParam('full_tls')
-    if FULL_TLS and TLS:
-        return_error('Cannot configure instance with both TLS and Full TLS')
     stderr_org = None
     try:
         if demisto.command() == 'test-module':
             stderr_org = swap_stderr(LOG)
             smtplib.SMTP.debuglevel = 1
+
         # TODO - support for non-valid certs
-        SERVER = SMTP_SSL(demisto.getParam('host'), int(demisto.params().get('port', 0)),
-                          local_hostname=FQDN) if FULL_TLS else SMTP(demisto.getParam('host'),
-                                                                     int(demisto.params().get('port', 0)),
-                                                                     local_hostname=FQDN)
+        if TLS == 'FULL TLS':
+            SERVER = SMTP_SSL(demisto.getParam('host'), int(demisto.params().get('port', 0)), local_hostname=FQDN)
+        else:
+            SERVER = SMTP(demisto.getParam('host'), int(demisto.params().get('port', 0)), local_hostname=FQDN)
+
         SERVER.ehlo()
-        if TLS:
+        # For BC purposes where TLS was a checkbox (no value only true or false) if TLS=True or TLS=TLS we enter this
+        # condition. If TLS is not configured or is set to FULL TLS we do not access thos condition
+        if TLS and not TLS == 'FULL TLS':
             SERVER.starttls()
         user, password = get_user_pass()
         if user:
