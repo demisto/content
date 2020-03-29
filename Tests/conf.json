@@ -2593,7 +2593,6 @@
         "test-Expanse": "Expanse should provide domain that they have in their system",
         "TestProofpointFeed": "Issue 22229",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 22227",
-        "test_Qradar": "Issue 22186",
         "Tenable.io test": "Issue 22184",
         "ThreatQ - Test": "Issue 22175",
         "PostgreSQL Test": "Issue 22172",
