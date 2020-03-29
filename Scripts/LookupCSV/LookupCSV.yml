@@ -1,0 +1,31 @@
+name: LookupCSV
+script: '-'
+type: python
+tags:
+  - file
+  - csv
+  - Utility
+comment: Parses a CSV and looks for a specific value in a specific column, returning
+  a dict of the entire matching row.
+enabled: true
+args:
+  - name: entryID
+    required: true
+    description: EntryID of CSV file.
+  - name: header_row
+    description: CSV file has a header row
+  - name: column
+    description: Column to search for value in
+  - name: value
+    description: value to search for
+outputs:
+  - contextPath: LookupCSV.result
+    description: List of result objects; either a list of dicts (with header_row) or a list of lists (no header row)
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.8.2.6712
+runas: DBotWeakRole
+commonfields:
+  id: LookupCSV
+  version: -1

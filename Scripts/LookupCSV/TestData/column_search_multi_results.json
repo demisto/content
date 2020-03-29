@@ -1,0 +1,26 @@
+{
+  "Type": 1,
+  "ContentsFormat": "json",
+  "Contents": [
+    {
+      "sourceIP": "4.4.4.4",
+      "count": "5"
+    },
+    {
+      "sourceIP": "4.4.4.4",
+      "count": "6"
+    }
+  ],
+  "EntryContext": {
+    "LookupCSV.result": [
+      {
+        "sourceIP": "4.4.4.4",
+        "count": "5"
+      },
+      {
+        "sourceIP": "4.4.4.4",
+        "count": "6"
+      }
+    ]
+  }
+}
