@@ -235,7 +235,7 @@ def get_incident_by_id_command(client, args):
 def list_incidents_command(client, args, is_fetch_incidents=False):
     filter_expression = args.get('filter')
     limit = None if is_fetch_incidents else min(50, int(args.get('limit')))
-    next_link = args.get('next_link')
+    next_link = args.get('next_link', '')
 
     if next_link:
         next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
@@ -413,7 +413,7 @@ def get_entity_by_id_command(client, args):
 def list_entity_relations_command(client, args):
     entity_id = args.get('entity_id')
     limit = min(50, int(args.get('limit')))
-    next_link = args.get('next_link')
+    next_link = args.get('next_link', '')
     entity_kinds = args.get('entity_kinds')
     filter_expression = args.get('filter', '')
 
@@ -463,7 +463,7 @@ def list_entity_relations_command(client, args):
 def list_incident_relations_command(client, args):
     inc_id = args.get('incident_id')
     limit = min(50, int(args.get('limit')))
-    next_link = args.get('next_link')
+    next_link = args.get('next_link', '')
     entity_kinds = args.get('entity_kinds')
     filter_expression = args.get('filter', '')
 
@@ -566,12 +566,12 @@ def main():
     try:
         client = Client(
             self_deployed=params.get('self_deployed', False),
-            refresh_token=params['refresh_token'],
-            auth_and_token_url=params['auth_id'],
-            enc_key=params['enc_key'],
-            subscription_id=params['subscriptionID'],
-            resource_group_name=params['resourceGroupName'],
-            workspace_name=params['workspaceName'],
+            refresh_token=params.get('refresh_token', ''),
+            auth_and_token_url=params.get('auth_id', ''),
+            enc_key=params.get('enc_key', ''),
+            subscription_id=params.get('subscriptionID', ''),
+            resource_group_name=params.get('resourceGroupName', ''),
+            workspace_name=params.get('workspaceName', ''),
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False)
         )
