@@ -81,7 +81,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '''[Demisto](http://demisto.com)'''
+              simple: '[Demisto](http://demisto.com)'
     view: |-
       {
         "position": {
