@@ -159,7 +159,7 @@ class Client:
 
                 if incidents:
                     if last_timestamp[-1] == 'Z':
-                        last_timestamp = last_timestamp[:-4]
+                        last_timestamp = last_timestamp[:-4].replace(':', "")
                     last_run = {'last_timestamp': last_timestamp}
 
             except ValueError:
