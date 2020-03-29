@@ -885,10 +885,10 @@ tasks:
     ignoreworker: false
   "38":
     id: "38"
-    taskid: c73fa621-9cac-4fd5-8c69-69e2226ef992
+    taskid: b5f40d21-0ae9-4595-83ff-8c29bcba1e38
     type: condition
     task:
-      id: c73fa621-9cac-4fd5-8c69-69e2226ef992
+      id: b5f40d21-0ae9-4595-83ff-8c29bcba1e38
       version: -1
       name: verify create network object
       type: condition
@@ -930,14 +930,11 @@ tasks:
           right:
             value:
               simple: my playbook test
-      - - operator: isEqualString
+      - - operator: isFalse
           left:
             value:
               simple: CiscoFP.Network.Overridable
             iscontext: true
-          right:
-            value:
-              simple: "false"
     view: |-
       {
         "position": {
@@ -1079,10 +1076,10 @@ tasks:
     ignoreworker: false
   "43":
     id: "43"
-    taskid: b433fcba-164b-453e-85ef-87ea6195a368
+    taskid: e84586e8-8be4-4e69-8dcd-089eafb2efb7
     type: condition
     task:
-      id: b433fcba-164b-453e-85ef-87ea6195a368
+      id: e84586e8-8be4-4e69-8dcd-089eafb2efb7
       version: -1
       name: verify update network object
       type: condition
@@ -1124,14 +1121,11 @@ tasks:
           right:
             value:
               simple: my playbook test
-      - - operator: isEqualString
+      - - operator: isTrue
           left:
             value:
               simple: CiscoFP.Network.Overridable
             iscontext: true
-          right:
-            value:
-              simple: "true"
     view: |-
       {
         "position": {
@@ -1144,10 +1138,10 @@ tasks:
     ignoreworker: false
   "44":
     id: "44"
-    taskid: d4eced7f-4bf5-4f34-8516-e40d6871dc58
+    taskid: ceda8589-7e8b-4b40-8293-6fbf74381903
     type: condition
     task:
-      id: d4eced7f-4bf5-4f34-8516-e40d6871dc58
+      id: ceda8589-7e8b-4b40-8293-6fbf74381903
       version: -1
       name: verify get network object
       type: condition
@@ -1189,14 +1183,11 @@ tasks:
           right:
             value:
               simple: my playbook test
-      - - operator: isEqualString
+      - - operator: isTrue
           left:
             value:
               simple: CiscoFP.Network.Overridable
             iscontext: true
-          right:
-            value:
-              simple: "true"
     view: |-
       {
         "position": {
@@ -1209,10 +1200,10 @@ tasks:
     ignoreworker: false
   "46":
     id: "46"
-    taskid: 3c488384-4ad5-499c-80b9-45e38e3b199d
+    taskid: 4dfad02d-eb05-44c7-8106-237c966d6c7c
     type: condition
     task:
-      id: 3c488384-4ad5-499c-80b9-45e38e3b199d
+      id: 4dfad02d-eb05-44c7-8106-237c966d6c7c
       version: -1
       name: verify create-host-object
       type: condition
@@ -1254,14 +1245,11 @@ tasks:
           right:
             value:
               simple: my playbook test
-      - - operator: isEqualString
+      - - operator: isFalse
           left:
             value:
               simple: CiscoFP.Host.Overridable
             iscontext: true
-          right:
-            value:
-              simple: "false"
     view: |-
       {
         "position": {
@@ -1274,10 +1262,10 @@ tasks:
     ignoreworker: false
   "47":
     id: "47"
-    taskid: 2541a7a8-a9c6-4507-8834-4512abbf13a8
+    taskid: 27146726-c950-438d-8b6b-be1c84b2139b
     type: condition
     task:
-      id: 2541a7a8-a9c6-4507-8834-4512abbf13a8
+      id: 27146726-c950-438d-8b6b-be1c84b2139b
       version: -1
       name: verify-update-host-object
       type: condition
@@ -1319,14 +1307,11 @@ tasks:
           right:
             value:
               simple: my playbook test
-      - - operator: isEqualString
+      - - operator: isTrue
           left:
             value:
               simple: CiscoFP.Host.Overridable
             iscontext: true
-          right:
-            value:
-              simple: "true"
     view: |-
       {
         "position": {
@@ -1339,10 +1324,10 @@ tasks:
     ignoreworker: false
   "48":
     id: "48"
-    taskid: 9b1fb2d4-e632-4b75-850c-2ef0f8efdf3b
+    taskid: 2120b9a4-f8de-4d10-8c7f-c806d6d7369d
     type: condition
     task:
-      id: 9b1fb2d4-e632-4b75-850c-2ef0f8efdf3b
+      id: 2120b9a4-f8de-4d10-8c7f-c806d6d7369d
       version: -1
       name: verify-get-host-object
       type: condition
@@ -1384,14 +1369,11 @@ tasks:
           right:
             value:
               simple: my playbook test
-      - - operator: isEqualString
+      - - operator: isTrue
           left:
             value:
               simple: CiscoFP.Host.Overridable
             iscontext: true
-          right:
-            value:
-              simple: "true"
     view: |-
       {
         "position": {
@@ -2085,10 +2067,10 @@ tasks:
     ignoreworker: false
   "78":
     id: "78"
-    taskid: 4d8be500-4092-42f0-8692-1fd4164c8024
+    taskid: 3319a372-b0c4-408d-807c-d259f17d3b51
     type: condition
     task:
-      id: 4d8be500-4092-42f0-8692-1fd4164c8024
+      id: 3319a372-b0c4-408d-807c-d259f17d3b51
       version: -1
       name: verify create access rule
       type: condition
@@ -2122,14 +2104,11 @@ tasks:
           right:
             value:
               simple: ALLOW
-      - - operator: isEqualString
+      - - operator: isTrue
           left:
             value:
               simple: CiscoFP.Rule.Enabled
             iscontext: true
-          right:
-            value:
-              simple: "true"
       - - operator: isEqualString
           left:
             value:
@@ -2208,10 +2187,10 @@ tasks:
     ignoreworker: false
   "79":
     id: "79"
-    taskid: 6d0a754e-c186-43b3-81ab-c1b06dc21fbe
+    taskid: 7bba6d6e-eb8d-42e3-87d7-653609a95fc3
     type: condition
     task:
-      id: 6d0a754e-c186-43b3-81ab-c1b06dc21fbe
+      id: 7bba6d6e-eb8d-42e3-87d7-653609a95fc3
       version: -1
       name: verify get access rule
       type: condition
@@ -2245,14 +2224,11 @@ tasks:
           right:
             value:
               simple: ALLOW
-      - - operator: isEqualString
+      - - operator: isTrue
           left:
             value:
               simple: CiscoFP.Rule.Enabled
             iscontext: true
-          right:
-            value:
-              simple: "true"
       - - operator: isEqualString
           left:
             value:
@@ -2331,10 +2307,10 @@ tasks:
     ignoreworker: false
   "80":
     id: "80"
-    taskid: 78d7c18f-0ba1-498c-8992-a323854791ac
+    taskid: 0e338e4e-de05-4d3c-8f83-01073ec365fe
     type: condition
     task:
-      id: 78d7c18f-0ba1-498c-8992-a323854791ac
+      id: 0e338e4e-de05-4d3c-8f83-01073ec365fe
       version: -1
       name: verify update access rule
       type: condition
@@ -2368,14 +2344,11 @@ tasks:
           right:
             value:
               simple: BLOCK
-      - - operator: isEqualString
+      - - operator: isTrue
           left:
             value:
               simple: CiscoFP.Rule.Enabled
             iscontext: true
-          right:
-            value:
-              simple: "true"
       - - operator: isEqualString
           left:
             value:
@@ -2482,10 +2455,10 @@ tasks:
     ignoreworker: false
   "82":
     id: "82"
-    taskid: 2be9e83a-64f5-4681-81a7-97f0299152e2
+    taskid: df2ff8b0-f5fc-4461-8b8d-061619553be8
     type: condition
     task:
-      id: 2be9e83a-64f5-4681-81a7-97f0299152e2
+      id: df2ff8b0-f5fc-4461-8b8d-061619553be8
       version: -1
       name: verify-create-policy-assignments
       type: condition
