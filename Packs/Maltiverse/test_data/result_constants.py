@@ -146,19 +146,19 @@ EXPECTED_FILE_RESULT = {
                     'Normalizedpath': 'C:\\FileZilla_3.47.2.1_win64_sponsored-setup.exe',
                     'Sha256': 'edb2f88c29844117cd74acf8bb357edf92487a1b142fe6f60b6ac5e15d2d718f',
                     'Uid': '00016638-00002652'
-                },
+            },
             'Blacklist':
                 {
                     'Description': ['PUA.FusionCore'],
                     'FirstSeen': ['2020-03-11 15:00:52'],
                     'LastSeen': ['2020-03-11 15:00:52'],
                     'Source': ['Hybrid-Analysis']
-                },
+            },
             'Malicious':
                 {
                     'Vendor': 'Maltiverse',
                     'Description': ['PUA.FusionCore']
-                }
+            }
         }
     ]
 }
