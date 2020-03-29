@@ -1,0 +1,25 @@
+{
+    "name": "Pwned v2",
+    "description": "Integration for have I been Pwned v2",
+    "support": "demisto",
+    "serverMinVersion": "1.0.0",
+    "currentVersion": "1.0.0",
+    "author": "",
+    "url": "",
+    "email": "",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        ""
+    ],
+    "created": "2020-03-22T08:12:36Z",
+    "updated": "2020-03-22T08:12:36Z",
+    "beta": false,
+    "deprecated": false,
+    "certification": "certified",
+    "useCases": [],
+    "keywords": [],
+    "price": "",
+    "dependencies": {}
+}

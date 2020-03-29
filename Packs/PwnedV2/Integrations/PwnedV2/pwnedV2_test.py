@@ -1,0 +1,22 @@
+import pytest
+from pwnedV2 import pwned_domain_command, pwned_username_command
+from test_data.context_data import username_context, domain_context
+from test_data.http_responses import username_req, domain_req
+
+
+args1 = {
+    'username': "jondon",
+    'domain': "adobe.com"
+}
+
+
+@pytest.mark.parametrize('command, args, response, expected_result', [
+    (pwned_username_command, args1, username_req, username_context),
+    (pwned_domain_command, args1, domain_req, domain_context)
+])
+def test_pwned_commands(command, args, response, expected_result, mocker):
+    """Unit test ///fix!!!!!
+    """
+    mocker.patch('pwnedV2.http_request', return_value=response)
+    result = command(args)
+    assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
