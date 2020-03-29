@@ -1,5 +1,6 @@
 ## [Unreleased]
-
+- Added Custom details and Extended details sections.
+- Added the indicator field **Aggregated Reliability**, which is the aggregated score of the feed.
 
 ## [20.3.3] - 2020-03-18
 -
