@@ -1,5 +1,8 @@
 ## [Unreleased]
-
+ - Added the ***microsoft-teams-ring-user*** command.
+   - To user this functionality add Calls.Initiate.All and Calls.InitiateGroupCall.All premissions to your configured Teams Bot.
+   - For more information see the [Microsoft Teams Documentation](https://docs.microsoft.com/en-us/microsoftteams/platform/bots/calls-and-meetings/registering-calling-bot#add-microsoft-graph-permissions) on this subject.
+ - Deprecated ***add-user-to-channel*** and ***create-channel*** - Use ***microsoft-teams-add-user-to-channel*** and ***microsoft-teams-create-channel*** instead. 
 
 ## [20.1.2] - 2020-01-22
 Added the ability to mention users in the ***send-notification*** command.

@@ -42,7 +42,7 @@ class Client(BaseClient):
             character is used as indicator. Default: *null*
         :param: fields: a dictionary of *extraction dictionaries* to extract
             additional attributes from each line. Default: {}
-        :param: feed_url_to_config: For each sub-feed, a dictionary to process indicators by.
+        :param: feed_url_to_config: For each service, a dictionary to process indicators by.
         For example, ASN feed:
         'https://www.spamhaus.org/drop/asndrop.txt': {
             'indicator_type': ASN,
@@ -187,7 +187,7 @@ class Client(BaseClient):
 
     def build_iterator(self, **kwargs):
         """
-        For each URL (sub-feed), send an HTTP request to get indicators and return them after filtering by Regex
+        For each URL (service), send an HTTP request to get indicators and return them after filtering by Regex
         :param kwargs: Arguments to send to the HTTP API endpoint
         :return: List of indicators
         """
