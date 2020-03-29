@@ -1,5 +1,6 @@
 ## [Unreleased]
-Improved test module functionality.
+- Improved test module functionality.
+- Update the reference to the traffic light protocol indicator field to use the new **cliname**.
 
 ## [20.3.1] - 2020-03-04
 -
