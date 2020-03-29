@@ -225,7 +225,7 @@ def set_retry_end_time():
 
 def test_module(args_dict):
     http_request('GET', SUFFIXES.get("test"))
-    return 'ok', {}, []
+    yield ['ok', {}, []]
 
 
 def pwned_email_command(args_dict):
@@ -233,7 +233,8 @@ def pwned_email_command(args_dict):
     for email in email_list:
         email_suffix = SUFFIXES.get("email") + email + SUFFIXES.get("email_truncate_verified")
         paste_suffix = SUFFIXES.get("paste") + email
-        return pwned_email(email, email_suffix, paste_suffix)
+        for arg in pwned_email(email, email_suffix, paste_suffix):
+            yield arg
 
 
 def pwned_email(email, email_suffix, paste_suffix):
@@ -242,35 +243,37 @@ def pwned_email(email, email_suffix, paste_suffix):
 
     md = data_to_markdown('Email', email, api_email_res, api_paste_res)
     ec = email_to_entry_context(email, api_email_res or [], api_paste_res or [])
-    return md, ec, api_email_res
+    yield [md, ec, api_email_res]
 
 
 def pwned_domain_command(args_dict):
     domain_list = argToList(args_dict.get('domain', ''))
     for domain in domain_list:
         suffix = SUFFIXES.get("domain") + domain + SUFFIXES.get("domain_truncate_verified")
-        return pwned_domain(domain, suffix)
+        for arg in pwned_domain(domain, suffix):
+            yield arg
 
 
 def pwned_domain(domain, suffix):
     api_res = http_request('GET', url_suffix=suffix)
     md = data_to_markdown('Domain', domain, api_res)
     ec = domain_to_entry_context(domain, api_res or [])
-    return md, ec, api_res
+    yield [md, ec, api_res]
 
 
 def pwned_username_command(args_dict):
     username_list = argToList(args_dict.get('username', ''))
     for username in username_list:
         suffix = SUFFIXES.get("username") + username + SUFFIXES.get("username_truncate_verified")
-        return pwned_username(username, suffix)
+        for arg in pwned_username(username, suffix):
+            yield arg
 
 
 def pwned_username(username, suffix):
     api_res = http_request('GET', url_suffix=suffix)
     md = data_to_markdown('Username', username, api_res)
     ec = domain_to_entry_context(username, api_res or [])
-    return md, ec, api_res
+    yield [md, ec, api_res]
 
 
 command = demisto.command()
@@ -289,7 +292,10 @@ try:
     }
 
     if command in commands:
-        return_outputs(*commands[command](demisto.args()))
+        for args in commands[command](demisto.args()):
+            hr, outputs, raw = args
+            return_outputs(hr, outputs, raw)
+
 # Log exceptions
 except Exception as e:
     return_error(str(e))
