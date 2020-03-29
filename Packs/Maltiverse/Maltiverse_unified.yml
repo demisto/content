@@ -226,7 +226,7 @@ script:
     - contextPath: URL.Data
       description: The URL
       type: String
-    - contextPath: URL.Maicious.Description
+    - contextPath: URL.Malicious.Description
       description: Describes the reason for the URL to be in the blacklist
       type: String
     - contextPath: URL.Malicious.Vendor
@@ -283,7 +283,7 @@ script:
       description: Stores the domain to which the hostname belongs. Hostame and domain
         can match on level 2 hostnames
       type: String
-    - contextPath: Maltiverse.URL.TLD
+    - contextPath: Maltiverse.URL.Tld
       description: Top level domain of the hostname
       type: String
   - arguments:
@@ -558,24 +558,24 @@ script:
         reports = []
 
         for ip in argToList(args.get('ip')):
-            report = client.ip_report(ip, )
-            positive_detections = len(report.get('blacklist'))
+            report = client.ip_report(ip)
+            positive_detections = len(report.get('blacklist', []))
 
             blacklist_context = create_blacklist_context(report.get('blacklist', []))
 
             outputs = {
-                'Address': report['ip_addr'],
-                'Geo.Country': report.get('country_code'),
+                'Address': report.get('ip_addr', ''),
+                'Geo.Country': report.get('country_code', ''),
                 'PositiveDetections': positive_detections,
                 'Malicious.Description': blacklist_context['Blacklist']['Description']
             }
 
-            additional_info = {string_to_context_key(field): report[field] for field in
+            additional_info = {string_to_context_key(field): report.get(field, '') for field in
                                ['classification', 'tag']}
-            additional_info['Address'] = report['ip_addr']
+            additional_info['Address'] = report.get('ip_addr', '')
 
-            dbot_score = {'Indicator': report['ip_addr'], 'Type': 'ip', 'Vendor': 'Maltiverse',
-                          'Score': calculate_score(positive_detections, report.get('classification', ' '), threshold)}
+            dbot_score = {'Indicator': report.get('ip_addr', ''), 'Type': 'ip', 'Vendor': 'Maltiverse',
+                          'Score': calculate_score(positive_detections, report.get('classification', ''), threshold)}
 
             maltiverse_ip = {**blacklist_context, **additional_info}
 
@@ -583,12 +583,8 @@ script:
             context[f'Maltiverse.{outputPaths["ip"]}'].append(maltiverse_ip)
             context[DBOT_SCORE_KEY].append(dbot_score)
 
-            # todo: check if it needs to appear as IP.Address and so on
             markdown += tableToMarkdown(f'Maltiverse IP reputation for: {report["ip_addr"]}\n', outputs, removeNull=True)
             reports.append(report)
-
-        # todo: delete next line
-        print(reports)
 
         return markdown, context, reports
 
@@ -613,31 +609,38 @@ script:
 
         for url in argToList(args.get('url', '')):
             report = client.url_report(url)
-            positive_detections = len(report.get('blacklist', ''))
+            positive_detections = len(report.get('blacklist', []))
             blacklist_context = create_blacklist_context(report.get('blacklist', []))
 
-            outputs = {'Data': report['url'],
+            outputs = {'Data': report.get('url', ''),
                        'PositiveDetections': positive_detections
                        }
 
-            dbot_score = {'Indicator': report['hostname'], 'Type': 'url', 'Vendor': 'Maltiverse',
-                          'Score': calculate_score(positive_detections, report.get('classification', ' '), threshold)}
+            dbot_score = {'Indicator': report.get('hostname', ''), 'Type': 'url', 'Vendor': 'Maltiverse',
+                          'Score': calculate_score(positive_detections, report.get('classification', ''), threshold)}
 
-            maltiverse_url = {string_to_context_key(field): report[field] for field in
+            maltiverse_url = {string_to_context_key(field): report.get(field, '') for field in
                               ['classification', 'tag', 'modification_time', 'creation_time', 'hostname', 'domain', 'tld']}
-            maltiverse_url['Address'] = report.get('url')
+            maltiverse_url['Address'] = report.get('url', '')
             maltiverse_url = {**maltiverse_url, **blacklist_context}
 
             md_info = {
-                'URL.Data': report['url'],
+                'URL.Data': report.get('url', ''),
                 'URL.PositiveDetections': positive_detections,
-                'Maltiverse.URL.Domain': report['domain'],
-                'Maltiverse.URL.ModificationTime': report['modification_time'],
-                'Maltiverse.URL.CreationTime': report['creation_time']
+                'Maltiverse.URL.Domain': report.get('domain', ''),
+                'Maltiverse.URL.ModificationTime': report.get('modification_time', ''),
+                'Maltiverse.URL.CreationTime': report.get('creation_time', '')
             }
             if positive_detections > 0:
-                outputs['Malicious.Description'] = blacklist_context['Blacklist']['Description']
-                outputs['Malicious.Vendor'] = 'Maltiverse'
+                malicious_info = {
+                    'Malicious': {
+                        'Description': blacklist_context['Blacklist']['Description'],
+                        'Vendor': 'Maltiverse'
+                    }
+                }
+                # outputs['Malicious.Description'] = blacklist_context['Blacklist']['Description']
+                # outputs['Malicious.Vendor'] = 'Maltiverse'
+                outputs = {**outputs, **malicious_info}
                 md_info['URL.Malicious.Description'] = blacklist_context['Blacklist']['Description']
                 md_info['URL.Malicious.Vendor'] = 'Maltiverse'
 
@@ -670,18 +673,17 @@ script:
         reports = []
 
         for domain in argToList(args.get('domain', '')):
-            print("in for")
             report = client.domain_report(domain)
             positive_detections = len(report.get('blacklist', []))
 
-            outputs = {string_to_context_key(field): report[field] for field in
+            outputs = {string_to_context_key(field): report.get(field, '') for field in
                        ['creation_time', 'modification_time', 'tld']
                        }
-            outputs['Name'] = report['hostname']
-            outputs['ASName'] = report['as_name']
+            outputs['Name'] = report.get('hostname', '')
+            outputs['ASName'] = report.get('as_name', '')
 
-            dbot_score = {'Indicator': report['hostname'], 'Type': 'Domain', 'Vendor': 'Maltiverse',
-                          'Score': calculate_score(positive_detections, report.get('classification', ' '), threshold)}
+            dbot_score = {'Indicator': report.get('hostname', ''), 'Type': 'Domain', 'Vendor': 'Maltiverse',
+                          'Score': calculate_score(positive_detections, report.get('classification', ''), threshold)}
 
             blacklist_context = create_blacklist_context(report.get('blacklist', []))
 
@@ -693,10 +695,10 @@ script:
                     }
             }
 
-            maltiverse_domain = {string_to_context_key(field): report[field] for field in
+            maltiverse_domain = {string_to_context_key(field): report.get(field, '') for field in
                                  ['creation_time', 'modification_time', 'tld', 'classification', 'tag']
                                  }
-            maltiverse_domain['Address'] = report['hostname']
+            maltiverse_domain['Address'] = report.get('hostname', '')
             maltiverse_domain = {**maltiverse_domain, **blacklist_context}
             maltiverse_domain = {**maltiverse_domain, **resolvedIP_info}
 
@@ -705,11 +707,11 @@ script:
             context[f'Maltiverse.{outputPaths["domain"]}'].append(maltiverse_domain)
 
             md_info = {
-                'Domain.Name': report['hostname'],
-                'Domain.CreationDate': report['creation_time'],
-                'Domain.ModificationDate': report['modification_time'],
-                'Maltiverse.Domain.ModificationTime': report['modification_time'],
-                'Maltiverse.Domain.CreationTime': report['creation_time'],
+                'Domain.Name': report.get('hostname', ''),
+                'Domain.CreationDate': report.get('creation_time', ''),
+                'Domain.ModificationDate': report.get('modification_time', ''),
+                'Maltiverse.Domain.ModificationTime': report.get('modification_time', ''),
+                'Maltiverse.Domain.CreationTime': report.get('creation_time', ''),
                 'Maltiverse.Domain.ResolvedIP.IP': [report['resolved_ip'][i]['ip_addr'] for i in
                                                     range(len(report['resolved_ip']))]
             }
@@ -743,7 +745,7 @@ script:
             report = client.file_report(file)
             positive_detections = len(report.get('blacklist', []))
 
-            outputs = {string_to_context_key(field): report[field] for field in
+            outputs = {string_to_context_key(field): report.get(field, '') for field in
                        ['md5', 'sha1', 'sha256', 'size', 'type']
                        }
             outputs['Name'] = report['filename'][0]
@@ -751,7 +753,7 @@ script:
             outputs['Path'] = report['process_list'][0]['normalizedpath']
 
             dbot_score = {'Indicator': report['filename'][0], 'Type': 'File', 'Vendor': 'Maltiverse',
-                          'Score': calculate_score(positive_detections, report.get('classification', ' '), threshold,
+                          'Score': calculate_score(positive_detections, report.get('classification', ''), threshold,
                                                    len(report.get('antivirus', [])))}
 
             blacklist_context = create_blacklist_context(report.get('blacklist', []))
@@ -786,10 +788,10 @@ script:
 
             md_info = {
                 'File.Name': report['filename'][0],
-                'File.MD5': report['md5'],
-                'File.Type': report['type'],
+                'File.MD5': report.get('md5', ''),
+                'File.Type': report.get('type', ''),
                 'Maltiverse.File.PositiveDetections': positive_detections,
-                'Maltiverse.File.Classification': report['classification']
+                'Maltiverse.File.Classification': report.get('classification', '')
             }
 
             markdown += tableToMarkdown(f'Maltiverse File Reputation for: {report["filename"][0]}\n',

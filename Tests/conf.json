@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Maltiverse",
+            "playbookID": "Maltiverse Test"
+        },
+        {
             "integrations": ["Syslog Sender", "syslog"],
             "playbookID": "Test Syslog",
             "fromversion": "5.5.0",
