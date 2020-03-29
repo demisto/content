@@ -14,11 +14,11 @@ from threading import Thread
 from Tests.test_integration import __get_integration_config, __test_integration_instance, \
     __disable_integrations_instances
 from demisto_sdk.commands.common.tools import print_error, print_warning, print_color, LOG_COLORS, run_threads_list, \
-     run_command, get_last_release_version, checked_type, get_yaml, str2bool
+    run_command, get_last_release_version, checked_type, get_yaml, str2bool
 from Tests.test_content import load_conf_files, extract_filtered_tests, ParallelPrintsManager
 from demisto_sdk.commands.validate.file_validator import FilesValidator
 from demisto_sdk.commands.common.constants import YML_INTEGRATION_REGEXES, INTEGRATION_REGEX, PACKS_INTEGRATION_REGEX, \
-     BETA_INTEGRATION_REGEX, RUN_ALL_TESTS_FORMAT
+    BETA_INTEGRATION_REGEX, RUN_ALL_TESTS_FORMAT
 from Tests.test_content import server_version_compare
 from Tests.update_content_data import update_content
 
