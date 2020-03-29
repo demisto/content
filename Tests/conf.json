@@ -2173,6 +2173,9 @@
             "playbookID": "PhishLabsTestPopulateIndicators"
         },
         {
+            "playbookID": "Test_HTMLtoMD"
+        },
+        {
             "integrations": "PhishLabs IOC",
             "playbookID": "PhishLabsIOC TestPlaybook",
             "fromversion": "4.1.0"
