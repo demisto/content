@@ -73,13 +73,14 @@ Get a single incident from Azure Sentinel.
 
 
 ##### Command Example
-```!azure-sentinel-get-incident-by-id incident_id=b3de6b49-0945-454e-bb59-98087573cfc2```
+```!azure-sentinel-get-incident-by-id incident_id=f1670c58-43dc-4b82-a13a-c732325c41f5```
 
 ##### Human Readable Output
 ### Incident b3de6b49-0945-454e-bb59-98087573cfc2 details
-|ID|Incident Number|Title|Description|Severity|Status|Last Modified Time UTC|Created Time UTC|Alerts Count|Bookmarks Count|Comments Count|Alert Product Names|First Activity Time Generated|Last Activity Time Generated|Etag|
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| b3de6b49-0945-454e-bb59-98087573cfc2 | 214 | test_title | test description | Medium | Active | 2020-03-26T12:57:57Z | 2020-02-02T14:10:01Z | 1 | 0 | 14 | Azure Sentinel | 2020-02-02T14:10:01Z | 2020-02-02T14:10:01Z | "7301797c-0000-0100-0000-5e7ca6d50000" |
+### Incident f1670c58-43dc-4b82-a13a-c732325c41f5 details
+|ID|Incident Number|Title|Severity|Status|First Activity Time UTC|Last Activity Time UTC|Last Modified Time UTC|Created Time UTC|Alerts Count|Bookmarks Count|Comments Count|Alert Product Names|First Activity Time Generated|Last Activity Time Generated|Etag|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| f1670c58-43dc-4b82-a13a-c732325c41f5 | 234 | Test Incident | High | New | 2020-03-28T18:45:59Z | 2020-03-28T23:45:59Z | 2020-03-28T23:51:06Z | 2020-03-28T23:51:06Z | 1 | 0 | 0 | Azure Sentinel | 2020-03-28T23:51:06Z | 2020-03-28T23:51:06Z | "49002835-0000-0100-0000-5e7fe2ea0000" |
 
 ### azure-sentinel-list-incidents
 ***
@@ -190,13 +191,13 @@ Update a single incident in Azure Sentinel.
 
 
 ##### Command Example
-```!azure-sentinel-update-incident incident_id=b3de6b49-0945-454e-bb59-98087573cfc2 severity=Medium```
+```!azure-sentinel-update-incident incident_id=f1670c58-43dc-4b82-a13a-c732325c41f5 severity=Medium```
 
 ##### Human Readable Output
 ### Updated incidents b3de6b49-0945-454e-bb59-98087573cfc2 details
-|ID|Incident Number|Title|Description|Severity|Status|Last Modified Time UTC|Created Time UTC|Alerts Count|Bookmarks Count|Comments Count|Alert Product Names|First Activity Time Generated|Last Activity Time Generated|Etag|
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| b3de6b49-0945-454e-bb59-98087573cfc2 | 214 | Test Incident | test description | Medium | Active | 2020-03-26T12:53:02Z | 2020-02-02T14:10:01Z | 1 | 0 | 13 | Azure Sentinel | 2020-02-02T14:10:01Z | 2020-02-02T14:10:01Z | "7301806b-0000-0100-0000-5e7ca5ae0000" |
+|ID|Incident Number|Title|Severity|Status|First Activity Time UTC|Last Activity Time UTC|Last Modified Time UTC|Created Time UTC|Alerts Count|Bookmarks Count|Comments Count|Alert Product Names|First Activity Time Generated|Last Activity Time Generated|Etag|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| f1670c58-43dc-4b82-a13a-c732325c41f5 | 234 | Test Incident | Medium | New | 2020-03-28T18:45:59Z | 2020-03-28T23:47:10Z | 2020-03-28T23:51:06Z | 2020-03-28T23:51:06Z | 1 | 0 | 0 | Azure Sentinel | 2020-03-28T23:51:06Z | 2020-03-28T23:51:06Z | "49002835-0000-0100-0000-5e7fe2ea0000" |
 
 
 ### azure-sentinel-delete-incident
@@ -337,13 +338,13 @@ Get a list of an incident's related entities from Azure Sentinel.
 
 
 ##### Command Example
-```!azure-sentinel-list-incident-relations incident_id=b3de6b49-0945-454e-bb59-98087573cfc2```
+```!azure-sentinel-list-incident-relations incident_id=f1670c58-43dc-4b82-a13a-c732325c41f5```
 
 ##### Human Readable Output
-### Incident b3de6b49-0945-454e-bb59-98087573cfc2 Relations (1 results)
+### Incident f1670c58-43dc-4b82-a13a-c732325c41f5 Relations (1 results)
 |ID|Incident ID|Kind|
 |---|---|---|
-| f8f7a4c4-b617-4c7f-bdb2-321756dd1d21 | b3de6b49-0945-454e-bb59-98087573cfc2 | SecurityAlert |
+| 7ff48076-37b9-4bb5-83b1-db21618a282a | f1670c58-43dc-4b82-a13a-c732325c41f5 | SecurityAlert |
 
 
 ### azure-sentinel-get-entity-by-id
@@ -366,13 +367,13 @@ Get a single entity from Azure Sentinel. Use !azure-sentinel-list-incident-relat
 There is no context output for this command.
 
 ##### Command Example
-```!azure-sentinel-get-entity-by-id entity_id=a7bb8825-64f4-87ba-b0f4-97b7784e28e5```
+```!azure-sentinel-get-entity-by-id entity_id=7ff48076-37b9-4bb5-83b1-db21618a282a```
 
 ##### Human Readable Output
-### Entity a7bb8825-64f4-87ba-b0f4-97b7784e28e5 details
-|ID|Kind|Friendly Name|Resource Id|
-|---|---|---|---|
-| a7bb8825-64f4-87ba-b0f4-97b7784e28e5 | AzureResource | alerts | /subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourcegroups/cloud-shell-storage-eastus/providers/microsoft.compute/virtualmachines/alerts |
+### Entity 7ff48076-37b9-4bb5-83b1-db21618a282a details
+|ID|Kind|Additional Data|Alert Display Name|Alert Type|Confidence Level|End Time Utc|Friendly Name|Processing End Time|Product Component Name|Product Name|Provider Alert Id|Severity|Start Time Utc|Status|System Alert Id|Tactics|Time Generated|Vendor Name|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 7ff48076-37b9-4bb5-83b1-db21618a282a | SecurityAlert | Query: SecurityAlert<br>Query Period: 05:00:00<br>Query Start Time UTC: 2020-03-28 18:45:59Z<br>Query End Time UTC: 2020-03-28 23:45:59Z<br>Trigger Operator: Equal<br>Trigger Threshold: 0<br>Query Results Aggregation Kind: SingleAlert<br>Search Query Results Overall Count: 0 | Test rule | 275b61c7-26ae-4008-a739-1b61b78e7cef_f5b76ab9-a1ff-416e-a706-b3a3e102d68f | Unknown | 2020-03-28T23:45:59.7720057Z | Test rule | 2020-03-28T23:51:06.0937297Z | Scheduled Alerts | Azure Sentinel | e80525d0-1ef0-4f29-92bb-e19bd0894139 | Medium | 2020-03-28T18:45:59.7720057Z | New | 7ff48076-37b9-4bb5-83b1-db21618a282a | InitialAccess,<br>Persistence,<br>PrivilegeEscalation,<br>DefenseEvasion,<br>CredentialAccess,<br>Discovery,<br>LateralMovement,<br>Execution,<br>Collection,<br>Exfiltration,<br>CommandAndControl,<br>Impact | 2020-03-28T23:51:06.0937297Z | Microsoft |
 
 
 ### azure-sentinel-list-entity-relations
@@ -406,10 +407,13 @@ Get a list of an entity's relations from Azure Sentinel.
 
 
 ##### Command Example
-```!azure-sentinel-list-entity-relations entity_id=a7bb8825-64f4-87ba-b0f4-97b7784e28e5```
+```!azure-sentinel-list-entity-relations entity_id=7ff48076-37b9-4bb5-83b1-db21618a282a```
 
 ##### Human Readable Output
-### Entity a7bb8825-64f4-87ba-b0f4-97b7784e28e5 Relations (0 results)
-**No entries.**
+### Entity 7ff48076-37b9-4bb5-83b1-db21618a282a Relations (1 results)
+|ID|Incident ID|
+|---|---|
+| f1670c58-43dc-4b82-a13a-c732325c41f5 | 7ff48076-37b9-4bb5-83b1-db21618a282a |
+
 
 <!-- disable-secrets-detection-end -->
