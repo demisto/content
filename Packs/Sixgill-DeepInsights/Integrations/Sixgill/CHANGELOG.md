@@ -1,12 +1,16 @@
 ## [Unreleased]
 
 ## [20.3.2] - 2020-03-28
+### Changed
 - Updated Readme
-- Updated DockerImage
-- Deprecated get-indicators command
+- Updated Integratoin DockerImage
 - Allow Proxy use
 - Updated Test
-- New picture
+- Changed picture
+
+### Removed
+- Removed get-indicators command
+- Removed playbooks that used get-indicators command
 
 ## [20.2.0] - 2020-02-04
 
