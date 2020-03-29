@@ -59,7 +59,7 @@ tasks:
         simple: "yes"
       unsecure: {}
       url:
-        simple: https://github.com/demisto/content/raw/master/TestData/pdfworking.pdf
+        simple: https://github.com/demisto/content/raw/master/TestData/pdfwithindicators.pdf
       username: {}
     separatecontext: false
     view: |-
