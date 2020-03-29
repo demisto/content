@@ -76,6 +76,17 @@ class Client(BaseClient):
         self.suffix_template = "{}/activity/feed/subscriptions/{}"
         self.tenant_id_suffix = ''
         self.access_token = None
+        # TODO : add support for ms client
+        self.ms_client = MicrosoftClient(self_deployed=self_deployed,
+                                         tenant_id=tenant_id,
+                                         auth_id=auth_and_token_url,
+                                         enc_key=enc_key,
+                                         app_name=APP_NAME,
+                                         base_url=base_url,
+                                         verify=verify,
+                                         proxy=proxy,
+                                         ok_codes=(200, 201, 202, 204, 400, 401, 403, 404),
+                                         refresh_token=refresh_token)
 
     @staticmethod
     def is_token_expired(integration_context):
@@ -113,6 +124,18 @@ class Client(BaseClient):
             'expires_on': get_access_token_response.get('expires_on')
         }
         return new_integration_context
+
+
+    def http_request(self, method, url_suffix=None, full_url=None, params={}, data=None, is_get_entity_cmd=False):
+        # TODO : verify this does not break anything
+        res = self.ms_client.http_request(method=method,  # disable-secrets-detection
+                                          url_suffix=url_suffix,
+                                          full_url=full_url,
+                                          json_data=data,
+                                          params=params,
+                                          resp_type='response')
+        return res.json()
+
 
     def get_access_token_request(self):
         headers = {
@@ -527,6 +550,7 @@ def main():
     LOG(f'Command being called is {demisto.command()}')
     try:
         args = demisto.args()
+        # TODO : change this to include all relevant params, and the self deployed option
         client = Client(
             base_url, username='', password='',
             verify=verify_certificate,
