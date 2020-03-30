@@ -255,11 +255,12 @@ def get_indicators_command(client: Client) -> Tuple[str, Dict, Dict]:
     return human_readable, {}, {'raw_response': raw_response}
 
 
-def fetch_indicators_command(client: Client, limit: int = -1) -> Tuple[List[Dict], List]:
+def fetch_indicators_command(client: Client, tags: list, limit: int = -1) -> Tuple[List[Dict], List]:
     """Fetches indicators from the feed to the indicators tab.
     Args:
         client (Client): Client object configured according to instance arguments.
         limit (int): Maximum number of indicators to return.
+        tags (list): Indicator tags
     Returns:
         Tuple of:
             str. Information to be printed to war room.
@@ -277,7 +278,10 @@ def fetch_indicators_command(client: Client, limit: int = -1) -> Tuple[List[Dict
         indicators.append({
             'value': indicator['value'],
             'type': indicator['type'],
-            'fields': {'region': indicator.get('azure_region')},
+            'fields': {
+                'region': indicator.get('azure_region'),
+                'tags': tags
+            },
             'rawJSON': indicator
         })
 
@@ -297,6 +301,8 @@ def main():
     services_list = argToList(demisto.params().get('services'))
     if not services_list:
         services_list = ['All']
+
+    tags = argToList(demisto.params().get('tags'))
 
     polling_arg = demisto.params().get('polling_timeout', '')
     polling_timeout = int(polling_arg) if polling_arg.isdigit() else 20
@@ -318,7 +324,7 @@ def main():
             return_outputs(*commands[command](client))
 
         elif command == 'fetch-indicators':
-            indicators, _ = fetch_indicators_command(client)
+            indicators, _ = fetch_indicators_command(client, tags)
 
             for single_batch in batch(indicators, batch_size=2000):
                 demisto.createIndicators(single_batch)
