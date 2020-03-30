@@ -75,7 +75,15 @@
 								"id": "027ac360-a303-11e9-b76d-69524aca75e8",
 								"index": 6,
 								"startCol": 0
-							}
+							},
+							{
+                                "index": 7,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+                                "fieldId": "aggregatedreliability",
+                                "id": "b49a3ba0-6f8d-11ea-aeac-6dbd1bcce63e"
+                            }
 						],
 						"maxW": 3,
 						"minH": 1,

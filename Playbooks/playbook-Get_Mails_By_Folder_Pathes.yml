@@ -1,7 +1,8 @@
 id: Get Mails By Folder Pathes
 version: -1
 name: Get Mails By Folder Pathes
-description: 'Get emails from specific folders and pre-process them using EWS. '
+description: Deprecated. Use the "Get Mails By Folder Paths" playbook instead.
+hidden: true
 starttaskid: "0"
 fromversion: "4.5.0"
 tasks:
@@ -191,4 +192,4 @@ inputs:
     description: Maximum number of emails to fetch from each folder.
 outputs: []
 tests:
-  - Get EWS Folder Test
+  - No Test - use the "Get Mails By Folder Paths" playbook instead.

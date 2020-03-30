@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.3.4] - 2020-03-30
 - Added support for successful empty responses (status code 204) in the base client
 
 
