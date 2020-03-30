@@ -252,6 +252,7 @@ class Client(BaseClient):
         sha1 = single_sample_data.get('sha1', None)
         md5 = single_sample_data.get('md5')
 
+        # When the user do not have access to sample's details a truncated sha256 is used.
         if '...' in sha256:
             return []
 
