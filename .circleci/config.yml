@@ -171,6 +171,16 @@ jobs:
             fi
             ./Documentation/commonServerDocs.sh
       - run:
+          name: Content Docs Site
+          when: always
+          command: |
+            if [ $CIRCLE_NODE_INDEX -ne 0 ];
+              then
+                echo "Skipping - running only in container number 0"
+                exit 0
+            fi
+            ./Documentation/docs_site_update.sh
+      - run:
           name: Create Content Artifacts
           when: always
           command: |
