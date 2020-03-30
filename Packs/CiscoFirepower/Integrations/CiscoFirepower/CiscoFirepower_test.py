@@ -1,5 +1,5 @@
 import pytest
-from CiscoFirepower import switch_list_to_list_counter, raw_response_to_context_list, raw_response_to_context_ruls, \
+from CiscoFirepower import switch_list_to_list_counter, raw_response_to_context_list, raw_response_to_context_rules, \
     raw_response_to_context_network_groups, raw_response_to_context_policy_assignment, \
     raw_response_to_context_access_policy
 
@@ -314,5 +314,5 @@ def test_raw_response_to_context_access_policy(list_input, list_output):
 
 @pytest.mark.parametrize('list_input, list_output', INPUT_TEST_RAW_RESPONSE_TO_CONTEXT_RULS)
 def test_raw_response_to_context_ruls(list_input, list_output):
-    result = raw_response_to_context_ruls(list_input)
+    result = raw_response_to_context_rules(list_input)
     assert list_output == result

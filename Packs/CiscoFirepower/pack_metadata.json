@@ -1,5 +1,5 @@
 {
-    "name": "Cisco Firepower",
+    "name": "CiscoFirepower",
     "description": "Use the CiscoFirepower integration for unified management of firewalls, application control",
     "support": "Cortex XSOAR",
     "serverMinVersion": "5.0.0",
