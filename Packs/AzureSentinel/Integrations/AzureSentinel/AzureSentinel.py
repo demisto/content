@@ -35,25 +35,30 @@ ENTITIES_RETENTION_PERIOD_MESSAGE = '\nNotice that in the current Azure Sentinel
 
 
 class Client:
-    def __init__(self, self_deployed, refresh_token, auth_and_token_url, enc_key,
+    def __init__(self, self_deployed, refresh_token, auth_and_token_url, enc_key, auth_code,
                  subscription_id, resource_group_name, workspace_name, verify, proxy):
 
         tenant_id = refresh_token if self_deployed else ''
         base_url = f'https://management.azure.com/subscriptions/{subscription_id}/' \
                    f'resourceGroups/{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/' \
                    f'{workspace_name}/providers/Microsoft.SecurityInsights'
-
-        self.ms_client = MicrosoftClient(self_deployed=self_deployed,
-                                         tenant_id=tenant_id,
-                                         auth_id=auth_and_token_url,
-                                         enc_key=enc_key,
-                                         grant_type='authorization_code',  # disable-secrets-detection
-                                         app_name=APP_NAME,
-                                         base_url=base_url,
-                                         verify=verify,
-                                         proxy=proxy,
-                                         ok_codes=(200, 201, 202, 204, 400, 401, 403, 404),
-                                         refresh_token=refresh_token)
+        self.ms_client = MicrosoftClient(
+            self_deployed=self_deployed,
+            tenant_id=tenant_id,
+            auth_id=auth_and_token_url,
+            enc_key=enc_key,
+            token_retrieval_url='https://login.microsoftonline.com/{tenant_id}/oauth2/token',
+            grant_type=AUTHORIZATION_CODE,
+            app_name=APP_NAME,
+            base_url=base_url,
+            verify=verify,
+            proxy=proxy,
+            resource='https://management.core.windows.net',
+            scope='',
+            ok_codes=(200, 201, 202, 204, 400, 401, 403, 404),
+            refresh_token=refresh_token,
+            auth_code=auth_code
+        )
 
     def http_request(self, method, url_suffix=None, full_url=None, params=None, data=None, is_get_entity_cmd=False):
         if not params:
@@ -569,6 +574,7 @@ def main():
             refresh_token=params.get('refresh_token', ''),
             auth_and_token_url=params.get('auth_id', ''),
             enc_key=params.get('enc_key', ''),
+            auth_code=params.get('auth_code', ''),
             subscription_id=params.get('subscriptionID', ''),
             resource_group_name=params.get('resourceGroupName', ''),
             workspace_name=params.get('workspaceName', ''),

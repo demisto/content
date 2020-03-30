@@ -22,6 +22,11 @@ configuration:
   name: self_deployed
   required: false
   type: 8
+- display: Authorization code (received from the authorization step - see Detailed Instructions (?)
+    section)
+  name: auth_code
+  required: false
+  type: 4
 - display: Fetch incidents
   name: isFetch
   required: false
