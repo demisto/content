@@ -890,7 +890,7 @@ def create_test_file(is_nightly, skip_save=False):
             ami_builds = json.load(ami_builds_file)
             two_before_ga = ami_builds.get('TwoBefore-GA', '0').split('-')[0]
             one_before_ga = ami_builds.get('OneBefore-GA', '0').split('-')[0]
-            ga = json.load(ami_builds_file).get('GA', '0').split('-')[0]
+            ga = one_before_ga.get('GA', '0').split('-')[0]
         tests = get_test_list(files_string, branch_name, two_before_ga)
         create_filter_envs_file(tests, two_before_ga, one_before_ga, ga)
         tests_string = '\n'.join(tests)
