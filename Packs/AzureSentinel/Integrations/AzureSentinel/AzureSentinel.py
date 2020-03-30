@@ -39,25 +39,26 @@ class Client:
                  subscription_id, resource_group_name, workspace_name, verify, proxy):
 
         tenant_id = refresh_token if self_deployed else ''
+        refresh_token = (demisto.getIntegrationContext().get('current_refresh_token') or refresh_token)
         base_url = f'https://management.azure.com/subscriptions/{subscription_id}/' \
                    f'resourceGroups/{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/' \
                    f'{workspace_name}/providers/Microsoft.SecurityInsights'
         self.ms_client = MicrosoftClient(
             self_deployed=self_deployed,
-            tenant_id=tenant_id,
             auth_id=auth_and_token_url,
+            refresh_token=refresh_token,
             enc_key=enc_key,
             token_retrieval_url='https://login.microsoftonline.com/{tenant_id}/oauth2/token',
-            grant_type=AUTHORIZATION_CODE,
+            grant_type=AUTHORIZATION_CODE,  # disable-secrets-detection
             app_name=APP_NAME,
             base_url=base_url,
             verify=verify,
             proxy=proxy,
             resource='https://management.core.windows.net',
             scope='',
-            ok_codes=(200, 201, 202, 204, 400, 401, 403, 404),
-            refresh_token=refresh_token,
-            auth_code=auth_code
+            tenant_id=tenant_id,
+            auth_code=auth_code,
+            ok_codes=(200, 201, 202, 204, 400, 401, 403, 404)
         )
 
     def http_request(self, method, url_suffix=None, full_url=None, params=None, data=None, is_get_entity_cmd=False):
@@ -571,8 +572,8 @@ def main():
     try:
         client = Client(
             self_deployed=params.get('self_deployed', False),
-            refresh_token=params.get('refresh_token', ''),
             auth_and_token_url=params.get('auth_id', ''),
+            refresh_token=params.get('refresh_token', ''),
             enc_key=params.get('enc_key', ''),
             auth_code=params.get('auth_code', ''),
             subscription_id=params.get('subscriptionID', ''),
@@ -597,7 +598,6 @@ def main():
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
-            demisto.results(result)
 
         elif demisto.command() == 'fetch-incidents':
             # How much time before the first fetch to retrieve incidents

@@ -13,7 +13,7 @@ SELF_DEPLOYED_AUTH_TYPE = 'self_deployed'
 # grant types in self-deployed authorization
 CLIENT_CREDENTIALS = 'client_credentials'
 AUTHORIZATION_CODE = 'authorization_code'
-REFRESH_TOKEN = 'refresh_token'
+REFRESH_TOKEN = 'refresh_token'  # guardrails-disable-line
 
 
 class MicrosoftClient(BaseClient):
