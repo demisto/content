@@ -865,6 +865,7 @@ def create_filter_envs_file(tests, two_before_ga, one_before_ga, ga):
         envs_to_test.append('Demisto one before GA')
     if is_any_test_runnable(test_ids=tests, server_version=ga):
         envs_to_test.append('Demisto GA')
+    print("Creating filter_envs.json")
     with open("./Tests/filter_envs.json", "w") as filter_envs_file:
         json.dump(envs_to_test, filter_envs_file)
 
@@ -891,7 +892,7 @@ def create_test_file(is_nightly, skip_save=False):
             two_before_ga = ami_builds.get('TwoBefore-GA', '0').split('-')[0]
             one_before_ga = ami_builds.get('OneBefore-GA', '0').split('-')[0]
             ga = ami_builds.get('GA', '0').split('-')[0]
-        tests = get_test_list(files_string, branch_name, two_before_ga)
+        tests = get_test_list(files_string, branch_name, ga)
         create_filter_envs_file(tests, two_before_ga, one_before_ga, ga)
         tests_string = '\n'.join(tests)
         if tests_string:
