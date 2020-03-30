@@ -14,7 +14,7 @@ This integration was integrated and tested with version xx of Fidelis Elevate Ne
 | proxy | Use system proxy settings | False |
 | isFetch | Fetch incidents | False |
 | incidentType | Incident type | False |
-| fetch_time | First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year) | False |
+| fetch_time | First fetch timestamp (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3 months, 1 year) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -388,7 +388,7 @@ Runs PCAP file analysis in Fidelis Elevate.
 There is no context output for this command.
 
 ##### Command Example
-```!fidelis-run-pcap component_ip=1.1.1.1 files=ipv4frags.pcap```
+```!fidelis-run-pcap component_ip=1.1.1.1 files=file.pcap```
 
 ##### Human Readable Output
 Pcap file run submitted.
@@ -635,8 +635,26 @@ Downloads a malware file from a specified alert.
 
 
 ##### Command Example
-```!fidelis-download-malware-file alert_id=1```
+```!fidelis-download-malware-file alert_id=9```
 
+##### Context Example
+```
+{
+    "File": {
+        "EntryID": "7640@99f96547-c492-48d1-84bc-070759449a5d",
+        "Extension": "zip",
+        "Info": "application/zip",
+        "MD5": "d41d8cd98f00b204e9800998ecf8427e",
+        "Name": ":HTTP(file.pcap).zip",
+        "SHA1": "52483514f07eb14570142f6927b77deb7b4da99f",
+        "SHA256": "42a5e275559a1651b3df8e15d3f5912499f0f2d3d1523959c56fc5aea6371e59",
+        "SHA512": "3fbdc4195b66297eaa4168ad6ded010c47eaea57496b6cc1ccfa34c9579d21562451d1269c7412e31e926cbb7c50ffc160a6493f4a8df0235ecd3ea2c9bfddb5",
+        "SSDeep": "3::",
+        "Size": 0,
+        "Type": "empty"
+    }
+}
+```
 
 ##### Human Readable Output
 No File Found
@@ -748,46 +766,46 @@ Return the session information related to an alert.
 
 
 ##### Command Example
-```!fidelis-get-alert-session-data alert_id=3```
+```!fidelis-get-alert-session-data alert_id=9```
 
 ##### Context Example
 ```
 {
     "Fidelis": {
         "Alert": {
-            "ID": "3",
+            "ID": "9",
             "SessionData": {
-                "BinaryClientData": null,
+                "BinaryClientData": {file binary data},
                 "BinaryServerData": null,
-                "ClientData": null,
+                "ClientData": {file client data},
                 "ClientDataComplete": true,
-                "ClientDataSize": null,
+                "ClientDataSize": 2990,
                 "ClientDomainName": null,
-                "ClientDomaniName": null,
-                "ClientIp": null,
+                "ClientDomaniName": "",
+                "ClientIp": "0.0.0.0",
                 "ClientPackets": null,
-                "ClientPort": null,
+                "ClientPort": 0,
                 "ClientSize": null,
                 "Duration": 0,
-                "EndTime": null,
-                "Exist": false,
+                "EndTime": "2020-03-30 09:07:33",
+                "Exist": true,
                 "Highlights": [],
                 "NoForensics": false,
-                "RecordedObject": false,
+                "RecordedObject": true,
                 "RecordingState": null,
                 "ServerData": null,
                 "ServerDataComplete": true,
                 "ServerDataSize": null,
                 "ServerDomainName": null,
-                "ServerDomaniName": null,
-                "ServerIp": null,
+                "ServerDomaniName": "",
+                "ServerIp": "0.0.0.0",
                 "ServerPackets": null,
-                "ServerPort": null,
+                "ServerPort": 0,
                 "ServerSize": null,
                 "ShowingDataSize": 4,
-                "StartTime": null,
+                "StartTime": "2020-03-30 09:07:33",
                 "TcpState": null,
-                "TimeZone": null
+                "TimeZone": "UTC"
             }
         }
     }
@@ -795,10 +813,10 @@ Return the session information related to an alert.
 ```
 
 ##### Human Readable Output
-### Alert 3
-|Client Data Complete|Duration|Exist|No Forensics|Recorded Object|Server Data Complete|Showing Data Size|
-|---|---|---|---|---|---|---|
-| true | 0 | false | false | false | true | 4 |
+### Alert 9
+|Binary Client Data|Client Data|Client Data Complete|Client Data Size|Client Ip|Client Port|Duration|End Time|Exist|No Forensics|Recorded Object|Server Data Complete|Server Ip|Server Port|Showing Data Size|Start Time|Time Zone|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| {file binary data} | {file client data} | true | 2990 | 0.0.0.0 | 0 | 0 | 2020-03-30 09:07:33 | true | false | true | true | 0.0.0.0 | 0 | 4 | 2020-03-30 09:07:33 | UTC |
 
 
 ### fidelis-get-alert-execution-forensics
@@ -853,7 +871,7 @@ Get the exectution forensics for an alert.
 
 
 ##### Command Example
-```!fidelis-get-alert-execution-forensics alert_id=1```
+```!fidelis-get-alert-execution-forensics alert_id=9```
 
 ##### Context Example
 ```
@@ -862,46 +880,46 @@ Get the exectution forensics for an alert.
         "Alert": {
             "ExecutionForensics": {
                 "AlertFlagsXeNonsubmit": false,
-                "AlertId": 0,
+                "AlertId": 9,
                 "Bit9Server": null,
-                "DecodingPath": "",
+                "DecodingPath": null,
                 "DnsFeed": false,
                 "EFEnabled": true,
-                "FileCheckAlert": false,
+                "FileCheckAlert": true,
                 "FileName": null,
-                "FileSize": null,
+                "FileSize": 2990,
                 "FileType": "",
                 "JsSubmitable": true,
                 "JsonReport": null,
                 "Md5": null,
                 "PcapUrl": "",
-                "RecordingComplete": false,
+                "RecordingComplete": true,
                 "ReportUrl": "",
                 "SandBoxOn": true,
-                "Score": 0,
+                "Score": null,
                 "Size": 0,
-                "Status": null,
-                "StatusMessage": "Sandbox Report not possible: No Recorded Session.",
-                "SubmitId": null,
-                "SubmitTime": 0,
-                "Submitable": false,
+                "Status": "Submitted",
+                "StatusMessage": null,
+                "SubmitId": "0",
+                "SubmitTime": 1585559253000,
+                "Submitable": true,
                 "TgReport": false,
                 "ThreatGridOn": false,
-                "Type": null,
+                "Type": "alert",
                 "Uuid": null,
                 "VideoUrl": ""
             },
-            "ID": "1"
+            "ID": "9"
         }
     }
 }
 ```
 
 ##### Human Readable Output
-### Alert 1
-|Alert Flags Xe Nonsubmit|Alert Id|Dns Feed|EF Enabled|File Check Alert|Js Submitable|Recording Complete|Sand Box On|Score|Size|Status Message|Submit Time|Submitable|Tg Report|Threat Grid On|
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| false | 0 | false | true | false | true | false | true | 0 | 0 | Sandbox Report not possible: No Recorded Session. | 0 | false | false | false |
+### Alert 9
+|Alert Flags Xe Nonsubmit|Alert Id|Dns Feed|EF Enabled|File Check Alert|File Size|Js Submitable|Recording Complete|Sand Box On|Size|Status|Submit Id|Submit Time|Submitable|Tg Report|Threat Grid On|Type|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| false | 9 | false | true | true | 2990 | true | true | true | 0 | Submitted | 0 | 1585559253000 | true | false | false | alert |
 
 
 ### fidelis-get-alert-forensic-text
@@ -928,23 +946,23 @@ Get the text of the forensic data.
 
 
 ##### Command Example
-```!fidelis-get-alert-forensic-text alert_id=1```
+```!fidelis-get-alert-forensic-text alert_id=9```
 
 ##### Context Example
 ```
 {
     "Fidelis": {
         "Alert": {
-            "ForensicText": "no forensic data",
-            "ID": "1"
+            "ForensicText": {file forensic text},
+            "ID": "9"
         }
     }
 }
 ```
 
 ##### Human Readable Output
-Alert 1
-Forensic Text: no forensic data
+Alert 9
+Forensic Text: {file forensic text}
 
 ### fidelis-get-alert-decoding-path
 ***
@@ -976,7 +994,7 @@ Get the alert's decoding path.
 
 
 ##### Command Example
-```!fidelis-get-alert-decoding-path alert_id=6```
+```!fidelis-get-alert-decoding-path alert_id=9```
 
 ##### Context Example
 ```
@@ -984,23 +1002,47 @@ Get the alert's decoding path.
     "Fidelis": {
         "Alert": {
             "DecodingPath": {
-                "AttributeMap": {},
+                "AttributeMap": {
+                    "HTTP": [
+                        {
+                            "endIndex": 29,
+                            "highLights": [],
+                            "link": false,
+                            "name": "Filename",
+                            "partialAttr": "HTTP\fFilename\tfile.pcap\n",
+                            "startIndex": 0,
+                            "value": "file.pcap",
+                            "valueFirst255": "file.pcap"
+                        }
+                    ]
+                },
                 "AttributeMapHighLights": [],
-                "ClickableDpaths": null,
+                "ClickableDpaths": [
+                    "HTTP(file.pcap)"
+                ],
                 "CommandpostIp": null,
-                "DecodingPaths": null,
-                "OriginalAttributes": null,
-                "OriginalDPath": null
+                "DecodingPaths": [
+                    {
+                        "clickable": true,
+                        "highLights": [],
+                        "linkPath": ":HTTP(file.pcap)",
+                        "path": "HTTP(file.pcap)"
+                    }
+                ],
+                "OriginalAttributes": "HTTP\fFilename\tfile.pcap\n",
+                "OriginalDPath": ":HTTP(file.pcap)"
             },
-            "ID": "6"
+            "ID": "9"
         }
     }
 }
 ```
 
 ##### Human Readable Output
-### Alert 6
-**No entries.**
+### Alert 9
+|Attribute Map|Clickable Dpaths|Decoding Paths|Original Attributes|Original D Path|
+|---|---|---|---|---|
+| HTTP: {u'endIndex': 29, u'name': u'Filename', u'valueFirst255': u'file.pcap', u'highLights': [], u'value': u'file.pcap', u'startIndex': 0, u'link': False, u'partialAttr': u'HTTP\x0cFilename\tfile.pcap\n'} | HTTP(file.pcap) | {u'clickable': True, u'highLights': [], u'linkPath': u':HTTP(file.pcap)', u'path': u'HTTP(file.pcap)'} | HTTPFilename	file.pcap<br> | :HTTP(file.pcap) |
 
 
 ### fidelis-update-alert-status
@@ -1082,7 +1124,7 @@ Submit an excutable file to the fidelis sandbox.
 
 
 ##### Command Example
-```!fidelis-alert-execution-forensics-submission alert_id=1```
+```!fidelis-alert-execution-forensics-submission alert_id=9```
 
 ##### Context Example
 ```
@@ -1091,46 +1133,46 @@ Submit an excutable file to the fidelis sandbox.
         "Alert": {
             "ExecutionForensics": {
                 "AlertFlagsXeNonsubmit": false,
-                "AlertId": 0,
+                "AlertId": 9,
                 "Bit9Server": null,
-                "DecodingPath": "",
+                "DecodingPath": null,
                 "DnsFeed": false,
                 "EFEnabled": true,
-                "FileCheckAlert": false,
+                "FileCheckAlert": true,
                 "FileName": null,
-                "FileSize": null,
+                "FileSize": 2990,
                 "FileType": "",
                 "JsSubmitable": true,
                 "JsonReport": null,
                 "Md5": null,
                 "PcapUrl": "",
-                "RecordingComplete": false,
+                "RecordingComplete": true,
                 "ReportUrl": "",
                 "SandBoxOn": true,
-                "Score": 0,
+                "Score": null,
                 "Size": 0,
-                "Status": null,
-                "StatusMessage": "Sandbox Report not possible: No Recorded Session.",
-                "SubmitId": null,
-                "SubmitTime": 0,
-                "Submitable": false,
+                "Status": "Submitted",
+                "StatusMessage": null,
+                "SubmitId": "0",
+                "SubmitTime": 1585559253000,
+                "Submitable": true,
                 "TgReport": false,
                 "ThreatGridOn": false,
-                "Type": null,
+                "Type": "alert",
                 "Uuid": null,
                 "VideoUrl": ""
             },
-            "ID": "1"
+            "ID": "9"
         }
     }
 }
 ```
 
 ##### Human Readable Output
-### Alert 1
-|Alert Flags Xe Nonsubmit|Alert Id|Dns Feed|EF Enabled|File Check Alert|Js Submitable|Recording Complete|Sand Box On|Score|Size|Status Message|Submit Time|Submitable|Tg Report|Threat Grid On|
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| false | 0 | false | true | false | true | false | true | 0 | 0 | Sandbox Report not possible: No Recorded Session. | 0 | false | false | false |
+### Alert 9
+|Alert Flags Xe Nonsubmit|Alert Id|Dns Feed|EF Enabled|File Check Alert|File Size|Js Submitable|Recording Complete|Sand Box On|Size|Status|Submit Id|Submit Time|Submitable|Tg Report|Threat Grid On|Type|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| false | 9 | false | true | true | 2990 | true | true | true | 0 | Submitted | 0 | 1585559253000 | true | false | false | alert |
 
 
 ### fidelis-add-alert-comment
