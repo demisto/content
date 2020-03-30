@@ -15,7 +15,7 @@ This integration was integrated and tested with version xx of MicrosoftGraphMail
 | isFetch | Fetch incidents | False |
 | mailbox_to_fetch | Email address from which to fetch incidents (e.g. "example@demisto.com") | False |
 | folder_to_fetch | Name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g. Inbox/Phishing) | False |
-| first_fetch | First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days) | False |
+| first_fetch | First fetch timestamp ((number) (time unit), e.g., 12 hours, 7 days) | False |
 | fetch_limit | Maximum number of emails to pull per fetch | False |
 | insecure | Trust any certificate (not secure) | False |
 | proxy | Use system proxy settings | False |
