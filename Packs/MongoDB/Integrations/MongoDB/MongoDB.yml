@@ -18,7 +18,7 @@ configuration:
   type: 0
 - display: Use SSL/TLS secured connection
   hidden: false
-  defaultvalue: True
+  defaultvalue: false
   name: use_ssl
   required: false
   type: 8

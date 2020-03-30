@@ -332,6 +332,3 @@ There is no context output for this command.
 ## Known Limitations
 ---
 The `test` button is trying to list collections. If the user has no `find` permission it will fail.
-
-## Troubleshooting
----

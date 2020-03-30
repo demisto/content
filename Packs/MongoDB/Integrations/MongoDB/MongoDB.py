@@ -24,7 +24,7 @@ class Client:
         insecure: bool = False
     ):
         if insecure and not ssl:
-            return_error(f'"Trust any certificate (not secure)" must be ticked with "Use TLS/SSL secured connection"')
+            raise DemistoException(f'"Trust any certificate (not secure)" must be ticked with "Use TLS/SSL secured connection"')
         if not insecure and not ssl:
             self._client = MongoClient(
                 urls, username=username, password=password, ssl=ssl
@@ -158,10 +158,9 @@ def get_entry_by_id_command(
     client: Client, collection: str, object_id: str, **kwargs
 ) -> Tuple[str, dict, list]:
     raw_response = client.get_entry_by_id(collection, argToList(object_id))
-    res_len = len(raw_response)
-    if res_len:
+    if raw_response:
         readable_outputs = tableToMarkdown(
-            f'Total of {res_len} found in MongoDB collection `{collection}`:',
+            f'Total of {len(raw_response)} found in MongoDB collection `{collection}`:',
             raw_response,
         )
         entries = list()
@@ -185,7 +184,7 @@ def search_query(
         raw_response = client.query(collection, query_json, int(limit))
     except JSONDecodeError:
         raise DemistoException('The `query` argument is not a valid json.')
-    if len(raw_response):
+    if raw_response:
         readable_outputs = tableToMarkdown(
             f'Total of {len(raw_response)} entries were found in MongoDB collection `{collection}` with query: {query}:',
             [entry.get('_id') for entry in raw_response],
@@ -198,7 +197,7 @@ def search_query(
         outputs = {CONTEXT_KEY: outputs_objects}
         return readable_outputs, outputs, raw_response
     else:
-        return "MongoDB: No results found", {}, raw_response
+        return 'MongoDB: No results found', {}, raw_response
 
 
 def insert_entry_command(
@@ -286,7 +285,7 @@ def create_collection_command(
 
 def list_collections_command(client: Client, **kwargs) -> Tuple[str, dict, list]:
     raw_response = client.db.list_collection_names()
-    if len(raw_response):
+    if raw_response:
         readable_outputs = tableToMarkdown(
             'MongoDB: All collections in database', raw_response, headers=['Collection']
         )
@@ -297,7 +296,7 @@ def list_collections_command(client: Client, **kwargs) -> Tuple[str, dict, list]
         }
         return readable_outputs, outputs, raw_response
     else:
-        return "MongoDB: No results found", {}, raw_response
+        return 'MongoDB: No results found', {}, raw_response
 
 
 def drop_collection_command(
