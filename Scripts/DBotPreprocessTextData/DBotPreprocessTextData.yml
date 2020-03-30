@@ -93,6 +93,17 @@ args:
   - pickle
   required: false
   secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: Whether to add the original texrt fields to the output. Default is "false".
+  isArray: false
+  name: outputOriginalTextFields
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
 comment: Pre-process text data for the machine learning text classifier.
 commonfields:
   id: DBotPreProcessTextData
@@ -113,12 +124,12 @@ outputs:
   description: The output file format.
   type: String
 script: '-'
+subtype: python2
 system: false
 tags:
 - ml
 timeout: 120µs
 type: python
-subtype: python2
 dockerimage: demisto/dl:1.4
 runonce: true
 tests:
