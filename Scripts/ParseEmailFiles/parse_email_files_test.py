@@ -536,4 +536,4 @@ def test_eml_contains_htm_attachment(mocker):
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
-    assert results[0]['EntryContext']['Email'][0][u'Attachments'] == '5567688.htm'
+    assert results[0]['EntryContext']['Email'][u'Attachments'] == '1.htm'
