@@ -281,7 +281,7 @@ class Pack(object):
         try:
             if signature_string:
                 with open("keyfile", "wb") as keyfile:
-                    keyfile.write(bytes(signature_string))
+                    keyfile.write(signature_string.encode())
                 arg = f'./signDirectory {self._pack_path} /keyfile base64'
             else:
                 arg = f'./signDirectory {self._pack_path}'
