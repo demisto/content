@@ -940,6 +940,13 @@ def isolate_endpoint_command(client, args):
             None
         )
 
+    if is_isolated == 'AGENT_PENDING_ISOLATION':
+        return (
+            f'Endpoint {endpoint_id} pending isolation',
+            None,
+            None
+        )
+
     client.isolate_endpoint(endpoint_id)
 
     return (
@@ -961,6 +968,13 @@ def unisolate_endpoint_command(client, args):
     if is_isolated == 'AGENT_UNISOLATED':
         return (
             f'Endpoint {endpoint_id} already unisolated',
+            None,
+            None
+        )
+
+    if is_isolated == 'AGENT_PENDING_ISOLATION_CANCELLATION':
+        return (
+            f'Endpoint {endpoint_id} pending isolation cancellation',
             None,
             None
         )
