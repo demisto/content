@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.3.4] - 2020-03-30
  - Fixed an issue where the listing emails were not comparing the mail ID.
 - Added 4 commands:
     - ***msgraph-mail-create-draft***
