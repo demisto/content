@@ -424,7 +424,7 @@ def fetch_incidents():
         time_str = str(incidents[-1].get('occurred'))
 
         # add one second to last incident occurred time to avoid duplications
-        occurred = datetime.strptime(time_str, '%Y-%m-%dT%H:%M:%S.000Z')
+        occurred = datetime.strptime(time_str, '%Y-%m-%dT%H:%M:%S.%fZ')
         occurred = occurred + timedelta(seconds=1)
         time_str = occurred.strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
