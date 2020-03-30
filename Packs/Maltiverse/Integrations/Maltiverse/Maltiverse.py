@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-from typing import Tuple, Dict
+from typing import Tuple, Dict, Any
 from _collections import defaultdict
 import requests
 import hashlib
@@ -15,6 +15,7 @@ requests.packages.urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 SERVER_URL = 'https://api.maltiverse.com'
 DBOT_SCORE_KEY = 'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'
+DEFAULT_THRESHOLD = 5
 
 
 class Client(BaseClient):
@@ -128,7 +129,7 @@ def create_blacklist_context(blacklist):
     return blacklist_context
 
 
-def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, any]:
+def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     """
     Executes IP enrichment against Maltiverse.
 
@@ -141,7 +142,7 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, any]:
         Any: the raw data from Maltiverse client (used for debugging).
     """
 
-    threshold = int(args.get('threshold'))
+    threshold = int(args.get('threshold', DEFAULT_THRESHOLD))
     markdown = ''
     context: dict = defaultdict(list)
     reports = []
@@ -178,7 +179,7 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, any]:
     return markdown, context, reports
 
 
-def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, any]:
+def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     """
      Executes URL enrichment against Maltiverse.
 
@@ -191,7 +192,7 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, any]:
          Any: the raw data from Maltiverse client (used for debugging).
      """
 
-    threshold = int(args.get('threshold'))
+    threshold = int(args.get('threshold', DEFAULT_THRESHOLD))
     markdown = ''
     context: dict = defaultdict(list)
     reports = []
@@ -227,8 +228,6 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, any]:
                     'Vendor': 'Maltiverse'
                 }
             }
-            # outputs['Malicious.Description'] = blacklist_context['Blacklist']['Description']
-            # outputs['Malicious.Vendor'] = 'Maltiverse'
             outputs = {**outputs, **malicious_info}
             md_info['URL.Malicious.Description'] = blacklist_context['Blacklist']['Description']
             md_info['URL.Malicious.Vendor'] = 'Maltiverse'
@@ -244,7 +243,7 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, any]:
     return markdown, context, reports
 
 
-def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, any]:
+def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     """
      Executes domain enrichment against Maltiverse.
 
@@ -256,7 +255,7 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, any
          dict: the results to return into Demisto's context.
          Any: the raw data from Maltiverse client (used for debugging).
      """
-    threshold = int(args.get('threshold'))
+    threshold = int(args.get('threshold', DEFAULT_THRESHOLD))
     markdown = ''
     context: dict = defaultdict(list)
     reports = []
@@ -312,7 +311,7 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, any
     return markdown, context, reports
 
 
-def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, any]:
+def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     """
     Executes file hash enrichment against Maltiverse.
 
@@ -325,7 +324,7 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, any]:
          dict: the results to return into Demisto's context.
          Any: the raw data from Maltiverse client (used for debugging).
     """
-    threshold = int(args.get('threshold'))
+    threshold = int(args.get('threshold', DEFAULT_THRESHOLD))
     markdown = ''
     context: dict = defaultdict(list)
     reports = []

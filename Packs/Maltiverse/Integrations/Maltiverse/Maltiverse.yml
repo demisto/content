@@ -9,23 +9,19 @@ configuration:
   type: 12
 - display: Trust any certificate (not secure)
   name: insecure
-  required: true
+  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: true
+  required: false
   type: 8
 description: Analyze suspicious hashes, URLs, domains and IP addresses
-detaileddescription: |-
-  ## Hello World
-  - This text is markdown
-  - Here you should explain how to configure the instance in Demisto
 display: Maltiverse
 name: Maltiverse
 script:
   commands:
   - arguments:
-    - default: false
+    - default: true
       description: IP address to check
       isArray: false
       name: ip
@@ -101,7 +97,7 @@ script:
       description: The type of indicator
       type: String
   - arguments:
-    - default: false
+    - default: true
       description: Domain address to check
       isArray: false
       name: domain
@@ -195,7 +191,7 @@ script:
         domain
       type: Date
   - arguments:
-    - default: false
+    - default: true
       description: URL address to check
       isArray: false
       name: url
@@ -287,7 +283,7 @@ script:
       description: Top level domain of the hostname
       type: String
   - arguments:
-    - default: false
+    - default: true
       description: SHA256 to check
       isArray: false
       name: file
