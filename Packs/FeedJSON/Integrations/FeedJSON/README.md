@@ -7,7 +7,7 @@ Fetch indicators from a JSON feed. The integration allows a great amount of user
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
-2. Search for AlienVault Reputation Feed.
+2. Search for JSON feed.
 3. Click __Add instance__ to create and configure a new integration instance.
 
     | Parameter | Description |
