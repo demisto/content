@@ -170,28 +170,10 @@ script:
     - contextPath: HelloWorld.Alert.type
       description: Alert type.
       type: string
-  - arguments:
-    - default: true
-      description: List of IPs
-      isArray: true
-      name: ip
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '65'
-      description: If the ip has reputation above the treshold then the ip defined
-        as malicious. If threshold not set, then threshold from instance configuration
-        is used.
-      isArray: false
-      name: threshold
-      required: false
-      secret: false
-    deprecated: false
-    description: Return IP reputation
-    execution: false
   - name: ip
     arguments:
     - name: ip
+      default: true
       description: List of IPs
       isArray: true
     - name: threshold
@@ -232,10 +214,11 @@ script:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
-    description: Return Domain reputation
+    description: Return IP reputation
   - name: domain
     arguments:
     - name: domain
+      default: true
       description: List of Domains
       isArray: true
     - name: threshold
