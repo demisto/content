@@ -126,7 +126,7 @@ tasks:
       preProcessType: {}
       removeShortTextThreshold: {}
       textFields:
-        simple: subject,textBody|body
+        simple: emailsubject,emailbody|emailbodyhtml
       whitelistFields: {}
     separatecontext: false
     view: |-

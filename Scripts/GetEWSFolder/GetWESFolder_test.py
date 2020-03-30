@@ -1,8 +1,7 @@
 import json
 
-from GetEWSFolder import main, convert_mail_to_json
-
 import demistomock as demisto
+from GetEWSFolder import main, convert_mail_to_json
 
 
 def create_mail(subject, body):
@@ -28,8 +27,16 @@ def test_main(mocker):
         else:
             raise ValueError('Unexist directory')
 
+    emailTagKey = 'closereason'
+    emailTextKey = 'textBody'
+    emailHtmlKey = 'body'
+    emailSubjectKey = 'subject'
     mocker.patch.object(demisto, 'args', return_value={
-        "foldersPaths": 'folder1,folder2'
+        'foldersPaths': 'folder1,folder2',
+        'emailTagKey': emailTagKey,
+        'emailTextKey': emailTextKey,
+        'emailHtmlKey': emailHtmlKey,
+        'emailSubjectKey': emailSubjectKey,
     })
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     mocker.patch.object(demisto, 'results')
@@ -42,5 +49,7 @@ def test_main(mocker):
     assert len(mails_from_file) == len(mails_folder_1) + len(mails_folder_2)
     for mails_folder, folder in zip([mails_folder_1, mails_folder_2], ['folder1', 'folder2']):
         for mail in mails_folder:
-            formatted_mail = convert_mail_to_json(mail, folder)
+            formatted_mail = convert_mail_to_json(mail, folder, emailSubjectKey=emailSubjectKey,
+                                                  emailTextKey=emailTextKey, emailHtmlKey=emailHtmlKey,
+                                                  emailTagKey=emailTagKey)
             assert sum(identical_mail(m, formatted_mail) for m in mails_from_file) == 1

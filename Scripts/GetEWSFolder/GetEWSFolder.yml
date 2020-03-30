@@ -1,7 +1,7 @@
 args:
 - default: false
   defaultValue: Inbox,Inbox\\FOLDER1,Inbox\\FOLDER2
-  description: A comma-separated list of the EWS folders paths.
+  description: A comma-separated list of the EWS folder paths.
   isArray: false
   name: foldersPaths
   required: true
@@ -15,7 +15,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: Is the folder public?
+  description: Whether the folder is public?
   isArray: false
   name: isPublic
   predefined:
@@ -25,18 +25,58 @@ args:
   secret: false
 - default: false
   defaultValue: '1000'
-  description: Maximum number of items per folder.
+  description: The maximum number of items per folder. The default is 1000.
   isArray: false
   name: limit
   required: false
   secret: false
 - default: false
-  description: Use this hash seed.
+  description: The hash seed to use.
   isArray: false
   name: hashSeed
   required: false
   secret: false
-comment: Get emails from multiple folders of an account all at once.
+- default: false
+  defaultValue: emailbody
+  description: The incident field name with the email body.
+  isArray: false
+  name: emailTextKey
+  required: false
+  secret: false
+- default: false
+  defaultValue: emailbodyhtml
+  description: The incident field name with the email HTML.
+  isArray: false
+  name: emailHtmlKey
+  required: false
+  secret: false
+- default: false
+  defaultValue: emailsubject
+  description: The incident field name with the email subject.
+  isArray: false
+  name: emailSubjectKey
+  required: false
+  secret: false
+- default: false
+  defaultValue: closeReason
+  description: 'The field name with the email tag. Should be the same field name where
+    the incident label is stored. '
+  isArray: false
+  name: emailTagKey
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: If true, the attachment mail from each file will be taken.
+  isArray: false
+  name: getInternalItem
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+comment: Gets emails from multiple folders of an account at a single time.
 commonfields:
   id: GetEWSFolder
   version: -1
@@ -49,8 +89,8 @@ tags:
 - ml
 timeout: 6µs
 type: python
-runas: DBotWeakRole
 dockerimage: demisto/python3:3.7.5.4328
+runas: DBotWeakRole
 runonce: false
 tests:
 - Get EWS Folder Test
