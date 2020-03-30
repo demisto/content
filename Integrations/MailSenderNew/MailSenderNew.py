@@ -348,9 +348,9 @@ def main():
             SERVER = SMTP(demisto.getParam('host'), int(demisto.params().get('port', 0)), local_hostname=FQDN)
 
         SERVER.ehlo()
-        # For BC purposes where TLS was a checkbox (no value only true or false) if TLS=True or TLS=TLS we enter this
-        # condition. If TLS is not configured or is set to FULL TLS we do not access thos condition
-        if TLS and not TLS == 'FULL TLS':
+        # For BC purposes where TLS was a checkbox (no value only true or false) if TLS=True or TLS='TLS' we enter this
+        # condition, otherwise it means TLS is not configured (TLS=False) or is set to 'FULL TLS' or 'None'.
+        if TLS is True or TLS == 'TLS':
             SERVER.starttls()
         user, password = get_user_pass()
         if user:

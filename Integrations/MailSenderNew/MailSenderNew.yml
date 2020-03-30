@@ -25,12 +25,13 @@ configuration:
   name: fqdn
   required: false
   type: 0
-- display: Use TLS for connection
+- display: Connection Security
   name: tls
-  defaultvalue: ""
+  defaultvalue: "None"
   type: 15
   required: false
   options:
+    - None
     - TLS
     - FULL TLS
 - defaultvalue: 'false'
