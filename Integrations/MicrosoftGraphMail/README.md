@@ -119,13 +119,13 @@ Gets the properties of returned emails.
 ### ### Total of 7 of mails received
 |Subject|From|SendTime|
 |---|---|---|
-| Demo test send mail | Name: demisto dev<br>Address: dev@demistodev.onmicrosoft.com | 2020-03-29T09:56:37Z |
-| RE: Demo test | Name: demisto dev<br>Address: dev@demistodev.onmicrosoft.com | 2020-03-29T09:56:18Z |
-| Demo test send mail | Name: demisto dev<br>Address: dev@demistodev.onmicrosoft.com | 2020-03-29T09:52:59Z |
-| RE: Demo test | Name: demisto dev<br>Address: dev@demistodev.onmicrosoft.com | 2020-03-29T09:52:41Z |
-| RE: Demo test | Name: demisto dev<br>Address: dev@demistodev.onmicrosoft.com | 2020-03-29T09:51:06Z |
-| Demo test send mail | Name: demisto dev<br>Address: dev@demistodev.onmicrosoft.com | 2020-03-29T09:06:54Z |
-| Demo test | Name: demisto dev<br>Address: dev@demistodev.onmicrosoft.com | 2020-03-26T09:21:14Z |
+| Demo test send mail | Name: demisto dev, Address: dev@demistodev.onmicrosoft.com | 2020-03-29T09:56:37Z |
+| RE: Demo test | Name: demisto dev, Address: dev@demistodev.onmicrosoft.com | 2020-03-29T09:56:18Z |
+| Demo test send mail | Name: demisto dev, Address: dev@demistodev.onmicrosoft.com | 2020-03-29T09:52:59Z |
+| RE: Demo test | Name: demisto dev, Address: dev@demistodev.onmicrosoft.com | 2020-03-29T09:52:41Z |
+| RE: Demo test | Name: demisto dev, Address: dev@demistodev.onmicrosoft.com | 2020-03-29T09:51:06Z |
+| Demo test send mail | Name: demisto dev, Address: dev@demistodev.onmicrosoft.com | 2020-03-29T09:06:54Z |
+| Demo test | Name: demisto dev, Address: dev@demistodev.onmicrosoft.com | 2020-03-26T09:21:14Z |
 
 
 ### msgraph-mail-get-email
@@ -218,7 +218,7 @@ Returns the properties of an email.
 ### Results for message ID ""
 |ID|Subject|SendTime|Sender|From|HasAttachments|Body|
 |---|---|---|---|---|---|---|
-| "" | Demo test | 2020-03-26T09:21:14Z | Name: demisto dev<br>Address: dev@demistodev.onmicrosoft.com | Name: demisto dev<br>Address: dev@demistodev.onmicrosoft.com | false |  |
+| "" | Demo test | 2020-03-26T09:21:14Z | Name: demisto dev, Address: dev@demistodev.onmicrosoft.com | Name: demisto dev, Address: dev@demistodev.onmicrosoft.com | false |  |
 
 ##### Required Permissions
 **The following permissions are required for this command:**
@@ -951,7 +951,7 @@ Sends an email using Microsoft Graph.
 ### Email was sent successfully.
 |body|flag|importance|subject|toRecipients|
 |---|---|---|---|---|
-| content: <br>contentType: text | flagStatus: notFlagged | Low | Demo test send mail | dev@demistodev.onmicrosoft.com |
+| content: contentType: text | flagStatus: notFlagged | Low | Demo test send mail | dev@demistodev.onmicrosoft.com |
 
 
 ### msgraph-mail-reply-to
