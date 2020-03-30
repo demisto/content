@@ -117,7 +117,15 @@
 								"id": "56bc1c30-b1e0-11e9-b8c7-15ca72216f6a",
 								"index": 5,
 								"startCol": 0
-							}
+							},
+							{
+                                "index": 6,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+                                "fieldId": "aggregatedreliability",
+                                "id": "b49a3ba0-6f8d-11ea-aeac-6dbd1bcce63e"
+                            }
 						],
 						"moved": false,
 						"name": "Registry Key Info",
