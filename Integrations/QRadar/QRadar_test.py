@@ -2,6 +2,8 @@ import pytest
 import demistomock as demisto
 import copy
 
+RETURN_ERROR_TARGET = 'QRadar.return_error'
+
 
 @pytest.fixture(autouse=True)
 def init_tests(mocker):
@@ -272,11 +274,13 @@ def test_upload_indicators_command_no_indicators_found(mocker):
     """
 
     import QRadar as qradar
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     mocker.patch.object(demisto, 'args', return_value={'ref_name': 'test_ref_set', 'limit': '20', 'page': '0'})
     mocker.patch.object(qradar, 'check_ref_set_exist', return_value=REF_SET_DATA_NO_INDICATORS)
     mocker.patch.object(qradar, 'get_indicators_list', return_value=([], []))
-    res = qradar.upload_indicators_command()
-    assert res == "No indicators found, Reference set test_ref_set didn't change"
+    qradar.upload_indicators_command()
+    err_msg = return_error_mock.call_args[0][0]
+    assert err_msg == "No indicators found, Reference set test_ref_set didn't change"
 
 
 """ CONSTANTS """
