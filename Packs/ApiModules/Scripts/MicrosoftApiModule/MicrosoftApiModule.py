@@ -3,19 +3,35 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import requests
 import base64
-from typing import Dict, Tuple
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from typing import Dict, Tuple
 
+# authorization types
 OPROXY_AUTH_TYPE = 'oproxy'
 SELF_DEPLOYED_AUTH_TYPE = 'self_deployed'
+
+# grant types in self-deployed authorization
+CLIENT_CREDENTIALS = 'client_credentials'
+AUTHORIZATION_CODE = 'authorization_code'
+REFRESH_TOKEN = 'refresh_token'
 
 
 class MicrosoftClient(BaseClient):
 
-    def __init__(self, tenant_id: str = '', auth_id: str = '', enc_key: str = '',
-                 token_retrieval_url: str = '', app_name: str = '', refresh_token: str = '',
-                 scope: str = 'https://graph.microsoft.com/.default', grant_type: str = 'client_credentials',
-                 resource: str = '', verify: bool = True, self_deployed: bool = False, *args, **kwargs):
+    def __init__(self, tenant_id: str = '',
+                 auth_id: str = '',
+                 enc_key: str = '',
+                 token_retrieval_url: str = 'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token',
+                 app_name: str = '',
+                 refresh_token: str = '',
+                 auth_code: str = '',
+                 scope: str = 'https://graph.microsoft.com/.default',
+                 grant_type: str = CLIENT_CREDENTIALS,
+                 redirect_uri: str = 'https://localhost/myapp',
+                 resource: str = '',
+                 verify: bool = True,
+                 self_deployed: bool = False,
+                 *args, **kwargs):
         """
         Microsoft Client class that implements logic to authenticate with oproxy or self deployed applications.
         It also provides common logic to handle responses from Microsoft.
@@ -35,29 +51,29 @@ class MicrosoftClient(BaseClient):
             auth_id_and_token_retrieval_url = auth_id.split('@')
             auth_id = auth_id_and_token_retrieval_url[0]
             if len(auth_id_and_token_retrieval_url) != 2:
-                token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # guardrails-disable-line
+                self.token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # guardrails-disable-line
             else:
-                token_retrieval_url = auth_id_and_token_retrieval_url[1]
+                self.token_retrieval_url = auth_id_and_token_retrieval_url[1]
+
+            self.app_name = app_name
+            self.auth_id = auth_id
+            self.enc_key = enc_key
+            self.tenant_id = tenant_id
+            self.refresh_token = refresh_token
+
         else:
-            if grant_type == 'authorization_code':
-                self.app_url = f'https://login.microsoftonline.com/common/oauth2/token'
-            else:
-                self.app_url = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token'
+            self.token_retrieval_url = token_retrieval_url.format(tenant_id=tenant_id)
+            self.client_id = auth_id
+            self.client_secret = enc_key
+            self.tenant_id = tenant_id
+            self.auth_code = auth_code
+            self.grant_type = grant_type
+            self.resource = resource
             self.scope = scope
+            self.redirect_uri = redirect_uri
 
         self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
-        self.tenant_id = tenant_id
-        self.auth_id = auth_id
-        self.enc_key = enc_key
-        self.grant_type = grant_type
-        self.token_retrieval_url = token_retrieval_url
-        self.app_name = app_name
-        self.refresh_token = refresh_token
-        self.client_id = auth_id
-        self.client_secret = enc_key
-        self.resource = resource
         self.verify = verify
-        self.auth_code = refresh_token
 
     def http_request(self, *args, **kwargs):
         """
@@ -164,50 +180,79 @@ class MicrosoftClient(BaseClient):
         return (parsed_response.get('access_token', ''), parsed_response.get('expires_in', 3595),
                 parsed_response.get('refresh_token', ''))
 
-    def _get_self_deployed_token(self, refresh_token: str = '') -> Tuple[str, int, str]:
+    def _get_self_deployed_token(self, refresh_token: str = ''):
+        if self.grant_type == AUTHORIZATION_CODE:
+            return self._get_self_deployed_token_auth_code(refresh_token)
+        else:
+            # by default, grant_type is CLIENT_CREDENTIALS
+            return self._get_self_deployed_token_client_credentials()
+
+    def _get_self_deployed_token_client_credentials(self) -> Tuple[str, int, str]:
         """
-        Gets a token by authorizing a self deployed Azure application.
+        Gets a token by authorizing a self deployed Azure application in client credentials grant type.
 
         Returns:
-            tuple: An access token, its expiry and refresh token.
+            tuple: An access token and its expiry.
         """
-        if not self.app_url:
-            url = f'https://login.windows.net/{self.tenant_id}/oauth2/token'
-        else:
-            url = self.app_url
         data = {
             'client_id': self.client_id,
             'client_secret': self.client_secret,
-            'grant_type': self.grant_type
+            'grant_type': CLIENT_CREDENTIALS
         }
-        if not refresh_token:
-            data['grant_type'] = self.grant_type
-            if self.grant_type == 'authorization_code':
-                data['code'] = self.auth_code
-                data['resource'] = self.resource
-                data['redirect_uri'] = 'https://localhost/myapp'
-        else:
-            data['grant_type'] = 'refresh_token'
-            data['refresh_token'] = refresh_token
 
         if self.scope:
             data['scope'] = self.scope
         if self.resource:
             data['resource'] = self.resource
 
-        body: dict = {}
+        response_json: dict = {}
         try:
-            response = requests.post(url, data, verify=self.verify)
+            response = requests.post(self.token_retrieval_url, data, verify=self.verify)
             if response.status_code not in {200, 201}:
                 return_error(f'Error in Microsoft authorization. Status: {response.status_code},'
                              f' body: {self.error_parser(response)}')
-            body = response.json()
+            response_json = response.json()
         except Exception as e:
             return_error(f'Error in Microsoft authorization: {str(e)}')
 
-        access_token = body.get('access_token', '')
-        refresh_token = body.get('refresh_token', '')
-        expires_in = int(body.get('expires_in', 3595))
+        access_token = response_json.get('access_token', '')
+        expires_in = int(response_json.get('expires_in', 3595))
+
+        return access_token, expires_in, ''
+
+    def _get_self_deployed_token_auth_code(self, refresh_token: str = ''):
+        """
+        Gets a token by authorizing a self deployed Azure application.
+
+        Returns:
+            tuple: An access token, its expiry and refresh token.
+        """
+        data = {
+            'client_id': self.client_id,
+            'client_secret': self.client_secret,
+            'resource': self.resource,
+            'redirect_uri': self.redirect_uri
+        }
+        if refresh_token:
+            data['grant_type'] = REFRESH_TOKEN
+            data['refresh_token'] = refresh_token
+        else:
+            data['grant_type'] = AUTHORIZATION_CODE
+            data['code'] = self.auth_code
+
+        response_json: dict = {}
+        try:
+            response = requests.post(self.token_retrieval_url, data, verify=self.verify)
+            if response.status_code not in {200, 201}:
+                return_error(f'Error in Microsoft authorization. Status: {response.status_code},'
+                             f' body: {self.error_parser(response)}')
+            response_json = response.json()
+        except Exception as e:
+            return_error(f'Error in Microsoft authorization: {str(e)}')
+
+        access_token = response_json.get('access_token', '')
+        refresh_token = response_json.get('refresh_token', '')
+        expires_in = int(response_json.get('expires_in', 3595))
 
         return access_token, expires_in, refresh_token
 
