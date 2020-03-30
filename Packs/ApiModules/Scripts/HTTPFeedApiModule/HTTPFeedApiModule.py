@@ -12,6 +12,9 @@ from typing import Optional, Pattern, List
 # disable insecure warnings
 urllib3.disable_warnings()
 
+''' GLOBALS '''
+TAGS = 'tags'
+
 
 class Client(BaseClient):
     def __init__(self, url: str, feed_name: str = 'http', insecure: bool = False, credentials: dict = None,
@@ -245,8 +248,8 @@ class Client(BaseClient):
     def custom_fields_creator(self, attributes: dict):
         created_custom_fields = {}
         for attribute in attributes.keys():
-            if attribute in self.custom_fields_mapping.keys() or attribute == 'tags':
-                if attribute == 'tags':
+            if attribute in self.custom_fields_mapping.keys() or attribute == TAGS:
+                if attribute == TAGS:
                     created_custom_fields[attribute] = attributes[attribute]
                 else:
                     created_custom_fields[self.custom_fields_mapping[attribute]] = attributes[attribute]
@@ -347,7 +350,7 @@ def fetch_indicators_command(client, tags, itype, **kwargs):
                         "rawJSON": attributes,
                     }
 
-                    if len(client.custom_fields_mapping.keys()) > 0 or 'tags' in attributes.keys():
+                    if len(client.custom_fields_mapping.keys()) > 0 or TAGS in attributes.keys():
                         custom_fields = client.custom_fields_creator(attributes)
                         indicator_data["fields"] = custom_fields
 
@@ -381,6 +384,7 @@ def test_module(client: Client, args):
 
 
 def feed_main(feed_name, params=None, prefix=''):
+    global TAGS
     if not params:
         params = assign_params(**demisto.params())
     if 'feed_name' not in params:
