@@ -3,7 +3,6 @@ from PwnedV2 import pwned_domain_command, pwned_username_command
 from test_data.context_data import username_context, domain_context
 from test_data.http_responses import username_req, domain_req
 
-
 args1 = {
     'username': "jondon",
     'domain': "adobe.com"
