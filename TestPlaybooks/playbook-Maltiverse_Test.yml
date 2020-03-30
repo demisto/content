@@ -196,7 +196,7 @@ tasks:
       long: {}
       threshold: {}
       url:
-        simple: http://assocolours.com/mu/i/LoginVerification.php  # disable-secrets-detection
+        simple: http://assocolours.com/mu/i/LoginVerification.php
     separatecontext: false
     view: |-
       {

@@ -13,7 +13,7 @@ from test_data.result_constants import EXPECTED_IP_RESULT, EXPECTED_URL_RESULT, 
 ])
 def test_commands(command, response, expected_result, requests_mock):
     import requests
-    SERVER_URL = 'https://api.maltiverse.com'  # disable-secrets-detection
+    SERVER_URL = 'https://api.maltiverse.com'
     requests.packages.urllib3.disable_warnings()
 
     requests_mock.patch.object(Client)
