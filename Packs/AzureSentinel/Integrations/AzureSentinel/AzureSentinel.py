@@ -598,7 +598,7 @@ def main():
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
-            demisto.results('ok')
+            demisto.results(result)
 
         elif demisto.command() == 'fetch-incidents':
             # How much time before the first fetch to retrieve incidents
