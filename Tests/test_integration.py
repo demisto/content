@@ -301,8 +301,8 @@ class Docker:
 
             memory_threshold = (docker_thresholds.get(image_full, {}).get('memory_threshold') or docker_thresholds.get(
                 image_name, {}).get('memory_threshold') or def_memory_threshold)
-            pid_threshold = (docker_thresholds.get(image_full, {}).get('pid_threshold') or
-                             docker_thresholds.get(image_name, {}).get('pid_threshold') or def_pid_threshold)
+            pid_threshold = (docker_thresholds.get(image_full, {}).get('pid_threshold')
+                             or docker_thresholds.get(image_name, {}).get('pid_threshold') or def_pid_threshold)
             print("Checking container: {} (image: {}) for memory: {} pid: {} thresholds ...".format(
                 container_name, image_full, memory_threshold, pid_threshold))
             if memory_usage > memory_threshold:
