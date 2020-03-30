@@ -264,3 +264,6 @@ script:
   script: '-'
   subtype: python2
   type: python
+tests:
+  - Pwned v2 test
+
