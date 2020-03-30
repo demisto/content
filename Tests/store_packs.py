@@ -267,7 +267,7 @@ class Pack(object):
         finally:
             return task_status
 
-    def sign_pack(self, signature_string):
+    def sign_pack(self, signature_string=None):
         """Signs pack folder and creates signature file.
 
         Args:
@@ -283,18 +283,16 @@ class Pack(object):
                 with open("keyfile", "wb") as keyfile:
                     keyfile.write(signature_string.encode())
                 arg = f'./signDirectory {self._pack_path} /keyfile base64'
+                signing_process = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+                output, err = signing_process.communicate()
+
+                if err:
+                    print_error(f"Failed to sign pack for {self._pack_name} - {str(err)}")
+                    return
+
+                print(f"Signed {self._pack_name} pack successfully")
             else:
-                arg = f'./signDirectory {self._pack_path}'
-                # This won't actually work unless a key is provided
-            signing_process = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-            output, err = signing_process.communicate()
-
-            if err:
-                print_error(f"Failed to sign pack for {self._pack_name} - {str(err)}")
-                return
-
-            print_warning(output)  # todo remove after the issue is fixed
-            print(f"Signed {self._pack_name} pack successfully")
+                print(f"No signature provided. Skipped signing {self._pack_name} pack")
             task_status = True
         except Exception as e:
             print_error(f"Failed to sign pack for {self._pack_name} - {str(e)}")
@@ -861,7 +859,8 @@ def option_handler():
                         help="CircleCi build number (will be used as hash revision at index file)", required=False)
     parser.add_argument('-o', '--override_pack', help="Override existing packs in cloud storage", default=False,
                         action='store_true', required=False)
-    parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.")
+    parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
+                        required=False)
     # disable-secrets-detection-end
     return parser.parse_args()
 
