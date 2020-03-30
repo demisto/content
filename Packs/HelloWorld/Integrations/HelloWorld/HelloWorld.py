@@ -179,8 +179,10 @@ def fetch_incidents(client, last_run, first_fetch_time, alert_type, alert_status
 
     Args:
         client (Client): HelloWorld client
-        last_run (dateparser.time): The greatest incident created_time we fetched from last fetch
-        first_fetch_time (dateparser.time): If last_run is None then fetch all incidents since first_fetch_time
+        last_run (dict): The greatest incident created_time we fetched from last fetch
+        first_fetch_time (int): If last_run is None then fetch incidents
+            since first_fetch_time (timestamp in milliseconds)
+
         alert_type (str): Alert type
         alert_status (str): Alert status - ACTIVE, CLOSED
 
@@ -190,7 +192,7 @@ def fetch_incidents(client, last_run, first_fetch_time, alert_type, alert_status
     """
     # Get the last fetch time, if exists
     last_fetch = last_run.get('last_fetch')
-    # Handle first time fetch
+    # Handle first fetch time
     if last_fetch is None:
         last_fetch = first_fetch_time
     else:
@@ -198,6 +200,7 @@ def fetch_incidents(client, last_run, first_fetch_time, alert_type, alert_status
 
     latest_created_time = last_fetch
     incidents = []
+
     alerts = client.search_alerts(
         alert_type=alert_type,
         alert_status=alert_status,
@@ -205,13 +208,16 @@ def fetch_incidents(client, last_run, first_fetch_time, alert_type, alert_status
         start_time=last_fetch,
         severity=None
     )
+
     for alert in alerts:
         incident_created_time = int(alert['created'])
-        incident_name = '#{} - {}'.format(alert['alert_id'], alert['name'])
+        incident_created_time_ms = incident_created_time * 1000
+
+        incident_name = alert['name']
         incident = {
             'name': incident_name,
             'details': alert['name'],
-            'occurred': timestamp_to_datestring(incident_created_time),
+            'occurred': timestamp_to_datestring(incident_created_time_ms),
             'rawJSON': json.dumps(alert),
             'type': 'Hello World Alert',
             'severity': convert_to_demisto_severity(alert.get('severity')),
@@ -242,9 +248,10 @@ def ip_reputation_command(client, args, default_threshold):
 
     for ip in ips:
         ip_data = client.get_ip_reputation(ip)
+        ip_data['ip'] = ip
 
         score = 0
-        reputation = ip_data.get('reputation')
+        reputation = ip_data.get('score')
         if reputation >= threshold:
             score = 3  # bad
         elif reputation >= threshold / 2:
@@ -260,7 +267,7 @@ def ip_reputation_command(client, args, default_threshold):
         }
         ip_standard_context = {
             'Address': ip,
-            'ASN': ip_data.get('ip')
+            'ASN': ip_data.get('asn')
         }
 
         if score == 3:
@@ -290,7 +297,60 @@ def ip_reputation_command(client, args, default_threshold):
 
 
 def domain_reputation_command(client, args, default_threshold_domain):
-    pass
+    domains = argToList(args.get('domain'))
+    threshold = int(args.get('threshold', default_threshold_domain))
+
+    dbot_score_list = []
+    domain_standard_list = []
+    domain_data_list = []
+
+    for domain in domains:
+        domain_data = client.get_domain_reputation(domain)
+        domain_data['domain'] = domain
+
+        score = 0
+        reputation = domain_data.get('score')
+        if reputation >= threshold:
+            score = 3  # bad
+        elif reputation >= threshold / 2:
+            score = 2  # suspicious
+        else:
+            score = 1  # good
+
+        dbot_score = {
+            'Indicator': domain,
+            'Vendor': 'HelloWorld',
+            'Type': 'domain',
+            'Score': score
+        }
+        domain_standard_context = {
+            'Name': domain,
+        }
+
+        if score == 3:
+            # if score is bad
+            domain_standard_context['Malicious'] = {
+                'Vendor': 'HelloWorld',
+                'Description': f'Hello World returned reputation {reputation}'
+            }
+
+        domain_standard_list.append(domain_standard_context)
+        dbot_score_list.append(dbot_score)
+        domain_data_list.append(domain_data)
+
+    outputs = {
+        'DBotScore(val.Vendor == obj.Vendor && val.Indicator == obj.Indicator)': dbot_score_list,
+        outputPaths['domain']: domain_standard_list,
+        'HelloWorld.Domain(val.domain == obj.domain)': domain_data_list
+    }
+
+    readable_output = tableToMarkdown('Domain List', domain_standard_list)
+
+    return (
+        readable_output,
+        outputs,
+        domain_data_list
+    )
 
 
 def arg_to_int(arg, arg_name: str, required: bool = False):
@@ -323,7 +383,7 @@ def arg_to_timestamp(arg, arg_name: str, required: bool = False):
             # if d is None it means dateparser failed to parse it
             raise ValueError(f'Invalid date: {arg_name}')
 
-        return int(date.timestamp() * 1000)
+        return int(date.timestamp())
     if isinstance(arg, (int, float)):
         return arg
 

@@ -180,6 +180,10 @@
             "playbookID": "TestHelloWorld"
         },
         {
+            "integrations": "HelloWorld",
+            "playbookID": "TestHelloWorldPlaybook"
+        },
+        {
             "integrations": "ThreatQ v2",
             "playbookID": "ThreatQ - Test",
             "fromversion": "4.5.0"

@@ -189,28 +189,36 @@ script:
     deprecated: false
     description: Return IP reputation
     execution: false
-    name: ip
+  - name: ip
+    arguments:
+    - name: ip
+      description: List of IPs
+      isArray: true
+    - name: threshold
+      description: If the IP has reputation above the threshold then the IP defined as malicious.
+        If threshold not set, then threshold from instance configuration is used.
+      defaultValue: 65
     outputs:
     - contextPath: IP.Address
       description: IP address
       type: string
     - contextPath: IP.ASN
-      description: ASN
+      description: The autonomous system name for the IP address, for example "AS8948".
       type: string
     - contextPath: IP.Malicious.Vendor
-      description: HelloWorld
+      description: The vendor reporting the IP address as malicious.
       type: string
     - contextPath: IP.Malicious.Description
-      description: Explanation why this IP found to be malicious
+      description: A description explaining why the IP address was reported as malicious.
       type: string
     - contextPath: HelloWorld.IP.ip
-      description: IP Address
+      description: IP Address.
       type: string
     - contextPath: HelloWorld.IP.asn
-      description: ASN address
+      description: The autonomous system name for the IP address, for example "AS8948".
       type: string
     - contextPath: HelloWorld.IP.reputation
-      description: Reputation of the ip, number between 0-100
+      description: Reputation of the ip, number between 0-100.
       type: number
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
@@ -224,6 +232,42 @@ script:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
+    description: Return Domain reputation
+  - name: domain
+    arguments:
+    - name: domain
+      description: List of Domains
+      isArray: true
+    - name: threshold
+      description: If the domain has reputation above the threshold then the domain defined as malicious.
+        If threshold not set, then threshold from instance configuration is used.
+      defaultValue: 65
+    outputs:
+    - contextPath: Domain.Name
+      description: The domain name, for example "google.com".
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: The vendor reporting the domain as malicious.
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: A description explaining why the domain was reported as malicious.
+      type: string
+    - contextPath: HelloWorld.Domain.domain
+      description: Domain Name
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    description: Return Domain reputation
   - arguments:
     - default: false
       description: Just pass any hostname you want

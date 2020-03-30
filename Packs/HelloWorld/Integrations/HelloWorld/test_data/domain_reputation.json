@@ -54,5 +54,6 @@
   "state": "CA",
   "zipcode": null,
   "country": "US",
-  "score": 64
+  "score": 64,
+  "domain": "google.com"
 }
