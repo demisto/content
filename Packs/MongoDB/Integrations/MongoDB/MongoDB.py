@@ -21,17 +21,19 @@ class Client:
         password: str,
         database: str,
         ssl: bool = False,
-        insecure: bool = False
+        insecure: bool = False,
+        timeout: int = 5000
     ):
         if insecure and not ssl:
             raise DemistoException(f'"Trust any certificate (not secure)" must be ticked with "Use TLS/SSL secured connection"')
         if not insecure and not ssl:
             self._client = MongoClient(
-                urls, username=username, password=password, ssl=ssl
+                urls, username=username, password=password, ssl=ssl, socketTimeoutMS=timeout
             )
         else:
             self._client = MongoClient(
-                urls, username=username, password=password, ssl=ssl, tlsAllowInvalidCertificates=insecure
+                urls, username=username, password=password, ssl=ssl, tlsAllowInvalidCertificates=insecure,
+                socketTimeoutMS=timeout
             )
         self.db: Database = self._client.get_database(database)
 
