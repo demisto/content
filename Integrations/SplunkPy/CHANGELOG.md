@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+- Added the ***splunk-job-status*** command, which checks the status of a job.
 
 ## [20.3.4] - 2020-03-30
 - Added the **Replace with Underscore in Incident Fields** parameter key, which replaces problematic characters (e.g., ".") with underscores ("\_") in context keys.
