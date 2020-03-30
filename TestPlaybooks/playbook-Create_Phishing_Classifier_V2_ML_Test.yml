@@ -53,7 +53,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 545
         }
       }
     note: false
@@ -98,7 +98,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
@@ -120,7 +120,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2470
         }
       }
     note: false
@@ -140,7 +140,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "21"
     scriptarguments:
       all:
         simple: "yes"
@@ -186,7 +186,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1420
         }
       }
     note: false
@@ -203,7 +203,6 @@ tasks:
       description: Create a phishing classifier using machine learning technique,
         based on email content
       playbookName: DBot Create Phishing Classifier V2
-      playbookId: DBot Create Phishing Classifier V2
       type: playbook
       iscommand: false
       brand: ""
@@ -241,11 +240,12 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 720
         }
       }
     note: false
@@ -278,7 +278,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -314,7 +314,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1245
         }
       }
     note: false
@@ -350,7 +350,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1770
         }
       }
     note: false
@@ -395,7 +395,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1595
         }
       }
     note: false
@@ -440,7 +440,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2120
         }
       }
     note: false
@@ -473,7 +473,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1945
         }
       }
     note: false
@@ -509,7 +509,54 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: ace9990f-e5ee-4481-89d2-e87f79a19b7f
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: ace9990f-e5ee-4481-89d2-e87f79a19b7f
+      version: -1
+      name: Load WordTokenizerNLP Docker
+      description: Tokenize the words in a input text.
+      scriptName: WordTokenizerNLP
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      cleanHtml:
+        simple: "no"
+      encoding: {}
+      hashWordWithSeed: {}
+      isValueJson: {}
+      removeLineBreaks: {}
+      removeNonAlphaWords: {}
+      removeNonEnglishWords: {}
+      removePunctuation: {}
+      removeStopWords: {}
+      replaceEmails: {}
+      replaceNumbers: {}
+      replaceUrls: {}
+      useLemmatization: {}
+      value:
+        simple: hello
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -520,7 +567,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2310,
+        "height": 2485,
         "width": 380,
         "x": 50,
         "y": 50
