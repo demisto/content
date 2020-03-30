@@ -279,7 +279,13 @@ class Pack(object):
         task_status = False
 
         try:
-            arg = f'./signDirectory {self._pack_path} {signature_string}'
+            if signature_string:
+                with open("keyfile", "wb") as keyfile:
+                    keyfile.write(signature_string)
+                arg = f'./signDirectory {self._pack_path} /keyfile base64'
+            else:
+                arg = f'./signDirectory {self._pack_path}'
+                # This won't actually work unless a key is provided
             signing_process = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             output, err = signing_process.communicate()
 
