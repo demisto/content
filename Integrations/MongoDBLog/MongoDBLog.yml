@@ -1,0 +1,93 @@
+category: Database
+commonfields:
+  id: MongoDB Log
+  version: -1
+configuration:
+- display: MongoDB Username
+  name: credentials
+  required: true
+  type: 9
+- display: URI (mongodb://<IP/FQDN>:<Port Number>)
+  name: uri
+  required: true
+  type: 0
+- display: Database Name
+  name: db
+  required: true
+  type: 0
+- defaultvalue: log
+  display: Collection Name
+  name: collection
+  required: true
+  type: 0
+description: Writes Log data out to MongoDB collection.
+display: MongoDB Log
+name: MongoDB Log
+script:
+  commands:
+  - deprecated: false
+    description: Returns all log entries.
+    execution: false
+    name: mongodb-read-log
+  - arguments:
+    - default: false
+      description: The playbook that had been used.
+      isArray: false
+      name: playbook
+      required: true
+      secret: false
+    - default: false
+      description: Assigned analyst.
+      isArray: false
+      name: analyst
+      required: true
+      secret: false
+    - default: false
+      description: Entity to write to log.
+      isArray: false
+      name: entity
+      required: true
+      secret: false
+    - default: false
+      description: Action(s) performed
+      isArray: false
+      name: action
+      required: true
+      secret: false
+    deprecated: false
+    description: Add log entry.
+    execution: false
+    name: mongodb-write-log
+    outputs:
+    - contextPath: MongoDB.Entry.Action
+      description: Action(s) performed
+      type: String
+    - contextPath: MongoDB.Entry.Analyst
+      description: Assigned analyst.
+      type: String
+    - contextPath: MongoDB.Entry.Entity
+      description: Entity to write to log.
+      type: String
+    - contextPath: MongoDB.Entry.ID
+      description: Entry ID.
+      type: String
+    - contextPath: MongoDB.Entry.Playbook
+      description: The playbook that had been used.
+      type: String
+    - contextPath: MongoDB.Entry.Timestamp
+      description: Entry timestamp.
+      type: Date
+  - deprecated: false
+    description: Returns the number of log entries.
+    execution: false
+    name: mongodb-logs-number
+  dockerimage: demisto/pymongo:1.0.0.5425
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: true
+  script: '-'
+  type: python
+  subtype: python3
+tests:
+  - MongoDBLog - Test
