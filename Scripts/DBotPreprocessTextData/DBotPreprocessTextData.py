@@ -165,6 +165,7 @@ def main():
     whitelist_fields = demisto.args().get('whitelistFields').split(",") if demisto.args().get(
         'whitelistFields') else None
     output_format = demisto.args()['outputFormat']
+    output_original_text_fields = demisto.args()['outputOriginalTextFields'] == 'true'
 
     description = ""
     # read data
@@ -194,10 +195,11 @@ def main():
     except Exception:
         pass
 
+    if output_original_text_fields:
+        for field in text_fields:
+            whitelist_fields += [x.strip() for x in field.split('|')]
     if whitelist_fields and len(whitelist_fields) > 0:
         whitelist_fields.append(DBOT_PROCESSED_TEXT_FIELD)
-        for field in text_fields:
-            whitelist_fields += field.split('|')
         data = whitelist_dict_fields(data, whitelist_fields)
 
     description += "Done processing: %d samples" % len(data) + "\n"

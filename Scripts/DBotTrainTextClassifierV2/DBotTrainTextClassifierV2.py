@@ -267,6 +267,7 @@ def return_file_result_with_predictions_on_test_set(data, original_text_fields, 
         original_text_fields = [text_field]
     else:
         original_text_fields = re.split(r'[|,]', original_text_fields)
+        original_text_fields = [x.strip() for x in original_text_fields] + [text_field]
     predictions_data = {}
     test_data = [data[i] for i in test_index]
     for field in original_text_fields:
