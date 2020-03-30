@@ -2579,6 +2579,11 @@
             "playbookID": "Cortex Data Lake Test",
             "instance_names": "cdl_dev",
             "fromversion": "4.5.0"
+        },
+        {
+            "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
+            "timeout" : 60000,
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
