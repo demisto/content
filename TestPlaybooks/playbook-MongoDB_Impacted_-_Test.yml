@@ -1,0 +1,332 @@
+id: MongoDB Impacted - Test
+version: -1
+name: MongoDB Impacted - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ed9917f9-8fea-4ccb-82de-753818efcf16
+    type: start
+    task:
+      id: ed9917f9-8fea-4ccb-82de-753818efcf16
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 59034527-0238-4a07-8c98-73e34c2f7368
+    type: regular
+    task:
+      id: 59034527-0238-4a07-8c98-73e34c2f7368
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: e6ea7d67-505b-483c-82f7-83e805ea45c6
+    type: regular
+    task:
+      id: e6ea7d67-505b-483c-82f7-83e805ea45c6
+      version: -1
+      name: MongoDB write impacted
+      description: Adds an impacted entity for the incident.  If an impacted record
+        already exists, previous values are overwritten.
+      script: '|||mongodb-write-impacted'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      action:
+        simple: create
+      category:
+        simple: user
+      classification:
+        simple: service
+      incident_id:
+        simple: "1234"
+      name:
+        simple: my_incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 40a64ce0-708d-4f37-82ac-f6d9f1e3531c
+    type: condition
+    task:
+      id: 40a64ce0-708d-4f37-82ac-f6d9f1e3531c
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: MongoDB.Entry.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MongoDB.Entry.Entity
+            iscontext: true
+          right:
+            value:
+              simple: my_incident
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 45a63ba4-a857-41b8-81ab-775f0d0eb8b7
+    type: regular
+    task:
+      id: 45a63ba4-a857-41b8-81ab-775f0d0eb8b7
+      version: -1
+      name: MongoDB read impacted
+      description: Return record of incident's impacted entity.
+      script: '|||mongodb-get-impacted'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      incident_id:
+        simple: ${MongoDB.Entry.Incident}
+      name:
+        simple: ${MongoDB.Entry.Entity}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: ed015424-4456-4fbd-869c-c0670c016b01
+    type: condition
+    task:
+      id: ed015424-4456-4fbd-869c-c0670c016b01
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MongoDB.Entry.IncidentID
+            iscontext: true
+          right:
+            value:
+              simple: "1234"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 25ca828f-e357-40e9-8cc5-d341f418df65
+    type: regular
+    task:
+      id: 25ca828f-e357-40e9-8cc5-d341f418df65
+      version: -1
+      name: MongoDB list impacted
+      description: Returns json of impacted entities.
+      script: '|||mongodb-list-impacted'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      incident_id:
+        simple: "1234"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: f593228a-4c1d-49e7-8beb-df1aa6f8a7b7
+    type: regular
+    task:
+      id: f593228a-4c1d-49e7-8beb-df1aa6f8a7b7
+      version: -1
+      name: MongoDB number of impacted
+      description: Returns the total number of impacted entities for an incident.
+      script: '|||mongodb-number-of-impacted'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      incident_id:
+        simple: ${MongoDB.Entry.IncidentID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 414127da-d0cf-48b8-8425-4689e5f40a5e
+    type: regular
+    task:
+      id: 414127da-d0cf-48b8-8425-4689e5f40a5e
+      version: -1
+      name: MongoDB delete impacted
+      description: Deletes an incident's impacted entity.
+      script: '|||mongodb-delete-impacted'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      incident_id:
+        simple: ${MongoDB.Entry.Incident}
+      name:
+        simple: ${MongoDB.Entry.Entity}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1485,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

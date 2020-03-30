@@ -1,0 +1,222 @@
+category: Database
+commonfields:
+  id: MongoDB Impacted
+  version: -1
+configuration:
+- display: MongoDB Username
+  name: credentials
+  required: true
+  type: 9
+- display: mongodb://<IP/FQDN>:<Port Number>
+  name: uri
+  required: true
+  type: 0
+- defaultvalue: demisto
+  display: MongoDB Database Name
+  name: database
+  required: true
+  type: 0
+- defaultvalue: impacted
+  display: MongoDB Collection Name
+  name: collection
+  required: true
+  type: 0
+description: Manipulates a collection of impacted entities -  - utilizing the MongoDB
+  collection named "impacted".
+display: MongoDB Impacted
+name: MongoDB Impacted
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Demisto's Incident Number
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
+      description: Name of the impacted entity
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Impacted entity Category
+      isArray: false
+      name: category
+      predefined:
+      - user
+      - server
+      - endpoint
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Impacted entity Classification
+      isArray: false
+      name: classification
+      predefined:
+      - associate
+      - privileged
+      - service
+      required: false
+      secret: false
+    - default: false
+      description: Action(s) performed
+      isArray: false
+      name: action
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds an impacted entity for the incident.  If an impacted record
+      already exists, previous values are overwritten.
+    execution: false
+    name: mongodb-write-impacted
+    outputs:
+    - contextPath: MongoDB.Entry.Category
+      description: The impacted entry category.
+      type: String
+    - contextPath: MongoDB.Entry.Classification
+      description: Impacted classification.
+      type: String
+    - contextPath: MongoDB.Entry.Created
+      description: Entry create time.
+      type: Date
+    - contextPath: MongoDB.Entry.Entity
+      description: Entity name.
+      type: String
+    - contextPath: MongoDB.Entry.ID
+      description: Entry ID.
+      type: String
+    - contextPath: MongoDB.Entry.Incident
+      description: Incident ID.
+      type: String
+    - contextPath: MongoDB.Entry.Modified
+      description: Entry modified time.
+      type: Date
+    - contextPath: MongoDB.Entry.action
+      description: Action performed.
+      type: String
+  - arguments:
+    - default: false
+      description: Incident ID
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
+      description: Name of impacted entity
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Return record of incident's impacted entity.
+    execution: false
+    name: mongodb-get-impacted
+    outputs:
+    - contextPath: MongoDB.Entry.Action
+      description: Action(s) performed.
+      type: String
+    - contextPath: MongoDB.Entry.Category
+      description: Impacted category.
+      type: String
+    - contextPath: MongoDB.Entry.Classification
+      description: Impacted classification.
+      type: String
+    - contextPath: MongoDB.Entry.Created
+      description: Entry created date.
+      type: Date
+    - contextPath: MongoDB.Entry.Entity
+      description: Entity name.
+      type: String
+    - contextPath: MongoDB.Entry.IncidentID
+      description: Incident ID.
+      type: String
+    - contextPath: MongoDB.Entry.Modified
+      description: Entry modified date.
+      type: Date
+  - arguments:
+    - default: false
+      description: Incident ID
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns json of impacted entities.
+    execution: false
+    name: mongodb-list-impacted
+    outputs:
+    - contextPath: MongoDB.Entry.Action
+      description: Action(s) performed.
+      type: String
+    - contextPath: MongoDB.Entry.Category
+      description: Impacted category.
+      type: String
+    - contextPath: MongoDB.Entry.Classification
+      description: Impacted classification.
+      type: String
+    - contextPath: MongoDB.Entry.Created
+      description: Entry created date.
+      type: Date
+    - contextPath: MongoDB.Entry.Entity
+      description: Entity name.
+      type: String
+    - contextPath: MongoDB.Entry.IncidentID
+      description: Incident ID.
+      type: String
+    - contextPath: MongoDB.Entry.Modified
+      description: Entry modified date.
+      type: Date
+  - arguments:
+    - default: false
+      description: Incident ID
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the total number of impacted entities for an incident.
+    execution: false
+    name: mongodb-number-of-impacted
+  - arguments:
+    - default: false
+      description: Incident ID
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
+      description: Name of the impacted entity
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes an incident's impacted entity.
+    execution: false
+    name: mongodb-delete-impacted
+  - arguments:
+    - default: false
+      description: Incident ID
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Purges ALL impacted entities for an incident.  Possibly called when
+      closing an incident to clear entries from database.
+    execution: false
+    name: mongodb-purge-impacted
+  dockerimage: demisto/pymongo:1.0.0.5425
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: true
+  script: '-'
+  type: python
+  subtype: python3
+tests:
+  - MongoDB Impacted - Test
