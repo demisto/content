@@ -2178,6 +2178,9 @@
             "playbookID": "PhishLabsTestPopulateIndicators"
         },
         {
+            "playbookID": "Test_HTMLtoMD"
+        },
+        {
             "integrations": "PhishLabs IOC",
             "playbookID": "PhishLabsIOC TestPlaybook",
             "fromversion": "4.1.0"
@@ -2487,7 +2490,8 @@
             "integrations": "Feodo Tracker Hashes Feed",
             "playbookID": "playbook-feodoteackerhash_test",
             "fromversion": "5.5.0",
-            "memory_threshold": "130"
+            "memory_threshold": "130",
+            "timeout": 600
         },
         {
             "integrations": "Feodo Tracker IP Blocklist Feed",
@@ -2583,7 +2587,13 @@
         }
     ],
     "skipped_tests": {
+        "Send Investigation Summary Reports - Test": "Issue 22299",
+        "Symantec Deepsight Test": "Issue 22971",
+        "OTRS Test": "Issue 23167",
+        "Akamai_WAF_SIEM-Test": "Issue 22225",
+        "Cloaken-Test": "Issue 20036",
         "Test-VulnDB": "Issue 23138",
+        "Sixgill-Test": "Issue ",
         "test_MsGraphFiles": "Issue 22853 ",
         "TestCofenseFeed": "Issue 22854",
         "RecordedFutureFeed - Test": "Issue 22855",
@@ -2593,7 +2603,6 @@
         "AbuseIPDB Test": "Issue 22658",
         "Bluecat Address Manager test": "Issue 22616",
         "Office365_Feed_Test": "Issue 22517",
-        "Test XDR Playbook": "Issue 22512",
         "Send Investigation Summary Reports": "Issue 22299",
         "test-Expanse": "Expanse should provide domain that they have in their system",
         "TestProofpointFeed": "Issue 22229",
