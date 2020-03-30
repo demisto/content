@@ -16,8 +16,7 @@ from distutils.util import strtobool
 from distutils.version import LooseVersion
 from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
-from Tests.test_utils import run_command, print_error, print_warning, print_color, LOG_COLORS, \
-    collect_pack_content_items, input_to_list
+from Tests.test_utils import run_command, print_error, print_warning, print_color, LOG_COLORS
 
 # global constants
 STORAGE_BASE_PATH = "content/packs"  # base path for packs in gcs
@@ -169,7 +168,121 @@ class Pack(object):
             return pack_versions[0].vstring
 
     @staticmethod
-    def _parse_pack_metadata(user_metadata, pack_content_items, pack_id, integration_images, author_image):
+    def _get_all_pack_images(pack_integration_images, display_dependencies_images, dependencies_data):
+        """ Returns data of uploaded pack integration images and it's path in gcs. Pack dependencies integration images
+        are added to that result as well.
+
+        Args:
+             pack_integration_images (list): list of uploaded to gcs integration images and it paths in gcs.
+             display_dependencies_images (list): list of pack names of additional dependencies images to display.
+             dependencies_data (dict): all level dependencies data.
+
+        Returns:
+            list: collection of integration display name and it's path in gcs.
+
+        """
+        additional_dependencies_data = {k: v for (k, v) in dependencies_data.items()
+                                        if k in display_dependencies_images}
+
+        for dependency_data in additional_dependencies_data.values():
+            dependency_integration_images = dependency_data.get('integrations', [])
+
+            for dependency_integration in dependency_integration_images:
+                if dependency_integration not in pack_integration_images:
+                    pack_integration_images.append(dependency_integration)
+
+        return pack_integration_images
+
+    @staticmethod
+    def _parse_pack_dependencies(first_level_dependencies, all_level_pack_dependencies_data):
+        """ Parses user defined dependencies and returns dictionary with relevant data about each dependency pack.
+
+        Args:
+            first_level_dependencies (dict): first lever dependencies that were retrieved
+            from user pack_metadata.json file.
+            all_level_pack_dependencies_data (dict): all level pack dependencies data.
+
+        Returns:
+            dict: parsed dictionary with pack dependency data.
+        """
+        parsed_result = {}
+        dependencies_data = {k: v for (k, v) in all_level_pack_dependencies_data.items()
+                             if k in first_level_dependencies.keys() or k == BASE_PACK}
+
+        for dependency_id, dependency_data in dependencies_data.items():
+            parsed_result[dependency_id] = {
+                "mandatory": first_level_dependencies.get(dependency_id, {}).get('mandatory', True),
+                "minVersion": dependency_data.get('currentVersion', Pack.PACK_INITIAL_VERSION),
+                "author": dependency_data.get('author', ''),
+                "name": dependency_data.get('name') if dependency_data.get('name') else dependency_id,
+                "certification": dependency_data.get('certification', 'certified')
+            }
+
+        return parsed_result
+
+    def collect_content_items(self):
+        # todo rewrite this function, add docstring and unit tests
+        """Collects specific pack content items.
+
+        """
+        YML_SUPPORTED_DIRS = [
+            "Scripts",
+            "Integrations",
+            "Playbooks"
+        ]
+        data = {}
+        task_status = True
+
+        try:
+            for directory in os.listdir(self._pack_path):
+                if not os.path.isdir(os.path.join(self._pack_path, directory)) or directory == "TestPlaybooks":
+                    continue
+
+                dir_data = []
+                dir_path = os.path.join(self._pack_path, directory)
+
+                for dir_file in os.listdir(dir_path):
+                    file_path = os.path.join(dir_path, dir_file)
+                    if dir_file.endswith('.json') or dir_file.endswith('.yml'):
+                        file_info = {}
+
+                        with open(file_path, 'r') as file_data:
+                            if directory in YML_SUPPORTED_DIRS:
+                                new_data = yaml.safe_load(file_data)
+                            else:
+                                new_data = json.load(file_data)
+
+                            if directory == 'Layouts':
+                                file_info['name'] = new_data.get('TypeName', '')
+                            elif directory == 'Integrations':
+                                file_info['name'] = new_data.get('display', '')
+                                integration_commands = new_data.get('script', {}).get('commands', [])
+                                file_info['commands'] = [
+                                    {'name': c.get('name', ''), 'description': c.get('description', '')}
+                                    for c in integration_commands]
+                            elif directory == "Classifiers":
+                                file_info['name'] = new_data.get('id', '')
+                            else:
+                                file_info['name'] = new_data.get('name', '')
+
+                            if new_data.get('description', ''):
+                                file_info['description'] = new_data.get('description', '')
+                            if new_data.get('comment', ''):
+                                file_info['description'] = new_data.get('comment', '')
+
+                            dir_data.append(file_info)
+
+                data[directory] = dir_data
+        except Exception as e:
+            task_status = False
+            print_error(
+                "Failed to collect pack content items at path :{}\n. Additional info {}".format(self._pack_path, e))
+        finally:
+            return task_status, data
+
+    @staticmethod
+    def _parse_pack_metadata(user_metadata, pack_content_items, pack_id, integration_images, author_image,
+                             dependencies_data):
         """Parses pack metadata according to issue #19786 and #20091. Part of field may change over the time.
 
         Args:
@@ -178,6 +291,7 @@ class Pack(object):
             pack_id (str): pack unique identifier.
             integration_images (list): list of gcs uploaded integration images.
             author_image (str): gcs uploaded author image
+            dependencies_data (dict): mapping of pack dependencies data, of all levels.
 
         Returns:
             dict: parsed pack metadata.
@@ -202,7 +316,6 @@ class Pack(object):
         if support_email:
             pack_metadata['supportDetails']['email'] = support_email
         pack_metadata['author'] = user_metadata.get('author', '')
-        # todo get vendor image and upload to storage
         pack_metadata['authorImage'] = author_image
         is_beta = user_metadata.get('beta', False)
         pack_metadata['beta'] = bool(strtobool(is_beta)) if isinstance(is_beta, str) else is_beta
@@ -224,13 +337,44 @@ class Pack(object):
         pack_metadata['categories'] = input_to_list(user_metadata.get('categories'))
         pack_metadata['contentItems'] = {DIR_NAME_TO_CONTENT_TYPE[k]: v for (k, v) in pack_content_items.items()
                                          if k in DIR_NAME_TO_CONTENT_TYPE and v}
-        # todo collect all dependencies integrations display name
-        pack_metadata['integrations'] = integration_images
+        pack_metadata['integrations'] = Pack._get_all_pack_images(integration_images,
+                                                                  user_metadata.get('displayedImages', []),
+                                                                  dependencies_data)
         pack_metadata['useCases'] = input_to_list(user_metadata.get('useCases'))
         pack_metadata['keywords'] = input_to_list(user_metadata.get('keywords'))
-        pack_metadata['dependencies'] = user_metadata.get('dependencies', {})
+        pack_metadata['dependencies'] = Pack._parse_pack_dependencies(user_metadata.get('dependencies', {}),
+                                                                      dependencies_data)
 
         return pack_metadata
+
+    def _load_pack_dependencies(self, index_folder_path, first_level_dependencies, all_level_displayed_dependencies):
+        """ Loads dependencies metadata and returns mapping of pack id and it's loaded data.
+
+        Args:
+            index_folder_path (str): full path to download index folder.
+            first_level_dependencies (dict): user defined dependencies.
+            all_level_displayed_dependencies (list): all level pack's images to display.
+
+        Returns:
+            dict: pack id as key and loaded metadata of packs as value.
+
+        """
+        dependencies_data_result = {}
+        dependencies_ids = {d for d in first_level_dependencies.keys()}
+        dependencies_ids.update(all_level_displayed_dependencies)
+        dependencies_ids.add(BASE_PACK)  # Base pack is always added as pack dependency
+
+        for dependency_pack_id in dependencies_ids:
+            dependency_metadata_path = os.path.join(index_folder_path, dependency_pack_id, Pack.METADATA)
+
+            if os.path.exists(dependency_metadata_path):
+                with open(dependency_metadata_path, 'r') as metadata_file:
+                    dependency_metadata = json.load(metadata_file)
+                    dependencies_data_result[dependency_pack_id] = dependency_metadata
+            else:
+                raise Exception(f"{self._pack_name} pack dependency with id {dependency_pack_id} was not found")
+
+        return dependencies_data_result
 
     def remove_unwanted_files(self):
         """Iterates over pack folder and removes hidden files and unwanted folders.
@@ -360,7 +504,7 @@ class Pack(object):
             print_error(f"Failed in uploading {self._pack_name} pack to gcs. Additional info:\n {e}")
             return task_status, True
 
-    def format_metadata(self, pack_content_items, integration_images, author_image):
+    def format_metadata(self, pack_content_items, integration_images, author_image, index_folder_path):
         """Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -372,32 +516,45 @@ class Pack(object):
             integration_images (list): list of uploaded integration images with integration display name and image gcs
             public url.
             author_image (str): uploaded public gcs path to author image.
+            index_folder_path (str): downloaded index folder directory path.
 
         Returns:
             bool: True is returned in case metadata file was parsed successfully, otherwise False.
 
         """
-        user_metadata_path = os.path.join(self._pack_path, Pack.USER_METADATA)  # user metadata path before parsing
-        metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
+        task_status = False
 
-        if not os.path.exists(user_metadata_path):
-            print_error(f"{self._pack_name} pack is missing {Pack.USER_METADATA} file.")
-            return False
+        try:
+            user_metadata_path = os.path.join(self._pack_path, Pack.USER_METADATA)  # user metadata path before parsing
+            metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
 
-        with open(user_metadata_path, "r") as user_metadata_file:
-            user_metadata = json.load(user_metadata_file)  # loading user metadata
+            if not os.path.exists(user_metadata_path):
+                print_error(f"{self._pack_name} pack is missing {Pack.USER_METADATA} file.")
+                return task_status
+
+            with open(user_metadata_path, "r") as user_metadata_file:
+                user_metadata = json.load(user_metadata_file)  # loading user metadata
+
+            dependencies_data = self._load_pack_dependencies(index_folder_path,
+                                                             user_metadata.get('dependencies'),
+                                                             user_metadata.get('displayedImages'))
             formatted_metadata = Pack._parse_pack_metadata(user_metadata=user_metadata,
                                                            pack_content_items=pack_content_items,
                                                            pack_id=self._pack_name,
                                                            integration_images=integration_images,
-                                                           author_image=author_image)
+                                                           author_image=author_image,
+                                                           dependencies_data=dependencies_data)
 
-        with open(metadata_path, "w") as metadata_file:
-            json.dump(formatted_metadata, metadata_file, indent=4)  # writing back parsed metadata
+            with open(metadata_path, "w") as metadata_file:
+                json.dump(formatted_metadata, metadata_file, indent=4)  # writing back parsed metadata
 
-        print_color(f"Finished formatting {self._pack_name} packs's {Pack.METADATA} {metadata_path} file.",
-                    LOG_COLORS.GREEN)
-        return True
+            print_color(f"Finished formatting {self._pack_name} packs's {Pack.METADATA} {metadata_path} file.",
+                        LOG_COLORS.GREEN)
+            task_status = True
+        except Exception as e:
+            print_error(f"Failed in formatting {self._pack_name} pack metadata. Additional info:\n{e}")
+        finally:
+            return task_status
 
     def parse_release_notes(self):
         """Need to implement the changelog.md parsing and changelog.json creation after design is finalized.
@@ -614,24 +771,23 @@ def get_modified_packs(specific_packs=""):
         return modified_packs
 
 
-def extract_modified_packs(modified_packs, packs_artifacts_path, extract_destination_path):
-    """Extracts changed packs from content pack artifact zip.
+def input_to_list(input_data):
+    # todo add docstring and unit tests
+    input_data = input_data if input_data else []
+    return input_data if isinstance(input_data, list) else [s for s in input_data.split(',') if s]
+
+
+def extract_packs_artifacts(packs_artifacts_path, extract_destination_path):
+    """Extracts all packs from content pack artifact zip.
 
     Args:
-        modified_packs (set): collection of modified/new packs.
         packs_artifacts_path (str): full path to content artifacts zip file.
         extract_destination_path (str): full path to directory where to extract the packs.
 
     """
-    print("Starting extracting modified pack:")
     with ZipFile(packs_artifacts_path) as packs_artifacts:
-        for pack in packs_artifacts.namelist():
-            for modified_pack in modified_packs:
-
-                if pack.startswith(f"{modified_pack}/"):
-                    packs_artifacts.extract(pack, extract_destination_path)
-                    print(f"Extracted {pack} to path: {extract_destination_path}")
-    print_color("Finished extracting modified packs", LOG_COLORS.GREEN)
+        packs_artifacts.extractall(extract_destination_path)
+    print("Finished extracting packs artifacts")
 
 
 def init_storage_client(service_account=None):
@@ -648,7 +804,7 @@ def init_storage_client(service_account=None):
     """
     if service_account:
         storage_client = storage.Client.from_service_account_json(service_account)
-        print_color("Created gcp service account", LOG_COLORS.GREEN)
+        print("Created gcp service account")
 
         return storage_client
     else:
@@ -656,7 +812,7 @@ def init_storage_client(service_account=None):
         warnings.filterwarnings("ignore", message=google.auth._default._CLOUD_SDK_CREDENTIALS_WARNING)
         credentials, project = google.auth.default()
         storage_client = storage.Client(credentials=credentials, project=project)
-        print_color("Created gcp privare account", LOG_COLORS.GREEN)
+        print("Created gcp private account")
 
         return storage_client
 
@@ -696,8 +852,7 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
             sys.exit(1)
 
         os.remove(download_index_path)
-        print_color(f"Finished downloading and extracting {Pack.INDEX_NAME} file to {extract_destination_path}",
-                    LOG_COLORS.GREEN)
+        print(f"Finished downloading and extracting {Pack.INDEX_NAME} file to {extract_destination_path}")
 
         return index_folder_path, index_blob
     else:
@@ -868,7 +1023,7 @@ def main():
 
     # detect new or modified packs
     modified_packs = get_modified_packs(specific_packs)
-    extract_modified_packs(modified_packs, packs_artifacts_path, extract_destination_path)
+    extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in modified_packs
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
@@ -891,13 +1046,14 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, pack_content_items = collect_pack_content_items(pack.path)
+        task_status, pack_content_items = pack.collect_content_items()
         if not task_status:
             pack.status = PackStatus.FAILED_COLLECT_ITEMS.name
             pack.cleanup()
             continue
 
-        task_status = pack.format_metadata(pack_content_items, integration_images, author_image)
+        task_status = pack.format_metadata(pack_content_items, integration_images, author_image,
+                                           index_folder_path)
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack.cleanup()
@@ -952,8 +1108,8 @@ def main():
         # detected index update
         index_was_updated = True
         pack.status = PackStatus.SUCCESS.name
-        pack.cleanup()
 
+    # finished iteration over content packs
     if index_was_updated:
         upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number)
     else:
