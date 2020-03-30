@@ -280,14 +280,17 @@ jobs:
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
-                if [ -n "${NIGHTLY}" ] || [ -n "${INSTANCE_TESTS}" ] ;
+                if [ -n "${NIGHTLY}" ] ;
                   then
                     export IFRA_ENV_TYPE=Nightly # disable-secrets-detection
+                elif [ -n "${INSTANCE_TESTS}" ] ;
+                  then
+                    export IFRA_ENV_TYPE="Demisto PreGA" # disable-secrets-detection
 
                   else
                     export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
                 fi
-                python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType $IFRA_ENV_TYPE -outfile ./env_results.json
+                python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -outfile ./env_results.json
 
               else
                 python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -outfile ./env_results.json
