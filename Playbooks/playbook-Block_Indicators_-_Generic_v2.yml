@@ -111,6 +111,7 @@ tasks:
 
         Supported integrations for this playbook:
         * Active Directory
+        * PAN-OS - This requires PAN-OS 9.1 or higher.
       playbookName: Block Account - Generic
       type: playbook
       iscommand: false
@@ -155,6 +156,7 @@ tasks:
       - "5"
       - "9"
       - "10"
+      - "11"
     separatecontext: false
     view: |-
       {
@@ -183,12 +185,33 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
+      AutoCommit:
+        complex:
+          root: inputs.AutoCommit
+      CustomBlockRule:
+        complex:
+          root: inputs.CustomBlockRule
+      DAG:
+        complex:
+          root: inputs.DAG
+      EDLServerIP:
+        complex:
+          root: inputs.EDLServerIP
       IP:
         complex:
           root: inputs.IP
       IPBlacklistMiner:
         complex:
           root: inputs.IPBlacklistMiner
+      IPListName:
+        complex:
+          root: inputs.IPListName
+      LogForwarding:
+        complex:
+          root: inputs.LogForwarding
+      StaticAddressGroup:
+        complex:
+          root: inputs.StaticAddressGroup
     separatecontext: true
     loop:
       iscommand: false
@@ -220,11 +243,85 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
+    scriptarguments:
+      EventId: {}
+      MD5:
+        complex:
+          root: inputs.MD5
+      SHA256:
+        complex:
+          root: inputs.SHA256
     separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
     view: |-
       {
         "position": {
           "x": 1340,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 9d722317-88ec-40da-8d3f-f56b841f0039
+    type: playbook
+    task:
+      id: 9d722317-88ec-40da-8d3f-f56b841f0039
+      version: -1
+      name: Block URL - Generic
+      playbookName: Block URL - Generic
+      description: ""
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      AutoCommit:
+        complex:
+          root: inputs.AutoCommit
+      CustomURLCategory:
+        complex:
+          root: inputs.CustomURLCategory
+      EDLServerIP:
+        complex:
+          root: inputs.EDLServerIP
+      LogForwarding:
+        complex:
+          root: inputs.LogForwarding
+      URL:
+        complex:
+          root: inputs.URL
+      URLBlacklistMiner:
+        complex:
+          root: inputs.URLBlacklistMiner
+      URLListName:
+        complex:
+          root: inputs.URLListName
+      categories:
+        complex:
+          root: inputs.categories
+      device-group:
+        complex:
+          root: inputs.device-group
+      type:
+        complex:
+          root: inputs.type
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
           "y": 340
         }
       }
@@ -331,6 +428,86 @@ inputs:
       accessor: Indicator
   required: false
   description: Array of malicious usernames to block.
+- key: MD5
+  value:
+    complex:
+      root: File
+      accessor: MD5
+  required: false
+  description: The MD5 hash of the file you want to block.
+- key: SHA256
+  value:
+    complex:
+      root: File
+      accessor: SHA256
+  required: false
+  description: The SHA256 hash of the file you want to block.
+- key: CustomBlockRule
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    This input determines whether Palo Alto Networks Panorama or Firewall Custom Block Rules are used.
+    Specify True to use Custom Block Rules.
+- key: LogForwarding
+  value: {}
+  required: false
+  description: Panorama log forwarding object name.
+- key: AutoCommit
+  value:
+    simple: "No"
+  required: false
+  description: |-
+    This input determines whether Palo Alto Networks Panorama or Firewall Static Address Groups are used.
+    Specify the Static Address Group name for IP handling.
+- key: IPListName
+  value: {}
+  required: false
+  description: |-
+    This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used for blocking IPs.
+    Specify the EDL name for IP handling.
+- key: EDLServerIP
+  value: {}
+  required: false
+  description: |-
+    This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used:
+    * The IP address of the web server on which the files are stored.
+    * The web server IP address is configured in the integration instance.
+- key: DAG
+  value: {}
+  required: false
+  description: |-
+    This input determines whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups are used.
+    Specify the Dynamic Address Group tag name for IP handling.
+- key: StaticAddressGroup
+  value: {}
+  required: false
+  description: |-
+    This input determines whether Palo Alto Networks Panorama or Firewall Static Address Groups are used.
+    Specify the Static Address Group name for IP handling.
+- key: URLListName
+  value:
+    simple: Demisto Remediation - URL EDL
+  required: false
+  description: URL list from the instance context with which to override the remote
+    file.
+- key: CustomURLCategory
+  value:
+    simple: Demisto Remediation - Malicious URLs
+  required: false
+  description: Custom URL Category name.
+- key: type
+  value: {}
+  required: false
+  description: Custom URL category type. Insert "URL List"/ "Category Match".
+- key: device-group
+  value: {}
+  required: false
+  description: Device group for the Custom URL Category (Panorama instances).
+- key: categories
+  value: {}
+  required: false
+  description: The list of categories. Relevant from PAN-OS v9.x.
 outputs:
 - contextPath: CheckpointFWRule.Domain
   description: Rule domain.
