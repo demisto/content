@@ -22,7 +22,7 @@ This integration was integrated and tested with Splunk v6.5.
     * __Fetch notable events ES query__
     * __Fetch Limit (Max.- 200, Recommended less than 50)__
     * __Fetch incidents__
-    * __First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)__ 
+    * __First fetch timestamp (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3 months, 1 year)__ 
     * __Incident type__
     * __Proxy - in format: 127.0.0.1:8080__
     * __Timezone of the Splunk server, in minutes. For example, GMT is gmt +3, set +180 (set only if different than Demisto server). Relevant only for fetching notable events.__
