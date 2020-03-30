@@ -287,7 +287,6 @@ try:
         'pwned-email': pwned_email_command,
         'domain': pwned_domain_command,
         'pwned-domain': pwned_domain_command,
-        'username': pwned_username_command,
         'pwned-username': pwned_username_command
     }
 

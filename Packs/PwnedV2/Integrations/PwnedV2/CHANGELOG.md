@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+Added username command  the option to search by username. 
 
 ## [20.3.3] - 2020-03-18
 -
@@ -14,6 +14,3 @@ Added batch support for domain and email commands.
 ## [19.8.2] - 2019-08-22
 #### New Integration
 Uses the Have I Been Pwned? service to check whether email addresses or domains were compromised in previous breaches.
-
-## [19.8.2] - 2020-03-29
-Adding the option to search by username. 
