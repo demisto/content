@@ -14,7 +14,7 @@ class MicrosoftClient(BaseClient):
 
     def __init__(self, tenant_id: str = '', auth_id: str = '', enc_key: str = '',
                  token_retrieval_url: str = '', app_name: str = '', refresh_token: str = '',
-                 scope: str = 'https://graph.microsoft.com/.default',
+                 scope: str = 'https://graph.microsoft.com/.default', grant_type: str = 'client_credentials',
                  resource: str = '', verify: bool = True, self_deployed: bool = False, *args, **kwargs):
         """
         Microsoft Client class that implements logic to authenticate with oproxy or self deployed applications.
@@ -39,13 +39,17 @@ class MicrosoftClient(BaseClient):
             else:
                 token_retrieval_url = auth_id_and_token_retrieval_url[1]
         else:
-            self.app_url = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token'
+            if grant_type == 'authorization_code':
+                self.app_url = f'https://login.microsoftonline.com/common/oauth2/token'
+            else:
+                self.app_url = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token'
             self.scope = scope
 
         self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
         self.tenant_id = tenant_id
         self.auth_id = auth_id
         self.enc_key = enc_key
+        self.grant_type = grant_type
         self.token_retrieval_url = token_retrieval_url
         self.app_name = app_name
         self.refresh_token = refresh_token
@@ -53,6 +57,7 @@ class MicrosoftClient(BaseClient):
         self.client_secret = enc_key
         self.resource = resource
         self.verify = verify
+        self.auth_code = refresh_token
 
     def http_request(self, *args, **kwargs):
         """
@@ -81,17 +86,17 @@ class MicrosoftClient(BaseClient):
         """
         integration_context = demisto.getIntegrationContext()
         access_token = integration_context.get('access_token')
+        refresh_token = integration_context.get('current_refresh_token', '')
         valid_until = integration_context.get('valid_until')
         if access_token and valid_until:
             if self.epoch_seconds() < valid_until:
                 return access_token
 
         auth_type = self.auth_type
-        refresh_token = ''
         if auth_type == OPROXY_AUTH_TYPE:
             access_token, expires_in, refresh_token = self._oproxy_authorize()
         else:
-            access_token, expires_in = self._get_self_deployed_token()
+            access_token, expires_in, refresh_token = self._get_self_deployed_token(refresh_token)
         time_now = self.epoch_seconds()
         time_buffer = 5  # seconds by which to shorten the validity period
         if expires_in - time_buffer > 0:
@@ -100,11 +105,10 @@ class MicrosoftClient(BaseClient):
 
         integration_context = {
             'access_token': access_token,
+            'current_refresh_token': refresh_token,
             'valid_until': time_now + expires_in,
         }
 
-        if refresh_token:
-            integration_context['current_refresh_token'] = refresh_token
         demisto.setIntegrationContext(integration_context)
         return access_token
 
@@ -160,12 +164,12 @@ class MicrosoftClient(BaseClient):
         return (parsed_response.get('access_token', ''), parsed_response.get('expires_in', 3595),
                 parsed_response.get('refresh_token', ''))
 
-    def _get_self_deployed_token(self) -> Tuple[str, int]:
+    def _get_self_deployed_token(self, refresh_token: str = '') -> Tuple[str, int, str]:
         """
         Gets a token by authorizing a self deployed Azure application.
 
         Returns:
-            tuple: An access token and its expiry.
+            tuple: An access token, its expiry and refresh token.
         """
         if not self.app_url:
             url = f'https://login.windows.net/{self.tenant_id}/oauth2/token'
@@ -174,8 +178,17 @@ class MicrosoftClient(BaseClient):
         data = {
             'client_id': self.client_id,
             'client_secret': self.client_secret,
-            'grant_type': 'client_credentials'
+            'grant_type': self.grant_type
         }
+        if not refresh_token:
+            data['grant_type'] = self.grant_type
+            if self.grant_type == 'authorization_code':
+                data['code'] = self.auth_code
+                data['resource'] = self.resource
+                data['redirect_uri'] = 'https://localhost/myapp'
+        else:
+            data['grant_type'] = 'refresh_token'
+            data['refresh_token'] = refresh_token
 
         if self.scope:
             data['scope'] = self.scope
@@ -193,9 +206,10 @@ class MicrosoftClient(BaseClient):
             return_error(f'Error in Microsoft authorization: {str(e)}')
 
         access_token = body.get('access_token', '')
+        refresh_token = body.get('refresh_token', '')
         expires_in = int(body.get('expires_in', 3595))
 
-        return access_token, expires_in
+        return access_token, expires_in, refresh_token
 
     @staticmethod
     def error_parser(error: requests.Response) -> str:

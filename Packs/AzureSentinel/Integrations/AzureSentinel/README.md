@@ -6,18 +6,22 @@ Azure Sentinel is a cloud-native security information and event manager (SIEM) p
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Azure Sentinel.
 3. Click **Add instance** to create and configure a new integration instance.
+4. Click the question mark button in the upper-right corner and read the information, and click the link.
+5. Click the **Start Authorization Process** button.
+6. Log in with Microsoft credentials.
+7. Authorize Demisto application to access data.
+8. When you are redirected, copy the parameter values (ID, Token and Key) which you will need when configuring the integration instance in Demisto.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
+| auth_id | ID | True |
+| refresh_token | Token | True |
+| enc_key | Key | True |
+| self_deployed | Use a self-deployed Azure application | True |
 | isFetch | Fetch incidents | False |
 | fetch_time | First fetch timestamp ({number} {time unit}, e.g., 12 hours, 7 days) | False |
 | min_severity | The minimum severity of incidents to fetch | False |
 | incidentType | Incident type | False |
-| url | Server base URL | True |
-| tenant_id | Tenant ID | True |
-| client_id | Client ID | True |
-| client_secret | Client Secret | True |
-| auth_code | Authorization Code | True |
 | subscriptionID | Subscription ID | True |
 | resourceGroupName | Resource Group Name | True |
 | workspaceName | Workspace Name | True |
