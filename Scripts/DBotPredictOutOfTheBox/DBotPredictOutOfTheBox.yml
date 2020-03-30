@@ -84,7 +84,7 @@ outputs:
 script: '-'
 subtype: python3
 system: false
-timeout: '0'
+timeout: 9000s
 type: python
 dockerimage: demisto/dl:1.5
 runas: DBotWeakRole
