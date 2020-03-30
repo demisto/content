@@ -345,16 +345,16 @@ def main():
         if TLS == 'FULL TLS':
             SERVER = SMTP_SSL(demisto.getParam('host'), int(demisto.params().get('port', 0)), local_hostname=FQDN)
         else:
-            SERVER = SMTP(demisto.getParam('host'), int(demisto.params().get('port', 0)), local_hostname=FQDN)
+            SERVER = SMTP(demisto.getParam('host'), int(demisto.params().get('port', 0)), local_hostname=FQDN)  # type: ignore
 
-        SERVER.ehlo()
+        SERVER.ehlo()   # type: ignore
         # For BC purposes where TLS was a checkbox (no value only true or false) if TLS=True or TLS='TLS' we enter this
         # condition, otherwise it means TLS is not configured (TLS=False) or is set to 'FULL TLS' or 'None'.
         if TLS is True or TLS == 'TLS':
-            SERVER.starttls()
+            SERVER.starttls()   # type: ignore
         user, password = get_user_pass()
         if user:
-            SERVER.login(user, password)
+            SERVER.login(user, password)    # type: ignore
     except Exception as e:
         # also reset at the bottom finally
         swap_stderr(stderr_org)  # type: ignore
@@ -369,8 +369,8 @@ def main():
             msg['Subject'] = 'Test mail from Demisto'
             msg['From'] = FROM
             msg['To'] = FROM
-            SERVER.sendmail(FROM, [FROM], msg.as_string())
-            SERVER.quit()
+            SERVER.sendmail(FROM, [FROM], msg.as_string())  # type: ignore
+            SERVER.quit()   # type: ignore
             demisto.results('ok')
         elif demisto.command() == 'send-mail':
             raw_message = demisto.getArg('raw_message')
