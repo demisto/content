@@ -210,34 +210,6 @@ script:
     deprecated: false
     description: Checks if a username was compromised.
     execution: false
-    name: username
-    outputs:
-    - contextPath: Username.Pwned-V2.Compromised.Vendor
-      description: For compromised usernames, the vendor that made the decision.
-      type: String
-    - contextPath: Username.Pwned-V2.Compromised.Reporters
-      description: For compromised usernames, the reporters for the vendor to make
-        the compromised decision.
-      type: String
-    - contextPath: Username.Name
-      description: The username name.
-      type: String
-    - contextPath: Username.Malicious.Vendor
-      description: For malicious usernames, the vendor that made the decision.
-      type: String
-    - contextPath: Username.Malicious.Description
-      description: For malicious username, the reason that the vendor made the decision.
-      type: String
-  - arguments:
-    - default: true
-      description: The username to check (CSV supported).
-      isArray: true
-      name: username
-      required: true
-      secret: false
-    deprecated: false
-    description: Checks if a username was compromised.
-    execution: false
     name: pwned-username
     outputs:
     - contextPath: Username.Pwned-V2.Compromised.Vendor
@@ -265,5 +237,4 @@ script:
   subtype: python2
   type: python
 tests:
-  - Pwned v2 test
-
+- Pwned v2 test
