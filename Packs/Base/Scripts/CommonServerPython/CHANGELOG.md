@@ -1,5 +1,21 @@
 ## [Unreleased]
-
+  - Deprecated the following enums: 
+    - **entryTypes**
+    - **formats**
+    - **dbotscores**
+  - Added new enums: 
+    - **DBotScoreType** (replaces *dbotscores*)
+    - **EntryFormat** (replaces *formats*)
+    - **EntryType** (replaces *entryTypes*)
+  - Added new classes to represent reputation outputs:
+    - **DBotScore**
+    - **IP**
+    - **URL**
+    - **CVE**
+    - **File**
+    - **Domain**
+    - **WHOIS**
+    - **CommandResults** (returns results to the War Room)
 
 ## [20.3.4] - 2020-03-30
 - Added support for successful empty responses (status code 204) in the base client

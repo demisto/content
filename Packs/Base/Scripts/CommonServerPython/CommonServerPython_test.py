@@ -836,6 +836,258 @@ class TestBuildDBotEntry(object):
         }
 
 
+class TestCommandResults:
+    def test_return_command_results(self):
+        from CommonServerPython import IP, DBotScore, CommandResults, EntryFormat, EntryType, DBotScoreType
+        ip = IP(
+            ip='8.8.8.8',
+            asn='some asn',
+            hostname='test.com',
+            geo_country=None,
+            geo_description=None,
+            geo_latitude=None,
+            geo_longitude=None,
+            positive_engines=None,
+            detection_engines=None
+        )
+
+        dbot_score = DBotScore(
+            indicator='8.8.8.8',
+            integration_name='Virus Total',
+            indicator_type=DBotScoreType.IP,
+            score=DBotScore.GOOD
+        )
+        ip.set_dbot_score(dbot_score)
+
+        results = CommandResults(
+            outputs_key_field=None,
+            outputs_prefix=None,
+            outputs=None,
+            indicators=[ip]
+        )
+
+        assert results.to_context() == {
+            'Type': EntryType.NOTE,
+            'ContentsFormat': EntryFormat.JSON,
+            'Contents': None,
+            'HumanReadable': None,
+            'EntryContext': {
+                'IP(val.Address && val.Address == obj.Address)': {
+                    'Address': '8.8.8.8',
+                    'ASN': 'some asn',
+                    'Hostname': 'test.com'
+                },
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': {
+                    'Indicator': '8.8.8.8',
+                    'Vendor': 'Virus Total',
+                    'Score': 1,
+                    'Type': 'ip'
+                }
+            }
+        }
+
+    def test_create_dbot_score(self):
+        from CommonServerPython import DBotScore, CommandResults, EntryFormat, EntryType, DBotScoreType
+
+        dbot_score = DBotScore(
+            indicator='8.8.8.8',
+            integration_name='Virus Total',
+            indicator_type=DBotScoreType.IP,
+            score=DBotScore.GOOD
+        )
+
+        results = CommandResults(
+            outputs_key_field=None,
+            outputs_prefix=None,
+            outputs=None,
+            indicators=[dbot_score]
+        )
+
+        assert results.to_context() == {
+            'Type': EntryType.NOTE,
+            'ContentsFormat': EntryFormat.JSON,
+            'Contents': None,
+            'HumanReadable': None,
+            'EntryContext': {
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': {
+                    'Indicator': '8.8.8.8',
+                    'Vendor': 'Virus Total',
+                    'Score': 1,
+                    'Type': 'ip'
+                }
+            }
+        }
+
+    def test_return_list_of_items(self):
+        from CommonServerPython import CommandResults, EntryFormat, EntryType
+        tickets = [
+            {
+                'ticket_id': 1,
+                'title': 'foo'
+            },
+            {
+                'ticket_id': 2,
+                'title': 'goo'
+            }
+        ]
+        results = CommandResults(
+            outputs_prefix='Jira.Ticket',
+            outputs_key_field='ticket_id',
+            outputs=tickets
+        )
+
+        assert results.to_context() == {
+            'Type': EntryType.NOTE,
+            'ContentsFormat': EntryFormat.JSON,
+            'Contents': tickets,
+            'HumanReadable': tableToMarkdown('Results', tickets),
+            'EntryContext': {
+                'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
+            }
+        }
+
+    def test_create_dbot_score_with_invalid_score(self):
+        from CommonServerPython import DBotScore, DBotScoreType
+
+        try:
+            DBotScore(
+                indicator='8.8.8.8',
+                integration_name='Virus Total',
+                score=100,
+                indicator_type=DBotScoreType.IP
+            )
+
+            assert False
+        except TypeError:
+            assert True
+
+    def test_create_ip(self):
+        from CommonServerPython import IP
+
+        ip = IP(
+            ip='8.8.8.8',
+            asn='some asn',
+            hostname='test.com',
+            geo_country=None,
+            geo_description=None,
+            geo_latitude=None,
+            geo_longitude=None,
+            positive_engines=None,
+            detection_engines=None
+        )
+
+        assert ip is not None
+
+    def test_create_domain(self):
+        from CommonServerPython import CommandResults, Domain, WHOIS, EntryType, EntryFormat, DBotScoreType, DBotScore
+
+        domain = Domain(
+            domain='somedomain.com',
+            dns='dns.somedomain',
+            detection_engines=10,
+            positive_detections=5,
+            organization='Some Organization',
+            whois=WHOIS(
+                admin_phone='18000000',
+                admin_email='admin@test.com',
+
+                registrant_name='Mr Registrant',
+
+                registrar_name='Mr Registrar',
+                registrar_abuse_email='registrar@test.com'
+            ),
+            creation_date='2019-01-01T00:00:00',
+            update_date='2019-01-02T00:00:00',
+            expiration_date=None,
+            domain_status='ACTIVE',
+            name_servers=[
+                'PNS31.CLOUDNS.NET',
+                'PNS32.CLOUDNS.NET'
+            ],
+            sub_domains=[
+                'sub-domain1.somedomain.com',
+                'sub-domain2.somedomain.com',
+                'sub-domain3.somedomain.com'
+            ]
+        )
+
+        dbot_score = DBotScore(
+            indicator='somedomain.com',
+            integration_name='Virus Total',
+            indicator_type=DBotScoreType.DOMAIN,
+            score=DBotScore.GOOD
+        )
+        domain.set_dbot_score(dbot_score)
+
+        results = CommandResults(
+            outputs_key_field=None,
+            outputs_prefix=None,
+            outputs=None,
+            indicators=[domain]
+        )
+
+        assert results.to_context() == {
+            'Type': EntryType.NOTE,
+            'ContentsFormat': EntryFormat.JSON,
+            'Contents': None,
+            'HumanReadable': None,
+            'EntryContext': {
+                'Domain(val.Name && val.Name == obj.Name)': {
+                    'Name': 'somedomain.com',
+                    'DNS': 'dns.somedomain',
+                    'DetectionEngines': 10,
+                    'PositiveDetections': 5,
+                    'Organization': 'Some Organization',
+                    'CreationDate': '2019-01-01T00:00:00',
+                    'UpdateDate': '2019-01-02T00:00:00',
+                    'DomainStatus': 'ACTIVE',
+                    'NameServers': [
+                        'PNS31.CLOUDNS.NET',
+                        'PNS32.CLOUDNS.NET'
+                    ],
+                    'Subdomains': [
+                        'sub-domain1.somedomain.com',
+                        'sub-domain2.somedomain.com',
+                        'sub-domain3.somedomain.com'
+                    ],
+                    'Admin': {
+                        'Phone': '18000000',
+                        'Email': 'admin@test.com',
+                        'Name': None
+                    },
+                    'Registrant': {
+                        'Name': 'Mr Registrant',
+                        'Email': None,
+                        'Phone': None
+                    },
+                    'WHOIS': {
+                        'Admin': {
+                            'Name': None,
+                            'Phone': '18000000',
+                            'Email': 'admin@test.com'
+                        },
+                        'Registrar': {
+                            'Name': 'Mr Registrar',
+                            'AbuseEmail': 'registrar@test.com',
+                            'AbusePhone': None
+                        },
+                        'Registrant': {
+                            'Name': 'Mr Registrant',
+                            'Email': None,
+                            'Phone': None
+                        }
+                    }
+                },
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': {
+                    'Indicator': 'somedomain.com',
+                    'Vendor': 'Virus Total',
+                    'Score': 1,
+                    'Type': 'domain'
+                }
+            }
+        }
+
+
 class TestBaseClient:
     from CommonServerPython import BaseClient
     text = {"status": "ok"}
