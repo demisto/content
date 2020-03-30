@@ -8,6 +8,7 @@ def mock_client(self_deployed):
         refresh_token='refresh_token',
         auth_and_token_url='auth_id',
         enc_key='enc_key',
+        auth_code='auth_code',
         subscription_id='subscriptionID',
         resource_group_name='resourceGroupName',
         workspace_name='workspaceName',
