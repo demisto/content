@@ -2457,6 +2457,18 @@
             "playbookID": "illuminate Integration Demonstration - Test"
         },
         {
+            "integrations": "MongoDB Impacted",
+            "playbookID": "MongoDB Impacted - Test"
+        },
+        {
+            "integrations": "MongoDB Key Value Store",
+            "playbookID": "MongoDB KeyValueStore - Test"
+        },
+        {
+            "integrations": "MongoDB Log",
+            "playbookID": "MongoDBLog - Test"
+        },
+        {
             "integrations": "Google Chronicle Backstory",
             "playbookID": "Google Chronicle Backstory Asset - Test",
             "fromversion": "5.0.0"
