@@ -12,7 +12,7 @@
 !fidelis-endpoint-get-script-result job_id=fc94568c-9a15-4fa2-af08-ab8a01f5e86c
 !fidelis-endpoint-kill-process operating_system=Windows pid=516 endpoint_ip=10.128.0.5
 !fidelis-endpoint-delete-file file_path=c:\\Users\\admin\\Documents\\test.txt operating_system=Windows endpoint_ip=10.128.0.5
-!fidelis-endpoint-isolate-network operating_system=Windows allowed_server=52.22.125.253 endpoint_ip=10.128.0.1
+!fidelis-endpoint-isolate-network operating_system=Windows allowed_server=2.2.2.2 endpoint_ip=10.128.0.1
 !fidelis-endpoint-remove-network-isolation operating_system=Windows endpoint_ip=10.128.0.1
 !fidelis-endpoint-script-job-status job_result_id=fc94568c-9a15-4fa2-af08-ab8a01f5e86c
 !fidelis-endpoint-execute-script script_id="2d32a530-0716-4542-afdc-8da3bd47d8bf" time_out="300" endpoint_ip="10.128.0.5" answer="true"
