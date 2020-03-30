@@ -41,8 +41,8 @@ class Client:
         tenant_id = refresh_token if self_deployed else ''
         refresh_token = (demisto.getIntegrationContext().get('current_refresh_token') or refresh_token)
         base_url = f'https://management.azure.com/subscriptions/{subscription_id}/' \
-                   f'resourceGroups/{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/' \
-                   f'{workspace_name}/providers/Microsoft.SecurityInsights'
+            f'resourceGroups/{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/' \
+            f'{workspace_name}/providers/Microsoft.SecurityInsights'
         self.ms_client = MicrosoftClient(
             self_deployed=self_deployed,
             auth_id=auth_and_token_url,
@@ -598,6 +598,7 @@ def main():
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
+            demisto.results('ok')
 
         elif demisto.command() == 'fetch-incidents':
             # How much time before the first fetch to retrieve incidents
