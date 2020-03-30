@@ -1,9 +1,13 @@
 import demistomock as demisto
-from datetime import datetime
+from datetime import datetime, timezone
 
-date_value = demisto.args()['value']
-formatter = demisto.args()['formatter']
+epoch = datetime(1970, 1, 1, tzinfo=timezone.utc)
+
+args = demisto.args()
+date_value = args['value']
+formatter = args['formatter']
 
 date_obj = datetime.strptime(date_value, formatter)
+unix_time = int(date_obj.strftime('%s') if date_obj.tzinfo is None else (date_obj - epoch).total_seconds())
 
-demisto.results(int(date_obj.strftime('%s')))
+demisto.results(unix_time)
