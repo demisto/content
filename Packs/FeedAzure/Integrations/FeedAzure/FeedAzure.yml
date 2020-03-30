@@ -147,6 +147,11 @@ configuration:
   - SqlManagement
   required: true
   type: 16
+- display: Tags
+  name: tags
+  required: false
+  type: 0
+  additionalinfo: Supports CSV values.
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -179,7 +184,7 @@ script:
     execution: false
     name: azure-get-indicators
     outputs:
-  dockerimage: demisto/python3:3.8.1.6120
+  dockerimage: demisto/python3:3.8.2.6981
   feed: true
   isfetch: false
   longRunning: false

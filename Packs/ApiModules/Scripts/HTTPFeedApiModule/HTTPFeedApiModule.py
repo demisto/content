@@ -42,7 +42,7 @@ class Client(BaseClient):
             character is used as indicator. Default: *null*
         :param: fields: a dictionary of *extraction dictionaries* to extract
             additional attributes from each line. Default: {}
-        :param: feed_url_to_config: For each service, a dictionary to process indicators by.
+        :param: feed_url_to_config: For each sub-feed, a dictionary to process indicators by.
         For example, ASN feed:
         'https://www.spamhaus.org/drop/asndrop.txt': {
             'indicator_type': ASN,
@@ -187,7 +187,7 @@ class Client(BaseClient):
 
     def build_iterator(self, **kwargs):
         """
-        For each URL (service), send an HTTP request to get indicators and return them after filtering by Regex
+        For each URL (sub-feed), send an HTTP request to get indicators and return them after filtering by Regex
         :param kwargs: Arguments to send to the HTTP API endpoint
         :return: List of indicators
         """
@@ -245,8 +245,11 @@ class Client(BaseClient):
     def custom_fields_creator(self, attributes: dict):
         created_custom_fields = {}
         for attribute in attributes.keys():
-            if attribute in self.custom_fields_mapping.keys():
-                created_custom_fields[self.custom_fields_mapping[attribute]] = attributes[attribute]
+            if attribute in self.custom_fields_mapping.keys() or attribute == 'tags':
+                if attribute == 'tags':
+                    created_custom_fields[attribute] = attributes[attribute]
+                else:
+                    created_custom_fields[self.custom_fields_mapping[attribute]] = attributes[attribute]
 
         return created_custom_fields
 
@@ -256,12 +259,13 @@ def datestring_to_millisecond_timestamp(datestring):
     return int(date.timestamp() * 1000)
 
 
-def get_indicator_fields(line, url, client: Client):
+def get_indicator_fields(line, url, tags, client: Client):
     """
     Extract indicators according to the feed type
     :param line: The current line in the feed
     :param url: The feed URL
     :param client: The client
+    :param tags: The indicator tags.
     :return: The indicator
     """
     attributes = None
@@ -317,19 +321,21 @@ def get_indicator_fields(line, url, client: Client):
                     attributes[f] = i
         attributes['value'] = value = extracted_indicator
         attributes['type'] = feed_config.get('indicator_type', client.indicator_type)
+        attributes['tags'] = tags
     return attributes, value
 
 
-def fetch_indicators_command(client, itype, **kwargs):
+def fetch_indicators_command(client, tags, itype, **kwargs):
     iterators = client.build_iterator(**kwargs)
     indicators = []
     for iterator in iterators:
         for url, lines in iterator.items():
             for line in lines:
-                attributes, value = get_indicator_fields(line, url, client)
+                attributes, value = get_indicator_fields(line, url, tags, client)
                 if value:
                     if 'lastseenbysource' in attributes.keys():
-                        attributes['lastseenbysource'] = datestring_to_millisecond_timestamp(attributes['lastseenbysource'])
+                        attributes['lastseenbysource'] = datestring_to_millisecond_timestamp(attributes[
+                                                                                                 'lastseenbysource'])
 
                     if 'firstseenbysource' in attributes.keys():
                         attributes['firstseenbysource'] = datestring_to_millisecond_timestamp(
@@ -341,7 +347,7 @@ def fetch_indicators_command(client, itype, **kwargs):
                         "rawJSON": attributes,
                     }
 
-                    if len(client.custom_fields_mapping.keys()) > 0:
+                    if len(client.custom_fields_mapping.keys()) > 0 or 'tags' in attributes.keys():
                         custom_fields = client.custom_fields_creator(attributes)
                         indicator_data["fields"] = custom_fields
 
@@ -352,7 +358,8 @@ def fetch_indicators_command(client, itype, **kwargs):
 def get_indicators_command(client: Client, args):
     itype = args.get('indicator_type', client.indicator_type)
     limit = int(args.get('limit'))
-    indicators_list = fetch_indicators_command(client, itype)[:limit]
+    tags = args.get('tags')
+    indicators_list = fetch_indicators_command(client, tags, itype)[:limit]
     entry_result = camelize(indicators_list)
     hr = tableToMarkdown('Indicators', entry_result, headers=['Value', 'Type', 'Rawjson'])
     return hr, {}, indicators_list
@@ -378,6 +385,7 @@ def feed_main(feed_name, params=None, prefix=''):
         params = assign_params(**demisto.params())
     if 'feed_name' not in params:
         params['feed_name'] = feed_name
+    tags = argToList(demisto.params().get('tags'))
     client = Client(**params)
     command = demisto.command()
     if command != 'fetch-indicators':
@@ -391,13 +399,15 @@ def feed_main(feed_name, params=None, prefix=''):
     }
     try:
         if command == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, params.get('indicator_type'))
+            indicators = fetch_indicators_command(client, tags, params.get('indicator_type'))
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
         else:
             args = demisto.args()
             args['feed_name'] = feed_name
+            if tags:
+                args['tags'] = tags
             readable_output, outputs, raw_response = commands[command](client, args)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
