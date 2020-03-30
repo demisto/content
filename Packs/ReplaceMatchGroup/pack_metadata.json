@@ -20,7 +20,6 @@
     "certification": "",
     "useCases": [],
     "keywords": [],
-    "dependencies": {
-        "displayed_images": []
-    }
+    "dependencies": {},
+    "displayedImages": []
 }

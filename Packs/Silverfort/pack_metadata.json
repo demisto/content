@@ -25,9 +25,9 @@
         "Active_Directory_Query": {
             "mandatory": true,
             "display_name": "Active Directory Query v2"
-        },
-        "displayed_images": [
-            "Active_Directory_Query"
-        ]
-    }
+        }
+    },
+    "displayedImages": [
+        "Active_Directory_Query"
+    ]
 }

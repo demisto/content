@@ -22,7 +22,6 @@
         "Cortex Data Lake"
     ],
     "price": 0,
-    "dependencies": {
-        "displayed_images": []
-    }
+    "dependencies": {},
+    "displayedImages": []
 }
