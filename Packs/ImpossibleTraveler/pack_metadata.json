@@ -20,29 +20,9 @@
     "keywords": [],
     "price": 0,
     "dependencies": {
-        "Ipstack": {
-            "mandatory": false,
-            "display_name": "Ipstack"
-        },
-        "ipinfo": {
-            "mandatory": false,
-            "display_name": "ipinfo"
-        },
-        "Zscaler": {
-            "mandatory": false,
-            "display_name": "Zscaler"
-        },
-        "CalculateGeoDistance": {
-            "mandatory": false,
-            "display_name": "Calculate Geo Distance"
-        },
-        "rasterize": {
+        "Active_Directory_Query": {
             "mandatory": true,
-            "display_name": "Rasterize"
-        },
-        "XForceExchange": {
-            "mandatory": false,
-            "display_name": "IBM X-Force Exchange (v2)"
+            "display_name": "Active Directory Query v2"
         },
         "Expanse": {
             "mandatory": false,
@@ -52,20 +32,40 @@
             "mandatory": false,
             "display_name": "Calculate Time Difference"
         },
-        "Active_Directory_Query": {
+        "ipinfo": {
+            "mandatory": false,
+            "display_name": "ipinfo"
+        },
+        "CalculateGeoDistance": {
+            "mandatory": false,
+            "display_name": "Calculate Geo Distance"
+        },
+        "Ipstack": {
+            "mandatory": false,
+            "display_name": "Ipstack"
+        },
+        "XForceExchange": {
+            "mandatory": false,
+            "display_name": "IBM X-Force Exchange (v2)"
+        },
+        "Zscaler": {
+            "mandatory": false,
+            "display_name": "Zscaler"
+        },
+        "rasterize": {
             "mandatory": true,
-            "display_name": "Active Directory Query v2"
+            "display_name": "Rasterize"
         }
     },
     "displayedImages": [
-        "Ipstack",
-        "ipinfo",
-        "Zscaler",
-        "CalculateGeoDistance",
-        "rasterize",
-        "XForceExchange",
+        "Active_Directory_Query",
         "Expanse",
         "CalculateTimeDifference",
-        "Active_Directory_Query"
+        "ipinfo",
+        "CalculateGeoDistance",
+        "Ipstack",
+        "XForceExchange",
+        "Zscaler",
+        "rasterize"
     ]
 }
