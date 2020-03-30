@@ -2,9 +2,9 @@ from AzureSentinel import Client, list_incidents_command, list_incident_relation
 import pytest
 
 
-def mock_client():
+def mock_client(self_deployed):
     client = Client(
-        self_deployed=False,
+        self_deployed=self_deployed,
         refresh_token='refresh_token',
         auth_and_token_url='auth_id',
         enc_key='enc_key',
@@ -80,8 +80,8 @@ MOCKED_ADD_COMMENT_OUTPUT = {
 
 
 @pytest.mark.parametrize('args,client', [  # disable-secrets-detection
-    ({'limit': '1'}, mock_client()),
-    ({'limit': '1', 'next_link': 'https://test.com'}, mock_client())
+    ({'limit': '1'}, mock_client(self_deployed=False)),
+    ({'limit': '1', 'next_link': 'https://test.com'}, mock_client(self_deployed=True))
 ])
 def test_list_incidents(args, client, mocker):
     mocker.patch.object(client, 'http_request', return_value=MOCKED_INCIDENTS_OUTPUT)
@@ -99,8 +99,8 @@ def test_list_incidents(args, client, mocker):
 
 
 @pytest.mark.parametrize('args,client', [  # disable-secrets-detection
-    ({'incident_id': 'inc_id', 'limit': '1'}, mock_client()),
-    ({'incident_id': 'inc_id', 'next_link': 'https://test.com', 'limit': '1'}, mock_client()),
+    ({'incident_id': 'inc_id', 'limit': '1'}, mock_client(self_deployed=False)),
+    ({'incident_id': 'inc_id', 'next_link': 'https://test.com', 'limit': '1'}, mock_client(self_deployed=True)),
 ])
 def test_list_incident_relations_command(args, client, mocker):
     mocker.patch.object(client, 'http_request', return_value=MOCKED_RELATIONS_OUTPUT)
@@ -117,7 +117,7 @@ def test_list_incident_relations_command(args, client, mocker):
     assert len(result['value']) == 1
 
 @pytest.mark.parametrize('args,client', [  # disable-secrets-detection
-    ({'incident_id': 'inc_id', 'message': 'test_message'}, mock_client())])
+    ({'incident_id': 'inc_id', 'message': 'test_message'}, mock_client(self_deployed=False))])
 def test_incident_add_comment_command(args, client, mocker):
     import random
 

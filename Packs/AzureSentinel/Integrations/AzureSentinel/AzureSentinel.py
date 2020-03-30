@@ -39,7 +39,6 @@ class Client:
                  subscription_id, resource_group_name, workspace_name, verify, proxy):
 
         tenant_id = refresh_token if self_deployed else ''
-        refresh_token = (demisto.getIntegrationContext().get('current_refresh_token') or refresh_token)
         base_url = f'https://management.azure.com/subscriptions/{subscription_id}/' \
                    f'resourceGroups/{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/' \
                    f'{workspace_name}/providers/Microsoft.SecurityInsights'
@@ -48,6 +47,7 @@ class Client:
                                          tenant_id=tenant_id,
                                          auth_id=auth_and_token_url,
                                          enc_key=enc_key,
+                                         grant_type='authorization_code',  # disable-secrets-detection
                                          app_name=APP_NAME,
                                          base_url=base_url,
                                          verify=verify,
@@ -319,7 +319,7 @@ def delete_incident_command(client, args):
 def list_incident_comments_command(client, args):
     inc_id = args.get('incident_id')
     limit = min(50, int(args.get('limit')))
-    next_link = args.get('next_link')
+    next_link = args.get('next_link', '')
 
     if next_link:
         next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
