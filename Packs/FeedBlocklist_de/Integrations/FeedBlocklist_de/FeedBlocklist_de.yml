@@ -71,8 +71,8 @@ configuration:
   name: polling_timeout
   required: false
   type: 0
-- display: Sub-Feeds
-  name: subfeeds
+- display: Services
+  name: services
   options:
   - all
   - ssh
@@ -110,7 +110,7 @@ script:
     execution: false
     name: blocklist_de-get-indicators
     outputs:
-  dockerimage: demisto/python3:3.8.1.6120
+  dockerimage: demisto/python3:3.8.2.6981
   feed: true
   isfetch: false
   longRunning: false

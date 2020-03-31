@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 
+## [20.3.4] - 2020-03-30
+Fixed an issue that caused the playbook to fail when certain inputs were missing.
+
 ## [20.3.3] - 2020-03-18
 Fixed an issue that caused the **Critical Assets** field to be populated partially or not at all.
 

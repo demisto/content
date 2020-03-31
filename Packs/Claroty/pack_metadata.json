@@ -14,8 +14,13 @@
     "beta": false,
     "deprecated": false,
     "certification": "certified",
-    "useCases": ["Manage assets and alerts"],
-    "keywords": ["Claroty"],
+    "useCases": [
+        "Manage assets and alerts"
+    ],
+    "keywords": [
+        "Claroty"
+    ],
     "price": 0,
-    "dependencies": {}
+    "dependencies": {},
+    "displayedImages": []
 }

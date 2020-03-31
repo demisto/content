@@ -1,0 +1,23 @@
+{
+    "name": "MicrosoftDefenderAdvancedThreatProtection",
+    "price": 0,
+    "displayName": "",
+    "description": "",
+    "support": "",
+    "serverMinVersion": "",
+    "currentVersion": "1.0.0",
+    "author": "",
+    "url": "",
+    "email": "",
+    "categories": [],
+    "tags": [],
+    "created": "2020-03-08T15:06:52Z",
+    "updated": "2020-03-08T15:06:52Z",
+    "beta": false,
+    "deprecated": false,
+    "certification": "",
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {},
+    "displayedImages": []
+}
