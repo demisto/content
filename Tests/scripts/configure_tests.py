@@ -17,7 +17,7 @@ sys.path.append(CONTENT_DIR)
 from demisto_sdk.commands.common.constants import *  # noqa: E402
 from demisto_sdk.commands.common.tools import get_yaml, str2bool, get_from_version, get_to_version, \
     collect_ids, get_script_or_integration_id, run_command, LOG_COLORS, print_error, print_color, \
-    print_warning  # noqa: E402
+    print_warning, server_version_compare  # noqa: E402
 
 # Search Keyword for the changed file
 NO_TESTS_FORMAT = 'No test( - .*)?'
@@ -75,6 +75,20 @@ RANDOM_TESTS_NUM = 3
 
 # Global used to indicate if failed during any of the validation states
 _FAILED = False
+
+
+def is_runnable_in_server_version(from_v, server_v, to_v):
+    """
+    Checks whether an obj is runnable in a version
+    Args:
+        from_v (string): string representing Demisto version (fromversion comparable)
+        server_v (string): string representing Demisto version (version to be ran on)
+        to_v (string): string representing Demisto version (toversion comparable)
+
+    Returns:
+        bool. true if obj is runnable
+    """
+    return server_version_compare(from_v, server_v) <= 0 and server_version_compare(server_v, to_v) <= 0
 
 
 def checked_type(file_path, regex_list):
