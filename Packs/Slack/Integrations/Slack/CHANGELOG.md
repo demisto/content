@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.3.4] - 2020-03-30
 Fixed a bug where messages were not sent to a channel if it was the dedicated channel for notifications.
 
 ## [20.2.3] - 2020-02-18
