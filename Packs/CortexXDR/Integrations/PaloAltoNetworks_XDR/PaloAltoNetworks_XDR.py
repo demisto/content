@@ -932,6 +932,7 @@ def isolate_endpoint_command(client, args):
         raise ValueError(f'Endpoint {endpoint_id} was not found')
 
     endpoint = endpoint[0]
+    endpoint_status = endpoint.get('endpoint_status')
     is_isolated = endpoint.get('is_isolated')
     if is_isolated == 'AGENT_ISOLATED':
         return (
@@ -946,11 +947,18 @@ def isolate_endpoint_command(client, args):
             None,
             None
         )
-
+    if endpoint_status == 'DISCONNECTED':
+        return (
+            f'Endpoint {endpoint_id} is disconnected and therefore can not be isolated.',
+            None,
+            None
+        )
     client.isolate_endpoint(endpoint_id)
 
     return (
-        f'Endpoint {endpoint_id} has isolated successfully',
+        f'The isolation request has been submitted successfully on Endpoint {endpoint_id}.\n'
+        f'To check the endpoint isolation status please run: !xdr-get-endpoints endpoint_id_list={endpoint_id}'
+        f' and look at the [is_isolated] field',
         None,
         None
     )
@@ -964,6 +972,7 @@ def unisolate_endpoint_command(client, args):
         raise ValueError(f'Endpoint {endpoint_id} was not found')
 
     endpoint = endpoint[0]
+    endpoint_status = endpoint.get('endpoint_status')
     is_isolated = endpoint.get('is_isolated')
     if is_isolated == 'AGENT_UNISOLATED':
         return (
@@ -978,11 +987,18 @@ def unisolate_endpoint_command(client, args):
             None,
             None
         )
-
+    if endpoint_status == 'DISCONNECTED':
+        return (
+            f'Endpoint {endpoint_id} is disconnected and therefore can not be un-isolated',
+            None,
+            None
+        )
     client.unisolate_endpoint(endpoint_id)
 
     return (
-        f'Endpoint {endpoint_id} has un-isolated successfully',
+        f'The un-isolation request has been submitted successfully on Endpoint {endpoint_id}.\n'
+        f'To check the endpoint isolation status please run: !xdr-get-endpoints endpoint_id_list={endpoint_id}'
+        f' and look at the [is_isolated] field',
         None,
         None
     )
