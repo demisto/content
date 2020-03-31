@@ -358,6 +358,24 @@ script:
       JSON event protocol.
     execution: false
     name: splunk-submit-event-hec
+  - arguments:
+    - default: false
+      description: ID of the job for which to get the status.
+      isArray: false
+      name: sid
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the status of a job.
+    execution: false
+    name: splunk-job-status
+    outputs:
+    - contextPath: Splunk.JobStatus.SID
+      description: ID of the job.
+      type: String
+    - contextPath: Splunk.JobStatus.Status
+      description: Status of the job.
+      type: String
   dockerimage45: demisto/splunksdk:1.0
   dockerimage: demisto/splunksdk:1.0.0.6822
   feed: false
