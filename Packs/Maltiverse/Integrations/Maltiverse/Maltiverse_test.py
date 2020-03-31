@@ -1,28 +1,16 @@
-from Maltiverse import Client, ip_command
-from test_data.response_constants import IP_RESPONSE
-from test_data.result_constants import EXPECTED_IP_RESULT
+from Maltiverse import Client, ip_command, url_command, domain_command, file_command
+from test_data.response_constants import IP_RESPONSE, URL_RESPONSE, DOMAIN_RESPONSE, FILE_RESPONSE
+from test_data.result_constants import EXPECTED_IP_RESULT, EXPECTED_URL_RESULT, EXPECTED_DOMAIN_RESULT, \
+    EXPECTED_FILE_RESULT
 
-# @pytest.mark.parametrize('command, response, expected_result', [
-#     (ip_command, IP_RESPONSE, EXPECTED_IP_RESULT),
-#     (url_command, URL_RESPONSE, EXPECTED_URL_RESULT),
-#     (domain_command, DOMAIN_RESPONSE, EXPECTED_DOMAIN_RESULT),
-#     (file_command, FILE_RESPONSE, EXPECTED_FILE_RESULT)
-# ])
-# def test_commands(command, response, expected_result, requests_mock):
-#     import requests
-#     SERVER_URL = 'https://api.maltiverse.com'
-#     requests.packages.urllib3.disable_warnings()
-#
-#     requests_mock.patch.object(Client)
-#     client = Client(SERVER_URL, verify=True, proxy=True, headers={'Accept': 'application/json'})
-#
-#     requests_mock.patch.object(client, '_http_request', return_value=response)
-#     result = command(client)
-#
-#     assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
+
 
 SERVER_URL = 'https://api.maltiverse.com'
 MOCK_IP = '8.8.8.8'
+MOCK_URL = 'https://dv-expert.org'
+MOCK_URL_SHA256 = 'a70c027c6d76fb703f0d2e5a14526f219bf3b771557e4a36685365b960b98233'
+MOCK_DOMAIN = 'google.com'
+MOCK_FILE = 'edb2f88c29844117cd74acf8bb357edf92487a1b142fe6f60b6ac5e15d2d718f'  # should be given as SHA256
 
 
 def test_ip(requests_mock):
@@ -35,3 +23,39 @@ def test_ip(requests_mock):
     _, outputs, _ = ip_command(client, args)
 
     assert outputs == EXPECTED_IP_RESULT
+
+
+def test_url(requests_mock):
+    requests_mock.get(f'{SERVER_URL}/url/{MOCK_URL_SHA256}', json=URL_RESPONSE)
+
+    client = Client(url=SERVER_URL, use_ssl=True, use_proxy=True)
+    args = {
+        'url': MOCK_URL
+    }
+    _, outputs, _ = url_command(client, args)
+
+    assert outputs == EXPECTED_URL_RESULT
+
+
+def test_domain(requests_mock):
+    requests_mock.get(f'{SERVER_URL}/hostname/{MOCK_DOMAIN}', json=DOMAIN_RESPONSE)
+
+    client = Client(url=SERVER_URL, use_ssl=True, use_proxy=True)
+    args = {
+        'domain': MOCK_DOMAIN
+    }
+    _, outputs, _ = domain_command(client, args)
+
+    assert outputs == EXPECTED_DOMAIN_RESULT
+
+
+def test_file(requests_mock):
+    requests_mock.get(f'{SERVER_URL}/sample/{MOCK_FILE}', json=FILE_RESPONSE)
+
+    client = Client(url=SERVER_URL, use_ssl=True, use_proxy=True)
+    args = {
+        'file': MOCK_FILE
+    }
+    _, outputs, _ = file_command(client, args)
+
+    assert outputs == EXPECTED_FILE_RESULT

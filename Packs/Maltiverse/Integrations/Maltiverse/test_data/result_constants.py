@@ -35,8 +35,10 @@ EXPECTED_URL_RESULT = {
         {
             'Data': 'https://dv-expert.org',
             'PositiveDetections': 1,
-            'Malicious.Description': ['Phishing Aetna Health Plans &amp; Dental Coverage'],
-            'Malicious.Vendor': 'Maltiverse'
+            'Malicious': {
+                'Description': ['Phishing Aetna Health Plans &amp; Dental Coverage'],
+                'Vendor': 'Maltiverse'
+            }
         }
     ],
     'Maltiverse.URL(val.Data && val.Data == obj.Data)': [
@@ -108,15 +110,16 @@ EXPECTED_FILE_RESULT = {
     'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 '
     '|| val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == '
     'obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)': [
-        {'Md5': 'f13b929e6bf9c07a90d7da493b2825e3',
-         'Sha1': 'a17ddc7c691cc66f0e76233172051ab4cd69dd45',
-         'Sha256': 'edb2f88c29844117cd74acf8bb357edf92487a1b142fe6f60b6ac5e15d2d718f',
-         'Size': 10032728,
-         'Type': 'sample',
-         'Name': 'FileZilla_3.47.2.1_win64_sponsored-setup.exe',
-         'Extension': 'exe',
-         'Path': 'C:\\FileZilla_3.47.2.1_win64_sponsored-setup.exe'
-         }
+        {
+            'Md5': 'f13b929e6bf9c07a90d7da493b2825e3',
+            'Sha1': 'a17ddc7c691cc66f0e76233172051ab4cd69dd45',
+            'Sha256': 'edb2f88c29844117cd74acf8bb357edf92487a1b142fe6f60b6ac5e15d2d718f',
+            'Size': 10032728,
+            'Type': 'sample',
+            'Name': 'FileZilla_3.47.2.1_win64_sponsored-setup.exe',
+            'Extension': 'exe',
+            'Path': 'C:\\FileZilla_3.47.2.1_win64_sponsored-setup.exe'
+        }
     ],
     'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': [
         {
@@ -128,37 +131,37 @@ EXPECTED_FILE_RESULT = {
     ],
     'Maltiverse.File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == '
     'obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && '
-    'val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)': [
-        {
-            'Score': 10.0,
-            'Classification': 'malicious',
-            'ModificationTime': '2020-03-11 15:00:52',
-            'CreationTime': '2020-03-11 15:00:52',
-            'Size': 10032728,
-            'ContactedHost': ['136.243.154.86', '52.84.125.27'],
-            'DnsRequest': ['cloud.nitehe-nutete.com', 'isrg.trustid.ocsp.identrust.com', 'offers.filezilla-project.org'],
-            'PositiveDetections': 1,
-            'Name': 'FileZilla_3.47.2.1_win64_sponsored-setup.exe',
-            'Tag': '',
-            'ProcessList':
-                {
-                    'Name': 'FileZilla_3.47.2.1_win64_sponsored-setup.exe',
-                    'Normalizedpath': 'C:\\FileZilla_3.47.2.1_win64_sponsored-setup.exe',
-                    'Sha256': 'edb2f88c29844117cd74acf8bb357edf92487a1b142fe6f60b6ac5e15d2d718f',
-                    'Uid': '00016638-00002652'
-            },
-            'Blacklist':
-                {
+    'val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)':
+        [
+            {
+                'Score': 10.0,
+                'Classification': 'malicious',
+                'ModificationTime': '2020-03-11 15:00:52',
+                'CreationTime': '2020-03-11 15:00:52',
+                'Size': 10032728,
+                'ContactedHost': ['136.243.154.86', '52.84.125.27'],
+                'DnsRequest': ['cloud.nitehe-nutete.com', 'isrg.trustid.ocsp.identrust.com',
+                               'offers.filezilla-project.org'],
+                'PositiveDetections': 1,
+                'Name': 'FileZilla_3.47.2.1_win64_sponsored-setup.exe',
+                'Tag': '',
+                'ProcessList':
+                    {
+                        'Name': 'FileZilla_3.47.2.1_win64_sponsored-setup.exe',
+                        'Normalizedpath': 'C:\\FileZilla_3.47.2.1_win64_sponsored-setup.exe',
+                        'Sha256': 'edb2f88c29844117cd74acf8bb357edf92487a1b142fe6f60b6ac5e15d2d718f',
+                        'Uid': '00016638-00002652'
+                    },
+                'Blacklist': {
                     'Description': ['PUA.FusionCore'],
                     'FirstSeen': ['2020-03-11 15:00:52'],
                     'LastSeen': ['2020-03-11 15:00:52'],
                     'Source': ['Hybrid-Analysis']
-            },
-            'Malicious':
-                {
+                },
+                'Malicious': {
                     'Vendor': 'Maltiverse',
                     'Description': ['PUA.FusionCore']
+                }
             }
-        }
-    ]
+        ]
 }
