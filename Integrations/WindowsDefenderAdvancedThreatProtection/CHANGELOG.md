@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.3.4] - 2020-03-30
 Deprecated the integration - use Microsoft Defender Advanced Threat Protection integration instead.
 
 ## [19.12.1] - 2019-12-25
