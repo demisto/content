@@ -74,7 +74,7 @@ jobs:
             # Checks if there's any diff from master
             if [[ `git diff origin/master -- .circleci/config.yml` ]]; then
                 # Checks if part of the branch's changes
-                if [[ -z `git diff master --name-only | grep .circleci/config.yml` ]]; then
+                if [[ -z `git diff master $CIRCLE_BRANCH --name-only | grep .circleci/config.yml` ]]; then
                     echo ".circleci/config.yml has been changed. Merge from master"
                     exit 1
                 else
