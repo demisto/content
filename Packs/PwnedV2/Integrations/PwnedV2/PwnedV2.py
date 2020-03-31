@@ -291,8 +291,8 @@ try:
     }
 
     if command in commands:
-        for args in commands[command](demisto.args()):
-            hr, outputs, raw = args
+        for responses in commands[command](demisto.args()):
+            hr, outputs, raw = responses
             return_outputs(hr, outputs, raw)
 
 # Log exceptions
