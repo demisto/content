@@ -337,8 +337,8 @@ def fetch_indicators_command(client, tags, itype, **kwargs):
                 attributes, value = get_indicator_fields(line, url, tags, client)
                 if value:
                     if 'lastseenbysource' in attributes.keys():
-                        attributes['lastseenbysource'] = datestring_to_millisecond_timestamp(attributes[
-                                                                                                 'lastseenbysource'])
+                        attributes['lastseenbysource'] = datestring_to_millisecond_timestamp(
+                            attributes['lastseenbysource'])
 
                     if 'firstseenbysource' in attributes.keys():
                         attributes['firstseenbysource'] = datestring_to_millisecond_timestamp(
