@@ -87,7 +87,7 @@ class TestUtilFunctions:
 class TestCommands:
     def test_fetch_indicators(self, mocker):
         from FeedTAXII import TAXIIClient, fetch_indicators_command
-        client = TAXIIClient()
+        client = TAXIIClient(collection='a collection')
         with open('FeedTAXII_test/TestCommands/raw_indicators.json', 'r') as f:
             raw_indicators = json.load(f)
             mocker.patch.object(client, 'build_iterator', return_value=raw_indicators)

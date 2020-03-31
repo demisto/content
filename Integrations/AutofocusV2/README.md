@@ -35,7 +35,7 @@ For more information on activating the license see [Activating AutoFocus License
    | Name | A meaningful name for the integration instance. | AutoFocus V2_instance_2 |
    |  API Key | Account's private token. | N/A  |
    | Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
-   | Use System Proxy Settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  https:/<span>/www.markdownguide.org |
+   | Use System Proxy Settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  https:/<span></span>/www.markdownguide.org |
    | Additional Malicious Verdicts  | A comma-separated list of Palo Alto Networks verdicts to consider as malicious when calculating the DBot score.  | malware,phishing,c2 |
 
 
@@ -394,12 +394,12 @@ Returns the results of a previous session's search.
 | wildfire-test-pe-file.exe | u_47561050553 | High Tech | us | c14646114c390027d373cbd5af7d31d952ab6acd86d5157bb174b19792e557f2 | 2019-09-17T08:14:56 | 41453.TestElena,Commodity.WildFireTest | Manual API |  |
 | wildfire-test-pe-file.exe | u_47517909453 | High Tech | us | 2499501bebcc6ff59d3f0028f760e0433ee3a9415e916d1278a70c474690869d | 2019-09-17T02:02:46 | Commodity.WildFireTest | Manual API |  |
 | wildfire-test-pe-file.exe | u_47559447933 | High Tech | us | 12f198c65cbdf49972b7432291dad4d2fae7cbb77a35cda1cc28ab2b83d1e2b5 | 2019-09-17T08:08:39 | Commodity.WildFireTest | Manual API |  |
-| https:/<span>/wildfire.paloaltonetworks.com/publicapi/test/pe | u_46060032683 | High Tech | us | 2e40edcf77d95173463ca4bfaf833a6a1860ffa4e7b03c3fded8de08ee2be27f | 2019-09-01T04:34:48 | Commodity.WildFireTest | Manual API |  |
+| https:/<span></span>/wildfire.paloaltonetworks.com/publicapi/test/pe | u_46060032683 | High Tech | us | 2e40edcf77d95173463ca4bfaf833a6a1860ffa4e7b03c3fded8de08ee2be27f | 2019-09-01T04:34:48 | Commodity.WildFireTest | Manual API |  |
 | wildfire-test-pe-file (2).exe | u_45811064553 | High Tech | us | f27069e200ed14c56b1b91285ea3c061aa0e4ca53d9056fed9cc0c9c3e98e961 | 2019-08-28T21:17:33 | Commodity.WildFireTest | Manual API |  |
 | wildfire-test-pe-file (2).exe | u_45810946733 | High Tech | us | f27069e200ed14c56b1b91285ea3c061aa0e4ca53d9056fed9cc0c9c3e98e961 | 2019-08-28T21:14:17 | Commodity.WildFireTest | Manual API |  |
 | wildfire-test-pe-file (2).exe | u_45810992703 | High Tech | us | f27069e200ed14c56b1b91285ea3c061aa0e4ca53d9056fed9cc0c9c3e98e961 | 2019-08-28T21:15:31 | Commodity.WildFireTest | Manual API |  |
 | wildfire-test-pe-file (2).exe | u_45811012343 | High Tech | us | f27069e200ed14c56b1b91285ea3c061aa0e4ca53d9056fed9cc0c9c3e98e961 | 2019-08-28T21:16:06 | Commodity.WildFireTest | Manual API |  |
-| https:/<span>/wildfire.paloaltonetworks.com/publicapi/test/pe | u_45835887733 | High Tech | us | bfdc97ecc0d1e19d17cffe856b33c41883520d7b38daa77af03bb42ef83bc680 | 2019-08-29T05:19:21 | Commodity.WildFireTest | Manual API |  |
+| https:/<span></span>/wildfire.paloaltonetworks.com/publicapi/test/pe | u_45835887733 | High Tech | us | bfdc97ecc0d1e19d17cffe856b33c41883520d7b38daa77af03bb42ef83bc680 | 2019-08-29T05:19:21 | Commodity.WildFireTest | Manual API |  |
 | wildfire-test-pe-file (3).exe | u_45811604063 | High Tech | us | 409eb2fa745b4bd804bb3ebdd48f0107bd9c6471a9447a61f68c1a32c480f0f9 | 2019-08-28T21:32:05 | Commodity.WildFireTest | Manual API |  |
 | wildfire-test-pe-file (3).exe | u_45811375593 | High Tech | us | 409eb2fa745b4bd804bb3ebdd48f0107bd9c6471a9447a61f68c1a32c480f0f9 | 2019-08-28T21:25:36 | Commodity.WildFireTest | Manual API |  |
 | wildfire-test-pe-file (3).exe | u_45811208463 | High Tech | us | 409eb2fa745b4bd804bb3ebdd48f0107bd9c6471a9447a61f68c1a32c480f0f9 | 2019-08-28T21:20:56 | Commodity.WildFireTest | Manual API |  |
@@ -829,8 +829,8 @@ No entries
 | sp1.eventincoandhar.info  |  POST  |  /  |
 | ip-api.com  |  GET  |  /json  |
 | knsemis.com  |  POST  |  /tickets  |
-| www.<span>cnn.com  |  HEAD  |  /  |
-| www.<span>bbc.com  |  HEAD  |  /  |
+| www.<span></span>cnn.com  |  HEAD  |  /  |
+| www.<span></span>bbc.com  |  HEAD  |  /  |
 
 
 ### Get tag details
@@ -1298,10 +1298,10 @@ Returns the reputation of a URL.
 ```
 
 ##### Human Readable Output
-##### AutoFocus V2 URL reputation for: www<span>.andromedaa.ir/ir/andromedaa/likebegir/ap.smali/
+##### AutoFocus V2 URL reputation for: www<span></span>.andromedaa.ir/ir/andromedaa/likebegir/ap.smali/
 |Indicatortype|Indicatorvalue|Latestpanverdicts|Seenby|Wildfirerelatedsampleverdictcounts|
 |---|---|---|---|---|
-| URL | www<span>.andromedaa.ir/ir/andromedaa/likebegir/ap.smali/ | PAN_DB: MALWARE |  |  |
+| URL | www<span></span>.andromedaa.ir/ir/andromedaa/likebegir/ap.smali/ | PAN_DB: MALWARE |  |  |
 
 
 ### Get the reputation of a file
@@ -1505,4 +1505,4 @@ Returns the reputation of a domain.
 ##### AutoFocus V2 Domain reputation for: google.com
 |Indicatortype|Indicatorvalue|Latestpanverdicts|Seenby|Whoisadmincountry|Whoisadminemail|Whoisadminname|Whoisdomaincreationdate|Whoisdomainexpiredate|Whoisdomainupdatedate|Whoisregistrant|Whoisregistrar|Whoisregistrarurl|Wildfirerelatedsampleverdictcounts|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| DOMAIN | google.com | PAN_DB: BENIGN |  |  |  |  | 1997-09-15 | 2020-09-14 | 2018-02-21 |  | markdownguide Inc. | http:/<span>/ww<span>w.<span>markdownguide.org |  |
+| DOMAIN | google.com | PAN_DB: BENIGN |  |  |  |  | 1997-09-15 | 2020-09-14 | 2018-02-21 |  | markdownguide Inc. | http:/<span></span>/ww<span></span>w.<span></span>markdownguide.org |  |

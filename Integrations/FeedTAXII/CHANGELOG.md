@@ -1,6 +1,10 @@
 ## [Unreleased]
 
 
+## [20.3.4] - 2020-03-30
+You can now leave the **collection** parameter empty to receive the list of available collections.
+
+
 ## [20.3.3] - 2020-03-18
 You can now use the API header and API key in the credentials fields when configuring an integration instance.
 
