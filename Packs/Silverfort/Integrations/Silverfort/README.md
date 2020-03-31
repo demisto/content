@@ -1,8 +1,9 @@
-## Overview
----
 Silverfort protects organizations from data breaches by delivering strong authentication across entire corporate networks and cloud environments, without requiring any modifications to endpoints or servers. Using patent-pending technology, Silverfort's agentless approach enables multi-factor authentication and AI-driven adaptive authentication even for systems that don’t support it today, including proprietary systems, critical infrastructure, shared folders, IoT devices, and more.
-<br>Use Silverfort integration to get & update Silverfort risk severity.</br>
-<br>This integration was integrated and tested with Silverfort version 2.12.</br>
+
+Use Silverfort integration to get & update Silverfort risk severity.
+
+This integration was integrated and tested with Silverfort version 2.12.
+
 ## Silverfort Playbook
 ---
 - Get risk information and block the user if the risk is 'high' or 'critical'

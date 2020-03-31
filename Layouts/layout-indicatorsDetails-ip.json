@@ -147,7 +147,15 @@
 								"index": 6,
 								"listId": "e2c8c970-a09d-11e9-8956-390f602b039a",
 								"startCol": 0
-							}
+							},
+							{
+                                "index": 7,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+                                "fieldId": "aggregatedreliability",
+                                "id": "b49a3ba0-6f8d-11ea-aeac-6dbd1bcce63e"
+                            }
 						],
 						"maxW": 3,
 						"minH": 1,
