@@ -28,7 +28,7 @@ MOCK_IP = '8.8.8.8'
 def test_ip(requests_mock):
     requests_mock.get(f'{SERVER_URL}/ip/{MOCK_IP}', json=IP_RESPONSE)
 
-    client = Client(SERVER_URL, verify=True, proxy=True, headers={'Accept': 'application/json'})
+    client = Client(url=SERVER_URL, use_ssl=True, use_proxy=True)
     args = {
         'ip': MOCK_IP
     }
