@@ -1838,14 +1838,15 @@ tasks:
     ignoreworker: false
   '128':
     id: '128'
-    taskid: 94d31afc-af9f-45d8-8525-5040ff155bfb
+    taskid: 246088c0-10db-491a-852c-1d76c2240caf
     type: regular
     task:
-      id: 94d31afc-af9f-45d8-8525-5040ff155bfb
+      id: 246088c0-10db-491a-852c-1d76c2240caf
       version: -1
       name: Save user manager email to context
-      description: Sets a value into the context with the given context key
-      scriptName: Set
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set in context.
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ''
@@ -1856,6 +1857,7 @@ tasks:
       append: {}
       key:
         simple: UserManagerEmail
+      stringify: {}
       value:
         complex:
           root: Account
@@ -1876,7 +1878,6 @@ tasks:
                 iscontext: true
           accessor: Email
     reputationcalc: 1
-    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -1888,7 +1889,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {

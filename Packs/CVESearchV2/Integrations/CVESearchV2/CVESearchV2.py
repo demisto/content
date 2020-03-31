@@ -57,7 +57,11 @@ def test_module(client: Client):
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    cve_latest_command(client, 30)
+    try:
+        cve_latest_command(client, 30)
+    except Exception as e:
+        if "Read timed out." not in str(e):
+            raise
     return 'ok', None, None
 
 

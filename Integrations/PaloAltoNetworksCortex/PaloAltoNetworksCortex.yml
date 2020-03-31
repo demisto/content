@@ -2,6 +2,7 @@ category: Analytics & SIEM
 commonfields:
   id: Palo Alto Networks Cortex
   version: -1
+deprecated: true
 configuration:
 - display: Authentication Token
   name: token
@@ -140,7 +141,7 @@ configuration:
   required: false
   type: 16
 description: This framework manages all PA's cloud managed products
-display: Palo Alto Networks Cortex
+display: Palo Alto Networks Cortex (Deprecated)
 name: Palo Alto Networks Cortex
 script:
   commands:
@@ -664,7 +665,7 @@ script:
       secret: false
     - default: false
       description: A free-text query for which to search. This forms the WHERE part of the query,
-        for example, 
+        for example,
         !cortex-query-traffic-logs query="src LIKE '192.168.1.*' AND dst='8.8.8.8'"
       isArray: false
       name: query
@@ -900,8 +901,8 @@ script:
       secret: false
     - default: false
       description: Free input query to search. This is the WHERE part of the query.
-        so an example will be 
-        !cortex-query-traffic-logs query="src LIKE '192.168.1.*' 
+        so an example will be
+        !cortex-query-traffic-logs query="src LIKE '192.168.1.*'
         AND dst = '192.168.1.12'"
       isArray: false
       name: query
