@@ -20,54 +20,52 @@
     "keywords": [],
     "price": 0,
     "dependencies": {
-        "Base": {
-            "mandatory": true,
-            "minVersion": "1.0.0",
-            "name": "Base",
-            "certification": "certified",
-            "author": "Cortex XSOAR"
-          },
         "Active_Directory_Query": {
-            "mandatory": false,
-            "minVersion": "1.0.0",
-            "name": "Active Directory Query v2",
-            "certification": "certified",
-            "author": "Cortex XSOAR"
-          },
-        "CalculateGeoDistance": {
             "mandatory": true,
-            "minVersion": "1.0.0",
-            "name": "CalculateGeoDistance",
-            "certification": "certified",
-            "author": "Cortex XSOAR"
-          },
+            "display_name": "Active Directory Query v2"
+        },
+        "Expanse": {
+            "mandatory": false,
+            "display_name": "Expanse"
+        },
         "CalculateTimeDifference": {
-            "mandatory": true,
-            "minVersion": "1.0.0",
-            "name": "CalculateTimeDifference",
-            "certification": "certified",
-            "author": "Cortex XSOAR"
-          },
-        "Ipstack": {
             "mandatory": false,
-            "minVersion": "1.0.0",
-            "name": "Ipstack",
-            "certification": "certified",
-            "author": "Cortex XSOAR"
-          },
+            "display_name": "Calculate Time Difference"
+        },
         "ipinfo": {
             "mandatory": false,
-            "minVersion": "1.0.0",
-            "name": "ipinfo",
-            "certification": "certified",
-            "author": "Cortex XSOAR"
-          },
+            "display_name": "ipinfo"
+        },
+        "CalculateGeoDistance": {
+            "mandatory": false,
+            "display_name": "Calculate Geo Distance"
+        },
+        "Ipstack": {
+            "mandatory": false,
+            "display_name": "Ipstack"
+        },
+        "XForceExchange": {
+            "mandatory": false,
+            "display_name": "IBM X-Force Exchange (v2)"
+        },
+        "Zscaler": {
+            "mandatory": false,
+            "display_name": "Zscaler"
+        },
         "rasterize": {
             "mandatory": true,
-            "minVersion": "1.0.0",
-            "name": "Rasterize",
-            "certification": "certified",
-            "author": "Cortex XSOAR"
-          }
-    }
+            "display_name": "Rasterize"
+        }
+    },
+    "displayedImages": [
+        "Active_Directory_Query",
+        "Expanse",
+        "CalculateTimeDifference",
+        "ipinfo",
+        "CalculateGeoDistance",
+        "Ipstack",
+        "XForceExchange",
+        "Zscaler",
+        "rasterize"
+    ]
 }
