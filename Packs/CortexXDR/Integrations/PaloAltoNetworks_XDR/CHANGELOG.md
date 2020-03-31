@@ -1,4 +1,8 @@
 ## [Unreleased]
+- Fixed issue where **xdr-isolate-endpoint** was failing if the endpoint was disconnected
+- Fixed issue where **xdr-unisolate-endpoint** was failing if the endpoint was disconnected
+- Fixed issue where **xdr-isolate-endpoint** was failing if the isolation cancellation was still pending
+- Fixed issue where **xdr-unisolate-endpoint** was failing if isolation was still pending
 - Fixed issue where **xdr-isolate-endpoint** was failing if the isolation was still pending
 - Fixed issue where **xdr-unisolate-endpoint** was failing if the isolation cancellation was still pending
 
