@@ -37,12 +37,6 @@ def http_request_mock_missing(method, endpoint, params=None, token=False):
     return r
 
 
-def http_request_mock_missing(method, endpoint, params=None, token=False):
-    if endpoint == 'ip-range':
-        r = MOCK_IP_EMPTY_RESPONSE
-    return r
-
-
 def test_fetch_incidents(mocker):
     mocker.patch.object(demisto, 'params', return_value={
         'api_key': TEST_API_KEY,
