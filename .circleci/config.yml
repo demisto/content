@@ -6,9 +6,9 @@ jobs:
     resource_class: medium+
     parallelism: 2
     environment:
-      CONTENT_VERSION: "20.3.3"
+      CONTENT_VERSION: "20.3.4"
       SERVER_VERSION: "5.0.1"
-      GIT_SHA1: "ff7008afef82c5c88470d076f6c6eb673aa0ce51" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "4696087457090e6ac597df96870016bdc2e371a0" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - setup_remote_docker
@@ -171,6 +171,16 @@ jobs:
             fi
             ./Documentation/commonServerDocs.sh
       - run:
+          name: Content Docs Site
+          when: always
+          command: |
+            if [ $CIRCLE_NODE_INDEX -ne 0 ];
+              then
+                echo "Skipping - running only in container number 0"
+                exit 0
+            fi
+            ./Documentation/docs_site_update.sh
+      - run:
           name: Create Content Artifacts
           when: always
           command: |
@@ -277,14 +287,17 @@ jobs:
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
-                if [ -n "${NIGHTLY}" ] || [ -n "${INSTANCE_TESTS}" ] ;
+                if [ -n "${NIGHTLY}" ] ;
                   then
                     export IFRA_ENV_TYPE=Nightly # disable-secrets-detection
+                elif [ -n "${INSTANCE_TESTS}" ] ;
+                  then
+                    export IFRA_ENV_TYPE="Demisto PreGA" # disable-secrets-detection
 
                   else
                     export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
                 fi
-                python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType $IFRA_ENV_TYPE -outfile ./env_results.json
+                python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -outfile ./env_results.json
 
               else
                 python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -outfile ./env_results.json
