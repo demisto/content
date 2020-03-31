@@ -58,6 +58,11 @@ configuration:
   defaultvalue: "30"
   type: 19
   required: false
+- display: The Microsoft Intune endpoint URL
+  name: url
+  defaultvalue: https://docs.microsoft.com/en-us/intune/fundamentals/intune-endpoints
+  type: 0
+  required: true
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   defaultvalue: ""
@@ -76,11 +81,6 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: The Microsoft Intune endpoint URL
-  name: url
-  defaultvalue: https://docs.microsoft.com/en-us/intune/fundamentals/intune-endpoints
-  type: 0
-  required: true
 script:
   script: ''
   type: python
@@ -91,8 +91,7 @@ script:
       description: The maximum number of results to return. The default value is 10.
       defaultValue: "0"
     description: Gets indicators from the feed.
-  dockerimage: msft-scraper:latest
+  dockerimage: demisto/btfl-soup:1.0.1.6233
   feed: true
   runonce: false
   subtype: python3
-sourcemoduleid: Office 365 Feed

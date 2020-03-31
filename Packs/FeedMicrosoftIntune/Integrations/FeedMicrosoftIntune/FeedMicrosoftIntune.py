@@ -151,7 +151,6 @@ def main():
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
     params = demisto.params()
-    args = demisto.args()
     base_url = params.get('url')
     insecure = params.get('insecure', False)
     proxy = params.get('proxy', False)
