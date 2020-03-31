@@ -2467,7 +2467,8 @@
         },
         {
             "integrations": "MongoDB Log",
-            "playbookID": "MongoDBLog - Test"
+            "playbookID": "MongoDBLog - Test",
+            "pid_threshold": 12
         },
         {
             "integrations": "Google Chronicle Backstory",
