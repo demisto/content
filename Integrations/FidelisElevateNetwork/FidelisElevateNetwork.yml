@@ -160,7 +160,7 @@ script:
       name: upload_item
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Uploads a file or a URL for sandbox analysis in Fidelis Elevate.
     execution: false
     name: fidelis-sandbox-upload

@@ -697,7 +697,7 @@ def sandbox_upload_command():
 
 @logger
 def sandbox_upload(upload_item):
-    raise NotImplementedError()
+    raise NotImplementedError("The command is not implemented and could only be done manually through Fidelis.")
 
 
 def list_alerts_command():
