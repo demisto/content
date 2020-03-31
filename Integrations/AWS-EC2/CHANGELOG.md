@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.3.4] - 2020-03-30
 * Improved handling of error messages.
 * Updated the result returned when the command is an empty list.
 
