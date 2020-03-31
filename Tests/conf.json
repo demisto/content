@@ -2462,7 +2462,8 @@
         },
         {
             "integrations": "MongoDB Key Value Store",
-            "playbookID": "MongoDB KeyValueStore - Test"
+            "playbookID": "MongoDB KeyValueStore - Test",
+            "pid_threshold": 12
         },
         {
             "integrations": "MongoDB Log",

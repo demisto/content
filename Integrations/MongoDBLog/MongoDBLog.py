@@ -14,7 +14,7 @@ PASSWORD = demisto.params().get('credentials').get('password')
 # Get Server
 URI = demisto.params().get('uri')
 # Get Database
-DATABASE = demisto.params().get('db')
+DATABASE = demisto.params().get('database')
 # Connect to MongoDB - Need to add credentials and lock down MongoDB (add auth)
 CLIENT = MongoClient(URI, username=USERNAME, password=PASSWORD, authSource=DATABASE, authMechanism='SCRAM-SHA-1')
 DB = CLIENT[DATABASE]
