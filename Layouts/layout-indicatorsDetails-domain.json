@@ -525,10 +525,10 @@
 				"type": "custom"
 			}
 		],
-		"typeId": "domainRep",
+		"typeId": "domainRepUnified",
 		"version": -1
 	},
-	"typeId": "domainRep",
+	"typeId": "domainRepUnified",
 	"version": -1,
     "fromversion": "5.5.0"
 }
