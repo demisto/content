@@ -20,32 +20,6 @@ def get_server_url():
 
 ''' GLOBAL VARIABLES '''
 
-DEFAULTS = {
-    'limit': 10,
-    'offset': 0,
-    'fetch_limit': 10,
-    'fetch_time': '10 minutes',
-    'ticket_type': 'incident'
-}
-
-USERNAME = demisto.params()['credentials']['identifier']
-PASSWORD = demisto.params()['credentials']['password']
-VERIFY_SSL = not demisto.params().get('insecure', False)
-API = '/api/now/'
-VERSION = demisto.params().get('api_version')
-PARAMS_TICKET_TYPE = demisto.params().get('ticket_type', DEFAULTS['ticket_type'])
-FETCH_TIME = demisto.params().get('fetch_time').strip()
-SYSPARM_QUERY = demisto.params().get('sysparm_query')
-SYSPARM_LIMIT = demisto.params().get('fetch_limit', DEFAULTS['fetch_limit'])
-TIMESTAMP_FIELD = demisto.params().get('timestamp_field', 'opened_at')
-TICKET_TYPE = demisto.params().get('ticket_type', DEFAULTS['ticket_type'])
-GET_ATTACHMENTS = demisto.params().get('get_attachments', False)
-
-if VERSION:
-    API += VERSION + '/'
-
-SERVER_URL = get_server_url() + API
-
 TICKET_STATES = {
     'incident': {
         '1': '1 - New',
@@ -145,70 +119,6 @@ DEPRECATED_COMMANDS = ['servicenow-get', 'servicenow-incident-get',
                        'servicenow-create', 'servicenow-incident-create',
                        'servicenow-update', 'servicenow-query',
                        'servicenow-incidents-query', 'servicenow-incident-update']
-
-''' HELPER FUNCTIONS '''
-
-
-def send_request(path, method='get', body=None, params=None, headers=None, file=None):
-    body = body if body is not None else {}
-    params = params if params is not None else {}
-
-    url = '{}{}'.format(SERVER_URL, path)
-    if not headers:
-        headers = {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-    if file:
-        # Not supported in v2
-        url = url.replace('v2', 'v1')
-        try:
-            file_entry = file['id']
-            file_name = file['name']
-            shutil.copy(demisto.getFilePath(file_entry)['path'], file_name)
-            with open(file_name, 'rb') as f:
-                files = {'file': f}
-                res = requests.request(method, url, headers=headers, params=params, data=body, files=files,
-                                       auth=(USERNAME, PASSWORD), verify=VERIFY_SSL)
-            shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
-        except Exception as e:
-            raise Exception('Failed to upload file - ' + str(e))
-    else:
-        res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {}, params=params,
-                               auth=(USERNAME, PASSWORD), verify=VERIFY_SSL)
-
-    try:
-        obj = res.json()
-    except Exception as e:
-        if not res.content:
-            return ''
-        raise Exception('Error parsing reply - {} - {}'.format(res.content, str(e)))
-
-    if 'error' in obj:
-        message = obj.get('error', {}).get('message')
-        details = obj.get('error', {}).get('detail')
-        if message == 'No Record found':
-            return {
-                # Return an empty results array
-                'result': []
-            }
-        raise Exception('ServiceNow Error: {}, details: {}'.format(message, details))
-
-    if res.status_code < 200 or res.status_code >= 300:
-        raise Exception('Got status code {} with url {} with body {} with headers {}'
-                        .format(str(res.status_code), url, str(res.content), str(res.headers)))
-
-    return obj
-
-
-def get_table_name(ticket_type=None):
-    if ticket_type:
-        return ticket_type
-    else:
-        if PARAMS_TICKET_TYPE:
-            return PARAMS_TICKET_TYPE
-        else:
-            return 'incident'
 
 
 def create_ticket_context(data, ticket_type):
@@ -385,15 +295,123 @@ def convert_to_str(obj):
         return obj
 
 
-''' FUNCTIONS '''
+class Client(BaseClient):
+    """
+    Client to use in the ServiceNow integration. Overrides BaseClient
+    """
+    def __init__(self, server_url, username, password, verify, proxy, fetch_time, sysparm_query, sysparm_limit,
+                 timestamp_field, ticket_type, get_attachments):
+        self._base_url = server_url
+        self._verify = verify
+        self._username = username
+        self._password = password
+        self._proxies = handle_proxy() if proxy else None
+        self.fetch_time = fetch_time
+        self.sysparm_query = sysparm_query
+        self.sysparm_limit = sysparm_limit
+        self.timestamp_field = timestamp_field
+        self.ticket_type = ticket_type
+        self.get_attachments = get_attachments
+
+    def send_request(self, path, method='get', body=None, params=None, headers=None, file=None):
+        body = body if body is not None else {}
+        params = params if params is not None else {}
+
+        url = '{}{}'.format(self._base_url, path)
+        if not headers:
+            headers = {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        if file:
+            # Not supported in v2
+            url = url.replace('v2', 'v1')
+            try:
+                file_entry = file['id']
+                file_name = file['name']
+                shutil.copy(demisto.getFilePath(file_entry)['path'], file_name)
+                with open(file_name, 'rb') as f:
+                    files = {'file': f}
+                    res = requests.request(method, url, headers=headers, params=params, data=body, files=files,
+                                           auth=(self._username, self._password), verify=self._verify)
+                shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
+            except Exception as e:
+                raise Exception('Failed to upload file - ' + str(e))
+        else:
+            res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {}, params=params,
+                                   auth=(self._username, self._password), verify=self._verify)
+
+        try:
+            obj = res.json()
+        except Exception as e:
+            if not res.content:
+                return ''
+            raise Exception('Error parsing reply - {} - {}'.format(res.content, str(e)))
+
+        if 'error' in obj:
+            message = obj.get('error', {}).get('message')
+            details = obj.get('error', {}).get('detail')
+            if message == 'No Record found':
+                return {
+                    # Return an empty results array
+                    'result': []
+                }
+            raise Exception('ServiceNow Error: {}, details: {}'.format(message, details))
+
+        if res.status_code < 200 or res.status_code >= 300:
+            raise Exception('Got status code {} with url {} with body {} with headers {}'
+                            .format(str(res.status_code), url, str(res.content), str(res.headers)))
+
+        return obj
+
+    def get_ticket(self, table_name, record_id, custom_fields='', number=None):
+        """
+
+        Args:
+            table_name: the table name
+            record_id: the record ID
+            custom_fields: custom fields of the record to query
+            number: record number
+
+        Returns:
+            record data
+        """
+        query_params = {}  # type: Dict
+        if record_id:
+            path = 'table/' + table_name + '/' + record_id
+        elif number:
+            path = 'table/' + table_name
+            query_params = {
+                'number': number
+            }
+        elif custom_fields:
+            path = 'table/' + table_name
+            custom_fields_dict = {
+                k: v.strip('"') for k, v in [i.split("=", 1) for i in custom_fields.split(',')]
+            }
+            query_params = custom_fields_dict
+        else:
+            # Only in cases where the table is of type ticket
+            raise ValueError('servicenow-get-ticket requires either ticket ID (sys_id) or ticket number.')
+
+        return self.send_request(path, 'get', params=query_params)
 
 
-def get_template(name):
+def get_table_name(client, ticket_type=None):
+    if ticket_type:
+        return ticket_type
+    else:
+        if client.ticket_type:
+            return client.ticket_type
+        else:
+            return 'incident'
+
+def get_template(client, name):
     query_params = {'sysparm_limit': 1, 'sysparm_query': 'name=' + name}
 
     ticket_type = 'sys_template'
     path = 'table/' + ticket_type
-    res = send_request('GET', path, params=query_params)
+    res = client.send_request('GET', path, params=query_params)
 
     if len(res['result']) == 0:
         raise ValueError("Incorrect template name")
@@ -409,22 +427,23 @@ def get_template(name):
     return dic_template
 
 
-def get_ticket_command():
+def get_ticket_command(client, args):
     """Get ticket.
 
     Args:
+        client: Client object with request.
+        args: Usually demisto.args()
 
     Returns:
         Demisto Outputs.
     """
-    args = unicode_to_str_recur(demisto.args())
-    ticket_type = get_table_name(args.get('ticket_type'))
+    ticket_type = get_table_name(client, args.get('ticket_type'))
     ticket_id = args.get('id')
     number = args.get('number')
     get_attachments = args.get('get_attachments', 'false')
     custom_fields = str(args.get('custom_fields', ''))
 
-    result = get_ticket(ticket_type, ticket_id, custom_fields, number)
+    result = client.get_ticket(ticket_type, ticket_id, custom_fields, number)
     if not result or 'result' not in result:
         return 'Ticket was not found.'
 
@@ -438,7 +457,7 @@ def get_ticket_command():
     entries = []  # type: List[Dict]
 
     if get_attachments.lower() != 'false':
-        entries = get_ticket_attachment_entries(ticket['sys_id'])
+        entries = get_ticket_attachment_entries(client, ticket['sys_id'])
 
     hr = get_ticket_human_readable(ticket, ticket_type)
     context = get_ticket_context(ticket, ticket_type)
@@ -517,39 +536,6 @@ def get_record_command():
     return entry
 
 
-def get_ticket(table_name, record_id, custom_fields='', number=None):
-    """
-
-    Args:
-        table_name: the table name
-        record_id: the record ID
-        custom_fields: custom fields of the record to query
-        number: record number
-
-    Returns:
-        record data
-    """
-    query_params = {}  # type: Dict
-    if record_id:
-        path = 'table/' + table_name + '/' + record_id
-    elif number:
-        path = 'table/' + table_name
-        query_params = {
-            'number': number
-        }
-    elif custom_fields:
-        path = 'table/' + table_name
-        custom_fields_dict = {
-            k: v.strip('"') for k, v in [i.split("=", 1) for i in custom_fields.split(',')]
-        }
-        query_params = custom_fields_dict
-    else:
-        # Only in cases where the table is of type ticket
-        raise ValueError('servicenow-get-ticket requires either ticket ID (sys_id) or ticket number.')
-
-    return send_request(path, 'get', params=query_params)
-
-
 def get_ticket_attachments(ticket_id):
     path = 'attachment'
     query_params = {
@@ -559,7 +545,7 @@ def get_ticket_attachments(ticket_id):
     return send_request(path, 'get', params=query_params)
 
 
-def get_ticket_attachment_entries(ticket_id):
+def get_ticket_attachment_entries(client, ticket_id):
     entries = []
     links = []  # type: List[Tuple[str, str]]
     attachments_res = get_ticket_attachments(ticket_id)
@@ -568,7 +554,7 @@ def get_ticket_attachment_entries(ticket_id):
         links = [(attachment['download_link'], attachment['file_name']) for attachment in attachments]
 
     for link in links:
-        file_res = requests.get(link[0], auth=(USERNAME, PASSWORD), verify=VERIFY_SSL)
+        file_res = requests.get(link[0], auth=(client._username, client._password), verify=client._verify)
         if file_res is not None:
             entries.append(fileResult(link[1], file_res.content))
 
@@ -1395,32 +1381,28 @@ def get_table_name_command():
     return entry
 
 
-def fetch_incidents():
+def fetch_incidents(client):
     query_params = {}
     incidents = []
-    if FETCH_TIME:
-        fetch_time = FETCH_TIME
-    else:
-        fetch_time = DEFAULTS['fetch_time']
 
     last_run = demisto.getLastRun()
     if 'time' not in last_run:
-        snow_time, _ = parse_date_range(fetch_time, '%Y-%m-%d %H:%M:%S')
+        snow_time, _ = parse_date_range(client.fetch_time, '%Y-%m-%d %H:%M:%S')
     else:
         snow_time = last_run['time']
 
     query = ''
-    if SYSPARM_QUERY:
-        query += SYSPARM_QUERY + '^'
-    query += 'ORDERBY{0}^{0}>{1}'.format(TIMESTAMP_FIELD, snow_time)
+    if client.sysparm_query:
+        query += client.sysparm_query + '^'
+    query += 'ORDERBY{0}^{0}>{1}'.format(client.timestamp_field, snow_time)
 
     if query:
         query_params['sysparm_query'] = query
 
-    query_params['sysparm_limit'] = SYSPARM_LIMIT
+    query_params['sysparm_limit'] = client.sysparm_limit
 
-    path = 'table/' + TICKET_TYPE
-    res = send_request(path, 'get', params=query_params)
+    path = 'table/' + client.ticket_type
+    res = client.send_request(path, 'get', params=query_params)
 
     count = 0
     parsed_snow_time = datetime.strptime(snow_time, '%Y-%m-%d %H:%M:%S')
@@ -1428,15 +1410,15 @@ def fetch_incidents():
     for result in res.get('result', []):
         labels = []
 
-        if TIMESTAMP_FIELD not in result:
+        if client.timestamp_field not in result:
             raise ValueError("The timestamp field [{}]"
-                             " does not exist in the ticket".format(TIMESTAMP_FIELD))
+                             " does not exist in the ticket".format(client.timestamp_field))
 
-        if count > SYSPARM_LIMIT:
+        if count > client.sysparm_limit:
             break
 
         try:
-            if datetime.strptime(result[TIMESTAMP_FIELD], '%Y-%m-%d %H:%M:%S') < parsed_snow_time:
+            if datetime.strptime(result[client.timestamp_field], '%Y-%m-%d %H:%M:%S') < parsed_snow_time:
                 continue
         except Exception:
             pass
@@ -1456,7 +1438,7 @@ def fetch_incidents():
         severity = SEVERITY_MAP.get(result.get('severity', ''), 0)
 
         file_names = []
-        if GET_ATTACHMENTS:
+        if client.get_attachments:
             file_entries = get_ticket_attachment_entries(result['sys_id'])
             for file_result in file_entries:
                 if file_result['Type'] == entryTypes['error']:
@@ -1476,87 +1458,117 @@ def fetch_incidents():
         })
 
         count += 1
-        snow_time = result[TIMESTAMP_FIELD]
+        snow_time = result[client._timestamp_field]
 
     demisto.incidents(incidents)
     demisto.setLastRun({'time': snow_time})
 
 
-def test_module():
+def test_module(client):
     # Validate fetch_time parameter is valid (if not, parse_date_range will raise the error message)
-    parse_date_range(FETCH_TIME, '%Y-%m-%d %H:%M:%S')
+    parse_date_range(client.fetch_time, '%Y-%m-%d %H:%M:%S')
 
-    path = 'table/' + TICKET_TYPE + '?sysparm_limit=1'
-    res = send_request(path, 'GET')
-    if 'result' not in res:
-        return_error('ServiceNow error: ' + str(res))
-    ticket = res['result']
+    path = 'table/' + client.ticket_type + '?sysparm_limit=1'
+    result = client.send_request(path, 'GET')
+    if 'result' not in result:
+        return_error('ServiceNow error: ' + str(result))
+    ticket = result.get('result')
     if ticket and demisto.params().get('isFetch'):
         if isinstance(ticket, list):
             ticket = ticket[0]
-        if TIMESTAMP_FIELD not in ticket:
-            raise ValueError("The timestamp field [{}]"
-                             " does not exist in the ticket".format(TIMESTAMP_FIELD))
+        if client.timestamp_field not in ticket:
+            raise ValueError("The timestamp field [{}] does not exist in the ticket.".format(client.timestamp_field))
 
 
 def main():
-    LOG('Executing command {}'.format(demisto.command()))
-    try:
-        raise_exception = False
-        handle_proxy()
+    """
+    PARSE AND VALIDATE INTEGRATION PARAMS
+    """
+    command = demisto.command()
+    LOG('Executing command {}'.format(command))
 
-        if demisto.command() == 'test-module':
-            test_module()
+    params = demisto.params()
+    username = params['credentials']['identifier']
+    password = params['credentials']['password']
+    verify = not params.get('insecure', False)
+    proxy = demisto.params().get('proxy') is True
+    api = '/api/now/'
+    version = params.get('api_version')
+    if version:
+        api += version + '/'
+    server_url = get_server_url() + api
+
+    defaults = {
+        'limit': 10,
+        'offset': 0,
+        'fetch_limit': 10,
+        'fetch_time': '10 minutes',
+        'ticket_type': 'incident'
+    }
+    fetch_time = params.get('fetch_time', defaults['fetch_time']).strip()
+    sysparm_query = params.get('sysparm_query')
+    sysparm_limit = params.get('fetch_limit', defaults['fetch_limit'])
+    timestamp_field = params.get('timestamp_field', 'opened_at')
+    ticket_type = params.get('ticket_type', defaults['ticket_type'])
+    get_attachments = params.get('get_attachments', False)
+
+    try:
+        client = Client(server_url, username, password, verify, proxy, fetch_time, sysparm_query, sysparm_limit,
+                        timestamp_field, ticket_type, get_attachments)
+        args = unicode_to_str_recur(demisto.args())
+        raise_exception = False
+
+        if command == 'test-module':
+            test_module(client)
             demisto.results('ok')
-        elif demisto.command() == 'fetch-incidents':
+        elif command == 'fetch-incidents':
             raise_exception = True
-            fetch_incidents()
-        elif demisto.command() == 'servicenow-get' or \
-                demisto.command() == 'servicenow-incident-update' or demisto.command() == 'servicenow-get-ticket':
-            demisto.results(get_ticket_command())
-        elif demisto.command() == 'servicenow-update' or \
-                demisto.command() == 'servicenow-incident-update' or demisto.command() == 'servicenow-update-ticket':
+            fetch_incidents(client)
+        elif command in ['servicenow-get', 'servicenow-incident-update', 'servicenow-get-ticket']:
+            demisto.results(get_ticket_command(client, args))
+        elif command in ['servicenow-update', 'servicenow-incident-update', 'servicenow-update-ticket']:
             demisto.results(update_ticket_command())
-        elif demisto.command() == 'servicenow-create' or \
-                demisto.command() == 'servicenow-incident-create' or demisto.command() == 'servicenow-create-ticket':
+        elif command in ['servicenow-create', 'servicenow-incident-create', 'servicenow-create-ticket']:
             demisto.results(create_ticket_command())
-        elif demisto.command() == 'servicenow-delete-ticket':
+        elif command == 'servicenow-delete-ticket':
             demisto.results(delete_ticket_command())
-        elif demisto.command() == 'servicenow-add-link' or demisto.command() == 'servicenow-incident-add-link':
+        elif command in ['servicenow-add-link', 'servicenow-incident-add-link']:
             demisto.results(add_link_command())
-        elif demisto.command() == 'servicenow-add-comment' or demisto.command() == 'servicenow-incident-add-comment':
+        elif command in ['servicenow-add-comment', 'servicenow-incident-add-comment']:
             demisto.results(add_comment_command())
-        elif demisto.command() == 'servicenow-query' or \
-                demisto.command() == 'servicenow-incidents-query' or demisto.command() == 'servicenow-query-tickets':
+        elif command in ['servicenow-query', 'servicenow-incidents-query', 'servicenow-query-tickets']:
             demisto.results(query_tickets_command())
-        elif demisto.command() == 'servicenow-upload-file' or demisto.command() == 'servicenow-incident-upload-file':
+        elif command in ['servicenow-upload-file', 'servicenow-incident-upload-file']:
             demisto.results(upload_file_command())
-        elif demisto.command() == 'servicenow-query-table':
+        elif command == 'servicenow-query-table':
             demisto.results(query_table_command())
-        elif demisto.command() == 'servicenow-get-computer':
+        elif command == 'servicenow-get-computer':
             demisto.results(get_computer_command())
-        elif demisto.command() == 'servicenow-query-computers':
+        elif command == 'servicenow-query-computers':
             demisto.results(query_computers_command())
-        elif demisto.command() == 'servicenow-query-groups':
+        elif command == 'servicenow-query-groups':
             demisto.results(query_groups_command())
-        elif demisto.command() == 'servicenow-query-users':
+        elif command == 'servicenow-query-users':
             demisto.results(query_users_command())
-        elif demisto.command() == 'servicenow-get-groups':
+        elif command == 'servicenow-get-groups':
             demisto.results(get_groups_command())
-        elif demisto.command() == 'servicenow-get-record':
+        elif command == 'servicenow-get-record':
             demisto.results(get_record_command())
-        elif demisto.command() == 'servicenow-update-record':
+        elif command == 'servicenow-update-record':
             demisto.results(update_record_command())
-        elif demisto.command() == 'servicenow-create-record':
+        elif command == 'servicenow-create-record':
             demisto.results(create_record_command())
-        elif demisto.command() == 'servicenow-delete-record':
+        elif command == 'servicenow-delete-record':
             demisto.results(delete_record_command())
-        if demisto.command() == 'servicenow-list-table-fields':
+        elif command == 'servicenow-list-table-fields':
             demisto.results(list_table_fields_command())
-        if demisto.command() == 'servicenow-get-table-name':
+        elif command == 'servicenow-get-table-name':
             demisto.results(get_table_name_command())
-        if demisto.command() == 'servicenow-get-ticket-notes':
+        elif command == 'servicenow-get-ticket-notes':
             demisto.results(get_ticket_notes_command())
+        else:
+            raise NotImplementedError('Command {} was not implemented.'.format(command))
+
     except Exception as err:
         LOG(err)
         LOG.print_log()
