@@ -225,7 +225,7 @@ def set_retry_end_time():
 
 def test_module(args_dict):
     http_request('GET', SUFFIXES.get("test"))
-    yield ['ok', {}, []]
+    return ['ok'], [None], [None]
 
 
 # returning 3 lists
