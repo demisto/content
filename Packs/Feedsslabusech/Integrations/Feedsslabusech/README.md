@@ -11,7 +11,7 @@ Use the abuse.ch SSL Blacklist feed integration to fetch indicators from the fee
 2. Search for abuse.ch SSL Blacklist Feed.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
-    * __Sub-Feeds__: Sub-Feeds of abuse.ch SSL Blacklist to fetch indicators from: 
+    * __Services__: Services of abuse.ch SSL Blacklist to fetch indicators from: 
         * https://sslbl.abuse.ch/blacklist/sslipblacklist.csv.
         * https://sslbl.abuse.ch/blacklist/sslipblacklist_aggressive.csvs.
     * __Fetch indicators__: boolean flag. If set to true will fetch indicators.

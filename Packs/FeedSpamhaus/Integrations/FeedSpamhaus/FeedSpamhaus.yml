@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://www.spamhaus.org/drop/drop.txt
-  display: Sub-Feeds
+  display: Services
   name: url
   options:
   - https://www.spamhaus.org/drop/edrop.txt
@@ -17,7 +17,7 @@ configuration:
   defaultvalue: true
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
-    reputation.
+    reputation
   defaultvalue: Bad
   display: Indicator Reputation
   name: feedReputation
@@ -40,6 +40,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+  additionalinfo: Reliability of the source providing the intelligence data
 - defaultvalue: indicatorType
   display: ""
   name: feedExpirationPolicy
@@ -105,7 +106,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: spamhaus-get-indicators
-  dockerimage: demisto/python3:3.8.1.6120
+  dockerimage: demisto/python3:3.8.2.6981
   feed: true
   isfetch: false
   longRunning: false
