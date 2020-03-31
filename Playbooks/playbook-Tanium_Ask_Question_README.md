@@ -32,4 +32,4 @@ This playbook does not use any scripts.
 | Tanium.QuestionResult.Results | The question results. | unknown |
 | Tanium.Question.ID | The unique ID of the question object | unknown |
 
-![Tanium_Ask_Question](https://github.com/demisto/content/blob/77dfca704d8ac34940713c1737f89b07a5fc2b9d/images/playbooks/Tanium_Ask_Question.png)
+![Tanium_Ask_Question](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Tanium_Ask_Question.png)

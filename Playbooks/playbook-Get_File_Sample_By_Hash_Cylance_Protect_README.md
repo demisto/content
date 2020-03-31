@@ -34,4 +34,4 @@ This playbook does not use any sub-playbooks.
 | File | The sample file. | unknown |
 
 
-![Get_File_Sample_By_Hash_Cylance_Protect](https://github.com/demisto/content/blob/77dfca704d8ac34940713c1737f89b07a5fc2b9d/images/playbooks/Get_File_Sample_By_Hash_Cylance_Protect.png)
+![Get_File_Sample_By_Hash_Cylance_Protect](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Get_File_Sample_By_Hash_Cylance_Protect.png)

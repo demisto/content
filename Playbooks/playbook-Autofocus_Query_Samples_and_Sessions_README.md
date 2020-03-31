@@ -69,4 +69,4 @@ Another example for searching for an IP
 | AutoFocus.SamplesResults | The results of Autofocus samples search. | string |
 | AutoFocus.TopTagResults | The results of Autofocus tags search. | string |
 
-![Autofocus_Query_Samples__Sessions_and_Tags](https://github.com/demisto/content/blob/77dfca704d8ac34940713c1737f89b07a5fc2b9d/images/playbooks/Autofocus_Query_Samples__Sessions_and_Tags.png)
+![Autofocus_Query_Samples__Sessions_and_Tags](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Autofocus_Query_Samples__Sessions_and_Tags.png)

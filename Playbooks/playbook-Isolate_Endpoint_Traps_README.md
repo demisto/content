@@ -31,4 +31,4 @@ This playbook does not use any scripts.
 | Traps.Isolate.EndpointID | The ID of the Endpoint. | unknown |
 | Traps.IsolateResult.Status | The status of the isolation operation. | unknown |
 
-![Isolate_Endpoint_Traps](https://github.com/demisto/content/blob/77dfca704d8ac34940713c1737f89b07a5fc2b9d/images/playbooks/Traps_Isolate_Endpoint.png)
+![Isolate_Endpoint_Traps](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Traps_Isolate_Endpoint.png)

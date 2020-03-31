@@ -79,4 +79,4 @@ This playbook does not use any commands.
 | ActiveDirectory.Users.memberOf | The groups that the user is a member of. | unknown |
 | CylanceProtectDevice | The device information about the hostname that was enriched using Cylance Protect v2. | unknown |
 
-![Entity_Enrichment_Phishing_v2](https://github.com/demisto/content/blob/77dfca704d8ac34940713c1737f89b07a5fc2b9d/images/playbooks/Entity_Enrichment_Phishing_v2.png)
+![Entity_Enrichment_Phishing_v2](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Entity_Enrichment_Phishing_v2.png)

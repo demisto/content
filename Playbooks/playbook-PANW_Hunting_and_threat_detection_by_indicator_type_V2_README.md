@@ -51,4 +51,4 @@ This playbook does not use any integrations.
 | PANWHunting.DetectedInternalHosts | The internal host names detected based on fields and inputs in your search. | string |
 | PANWHunting.DetectedExternalHosts | The external host names detected based on fields and inputs in your search. | string |
 
-![PANW_Hunting_and_threat_detection_by_indicator_type_V2](https://github.com/demisto/content/blob/77dfca704d8ac34940713c1737f89b07a5fc2b9d/images/playbooks/PANW_Hunting_and_threat_detection_by_indicator_type_V2.png)
+![PANW_Hunting_and_threat_detection_by_indicator_type_V2](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PANW_Hunting_and_threat_detection_by_indicator_type_V2.png)

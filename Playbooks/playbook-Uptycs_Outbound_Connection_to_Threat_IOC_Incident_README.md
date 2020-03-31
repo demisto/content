@@ -40,4 +40,4 @@ This playbook does not use any scripts.
 | Uptycs.Children.upt_add_time | The time that the process was spawned. | date |
 | Uptycs.Children.upt_remove_time | The time that the process was removed. | date |
 
-![Uptycs_Outbound_Connection_to_Threat_IOC_Incident](https://github.com/demisto/content/blob/77dfca704d8ac34940713c1737f89b07a5fc2b9d/images/playbooks/Uptycs_Outbound_Connection_to_Threat_IOC_Incident.png)
+![Uptycs_Outbound_Connection_to_Threat_IOC_Incident](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Uptycs_Outbound_Connection_to_Threat_IOC_Incident.png)

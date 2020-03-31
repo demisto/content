@@ -24,4 +24,4 @@ There are no inputs for this playbook.
 ---
 There are no outputs for this playbook.
 
-![Palo Alto Networks BPA Playbook](https://github.com/demisto/content/blob/c4f82678a3c3d3d0b40ad9515555722f36bc6315/images/playbooks/Palo_Alto_Networks_BPA_Playbook.png)
+![Palo Alto Networks BPA Playbook](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Palo_Alto_Networks_BPA_Playbook.png)

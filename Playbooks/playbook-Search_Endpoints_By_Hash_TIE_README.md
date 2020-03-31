@@ -37,4 +37,4 @@ This playbook does not use any sub-playbooks.
 | Endpoint.Hostname | The hostname. | string |
 | Endpoint | The endpoint. | unknown |
 
-![Search_Endpoints_By_Hash_TIE](https://github.com/demisto/content/blob/77dfca704d8ac34940713c1737f89b07a5fc2b9d/images/playbooks/Search_Endpoints_By_Hash_TIE.png)
+![Search_Endpoints_By_Hash_TIE](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Search_Endpoints_By_Hash_TIE.png)
