@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.3.4] - 2020-03-30
  - Added the ***microsoft-teams-ring-user*** command.
    - To user this functionality add Calls.Initiate.All and Calls.InitiateGroupCall.All premissions to your configured Teams Bot.
    - For more information see the [Microsoft Teams Documentation](https://docs.microsoft.com/en-us/microsoftteams/platform/bots/calls-and-meetings/registering-calling-bot#add-microsoft-graph-permissions) on this subject.

@@ -1111,7 +1111,7 @@ def upload_indicators_command():
         query = args.get('query')
         indicators_values_list, indicators_data_list = get_indicators_list(query, limit, page)
         if len(indicators_values_list) == 0:
-            return "No indicators found, Reference set {0} didn't change".format(reference_name)
+            return "No indicators found, Reference set {0} didn't change".format(reference_name), {}, {}
         else:
             raw_response = upload_indicators_list_request(reference_name, indicators_values_list)
             ref_set_data = unicode_to_str_recur(get_ref_set(reference_name))
@@ -1127,7 +1127,7 @@ def upload_indicators_command():
     # Gets an error if the user tried to add indicators that dont match to the reference set type
     except Exception as e:
         if '1005' in str(e):
-            return "You tried to add indicators that dont match to reference set type"
+            return "You tried to add indicators that dont match to reference set type", {}, {}
         raise e
 
 
