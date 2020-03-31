@@ -36,4 +36,4 @@ This playbook does not use any scripts.
 | File.SHA1 | The output for detected SHA1 hash of the file. | string |
 | File.MD5 | The output for detected MD5 hash of the file. | string |
 
-![Convert_file_hash_to_corresponding_hashes](https://github.com/demisto/content/blob/77dfca704d8ac34940713c1737f89b07a5fc2b9d/images/playbooks/Convert_file_hash_to_corresponding_hashes.png)
+![Convert_file_hash_to_corresponding_hashes](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Convert_file_hash_to_corresponding_hashes.png)

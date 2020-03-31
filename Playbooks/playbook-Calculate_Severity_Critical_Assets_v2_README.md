@@ -42,4 +42,4 @@ This playbook does not use any commands.
 | CriticalAssets.CriticalUserGroups | The critical user-groups involved in the incident. | unknown |
 
 
-![Calculate_Severity_Critical_Assets_v2](https://github.com/demisto/content/blob/77dfca704d8ac34940713c1737f89b07a5fc2b9d/images/playbooks/Calculate_Severity_Critical_Assets_v2.png)
+![Calculate_Severity_Critical_Assets_v2](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Calculate_Severity_Critical_Assets_v2.png)

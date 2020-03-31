@@ -42,4 +42,4 @@ This playbook does not use any scripts.
 ---
 There are no outputs for this playbook.
 
-![Employee_Offboarding_Revoke_Permissions](https://github.com/demisto/content/blob/77dfca704d8ac34940713c1737f89b07a5fc2b9d/images/playbooks/Employee_Offboarding_Revoke_Permissions.png)
+![Employee_Offboarding_Revoke_Permissions](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Employee_Offboarding_Revoke_Permissions.png)

@@ -46,4 +46,4 @@ This playbook does not use any scripts.
 | DBotScore.Vendor | The vendor used to calculate the score. | string |
 | DBotScore.Score | The actual score. | number |
 
-![Detonate_URL_CrowdStrike](https://github.com/demisto/content/blob/77dfca704d8ac34940713c1737f89b07a5fc2b9d/images/playbooks/Detonate_URL_CrowdStrike.png)
+![Detonate_URL_CrowdStrike](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_URL_CrowdStrike.png)

@@ -31,4 +31,4 @@ This playbook does not use any scripts.
 ---
 There are no outputs for this playbook.
 
-![PrismaCloudRemediation_AWSCloudTrailIsNotEnabledOnTheAccount](https://github.com/demisto/content/blob/77dfca704d8ac34940713c1737f89b07a5fc2b9d/images/playbooks/PrismaCloudRemediation_AWSCloudTrailIsNotEnabledOnTheAccount.png)
+![PrismaCloudRemediation_AWSCloudTrailIsNotEnabledOnTheAccount](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PrismaCloudRemediation_AWSCloudTrailIsNotEnabledOnTheAccount.png)

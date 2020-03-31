@@ -54,4 +54,4 @@ This playbook does not use any integrations.
 | File.Pages | The number of pages in the PDF file. | unknown |
 | URL.Data | The list of URLs that were extracted from the PDF file. | unknown |
 
-![Extract_Indicators_From_File_Generic_v2](https://github.com/demisto/content/blob/77dfca704d8ac34940713c1737f89b07a5fc2b9d/images/playbooks/Extract_Indicators_From_File_Generic_v2.png)
+![Extract_Indicators_From_File_Generic_v2](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Extract_Indicators_From_File_Generic_v2.png)

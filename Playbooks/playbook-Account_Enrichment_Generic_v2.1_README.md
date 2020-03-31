@@ -36,4 +36,4 @@ This playbook does not use any scripts.
 | ActiveDirectory.Users.mail | The user's email address. | unknown |
 | ActiveDirectory.Users.memberOf | The groups the user is a member of. | unknown |
 
-![Account_Enrichment_Generic_v2.1](https://github.com/demisto/content/blob/77dfca704d8ac34940713c1737f89b07a5fc2b9d/images/playbooks/Account_Enrichment_Generic_v2.1.png)
+![Account_Enrichment_Generic_v2.1](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Account_Enrichment_Generic_v2.1.png)

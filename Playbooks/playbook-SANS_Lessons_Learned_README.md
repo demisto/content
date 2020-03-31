@@ -41,4 +41,4 @@ This playbook does not use any commands.
 | SANS - Lessons Learned.Answers.6 | Share ideas and information in order to improve team effectiveness in future incidents. | longText |
 | SANS - Lessons Learned.Answers.name | The answered username or email address. | unknown |
 
-![SANS_Lessons_Learned](https://github.com/demisto/content/blob/77dfca704d8ac34940713c1737f89b07a5fc2b9d/images/playbooks/SANS_-_Lessons_Learned.png)
+![SANS_Lessons_Learned](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/SANS_-_Lessons_Learned.png)

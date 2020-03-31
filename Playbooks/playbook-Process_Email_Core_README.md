@@ -49,4 +49,4 @@ This playbook does not use any sub-playbooks.
 | Email.Format | The format of the email, if it is available. | string |
 | File | The file object. | unknown |
 
-![Process_Email_Core](https://github.com/demisto/content/blob/77dfca704d8ac34940713c1737f89b07a5fc2b9d/images/playbooks/Process_Email_Core.png)
+![Process_Email_Core](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Process_Email_Core.png)

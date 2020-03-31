@@ -34,4 +34,4 @@ This playbook does not use any sub-playbooks.
 | DuoUsername | The username, in Duo, of the user you are offboarding. | - | - | Optional |
 | ServiceNowAssetsTableName | The name of the "Assets" table in ServiceNow. This will be used to get the assets that belong to the user you are offboarding. | alm_asset | - | Optional |
 
-![Employee_Offboarding_Gather_User_Information](https://github.com/demisto/content/blob/77dfca704d8ac34940713c1737f89b07a5fc2b9d/images/playbooks/Employee_Offboarding_Gather_User_Information.png)
+![Employee_Offboarding_Gather_User_Information](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Employee_Offboarding_Gather_User_Information.png)

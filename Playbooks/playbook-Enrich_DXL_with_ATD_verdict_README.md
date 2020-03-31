@@ -25,4 +25,4 @@ There are no inputs for this playbook.
 ---
 There are no outputs for this playbook.
 
-![Enrich_DXL_with_ATD_verdict](https://github.com/demisto/content/blob/77dfca704d8ac34940713c1737f89b07a5fc2b9d/images/playbooks/Enrich_DXL_with_ATD_verdict.png)
+![Enrich_DXL_with_ATD_verdict](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Enrich_DXL_with_ATD_verdict.png)
