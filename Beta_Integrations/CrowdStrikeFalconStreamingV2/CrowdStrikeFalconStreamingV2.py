@@ -101,10 +101,12 @@ class EventStream:
         client = Client(base_url=self.base_url, app_id=self.app_id, verify_ssl=self.verify_ssl, proxy=self.proxy)
         while True:
             if client.refresh_stream_url:
+                # We already discovered an event stream, need to refresh it
                 demisto.debug('Starting stream refresh')
                 client.refresh_stream_session()
                 demisto.debug('Finished stream refresh')
             else:
+                # We have no event stream, need to discover
                 await client.set_access_token(self.refresh_token)
                 demisto.debug('Starting stream discovery')
                 discover_stream_response = client.discover_stream()
@@ -133,7 +135,7 @@ class EventStream:
         """
         demisto.debug('Fetching event')
         event = Event()
-        stream = create_task(self._discover_refresh_stream(event))
+        create_task(self._discover_refresh_stream(event))
         demisto.debug('Waiting for stream discovery or refresh')
         await event.wait()
         demisto.debug('Done waiting for stream discovery or refresh')
@@ -142,16 +144,19 @@ class EventStream:
             headers={'Authorization': f'Token {self.session_token}'},
             trust_env=self.proxy
         ) as session:
-            async with session.get(self.data_feed_url, params={'offset': offset, 'eventType': event_type}) as res:
-                demisto.debug(f'Fetched event: {res.content}')
-                async for line in res.content:
-                    stripped_line = line.strip()
-                    if stripped_line:
-                        try:
-                            yield json.loads(stripped_line)
-                        except json.decoder.JSONDecodeError:
-                            demisto.debug(f'Failed decoding event (skipping it) - {str(stripped_line)}')
-        await stream
+            try:
+                async with session.get(self.data_feed_url, params={'offset': offset, 'eventType': event_type}) as res:
+                    demisto.debug(f'Fetched event: {res.content}')
+                    async for line in res.content:
+                        stripped_line = line.strip()
+                        if stripped_line:
+                            try:
+                                yield json.loads(stripped_line)
+                            except json.decoder.JSONDecodeError:
+                                demisto.debug(f'Failed decoding event (skipping it) - {str(stripped_line)}')
+            except Exception as e:
+                demisto.debug(f'Failed to fetch event: {e} - Going to sleep for 10 seconds and then retry')
+                await sleep(10)
 
 
 class RefreshToken:
@@ -180,11 +185,11 @@ class RefreshToken:
     async def set_access_token(self, client: Client) -> None:
         self.client = client
         if not self.token:
-            token = await self._get_access_token()
+            token = await self.get_access_token()
             self.token = token
         client.set_auth_headers(self.token)
 
-    async def _get_access_token(self) -> str:
+    async def get_access_token(self) -> str:
         """Retrieves CrowdStrike Falcon access token required for API requests.
 
         Runs for max retries of 3 attempts in case of API rate limit hit.
@@ -243,7 +248,7 @@ class RefreshToken:
     async def refresh_token_loop(self) -> None:
         while True:
             await sleep(self.expiry_time)
-            token = await self._get_access_token()
+            token = await self.get_access_token()
             self.token = token
             self.client.set_auth_headers(token)
 
@@ -269,6 +274,7 @@ async def init_refresh_token(
         AsyncIterator[RefreshToken]: RefreshToken instance initialized with client details.
     """
     refresh_token = RefreshToken(base_url, client_id, client_secret, verify_ssl, proxy)
+    await refresh_token.get_access_token()
     task = create_task(refresh_token.refresh_token_loop())
     yield refresh_token
     task.cancel()
@@ -316,7 +322,7 @@ async def long_running_loop(
 
 async def test_module(base_url: str, client_id: str, client_secret: str, verify_ssl: bool, proxy: bool) -> None:
     async with init_refresh_token(base_url, client_id, client_secret, verify_ssl, proxy) as refresh_token:
-        await refresh_token._get_access_token()
+        await refresh_token.get_access_token()
         demisto.results('ok')
 
 
