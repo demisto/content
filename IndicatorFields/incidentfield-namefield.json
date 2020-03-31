@@ -32,7 +32,7 @@
   "placeholder": "",
   "useAsKpi": false,
   "systemAssociatedTypes": null,
-  "prevName": "Name",
+  "prevName": "Name Field",
   "locked": false,
   "name": "Name Field",
   "ownerOnly": false,
