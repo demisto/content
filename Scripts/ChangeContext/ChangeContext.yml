@@ -1,0 +1,39 @@
+commonfields:
+  id: ChangeContext
+  version: -1
+name: ChangeContext
+script: '-'
+type: python
+tags: []
+comment: 'Enables changing context in two ways. The first is to capitalize the first
+  letter of each key in following level of the context key entered. The second is
+  to change context keys to new values. '
+enabled: true
+args:
+- name: key
+  required: true
+  description: The context key to change.
+- name: inplace
+  auto: PREDEFINED
+  predefined:
+  - "True"
+  - "False"
+  description: If True replaces the existing key.
+  defaultValue: "False"
+- name: replace_dict
+  description: 'A list of key-values to replace key for value in the following format:
+    {"old_key1":"new_key1", "old_key2":"new_key2"}'
+- name: capitalize
+  auto: PREDEFINED
+  predefined:
+  - "True"
+  - "False"
+  description: If "True" capitalize the first letter of the context key
+  defaultValue: "False"
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.8.2.6981
+runas: DBotWeakRole
+fromversion: 4.5.0

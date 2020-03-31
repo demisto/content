@@ -3,14 +3,7 @@ version: -1
 name: QRadar - Get offense correlations
 fromversion: 3.5.0
 description: |-
-  Run on a QRadar offense to get more information
-
-  * Get all correlations relevant to the offense
-  * Get all logs relevant to the correlations (not done by default, set "GetCorrelationLogs" to "True")
-
-  Inputs:
-  * GetCorrelationLogs (default: False)
-  * MaxLogsCount (default: 20)
+  Deprecated. Use the "QRadar - Get offense correlations v2" playbook instead.
 starttaskid: "0"
 tasks:
   "0":
