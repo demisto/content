@@ -1,6 +1,5 @@
 from splunklib import results
 from typing import Dict, Optional, Union, Tuple, List, Any
-
 import splunklib
 from splunklib.binding import HTTPError
 from splunklib.client import Job
@@ -22,7 +21,7 @@ class SplankPy:
     def __init__(self, host: str, username: str, password: str, port: str = '8089',
                  app: Optional[str] = None, verify: bool = True, proxy: bool = False):
         if not proxy:
-            self._service = splunklib.client.connect(
+            self._service: splunklib.client = splunklib.client.connect(
                 host=host,
                 port=port,
                 app=app,
@@ -37,7 +36,7 @@ class SplankPy:
             if not str(error) == "'SplankPy' object has no attribute '_service'":
                 raise error
 
-    def _create_job(self, query: str, exec_mode: str = 'normal', app='',
+    def _create_job(self, query: str, exec_mode: str = 'normal', app: str = '',
                     earliest_time: Union[str, None] = None, latest_time: str = '', **kwargs) -> Job:
         if earliest_time is None:
             earliest_time = get_default_earliest_time()
@@ -65,49 +64,49 @@ class SplankPy:
         return splunk_time
 
     def search(self):
-        args = demisto.args()
-        query = build_search_query(args.get('query', ''))
-        earliest_time = args.get('earliest_time')
-        latest_time = args.get('latest_time', '')
-        app = args.get('app', '')
+        args: Dict = demisto.args()
+        query: str = build_search_query(args.get('query', ''))
+        earliest_time: Optional[str] = args.get('earliest_time')
+        latest_time: str = args.get('latest_time', '')
+        app: str = args.get('app', '')
         job: Job = self._create_job(query=query, earliest_time=earliest_time, latest_time=latest_time, app=app,
                                     exec_mode='blocking')
 
-        result = SplankPy.ResultReader(job)
-        limit = args.get('event_limit', 100)
+        result: SplankPy.ResultReader = SplankPy.ResultReader(job)
+        limit: Union[int, bool] = int(args.get('event_limit', 100))
         if limit == 0:
             limit = False
-        size = args.get('batch_limit', 2500)
-        app = args.get('app')
+        size: int = int(args.get('batch_limit', 2500))
+        app: Optional[str] = args.get('app')
         parsed_results, dbot_scores = result.search(limit=limit, size=size, app=app)
         job.cancel()
 
         if args.get("update_context", 'true') == 'true':
-            entry_context = {
+            entry_context: Dict = {
                 'Splunk': {'Result': parsed_results},
                 'DBotScore': dbot_scores
             }
         else:
             entry_context = {}
 
-        headers = 'results' if parsed_results and not isinstance(parsed_results[0], dict) else ''
-        human_readable = tableToMarkdown(f'Splunk Search results for query: {query}', parsed_results, headers)
+        headers: str = 'results' if parsed_results and not isinstance(parsed_results[0], dict) else ''
+        human_readable: str = tableToMarkdown(f'Splunk Search results for query: {query}', parsed_results, headers)
         return_outputs(human_readable, entry_context, parsed_results)
 
     def job_create(self):
         args: Dict = demisto.args()
         query: str = build_search_query(args.get('query', ''))
-        app: Optional[str] = args.get('app')
+        app: str = args.get('app', '')
         earliest_time: Optional[str] = args.get('earliest_time')
         latest_time: str = args.get('latest_time', '')
-        job = self._create_job(query=query, earliest_time=earliest_time, latest_time=latest_time, app=app)
-        entry_context = {'Splunk': {'Job': job.sid}}
-        human_readable = f'Splunk Job created with SID: {job.sid}'
+        job: Job = self._create_job(query=query, earliest_time=earliest_time, latest_time=latest_time, app=app)
+        entry_context: Dict = {'Splunk': {'Job': job.sid}}
+        human_readable: str = f'Splunk Job created with SID: {job.sid}'
         return_outputs(human_readable, entry_context)
 
     def get_results(self):
-        args = demisto.args()
-        sid = args.get('sid', '')
+        args: Dict = demisto.args()
+        sid: str = args.get('sid', '')
         job: Job = self._get_job(sid)
         res, messages = SplankPy.ResultReader(job).get_results()
 
@@ -118,12 +117,12 @@ class SplankPy:
 
     def test_module(self):
         if self._service:
-            params = demisto.params()
+            params: Dict = demisto.params()
             if params.get('isFetch', False):
-                query_oneshot = params.get('fetchQuery')
+                query_oneshot: str = params.get('fetchQuery', '')
                 try:
-                    t = datetime.utcnow() - timedelta(hours=7)
-                    _time = t.strftime(SplankPy.splunk_time_format)
+                    t: datetime = datetime.utcnow() - timedelta(hours=7)
+                    _time: str = t.strftime(SplankPy.splunk_time_format)
                     self._service.jobs.oneshot(query_oneshot, count=1, earliest_time=_time)  # type: ignore
                 except HTTPError as error:
                     return_error(str(error), error)
@@ -142,7 +141,7 @@ class SplankPy:
 
     def fetch_incidents(self):
         params: Dict = demisto.params()
-        lust_run = demisto.getLastRun()
+        lust_run: Dict = demisto.getLastRun()
 
         query: str = params.get('fetchQuery', '')
         if 'extractFields' in params:
@@ -153,7 +152,7 @@ class SplankPy:
         else:
             latest_time = set_latest_time(params.get('timezone'))
 
-        earliest_time: str = lust_run.get('time')
+        earliest_time: Optional[str] = lust_run.get('time')
         if earliest_time is None:
             earliest_time = set_first_run(params.get('fetch_time', 60), latest_time)
 
@@ -162,22 +161,22 @@ class SplankPy:
             params.get("latest_fetch_time_fieldname", "index_latest"): latest_time
         }
 
-        job = self._create_job(query=query, exec_mode='blocking', **job_kwargs)
+        job: Job = self._create_job(query=query, exec_mode='blocking', **job_kwargs)
 
-        limit = min(params.get('fetch_limit', 10), 200)
-        offset = lust_run.get('offset', 0)
-        job_reader = SplankPy.ResultReader(job=job)
-        job_result = job_reader.fetch_incidents(index=offset, limit=limit)
+        limit: int = min(params.get('fetch_limit', 50), 200)
+        offset: int = int(lust_run.get('offset', 0))
+        job_reader: SplankPy.ResultReader = SplankPy.ResultReader(job=job)
+        job_result: results.ResultsReader = job_reader.fetch_incidents(index=offset, limit=limit)
 
-        replace = params.get('replaceKeys', False)
-        parse_notable_events_raw = params.get('parseNotableEventsRaw', False)
-        incidents = []
+        replace: bool = params.get('replaceKeys', False)
+        parse_notable_events_raw: bool = params.get('parseNotableEventsRaw', False)
+        incidents: List[Dict] = []
         for incident in job_result:
             incidents.append(notable_to_incident(incident, replace=replace,
                                                  parse_notable_events_raw=parse_notable_events_raw))
 
         if len(incidents) < len(job_reader):
-            next_run = {'time': earliest_time, 'offset': offset + limit}
+            next_run: Dict = {'time': earliest_time, 'offset': offset + limit}
         else:
             next_run = {'time': latest_time}
 
@@ -189,7 +188,7 @@ class SplankPy:
 
     class ResultReader(object):
         def __init__(self, job: Job):
-            self.job = job
+            self.job: Job = job
 
         def _read(self, index: int = 0, limit: int = 2500) -> results.ResultsReader:
             result = self.job.results(**{'count': index, 'offset': limit})
@@ -206,7 +205,6 @@ class SplankPy:
                 if limit and index + size < limit:
                     size = limit - index - 1
                 for item in self._read(index, size):
-                    print(item)
                     if isinstance(item, results.Message):
                         if "Error in" in item.message:
                             raise ValueError(item.message)
@@ -298,7 +296,7 @@ def severity_to_level(severity: str) -> Union[float, int]:
 
 
 def replace_key_name(_key: str) -> str:
-    replace_to = '_'
+    replace_to: str = '_'
     problematics_characters: List[str] = ['.', '(', ')', '[', ']']
     for char in problematics_characters:
         _key = _key.replace(char, replace_to)
@@ -340,8 +338,21 @@ def raw_to_dict(raw_data: str) -> Dict[str, str]:
 
 
 def notable_to_incident(event: Dict, replace: bool = False, parse_notable_events_raw: bool = False) -> Dict:
-    incident: Dict = {
-        "name": event.get('rule_title', '') + ' : ' + event.get('rule_name', '')
+    incident: Dict[str, Any] = get_incident_data(event)
+
+    if replace:
+        event = replace_keys(event)
+
+    incident["rawJSON"] = json.dumps(event)
+    labels: List[Dict[str, str]] = get_incident_labels(event, parse_notable_events_raw)
+    if len(labels) > 0:
+        incident['labels'] = labels
+    return incident
+
+
+def get_incident_data(event: Dict) -> Dict[str, Union[str, int, float]]:
+    incident: Dict[str, Union[str, int, float]] = {
+        "name": '{} : {}'.format(event.get('rule_title', ''), event.get('rule_name', ''))
     }
     if 'urgency' in event:
         incident["severity"] = severity_to_level(event['urgency'])
@@ -351,11 +362,10 @@ def notable_to_incident(event: Dict, replace: bool = False, parse_notable_events
         incident["occurred"] = event["_time"]
     else:
         incident["occurred"] = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
+    return incident
 
-    if replace:
-        event = replace_keys(event)
 
-    incident["rawJSON"] = json.dumps(event)
+def get_incident_labels(event: Dict, parse_notable_events_raw: bool = False) -> List[Dict[str, str]]:
     labels: List[Dict[str, str]] = []
     if parse_notable_events_raw:
         raw_dict: Dict[str, str] = raw_to_dict(event.get('_raw', ''))
@@ -363,9 +373,7 @@ def notable_to_incident(event: Dict, replace: bool = False, parse_notable_events
             labels.append({'type': raw_key, 'value': raw_value})
     if 'security_domain' in event:
         labels.append({'type': 'security_domain', 'value': event["security_domain"]})
-    if len(labels) > 0:
-        incident['labels'] = labels
-    return incident
+    return labels
 
 
 def main():

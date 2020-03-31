@@ -5,7 +5,8 @@ from typing import List, Dict
 import pytest
 from freezegun import freeze_time
 from SplunkPy_v2 import build_search_query, get_default_earliest_time, build_fetch_fields, set_latest_time, \
-    set_first_run, severity_to_level, replace_key_name, replace_keys, raw_to_dict, notable_to_incident
+    set_first_run, severity_to_level, replace_key_name, replace_keys, raw_to_dict, notable_to_incident, \
+    get_incident_data, get_incident_labels
 
 
 data_test_build_search_query = [
@@ -418,3 +419,39 @@ def test_notable_to_incident_with_parse_notable_events_raw(event, expected_outpu
             output.sort(key=lambda x: x.get('type', ''))
     assert output == expected_output, f'notable_to_incident({event}, parse_notable_events_raw=True).get("labels")\n\t' \
                                       f'returns: {output}\n\tinstead: {expected_output}'
+
+
+data_test_get_incident_data = [
+    ({}, {"name": ' : ', 'occurred': '2020-03-31T00:00:00'}),
+    ({'urgency': 'test'}, {"name": ' : ', 'occurred': '2020-03-31T00:00:00', 'severity': 1}),
+    ({'urgency': 'critical'}, {"name": ' : ', 'occurred': '2020-03-31T00:00:00', 'severity': 4}),
+    ({'rule_description': 'test,'}, {"name": ' : ', 'occurred': '2020-03-31T00:00:00', 'details': 'test'}),
+    ({'_time': '2019-03-31T00:00:00'}, {"name": ' : ', 'occurred': '2019-03-31T00:00:00'}),
+    ({'rule_title': 'test', 'rule_name': 'try'}, {"name": 'test : try', 'occurred': '2020-03-31T00:00:00'})
+]
+
+
+@pytest.mark.parametrize('event, expected_output', data_test_get_incident_data)
+@freeze_time('2020-03-31T00:00:00')
+def test_get_incident_data(event, expected_output):
+    output = get_incident_data(event)
+    assert sorted(output) == sorted(expected_output), f'get_incident_data({event})\n\t' \
+                                                      f'returns: {output}\n\tinstead: {expected_output}'
+
+
+data_test_get_incident_labels = [
+    ({}, '"test=success"', True, {'test': 'success'}),
+    ({}, '"test=success"', False, {}),
+    ({'security_domain': 'test'}, '"test=success"', False, {'security_domain': 'test'}),
+    ({'security_domain': 'test'}, '"test=success"', True, {'security_domain': 'test', 'test': 'success'})
+]
+
+
+@pytest.mark.parametrize('event, raw, parse_notable_events_raw, expected_output', data_test_get_incident_labels)
+def test_get_incident_labels(event, raw, parse_notable_events_raw, expected_output):
+    event['_raw'] = raw
+    list_expected_output = list({'type': raw_key, 'value': raw_value} for raw_key, raw_value in expected_output.items())
+    output = get_incident_labels(event, parse_notable_events_raw)
+    list_expected_output.sort(key=lambda x: x.get('type', ''))
+    output.sort(key=lambda x: x.get('type', ''))
+    assert output == list_expected_output, f'get_incident_labels({event})\n\treturns: {output}\n\tinstead: {list_expected_output}'
