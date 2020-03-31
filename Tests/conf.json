@@ -2606,7 +2606,7 @@
         },
         {
             "integrations": "Zabbix",
-            "playbookID": "zabbix-text"
+            "playbookID": "test-zabbix"
         }
     ],
     "skipped_tests": {
