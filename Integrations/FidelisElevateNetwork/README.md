@@ -205,29 +205,6 @@ There is no context output for this command.
 }
 ```
 
-
-### fidelis-sandbox-upload
-***
-Uploads a file or a URL for sandbox analysis in Fidelis Elevate.
-
-
-##### Base Command
-
-`fidelis-sandbox-upload`
-##### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| upload_item | The file or URL to upload to Fidelis Elevate for analysis. | Required | 
-
-
-##### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Fidelis.Alert.ID | string | Alert ID generated from the upload. | 
-
-
 ### fidelis-list-alerts
 ***
 Returns a list of open alerts from Fidelis Elevate.
