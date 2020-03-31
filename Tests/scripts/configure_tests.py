@@ -801,6 +801,24 @@ def get_runnable_tests(tests_num, conf=None, id_set=None, server_version='0'):
     return tests
 
 
+def get_unrunnable_tests(tests_num, conf=None, id_set=None, server_version='0'):
+    """Gets runnable tests for the server version"""
+    if not id_set:
+        with open("./Tests/id_set.json", 'r') as conf_file:
+            id_set = json.load(conf_file)
+    if not conf:
+        with open("./Tests/conf.json", 'r') as conf_file:
+            conf = json.load(conf_file)
+    tests = set([])
+    test_ids = get_test_ids(conf=conf)[0]
+    rand = random.Random(time.time())
+    while len(tests) < tests_num:
+        test = rand.choice(test_ids)
+        if not is_test_runnable(test, id_set, conf, server_version):
+            tests.add(test)
+    return tests
+
+
 def get_test_list(files_string, branch_name, two_before_ga_ver='0', conf=None, id_set=None):
     """Create a test list that should run"""
     (modified_files, modified_tests_list, changed_common, is_conf_json, sample_tests, is_reputations_json,
@@ -840,8 +858,8 @@ def get_test_list(files_string, branch_name, two_before_ga_ver='0', conf=None, i
             _FAILED = True
         elif changed_common:
             print_warning('Adding 3 random tests due to: {}'.format(','.join(changed_common)))
-            tests = tests.union(get_runnable_tests(tests_num=RANDOM_TESTS_NUM, conf=conf, id_set=id_set,
-                                                   server_version=two_before_ga_ver))
+            tests = tests.union(get_unrunnable_tests(tests_num=RANDOM_TESTS_NUM, conf=conf, id_set=id_set,
+                                                     server_version=two_before_ga_ver))
         else:
             print_warning("Running Sanity check only")
             tests = get_runnable_tests(tests_num=RANDOM_TESTS_NUM, conf=conf, id_set=id_set,
