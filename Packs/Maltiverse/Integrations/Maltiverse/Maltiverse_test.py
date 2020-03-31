@@ -4,7 +4,6 @@ from test_data.result_constants import EXPECTED_IP_RESULT, EXPECTED_URL_RESULT, 
     EXPECTED_FILE_RESULT
 
 
-
 SERVER_URL = 'https://api.maltiverse.com'
 MOCK_IP = '8.8.8.8'
 MOCK_URL = 'https://dv-expert.org'
