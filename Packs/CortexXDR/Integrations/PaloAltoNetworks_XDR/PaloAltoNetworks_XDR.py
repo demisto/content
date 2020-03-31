@@ -936,29 +936,30 @@ def isolate_endpoint_command(client, args):
     is_isolated = endpoint.get('is_isolated')
     if is_isolated == 'AGENT_ISOLATED':
         return (
-            f'Endpoint {endpoint_id} already isolated',
+            f'Endpoint {endpoint_id} already isolated.',
             None,
             None
         )
-
     if is_isolated == 'AGENT_PENDING_ISOLATION':
         return (
-            f'Endpoint {endpoint_id} pending isolation',
+            f'Endpoint {endpoint_id} pending isolation.',
             None,
             None
         )
     if endpoint_status == 'DISCONNECTED':
-        return (
-            f'Endpoint {endpoint_id} is disconnected and therefore can not be isolated.',
-            None,
-            None
+        return_error(
+            f'Error: Endpoint {endpoint_id} is disconnected and therefore can not be isolated.'
+        )
+    if is_isolated == 'AGENT_PENDING_ISOLATION_CANCELLATION':
+        return_error(
+            f'Error: Endpoint {endpoint_id} is pending isolation cancellation and therefore can not be isolated.'
         )
     client.isolate_endpoint(endpoint_id)
 
     return (
         f'The isolation request has been submitted successfully on Endpoint {endpoint_id}.\n'
         f'To check the endpoint isolation status please run: !xdr-get-endpoints endpoint_id_list={endpoint_id}'
-        f' and look at the [is_isolated] field',
+        f' and look at the [is_isolated] field.',
         None,
         None
     )
@@ -976,29 +977,30 @@ def unisolate_endpoint_command(client, args):
     is_isolated = endpoint.get('is_isolated')
     if is_isolated == 'AGENT_UNISOLATED':
         return (
-            f'Endpoint {endpoint_id} already unisolated',
+            f'Endpoint {endpoint_id} already unisolated.',
             None,
             None
         )
-
     if is_isolated == 'AGENT_PENDING_ISOLATION_CANCELLATION':
         return (
-            f'Endpoint {endpoint_id} pending isolation cancellation',
+            f'Endpoint {endpoint_id} pending isolation cancellation.',
             None,
             None
         )
     if endpoint_status == 'DISCONNECTED':
-        return (
-            f'Endpoint {endpoint_id} is disconnected and therefore can not be un-isolated',
-            None,
-            None
+        return_error(
+            f'Error: Endpoint {endpoint_id} is disconnected and therefore can not be un-isolated.'
+        )
+    if is_isolated == 'AGENT_PENDING_ISOLATION':
+        return_error(
+            f'Error: Endpoint {endpoint_id} is pending isolation and therefore can not be un-isolated.'
         )
     client.unisolate_endpoint(endpoint_id)
 
     return (
         f'The un-isolation request has been submitted successfully on Endpoint {endpoint_id}.\n'
         f'To check the endpoint isolation status please run: !xdr-get-endpoints endpoint_id_list={endpoint_id}'
-        f' and look at the [is_isolated] field',
+        f' and look at the [is_isolated] field.',
         None,
         None
     )
