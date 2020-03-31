@@ -11,7 +11,7 @@ Use the JsonWhoIs integration to  enrich domain indicators.
     | ---------             | -----------           | -------            |
     | Name | A meaningful name for the integration instance. | JsonWhoIs_instance_1 |
     | API Token  |  Your [JsonWhoIs API token](https://jsonwhois.com/) |  N/A  |
-    | System proxy | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration.     | https:/<span>/proxyserver.com |
+    | System proxy | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration.     | https:/<span></span>/proxyserver.com |
     | Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
     | Do Not Use by Default  | If checked the commands will not be used by default (this is influenced if two command are the same). | N/A  |
 
@@ -113,28 +113,28 @@ Returns enriched data for Domains, URLs, and IP addresses.
 
 | **Email** | **Name** | **Phone** |
 | --- | --- | --- |
-| 5be9245893ff486d98c3640879bb2657.protect<span>@whoisguard.com | WhoisGuard Protected | +507.8365503 |
+| 5be9245893ff486d98c3640879bb2657.protect<span></span>@whoisguard.com | WhoisGuard Protected | +507.8365503 |
 
 ##### Name servers
 
 | **Name** |
 | --- |
-| pns31.cloudns<span>.net |
-| pns32.cloudns<span>.net |
-| pns33.cloudns<span>.net |
-| pns34.cloudns<span>.net |
+| pns31.cloudns<span></span>.net |
+| pns32.cloudns<span></span>.net |
+| pns33.cloudns<span></span>.net |
+| pns34.cloudns<span></span>.net |
 
 ##### Registrant
 
 | **Email** | **Name** | **Phone** |
 | --- | --- | --- |
-| 5be9245893ff486d98c3640879bb2657.protect<span>@whoisguard.com | WhoisGuard Protected | +507.8365503 |
+| 5be9245893ff486d98c3640879bb2657.protect<span></span>@whoisguard.com | WhoisGuard Protected | +507.8365503 |
 
 ##### Registrar
 
 | **Id** | **Name** | **Url** |
 | --- | --- | --- |
-| 1068 | NameCheap, Inc. | http:/<span>/www<span>.namecheap<span>.com |
+| 1068 | NameCheap, Inc. | http:/<span></span>/www<span></span>.namecheap<span></span>.com |
 
 ##### Others
 

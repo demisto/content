@@ -1,0 +1,2520 @@
+## Overview
+---
+
+Microsoft Defender Advanced Threat Protection (ATP) is a unified platform for preventative protection, post-breach detection, automated investigation, and response.
+## Microsoft Defender Advanced Threat Protection Playbook
+---
+Microsoft Defender Advanced Threat Protection Get Machine Action Status
+
+## Use Cases
+---
+1. Fetch incidents.
+2. Managing machines and performing actions on them.
+3. Blocking files and applications.
+
+## Configure Microsoft Defender Advanced Threat Protection on Demisto
+---
+
+1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+2. Search for Microsoft Defender Advanced Threat Protection.
+3. Click __Add instance__ to create and configure a new integration instance.
+    * __Name__: a textual name for the integration instance.
+    * __Host URL (e.g. https://api.securitycenter.windows.com)__
+    * __ID (received from the admin consent - see Detailed Instructions (?) section)__
+    * __Token (received from the admin consent - see Detailed Instructions (?) section)__
+    * __Key (received from the admin consent - see Detailed Instructions (?) section)__
+    * __Fetch incidents__
+    * __Incident type__
+    * __Status to filter out alerts for fetching as incidents. The property values are: New,InProgress,Resolved (Comma separated values supported, e.g. New,Resolved)__
+    * __Severity to filter out alerts for fetching as incidents. The property values are: Informational,Low,Medium,High (Comma separated values supported, e.g. Medium,High)__
+    * __Trust any certificate (not secure)__
+    * __Use system proxy settings__
+    * __First fetch timestamp (*number* *time unit*, e.g., 12 hours, 7 days)__
+4. Click __Test__ to validate the URLs, token, and connection.
+## Fetched Incidents Data
+1. id
+2. incidentId
+3. investigationId
+4. assignedTo
+5. severity
+6. status
+7. classification
+8. determination
+9. investigationState
+10. detectionSource
+11. category
+12. threatFamilyName
+13. title
+14. description
+15. alertCreationTime
+16. firstEventTime
+17. lastEventTime
+18. lastUpdateTime
+19. resolvedTime
+20. machineId
+21. computerDnsName
+22. aadTenantId
+23. relatedUser
+24. comments
+25. evidence
+
+
+## Commands
+---
+You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+1. microsoft-atp-isolate-machine
+2. microsoft-atp-unisolate-machine
+3. microsoft-atp-get-machines
+4. microsoft-atp-get-file-related-machines
+5. microsoft-atp-get-machine-details
+6. microsoft-atp-run-antivirus-scan
+7. microsoft-atp-list-alerts
+8. microsoft-atp-update-alert
+9. microsoft-atp-advanced-hunting
+10. microsoft-atp-create-alert
+11. microsoft-atp-get-alert-related-user
+12. microsoft-atp-get-alert-related-files
+13. microsoft-atp-get-alert-related-ips
+14. microsoft-atp-get-alert-related-domains
+15. microsoft-atp-list-machine-actions-details
+16. microsoft-atp-collect-investigation-package
+17. microsoft-atp-get-investigation-package-sas-uri
+18. microsoft-atp-restrict-app-execution
+19. microsoft-atp-remove-app-restriction
+20. microsoft-atp-stop-and-quarantine-file
+21. microsoft-atp-list-investigations
+22. microsoft-atp-start-investigation
+23. microsoft-atp-get-domain-statistics
+24. microsoft-atp-get-domain-alerts
+25. microsoft-atp-get-domain-machines
+26. microsoft-atp-get-file-statistics
+27. microsoft-atp-get-file-alerts
+28. microsoft-atp-get-ip-statistics
+29. microsoft-atp-get-ip-alerts
+30. microsoft-atp-get-user-alerts
+31. microsoft-atp-get-user-machines
+32. microsoft-atp-add-remove-machine-tag
+### 1. microsoft-atp-isolate-machine
+---
+Isolates a machine from accessing external network.
+##### Required Permissions
+Machine.Isolate	
+##### Base Command
+
+`microsoft-atp-isolate-machine`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_id | Machine ID to be used for isolation. e.g. 0a3250e0693a109f1affc9217be9459028aa8426 | Required | 
+| comment | A comment to associate with the action. | Required | 
+| isolation_type | Full isolation or Selective isolation (Restrict only limited set of applications from accessing the network) | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.MachineAction.ID | String | The machine action ID | 
+| MicrosoftATP.MachineAction.Type | String | Type of the machine action | 
+| MicrosoftATP.MachineAction.Scope | Unknown | Scope of the action | 
+| MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action | 
+| MicrosoftATP.MachineAction.RequestorComment | String | Comment that was written when issuing the action | 
+| MicrosoftATP.MachineAction.Status | String | The current status of the command | 
+| MicrosoftATP.MachineAction.MachineID | String | The machine ID on which the action was executed | 
+| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name on which the action was executed | 
+| MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. | 
+| MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. | 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier | 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier with the possible values: "SHA1" ,"SHA256" and "MD5". | 
+
+
+##### Command Example
+```!microsoft-atp-isolate-machine machine_id=a70f9fe6b29cd9511652434919c6530618f06606 comment="test isolate machine" isolation_type=Selective```
+
+##### Context Example
+```
+{
+    "MicrosoftATP.MachineAction": {
+        "Status": "Pending", 
+        "CreationDateTimeUtc": "2020-03-23T10:07:48.6818309Z", 
+        "MachineID": "a70f9fe6b29cd9511652434919c6530618f06606", 
+        "LastUpdateTimeUtc": null, 
+        "ComputerDNSName": null, 
+        "Requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4", 
+        "RelatedFileInfo": {
+            "FileIdentifier": null, 
+            "FileIdentifierType": null
+        }, 
+        "Scope": null, 
+        "Type": "Isolate", 
+        "ID": "70ab787a-0719-4493-b98d-2535c8fe6817", 
+        "RequestorComment": "test isolate machine"
+    }
+}
+```
+
+##### Human Readable Output
+### The isolation request has been submitted successfully:
+|ID|Type|Requestor|RequestorComment|Status|MachineID|
+|---|---|---|---|---|---|
+| 70ab787a-0719-4493-b98d-2535c8fe6817 | Isolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | test isolate machine | Pending | a70f9fe6b29cd9511652434919c6530618f06606 |
+
+
+### 2. microsoft-atp-unisolate-machine
+---
+Undo an isolation of a machine
+##### Required Permissions
+Machine.Isolate	
+##### Base Command
+
+`microsoft-atp-unisolate-machine`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_id | Machine ID to be used to stop the isolation. e.g. 0a3250e0693a109f1affc9217be9459028aa8426 | Required | 
+| comment | Comment to associate with the action. | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.MachineAction.ID | String | The machine action ID | 
+| MicrosoftATP.MachineAction.Type | String | Type of the action | 
+| MicrosoftATP.MachineAction.Scope | Unknown | Scope of the action | 
+| MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action | 
+| MicrosoftATP.MachineAction.RequestorComment | String | The comment that was written when issuing the action | 
+| MicrosoftATP.MachineAction.Status | String | The current status of the command | 
+| MicrosoftATP.MachineAction.MachineID | String | The machine ID on which the action was executed | 
+| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name on which the action was executed | 
+| MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created | 
+| MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated | 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The fileIdentifier | 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier with the possible values: "SHA1" ,"SHA256" and "MD5" | 
+
+
+##### Command Example
+```!microsoft-atp-unisolate-machine machine_id=f70f9fe6b29cd9511652434919c6530618f06606 comment="test unisolate machine"```
+
+##### Context Example
+```
+{
+    "MicrosoftATP.MachineAction": {
+        "Status": "Pending", 
+        "CreationDateTimeUtc": "2020-03-23T10:07:50.7692907Z", 
+        "MachineID": "f70f9fe6b29cd9511652434919c6530618f06606", 
+        "LastUpdateTimeUtc": null, 
+        "ComputerDNSName": null, 
+        "Requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4", 
+        "RelatedFileInfo": {
+            "FileIdentifier": null, 
+            "FileIdentifierType": null
+        }, 
+        "Scope": null, 
+        "Type": "Unisolate", 
+        "ID": "3d30f7c9-e41c-4839-a678-f528a201778c", 
+        "RequestorComment": "test unisolate machine"
+    }
+}
+```
+
+##### Human Readable Output
+### The request to stop the isolation has been submitted successfully:
+|ID|Type|Requestor|RequestorComment|Status|MachineID|
+|---|---|---|---|---|---|
+| 3d30f7c9-e41c-4839-a678-f528a201778c | Unisolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | test unisolate machine | Pending | f70f9fe6b29cd9511652434919c6530618f06606 |
+
+
+### 3. microsoft-atp-get-machines
+---
+Retrieves a collection of machines that have communicated with WDATP cloud on the last 30 days.
+
+##### Base Command
+
+`microsoft-atp-get-machines`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hostname | The computer DNS name. | Optional | 
+| ip | The last machine IP to access the internet. | Optional | 
+| risk_score | The machine risk score. | Optional | 
+| health_status | The machine health status. | Optional | 
+| os_platform | The machine's OS platform. Only a single platform can be added. | Optional | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.Machine.ID | String | The machine ID | 
+| MicrosoftATP.Machine.ComputerDNSName | String | The machine DNS name | 
+| MicrosoftATP.Machine.FirstSeen | Date | The first date and time where the machine was observed by Microsoft Defender ATP | 
+| MicrosoftATP.Machine.LastSeen | Date | The last date and time where the machine was observed by Microsoft Defender ATP | 
+| MicrosoftATP.Machine.OSPlatform | String | The operating system platform | 
+| MicrosoftATP.Machine.OSVersion | String | The operating system Version | 
+| MicrosoftATP.Machine.OSProcessor | String | The operating system processor | 
+| MicrosoftATP.Machine.LastIPAddress | String | The last IP on the machine | 
+| MicrosoftATP.Machine.LastExternalIPAddress | String | The last machine IP to access the internet | 
+| MicrosoftATP.Machine.OSBuild | Number | The operating system build number | 
+| MicrosoftATP.Machine.HealthStatus | String | The machine health status | 
+| MicrosoftATP.Machine.RBACGroupID | Number | The machine RBAC group ID | 
+| MicrosoftATP.Machine.RBACGroupName | String | The machine RBAC group Name | 
+| MicrosoftATP.Machine.RiskScore | String | The machine risk score | 
+| MicrosoftATP.Machine.ExposureLevel | String | The machine exposure score | 
+| MicrosoftATP.Machine.IsAADJoined | Boolean | True if machine is AAD joined, False otherwise | 
+| MicrosoftATP.Machine.AADDeviceID | String | The AAD device ID | 
+| MicrosoftATP.Machine.MachineTags | String | Set of machine tags | 
+
+
+##### Command Example
+```!microsoft-atp-get-machines health_status=Active risk_score=Medium```
+
+##### Context Example
+```
+{
+    "MicrosoftATP.Machine": [
+        {
+            "OSBuild": 18363, 
+            "ExposureLevel": "Medium", 
+            "OSPlatform": "Windows10", 
+            "MachineTags": [
+                "test add tag", 
+                "testing123"
+            ], 
+            "ComputerDNSName": "desktop-s2455r9", 
+            "RBACGroupID": 0, 
+            "OSProcessor": "x64", 
+            "HealthStatus": "Active", 
+            "AgentVersion": "10.6940.18362.693", 
+            "LastExternalIPAddress": "81.166.99.236", 
+            "LastIPAddress": "192.168.1.73", 
+            "OSVersion": "1909", 
+            "RiskScore": "Medium", 
+            "ID": "f70f9fe6b29cd9511652434919c6530618f06606", 
+            "FirstSeen": "2020-02-20T14:44:11.4627779Z", 
+            "LastSeen": "2020-03-23T07:55:50.9986715Z"
+        }, 
+        {
+            "OSBuild": 14393, 
+            "ExposureLevel": "Medium", 
+            "OSPlatform": "WindowsServer2016", 
+            "ComputerDNSName": "ec2amaz-ua9hieu", 
+            "RBACGroupID": 0, 
+            "OSProcessor": "x64", 
+            "HealthStatus": "Active", 
+            "AgentVersion": "10.3720.16299.2010", 
+            "LastExternalIPAddress": "51.29.51.184", 
+            "LastIPAddress": "175.31.7.116", 
+            "RiskScore": "Medium", 
+            "ID": "f3bba49af4d3bacedc62ca0fe580a4d5925af8aa", 
+            "FirstSeen": "2020-01-26T14:02:55.1863281Z", 
+            "LastSeen": "2020-03-22T20:18:54.9792497Z"
+        }
+    ]
+}
+```
+
+##### Human Readable Output
+### Microsoft Defender ATP Machines:
+|ID|ComputerDNSName|OSPlatform|LastIPAddress|LastExternalIPAddress|HealthStatus|RiskScore|ExposureLevel|
+|---|---|---|---|---|---|---|---|
+| f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 | Windows10 | 192.168.1.73 | 81.166.99.236 | Active | Medium | Medium |
+| f3bba49af4d3bacedc62ca0fe580a4d5925af8aa | ec2amaz-ua9hieu | WindowsServer2016 | 175.31.7.116 | 51.29.51.184 | Active | Medium | Medium |
+
+
+### 4. microsoft-atp-get-file-related-machines
+---
+Get a collection of machines related to a given file SHA1 hash.
+
+##### Base Command
+
+`microsoft-atp-get-file-related-machines`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_hash | File SHA1 hash to get the related machines. | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.FileMachine.Machines.ID | String | The machine ID | 
+| MicrosoftATP.FileMachine.Machines.ComputerDNSName | String | The machine DNS name | 
+| MicrosoftATP.FileMachine.Machines.FirstSeen | Date | The first date and time where the machine was observed by Microsoft Defender ATP | 
+| MicrosoftATP.FileMachine.Machines.LastSeen | Date | The last date and time where the machine was observed by Microsoft Defender ATP | 
+| MicrosoftATP.FileMachine.Machines.OSPlatform | String | The operating system platform | 
+| MicrosoftATP.FileMachine.Machines.OSVersion | String | The operating system Version | 
+| MicrosoftATP.Machine.OSProcessor | String | The operating system processor | 
+| MicrosoftATP.FileMachine.Machines.OSBuild | Number | Operating system build number | 
+| MicrosoftATP.FileMachine.Machines.LastIPAddress | String | The last IP on the machine | 
+| MicrosoftATP.FileMachine.Machines.LastExternalIPAddress | String | The last machine IP to access the internet | 
+| MicrosoftATP.FileMachine.Machines.HelathStatus | String | The machine health status | 
+| MicrosoftATP.FileMachine.Machines.RBACGroupID | Number | The machine RBAC group ID | 
+| MicrosoftATP.FileMachine.Machines.RBACGroupName | String | The machine RBAC group Name | 
+| MicrosoftATP.FileMachine.Machines.RiskScore | String | The machine risk score | 
+| MicrosoftATP.FileMachine.Machines.ExposureLevel | String | The machine exposure score | 
+| MicrosoftATP.FileMachine.Machines.IsAADJoined | Boolean | True if machine is AAD joined, False otherwise | 
+| MicrosoftATP.FileMachine.Machines.AADDeviceID | string | The AAD device ID | 
+| MicrosoftATP.FileMachine.Machines.MachineTags | String | Set of machine tags | 
+| MicrosoftATP.FileMachine.File | String | The machine related file hash | 
+
+
+##### Command Example
+```!microsoft-atp-get-file-related-machines file_hash=36c5d12033b2eaf251bae61c00690ffb17fddc87```
+
+##### Context Example
+```
+{
+    "MicrosoftATP.FileMachine": {
+        "Machines": [
+            {
+                "OSBuild": 18363, 
+                "ExposureLevel": "Medium", 
+                "OSPlatform": "Windows10", 
+                "MachineTags": [
+                    "test Tag 2", 
+                    "test Tag 5"
+                ], 
+                "AADDeviceID": "cfcf4177-227e-4cdb-ac8e-f9a3da1ca30c", 
+                "ComputerDNSName": "desktop-s2455r8", 
+                "RBACGroupID": 0, 
+                "OSProcessor": "x64", 
+                "HealthStatus": "Active", 
+                "AgentVersion": "10.6940.18362.693", 
+                "LastExternalIPAddress": "81.166.99.236", 
+                "LastIPAddress": "192.168.1.73", 
+                "OSVersion": "1909", 
+                "RiskScore": "High", 
+                "ID": "4899036531e374137f63289c3267bad772c13fef", 
+                "FirstSeen": "2020-02-17T08:30:07.2415577Z", 
+                "LastSeen": "2020-03-23T08:10:41.473428Z"
+            }, 
+            {
+                "OSBuild": 18363, 
+                "ExposureLevel": "Medium", 
+                "OSPlatform": "Windows10", 
+                "MachineTags": [
+                    "test add tag", 
+                    "testing123"
+                ], 
+                "ComputerDNSName": "desktop-s2455r9", 
+                "RBACGroupID": 0, 
+                "OSProcessor": "x64", 
+                "HealthStatus": "Active", 
+                "AgentVersion": "10.6940.18362.693", 
+                "LastExternalIPAddress": "81.166.99.236", 
+                "LastIPAddress": "192.168.1.73", 
+                "OSVersion": "1909", 
+                "RiskScore": "Medium", 
+                "ID": "f70f9fe6b29cd9511652434919c6530618f06606", 
+                "FirstSeen": "2020-02-20T14:44:11.4627779Z", 
+                "LastSeen": "2020-03-23T07:55:50.9986715Z"
+            }
+        ], 
+        "File": "36c5d12033b2eaf251bae61c00690ffb17fddc87"
+    }
+}
+```
+
+##### Human Readable Output
+### Microsoft Defender ATP machines related to file 36c5d12033b2eaf251bae61c00690ffb17fddc87
+|ID|ComputerDNSName|OSPlatform|LastIPAddress|LastExternalIPAddress|HealthStatus|RiskScore|ExposureLevel|
+|---|---|---|---|---|---|---|---|
+| 4899036531e374137f63289c3267bad772c13fef | desktop-s2455r8 | Windows10 | 192.168.1.71 | 81.166.99.236 | Active | High | Medium |
+| f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 | Windows10 | 192.168.1.73 | 81.166.99.236 | Active | Medium | Medium |
+
+
+### 5. microsoft-atp-get-machine-details
+---
+Get a machine details by its identity.
+##### Required Permissions
+**FILL IN REQUIRED PERMISSIONS HERE**
+##### Base Command
+
+`microsoft-atp-get-machine-details`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_id | Machine id to be used for getting the machine details, e.g. 0a3250e0693a109f1affc9217be9459028aa8426 | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.Machine.ID | String | The machine ID | 
+| MicrosoftATP.Machine.ComputerDNSName | String | The machine DNS name | 
+| MicrosoftATP.Machine.FirstSeen | Date | The first date and time where the machine was observed by Microsoft Defender ATP | 
+| MicrosoftATP.Machine.LastSeen | Date | The last date and time where the machine was observed by Microsoft Defender ATP | 
+| MicrosoftATP.Machine.OSPlatform | String | The operating system platform | 
+| MicrosoftATP.Machine.OSVersion | String | The operating system Version | 
+| MicrosoftATP.Machine.OSProcessor | String | The operating system processor | 
+| MicrosoftATP.Machine.LastIPAddress | String | The last IP on the machine | 
+| MicrosoftATP.Machine.LastExternalIPAddress | String | The last machine IP to access the internet | 
+| MicrosoftATP.Machine.OSBuild | Number | The operating system build number | 
+| MicrosoftATP.Machine.HealthStatus | String | The machine health status | 
+| MicrosoftATP.Machine.RBACGroupID | Number | The machine RBAC group ID | 
+| MicrosoftATP.Machine.RBACGroupName | String | The machine RBAC group Name | 
+| MicrosoftATP.Machine.RiskScore | String | The machine risk score | 
+| MicrosoftATP.Machine.ExposureLevel | String | The machine exposure level | 
+| MicrosoftATP.Machine.IsAADJoined | Boolean | True if machine is AAD joined, False otherwise | 
+| MicrosoftATP.Machine.AADDeviceID | String | The AAD device ID | 
+| MicrosoftATP.Machine.MachineTags | String | Set of machine tags | 
+
+
+##### Command Example
+```!microsoft-atp-get-machine-details machine_id=f70f9fe6b29cd9511652434919c6530618f06606```
+
+##### Context Example
+```
+{
+    "MicrosoftATP.Machine": {
+        "OSBuild": 18363, 
+        "ExposureLevel": "Medium", 
+        "OSPlatform": "Windows10", 
+        "MachineTags": [
+            "test add tag", 
+            "testing123"
+        ], 
+        "ComputerDNSName": "desktop-s2455r9", 
+        "RBACGroupID": 0, 
+        "OSProcessor": "x64", 
+        "HealthStatus": "Active", 
+        "AgentVersion": "10.6940.18362.693", 
+        "LastExternalIPAddress": "81.166.99.236", 
+        "LastIPAddress": "192.168.1.73", 
+        "OSVersion": "1909", 
+        "RiskScore": "Medium", 
+        "ID": "f70f9fe6b29cd9511652434919c6530618f06606", 
+        "FirstSeen": "2020-02-20T14:44:11.4627779Z", 
+        "LastSeen": "2020-03-23T07:55:50.9986715Z"
+    }
+}
+```
+
+##### Human Readable Output
+### Microsoft Defender ATP machine f70f9fe6b29cd9511652434919c6530618f06606 details:
+|ID|ComputerDNSName|OSPlatform|LastIPAddress|LastExternalIPAddress|HealthStatus|RiskScore|ExposureLevel|
+|---|---|---|---|---|---|---|---|
+| f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 | Windows10 | 192.168.1.73 | 81.166.99.236 | Active | Medium | Medium |
+
+
+### 6. microsoft-atp-run-antivirus-scan
+---
+Initiate Microsoft Defender Antivirus scan on a machine.
+##### Required Permissions
+Machine.Scan	
+##### Base Command
+
+`microsoft-atp-run-antivirus-scan`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_id | The machine ID to run the scan on. | Required | 
+| comment | A comment to associate with the action. | Required | 
+| scan_type | Defines the type of the scan. | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.MachineAction.ID | String | The machine action ID | 
+| MicrosoftATP.MachineAction.Type | String | The type of the action | 
+| MicrosoftATP.MachineAction.Scope | Unknown | The scope of the action | 
+| MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action | 
+| MicrosoftATP.MachineAction.RequestorComment | String | The comment that was written when issuing the action | 
+| MicrosoftATP.MachineAction.Status | String | The current status of the command | 
+| MicrosoftATP.MachineAction.MachineID | String | The machine ID on which the action was executed | 
+| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name on which the action was executed | 
+| MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created | 
+| MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated | 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier | 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier with the possible values: "SHA1" ,"SHA256" and "MD5" | 
+
+
+##### Command Example
+```!microsoft-atp-run-antivirus-scan machine_id=f70f9fe6b29cd9511652434919c6530618f06606 comment="testing anti virus" scan_type=Quick```
+
+##### Context Example
+```
+{
+    "MicrosoftATP.MachineAction": {
+        "Status": "Pending", 
+        "CreationDateTimeUtc": "2020-03-23T10:07:54.3942786Z", 
+        "MachineID": "f70f9fe6b29cd9511652434919c6530618f06606", 
+        "LastUpdateTimeUtc": null, 
+        "ComputerDNSName": null, 
+        "Requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4", 
+        "RelatedFileInfo": {
+            "FileIdentifier": null, 
+            "FileIdentifierType": null
+        }, 
+        "Scope": null, 
+        "Type": "RunAntiVirusScan", 
+        "ID": "55680be3-162c-49d1-a4d6-37f9dc47e9d8", 
+        "RequestorComment": "testing anti virus"
+    }
+}
+```
+
+##### Human Readable Output
+### Antivirus scan successfully triggered
+|ID|Type|Requestor|RequestorComment|Status|MachineID|
+|---|---|---|---|---|---|
+| 55680be3-162c-49d1-a4d6-37f9dc47e9d8 | RunAntiVirusScan | 2f48b784-5da5-4e61-9957-012d2630f1e4 | testing anti virus | Pending | f70f9fe6b29cd9511652434919c6530618f06606 |
+
+
+### 7. microsoft-atp-list-alerts
+---
+Get a list of alerts present on the system. Filtering can be done only on a single argument.
+
+##### Base Command
+
+`microsoft-atp-list-alerts`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| severity | Alert severity. | Optional | 
+| status | Alert status. | Optional | 
+| category | Alert category, only one can be added. | Optional | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.Alert.ID | String | The alert ID | 
+| MicrosoftATP.Alert.IncidentID | Number | The incident ID of the alert | 
+| MicrosoftATP.Alert.InvestigationID | Number | The investigation ID related to the alert | 
+| MicrosoftATP.Alert.InvestigationState | String | The current state of the investigation | 
+| MicrosoftATP.Alert.AssignedTo | String | The owner of the alert | 
+| MicrosoftATP.Alert.Severity | String | The severity of the alert | 
+| MicrosoftATP.Alert.Status | String | The current status of the alert | 
+| MicrosoftATP.Alert.Classification | String | The alert classification | 
+| MicrosoftATP.Alert.Determination | String | The determination of the alert | 
+| MicrosoftATP.Alert.DetectionSource | String | The detection source | 
+| MicrosoftATP.Alert.Category | String | The category of the alert | 
+| MicrosoftATP.Alert.ThreatFamilyName | String | The threat family | 
+| MicrosoftATP.Alert.Title | String | The alert title | 
+| MicrosoftATP.Alert.Description | String | The alert description | 
+| MicrosoftATP.Alert.AlertCreationTime | Date | The date and time the alert was created | 
+| MicrosoftATP.Alert.FirstEventTime | Date | The first event time that triggered the alert on that machine | 
+| MicrosoftATP.Alert.LastEventTime | Date | The last event time that triggered the alert on that machine | 
+| MicrosoftATP.Alert.LastUpdateTime | Date | The first event time that triggered the alert on that machine | 
+| MicrosoftATP.Alert.ResolvedTime | Date | The date and time in which the status of the alert was changed to 'Resolved' | 
+| MicrosoftATP.Alert.MachineID | String | The machine ID that is associated with the alert | 
+| MicrosoftATP.Alert.ComputerDNSName | String | The machine DNS name | 
+| MicrosoftATP.Alert.AADTenantID | String | The AAD tenant ID | 
+| MicrosoftATP.Alert.Comments.Comment | String | The alert comment string | 
+| MicrosoftATP.Alert.Comments.CreatedBy | String | The alert comment created by string | 
+| MicrosoftATP.Alert.Comments.CreatedTime | Date | The alert comment create time date | 
+
+
+##### Command Example
+```!microsoft-atp-list-alerts severity=Low```
+
+##### Context Example
+```
+{
+    "MicrosoftATP.Alert": [
+        {
+            "Category": "Backdoor", 
+            "ThreatFamilyName": null, 
+            "Severity": "Low", 
+            "LastEventTime": "2020-02-19T10:31:22.7894742Z", 
+            "FirstEventTime": "2020-02-19T10:31:22.7894742Z", 
+            "Comments": [
+                {
+                    "Comment": null, 
+                    "CreatedTime": null, 
+                    "CreatedBy": null
+                }
+            ], 
+            "AADTenantID": "ebac1a16-81bf-449b-8d43-5732c3c1d999", 
+            "AlertCreationTime": "2020-03-17T11:35:16.8861429Z", 
+            "Status": "InProgress", 
+            "Description": "testing", 
+            "InvestigationState": "PendingApproval", 
+            "MachineID": "4899036531e374137f63289c3267bad772c13fef", 
+            "Title": "testing", 
+            "InvestigationID": 10, 
+            "Determination": null, 
+            "IncidentID": 14, 
+            "AssignedTo": "Automation", 
+            "DetectionSource": "CustomerTI", 
+            "ResolvedTime": null, 
+            "ID": "da637200417169017725_183736971", 
+            "LastUpdateTime": "2020-03-23T10:00:16.8633333Z", 
+            "Classification": null, 
+            "ComputerDNSName": "desktop-s2455r8", 
+            "Evidence": []
+        }, 
+        {
+            "Category": "Backdoor", 
+            "ThreatFamilyName": null, 
+            "Severity": "Low", 
+            "LastEventTime": "2020-02-23T07:22:07.1532018Z", 
+            "FirstEventTime": "2020-02-23T07:22:07.1532018Z", 
+            "Comments": [
+                {
+                    "Comment": null, 
+                    "CreatedTime": null, 
+                    "CreatedBy": null
+                }
+            ], 
+            "AADTenantID": "ebac1a16-81bf-449b-8d43-5732c3c1d999", 
+            "AlertCreationTime": "2020-03-22T15:44:23.5446957Z", 
+            "Status": "New", 
+            "Description": "test", 
+            "InvestigationState": "PendingApproval", 
+            "MachineID": "4899036531e374137f63289c3267bad772c13fef", 
+            "Title": "testing alert", 
+            "InvestigationID": 10, 
+            "Determination": null, 
+            "IncidentID": 18, 
+            "AssignedTo": null, 
+            "DetectionSource": "CustomerTI", 
+            "ResolvedTime": null, 
+            "ID": "da637204886635759335_1480542752", 
+            "LastUpdateTime": "2020-03-22T15:44:24.6533333Z", 
+            "Classification": null, 
+            "ComputerDNSName": "desktop-s2455r8", 
+            "Evidence": []
+        }
+    ]
+}
+```
+
+##### Human Readable Output
+### Microsoft Defender ATP alerts:
+|ID|Title|Description|IncidentID|Severity|Status|Category|MachineID|
+|---|---|---|---|---|---|---|---|
+| da637200417169017725_183736971 | testing | testing | 14 | Low | InProgress | Backdoor | 4899036531e374137f63289c3267bad772c13fef |
+| da637204886635759335_1480542752 | testing alert | test | 18 | Low | New | Backdoor | 4899036531e374137f63289c3267bad772c13fef |
+
+
+### 8. microsoft-atp-update-alert
+---
+Update the properties of an alert entity.
+
+##### Base Command
+
+`microsoft-atp-update-alert`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_id | Alert ID to update. | Required | 
+| status | Alert status to update. | Optional | 
+| assigned_to | Owner of the alert. | Optional | 
+| classification | Specifies the specification of the alert. | Optional | 
+| determination | Specifies the determination of the alert. | Optional | 
+| comment | Comment to be added to the alert. | Optional | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.Alert.ID | String | The alert ID | 
+| MicrosoftATP.Alert.IncidentID | Number | The incident ID of the alert | 
+| MicrosoftATP.Alert.InvestigationID | Number | The investigation ID related to the alert | 
+| MicrosoftATP.Alert.InvestigationState | String | The current state of the investigation | 
+| MicrosoftATP.Alert.AssignedTo | String | The owner of the alert | 
+| MicrosoftATP.Alert.Severity | String | The severity of the alert | 
+| MicrosoftATP.Alert.Status | String | The current status of the alert | 
+| MicrosoftATP.Alert.Classification | String | The alert classification | 
+| MicrosoftATP.Alert.Determination | String | The determination of the alert | 
+| MicrosoftATP.Alert.DetectionSource | String | The detection source | 
+| MicrosoftATP.Alert.Category | String | The category of the alert | 
+| MicrosoftATP.Alert.ThreatFamilyName | String | The threat family | 
+| MicrosoftATP.Alert.Title | String | The alert title | 
+| MicrosoftATP.Alert.Description | String | The alert description | 
+| MicrosoftATP.Alert.AlertCreationTime | Date | The date and time the alert was created | 
+| MicrosoftATP.Alert.FirstEventTime | Date | The first event time that triggered the alert on that machine | 
+| MicrosoftATP.Alert.LastEventTime | Date | The last event time that triggered the alert on that machine | 
+| MicrosoftATP.Alert.LastUpdateTime | Date | The first event time that triggered the alert on that machine | 
+| MicrosoftATP.Alert.ResolvedTime | Date | The date and time in which the status of the alert was changed to 'Resolved' | 
+| MicrosoftATP.Alert.MachineID | String | The mahine ID that is associated with the alert | 
+| MicrosoftATP.Alert.ComputerDNSName | String | The machine DNS name | 
+| MicrosoftATP.Alert.AADTenantID | String | The AAD tenant ID | 
+| MicrosoftATP.Alert.Comments.Comment | String | The alert comment string | 
+| MicrosoftATP.Alert.Comments.CreatedBy | String | The alert comment created by string | 
+| MicrosoftATP.Alert.Comments.CreatedTime | Date | The alert comment create time date | 
+
+
+##### Command Example
+```!microsoft-atp-update-alert alert_id=da637200417169017725_183736971 status=InProgress```
+
+##### Context Example
+```
+{
+    "MicrosoftATP.Alert": {
+        "Status": "InProgress", 
+        "ID": "da637200417169017725_183736971"
+    }
+}
+```
+
+##### Human Readable Output
+The alert da637200417169017725_183736971 has been updated successfully
+
+### 9. microsoft-atp-advanced-hunting
+---
+Allows you to run programmatic queries like in Microsoft Defender ATP Portal (https://securitycenter.windows.com/hunting). Limitations: You can only run a query on data from the last 30 days, The results will include a maximum of 10,000 rows, The number of executions is limited (up to 15 calls per minute, 15 minutes of running time every hour and 4 hours of running time a day).
+
+##### Base Command
+
+`microsoft-atp-advanced-hunting`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | The query to run. | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.Hunt.Result | String | The query results. | 
+
+
+##### Command Example
+```!microsoft-atp-advanced-hunting query="LogonEvents | take 1 | project MachineId, ReportId, tostring(EventTime)"```
+
+##### Context Example
+```
+{
+    "MicrosoftATP.Hunt.Result": [
+        {
+            "MachineId": "4899036531e374137f63289c3267bad772c13fef", 
+            "EventTime": "2020-02-23T07:14:42.1599815Z", 
+            "ReportId": "35275"
+        }
+    ]
+}
+```
+
+##### Human Readable Output
+### Hunt results
+|EventTime|MachineId|ReportId|
+|---|---|---|
+| 2020-02-23T07:14:42.1599815Z | 4899036531e374137f63289c3267bad772c13fef | 35275 |
+
+
+### 10. microsoft-atp-create-alert
+---
+Create a new alert entity using event data, as obtained from the Advanced Hunting.
+
+##### Base Command
+
+`microsoft-atp-create-alert`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_id | ID of the machine on which the event was identified. | Required | 
+| severity | Severity of the alert. | Required | 
+| title | Title for the alert. | Required | 
+| description | Description of the alert. | Required | 
+| recommended_action | Action that is recommended to be taken by security officer when analyzing the alert. | Required | 
+| event_time | The time of the event, as obtained from the advanced query. | Required | 
+| report_id | The reportId, as obtained from the advanced query. | Required | 
+| category | Category of the alert. | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.Alert.ID | String | The alert ID | 
+| MicrosoftATP.Alert.IncidentID | Number | The incident ID of the alert | 
+| MicrosoftATP.Alert.InvestigationID | Number | The investigation ID related to the alert | 
+| MicrosoftATP.Alert.InvestigationState | String | The current state of the investigation | 
+| MicrosoftATP.Alert.AssignedTo | String | The owner of the alert | 
+| MicrosoftATP.Alert.Severity | String | The severity of the alert | 
+| MicrosoftATP.Alert.Status | String | The current status of the alert | 
+| MicrosoftATP.Alert.Classification | String | The alert classification | 
+| MicrosoftATP.Alert.Determination | String | The determination of the alert | 
+| MicrosoftATP.Alert.DetectionSource | String | The detection source | 
+| MicrosoftATP.Alert.Category | String | The category of the alert | 
+| MicrosoftATP.Alert.ThreatFamilyName | String | The threat family | 
+| MicrosoftATP.Alert.Title | String | The alert title | 
+| MicrosoftATP.Alert.Description | String | The alert description | 
+| MicrosoftATP.Alert.AlertCreationTime | Date | The date and time the alert was created | 
+| MicrosoftATP.Alert.FirstEventTime | Date | The first event time that triggered the alert on that machine | 
+| MicrosoftATP.Alert.LastEventTime | Date | The last event time that triggered the alert on that machine | 
+| MicrosoftATP.Alert.LastUpdateTime | Date | The first event time that triggered the alert on that machine | 
+| MicrosoftATP.Alert.ResolvedTime | Date | The date and time in which the status of the alert was changed to 'Resolved' | 
+| MicrosoftATP.Alert.MachineID | String | The mahine ID that is associated with the alert | 
+| MicrosoftATP.Alert.ComputerDNSName | String | The machine DNS name | 
+| MicrosoftATP.Alert.AADTenantID | String | The AAD tenant ID | 
+| MicrosoftATP.Alert.Comments.Comment | String | The alert Comment string | 
+| MicrosoftATP.Alert.Comments.CreatedBy | String | The alert comment created by string | 
+| MicrosoftATP.Alert.Comments.CreatedTime | Date | The alert comment create time date | 
+
+
+##### Command Example
+```!microsoft-atp-create-alert category=Backdoor description="test" report_id=20279 event_time=2020-02-23T07:22:07.1532018Z machine_id=4899036531e374137f63289c3267bad772c13fef recommended_action="runAntiVirusScan" severity=Low title="testing alert"```
+
+##### Context Example
+```
+{
+    "MicrosoftATP.Alert": {
+        "Category": "Backdoor", 
+        "ThreatFamilyName": null, 
+        "Severity": "Low", 
+        "LastEventTime": "2020-02-23T07:22:07.1532018Z", 
+        "FirstEventTime": "2020-02-23T07:22:07.1532018Z", 
+        "Comments": [
+            {
+                "Comment": null, 
+                "CreatedTime": null, 
+                "CreatedBy": null
+            }
+        ], 
+        "AADTenantID": "ebac1a16-81bf-449b-8d43-5732c3c1d999", 
+        "AlertCreationTime": "2020-03-22T15:44:23.5446957Z", 
+        "Status": "New", 
+        "Description": "test", 
+        "InvestigationState": "PendingApproval", 
+        "MachineID": "4899036531e374137f63289c3267bad772c13fef", 
+        "Title": "testing alert", 
+        "InvestigationID": 10, 
+        "Determination": null, 
+        "IncidentID": 18, 
+        "AssignedTo": null, 
+        "DetectionSource": "CustomerTI", 
+        "ResolvedTime": null, 
+        "ID": "da637204886635759335_1480542752", 
+        "LastUpdateTime": "2020-03-22T15:44:24.6533333Z", 
+        "Classification": null, 
+        "ComputerDNSName": "desktop-s2455r8", 
+        "Evidence": []
+    }
+}
+```
+
+##### Human Readable Output
+### Alert created:
+|ID|Title|Description|IncidentID|Severity|Status|Category|MachineID|
+|---|---|---|---|---|---|---|---|
+| da637204886635759335_1480542752 | testing alert | test | 18 | Low | New | Backdoor | 4899036531e374137f63289c3267bad772c13fef |
+
+
+### 11. microsoft-atp-get-alert-related-user
+---
+Retrieves the user associated to a specific alert.
+
+##### Base Command
+
+`microsoft-atp-get-alert-related-user`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of the alert. | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.AlertUser.User.ID | String | The user ID | 
+| MicrosoftATP.AlertUser.User.AccountName | String | The account name | 
+| MicrosoftATP.AlertUser.User.AccountDomain | String | The account domain | 
+| MicrosoftATP.AlertUser.User.AccountSID | String | The account SID | 
+| MicrosoftATP.AlertUser.User.FirstSeen | Date | The user first seen date time | 
+| MicrosoftATP.AlertUser.User.LastSeen | Date | The user last seen date time | 
+| MicrosoftATP.AlertUser.User.MostPrevalentMachineID | String | The most prevelent machine ID | 
+| MicrosoftATP.AlertUser.User.LeastPrevalentMachineID | String | The least prevelent machine ID | 
+| MicrosoftATP.AlertUser.User.LogonTypes | String | The user logon types | 
+| MicrosoftATP.AlertUser.User.LogonCount | Number | The count of user logon | 
+| MicrosoftATP.AlertUser.User.DomainAdmin | Number | True if domain admin, False otherwise | 
+| MicrosoftATP.AlertUser.User.NetworkUser | Number | True if domain admin, False otherwise | 
+| MicrosoftATP.AlertUser.AlertID | String | The alert ID | 
+
+
+##### Command Example
+```!microsoft-atp-get-alert-related-user id=da637175364995825348_1865170845```
+
+##### Context Example
+```
+{
+    "MicrosoftATP.AlertUser": {
+        "User": {
+            "LeastPrevalentMachineID": "4899036531e374137f63289c3267bad772c13fef", 
+            "MostPrevalentMachineID": "4899036531e374137f63289c3267bad772c13fef", 
+            "LogonCount": 1, 
+            "NetworkUser": false, 
+            "DomainAdmin": false, 
+            "LogonTypes": null, 
+            "AccountName": "demisto", 
+            "LastSeen": "2020-03-03T12:32:51Z", 
+            "AccountSID": "S-1-5-21-4197691174-1403503641-4006700887-1001", 
+            "AccountDomain": "desktop-s2455r8", 
+            "ID": "desktop-s2455r8\\demisto", 
+            "FirstSeen": "2020-02-23T07:14:42Z"
+        }, 
+        "AlertID": "da637175364995825348_1865170845"
+    }
+}
+```
+
+##### Human Readable Output
+### Alert Related User:
+|AccountDomain|AccountName|AccountSID|DomainAdmin|FirstSeen|ID|LastSeen|LeastPrevalentMachineID|LogonCount|MostPrevalentMachineID|NetworkUser|
+|---|---|---|---|---|---|---|---|---|---|---|
+| desktop-s2455r8 | demisto | S-1-5-21-4197691174-1403503641-4006700887-1001 | false | 2020-02-23T07:14:42Z | desktop-s2455r8\demisto | 2020-03-03T12:32:51Z | 4899036531e374137f63289c3267bad772c13fef | 1 | 4899036531e374137f63289c3267bad772c13fef | false |
+
+
+### 12. microsoft-atp-get-alert-related-files
+---
+Retrieves the files associated to a specific alert.
+
+##### Base Command
+
+`microsoft-atp-get-alert-related-files`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of the alert. | Required | 
+| limit | The limit of files to display. | Optional | 
+| offset | The page from which to get the related files. | Optional | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.AlertFile.Files.FilePublisher | String | The file's publisher | 
+| MicrosoftATP.AlertFile.Files.Size | Number | The size of the file | 
+| MicrosoftATP.AlertFile.Files.GlobalLastObserved | Date | The last time the file was observed | 
+| MicrosoftATP.AlertFile.Files.Sha1 | String | The SHA1 hash of the file | 
+| MicrosoftATP.AlertFile.Files.IsValidCertificate | Number | Was signing certificate successfully verified by Microsoft Defender ATP agent. | 
+| MicrosoftATP.AlertFile.Files.Sha256 | String | The SHA256 hash of the file | 
+| MicrosoftATP.AlertFile.Files.Signer | String | The file signer | 
+| MicrosoftATP.AlertFile.Files.GlobalPrevalence | Number | The file prevalence across organization | 
+| MicrosoftATP.AlertFile.Files.DeterminationValue | String | The file determination value | 
+| MicrosoftATP.AlertFile.Files.GlobalFirstObserved | Date | The first time the file was observed | 
+| MicrosoftATP.AlertFile.Files.FileType | String | The type of the file | 
+| MicrosoftATP.AlertFile.Files.SignerHash | String | The hash of the signing certificate | 
+| MicrosoftATP.AlertFile.Files.Issuer | String | The file issuer | 
+| MicrosoftATP.AlertFile.Files.IsPeFile | Number | True if the file is portable executable, False otherwise | 
+| MicrosoftATP.AlertFile.Files.DeterminationType | String | The file determination type | 
+| MicrosoftATP.AlertFile.Files.FileProductName | Unknown | The file product name | 
+| MicrosoftATP.AlertFile.Files.Md5 | String | The MD5 hash of the file | 
+
+
+##### Command Example
+```!microsoft-atp-get-alert-related-files id=da637175364995825348_1865170845```
+
+##### Context Example
+```
+{
+    "MicrosoftATP.AlertFile": {
+        "Files": [
+            {
+                "DeterminationType": "Unknown", 
+                "SignerHash": "84ec67b9ac9d7789bab500503a7862173f432adb", 
+                "Sha1": "d487580502354c61808c7180d1a336beb7ad4624", 
+                "IsPeFile": true, 
+                "GlobalPrevalence": 45004, 
+                "SizeInBytes": 181248, 
+                "Signer": "Microsoft Windows", 
+                "GlobalFirstObserved": "2019-03-21T22:37:42.7608151Z", 
+                "IsValidCertificate": true, 
+                "GlobalLastObserved": "2020-03-22T22:48:20.608421Z", 
+                "Sha256": "f1d62648ef915d85cb4fc140359e925395d315c70f3566b63bb3e21151cb2ce3", 
+                "Md5": "f1139811bbf61362915958806ad30211", 
+                "Issuer": "Microsoft Windows Production PCA 2011"
+            }, 
+            {
+                "DeterminationType": "Unknown", 
+                "SignerHash": "84ec67b9ac9d7789bab500503a7862173f432adb", 
+                "Sha1": "36c5d12033b2eaf251bae61c00690ffb17fddc87", 
+                "IsPeFile": true, 
+                "GlobalPrevalence": 1316463, 
+                "SizeInBytes": 451584, 
+                "Signer": "Microsoft Windows", 
+                "GlobalFirstObserved": "2019-03-21T08:31:08.1952647Z", 
+                "IsValidCertificate": true, 
+                "GlobalLastObserved": "2020-03-23T09:24:49.9664767Z", 
+                "Sha256": "908b64b1971a979c7e3e8ce4621945cba84854cb98d76367b791a6e22b5f6d53", 
+                "Md5": "cda48fc75952ad12d99e526d0b6bf70a", 
+                "Issuer": "Microsoft Windows Production PCA 2011"
+            }
+        ], 
+        "AlertID": "da637175364995825348_1865170845"
+    }
+}
+```
+
+##### Human Readable Output
+### Alert da637175364995825348_1865170845 Related Files:
+|Sha1|Sha256|SizeInBytes|
+|---|---|---|
+| d487580502354c61808c7180d1a336beb7ad4624 | f1d62648ef915d85cb4fc140359e925395d315c70f3566b63bb3e21151cb2ce3 | 181248 |
+| 36c5d12033b2eaf251bae61c00690ffb17fddc87 | 908b64b1971a979c7e3e8ce4621945cba84854cb98d76367b791a6e22b5f6d53 | 451584 |
+
+
+### 13. microsoft-atp-get-alert-related-ips
+---
+Retrieves the IPs associated to a specific alert.
+
+##### Base Command
+
+`microsoft-atp-get-alert-related-ips`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of the alert. | Required | 
+| limit | The limit of IPs to display. | Optional | 
+| offset | The page from which to get the related IPs. | Optional | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.AlertIP.IPs.IpAddress | String | The address of the IP | 
+| MicrosoftATP.AlertIP.AlertID | String | The alert ID | 
+
+
+##### Command Example
+```!microsoft-atp-get-alert-related-ips id=da637200417169017725_183736971 limit=3 offset=0```
+
+##### Context Example
+```
+{
+    "MicrosoftATP.AlertIP": {
+        "IPs": [], 
+        "AlertID": "da637200417169017725_183736971"
+    }
+}
+```
+
+##### Human Readable Output
+Alert da637200417169017725_183736971 Related IPs: []
+
+### 14. microsoft-atp-get-alert-related-domains
+---
+Retrieves the domains associated to a specific alert.
+
+##### Base Command
+
+`microsoft-atp-get-alert-related-domains`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of the alert. | Required | 
+| limit | The limit of domains to display. | Optional | 
+| offset | The page from which to get the related domains. | Optional | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.AlertDomain.Domains.Domain | String | The domain address | 
+| MicrosoftATP.AlertDomain.AlertID | Unknown | The alert ID | 
+
+
+##### Command Example
+```!microsoft-atp-get-alert-related-domains id=da637175364995825348_1865170845 limit=2 offset=0```
+
+##### Context Example
+```
+{
+    "MicrosoftATP.AlertDomain": {
+        "Domains": [], 
+        "AlertID": "da637175364995825348_1865170845"
+    }
+}
+```
+
+##### Human Readable Output
+Alert da637175364995825348_1865170845 Related Domains: []
+
+### 15. microsoft-atp-list-machine-actions-details
+---
+Return the machine's actions. If you set an action ID it will return the info on the specific action.
+Filtering can be done only on a single argument.
+
+##### Base Command
+
+`microsoft-atp-list-machine-actions-details`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of the action. | Optional | 
+| status | The machine action status. | Optional | 
+| machine_id | The machine ID on which the action was executed, only one can be added. | Optional | 
+| type | The machine action type. | Optional | 
+| requestor | The ID of the user that executed the action, only one can be added. | Optional | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.MachineAction.ID | String | The machine action ID | 
+| MicrosoftATP.MachineAction.Type | String | The type of the action | 
+| MicrosoftATP.MachineAction.Scope | String | The scope of the action | 
+| MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action | 
+| MicrosoftATP.MachineAction.RequestorComment | String | The comment that was written when issuing the action | 
+| MicrosoftATP.MachineAction.Status | String | The current status of the command | 
+| MicrosoftATP.MachineAction.MachineID | String | The machine ID on which the action was executed | 
+| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name on which the action was executed | 
+| MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created | 
+| MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated | 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier | 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier with the possible values: "SHA1" ,"SHA256" and "MD5" | 
+
+
+##### Command Example
+```!microsoft-atp-list-machine-actions-details type=RestrictCodeExecution```
+
+##### Context Example
+```
+{
+    "MicrosoftATP.MachineAction": [
+        {
+            "Status": "Succeeded", 
+            "CreationDateTimeUtc": "2020-03-23T10:00:26.5923766Z", 
+            "MachineID": "f70f9fe6b29cd9511652434919c6530618f06606", 
+            "LastUpdateTimeUtc": null, 
+            "ComputerDNSName": "desktop-s2455r9", 
+            "Requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4", 
+            "RelatedFileInfo": {
+                "FileIdentifier": null, 
+                "FileIdentifierType": null
+            }, 
+            "Scope": null, 
+            "Type": "RestrictCodeExecution", 
+            "ID": "655b9413-0f41-49bc-a811-1aadc2c827d6", 
+            "RequestorComment": "test restrict app"
+        }, 
+        {
+            "Status": "Cancelled", 
+            "CreationDateTimeUtc": "2020-02-10T13:32:03.0534738Z", 
+            "MachineID": "f3bba49af4d3bacedc62ca0fe580a4d5925af8aa", 
+            "LastUpdateTimeUtc": null, 
+            "ComputerDNSName": "ec2amaz-ua9hieu", 
+            "Requestor": "7bb424e0-d74b-47c8-816f-21955e7a30d3", 
+            "RelatedFileInfo": {
+                "FileIdentifier": null, 
+                "FileIdentifierType": null
+            }, 
+            "Scope": null, 
+            "Type": "RestrictCodeExecution", 
+            "ID": "a57cd8a4-8d21-49e5-9a67-9fda06e1e637", 
+            "RequestorComment": "Restrict code execution due to alert 1234"
+        }
+    ]
+}
+```
+
+##### Human Readable Output
+### Machine actions Info:
+|ID|Type|Requestor|RequestorComment|Status|MachineID|ComputerDNSName|
+|---|---|---|---|---|---|---|
+| 655b9413-0f41-49bc-a811-1aadc2c827d6 | RestrictCodeExecution | 2f48b784-5da5-4e61-9957-012d2630f1e4 | test restrict app | Succeeded | f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 |
+| a57cd8a4-8d21-49e5-9a67-9fda06e1e637 | RestrictCodeExecution | 7bb424e0-d74b-47c8-816f-21955e7a30d3 | Restrict code execution due to alert 1234 | Cancelled | f3bba49af4d3bacedc62ca0fe580a4d5925af8aa | ec2amaz-ua9hieu |
+
+
+### 16. microsoft-atp-collect-investigation-package
+---
+Collect an investigation package from a machine.
+##### Required Permissions
+Machine.CollectForensics
+##### Base Command
+
+`microsoft-atp-collect-investigation-package`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_id | The machine ID. | Required | 
+| comment | Comment to associate with the action. | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.MachineAction.ID | String | The machine action ID | 
+| MicrosoftATP.MachineAction.Type | String | The type of the action | 
+| MicrosoftATP.MachineAction.Scope | String | The scope of the action | 
+| MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action. | 
+| MicrosoftATP.MachineAction.RequestorComment | String | The comment that was written when issuing the action. | 
+| MicrosoftATP.MachineAction.Status | String | The current status of the command | 
+| MicrosoftATP.MachineAction.MachineID | String | The machine ID on which the action was executed. | 
+| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name on which the action was executed | 
+| MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created | 
+| MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated | 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier | 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier with the possible values: "SHA1" ,"SHA256" and "MD5" | 
+
+
+##### Command Example
+```!microsoft-atp-collect-investigation-package comment="testing" machine_id=f70f9fe6b29cd9511652434919c6530618f06606```
+
+##### Context Example
+```
+{
+    "MicrosoftATP.MachineAction": {
+        "Status": "Pending", 
+        "CreationDateTimeUtc": "2020-03-23T10:08:05.8010798Z", 
+        "MachineID": "f70f9fe6b29cd9511652434919c6530618f06606", 
+        "LastUpdateTimeUtc": null, 
+        "ComputerDNSName": null, 
+        "Requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4", 
+        "RelatedFileInfo": {
+            "FileIdentifier": null, 
+            "FileIdentifierType": null
+        }, 
+        "Scope": null, 
+        "Type": "CollectInvestigationPackage", 
+        "ID": "fa952f94-d672-47a6-a637-70b91339c079", 
+        "RequestorComment": "testing"
+    }
+}
+```
+
+##### Human Readable Output
+### Initiating collect investigation package from f70f9fe6b29cd9511652434919c6530618f06606 machine :
+|ID|Type|Requestor|RequestorComment|Status|MachineID|
+|---|---|---|---|---|---|
+| fa952f94-d672-47a6-a637-70b91339c079 | CollectInvestigationPackage | 2f48b784-5da5-4e61-9957-012d2630f1e4 | testing | Pending | f70f9fe6b29cd9511652434919c6530618f06606 |
+
+
+### 17. microsoft-atp-get-investigation-package-sas-uri
+---
+Get a URI that allows downloading of an investigation package.
+##### Required Permissions
+Machine.CollectForensics
+##### Base Command
+
+`microsoft-atp-get-investigation-package-sas-uri`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| action_id | Machine action ID. | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.InvestigationURI.Link | String | The investigation package URI | 
+
+
+##### Command Example
+```!microsoft-atp-get-investigation-package-sas-uri action_id=6ae51f8f-68e6-4259-abae-0018fdf2e418```
+
+##### Context Example
+```
+{
+    "MicrosoftATP.InvestigationURI": {
+        "Link": "https://userrequests-us.securitycenter.windows.com:443/safedownload/WDATP_Investigation_Package.zip?token=MIICYwYJKoZIhvcNAQcCoIICV"
+    }
+}
+```
+
+##### Human Readable Output
+Success. This link is valid for a very short time and should be used immediately for downloading the package to a local storagehttps:
+//userrequests-us.securitycenter.windows.com:443/safedownload/WDATP_Investigation_Package.zip?token=MIICYwYJKoZIhvcNAQcCoIICV
+
+### 18. microsoft-atp-restrict-app-execution
+---
+Restrict the execution of all applications on the machine except a predefined set.
+##### Required Permissions
+Machine.RestrictExecution
+##### Base Command
+
+`microsoft-atp-restrict-app-execution`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_id | The machine ID. | Required | 
+| comment | Comment to associate with the action. | Optional | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.MachineAction.ID | String | The machine action ID | 
+| MicrosoftATP.MachineAction.Type | String | The type of the action | 
+| MicrosoftATP.MachineAction.Scope | String | The scope of the action | 
+| MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action | 
+| MicrosoftATP.MachineAction.RequestorComment | String | The comment that was written when issuing the action | 
+| MicrosoftATP.MachineAction.Status | String | The current status of the command | 
+| MicrosoftATP.MachineAction.MachineID | String | The machine ID on which the action was executed | 
+| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name on which the action was executed | 
+| MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created | 
+| MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated | 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier | 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier with the possible values: "SHA1" ,"SHA256" and "MD5" | 
+
+
+##### Command Example
+```!microsoft-atp-restrict-app-execution machine_id=f70f9fe6b29cd9511652434919c6530618f06606 comment="test restrict app"```
+
+##### Context Example
+```
+{
+    "MicrosoftATP.MachineAction": {
+        "Status": "Pending", 
+        "CreationDateTimeUtc": "2020-03-23T10:08:07.7643812Z", 
+        "MachineID": "f70f9fe6b29cd9511652434919c6530618f06606", 
+        "LastUpdateTimeUtc": null, 
+        "ComputerDNSName": null, 
+        "Requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4", 
+        "RelatedFileInfo": {
+            "FileIdentifier": null, 
+            "FileIdentifierType": null
+        }, 
+        "Scope": null, 
+        "Type": "RestrictCodeExecution", 
+        "ID": "264c80f0-1452-43fb-92d0-5515dd0b821e", 
+        "RequestorComment": "test restrict app"
+    }
+}
+```
+
+##### Human Readable Output
+### Initiating Restrict execution of all applications on the machine f70f9fe6b29cd9511652434919c6530618f06606 except a predefined set:
+|ID|Type|Requestor|RequestorComment|Status|MachineID|
+|---|---|---|---|---|---|
+| 264c80f0-1452-43fb-92d0-5515dd0b821e | RestrictCodeExecution | 2f48b784-5da5-4e61-9957-012d2630f1e4 | test restrict app | Pending | f70f9fe6b29cd9511652434919c6530618f06606 |
+
+
+### 19. microsoft-atp-remove-app-restriction
+---
+Enable the execution of any application on the machine.
+##### Required Permissions
+Machine.RestrictExecution
+##### Base Command
+
+`microsoft-atp-remove-app-restriction`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_id | The machine ID. | Required | 
+| comment | Comment to associate with the action. | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.MachineAction.ID | String | The machine action ID | 
+| MicrosoftATP.MachineAction.Type | String | The type of the action | 
+| MicrosoftATP.MachineAction.Scope | String | The scope of the action | 
+| MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action | 
+| MicrosoftATP.MachineAction.RequestorComment | String | The comment that was written when issuing the action | 
+| MicrosoftATP.MachineAction.Status | String | The current status of the command | 
+| MicrosoftATP.MachineAction.MachineID | String | The machine ID on which the action was executed | 
+| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name on which the action was executed | 
+| MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created | 
+| MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated | 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier | 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier with the possible values: "SHA1" ,"SHA256" and "MD5" | 
+
+
+##### Command Example
+```!microsoft-atp-remove-app-restriction machine_id=f70f9fe6b29cd9511652434919c6530618f06606 comment="testing remove restriction"```
+
+##### Context Example
+```
+{
+    "MicrosoftATP.MachineAction": {
+        "Status": "Pending", 
+        "CreationDateTimeUtc": "2020-03-23T10:08:08.5355244Z", 
+        "MachineID": "f70f9fe6b29cd9511652434919c6530618f06606", 
+        "LastUpdateTimeUtc": null, 
+        "ComputerDNSName": null, 
+        "Requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4", 
+        "RelatedFileInfo": {
+            "FileIdentifier": null, 
+            "FileIdentifierType": null
+        }, 
+        "Scope": null, 
+        "Type": "UnrestrictCodeExecution", 
+        "ID": "5e3cc0b8-b1a1-4a07-92bf-4d63ecec1b18", 
+        "RequestorComment": "testing remove restriction"
+    }
+}
+```
+
+##### Human Readable Output
+### Removing applications restriction on the machine f70f9fe6b29cd9511652434919c6530618f06606:
+|ID|Type|Requestor|RequestorComment|Status|MachineID|
+|---|---|---|---|---|---|
+| 5e3cc0b8-b1a1-4a07-92bf-4d63ecec1b18 | UnrestrictCodeExecution | 2f48b784-5da5-4e61-9957-012d2630f1e4 | testing remove restriction | Pending | f70f9fe6b29cd9511652434919c6530618f06606 |
+
+
+### 20. microsoft-atp-stop-and-quarantine-file
+---
+Stop the execution of a file on a machine and delete it.
+##### Required Permissions
+Machine.StopAndQuarantine	
+##### Base Command
+
+`microsoft-atp-stop-and-quarantine-file`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_id | The machine ID. | Required | 
+| file_hash | The file SHA1 hash to stop and quarantine on the machine. | Required | 
+| comment | Comment to associate with the action. | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.MachineAction.ID | String | The machine action ID | 
+| MicrosoftATP.MachineAction.Type | String | The type of the action | 
+| MicrosoftATP.MachineAction.Scope | String | The scope of the action | 
+| MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action | 
+| MicrosoftATP.MachineAction.RequestorComment | String | The comment that was written when issuing the action | 
+| MicrosoftATP.MachineAction.Status | String | The current status of the command | 
+| MicrosoftATP.MachineAction.MachineID | String | The machine ID on which the action was executed | 
+| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name on which the action was executed | 
+| MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created | 
+| MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated | 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier | 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier with the possible values: "SHA1" ,"SHA256" and "MD5" | 
+
+
+##### Command Example
+```!microsoft-atp-stop-and-quarantine-file comment="testing" file_hash=abe3ba25e5660c23dfe478d577cfacde5795870c machine_id=12345678```
+#### Context Example
+```
+{ 'ID': '123',
+ 'Type': 'StopAndQuarantineFile',
+ 'Scope': None,
+ 'Requestor': '123abc',
+ 'RequestorComment': 'Test',
+ 'Status': 'Pending',
+ 'MachineID': '12345678',
+ 'ComputerDNSName': None,
+ 'CreationDateTimeUtc': '2020-03-20T14:21:49.9097785Z',
+ 'LastUpdateTimeUtc': '2020-02-27T12:21:00.4568741Z',
+ 'RelatedFileInfo': {'fileIdentifier': '87654321', 'fileIdentifierType': 'Sha1'}
+}
+```
+
+##### Human Readable Output
+### Stopping the execution of a file on 12345678 machine and deleting it:
+|ID|Type|Requestor|RequestorComment|Status|MachineID|
+|---|---|---|---|---|---|
+| 123 | StopAndQuarantineFile | 123abc | Test | Pending | 12345678 |
+
+
+### 21. microsoft-atp-list-investigations
+---
+Retrieves a collection of investigations or retrieves specific investigation by its ID.
+##### Required Permissions
+**FILL IN REQUIRED PERMISSIONS HERE**
+##### Base Command
+
+`microsoft-atp-list-investigations`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID can be the investigation ID or the investigation triggering alert ID. | Optional | 
+| limit | The limit of investigations to display. | Optional | 
+| offset | The page from which to get the investigations. | Optional | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.Investigation.ID | String | The investigation ID | 
+| MicrosoftATP.Investigation.StartTime | Date | The date and time when the investigation was created | 
+| MicrosoftATP.Investigation.EndTime | Date | The date and time when the investigation was completed | 
+| MicrosoftATP.Investigation.State | String | The investigation state | 
+| MicrosoftATP.Investigation.CancelledBy | Unknown | The ID of the user/application that cancelled that investigation | 
+| MicrosoftATP.Investigation.StatusDetails | Unknown | The details about the investigation state | 
+| MicrosoftATP.Investigation.MachineID | String | The machine ID on which the investigation is executed | 
+| MicrosoftATP.Investigation.ComputerDNSName | String | The machine DNS name on which the investigation is executed | 
+| MicrosoftATP.Investigation.TriggeringAlertID | String | The alert ID that triggered the investigation | 
+
+
+##### Command Example
+```!microsoft-atp-list-investigations limit=3 offset=0```
+
+##### Context Example
+```
+{
+    "MicrosoftATP.Investigation": [
+        {
+            "CancelledBy": null, 
+            "InvestigationState": "PendingApproval", 
+            "MachineID": "4899036531e374137f63289c3267bad772c13fef", 
+            "TriggeringAlertID": "da637200417169017725_183736971", 
+            "ComputerDNSName": "desktop-s2455r8", 
+            "StatusDetails": null, 
+            "StartTime": "2020-03-17T11:35:17Z", 
+            "EndTime": null, 
+            "ID": "10"
+        }, 
+        {
+            "CancelledBy": null, 
+            "InvestigationState": "PendingApproval", 
+            "MachineID": "f70f9fe6b29cd9511652434919c6530618f06606", 
+            "TriggeringAlertID": "da637200385941308230_1832866941", 
+            "ComputerDNSName": "desktop-s2455r9", 
+            "StatusDetails": null, 
+            "StartTime": "2020-03-17T10:43:15Z", 
+            "EndTime": null, 
+            "ID": "9"
+        }, 
+        {
+            "CancelledBy": null, 
+            "InvestigationState": "TerminatedBySystem", 
+            "MachineID": "f70f9fe6b29cd9511652434919c6530618f06606", 
+            "TriggeringAlertID": "da637189366671550108_395377714", 
+            "ComputerDNSName": "desktop-s2455r9", 
+            "StatusDetails": null, 
+            "StartTime": "2020-03-04T16:37:50Z", 
+            "EndTime": "2020-03-11T18:13:42Z", 
+            "ID": "8"
+        }
+    ]
+}
+```
+
+##### Human Readable Output
+### Investigations Info:
+|ID|StartTime|EndTime|InvestigationState|MachineID|ComputerDNSName|TriggeringAlertID|
+|---|---|---|---|---|---|---|
+| 10 | 2020-03-17T11:35:17Z |  | PendingApproval | 4899036531e374137f63289c3267bad772c13fef | desktop-s2455r8 | da637200417169017725_183736971 |
+| 9 | 2020-03-17T10:43:15Z |  | PendingApproval | f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 | da637200385941308230_1832866941 |
+| 8 | 2020-03-04T16:37:50Z | 2020-03-11T18:13:42Z | TerminatedBySystem | f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 | da637189366671550108_395377714 |
+
+
+### 22. microsoft-atp-start-investigation
+---
+Start an automated investigation on a machine.
+
+##### Base Command
+
+`microsoft-atp-start-investigation`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_id | The machine's ID. | Required | 
+| comment | Comment to associate with the action. | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.Investigation.ID | String | The investigation ID | 
+| MicrosoftATP.Investigation.StartTime | Date | The date and time when the investigation was created | 
+| MicrosoftATP.Investigation.EndTime | Date | The date and time when the investigation was completed | 
+| MicrosoftATP.Investigation.State | String | The investigation state | 
+| MicrosoftATP.Investigation.CancelledBy | Unknown | The ID of the user/application that cancelled that investigation | 
+| MicrosoftATP.Investigation.StatusDetails | Unknown | The details about the investigation state | 
+| MicrosoftATP.Investigation.MachineID | String | The machine ID on which the investigation is executed | 
+| MicrosoftATP.Investigation.ComputerDNSName | String | The machine DNS name on which the investigation is executed | 
+| MicrosoftATP.Investigation.TriggeringAlertID | String | The alert ID that triggered the investigation | 
+
+
+##### Command Example
+```!microsoft-atp-start-investigation comment="testing" machine_id=f70f9fe6b29cd9511652434919c6530618f06606```
+
+##### Context Example
+```
+{
+    "MicrosoftATP.Investigation": {
+        "CancelledBy": null, 
+        "InvestigationState": "PendingApproval", 
+        "MachineID": null, 
+        "TriggeringAlertID": "da637205548921456173_375980286", 
+        "ComputerDNSName": null, 
+        "StatusDetails": null, 
+        "StartTime": null, 
+        "EndTime": null, 
+        "ID": "da637205548921456173_375980286"
+    }
+}
+```
+
+##### Human Readable Output
+### Starting investigation da637205548921456173_375980286 on f70f9fe6b29cd9511652434919c6530618f06606 machine:
+|ID|InvestigationState|TriggeringAlertID|
+|---|---|---|
+| da637205548921456173_375980286 | PendingApproval | da637205548921456173_375980286 |
+
+
+### 23. microsoft-atp-get-domain-statistics
+---
+Retrieves the statistics on the given domain.
+
+##### Base Command
+
+`microsoft-atp-get-domain-statistics`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | The domain address. | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.DomainStatistics.Statistics.Host | String | The domain host | 
+| MicrosoftATP.DomainStatistics.Statistics.OrgPrevalence | String | The prevalnce of the domain in the organizetion | 
+| MicrosoftATP.DomainStatistics.Statistics.OrgFirstSeen | Date | The first date and time the domain was seen in the organizetion | 
+| MicrosoftATP.DomainStatistics.Statistics.OrgLastSeen | Date | The last date and time the domain was seen in the organizetion | 
+
+
+##### Command Example
+```!microsoft-atp-get-domain-statistics domain=google.com```
+
+##### Context Example
+```
+{
+    "MicrosoftATP.DomainStatistics": {
+        "Domain": "google.com", 
+        "Statistics": {
+            "OrgLastSeen": "2020-02-24T13:14:54Z", 
+            "Host": "google.com", 
+            "OrgFirstSeen": "2020-02-24T12:50:04Z", 
+            "OrgPrevalence": "1"
+        }
+    }
+}
+```
+
+##### Human Readable Output
+### Statistics on google.com domain:
+|Host|OrgFirstSeen|OrgLastSeen|OrgPrevalence|
+|---|---|---|---|
+| google.com | 2020-02-24T12:50:04Z | 2020-02-24T13:14:54Z | 1 |
+
+
+### 24. microsoft-atp-get-domain-alerts
+---
+Retrieves a collection of alerts related to a given domain address.
+##### Required Permissions
+**FILL IN REQUIRED PERMISSIONS HERE**
+##### Base Command
+
+`microsoft-atp-get-domain-alerts`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | The domain address. | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.DomainAlert.Domain | String | The domain address | 
+| MicrosoftATP.DomainAlert.Alerts.ID | String | The alert ID | 
+| MicrosoftATP.DomainAlert.Alerts.IncidentID | Number | The incident ID of the alert | 
+| MicrosoftATP.DomainAlert.Alerts.InvestigationID | Number | The investigation ID related to the alert | 
+| MicrosoftATP.DomainAlert.Alerts.InvestigationState | String | The current state of the investigation | 
+| MicrosoftATP.DomainAlert.Alerts.AssignedTo | String | The owner of the alert | 
+| MicrosoftATP.DomainAlert.Alerts.Severity | String | The severity of the alert | 
+| MicrosoftATP.DomainAlert.Alerts.Status | String | The current status of the alert | 
+| MicrosoftATP.DomainAlert.Alerts.Classification | String | The alert classification | 
+| MicrosoftATP.DomainAlert.Alerts.Determination | String | The determination of the alert | 
+| MicrosoftATP.DomainAlert.Alerts.DetectionSource | String | The detection source | 
+| MicrosoftATP.DomainAlert.Alerts.Category | String | The category of the alert | 
+| MicrosoftATP.DomainAlert.Alerts.ThreatFamilyName | String | The threat family name | 
+| MicrosoftATP.DomainAlert.Alerts.Title | String | The alert title | 
+| MicrosoftATP.DomainAlert.Alerts.Description | String | The alert description | 
+| MicrosoftATP.DomainAlert.Alerts.AlertCreationTime | Date | The date and time the alert was created | 
+| MicrosoftATP.DomainAlert.Alerts.FirstEventTime | Date | The first event time that triggered the alert on that machine | 
+| MicrosoftATP.DomainAlert.Alerts.LastEventTime | Date | The last event time that triggered the alert on that machine | 
+| MicrosoftATP.DomainAlert.Alerts.LastUpdateTime | Date | The first event time that triggered the alert on that machine | 
+| MicrosoftATP.DomainAlert.Alerts.ResolvedTime | Date | The date and time in which the status of the alert was changed to 'Resolved' | 
+| MicrosoftATP.DomainAlert.Alerts.MachineID | String | The machine ID that is associated with the alert | 
+| MicrosoftATP.DomainAlert.Alerts.ComputerDNSName | String | The machine DNS name | 
+| MicrosoftATP.DomainAlert.Alerts.AADTenantID | String | The AAD tenant ID | 
+| MicrosoftATP.DomainAlert.Alerts.Comments.Comment | String | The alert comment string | 
+| MicrosoftATP.DomainAlert.Alerts.Comments.CreatedBy | String | The alert comment created by string | 
+| MicrosoftATP.DomainAlert.Alerts.Comments.CreatedTime | Date | The alert comment create time date | 
+
+
+##### Command Example
+```!microsoft-atp-get-domain-alerts domain=google.com```
+
+##### Context Example
+```
+{
+    "MicrosoftATP.DomainAlert": {
+        "Domain": "google.com", 
+        "Alerts": []
+    }
+}
+```
+
+##### Human Readable Output
+### Domain google.com related alerts Info:
+**No entries.**
+
+
+### 25. microsoft-atp-get-domain-machines
+---
+Retrieves a collection of machines that have communicated to or from a given domain address.
+
+##### Base Command
+
+`microsoft-atp-get-domain-machines`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | The domain address | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.DomainMachine.Domain | String | The domain address | 
+| MicrosoftATP.DomainMachine.Machines.ID | String | The machine ID | 
+| MicrosoftATP.DomainMachine.Machines.ComputerDNSName | String | The machine DNS name | 
+| MicrosoftATP.DomainMachine.Machines.FirstSeen | Date | The first date and time where the machine was observed by Microsoft Defender ATP | 
+| MicrosoftATP.DomainMachine.Machines.LastSeen | Date | The last date and time where the machine was observed by Microsoft Defender ATP | 
+| MicrosoftATP.DomainMachine.Machines.OSPlatform | String | The operating system platform | 
+| MicrosoftATP.DomainMachine.Machines.OSVersion | String | The operating system Version | 
+| MicrosoftATP.DomainMachine.Machines.OSProcessor | String | The operating system processor | 
+| MicrosoftATP.DomainMachine.Machines.LastIPAddress | String | The last IP on the machine | 
+| MicrosoftATP.DomainMachine.Machines.LastExternalIPAddress | String | The last IP through which the machine accessed the internet | 
+| MicrosoftATP.DomainMachine.Machines.OSBuild | Number | The operating system build number | 
+| MicrosoftATP.DomainMachine.Machines.HealthStatus | String | The machine health status | 
+| MicrosoftATP.DomainMachine.Machines.RBACGroupID | Number | The machine RBAC group ID | 
+| MicrosoftATP.DomainMachine.Machines.RBACGroupName | String | The machine RBAC group Name | 
+| MicrosoftATP.DomainMachine.Machines.RiskScore | String | The machine risk score | 
+| MicrosoftATP.DomainMachine.Machines.ExposureLevel | String | The machine exposure level | 
+| MicrosoftATP.DomainMachine.Machines.IsAADJoined | Boolean | True if machine is AAD joined, False otherwise | 
+| MicrosoftATP.DomainMachine.Machines.AADDeviceID | String | The AAD device ID | 
+| MicrosoftATP.DomainMachine.Machines.MachineTags | String | Set of machine tags | 
+
+
+##### Command Example
+```!microsoft-atp-get-domain-machines domain=google.com```
+
+##### Context Example
+```
+{
+    "MicrosoftATP.DomainMachine": {
+        "Domain": "google.com", 
+        "Machines": [
+            {
+                "OSBuild": 18363, 
+                "ExposureLevel": "Medium", 
+                "OSPlatform": "Windows10", 
+                "MachineTags": [
+                    "test Tag 2", 
+                    "test Tag 5"
+                ], 
+                "AADDeviceID": "cfcf4177-227e-4cdb-ac8e-f9a3da1ca30c", 
+                "ComputerDNSName": "desktop-s2455r8", 
+                "RBACGroupID": 0, 
+                "OSProcessor": "x64", 
+                "HealthStatus": "Active", 
+                "AgentVersion": "10.6940.18362.693", 
+                "LastExternalIPAddress": "81.166.99.236", 
+                "LastIPAddress": "192.168.1.71", 
+                "OSVersion": "1909", 
+                "RiskScore": "High", 
+                "ID": "4899036531e374137f63289c3267bad772c13fef", 
+                "FirstSeen": "2020-02-17T08:30:07.2415577Z", 
+                "LastSeen": "2020-03-23T08:10:41.473428Z"
+            }
+        ]
+    }
+}
+```
+
+##### Human Readable Output
+### Machines that have communicated with google.com domain:
+|ID|ComputerDNSName|OSPlatform|LastIPAddress|LastExternalIPAddress|HealthStatus|RiskScore|ExposureLevel|
+|---|---|---|---|---|---|---|---|
+| 4899036531e374137f63289c3267bad772c13fef | desktop-s2455r8 | Windows10 | 192.168.1.71 | 81.166.99.236 | Active | High | Medium |
+
+
+### 26. microsoft-atp-get-file-statistics
+---
+Retrieves the statistics for the given file.
+
+##### Base Command
+
+`microsoft-atp-get-file-statistics`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_hash | File SHA1 hash to get statistics on. | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.FileStatistics.Sha1 | String | The file SHA1 hash | 
+| MicrosoftATP.FileStatistics.Statistics.OrgPrevalence | String | The prevalnce of the file in the organizetion | 
+| MicrosoftATP.FileStatistics.Statistics.OrgFirstSeen | Date | The first date and time the file was seen in the organizetion | 
+| MicrosoftATP.FileStatistics.Statistics.OrgLastSeen | Date | The last date and time the file was seen in the organizetion | 
+| MicrosoftATP.FileStatistics.Statistics.GlobalPrevalence | String | The global prevalnce of the file | 
+| MicrosoftATP.FileStatistics.Statistics.GlobalFirstObserved | Date | The global first observetion date and time of the file | 
+| MicrosoftATP.FileStatistics.Statistics.GlobalLastObserved | Date | The global last observetion date and time of the file | 
+| MicrosoftATP.FileStatistics.Statistics.TopFileNames | String | The file's top names | 
+
+
+##### Command Example
+```!microsoft-atp-get-file-statistics file_hash=9fe3ba25e5660c23dfe478d577cfacde5795870c```
+
+##### Context Example
+```
+{
+    "MicrosoftATP.FileStatistics": {
+        "Sha1": "9fe3ba25e5660c23dfe478d577cfacde5795870c", 
+        "Statistics": {
+            "TopFileNames": [
+                "lsass.exe"
+            ], 
+            "GlobalFirstObserved": "2019-04-03T04:10:18.1001071Z", 
+            "GlobalPrevalence": "1355899", 
+            "OrgPrevalence": "0", 
+            "GlobalLastObserved": "2020-03-23T09:24:54.169574Z"
+        }
+    }
+}
+```
+
+##### Human Readable Output
+### Statistics on 9fe3ba25e5660c23dfe478d577cfacde5795870c file:
+|GlobalFirstObserved|GlobalLastObserved|GlobalPrevalence|OrgPrevalence|TopFileNames|
+|---|---|---|---|---|
+| 2019-04-03T04:10:18.1001071Z | 2020-03-23T09:24:54.169574Z | 1355899 | 0 | lsass.exe |
+
+
+### 27. microsoft-atp-get-file-alerts
+---
+Retrieves a collection of alerts related to a given file hash.
+
+##### Base Command
+
+`microsoft-atp-get-file-alerts`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_hash | File SHA1 hash to get statistics on. | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.FileAlert.Sha1 | String | The file SHA1 hash | 
+| MicrosoftATP.FileAlert.Alerts.ID | String | The alert ID | 
+| MicrosoftATP.FileAlert.Alerts.IncidentID | Number | The incident ID of the alert | 
+| MicrosoftATP.FileAlert.Alerts.InvestigationID | Number | The investigation ID related to the alert | 
+| MicrosoftATP.FileAlert.Alerts.InvestigationState | String | The current state of the investigation | 
+| MicrosoftATP.FileAlert.Alerts.AssignedTo | String | The owner of the alert | 
+| MicrosoftATP.FileAlert.Alerts.Severity | String | The severity of the alert | 
+| MicrosoftATP.FileAlert.Alerts.Status | String | The current status of the alert | 
+| MicrosoftATP.FileAlert.Alerts.Classification | String | The alert classification | 
+| MicrosoftATP.FileAlert.Alerts.Determination | String | The determination of the alert | 
+| MicrosoftATP.FileAlert.Alerts.DetectionSource | String | The detection source | 
+| MicrosoftATP.FileAlert.Alerts.Category | String | The category of the alert | 
+| MicrosoftATP.FileAlert.Alerts.ThreatFamilyName | String | The threat family name | 
+| MicrosoftATP.FileAlert.Alerts.Title | String | The alert title | 
+| MicrosoftATP.FileAlert.Alerts.Description | String | The alert description | 
+| MicrosoftATP.FileAlert.Alerts.AlertCreationTime | Date | The date and time the alert was created | 
+| MicrosoftATP.FileAlert.Alerts.FirstEventTime | Date | The first event time that triggered the alert on that machine | 
+| MicrosoftATP.FileAlert.Alerts.LastEventTime | Date | The last event time that triggered the alert on that machine | 
+| MicrosoftATP.FileAlert.Alerts.LastUpdateTime | Date | The first event time that triggered the alert on that machine | 
+| MicrosoftATP.FileAlert.Alerts.ResolvedTime | Date | The date and time in which the status of the alert was changed to 'Resolved' | 
+| MicrosoftATP.FileAlert.Alerts.MachineID | String | The mahine ID that is associated with the alert | 
+| MicrosoftATP.FileAlert.Alerts.ComputerDNSName | String | The machine DNS name | 
+| MicrosoftATP.FileAlert.Alerts.AADTenantID | String | The AAD tenant ID | 
+| MicrosoftATP.FileAlert.Alerts.Comments.Comment | String | The alert comment string | 
+| MicrosoftATP.FileAlert.Alerts.Comments.CreatedBy | String | The alert comment created by string | 
+| MicrosoftATP.FileAlert.Alerts.Comments.CreatedTime | Date | The alert comment create time date | 
+
+
+##### Command Example
+```!microsoft-atp-get-file-alerts file_hash=9fe3ba25e5660c23dfe478d577cfacde5795870c```
+
+##### Context Example
+```
+{
+    "MicrosoftATP.FileAlert": {
+        "Sha1": "9fe3ba25e5660c23dfe478d577cfacde5795870c", 
+        "Alerts": [
+            {
+                "Category": "None", 
+                "ThreatFamilyName": null, 
+                "Severity": "Medium", 
+                "LastEventTime": "2020-03-15T13:59:14.2438912Z", 
+                "FirstEventTime": "2020-03-15T13:59:14.2438912Z", 
+                "Comments": [
+                    {
+                        "Comment": null, 
+                        "CreatedTime": null, 
+                        "CreatedBy": null
+                    }
+                ], 
+                "AADTenantID": "ebac1a16-81bf-449b-8d43-5732c3c1d999", 
+                "AlertCreationTime": "2020-03-17T11:55:31.890247Z", 
+                "Status": "New", 
+                "Description": "Created for test", 
+                "InvestigationState": "PendingApproval", 
+                "MachineID": "4899036531e374137f63289c3267bad772c13fef", 
+                "Title": "test alert", 
+                "InvestigationID": 10, 
+                "Determination": null, 
+                "IncidentID": 15, 
+                "AssignedTo": null, 
+                "DetectionSource": "CustomerTI", 
+                "ResolvedTime": null, 
+                "ID": "da637200429318902470_-1583197054", 
+                "LastUpdateTime": "2020-03-17T11:55:33.0233333Z", 
+                "Classification": null, 
+                "ComputerDNSName": "desktop-s2455r8", 
+                "Evidence": [
+                    {
+                        "userPrincipalName": null, 
+                        "processId": 656, 
+                        "sha1": "9fe3ba25e5660c23dfe478d577cfacde5795870c", 
+                        "parentProcessCreationTime": null, 
+                        "domainName": null, 
+                        "url": null, 
+                        "processCommandLine": "lsass.exe", 
+                        "entityType": "Process", 
+                        "processCreationTime": "2020-03-13T16:58:59Z", 
+                        "aadUserId": null, 
+                        "fileName": "lsass.exe", 
+                        "sha256": null, 
+                        "parentProcessId": 512, 
+                        "userSid": null, 
+                        "filePath": "c:\\windows\\system32\\lsass.exe", 
+                        "accountName": null, 
+                        "ipAddress": null
+                    }
+                ]
+            }
+        ]
+    }
+}
+```
+
+##### Human Readable Output
+### File 9fe3ba25e5660c23dfe478d577cfacde5795870c related alerts Info:
+|ID|Title|Description|IncidentID|Severity|Status|Category|MachineID|
+|---|---|---|---|---|---|---|---|
+| da637200429318902470_-1583197054 | test alert | Created for test | 15 | Medium | New | None | 4899036531e374137f63289c3267bad772c13fef |
+
+
+### 28. microsoft-atp-get-ip-statistics
+---
+Retrieves the statistics for the given IP.
+
+##### Base Command
+
+`microsoft-atp-get-ip-statistics`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | The IP address. | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.IPStatistics.Statistics.IPAddress | String | The IP address | 
+| MicrosoftATP.IPStatistics.Statistics.OrgPrevalence | String | The prevalnce of the IP on the organizetion | 
+| MicrosoftATP.IPStatistics.Statistics.OrgFirstSeen | Date | The first date and time the IP was seen in the organizetion | 
+| MicrosoftATP.IPStatistics.Statistics.OrgLastSeen | Date | The last date and time the IP was seen in the organizetion | 
+
+
+##### Command Example
+```!microsoft-atp-get-ip-statistics ip=8.8.8.8```
+
+##### Context Example
+```
+{
+    "MicrosoftATP.IPStatistics": {
+        "Statistics": {
+            "OrgLastSeen": "2020-03-01T15:19:40Z", 
+            "OrgPrevalence": "1", 
+            "OrgFirstSeen": "2020-02-22T12:52:35Z"
+        }, 
+        "IPAddress": "8.8.8.8"
+    }
+}
+```
+
+##### Human Readable Output
+### Statistics on 8.8.8.8 IP:
+|OrgFirstSeen|OrgLastSeen|OrgPrevalence|
+|---|---|---|
+| 2020-02-22T12:52:35Z | 2020-03-01T15:19:40Z | 1 |
+
+
+### 29. microsoft-atp-get-ip-alerts
+---
+Retrieves a collection of alerts related to a given IP address.
+
+##### Base Command
+
+`microsoft-atp-get-ip-alerts`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | The Ip address. | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.IPAlert.IPAddress | String | The IP address | 
+| MicrosoftATP.IPAlert.Alerts.ID | String | The alert ID | 
+| MicrosoftATP.IPAlert.Alerts.IncidentID | Number | The incident ID of the alert | 
+| MicrosoftATP.IPAlert.Alerts.InvestigationID | Number | The investigation ID related to the alert | 
+| MicrosoftATP.IPAlert.Alerts.InvestigationState | String | The current state of the investigation | 
+| MicrosoftATP.IPAlert.Alerts.AssignedTo | String | The owner of the alert | 
+| MicrosoftATP.IPAlert.Alerts.Severity | String | The severity of the alert | 
+| MicrosoftATP.IPAlert.Alerts.Status | String | The current status of the alert | 
+| MicrosoftATP.IPAlert.Alerts.Classification | String | The alert classification | 
+| MicrosoftATP.IPAlert.Alerts.Determination | String | The determination of the alert | 
+| MicrosoftATP.IPAlert.Alerts.DetectionSource | String | The detection source | 
+| MicrosoftATP.IPAlert.Alerts.Category | String | The category of the alert | 
+| MicrosoftATP.IPAlert.Alerts.ThreatFamilyName | String | The threat family name | 
+| MicrosoftATP.IPAlert.Alerts.Title | String | The alert title | 
+| MicrosoftATP.IPAlert.Alerts.Description | String | The alert description | 
+| MicrosoftATP.IPAlert.Alerts.AlertCreationTime | Date | The date and time the alert was created | 
+| MicrosoftATP.IPAlert.Alerts.FirstEventTime | Date | The first event time that triggered the alert on that machine | 
+| MicrosoftATP.IPAlert.Alerts.LastEventTime | Date | The last event time that triggered the alert on that machine | 
+| MicrosoftATP.IPAlert.Alerts.LastUpdateTime | Date | The first event time that triggered the alert on that machine | 
+| MicrosoftATP.IPAlert.Alerts.ResolvedTime | Date | The date and time in which the status of the alert was changed to 'Resolved' | 
+| MicrosoftATP.IPAlert.Alerts.MachineID | String | The machine ID that is associated with the alert | 
+| MicrosoftATP.IPAlert.Alerts.ComputerDNSName | String | The machine DNS name | 
+| MicrosoftATP.IPAlert.Alerts.AADTenantID | String | The AAD tenant ID | 
+| MicrosoftATP.IPAlert.Alerts.Comments.Comment | String | The alert comment string | 
+| MicrosoftATP.IPAlert.Alerts.Comments.CreatedBy | String | The alert comment created by string | 
+| MicrosoftATP.IPAlert.Alerts.Comments.CreatedTime | Date | The alert comment create time date | 
+
+
+##### Command Example
+```!microsoft-atp-get-ip-alerts ip=8.8.8.8```
+
+##### Context Example
+```
+{
+    "MicrosoftATP.IPAlert": {
+        "Alerts": [], 
+        "IPAddress": "8.8.8.8"
+    }
+}
+```
+
+##### Human Readable Output
+### IP 8.8.8.8 related alerts Info:
+**No entries.**
+
+
+### 30. microsoft-atp-get-user-alerts
+---
+Retrieves a collection of alerts related to a given user ID.
+
+##### Base Command
+
+`microsoft-atp-get-user-alerts`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | The user ID. Note that the ID is not the full UPN, but only the user name. (e.g., to retrieve alerts for user1@test.com use user1) | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.UserAlert.Username | String | The user name | 
+| MicrosoftATP.UserAlert.Alerts.ID | String | The alert ID | 
+| MicrosoftATP.UserAlert.Alerts.IncidentID | Number | The incident ID of the alert | 
+| MicrosoftATP.UserAlert.Alerts.InvestigationID | Number | The investigation ID related to the alert | 
+| MicrosoftATP.UserAlert.Alerts.InvestigationState | String | The current state of the investigation | 
+| MicrosoftATP.UserAlert.Alerts.AssignedTo | String | The owner of the alert | 
+| MicrosoftATP.UserAlert.Alerts.Severity | String | The severity of the alert | 
+| MicrosoftATP.UserAlert.Alerts.Status | String | The current status of the alert | 
+| MicrosoftATP.UserAlert.Alerts.Classification | String | The alert classification | 
+| MicrosoftATP.UserAlert.Alerts.Determination | String | The determination of the alert | 
+| MicrosoftATP.UserAlert.Alerts.DetectionSource | String | The detection source | 
+| MicrosoftATP.UserAlert.Alerts.Category | String | The category of the alert | 
+| MicrosoftATP.UserAlert.Alerts.ThreatFamilyName | String | The threat family name | 
+| MicrosoftATP.UserAlert.Alerts.Title | String | The alert title | 
+| MicrosoftATP.UserAlert.Alerts.Description | String | The alert description | 
+| MicrosoftATP.UserAlert.Alerts.AlertCreationTime | Date | The date and time the alert was created | 
+| MicrosoftATP.UserAlert.Alerts.FirstEventTime | Date | The first event time that triggered the alert on that machine | 
+| MicrosoftATP.UserAlert.Alerts.LastEventTime | Date | The last event time that triggered the alert on that machine | 
+| MicrosoftATP.UserAlert.Alerts.LastUpdateTime | Date | The first event time that triggered the alert on that machine | 
+| MicrosoftATP.UserAlert.Alerts.ResolvedTime | Date | The date and time in which the status of the alert was changed to 'Resolved' | 
+| MicrosoftATP.UserAlert.Alerts.MachineID | String | The mahine ID that is associated with the alert | 
+| MicrosoftATP.UserAlert.Alerts.ComputerDNSName | String | The machine DNS name | 
+| MicrosoftATP.UserAlert.Alerts.AADTenantID | String | The AAD tenant ID | 
+| MicrosoftATP.UserAlert.Alerts.Comments.Comment | String | The alert comment string | 
+| MicrosoftATP.UserAlert.Alerts.Comments.CreatedBy | String | The alert comment created by string | 
+| MicrosoftATP.UserAlert.Alerts.Comments.CreatedTime | Date | The alert comment create time date | 
+
+
+##### Command Example
+```!microsoft-atp-get-user-alerts username=demisto```
+
+##### Context Example
+```
+{
+    "MicrosoftATP.UserAlert": {
+        "Username": "demisto", 
+        "Alerts": [
+            {
+                "Category": "DefenseEvasion", 
+                "ThreatFamilyName": null, 
+                "Severity": "Medium", 
+                "LastEventTime": "2020-02-17T11:39:09.9948632Z", 
+                "FirstEventTime": "2020-02-17T11:37:11.4901408Z", 
+                "Comments": [
+                    {
+                        "Comment": null, 
+                        "CreatedTime": null, 
+                        "CreatedBy": null
+                    }
+                ], 
+                "AADTenantID": "ebac1a16-81bf-449b-8d43-5732c3c1d999", 
+                "AlertCreationTime": "2020-02-17T11:40:33.5724218Z", 
+                "Status": "InProgress", 
+                "Description": "A process abnormally injected code into another process, As a result, unexpected code may be running in the target process memory. Injection is often used to hide malicious code execution within a trusted process. \nAs a result, the target process may exhibit abnormal behaviors such as opening a listening port or connecting to a command and control server.", 
+                "InvestigationState": "Benign", 
+                "MachineID": "4899036531e374137f63289c3267bad772c13fef", 
+                "Title": "Suspicious process injection observed", 
+                "InvestigationID": 1, 
+                "Determination": null, 
+                "IncidentID": 7, 
+                "AssignedTo": "Automation", 
+                "DetectionSource": "WindowsDefenderAtp", 
+                "ResolvedTime": null, 
+                "ID": "da637175364336494657_410871946", 
+                "LastUpdateTime": "2020-03-17T11:29:55.0066667Z", 
+                "Classification": null, 
+                "ComputerDNSName": "desktop-s2455r8", 
+                "Evidence": [
+                    {
+                        "userPrincipalName": null, 
+                        "processId": 11192, 
+                        "sha1": "36c5d12033b2eaf251bae61c00690ffb17fddc87", 
+                        "parentProcessCreationTime": "2020-02-17T08:03:34.9841426Z", 
+                        "domainName": null, 
+                        "url": null, 
+                        "processCommandLine": "\"powershell.exe\" ", 
+                        "entityType": "Process", 
+                        "processCreationTime": "2020-02-17T12:38:47.6521977Z", 
+                        "aadUserId": null, 
+                        "fileName": "powershell.exe", 
+                        "sha256": "908b64b1971a979c7e3e8ce4621945cba84854cb98d76367b791a6e22b5f6d53", 
+                        "parentProcessId": 9008, 
+                        "userSid": null, 
+                        "filePath": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0", 
+                        "accountName": null, 
+                        "ipAddress": null
+                    }, 
+                    {
+                        "userPrincipalName": null, 
+                        "processId": 12508, 
+                        "sha1": "d487580502354c61808c7180d1a336beb7ad4624", 
+                        "parentProcessCreationTime": "2020-02-17T12:38:47.6521977Z", 
+                        "domainName": null, 
+                        "url": null, 
+                        "processCommandLine": "\"notepad.exe\"", 
+                        "entityType": "Process", 
+                        "processCreationTime": "2020-02-17T12:41:04.9040946Z", 
+                        "aadUserId": null, 
+                        "fileName": "notepad.exe", 
+                        "sha256": "f1d62648ef915d85cb4fc140359e925395d315c70f3566b63bb3e21151cb2ce3", 
+                        "parentProcessId": 11192, 
+                        "userSid": null, 
+                        "filePath": "C:\\Windows\\System32", 
+                        "accountName": null, 
+                        "ipAddress": null
+                    }, 
+                    {
+                        "userPrincipalName": null, 
+                        "processId": null, 
+                        "sha1": null, 
+                        "parentProcessCreationTime": null, 
+                        "domainName": "DESKTOP-S2455R8", 
+                        "url": null, 
+                        "processCommandLine": null, 
+                        "entityType": "User", 
+                        "processCreationTime": null, 
+                        "aadUserId": null, 
+                        "fileName": null, 
+                        "sha256": null, 
+                        "parentProcessId": null, 
+                        "userSid": "S-1-5-21-4197691174-1403503641-4006700887-1001", 
+                        "filePath": null, 
+                        "accountName": "demisto", 
+                        "ipAddress": null
+                    }, 
+                    {
+                        "userPrincipalName": null, 
+                        "processId": 8936, 
+                        "sha1": "d487580502354c61808c7180d1a336beb7ad4624", 
+                        "parentProcessCreationTime": "2020-02-17T12:38:47.6521977Z", 
+                        "domainName": null, 
+                        "url": null, 
+                        "processCommandLine": "\"notepad.exe\"", 
+                        "entityType": "Process", 
+                        "processCreationTime": "2020-02-17T12:39:16.3783602Z", 
+                        "aadUserId": null, 
+                        "fileName": "notepad.exe", 
+                        "sha256": "f1d62648ef915d85cb4fc140359e925395d315c70f3566b63bb3e21151cb2ce3", 
+                        "parentProcessId": 11192, 
+                        "userSid": null, 
+                        "filePath": "C:\\Windows\\System32", 
+                        "accountName": null, 
+                        "ipAddress": null
+                    }
+                ]
+            }
+
+                ]
+            }
+        ]
+    }
+}
+```
+
+##### Human Readable Output
+### User demisto related alerts Info:
+|ID|Title|Description|IncidentID|Severity|Status|Category|MachineID|
+|---|---|---|---|---|---|---|---|
+| da637175364336494657_410871946 | Suspicious process injection observed | A process abnormally injected code into another process, As a result, unexpected code may be running in the target process memory. Injection is often used to hide malicious code execution within a trusted process. As a result, the target process may exhibit abnormal behaviors such as opening a listening port or connecting to a command and control server. | 7 | Medium | InProgress | DefenseEvasion | 4899036531e374137f63289c3267bad772c13fef |
+
+### 31. microsoft-atp-get-user-machines
+---
+Retrieves a collection of machines related to a given user ID.
+
+##### Base Command
+
+`microsoft-atp-get-user-machines`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | The user ID. Note that the id is not the full UPN, but only the user name. (e.g., to retrieve machines for user1@test.com use user1) | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.UserMachine.Username | String | The user name | 
+| MicrosoftATP.UserMachine.Machines.ID | String | The machine ID | 
+| MicrosoftATP.UserMachine.Machines.ComputerDNSName | String | The machine DNS name | 
+| MicrosoftATP.UserMachine.Machines.FirstSeen | Date | The first date and time where the machine was observed by Microsoft Defender ATP | 
+| MicrosoftATP.UserMachine.Machines.LastSeen | Date | The last date and time where the machine was observed by Microsoft Defender ATP | 
+| MicrosoftATP.UserMachine.Machines.OSPlatform | String | The operating system platform | 
+| MicrosoftATP.UserMachine.Machines.OSVersion | String | The operating system Version | 
+| MicrosoftATP.UserMachine.Machines.OSProcessor | String | The operating system processor | 
+| MicrosoftATP.v.Machines.LastIPAddress | String | The last IP on the machine | 
+| MicrosoftATP.UserMachine.Machines.LastExternalIPAddress | String | The last IP through which the machine accessed the internet | 
+| MicrosoftATP.UserMachine.Machines.OSBuild | Number | The operating system build number | 
+| MicrosoftATP.UserMachine.Machines.HealthStatus | String | The machine health status | 
+| MicrosoftATP.UserMachine.Machines.RBACGroupID | Number | The machine RBAC group ID | 
+| MicrosoftATP.UserMachine.Machines.RBACGroupName | String | The machine RBAC group Name | 
+| MicrosoftATP.UserMachine.Machines.RiskScore | String | The machine risk score | 
+| MicrosoftATP.UserMachine.Machines.ExposureLevel | String | The machine exposure level | 
+| MicrosoftATP.UserMachine.Machines.IsAADJoined | Boolean | True if machine is AAD joined, False otherwise | 
+| MicrosoftATP.UserMachine.Machines.AADDeviceID | String | The AAD device ID | 
+| MicrosoftATP.UserMachine.Machines.MachineTags | String | Set of machine tags | 
+
+
+##### Command Example
+```!microsoft-atp-get-user-machines username=demisto```
+
+##### Context Example
+```
+{
+    "MicrosoftATP.UserMachine": {
+        "Username": "demisto", 
+        "Machines": [
+            {
+                "OSBuild": 18363, 
+                "ExposureLevel": "Medium", 
+                "OSPlatform": "Windows10", 
+                "MachineTags": [
+                    "test Tag 2", 
+                    "test Tag 5"
+                ], 
+                "AADDeviceID": "cfcf4177-227e-4cdb-ac8e-f9a3da1ca30c", 
+                "ComputerDNSName": "desktop-s2455r8", 
+                "RBACGroupID": 0, 
+                "OSProcessor": "x64", 
+                "HealthStatus": "Active", 
+                "AgentVersion": "10.6940.18362.693", 
+                "LastExternalIPAddress": "81.166.99.236", 
+                "LastIPAddress": "192.168.1.71", 
+                "OSVersion": "1909", 
+                "RiskScore": "High", 
+                "ID": "4899036531e374137f63289c3267bad772c13fef", 
+                "FirstSeen": "2020-02-17T08:30:07.2415577Z", 
+                "LastSeen": "2020-03-23T08:10:41.473428Z"
+            }, 
+            {
+                "OSBuild": 18363, 
+                "ExposureLevel": "Medium", 
+                "OSPlatform": "Windows10", 
+                "MachineTags": [
+                    "test add tag", 
+                    "testing123"
+                ], 
+                "ComputerDNSName": "desktop-s2455r9", 
+                "RBACGroupID": 0, 
+                "OSProcessor": "x64", 
+                "HealthStatus": "Active", 
+                "AgentVersion": "10.6940.18362.693", 
+                "LastExternalIPAddress": "81.166.99.236", 
+                "LastIPAddress": "192.168.1.73", 
+                "OSVersion": "1909", 
+                "RiskScore": "Medium", 
+                "ID": "f70f9fe6b29cd9511652434919c6530618f06606", 
+                "FirstSeen": "2020-02-20T14:44:11.4627779Z", 
+                "LastSeen": "2020-03-23T07:55:50.9986715Z"
+            }
+        ]
+    }
+}
+```
+
+##### Human Readable Output
+### Machines that are related to user demisto:
+|ID|ComputerDNSName|OSPlatform|LastIPAddress|LastExternalIPAddress|HealthStatus|RiskScore|ExposureLevel|
+|---|---|---|---|---|---|---|---|
+| 4899036531e374137f63289c3267bad772c13fef | desktop-s2455r8 | Windows10 | 192.168.1.71 | 81.166.99.236 | Active | High | Medium |
+| f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 | Windows10 | 192.168.1.73 | 81.166.99.236 | Active | Medium | Medium |
+
+
+### 32. microsoft-atp-add-remove-machine-tag
+---
+Adds or removes a tag on a specific Machine.
+
+##### Base Command
+
+`microsoft-atp-add-remove-machine-tag`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_id | The machine ID. | Required | 
+| action | The action to use for the tag. | Required | 
+| tag | The tag name. | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.Machine.ID | String | The machine ID | 
+| MicrosoftATP.Machine.ComputerDNSName | String | The machine DNS name | 
+| MicrosoftATP.Machine.FirstSeen | Date | The first date and time where the machine was observed by Microsoft Defender ATP | 
+| MicrosoftATP.Machine.LastSeen | Date | The last date and time where the machine was observed by Microsoft Defender ATP | 
+| MicrosoftATP.Machine.OSPlatform | String | The operating system platform | 
+| MicrosoftATP.Machine.OSVersion | String | The operating system Version | 
+| MicrosoftATP.Machine.OSProcessor | String | The operating system processor | 
+| MicrosoftATP.Machine.LastIPAddress | String | The last IP on the machine | 
+| MicrosoftATP.Machine.LastExternalIPAddress | String | The last IP through which the machine accessed the internet | 
+| MicrosoftATP.Machine.OSBuild | Number | The operating system build number | 
+| MicrosoftATP.Machine.HealthStatus | String | The machine health status | 
+| MicrosoftATP.Machine.RBACGroupID | Number | The machine RBAC group ID | 
+| MicrosoftATP.Machine.RBACGroupName | String | The machine RBAC group Name | 
+| MicrosoftATP.Machine.RiskScore | String | The machine risk score | 
+| MicrosoftATP.Machine.ExposureLevel | String | The machine exposure level | 
+| MicrosoftATP.Machine.IsAADJoined | Boolean | True if machine is AAD joined, False otherwise | 
+| MicrosoftATP.Machine.AADDeviceID | String | The AAD device ID | 
+| MicrosoftATP.Machine.MachineTags | String | Set of machine tags | 
+
+
+##### Command Example
+```!microsoft-atp-add-remove-machine-tag action=Add machine_id=f70f9fe6b29cd9511652434919c6530618f06606 tag="test add tag"```
+
+##### Context Example
+```
+{
+    "MicrosoftATP.Machine": {
+        "OSBuild": 18363, 
+        "ExposureLevel": "Medium", 
+        "OSPlatform": "Windows10", 
+        "MachineTags": [
+            "test add tag", 
+            "testing123"
+        ], 
+        "ComputerDNSName": "desktop-s2455r9", 
+        "RBACGroupID": 0, 
+        "OSProcessor": "x64", 
+        "HealthStatus": "Active", 
+        "AgentVersion": "10.6940.18362.693", 
+        "LastExternalIPAddress": "81.166.99.236", 
+        "LastIPAddress": "192.168.1.73", 
+        "OSVersion": "1909", 
+        "RiskScore": "Medium", 
+        "ID": "f70f9fe6b29cd9511652434919c6530618f06606", 
+        "FirstSeen": "2020-02-20T14:44:11.4627779Z", 
+        "LastSeen": "2020-03-23T07:55:50.9986715Z"
+    }
+}
+```
+
+##### Human Readable Output
+### Succeed to Add tag to f70f9fe6b29cd9511652434919c6530618f06606:
+|ID|ComputerDNSName|OSPlatform|LastExternalIPAddress|HealthStatus|RiskScore|ExposureLevel|MachineTags|
+|---|---|---|---|---|---|---|---|
+| f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 | Windows10 | 81.166.99.236 | Active | Medium | Medium | test add tag, testing123 |
+
+

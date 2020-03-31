@@ -332,7 +332,7 @@ FILE_INDICATORS = '''
          ],
          "account":"",
          "timestamp":"2020-02-19T21:06:50.554042+02:00",
-         "indicator_type":"File MD5",
+         "indicator_type":"File",
          "value":"86d96212bfe35ed590aa4f7ace76bb51",
          "source":"DBot",
          "investigationIDs":[
