@@ -84,32 +84,6 @@ class TestZabbix():
 
         spy.assert_called_once_with('host.get', {})
 
-    def test_main_testmodule(self, mocker):
-        mocker.patch('demistomock.params', return_value={
-            'url': 'http://localhost',
-            'credentials': {
-                'identifier': 'user',
-                'password': 'password'
-            }
-        })
-        mocker.patch('demistomock.args', return_value={
-            
-        })
-        mocker.patch('demistomock.command', return_value='test-module')
-
-        zapi = ZabbixApiStub()
-
-        mocker.patch('Zabbix.ZabbixIntegration.login', return_value=zapi)
-        mocker.patch('Zabbix.ZabbixIntegration.logout')
-
-        spy = mocker.spy(zapi.apiinfo, 'version')
-
-        zabbix = Zabbix.ZabbixIntegration()
-        zabbix.main()
-
-        spy.assert_called_once()
-
-
 class ZabbixApiStub(object):
     def __init__(self):
         self.apiinfo = apiinfo()

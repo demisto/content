@@ -1,14 +1,14 @@
-id: e11a2b2f-1be8-4f3b-8ce9-cc086522e0d3
-version: 13
-name: Playbook - Zabbix
+id: test-zabbix
+version: 1
+name: test-zabbix
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 1b032986-9c5f-4bec-82fe-52815359a3bd
+    taskid: 69b932fb-e047-4c83-8bd0-42d197c52913
     type: start
     task:
-      id: 1b032986-9c5f-4bec-82fe-52815359a3bd
+      id: 69b932fb-e047-4c83-8bd0-42d197c52913
       version: -1
       name: ""
       iscommand: false
@@ -29,20 +29,17 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: cbecf80c-49ca-4f80-80ac-90f2663e6ab2
+    taskid: 32665f69-95a5-4cd8-85e3-0bef554aebe9
     type: regular
     task:
-      id: cbecf80c-49ca-4f80-80ac-90f2663e6ab2
+      id: 32665f69-95a5-4cd8-85e3-0bef554aebe9
       version: -1
-      name: execute_command
-      script: Zabbix|||execute_command
+      name: test-module
+      description: Test if module is working
+      script: Zabbix|||test-module
       type: regular
       iscommand: true
       brand: Zabbix
-    scriptarguments:
-      method:
-        simple: host.get
-      params: {}
     separatecontext: false
     view: |-
       {

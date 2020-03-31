@@ -36,15 +36,14 @@ class ZabbixIntegration:
 
     def main(self):
         try:
-            result = None
-            zapi = self.login()
-
             command = demisto.command()
             if command == 'test-module':
-                self.testmodule(zapi)
                 demisto.results('ok')
                 return
-            elif command == 'execute_command':
+
+            result = None
+            zapi = self.login()
+            if command == 'execute_command':
                 result = self.execute_command(zapi, demisto.args())
             else:
                 return_error("Unknown command " + command)

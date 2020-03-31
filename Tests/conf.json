@@ -2603,6 +2603,10 @@
             "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
             "timeout" : 60000,
             "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "Zabbix",
+            "playbookID": "zabbix-text"
         }
     ],
     "skipped_tests": {
