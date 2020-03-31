@@ -14,6 +14,7 @@ username_context = {
     }
 }
 
+
 domain_context = {
     'Domain(val.Name && val.Name == obj.Name)': {
         'Name': 'adobe.com', 'Pwned-V2': {
