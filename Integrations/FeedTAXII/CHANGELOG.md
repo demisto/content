@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.3.4] - 2020-03-30
 You can now leave the **collection** parameter empty to receive the list of available collections.
 
 
