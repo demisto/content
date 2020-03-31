@@ -228,52 +228,74 @@ def test_module(args_dict):
     yield ['ok', {}, []]
 
 
+# returning 3 lists
 def pwned_email_command(args_dict):
     email_list = argToList(args_dict.get('email', ''))
+    api_email_res_list, api_paste_res_list = pwned_email(email_list)
+
+    md_list = []
+    ec_list = []
+
+    for email, api_email_res, api_paste_res in zip(email_list, api_email_res_list, api_paste_res_list):
+        md_list.append(data_to_markdown('Email', email, api_email_res, api_paste_res))
+        ec_list.append(email_to_entry_context(email, api_email_res or [], api_paste_res or []))
+    return md_list, ec_list, api_email_res_list
+
+
+# return lists of api_email_res and api_paste_res
+def pwned_email(email_list):
+    api_email_res_list = []
+    api_paste_res_list = []
+
     for email in email_list:
         email_suffix = SUFFIXES.get("email") + email + SUFFIXES.get("email_truncate_verified")
         paste_suffix = SUFFIXES.get("paste") + email
-        for arg in pwned_email(email, email_suffix, paste_suffix):
-            yield arg
+        api_email_res_list.append(http_request('GET', url_suffix=email_suffix))
+        api_paste_res_list.append(http_request('GET', url_suffix=paste_suffix))
 
-
-def pwned_email(email, email_suffix, paste_suffix):
-    api_email_res = http_request('GET', url_suffix=email_suffix)
-    api_paste_res = http_request('GET', url_suffix=paste_suffix)
-
-    md = data_to_markdown('Email', email, api_email_res, api_paste_res)
-    ec = email_to_entry_context(email, api_email_res or [], api_paste_res or [])
-    yield [md, ec, api_email_res]
+    return api_email_res_list, api_paste_res_list
 
 
 def pwned_domain_command(args_dict):
     domain_list = argToList(args_dict.get('domain', ''))
+    api_res_list = pwned_domain(domain_list)
+
+    md_list = []
+    ec_list = []
+
+    for domain, api_res in zip(domain_list, api_res_list):
+        md_list.append(data_to_markdown('Domain', domain, api_res))
+        ec_list.append(domain_to_entry_context(domain, api_res or []))
+    return md_list, ec_list, api_res_list
+
+
+def pwned_domain(domain_list):
+    api_res_list = []
     for domain in domain_list:
         suffix = SUFFIXES.get("domain") + domain + SUFFIXES.get("domain_truncate_verified")
-        for arg in pwned_domain(domain, suffix):
-            yield arg
-
-
-def pwned_domain(domain, suffix):
-    api_res = http_request('GET', url_suffix=suffix)
-    md = data_to_markdown('Domain', domain, api_res)
-    ec = domain_to_entry_context(domain, api_res or [])
-    yield [md, ec, api_res]
+        api_res_list.append(http_request('GET', url_suffix=suffix))
+    return api_res_list
 
 
 def pwned_username_command(args_dict):
     username_list = argToList(args_dict.get('username', ''))
+    api_res_list = pwned_username(username_list)
+
+    md_list = []
+    ec_list = []
+
+    for username, api_res in zip(username_list, api_res_list):
+        md_list.append(data_to_markdown('Username', username, api_res))
+        ec_list.append(domain_to_entry_context(username, api_res or []))
+    return md_list, ec_list, api_res_list
+
+
+def pwned_username(username_list):
+    api_res_list = []
     for username in username_list:
         suffix = SUFFIXES.get("username") + username + SUFFIXES.get("username_truncate_verified")
-        for arg in pwned_username(username, suffix):
-            yield arg
-
-
-def pwned_username(username, suffix):
-    api_res = http_request('GET', url_suffix=suffix)
-    md = data_to_markdown('Username', username, api_res)
-    ec = domain_to_entry_context(username, api_res or [])
-    yield [md, ec, api_res]
+        api_res_list.append(http_request('GET', url_suffix=suffix))
+    return api_res_list
 
 
 command = demisto.command()
@@ -291,9 +313,9 @@ try:
     }
 
     if command in commands:
-        for responses in commands[command](demisto.args()):
-            hr, outputs, raw = responses
-            return_outputs(hr, outputs, raw)
+        md_list, ec_list, api_email_res_list = commands[command](demisto.args())
+        for md, ec, api_paste_res in zip(md_list, ec_list, api_email_res_list):
+            return_outputs(md, ec, api_paste_res)
 
 # Log exceptions
 except Exception as e:
