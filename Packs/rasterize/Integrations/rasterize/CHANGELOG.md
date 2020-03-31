@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.3.4] - 2020-03-30
 Increased default value for ***rasterize*** image width to 1024px.
 
 ## [20.3.3] - 2020-03-18
