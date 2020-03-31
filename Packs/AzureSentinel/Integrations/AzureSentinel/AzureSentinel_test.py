@@ -7,6 +7,7 @@ def mock_client(self_deployed):
         self_deployed=self_deployed,
         refresh_token='refresh_token',
         auth_and_token_url='auth_id',
+        redirect_uri='redirect_uri',
         enc_key='enc_key',
         auth_code='auth_code',
         subscription_id='subscriptionID',
