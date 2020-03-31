@@ -279,4 +279,3 @@ script:
   feed: true
   runonce: false
   subtype: python3
-sourcemoduleid: Office 365 Feed
