@@ -3,18 +3,6 @@ commonfields:
   id: Microsoft Management Activity API (O365/Azure Events)
   version: -1
 configuration:
-- display: Redirect URI
-  name: redirect_uri
-  required: true
-  type: 0
-- display: Client Secret
-  name: client_secret
-  required: true
-  type: 4
-- display: Client ID
-  name: client_id
-  required: true
-  type: 0
 - defaultvalue: https://manage.office.com/api/v1.0/
   display: Base URL
   name: base_url

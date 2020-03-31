@@ -463,7 +463,9 @@ def get_content_types_to_fetch(client):
     content_types_to_fetch = demisto.params().get("content_types_to_fetch")
     if not content_types_to_fetch:
         # Was not supplied by the user, so we will return all content types the user is subscribed to
-        content_types_to_fetch = get_all_subscribed_content_types(client)
+        subscriptions = client.list_subscriptions_request()
+        content_types_to_fetch = get_enabled_subscriptions_content_types(
+            subscriptions)  # Subscriptions are defined by their content type
     return content_types_to_fetch
 
 
@@ -570,7 +572,7 @@ def main():
         auth_id = params['auth_id']
         enc_key = params['enc_key']
 
-        refresh_token = demisto.getIntegrationContext().get('current_refresh_token') or refresh_token
+        refresh_token = (demisto.getIntegrationContext().get('current_refresh_token') or refresh_token)
 
         client = Client(
             base_url=base_url,
@@ -618,8 +620,3 @@ def main():
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
-
-from MicrosoftApiModule import *
-
-if __name__ in ('__main__', '__builtin__', 'builtins'):
-    main()
