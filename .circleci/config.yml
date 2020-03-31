@@ -88,7 +88,7 @@ jobs:
             python -m pytest ./Tests/scripts/infrastructure_tests/validate_files_test.py -v
             python3 -m pytest ./Tests/scripts/infrastructure_tests/update_id_set_test.py -v
             python3 -m pytest ./Tests/scripts/infrastructure_tests/store_packs_test.py -v
-            python -m pytest ./Tests/scripts/test_configure_tests.py -v
+            python -m pytest ./Tests/scripts/infrastructure_tests/test_configure_tests.py -v
       - run:
           name: Validate Files and Yaml
           when: always
