@@ -410,6 +410,13 @@ def get_template(name):
 
 
 def get_ticket_command():
+    """Get ticket.
+
+    Args:
+
+    Returns:
+        Demisto Outputs.
+    """
     args = unicode_to_str_recur(demisto.args())
     ticket_type = get_table_name(args.get('ticket_type'))
     ticket_id = args.get('id')
@@ -1493,11 +1500,9 @@ def test_module():
 
 
 def main():
-
     LOG('Executing command {}'.format(demisto.command()))
-    raise_exception = False
-
     try:
+        raise_exception = False
         handle_proxy()
 
         if demisto.command() == 'test-module':
@@ -1552,11 +1557,11 @@ def main():
             demisto.results(get_table_name_command())
         if demisto.command() == 'servicenow-get-ticket-notes':
             demisto.results(get_ticket_notes_command())
-    except Exception as e:
-        LOG(e)
+    except Exception as err:
+        LOG(err)
         LOG.print_log()
         if not raise_exception:
-            return_error(str(e))
+            return_error(str(err))
         else:
             raise
 
