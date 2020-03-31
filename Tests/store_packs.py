@@ -411,8 +411,11 @@ class Pack(object):
         finally:
             return task_status
 
-    def sign_pack(self):
+    def sign_pack(self, signature_string=None):
         """Signs pack folder and creates signature file.
+
+        Args:
+            signature_string (str): Base64 encoded string used to sign the pack.
 
         Returns:
             bool: whether the operation succeeded.
@@ -420,16 +423,20 @@ class Pack(object):
         task_status = False
 
         try:
-            arg = f'./signDirectory {self._pack_path} /signKey'
-            signing_process = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-            output, err = signing_process.communicate()
+            if signature_string:
+                with open("keyfile", "wb") as keyfile:
+                    keyfile.write(signature_string.encode())
+                arg = f'./signDirectory {self._pack_path} /keyfile base64'
+                signing_process = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+                output, err = signing_process.communicate()
 
-            if err:
-                print_error(f"Failed to sign pack for {self._pack_name} - {str(err)}")
-                return
+                if err:
+                    print_error(f"Failed to sign pack for {self._pack_name} - {str(err)}")
+                    return
 
-            print_warning(output)  # todo remove after the issue is fixed
-            print(f"Signed {self._pack_name} pack successfully")
+                print(f"Signed {self._pack_name} pack successfully")
+            else:
+                print(f"No signature provided. Skipped signing {self._pack_name} pack")
             task_status = True
         except Exception as e:
             print_error(f"Failed to sign pack for {self._pack_name} - {str(e)}")
@@ -1007,6 +1014,8 @@ def option_handler():
                         help="CircleCi build number (will be used as hash revision at index file)", required=False)
     parser.add_argument('-o', '--override_pack', help="Override existing packs in cloud storage", default=False,
                         action='store_true', required=False)
+    parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
+                        required=False)
     # disable-secrets-detection-end
     return parser.parse_args()
 
@@ -1020,6 +1029,7 @@ def main():
     specific_packs = option.pack_names
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
     override_pack = option.override_pack
+    signature_key = option.key_string
 
     # detect new or modified packs
     modified_packs = get_modified_packs(specific_packs)
@@ -1068,7 +1078,7 @@ def main():
             pack.cleanup()
             continue
 
-        task_status = pack.sign_pack()
+        task_status = pack.sign_pack(signature_key)
         if not task_status:
             pack.status = PackStatus.FAILED_SIGNING_PACKS.name
             pack.cleanup()
