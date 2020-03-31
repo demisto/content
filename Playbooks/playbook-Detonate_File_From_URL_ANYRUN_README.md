@@ -102,4 +102,4 @@ This playbook does not use any scripts.
 | File.Malicious.Description | The reason that the vendor made the decision that decided the file is malicious. | String |
 | ANYRUN.Task.Status | The task analysis status. | String |
 
-![Detonate_File_From_URL_ANYRUN](https://github.com/demisto/content/blob/77dfca704d8ac34940713c1737f89b07a5fc2b9d/images/playbooks/Detonate_File_From_URL_ANYRUN.png)
+![Detonate_File_From_URL_ANYRUN](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_File_From_URL_ANYRUN.png)

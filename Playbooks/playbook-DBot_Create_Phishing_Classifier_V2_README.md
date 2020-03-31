@@ -50,4 +50,4 @@ This playbook does not use any commands.
 | DBotPhishingClassifier.EvaluationScores.Total.All | The total number of instances. | number |
 | DBotPhishingClassifier.ModelName | The name of the model in Demisto. | string |
 
-![DBot_Create_Phishing_Classifier_V2](https://github.com/demisto/content/blob/77dfca704d8ac34940713c1737f89b07a5fc2b9d/images/playbooks/DBot_Create_Phishing_Classifier_V2.png)
+![DBot_Create_Phishing_Classifier_V2](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/DBot_Create_Phishing_Classifier_V2.png)

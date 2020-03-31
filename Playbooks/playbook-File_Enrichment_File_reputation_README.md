@@ -40,4 +40,4 @@ This playbook does not use any commands.
 | DBotScore.Vendor | The vendor used to calculate the score. | string |
 | DBotScore.Score | The actual score. | number |
 
-![File_Enrichment_File_reputation](https://github.com/demisto/content/blob/77dfca704d8ac34940713c1737f89b07a5fc2b9d/images/playbooks/File_Enrichment_File_reputation.png)
+![File_Enrichment_File_reputation](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/File_Enrichment_File_reputation.png)

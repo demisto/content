@@ -27,4 +27,4 @@ This playbook does not use any scripts.
 ---
 There are no outputs for this playbook.
 
-![Block_File_Quarantine_Traps](https://github.com/demisto/content/blob/77dfca704d8ac34940713c1737f89b07a5fc2b9d/images/playbooks/Block_File_Quarantine_Traps.png)
+![Block_File_Quarantine_Traps](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Block_File_Quarantine_Traps.png)
