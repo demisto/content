@@ -220,7 +220,7 @@ class MicrosoftClient(BaseClient):
 
         return access_token, expires_in, ''
 
-    def _get_self_deployed_token_auth_code(self, refresh_token: str = ''):
+    def _get_self_deployed_token_auth_code(self, refresh_token: str = '') -> Tuple[str, int, str]:
         """
         Gets a token by authorizing a self deployed Azure application.
 
@@ -233,6 +233,7 @@ class MicrosoftClient(BaseClient):
             'resource': self.resource,
             'redirect_uri': self.redirect_uri
         }
+        refresh_token = refresh_token or self._get_refresh_token_from_auth_code_param()
         if refresh_token:
             data['grant_type'] = REFRESH_TOKEN
             data['refresh_token'] = refresh_token
@@ -251,10 +252,17 @@ class MicrosoftClient(BaseClient):
             return_error(f'Error in Microsoft authorization: {str(e)}')
 
         access_token = response_json.get('access_token', '')
-        refresh_token = response_json.get('refresh_token', '')
+        # refresh_token = response_json.get('refresh_token', '')
         expires_in = int(response_json.get('expires_in', 3595))
 
         return access_token, expires_in, refresh_token
+
+    def _get_refresh_token_from_auth_code_param(self) -> str:
+        refresh_prefix = "refresh_token:"
+        if self.auth_code.startswith(refresh_prefix):  # for testing we allow setting the refresh token directly
+            demisto.debug("Using refresh token set as auth_code")
+            return self.auth_code[len(refresh_prefix):]
+        return ''
 
     @staticmethod
     def error_parser(error: requests.Response) -> str:
