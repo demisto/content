@@ -1,0 +1,71 @@
+id: e11a2b2f-1be8-4f3b-8ce9-cc086522e0d3
+version: 13
+name: Playbook - Zabbix
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1b032986-9c5f-4bec-82fe-52815359a3bd
+    type: start
+    task:
+      id: 1b032986-9c5f-4bec-82fe-52815359a3bd
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: cbecf80c-49ca-4f80-80ac-90f2663e6ab2
+    type: regular
+    task:
+      id: cbecf80c-49ca-4f80-80ac-90f2663e6ab2
+      version: -1
+      name: execute_command
+      script: Zabbix|||execute_command
+      type: regular
+      iscommand: true
+      brand: Zabbix
+    scriptarguments:
+      method:
+        simple: host.get
+      params: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+
