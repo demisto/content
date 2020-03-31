@@ -4,7 +4,8 @@
     "tests": [
         {
             "integrations": "Azure Sentinel",
-            "playbookID": "TestAzureSentinelPlaybook"
+            "playbookID": "TestAzureSentinelPlaybook",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Tanium Threat Response",
