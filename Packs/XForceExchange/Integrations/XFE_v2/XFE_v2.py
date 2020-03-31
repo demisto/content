@@ -382,7 +382,7 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         report_data = report['origins'].get('external', {})
         family_value = report_data.get('family')
 
-        hash_info = {**report['origins'], 'Family': ', '.join(family_value),
+        hash_info = {**report['origins'], 'Family': family_value,
                      'FamilyMembers': report_data.get('familyMembers')}
         context[file_key] = hash_info
 
