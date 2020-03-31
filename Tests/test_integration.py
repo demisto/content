@@ -695,15 +695,15 @@ def __print_investigation_error(client, playbook_id, investigation_id, prints_ma
     if res and int(res[1]) == 200:
         resp_json = ast.literal_eval(res[0])
         entries = resp_json['entries']
-        prints_manager.add_print_job('Playbook ' + playbook_id + ' has failed:', print_color, thread_index,
+        prints_manager.add_print_job('Playbook {} has failed:'.format(playbook_id), print_color, thread_index,
                                      message_color=color)
         for entry in entries:
             if entry['type'] == ENTRY_TYPE_ERROR and entry['parentContent']:
-                prints_manager.add_print_job('- Task ID: ' + entry['taskId'].encode('utf-8'), print_color, thread_index,
+                prints_manager.add_print_job('- Task ID: {}'.format(entry['taskId']), print_color, thread_index,
                                              message_color=color)
-                prints_manager.add_print_job('  Command: ' + entry['parentContent'].encode('utf-8'), print_color,
+                prints_manager.add_print_job('  Command: {}'.format(entry['parentContent']), print_color,
                                              thread_index, message_color=color)
-                body_contents_str = '  Body:\n' + entry['contents'].encode('utf-8') + '\n'
+                body_contents_str = '  Body:\n{}\n'.format(entry['contents'])
                 prints_manager.add_print_job(body_contents_str, print_color,
                                              thread_index, message_color=color)
 
