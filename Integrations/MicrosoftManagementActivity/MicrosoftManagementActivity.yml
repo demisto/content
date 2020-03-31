@@ -3,10 +3,6 @@ commonfields:
   id: Microsoft Management Activity API (O365/Azure Events)
   version: -1
 configuration:
-- display: Authentication code
-  name: auth_code
-  required: true
-  type: 4
 - display: Redirect URI
   name: redirect_uri
   required: true
@@ -74,17 +70,22 @@ configuration:
     (?) section)
   name: refresh_token
   required: false
-  type: 0
+  type: 4
 - display: Key (received from the authorization step - see Detailed Instructions (?)
     section)
   name: enc_key
   required: false
-  type: 0
+  type: 4
 - display: ID (received from the authorization step - see Detailed Instructions (?)
     section)
   name: auth_id
   required: false
-  type: 0
+  type: 4
+- display: The authentication code you got for the service. For instructions on how
+    to receive it, see the detailed description ('?') section.
+  name: auth_code
+  required: false
+  type: 4
 description: The Microsoft Management Activity API integration allows you to subscribe
   or unsubscribe to different audits, receive their content and fetch new content
   as incidents.
@@ -239,4 +240,3 @@ script:
   runonce: false
   script: ''
   type: python
-  subtype: python3

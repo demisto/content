@@ -66,14 +66,12 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def __init__(self, base_url: str, username: str, password: str, verify: bool,
-                 proxy: bool, headers, self_deployed, refresh_token, auth_and_token_url,
-                 enc_key):
+    def __init__(self, base_url: str, verify: bool,
+                 proxy: bool, self_deployed, refresh_token, auth_and_token_url,
+                 enc_key, auth_code, tenant_id):
         # TODO : understand how the client_id and client_secret in MicrosoftApiModule are correct
-        super().__init__(base_url=f'{base_url}', headers=headers, verify=verify, proxy=proxy)
-        self.username = username
-        self.password = password
-        self.tenant_id = None
+        super().__init__(base_url=f'{base_url}', verify=verify, proxy=proxy)
+        self.tenant_id = tenant_id
         self.suffix_template = "{}/activity/feed/subscriptions/{}"
         self.tenant_id_suffix = ''
         self.access_token = None
@@ -82,23 +80,30 @@ class Client(BaseClient):
         self.auth_and_token_url = auth_and_token_url
         self.enc_key = enc_key
         self.ms_client = MicrosoftClient(self_deployed=self.self_deployed,
-                                         tenant_id=self.refresh_token,
+                                         tenant_id=self.tenant_id,
                                          auth_id=self.auth_and_token_url,
                                          enc_key=self.enc_key,
                                          app_name=APP_NAME,
                                          base_url=base_url,
+                                         grant_type = AUTHORIZATION_CODE,
                                          verify=verify,
                                          proxy=proxy,
                                          refresh_token=self.refresh_token,
-                                         ok_codes=(200, 201, 202, 204))
+                                         ok_codes=(200, 201, 202, 204),
+                                         scope='',
+                                         auth_code=auth_code,
+                                         resource='https://manage.office.com',
+                                         token_retrieval_url='https://login.windows.net/common/oauth2/token')
 
 
+    # TODO : remove if not used
     @staticmethod
     def is_token_expired(integration_context):
         token_expiry_timestamp = int(integration_context["expires_on"])
         now_in_epoch = (datetime.now() - datetime(1970, 1, 1)).total_seconds()
         return token_expiry_timestamp <= now_in_epoch - 10  # Checking with a 10 seconds margin to be on the safe side
 
+    # TODO : remove if not used
     @staticmethod
     def build_access_token_request_data(integration_context):
         redirect_uri = demisto.params().get('redirect_uri')
@@ -121,6 +126,7 @@ class Client(BaseClient):
 
         return data
 
+    # TODO : remove if not used
     @staticmethod
     def create_new_integration_context(get_access_token_response):
         new_integration_context = {
@@ -130,7 +136,7 @@ class Client(BaseClient):
         }
         return new_integration_context
 
-
+    # TODO : remove if not used
     def http_request(self, method, url_suffix=None, full_url=None, params={}, data=None, is_get_entity_cmd=False):
         # TODO : verify this does not break anything
         res = self.ms_client.http_request(method=method,  # disable-secrets-detection
@@ -141,7 +147,7 @@ class Client(BaseClient):
                                           resp_type='response')
         return res.json()
 
-
+    # TODO : remove if not used
     def get_access_token_request(self):
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -558,15 +564,25 @@ def main():
     try:
         args = demisto.args()
         params = demisto.params()
+        refresh_token = params.get('refresh_token',  '')
+        self_deployed = params.get('self_deployed', False)
+        tenant_id = refresh_token if self_deployed else ''
+        auth_id = params['auth_id']
+        enc_key = params['enc_key']
+
+        refresh_token = demisto.getIntegrationContext().get('current_refresh_token') or refresh_token
 
         client = Client(
-            base_url, username='', password='',
+            base_url=base_url,
+            tenant_id=tenant_id,
             verify=verify_certificate,
-            proxy=proxy, headers={},
-            self_deployed=params.get('self_deployed', False),
-            refresh_token=params['refresh_token'],
-            auth_and_token_url=params['auth_id'],
-            enc_key=params['enc_key'],)
+            proxy=proxy,
+            self_deployed=self_deployed,
+            refresh_token=refresh_token,
+            auth_and_token_url=auth_id,
+            enc_key=enc_key,
+            auth_code=params.get('auth_code', '') # TODO : add auth_code param
+        )
 
         access_token, token_data = client.get_access_token_data()
         client.access_token = access_token
