@@ -1,0 +1,40 @@
+commonfields:
+  id: Zabbix
+  version: -1
+name: Zabbix
+display: Zabbix
+category: Utilities
+description: Allow integration with Zabbix api
+configuration:
+- display: Url
+  name: url
+  defaultvalue: http://example.net
+  type: 0
+  required: true
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+script:
+  script: ''
+  type: python
+  commands:
+  - name: execute_command
+    description: Execute command on Zabbix API
+    arguments:
+    - name: method
+      required: true
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - host.get
+      description: Method to call on Zabbix API
+    - name: params
+      description: JSON with params to send with call
+    outputs:
+    - contextPath: result
+      description: result
+  dockerimage: demisto/zabbix:1.0.0.7067
+  runonce: false
+  subtype: python3
