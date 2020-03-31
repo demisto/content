@@ -136,8 +136,8 @@ script:
       secret: false
     deprecated: false
     description: Searches for samples in AutoFocus. To view results, run the autofocus-samples-search-results
-      command with the returned AF Cookie. The AF Cookie expires 120 seconds after
-      the search completes.
+      command with the returned AF Cookie. The AF Cookie expires 120 seconds after the search completes.
+      `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
     execution: false
     name: autofocus-search-samples
     outputs:
@@ -148,6 +148,9 @@ script:
     - contextPath: AutoFocus.SamplesSearch.Status
       description: The search status. Can be "in progress" or "complete".
       type: String
+    - contextPath: AutoFocus.SamplesSearch.SessionStart
+      description: The time when the session began.
+      type: Date
   - arguments:
     - default: false
       description: The query for which to retrieve samples. For additional information
@@ -251,8 +254,8 @@ script:
       secret: false
     deprecated: false
     description: Searches for sessions in AutoFocus. To view results, run the autofocus-sessions-search-results
-      command with the returned AF Cookie. The AF Cookie expires 120 seconds after
-      the search completes.
+      command with the returned AF Cookie. The AF Cookie expires 120 seconds after the search completes.
+      `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
     execution: false
     name: autofocus-search-sessions
     outputs:
@@ -263,6 +266,9 @@ script:
     - contextPath: AutoFocus.SessionsSearch.Status
       description: The search status. Can be "in progress" or "complete".
       type: String
+    - contextPath: AutoFocus.SessionsSearch.SessionStart
+      description: The time when the session began.
+      type: Date
   - arguments:
     - default: false
       description: The AF Cookie for retrieving results of previous searches. The
@@ -272,7 +278,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns results of a previous samples search.
+    description: Returns results of a previous samples search. `Autofocus Query Samples, Sessions and Tags` Playbook is
+      recommended for querying and polling.
     execution: false
     name: autofocus-samples-search-results
     outputs:
@@ -334,7 +341,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns results of a previous sessions search.
+    description: Returns results of a previous sessions search. `Autofocus Query Samples, Sessions and Tags` Playbook is
+      recommended for querying and polling.
     execution: false
     name: autofocus-sessions-search-results
     outputs:
@@ -619,7 +627,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Performs a search to identify the most popular tags.
+    description: Performs a search to identify the most popular tags. `Autofocus Query Samples, Sessions and Tags`
+      Playbook is recommended for querying and polling.
     execution: false
     name: autofocus-top-tags-search
     outputs:
@@ -630,6 +639,9 @@ script:
     - contextPath: AutoFocus.TopTagsSearch.Status
       description: The search status. Can be "in progress" or "complete".
       type: String
+    - contextPath: AutoFocus.SamplesSearch.SessionStart
+      description: The time when the session began.
+      type: Date
   - arguments:
     - default: false
       description: 'The AF Cookie for retrieving results of previous search. Note:
@@ -639,7 +651,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns the results of a previous top tags search.
+    description: Returns the results of a previous top tags search. `Autofocus Query Samples, Sessions and Tags`
+      Playbook is recommended for querying and polling.
     execution: false
     name: autofocus-top-tags-results
     outputs:
