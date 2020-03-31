@@ -240,7 +240,8 @@ class Client(BaseClient):
             url_suffix=self.suffix_template.format(self.tenant_id, start_or_stop_suffix),
             headers=headers,
             params=params,
-            ok_codes=(200, 201, 202, 203, 204)
+            ok_codes=(200, 201, 202, 203, 204),
+            return_empty_response=True
         )
         return response
 
