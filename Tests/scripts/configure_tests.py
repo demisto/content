@@ -130,7 +130,8 @@ def get_modified_files(files_string):
                 continue
 
             elif all(file not in file_path for file in
-                     (SECRETS_WHITE_LIST, PACKS_PACK_META_FILE_NAME, PACKS_WHITELIST_FILE_NAME)):
+                     (SECRETS_WHITE_LIST, PACKS_PACK_META_FILE_NAME, PACKS_WHITELIST_FILE_NAME,
+                      PACKS_PACK_IGNORE_FILE_NAME)):
                 sample_tests.append(file_path)
 
     return (modified_files_list, modified_tests_list, all_tests, is_conf_json, sample_tests,
@@ -167,7 +168,11 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
     caught_missing_test = False
     catched_intergrations = set([])
 
-    test_ids, skipped_tests = get_test_ids()
+    conf = get_test_conf()
+
+    test_ids = conf.get_test_playbook_ids()
+    skipped_tests = conf.get_skipped_tests()
+    skipped_integrations = conf.get_skipped_integrations()
 
     with open("./Tests/id_set.json", 'r') as conf_file:
         id_set = json.load(conf_file)
@@ -181,6 +186,7 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
         test_playbook_id = list(test_playbook.keys())[0]
         test_playbook_data = list(test_playbook.values())[0]
         test_playbook_name = test_playbook_data.get('name')
+
         for script in test_playbook_data.get('implementing_scripts', []):
             if script in script_ids:
                 detected_usage = True
@@ -212,6 +218,16 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
     missing_ids = update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts,
                                       integration_ids, playbook_ids, script_ids)
 
+    # if integration is mentioned/used in one of the test configurations, it means that integration is tested
+    # for example there could be a test playbook that tests fetch incidents command of some integration
+    # so the test playbook will use FetchFromInstance script in the playbook, which is not direct command of a specific
+    # integration
+    all_tested_integrations = conf.get_all_tested_integrations()
+    missing_ids = missing_ids - set(all_tested_integrations)
+
+    # remove skipped integrations from the list
+    missing_ids = missing_ids - set(skipped_integrations)
+
     return test_ids, missing_ids, caught_missing_test
 
 
@@ -224,7 +240,44 @@ def update_missing_sets(catched_intergrations, catched_playbooks, catched_script
     return missing_ids
 
 
-def get_test_ids(check_nightly_status=False):
+class TestConf(object):
+    def __init__(self, conf):
+        #  (dict) -> None
+
+        self._conf = conf
+
+    def get_skipped_integrations(self):
+        return list(self._conf['skipped_integrations'].keys())
+
+    def get_skipped_tests(self):
+        return list(self._conf['skipped_tests'].keys())
+
+    def get_test_playbook_ids(self, check_nightly_status=False):
+        conf_tests = self._conf['tests']
+        test_ids = []
+
+        for t in conf_tests:
+            if not check_nightly_status or not t.get('nightly', False):
+                playbook_id = t['playbookID']
+                test_ids.append(playbook_id)
+
+        return test_ids
+
+    def get_all_tested_integrations(self):
+        all_integrations = []
+        conf_tests = self._conf['tests']
+
+        for t in conf_tests:
+            if 'integrations' in t:
+                if isinstance(t['integrations'], list):
+                    all_integrations.extend(t['integrations'])
+                else:
+                    all_integrations.append(t['integrations'])
+
+        return all_integrations
+
+
+def get_test_conf():
     """Get the test ids from conf.json
 
     Keyword Arguments:
@@ -233,17 +286,10 @@ def get_test_ids(check_nightly_status=False):
     Returns:
         tuple: (test_ids, skipped_tests)
     """
-    test_ids = []
     with open("./Tests/conf.json", 'r') as conf_file:
         conf = json.load(conf_file)
 
-    conf_tests = conf['tests']
-    for t in conf_tests:
-        if not check_nightly_status or not t.get('nightly', False):
-            playbook_id = t['playbookID']
-            test_ids.append(playbook_id)
-
-    return test_ids, list(conf['skipped_tests'].keys())
+        return TestConf(conf)
 
 
 def get_integration_commands(integration_ids, integration_set):
@@ -279,6 +325,7 @@ def find_tests_for_modified_files(modified_files):
                                                                         script_names, modified_files)
     test_ids, missing_ids, caught_missing_test = collect_tests(script_names, playbook_names, integration_ids,
                                                                catched_scripts, catched_playbooks, tests_set)
+
     missing_ids = update_with_tests_sections(missing_ids, modified_files, test_ids, tests_set)
 
     if len(missing_ids) > 0:
@@ -678,7 +725,10 @@ def get_test_list(files_string, branch_name):
 
     if sample_tests:  # Choosing 3 random tests for infrastructure testing
         print_warning('Collecting sample tests due to: {}'.format(','.join(sample_tests)))
-        test_ids = get_test_ids(check_nightly_status=True)[0]
+
+        conf = get_test_conf()
+        test_ids = conf.get_test_playbook_ids(check_nightly_status=True)
+
         rand = random.Random(files_string + branch_name)
         while len(tests) < 3:
             tests.add(rand.choice(test_ids))
