@@ -2579,6 +2579,10 @@
             "playbookID": "Cortex Data Lake Test",
             "instance_names": "cdl_dev",
             "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "MongoDB",
+            "playbookID": "MongoDB - Test"
         }
     ],
     "skipped_tests": {
@@ -2735,6 +2739,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "MongoDB": "Our instance not using SSL",
         "Cortex Data Lake": "Integration requires SSL",
         "Google Key Management Service": "The API requires an SSL secure connection to work.",
         "McAfee ESM-v10": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
