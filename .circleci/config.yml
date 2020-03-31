@@ -73,7 +73,9 @@ jobs:
             fi
             # Checks if there's any diff from master
             echo "output of git diff "
-            echo `git diff master --name-only`
+            echo `git diff master --name-only | grep .circleci/config.yml`
+            echo "with branch"
+            echo `git diff master $CIRCLE_BRANCH --name-only | grep .circleci/config.yml`
             if [[ `git diff origin/master -- .circleci/config.yml` ]]; then
                 # Checks if part of the branch's changes
                 if [[ -z `git diff master $CIRCLE_BRANCH --name-only | grep .circleci/config.yml` ]]; then
