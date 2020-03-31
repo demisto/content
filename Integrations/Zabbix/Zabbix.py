@@ -31,13 +31,23 @@ class ZabbixIntegration:
     def logout(self, zapi):
         zapi.do_request('user.logout')
 
+    def testmodule(self, zapi):
+        return zapi.apiinfo.version()
+
     def main(self):
         try:
             result = None
             zapi = self.login()
 
-            if demisto.command() == 'execute_command':
+            command = demisto.command()
+            if command == 'test-module':
+                self.testmodule(zapi)
+                demisto.results('ok')
+                return
+            elif command == 'execute_command':
                 result = self.execute_command(zapi, demisto.args())
+            else:
+                return_error("Unknown command " + command)
 
             self.logout(zapi)
             demisto.results(result)
