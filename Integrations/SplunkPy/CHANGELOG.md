@@ -1,5 +1,7 @@
 ## [Unreleased]
 - Added the ***splunk-job-status*** command, which checks the status of a job.
+
+## [20.3.4] - 2020-03-30
 - Added the **Replace with Underscore in Incident Fields** parameter key, which replaces problematic characters (e.g., ".") with underscores ("\_") in context keys.
 - Added ***First fetch timestamp*** parameter which indicates from which date and time should incidents be fetched.
 - Fixed an issue where ***splunk-search*** presented the table headers in alphabetical order instead of the query order.
