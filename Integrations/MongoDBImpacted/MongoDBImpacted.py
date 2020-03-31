@@ -228,22 +228,24 @@ def delete_impacted_command():
 def main():
 
     LOG("Command being called is %s" % (demisto.command()))
-
-    if demisto.command() == "test-module":
-        # This is the call made when pressing the integration test button.
-        return_outputs(*test_module())
-    elif demisto.command() == 'mongodb-write-impacted':
-        return_outputs(*write_impacted_command())
-    elif demisto.command() == 'mongodb-get-impacted':
-        return_outputs(*get_impacted_command())
-    elif demisto.command() == 'mongodb-list-impacted':
-        return_outputs(*list_impacted_command())
-    elif demisto.command() == 'mongodb-delete-impacted':
-        return_outputs(*delete_impacted_command())
-    elif demisto.command() == 'mongodb-purge-impacted':
-        return_outputs(*purge_impacted_command())
-    elif demisto.command() == 'mongodb-number-of-impacted':
-        return_outputs(*num_impacted_command())
+    try:
+        if demisto.command() == "test-module":
+            # This is the call made when pressing the integration test button.
+            return_outputs(*test_module())
+        elif demisto.command() == 'mongodb-write-impacted':
+            return_outputs(*write_impacted_command())
+        elif demisto.command() == 'mongodb-get-impacted':
+            return_outputs(*get_impacted_command())
+        elif demisto.command() == 'mongodb-list-impacted':
+            return_outputs(*list_impacted_command())
+        elif demisto.command() == 'mongodb-delete-impacted':
+            return_outputs(*delete_impacted_command())
+        elif demisto.command() == 'mongodb-purge-impacted':
+            return_outputs(*purge_impacted_command())
+        elif demisto.command() == 'mongodb-number-of-impacted':
+            return_outputs(*num_impacted_command())
+    except Exception as e:
+        return_error(f'MongoDB: {str(e)}', error=e)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
