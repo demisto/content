@@ -10,12 +10,6 @@ import shutil
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-if not demisto.params().get('proxy', False):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
-
 
 def get_server_url():
     url = demisto.params()['url']
@@ -421,17 +415,18 @@ def get_ticket_command():
     ticket_id = args.get('id')
     number = args.get('number')
     get_attachments = args.get('get_attachments', 'false')
+    custom_fields = str(args.get('custom_fields', ''))
 
-    res = get(ticket_type, ticket_id, number)
-    if not res or 'result' not in res:
-        return 'Cannot find ticket'
+    result = get_ticket(ticket_type, ticket_id, custom_fields, number)
+    if not result or 'result' not in result:
+        return 'Ticket was not found.'
 
-    if isinstance(res['result'], list):
-        if len(res['result']) == 0:
-            return 'Cannot find ticket'
-        ticket = res['result'][0]
+    if isinstance(result['result'], list):
+        if len(result['result']) == 0:
+            return 'Ticket was not found.'
+        ticket = result['result'][0]
     else:
-        ticket = res['result']
+        ticket = result['result']
 
     entries = []  # type: List[Dict]
 
@@ -448,7 +443,7 @@ def get_ticket_command():
 
     entry = {
         'Type': entryTypes['note'],
-        'Contents': res,
+        'Contents': result,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('ServiceNow ticket', hr, headers=headers, removeNull=True),
@@ -469,7 +464,7 @@ def get_record_command():
     record_id = args['id']
     fields = args.get('fields')
 
-    res = get(table_name, record_id)
+    res = get_ticket(table_name, record_id)
 
     if not res or 'result' not in res:
         return 'Cannot find record'
@@ -515,8 +510,18 @@ def get_record_command():
     return entry
 
 
-def get(table_name, record_id, number=None):
-    path = None
+def get_ticket(table_name, record_id, custom_fields='', number=None):
+    """
+
+    Args:
+        table_name: the table name
+        record_id: the record ID
+        custom_fields: custom fields of the record to query
+        number: record number
+
+    Returns:
+        record data
+    """
     query_params = {}  # type: Dict
     if record_id:
         path = 'table/' + table_name + '/' + record_id
@@ -525,9 +530,15 @@ def get(table_name, record_id, number=None):
         query_params = {
             'number': number
         }
+    elif custom_fields:
+        path = 'table/' + table_name
+        custom_fields_dict = {
+            k: v.strip('"') for k, v in [i.split("=", 1) for i in custom_fields.split(',')]
+        }
+        query_params = custom_fields_dict
     else:
         # Only in cases where the table is of type ticket
-        raise ValueError('servicenow-get-ticket requires either ticket ID (sys_id) or ticket number')
+        raise ValueError('servicenow-get-ticket requires either ticket ID (sys_id) or ticket number.')
 
     return send_request(path, 'get', params=query_params)
 
@@ -1099,7 +1110,7 @@ def query_computers_command():
     limit = args.get('limit', DEFAULTS['limit'])
 
     if computer_id:
-        res = get(table_name, computer_id)
+        res = get_ticket(table_name, computer_id)
     else:
         if computer_name:
             computer_query = 'name=' + computer_name
@@ -1162,7 +1173,7 @@ def query_groups_command():
     limit = args.get('limit', DEFAULTS['limit'])
 
     if group_id:
-        res = get(table_name, group_id)
+        res = get_ticket(table_name, group_id)
     else:
         if group_name:
             group_query = 'name=' + group_name
@@ -1215,7 +1226,7 @@ def query_users_command():
     limit = args.get('limit', DEFAULTS['limit'])
 
     if user_id:
-        res = get(table_name, user_id)
+        res = get_ticket(table_name, user_id)
     else:
         if user_name:
             user_query = 'user_name=' + user_name
@@ -1481,65 +1492,74 @@ def test_module():
                              " does not exist in the ticket".format(TIMESTAMP_FIELD))
 
 
-LOG('Executing command ' + demisto.command())
-raise_exception = False
-try:
-    if demisto.command() == 'test-module':
-        test_module()
-        demisto.results('ok')
-    elif demisto.command() == 'fetch-incidents':
-        raise_exception = True
-        fetch_incidents()
-    elif demisto.command() == 'servicenow-get' or \
-            demisto.command() == 'servicenow-incident-update' or demisto.command() == 'servicenow-get-ticket':
-        demisto.results(get_ticket_command())
-    elif demisto.command() == 'servicenow-update' or \
-            demisto.command() == 'servicenow-incident-update' or demisto.command() == 'servicenow-update-ticket':
-        demisto.results(update_ticket_command())
-    elif demisto.command() == 'servicenow-create' or \
-            demisto.command() == 'servicenow-incident-create' or demisto.command() == 'servicenow-create-ticket':
-        demisto.results(create_ticket_command())
-    elif demisto.command() == 'servicenow-delete-ticket':
-        demisto.results(delete_ticket_command())
-    elif demisto.command() == 'servicenow-add-link' or demisto.command() == 'servicenow-incident-add-link':
-        demisto.results(add_link_command())
-    elif demisto.command() == 'servicenow-add-comment' or demisto.command() == 'servicenow-incident-add-comment':
-        demisto.results(add_comment_command())
-    elif demisto.command() == 'servicenow-query' or \
-            demisto.command() == 'servicenow-incidents-query' or demisto.command() == 'servicenow-query-tickets':
-        demisto.results(query_tickets_command())
-    elif demisto.command() == 'servicenow-upload-file' or demisto.command() == 'servicenow-incident-upload-file':
-        demisto.results(upload_file_command())
-    elif demisto.command() == 'servicenow-query-table':
-        demisto.results(query_table_command())
-    elif demisto.command() == 'servicenow-get-computer':
-        demisto.results(get_computer_command())
-    elif demisto.command() == 'servicenow-query-computers':
-        demisto.results(query_computers_command())
-    elif demisto.command() == 'servicenow-query-groups':
-        demisto.results(query_groups_command())
-    elif demisto.command() == 'servicenow-query-users':
-        demisto.results(query_users_command())
-    elif demisto.command() == 'servicenow-get-groups':
-        demisto.results(get_groups_command())
-    elif demisto.command() == 'servicenow-get-record':
-        demisto.results(get_record_command())
-    elif demisto.command() == 'servicenow-update-record':
-        demisto.results(update_record_command())
-    elif demisto.command() == 'servicenow-create-record':
-        demisto.results(create_record_command())
-    elif demisto.command() == 'servicenow-delete-record':
-        demisto.results(delete_record_command())
-    if demisto.command() == 'servicenow-list-table-fields':
-        demisto.results(list_table_fields_command())
-    if demisto.command() == 'servicenow-get-table-name':
-        demisto.results(get_table_name_command())
-    if demisto.command() == 'servicenow-get-ticket-notes':
-        demisto.results(get_ticket_notes_command())
-except Exception as e:
-    LOG(e)
-    LOG.print_log()
-    if not raise_exception:
-        return_error(str(e))
-    else:
-        raise
+def main():
+
+    LOG('Executing command {}'.format(demisto.command()))
+    raise_exception = False
+
+    try:
+        handle_proxy()
+
+        if demisto.command() == 'test-module':
+            test_module()
+            demisto.results('ok')
+        elif demisto.command() == 'fetch-incidents':
+            raise_exception = True
+            fetch_incidents()
+        elif demisto.command() == 'servicenow-get' or \
+                demisto.command() == 'servicenow-incident-update' or demisto.command() == 'servicenow-get-ticket':
+            demisto.results(get_ticket_command())
+        elif demisto.command() == 'servicenow-update' or \
+                demisto.command() == 'servicenow-incident-update' or demisto.command() == 'servicenow-update-ticket':
+            demisto.results(update_ticket_command())
+        elif demisto.command() == 'servicenow-create' or \
+                demisto.command() == 'servicenow-incident-create' or demisto.command() == 'servicenow-create-ticket':
+            demisto.results(create_ticket_command())
+        elif demisto.command() == 'servicenow-delete-ticket':
+            demisto.results(delete_ticket_command())
+        elif demisto.command() == 'servicenow-add-link' or demisto.command() == 'servicenow-incident-add-link':
+            demisto.results(add_link_command())
+        elif demisto.command() == 'servicenow-add-comment' or demisto.command() == 'servicenow-incident-add-comment':
+            demisto.results(add_comment_command())
+        elif demisto.command() == 'servicenow-query' or \
+                demisto.command() == 'servicenow-incidents-query' or demisto.command() == 'servicenow-query-tickets':
+            demisto.results(query_tickets_command())
+        elif demisto.command() == 'servicenow-upload-file' or demisto.command() == 'servicenow-incident-upload-file':
+            demisto.results(upload_file_command())
+        elif demisto.command() == 'servicenow-query-table':
+            demisto.results(query_table_command())
+        elif demisto.command() == 'servicenow-get-computer':
+            demisto.results(get_computer_command())
+        elif demisto.command() == 'servicenow-query-computers':
+            demisto.results(query_computers_command())
+        elif demisto.command() == 'servicenow-query-groups':
+            demisto.results(query_groups_command())
+        elif demisto.command() == 'servicenow-query-users':
+            demisto.results(query_users_command())
+        elif demisto.command() == 'servicenow-get-groups':
+            demisto.results(get_groups_command())
+        elif demisto.command() == 'servicenow-get-record':
+            demisto.results(get_record_command())
+        elif demisto.command() == 'servicenow-update-record':
+            demisto.results(update_record_command())
+        elif demisto.command() == 'servicenow-create-record':
+            demisto.results(create_record_command())
+        elif demisto.command() == 'servicenow-delete-record':
+            demisto.results(delete_record_command())
+        if demisto.command() == 'servicenow-list-table-fields':
+            demisto.results(list_table_fields_command())
+        if demisto.command() == 'servicenow-get-table-name':
+            demisto.results(get_table_name_command())
+        if demisto.command() == 'servicenow-get-ticket-notes':
+            demisto.results(get_ticket_notes_command())
+    except Exception as e:
+        LOG(e)
+        LOG.print_log()
+        if not raise_exception:
+            return_error(str(e))
+        else:
+            raise
+
+
+if __name__ in ["__builtin__", "builtins"]:
+    main()
