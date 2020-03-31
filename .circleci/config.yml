@@ -78,7 +78,7 @@ jobs:
                 exit 0
             fi
 
-            python -m pytest ./Tests/scripts/infrastructure_tests/mock_unit_test.py -v
+            python3 -m pytest ./Tests/scripts/infrastructure_tests/mock_unit_test.py -v
             python3 -m pytest ./Tests/scripts/infrastructure_tests/release_notes_test.py -v
             python3 -m pytest ./Tests/scripts/infrastructure_tests/store_packs_test.py -v
             python3 -m pytest ./Tests/scripts/test_configure_tests.py -v
