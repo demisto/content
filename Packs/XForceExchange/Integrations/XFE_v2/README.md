@@ -144,7 +144,7 @@ IP to check
 https://exchange.xforce.ibmcloud.com/ip/8.8.8.8
 |Reason|Score|Subnets|
 |---|---|---|
-| Regional Internet Registry:<br>One of the five RIRs announced a (new) location mapping of the IP. | 1 | 8.0.0.0/8, 8.0.0.0/9, 8.8.8.0/24 |
+| Regional Internet Registry:One of the five RIRs announced a (new) location mapping of the IP. | 1 | 8.0.0.0/8, 8.0.0.0/9, 8.8.8.0/24 |
 
 
 ### url
