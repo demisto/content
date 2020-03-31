@@ -22,8 +22,12 @@ configuration:
   name: self_deployed
   required: false
   type: 8
-- display: Authorization code (received from the authorization step - see Detailed Instructions (?)
-    section)
+- display: Application redirect URI (for self-deployed mode).
+  name: redirect_uri
+  required: false
+  type: 0
+- display: Authorization code (received from the authorization step - see Detailed
+    Instructions (?) section)
   name: auth_code
   required: false
   type: 4
@@ -171,8 +175,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A link that specifies a starting point to use for subsequent calls.
-        Using this argument overrides all of the other command arguments.'
+      description: A link that specifies a starting point to use for subsequent calls.
+        Using this argument overrides all of the other command arguments.
       isArray: false
       name: next_link
       required: false
@@ -396,8 +400,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A link that specifies a starting point to use for subsequent calls.
-        Using this argument overrides all of the other command arguments.'
+      description: A link that specifies a starting point to use for subsequent calls.
+        Using this argument overrides all of the other command arguments.
       isArray: false
       name: next_link
       required: false
@@ -484,8 +488,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A link that specifies a starting point to use for subsequent calls.
-        Using this argument overrides all of the other command arguments.'
+      description: A link that specifies a starting point to use for subsequent calls.
+        Using this argument overrides all of the other command arguments.
       isArray: false
       name: next_link
       required: false
@@ -557,8 +561,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A link that specifies a starting point to use for subsequent calls.
-        Using this argument overrides all of the other command arguments.'
+      description: A link that specifies a starting point to use for subsequent calls.
+        Using this argument overrides all of the other command arguments.
       isArray: false
       name: next_link
       required: false
@@ -602,6 +606,10 @@ script:
     - contextPath: AzureSentinel.EntityRelatedResource.EntityID
       description: The entity ID.
       type: String
+  - deprecated: false
+    description: Tests connectivity to Azure Sentinel.
+    execution: false
+    name: azure-sentinel-test
   dockerimage: demisto/crypto:1.0.0.303
   isfetch: true
   longRunning: false

@@ -35,7 +35,7 @@ ENTITIES_RETENTION_PERIOD_MESSAGE = '\nNotice that in the current Azure Sentinel
 
 
 class Client:
-    def __init__(self, self_deployed, refresh_token, auth_and_token_url, enc_key, auth_code,
+    def __init__(self, self_deployed, refresh_token, auth_and_token_url, enc_key, redirect_uri, auth_code,
                  subscription_id, resource_group_name, workspace_name, verify, proxy):
 
         tenant_id = refresh_token if self_deployed else ''
@@ -48,6 +48,7 @@ class Client:
             auth_id=auth_and_token_url,
             refresh_token=refresh_token,
             enc_key=enc_key,
+            redirect_uri=redirect_uri,
             token_retrieval_url='https://login.microsoftonline.com/{tenant_id}/oauth2/token',
             grant_type=AUTHORIZATION_CODE,  # disable-secrets-detection
             app_name=APP_NAME,
@@ -209,12 +210,9 @@ def severity_to_level(severity):
 ''' INTEGRATION COMMANDS '''
 
 
-def test_module(client):
-    try:
-        client.ms_client.get_access_token()
-        return 'ok'
-    except Exception:
-        raise ValueError('Please check your instance configuration.')
+def test_connection(client):
+    client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
+    return_outputs('```✅ Success!```')
 
 
 def get_incident_by_id_command(client, args):
@@ -575,6 +573,7 @@ def main():
             auth_and_token_url=params.get('auth_id', ''),
             refresh_token=params.get('refresh_token', ''),
             enc_key=params.get('enc_key', ''),
+            redirect_uri=params.get('redirect_uri', ''),
             auth_code=params.get('auth_code', ''),
             subscription_id=params.get('subscriptionID', ''),
             resource_group_name=params.get('resourceGroupName', ''),
@@ -596,9 +595,11 @@ def main():
         }
 
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            demisto.results(result)
+            # cannot use test module due to the lack of ability to set refresh token to integration context
+            raise Exception("Please use !azure-sentinel-test instead")
+
+        elif demisto.command() == 'azure-sentinel-test':
+            test_connection(client)
 
         elif demisto.command() == 'fetch-incidents':
             # How much time before the first fetch to retrieve incidents
