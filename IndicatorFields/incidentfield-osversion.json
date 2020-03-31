@@ -11,7 +11,7 @@
     "script": "",
     "isReadOnly": false,
     "system": false,
-    "content": false,
+    "content": true,
     "unsearchable": false,
     "version": -1,
     "unmapped": false,
