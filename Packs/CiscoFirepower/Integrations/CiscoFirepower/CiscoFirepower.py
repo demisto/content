@@ -293,7 +293,7 @@ class Client(BaseClient):
             return self._http_request('PUT', suffix, json_data=data_from_get)
 
     def delete_access_rules(self, policy_id, rule_id) -> Dict:
-        suffix = f'policy/accesspolicies/{policy_id}/accessrules{rule_id}'
+        suffix = f'policy/accesspolicies/{policy_id}/accessrules/{rule_id}'
         return self._http_request('DELETE', suffix)
 
     def deploy_to_devices(self, force_deploy, ignore_warning, version, device_ids) -> Dict:
