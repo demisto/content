@@ -90,17 +90,19 @@ def num_log_json():
 
 def main():
     LOG("Command being called is %s" % (demisto.command()))
-
-    if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
-        test_module()
-        return_outputs(*test_module())
-    elif demisto.command() == 'mongodb-write-log':
-        return_outputs(*write_log_json())
-    elif demisto.command() == 'mongodb-read-log':
-        return_outputs(*read_log_json())
-    elif demisto.command() == 'mongodb-logs-number':
-        return_outputs(*num_log_json())
+    try:
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            test_module()
+            return_outputs(*test_module())
+        elif demisto.command() == 'mongodb-write-log':
+            return_outputs(*write_log_json())
+        elif demisto.command() == 'mongodb-read-log':
+            return_outputs(*read_log_json())
+        elif demisto.command() == 'mongodb-logs-number':
+            return_outputs(*num_log_json())
+    except Exception as e:
+        return_error(f'MongoDB: {str(e)}', error=e)
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
