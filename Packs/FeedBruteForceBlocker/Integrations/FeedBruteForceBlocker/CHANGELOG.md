@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added new parameter -  **Tags**.
 
 ## [20.3.4] - 2020-03-30
 -
