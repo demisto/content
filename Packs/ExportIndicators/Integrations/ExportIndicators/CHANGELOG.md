@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.3.4] - 2020-03-30
   - Added support for the following inline URL parameters.
     - t - The type indicated in the mwg format.
     - sp - Whether to strip ports of URLs in the panosurl format.
