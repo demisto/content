@@ -1,5 +1,4 @@
-IP_RESPONSE = [
-    {
+IP_RESPONSE = {
         'address': '100 CenturyLink Drive',
         'as_name': 'AS15169 Google Inc',
         'asn_cidr': '8.8.8.0/24',
@@ -35,8 +34,7 @@ IP_RESPONSE = [
         'state': 'LA',
         'tag': ['phishing', 'abuse', 'bot'],
         'type': 'ip'
-    }
-]
+}
 
 URL_RESPONSE = [
     {
