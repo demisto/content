@@ -1802,10 +1802,24 @@ Updates the specified access control policy.
 
 
 ##### Command Example
-``` ```
+```!ciscofp-update-access-policy action=BLOCK default_action_id=000C29A8-BA3B-0ed3-0000-000268444682 name=jj id=000C29A8-BA3B-0ed3-0000-133143991123```
+
+##### Context Example
+```
+{
+    "CiscoFP.Policy": {
+        "DefaultActionID": "000C29A8-BA3B-0ed3-0000-000268444682", 
+        "ID": "000C29A8-BA3B-0ed3-0000-133143991123", 
+        "Name": "jj"
+    }
+}
+```
 
 ##### Human Readable Output
-
+### Cisco Firepower - access policy has been updated.
+|ID|Name|DefaultActionID|
+|---|---|---|
+| 000C29A8-BA3B-0ed3-0000-133143991123 | jj | 000C29A8-BA3B-0ed3-0000-000268444682 |
 
 ### 19. ciscofp-delete-access-policy
 ---
@@ -4124,9 +4138,65 @@ Updates the specified access control rule.
 
 
 ##### Command Example
-``` ```
+```!ciscofp-update-access-rules policy_id=000C29A8-BA3B-0ed3-0000-133143987627 rule_id=000C29A8-BA3B-0ed3-0000-000268444675 update_strategy=merge enabled=false```
+
+##### Context Example
+```
+{
+    "CiscoFP.Rule": {
+        "Category": "--Undefined--", 
+        "SourceZones": {
+            "Objects": []
+        }, 
+        "DestinationZones": {
+            "Objects": []
+        }, 
+        "DestinationNetworks": {
+            "Objects": [], 
+            "Addresses": []
+        }, 
+        "DestinationPorts": {
+            "Objects": [], 
+            "Addresses": []
+        }, 
+        "Section": "Default", 
+        "Enabled": false, 
+        "SourcePorts": {
+            "Objects": [], 
+            "Addresses": []
+        }, 
+        "RuleIndex": 1, 
+        "VlanTags": {
+            "Objects": [], 
+            "Numbers": []
+        }, 
+        "Applications": [], 
+        "SourceSecurityGroupTags": {
+            "Objects": []
+        }, 
+        "Urls": {
+            "Objects": [], 
+            "Addresses": []
+        }, 
+        "Action": "ALLOW", 
+        "SourceNetworks": {
+            "Objects": [], 
+            "Addresses": []
+        }, 
+        "SendEventsToFMC": true, 
+        "ID": "000C29A8-BA3B-0ed3-0000-000268444675", 
+        "Name": "BPS-access-policy"
+    }
+}
+```
 
 ##### Human Readable Output
+### Cisco Firepower - access rule:
+|ID|Name|Action|Enabled|SendEventsToFMC|RuleIndex|Section|Category|Urls|VlanTags|SourceZones|Applications|DestinationZones|SourceNetworks|DestinationNetworks|SourcePorts|DestinationPorts|SourceSecurityGroupTags|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 000C29A8-BA3B-0ed3-0000-000268444675 | BPS-access-policy | ALLOW | false | true | 1 | Default | --Undefined-- | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+
+
 
 ### 28. ciscofp-delete-access-rules
 ---
