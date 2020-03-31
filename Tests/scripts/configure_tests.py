@@ -17,7 +17,7 @@ sys.path.append(CONTENT_DIR)
 from demisto_sdk.commands.common.constants import *  # noqa: E402
 from demisto_sdk.commands.common.tools import get_yaml, str2bool, get_from_version, get_to_version, \
     collect_ids, get_script_or_integration_id, run_command, LOG_COLORS, print_error, print_color, \
-    print_warning, is_runnable_in_server_version  # noqa: E402
+    print_warning  # noqa: E402
 
 # Search Keyword for the changed file
 NO_TESTS_FORMAT = 'No test( - .*)?'
