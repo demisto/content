@@ -424,6 +424,9 @@ class Pack(object):
             with open('releaseNotes.json', 'w', encoding='utf-8') as f:
                 json.dump(changelog_dict, f, ensure_ascii=False, indent=4)
             task_status = True
+            print_color(
+                f"Finished creating releaseNotes.json for {self._pack_name}",
+                LOG_COLORS.GREEN)
         except Exception as e:
             print_error(
                 f"Failed creating releaseNotes.json file for {self._pack_name}.\n "
@@ -922,7 +925,7 @@ def main():
 
         task_status = pack.parse_release_notes()
         if not task_status:
-            pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
+            pack.status = PackStatus.FAILED_RELEASE_NOTES.name
             pack.cleanup()
             continue
 
