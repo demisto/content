@@ -1,0 +1,25 @@
+{
+    "displayName": "FidelisEndpoint",
+    "name": "FidelisEndpoint",
+    "description": "",
+    "support": "demisto",
+    "serverMinVersion": "",
+    "currentVersion": "1.0.0",
+    "author": "",
+    "url": "",
+    "email": "",
+    "categories": [
+        "Endpoint"
+    ],
+    "tags": [],
+    "created": "2020-02-20T10:12:25Z",
+    "updated": "2020-02-20T10:12:25Z",
+    "beta": false,
+    "deprecated": false,
+    "certification": "",
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {},
+    "price": 0,
+    "displayedImages": []
+}
