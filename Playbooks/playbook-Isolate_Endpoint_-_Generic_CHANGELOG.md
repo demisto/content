@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 
+## [20.3.4] - 2020-03-30
+Added new sub-playbook 'Cortex XDR - Isolate Endpoint'.
+
 ## [19.11.1] - 2019-11-26
 New playbook outputs
 
