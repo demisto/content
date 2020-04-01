@@ -63,6 +63,7 @@ class PackStatus(enum.Enum):
     FAILED_UPLOADING_PACK = "Failed in uploading pack zip to gcs"
     PACK_ALREADY_EXISTS = "Specified pack already exists in gcs under latest version"
     FAILED_REMOVING_PACK_SKIPPED_FOLDERS = "Failed to remove pack hidden and skipped folders"
+    FAILED_RELEASE_NOTES = "Failed to create releaseNotes.json"
 
 
 class Pack(object):
@@ -94,7 +95,8 @@ class Pack(object):
     METADATA = "metadata.json"
     AUTHOR_IMAGE_NAME = "Author_image.png"
     INDEX_NAME = "index"
-    EXCLUDE_DIRECTORIES = ["TestPlaybooks"]
+    EXCLUDE_DIRECTORIES = ["TestPlaybooks", "ReleaseNotes"]
+    RELEASE_NOTES = "ReleaseNotes"
 
     def __init__(self, pack_name, pack_path):
         self._pack_name = pack_name
@@ -403,17 +405,31 @@ class Pack(object):
         """Need to implement the changelog.md parsing and changelog.json creation after design is finalized.
 
         """
-        changelog_md_path = os.path.join(self._pack_path, Pack.CHANGELOG_MD)
+        task_status = False
+        try:
+            release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
+            changelog_dict = {}
+            for filename in os.listdir(release_notes_dir):
+                version = filename.replace('.md', '')
+                if filename.endswith(".md"):
+                    with open(filename, 'r') as changelog_md:
+                        changelog_lines = changelog_md.readline()
+                        changelog_string = '\n'.join(changelog_lines)
+                        changelog_dict[version] = changelog_string
+                else:
+                    task_status = False
+                    print_error("The ReleaseNotes folder contains a file other than markdown, please remove it.")
+                    return task_status
 
-        if not os.path.exists(changelog_md_path):
-            print_error(f"The pack {self._pack_name} is missing {Pack.CHANGELOG_MD} file.")
-            sys.exit(1)
-
-        # with open(changelog_md_path, 'r') as release_notes_file:
-        #     release_notes = release_notes_file.read()
-        # todo implement release notes logic and create changelog.json
-
-        return {}
+            with open('releaseNotes.json', 'w', encoding='utf-8') as f:
+                json.dump(changelog_dict, f, ensure_ascii=False, indent=4)
+            task_status = True
+        except Exception as e:
+            print_error(
+                f"Failed creating releaseNotes.json file for {self._pack_name}.\n "
+                f"Additional info: {e}")
+        finally:
+            return task_status
 
     def prepare_for_index_upload(self):
         """Removes and leaves only necessary files in pack folder.
@@ -879,6 +895,12 @@ def main():
     index_was_updated = False  # indicates whether one or more index folders were updated
 
     for pack in packs_list:
+        task_status = pack.parse_release_notes()
+        if not task_status:
+            pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
+            pack.cleanup()
+            continue
+
         task_status, integration_images = pack.upload_integration_images(storage_bucket)
         if not task_status:
             pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
