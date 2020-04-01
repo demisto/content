@@ -376,6 +376,13 @@ def get_incident_labels(event: Dict, parse_notable_events_raw: bool = False) -> 
     return labels
 
 
+def parse_raw_command():
+    args: Dict = demisto.args()
+    raw_dict: Dict[str, str] = raw_to_dict(args.get('raw', ''))
+    ec = {'Splunk': {'Raw': {'Parsed': raw_dict}}}
+    demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(raw_dict), "EntryContext": ec})
+
+
 def main():
     pass
 
