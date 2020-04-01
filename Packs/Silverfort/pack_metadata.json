@@ -1,25 +1,33 @@
 {
-  "name": "Silverfort",
-  "description": "Silverfort protects organizations from data breaches by delivering strong authentication across entire corporate networks and cloud environments, without requiring any modifications to endpoints or servers. Using patent-pending technology, Silverfort's agentless approach enables multi-factor authentication and AI-driven adaptive authentication even for systems that don’t support it today, including proprietary systems, critical infrastructure, shared folders, IoT devices, and more. Use Silverfort integration to get & update Silverfort risk severity. This integration was integrated and tested with Silverfort version 2.12.",
-  "support": "partner",
-  "serverMinVersion": "5.0.0",
-  "currentVersion": "1.0.0",
-  "author": "Silverfort team",
-  "url": "Silverfort.com",
-  "email": "support@silverfort.com",
-  "categories": [
-    "Data Enrichment & Threat Intelligence"
-  ],
-  "tags": [],
-  "created": "2020-03-17T16:09:03Z",
-  "updated": "2020-03-17T16:09:03Z",
-  "beta": false,
-  "deprecated": false,
-  "certification": "certified",
-  "useCases": [],
-  "keywords": [
-    "Silverfort"
-  ],
-  "price": 0,
-  "dependencies": {}
+    "name": "Silverfort",
+    "description": "Silverfort protects organizations from data breaches by delivering strong authentication across entire corporate networks and cloud environments, without requiring any modifications to endpoints or servers. Using patent-pending technology, Silverfort's agentless approach enables multi-factor authentication and AI-driven adaptive authentication even for systems that don\u2019t support it today, including proprietary systems, critical infrastructure, shared folders, IoT devices, and more. Use Silverfort integration to get & update Silverfort risk severity. This integration was integrated and tested with Silverfort version 2.12.",
+    "support": "partner",
+    "serverMinVersion": "5.0.0",
+    "currentVersion": "1.0.0",
+    "author": "Silverfort team",
+    "url": "Silverfort.com",
+    "email": "support@silverfort.com",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "created": "2020-03-17T16:09:03Z",
+    "updated": "2020-03-17T16:09:03Z",
+    "beta": false,
+    "deprecated": false,
+    "certification": "certified",
+    "useCases": [],
+    "keywords": [
+        "Silverfort"
+    ],
+    "price": 0,
+    "dependencies": {
+        "Active_Directory_Query": {
+            "mandatory": true,
+            "display_name": "Active Directory Query v2"
+        }
+    },
+    "displayedImages": [
+        "Active_Directory_Query"
+    ]
 }
