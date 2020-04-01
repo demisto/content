@@ -50,11 +50,19 @@ script:
       description: The Artifact Queried.
       type: String
   - arguments:
-    - default: true
-      description: 'The hash for the file reputation information. Can be be: "SHA256", "SHA1" or "MD5".'
+    - default: false
+      description: 'The hash for the file reputation information. Can be be: "SHA256",
+        "SHA1" or "MD5".'
       isArray: false
       name: hash
-      required: true
+      required: false
+      secret: false
+    - default: true
+      description: 'The hash for the file reputation information. Can be be: "SHA256",
+        "SHA1" or "MD5".'
+      isArray: false
+      name: file
+      required: false
       secret: false
     deprecated: false
     description: Queries Polyswarm for file reputation information.
@@ -283,10 +291,11 @@ script:
     - contextPath: PolySwarm.Artifact
       description: The Artifact queried.
       type: String
+  feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python2
+  type: python
