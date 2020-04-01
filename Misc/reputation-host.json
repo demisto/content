@@ -23,6 +23,7 @@
     "contextPath": "",
     "contextValue": "",
     "excludedBrands": [],
+    "expiration": 43200,
     "defaultMapping": {
         "biosversion": {
             "simple": "",
