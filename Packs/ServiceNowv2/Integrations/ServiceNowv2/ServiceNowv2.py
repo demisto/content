@@ -1525,11 +1525,11 @@ def main():
         elif command == 'fetch-incidents':
             raise_exception = True
             fetch_incidents(client)
-        elif command in ['servicenow-get', 'servicenow-incident-update', 'servicenow-get-ticket']:
+        elif command in ['servicenow-incident-update', 'servicenow-get-ticket']:
             demisto.results(get_ticket_command(client, args))
-        elif command in ['servicenow-update', 'servicenow-incident-update', 'servicenow-update-ticket']:
+        elif command in ['servicenow-incident-update', 'servicenow-update-ticket']:
             demisto.results(update_ticket_command())
-        elif command in ['servicenow-create', 'servicenow-incident-create', 'servicenow-create-ticket']:
+        elif command in ['servicenow-incident-create', 'servicenow-create-ticket']:
             demisto.results(create_ticket_command())
         elif command == 'servicenow-delete-ticket':
             demisto.results(delete_ticket_command())
@@ -1537,7 +1537,7 @@ def main():
             demisto.results(add_link_command())
         elif command in ['servicenow-add-comment', 'servicenow-incident-add-comment']:
             demisto.results(add_comment_command())
-        elif command in ['servicenow-query', 'servicenow-incidents-query', 'servicenow-query-tickets']:
+        elif command in ['servicenow-incidents-query', 'servicenow-query-tickets']:
             demisto.results(query_tickets_command())
         elif command in ['servicenow-upload-file', 'servicenow-incident-upload-file']:
             demisto.results(upload_file_command())
