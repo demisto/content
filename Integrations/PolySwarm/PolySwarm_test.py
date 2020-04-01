@@ -141,7 +141,7 @@ MOCK_LOOKUP_JSON_RESPOSE = {'result': {
                     "engine": "0",
                     "mask": True,
                     "metadata": {
-                        "malware_family": "infected with Android.Banker.3074",  # disable-secrets-detection
+                        "malware_family": "",
                         "scanner": {
                             "environment": {
                                 "architecture": "x86_64",
