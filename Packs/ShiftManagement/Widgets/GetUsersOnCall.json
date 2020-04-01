@@ -1,0 +1,7 @@
+{
+  "id": "GetUsersOnCall",
+  "name": "GetUsersOnCall",
+  "dataType": "scripts",
+  "widgetType": "text",
+  "query": "GetUsersOnCall"
+}
