@@ -4,6 +4,8 @@ commonfields:
 name: Zabbix
 display: Zabbix
 category: Utilities
+description: ''
+detaileddescription: ''
 configuration:
 - display: Url
   name: url
