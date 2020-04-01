@@ -253,17 +253,32 @@ def create_address_command():
     address_name = demisto.args().get('name', '')
     address = demisto.args().get('address', '')
     mask = demisto.args().get('mask', '')
+    fqdn = demisto.args().get('fqdn','')
     subnet = address + " " + mask
-    create_address_request(address_name, address, mask)
 
-    contents.append({
-        'Name': address_name,
-        'Subnet': subnet,
-    })
-    address_context.append({
-        'Name': address_name,
-        'Subnet': subnet
-    })
+    if fqdn and address:
+        return_error("Please provide only one of the two arguments: fqdn or address")
+
+    create_address_request(address_name, address, mask,fqdn)
+
+    if address:
+        contents.append({
+            'Name': address_name,
+            'IPAddress': address
+        })
+        address_context.append({
+            'Name': address_name,
+            'IPAddress': address
+        })
+    elif fqdn:
+        contents.append({
+            'Name': address_name,
+            'FQDN': fqdn
+        })
+        address_context.append({
+            'Name': address_name,
+            'FQDN': fqdn
+        })
 
     context['Fortigate.Address(val.Name && val.Name === obj.Name)'] = address_context
 
@@ -277,15 +292,22 @@ def create_address_command():
     })
 
 
-def create_address_request(address_name, address, mask):
+def create_address_request(address_name, address, mask,fqdn):
     uri_suffix = 'cmdb/firewall/address/'
     if does_path_exist(uri_suffix + address_name):
         return_error('Address already exists.')
     subnet = address + " " + mask
-    payload = {
-        'name': address_name,
-        'subnet': subnet
-    }
+    if address:
+        payload = {
+            'name': address_name,
+            'subnet': subnet
+        }
+    elif fqdn:
+        payload = {
+            'name': address_name,
+            "type": "fqdn",
+            "fqdn": fqdn
+        }
     result = http_request('POST', uri_suffix, {}, json.dumps(payload))
     return result
 

@@ -67,13 +67,19 @@ script:
       description: 'Address. Example: 8.8.8.8'
       isArray: false
       name: address
-      required: true
+      required: false
       secret: false
     - default: true
       defaultValue: 255.255.255.255
       description: Address Mask. Example 255.255.255.0 , Default is 255.255.255.255
       isArray: false
       name: mask
+      required: false
+      secret: false
+    - default: false
+      description: 'Domain Name. Example: example.com'
+      isArray: false
+      name: fqdn
       required: false
       secret: false
     deprecated: false
@@ -83,10 +89,13 @@ script:
     outputs:
     - contextPath: Fortigate.Address.Name
       description: Address Name
-      type: String
-    - contextPath: Fortigate.Address.Subnet
-      description: Address Subnet
-      type: String
+      type: Unknown
+    - contextPath: Fortigate.Address.IPAddress
+      description: IP Address
+      type: Unknown
+    - contextPath: Fortigate.Address.FQDN
+      description: Domain Name
+      type: Unknown
   - arguments:
     - default: false
       description: Filter by group name
@@ -692,6 +701,7 @@ script:
       description: Address Deleted
       type: Unknown
   dockerimage: demisto/python3:3.8.1.5734
+  feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false
