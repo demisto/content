@@ -4143,13 +4143,14 @@ script:
     - contextPath: ServiceNow.Ticket.Note.Type
       description: Ticket note type
       type: string
+  dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python2
+  subtype: python3
   type: python
 tests:
 - No test - Hibernating instance

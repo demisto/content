@@ -11,7 +11,8 @@ configuration:
   name: credentials
   required: false
   type: 9
-- display: Use system proxy settings
+- defaultvalue: ''
+  display: Use system proxy settings
   name: proxy
   required: false
   type: 8
@@ -105,12 +106,6 @@ script:
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: 'Custom fields to query on. e.g: state_code=AR,time_zone=PST.'''
-      isArray: false
-      name: custom_fields
       required: false
       secret: false
     deprecated: false
@@ -4143,13 +4138,10 @@ script:
     - contextPath: ServiceNow.Ticket.Note.Type
       description: Ticket note type
       type: string
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python2
   type: python
+  subtype: python2
 tests:
 - No test - Hibernating instance

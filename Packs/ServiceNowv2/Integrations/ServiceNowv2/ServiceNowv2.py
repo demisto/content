@@ -299,8 +299,8 @@ class Client(BaseClient):
     """
     Client to use in the ServiceNow integration. Overrides BaseClient
     """
-    def __init__(self, server_url, username, password, verify, proxy, fetch_time, sysparm_query, sysparm_limit,
-                 timestamp_field, ticket_type, get_attachments):
+    def __init__(self, server_url: str, username: str, password: str, verify: bool, proxy: bool, fetch_time: str,
+                 sysparm_query: str, sysparm_limit: str, timestamp_field: str, ticket_type: str, get_attachments: bool):
         self._base_url = server_url
         self._verify = verify
         self._username = username
@@ -313,7 +313,8 @@ class Client(BaseClient):
         self.ticket_type = ticket_type
         self.get_attachments = get_attachments
 
-    def send_request(self, path, method='get', body=None, params=None, headers=None, file=None):
+    def send_request(self, path: str, method: str = 'get', body: dict = None, params: dict = None,
+                     headers: dict = None, file=None):
         body = body if body is not None else {}
         params = params if params is not None else {}
 
@@ -364,7 +365,7 @@ class Client(BaseClient):
 
         return obj
 
-    def get_ticket(self, table_name, record_id, custom_fields='', number=None):
+    def get_ticket(self, table_name: str, record_id: str, custom_fields: str = '', number: str = None):
         """
 
         Args:
