@@ -634,7 +634,7 @@ def get_test_conf_from_conf(test_id, server_version, conf=None):
     return test_conf
 
 
-def get_obj_from_obj_set(obj_id, obj_set, server_version='0'):
+def extract_matching_object_from_id_set(obj_id, obj_set, server_version='0'):
     """Gets first occurrence of object in the object's id_set with matching id and valid from/to version"""
     # return None if nothing is found
     test = next((obj_wrpr[obj_id] for obj_wrpr in obj_set if (
@@ -710,7 +710,7 @@ def is_test_runnable(test_id, id_set, conf, server_version):
     conf_fromversion = test_conf.get('fromversion', '0')
     conf_toversion = test_conf.get('toversion', '99.99.99')
     test_playbooks_set = id_set.get('TestPlaybooks', [])
-    test_playbook_obj = get_obj_from_obj_set(test_id, test_playbooks_set, server_version)
+    test_playbook_obj = extract_matching_object_from_id_set(test_id, test_playbooks_set, server_version)
 
     # check whether the test is runnable in id_set
     if not test_playbook_obj:
@@ -732,7 +732,7 @@ def is_test_scripts_available(test_playbook_obj, server_version, id_set):
         if not isinstance(test_scripts_ids, list):
             test_scripts_ids = [test_scripts_ids]
         scripts = id_set.get('scripts', [])
-        if any(get_obj_from_obj_set(script_id, scripts, server_version) is None for script_id in
+        if any(extract_matching_object_from_id_set(script_id, scripts, server_version) is None for script_id in
                test_scripts_ids):
             return False
     return True
@@ -750,7 +750,7 @@ def is_test_integrations_available(server_version, test_conf, conf, id_set):
             return False
         # check integrations from/toversion is valid with server_version
         integrations_set = id_set.get('integrations', [])
-        if any(get_obj_from_obj_set(integration_id, integrations_set, server_version) is None for integration_id in
+        if any(extract_matching_object_from_id_set(integration_id, integrations_set, server_version) is None for integration_id in
                test_integration_ids):
             return False
     return True
@@ -783,7 +783,7 @@ def is_any_test_runnable(test_ids, conf=None, id_set=None, server_version='0'):
     return False
 
 
-def get_runnable_tests(tests_num, conf=None, id_set=None, server_version='0'):
+def get_random_tests(tests_num, conf=None, id_set=None, server_version='0'):
     """Gets runnable tests for the server version"""
     if not id_set:
         with open("./Tests/id_set.json", 'r') as conf_file:
@@ -797,24 +797,6 @@ def get_runnable_tests(tests_num, conf=None, id_set=None, server_version='0'):
     while len(tests) < tests_num:
         test = rand.choice(test_ids)
         if is_test_runnable(test, id_set, conf, server_version):
-            tests.add(test)
-    return tests
-
-
-def get_unrunnable_tests(tests_num, conf=None, id_set=None, server_version='0'):
-    """Gets runnable tests for the server version"""
-    if not id_set:
-        with open("./Tests/id_set.json", 'r') as conf_file:
-            id_set = json.load(conf_file)
-    if not conf:
-        with open("./Tests/conf.json", 'r') as conf_file:
-            conf = json.load(conf_file)
-    tests = set([])
-    test_ids = get_test_ids(conf=conf)[0]
-    rand = random.Random(time.time())
-    while len(tests) < tests_num:
-        test = rand.choice(test_ids)
-        if not is_test_runnable(test, id_set, conf, server_version):
             tests.add(test)
     return tests
 
@@ -848,7 +830,7 @@ def get_test_list(files_string, branch_name, two_before_ga_ver='0', conf=None, i
     if sample_tests:  # Choosing 3 random tests for infrastructure testing
         print_warning('Collecting sample tests due to: {}'.format(','.join(sample_tests)))
         tests = tests.union(
-            get_runnable_tests(tests_num=RANDOM_TESTS_NUM, conf=conf, id_set=id_set, server_version=two_before_ga_ver))
+            get_random_tests(tests_num=RANDOM_TESTS_NUM, conf=conf, id_set=id_set, server_version=two_before_ga_ver))
 
     if not tests:
         if modified_files or modified_tests_list:
@@ -858,16 +840,16 @@ def get_test_list(files_string, branch_name, two_before_ga_ver='0', conf=None, i
             _FAILED = True
         elif changed_common:
             print_warning('Adding 3 random tests due to: {}'.format(','.join(changed_common)))
-            tests = tests.union(get_unrunnable_tests(tests_num=RANDOM_TESTS_NUM, conf=conf, id_set=id_set,
-                                                     server_version=two_before_ga_ver))
+            tests = tests.union(get_random_tests(tests_num=RANDOM_TESTS_NUM, conf=conf, id_set=id_set,
+                                                 server_version=two_before_ga_ver))
         else:
             print_warning("Running Sanity check only")
-            tests = get_runnable_tests(tests_num=RANDOM_TESTS_NUM, conf=conf, id_set=id_set,
-                                       server_version=two_before_ga_ver)
+            tests = get_random_tests(tests_num=RANDOM_TESTS_NUM, conf=conf, id_set=id_set,
+                                     server_version=two_before_ga_ver)
             tests.add('DocumentationTest')  # test with integration configured
             tests.add('TestCommonPython')  # test with no integration configured
 
-    elif changed_common:
+    if changed_common:
         tests.add('TestCommonPython')
 
     return tests

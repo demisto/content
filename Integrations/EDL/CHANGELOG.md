@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.3.4] - 2020-03-30
   - Improved test module functionality.
   - Added support for IP collapse to ranges and CIDRs.
 

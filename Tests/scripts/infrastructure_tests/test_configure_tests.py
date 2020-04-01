@@ -2,9 +2,9 @@ import json
 
 from Tests.scripts.configure_tests import get_test_list, get_modified_files, RANDOM_TESTS_NUM
 
-with open('Tests/scripts/hook_validations/tests/tests_data/mock_id_set.json', 'r') as mock_id_set_f:
+with open('Tests/scripts/infrastructure_tests/tests_data/mock_id_set.json', 'r') as mock_id_set_f:
     MOCK_ID_SET = json.load(mock_id_set_f)
-with open('Tests/scripts/hook_validations/tests/tests_data/mock_conf.json', 'r') as mock_conf_f:
+with open('Tests/scripts/infrastructure_tests/tests_data/mock_conf.json', 'r') as mock_conf_f:
     MOCK_CONF = json.load(mock_conf_f)
 
 
@@ -32,7 +32,7 @@ class TestChangedTestPlaybook:
     def test_changed_runnable_test__mocked_get_modified_files(self, mocker):
         # fake_test_playbook is fromversion 4.1.0 in playbook file
         test_id = 'fake_test_playbook'
-        test_path = 'Tests/scripts/hook_validations/tests/tests_data/mock_test_playbooks/fake_test_playbook.yml'
+        test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[test_path],
                                                                modified_tests_list=[test_path])
         filterd_tests = get_mock_test_list('4.1.0', get_modified_files_ret, mocker)
@@ -43,7 +43,7 @@ class TestChangedTestPlaybook:
     def test_changed_unrunnable_test__integration_fromversion(self, mocker):
         # fake_test_playbook is fromversion 4.1.0 in integration file
         test_id = 'fake_test_playbook'
-        test_path = 'Tests/scripts/hook_validations/tests/tests_data/mock_test_playbooks/fake_test_playbook.yml'
+        test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[test_path],
                                                                modified_tests_list=[test_path])
         filterd_tests = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
@@ -54,7 +54,7 @@ class TestChangedTestPlaybook:
     def test_changed_unrunnable_test__playbook_fromversion(self, mocker):
         # fake_test_playbook is fromversion 4.1.0 in playbook file
         test_id = 'fake_test_playbook'
-        test_path = 'Tests/scripts/hook_validations/tests/tests_data/mock_test_playbooks/fake_test_playbook.yml'
+        test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[test_path],
                                                                modified_tests_list=[test_path])
         filterd_tests = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
@@ -65,7 +65,7 @@ class TestChangedTestPlaybook:
     def test_changed_unrunnable_test__playbook_toversion(self, mocker):
         # future_playbook_1 is toversion 99.99.99 in conf file
         test_id = 'future_test_playbook_1'
-        test_path = 'Tests/scripts/hook_validations/tests/tests_data/mock_test_playbooks/future_test_playbook_1.yml'
+        test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/future_test_playbook_1.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[test_path],
                                                                modified_tests_list=[test_path])
         filterd_tests = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
@@ -76,7 +76,7 @@ class TestChangedTestPlaybook:
     def test_changed_runnable_test__playbook_toversion(self, mocker):
         # future_playbook_1 is toversion 99.99.99 in conf file
         test_id = 'future_test_playbook_1'
-        test_path = 'Tests/scripts/hook_validations/tests/tests_data/mock_test_playbooks/future_test_playbook_1.yml'
+        test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/future_test_playbook_1.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[test_path],
                                                                modified_tests_list=[test_path])
         filterd_tests = get_mock_test_list('99.99.99', get_modified_files_ret, mocker)
@@ -86,7 +86,7 @@ class TestChangedTestPlaybook:
 
     def test_changed_unrunnable_test__skipped_test(self, mocker):
         test_id = 'skipped_integration_test_playbook_1'
-        test_path = 'Tests/scripts/hook_validations/tests/tests_data/mock_test_playbooks/skipped_integration_test_playbook_1.yml'
+        test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/skipped_integration_test_playbook_1.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[test_path],
                                                                modified_tests_list=[test_path])
         filterd_tests = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
@@ -96,7 +96,7 @@ class TestChangedTestPlaybook:
 
     def test_changed_unrunnable_test__skipped_integration(self, mocker):
         test_id = 'skipped_test_playbook_1'
-        test_path = 'Tests/scripts/hook_validations/tests/tests_data/mock_test_playbooks/skipped_test_playbook_1.yml'
+        test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/skipped_test_playbook_1.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[test_path],
                                                                modified_tests_list=[test_path])
         filterd_tests = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
@@ -117,8 +117,8 @@ class TestChangedIntegration:
 
     def test_changed_unrunnable_test__integration_fromversion(self, mocker):
         test_id = 'future_test_playbook_2'
-        test_path = 'Tests/scripts/hook_validations/tests/tests_data/mock_test_playbooks/future_test_playbook_2.yml'
-        file_path = 'Tests/scripts/hook_validations/tests/tests_data/mock_integrations/future_integration_2.yml'
+        test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/future_test_playbook_2.yml'
+        file_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_integrations/future_integration_2.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[file_path],
                                                                modified_tests_list=[test_path])
         filterd_tests = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
@@ -128,8 +128,8 @@ class TestChangedIntegration:
 
     def test_changed_unrunnable_test__integration_toversion(self, mocker):
         test_id = 'past_test_playbook_1'
-        test_path = 'Tests/scripts/hook_validations/tests/tests_data/mock_test_playbooks/past_test_playbook_1.yml'
-        file_path = 'Tests/scripts/hook_validations/tests/tests_data/mock_integrations/past_integration_1.yml'
+        test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/past_test_playbook_1.yml'
+        file_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_integrations/past_integration_1.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[file_path],
                                                                modified_tests_list=[test_path])
         filterd_tests = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
@@ -162,8 +162,8 @@ class TestChangedScript:
 
     def test_changed_unrunnable_test__script_fromversion(self, mocker):
         test_id = 'future_test_playbook_2'
-        test_path = 'Tests/scripts/hook_validations/tests/tests_data/mock_test_playbooks/future_test_playbook_2.yml'
-        file_path = 'Tests/scripts/hook_validations/tests/tests_data/mock_integrations/future_integration_2.yml'
+        test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/future_test_playbook_2.yml'
+        file_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_integrations/future_integration_2.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[file_path],
                                                                modified_tests_list=[test_path])
         filterd_tests = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
@@ -173,8 +173,8 @@ class TestChangedScript:
 
     def test_changed_unrunnable_test__integration_toversion(self, mocker):
         test_id = 'past_test_playbook_2'
-        test_path = 'Tests/scripts/hook_validations/tests/tests_data/mock_test_playbooks/past_test_playbook_2.yml'
-        file_path = 'Tests/scripts/hook_validations/tests/tests_data/mock_scripts/past_script_1.yml'
+        test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/past_test_playbook_2.yml'
+        file_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_scripts/past_script_1.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[file_path],
                                                                modified_tests_list=[test_path])
         filterd_tests = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
