@@ -228,7 +228,10 @@ def list_managed_devices_command(client: MsGraphClient, args: dict) -> None:
     entry_context: dict = {'MSGraphDeviceManagement.Device(val.ID === obj.ID)': list_devices}
     human_readable: str = 'No managed devices found.'
     if list_devices:
-        human_readable = tableToMarkdown(name='List managed devices', t=list_raw_devices, headers=HEADERS['raw_device'],
+        name: str = 'List managed devices'
+        if len(list_devices) == 1:
+            name = f'Managed device {list_devices[0].get("Name", "")}'
+        human_readable = tableToMarkdown(name=name, t=list_raw_devices, headers=HEADERS['raw_device'],
                                          headerTransform=lambda h: SPECIAL_HEADERS.get(h, pascalToSpace(h)),
                                          removeNull=True)
     return_outputs(human_readable, entry_context, raw_response)
