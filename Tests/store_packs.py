@@ -408,8 +408,9 @@ class Pack(object):
         task_status = False
         try:
             release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
+            print(release_notes_dir)
             changelog_dict = {}
-            for filename in os.listdir(release_notes_dir):
+            for filename in os.scandir(release_notes_dir):
                 print_color(str(filename), LOG_COLORS.GREEN)
                 version = filename.replace('.md', '')
                 print_color(str(version), LOG_COLORS.GREEN)
