@@ -13,7 +13,7 @@ configuration:
   options:
   - Daily Threat Feed
   - Custom Feed
-  - Sample Feed
+  - Samples Feed
   required: true
   type: 16
 - display: The AutoFocus API key
@@ -26,8 +26,8 @@ configuration:
   name: custom_feed_urls
   required: false
   type: 0
-- additionalinfo: Only necessary in case a Sample Feed is fetched.
-  display: Sample Feed Scope Type
+- additionalinfo: Only necessary in case a Samples Feed is fetched.
+  display: Samples Feed Scope Type
   name: scope_type
   options:
   - public
@@ -35,8 +35,8 @@ configuration:
   - global
   required: false
   type: 15
-- additionalinfo: JSON styled AutoFocus query, an example can be found in the description (?). Only necessary in case a Sample Feed is fetched.
-  display: Sample Feed Query
+- additionalinfo: JSON styled AutoFocus query, an example can be found in the description (?). Only necessary in case a Samples Feed is fetched.
+  display: Samples Feed Query
   name: sample_query
   required: false
   type: 0

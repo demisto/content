@@ -9,7 +9,7 @@ To connect a custom AutoFocus feed you need to provide the Custom Feed URL.
 The Custom Feed URL should be in this form:
 https://autofocus.paloaltonetworks.com/IOCFeed/{Output_Feed_ID}/{Output_Feed_Name}
 
-#### Sample Feed info:
+#### Samples Feed info:
 To connect to a sample AutoFocus feed you need to provide the following parameters:
 * Scope Type - Either **public**, **private** or **global**.
 * Query - A JSON styled AutoFocus query. For example: 
