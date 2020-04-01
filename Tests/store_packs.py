@@ -895,11 +895,6 @@ def main():
     index_was_updated = False  # indicates whether one or more index folders were updated
 
     for pack in packs_list:
-        task_status = pack.parse_release_notes()
-        if not task_status:
-            pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
-            pack.cleanup()
-            continue
 
         task_status, integration_images = pack.upload_integration_images(storage_bucket)
         if not task_status:
@@ -925,8 +920,11 @@ def main():
             pack.cleanup()
             continue
 
-        # todo finish implementation of release notes
-        # pack.parse_release_notes()
+        task_status = pack.parse_release_notes()
+        if not task_status:
+            pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
+            pack.cleanup()
+            continue
 
         task_status = pack.remove_unwanted_files()
         if not task_status:
