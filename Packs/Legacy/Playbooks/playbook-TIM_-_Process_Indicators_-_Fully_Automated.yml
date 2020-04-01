@@ -134,6 +134,7 @@ tasks:
       iscommand: false
       brand: ""
       description: ''
+      description: ''
     separatecontext: false
     view: |-
       {
