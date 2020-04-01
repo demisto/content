@@ -26,4 +26,4 @@ This playbook does not use any commands.
 ---
 There are no outputs for this playbook.
 
-![Process_Email_Add_custom_fields](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Process_Email_Add_custom_fields.png)
+![Process_Email_Add_custom_fields](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Process_Email_Add_custom_fields.png)

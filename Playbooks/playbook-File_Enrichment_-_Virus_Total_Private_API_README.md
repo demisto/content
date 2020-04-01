@@ -45,4 +45,4 @@ This playbook does not use any scripts.
 | File.VirusTotal.Scans.Detected | The scan detection for this hash. Can be, "True" or "False". | unknown |
 | File.VirusTotal.Scans.Result | The scan result for this hash. For example, signature, etc. | unknown |
 
-![File_Enrichment_Virus_Total_Private_API](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/File_Enrichment_Virus_Total_Private_API.png)
+![File_Enrichment_Virus_Total_Private_API](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/File_Enrichment_Virus_Total_Private_API.png)

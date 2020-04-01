@@ -39,4 +39,4 @@ This playbook does not use any commands.
 | Account.DisplayName | The account display name. | string |
 | Account.Manager | The account's manager. | string |
 
-![Account_Enrichment_Generic_v2](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Account_Enrichment_Generic_v2.png)
+![Account_Enrichment_Generic_v2](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Account_Enrichment_Generic_v2.png)

@@ -40,4 +40,4 @@ This playbook does not use any commands.
 ---
 There are no outputs for this playbook.
 
-![D2_Endpoint_data_collection](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/D2_Endpoint_data_collection.png)
+![D2_Endpoint_data_collection](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/D2_Endpoint_data_collection.png)

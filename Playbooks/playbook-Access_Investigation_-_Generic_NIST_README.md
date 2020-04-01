@@ -69,4 +69,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | Endpoint.MAC | The list of endpoint MAC addresses. | unknown |
 | Endpoint.Domain | The endpoint domain name. | string |
 
-![Access_Investigation_Generic_NIST](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Access_Investigation_Generic_NIST.png)
+![Access_Investigation_Generic_NIST](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Access_Investigation_Generic_NIST.png)

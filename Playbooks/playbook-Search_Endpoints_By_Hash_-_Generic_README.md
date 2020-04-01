@@ -35,4 +35,4 @@ This playbook does not use any commands.
 | Endpoint.Hostname | The device hostname. | string |
 | Endpoint | The endpoint. | unknown |
 
-![Search_Endpoints_By_Hash_Generic](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Search_Endpoints_By_Hash_Generic.png)
+![Search_Endpoints_By_Hash_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Search_Endpoints_By_Hash_Generic.png)

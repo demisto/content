@@ -38,4 +38,4 @@ This playbook does not use any commands.
 | DBotScore.Vendor | The DBot score vendor. | string |
 | DBotScore.Score | The DBot score. | number |
 
-![DBot_Indicator_Enrichment_Generic](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/DBot_Indicator_Enrichment_Generic.png)
+![DBot_Indicator_Enrichment_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/DBot_Indicator_Enrichment_Generic.png)

@@ -38,4 +38,4 @@ This playbook does not use any scripts.
 ---
 There are no outputs for this playbook.
 
-![Phishing_Core](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Phishing_Core.png)
+![Phishing_Core](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Phishing_Core.png)

@@ -33,4 +33,4 @@ This playbook does not use any sub-playbooks.
 | Endpoint.Hostname | The device hostname. | string |
 | Endpoint | The endpoint. | unknown |
 
-![Search_Endpoints_By_Hash_Carbon_Black_Protection](https://github.com/demisto/content/blob/f975de39b05cd3560b782f54d37637741d87ff65/docs/images/playbooks/Search_Endpoints_By_Hash_Carbon_Black_Protection.png)
+![Search_Endpoints_By_Hash_Carbon_Black_Protection](https://raw.githubusercontent.com/demisto/content/f975de39b05cd3560b782f54d37637741d87ff65/docs/images/playbooks/Search_Endpoints_By_Hash_Carbon_Black_Protection.png)

@@ -33,4 +33,4 @@ This playbook does not use any scripts.
 ---
 There are no outputs for this playbook.
 
-![PAN-OS_Add_Static_Routes](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PAN-OS_Add_Static_Routes.png)
+![PAN-OS_Add_Static_Routes](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PAN-OS_Add_Static_Routes.png)

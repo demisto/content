@@ -73,4 +73,4 @@ This playbook does not use any integrations.
 | DBotScore | The DBot score object. | unknown |
 | Lastline.Submission | The Lastline submission object. | unknown |
 
-![Detonate_File_Lastline_v2](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_File_Lastline_v2.png)
+![Detonate_File_Lastline_v2](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_File_Lastline_v2.png)

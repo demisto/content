@@ -51,4 +51,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | Email.Format | The format of the email if available. | string |
 | File | The file object. | unknown |
 
-![Process_Email_Generic](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Process_Email_Generic.png)
+![Process_Email_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Process_Email_Generic.png)

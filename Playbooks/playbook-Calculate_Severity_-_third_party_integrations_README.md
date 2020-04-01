@@ -30,4 +30,4 @@ This playbook does not use any commands.
 | --- | --- | --- |
 | Severity | The output severity | string |
 
-![Calculate_Severity_third_party_integrations](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Calculate_Severity_3rd-party_integrations.png)
+![Calculate_Severity_third_party_integrations](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Calculate_Severity_3rd-party_integrations.png)

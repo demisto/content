@@ -39,4 +39,4 @@ This playbook does not use any sub-playbooks.
 | Email.Format | The format of the email if available. | string |
 | File | The email's attachment. | unknown |
 
-![Process_Email_EWS](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Process_Email_EWS.png)
+![Process_Email_EWS](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Process_Email_EWS.png)

@@ -82,4 +82,4 @@ This playbook does not use any scripts.
 | FireEyeHelixSearch.Result.RcpTo | The "Recipient of" email address. | string |
 | FireEyeHelixSearch.Result.InReplyTo | The "Reply to" email address. | string |
 
-![FireEye_Helix_Archive_Search](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/FireEye_Helix_Archive_Search.png)
+![FireEye_Helix_Archive_Search](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/FireEye_Helix_Archive_Search.png)

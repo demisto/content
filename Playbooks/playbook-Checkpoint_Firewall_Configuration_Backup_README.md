@@ -29,4 +29,4 @@ There are no inputs for this playbook.
 ---
 There are no outputs for this playbook.
 
-![Checkpoint_Firewall_Configuration_Backup](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Checkpoint_Firewall_Configuration_Backup.png)
+![Checkpoint_Firewall_Configuration_Backup](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Checkpoint_Firewall_Configuration_Backup.png)

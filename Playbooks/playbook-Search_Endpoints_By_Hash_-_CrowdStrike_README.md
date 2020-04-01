@@ -33,4 +33,4 @@ This playbook does not use any scripts.
 | Endpoint.Hostname | The device hostname. | string |
 | Endpoint | The endpoint. | unknown |
 
-![Search_Endpoints_By_Hash_CrowdStrike](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Search_Endpoints_By_Hash_CrowdStrike.png)
+![Search_Endpoints_By_Hash_CrowdStrike](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Search_Endpoints_By_Hash_CrowdStrike.png)
