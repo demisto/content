@@ -181,7 +181,8 @@ inputs:
     required: true
     description: "A comma-separated List of folder paths from the Inbox. \nFor example: inbox,inbox\\\\folder"
   - key: listName
-    simple: list_name
+    value:
+      simple: list_name
     required: true
     description: Name of the list in which mails will be saved.
   - key: limit

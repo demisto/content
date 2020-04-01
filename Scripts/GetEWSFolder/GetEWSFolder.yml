@@ -83,7 +83,7 @@ commonfields:
 enabled: true
 name: GetEWSFolder
 script: '-'
-subtype: python3
+subtype: python2
 system: false
 tags:
 - ml
