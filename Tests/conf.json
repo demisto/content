@@ -2338,7 +2338,8 @@
           "integrations": "EWS v2",
           "playbookID": "Get EWS Folder Test",
           "fromversion": "4.5.0",
-          "instance_names": "ewv2_regular"
+          "instance_names": "ewv2_regular",
+          "timeout": 1200
         },
         {
           "integrations": "QRadar",
@@ -2557,7 +2558,8 @@
         },
         {
             "playbookID": "DbotPredictOufOfTheBoxTest",
-            "fromversion": "4.5.0"
+            "fromversion": "4.5.0",
+            "timeout": 1000
         },
         {
            "integrations": "AlienVault OTX TAXII Feed",
