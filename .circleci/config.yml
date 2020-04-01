@@ -88,7 +88,7 @@ jobs:
             python -m pytest ./Tests/scripts/infrastructure_tests/validate_files_test.py -v
             python3 -m pytest ./Tests/scripts/infrastructure_tests/update_id_set_test.py -v
             python3 -m pytest ./Tests/scripts/infrastructure_tests/store_packs_test.py -v
-            python -m pytest ./Tests/scripts/test_configure_tests.py -v
+            python -m pytest ./Tests/scripts/infrastructure_tests/test_configure_tests.py -v
       - run:
           name: Validate Files and Yaml
           when: always
@@ -287,14 +287,17 @@ jobs:
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
-                if [ -n "${NIGHTLY}" ] || [ -n "${INSTANCE_TESTS}" ] ;
+                if [ -n "${NIGHTLY}" ] ;
                   then
                     export IFRA_ENV_TYPE=Nightly # disable-secrets-detection
+                elif [ -n "${INSTANCE_TESTS}" ] ;
+                  then
+                    export IFRA_ENV_TYPE="Demisto PreGA" # disable-secrets-detection
 
                   else
                     export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
                 fi
-                python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType $IFRA_ENV_TYPE -outfile ./env_results.json
+                python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -outfile ./env_results.json
 
               else
                 python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -outfile ./env_results.json
@@ -499,7 +502,7 @@ jobs:
             PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
             GCS_PATH=$(mktemp)
             echo $GCS_MARKET_KEY > $GCS_PATH
-            python3 ./Tests/store_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -s $GCS_PATH -b 'marketplace-dist' -n $CIRCLE_BUILD_NUM -p 'All' -o
+            python3 ./Tests/store_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -s $GCS_PATH -b 'marketplace-dist' -n $CIRCLE_BUILD_NUM -p 'All' -o -k $PACK_SIGNING_KEY
             rm $GCS_PATH
           when: on_success
       - store_artifacts:

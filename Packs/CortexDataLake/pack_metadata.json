@@ -7,7 +7,9 @@
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "categories": ["Analytics & SIEM"],
+    "categories": [
+        "Analytics & SIEM"
+    ],
     "tags": [],
     "created": "2020-03-24T12:58:02Z",
     "updated": "2020-03-24T12:58:02Z",
@@ -15,7 +17,11 @@
     "deprecated": false,
     "certification": "certified",
     "useCases": [],
-    "keywords": ["CDL", "Cortex Data Lake"],
+    "keywords": [
+        "CDL",
+        "Cortex Data Lake"
+    ],
     "price": 0,
-    "dependencies": {}
+    "dependencies": {},
+    "displayedImages": []
 }
