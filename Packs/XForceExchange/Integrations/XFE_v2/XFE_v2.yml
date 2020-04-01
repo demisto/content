@@ -43,7 +43,7 @@ configuration:
   type: 0
 description: IBM X-Force Exchange lets you receive threat intelligence about applications,
   IP addresses, URls and hashes
-display: IBM X-Force Exchange (v2)
+display: IBM X-Force Exchange v2
 name: XFE_v2
 script:
   commands:
@@ -55,7 +55,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'score treshold '
+      description: score threshold
       isArray: false
       name: threshold
       required: false
