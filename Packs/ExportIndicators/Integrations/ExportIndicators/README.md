@@ -71,7 +71,7 @@ Use the following arguments in the URL to change the request:
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The query used to retrieve indicators from the system. | Required | 
+| query | The query used to retrieve indicators from the system. leave empty to use the query from the integration parameters.  | Required | 
 | format | The output format. | Optional | 
 | list_size | The maximum number of entries in the output. If no value is provided, will use the value specified in the List Size parameter configured in the instance configuration. | Optional | 
 | offset | The starting entry index from which to export the indicators. | Optional |
