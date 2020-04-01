@@ -1,8 +1,7 @@
 import json
-
+import pytest
 
 XDR_URL = 'https://api.xdrurl.com'
-RETURN_ERROR_TARGET = 'PaloAltoNetworks_XDR.return_error'
 
 
 def load_test_data(json_path):
@@ -185,7 +184,7 @@ def test_isolate_endpoint(requests_mock):
 
 def test_isolate_endpoint_unconnected_machine(requests_mock, mocker):
     from PaloAltoNetworks_XDR import isolate_endpoint_command, Client
-    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+#    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/get_endpoint/', json={
         'reply': {
@@ -208,9 +207,8 @@ def test_isolate_endpoint_unconnected_machine(requests_mock, mocker):
     args = {
         "endpoint_id": "1111"
     }
-    isolate_endpoint_command(client, args)
-    err_msg = return_error_mock.call_args[0][0]
-    assert err_msg == 'Error: Endpoint 1111 is disconnected and therefore can not be isolated.'
+    with pytest.raises(ValueError, match='Error: Endpoint 1111 is disconnected and therefore can not be isolated.'):
+        isolate_endpoint_command(client, args)
 
 
 def test_unisolate_endpoint(requests_mock):
@@ -245,9 +243,8 @@ def test_unisolate_endpoint(requests_mock):
                               ' !xdr-get-endpoints endpoint_id_list=1111 and look at the [is_isolated] field.'
 
 
-def test_unisolate_endpoint_pending_isolation(requests_mock, mocker):
+def test_unisolate_endpoint_pending_isolation(requests_mock):
     from PaloAltoNetworks_XDR import unisolate_endpoint_command, Client
-    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/get_endpoint/', json={
         'reply': {
@@ -270,9 +267,9 @@ def test_unisolate_endpoint_pending_isolation(requests_mock, mocker):
     args = {
         "endpoint_id": "1111"
     }
-    unisolate_endpoint_command(client, args)
-    err_msg = return_error_mock.call_args[0][0]
-    assert err_msg == 'Error: Endpoint 1111 is pending isolation and therefore can not be un-isolated.'
+    with pytest.raises(ValueError, match='Error: Endpoint 1111 is pending isolation and therefore can not be'
+                                         ' un-isolated.'):
+        unisolate_endpoint_command(client, args)
 
 
 def test_get_distribution_url(requests_mock):
