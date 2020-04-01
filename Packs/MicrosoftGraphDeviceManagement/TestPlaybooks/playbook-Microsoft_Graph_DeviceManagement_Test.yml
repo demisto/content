@@ -1,5 +1,6 @@
 elasticcommonfields: {}
 id: MSGraph_DeviceManagement_Test
+fromversion: 5.0.0
 version: -1
 name: MSGraph_DeviceManagement_Test
 starttaskid: "0"
