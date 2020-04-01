@@ -308,6 +308,20 @@ def server_version_compare(v1, v2):
     return 0
 
 
+def is_runnable_in_server_version(from_v, server_v, to_v):
+    """
+    Checks whether an obj is runnable in a version
+    Args:
+        from_v (string): string representing Demisto version (fromversion comparable)
+        server_v (string): string representing Demisto version (version to be ran on)
+        to_v (string): string representing Demisto version (toversion comparable)
+
+    Returns:
+        bool. true if obj is runnable
+    """
+    return server_version_compare(from_v, server_v) <= 0 and server_version_compare(server_v, to_v) <= 0
+
+
 def run_threads_list(threads_list):
     """
     Start a list of threads and wait for completion (join)
