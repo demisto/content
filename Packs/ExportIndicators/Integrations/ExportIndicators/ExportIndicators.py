@@ -770,11 +770,11 @@ def route_list_values() -> Response:
             request_args=request_args
         )
 
-        if demisto.getIntegrationContext() == {} and params.get('on_demand'):
+        if not demisto.getIntegrationContext() and params.get('on_demand'):
             values = 'You are running in On-Demand mode - please run !eis-update command to initialize the ' \
                      'export process'
 
-        elif values == '':
+        elif not values:
             values = "No Results Found For the Query"
 
         mimetype = get_outbound_mimetype()
@@ -905,7 +905,7 @@ def update_outbound_command(args, params):
                                     category_default, category_attribute, collapse_ips)
 
     indicators = refresh_outbound_context(request_args)
-    if len(indicators) > 0:
+    if not indicators:
         hr = tableToMarkdown('List was updated successfully with the following values', indicators,
                              ['Indicators']) if print_indicators == 'true' else 'List was updated successfully'
 
