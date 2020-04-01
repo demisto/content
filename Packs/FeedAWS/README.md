@@ -11,7 +11,7 @@ Use the AWS feed integration to fetch indicators from the feed.
 2. Search for SpamhausFeed.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
-    * __Sub-Feeds__: Sub-Feeds of AWS to fetch indicators from: 
+    * __Services__: Services of AWS to fetch indicators from: 
         * Amazon
         * EC2
         * ROUTE53

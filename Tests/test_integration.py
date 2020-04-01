@@ -212,6 +212,7 @@ def __disable_integrations_instances(client, module_instances, prints_manager, t
             error_message = 'Failed to disable integration instance, error trying to communicate with demisto ' \
                             'server: {} '.format(conn_err)
             prints_manager.add_print_job(error_message, print_error, thread_index)
+            return
 
         if res[1] != 200:
             error_message = 'disable instance failed with status code ' + str(res[1])

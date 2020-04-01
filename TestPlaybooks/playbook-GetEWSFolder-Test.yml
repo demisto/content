@@ -120,8 +120,8 @@ tasks:
     task:
       id: 2a0ec2e0-91f1-47d9-879a-c0dcba828588
       version: -1
-      name: Get Mails By Folder Pathes
-      playbookName: Get Mails By Folder Pathes
+      name: Get Mails By Folder Paths
+      playbookName: Get Mails By Folder Paths
       type: playbook
       iscommand: false
       brand: ""

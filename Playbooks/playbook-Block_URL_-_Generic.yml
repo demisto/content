@@ -268,14 +268,30 @@ tasks:
       - "2"
     scriptarguments:
       AutoCommit:
-        simple: "No"
-      CustomURLCategory: {}
-      LogForwarding: {}
+        complex:
+          root: inputs.AutoCommit
+      CustomURLCategory:
+        complex:
+          root: inputs.CustomURLCategory
+      LogForwarding:
+        complex:
+          root: inputs.LogForwarding
       URL:
         complex:
           root: inputs.URL
           transformers:
           - operator: uniq
+      categories:
+        complex:
+          root: inputs.categories
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre-post:
+        simple: pre-rulebase
+      type:
+        complex:
+          root: inputs.type
     separatecontext: true
     loop:
       iscommand: false
@@ -284,8 +300,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -710,
-          "y": 710
+          "x": -800,
+          "y": 980
         }
       }
     note: false
@@ -309,17 +325,35 @@ tasks:
       - "2"
     scriptarguments:
       AutoCommit:
-        simple: "No"
-      EDLServerIP: {}
+        complex:
+          root: inputs.AutoCommit
+      EDLServerIP:
+        complex:
+          root: inputs.EDLServerIP
       IP: {}
       IPListName: {}
-      LogForwarding: {}
+      LogForwarding:
+        complex:
+          root: inputs.LogForwarding
       URL:
         complex:
           root: inputs.URL
           transformers:
           - operator: uniq
-      URLListName: {}
+      URLListName:
+        complex:
+          root: inputs.URLListName
+      device-group:
+        complex:
+          root: inputs.device-group
+      inbound-or-outbound-rule:
+        simple: outbound
+      ip-pre-post-rulebase:
+        simple: pre-rulebase
+      ip-rule-position: {}
+      url-pre-post-rulebase:
+        simple: pre-rulebase
+      url-rule-position: {}
     separatecontext: true
     loop:
       iscommand: false
@@ -328,8 +362,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -300,
-          "y": 710
+          "x": -310,
+          "y": 980
         }
       }
     note: false
@@ -375,13 +409,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
-      - "14"
+      - "19"
+      - "20"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -510,
+          "x": -560,
           "y": 570
         }
       }
@@ -414,6 +448,78 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 8764a204-c1b6-454f-8b27-8d453cfcbb52
+    type: condition
+    task:
+      id: 8764a204-c1b6-454f-8b27-8d453cfcbb52
+      version: -1
+      name: Use EDL?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.EDLServerIP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -310,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 32ad589a-8395-4895-89fe-ee33d1a2b96c
+    type: condition
+    task:
+      id: 32ad589a-8395-4895-89fe-ee33d1a2b96c
+      version: -1
+      name: Use Custom URL Category?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -800,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -423,8 +529,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1175,
-        "width": 1900,
-        "x": -710,
+        "width": 1990,
+        "x": -800,
         "y": 40
       }
     }
@@ -438,6 +544,45 @@ inputs:
   value: {}
   required: false
   description: Array of malicious URLs to block.
+- key: URLListName
+  value:
+    simple: Demisto Remediation - URL EDL
+  required: false
+  description: URL list from the instance context with which to override the remote
+    file.
+- key: LogForwarding
+  value: {}
+  required: false
+  description: Log Forwarding object name.
+- key: EDLServerIP
+  value: {}
+  required: false
+  description: EDL server IP address.
+- key: AutoCommit
+  value:
+    simple: "No"
+  required: false
+  description: |-
+    This input establishes whether to commit the configuration automatically.
+    Yes - Commit automatically.
+    No - Commit manually.
+- key: CustomURLCategory
+  value:
+    simple: Demisto Remediation - Malicious URLs
+  required: false
+  description: Custom URL Category name.
+- key: type
+  value: {}
+  required: false
+  description: Custom URL category type. Insert "URL List"/ "Category Match".
+- key: device-group
+  value: {}
+  required: false
+  description: Device group for the Custom URL Category (Panorama instances).
+- key: categories
+  value: {}
+  required: false
+  description: The list of categories. Relevant from PAN-OS v9.x.
 outputs: []
 tests:
   - block_indicators_-_generic_-_test
