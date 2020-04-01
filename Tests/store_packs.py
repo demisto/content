@@ -411,14 +411,14 @@ class Pack(object):
             print(release_notes_dir)
             changelog_dict = {}
             for filename in os.scandir(release_notes_dir):
-                print_color('Found the following files: '+str(filename), LOG_COLORS.GREEN)
+                print('Found the following files: '+str(filename))
                 version = filename.replace('.md', '')
-                print_color(str(version), LOG_COLORS.GREEN)
+                print(str(version))
                 if filename.endswith(".md"):
                     with open(filename, 'r') as changelog_md:
                         changelog_lines = changelog_md.readline()
                         changelog_string = '\n'.join(changelog_lines)
-                        print_color(str(changelog_string), LOG_COLORS.GREEN)
+                        print(str(changelog_string))
                         changelog_dict[version] = changelog_string
                 else:
                     task_status = False
@@ -428,10 +428,9 @@ class Pack(object):
             with open('releaseNotes.json', 'w', encoding='utf-8') as f:
                 json.dump(changelog_dict, f, ensure_ascii=False, indent=4)
             task_status = True
-            print_color(
-                f"Finished creating releaseNotes.json for {self._pack_name}",
-                LOG_COLORS.GREEN)
-            print_color(str(changelog_dict), LOG_COLORS.GREEN)
+            print(
+                f"Finished creating releaseNotes.json for {self._pack_name}")
+            print(str(changelog_dict))
         except Exception as e:
             print_error(
                 f"Failed creating releaseNotes.json file for {self._pack_name}.\n "
