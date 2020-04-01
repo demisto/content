@@ -342,15 +342,15 @@ def main():
             smtplib.SMTP.debuglevel = 1
 
         # TODO - support for non-valid certs
-        if TLS == 'FULL TLS':
+        if TLS == 'SSL/TLS':
             SERVER = SMTP_SSL(demisto.getParam('host'), int(demisto.params().get('port', 0)), local_hostname=FQDN)
         else:
             SERVER = SMTP(demisto.getParam('host'), int(demisto.params().get('port', 0)), local_hostname=FQDN)  # type: ignore
 
         SERVER.ehlo()   # type: ignore
-        # For BC purposes where TLS was a checkbox (no value only true or false) if TLS=True or TLS='TLS' we enter this
-        # condition, otherwise it means TLS is not configured (TLS=False) or is set to 'FULL TLS' or 'None'.
-        if TLS is True or TLS == 'TLS':
+        # For BC purposes where TLS was a checkbox (no value only true or false) if TLS=True or TLS='STARTTLS' we enter
+        # this condition, otherwise it means TLS is not configured (TLS=False) or is set to 'SSL/TLS' or 'None'.
+        if TLS is True or TLS == 'STARTTLS':
             SERVER.starttls()   # type: ignore
         user, password = get_user_pass()
         if user:
