@@ -127,6 +127,7 @@ script:
   commands:
   - arguments:
     - default: false
+      defaultValue: default
       description: The query used to retrieve indicators from the system.
       isArray: false
       name: query

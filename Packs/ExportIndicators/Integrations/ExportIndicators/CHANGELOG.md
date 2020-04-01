@@ -1,5 +1,6 @@
 ## [Unreleased]
-
+ - Fixed an issue where running On-Demand mode an error appeared if export was not initialized.
+ - Now  when not entering a `query` argument in ***eis-update*** command - the query from the integration parameters is used.
 
 ## [20.3.4] - 2020-03-30
   - Added support for the following inline URL parameters.

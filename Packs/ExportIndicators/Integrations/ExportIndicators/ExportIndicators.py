@@ -582,7 +582,7 @@ def create_values_for_returned_dict(iocs: list, request_args: RequestArguments) 
 
 def get_outbound_mimetype() -> str:
     """Returns the mimetype of the export_iocs"""
-    ctx = demisto.getIntegrationContext().get('last_output')
+    ctx = demisto.getIntegrationContext().get('last_output', {})
     return ctx.get(CTX_MIMETYPE_KEY, 'text/plain')
 
 
@@ -770,6 +770,13 @@ def route_list_values() -> Response:
             request_args=request_args
         )
 
+        if demisto.getIntegrationContext() == {} and params.get('on_demand'):
+            values = 'You are running in On-Demand mode - please run !eis-update command to initialize the ' \
+                     'export process'
+
+        elif values == '':
+            values = "No Results Found For the Query"
+
         mimetype = get_outbound_mimetype()
         return Response(values, status=200, mimetype=mimetype)
 
@@ -879,7 +886,12 @@ def update_outbound_command(args, params):
             '"Update exported IOCs On Demand" is off. If you want to update manually please toggle it on.')
     limit = try_parse_integer(args.get('list_size', params.get('list_size')), CTX_LIMIT_ERR_MSG)
     print_indicators = args.get('print_indicators')
+
     query = args.get('query')
+    # in case no query is entered take the query in the integration params
+    if query == 'default':
+        query = params.get('indicators_query')
+
     out_format = args.get('format')
     offset = try_parse_integer(args.get('offset', 0), CTX_OFFSET_ERR_MSG)
     mwg_type = args.get('mwg_type')
@@ -893,8 +905,13 @@ def update_outbound_command(args, params):
                                     category_default, category_attribute, collapse_ips)
 
     indicators = refresh_outbound_context(request_args)
-    hr = tableToMarkdown('List was updated successfully with the following values', indicators,
-                         ['Indicators']) if print_indicators == 'true' else 'List was updated successfully'
+    if len(indicators) > 0:
+        hr = tableToMarkdown('List was updated successfully with the following values', indicators,
+                             ['Indicators']) if print_indicators == 'true' else 'List was updated successfully'
+
+    else:
+        hr = "No Results Found For the Query"
+
     return hr, {}, indicators
 
 

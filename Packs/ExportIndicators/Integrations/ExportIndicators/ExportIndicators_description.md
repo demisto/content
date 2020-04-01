@@ -1,5 +1,6 @@
 ## How to Access the Export Indicators Service
 There are two ways that you can access the Export Indicators Service.
+Use these to make sure your indicators are exported properly.
 
 ### Access the Export Indicators Service by URL and Port (HTTP)
 In a web browser, go to **http://*demisto_address*:*listen_port***.
@@ -41,3 +42,6 @@ Use the following arguments in the URL to change the request:
     * 1 - Collapse to ranges.
     * 2 - Collapse to CIDRs.
  * Example: https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?q="type:ip and sourceBrand:my_source"&tr=1
+
+### When running in On-Demand mode
+Please make sure to to run !eis-update for the first time to initialize the export process.
