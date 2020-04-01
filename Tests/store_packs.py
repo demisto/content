@@ -427,6 +427,7 @@ class Pack(object):
             print_color(
                 f"Finished creating releaseNotes.json for {self._pack_name}",
                 LOG_COLORS.GREEN)
+            print_color(str(changelog_dict), LOG_COLORS.GREEN)
         except Exception as e:
             print_error(
                 f"Failed creating releaseNotes.json file for {self._pack_name}.\n "
