@@ -1,5 +1,5 @@
 import pytest
-from Tests.store_packs import Pack, get_modified_packs
+from Tests.Marketplace.store_packs import Pack, get_modified_packs
 
 # disable-secrets-detection-start
 USER_PACK_METADATA = {
