@@ -72,6 +72,7 @@ jobs:
                 exit 0;
             fi
             # Checks if there's any diff from master
+            echo `git diff master "$CIRCLE_BRANCH" --name-only`
             if [[ `git diff origin/master -- .circleci/config.yml` ]]; then
                 # Checks if part of the branch's changes
                 if [[ -z `git diff master "$CIRCLE_BRANCH" --name-only | grep .circleci/config.yml` ]]; then
