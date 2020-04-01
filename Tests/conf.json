@@ -180,6 +180,10 @@
             "playbookID": "TestHelloWorld"
         },
         {
+            "integrations": "HelloWorld",
+            "playbookID": "TestHelloWorldPlaybook"
+        },
+        {
             "integrations": "ThreatQ v2",
             "playbookID": "ThreatQ - Test",
             "fromversion": "4.5.0"
@@ -2716,6 +2720,7 @@
         "urlscan.io": "Issue 21831",
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
         "HelloWorldSimple": "This is just an example integration - no need for test",
+        "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lockpath KeyLight": "Deprecated. No tests.",
         "SafeBreach": "pending rewrite",
         "Cymulate": "Partner didn't provided test playbook",
