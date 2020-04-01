@@ -1,6 +1,6 @@
-id: test-zabbix
+id: Zabbix
 version: 1
-name: test-zabbix
+name: Zabbix
 starttaskid: "0"
 tasks:
   "0":

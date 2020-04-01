@@ -5,6 +5,7 @@ name: Zabbix
 display: Zabbix
 category: Utilities
 description: Allow integration with Zabbix api
+detaileddescription: Integration with Zabbix API
 configuration:
 - display: Url
   name: url
@@ -21,7 +22,6 @@ script:
   type: python
   commands:
   - name: execute_command
-    description: Execute command on Zabbix API
     arguments:
     - name: method
       required: true
@@ -35,6 +35,11 @@ script:
     outputs:
     - contextPath: result
       description: result
+      type: Unknown
+    description: Execute command on Zabbix API
+  - name: test-module
+    arguments: []
+    description: Test if module is working
   dockerimage: demisto/zabbix:1.0.0.7067
   runonce: false
   subtype: python3

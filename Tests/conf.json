@@ -2606,7 +2606,7 @@
         },
         {
             "integrations": "Zabbix",
-            "playbookID": "test-zabbix"
+            "playbookID": "Zabbix"
         }
     ],
     "skipped_tests": {
@@ -2817,8 +2817,7 @@
         "Google Chronicle Backstory": "SDK",
         "Google Vision AI": "SDK",
         "Syslog Sender": "syslog",
-        "syslog": "syslog",
-        "Zabbix": "dependency"
+        "syslog": "syslog"
     },
     "docker_thresholds": {
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
