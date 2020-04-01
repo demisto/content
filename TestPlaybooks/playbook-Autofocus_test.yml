@@ -1,0 +1,276 @@
+id: autofocus_test
+version: -1
+name: Autofocus Test
+description: autofocus test pb
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 79a884c9-ccfd-4056-8d68-066be6b4d024
+    type: start
+    task:
+      id: 79a884c9-ccfd-4056-8d68-066be6b4d024
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 58608f90-3d09-4492-833f-0629b358e3a3
+    type: regular
+    task:
+      id: 58608f90-3d09-4492-833f-0629b358e3a3
+      version: -1
+      name: autofocus-search-samples
+      description: Search for samples on Autofocus
+      script: '|||autofocus-search-samples'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      checks: {}
+      cookie: {}
+      from: {}
+      order:
+        simple: desc
+      query:
+        simple: '{"operator": "all", "children": [{"field": "sample.malware", "operator":
+          "is", "value": 1}]}'
+      scope:
+        simple: public
+      size:
+        simple: "10"
+      sleep: {}
+      sort:
+        simple: create_date
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 60e3afe5-b32d-4c05-8b00-f2c634d6572d
+    type: condition
+    task:
+      id: 60e3afe5-b32d-4c05-8b00-f2c634d6572d
+      version: -1
+      name: AreValuesEqual
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    scriptarguments:
+      left:
+        simple: ${Autofocus=val.Samples.length}
+      right:
+        simple: "10"
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: deefd62f-534e-4ed6-8592-d91aea726e10
+    type: regular
+    task:
+      id: deefd62f-534e-4ed6-8592-d91aea726e10
+      version: -1
+      name: autofocus-search-sessions
+      description: Search for sessions on Autofocus
+      script: '|||autofocus-search-sessions'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      checks: {}
+      cookie: {}
+      from: {}
+      order:
+        simple: desc
+      query:
+        simple: '{"operator": "all", "children": [{"field": "session.region", "operator":
+          "is", "value": "us"}]}'
+      size:
+        simple: "10"
+      sleep: {}
+      sort:
+        simple: tstamp
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 03256a7b-a185-467e-8b56-33aee2b6c3e0
+    type: condition
+    task:
+      id: 03256a7b-a185-467e-8b56-33aee2b6c3e0
+      version: -1
+      name: AreValuesEqual
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    scriptarguments:
+      left:
+        simple: ${Autofocus=val.Sessions.length}
+      right:
+        simple: "10"
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: 55d86131-a1b2-4c31-83a4-6d092d193b25
+    type: regular
+    task:
+      id: 55d86131-a1b2-4c31-83a4-6d092d193b25
+      version: -1
+      name: file
+      description: Check file reputation of the given hash
+      script: Autofocus|||file
+      type: regular
+      iscommand: true
+      brand: Autofocus
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      file:
+        simple: 75779e62f9790bd4c2ed449bd20be741f78811fb5ce848a2c5a516af17cdeccf
+      long: {}
+      retries: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: 4fa712ec-10bd-4161-82a3-faa9c80f405b
+    type: condition
+    task:
+      id: 4fa712ec-10bd-4161-82a3-faa9c80f405b
+      version: -1
+      name: IsMaliciousIndicatorFound
+      description: Checks if the investigation found any Malicious File/URL/IP, if
+        so return yes, otherwise no.
+      scriptName: IsMaliciousIndicatorFound
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    scriptarguments:
+      includeSuspicious: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: 7f6e1475-51fb-4bb1-87f7-07511e26cdec
+    type: title
+    task:
+      id: 7f6e1475-51fb-4bb1-87f7-07511e26cdec
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1255,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
