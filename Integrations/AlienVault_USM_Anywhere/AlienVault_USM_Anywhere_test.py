@@ -2,7 +2,7 @@ import demistomock as demisto
 import dateparser
 from datetime import datetime, timedelta
 
-server_url = 'https://vigilant.alienvault.cloud/api/2.0/alarms?page=1&size=1' \
+server_url = 'https://vigilant.alienvault.cloud/api/2.0/alarms?page=0&size=1' \
              '&sort=timestamp_occured%2Casc&timestamp_occured_gte=1547567249000'
 
 
