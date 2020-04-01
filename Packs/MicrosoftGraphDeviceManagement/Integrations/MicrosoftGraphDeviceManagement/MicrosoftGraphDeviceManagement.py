@@ -13,8 +13,6 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 
-EMPTY_RESP_TYPE = 'None'
-
 SPECIAL_HEADERS: dict = {
     'id': 'ID',
     'userId': 'User ID',
@@ -50,7 +48,7 @@ class MsGraphClient:
 
     def make_action(self, device_id: str, action: str, body: str = None) -> None:
         url_suffix: str = f'deviceManagement/managedDevices/{device_id}/{action}'
-        self.ms_client.http_request('POST', url_suffix, data=body, resp_type=EMPTY_RESP_TYPE)
+        self.ms_client.http_request('POST', url_suffix, data=body, return_empty_response=True)
 
     def delete_user_from_shared_apple_device(self, user_principal_name: str, device_id: str, action: str) -> None:
         body: dict = {'userPrincipalName': user_principal_name}
