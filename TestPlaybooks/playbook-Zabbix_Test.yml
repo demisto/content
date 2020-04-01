@@ -1,6 +1,7 @@
 id: Zabbix
 version: 1
 name: Zabbix
+fromversion: 4.5.0
 starttaskid: "0"
 tasks:
   "0":
