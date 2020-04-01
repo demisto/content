@@ -11,8 +11,8 @@ import shutil
 requests.packages.urllib3.disable_warnings()
 
 
-def get_server_url():
-    url = demisto.params()['url']
+def get_server_url(server_url: str) -> str:
+    url = server_url
     url = re.sub('/[\/]+$/', '', url)
     url = re.sub('\/$', '', url)
     return url
@@ -218,10 +218,10 @@ def get_ticket_human_readable(tickets, ticket_type):
 def get_ticket_fields(template, ticket_type):
     # Inverse the keys and values of those dictionaries to map the arguments to their corresponding values in ServiceNow
     args = unicode_to_str_recur(demisto.args())
-    inv_severity = {v: k for k, v in TICKET_SEVERITY.iteritems()}
-    inv_priority = {v: k for k, v in TICKET_PRIORITY.iteritems()}
+    inv_severity = {v: k for k, v in TICKET_SEVERITY.items()}
+    inv_priority = {v: k for k, v in TICKET_PRIORITY.items()}
     states = TICKET_STATES.get(ticket_type)
-    inv_states = {v: k for k, v in states.iteritems()} if states else {}
+    inv_states = {v: k for k, v in states.items()} if states else {}
 
     body = {}
     for arg in SNOW_ARGS:
@@ -277,18 +277,14 @@ def split_fields(fields):
 # Converts unicode elements of obj (incl. dictionary and list) to string recursively
 def unicode_to_str_recur(obj):
     if isinstance(obj, dict):
-        obj = {unicode_to_str_recur(k): unicode_to_str_recur(v) for k, v in obj.iteritems()}
+        obj = {unicode_to_str_recur(k): unicode_to_str_recur(v) for k, v in obj.items()}
     elif isinstance(obj, list):
-        obj = map(unicode_to_str_recur, obj)
-    elif isinstance(obj, unicode):
-        obj = obj.encode('utf-8')
+        obj = list(map(unicode_to_str_recur, obj))
     return obj
 
 
 # Converts to an str
 def convert_to_str(obj):
-    if isinstance(obj, unicode):
-        return obj.encode('utf-8')
     try:
         return str(obj)
     except ValueError:
@@ -515,8 +511,8 @@ def get_record_command():
             # ID is added by default
             fields.append('sys_id')
         # filter the record for the required fields
-        record = dict(filter(lambda kv_pair: kv_pair[0] in fields, record.items()))
-        for k, v in record.iteritems():
+        record = dict([kv_pair for kv_pair in list(record.items()) if kv_pair[0] in fields])
+        for k, v in record.items():
             if isinstance(v, dict):
                 # For objects that refer to a record in the database, take their value(system ID).
                 record[k] = v.get('value', record[k])
@@ -946,10 +942,10 @@ def query_table_command():
             # ID is added by default
             fields.append('sys_id')
         # Filter the records according to the given fields
-        records = [dict(filter(lambda kv_pair: kv_pair[0] in fields, r.iteritems())) for r in res['result']]
+        records = [dict([kv_pair for kv_pair in iter(r.items()) if kv_pair[0] in fields]) for r in res['result']]
         for r in records:
             r['ID'] = r.pop('sys_id')
-            for k, v in r.iteritems():
+            for k, v in r.items():
                 if isinstance(v, dict):
                     # For objects that refer to a record in the database, take their value (system ID).
                     r[k] = v.get('value', v)
@@ -1317,7 +1313,7 @@ def list_table_fields_command():
     if len(res['result']) == 0:
         return 'Table contains no records'
 
-    fields = [{'Name': k} for k, v in res['result'][0].iteritems()]
+    fields = [{'Name': k} for k, v in res['result'][0].items()]
 
     entry = {
         'Type': entryTypes['note'],
@@ -1424,8 +1420,8 @@ def fetch_incidents(client):
         except Exception:
             pass
 
-        for k, v in result.iteritems():
-            if isinstance(v, basestring):
+        for k, v in result.items():
+            if isinstance(v, str):
                 labels.append({
                     'type': k,
                     'value': v
@@ -1486,18 +1482,21 @@ def main():
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
     command = demisto.command()
-    LOG('Executing command {}'.format(command))
+    LOG(f'Executing command {command}')
 
     params = demisto.params()
     username = params['credentials']['identifier']
     password = params['credentials']['password']
     verify = not params.get('insecure', False)
     proxy = demisto.params().get('proxy') is True
-    api = '/api/now/'
+
     version = params.get('api_version')
     if version:
-        api += version + '/'
-    server_url = get_server_url() + api
+        api = f'/api/now/{version}/'
+    else:
+        api = '/api/now/'
+    server_url = params.get('url')
+    server_url = f'{get_server_url(server_url)}{api}'
 
     defaults = {
         'limit': 10,
@@ -1513,12 +1512,11 @@ def main():
     ticket_type = params.get('ticket_type', defaults['ticket_type'])
     get_attachments = params.get('get_attachments', False)
 
+    raise_exception = False
     try:
         client = Client(server_url, username, password, verify, proxy, fetch_time, sysparm_query, sysparm_limit,
                         timestamp_field, ticket_type, get_attachments)
         args = unicode_to_str_recur(demisto.args())
-        raise_exception = False
-
         if command == 'test-module':
             test_module(client)
             demisto.results('ok')
@@ -1568,7 +1566,7 @@ def main():
         elif command == 'servicenow-get-ticket-notes':
             demisto.results(get_ticket_notes_command())
         else:
-            raise NotImplementedError('Command {} was not implemented.'.format(command))
+            raise NotImplementedError(f'Command {command} was not implemented.')
 
     except Exception as err:
         LOG(err)
