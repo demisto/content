@@ -8,12 +8,31 @@ configuration:
   name: base_url
   required: false
   type: 0
+- display: Token (received from the authorization step - see Detailed Instructions
+    (?) section)
+  name: refresh_token
+  required: false
+  type: 4
+- display: Key (received from the authorization step - see Detailed Instructions (?)
+    section)
+  name: enc_key
+  required: false
+  type: 4
+- display: ID (received from the authorization step - see Detailed Instructions (?)
+    section)
+  name: auth_id
+  required: false
+  type: 4
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
+  required: false
+  type: 8
+- display: Use a self-deployed Azure application
+  name: self_deployed
   required: false
   type: 8
 - defaultvalue: '1440'
@@ -50,25 +69,6 @@ configuration:
   name: operations_filter
   required: false
   type: 0
-- display: Use a self-deployed Azure application
-  name: self_deployed
-  required: false
-  type: 8
-- display: Token (received from the authorization step - see Detailed Instructions
-    (?) section)
-  name: refresh_token
-  required: false
-  type: 4
-- display: Key (received from the authorization step - see Detailed Instructions (?)
-    section)
-  name: enc_key
-  required: false
-  type: 4
-- display: ID (received from the authorization step - see Detailed Instructions (?)
-    section)
-  name: auth_id
-  required: false
-  type: 4
 - display: The authentication code you got for the service. For instructions on how
     to receive it, see the detailed description ('?') section.
   name: auth_code

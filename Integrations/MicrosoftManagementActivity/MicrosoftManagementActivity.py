@@ -1,8 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *
+import jwt
 import json
 import requests
-import jwt
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -12,51 +12,51 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
 APP_NAME = 'ms-management-api'
 
 CONTENT_TYPE_TO_TYPE_ID_MAPPING = {
-    "ExchangeAdmin": 1,
-    "ExchangeItem": 2,
-    "ExchangeItemGroup": 3,
-    "SharePoint": 4,
-    "SharePointFileOperation": 6,
-    "AzureActiveDirectory": 8,
-    "AzureActiveDirectoryAccountLogon": 9,
-    "DataCenterSecurityCmdlet": 10,
-    "ComplianceDLPSharePoint": 11,
-    "Sway": 12,
-    "ComplianceDLPExchange": 13,
-    "SharePointSharingOperation": 14,
-    "AzureActiveDirectoryStsLogon": 15,
-    "SecurityComplianceCenterEOPCmdlet": 18,
-    "PowerBIAudit": 20,
-    "CRM": 21,
-    "Yammer": 22,
-    "SkypeForBusinessCmdlets": 23,
-    "Discovery": 24,
-    "MicrosoftTeams": 25,
-    "ThreatIntelligence": 28,
-    "MailSubmission": 29,
-    "MicrosoftFlow": 30,
-    "AeD": 31,
-    "MicrosoftStream": 32,
-    "ComplianceDLPSharePointClassification": 33,
-    "Project": 35,
-    "SharePointListOperation": 36,
-    "DataGovernance": 38,
-    "SecurityComplianceAlerts": 40,
-    "ThreatIntelligenceUrl": 41,
-    "SecurityComplianceInsights": 42,
-    "WorkplaceAnalytics": 44,
-    "PowerAppsApp": 45,
-    "ThreatIntelligenceAtpContent": 47,
-    "TeamsHealthcare": 49,
-    "DataInsightsRestApiAudit": 52,
-    "SharePointListItemOperation": 54,
-    "SharePointContentTypeOperation": 55,
-    "SharePointFieldOperation": 56,
-    "AirInvestigation": 64,
-    "Quarantine": 65,
-    "MicrosoftForms": 66
+    'ExchangeAdmin': 1,
+    'ExchangeItem': 2,
+    'ExchangeItemGroup': 3,
+    'SharePoint': 4,
+    'SharePointFileOperation': 6,
+    'AzureActiveDirectory': 8,
+    'AzureActiveDirectoryAccountLogon': 9,
+    'DataCenterSecurityCmdlet': 10,
+    'ComplianceDLPSharePoint': 11,
+    'Sway': 12,
+    'ComplianceDLPExchange': 13,
+    'SharePointSharingOperation': 14,
+    'AzureActiveDirectoryStsLogon': 15,
+    'SecurityComplianceCenterEOPCmdlet': 18,
+    'PowerBIAudit': 20,
+    'CRM': 21,
+    'Yammer': 22,
+    'SkypeForBusinessCmdlets': 23,
+    'Discovery': 24,
+    'MicrosoftTeams': 25,
+    'ThreatIntelligence': 28,
+    'MailSubmission': 29,
+    'MicrosoftFlow': 30,
+    'AeD': 31,
+    'MicrosoftStream': 32,
+    'ComplianceDLPSharePointClassification': 33,
+    'Project': 35,
+    'SharePointListOperation': 36,
+    'DataGovernance': 38,
+    'SecurityComplianceAlerts': 40,
+    'ThreatIntelligenceUrl': 41,
+    'SecurityComplianceInsights': 42,
+    'WorkplaceAnalytics': 44,
+    'PowerAppsApp': 45,
+    'ThreatIntelligenceAtpContent': 47,
+    'TeamsHealthcare': 49,
+    'DataInsightsRestApiAudit': 52,
+    'SharePointListItemOperation': 54,
+    'SharePointContentTypeOperation': 55,
+    'SharePointFieldOperation': 56,
+    'AirInvestigation': 64,
+    'Quarantine': 65,
+    'MicrosoftForms': 66
 }
-# Transferring content types to lowercase to prevent user errors (such as "quarantine" instead of "Quarantine")
+# Transferring content types to lowercase to prevent user errors (such as 'quarantine' instead of 'Quarantine')
 CONTENT_TYPE_TO_TYPE_ID_MAPPING = {key.lower(): value for key, value in CONTENT_TYPE_TO_TYPE_ID_MAPPING.items()}
 
 
@@ -69,11 +69,9 @@ class Client(BaseClient):
     def __init__(self, base_url: str, verify: bool,
                  proxy: bool, self_deployed, refresh_token, auth_and_token_url,
                  enc_key, auth_code, tenant_id):
-        # TODO : understand how the client_id and client_secret in MicrosoftApiModule are correct
-        super().__init__(base_url=f'{base_url}', verify=verify, proxy=proxy)
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.tenant_id = tenant_id
-        self.suffix_template = "{}/activity/feed/subscriptions/{}"
-        self.tenant_id_suffix = ''
+        self.suffix_template = '{}/activity/feed/subscriptions/{}'
         self.access_token = None
         self.self_deployed = self_deployed
         self.refresh_token = refresh_token
@@ -95,92 +93,16 @@ class Client(BaseClient):
                                          resource='https://manage.office.com',
                                          token_retrieval_url='https://login.windows.net/common/oauth2/token')
 
-
-    # TODO : remove if not used
-    @staticmethod
-    def is_token_expired(integration_context):
-        token_expiry_timestamp = int(integration_context["expires_on"])
-        now_in_epoch = (datetime.now() - datetime(1970, 1, 1)).total_seconds()
-        return token_expiry_timestamp <= now_in_epoch - 10  # Checking with a 10 seconds margin to be on the safe side
-
-    # TODO : remove if not used
-    @staticmethod
-    def build_access_token_request_data(integration_context):
-        redirect_uri = demisto.params().get('redirect_uri')
-        auth_code = demisto.params().get('auth_code')
-        client_id = demisto.params().get('client_id')
-        client_secret = demisto.params().get('client_secret')
-        data = {
-            'client_id': client_id,
-            'redirect_uri': redirect_uri,
-            'client_secret': client_secret,
-            'resource': 'https://manage.office.com'
-        }
-
-        if not integration_context:
-            data['code'] = auth_code
-            data['grant_type'] = 'authorization_code'
-        else:
-            data['refresh_token'] = integration_context['refresh_token']
-            data['grant_type'] = 'refresh_token'
-
-        return data
-
-    # TODO : remove if not used
-    @staticmethod
-    def create_new_integration_context(get_access_token_response):
-        new_integration_context = {
-            'refresh_token': get_access_token_response.get('refresh_token'),
-            'access_token': get_access_token_response.get('access_token'),
-            'expires_on': get_access_token_response.get('expires_on')
-        }
-        return new_integration_context
-
-    # TODO : remove if not used
-    def http_request(self, method, url_suffix=None, full_url=None, params={}, data=None, is_get_entity_cmd=False):
-        # TODO : verify this does not break anything
-        res = self.ms_client.http_request(method=method,  # disable-secrets-detection
-                                          url_suffix=url_suffix,
-                                          full_url=full_url,
-                                          json_data=data,
-                                          params=params,
-                                          resp_type='response')
-        return res.json()
-
-    # TODO : remove if not used
-    def get_access_token_request(self):
-        headers = {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
-
-        integration_context = demisto.getIntegrationContext()
-        if integration_context and not Client.is_token_expired(integration_context):
-            return integration_context
-
-        data = Client.build_access_token_request_data(integration_context)
-
-        response = self._http_request(
-            method='POST',
-            url_suffix='',
-            full_url='https://login.windows.net/common/oauth2/token',
-            headers=headers,
-            data=data
-        )
-
-        new_integration_context = Client.create_new_integration_context(response)
-        demisto.setIntegrationContext(new_integration_context)
-        return response
-
     def get_access_token_data(self):
         access_token_jwt = self.ms_client.get_access_token()
-        # TODO : remove two lines below
-        # refresh_token_response = self.get_access_token_request()
-        # access_token_jwt = refresh_token_response.get('access_token')
         token_data = jwt.decode(access_token_jwt, verify=False)
         return access_token_jwt, token_data
 
+    def get_authentication_string(self):
+        return f'Bearer {self.access_token}'
+
     def get_blob_data_request(self, blob_url):
-        auth_string = 'Bearer {}'.format(self.access_token)
+        auth_string = self.get_authentication_string()
         headers = {
             'Content-Type': 'application/json',
             'Authorization': auth_string
@@ -194,7 +116,7 @@ class Client(BaseClient):
         return response
 
     def list_content_request(self, content_type, start_time, end_time):
-        auth_string = 'Bearer {}'.format(self.access_token)
+        auth_string =
         headers = {
             'Authorization': auth_string
         }
@@ -215,7 +137,7 @@ class Client(BaseClient):
         return response
 
     def list_subscriptions_request(self):
-        auth_string = 'Bearer {}'.format(self.access_token)
+        auth_string = self.get_authentication_string()
         headers = {
             'Authorization': auth_string
         }
@@ -228,7 +150,7 @@ class Client(BaseClient):
 
     def start_or_stop_subscription_request(self, content_type, start_or_stop_suffix):
 
-        auth_string = 'Bearer {}'.format(self.access_token)
+        auth_string = self.get_authentication_string()
         headers = {
             'Authorization': auth_string
         }
@@ -247,44 +169,34 @@ class Client(BaseClient):
 
 
 def test_module(client):
-    """
-    Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
-
-    Args:
-        client: HelloWorld client
-
-    Returns:
-        'ok' if test passed, anything else will fail the test.
-    """
-
-    fetch_delta = demisto.params().get("first_fetch_delta", "1440")
+    fetch_delta = demisto.params().get('first_fetch_delta', '1440')
     if not fetch_delta.isdigit():
-        return "Error: first fetch start must be a positive integer."
+        return 'Error: first fetch start must be a positive integer.'
     fetch_delta = int(fetch_delta)
     if fetch_delta > 1440:
-        return "Error: first fetch start cannot be more than 1440 minutes."
+        return 'Error: first fetch start cannot be more than 1440 minutes.'
     access_token, token_data = client.get_access_token_data()
     if not access_token:
-        return "Error: unable to get perform successful authentication. Please re-submit parameters values."
+        return 'Error: unable to get perform successful authentication. Please re-submit parameters values.'
     return 'ok'
 
 
 def get_start_or_stop_subscription_human_readable(content_type, start_or_stop):
     if start_or_stop == 'start':
-        human_readable = "Successfully started subscription to content type: {}".format(content_type)
+        human_readable = f'Successfully started subscription to content type: {content_type}'
     else:
-        human_readable = "Successfully stopped subscription to content type: {}".format(content_type)
+        human_readable = f'Successfully stopped subscription to content type: {content_type}'
     return human_readable
 
 
 def get_start_or_stop_subscription_context(content_type, start_or_stop):
     is_subscription_enabled = True if start_or_stop == 'start' else False
     subscription_context = {
-        "ContentType": content_type,
-        "Enabled": is_subscription_enabled
+        'ContentType': content_type,
+        'Enabled': is_subscription_enabled
     }
     entry_context = {
-        'MicrosoftManagement.Subscription(val.ContentType && val.ContentType == obj.ContentType)': subscription_context
+        'MicrosoftManagement.Subscription(val.ContentType && val.ContentType === obj.ContentType)': subscription_context
     }
     return entry_context
 
@@ -312,8 +224,8 @@ def get_subscriptions_context(enabled_subscriptions):
     subscriptions_contexts = []
     for subscription_content_type in enabled_subscriptions:
         subscription_context = {
-            "ContentType": subscription_content_type,
-            "Enabled": True
+            'ContentType': subscription_content_type,
+            'Enabled': True
         }
         subscriptions_contexts.append(subscription_context)
     return subscriptions_contexts
@@ -327,7 +239,7 @@ def list_subscriptions_command(client):
     human_readable = tableToMarkdown('Current Subscriptions', enabled_subscriptions_content_types,
                                      headers='Current Subscriptions')
     entry_context = {
-        'MicrosoftManagement.Subscription(val.ContentType && val.ContentType == obj.ContentType)': enabled_subscriptions_context
+        'MicrosoftManagement.Subscription(val.ContentType && val.ContentType === obj.ContentType)': enabled_subscriptions_context
     }
     return_outputs(
         readable_output=human_readable,
@@ -338,22 +250,22 @@ def list_subscriptions_command(client):
 
 def build_event_context(event_record):
     event_context = {
-        "CreationTime": event_record.get("CreationTime"),
-        "ID": event_record.get("Id"),
-        "RecordType": event_record.get("RecordType"),
-        "Operation": event_record.get("Operation"),
-        "OrganizationID": event_record.get("OrganizationId"),
-        "UserType": event_record.get("UserType"),
-        "UserKey": event_record.get("UserKey"),
-        "Workload": event_record.get("Workload"),
-        "ResultsStatus": event_record.get("ResultStatus"),
-        "ObjectID": event_record.get("ObjectId"),
-        "UserID": event_record.get("UserId"),
-        "ClientIP": event_record.get("ClientIP"),
-        "Scope": event_record.get("Scope"),
+        'CreationTime': event_record.get('CreationTime'),
+        'ID': event_record.get('Id'),
+        'RecordType': event_record.get('RecordType'),
+        'Operation': event_record.get('Operation'),
+        'OrganizationID': event_record.get('OrganizationId'),
+        'UserType': event_record.get('UserType'),
+        'UserKey': event_record.get('UserKey'),
+        'Workload': event_record.get('Workload'),
+        'ResultsStatus': event_record.get('ResultStatus'),
+        'ObjectID': event_record.get('ObjectId'),
+        'UserID': event_record.get('UserId'),
+        'ClientIP': event_record.get('ClientIP'),
+        'Scope': event_record.get('Scope'),
     }
-    # Remove keys with None value
 
+    # Remove keys with None value
     event_context = assign_params(**event_context)
     return event_context
 
@@ -367,9 +279,9 @@ def get_content_records_context(content_records):
 
 
 def get_all_content_type_records(client, content_type, start_time, end_time):
-    # The request returns a list of content records, each containing a url that holds the actual data
     content_blobs = client.list_content_request(content_type, start_time, end_time)
-    content_uris = [content_blob.get("contentUri") for content_blob in content_blobs]
+    # The list_content request returns a list of content records, each containing a url that holds the actual data
+    content_uris = [content_blob.get('contentUri') for content_blob in content_blobs]
     content_records = []
     for uri in content_uris:
         content_records_in_uri = client.get_blob_data_request(uri)
@@ -378,30 +290,30 @@ def get_all_content_type_records(client, content_type, start_time, end_time):
 
 
 def create_events_human_readable(events_context, content_type):
-    headers = ["ID", "CreationTime", "Workload", "Operation"]
-    content_header = "Content for content type {}".format(content_type)
+    headers = ['ID', 'CreationTime', 'Workload', 'Operation']
+    content_header = f'Content for content type {content_type}'
     human_readable = tableToMarkdown(content_header, events_context, headers=headers)
     return human_readable
 
 
 def are_start_and_end_times_valid(args):
-    start_time = args.get("start_time")
-    end_time = args.get("end_time")
+    start_time = args.get('start_time')
+    end_time = args.get('end_time')
     if (start_time and not end_time) or (end_time and not start_time):
-        return_error("Error: Start time and end time must both be specified (or both omitted).")
+        return_error('Error: Start time and end time must both be specified (or both omitted).')
 
 
 def get_filter_accepted_values_list(filtered_field, filter_data):
     filter_accepted_values_string = filter_data.get(filtered_field)
     if filter_accepted_values_string:
-        return filter_accepted_values_string.split(",")
+        return filter_accepted_values_string.split(',')
     return None
 
 
 def verify_record_type_is_legal(record_type):
     record_type_lowercase = record_type.lower()
     if record_type_lowercase not in CONTENT_TYPE_TO_TYPE_ID_MAPPING:
-        return_error(f"Error: {record_type} is not a legal record type in the Microsoft Management Activity API.")
+        return_error(f'Error: {record_type} is not a legal record type in the Microsoft Management Activity API.')
 
 
 def record_types_to_type_ids(record_types_to_fetch):
@@ -409,7 +321,8 @@ def record_types_to_type_ids(record_types_to_fetch):
 
     for record_type in record_types_to_fetch:
         verify_record_type_is_legal(record_type)
-        record_type_lowercase = record_type.lower()  # To lowercase to avoid user errors, such as "quarantine" and "Quarantine"
+        # To lowercase to avoid user errors, such as 'quarantine' and 'Quarantine'
+        record_type_lowercase = record_type.lower()
         record_type_id = CONTENT_TYPE_TO_TYPE_ID_MAPPING[record_type_lowercase]
         record_type_ids_to_fetch.append(record_type_id)
     return record_type_ids_to_fetch
@@ -417,23 +330,24 @@ def record_types_to_type_ids(record_types_to_fetch):
 
 def does_record_match_filters(record, filter_accepted_record_type_ids, filter_accepted_workloads, filter_accepted_operations):
     should_filter_by_record_types = filter_accepted_record_type_ids is not None
-    record_matches_record_type_filter = not should_filter_by_record_types or record.get("RecordType") in record_type_ids_to_fetch
+    record_matches_record_type_filter = not should_filter_by_record_types or record.get('RecordType') in filter_accepted_record_type_ids
 
     should_filter_by_workloads = filter_accepted_workloads is not None
-    record_matches_workloads_filter = not should_filter_by_workloads or record.get("Workload") in record_type_ids_to_fetch
+    record_matches_workloads_filter = not should_filter_by_workloads or record.get('Workload') in filter_accepted_workloads
 
     should_filter_by_operations = filter_accepted_operations is not None
-    record_matches_operations_filter = not should_filter_by_operations or record.get("Operation") in record_type_ids_to_fetch
+    record_matches_operations_filter = not should_filter_by_operations or record.get('Operation') in filter_accepted_operations
 
     return record_matches_record_type_filter and record_matches_workloads_filter and record_matches_operations_filter
 
 
 def filter_records(content_records, filter_data):
-    filter_accepted_workloads = get_filter_accepted_values_list("workloads_filter", filter_data)
-    filter_accepted_operations = get_filter_accepted_values_list("operations_filter", filter_data)
-    filter_accepted_record_types = get_filter_accepted_values_list("record_types_filter", filter_data)
+    filter_accepted_workloads = get_filter_accepted_values_list('workloads_filter', filter_data)
+    filter_accepted_operations = get_filter_accepted_values_list('operations_filter', filter_data)
+    filter_accepted_record_types = get_filter_accepted_values_list('record_types_filter', filter_data)
 
-    # User specifies the record types by type name, but the API returns the record types by ID, so we transform the names to IDs
+    # User specifies the record types by type name, but the API returns the record types by ID.
+    # Therefore we transform the names to IDs.
     filter_accepted_record_type_ids = record_types_to_type_ids(
         filter_accepted_record_types) if filter_accepted_record_types else None
 
@@ -446,6 +360,8 @@ def filter_records(content_records, filter_data):
 
 def list_content_command(client, args):
     content_type = args['content_type']
+    start_time = args.get('start_time')
+    end_time = args.get('end_time')
 
     content_records = get_all_content_type_records(client, content_type, start_time, end_time)
     filtered_content_records = filter_records(content_records, args)
@@ -454,19 +370,19 @@ def list_content_command(client, args):
     return_outputs(
         readable_output=human_readable,
         outputs={
-            "MicrosoftManagement.ContentRecord(val.ID && val.ID === obj.ID)": content_records_context
+            'MicrosoftManagement.ContentRecord(val.ID && val.ID === obj.ID)': content_records_context
         },
         raw_response=content_records
     )
 
 
 def get_content_types_to_fetch(client):
-    content_types_to_fetch = demisto.params().get("content_types_to_fetch")
+    content_types_to_fetch = demisto.params().get('content_types_to_fetch')
     if not content_types_to_fetch:
         # Was not supplied by the user, so we will return all content types the user is subscribed to
         subscriptions = client.list_subscriptions_request()
         content_types_to_fetch = get_enabled_subscriptions_content_types(
-            subscriptions)  # Subscriptions are defined by their content type
+            subscriptions)
     return content_types_to_fetch
 
 
@@ -517,9 +433,10 @@ def content_records_to_incidents(content_records, start_time, end_time):
 
         if incident_creation_time_datetime < start_time_datetime:
             pass
-        incident_creation_time_in_incidents_format = incident_creation_time_str + "Z"
+        incident_creation_time_in_incidents_format = incident_creation_time_str + 'Z'
+        record_id = content_record['Id']
         incident = {
-            'name': content_record['Id'],
+            'name': f'Microsoft Management Activity: {record_id}',
             'occurred': incident_creation_time_in_incidents_format,
             'rawJSON': json.dumps(content_record)
         }
@@ -552,10 +469,7 @@ def fetch_incidents(client, last_run, first_fetch_delta):
 
 
 def main():
-    """
-        PARSE AND VALIDATE INTEGRATION PARAMS
-    """
-    base_url = demisto.params().get("base_url", "https://manage.office.com/api/v1.0/")
+    base_url = demisto.params().get('base_url', 'https://manage.office.com/api/v1.0/')
     verify_certificate = not demisto.params().get('insecure', False)
 
     first_fetch_delta = demisto.params().get('first_fetch_delta', '1440').strip()
@@ -584,20 +498,18 @@ def main():
             refresh_token=refresh_token,
             auth_and_token_url=auth_id,
             enc_key=enc_key,
-            auth_code=params.get('auth_code', '') # TODO : add auth_code param
+            auth_code=params.get('auth_code', '')
         )
 
         access_token, token_data = client.get_access_token_data()
         client.access_token = access_token
-        client.tenant_id = token_data["tid"]
+        client.tenant_id = token_data['tid']
 
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
             result = test_module(client)
             demisto.results(result)
 
         elif demisto.command() == 'fetch-incidents':
-            # Set and define the fetch incidents command to run after activated via integration settings.
             next_run, incidents = fetch_incidents(
                 client=client,
                 last_run=demisto.getLastRun(),
@@ -607,10 +519,10 @@ def main():
             demisto.incidents(incidents)
 
         elif demisto.command() == 'ms-management-activity-start-subscription':
-            start_or_stop_subscription_command(client, args, "start")
+            start_or_stop_subscription_command(client, args, 'start')
 
         elif demisto.command() == 'ms-management-activity-stop-subscription':
-            start_or_stop_subscription_command(client, args, "stop")
+            start_or_stop_subscription_command(client, args, 'stop')
 
         elif demisto.command() == 'ms-management-activity-list-subscriptions':
             list_subscriptions_command(client)
