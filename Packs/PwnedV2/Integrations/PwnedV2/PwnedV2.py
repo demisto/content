@@ -7,7 +7,6 @@ from CommonServerUserPython import *
 import re
 import requests
 
-
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
