@@ -4,8 +4,6 @@ commonfields:
 name: Zabbix
 display: Zabbix
 category: Utilities
-description: Allow integration with Zabbix api
-detaileddescription: Integration with Zabbix API
 configuration:
 - display: Url
   name: url
@@ -18,8 +16,6 @@ configuration:
   type: 9
   required: true
 script:
-  script: ''
-  type: python
   commands:
   - name: execute_command
     arguments:
@@ -41,5 +37,11 @@ script:
     arguments: []
     description: Test if module is working
   dockerimage: demisto/zabbix:1.0.0.7067
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
+  script: '-'
+  type: python
   subtype: python3
+
