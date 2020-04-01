@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+-
 
 ## [20.3.1] - 2020-03-04
 - Added regex and context path to the new default CVE indicator.
