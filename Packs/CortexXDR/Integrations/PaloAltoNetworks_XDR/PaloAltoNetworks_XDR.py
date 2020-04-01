@@ -929,7 +929,7 @@ def isolate_endpoint_command(client, args):
 
     endpoint = client.get_endpoints(endpoint_id_list=[endpoint_id])
     if len(endpoint) == 0:
-        raise ValueError(f'Endpoint {endpoint_id} was not found')
+        raise ValueError(f'Error: Endpoint {endpoint_id} was not found')
 
     endpoint = endpoint[0]
     endpoint_status = endpoint.get('endpoint_status')
@@ -947,11 +947,11 @@ def isolate_endpoint_command(client, args):
             None
         )
     if endpoint_status == 'DISCONNECTED':
-        return_error(
+        raise ValueError(
             f'Error: Endpoint {endpoint_id} is disconnected and therefore can not be isolated.'
         )
     if is_isolated == 'AGENT_PENDING_ISOLATION_CANCELLATION':
-        return_error(
+        raise ValueError(
             f'Error: Endpoint {endpoint_id} is pending isolation cancellation and therefore can not be isolated.'
         )
     client.isolate_endpoint(endpoint_id)
@@ -970,7 +970,7 @@ def unisolate_endpoint_command(client, args):
 
     endpoint = client.get_endpoints(endpoint_id_list=[endpoint_id])
     if len(endpoint) == 0:
-        raise ValueError(f'Endpoint {endpoint_id} was not found')
+        raise ValueError(f'Error: Endpoint {endpoint_id} was not found')
 
     endpoint = endpoint[0]
     endpoint_status = endpoint.get('endpoint_status')
@@ -988,11 +988,11 @@ def unisolate_endpoint_command(client, args):
             None
         )
     if endpoint_status == 'DISCONNECTED':
-        return_error(
+        raise ValueError(
             f'Error: Endpoint {endpoint_id} is disconnected and therefore can not be un-isolated.'
         )
     if is_isolated == 'AGENT_PENDING_ISOLATION':
-        return_error(
+        raise ValueError(
             f'Error: Endpoint {endpoint_id} is pending isolation and therefore can not be un-isolated.'
         )
     client.unisolate_endpoint(endpoint_id)
