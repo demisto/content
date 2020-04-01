@@ -410,11 +410,14 @@ class Pack(object):
             release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
             changelog_dict = {}
             for filename in os.listdir(release_notes_dir):
+                print_color(str(filename), LOG_COLORS.GREEN)
                 version = filename.replace('.md', '')
+                print_color(str(version), LOG_COLORS.GREEN)
                 if filename.endswith(".md"):
                     with open(filename, 'r') as changelog_md:
                         changelog_lines = changelog_md.readline()
                         changelog_string = '\n'.join(changelog_lines)
+                        print_color(str(changelog_string), LOG_COLORS.GREEN)
                         changelog_dict[version] = changelog_string
                 else:
                     task_status = False
