@@ -284,7 +284,7 @@ tasks:
       - "9"
     scriptarguments:
       connection-name:
-        simple: ip-172-31-44-5.eu-central-1.compute.internal
+        simple: taniumlinux
       connection_name:
         complex:
           root: Tanium
@@ -326,7 +326,7 @@ tasks:
       - "10"
     scriptarguments:
       connection-name:
-        simple: ip-172-31-44-5.eu-central-1.compute.internal
+        simple: taniumlinux
       connection_name:
         complex:
           root: Tanium
@@ -566,7 +566,7 @@ tasks:
       - "24"
     scriptarguments:
       connection-name:
-        simple: ip-172-31-44-5.eu-central-1.compute.internal
+        simple: taniumlinux
     separatecontext: false
     view: |-
       {
@@ -691,7 +691,7 @@ tasks:
     scriptarguments:
       connection-timeout: {}
       destination:
-        simple: ip-172-31-44-5.eu-central-1.compute.internal
+        simple: taniumlinux
       destination-type:
         simple: ip_address
       remote:
