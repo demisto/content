@@ -10,4 +10,4 @@ beautifulsoup4==4.8.1
 pypdf2==1.26.0
 requests-mock==1.7.0
 git+https://github.com/coyo8/parinx.git@6493798ceba8089345d970f71be4a896eb6b081d
-vulture==1.3
+vulture==1.4
