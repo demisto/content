@@ -26,6 +26,8 @@ configuration:
   required: false
   type: 0
 - display: Connection Security
+  additionalinfo: The connection security. `TLS` will opt in the TLS mode after the connection was established whereas
+    FULL_TLS will create the connection in TLS mode from The beginning.
   name: tls
   defaultvalue: "None"
   type: 15
