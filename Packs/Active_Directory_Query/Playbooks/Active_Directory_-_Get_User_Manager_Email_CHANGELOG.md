@@ -1,5 +1,6 @@
 ## [Unreleased]
-Fixed an issue where if the username or email of the user did not exist, the playbook would fail. Also improved general playbook error handling.
+  - Fixed an issue where the playbook would fail if the user's email address or username did not exist.
+  - Improved general playbook error handling.
 
 ## [20.3.3] - 2020-03-18
 -
