@@ -43,6 +43,20 @@ if [[ -n "$DIFF_RES" ]]; then
     exit 0
 fi
 
+# test if CommonServerPowerShell has been modified
+DIFF_RES=$(git diff  "$DIFF_COMPARE" -- Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1)
+if [[ -n "$DIFF_RES" ]]; then
+    echo -e "CommonServerPowerShell.ps1 has been modified"
+    exit 0
+fi
+
+# test if CommonServer has been modified
+DIFF_RES=$(git diff  "$DIFF_COMPARE" -- Packs/Base/Scripts/script-CommonServer.yml)
+if [[ -n "$DIFF_RES" ]]; then
+    echo -e "CommonServer.yml has been modified"
+    exit 0
+fi
+
 # test if CommonServerPython has been modified
 DIFF_RES=$(git diff  "$DIFF_COMPARE" -- Tests/demistomock/demistomock.py)
 if [[ -n "$DIFF_RES" ]]; then
