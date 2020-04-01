@@ -177,11 +177,13 @@
         },
         {
             "integrations": "HelloWorld",
-            "playbookID": "TestHelloWorld"
+            "playbookID": "TestHelloWorld",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "HelloWorld",
-            "playbookID": "TestHelloWorldPlaybook"
+            "playbookID": "TestHelloWorldPlaybook",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "ThreatQ v2",
