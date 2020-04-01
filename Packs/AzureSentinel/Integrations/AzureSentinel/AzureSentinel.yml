@@ -22,7 +22,7 @@ configuration:
   name: self_deployed
   required: false
   type: 8
-- display: Application redirect URI (for self-deployed mode).
+- display: Application redirect URI (for self-deployed mode)
   name: redirect_uri
   required: false
   type: 0
@@ -74,9 +74,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Azure Sentinel is a cloud-native security information and event manager
-  (SIEM) platform that uses built-in AI to help analyze large volumes of data across
-  an enterprise.
+description: USe the Azure Sentinel integration to get and manage incidents and get related entity information for incidents.
 display: Azure Sentinel
 name: Azure Sentinel
 script:
@@ -89,7 +87,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get a single incident from Azure Sentinel.
+    description: Gets a single incident from Azure Sentinel.
     execution: false
     name: azure-sentinel-get-incident-by-id
     outputs:
@@ -97,43 +95,43 @@ script:
       description: The incident ID.
       type: String
     - contextPath: AzureSentinel.Incident.Title
-      description: The incident's title.
+      description: The incident title.
       type: String
     - contextPath: AzureSentinel.Incident.Description
-      description: Description about the incident.
+      description: Description of the incident.
       type: String
     - contextPath: AzureSentinel.Incident.Severity
-      description: The incident's severity.
+      description: The incident severity.
       type: String
     - contextPath: AzureSentinel.Incident.Status
-      description: The status of the incident.
+      description: The incident status.
       type: String
     - contextPath: AzureSentinel.Incident.AssigneeName
-      description: The name of the incident's assignee.
+      description: The name of the incident assignee.
       type: String
     - contextPath: AzureSentinel.Incident.AssigneeEmail
-      description: The email of the incident's assignee.
+      description: The email address of the incident assignee.
       type: String
     - contextPath: AzureSentinel.Incident.Label.Name
-      description: The name of the incident's label.
+      description: The name of the incident label.
       type: String
     - contextPath: AzureSentinel.Incident.Label.Type
-      description: The type of the incident's label.
+      description: The incident label type.
       type: String
     - contextPath: AzureSentinel.Incident.FirstActivityTimeUTC
-      description: The incident's first activity time.
+      description: The date and time of the incident's first activity.
       type: Date
     - contextPath: AzureSentinel.Incident.LastActivityTimeUTC
-      description: The incident's last activity time.
+      description: The date and time of the incident's last activity.
       type: Date
     - contextPath: AzureSentinel.Incident.LastModifiedTimeUTC
-      description: The incident's last modification time.
+      description: The date and time the incident was last modified.
       type: Date
     - contextPath: AzureSentinel.Incident.CreatedTimeUTC
-      description: The incident's creation time.
+      description: The date and time the incident was created.
       type: Date
     - contextPath: AzureSentinel.Incident.IncidentNumber
-      description: The incident's number.
+      description: The incident number.
       type: Number
     - contextPath: AzureSentinel.Incident.AlertsCount
       description: The number of the alerts in the incident.
@@ -162,27 +160,27 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of incidents to return. Maximum value is 50.
+      description: The maximum number of incidents to return. The default and maximum value is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: Use OData syntax to filter your results (e.g `properties/createdTimeUtc
-        gt 2020-02-02T14:00:00Z`). For further information, visit https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter
+      description: 'Filter results using OData syntax. For example: properties/createdTimeUtc
+        gt 2020-02-02T14:00:00Z`). For more information see the Azure documentation: https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter.'
       isArray: false
       name: filter
       required: false
       secret: false
     - default: false
       description: A link that specifies a starting point to use for subsequent calls.
-        Using this argument overrides all of the other command arguments.
+        This argument overrides all of the other command arguments.
       isArray: false
       name: next_link
       required: false
       secret: false
     deprecated: false
-    description: Get a list of incidents from Azure Sentinel.
+    description: Gets a list of incidents from Azure Sentinel.
     execution: false
     name: azure-sentinel-list-incidents
     outputs:
@@ -190,43 +188,43 @@ script:
       description: The incident ID.
       type: String
     - contextPath: AzureSentinel.Incident.Title
-      description: The incident's title.
+      description: The incident title.
       type: String
     - contextPath: AzureSentinel.Incident.Description
-      description: Description about the incident.
+      description: Description of the incident.
       type: String
     - contextPath: AzureSentinel.Incident.Severity
-      description: The incident's severity.
+      description: The incident severity.
       type: String
     - contextPath: AzureSentinel.Incident.Status
-      description: The status of the incident.
+      description: The incident status.
       type: String
     - contextPath: AzureSentinel.Incident.AssigneeName
-      description: The name of the incident's assignee.
+      description: The name of the incident assignee.
       type: String
     - contextPath: AzureSentinel.Incident.AssigneeEmail
-      description: The email of the incident's assignee.
+      description: The email address of the incident assignee.
       type: String
     - contextPath: AzureSentinel.Incident.Label.Name
-      description: The nsme of the incident's label.
+      description: The name of the incident label.
       type: String
     - contextPath: AzureSentinel.Incident.Label.Type
-      description: The type of the incident's label.
+      description: The incident label type.
       type: String
     - contextPath: AzureSentinel.Incident.FirstActivityTimeUTC
-      description: The incident's first activity time.
+      description: The date and time of the incident's first activity.
       type: Date
     - contextPath: AzureSentinel.Incident.LastActivityTimeUTC
-      description: The incident's last activity time.
+      description: The date and time of the incident's last activity.
       type: Date
     - contextPath: AzureSentinel.Incident.LastModifiedTimeUTC
-      description: The incident's last modification time.
+      description: The date and time the incident was last modified.
       type: Date
     - contextPath: AzureSentinel.Incident.CreatedTimeUTC
-      description: The incident's creation time.
+      description: The date and time the incident was created.
       type: Date
     - contextPath: AzureSentinel.Incident.IncidentNumber
-      description: The incident's number.
+      description: The incident number.
       type: Number
     - contextPath: AzureSentinel.Incident.AlertsCount
       description: The number of the alerts in the incident.
@@ -250,7 +248,7 @@ script:
       description: The incident's generated last activity time.
       type: Date
     - contextPath: AzureSentinel.NextLink.Description
-      description: The description about NextLink.
+      description: Description of NextLink.
       type: String
     - contextPath: AzureSentinel.NextLink.URL
       description: Used if an operation returns partial results. If a response contains
@@ -274,14 +272,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: The incident's description.
+      description: Description of the incident.
       isArray: false
       name: description
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The incident's severity.
+      description: The incident severity.
       isArray: false
       name: severity
       predefined:
@@ -293,7 +291,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The incident's status.
+      description: The incident status.
       isArray: false
       name: status
       predefined:
@@ -303,7 +301,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Update a single incident in Azure Sentinel.
+    description: Updates a single incident in Azure Sentinel.
     execution: false
     name: azure-sentinel-update-incident
     outputs:
@@ -314,40 +312,40 @@ script:
       description: The incident's title.
       type: String
     - contextPath: AzureSentinel.Incident.Description
-      description: Description about the incident.
+      description: Description of the incident.
       type: String
     - contextPath: AzureSentinel.Incident.Severity
-      description: The incident's severity.
+      description: The incident severity.
       type: String
     - contextPath: AzureSentinel.Incident.Status
-      description: The status of the incident.
+      description: The incident status.
       type: String
     - contextPath: AzureSentinel.Incident.AssigneeName
-      description: The name of the incident's assignee.
+      description: The name of the incident assignee.
       type: String
     - contextPath: AzureSentinel.Incident.AssigneeEmail
-      description: The email of the incident's assignee.
+      description: The email address of the incident assignee.
       type: String
     - contextPath: AzureSentinel.Incident.Label.Name
-      description: The name of the incident's label.
+      description: The name of the incident label.
       type: String
     - contextPath: AzureSentinel.Incident.Label.Type
-      description: The type of the incident's label.
+      description: The incident label type.
       type: String
     - contextPath: AzureSentinel.Incident.FirstActivityTimeUTC
-      description: The incident's first activity time.
+      description: The date and time of the incident's first activity.
       type: Date
     - contextPath: AzureSentinel.Incident.LastActivityTimeUTC
-      description: The incident's last activity time.
+      description: The date and time of the incident's last activity.
       type: Date
     - contextPath: AzureSentinel.Incident.LastModifiedTimeUTC
-      description: The incident's last modification time.
+      description: The date and time the incident was last modified.
       type: Date
     - contextPath: AzureSentinel.Incident.CreatedTimeUTC
-      description: The incident's creation time.
+      description: The date and time the incident was created.
       type: Date
     - contextPath: AzureSentinel.Incident.IncidentNumber
-      description: The incident's number.
+      description: The incident number.
       type: Number
     - contextPath: AzureSentinel.Incident.AlertsCount
       description: The number of the alerts in the incident.
@@ -381,7 +379,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Delete a single incident in Azure Sentinel.
+    description: Deletes a single incident in Azure Sentinel.
     execution: false
     name: azure-sentinel-delete-incident
   - arguments:
@@ -393,7 +391,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of incident comments to return. Maximum value
+      description: The maximum number of incident comments to return. The default and maximum value
         is 50.
       isArray: false
       name: limit
@@ -407,30 +405,30 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get an incident comments from Azure Sentinel.
+    description: Gets the comments of an incident from Azure Sentinel.
     execution: false
     name: azure-sentinel-list-incident-comments
     outputs:
     - contextPath: AzureSentinel.IncidentComment.ID
-      description: Incident comment's ID.
+      description: The ID of the incident comment.
       type: String
     - contextPath: AzureSentinel.IncidentComment.IncidentID
-      description: Incident ID.
+      description: The incident ID.
       type: String
     - contextPath: AzureSentinel.IncidentComment.Message
       description: The incident comment.
       type: String
     - contextPath: AzureSentinel.IncidentComment.AuthorName
-      description: The author name of the incident comment.
+      description: The name of the author of the incident comment.
       type: String
     - contextPath: AzureSentinel.IncidentComment.AuthorEmail
-      description: The author email of the incident comment.
+      description: The email address of the author of the incident comment.
       type: String
     - contextPath: AzureSentinel.IncidentComment.CreatedTimeUTC
-      description: The creation time of the incident comment.
+      description: The date and time that the incident comment was created.
       type: Date
     - contextPath: AzureSentinel.NextLink.Description
-      description: The description about NextLink.
+      description: Description of NextLink.
       type: String
     - contextPath: AzureSentinel.NextLink.URL
       description: Used if an operation returns a partial result. If a response contains
@@ -451,27 +449,27 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Add a comment to an incident in Azure Sentinel.
+    description: Adds a comment to an incident in Azure Sentinel.
     execution: false
     name: azure-sentinel-incident-add-comment
     outputs:
     - contextPath: AzureSentinel.IncidentComment.ID
-      description: Incident comment's ID.
+      description: The ID of the incident comment.
       type: String
     - contextPath: AzureSentinel.IncidentComment.IncidentID
-      description: Incident ID.
+      description: The incident ID.
       type: String
     - contextPath: AzureSentinel.IncidentComment.Message
       description: The incident comment.
       type: String
     - contextPath: AzureSentinel.IncidentComment.AuthorName
-      description: The author name of the incident comment.
+      description: The name of the author of the incident comment.
       type: String
     - contextPath: AzureSentinel.IncidentComment.AuthorEmail
-      description: The author email of the incident comment.
+      description: The email address of the author of the incident comment.
       type: String
     - contextPath: AzureSentinel.IncidentComment.CreatedTimeUTC
-      description: The creation time of the incident comment.
+      description: The date and time that the incident comment was created.
       type: Date
   - arguments:
     - default: false
@@ -482,7 +480,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of relations to return.
+      description: The maximum number of related entities to return.
       isArray: false
       name: limit
       required: false
@@ -496,7 +494,7 @@ script:
       secret: false
     - default: false
       description: |-
-        A comma-separated list of entity kinds to filter by. By default, the result won't be filtered by kind.
+        A comma-separated list of entity kinds to filter by. By default, the results won't be filtered by kind.
         The optional kinds are: Account, Host, File, AzureResource, CloudApplication, DnsResolution, FileHash, Ip, Malware, Process, RegistryKey, RegistryValue, SecurityGroup, Url, IoTDevice, SecurityAlert, Bookmark.
       isArray: true
       name: entity_kinds
@@ -505,14 +503,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Use OData syntax to filter your results (e.g `properties/createdTimeUtc
-        gt 2020-02-02T14:00:00Z`). For further information, visit https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter
+      description: 'Filter results using OData syntax. For example: properties/createdTimeUtc
+        gt 2020-02-02T14:00:00Z`). For more information see the Azure documentation: https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter.'
       isArray: false
       name: filter
       required: false
       secret: false
     deprecated: false
-    description: Get a list of an incident's related entities from Azure Sentinel.
+    description: Gets a list of an incident's related entities from Azure Sentinel.
     execution: false
     name: azure-sentinel-list-incident-relations
     outputs:
@@ -541,9 +539,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get a single entity from Azure Sentinel. Use !azure-sentinel-list-incident-relations
-      command, and get an entity ID to apply this command on. Notice that in the current
-      Azure Sentinel API version, the retention period for GetEntityByID is 30 days.
+    description: Gets a single entity from Azure Sentinel. Use the azure-sentinel-list-incident-relations
+      command, and get an entity ID to apply this command on. In the current
+      Azure Sentinel API version the retention period for GetEntityByID is 30 days.
     execution: false
     name: azure-sentinel-get-entity-by-id
   - arguments:
@@ -555,7 +553,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of relations to return.
+      description: The maximum number of relations to return. The default value is 50.
       isArray: false
       name: limit
       required: false
@@ -578,14 +576,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Use OData syntax to filter your results (e.g `properties/createdTimeUtc
-        gt 2020-02-02T14:00:00Z`). For further information, visit https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter
+      description: 'Filter results using OData syntax. For example: properties/createdTimeUtc
+        gt 2020-02-02T14:00:00Z`). For more information see the Azure documentation: https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter.'
       isArray: false
       name: filter
       required: false
       secret: false
     deprecated: false
-    description: Get a list of an entity's relations from Azure Sentinel.
+    description: Gets a list of an entity's relations from Azure Sentinel.
     execution: false
     name: azure-sentinel-list-entity-relations
     outputs:
