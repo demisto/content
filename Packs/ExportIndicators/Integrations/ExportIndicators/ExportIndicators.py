@@ -889,7 +889,7 @@ def update_outbound_command(args, params):
 
     query = args.get('query')
     # in case no query is entered take the query in the integration params
-    if query == 'default':
+    if len(query) == 0:
         query = params.get('indicators_query')
 
     out_format = args.get('format')

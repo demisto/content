@@ -127,11 +127,11 @@ script:
   commands:
   - arguments:
     - default: false
-      defaultValue: default
-      description: The query used to retrieve indicators from the system.
+      description: 'The query used to retrieve indicators from the system. leave empty
+        to use the query from the integration parameters. '
       isArray: false
       name: query
-      required: true
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
