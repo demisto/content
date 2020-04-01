@@ -1,1 +1,0 @@
-Integration with Zabbix API
