@@ -411,7 +411,7 @@ class Pack(object):
             print(release_notes_dir)
             changelog_dict = {}
             for filename in os.scandir(release_notes_dir):
-                print_color(str(filename), LOG_COLORS.GREEN)
+                print_color('Found the following files: '+str(filename), LOG_COLORS.GREEN)
                 version = filename.replace('.md', '')
                 print_color(str(version), LOG_COLORS.GREEN)
                 if filename.endswith(".md"):
