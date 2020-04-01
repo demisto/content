@@ -51,4 +51,5 @@ scripttarget: 0
 dependson:
   must:
   - cve
+timeout: 2.4µs
 runonce: false
