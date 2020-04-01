@@ -8,7 +8,8 @@ def convert_mail_to_json(item, folder, emailSubjectKey, emailTextKey, emailHtmlK
         emailSubjectKey: item.get('subject', ''),
         emailTextKey: item.get('textBody', ''),
         emailHtmlKey: item.get('body', ''),
-        emailTagKey: folder}
+        emailTagKey: folder
+    }
 
 
 def main():
