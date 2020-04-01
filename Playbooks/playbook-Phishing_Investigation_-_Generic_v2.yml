@@ -53,6 +53,9 @@ tasks:
     scriptarguments:
       assignBy: {}
       email: {}
+      onCall:
+        complex:
+          root: inputs.OnCall
       roles:
         complex:
           root: inputs.Role
@@ -2247,6 +2250,11 @@ inputs:
   required: false
   description: Whether the authenticity of the email should be verified, using SPF,
     DKIM and DMARC.
+- key: OnCall
+  value:
+    simple: false
+  required: false
+  description: Set to true to assign only user that is currently on shift.
 outputs: []
 tests:
   - Phishing v2 Test - Attachment
