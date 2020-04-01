@@ -1,6 +1,5 @@
 import pytest
-from Scripts.FormattedDateToEpoch.FormattedDateToEpoch import date_to_epoch
-import demistomock as demisto
+from FormattedDateToEpoch import date_to_epoch
 
 
 @pytest.mark.parametrize(
