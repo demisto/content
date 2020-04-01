@@ -1,3 +1,4 @@
+elasticcommonfields: {}
 id: DBotCreatePhishingClassifierV2FromFile-Test
 version: -1
 name: DBotCreatePhishingClassifierV2FromFile-Test
@@ -5,11 +6,11 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 86525492-d0e2-465a-8e8e-e37bc09da29a
+    taskid: 053b0e94-45e9-4c79-85fa-a0039647c154
     type: start
     task:
       elasticcommonfields: {}
-      id: 86525492-d0e2-465a-8e8e-e37bc09da29a
+      id: 053b0e94-45e9-4c79-85fa-a0039647c154
       version: -1
       name: ""
       iscommand: false
@@ -21,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
@@ -32,11 +33,11 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 8994c97b-047f-46f6-8d32-c90f00a379a8
+    taskid: 8b63ef95-7e74-4ace-8282-c3a052c322c0
     type: regular
     task:
       elasticcommonfields: {}
-      id: 8994c97b-047f-46f6-8d32-c90f00a379a8
+      id: 8b63ef95-7e74-4ace-8282-c3a052c322c0
       version: -1
       name: Create Incidents File
       scriptName: TestCreateIncidentsFile
@@ -54,7 +55,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 545
         }
       }
     note: false
@@ -64,11 +65,11 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: bc86e9f0-c9c1-43d0-8d6a-2992634d4460
+    taskid: fc63ce22-8bc1-4316-8ea5-d7b460729049
     type: regular
     task:
       elasticcommonfields: {}
-      id: bc86e9f0-c9c1-43d0-8d6a-2992634d4460
+      id: fc63ce22-8bc1-4316-8ea5-d7b460729049
       version: -1
       name: Predict Sentence
       description: Predict text label using a pre-trained machine learning phishing
@@ -100,8 +101,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 720
+          "x": 265,
+          "y": 895
         }
       }
     note: false
@@ -111,11 +112,11 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 24ad9edf-7c0a-4881-80e2-a2f5309c0e59
+    taskid: 83897b30-29a0-47c0-8e36-fa48c281d143
     type: condition
     task:
       elasticcommonfields: {}
-      id: 24ad9edf-7c0a-4881-80e2-a2f5309c0e59
+      id: 83897b30-29a0-47c0-8e36-fa48c281d143
       version: -1
       name: Check Prediction
       type: condition
@@ -147,8 +148,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": 265,
+          "y": 1070
         }
       }
     note: false
@@ -158,11 +159,11 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 6ab1ed86-0e31-4909-87e5-ec45779862f9
+    taskid: 720f3087-9136-4e0d-88f5-c1c88131b84f
     type: title
     task:
       elasticcommonfields: {}
-      id: 6ab1ed86-0e31-4909-87e5-ec45779862f9
+      id: 720f3087-9136-4e0d-88f5-c1c88131b84f
       version: -1
       name: Done
       type: title
@@ -172,8 +173,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1070
+          "x": 265,
+          "y": 1245
         }
       }
     note: false
@@ -183,11 +184,11 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 837bcd02-f7ee-4556-89b0-928df6957808
+    taskid: 9c1f4f1d-aad8-406c-8f6a-902241a9599f
     type: regular
     task:
       elasticcommonfields: {}
-      id: 837bcd02-f7ee-4556-89b0-928df6957808
+      id: 9c1f4f1d-aad8-406c-8f6a-902241a9599f
       version: -1
       name: Clean Context
       description: Delete field from context
@@ -198,6 +199,7 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+      - "8"
     scriptarguments:
       all:
         simple: "yes"
@@ -209,7 +211,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 195
         }
       }
@@ -220,10 +222,11 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 9e32746d-fd7f-4152-8845-c49203c650ca
+    taskid: 20b2b299-83b0-4991-8277-72da22820677
     type: playbook
     task:
-      id: 9e32746d-fd7f-4152-8845-c49203c650ca
+      elasticcommonfields: {}
+      id: 20b2b299-83b0-4991-8277-72da22820677
       version: -1
       name: DBot Create Phishing Classifier V2 From File
       description: Create a phishing classifier using machine learning technique from
@@ -251,6 +254,8 @@ tasks:
       incidentTypes:
         simple: Phishing
       incidentsQuery: {}
+      inputFormat:
+        simple: csv
       maxIncidentsToFetchOnTraining:
         simple: "6000"
       modelName:
@@ -274,8 +279,89 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 550
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: cf68c2df-0927-4dbb-8bef-3fe61e408828
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: cf68c2df-0927-4dbb-8bef-3fe61e408828
+      version: -1
+      name: Load Docker
+      description: Tokenize the words in a input text.
+      scriptName: WordTokenizerNLP
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      cleanHtml:
+        simple: "no"
+      encoding: {}
+      hashWordWithSeed: {}
+      isValueJson: {}
+      removeLineBreaks: {}
+      removeNonAlphaWords: {}
+      removeNonEnglishWords: {}
+      removePunctuation: {}
+      removeStopWords: {}
+      replaceEmails: {}
+      replaceNumbers: {}
+      replaceUrls: {}
+      useLemmatization: {}
+      value:
+        simple: test
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 9caafb5b-4ebb-4de0-8e24-7a03f11c0aaa
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 9caafb5b-4ebb-4de0-8e24-7a03f11c0aaa
+      version: -1
+      name: Wait for Docker
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
         }
       }
     note: false
@@ -288,8 +374,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1085,
-        "width": 380,
+        "height": 1260,
+        "width": 810,
         "x": 50,
         "y": 50
       }
@@ -297,3 +383,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.5.0

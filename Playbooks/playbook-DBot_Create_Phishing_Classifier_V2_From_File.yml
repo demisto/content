@@ -1,7 +1,7 @@
 id: DBot Create Phishing Classifier V2 From File
 version: -1
 name: DBot Create Phishing Classifier V2 From File
-fromversion: 5.0.0
+fromversion: 4.5.0
 description: Create a phishing classifier using machine learning. The classifier is based on
   incidents files extracted from email content.
 starttaskid: "0"
