@@ -30,4 +30,4 @@ This playbook does not use any sub-playbooks.
 ---
 There are no outputs for this playbook.
 
-![MAR_Endpoint_data_collection](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/MAR_Endpoint_data_collection.png)
+![MAR_Endpoint_data_collection](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/MAR_Endpoint_data_collection.png)

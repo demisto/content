@@ -39,4 +39,4 @@ This playbook does not use any integrations.
 | Account.Email.Distance.Value | The distance between the email domain and the compared domain.  | number |
 | DBotScore | The DBotScore object. | unknown |
 
-![Email_Address_Enrichment_Generic_v2.1](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Email_Address_Enrichment_Generic_v2.1.png)
+![Email_Address_Enrichment_Generic_v2.1](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Email_Address_Enrichment_Generic_v2.1.png)

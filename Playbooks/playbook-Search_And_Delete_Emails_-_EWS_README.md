@@ -32,4 +32,4 @@ This playbook does not use any sub-playbooks.
 ---
 There are no outputs for this playbook.
 
-![Search_And_Delete_Emails_EWS](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Search_And_Delete_Emails_EWS.png)
+![Search_And_Delete_Emails_EWS](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Search_And_Delete_Emails_EWS.png)

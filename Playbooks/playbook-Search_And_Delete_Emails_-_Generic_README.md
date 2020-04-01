@@ -28,4 +28,4 @@ This playbook does not use any commands.
 ---
 There are no outputs for this playbook.
 
-![Search_And_Delete_Emails_Generic](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Search_And_Delete_Emails_Generic.png)
+![Search_And_Delete_Emails_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Search_And_Delete_Emails_Generic.png)

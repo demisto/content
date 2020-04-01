@@ -59,4 +59,4 @@ This playbook does not use any scripts.
 | HybridAnalysis.Submit.JobID | The JobID of the submission. | unknown |
 | HybridAnalysis.Submit.EnvironmentID | The environmentID of the submission. | unknown |
 
-![Detonate_File_HybridAnalysis](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_File_HybridAnalysis.png)
+![Detonate_File_HybridAnalysis](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_File_HybridAnalysis.png)

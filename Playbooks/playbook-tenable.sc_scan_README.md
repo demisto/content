@@ -50,4 +50,4 @@ This playbook does not use any scripts.
 | TenableSC.ScanResults.Vulnerability.Severity | The vulnerability severity of the scan. | string |
 | TenableSC.ScanResults.Vulnerability.Total | The vulnerability total hosts of the scan. | number |
 
-![Tenable_sc_scan](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Tenable_sc_scan.png)
+![Tenable_sc_scan](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Tenable_sc_scan.png)

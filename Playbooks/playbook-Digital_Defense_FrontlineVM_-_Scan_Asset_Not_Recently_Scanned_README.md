@@ -24,4 +24,4 @@ There are no inputs for this playbook.
 ---
 There are no outputs for this playbook.
 
-![Digital_Defense_FrontlineVM_Scan_Asset_Not_Recently_Scanned](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Digital_Defense_FrontlineVM_Scan_Asset_Not_Recently_Scanned.png)
+![Digital_Defense_FrontlineVM_Scan_Asset_Not_Recently_Scanned](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Digital_Defense_FrontlineVM_Scan_Asset_Not_Recently_Scanned.png)

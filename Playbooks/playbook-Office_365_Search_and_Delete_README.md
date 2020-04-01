@@ -29,4 +29,4 @@ This playbook does not use any scripts.
 ---
 There are no outputs for this playbook.
 
-![Office_365_Search_and_Delete](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Office_365_Search_and_Delete.png)
+![Office_365_Search_and_Delete](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Office_365_Search_and_Delete.png)

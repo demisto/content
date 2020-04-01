@@ -63,4 +63,4 @@ This playbook does not use any integrations.
 | InfoFile | The report file object. | unknown |
 | URL.Malicious | The URL malicious object. | unknown |
 
-![Detonate_URL_McAfee_ATD](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_URL_McAfee_ATD.png)
+![Detonate_URL_McAfee_ATD](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_URL_McAfee_ATD.png)

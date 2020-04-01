@@ -25,4 +25,4 @@ There are no inputs for this playbook.
 ---
 There are no outputs for this playbook.
 
-![Enrich_McAfee_DXL_using_3rd_party_sandbox](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Enrich_McAfee_DXL_using_3rd_party_sandbox.png)
+![Enrich_McAfee_DXL_using_3rd_party_sandbox](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Enrich_McAfee_DXL_using_3rd_party_sandbox.png)

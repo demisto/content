@@ -29,4 +29,4 @@ This playbook does not use any commands.
 | --- | --- | --- |
 | Severities.DBotScoreSeverity | The severity level of the incident identified and set in the Calculate Severity By Highest DBotScore playbook. | string |
 
-![Calculate_Severity_By_Highest_DBotScore](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Calculate_Severity_By_Highest_DBotScore.png)
+![Calculate_Severity_By_Highest_DBotScore](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Calculate_Severity_By_Highest_DBotScore.png)

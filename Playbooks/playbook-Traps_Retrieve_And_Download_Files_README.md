@@ -29,4 +29,4 @@ This playbook does not use any scripts.
 ---
 There are no outputs for this playbook.
 
-![Traps_Retrieve_And_Download_FIles](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Traps_Retrieve_And_Download_FIles.png)
+![Traps_Retrieve_And_Download_FIles](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Traps_Retrieve_And_Download_FIles.png)

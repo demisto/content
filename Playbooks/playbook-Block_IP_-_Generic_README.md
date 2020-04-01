@@ -64,4 +64,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | CheckpointFWRule.Hits.Percentage | The percentage of hits | unknown |
 | CheckpointFWRule.Hits.Value | The value of hits. | unknown |
 
-![Block_IP_Generic](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Block_IP_Generic.png)
+![Block_IP_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Block_IP_Generic.png)

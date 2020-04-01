@@ -96,4 +96,4 @@ This playbook does not use any scripts.
 | URL.Malicious.Description | The reason that the vendor made the decision that the URL was malicious. | String |
 | ANYRUN.Task.Status | The task analysis status. | String |
 
-![Detonate_URL_ThreatStream](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_URL_ThreatStream.png)
+![Detonate_URL_ThreatStream](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_URL_ThreatStream.png)

@@ -52,4 +52,4 @@ This playbook does not use any scripts.
 ---
 There are no outputs for this playbook.
 
-![PCR_AWS_EC2_Instance_Misconfig](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PCR_AWS_EC2_Instance_Misconfig.png)
+![PCR_AWS_EC2_Instance_Misconfig](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PCR_AWS_EC2_Instance_Misconfig.png)

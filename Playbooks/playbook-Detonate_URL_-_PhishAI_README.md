@@ -44,4 +44,4 @@ This playbook does not use any scripts.
 | URL.Status | THe URL's status. | string |
 | URL.Data | The URL's address. | string |
 
-![Detonate_URL_PhishAI](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_URL_Phish.AI.png)
+![Detonate_URL_PhishAI](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_URL_Phish.AI.png)

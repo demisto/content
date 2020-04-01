@@ -34,4 +34,4 @@ This playbook does not use any scripts.
 | Domain | The domain objects. | unknown |
 | DBotScore | The indicator, score, type, and vendor. | unknown |
 
-![Domain_Enrichment_Generic_v2](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Domain_Enrichment_Generic_v2.png)
+![Domain_Enrichment_Generic_v2](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Domain_Enrichment_Generic_v2.png)

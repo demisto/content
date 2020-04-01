@@ -34,4 +34,4 @@ This playbook does not use any scripts.
 | CbResponse.BlockedHashes.LastBlock.Hostname | The last block hostname. | unknown |
 | CbResponse.BlockedHashes.LastBlock.CbSensorID | The last block sensor ID. | unknown |
 
-![Block_File_Carbon_Black_Response](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Block_File_Carbon_Black_Response.png)
+![Block_File_Carbon_Black_Response](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Block_File_Carbon_Black_Response.png)

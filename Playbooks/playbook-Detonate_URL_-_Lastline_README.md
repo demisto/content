@@ -68,4 +68,4 @@ This playbook does not use any scripts.
 | DBotScore | The DBot score object. | unknown |
 | Lastline.Submission | The Lastline submission object. | unknown |
 
-![Detonate_URL_Lastline](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_URL_Lastline.png)
+![Detonate_URL_Lastline](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_URL_Lastline.png)

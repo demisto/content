@@ -31,4 +31,4 @@ This playbook does not use any sub-playbooks.
 | UserManagerEmail | The email of the user's manager. | unknown |
 | UserManagerDisplayName | The display name of the user's manager. | unknown |
 
-![Active Directory_Get User Manager Details](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Active_Directory_-_Get_User_Manager_Details.png)
+![Active Directory_Get User Manager Details](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Active_Directory_-_Get_User_Manager_Details.png)

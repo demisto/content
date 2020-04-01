@@ -54,4 +54,4 @@ This playbook does not use any integrations.
 | Cuckoo.Task.Score | The reported score of the the task. | unknown |
 | Cuckoo.Task.Monitor | The  monitor of the reported task. | unknown |
 
-![Detonate_URL_Cuckoo](https://github.com/demisto/content/blob/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_URL_Cuckoo.png)
+![Detonate_URL_Cuckoo](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_URL_Cuckoo.png)
