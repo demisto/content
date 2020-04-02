@@ -208,7 +208,9 @@ tasks:
           "CRE Name" AS "CREName",
           "CRE Description" AS "CREDescription",
           CATEGORYNAME(highlevelcategory) AS "Category"
-          FROM events WHERE "CRE NAME" <> NULL AND INOFFENSE(${inputs.ID}) START '${incident.labels.start_time}'
+          FROM events WHERE "CRE NAME" <> NULL AND INOFFENSE(${inputs.ID})
+          LIMIT ${inputs.MaxCorrelationCount}
+          START '${incident.labels.start_time}'
       range: {}
       timeout:
         simple: "600"
@@ -448,7 +450,9 @@ tasks:
           "CRE Name" AS "CREName",
           "CRE Description" AS "CREDescription",
           CATEGORYNAME(highlevelcategory) AS "Category"
-          FROM events WHERE "CRE NAME" IS NULL AND INOFFENSE(${inputs.ID}) START '${incident.labels.start_time}'
+          FROM events WHERE "CRE NAME" IS NULL AND INOFFENSE(${inputs.ID})
+          LIMIT ${inputs.MaxCorrelationCount}
+          START '${incident.labels.start_time}'
       range: {}
       timeout:
         simple: "600"
@@ -756,6 +760,12 @@ inputs:
     If value "OnlyCRE" get only events made by CRE.
     Values can be "OnlyCRE", "OnlyNotCRE", "All".
   playbookInputQuery: null
+- key: MaxCorrelationCount
+  value:
+    simple: "100"
+  required: false
+  description: 'Maximum number of correlations to query from QRadar (default: 100)'
+  playbookInputQuery: null
 outputs:
 - contextPath: QRadar.Correlation.StartTime
   description: The correlation start time
@@ -804,4 +814,4 @@ outputs:
 - contextPath: QRadar.Log.ProtocolName
   description: The log's protocol name
 sourceplaybookid: 'QRadar - Get offense correlations '
-fromversion: 4.5.0
+fromversion: 5.0.0

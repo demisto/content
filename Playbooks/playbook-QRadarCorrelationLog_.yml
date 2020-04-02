@@ -60,7 +60,7 @@ tasks:
           as \"DestinationPort\",\n\t\tmagnitude as \"Magnitude\",\n\t\tidentityip
           as \"IdentityIP\",\n\t\tCATEGORYNAME(category) as \"Category\",\n\t\tPROTOCOLNAME(protocolid)
           as \"ProtocolName\",\n\t\tLOGSOURCENAME(logsourceid)${inputs.additionalQueryFields}\n\t\tfrom
-          events where (RULENAME(${inputs.QID}) ILIKE '%') AND \"CRE Name\" IS NULL AND INOFFENSE(${inputs.OffenseID})
+          events where (RULENAME(${inputs.QID}) ILIKE '%') AND \"CRE Name\" IS NULL AND INOFFENSE(${inputs.OffenseID})\nLIMIT ${inputs.MaxLogsCount}\n
           START '${inputs.OffenseStartTime}'"
       range: {}
       timeout:
@@ -220,6 +220,7 @@ tasks:
           as \"IdentityIP\",\n\t\tCATEGORYNAME(category) as \"Category\",\n\t\tPROTOCOLNAME(protocolid)
           as \"ProtocolName\",\n\t\tLOGSOURCENAME(logsourceid)${inputs.additionalQueryFields}\n\t\tfrom
           events where (RULENAME(${inputs.QID}) ILIKE '%') AND \"CRE Name\" <> NULL AND INOFFENSE(${inputs.OffenseID})
+          \nLIMIT ${inputs.MaxLogsCount}\n
           START '${inputs.OffenseStartTime}'"
       range: {}
       timeout:
@@ -283,6 +284,12 @@ inputs:
   description: |-
     If value "OnlyCRE" get only events made by CRE.
     Values can be "OnlyCRE", "OnlyNotCRE", "All".
+  playbookInputQuery: null
+- key: MaxLogsCount
+  value:
+    simple: "20"
+  required: false
+  description: 'Maximum number of log entires to query from QRadar (default: 20)'
   playbookInputQuery: null
 outputs: []
 fromversion: 4.5.0
