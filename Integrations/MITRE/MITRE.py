@@ -1,15 +1,15 @@
 import demistomock as demisto
 from CommonServerPython import *
 ''' IMPORTS '''
-from typing import List
+from typing import Dict, List, Tuple, Any, Callable
 import json
 import requests
 from stix2 import TAXIICollectionSource, Filter
 from taxii2client import Server, Collection
+import inspect
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
-
 
 class Client:
 
@@ -39,204 +39,6 @@ class Client:
         self.getRoots()
         self.getCollections()
 
-    def deduplicate_items(self, result):
-
-        parsedResults = list()
-        for res in result:
-
-            rawJSON = res.get('rawJSON')
-            name = rawJSON.get('name')
-            value = res.get('value')
-
-            # Find items that have the same ID
-            totalItems = [x for x in result if x.get('value') == value]
-
-            # If there is a duplicate external ID, merge them together
-            if len(totalItems) > 1:
-
-                # Ensure we don't already have a combined item for this
-                if value in [x.get('value') for x in parsedResults]:
-                    continue
-
-                # Otherwise create a combined item
-                else:
-
-                    descriptionMarkdown = f"# {value}\n\n" + "\n\n".join(
-                        [f"### {x.get('rawJSON').get('name')} ({x.get('rawJSON').get('type')})\n\n\
-                        {x.get('rawJSON').get('description')}" for x in totalItems])
-
-                    description = f"{value}\n" + "\n\n".join(
-                        [f"{x.get('rawJSON').get('name')} ({x.get('rawJSON').get('type')})\n\n\
-                        {x.get('rawJSON').get('description')}" for x in totalItems])
-
-                    combinedReferences = list()
-                    killChainsCombined = list()
-                    platformsCombined = list()
-                    mitreType = list()
-                    subfeed = list()
-                    mitreID = list()
-                    aliases = list()
-                    for item in totalItems:
-                        mitreType.append(item.get('rawJSON').get('type'))
-                        subfeed.append(item.get('rawJSON').get('type'))
-                        mitreID.append(item.get('rawJSON').get('id'))
-                        for alias in item.get('rawJSON').get('aliases', []):
-                            aliases.append(alias) if alias not in aliases and alias != value else None
-                        for alias in item.get('rawJSON').get('x_mitre_aliases', []):
-                            aliases.append(alias) if alias not in aliases and alias != value else None
-                        for reference in item.get('rawJSON').get('external_references', []):
-                            reference['type'] = item.get('rawJSON').get('type')
-                            combinedReferences.append(reference)
-                        for killchain in item.get('rawJSON').get('kill_chain_phases', []):
-                            killChainsCombined.append(killchain)
-                        for platform in item.get('rawJSON').get('x_mitre_platforms', []):
-                            if platform not in platformsCombined:
-                                platformsCombined.append(platform)
-                    associations = [x.get('external_id', '') for x in combinedReferences if
-                                    x.get('external_id', None)
-                                    and x.get('source_name', '') == 'mitre-attack'
-                                    and x.get('external_id', '') != value]
-                    mitreType = "\n".join(mitreType)
-                    subfeed = "\n".join(subfeed)
-                    mitreID = "\n".join(mitreID)
-                    aliasesMarkdown = tableToMarkdown('', [{"Alias": x} for x in aliases])
-
-                    referencesMarkdown = ""
-                    urlMarkdown = ""
-                    mitreURL = ''
-                    if len(combinedReferences) > 0:
-                        external_references = [
-                            {
-                                "Source Name": x.get('source_name'),
-                                "ID": x.get('external_id'),
-                                "URL": x.get('url')
-                            } for x in combinedReferences]
-                        referencesMarkdown = tableToMarkdown('', external_references, ['ID', 'Source Name', 'URL'])
-                        URLsModified = [
-                            {
-                                "ID": f"{x.get('external_id', '')} \
-                                ({x.get('type', '')})" if x.get('external_id', None)
-                                and x.get('url', None) else '',
-                                "Source": f"[{x.get('source_name', 'Link')}]\
-                                ({x.get('url', None)})"
-                            } for x in combinedReferences if x.get('url', None)]
-                        mitreURL = [x['url'] for x in combinedReferences if x['source_name'] == 'mitre-attack']
-                        mitreURL = mitreURL[0] if mitreURL else ''
-                        urlMarkdown = tableToMarkdown('', URLsModified)
-
-                    killchainMarkdown = ""
-                    if len(killChainsCombined) > 0:
-                        killchainModified = [
-                            {
-                                "Kill Chain Name": x.get('kill_chain_name', ''),
-                                "Phase Name": x.get('phase_name', '')
-                            } for x in killChainsCombined
-                        ]
-                        killchainMarkdown = tableToMarkdown('', killchainModified)
-
-                    platformsMarkdown = ""
-                    if platformsCombined:
-                        platformsModified = [{"Platform": x} for x in platformsCombined]
-                        platformsMarkdown = tableToMarkdown('', platformsModified)
-
-            else:
-                mitreType = rawJSON.get('type')
-                subfeed = rawJSON.get('type', '')
-                mitreID = rawJSON.get('id')
-                description = rawJSON.get('description')
-                aliases = rawJSON.get('aliases', [])
-                aliases.extend(rawJSON.get('x_mitre-aliases', []))
-                aliasesMarkdown = tableToMarkdown('', [{"Alias": x} for x in aliases])
-                associations = [
-                    x.get('external_id') for x in rawJSON.get('external_references', [])
-                    if x.get('external_id', None) and x.get('source_name', '') == 'mitre-attack'
-                    and x.get('external_id', '') != value
-                ]
-                descriptionMarkdown = f"# {value}\n\n## {rawJSON.get('name')} \
-                ({rawJSON.get('type')})\n\n{rawJSON.get('description')}"
-
-                referencesMarkdown = ''
-                urlMarkdown = ""
-                mitreURL = ''
-                if rawJSON.get('external_references', None):
-                    external_references = [
-                        {
-                            "Source Name": x.get('source_name'),
-                            "ID": x.get('external_id'),
-                            "URL": x.get('url')
-                        }
-                        for x in rawJSON.get('external_references')
-                    ]
-                    referencesMarkdown = tableToMarkdown('', external_references, ['ID', 'Source Name', 'URL'])
-                    URLsModified = [
-                        {
-                            "ID": f"{x.get('external_id', '')} ({mitreType})"
-                            if x.get('external_id', None) else '',
-                            "Source": f"[{x.get('source_name', 'Link')}]({x.get('url', None)})"
-                        }
-                        for x in rawJSON.get('external_references') if x.get('url', None)
-                    ]
-                    mitreURL = [x['url'] for x in rawJSON.get('external_references') if x['source_name'] == 'mitre-attack']
-                    mitreURL = mitreURL[0] if mitreURL else ''
-                    urlMarkdown = tableToMarkdown('', URLsModified)
-
-                killchainMarkdown = ""
-                if rawJSON.get('kill_chain_phases', None):
-                    killchainModified = [
-                        {
-                            "Kill Chain Name": x.get('kill_chain_name', ''),
-                            "Phase Name": x.get('phase_name', '')
-                        }
-                        for x in rawJSON.get('kill_chain_phases')
-                    ]
-                    killchainMarkdown = tableToMarkdown('', killchainModified)
-
-                platformsMarkdown = ""
-                if rawJSON.get('x_mitre_platforms', None):
-                    platformsModified = [{"Platform": x} for x in rawJSON.get('x_mitre_platforms', [])]
-                    platformsMarkdown = tableToMarkdown('', platformsModified)
-
-            indicator = {
-                "value": value,
-                "score": self.reputation,
-                "type": self.indicatorType,
-                "rawJSON": rawJSON,
-                "fields": {
-                    "subfeed": subfeed,
-                    "associations": associations,
-                    "mitrealiases": aliasesMarkdown,
-                    "mitredescription": description,
-                    "mitredescriptionmarkdown": descriptionMarkdown,
-                    "mitreexternalreferences": referencesMarkdown,
-                    "mitreid": mitreID,
-                    "mitrekillchainphases": killchainMarkdown,
-                    "mitrename": name,
-                    "mitretype": mitreType,
-                    "mitreurls": urlMarkdown,
-                    "mitreurl": mitreURL,
-                    "mitreplatforms": platformsMarkdown
-                },
-                "temp": {
-                    "aliases": aliases
-                }
-            }
-            parsedResults.append(indicator)
-        return parsedResults
-
-    def include_external_refs(self, result):
-        external_refs = list()
-        for indicator in result:
-            for ref in indicator.get('temp', {}).get('aliases', []):
-                if self.includeAPT:
-                    newIndicator = dict()
-                    for k, v in indicator.items():
-                        newIndicator[k] = v
-                    newIndicator['value'] = ref
-                    del newIndicator['temp']
-                    external_refs.append(newIndicator)
-            del indicator['temp']
-        result.extend(external_refs)
-        return result
 
     def build_iterator(self, limit: int = -1) -> List:
 
@@ -247,6 +49,9 @@ class Client:
         """
 
         indicators = list()
+        mitreIDList = set()
+        indicatorValuesList = set()
+        externalRefs = set()
         limit = limit
         counter = 0
 
@@ -298,10 +103,7 @@ class Client:
 
                     # Try and map a friendly name to the value before the real ID
                     try:
-                        externals = [
-                            x['external_id'] for x in mitreItemJSON.get('external_references', [])
-                            if x['source_name'] == 'mitre-attack' and x['external_id']
-                        ]
+                        externals = [x['external_id'] for x in mitreItemJSON.get('external_references', []) if x['source_name'] == 'mitre-attack' and x['external_id']]
                         value = externals[0]
                     except Exception:
                         value = None
@@ -310,20 +112,73 @@ class Client:
                     if not value:
                         value = mitreItemJSON.get('id')
 
-                    if mitreItemJSON.get('id') not in [x.get('rawJSON').get('id') for x in indicators]:
-                        indicators.append({
-                            "value": value,
-                            "rawJSON": mitreItemJSON,
-                        })
-                        counter += 1
+                    if mitreItemJSON.get('id') not in mitreIDList:
 
-        # De-duplicate the list for items with the same ID
-        indicators = self.deduplicate_items(indicators)
-        indicators = self.include_external_refs(indicators)
+                        if value in indicatorValuesList:
+
+                            # Append data to the original item
+                            originalItem = [x for x in indicators if x.get('value') == value][0]
+                            if originalItem['rawJSON'].get('created', None):
+                                try:
+                                    originalItem['rawJSON']['created'] += f"\n{mitreItemJSON.get('created', '')}"
+                                except Exception:
+                                    pass
+                            if originalItem['rawJSON'].get('modified', None):
+                                try:
+                                    originalItem['rawJSON']['modified'] += f"\n{mitreItemJSON.get('modified', '')}"
+                                except Exception:
+                                    pass
+                            if originalItem['rawJSON'].get('description', None):
+                                try:
+                                    originalItem['rawJSON']['description'] += f"\n\n{mitreItemJSON.get('description', '')}"
+                                except Exception:
+                                    pass
+                            if originalItem['rawJSON'].get('external_references', None):
+                                try:
+                                    originalItem['rawJSON']['external_references'].extend(mitreItemJSON.get('external_references', []))
+                                except Exception:
+                                    pass
+                            if originalItem['rawJSON'].get('kill_chain_phases', None):
+                                try:
+                                    originalItem['rawJSON']['kill_chain_phases'].extend(mitreItemJSON.get('kill_chain_phases', []))
+                                except Exception:
+                                    pass
+                            if originalItem['rawJSON'].get('aliases', None):
+                                try:
+                                    originalItem['rawJSON']['aliases'].extend(mitreItemJSON.get('aliases', []))
+                                except Exception:
+                                    pass
+
+                        else:
+                            indicators.append({
+                                "value": value,
+                                "score": self.reputation,
+                                "type": "MITRE ATT&CK",
+                                "rawJSON": mitreItemJSON,
+                            })
+                            indicatorValuesList.add(value)
+                            counter += 1
+                        mitreIDList.add(mitreItemJSON.get('id'))
+
+                        # Create a duplicate indicator using the "external_id" from the original indicator, if the user has selected "includeAPT" as True
+                        if self.includeAPT:
+                            extRefs = [x.get('external_id') for x in mitreItemJSON.get('external_references') if x.get('external_id') and x.get('source_name') != "mitre-attack"]
+                            for x in extRefs:
+                                if x not in externalRefs:
+                                    indicators.append({
+                                        "value": x,
+                                        "score": self.reputation,
+                                        "type": "MITRE ATT&CK",
+                                        "rawJSON": mitreItemJSON,
+                                    })
+                                    externalRefs.add(x)
         return(indicators)
 
 
 def test_module(client):
+    client.getServer()
+    client.getRoots()
+    client.getCollections()
     if client.collections:
         demisto.results('ok')
     else:
@@ -332,6 +187,7 @@ def test_module(client):
 
 def fetch_indicators(client):
 
+    client.initialise()
     indicators = client.build_iterator()
     return indicators
 
@@ -340,7 +196,9 @@ def get_indicators_command(client, args):
 
     indicators = list()
     limit = int(args.get('limit', 10))
+    counter = 0
 
+    client.initialise()
     indicators = client.build_iterator(limit=limit)
 
     demisto.results(f"Found {len(indicators)} results:")
@@ -355,8 +213,8 @@ def get_indicators_command(client, args):
         }
     )
 
-
 def show_feeds_command(client, args):
+    client.initialise()
     feeds = list()
     for collection in client.collections:
         feeds.append({"Name": collection.title, "ID": collection.id})
@@ -402,9 +260,7 @@ def search_command(client, args):
                     })
                     break
             else:
-                if search.lower() in v.lower() and customFields.get('mitrename') not in [
-                    x.get('mitrename') for x in returnListMD
-                ]:
+                if search.lower() in v.lower() and customFields.get('mitrename') not in [x.get('mitrename') for x in returnListMD]:
                     returnListMD.append({
                         'mitrename': customFields.get('mitrename'),
                         'Name': f"[{customFields.get('mitrename', '')}]({urljoin(indicatorURL, indicator.get('id'))})",
@@ -425,12 +281,15 @@ def search_command(client, args):
         'ReadableContentsFormat': formats['markdown'],
         'EntryContext': {
             'indicators(val.id && val.id == obj.id)': entries
-        }
+            }
     })
 
 
 def reputation_command(client, args):
+    instanceName = demisto.integrationInstance()
     indicator = args.get('indicator')
+    returnListMD = list()
+    entries = list()
     allIndicators = list()
     page = 0
     size = 1000
@@ -442,7 +301,7 @@ def reputation_command(client, args):
     for indicator in allIndicators:
         customFields = indicator.get('CustomFields')
 
-    # Build the markdown for the user
+        # Build the markdown for the user
         md = customFields.get('mitredescriptionmarkdown')
         if customFields.get('mitreurls', None):
             md += "\n_____\n## MITRE URLs\n" + customFields.get('mitreurls')
@@ -473,6 +332,7 @@ def reputation_command(client, args):
             'EntryContext': ec
         }
         demisto.results(entry)
+    #demisto.results(entries)
 
 
 def main():
@@ -483,35 +343,35 @@ def main():
     includeAPT = params.get('includeAPT')
     proxies = handle_proxy()
     verify_certificate = not params.get('insecure', False)
+    feed_name = "MITRE ATT&CK"
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
-    try:
-        client = Client(url, proxies, verify_certificate, includeAPT)
-        client.initialise()
-        commands = {
-            'mitre-get-indicators': get_indicators_command,
-            'mitre-show-feeds': show_feeds_command,
-            'mitre-search-indicators': search_command,
-            'mitre-reputation': reputation_command,
-        }
+    #try:
+    client = Client(url, proxies, verify_certificate, includeAPT)
+    commands = {
+        'mitre-get-indicators': get_indicators_command,
+        'mitre-show-feeds': show_feeds_command,
+        'mitre-search-indicators': search_command,
+        'mitre-reputation': reputation_command,
+    }
 
-        if demisto.command() == 'test-module':
-            test_module(client)
+    if demisto.command() == 'test-module':
+        # This is the call made when pressing the integration Test button.
+        test_module(client)
 
-        elif demisto.command() == 'fetch-indicators':
-            indicators = fetch_indicators(client)
-            for iter_ in batch(indicators, batch_size=2000):
+    elif demisto.command() == 'fetch-indicators':
+        indicators = fetch_indicators(client)
+        for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
 
-        else:
-            commands[command](client, args)
+    else:
+        commands[command](client, args)
 
     # Log exceptions
-    except Exception as e:
-        err_msg = f'Error in {feed_name} Integration:\n{e}'
-        return_error(err_msg)
+    #except Exception as e:
+    #    return_error(e)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
