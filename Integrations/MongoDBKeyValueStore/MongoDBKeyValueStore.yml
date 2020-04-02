@@ -39,7 +39,7 @@ script:
       description: Demisto's Incident Number
       isArray: false
       name: id
-      required: true
+      required: false
       secret: false
     - default: false
       description: Name/Key
@@ -79,7 +79,7 @@ script:
       description: Demisto's Incident Number
       isArray: false
       name: id
-      required: true
+      required: false
       secret: false
     - default: false
       description: Name/Key
@@ -106,7 +106,7 @@ script:
       description: Demisto's Incident Number
       isArray: false
       name: id
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Lists the keys and their values assigned for specified incident.
@@ -127,7 +127,7 @@ script:
       description: Demisto's Incident Number
       isArray: false
       name: id
-      required: true
+      required: false
       secret: false
     - default: false
       description: Name/Key
@@ -144,7 +144,7 @@ script:
       description: Demisto's Incident Number
       isArray: false
       name: id
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Purges ALL key/values for an incident.  Possibly called when closing
@@ -156,7 +156,7 @@ script:
       description: Demisto's Incident Number
       isArray: false
       name: id
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Returns the number of key/value pairs for an incident.

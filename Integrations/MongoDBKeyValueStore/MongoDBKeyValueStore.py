@@ -34,6 +34,13 @@ COLLECTION_NAME = demisto.params().get('collection')
 COLLECTION = DB[COLLECTION_NAME]
 
 
+def get_investigation_id():
+    investigation = demisto.investigation()
+    investigation_id = investigation.get('id')
+
+    return investigation_id
+
+
 def test_module():
     """ Check DB Status """
     if CLIENT.server_info().get('ok') == 1.0:
@@ -45,7 +52,7 @@ def write_key_value_command():
     """ Write key/value document to MondoDB """
     # Get Args needed for the command
     timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+00:00")
-    incident = demisto.args().get('id')
+    incident = demisto.args().get('id', get_investigation_id())
     key = demisto.args().get('key')
     value = demisto.args().get('value')
     logjson = {
@@ -103,7 +110,7 @@ def write_key_value_command():
 def get_key_value_command():
     """ Return value for key stored for the incident """
     # Get Args needed for the command
-    incident = demisto.args().get('id')
+    incident = demisto.args().get('id', get_investigation_id())
     key = demisto.args().get('key')
     # Search Collection for incident_id and key
     search = incident + '.key'
@@ -122,7 +129,7 @@ def get_key_value_command():
 
 def delete_key_command():
     """ Removes the key/value pair specified by key and incident_id """
-    incident = demisto.args().get('id')
+    incident = demisto.args().get('id', get_investigation_id())
     key = demisto.args().get('key')
     # Search Collection for incident_id and key
     search = incident + '.key'
@@ -137,7 +144,7 @@ def delete_key_command():
 def num_keys_command():
     """ Returns the count of the key/value pairs for the incident """
     # Get Args needed for the command
-    incident = demisto.args().get('id')
+    incident = demisto.args().get('id', get_investigation_id())
     # Search Collection counting matching incident_id
     cursor = COLLECTION.find({})
     count = 0
@@ -150,7 +157,7 @@ def num_keys_command():
 def list_key_values_command():
     """ Returns all the key/value pairs stored for the incident """
     # Get Args needed for the command
-    incident = demisto.args().get('id')
+    incident = demisto.args().get('id', get_investigation_id())
     # Search Collection for matching incident_id
     return_json = []  # type: ignore
     context = []
@@ -187,7 +194,7 @@ def list_key_values_command():
 
 def purge_entries_command():
     """ Purges all the key/value pairs stored for the incident """
-    incident = demisto.args().get('id')
+    incident = demisto.args().get('id', get_investigation_id())
     cursor = COLLECTION.find({})
     deleted = 0
     # Iterate, collecting any name/value pairs associated with the incident
@@ -205,7 +212,7 @@ def list_incidents_command():
     """ List all incidents in the collection """
     cursor = COLLECTION.find({}, {'_id': False})
     incidents = []
-    results = []
+    results: list = []
     for incident in cursor:
         for name in incident:
             incidents.append(name)
