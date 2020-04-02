@@ -182,7 +182,13 @@
         },
         {
             "integrations": "HelloWorld",
-            "playbookID": "TestHelloWorld"
+            "playbookID": "TestHelloWorld",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "HelloWorld",
+            "playbookID": "TestHelloWorldPlaybook",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "ThreatQ v2",
@@ -1321,6 +1327,10 @@
             "nightly": true
         },
         {
+            "integrations": "Cisco ASA",
+            "playbookID": "Cisco ASA - Test Playbook"
+        },
+        {
             "integrations": "VirusTotal - Private API",
             "instance_names": "virus_total_private_api_preferred_vendors",
             "playbookID": "virusTotalPrivateAPI-test-preferred-vendors",
@@ -2343,7 +2353,8 @@
           "integrations": "EWS v2",
           "playbookID": "Get EWS Folder Test",
           "fromversion": "4.5.0",
-          "instance_names": "ewv2_regular"
+          "instance_names": "ewv2_regular",
+          "timeout": 1200
         },
         {
           "integrations": "QRadar",
@@ -2562,7 +2573,8 @@
         },
         {
             "playbookID": "DbotPredictOufOfTheBoxTest",
-            "fromversion": "4.5.0"
+            "fromversion": "4.5.0",
+            "timeout": 1000
         },
         {
            "integrations": "AlienVault OTX TAXII Feed",
@@ -2608,8 +2620,6 @@
         "test-Expanse": "Expanse should provide domain that they have in their system",
         "TestProofpointFeed": "Issue 22229",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 22227",
-        "Tenable.io test": "Issue 22184",
-        "ThreatQ - Test": "Issue 22175",
         "PostgreSQL Test": "Issue 22172",
         "Test-Detonate URL - Crowdstrike": "Issue 19439",
         "Git_Integration-Test": "Issue 20029",
@@ -2721,6 +2731,7 @@
         "urlscan.io": "Issue 21831",
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
         "HelloWorldSimple": "This is just an example integration - no need for test",
+        "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lockpath KeyLight": "Deprecated. No tests.",
         "SafeBreach": "pending rewrite",
         "Cymulate": "Partner didn't provided test playbook",
