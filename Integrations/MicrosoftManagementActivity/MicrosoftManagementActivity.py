@@ -116,7 +116,7 @@ class Client(BaseClient):
         return response
 
     def list_content_request(self, content_type, start_time, end_time):
-        auth_string =
+        auth_string = self.get_authentication_string()
         headers = {
             'Authorization': auth_string
         }
@@ -170,13 +170,14 @@ class Client(BaseClient):
 
 def test_module(client):
     params = demisto.params()
-    fetch_delta = params.get('first_fetch_delta', '24 hours')
+    fetch_delta = params.get('first_fetch_delta', '10 minutes')
     user_input_fetch_start_date = parse_date_range(fetch_delta)
-    if datetime.now() - timedelta(days=7)  - timedelta(minutes=5)>= user_input_fetch_start_date:
+    if datetime.now() - timedelta(days=7) - timedelta(minutes=5) >= user_input_fetch_start_date:
         return 'Error: first fetch time delta should not be over one week.'
     if client.self_deployed and not params.get('auth_code'):
         return 'Error: in the self_deployed authentication flow the authentication code parameter cannot be empty.'
-    return 'The basic parameters are ok, but please use the ms-management-activity-test command to test the credentials.'
+    return 'The basic parameters are ok, but please ' \
+           'use the ms-management-activity-test command to test the credentials.'
 
 
 def get_start_or_stop_subscription_human_readable(content_type, start_or_stop):
@@ -456,8 +457,8 @@ def content_records_to_incidents(content_records, start_time, end_time):
     return incidents, latest_creation_time_str
 
 
-def fetch_incidents(client, last_run, first_fetch_delta):
-    start_time, end_time = get_fetch_start_and_end_time(last_run, first_fetch_delta)
+def fetch_incidents(client, last_run, first_fetch_datetime):
+    start_time, end_time = get_fetch_start_and_end_time(last_run, first_fetch_datetime)
     content_types_to_fetch = get_content_types_to_fetch(client)
     content_records = get_all_content_records_of_specified_types(client, content_types_to_fetch, start_time, end_time)
     filtered_content_records = filter_records(content_records, demisto.params())
@@ -470,8 +471,8 @@ def main():
     base_url = demisto.params().get('base_url', 'https://manage.office.com/api/v1.0/')
     verify_certificate = not demisto.params().get('insecure', False)
 
-    first_fetch_delta = demisto.params().get('first_fetch_delta', '24 hours').strip()
-    first_fetch_delta = int(first_fetch_delta)
+    first_fetch_delta = demisto.params().get('first_fetch_delta', '10 minutes').strip()
+    first_fetch_datetime, _ = parse_date_range(first_fetch_delta)
 
     proxy = demisto.params().get('proxy', False)
 
@@ -511,7 +512,7 @@ def main():
             next_run, incidents = fetch_incidents(
                 client=client,
                 last_run=demisto.getLastRun(),
-                first_fetch_delta=first_fetch_delta)
+                first_fetch_datetime=first_fetch_datetime)
 
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
@@ -531,3 +532,8 @@ def main():
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+
+from MicrosoftApiModule import *  # noqa: E402
+
+if __name__ in ['__main__', '__builtin__', 'builtins']:
+    main()
