@@ -8,6 +8,8 @@ import json
 import requests
 from typing import Union, Any
 from datetime import datetime
+from gql import gql, Client
+from gql.transport.requests import RequestsHTTPTransport
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -1119,6 +1121,24 @@ def fetch_incidents_command():
     demisto.setLastRun({'start_time': datetime.strftime(last_time, '%Y-%m-%dT%H:%M:%SZ')})
     demisto.incidents(incidents)
 
+def execute_graphql_query():
+    query  = demisto.args().get('query')
+    sample_transport = RequestsHTTPTransport(
+        url=BASE_URL + '/graphql',
+        use_json=True,
+        headers=HEADERS,
+        verify=USE_SSL
+    )
+    client = Client(
+        retries=3,
+        transport=sample_transport,
+        fetch_schema_from_transport=True,
+    )
+
+    query = gql(query)
+    response = client.execute(query)
+    return_outputs("", response)
+
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
@@ -1148,7 +1168,8 @@ COMMANDS = {
     'GitHub-list-pr-review-comments': list_pr_review_comments_command,
     'GitHub-update-pull-request': update_pull_request_command,
     'GitHub-is-pr-merged': is_pr_merged_command,
-    'GitHub-create-pull-request': create_pull_request_command
+    'GitHub-create-pull-request': create_pull_request_command,
+    'GitHub-grapql-query': execute_graphql_query
 }
 
 
