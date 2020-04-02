@@ -39,8 +39,8 @@ def test_query_timestamp(args, expected_response, test_case):
         expected_start = expected_start.replace(microsecond=0)
         expected_end = expected_end.replace(microsecond=0)
         generated_start, generated_end = query_timestamp(args)
-        generated_start = generated_start.replace(microsecond=0)
-        generated_end = generated_end.replace(microsecond=0)
+        generated_start = generated_start
+        generated_end = generated_end
         assert (generated_start, generated_end) == (expected_start, expected_end), f'Failed: {test_case}'
     else:
         generated_start, generated_end = query_timestamp(args)

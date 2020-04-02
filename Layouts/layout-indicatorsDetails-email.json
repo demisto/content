@@ -123,7 +123,16 @@
 								"index": 6,
 								"sectionItemType": "field",
 								"startCol": 0
-							}
+							},
+							{
+                                "index": 7,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+								"sectionItemType": "field",
+                                "fieldId": "aggregatedreliability",
+                                "id": "b49a3ba0-6f8d-11ea-aeac-6dbd1bcce63e"
+                            }
 						],
 						"moved": false,
 						"name": "Email Address Info",
