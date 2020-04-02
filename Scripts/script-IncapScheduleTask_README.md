@@ -7,7 +7,7 @@ The script then saves the new periodic ID into incident context under the `Sched
 | --- | --- |
 | Script Type | python |
 | Tags | Incapsula |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

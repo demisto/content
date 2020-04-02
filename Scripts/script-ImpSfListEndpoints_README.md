@@ -8,7 +8,7 @@ Enables a clients application to receive a list of all managed and unmanaged end
 | --- | --- |
 | Script Type | python |
 | Tags | Imperva Skyfence |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

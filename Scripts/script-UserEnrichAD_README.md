@@ -7,7 +7,7 @@ Enriches the user name from Active Directory data. This is an enhancement automa
 | --- | --- |
 | Script Type | python |
 | Tags | enhancement, active directory, user |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

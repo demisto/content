@@ -7,7 +7,7 @@ Returns lists of Carbon Black sessions.
 | --- | --- |
 | Script Type | javascript |
 | Tags | carbon-black, endpoint |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

@@ -7,7 +7,7 @@ Pings an IP address or URL address, to verify it's operational.
 | --- | --- |
 | Script Type | python |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

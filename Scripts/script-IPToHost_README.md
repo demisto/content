@@ -7,7 +7,7 @@ Gets the hostname correlated with the inputed IP address.
 | --- | --- |
 | Script Type | python |
 | Tags | - |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

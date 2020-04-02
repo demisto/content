@@ -7,7 +7,7 @@ Gets the Demisto Log Bundle to the War Room.
 | --- | --- |
 | Script Type | javascript |
 | Tags | DemistoAPI |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

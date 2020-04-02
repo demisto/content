@@ -7,7 +7,7 @@ Marks a host as resolved in LightCyber Magna. If you attempt to resolve a host t
 | --- | --- |
 | Script Type | python |
 | Tags | lightcyber |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

@@ -7,7 +7,7 @@ Returns an EWS query according to the automation's arguments.
 | --- | --- |
 | Script Type | python |
 | Tags | ews |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

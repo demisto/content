@@ -7,7 +7,7 @@ Displays HTML in the War Room.
 | --- | --- |
 | Script Type | python |
 | Tags |  |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

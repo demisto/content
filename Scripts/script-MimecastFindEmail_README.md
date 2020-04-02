@@ -7,7 +7,7 @@ Searches all mailboxes to find an email, and returns the list of mailboxes where
 | --- | --- |
 | Script Type | python |
 | Tags | Mimecast |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

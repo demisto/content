@@ -7,7 +7,7 @@ Stops an EC2 AWS instance.
 | --- | --- |
 | Script Type | python |
 | Tags | Amazon Web Services |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

@@ -6,7 +6,7 @@ Use the Volatility script to command ldrmodules.
 | --- | --- |
 | Script Type | javascript |
 | Tags | volatility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

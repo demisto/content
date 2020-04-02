@@ -7,7 +7,7 @@ Returns a map entry with marker on the given coordinate (lat, lng).
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

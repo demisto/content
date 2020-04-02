@@ -7,7 +7,7 @@ Converts a Base64 file in a list to a binary file and upload it to the War Room.
 | --- | --- |
 | Script Type | python |
 | Tags | list, Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

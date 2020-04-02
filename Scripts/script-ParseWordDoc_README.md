@@ -7,7 +7,7 @@ Takes an input Docx file (entryID) as an input and saves an output text file (fi
 | --- | --- |
 | Script Type | python |
 | Tags | word, docx, doc, parser |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

@@ -7,7 +7,7 @@ Extracts regular text from the given HTML.
 | --- | --- |
 | Script Type | python |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

@@ -10,7 +10,7 @@ This is an example for an entire-list transformer. It operates the argument as a
 | --- | --- |
 | Script Type | python |
 | Tags | general, entirelist, transformer |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

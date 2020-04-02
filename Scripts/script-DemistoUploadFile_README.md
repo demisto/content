@@ -6,7 +6,7 @@ Copies a file from an incident to a specified incident. The file is recorded as 
 | --- | --- |
 | Script Type | javascript |
 | Tags | DemistoAPI |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

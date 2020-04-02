@@ -7,7 +7,7 @@ Gets the string distance for the sender from our domain.
 | --- | --- |
 | Script Type | python |
 | Tags | server, phishing, Condition |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

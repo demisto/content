@@ -6,7 +6,7 @@ Gets the list of email addresses that can be used when adding an SSL site.
 | --- | --- |
 | Script Type | python |
 | Tags | Incapsula |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

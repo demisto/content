@@ -8,7 +8,7 @@ Adds an entry to duplicate (older) incidents, notifying that a duplicate inciden
 | --- | --- |
 | Script Type | python |
 | Tags | preProcessing, crowdStrike, crowdStrikeStreaming |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

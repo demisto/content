@@ -7,7 +7,7 @@ Generates a Google authorized URL to authenticate a given list of scopes.
 | --- | --- |
 | Script Type | javascript |
 | Tags | google apps |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

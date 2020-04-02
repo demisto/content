@@ -7,7 +7,7 @@ Creates a new FireFlow change request.
 | --- | --- |
 | Script Type | python |
 | Tags | Algosec |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

@@ -7,7 +7,7 @@ Converts "https:%2F%2Fexample.com" into "https:/<span>/example.com".
 | --- | --- |
 | Script Type | python |
 | Tags | transformer |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

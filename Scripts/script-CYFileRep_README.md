@@ -7,7 +7,7 @@ Retrieves a file's reputation and upload the file if required for analysis.
 | --- | --- |
 | Script Type | python |
 | Tags | server, threat-intel, cylance, file |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

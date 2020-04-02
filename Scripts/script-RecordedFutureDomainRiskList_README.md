@@ -6,7 +6,7 @@ Extracts the domain risk list from the recorded future and creates indicators ac
 | --- | --- |
 | Script Type | python |
 | Tags | RecordedFuture |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

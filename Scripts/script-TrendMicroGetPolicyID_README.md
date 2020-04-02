@@ -6,7 +6,7 @@ Returns a table of policies and their Trend Micro IDs.
 | --- | --- |
 | Script Type | python |
 | Tags | Trend Micro |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

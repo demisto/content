@@ -8,7 +8,7 @@ This is a utility agent script to be used inside server scripts. See `CopyFileD2
 | --- | --- |
 | Script Type | javascript |
 | Tags | agent, util |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

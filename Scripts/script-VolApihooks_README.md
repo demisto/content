@@ -7,7 +7,7 @@ Is a volatility script for command `apihooks`.
 | --- | --- |
 | Script Type | javascript |
 | Tags | memory, forensics, volatility, server |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

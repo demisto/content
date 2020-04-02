@@ -7,7 +7,7 @@ Searches all mailboxes on an Exchange server and copies the results to a specifi
 | --- | --- |
 | Script Type | javascript |
 | Tags | exchange, email |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

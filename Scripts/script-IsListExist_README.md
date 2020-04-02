@@ -7,7 +7,7 @@ Checks if a list exists in the Demisto lists.
 | --- | --- |
 | Script Type | python |
 | Tags | Condition |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

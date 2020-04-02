@@ -8,7 +8,6 @@ If no filter is provided, the result will show all users.
 | --- | --- |
 | Script Type | python |
 | Tags | active directory, enhancement, username |
-| Demisto Version | 0.0.0 |
 
 ## Dependencies
 ---

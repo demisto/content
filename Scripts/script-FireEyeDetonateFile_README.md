@@ -7,7 +7,7 @@ Detonates a file or URL through FireEye.
 | --- | --- |
 | Script Type | python |
 | Tags | fireeye, file, enhancement |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

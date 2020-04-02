@@ -7,7 +7,7 @@ Runs common memory image analysis commands.
 | --- | --- |
 | Script Type | javascript |
 | Tags | memory, forensics, volatility, server |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

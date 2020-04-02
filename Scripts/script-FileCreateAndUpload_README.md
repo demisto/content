@@ -7,7 +7,7 @@ Creates a file using the given data input or entry ID, and uploads it to the cur
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

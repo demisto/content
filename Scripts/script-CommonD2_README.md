@@ -6,7 +6,7 @@ Designates common code that will be merged into each D2 agent script when it run
 | --- | --- |
 | Script Type | javascript |
 | Tags | infra, agent |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

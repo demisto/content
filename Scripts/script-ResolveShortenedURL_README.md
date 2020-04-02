@@ -6,7 +6,7 @@ Resolves the original URL from the given shortened URL and places it in both, as
 | --- | --- |
 | Script Type | python |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

@@ -9,7 +9,7 @@ Supported types include, 7z (.7z), ACE (.ace), ALZIP (.alz), AR (.a), ARC (.arc)
 | --- | --- |
 | Script Type | python |
 | Tags | Utility, file |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

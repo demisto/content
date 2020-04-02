@@ -7,7 +7,7 @@ Performs a query against the meta database.
 | --- | --- |
 | Script Type | python |
 | Tags | RSA NetWitness Packets & Logs |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

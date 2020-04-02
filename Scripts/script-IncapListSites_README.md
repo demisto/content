@@ -7,7 +7,7 @@ Lists the sites for an account.
 | --- | --- |
 | Script Type | python |
 | Tags | Incapsula |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

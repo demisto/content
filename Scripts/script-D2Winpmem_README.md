@@ -7,7 +7,7 @@ Carries the winpmem binary to a system and returns the memory dump file to the W
 | --- | --- |
 | Script Type | javascript |
 | Tags | agent, memory, forensics |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

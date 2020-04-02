@@ -8,7 +8,7 @@ This uses a D2 agent to run `SysInternals` autoruns.
 | --- | --- |
 | Script Type | python |
 | Tags | endpoint, forensics |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

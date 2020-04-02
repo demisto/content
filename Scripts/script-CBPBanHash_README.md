@@ -6,7 +6,7 @@ Bans/blacklists a hash in CBEP/Bit9.
 | --- | --- |
 | Script Type | python |
 | Tags | carbon-black-protection, bit9 |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

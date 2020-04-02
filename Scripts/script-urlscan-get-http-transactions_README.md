@@ -9,7 +9,7 @@ To use this script properly, go to the **Advanced** section in the task that exe
 | --- | --- |
 | Script Type | javascript |
 | Tags | polling, UrlScan |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

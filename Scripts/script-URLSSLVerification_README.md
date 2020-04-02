@@ -7,7 +7,7 @@ Verifies the URL's SSL certificate.
 | --- | --- |
 | Script Type | python |
 | Tags | url, Enrichment |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

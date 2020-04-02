@@ -8,7 +8,7 @@ Note: The training playbook must run successfully first.
 | --- | --- |
 | Script Type | python |
 | Tags | ml, phishing |
-| Demisto Version | 4.1.0 |
+| Demisto Version | 4.1.0+ |
 
 ## Inputs
 ---

@@ -7,7 +7,7 @@ Retrieves screenshots taken during a task analysis
 | --- | --- |
 | Script Type | python |
 | Tags | cuckoo |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

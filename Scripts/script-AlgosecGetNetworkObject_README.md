@@ -6,7 +6,7 @@ Finds network objects related to the IP address.
 | --- | --- |
 | Script Type | python |
 | Tags | Algosec |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

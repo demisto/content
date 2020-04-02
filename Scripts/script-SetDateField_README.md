@@ -7,7 +7,7 @@ Sets a custom incident field with the current date.
 | --- | --- |
 | Script Type | python |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

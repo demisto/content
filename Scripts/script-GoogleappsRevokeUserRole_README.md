@@ -7,7 +7,7 @@ Deletes a role's assignment.
 | --- | --- |
 | Script Type | python |
 | Tags | google apps |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

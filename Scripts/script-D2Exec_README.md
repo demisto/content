@@ -7,7 +7,7 @@ Executes the command and packs the output back to server.
 | --- | --- |
 | Script Type | javascript |
 | Tags | agent, endpoint |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

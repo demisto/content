@@ -7,7 +7,7 @@ Retrieves the triggered rules for a session.
 | --- | --- |
 | Script Type | python |
 | Tags | server, analytics, exabeam |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

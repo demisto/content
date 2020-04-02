@@ -7,7 +7,7 @@ Extracts the hash risk list from the recorded future and creates indicators acco
 | --- | --- |
 | Script Type | python |
 | Tags | RecordedFuture |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

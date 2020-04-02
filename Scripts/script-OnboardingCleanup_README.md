@@ -7,7 +7,7 @@ Cleans up the incidents and indicators created by the `Onboarding Integration` c
 | --- | --- |
 | Script Type | python3 |
 | Tags | - |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

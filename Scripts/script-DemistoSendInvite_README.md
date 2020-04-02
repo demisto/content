@@ -7,7 +7,7 @@ Sends an invitation to join Demisto.
 | --- | --- |
 | Script Type | javascript |
 | Tags | DemistoAPI |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

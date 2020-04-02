@@ -7,7 +7,7 @@ Gets a list of indicators from the indicators argument, and generates a JSON fil
 | --- | --- |
 | Script Type | python3 |
 | Tags | - |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

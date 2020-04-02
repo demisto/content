@@ -7,7 +7,7 @@ Sets multiple keys/values to the context.
 | --- | --- |
 | Script Type | python |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

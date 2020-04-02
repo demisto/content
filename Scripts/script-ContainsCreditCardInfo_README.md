@@ -6,7 +6,7 @@ Checks if a given value is true. If not a "no" will be returned.
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility, Condition |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

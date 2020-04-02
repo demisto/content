@@ -6,7 +6,7 @@ Verifies if a given entry contains a string.
 | --- | --- |
 | Script Type | javascript |
 | Tags | - |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

@@ -7,7 +7,7 @@ Prints text to the War Room. Markdown is supported.
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

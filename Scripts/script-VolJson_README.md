@@ -6,7 +6,7 @@ Executes Volatility with command and files it as parameters and returns the outp
 | --- | --- |
 | Script Type | javascript |
 | Tags | volatility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

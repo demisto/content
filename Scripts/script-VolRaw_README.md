@@ -7,7 +7,7 @@ Executes Volatility with command and files as parameters and returns raw output 
 | --- | --- |
 | Script Type | javascript |
 | Tags | agent, volatility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

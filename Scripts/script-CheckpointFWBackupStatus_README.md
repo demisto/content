@@ -7,7 +7,7 @@ Connects a Checkpoint firewall appliance using SSH and retrieves the status of b
 | --- | --- |
 | Script Type | python |
 | Tags | checkpoint |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

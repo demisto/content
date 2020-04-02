@@ -8,7 +8,7 @@ If an array is returned. the first value will be the decision making value.
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility, Condition |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

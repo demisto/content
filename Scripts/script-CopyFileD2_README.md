@@ -9,7 +9,7 @@ Example usage: `!CopyFileD2 destpath=/home/sansforensics/collectedbinaries/inv8_
 | --- | --- |
 | Script Type | javascript |
 | Tags | util, server |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

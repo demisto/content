@@ -7,7 +7,7 @@ Classifies the TrendMicro incidents.
 | --- | --- |
 | Script Type | python |
 | Tags | Classifier, Trend Micro |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

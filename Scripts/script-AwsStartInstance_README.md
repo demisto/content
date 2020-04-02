@@ -6,7 +6,7 @@ Starts an Amazon EBS-backed AMI that was previously stopped.
 | --- | --- |
 | Script Type | python |
 | Tags | Amazon Web Services |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

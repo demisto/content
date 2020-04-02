@@ -6,7 +6,7 @@ Detonates a URL in the Cuckoo sandbox.
 | --- | --- |
 | Script Type | python |
 | Tags | cuckoo |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

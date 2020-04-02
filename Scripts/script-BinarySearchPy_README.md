@@ -7,7 +7,7 @@ Searches for a binary on an endpoint using Carbon Black.
 | --- | --- |
 | Script Type | python |
 | Tags | hash, server, endpoint, carbon-black |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

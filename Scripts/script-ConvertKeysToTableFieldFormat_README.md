@@ -12,7 +12,7 @@ Example:
 | --- | --- |
 | Script Type | javascript |
 | Tags | transformer |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

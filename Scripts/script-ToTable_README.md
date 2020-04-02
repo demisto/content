@@ -6,7 +6,7 @@ Converts an array in to a table display. Usually, from the context.
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

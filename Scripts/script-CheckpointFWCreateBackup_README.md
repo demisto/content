@@ -7,7 +7,7 @@ Connects to a Checkpoint firewall appliance using SSH and trigger a task to crea
 | --- | --- |
 | Script Type | python |
 | Tags | checkpoint |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

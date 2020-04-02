@@ -7,7 +7,7 @@ Copies a file from an incident to the specified incident. The file is uploaded a
 | --- | --- |
 | Script Type | python |
 | Tags | DemistoAPI |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

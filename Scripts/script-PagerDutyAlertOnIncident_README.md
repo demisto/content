@@ -7,7 +7,7 @@ Sends incident details to pagerduty.
 | --- | --- |
 | Script Type | javascript |
 | Tags | pagerduty, communication |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

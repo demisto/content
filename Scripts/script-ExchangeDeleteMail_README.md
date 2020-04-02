@@ -7,7 +7,7 @@ Searches all mailboxes on an Exchange server for a query and deletes all the mes
 | --- | --- |
 | Script Type | javascript |
 | Tags | exchange, email |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

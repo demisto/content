@@ -9,7 +9,7 @@ If given values: "a,b,c" and translated: 1,2,3 then input "a" will return a 1.
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

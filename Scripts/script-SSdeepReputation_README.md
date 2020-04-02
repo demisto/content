@@ -7,7 +7,7 @@ Calculates the SSdeep reputation based on similar files (by ssdeep similarity) o
 | --- | --- |
 | Script Type | python |
 | Tags | reputation |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

@@ -7,7 +7,7 @@ Lists flows launched on a given client.
 | --- | --- |
 | Script Type | python |
 | Tags | GRR |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

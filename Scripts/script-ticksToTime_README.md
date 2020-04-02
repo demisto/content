@@ -6,7 +6,7 @@ Converts time in ticks to a readable time. The ticks are used to represent time 
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

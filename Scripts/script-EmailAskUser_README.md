@@ -7,7 +7,7 @@ Asks a user a question via email and process the reply directly into the investi
 | --- | --- |
 | Script Type | javascript |
 | Tags | email |
-| Demisto Version | 4.0.0 |
+| Demisto Version | 4.0.0+ |
 
 ## Inputs
 ---

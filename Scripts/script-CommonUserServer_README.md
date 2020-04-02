@@ -7,7 +7,7 @@ Merges common user defined code into each server script when it runs.
 | --- | --- |
 | Script Type | javascript |
 | Tags | infra, server |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

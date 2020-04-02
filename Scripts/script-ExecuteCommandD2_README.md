@@ -7,7 +7,7 @@ Runs a D2 built-in command on a D2 agent.
 | --- | --- |
 | Script Type | javascript |
 | Tags | endpoint, agent |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

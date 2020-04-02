@@ -7,7 +7,7 @@ Changes a hosts comment in LightCyber Magna.
 | --- | --- |
 | Script Type | python |
 | Tags | lightcyber |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

@@ -7,7 +7,7 @@ Removes the password protection from a PDF file and adds a new file entry with t
 | --- | --- |
 | Script Type | python |
 | Tags | - |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

@@ -7,7 +7,7 @@ Downloads PCAPs related to the specified observations. This supports rate thrott
 | --- | --- |
 | Script Type | python |
 | Tags | protectwise |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

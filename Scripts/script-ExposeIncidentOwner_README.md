@@ -7,7 +7,7 @@ Exposes the incident owner into `IncidentOwner` context key.
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

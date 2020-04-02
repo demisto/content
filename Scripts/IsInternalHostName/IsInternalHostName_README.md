@@ -7,7 +7,7 @@ Checks if the supplied hostnames match either the organization's internal naming
 | --- | --- |
 | Script Type | python3 |
 | Tags | Utility |
-| Demisto Version | 4.5.0 |
+| Demisto Version | 4.5.0+ |
 
 ## Inputs
 ---

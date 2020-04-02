@@ -7,7 +7,7 @@ Shows detected entities from LightCyber Magna.
 | --- | --- |
 | Script Type | python |
 | Tags | lightcyber |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

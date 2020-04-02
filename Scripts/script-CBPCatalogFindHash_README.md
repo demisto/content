@@ -7,7 +7,7 @@ Searches the CBP/Bit9 file catalog for an MD5 hash of a file.
 | --- | --- |
 | Script Type | python |
 | Tags | carbon-black-protection, bit9, enhancement |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

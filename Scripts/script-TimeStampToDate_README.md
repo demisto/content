@@ -9,7 +9,7 @@ For example, "1525006939" will return '2018-04-29T13:02:19.000Z'.
 | --- | --- |
 | Script Type | javascript |
 | Tags | transformer, date |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

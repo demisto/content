@@ -6,7 +6,7 @@ Calculates a weighted score based on the number of malicious indicators involved
 | --- | --- |
 | Script Type | python |
 | Tags | url, ip, hash |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

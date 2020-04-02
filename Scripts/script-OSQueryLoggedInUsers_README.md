@@ -7,7 +7,7 @@ Returns the logged in users details from a remote system using OSQuery.
 | --- | --- |
 | Script Type | python |
 | Tags | OSQuery |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

@@ -6,7 +6,7 @@ Checks the sender of the email via a `Pipl` search. Use this script for phishing
 | --- | --- |
 | Script Type | python |
 | Tags | server, phishing |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

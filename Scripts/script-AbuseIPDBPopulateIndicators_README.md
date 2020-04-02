@@ -7,7 +7,7 @@ Extracts blacklisted IP addresses from AbuseIPDB, and populates indicators accor
 | --- | --- |
 | Script Type | python |
 | Tags |  |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

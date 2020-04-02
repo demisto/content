@@ -7,7 +7,7 @@ Checks if an email address's domain is trying to squat other domain using Levens
 | --- | --- |
 | Script Type | javascript |
 | Tags | email, reputation |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

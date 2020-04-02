@@ -7,7 +7,7 @@ Returns a table of users from a remote system using OSQuery.
 | --- | --- |
 | Script Type | python |
 | Tags | OSQuery |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

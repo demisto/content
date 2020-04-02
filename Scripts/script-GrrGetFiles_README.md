@@ -7,7 +7,7 @@ Downloads files from a specified machine without requiring approval.
 | --- | --- |
 | Script Type | python |
 | Tags | GRR |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

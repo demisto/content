@@ -11,7 +11,7 @@ Finds tables inside HTML and extract the contents into objects using the followi
 | --- | --- |
 | Script Type | python |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

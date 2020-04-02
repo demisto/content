@@ -7,7 +7,7 @@ Checks if the malop was already fetched, and will update the existing incident a
 | --- | --- |
 | Script Type | python |
 | Tags | preProcessing, Cybereason, example |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

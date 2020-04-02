@@ -7,7 +7,7 @@ Uses the Quote API to have the client application get the current license and qu
 | --- | --- |
 | Script Type | python |
 | Tags | sandblast |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

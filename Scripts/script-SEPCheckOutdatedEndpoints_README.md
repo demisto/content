@@ -7,7 +7,7 @@ Checks if any endpoints are using an AV definition that is not the latest versio
 | --- | --- |
 | Script Type | python |
 | Tags | sep, symantec |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

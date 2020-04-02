@@ -7,7 +7,7 @@ Retrieves the timeline of a user.
 | --- | --- |
 | Script Type | python |
 | Tags | server, analytics, exabeam |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

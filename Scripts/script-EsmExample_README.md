@@ -7,7 +7,7 @@ Examples of using McAfee ESM (Nitro) with advanced filters.
 | --- | --- |
 | Script Type | javascript |
 | Tags | esm, nitro, siem, example |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

@@ -7,7 +7,7 @@ Copies a log file. This scripts works on Windows and Unix differently.
 | --- | --- |
 | Script Type | javascript |
 | Tags | agent, endpoint |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

@@ -7,7 +7,7 @@ Sets incident severity according to indicators found in a Confer alert.
 | --- | --- |
 | Script Type | python |
 | Tags | confer |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

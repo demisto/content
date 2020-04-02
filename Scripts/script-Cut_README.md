@@ -15,7 +15,7 @@ return: "A-E"
 | --- | --- |
 | Script Type | python |
 | Tags | transformer, string |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

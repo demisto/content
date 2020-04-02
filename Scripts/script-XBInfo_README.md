@@ -7,7 +7,7 @@ Retrieves global Exabeam info about the number of users, assets and events.
 | --- | --- |
 | Script Type | python |
 | Tags | server, analytics, exabeam |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

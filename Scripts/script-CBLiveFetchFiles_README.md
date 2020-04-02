@@ -7,7 +7,7 @@ Fetches all of the files from the endpoints where they were found using Carbon B
 | --- | --- |
 | Script Type | python |
 | Tags | carbon-black, endpoint |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

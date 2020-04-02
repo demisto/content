@@ -9,7 +9,7 @@ If the device hasn't been accessed in over three months, the script will revoke 
 | --- | --- |
 | Script Type | python |
 | Tags | Imperva Skyfence |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

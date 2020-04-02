@@ -7,7 +7,7 @@ A context script for hash entities.
 | --- | --- |
 | Script Type | python |
 | Tags | enhancement |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

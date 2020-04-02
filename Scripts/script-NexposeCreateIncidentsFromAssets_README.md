@@ -8,7 +8,7 @@ Duplicate incidents are not created for the same asset ID and vulnerability ID.
 | --- | --- |
 | Script Type | python |
 | Tags | nexpose |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

@@ -6,7 +6,7 @@ Provides the severity of the CVE based on the CVSS score if it is available.
 | --- | --- |
 | Script Type | javascript |
 | Tags | cve, reputation |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

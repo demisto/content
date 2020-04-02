@@ -8,7 +8,7 @@ Ignores second notifications, but will process first notification into incidents
 | --- | --- |
 | Script Type | python |
 | Tags | preProcessing |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

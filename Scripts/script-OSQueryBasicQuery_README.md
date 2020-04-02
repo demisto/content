@@ -8,7 +8,7 @@ For more information read this [documentation](https://osquery.readthedocs.io/).
 | --- | --- |
 | Script Type | python |
 | Tags | OSQuery |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

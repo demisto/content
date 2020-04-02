@@ -7,7 +7,7 @@ Schedules a command to run inside the War Room at a future time. Can be once or 
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

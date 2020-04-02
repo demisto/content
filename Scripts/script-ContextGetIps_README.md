@@ -6,7 +6,7 @@ Gets all IP addresses in context, excluding ones given.
 | --- | --- |
 | Script Type | javascript |
 | Tags |  |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

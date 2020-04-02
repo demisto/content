@@ -7,7 +7,7 @@ Asks a user a question on `Mattermost` and expects a response. The response can 
 | --- | --- |
 | Script Type | python |
 | Tags | mattermost |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

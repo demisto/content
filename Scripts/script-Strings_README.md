@@ -7,7 +7,7 @@ Extracts strings from a file with an optional filter. This is similar to `binuti
 | --- | --- |
 | Script Type | python |
 | Tags | server, file |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

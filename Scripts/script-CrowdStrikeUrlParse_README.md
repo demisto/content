@@ -8,7 +8,7 @@ This script will also return the detection ID for the specific alert. This is us
 | --- | --- |
 | Script Type | python |
 | Tags | crowdstrike |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

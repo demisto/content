@@ -7,7 +7,7 @@ Gets the last alerts.
 | --- | --- |
 | Script Type | python |
 | Tags | Trend Micro |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

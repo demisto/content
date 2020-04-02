@@ -7,7 +7,7 @@ Blocks an IP address in a configured firewall.
 | --- | --- |
 | Script Type | javascript |
 | Tags | firewall, checkpoint, panorama |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

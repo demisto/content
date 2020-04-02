@@ -15,7 +15,7 @@ Note: Sending emails requires an active `Mail Sender` integration instance.
 | --- | --- |
 | Script Type | javascript |
 | Tags | email, communication |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

@@ -7,7 +7,7 @@ Returns lists of the Carbon Black sensors.
 | --- | --- |
 | Script Type | javascript |
 | Tags | carbon-black, endpoint |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

@@ -6,7 +6,7 @@ Searches for a string in context and returns the context path, it will return nu
 | --- | --- |
 | Script Type | javascript |
 | Tags |  |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

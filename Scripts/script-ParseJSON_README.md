@@ -9,7 +9,7 @@ Example: "{'a':'value'}" => { a: "value"}.
 | --- | --- |
 | Script Type | javascript |
 | Tags | transformer, string |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

@@ -7,7 +7,7 @@ Returns a table of hosts and thers Trend Micro IDs.
 | --- | --- |
 | Script Type | python |
 | Tags | Trend Micro |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

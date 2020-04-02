@@ -7,7 +7,7 @@ Wraps the generic `update-record` command in ServiceNow. Fields can be added tha
 | --- | --- |
 | Script Type | python |
 | Tags | servicenow |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

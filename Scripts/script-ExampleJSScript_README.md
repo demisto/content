@@ -6,7 +6,7 @@ Showcases how to use and write JavaScript scripts. (This is only an example scri
 | --- | --- |
 | Script Type | javascript |
 | Tags | example |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

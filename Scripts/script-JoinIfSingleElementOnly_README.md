@@ -7,7 +7,7 @@ Returns the single element in a situation where an array has only 1 element in i
 | --- | --- |
 | Script Type | python |
 | Tags | entirelist, transformer, general |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

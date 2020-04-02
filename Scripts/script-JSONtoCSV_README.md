@@ -6,7 +6,7 @@ Converts a JSON War Room output via EntryID into a CSV file.
 | --- | --- |
 | Script Type | python |
 | Tags | - |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

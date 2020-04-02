@@ -7,7 +7,7 @@ Marks entries as notes if they are tagged with a given tag.
 | --- | --- |
 | Script Type | python |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

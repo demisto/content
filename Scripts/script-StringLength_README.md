@@ -7,7 +7,7 @@ Returns the length of the string passed as an argument.
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

@@ -7,7 +7,7 @@ Performs a batch traffic simulation query using Firewall Analyzer.
 | --- | --- |
 | Script Type | python |
 | Tags | Algosec |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

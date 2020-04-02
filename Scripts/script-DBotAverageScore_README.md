@@ -7,7 +7,7 @@ Calculates the average score for each indicator from context.
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

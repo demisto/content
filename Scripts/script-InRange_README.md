@@ -9,7 +9,7 @@ Example - InRange left=4right=1,8 will return true
 | --- | --- |
 | Script Type | python |
 | Tags | filter, number |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

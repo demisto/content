@@ -7,7 +7,7 @@ Classifies an incident from mail.
 | --- | --- |
 | Script Type | javascript |
 | Tags | ingestion |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

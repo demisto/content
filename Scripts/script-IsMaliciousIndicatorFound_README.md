@@ -7,7 +7,7 @@ Checks if the investigation found any malicious indicators (file, URL, IP addres
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility, Condition |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

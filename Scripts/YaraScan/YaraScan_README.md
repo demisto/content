@@ -7,7 +7,6 @@ Performs a Yara scan on the specified files.
 | --- | --- |
 | Script Type | python3 |
 | Tags | - |
-| Demisto Version | 0.0.0 |
 
 ## Inputs
 ---

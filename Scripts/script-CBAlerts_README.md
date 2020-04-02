@@ -7,7 +7,7 @@ Gets the list of alerts from Carbon Black Enterprise Response. This script suppo
 | --- | --- |
 | Script Type | python |
 | Tags | carbon-black |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

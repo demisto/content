@@ -8,7 +8,7 @@ If the device hasn't been accessed to in over three months, the script will revo
 | --- | --- |
 | Script Type | python |
 | Tags | Imperva Skyfence |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

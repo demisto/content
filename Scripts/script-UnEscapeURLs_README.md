@@ -7,7 +7,7 @@ Also, this will un-escape URLs that are escaped for safety with formats such as 
 | --- | --- |
 | Script Type | javascript |
 | Tags | indicator-format |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

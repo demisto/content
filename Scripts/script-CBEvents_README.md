@@ -7,7 +7,7 @@ Returns all events associated with a process query.
 | --- | --- |
 | Script Type | javascript |
 | Tags | carbon-black, endpoint, enhancement |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---
