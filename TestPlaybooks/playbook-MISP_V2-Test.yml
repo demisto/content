@@ -1,7 +1,7 @@
 id: MISP V2 Test
 version: -1
 name: MISP V2 Test
-fromversion: "4.5.0"
+fromversion: "5.0.0"
 description: Testbook for MISP V2 integration
 starttaskid: "0"
 tasks:
