@@ -1,25 +1,22 @@
 <!-- disable-secrets-detection-start -->
-
-Azure Sentinel is a cloud-native security information and event manager (SIEM) platform that uses built-in AI to help analyze large volumes of data across an enterprise.
+Use the Azure Sentinel integration to get and manage incidents and get related entity information for incidents.
+This integration was integrated and tested with version xx of Azure Sentinel
 ## Configure Azure Sentinel on Demisto
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Azure Sentinel.
 3. Click **Add instance** to create and configure a new integration instance.
-4. Click the question mark button in the upper-right corner and read the information, and click the link.
-5. Click the **Start Authorization Process** button.
-6. Log in with Microsoft credentials.
-7. Authorize Demisto application to access data.
-8. When you are redirected, copy the parameter values (ID, Token and Key) which you will need when configuring the integration instance in Demisto.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| auth_id | ID | True |
-| refresh_token | Token | True |
-| enc_key | Key | True |
-| self_deployed | Use a self-deployed Azure application | True |
+| auth_id | ID (received from the authorization step - see Detailed Instructions (?) section) | True |
+| refresh_token | Token (received from the authorization step - see Detailed Instructions (?) section) | True |
+| enc_key | Key (received from the authorization step - see Detailed Instructions (?) section) | True |
+| self_deployed | Use a self-deployed Azure application | False |
+| redirect_uri | Application redirect URI (for self-deployed mode) | False |
+| auth_code | Authorization code (received from the authorization step - see Detailed Instructions (?) section) | False |
 | isFetch | Fetch incidents | False |
-| fetch_time | First fetch timestamp ({number} {time unit}, e.g., 12 hours, 7 days) | False |
+| fetch_time | First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days) | False |
 | min_severity | The minimum severity of incidents to fetch | False |
 | incidentType | Incident type | False |
 | subscriptionID | Subscription ID | True |
@@ -34,7 +31,7 @@ You can execute these commands from the Demisto CLI, as part of an automation, o
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### azure-sentinel-get-incident-by-id
 ***
-Get a single incident from Azure Sentinel.
+Gets a single incident from Azure Sentinel.
 
 
 ##### Base Command
@@ -52,19 +49,19 @@ Get a single incident from Azure Sentinel.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | AzureSentinel.Incident.ID | String | The incident ID. | 
-| AzureSentinel.Incident.Title | String | The incident's title. | 
-| AzureSentinel.Incident.Description | String | Description about the incident. | 
-| AzureSentinel.Incident.Severity | String | The incident's severity. | 
-| AzureSentinel.Incident.Status | String | The status of the incident. | 
-| AzureSentinel.Incident.AssigneeName | String | The name of the incident's assignee. | 
-| AzureSentinel.Incident.AssigneeEmail | String | The email of the incident's assignee. | 
-| AzureSentinel.Incident.Label.Name | String | The name of the incident's label. | 
-| AzureSentinel.Incident.Label.Type | String | The type of the incident's label. | 
-| AzureSentinel.Incident.FirstActivityTimeUTC | Date | The incident's first activity time. | 
-| AzureSentinel.Incident.LastActivityTimeUTC | Date | The incident's last activity time. | 
-| AzureSentinel.Incident.LastModifiedTimeUTC | Date | The incident's last modification time. | 
-| AzureSentinel.Incident.CreatedTimeUTC | Date | The incident's creation time. | 
-| AzureSentinel.Incident.IncidentNumber | Number | The incident's number. | 
+| AzureSentinel.Incident.Title | String | The incident title. | 
+| AzureSentinel.Incident.Description | String | Description of the incident. | 
+| AzureSentinel.Incident.Severity | String | The incident severity. | 
+| AzureSentinel.Incident.Status | String | The incident status. | 
+| AzureSentinel.Incident.AssigneeName | String | The name of the incident assignee. | 
+| AzureSentinel.Incident.AssigneeEmail | String | The email address of the incident assignee. | 
+| AzureSentinel.Incident.Label.Name | String | The name of the incident label. | 
+| AzureSentinel.Incident.Label.Type | String | The incident label type. | 
+| AzureSentinel.Incident.FirstActivityTimeUTC | Date | The date and time of the incident's first activity. | 
+| AzureSentinel.Incident.LastActivityTimeUTC | Date | The date and time of the incident's last activity. | 
+| AzureSentinel.Incident.LastModifiedTimeUTC | Date | The date and time the incident was last modified. | 
+| AzureSentinel.Incident.CreatedTimeUTC | Date | The date and time the incident was created. | 
+| AzureSentinel.Incident.IncidentNumber | Number | The incident number. | 
 | AzureSentinel.Incident.AlertsCount | Number | The number of the alerts in the incident. | 
 | AzureSentinel.Incident.BookmarkCount | Number | The number of bookmarks in the incident. | 
 | AzureSentinel.Incident.CommentCount | Number | The number of comments in the incident. | 
@@ -85,9 +82,10 @@ Get a single incident from Azure Sentinel.
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | f1670c58-43dc-4b82-a13a-c732325c41f5 | 234 | Test Incident | High | New | 2020-03-28T18:45:59Z | 2020-03-28T23:45:59Z | 2020-03-28T23:51:06Z | 2020-03-28T23:51:06Z | 1 | 0 | 0 | Azure Sentinel | 2020-03-28T23:51:06Z | 2020-03-28T23:51:06Z | "49002835-0000-0100-0000-5e7fe2ea0000" |
 
+
 ### azure-sentinel-list-incidents
 ***
-Get a list of incidents from Azure Sentinel.
+Gets a list of incidents from Azure Sentinel.
 
 
 ##### Base Command
@@ -97,9 +95,9 @@ Get a list of incidents from Azure Sentinel.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of incidents to return. Maximum value is 50. | Optional | 
-| filter | Use OData syntax to filter your results (e.g `properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For further information, visit https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter | Optional | 
-| next_link | A link that specifies a starting point to use for subsequent calls. Using this argument overrides all of the other command arguments. | Optional | 
+| limit | The maximum number of incidents to return. The default and maximum value is 50. | Optional | 
+| filter | Filter results using OData syntax. For example: properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For more information see the Azure documentation: https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter. | Optional | 
+| next_link | A link that specifies a starting point to use for subsequent calls. This argument overrides all of the other command arguments. | Optional | 
 
 
 ##### Context Output
@@ -107,19 +105,19 @@ Get a list of incidents from Azure Sentinel.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | AzureSentinel.Incident.ID | String | The incident ID. | 
-| AzureSentinel.Incident.Title | String | The incident's title. | 
-| AzureSentinel.Incident.Description | String | Description about the incident. | 
-| AzureSentinel.Incident.Severity | String | The incident's severity. | 
-| AzureSentinel.Incident.Status | String | The status of the incident. | 
-| AzureSentinel.Incident.AssigneeName | String | The name of the incident's assignee. | 
-| AzureSentinel.Incident.AssigneeEmail | String | The email of the incident's assignee. | 
-| AzureSentinel.Incident.Label.Name | String | The name of the incident's label. | 
-| AzureSentinel.Incident.Label.Type | String | The type of the incident's label. | 
-| AzureSentinel.Incident.FirstActivityTimeUTC | Date | The incident's first activity time. | 
-| AzureSentinel.Incident.LastActivityTimeUTC | Date | The incident's last activity time. | 
-| AzureSentinel.Incident.LastModifiedTimeUTC | Date | The incident's last modification time. | 
-| AzureSentinel.Incident.CreatedTimeUTC | Date | The incident's creation time. | 
-| AzureSentinel.Incident.IncidentNumber | Number | The incident's number. | 
+| AzureSentinel.Incident.Title | String | The incident title. | 
+| AzureSentinel.Incident.Description | String | Description of the incident. | 
+| AzureSentinel.Incident.Severity | String | The incident severity. | 
+| AzureSentinel.Incident.Status | String | The incident status. | 
+| AzureSentinel.Incident.AssigneeName | String | The name of the incident assignee. | 
+| AzureSentinel.Incident.AssigneeEmail | String | The email address of the incident assignee. | 
+| AzureSentinel.Incident.Label.Name | String | The name of the incident label. | 
+| AzureSentinel.Incident.Label.Type | String | The incident label type. | 
+| AzureSentinel.Incident.FirstActivityTimeUTC | Date | The date and time of the incident's first activity. | 
+| AzureSentinel.Incident.LastActivityTimeUTC | Date | The date and time of the incident's last activity. | 
+| AzureSentinel.Incident.LastModifiedTimeUTC | Date | The date and time the incident was last modified. | 
+| AzureSentinel.Incident.CreatedTimeUTC | Date | The date and time the incident was created. | 
+| AzureSentinel.Incident.IncidentNumber | Number | The incident number. | 
 | AzureSentinel.Incident.AlertsCount | Number | The number of the alerts in the incident. | 
 | AzureSentinel.Incident.BookmarkCount | Number | The number of bookmarks in the incident. | 
 | AzureSentinel.Incident.CommentCount | Number | The number of comments in the incident. | 
@@ -127,7 +125,7 @@ Get a list of incidents from Azure Sentinel.
 | AzureSentinel.Incident.Tactics | String | The incident's tactics. | 
 | AzureSentinel.Incident.FirstActivityTimeGenerated | Date | The incident's generated first activity time. | 
 | AzureSentinel.Incident.LastActivityTimeGenerated | Date | The incident's generated last activity time. | 
-| AzureSentinel.NextLink.Description | String | The description about NextLink. | 
+| AzureSentinel.NextLink.Description | String | Description of NextLink. | 
 | AzureSentinel.NextLink.URL | String | Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls. | 
 | AzureSentinel.Incident.Etag | String | The Etag of the incident. | 
 
@@ -148,7 +146,7 @@ Get a list of incidents from Azure Sentinel.
 
 ### azure-sentinel-update-incident
 ***
-Update a single incident in Azure Sentinel.
+Updates a single incident in Azure Sentinel.
 
 
 ##### Base Command
@@ -160,9 +158,9 @@ Update a single incident in Azure Sentinel.
 | --- | --- | --- |
 | incident_id | The incident ID. | Required | 
 | title | The incident's title. | Optional | 
-| description | The incident's description. | Optional | 
-| severity | The incident's severity. | Optional | 
-| status | The incident's status. | Optional | 
+| description | Description of the incident. | Optional | 
+| severity | The incident severity. | Optional | 
+| status | The incident status. | Optional | 
 
 
 ##### Context Output
@@ -171,18 +169,18 @@ Update a single incident in Azure Sentinel.
 | --- | --- | --- |
 | AzureSentinel.Incident.ID | String | The incident ID. | 
 | AzureSentinel.Incident.Title | String | The incident's title. | 
-| AzureSentinel.Incident.Description | String | Description about the incident. | 
-| AzureSentinel.Incident.Severity | String | The incident's severity. | 
-| AzureSentinel.Incident.Status | String | The status of the incident. | 
-| AzureSentinel.Incident.AssigneeName | String | The name of the incident's assignee. | 
-| AzureSentinel.Incident.AssigneeEmail | String | The email of the incident's assignee. | 
-| AzureSentinel.Incident.Label.Name | String | The name of the incident's label. | 
-| AzureSentinel.Incident.Label.Type | String | The type of the incident's label. | 
-| AzureSentinel.Incident.FirstActivityTimeUTC | Date | The incident's first activity time. | 
-| AzureSentinel.Incident.LastActivityTimeUTC | Date | The incident's last activity time. | 
-| AzureSentinel.Incident.LastModifiedTimeUTC | Date | The incident's last modification time. | 
-| AzureSentinel.Incident.CreatedTimeUTC | Date | The incident's creation time. | 
-| AzureSentinel.Incident.IncidentNumber | Number | The incident's number. | 
+| AzureSentinel.Incident.Description | String | Description of the incident. | 
+| AzureSentinel.Incident.Severity | String | The incident severity. | 
+| AzureSentinel.Incident.Status | String | The incident status. | 
+| AzureSentinel.Incident.AssigneeName | String | The name of the incident assignee. | 
+| AzureSentinel.Incident.AssigneeEmail | String | The email address of the incident assignee. | 
+| AzureSentinel.Incident.Label.Name | String | The name of the incident label. | 
+| AzureSentinel.Incident.Label.Type | String | The incident label type. | 
+| AzureSentinel.Incident.FirstActivityTimeUTC | Date | The date and time of the incident's first activity. | 
+| AzureSentinel.Incident.LastActivityTimeUTC | Date | The date and time of the incident's last activity. | 
+| AzureSentinel.Incident.LastModifiedTimeUTC | Date | The date and time the incident was last modified. | 
+| AzureSentinel.Incident.CreatedTimeUTC | Date | The date and time the incident was created. | 
+| AzureSentinel.Incident.IncidentNumber | Number | The incident number. | 
 | AzureSentinel.Incident.AlertsCount | Number | The number of the alerts in the incident. | 
 | AzureSentinel.Incident.BookmarkCount | Number | The number of bookmarks in the incident. | 
 | AzureSentinel.Incident.CommentCount | Number | The number of comments in the incident. | 
@@ -205,7 +203,7 @@ Update a single incident in Azure Sentinel.
 
 ### azure-sentinel-delete-incident
 ***
-Delete a single incident in Azure Sentinel.
+Deletes a single incident in Azure Sentinel.
 
 
 ##### Base Command
@@ -228,9 +226,10 @@ There is no context output for this command.
 ##### Human Readable Output
 Incident ca5ffab9-25ff-413d-8000-12d3894b8468 was deleted successfully.
 
+
 ### azure-sentinel-list-incident-comments
 ***
-Get an incident comments from Azure Sentinel.
+Gets the comments of an incident from Azure Sentinel.
 
 
 ##### Base Command
@@ -241,7 +240,7 @@ Get an incident comments from Azure Sentinel.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | The incident ID. | Required | 
-| limit | The maximum number of incident comments to return. Maximum value is 50. | Optional | 
+| limit | The maximum number of incident comments to return. The default and maximum value is 50. | Optional | 
 | next_link | A link that specifies a starting point to use for subsequent calls. Using this argument overrides all of the other command arguments. | Optional | 
 
 
@@ -249,14 +248,14 @@ Get an incident comments from Azure Sentinel.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureSentinel.IncidentComment.ID | String | Incident comment's ID. | 
-| AzureSentinel.IncidentComment.IncidentID | String | Incident ID. | 
+| AzureSentinel.IncidentComment.ID | String | The ID of the incident comment. | 
+| AzureSentinel.IncidentComment.IncidentID | String | The incident ID. | 
 | AzureSentinel.IncidentComment.Message | String | The incident comment. | 
-| AzureSentinel.IncidentComment.AuthorName | String | The author name of the incident comment. | 
-| AzureSentinel.IncidentComment.AuthorEmail | String | The author email of the incident comment. | 
-| AzureSentinel.IncidentComment.CreatedTimeUTC | Date | The creation time of the incident comment. | 
-| AzureSentinel.NextLink.Description | String | The description about NextLink. | 
-| AzureSentinel.NextLink.URL | String | Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls. | 
+| AzureSentinel.IncidentComment.AuthorName | String | The name of the author of the incident comment. | 
+| AzureSentinel.IncidentComment.AuthorEmail | String | The email address of the author of the incident comment. | 
+| AzureSentinel.IncidentComment.CreatedTimeUTC | Date | The date and time that the incident comment was created. | 
+| AzureSentinel.NextLink.Description | String | Description of NextLink. | 
+| AzureSentinel.NextLink.URL | String | Used if an operation returns a partial result. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls. | 
 
 
 ##### Command Example
@@ -274,7 +273,7 @@ Get an incident comments from Azure Sentinel.
 
 ### azure-sentinel-incident-add-comment
 ***
-Add a comment to an incident in Azure Sentinel.
+Adds a comment to an incident in Azure Sentinel.
 
 
 ##### Base Command
@@ -292,12 +291,12 @@ Add a comment to an incident in Azure Sentinel.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureSentinel.IncidentComment.ID | String | Incident comment's ID. | 
-| AzureSentinel.IncidentComment.IncidentID | String | Incident ID. | 
+| AzureSentinel.IncidentComment.ID | String | The ID of the incident comment. | 
+| AzureSentinel.IncidentComment.IncidentID | String | The incident ID. | 
 | AzureSentinel.IncidentComment.Message | String | The incident comment. | 
-| AzureSentinel.IncidentComment.AuthorName | String | The author name of the incident comment. | 
-| AzureSentinel.IncidentComment.AuthorEmail | String | The author email of the incident comment. | 
-| AzureSentinel.IncidentComment.CreatedTimeUTC | Date | The creation time of the incident comment. | 
+| AzureSentinel.IncidentComment.AuthorName | String | The name of the author of the incident comment. | 
+| AzureSentinel.IncidentComment.AuthorEmail | String | The email address of the author of the incident comment. | 
+| AzureSentinel.IncidentComment.CreatedTimeUTC | Date | The date and time that the incident comment was created. | 
 
 
 ##### Command Example
@@ -312,7 +311,7 @@ Add a comment to an incident in Azure Sentinel.
 
 ### azure-sentinel-list-incident-relations
 ***
-Get a list of an incident's related entities from Azure Sentinel.
+Gets a list of an incident's related entities from Azure Sentinel.
 
 
 ##### Base Command
@@ -323,10 +322,10 @@ Get a list of an incident's related entities from Azure Sentinel.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | The incident ID. | Required | 
-| limit | The maximum number of relations to return. | Optional | 
+| limit | The maximum number of related entities to return. | Optional | 
 | next_link | A link that specifies a starting point to use for subsequent calls. Using this argument overrides all of the other command arguments. | Optional | 
-| entity_kinds | A comma-separated list of entity kinds to filter by. By default, the result won't be filtered by kind.<br/>The optional kinds are: Account, Host, File, AzureResource, CloudApplication, DnsResolution, FileHash, Ip, Malware, Process, RegistryKey, RegistryValue, SecurityGroup, Url, IoTDevice, SecurityAlert, Bookmark. | Optional | 
-| filter | Use OData syntax to filter your results (e.g `properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For further information, visit https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter | Optional | 
+| entity_kinds | A comma-separated list of entity kinds to filter by. By default, the results won't be filtered by kind.<br>The optional kinds are: Account, Host, File, AzureResource, CloudApplication, DnsResolution, FileHash, Ip, Malware, Process, RegistryKey, RegistryValue, SecurityGroup, Url, IoTDevice, SecurityAlert, Bookmark. | Optional | 
+| filter | Filter results using OData syntax. For example: properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For more information see the Azure documentation: https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter. | Optional | 
 
 
 ##### Context Output
@@ -335,8 +334,8 @@ Get a list of an incident's related entities from Azure Sentinel.
 | --- | --- | --- |
 | AzureSentinel.IncidentRelatedResource.ID | String | The ID of the incident's related resource. | 
 | AzureSentinel.IncidentRelatedResource.Kind | String | The kind of the incident's related resource. | 
-| AzureSentinel.NextLink.Description | String | Description about NextLink. | 
-| AzureSentinel.NextLink.URL | String | Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls. | 
+| AzureSentinel.NextLink.Description | String | The description about NextLink. | 
+| AzureSentinel.NextLink.URL | String | Used if an operation returns a partial result. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls. | 
 | AzureSentinel.IncidentRelatedResource.IncidentID | String | The incident ID. | 
 
 
@@ -352,7 +351,7 @@ Get a list of an incident's related entities from Azure Sentinel.
 
 ### azure-sentinel-get-entity-by-id
 ***
-Get a single entity from Azure Sentinel. Use !azure-sentinel-list-incident-relations command, and get an entity ID to apply this command on. Notice that in the current Azure Sentinel API version, the retention period for GetEntityByID is 30 days.
+Gets a single entity from Azure Sentinel. Use the azure-sentinel-list-incident-relations command, and get an entity ID to apply this command on. In the current Azure Sentinel API version the retention period for GetEntityByID is 30 days.
 
 
 ##### Base Command
@@ -381,7 +380,7 @@ There is no context output for this command.
 
 ### azure-sentinel-list-entity-relations
 ***
-Get a list of an entity's relations from Azure Sentinel.
+Gets a list of an entity's relations from Azure Sentinel.
 
 
 ##### Base Command
@@ -392,10 +391,10 @@ Get a list of an entity's relations from Azure Sentinel.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | entity_id | The entity ID. | Required | 
-| limit | The maximum number of relations to return. | Optional | 
+| limit | The maximum number of relations to return. The default value is 50. | Optional | 
 | next_link | A link that specifies a starting point to use for subsequent calls. Using this argument overrides all of the other command arguments. | Optional | 
-| entity_kinds | A comma-separated list of entity kinds to filter by. By default, the result won't be filtered by kind.<br/>The optional kinds are: Account, Host, File, AzureResource, CloudApplication, DnsResolution, FileHash, Ip, Malware, Process, RegistryKey, RegistryValue, SecurityGroup, Url, IoTDevice, SecurityAlert, Bookmark. | Optional | 
-| filter | Use OData syntax to filter your results (e.g `properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For further information, visit https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter | Optional | 
+| entity_kinds | A comma-separated list of entity kinds to filter by. By default, the result won't be filtered by kind.<br>The optional kinds are: Account, Host, File, AzureResource, CloudApplication, DnsResolution, FileHash, Ip, Malware, Process, RegistryKey, RegistryValue, SecurityGroup, Url, IoTDevice, SecurityAlert, Bookmark. | Optional | 
+| filter | Filter results using OData syntax. For example: properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For more information see the Azure documentation: https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter. | Optional | 
 
 
 ##### Context Output
@@ -404,8 +403,8 @@ Get a list of an entity's relations from Azure Sentinel.
 | --- | --- | --- |
 | AzureSentinel.EntityRelatedResource.ID | String | The ID of the entity's related resource. | 
 | AzureSentinel.EntityRelatedResource.Kind | String | The kind of the entity's related resource. | 
-| AzureSentinel.NextLink.Description | String | The description about NextLink. | 
-| AzureSentinel.NextLink.URL | String | Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls. | 
+| AzureSentinel.NextLink.Description | String | Description about NextLink. | 
+| AzureSentinel.NextLink.URL | String | Used if an operation returns a partial result. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls. | 
 | AzureSentinel.EntityRelatedResource.EntityID | String | The entity ID. | 
 
 
@@ -419,4 +418,25 @@ Get a list of an entity's relations from Azure Sentinel.
 | f1670c58-43dc-4b82-a13a-c732325c41f5 | 7ff48076-37b9-4bb5-83b1-db21618a282a |
 
 
+### azure-sentinel-test
+***
+Tests connectivity to Azure Sentinel.
+
+
+##### Base Command
+
+`azure-sentinel-test`
+##### Input
+
+There are no input arguments for this command.
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+```!azure-sentinel-test```
+
+##### Human Readable Output
+```✅ Success!```
 <!-- disable-secrets-detection-end -->
