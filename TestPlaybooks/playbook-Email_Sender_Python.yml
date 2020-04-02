@@ -632,8 +632,22 @@ tasks:
       max-results: {}
       page-token: {}
       query:
-        simple: from:avishai@demistodev.onmicrosoft.com subject:special test via playbook
-          newer_than:1d
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: division
+            args:
+              by:
+                value:
+                  simple: "1000"
+          - operator: floor
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'from:avishai@demistodev.onmicrosoft.com subject:special
+                    test via playbook after:'
+              suffix: {}
       subject: {}
       to: {}
       user-id:
