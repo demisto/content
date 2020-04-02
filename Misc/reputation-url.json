@@ -134,7 +134,7 @@
         }]
       }
     },
-    "trafficlightprotocoltlp": {
+    "trafficlightprotocol": {
       "simple": "",
       "complex": {
         "root": "URL",
