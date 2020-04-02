@@ -6,7 +6,7 @@ Shows system information.
 | --- | --- |
 | Script Type | javascript |
 | Tags | agent, endpoint |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

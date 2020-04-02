@@ -15,7 +15,7 @@ Machine-Learning: DBot will calculate and decide who is the best analyst for the
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

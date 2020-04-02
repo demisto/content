@@ -7,7 +7,7 @@ In order to access the last executed task's comments, provide `${lastCompletedTa
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

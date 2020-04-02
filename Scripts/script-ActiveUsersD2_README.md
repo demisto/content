@@ -7,7 +7,7 @@ Gets active users from a D2 agent and parsed them into context.
 | --- | --- |
 | Script Type | javascript |
 | Tags | endpoint, agent |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

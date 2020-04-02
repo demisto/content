@@ -7,7 +7,7 @@ Wraps the generic `query-table` command in ServiceNow. Fields can be added to us
 | --- | --- |
 | Script Type | python |
 | Tags | servicenow |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

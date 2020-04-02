@@ -7,7 +7,7 @@ Creates an Amazon EBS-backed AMI from an Amazon EBS-backed instance that is eith
 | --- | --- |
 | Script Type | python |
 | Tags | Amazon Web Services |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

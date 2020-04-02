@@ -6,7 +6,7 @@ Sleeps for a selected amount of time. In seconds.
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

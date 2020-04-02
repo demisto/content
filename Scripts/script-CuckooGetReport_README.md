@@ -6,7 +6,7 @@ Gets the report of a completed analysis.
 | --- | --- |
 | Script Type | python |
 | Tags | cuckoo |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

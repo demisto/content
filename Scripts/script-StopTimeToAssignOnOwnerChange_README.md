@@ -7,7 +7,7 @@ Stops the "Time To Assign" timer if the owner of the incident was changed.
 | --- | --- |
 | Script Type | python |
 | Tags | field-change-triggered, example |
-| Demisto Version | 4.1.0 |
+| Demisto Version | 4.1.0+ |
 
 ## Inputs
 ---

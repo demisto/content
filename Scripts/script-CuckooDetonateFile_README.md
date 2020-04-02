@@ -7,7 +7,7 @@ Adds a file to the list of pending tasks. Returns the ID of the newly created ta
 | --- | --- |
 | Script Type | python |
 | Tags | cuckoo |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

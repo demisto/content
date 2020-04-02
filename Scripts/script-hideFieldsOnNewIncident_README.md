@@ -6,7 +6,7 @@ Hides incident fields for new incidents (post application of the script), and di
 | --- | --- |
 | Script Type | python |
 | Tags | field-display |
-| Demisto Version | 3.6.0 |
+| Demisto Version | 3.6.0+ |
 
 ## Inputs
 ---

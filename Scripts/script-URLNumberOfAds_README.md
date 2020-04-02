@@ -7,7 +7,7 @@ Fetches the numbers of ads in the given URL.
 | --- | --- |
 | Script Type | python |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

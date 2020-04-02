@@ -7,7 +7,7 @@ Checks if the email address is part of the internal domain.
 | --- | --- |
 | Script Type | python |
 | Tags | email |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

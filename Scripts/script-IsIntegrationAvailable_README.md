@@ -7,7 +7,7 @@ Returns "yes" if the integration brand is available. Otherwise it will return "n
 | --- | --- |
 | Script Type | python |
 | Tags | infra, Condition |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

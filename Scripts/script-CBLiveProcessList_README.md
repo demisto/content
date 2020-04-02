@@ -7,7 +7,7 @@ Runs a `process list` command on a remote Carbon Black sensor.
 | --- | --- |
 | Script Type | javascript |
 | Tags | carbon-black, endpoint |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

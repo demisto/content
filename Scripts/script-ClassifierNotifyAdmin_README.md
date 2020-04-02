@@ -7,7 +7,7 @@ Sends mail to the administrator, notifying the administrator that the classifica
 | --- | --- |
 | Script Type | python |
 | Tags | Classifier |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

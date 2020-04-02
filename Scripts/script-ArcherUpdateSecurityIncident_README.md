@@ -12,7 +12,7 @@ Another option would be to duplicate this script and adjust it to the new applic
 | --- | --- |
 | Script Type | python |
 | Tags |  |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

@@ -7,7 +7,7 @@ Uses the Query API to have a client application look for either the analysis rep
 | --- | --- |
 | Script Type | python |
 | Tags | sandblast |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

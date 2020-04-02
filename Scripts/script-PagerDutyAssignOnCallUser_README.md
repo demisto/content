@@ -7,7 +7,7 @@ Assigns the first on-call user to an investigation by default. All incidents in 
 | --- | --- |
 | Script Type | javascript |
 | Tags | pagerduty, communication |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

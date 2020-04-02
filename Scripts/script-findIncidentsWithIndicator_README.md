@@ -7,7 +7,7 @@ Looks up incidents with a specified indicator. Uses `currentIncidentId` to omit 
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

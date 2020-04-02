@@ -7,7 +7,7 @@ Extract a user's response from `EmailAskUser reply`. Returns the first textual r
 | --- | --- |
 | Script Type | javascript |
 | Tags | Condition |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

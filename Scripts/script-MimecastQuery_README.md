@@ -7,7 +7,7 @@ Queries Mimecast emails.
 | --- | --- |
 | Script Type | python |
 | Tags | Mimecast |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

@@ -15,7 +15,7 @@ This will eturn all item names where field `type` equals `IP` - ['192.1,0.82', '
 | --- | --- |
 | Script Type | javascript |
 | Tags | transformer, general, entirelist |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

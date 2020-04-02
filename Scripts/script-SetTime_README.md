@@ -7,7 +7,7 @@ Fills the current time in a custom incident field.
 | --- | --- |
 | Script Type | python |
 | Tags | - |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

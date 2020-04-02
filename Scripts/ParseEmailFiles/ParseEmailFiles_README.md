@@ -7,7 +7,7 @@ Parses an email from an eml or msg file and populate all relevant context data t
 | --- | --- |
 | Script Type | python2 |
 | Tags | email, phishing, enhancement, file |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

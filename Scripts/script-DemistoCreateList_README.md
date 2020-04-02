@@ -7,7 +7,7 @@ Creates a new list.
 | --- | --- |
 | Script Type | javascript |
 | Tags | DemistoAPI |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

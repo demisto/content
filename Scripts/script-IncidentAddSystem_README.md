@@ -7,7 +7,7 @@ Adds a remote system (such as a desktop under investigation) to an investigation
 | --- | --- |
 | Script Type | javascript |
 | Tags | management |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

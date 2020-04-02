@@ -7,7 +7,7 @@ Displays all watchlists and their details, queries, etc.
 | --- | --- |
 | Script Type | python |
 | Tags | carbon-black |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

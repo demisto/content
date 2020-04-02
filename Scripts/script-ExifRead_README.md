@@ -7,7 +7,7 @@ Reads an image file's metadata and provides `Exif` tags.
 | --- | --- |
 | Script Type | python |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

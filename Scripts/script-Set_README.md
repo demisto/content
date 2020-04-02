@@ -7,7 +7,7 @@ Sets a value into the context with the given context key.
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

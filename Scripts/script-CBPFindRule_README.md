@@ -7,7 +7,7 @@ Finds the rule state for a hash value in CBEP/Bit9.
 | --- | --- |
 | Script Type | python |
 | Tags | carbon-black-protection, bit9, enhancement |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

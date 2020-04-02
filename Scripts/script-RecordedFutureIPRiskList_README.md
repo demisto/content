@@ -7,7 +7,7 @@ Extracts the IP address risk list from the recorded future and creates indicator
 | --- | --- |
 | Script Type | python |
 | Tags | RecordedFuture |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

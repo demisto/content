@@ -7,7 +7,7 @@ Displays the incident details retrieved from Confer in a readable format.
 | --- | --- |
 | Script Type | python |
 | Tags | confer |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

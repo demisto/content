@@ -12,7 +12,7 @@ Note - If you alter the script to work with another application some of the argu
 | --- | --- |
 | Script Type | python |
 | Tags |  |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

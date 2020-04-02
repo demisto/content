@@ -12,7 +12,7 @@ This script will use `VirusTotal` for URL checks, and IBM XForce for MD5 file ha
 | --- | --- |
 | Script Type | javascript |
 | Tags | osx |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

@@ -7,7 +7,7 @@ Collects the values for a given registry path from all Windows systems in the in
 | --- | --- |
 | Script Type | python |
 | Tags | registry, enhancement |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

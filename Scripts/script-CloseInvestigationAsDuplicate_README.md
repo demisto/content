@@ -6,7 +6,7 @@ Closes the current investigation as a duplicate to another investigation.
 | --- | --- |
 | Script Type | python |
 | Tags | dedup |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

@@ -6,7 +6,7 @@ Checks the given registry path against a small blacklist (score 3), whitelist (s
 | --- | --- |
 | Script Type | python |
 | Tags | registry, reputation |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

@@ -7,7 +7,7 @@ Unzip a file using the `fileName` or `entryID` to specify a file. Unzipped files
 | --- | --- |
 | Script Type | python2 |
 | Tags | Utility, file |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

@@ -7,7 +7,7 @@ Searches mails in office-365.
 | --- | --- |
 | Script Type | python |
 | Tags | office365, email, response |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

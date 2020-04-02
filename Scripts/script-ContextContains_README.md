@@ -7,7 +7,7 @@ Searches for a value in a context path.
 | --- | --- |
 | Script Type | python |
 | Tags |  |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

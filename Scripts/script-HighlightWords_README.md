@@ -7,7 +7,7 @@ Highlights words inside a given text.
 | --- | --- |
 | Script Type | python |
 | Tags | - |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

@@ -7,7 +7,7 @@ Adds new events to an existing NetWitness SA incident.
 | --- | --- |
 | Script Type | python |
 | Tags | RSA NetWitness Security Analytics |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

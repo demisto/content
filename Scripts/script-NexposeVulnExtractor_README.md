@@ -7,7 +7,7 @@ Parses a specific server Nexpose response into a table of vulnerabilities.
 | --- | --- |
 | Script Type | javascript |
 | Tags | nexpose |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

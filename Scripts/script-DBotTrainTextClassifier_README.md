@@ -8,7 +8,7 @@ Each line of the text file is sample data, and it has to have a tag.
 | --- | --- |
 | Script Type | python |
 | Tags | phishing, ml |
-| Demisto Version | 4.1.0 |
+| Demisto Version | 4.1.0+ |
 
 ## Inputs
 ---

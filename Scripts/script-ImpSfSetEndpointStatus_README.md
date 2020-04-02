@@ -7,7 +7,7 @@ Enables a clients application to enroll an endpoint or revoke its enrollment. Th
 | --- | --- |
 | Script Type | python |
 | Tags | Imperva Skyfence |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

@@ -7,7 +7,7 @@ Executes a command on a remote machine (without installing a D2 agent).
 | --- | --- |
 | Script Type | javascript |
 | Tags | endpoint |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

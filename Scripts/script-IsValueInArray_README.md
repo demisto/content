@@ -7,7 +7,7 @@ Indicates whether a given value is a member of given array.
 | --- | --- |
 | Script Type | javascript |
 | Tags | Condition |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

@@ -6,7 +6,7 @@ Runs the polling command repeatedly and completes a blocking manual task when po
 | --- | --- |
 | Script Type | javascript |
 | Tags | - |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

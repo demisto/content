@@ -7,7 +7,7 @@ Searches for a string in a path in context. If path is null, the string will be 
 | --- | --- |
 | Script Type | javascript |
 | Tags |  |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

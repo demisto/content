@@ -9,7 +9,7 @@ Used by the server-side script "Autoruns".
 | --- | --- |
 | Script Type | javascript |
 | Tags | agent, endpoint, forensics |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

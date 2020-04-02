@@ -6,7 +6,7 @@ Converts a XML file entry into JSON format.
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

@@ -9,7 +9,7 @@ We recommend for tools that you want to use that are not part of the default Doc
 | --- | --- |
 | Script Type | python |
 | Tags | Utilities |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

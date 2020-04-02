@@ -7,7 +7,7 @@ Pretty prints a JIRA issue into the incident War Room.
 | --- | --- |
 | Script Type | javascript |
 | Tags | jira |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

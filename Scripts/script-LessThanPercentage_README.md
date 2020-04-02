@@ -11,7 +11,7 @@ Returns an exception if one of the inputs is not a float.
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility, Condition |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

@@ -7,7 +7,7 @@ Creates new incidents from RSA Archer.
 | --- | --- |
 | Script Type | python |
 | Tags | - |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

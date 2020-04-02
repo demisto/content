@@ -7,7 +7,7 @@ Retrieves lockouts from Exabeam.
 | --- | --- |
 | Script Type | python |
 | Tags | server, analytics, exabeam |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

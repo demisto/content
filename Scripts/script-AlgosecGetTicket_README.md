@@ -7,7 +7,7 @@ Retrieves a FireFlow change request by its ID.
 | --- | --- |
 | Script Type | python |
 | Tags | Algosec |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

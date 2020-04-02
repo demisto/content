@@ -7,7 +7,7 @@ Returns system information.
 | --- | --- |
 | Script Type | python |
 | Tags | epo |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

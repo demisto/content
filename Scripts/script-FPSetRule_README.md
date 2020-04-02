@@ -7,7 +7,7 @@ Adds (or updates an existing) rule in Forcepoint Triton. Preserves orders of rul
 | --- | --- |
 | Script Type | python |
 | Tags | forcepoint, triton |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

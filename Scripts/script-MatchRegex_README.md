@@ -7,7 +7,7 @@ Extracts regex data from a given text. This supports groups and looping as well.
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

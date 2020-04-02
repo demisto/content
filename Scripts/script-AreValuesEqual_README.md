@@ -7,7 +7,7 @@ Checks whether the values provided in the arguments are equal. If either of the 
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility, Condition |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

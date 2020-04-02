@@ -8,7 +8,7 @@ Duplicates the incidents that are not created for the same asset ID and QID.
 | --- | --- |
 | Script Type | python |
 | Tags | qualys |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

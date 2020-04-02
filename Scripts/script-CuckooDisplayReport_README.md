@@ -6,7 +6,7 @@ Displays the contents of a Cuckoo report file from a War Room entry.
 | --- | --- |
 | Script Type | python |
 | Tags | cuckoo |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

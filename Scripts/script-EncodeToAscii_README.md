@@ -7,7 +7,7 @@ Returns inputed text data that will be encoded into ASCII. This ignores any char
 | --- | --- |
 | Script Type | python |
 | Tags | - |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

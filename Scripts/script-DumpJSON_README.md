@@ -7,7 +7,7 @@ Dumps a JSON from the context key input, and returns a JSON object string result
 | --- | --- |
 | Script Type | python |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

@@ -7,7 +7,7 @@ Creates a snapshot of an EBS volume and stores it in Amazon S3. Snapshots can be
 | --- | --- |
 | Script Type | python |
 | Tags | Amazon Web Services |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

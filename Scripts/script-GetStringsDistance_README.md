@@ -7,7 +7,7 @@ Gets the string distance between `inputString` and `compareString` (can be a com
 | --- | --- |
 | Script Type | python |
 | Tags | server, phishing, Condition |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

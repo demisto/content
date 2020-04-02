@@ -7,7 +7,7 @@ Finds applications containing network objects related to IP address using Busine
 | --- | --- |
 | Script Type | python |
 | Tags | Algosec |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

@@ -6,7 +6,7 @@ Runs the Intezer Endpoint Analysis scanner.
 | --- | --- |
 | Script Type | javascript |
 | Tags | agent, forensics |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

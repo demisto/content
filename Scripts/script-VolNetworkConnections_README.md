@@ -7,7 +7,7 @@ Finds all the network connections. This script runs through different commands b
 | --- | --- |
 | Script Type | javascript |
 | Tags | memory, forensics, volatility, server |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

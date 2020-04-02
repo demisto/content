@@ -7,7 +7,7 @@ Assigns a "Mailbox Import Export" management role to a user. This script runs th
 | --- | --- |
 | Script Type | javascript |
 | Tags | exchange, email |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

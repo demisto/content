@@ -7,7 +7,7 @@ Detonates a file or URL through McAfee ATD.
 | --- | --- |
 | Script Type | python |
 | Tags | file, enhancement, atd |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

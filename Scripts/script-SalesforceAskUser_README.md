@@ -7,7 +7,7 @@ Asks a user a question via Salesforce Chatter and process the reply directly int
 | --- | --- |
 | Script Type | python |
 | Tags | - |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

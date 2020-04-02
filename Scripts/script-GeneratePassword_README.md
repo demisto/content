@@ -15,7 +15,7 @@ The debug parameter will print certain properties of the command into the War Ro
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

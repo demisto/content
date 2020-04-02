@@ -7,7 +7,7 @@ Returns the available NetWitness SA users to be assigned to incidents.
 | --- | --- |
 | Script Type | python |
 | Tags | RSA NetWitness Security Analytics |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

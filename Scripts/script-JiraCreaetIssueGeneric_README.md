@@ -7,7 +7,7 @@ Simplifies the process of creating a new issue in Jira. Fields can be added in t
 | --- | --- |
 | Script Type | python |
 | Tags | jira, example |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

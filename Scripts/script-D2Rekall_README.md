@@ -7,7 +7,7 @@ Executes Rekall on a system (usually a forensics workstation) and analyzes a mem
 | --- | --- |
 | Script Type | javascript |
 | Tags | agent, memory, forensics |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

@@ -6,7 +6,7 @@ Gets hashes (such as, MD5, SHA1, SHA256) from context.
 | --- | --- |
 | Script Type | javascript |
 | Tags |  |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

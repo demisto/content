@@ -8,7 +8,7 @@ Parsing should be done in the following manner. The "type" is the header sourcet
 | --- | --- |
 | Script Type | javascript |
 | Tags | splunk, ingestion |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

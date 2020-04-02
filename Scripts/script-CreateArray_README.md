@@ -6,7 +6,7 @@ Creates an array object in context from a given string's input.
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

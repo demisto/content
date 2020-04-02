@@ -7,7 +7,7 @@ Executes the given command and verifies that the specified field is not in the c
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

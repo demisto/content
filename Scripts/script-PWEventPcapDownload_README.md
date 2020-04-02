@@ -7,7 +7,7 @@ Downloads PCAPs related to the requested events. This supports rate throttling.
 | --- | --- |
 | Script Type | python |
 | Tags | protectwise |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

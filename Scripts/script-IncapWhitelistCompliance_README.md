@@ -8,7 +8,7 @@ Each site will be returned through a ssh server (which should not be on the whit
 | --- | --- |
 | Script Type | python |
 | Tags | Incapsula |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

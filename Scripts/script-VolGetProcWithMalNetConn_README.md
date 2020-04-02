@@ -7,7 +7,7 @@ Gets the list of processes that have connections to IP addresses with a bad repu
 | --- | --- |
 | Script Type | javascript |
 | Tags | memory, forensics, volatility, server |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

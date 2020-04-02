@@ -8,7 +8,7 @@ This script will return the string after the replacement was preformed.
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

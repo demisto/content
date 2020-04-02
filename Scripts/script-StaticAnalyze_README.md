@@ -7,7 +7,7 @@ Iterates on all attachments and runs a PE dump on each. This is for phishing inc
 | --- | --- |
 | Script Type | javascript |
 | Tags | phishing |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

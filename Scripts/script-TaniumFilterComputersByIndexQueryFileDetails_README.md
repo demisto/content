@@ -10,7 +10,7 @@ will be translated to the following plain text Tanium question:
 | --- | --- |
 | Script Type | python |
 | Tags | tanium |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

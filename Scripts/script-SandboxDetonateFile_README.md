@@ -7,7 +7,7 @@ Detonates the file in available sandboxes.
 | --- | --- |
 | Script Type | python |
 | Tags | sandblast, cuckoo, wildfire, fireeye, task, sandbox, enhancement, file |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

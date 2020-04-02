@@ -7,7 +7,7 @@ Tokenizes the words in an input text.
 | --- | --- |
 | Script Type | python |
 | Tags | phishing, ml |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

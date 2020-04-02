@@ -7,7 +7,7 @@ Sets a value into the context with the given context key. By default this will n
 | --- | --- |
 | Script Type | python |
 | Tags | DemistoAPI |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

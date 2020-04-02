@@ -7,7 +7,7 @@ Filters context keys by applying one of the various available manipulations and 
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

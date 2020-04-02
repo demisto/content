@@ -8,7 +8,7 @@ For Example, "127[.]0[.]0[.]1 -> 127.0.0.1".
 | --- | --- |
 | Script Type | javascript |
 | Tags | indicator-format |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

@@ -7,7 +7,7 @@ Parses CEF data into the context. Outputs will display only the 7 mandatory fiel
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

@@ -7,7 +7,7 @@ Gets all tasks for a specific incident by the given state.
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

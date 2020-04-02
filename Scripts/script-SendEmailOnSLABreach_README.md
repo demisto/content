@@ -8,7 +8,7 @@ In order to run successfully, the script should be configured to trigger on a SL
 | --- | --- |
 | Script Type | python |
 | Tags | sla, example |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

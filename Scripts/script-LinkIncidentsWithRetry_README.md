@@ -7,7 +7,7 @@ Avoids DB version errors when simultaneously running multiple linked incidents.
 | --- | --- |
 | Script Type | python |
 | Tags |  |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

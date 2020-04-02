@@ -7,7 +7,7 @@ Sends messages to Demisto's online users over Email, Slack, Mattermost or all.
 | --- | --- |
 | Script Type | javascript |
 | Tags | - |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

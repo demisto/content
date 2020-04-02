@@ -6,7 +6,7 @@ Executes a PE Dump on a file that is under /tmp path (relative). This is used in
 | --- | --- |
 | Script Type | javascript |
 | Tags | executable, agent |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

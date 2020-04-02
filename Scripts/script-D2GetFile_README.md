@@ -7,7 +7,7 @@ Gets a file from a system using a D2 agent.
 | --- | --- |
 | Script Type | javascript |
 | Tags | agent |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

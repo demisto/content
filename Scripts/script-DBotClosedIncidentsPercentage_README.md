@@ -7,7 +7,7 @@ Populates the dashboard pie graph widget with the percentage of incidents closed
 | --- | --- |
 | Script Type | javascript |
 | Tags | widget |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

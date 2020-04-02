@@ -7,7 +7,7 @@ Checks whether a given entry(ies) return an error. Use `${lastCompletedTaskEntri
 | --- | --- |
 | Script Type | javascript |
 | Tags | Condition, Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

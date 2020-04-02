@@ -6,7 +6,7 @@ Renders the list of available hunts.
 | --- | --- |
 | Script Type | python |
 | Tags | GRR |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

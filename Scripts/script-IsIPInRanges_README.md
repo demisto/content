@@ -7,7 +7,7 @@ Returns "yes" if the IP address is within one of the ranges provided. Otherwise 
 | --- | --- |
 | Script Type | javascript |
 | Tags | ip |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

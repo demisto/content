@@ -7,7 +7,7 @@ Starts a flow on a given client with given parameters.
 | --- | --- |
 | Script Type | python |
 | Tags | GRR |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

@@ -7,7 +7,7 @@ Stops the scheduled task whose ID is given in the taskID argument.
 | --- | --- |
 | Script Type | python |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

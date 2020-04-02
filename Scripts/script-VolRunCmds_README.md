@@ -7,7 +7,7 @@ Executes Volatility with a command and returns tabular output. In casse where pr
 | --- | --- |
 | Script Type | javascript |
 | Tags | memory, forensics, volatility, server |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

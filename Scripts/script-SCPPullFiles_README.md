@@ -7,7 +7,7 @@ Pulls a specific file (given by path) from each using SCP from a list of devices
 | --- | --- |
 | Script Type | python |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

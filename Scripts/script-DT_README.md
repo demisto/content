@@ -7,7 +7,7 @@ Allows the usage of DT scripts within playbooks transformers.
 | --- | --- |
 | Script Type | python |
 | Tags | transformer, general |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

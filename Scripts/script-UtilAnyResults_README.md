@@ -7,7 +7,7 @@ Utility script to use in playbooks. This will return "yes" if the input is not e
 | --- | --- |
 | Script Type | python |
 | Tags | Utility, Condition |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

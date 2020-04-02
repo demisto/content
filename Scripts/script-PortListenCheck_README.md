@@ -7,7 +7,7 @@ Checks whether a port was open on a given host.
 | --- | --- |
 | Script Type | python |
 | Tags | - |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

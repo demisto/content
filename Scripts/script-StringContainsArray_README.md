@@ -7,7 +7,7 @@ Checks whether a substring or an array of substrings is within a string array (e
 | --- | --- |
 | Script Type | javascript |
 | Tags | filter, string |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

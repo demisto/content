@@ -7,7 +7,7 @@ Gets AWS EC2 instance details.
 | --- | --- |
 | Script Type | javascript |
 | Tags | Amazon Web Services |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

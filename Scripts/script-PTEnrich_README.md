@@ -7,7 +7,7 @@ Enriches the given IP address or domain with metadata, malware, or osint.
 | --- | --- |
 | Script Type | javascript |
 | Tags | passive-total, server, threat-intel |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

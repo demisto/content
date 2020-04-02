@@ -7,7 +7,7 @@ Parses PCAP files and returns, the extracted files that are found, HTTP flows, a
 | --- | --- |
 | Script Type | python |
 | Tags | Utility, file, pcap |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

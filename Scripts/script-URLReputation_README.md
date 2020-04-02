@@ -7,7 +7,7 @@ A context script for URL entities.
 | --- | --- |
 | Script Type | python |
 | Tags | enhancement |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

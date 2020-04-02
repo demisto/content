@@ -7,7 +7,7 @@ Retrieves the value of the given registry key.
 | --- | --- |
 | Script Type | javascript |
 | Tags | agent, registry |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

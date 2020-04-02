@@ -6,7 +6,7 @@ Creates indicators from the submitted STIX file. Supports STIX 1.0 and STIX 2.0.
 | --- | --- |
 | Script Type | python3 |
 | Tags | stix, ioc |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

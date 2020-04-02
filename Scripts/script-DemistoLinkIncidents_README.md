@@ -7,7 +7,7 @@ Links two or more incidents.
 | --- | --- |
 | Script Type | javascript |
 | Tags | DemistoAPI |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

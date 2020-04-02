@@ -7,7 +7,7 @@ Pretty-prints the contents of the playbook context.
 | --- | --- |
 | Script Type | python |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

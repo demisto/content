@@ -7,7 +7,7 @@ Execute `OSXcollector` on a machine. This can run only on OSX.
 | --- | --- |
 | Script Type | javascript |
 | Tags | osx, agent |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

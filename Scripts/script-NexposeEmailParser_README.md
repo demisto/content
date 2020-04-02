@@ -7,7 +7,7 @@ Parses the Nexpose report into a clear table that contains risk scores and vulne
 | --- | --- |
 | Script Type | javascript |
 | Tags | nexpose, ingestion |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

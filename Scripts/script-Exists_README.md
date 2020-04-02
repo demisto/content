@@ -7,7 +7,7 @@ Checks if a given value exists in the context. The script will return "no" for a
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility, Condition |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

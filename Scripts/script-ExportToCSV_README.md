@@ -6,7 +6,7 @@ Exports a given array to a CSV file.
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility, csv |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

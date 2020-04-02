@@ -7,7 +7,7 @@ Extracts the URL risk list from the recorded future and creates indicators accor
 | --- | --- |
 | Script Type | python |
 | Tags | RecordedFuture |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

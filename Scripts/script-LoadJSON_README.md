@@ -7,7 +7,7 @@ Loads a JSON from a string input, and returns a JSON object result.
 | --- | --- |
 | Script Type | python |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

@@ -6,7 +6,7 @@ Retrieves a list of all the clients applications.
 | --- | --- |
 | Script Type | python |
 | Tags | Incapsula |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

@@ -7,7 +7,7 @@ Finds the targets nameservers and shuffle DNS lookups between them. If a lookup 
 | --- | --- |
 | Script Type | python |
 | Tags |  |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---

@@ -6,7 +6,7 @@ Performs a short probe of the specified system's registry. It will retrieve and 
 | --- | --- |
 | Script Type | python |
 | Tags | registry |
-| Demisto Version | 0.0.0 |
+
 
 ## Inputs
 ---
