@@ -5,5 +5,6 @@
   "widgetType": "text",
   "query": "GetRolesPerShift",
   "version": -1,
-  "description": "Roles per shift 24x7"
+  "description": "Roles per shift 24x7",
+  "isPredefined": false
 }
