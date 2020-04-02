@@ -16,7 +16,7 @@ This integration was integrated and tested with version xx of Azure Sentinel
 | redirect_uri | Application redirect URI (for self-deployed mode) | False |
 | auth_code | Authorization code (received from the authorization step - see Detailed Instructions (?) section) | False |
 | isFetch | Fetch incidents | False |
-| fetch_time | First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days) | False |
+| fetch_time | First fetch timestamp ({number} {time unit}, e.g., 12 hours, 7 days) | False |
 | min_severity | The minimum severity of incidents to fetch | False |
 | incidentType | Incident type | False |
 | subscriptionID | Subscription ID | True |
@@ -324,7 +324,7 @@ Gets a list of an incident's related entities from Azure Sentinel.
 | incident_id | The incident ID. | Required | 
 | limit | The maximum number of related entities to return. | Optional | 
 | next_link | A link that specifies a starting point to use for subsequent calls. Using this argument overrides all of the other command arguments. | Optional | 
-| entity_kinds | A comma-separated list of entity kinds to filter by. By default, the results won't be filtered by kind.<br>The optional kinds are: Account, Host, File, AzureResource, CloudApplication, DnsResolution, FileHash, Ip, Malware, Process, RegistryKey, RegistryValue, SecurityGroup, Url, IoTDevice, SecurityAlert, Bookmark. | Optional | 
+| entity_kinds | A comma-separated list of entity kinds to filter by. By default, the results won't be filtered by kind.<br/>The optional kinds are: Account, Host, File, AzureResource, CloudApplication, DnsResolution, FileHash, Ip, Malware, Process, RegistryKey, RegistryValue, SecurityGroup, Url, IoTDevice, SecurityAlert, Bookmark. | Optional | 
 | filter | Filter results using OData syntax. For example: properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For more information see the Azure documentation: https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter. | Optional | 
 
 
@@ -393,7 +393,7 @@ Gets a list of an entity's relations from Azure Sentinel.
 | entity_id | The entity ID. | Required | 
 | limit | The maximum number of relations to return. The default value is 50. | Optional | 
 | next_link | A link that specifies a starting point to use for subsequent calls. Using this argument overrides all of the other command arguments. | Optional | 
-| entity_kinds | A comma-separated list of entity kinds to filter by. By default, the result won't be filtered by kind.<br>The optional kinds are: Account, Host, File, AzureResource, CloudApplication, DnsResolution, FileHash, Ip, Malware, Process, RegistryKey, RegistryValue, SecurityGroup, Url, IoTDevice, SecurityAlert, Bookmark. | Optional | 
+| entity_kinds | A comma-separated list of entity kinds to filter by. By default, the result won't be filtered by kind.<br/>The optional kinds are: Account, Host, File, AzureResource, CloudApplication, DnsResolution, FileHash, Ip, Malware, Process, RegistryKey, RegistryValue, SecurityGroup, Url, IoTDevice, SecurityAlert, Bookmark. | Optional | 
 | filter | Filter results using OData syntax. For example: properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For more information see the Azure documentation: https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter. | Optional | 
 
 
