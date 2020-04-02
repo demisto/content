@@ -71,4 +71,6 @@ def test_emoji_handling_in_file_name():
     file_names_package = ['Fwd for you 😍', 'Hi all', '', '🐝🤣🇮🇱👨🏽‍🚀🧟‍♂🧞‍♂🧚🏼‍♀', '🧔🤸🏻‍♀🥩🧚😷🍙👻']
 
     for file_name in file_names_package:
-        assert file_name_to_valid_string(file_name) == emoji.demojize(file_name)
+        demojized_file_name = file_name_to_valid_string(file_name)
+        assert demojized_file_name == emoji.demojize(file_name)
+        assert not emoji.emoji_count(file_name_to_valid_string(demojized_file_name))
