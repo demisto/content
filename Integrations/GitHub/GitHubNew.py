@@ -68,6 +68,23 @@ class GraphQLClient(object):
                   edges {
                     cursor
                     node {
+                      timelineItems(first:10){
+                        __typename
+                        ... on IssueTimelineItemsConnection{
+                          nodes {
+                            ... on CrossReferencedEvent {
+                              willCloseTarget
+                              source {
+                                __typename 
+                                ... on PullRequest {
+                                  number
+                                  reviewDecision
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
                       title
                       id
                       number
@@ -131,6 +148,23 @@ class GraphQLClient(object):
                   edges {
                     cursor
                     node {
+                      timelineItems(first:10){
+                        __typename
+                        ... on IssueTimelineItemsConnection{
+                          nodes {
+                            ... on CrossReferencedEvent {
+                              willCloseTarget
+                              source {
+                                __typename 
+                                ... on PullRequest {
+                                  number
+                                  reviewDecision
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
                       title
                       id
                       number
@@ -167,7 +201,8 @@ class GraphQLClient(object):
           }
         }''', {'contentID': issue_id, 'columnId': column_id})
 
-    def move_issue_in_project(self, card_id, column_id):
+    def move_issue_in_project(self, card_id, column_id, after_card_id=''):
+        #todo: afterCardId
         self.execute_query('''
         mutation moveProjectCardAction($cardId: ID!, $columnId: ID!){
           moveProjectCard(input: {cardId: $cardId, columnId: $columnId}) {
@@ -216,8 +251,6 @@ class Project(object):
         return all_matching_issues - issues_in_project_keys
 
     def add_issues(self, client, issues):
-        import ipdb
-        ipdb.set_trace()
         missing_issue_ids = self.find_missing_issue_ids(issues)
         for issue_id in missing_issue_ids:
             column_name, column_id = self.get_matching_column(issue_id, issues.issue_id_to_data[issue_id])
@@ -227,7 +260,7 @@ class Project(object):
 
     def is_in_column(self, column_name, issue_id):
         for card in self.column_name_to_details[column_name]['cards'].values():
-            if issue_id != card['issue_id']:
+            if issue_id == card['issue_id']:
                 return True
 
         return False
@@ -253,16 +286,18 @@ class Project(object):
         column_id = self.column_name_to_details[column_name]['id']
         return column_name, column_id
 
-    def find_card_id(self, issue_id):
-        for column_value in self.column_name_to_details.values():
-            for card_id, card_value in column_value['cards'].items():
-                if card_value['issue_id'] == issue_id:
-                    return card_id
+    def get_card_id(self, column_name, issue_id):
+        for card_id, card_data in self.column_name_to_details[column_name]['cards'].items():
+            if issue_id == card_data['issue_id']:
+                return card_id
 
-    def move_issues(self, client, issues):
+    def re_order_issues(self, client, issues):
         for issue_id, issue_details in issues.issue_id_to_data.items():
             column_name, column_id = self.get_matching_column(issue_id, issue_details)
-            card_id = self.find_card_id(issue_id)
+            card_id = self.get_card_id(column_name, issue_id)
+
+            #TODO: add treatment of after_card_id
+            #todo: add treatment of pull request
 
             print("moving issue '{}' to '{}'".format(issue_details['title'], column_name))
             client.move_issue_in_project(card_id, column_id)
@@ -277,14 +312,14 @@ class Project(object):
                 else:
                     column_id = self.column_name_to_details['Queue']['id']
 
-                card_id = self.find_card_id(issue_id)
+                card_id = self.get_card_id(issue_id)
                 client.move_issue_in_project(card_id, column_id)
 
             if issue_details['assignees'] and any(
                     [issue_id == val['issue_id'] for val in self.column_name_to_details['Queue']['cards'].values()]):
                 column_id = self.column_name_to_details['In progress']['id']
 
-                card_id = self.find_card_id(issue_id)
+                card_id = self.get_card_id(issue_id)
                 client.move_issue_in_project(card_id, column_id)
 
 
@@ -301,7 +336,8 @@ class Issues(object):
                 'title': node_data['title'],
                 'number': node_data['number'],
                 'assignees': self.extract_issue_assignees(node_data['assignees']['edges']),
-                'labels': labels
+                'labels': labels,
+                'pull_request': self.extract_pull_request(node_data)  # TODO: update in the request
             }
 
         self.issue_id_to_data = issue_id_to_data
@@ -324,6 +360,27 @@ class Issues(object):
 
         return label_names
 
+    def get_pull_request_assignee(self, timeline_node):
+        assignees = []
+        for assignee in timeline_node['source']['assignees']['nodes']:
+            if assignee:
+                assignees.append(assignee['login'])
+
+        return assignees
+
+    def extract_pull_request(self, node):
+        timeline_nodes = node['timelineItems']['nodes']
+        for timeline_node in timeline_nodes:
+            if not timeline_node:
+                continue
+
+            if timeline_node['willCloseTarget'] and timeline_node['__typename'] == 'PullRequest':
+                return {
+                    'number': timeline_node['source']['number'],
+                    'review_completed': False if timeline_node['source']['reviewDecision'] != 'APPROVED' else True,
+                    'assignees': self.get_pull_request_assignee(timeline_node)
+                }
+
 
 def get_github_information(client):
     response = client.send_get_query_to_get_data()
@@ -344,8 +401,8 @@ def process_issue_moves():
     client = GraphQLClient()
     project, issues = get_github_information(client)
 
-    project.add_issues(client, issues)
-    project.move_issues(client, issues)
+    # project.add_issues(client, issues)
+    # project.re_order_issues(client, issues)
 
 
 if __name__ == "__main__":
