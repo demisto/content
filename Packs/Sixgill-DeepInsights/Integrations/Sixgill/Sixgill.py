@@ -111,7 +111,8 @@ def sixgill_get_indicators_command():
     max_indicators = get_limit(demisto.args().get('maxIndicators', MAX_INDICATORS), MAX_INDICATORS)
 
     sixgill_darkfeed_client = SixgillFeedClient(demisto.params()['client_id'], demisto.params()['client_secret'],
-                                                CHANNEL_CODE, FeedStream.DARKFEED, demisto, max_indicators, SESSION)
+                                                CHANNEL_CODE, FeedStream.DARKFEED, demisto, max_indicators, SESSION,
+                                                VERIFY)
 
     bundle = sixgill_darkfeed_client.get_bundle()
     sixgill_darkfeed_client.commit_indicators()

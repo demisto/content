@@ -192,7 +192,7 @@ def main():
                                demisto.params()['client_secret'],
                                CHANNEL_CODE,
                                FeedStream.DARKFEED,
-                               demisto, max_indicators, SESSION)
+                               demisto, max_indicators, SESSION, VERIFY)
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
