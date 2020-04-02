@@ -1,6 +1,6 @@
 ## [Unreleased]
-- Added default value to the timeline **Category** field when it is not provided in an entry's timeline data.
-- Added support for successful empty responses (status code 204) in the base client
+  - Added a default value to the indicator timeline field **Category** when a value is not provided in an entry's timeline data.
+  - Added support for successful empty responses (status code 204) in the base client.
 
 
 ## [20.3.3] - 2020-03-18
