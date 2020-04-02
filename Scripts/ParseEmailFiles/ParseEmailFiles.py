@@ -3536,8 +3536,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
 
                 else:
                     # .msg and other files (png, jpeg)
-                    if part.is_multipart() and part.get_content_type() == 'message/delivery-status' \
-                            and max_depth - 1 > 0:
+                    if part.is_multipart() and max_depth - 1 > 0:
                         # email is DSN
                         msg = part.get_payload(0).get_payload()  # human-readable section
                         msg_info = base64.b64decode(msg).decode('utf-8')
