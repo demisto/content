@@ -1701,22 +1701,29 @@ def return_outputs(readable_output, outputs=None, raw_response=None, timeline=No
 
     :type raw_response: ``dict`` | ``list``
     :param raw_response: must be dictionary, if not provided then will be equal to outputs. usually must be the original
-    raw response from the 3rd party service (originally Contents)
+        raw response from the 3rd party service (originally Contents)
 
     :type timeline: ``dict`` | ``list``
     :param timeline: expects a list, if a dict is passed it will be put into a list. used by server to populate an
-    indicator's timeline
+        indicator's timeline. if the 'Category' field is not present in the timeline dict(s), it will automatically
+        be be added to the dict(s) with its value set to 'Integration Update'.
 
     :return: None
     :rtype: ``None``
     """
+    timeline_list = [timeline] if isinstance(timeline, dict) else timeline
+    if timeline_list:
+        for tl_obj in timeline_list:
+            if 'Category' not in tl_obj.keys():
+                tl_obj['Category'] = 'Integration Update'
+
     return_entry = {
         "Type": entryTypes["note"],
         "HumanReadable": readable_output,
         "ContentsFormat": formats["json"],
         "Contents": raw_response,
         "EntryContext": outputs,
-        "IndicatorTimeline": [timeline] if isinstance(timeline, dict) else timeline
+        "IndicatorTimeline": timeline_list
     }
     # Return 'readable_output' only if needed
     if readable_output and not outputs and not raw_response:
