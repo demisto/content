@@ -6,9 +6,9 @@ jobs:
     resource_class: medium+
     parallelism: 2
     environment:
-      CONTENT_VERSION: "20.3.3"
+      CONTENT_VERSION: "20.3.4"
       SERVER_VERSION: "5.0.1"
-      GIT_SHA1: "ff7008afef82c5c88470d076f6c6eb673aa0ce51" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "4696087457090e6ac597df96870016bdc2e371a0" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - setup_remote_docker
@@ -88,7 +88,7 @@ jobs:
             python -m pytest ./Tests/scripts/infrastructure_tests/validate_files_test.py -v
             python3 -m pytest ./Tests/scripts/infrastructure_tests/update_id_set_test.py -v
             python3 -m pytest ./Tests/scripts/infrastructure_tests/store_packs_test.py -v
-            python -m pytest ./Tests/scripts/test_configure_tests.py -v
+            python -m pytest ./Tests/scripts/infrastructure_tests/test_configure_tests.py -v
       - run:
           name: Validate Files and Yaml
           when: always
@@ -306,9 +306,9 @@ jobs:
             PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
             GCS_PATH=$(mktemp)
             echo $GCS_MARKET_KEY > $GCS_PATH
-            python3 ./Tests/store_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -s $GCS_PATH -b 'marketplace-dist' -n $CIRCLE_BUILD_NUM -p 'All' -o
+            python3 ./Tests/store_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -s $GCS_PATH -b 'marketplace-dist' -n $CIRCLE_BUILD_NUM -p 'All' -o -k $PACK_SIGNING_KEY
             rm $GCS_PATH
-          when: always
+          when: on_success
       - store_artifacts:
           path: artifacts
           destination: artifacts

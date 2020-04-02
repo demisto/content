@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.3.4] - 2020-03-30
 - Fixed an issue with unescaped 'https' URLs.
 - Fixed an issue with the ATP link regex.
 

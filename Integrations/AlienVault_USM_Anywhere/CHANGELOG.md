@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed an issue where fetching incidents created duplicate incidents.
 
 ## [19.9.1] - 2019-09-18
   - Improved implemention of the fetch incidents function.
