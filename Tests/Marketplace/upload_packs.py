@@ -10,16 +10,9 @@ import google.auth
 from google.cloud import storage
 from datetime import datetime
 from zipfile import ZipFile
-from Tests.Marketplace.marketplace_services import Pack, PackStatus
+from Tests.Marketplace.marketplace_services import Pack, PackStatus, GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, \
+    PACKS_FOLDER, IGNORED_PATHS
 from Tests.test_utils import run_command, print_error, print_warning, print_color, LOG_COLORS
-
-# global constants
-CONTENT_PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
-IGNORED_FILES = ['__init__.py', 'ApiModules']  # files to ignore inside Packs folder
-IGNORED_PATHS = [os.path.join(CONTENT_PACKS_FOLDER, p) for p in IGNORED_FILES]
-CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
-PACKS_FULL_PATH = os.path.join(CONTENT_ROOT_PATH, CONTENT_PACKS_FOLDER)  # full path to Packs folder in content repo
-INTEGRATIONS_FOLDER = "Integrations"  # integrations folder name inside pack
 
 
 def get_modified_packs(specific_packs=""):
@@ -42,7 +35,8 @@ def get_modified_packs(specific_packs=""):
             print(f"Number of selected packs is: {len(all_packs)}")
             return all_packs
         else:
-            print(f"Folder {CONTENT_PACKS_FOLDER} was not found at the following path: {PACKS_FULL_PATH}")
+            print((f"Folder {PACKS_FOLDER} was not found "
+                   f"at the following path: {PACKS_FULL_PATH}"))
             sys.exit(1)
 
     elif specific_packs:
@@ -110,11 +104,11 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
         Blob: google cloud storage object that represents index.zip blob.
 
     """
-    index_storage_path = os.path.join(STORAGE_BASE_PATH, f"{Pack.INDEX_NAME}.zip")
-    download_index_path = os.path.join(extract_destination_path, f"{Pack.INDEX_NAME}.zip")
+    index_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
+    download_index_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_NAME}.zip")
 
     index_blob = storage_bucket.blob(index_storage_path)
-    index_folder_path = os.path.join(extract_destination_path, Pack.INDEX_NAME)
+    index_folder_path = os.path.join(extract_destination_path, GCPConfig.INDEX_NAME)
 
     if not index_blob.exists():
         os.mkdir(index_folder_path)
@@ -129,15 +123,15 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
             index_zip.extractall(extract_destination_path)
 
         if not os.path.exists(index_folder_path):
-            print_error(f"Failed creating {Pack.INDEX_NAME} folder with extracted data.")
+            print_error(f"Failed creating {GCPConfig.INDEX_NAME} folder with extracted data.")
             sys.exit(1)
 
         os.remove(download_index_path)
-        print(f"Finished downloading and extracting {Pack.INDEX_NAME} file to {extract_destination_path}")
+        print(f"Finished downloading and extracting {GCPConfig.INDEX_NAME} file to {extract_destination_path}")
 
         return index_folder_path, index_blob
     else:
-        print_error(f"Failed to download {Pack.INDEX_NAME}.zip file from cloud storage.")
+        print_error(f"Failed to download {GCPConfig.INDEX_NAME}.zip file from cloud storage.")
         sys.exit(1)
 
 
@@ -179,7 +173,7 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
         build_number (str): circleCI build number, used as an index revision.
 
     """
-    with open(os.path.join(index_folder_path, f"{Pack.INDEX_NAME}.json"), "w+") as index_file:
+    with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json"), "w+") as index_file:
         index = {
             'description': 'Master index for Demisto Content Packages',
             'baseUrl': 'https://marketplace.demisto.ninja/content/packs',  # disable-secrets-detection
@@ -206,7 +200,7 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
 
     index_blob.upload_from_filename(index_zip_path)
     shutil.rmtree(index_folder_path)
-    print_color(f"Finished uploading {Pack.INDEX_NAME}.zip to storage.", LOG_COLORS.GREEN)
+    print_color(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.", LOG_COLORS.GREEN)
 
 
 def _build_summary_table(packs_input_list):

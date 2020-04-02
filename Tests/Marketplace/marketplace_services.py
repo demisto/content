@@ -12,6 +12,12 @@ from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
 from Tests.test_utils import print_error, print_warning, print_color, LOG_COLORS
 
+CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
+PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
+PACKS_FULL_PATH = os.path.join(CONTENT_ROOT_PATH, PACKS_FOLDER)  # full path to Packs folder in content repo
+IGNORED_FILES = ['__init__.py', 'ApiModules']  # files to ignore inside Packs folder
+IGNORED_PATHS = [os.path.join(PACKS_FOLDER, p) for p in IGNORED_FILES]
+
 # the format is defined in issue #19786, may change in the future
 DIR_NAME_TO_CONTENT_TYPE = {
     "Classifiers": "classifier",
@@ -29,27 +35,37 @@ DIR_NAME_TO_CONTENT_TYPE = {
 
 
 class GCPConfig(object):
+    """ Google cloud storage basic configurations
+
+    """
     STORAGE_BASE_PATH = "content/packs"  # base path for packs in gcs
     USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images
     GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
     BASE_PACK = "Base"  # base pack name
-
-
-class ContentRepoPaths(object):
-    CONTENT_PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
-    IGNORED_FILES = ['__init__.py', 'ApiModules']  # files to ignore inside Packs folder
-    IGNORED_PATHS = [os.path.join(CONTENT_PACKS_FOLDER, p) for p in IGNORED_FILES]
-    CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
-    PACKS_FULL_PATH = os.path.join(CONTENT_ROOT_PATH, CONTENT_PACKS_FOLDER)  # full path to Packs folder in content repo
+    INDEX_NAME = "index"  # main index folder name
 
 
 class PackFolders(enum.Enum):
-    # INTEGRATIONS_FOLDER = "Integrations"  # integrations folder name inside pack
-    pass
+    """ Pack known folders. Should be replaced by constants from demisto-sdk in later step.
+
+    """
+    SCRIPTS = "Scripts"
+    PLAYBOOKS = "Playbooks"
+    INTEGRATIONS = "Integrations"
+    TEST_PLAYBOOKS = 'TestPlaybooks'
+    REPORTS = "Reports"
+    DASHBOARDS = 'Dashboards'
+    WIDGETS = 'Widgets'
+    INCIDENT_FIELDS = 'IncidentFields'
+    INCIDENT_TYPES = 'IncidentTypes'
+    INDICATOR_FIELDS = 'IndicatorFields'
+    LAYOUTS = 'Layouts'
+    CLASSIFIERS = 'Classifiers'
+    MISC = 'Misc'
 
 
 class PackStatus(enum.Enum):
-    """Enum of pack upload status, is used in printing upload summary.
+    """ Enum of pack upload status, is used in printing upload summary.
 
     """
     SUCCESS = "Successfully uploaded pack data to gcs"
@@ -67,7 +83,7 @@ class PackStatus(enum.Enum):
 
 
 class Pack(object):
-    """Class that manipulates and manages the upload of pack's artifact and metadata to cloud storage.
+    """ Class that manipulates and manages the upload of pack's artifact and metadata to cloud storage.
 
     Args:
         pack_name (str): Pack root folder name.
@@ -81,7 +97,6 @@ class Pack(object):
         README (str): pack's readme file name.
         METADATA (str): pack's metadata file name, the one that will be deployed to cloud storage.
         USER_METADATA (str); user metadata file name, the one that located in content repo.
-        INDEX_NAME (str): pack's index name, may be changed in the future.
         EXCLUDE_DIRECTORIES (list): list of directories to excluded before uploading pack zip to storage.
         AUTHOR_IMAGE_NAME (str): author image file name.
 
@@ -94,8 +109,7 @@ class Pack(object):
     USER_METADATA = "pack_metadata.json"
     METADATA = "metadata.json"
     AUTHOR_IMAGE_NAME = "Author_image.png"
-    INDEX_NAME = "index"
-    EXCLUDE_DIRECTORIES = ["TestPlaybooks"]
+    EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS.value]
 
     def __init__(self, pack_name, pack_path):
         self._pack_name = pack_name
@@ -106,48 +120,48 @@ class Pack(object):
 
     @property
     def name(self):
-        """str: pack root folder name.
+        """ str: pack root folder name.
         """
         return self._pack_name
 
     @property
     def path(self):
-        """str: pack folder full path.
+        """ str: pack folder full path.
         """
         return self._pack_path
 
     @property
     def latest_version(self):
-        """str: pack latest version from sorted keys of changelog.json file.
+        """ str: pack latest version from sorted keys of changelog.json file.
         """
         return self._get_latest_version()
 
     @property
     def status(self):
-        """str: current status of the packs.
+        """ str: current status of the packs.
         """
         return self._status
 
     @status.setter
     def status(self, status_value):
-        """setter of pack current status.
+        """ setter of pack current status.
         """
         self._status = status_value
 
     @property
     def relative_storage_path(self):
-        """str: relative gcs path of uploaded pack.
+        """ str: relative gcs path of uploaded pack.
         """
         return self._relative_storage_path
 
     @relative_storage_path.setter
     def relative_storage_path(self, path_value):
-        """setter of relative gcs path of uploaded pack.
+        """ setter of relative gcs path of uploaded pack.
         """
         self._relative_storage_path = path_value
 
     def _get_latest_version(self):
-        """Return latest semantic version of the pack.
+        """ Return latest semantic version of the pack.
 
         In case that changelog.json file was not found, default value of 1.0.0 will be returned.
         Otherwise, keys of semantic pack versions will be collected and sorted in descending and return latest version.
@@ -209,7 +223,7 @@ class Pack(object):
         """
         parsed_result = {}
         dependencies_data = {k: v for (k, v) in all_level_pack_dependencies_data.items()
-                             if k in first_level_dependencies.keys() or k == BASE_PACK}
+                             if k in first_level_dependencies.keys() or k == GCPConfig.BASE_PACK}
 
         for dependency_id, dependency_data in dependencies_data.items():
             parsed_result[dependency_id] = {
@@ -224,7 +238,7 @@ class Pack(object):
 
     def collect_content_items(self):
         # todo rewrite this function, add docstring and unit tests
-        """Collects specific pack content items.
+        """ Collects specific pack content items.
 
         """
         YML_SUPPORTED_DIRS = [
@@ -285,7 +299,7 @@ class Pack(object):
     @staticmethod
     def _parse_pack_metadata(user_metadata, pack_content_items, pack_id, integration_images, author_image,
                              dependencies_data):
-        """Parses pack metadata according to issue #19786 and #20091. Part of field may change over the time.
+        """ Parses pack metadata according to issue #19786 and #20091. Part of field may change over the time.
 
         Args:
             user_metadata (dict): user metadata that was created in pack initialization.
@@ -365,8 +379,8 @@ class Pack(object):
         dependencies_ids = {d for d in first_level_dependencies.keys()}
         dependencies_ids.update(all_level_displayed_dependencies)
 
-        if self._pack_name != BASE_PACK:  # check that current pack isn't Base Pack in order to prevent loop
-            dependencies_ids.add(BASE_PACK)  # Base pack is always added as pack dependency
+        if self._pack_name != GCPConfig.BASE_PACK:  # check that current pack isn't Base Pack in order to prevent loop
+            dependencies_ids.add(GCPConfig.BASE_PACK)  # Base pack is always added as pack dependency
 
         for dependency_pack_id in dependencies_ids:
             dependency_metadata_path = os.path.join(index_folder_path, dependency_pack_id, Pack.METADATA)
@@ -381,7 +395,7 @@ class Pack(object):
         return dependencies_data_result
 
     def remove_unwanted_files(self):
-        """Iterates over pack folder and removes hidden files and unwanted folders.
+        """ Iterates over pack folder and removes hidden files and unwanted folders.
 
         Returns:
             bool: whether the operation succeeded.
@@ -393,7 +407,8 @@ class Pack(object):
                 for pack_file in files:
                     full_file_path = os.path.join(root, pack_file)
                     # removing unwanted files
-                    if pack_file.startswith('.') or pack_file in [Pack.AUTHOR_IMAGE_NAME, Pack.USER_METADATA]:
+                    if pack_file.startswith('.') or pack_file in [Pack.AUTHOR_IMAGE_NAME,  # disable-secrets-detection
+                                                                  Pack.USER_METADATA]:  # disable-secrets-detection
                         os.remove(full_file_path)
                         print(f"Deleted pack {pack_file} file for {self._pack_name} pack")
                         continue
@@ -416,7 +431,7 @@ class Pack(object):
             return task_status
 
     def sign_pack(self, signature_string=None):
-        """Signs pack folder and creates signature file.
+        """ Signs pack folder and creates signature file.
 
         Args:
             signature_string (str): Base64 encoded string used to sign the pack.
@@ -448,7 +463,7 @@ class Pack(object):
             return task_status
 
     def zip_pack(self):
-        """Zips pack folder.
+        """ Zips pack folder.
 
         Returns:
             bool: whether the operation succeeded.
@@ -492,7 +507,7 @@ class Pack(object):
         task_status = True
 
         try:
-            version_pack_path = os.path.join(STORAGE_BASE_PATH, self._pack_name, latest_version)
+            version_pack_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, latest_version)
             existing_files = [f.name for f in storage_bucket.list_blobs(prefix=version_pack_path)]
 
             if existing_files and not override_pack:
@@ -516,7 +531,7 @@ class Pack(object):
             return task_status, True
 
     def format_metadata(self, pack_content_items, integration_images, author_image, index_folder_path):
-        """Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
+        """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
         Args:
@@ -568,7 +583,7 @@ class Pack(object):
             return task_status
 
     def parse_release_notes(self):
-        """Need to implement the changelog.md parsing and changelog.json creation after design is finalized.
+        """ Need to implement the changelog.md parsing and changelog.json creation after design is finalized.
 
         """
         changelog_md_path = os.path.join(self._pack_path, Pack.CHANGELOG_MD)
@@ -584,7 +599,7 @@ class Pack(object):
         return {}
 
     def prepare_for_index_upload(self):
-        """Removes and leaves only necessary files in pack folder.
+        """ Removes and leaves only necessary files in pack folder.
 
         Returns:
             bool: whether the operation succeeded.
@@ -611,7 +626,7 @@ class Pack(object):
             return task_status
 
     def _search_for_images(self, target_folder, folder_depth=2):
-        """Searches for png files in targeted folder.
+        """ Searches for png files in targeted folder.
 
         Args:
             target_folder (str): full path to directory to search.
@@ -645,7 +660,7 @@ class Pack(object):
         return local_repo_images
 
     def upload_integration_images(self, storage_bucket):
-        """Uploads pack integrations images to gcs.
+        """ Uploads pack integrations images to gcs.
 
         The returned result of integration section are defined in issue #19786.
 
@@ -661,12 +676,12 @@ class Pack(object):
         uploaded_integration_images = []
 
         try:
-            pack_local_images = self._search_for_images(target_folder=INTEGRATIONS_FOLDER)
+            pack_local_images = self._search_for_images(target_folder=PackFolders.INTEGRATIONS.value)
 
             if not pack_local_images:
                 return uploaded_integration_images  # returned empty list if not images found
 
-            pack_storage_root_path = os.path.join(STORAGE_BASE_PATH, self._pack_name)
+            pack_storage_root_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name)
 
             for image_data in pack_local_images:
                 image_local_path = image_data.get('repo_image_path')
@@ -681,7 +696,8 @@ class Pack(object):
                     pack_image_blob.upload_from_file(image_file)
                     uploaded_integration_images.append({
                         'name': image_data.get('display_name', ''),
-                        'imagePath': pack_image_blob.name if USE_GCS_RELATIVE_PATH else pack_image_blob.public_url
+                        'imagePath': pack_image_blob.name if GCPConfig.USE_GCS_RELATIVE_PATH
+                        else pack_image_blob.public_url
                     })
 
             print(f"Uploaded {len(pack_local_images)} images for {self._pack_name} pack.")
@@ -692,7 +708,7 @@ class Pack(object):
             return task_status, uploaded_integration_images
 
     def upload_author_image(self, storage_bucket):
-        """Uploads pack author image to gcs.
+        """ Uploads pack author image to gcs.
 
         Searches for `Author_image.png` and uploads author image to gcs. In case no such image was found,
         default Base pack image path is used and it's gcp path is returned.
@@ -709,29 +725,32 @@ class Pack(object):
         author_image_storage_path = ""
 
         try:
-            repo_author_image_path = os.path.join(self._pack_repo_path, Pack.AUTHOR_IMAGE_NAME)
+            repo_author_image_path = os.path.join(self._pack_repo_path,  # disable-secrets-detection
+                                                  Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
 
             if os.path.exists(repo_author_image_path):
-                image_to_upload_storage_path = os.path.join(STORAGE_BASE_PATH, self._pack_name, Pack.AUTHOR_IMAGE_NAME)
+                image_to_upload_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name,
+                                                            Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
                 pack_author_image_blob = storage_bucket.blob(image_to_upload_storage_path)
 
                 with open(repo_author_image_path, "rb") as author_image_file:
                     pack_author_image_blob.upload_from_file(author_image_file)
 
-                author_image_storage_path = pack_author_image_blob.name if USE_GCS_RELATIVE_PATH \
+                author_image_storage_path = pack_author_image_blob.name if GCPConfig.USE_GCS_RELATIVE_PATH \
                     else pack_author_image_blob.public_url
 
                 print_color(f"Uploaded successfully {self._pack_name} pack author image", LOG_COLORS.GREEN)
             else:  # use default Base pack image
-                author_image_storage_path = os.path.join(STORAGE_BASE_PATH, BASE_PACK, Pack.AUTHOR_IMAGE_NAME)
+                author_image_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, GCPConfig.BASE_PACK,
+                                                         Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
 
-                if not USE_GCS_RELATIVE_PATH:
+                if not GCPConfig.USE_GCS_RELATIVE_PATH:
                     # disable-secrets-detection-start
-                    author_image_storage_path = os.path.join(GCS_PUBLIC_URL, storage_bucket.name,
+                    author_image_storage_path = os.path.join(GCPConfig.GCS_PUBLIC_URL, storage_bucket.name,
                                                              author_image_storage_path)
                     # disable-secrets-detection-end
                 print_color((f"Skipping uploading of {self._pack_name} pack author image "
-                             f"and use default {BASE_PACK} pack image"), LOG_COLORS.GREEN)
+                             f"and use default {GCPConfig.BASE_PACK} pack image"), LOG_COLORS.GREEN)
 
         except Exception as e:
             print_error(f"Failed uploading {self._pack_name} pack author image. Additional info:\n {e}")
@@ -741,7 +760,7 @@ class Pack(object):
             return task_status, author_image_storage_path
 
     def cleanup(self):
-        """Finalization action, removes extracted pack folder.
+        """ Finalization action, removes extracted pack folder.
 
         """
         if os.path.exists(self._pack_path):
