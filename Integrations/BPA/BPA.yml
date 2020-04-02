@@ -25,7 +25,7 @@ configuration:
   type: 8
 description: Palo Alto Networks Best Practice Assessment (BPA) analyzes NGFW and Panorama
   configurations and compares them to the best practices.
-display: BPA
+display: Palo Alto Networks BPA
 name: BPA
 script:
   commands:

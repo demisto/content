@@ -191,7 +191,7 @@
           }]
         }
       },
-      "trafficlightprotocoltlp": {
+      "trafficlightprotocol": {
         "simple": "",
         "complex": {
           "root": "Account",

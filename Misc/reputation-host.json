@@ -265,7 +265,7 @@
                 }]
             }
         },
-        "trafficlightprotocoltlp": {
+        "trafficlightprotocol": {
             "simple": "",
             "complex": {
                 "root": "Host",
