@@ -1,0 +1,21 @@
+{
+    "name": "## FILL OUT MANUALLY ##",
+    "description": "## FILL OUT MANUALLY ##",
+    "support": "demisto",
+    "serverMinVersion": "## FILL OUT MANUALLY #",
+    "currentVersion": "1.0.0",
+    "author": "demisto",
+    "url": "https://www.demisto.com",
+    "email": "",
+    "categories": [],
+    "tags": [],
+    "created": "2020-04-01T22:23:20Z",
+    "updated": "2020-04-01T22:23:20Z",
+    "beta": false,
+    "deprecated": false,
+    "certification": "certified",
+    "useCases": [],
+    "keywords": [],
+    "price": "0",
+    "dependencies": {}
+}
