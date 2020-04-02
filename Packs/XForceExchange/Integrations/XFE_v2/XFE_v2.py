@@ -379,13 +379,18 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
 
         file_key = f'XFE.{outputPaths["file"]}'
 
-        hash_info = {**report['origins'], 'Family': report['family'], 'FamilyMembers': report['familyMembers']}
+        report_data = report['origins'].get('external', {})
+        family_value = report_data.get('family')
+
+        hash_info = {**report['origins'], 'Family': family_value,
+                     'FamilyMembers': report_data.get('familyMembers')}
         context[file_key] = hash_info
 
         download_servers = ','.join(server['ip'] for server in hash_info.get('downloadServers', {}).get('rows', []))
         cnc_servers = ','.join(server['domain'] for server in hash_info.get('CnCServers', {}).get('rows', []))
         table = {'CnC Servers': cnc_servers, 'Download Servers': download_servers,
-                 'Source': hash_info.get('external', {}).get('source'), 'Created Date': report['created'],
+                 'Source': hash_info.get('external', {}).get('source'),
+                 'Created Date': report_data.get('firstSeen'),
                  'Type': hash_info.get('external', {}).get('malwareType')}
         markdown += tableToMarkdown(f'X-Force {hash_type} Reputation for {args.get("file")}\n'
                                     f'{XFORCE_URL}/malware/{args.get("file")}', table, removeNull=True)
