@@ -103,7 +103,7 @@
                 }]
             }
         },
-        "trafficlightprotocoltlp": {
+        "trafficlightprotocol": {
             "simple": "",
             "complex": {
                 "root": "RegistryKey",
