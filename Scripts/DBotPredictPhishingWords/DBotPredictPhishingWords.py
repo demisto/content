@@ -135,7 +135,7 @@ def main():
                                     int(demisto.args()['topWordsLimit']),
                                     demisto.args()['returnError'] == 'true',
                                     demisto.args().get('originalIncidentId', None),
-                                    demisto.args()['setIncidentFields'] == 'true'
+                                    demisto.args().get('setIncidentFields', 'false') == 'true'
                                     )
 
     return result
