@@ -1169,7 +1169,7 @@ def query_table_command(client: Client, args: dict):
             # ID is added by default
             fields.append('sys_id')
         # Filter the records according to the given fields
-        records = [dict([kv_pair for kv_pair in iter(r.items()) if kv_pair[0] in fields]) for r in res['result']]
+        records = [dict([kv_pair for kv_pair in iter(r.items()) if kv_pair[0] in fields]) for r in result]
         for r in records:
             r['ID'] = r.pop('sys_id')
             for k, v in r.items():
@@ -1646,7 +1646,7 @@ def main():
         elif command == 'servicenow-delete-record':
             demisto.results(delete_record_command(client, args))
         elif command == 'servicenow-query-table':
-            demisto.results(query_table_command())
+            demisto.results(query_table_command(client, args))
 
         elif command == 'servicenow-query-computers':
             demisto.results(query_computers_command())
