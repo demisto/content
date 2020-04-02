@@ -654,7 +654,7 @@ def update_ticket_command(client: Client, args: dict):
     Returns:
         Demisto Outputs.
     """
-    custom_fields = split_fields(args.get('custom_fields', ''))
+    custom_fields = split_fields(str(args.get('custom_fields', '')))
     template_name = str(args.get('template', ''))
     ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
     ticket_id = str(args.get('id', ''))
@@ -793,12 +793,12 @@ def get_record_command(client: Client, args: dict):
     }
 
     if fields:
-        fields = argToList(fields)
-        if 'sys_id' not in fields:
+        list_fields = argToList(fields)
+        if 'sys_id' not in list_fields:
             # ID is added by default
-            fields.append('sys_id')
+            list_fields.append('sys_id')
         # filter the record for the required fields
-        record = dict([kv_pair for kv_pair in list(record.items()) if kv_pair[0] in fields])
+        record = dict([kv_pair for kv_pair in list(record.items()) if kv_pair[0] in list_fields])
         for k, v in record.items():
             if isinstance(v, dict):
                 # For objects that refer to a record in the database, take their value(system ID).
@@ -831,13 +831,13 @@ def create_record_command(client: Client, args: dict):
         Demisto Outputs.
     """
     table_name = str(args.get('table_name', ''))
-    fields = str(args.get('fields', ''))
-    custom_fields = str(args.get('custom_fields', ''))
+    fields_str = str(args.get('fields', ''))
+    custom_fields_str = str(args.get('custom_fields', ''))
 
-    if fields:
-        fields = split_fields(fields)
-    if custom_fields:
-        custom_fields = split_fields(custom_fields)
+    if fields_str:
+        fields = split_fields(fields_str)
+    if custom_fields_str:
+        custom_fields = split_fields(custom_fields_str)
 
     result = client.create(table_name, fields, custom_fields)
 
@@ -982,7 +982,7 @@ def add_comment_command(client: Client, args: dict):
     ticket_id = str(args.get('id', ''))
     key = 'comments' if args.get('post-as-comment', 'false').lower() == 'true' else 'work_notes'
     text = str(args.get('comment', ''))
-    ticket_type = client.get_table_name(args.get('ticket_type'))
+    ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
 
     result = client.add_comment(ticket_id, ticket_type, key, text)
 
@@ -1017,7 +1017,7 @@ def upload_file_command(client: Client, args: dict):
     Returns:
         Demisto Outputs.
     """
-    ticket_type = client.get_table_name(args.get('ticket_type'))
+    ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
     ticket_id = str(args.get('id', ''))
     file_id = str(args.get('file_id', ''))
 
@@ -1032,7 +1032,7 @@ def upload_file_command(client: Client, args: dict):
 
     if not result or 'result' not in result or not result['result']:
         raise Exception('Unable to upload file.')
-    result = result.get('result')
+    result: dict = result.get('result', {})
 
     hr = {
         'Filename': result.get('file_name'),
@@ -1516,7 +1516,7 @@ def fetch_incidents(client: Client):
 
     if query:
         query_params['sysparm_query'] = query
-    query_params['sysparm_limit'] = client.sys_param_limit
+    query_params['sysparm_limit'] = str(client.sys_param_limit)
     res = client.send_request(f'table/{client.ticket_type}', 'GET', params=query_params)
 
     count = 0
