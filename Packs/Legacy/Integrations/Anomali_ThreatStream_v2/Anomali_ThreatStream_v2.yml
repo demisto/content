@@ -1579,7 +1579,7 @@ script:
     - contextPath: ThreatStream.URL.Severity
       description: The indicator severity ("very-high", "high", "medium", or "low").
       type: String
-  dockerimage: demisto/python3:3.7.3.221
+  dockerimage: devdemisto/emoji:1.0.0.7127
   feed: false
   isfetch: false
   longRunning: false

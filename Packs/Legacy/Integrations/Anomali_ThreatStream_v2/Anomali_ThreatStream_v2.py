@@ -4,9 +4,10 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 
+import json
+import emoji
 import requests
 from requests.exceptions import MissingSchema, ConnectionError
-import json
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -761,6 +762,16 @@ def get_submission_status(report_id, output=True):
     return status, verdict
 
 
+def file_name_to_valid_string(file_name):
+    try:
+        if emoji.emoji_count(file_name):  # type: ignore
+            return emoji.demojize(file_name)  # type: ignore
+    except Exception:
+        pass
+
+    return file_name
+
+
 def submit_report(submission_type, submission_value, submission_classification="private", report_platform="WINDOWS7",
                   premium_sandbox="false", detail=None):
     """
@@ -785,7 +796,8 @@ def submit_report(submission_type, submission_value, submission_classification="
             return_error(F"Entry {submission_value} does not contain a file.")
 
         uploaded_file = open(file_info['path'], 'rb')
-        files = {'report_radio-file': (file_info['name'], uploaded_file)}
+        file_name = file_name_to_valid_string(file_info.get('name'))
+        files = {'report_radio-file': (file_name, uploaded_file)}
     else:
         data['report_radio-url'] = submission_value
 

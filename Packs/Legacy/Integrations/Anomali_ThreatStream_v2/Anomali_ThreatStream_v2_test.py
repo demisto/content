@@ -1,5 +1,7 @@
 import demistomock as demisto
-from Anomali_ThreatStream_v2 import main
+from Anomali_ThreatStream_v2 import main, file_name_to_valid_string
+
+import emoji
 
 
 def http_request_mock(req_type, suffix, params, data, files):
@@ -63,3 +65,10 @@ def test_ioc_approval_500_error(mocker):
 
     assert results[0]['Contents']['data'] == expected_output_500['Contents']['data']
     assert 'datatext' in results[0]['Contents']['import_session_id']
+
+
+def test_emoji_handling_in_file_name():
+    file_names_package = ['Fwd for you 😍', 'Hi all', '', '🐝🤣🇮🇱👨🏽‍🚀🧟‍♂🧞‍♂🧚🏼‍♀', '🧔🤸🏻‍♀🥩🧚😷🍙👻']
+
+    for file_name in file_names_package:
+        assert file_name_to_valid_string(file_name) == emoji.demojize(file_name)
