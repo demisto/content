@@ -1,17 +1,12 @@
 ## Overview
----
-
 Allow integration with Zabbix api
-This integration was integrated and tested with version xx of Zabbix
-## Zabbix Playbook
----
+This integration was integrated and tested with version 4.0 of Zabbix
 
-## Use Cases
----
+## To set up Zabbix to work with Cortex XSOAR:
+* Connectivity to a server with any Zabbix version
+* Credentials
 
-## Configure Zabbix on Demisto
----
-
+## To set up the integration on Cortex XSOAR:
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for Zabbix.
 3. Click __Add instance__ to create and configure a new integration instance.
@@ -19,11 +14,16 @@ This integration was integrated and tested with version xx of Zabbix
     * __Url__
     * __Credentials__
 4. Click __Test__ to validate the URLs, token, and connection.
+
 ## Fetched Incidents Data
----
+Do not fetch incidents data
+
+## Use Cases
+* Retrieve a liste of devices
+* Get active triggers
+* Get last events
 
 ## Commands
----
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. execute_command
@@ -83,13 +83,15 @@ There is no context output for this command.
 ok
 
 ## Additional Information
----
+Using execute_command you can do anything available on Zabbix API.
+
+You can use the oficcial API documentation on https://www.zabbix.com/documentation/current/manual/api
 
 ## Known Limitations
----
+No current known limitations
 
 ## Troubleshooting
----
+Verify if the user has the necessary permissions to execute the operation
 
 
 ## Possible Errors (DO NOT PUBLISH ON ZENDESK):
