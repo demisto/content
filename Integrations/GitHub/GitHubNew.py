@@ -77,10 +77,17 @@ class GraphQLClient(object):
                               source {
                                 __typename 
                                 ... on PullRequest {
+                                  state
                                   assignees(first:10){
                                     nodes{
                                       login
                                     }
+                                  }
+                                  reviewRequests(first:1){
+                                    totalCount
+                                  }
+                                  reviews(first:1){
+                                    totalCount
                                   }
                                   number
                                   reviewDecision
@@ -162,10 +169,17 @@ class GraphQLClient(object):
                               source {
                                 __typename 
                                 ... on PullRequest {
+                                  state
                                   assignees(first:10){
                                     nodes{
                                       login
                                     }
+                                  }
+                                  reviewRequests(first:1){
+                                    totalCount
+                                  }
+                                  reviews(first:1){
+                                    totalCount
                                   }
                                   number
                                   reviewDecision
@@ -290,7 +304,7 @@ class Project(object):
                 column_name = 'Queue'
 
         elif issue_info['assignees']:
-            if issue_info['pull_request']:
+            if issue_info['pull_request'] and issue_info['pull_request']['review_requests']:
                 pull_request = issue_info['pull_request']
                 if pull_request['review_completed'] and 'kirbles19' in pull_request['assignees']:
                     if not self.is_in_column('Waiting for Docs', issue_id):
@@ -324,11 +338,6 @@ class Project(object):
             if not column_id:
                 print(f"No need to move card {issue_id}")
                 continue
-            #todo: treat closed PRs
-            #todo: add review requests to make sure it can be moved to review
-            import ipdb
-            ipdb.set_trace()
-
             card_id = self.get_card_id(issue_id)
             #TODO: add treatment of after_card_id
             print("moving issue '{}' to '{}'".format(issue_details['title'], column_name))
@@ -380,17 +389,28 @@ class Issues(object):
 
         return assignees
 
+    @staticmethod
+    def is_review_ready(pull_request_source):
+        if pull_request_source['reviewRequests']['totalCount'] or pull_request_source['reviews']['totalCount']:
+            return True
+
+        else:
+            return False
+
     def extract_pull_request(self, node):
         timeline_nodes = node['timelineItems']['nodes']
         for timeline_node in timeline_nodes:
             if not timeline_node:
                 continue
 
-            if timeline_node['willCloseTarget'] and timeline_node['source']['__typename'] == 'PullRequest':
+            if timeline_node['willCloseTarget'] and timeline_node['source']['__typename'] == 'PullRequest' \
+                    and timeline_node['source']['state'] == 'OPEN':
+
                 return {
                     'number': timeline_node['source']['number'],
                     'review_completed': False if timeline_node['source']['reviewDecision'] != 'APPROVED' else True,
-                    'assignees': self.get_pull_request_assignee(timeline_node)
+                    'assignees': self.get_pull_request_assignee(timeline_node),
+                    'review_requests': Issues.is_review_ready(timeline_node['source'])
                 }
 
 
@@ -412,7 +432,7 @@ def get_github_information(client):
 def process_issue_moves():
     client = GraphQLClient()
     project, issues = get_github_information(client)
-    # project.add_issues(client, issues)
+    project.add_issues(client, issues)
     project.re_order_issues(client, issues)
 
 
