@@ -14,7 +14,7 @@
   "reputationScriptName": "",
   "reputationCommand": "",
   "enhancementScriptNames": [],
-  "expiration": 43200,
+  "expiration": 0,
   "system": false,
   "locked": false,
   "disabled": false,
