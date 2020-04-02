@@ -1,11 +1,13 @@
+# type: ignore
+
 import logging
 import warnings
 from typing import Union, List, Any, Tuple, Dict
 from urllib.parse import urlparse
 
 import requests
-from pymisp import ExpandedPyMISP, PyMISPError, MISPObject  # type: ignore
-from pymisp.tools import EMailObject, GenericObjectGenerator  # type: ignore
+from pymisp import ExpandedPyMISP, PyMISPError, MISPObject
+from pymisp.tools import EMailObject, GenericObjectGenerator
 
 from CommonServerPython import *
 
