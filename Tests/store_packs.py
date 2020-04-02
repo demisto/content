@@ -362,7 +362,9 @@ class Pack(object):
         dependencies_data_result = {}
         dependencies_ids = {d for d in first_level_dependencies.keys()}
         dependencies_ids.update(all_level_displayed_dependencies)
-        dependencies_ids.add(BASE_PACK)  # Base pack is always added as pack dependency
+
+        if self._pack_name != BASE_PACK:  # check that current pack isn't Base Pack in order to prevent loop
+            dependencies_ids.add(BASE_PACK)  # Base pack is always added as pack dependency
 
         for dependency_pack_id in dependencies_ids:
             dependency_metadata_path = os.path.join(index_folder_path, dependency_pack_id, Pack.METADATA)
@@ -543,8 +545,8 @@ class Pack(object):
                 user_metadata = json.load(user_metadata_file)  # loading user metadata
 
             dependencies_data = self._load_pack_dependencies(index_folder_path,
-                                                             user_metadata.get('dependencies'),
-                                                             user_metadata.get('displayedImages'))
+                                                             user_metadata.get('dependencies', {}),
+                                                             user_metadata.get('displayedImages', []))
             formatted_metadata = Pack._parse_pack_metadata(user_metadata=user_metadata,
                                                            pack_content_items=pack_content_items,
                                                            pack_id=self._pack_name,
@@ -666,6 +668,9 @@ class Pack(object):
 
             for image_data in pack_local_images:
                 image_local_path = image_data.get('repo_image_path')
+                if not image_local_path:
+                    raise Exception(f"{self._pack_name} pack integration image was not found")
+
                 image_name = os.path.basename(image_local_path)
                 image_storage_path = os.path.join(pack_storage_root_path, image_name)
                 pack_image_blob = storage_bucket.blob(image_storage_path)
@@ -680,7 +685,7 @@ class Pack(object):
             print(f"Uploaded {len(pack_local_images)} images for {self._pack_name} pack.")
         except Exception as e:
             task_status = False
-            print_error(f"Failed to upload {self._pack_name} pack integration images. Additional info:\n {e}")
+            print_error(f"Failed to upload {self._pack_name} pack integration images. Additional info:\n{e}")
         finally:
             return task_status, uploaded_integration_images
 
@@ -945,13 +950,13 @@ def _build_summary_table(packs_input_list):
         PrettyTable: table with upload result of packs.
 
     """
-    table_fields = ["Index", "Pack Name", "Public uploaded URL", "Version", "Status"]
+    table_fields = ["Index", "Pack Name", "Version", "Status"]
     table = prettytable.PrettyTable()
     table.field_names = table_fields
 
     for index, pack in enumerate(packs_input_list, start=1):
         pack_status_message = PackStatus[pack.status].value
-        row = [index, pack.name, pack.relative_storage_path, pack.latest_version, pack_status_message]
+        row = [index, pack.name, pack.latest_version, pack_status_message]
         table.add_row(row)
 
     return table
