@@ -10,14 +10,31 @@
     "categories": [
         "Messaging"
     ],
-    "tags": ["Slack"],
+    "tags": [
+        "Slack"
+    ],
     "created": "2020-03-15T17:02:40Z",
     "updated": "2020-03-15T17:02:40Z",
     "beta": false,
     "deprecated": false,
     "certification": "certified",
     "useCases": [],
-    "keywords": ["Slack"],
+    "keywords": [
+        "Slack"
+    ],
     "price": "0",
-    "dependencies": {}
+    "dependencies": {
+        "Syslog": {
+            "mandatory": false,
+            "display_name": "Syslog Sender"
+        },
+        "Active_Directory_Query": {
+            "mandatory": true,
+            "display_name": "Active Directory Query v2"
+        }
+    },
+    "displayedImages": [
+        "Syslog",
+        "Active_Directory_Query"
+    ]
 }

@@ -1,7 +1,7 @@
 ## Overview
 ---
 
-Generic SQL ￿integration for the Databases: MYSQL, PostgreSQL, Microsoft SQL Server and Oracle.
+Generic SQL integration for the Databases: MySQL, PostgreSQL, Microsoft SQL Server and Oracle.
 
 ## Generic SQL Playbook
 ---

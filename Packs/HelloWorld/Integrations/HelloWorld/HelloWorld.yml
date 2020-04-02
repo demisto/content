@@ -3,15 +3,11 @@ commonfields:
   id: HelloWorld
   version: -1
 configuration:
-- defaultvalue: https://example.net
-  display: Server URL (e.g. https://example.net)
+- defaultvalue: https://soar.monstersofhack.com
+  display: Server URL (e.g. https://soar.monstersofhack.com)
   name: url
   required: true
   type: 0
-- display: Username
-  name: credentials
-  required: true
-  type: 9
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -20,6 +16,37 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- display: API Key
+  name: apikey
+  required: true
+  type: 4
+- defaultvalue: '65'
+  display: Score threshold for ip reputation command (0-100)
+  name: threshold_ip
+  required: false
+  type: 0
+- defaultvalue: '65'
+  display: Score threshold for domain reputation command (0-100)
+  name: threshold_domain
+  required: false
+  type: 0
+- defaultvalue: ACTIVE
+  display: Fetch alerts with status (ACTIVE, CLOSED)
+  name: alert_status
+  options:
+  - ACTIVE
+  - CLOSED
+  required: false
+  type: 15
+- display: Fetch alerts with type
+  name: alert_type
+  required: false
+  type: 0
+- defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -48,9 +75,270 @@ script:
     - contextPath: hello
       description: Should be Hello **something** here
       type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Filter by alert severity (0 to 3). 0-low, 1-medium, 2-high, 3-critical
+      isArray: false
+      name: severity
+      predefined:
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter by alert status
+      isArray: false
+      name: status
+      predefined:
+      - OPEN
+      - CLOSED
+      required: false
+      secret: false
+    - default: false
+      description: Filter by alert type
+      isArray: false
+      name: alert_type
+      required: false
+      secret: false
+    - default: false
+      description: Maximum results to return
+      isArray: false
+      name: max_results
+      required: false
+      secret: false
+    - default: false
+      description: "Filter by start time. \nExamples:\n  \"3 days ago\"\n  \"1 month\"\
+        \n  \"2019-10-10T12:22:00\"\n  \"2019-10-10\""
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve alerts
+    execution: false
+    name: helloworld-search-alerts
+    outputs:
+    - contextPath: HelloWorld.Alert.id
+      description: Alert id
+      type: string
+    - contextPath: HelloWorld.Alert.name
+      description: Alert name
+      type: string
+    - contextPath: HelloWorld.Alert.description
+      description: Alert description
+      type: string
+    - contextPath: HelloWorld.Alert.status
+      description: Alert status, can be "open", "closed"
+      type: string
+    - contextPath: HelloWorld.Alert.severity
+      description: Severity. 1-low,2-medium,3-high,4-critical
+      type: number
+    - contextPath: HelloWorld.Alert.type
+      description: 'Alert type. '
+      type: string
+  - arguments:
+    - default: false
+      description: alert id
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve alert by id
+    execution: false
+    name: helloworld-get-alert
+    outputs:
+    - contextPath: HelloWorld.Alert.id
+      description: Alert id
+      type: string
+    - contextPath: HelloWorld.Alert.name
+      description: Alert name
+      type: string
+    - contextPath: HelloWorld.Alert.description
+      description: Alert description
+      type: string
+    - contextPath: HelloWorld.Alert.status
+      description: Alert status, can be "open", "closed"
+      type: string
+    - contextPath: HelloWorld.Alert.severity
+      description: Severity. 1-low,2-medium,3-high,4-critical
+      type: number
+    - contextPath: HelloWorld.Alert.type
+      description: Alert type.
+      type: string
+  - name: ip
+    arguments:
+    - name: ip
+      default: true
+      description: List of IPs
+      isArray: true
+    - name: threshold
+      description: If the IP has reputation above the threshold then the IP defined as malicious.
+        If threshold not set, then threshold from instance configuration is used.
+      defaultValue: 65
+    outputs:
+    - contextPath: IP.Address
+      description: IP address
+      type: string
+    - contextPath: IP.ASN
+      description: The autonomous system name for the IP address, for example "AS8948".
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor reporting the IP address as malicious.
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: A description explaining why the IP address was reported as malicious.
+      type: string
+    - contextPath: HelloWorld.IP.ip
+      description: IP Address.
+      type: string
+    - contextPath: HelloWorld.IP.asn
+      description: The autonomous system name for the IP address, for example "AS8948".
+      type: string
+    - contextPath: HelloWorld.IP.reputation
+      description: Reputation of the ip, number between 0-100.
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    description: Return IP reputation
+  - name: domain
+    arguments:
+    - name: domain
+      default: true
+      description: List of Domains
+      isArray: true
+    - name: threshold
+      description: If the domain has reputation above the threshold then the domain defined as malicious.
+        If threshold not set, then threshold from instance configuration is used.
+      defaultValue: 65
+    outputs:
+    - contextPath: Domain.Name
+      description: The domain name, for example "google.com".
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: The vendor reporting the domain as malicious.
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: A description explaining why the domain was reported as malicious.
+      type: string
+    - contextPath: HelloWorld.Domain.domain
+      description: Domain Name
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    description: Return Domain reputation
+  - arguments:
+    - default: false
+      description: Just pass any hostname you want
+      isArray: false
+      name: hostname
+      required: true
+      secret: false
+    deprecated: false
+    description: Start scan on an asset
+    execution: false
+    name: helloworld-scan-start
+    outputs:
+    - contextPath: HelloWorld.Scan.scan_id
+      description: Unique id of the scan
+      type: string
+  - arguments:
+    - default: false
+      description: List of Scan IDs. helloworld-scan-start returns "scan_id"
+      isArray: true
+      name: scan_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve scan status
+    execution: false
+    name: helloworld-scan-status
+    outputs:
+    - contextPath: HelloWorld.Scan.scan_id
+      description: The id of the scan
+      type: string
+    - contextPath: HelloWorld.Scan.status
+      description: Can be "running", "completed"
+      type: string
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: file
+      description: Results format
+      isArray: false
+      name: format
+      predefined:
+      - json
+      - file
+      required: true
+      secret: false
+    - default: false
+      description: The id of the scan
+      isArray: false
+      name: scan_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns scan results
+    execution: false
+    name: helloworld-scan-results
+    outputs:
+    - contextPath: HelloWorld.ScanResults.id
+      description: Scan id
+      type: string
+    - contextPath: HelloWorld.ScanResults.source_ip
+      description: the ip of the asset
+      type: string
+    - contextPath: HelloWorld.ScanResults.c_and_c
+      description: C&C ip
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the report file
+      type: Unknown
+    - contextPath: InfoFile.Extension
+      description: The extension of the report file
+      type: string
+    - contextPath: InfoFile.Name
+      description: The name of the report file
+      type: string
+    - contextPath: InfoFile.Info
+      description: The info of the report file
+      type: string
+    - contextPath: InfoFile.Size
+      description: The size of the report file
+      type: number
+    - contextPath: InfoFile.Type
+      description: The type of the report file
+      type: string
+  dockerimage: demisto/python3:3.7.4.2245
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
-  dockerimage: demisto/python3:3.7.4.2245
+  type: python
