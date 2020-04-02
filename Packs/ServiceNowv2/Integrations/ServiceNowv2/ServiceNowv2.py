@@ -121,7 +121,7 @@ DEPRECATED_COMMANDS = ['servicenow-get', 'servicenow-incident-get',
                        'servicenow-incidents-query', 'servicenow-incident-update']
 
 
-def create_ticket_context(data, ticket_type):
+def create_ticket_context(data: dict, ticket_type: str) -> dict:
     context = {
         'ID': data.get('sys_id'),
         'Summary': data.get('short_description'),
@@ -160,7 +160,7 @@ def create_ticket_context(data, ticket_type):
     return createContext(context, removeNull=True)
 
 
-def get_ticket_context(data, ticket_type):
+def get_ticket_context(data, ticket_type: str):
     if not isinstance(data, list):
         return create_ticket_context(data, ticket_type)
 
@@ -170,7 +170,7 @@ def get_ticket_context(data, ticket_type):
     return tickets
 
 
-def get_ticket_human_readable(tickets, ticket_type):
+def get_ticket_human_readable(tickets, ticket_type: str):
     if not isinstance(tickets, list):
         tickets = [tickets]
 
@@ -215,33 +215,42 @@ def get_ticket_human_readable(tickets, ticket_type):
     return result
 
 
-def get_ticket_fields(template, ticket_type):
-    # Inverse the keys and values of those dictionaries to map the arguments to their corresponding values in ServiceNow
-    args = unicode_to_str_recur(demisto.args())
+def get_ticket_fields(args: dict, template_name: str, ticket_type: str) -> dict:
+    """Inverse the keys and values of those dictionaries
+    to map the arguments to their corresponding values in ServiceNow
+
+    Args:
+        args: Demisto args
+        template_name: ticket template name
+        ticket_type: ticket type
+
+    Returns:
+        ticket fields
+    """
     inv_severity = {v: k for k, v in TICKET_SEVERITY.items()}
     inv_priority = {v: k for k, v in TICKET_PRIORITY.items()}
     states = TICKET_STATES.get(ticket_type)
     inv_states = {v: k for k, v in states.items()} if states else {}
 
-    body = {}
+    ticket_fields = {}
     for arg in SNOW_ARGS:
         input_arg = args.get(arg)
         if input_arg:
             if arg in ['impact', 'urgency', 'severity']:
-                body[arg] = inv_severity.get(input_arg, input_arg)
+                ticket_fields[arg] = inv_severity.get(input_arg, input_arg)
             elif arg == 'priority':
-                body[arg] = inv_priority.get(input_arg, input_arg)
+                ticket_fields[arg] = inv_priority.get(input_arg, input_arg)
             elif arg == 'state':
-                body[arg] = inv_states.get(input_arg, input_arg)
+                ticket_fields[arg] = inv_states.get(input_arg, input_arg)
             else:
-                body[arg] = input_arg
-        elif template and arg in template:
-            body[arg] = template[arg]
+                ticket_fields[arg] = input_arg
+        elif template_name and arg in template_name:
+            ticket_fields[arg] = template_name[arg]
 
-    return body
+    return ticket_fields
 
 
-def get_body(fields, custom_fields):
+def get_body(fields: list, custom_fields: list):
     body = {}
 
     if fields:
@@ -259,7 +268,7 @@ def get_body(fields, custom_fields):
     return body
 
 
-def split_fields(fields):
+def split_fields(fields: str) -> dict:
     dic_fields = {}
 
     if fields:
@@ -293,8 +302,9 @@ def convert_to_str(obj):
 
 class Client(BaseClient):
     """
-    Client to use in the ServiceNow integration. Overrides BaseClient
+    Client to use in the ServiceNow integration. Overrides BaseClient.
     """
+
     def __init__(self, server_url: str, username: str, password: str, verify: bool, proxy: bool, fetch_time: str,
                  sysparm_query: str, sysparm_limit: str, timestamp_field: str, ticket_type: str, get_attachments: bool):
         self._base_url = server_url
@@ -303,14 +313,18 @@ class Client(BaseClient):
         self._password = password
         self._proxies = handle_proxy() if proxy else None
         self.fetch_time = fetch_time
-        self.sysparm_query = sysparm_query
-        self.sysparm_limit = sysparm_limit
+        self.sys_param_query = sysparm_query
+        self.sys_param_limit = sysparm_limit
         self.timestamp_field = timestamp_field
         self.ticket_type = ticket_type
         self.get_attachments = get_attachments
+        self.offset = 10
 
     def send_request(self, path: str, method: str = 'get', body: dict = None, params: dict = None,
                      headers: dict = None, file=None):
+        """
+        Generic request to ServiceNow.
+        """
         body = body if body is not None else {}
         params = params if params is not None else {}
 
@@ -361,8 +375,46 @@ class Client(BaseClient):
 
         return obj
 
-    def get_ticket(self, table_name: str, record_id: str, custom_fields: str = '', number: str = None):
+    def get_table_name(self, ticket_type=None) -> str:
+        """Get the relevant table name from th client.
+
+        Args:
+            ticket_type: ticket type
+
+        Returns:
+            the ticket_type if given or the client ticket type
         """
+        if ticket_type:
+            return ticket_type
+        return self.ticket_type
+
+    def get_template(self, template_name: str) -> dict:
+        """Get a ticket by sending a GET request.
+        Args:
+            template_name: ticket template name
+
+        Returns:
+            the ticket template
+        """
+        query_params = {'sysparm_limit': 1, 'sysparm_query': f'name={template_name}'}
+
+        result = self.send_request('GET', 'table/sys_template', params=query_params)
+
+        if len(result['result']) == 0:
+            raise ValueError("Incorrect template name.")
+
+        template = result['result'][0]['template'].split('^')
+        dic_template = {}
+
+        for i in range(len(template) - 1):
+            template_value = template[i].split('=')
+            if len(template_value) > 1:
+                dic_template[template_value[0]] = template_value[1]
+
+        return dic_template
+
+    def get_ticket(self, table_name: str, record_id: str, custom_fields: str = '', number: str = None):
+        """Get a ticket by sending a GET request.
 
         Args:
             table_name: the table name
@@ -371,7 +423,7 @@ class Client(BaseClient):
             number: record number
 
         Returns:
-            record data
+            Response from API.
         """
         query_params = {}  # type: Dict
         if record_id:
@@ -391,41 +443,98 @@ class Client(BaseClient):
             # Only in cases where the table is of type ticket
             raise ValueError('servicenow-get-ticket requires either ticket ID (sys_id) or ticket number.')
 
-        return self.send_request(path, 'get', params=query_params)
+        return self.send_request(path, 'GET', params=query_params)
+
+    def update(self, table_name: str, record_id: str, fields: list, custom_fields: list) -> dict:
+        """Updates a ticket or a record by sending a PATCH request.
+
+        Args:
+            table_name: table name
+            record_id: record id
+            fields: fields to update
+            custom_fields: custom_fields to update
+
+        Returns:
+            Response from API.
+        """
+        body = get_body(fields, custom_fields)
+        return self.send_request(f'table/{table_name}/{record_id}', 'PATCH', body=body)
+
+    def create(self, table_name: str, fields: list, custom_fields: list) -> dict:
+        """Creates a ticket or a record by sending a POST request.
+
+        Args:
+        table_name: table name
+        record_id: record id
+        fields: fields to update
+        custom_fields: custom_fields to update
+
+        Returns:
+            Response from API.
+        """
+        body = get_body(fields, custom_fields)
+        return self.send_request(f'table/{table_name}', 'POST', body=body)
+
+    def delete(self, table_name: str, record_id: str) -> dict:
+        """Deletes a ticket or a record by sending a DELETE request.
+
+        Args:
+        table_name: table name
+        record_id: record id
+
+        Returns:
+            Response from API.
+        """
+        return self.send_request(f'table/{table_name}/{record_id}', 'DELETE')
+
+    def add_link(self, ticket_id: str, ticket_type: str, key: str, link: str) -> dict:
+        """Adds a link to a ticket by sending a PATCH request.
+
+        Args:
+        ticket_id: ticket ID
+        ticket_type: ticket type
+        key: link key
+        link: link str
+
+        Returns:
+            Response from API.
+        """
+        return self.send_request(f'table/{ticket_type}/{ticket_id}', 'PATCH', body={key: link})
+
+    def add_comment(self, ticket_id: str, ticket_type: str, key: str, text: str):
+        """Adds a comment to a ticket by sending a PATCH request.
+
+        Args:
+        ticket_id: ticket ID
+        ticket_type: ticket type
+        key: link key
+        link: link str
+
+        Returns:
+            Response from API.
+        """
+        return self.send_request(f'table/{ticket_type}/{ticket_id}', 'PATCH', body={key: text})
+
+    def query(self, table_name: str, sysparam_limit: str, sysparam_offset: str, sysparam_query: str) -> dict:
+        """Query tickets by sending a PATCH request.
+
+        Args:
+        table_name: table name
+        sysparam_limit: limit the number of results
+        sysparam_offset: offset the results
+        sysparam_query: the query
+
+        Returns:
+            Response from API.
+        """
+        query_params = {'sysparm_limit': sysparam_limit, 'sysparm_offset': sysparam_offset}
+        if sysparam_query:
+            query_params['sysparm_query'] = sysparam_query
+        return self.send_request(f'table/{table_name}', 'GET', params=query_params)
 
 
-def get_table_name(client, ticket_type=None):
-    if ticket_type:
-        return ticket_type
-    else:
-        if client.ticket_type:
-            return client.ticket_type
-        else:
-            return 'incident'
-
-def get_template(client, name):
-    query_params = {'sysparm_limit': 1, 'sysparm_query': 'name=' + name}
-
-    ticket_type = 'sys_template'
-    path = 'table/' + ticket_type
-    res = client.send_request('GET', path, params=query_params)
-
-    if len(res['result']) == 0:
-        raise ValueError("Incorrect template name")
-
-    template = res['result'][0]['template'].split('^')
-    dic_template = {}
-
-    for i in range(len(template) - 1):
-        template_value = template[i].split('=')
-        if len(template_value) > 1:
-            dic_template[template_value[0]] = template_value[1]
-
-    return dic_template
-
-
-def get_ticket_command(client, args):
-    """Get ticket.
+def get_ticket_command(client: Client, args: dict):
+    """Get a ticket.
 
     Args:
         client: Client object with request.
@@ -434,7 +543,7 @@ def get_ticket_command(client, args):
     Returns:
         Demisto Outputs.
     """
-    ticket_type = get_table_name(client, args.get('ticket_type'))
+    ticket_type = client.get_table_name(args.get('ticket_type'))
     ticket_id = args.get('id')
     number = args.get('number')
     get_attachments = args.get('get_attachments', 'false')
@@ -481,27 +590,151 @@ def get_ticket_command(client, args):
     return entries
 
 
-def get_record_command():
-    args = unicode_to_str_recur(demisto.args())
-    table_name = args['table_name']
-    record_id = args['id']
-    fields = args.get('fields')
+def update_ticket_command(client: Client, args: dict):
+    """Update a ticket.
 
-    res = get_ticket(table_name, record_id)
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
 
-    if not res or 'result' not in res:
-        return 'Cannot find record'
+    Returns:
+        Demisto Outputs.
+    """
+    custom_fields = split_fields(args.get('custom_fields'))
+    template_name = args.get('template')
+    ticket_type = client.get_table_name(args.get('ticket_type'))
+    ticket_id = args.get('id')
 
-    if isinstance(res['result'], list):
-        if len(res['result']) == 0:
-            return 'Cannot find record'
-        record = res['result'][0]
-    else:
-        record = res['result']
+    if template_name:
+        template_name = client.get_template(client, template_name)
+    fields = get_ticket_fields(args, template_name, ticket_type)
+
+    result = client.update(ticket_type, ticket_id, fields, custom_fields)
+
+    if not result or 'result' not in result:
+        raise Exception('Unable to retrieve response.')
+
+    hr = get_ticket_human_readable(result['result'], ticket_type)
+    context = get_ticket_context(result['result'], ticket_type)
 
     entry = {
         'Type': entryTypes['note'],
-        'Contents': res,
+        'Contents': result,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown(f'ServiceNow ticket updated successfully\nTicket type: {ticket_type}',
+                                         t=hr, removeNull=True),
+        'EntryContext': {
+            'ServiceNow.Ticket(val.ID===obj.ID)': context
+        }
+    }
+
+    return entry
+
+
+def create_ticket_command(client: Client, args: dict):
+    """Create a ticket.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    custom_fields = split_fields(args.get('custom_fields'))
+    template = args.get('template')
+    ticket_type = client.get_table_name(args.get('ticket_type'))
+
+    if template:
+        template = client.get_template(template)
+    fields = get_ticket_fields(args, template, ticket_type)
+
+    result = client.create(ticket_type, fields, custom_fields)
+
+    if not result or 'result' not in result:
+        raise Exception('Unable to retrieve response.')
+
+    hr = get_ticket_human_readable(result['result'], ticket_type)
+    context = get_ticket_context(result['result'], ticket_type)
+
+    headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On',
+               'Created By',
+               'Active', 'Close Notes', 'Close Code',
+               'Description', 'Opened At', 'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description',
+               'Additional Comments']
+
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': result,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('ServiceNow ticket was created successfully.', hr,
+                                         headers=headers, removeNull=True),
+        'EntryContext': {
+            'Ticket(val.ID===obj.ID)': context,
+            'ServiceNow.Ticket(val.ID===obj.ID)': context
+        }
+    }
+
+    return entry
+
+
+def delete_ticket_command(client: Client, args: dict):
+    """Delete a ticket.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    ticket_id = args.get('id')
+    ticket_type = client.get_table_name(args.get('ticket_type'))
+
+    result = client.delete(ticket_type, ticket_id)
+
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': result,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['text'],
+        'HumanReadable': f'Ticket with ID {ticket_id} was successfully deleted.'
+    }
+
+    return entry
+
+
+def get_record_command(client: Client, args: dict):
+    """Get a record.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    table_name = args.get('table_name')
+    record_id = args.get('id')
+    fields = args.get('fields')
+
+    result = client.get_ticket(table_name, record_id)
+
+    if not result or 'result' not in result:
+        return 'Cannot find record'
+
+    if isinstance(result['result'], list):
+        if len(result['result']) == 0:
+            return f'ServiceNow record with ID {record_id} was not found.'
+        record = result['result'][0]
+    else:
+        record = result['result']
+
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': result,
         'ContentsFormat': formats['json']
     }
 
@@ -525,7 +758,7 @@ def get_record_command():
     else:
         mapped_record = {DEFAULT_RECORD_FIELDS[k]: record[k] for k in DEFAULT_RECORD_FIELDS if k in record}
         entry['ReadableContentsFormat'] = formats['markdown']
-        entry['HumanReadable'] = tableToMarkdown('ServiceNow record' + record_id, mapped_record, removeNull=True)
+        entry['HumanReadable'] = tableToMarkdown(f'ServiceNow record {record_id}', mapped_record, removeNull=True)
         entry['EntryContext'] = {
             'ServiceNow.Record(val.ID===obj.ID)': createContext(mapped_record)
         }
@@ -533,13 +766,245 @@ def get_record_command():
     return entry
 
 
-def get_ticket_attachments(ticket_id):
-    path = 'attachment'
-    query_params = {
-        'sysparm_query': 'table_sys_id=' + ticket_id
+def create_record_command(client: Client, args: dict):
+    """Create a record.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    table_name = args.get('table_name')
+    fields = args.get('fields')
+    custom_fields = args.get('custom_fields')
+
+    if fields:
+        fields = split_fields(fields)
+    if custom_fields:
+        custom_fields = split_fields(custom_fields)
+
+    result = client.create(table_name, fields, custom_fields)
+
+    if not result or 'result' not in result:
+        return 'Could not Create record.'
+
+    result = result['result']
+
+    mapped_record = {DEFAULT_RECORD_FIELDS[k]: result[k] for k in DEFAULT_RECORD_FIELDS if k in result}
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': result,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('ServiceNow record created successfully', mapped_record, removeNull=True),
+        'EntryContext': {
+            'ServiceNow.Record(val.ID===obj.ID)': createContext(mapped_record)
+        }
     }
 
-    return send_request(path, 'get', params=query_params)
+    return entry
+
+
+def update_record_command(client: Client, args: dict):
+    """Update a record.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    table_name = args.get('table_name')
+    record_id = args.get('id')
+    fields = args.get('fields', {})
+    custom_fields = args.get('custom_fields')
+
+    if fields:
+        fields = split_fields(fields)
+    if custom_fields:
+        custom_fields = split_fields(custom_fields)
+
+    result = client.update(table_name, record_id, fields, custom_fields)
+
+    if not result or 'result' not in result:
+        return 'Could not retrieve record.'
+
+    result = result['result']
+
+    mapped_record = {DEFAULT_RECORD_FIELDS[k]: result[k] for k in DEFAULT_RECORD_FIELDS if k in result}
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': result,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown(f'ServiceNow record with ID {record_id} updated successfully',
+                                         t=mapped_record, removeNull=True),
+        'EntryContext': {
+            'ServiceNow.Record(val.ID===obj.ID)': createContext(mapped_record)
+        }
+    }
+
+    return entry
+
+
+def delete_record_command(client: Client, args: dict):
+    """Delete a record.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    record_id = args.get('id')
+    table_name = args.get('table_name')
+
+    result = client.delete(table_name, record_id)
+
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': result,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['text'],
+        'HumanReadable': f'ServiceNow record with ID {record_id} was successfully deleted.'
+    }
+
+    return entry
+
+
+def add_link_command(client: Client, args: dict):
+    """Add a link.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    ticket_id = args.get('id')
+    key = 'comments' if args.get('post-as-comment', 'false').lower() == 'true' else 'work_notes'
+    link_argument = args.get('link')
+    text = args.get('text', link_argument)
+    link = f'[code]<a class="web" target="_blank" href="{link_argument}" >{text}</a>[/code]'
+    ticket_type = client.get_table_name(args.get('ticket_type'))
+
+    result = client.add_link(ticket_id, ticket_type, key, link)
+
+    if not result or 'result' not in result:
+        return_error('Unable to retrieve response')
+
+    headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
+               'Active', 'Close Notes', 'Close Code', 'Description', 'Opened At', 'Due Date', 'Resolved By',
+               'Resolved At', 'SLA Due', 'Short Description', 'Additional Comments']
+    hr = get_ticket_human_readable(result['result'], ticket_type)
+
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': result,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('Link successfully added to ServiceNow ticket', t=hr,
+                                         headers=headers, removeNull=True)
+    }
+
+    return entry
+
+
+def add_comment_command(client: Client, args: dict):
+    """Add a comment.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    ticket_id = args.get('id')
+    key = 'comments' if args.get('post-as-comment', 'false').lower() == 'true' else 'work_notes'
+    text = args['comment']
+    ticket_type = client.get_table_name(args.get('ticket_type'))
+
+    result = client.add_comment(ticket_id, ticket_type, key, text)
+
+    if not result or 'result' not in result:
+        return_error('Unable to retrieve response')
+
+    headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
+               'Active', 'Close Notes', 'Close Code',
+               'Description', 'Opened At', 'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description',
+               'Additional Comments']
+    hr = get_ticket_human_readable(result['result'], ticket_type)
+
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': result,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('Comment successfully added to ServiceNow ticket', hr,
+                                         headers=headers, removeNull=True)
+    }
+
+    return entry
+
+
+def query_tickets_command(client: Client, args: dict):
+    """Query tickets.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    sys_param_limit = args.get('limit', client.sys_param_limit)
+    sys_param_offset = args.get('offset', client.offset)
+
+    sys_param_query = args.get('query')
+    if not sys_param_query:
+        # backward compatibility
+        sys_param_query = args.get('sysparm_query')
+
+    ticket_type = client.get_table_name(args.get('ticket_type'))
+
+    result = client.query(ticket_type, sys_param_limit, sys_param_offset, sys_param_query)
+
+    if not result or 'result' not in result or len(result['result']) == 0:
+        return 'No ServiceNow tickets matched the query.'
+
+    hr = get_ticket_human_readable(result['result'], ticket_type)
+    context = get_ticket_context(result['result'], ticket_type)
+
+    headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
+               'Active', 'Close Notes', 'Close Code',
+               'Description', 'Opened At', 'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description',
+               'Additional Comments']
+
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': result,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('ServiceNow tickets', hr, headers=headers, removeNull=True),
+        'EntryContext': {
+            'Ticket(val.ID===obj.ID)': context,
+            'ServiceNow.Ticket(val.ID===obj.ID)': context
+        }
+    }
+
+    return entry
+
+
+def get_ticket_attachments(ticket_id: str):
+    query_params = {'sysparm_query': f'table_sys_id={ticket_id}'}
+
+    return send_request('attachment', 'GET', params=query_params)
 
 
 def get_ticket_attachment_entries(client, ticket_id):
@@ -556,279 +1021,6 @@ def get_ticket_attachment_entries(client, ticket_id):
             entries.append(fileResult(link[1], file_res.content))
 
     return entries
-
-
-def update_ticket_command():
-    args = unicode_to_str_recur(demisto.args())
-    custom_fields = split_fields(args.get('custom_fields'))
-    template = args.get('template')
-    ticket_type = get_table_name(args.get('ticket_type'))
-    ticket_id = args['id']
-
-    if template:
-        template = get_template(template)
-    fields = get_ticket_fields(template, ticket_type)
-
-    res = update(ticket_type, ticket_id, fields, custom_fields)
-
-    if not res or 'result' not in res:
-        return_error('Unable to retrieve response')
-
-    hr = get_ticket_human_readable(res['result'], ticket_type)
-    context = get_ticket_context(res['result'], ticket_type)
-
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow ticket updated successfully\nTicket type: ' + ticket_type,
-                                         hr, removeNull=True),
-        'EntryContext': {
-            'ServiceNow.Ticket(val.ID===obj.ID)': context
-        }
-    }
-
-    return entry
-
-
-def update_record_command():
-    args = unicode_to_str_recur(demisto.args())
-    table_name = args['table_name']
-    record_id = args['id']
-    fields = args.get('fields', {})
-    custom_fields = args.get('custom_fields')
-
-    if fields:
-        fields = split_fields(fields)
-    if custom_fields:
-        custom_fields = split_fields(custom_fields)
-
-    res = update(table_name, record_id, fields, custom_fields)
-
-    if not res or 'result' not in res:
-        return 'Could not retrieve record'
-
-    result = res['result']
-
-    mapped_record = {DEFAULT_RECORD_FIELDS[k]: result[k] for k in DEFAULT_RECORD_FIELDS if k in result}
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow record updated successfully', mapped_record, removeNull=True),
-        'EntryContext': {
-            'ServiceNow.Record(val.ID===obj.ID)': createContext(mapped_record)
-        }
-    }
-
-    return entry
-
-
-def update(table_name, record_id, fields, custom_fields):
-    body = get_body(fields, custom_fields)
-    path = 'table/' + table_name + '/' + record_id
-
-    return send_request(path, 'patch', body=body)
-
-
-def create_ticket_command():
-    args = unicode_to_str_recur(demisto.args())
-    custom_fields = split_fields(args.get('custom_fields'))
-    template = args.get('template')
-    ticket_type = get_table_name(args.get('ticket_type'))
-
-    if template:
-        template = get_template(template)
-    fields = get_ticket_fields(template, ticket_type)
-
-    res = create(ticket_type, fields, custom_fields)
-
-    if not res or 'result' not in res:
-        return_error('Unable to retrieve response')
-
-    hr = get_ticket_human_readable(res['result'], ticket_type)
-    context = get_ticket_context(res['result'], ticket_type)
-
-    headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
-               'Active', 'Close Notes', 'Close Code',
-               'Description', 'Opened At', 'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description',
-               'Additional Comments']
-
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow ticket created successfully', hr,
-                                         headers=headers, removeNull=True),
-        'EntryContext': {
-            'Ticket(val.ID===obj.ID)': context,
-            'ServiceNow.Ticket(val.ID===obj.ID)': context
-        }
-    }
-
-    return entry
-
-
-def create_record_command():
-    args = unicode_to_str_recur(demisto.args())
-    table_name = args['table_name']
-    fields = args.get('fields')
-    custom_fields = args.get('custom_fields')
-
-    if fields:
-        fields = split_fields(fields)
-    if custom_fields:
-        custom_fields = split_fields(custom_fields)
-
-    res = create(table_name, fields, custom_fields)
-
-    if not res or 'result' not in res:
-        return 'Could not retrieve record'
-
-    result = res['result']
-
-    mapped_record = {DEFAULT_RECORD_FIELDS[k]: result[k] for k in DEFAULT_RECORD_FIELDS if k in result}
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow record created successfully', mapped_record, removeNull=True),
-        'EntryContext': {
-            'ServiceNow.Record(val.ID===obj.ID)': createContext(mapped_record)
-        }
-    }
-
-    return entry
-
-
-def create(table_name, fields, custom_fields):
-    body = get_body(fields, custom_fields)
-    path = 'table/' + table_name
-
-    return send_request(path, 'post', body=body)
-
-
-def delete_ticket_command():
-    args = unicode_to_str_recur(demisto.args())
-    ticket_id = args['id']
-    ticket_type = get_table_name(args.get('ticket_type'))
-
-    res = delete(ticket_type, ticket_id)
-
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['text'],
-        'HumanReadable': 'Ticket with ID ' + ticket_id + ' was successfully deleted.'
-    }
-
-    return entry
-
-
-def delete_record_command():
-    args = unicode_to_str_recur(demisto.args())
-    record_id = args['id']
-    table_name = args.get('table_name')
-
-    res = delete(table_name, record_id)
-
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['text'],
-        'HumanReadable': 'Record with ID ' + record_id + ' was successfully deleted.'
-    }
-
-    return entry
-
-
-def delete(table_name, record_id):
-    path = 'table/' + table_name + '/' + record_id
-
-    return send_request(path, 'delete')
-
-
-def add_link_command():
-    args = unicode_to_str_recur(demisto.args())
-    ticket_id = args['id']
-    key = 'comments' if args.get('post-as-comment', 'false').lower() == 'true' else 'work_notes'
-    text = args.get('text', args['link'])
-    link = '[code]<a class="web" target="_blank" href="' + args['link'] + '" >' + text + '</a>[/code]'
-    ticket_type = get_table_name(args.get('ticket_type'))
-
-    res = add_link(ticket_id, ticket_type, key, link)
-
-    if not res or 'result' not in res:
-        return_error('Unable to retrieve response')
-
-    headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
-               'Active', 'Close Notes', 'Close Code',
-               'Description', 'Opened At', 'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description',
-               'Additional Comments']
-
-    hr = get_ticket_human_readable(res['result'], ticket_type)
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Link successfully added to ServiceNow ticket', hr,
-                                         headers=headers, removeNull=True)
-    }
-
-    return entry
-
-
-def add_link(ticket_id, ticket_type, key, link):
-    body = {}
-    body[key] = link
-    path = 'table/' + ticket_type + '/' + ticket_id
-
-    return send_request(path, 'patch', body=body)
-
-
-def add_comment_command():
-    args = unicode_to_str_recur(demisto.args())
-    ticket_id = args['id']
-    key = 'comments' if args.get('post-as-comment', 'false').lower() == 'true' else 'work_notes'
-    text = args['comment']
-    ticket_type = get_table_name(args.get('ticket_type'))
-
-    res = add_comment(ticket_id, ticket_type, key, text)
-
-    if not res or 'result' not in res:
-        return_error('Unable to retrieve response')
-
-    headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
-               'Active', 'Close Notes', 'Close Code',
-               'Description', 'Opened At', 'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description',
-               'Additional Comments']
-
-    hr = get_ticket_human_readable(res['result'], ticket_type)
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Comment successfully added to ServiceNow ticket', hr,
-                                         headers=headers, removeNull=True)
-    }
-
-    return entry
-
-
-def add_comment(ticket_id, ticket_type, key, text):
-    body = {}
-    body[key] = text
-    path = 'table/' + ticket_type + '/' + ticket_id
-
-    return send_request(path, 'patch', body=body)
 
 
 def get_ticket_notes_command():
@@ -876,51 +1068,12 @@ def get_ticket_notes_command():
     return entry
 
 
-def query_tickets_command():
-    args = unicode_to_str_recur(demisto.args())
-    sysparm_limit = args.get('limit', DEFAULTS['limit'])
-    sysparm_query = args.get('query')
-    sysparm_offset = args.get('offset', DEFAULTS['offset'])
-
-    if not sysparm_query:
-        # backward compatibility
-        sysparm_query = args.get('sysparm_query')
-    ticket_type = get_table_name(args.get('ticket_type'))
-
-    res = query(ticket_type, sysparm_limit, sysparm_offset, sysparm_query)
-
-    if not res or 'result' not in res or len(res['result']) == 0:
-        return 'No results found'
-
-    hr = get_ticket_human_readable(res['result'], ticket_type)
-    context = get_ticket_context(res['result'], ticket_type)
-
-    headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
-               'Active', 'Close Notes', 'Close Code',
-               'Description', 'Opened At', 'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description',
-               'Additional Comments']
-
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow tickets', hr, headers=headers, removeNull=True),
-        'EntryContext': {
-            'Ticket(val.ID===obj.ID)': context,
-            'ServiceNow.Ticket(val.ID===obj.ID)': context
-        }
-    }
-
-    return entry
-
-
 def query_table_command():
     args = unicode_to_str_recur(demisto.args())
     table_name = args['table_name']
-    sysparm_limit = args.get('limit', DEFAULTS['limit'])
-    sysparm_query = args.get('query')
-    sysparm_offset = args.get('offset', DEFAULTS['offset'])
+    sys_param_limit = args.get('limit', client.sys_param_limit)
+    sys_param_query = args.get('query')
+    sys_param_offset = args.get('offset', client.offset)
     fields = args.get('fields')
 
     res = query(table_name, sysparm_limit, sysparm_offset, sysparm_query)
@@ -963,18 +1116,6 @@ def query_table_command():
         }
 
     return entry
-
-
-def query(table_name, sysparm_limit, sysparm_offset, sysparm_query):
-    query_params = {}
-    query_params['sysparm_limit'] = sysparm_limit
-    query_params['sysparm_offset'] = sysparm_offset
-    if sysparm_query:
-        query_params['sysparm_query'] = sysparm_query
-
-    path = 'table/' + table_name
-
-    return send_request(path, 'get', params=query_params)
 
 
 def upload_file_command():
@@ -1498,18 +1639,11 @@ def main():
     server_url = params.get('url')
     server_url = f'{get_server_url(server_url)}{api}'
 
-    defaults = {
-        'limit': 10,
-        'offset': 0,
-        'fetch_limit': 10,
-        'fetch_time': '10 minutes',
-        'ticket_type': 'incident'
-    }
-    fetch_time = params.get('fetch_time', defaults['fetch_time']).strip()
+    fetch_time = params.get('fetch_time', '10 minutes').strip()
     sysparm_query = params.get('sysparm_query')
-    sysparm_limit = params.get('fetch_limit', defaults['fetch_limit'])
+    sysparm_limit = params.get('fetch_limit', 10)
     timestamp_field = params.get('timestamp_field', 'opened_at')
-    ticket_type = params.get('ticket_type', defaults['ticket_type'])
+    ticket_type = params.get('ticket_type', 'incident')
     get_attachments = params.get('get_attachments', False)
 
     raise_exception = False
@@ -1520,25 +1654,38 @@ def main():
         if command == 'test-module':
             test_module(client)
             demisto.results('ok')
+
         elif command == 'fetch-incidents':
             raise_exception = True
             fetch_incidents(client)
-        elif command in ['servicenow-incident-update', 'servicenow-get-ticket']:
+
+        elif command == 'servicenow-get-ticket':
             demisto.results(get_ticket_command(client, args))
-        elif command in ['servicenow-incident-update', 'servicenow-update-ticket']:
-            demisto.results(update_ticket_command())
-        elif command in ['servicenow-incident-create', 'servicenow-create-ticket']:
-            demisto.results(create_ticket_command())
+        elif command == 'servicenow-update-ticket':
+            demisto.results(update_ticket_command(client, args))
+        elif command == 'servicenow-create-ticket':
+            demisto.results(create_ticket_command(client, args))
         elif command == 'servicenow-delete-ticket':
-            demisto.results(delete_ticket_command())
-        elif command in ['servicenow-add-link', 'servicenow-incident-add-link']:
-            demisto.results(add_link_command())
-        elif command in ['servicenow-add-comment', 'servicenow-incident-add-comment']:
-            demisto.results(add_comment_command())
-        elif command in ['servicenow-incidents-query', 'servicenow-query-tickets']:
-            demisto.results(query_tickets_command())
-        elif command in ['servicenow-upload-file', 'servicenow-incident-upload-file']:
-            demisto.results(upload_file_command())
+            demisto.results(delete_ticket_command(client, args))
+
+        elif command == 'servicenow-get-record':
+            demisto.results(get_record_command(client, args))
+        elif command == 'servicenow-update-record':
+            demisto.results(update_record_command(client, args))
+        elif command == 'servicenow-create-record':
+            demisto.results(create_record_command(client, args))
+        elif command == 'servicenow-delete-record':
+            demisto.results(delete_record_command(client, args))
+
+        elif command == 'servicenow-incident-add-link':
+            demisto.results(add_link_command(client, args))
+        elif command == 'servicenow-add-comment':
+            demisto.results(add_comment_command(client, args))
+        elif command =='servicenow-query-tickets':
+            demisto.results(query_tickets_command(client, args))
+        elif command == 'servicenow-upload-file':
+            demisto.results(upload_file_command(client, args))
+
         elif command == 'servicenow-query-table':
             demisto.results(query_table_command())
         elif command == 'servicenow-get-computer':
@@ -1551,14 +1698,6 @@ def main():
             demisto.results(query_users_command())
         elif command == 'servicenow-get-groups':
             demisto.results(get_groups_command())
-        elif command == 'servicenow-get-record':
-            demisto.results(get_record_command())
-        elif command == 'servicenow-update-record':
-            demisto.results(update_record_command())
-        elif command == 'servicenow-create-record':
-            demisto.results(create_record_command())
-        elif command == 'servicenow-delete-record':
-            demisto.results(delete_record_command())
         elif command == 'servicenow-list-table-fields':
             demisto.results(list_table_fields_command())
         elif command == 'servicenow-get-table-name':
