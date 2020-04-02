@@ -700,10 +700,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: 8bbb9cbe-99d5-4c71-834e-d3f2b0446f60
+    taskid: 27a121f3-fa4d-420c-8751-06678c8bd76e
     type: condition
     task:
-      id: 8bbb9cbe-99d5-4c71-834e-d3f2b0446f60
+      id: 27a121f3-fa4d-420c-8751-06678c8bd76e
       version: -1
       name: Verify context
       type: condition
@@ -716,16 +716,20 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualNumber
+      - - operator: isExists
           left:
             value:
               complex:
                 root: CBP
                 accessor: Event.StringID
             iscontext: true
-          right:
+      - - operator: isExists
+          left:
             value:
-              simple: "200"
+              complex:
+                root: CBP
+                accessor: Event.ID
+            iscontext: true
     view: |-
       {
         "position": {
@@ -2193,7 +2197,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-system: true
 view: |-
   {
     "linkLabelsPosition": {},

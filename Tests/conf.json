@@ -177,7 +177,13 @@
         },
         {
             "integrations": "HelloWorld",
-            "playbookID": "TestHelloWorld"
+            "playbookID": "TestHelloWorld",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "HelloWorld",
+            "playbookID": "TestHelloWorldPlaybook",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "ThreatQ v2",
@@ -1316,6 +1322,10 @@
             "nightly": true
         },
         {
+            "integrations": "Cisco ASA",
+            "playbookID": "Cisco ASA - Test Playbook"
+        },
+        {
             "integrations": "VirusTotal - Private API",
             "instance_names": "virus_total_private_api_preferred_vendors",
             "playbookID": "virusTotalPrivateAPI-test-preferred-vendors",
@@ -2338,7 +2348,8 @@
           "integrations": "EWS v2",
           "playbookID": "Get EWS Folder Test",
           "fromversion": "4.5.0",
-          "instance_names": "ewv2_regular"
+          "instance_names": "ewv2_regular",
+          "timeout": 1200
         },
         {
           "integrations": "QRadar",
@@ -2567,7 +2578,8 @@
         },
         {
             "playbookID": "DbotPredictOufOfTheBoxTest",
-            "fromversion": "4.5.0"
+            "fromversion": "4.5.0",
+            "timeout": 1000
         },
         {
            "integrations": "AlienVault OTX TAXII Feed",
@@ -2589,6 +2601,10 @@
             "playbookID": "Cortex Data Lake Test",
             "instance_names": "cdl_dev",
             "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "MongoDB",
+            "playbookID": "MongoDB - Test"
         }
     ],
     "skipped_tests": {
@@ -2598,12 +2614,10 @@
         "Akamai_WAF_SIEM-Test": "Issue 22225",
         "Cloaken-Test": "Issue 20036",
         "Test-VulnDB": "Issue 23138",
-        "Sixgill-Test": "Issue ",
         "test_MsGraphFiles": "Issue 22853 ",
         "TestCofenseFeed": "Issue 22854",
         "RecordedFutureFeed - Test": "Issue 22855",
         "Cybereason Test": "Issue 22683",
-        "CVE Search v2 - Test": "Issue 22661",
         "AbuseIPDB Test": "Issue 22658",
         "Bluecat Address Manager test": "Issue 22616",
         "Office365_Feed_Test": "Issue 22517",
@@ -2611,8 +2625,6 @@
         "test-Expanse": "Expanse should provide domain that they have in their system",
         "TestProofpointFeed": "Issue 22229",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 22227",
-        "test_Qradar": "Issue 22186",
-        "Tenable.io test": "Issue 22184",
         "ThreatQ - Test": "Issue 22175",
         "PostgreSQL Test": "Issue 22172",
         "Test-Detonate URL - Crowdstrike": "Issue 19439",
@@ -2725,6 +2737,7 @@
         "urlscan.io": "Issue 21831",
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
         "HelloWorldSimple": "This is just an example integration - no need for test",
+        "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lockpath KeyLight": "Deprecated. No tests.",
         "SafeBreach": "pending rewrite",
         "Cymulate": "Partner didn't provided test playbook",
@@ -2747,6 +2760,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "MongoDB": "Our instance not using SSL",
         "Cortex Data Lake": "Integration requires SSL",
         "Google Key Management Service": "The API requires an SSL secure connection to work.",
         "McAfee ESM-v10": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
