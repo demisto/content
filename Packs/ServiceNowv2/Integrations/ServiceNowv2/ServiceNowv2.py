@@ -14,8 +14,8 @@ requests.packages.urllib3.disable_warnings()
 
 def get_server_url(server_url: str) -> str:
     url = server_url
-    url = re.sub('/[\/]+$/', '', url)
-    url = re.sub('\/$', '', url)
+    url = re.sub('/[/]+$/', '', url)
+    url = re.sub('/$', '', url)
     return url
 
 
@@ -879,7 +879,7 @@ def update_record_command(client: Client, args: dict):
     if fields_str:
         fields: dict = split_fields(fields_str)
     if custom_fields_str:
-        custom_fields: dict = custom_fields_str(custom_fields_str)
+        custom_fields: dict = split_fields(custom_fields_str)
 
     result = client.update(table_name, record_id, fields, custom_fields)
 
