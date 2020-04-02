@@ -1,5 +1,3 @@
-import demistomock as demisto
-from CommonServerPython import *
 ''' IMPORTS '''
 from typing import Dict, List, Tuple, Any, Callable
 import json
@@ -118,6 +116,11 @@ class Client:
 
                             # Append data to the original item
                             originalItem = [x for x in indicators if x.get('value') == value][0]
+                            if originalItem['rawJSON'].get('id', None):
+                                try:
+                                    originalItem['rawJSON']['id'] += f"\n{mitreItemJSON.get('id', '')}"
+                                except Exception:
+                                    pass
                             if originalItem['rawJSON'].get('created', None):
                                 try:
                                     originalItem['rawJSON']['created'] += f"\n{mitreItemJSON.get('created', '')}"
@@ -130,7 +133,9 @@ class Client:
                                     pass
                             if originalItem['rawJSON'].get('description', None):
                                 try:
-                                    originalItem['rawJSON']['description'] += f"\n\n{mitreItemJSON.get('description', '')}"
+                                    if not originalItem['rawJSON'].get('description').startswith("###"):
+                                        originalItem['rawJSON']['description'] = f"### {originalItem['rawJSON'].get('type')}\n{originalItem['rawJSON']['description']}"
+                                    originalItem['rawJSON']['description'] += f"\n\n_____\n\n### {mitreItemJSON.get('type')}\n{mitreItemJSON.get('description', '')}"
                                 except Exception:
                                     pass
                             if originalItem['rawJSON'].get('external_references', None):
@@ -196,10 +201,17 @@ def get_indicators_command(client, args):
 
     indicators = list()
     limit = int(args.get('limit', 10))
+    raw = True if args.get('raw') == "True" else False
     counter = 0
 
     client.initialise()
     indicators = client.build_iterator(limit=limit)
+
+    if raw:
+        demisto.results({
+            "indicators": [x.get('rawJSON') for x in indicators]
+        })
+        return
 
     demisto.results(f"Found {len(indicators)} results:")
     demisto.results(
@@ -243,6 +255,7 @@ def search_command(client, args):
         allIndicators.extend(rawData.get('iocs', []))
         page += 1
         rawData = demisto.searchIndicators(query=f'type:"{client.indicatorType}"', page=page, size=size)
+
     for indicator in allIndicators:
         customFields = indicator.get('CustomFields', {})
         for k, v in customFields.items():
@@ -272,6 +285,11 @@ def search_command(client, args):
                     break
     returnListMD = sorted(returnListMD, key=lambda name: name['mitrename'])
     returnListMD = [{"Name": x.get('Name')} for x in returnListMD]
+
+    if raw:
+        demisto.results({
+            "indicators": json.dumps()
+        })
 
     demisto.results({
         'Type': entryTypes['note'],

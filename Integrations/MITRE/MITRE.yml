@@ -88,6 +88,13 @@ script:
       required: true
       description: Limit the number of indicators returned.
       defaultValue: "10"
+    - name: raw
+      auto: PREDEFINED
+      predefined:
+      - "False"
+      - "True"
+      description: Output in raw JSON format
+      defaultValue: "False"
     description: Retreives a limited number of the indicators .
   - name: mitre-show-feeds
     arguments: []
@@ -96,7 +103,7 @@ script:
     arguments:
     - name: search
       required: true
-      description: The search word (example - "lateral movement")
+      description: The search word
     - name: casesensitive
       auto: PREDEFINED
       predefined:
