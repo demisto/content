@@ -1,3 +1,3 @@
 ## [Unreleased]
- - Fixed an issue where time convertion wasn't supporting timezone.
+Fixed an issue where time conversion didn't support timezone.
 
