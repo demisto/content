@@ -83,8 +83,7 @@ def http_request(method, url_suffix, params=None, data=None):
 
 def html_description_to_human_readable(breach_description):
     """
-    Executing the pwned request for usernames list, in order to support list input, the function returns 3 lists of
-    outputs
+    Converting from html description to hr
     :param breach_description: Description of breach from API response
     :return: Description string that altered HTML urls to clickable urls
     for better readability in war-room
