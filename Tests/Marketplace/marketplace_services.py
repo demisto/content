@@ -12,11 +12,6 @@ from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
 from Tests.test_utils import print_error, print_warning, print_color, LOG_COLORS
 
-STORAGE_BASE_PATH = "content/packs"  # base path for packs in gcs
-BASE_PACK = "Base"  # base pack name
-USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images
-GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
-
 # the format is defined in issue #19786, may change in the future
 DIR_NAME_TO_CONTENT_TYPE = {
     "Classifiers": "classifier",
@@ -31,6 +26,44 @@ DIR_NAME_TO_CONTENT_TYPE = {
     "Scripts": "automation",
     "Widgets": "widget"
 }
+
+
+class GCPConfig(object):
+    STORAGE_BASE_PATH = "content/packs"  # base path for packs in gcs
+    USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images
+    GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
+    BASE_PACK = "Base"  # base pack name
+
+
+class ContentRepoPaths(object):
+    CONTENT_PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
+    IGNORED_FILES = ['__init__.py', 'ApiModules']  # files to ignore inside Packs folder
+    IGNORED_PATHS = [os.path.join(CONTENT_PACKS_FOLDER, p) for p in IGNORED_FILES]
+    CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
+    PACKS_FULL_PATH = os.path.join(CONTENT_ROOT_PATH, CONTENT_PACKS_FOLDER)  # full path to Packs folder in content repo
+
+
+class PackFolders(enum.Enum):
+    # INTEGRATIONS_FOLDER = "Integrations"  # integrations folder name inside pack
+    pass
+
+
+class PackStatus(enum.Enum):
+    """Enum of pack upload status, is used in printing upload summary.
+
+    """
+    SUCCESS = "Successfully uploaded pack data to gcs"
+    FAILED_IMAGES_UPLOAD = "Failed to upload pack integration images to gcs"
+    FAILED_AUTHOR_IMAGE_UPLOAD = "Failed to upload pack author image to gcs"
+    FAILED_METADATA_PARSING = "Failed to parse and create metadata.json"
+    FAILED_COLLECT_ITEMS = "Failed to collect pack content items data"
+    FAILED_ZIPPING_PACK_ARTIFACTS = "Failed zipping pack artifacts"
+    FAILED_SIGNING_PACKS = "Failed to sign the packs"
+    FAILED_PREPARING_INDEX_FOLDER = "Failed in preparing and cleaning necessary index files"
+    FAILED_UPDATING_INDEX_FOLDER = "Failed updating index folder"
+    FAILED_UPLOADING_PACK = "Failed in uploading pack zip to gcs"
+    PACK_ALREADY_EXISTS = "Specified pack already exists in gcs under latest version"
+    FAILED_REMOVING_PACK_SKIPPED_FOLDERS = "Failed to remove pack hidden and skipped folders"
 
 
 class Pack(object):
@@ -714,24 +747,6 @@ class Pack(object):
         if os.path.exists(self._pack_path):
             shutil.rmtree(self._pack_path)
             print(f"Cleanup {self._pack_name} pack from: {self._pack_path}")
-
-
-class PackStatus(enum.Enum):
-    """Enum of pack upload status, is used in printing upload summary.
-
-    """
-    SUCCESS = "Successfully uploaded pack data to gcs"
-    FAILED_IMAGES_UPLOAD = "Failed to upload pack integration images to gcs"
-    FAILED_AUTHOR_IMAGE_UPLOAD = "Failed to upload pack author image to gcs"
-    FAILED_METADATA_PARSING = "Failed to parse and create metadata.json"
-    FAILED_COLLECT_ITEMS = "Failed to collect pack content items data"
-    FAILED_ZIPPING_PACK_ARTIFACTS = "Failed zipping pack artifacts"
-    FAILED_SIGNING_PACKS = "Failed to sign the packs"
-    FAILED_PREPARING_INDEX_FOLDER = "Failed in preparing and cleaning necessary index files"
-    FAILED_UPDATING_INDEX_FOLDER = "Failed updating index folder"
-    FAILED_UPLOADING_PACK = "Failed in uploading pack zip to gcs"
-    PACK_ALREADY_EXISTS = "Specified pack already exists in gcs under latest version"
-    FAILED_REMOVING_PACK_SKIPPED_FOLDERS = "Failed to remove pack hidden and skipped folders"
 
 
 def input_to_list(input_data):

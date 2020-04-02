@@ -10,7 +10,7 @@ import google.auth
 from google.cloud import storage
 from datetime import datetime
 from zipfile import ZipFile
-from Tests.Marketplace.marketplace_services import Pack, PackStatus, STORAGE_BASE_PATH
+from Tests.Marketplace.marketplace_services import Pack, PackStatus
 from Tests.test_utils import run_command, print_error, print_warning, print_color, LOG_COLORS
 
 # global constants
