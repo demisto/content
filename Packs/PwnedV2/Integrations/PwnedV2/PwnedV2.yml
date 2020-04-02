@@ -32,15 +32,14 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Uses the Have I Been Pwned? service to check whether email addresses
-  or domains were compromised in previous breaches.
+description: Uses the Have I Been Pwned? service to check whether email addresses, domains, or usernames were compromised in previous breaches.
 display: Have I Been Pwned? v2
 name: Have I Been Pwned? V2
 script:
   commands:
   - arguments:
     - default: true
-      description: The email address to check (CSV supported).
+      description: Comma-separated list of email addresses to check.
       isArray: true
       name: email
       required: true
@@ -81,7 +80,7 @@ script:
       type: Number
   - arguments:
     - default: true
-      description: The domain to check (CSV supported).
+      description: Comma-separated list of domains to check.
       isArray: true
       name: domain
       required: true
@@ -121,7 +120,7 @@ script:
       type: Number
   - arguments:
     - default: true
-      description: The email address to check (CSV supported).
+      description: Comma-separated list of email addresses to check.
       isArray: true
       name: email
       required: true
@@ -162,7 +161,7 @@ script:
       type: Number
   - arguments:
     - default: true
-      description: The domain to check (CSV supported).
+      description: Comma-separated list of domains to check.
       isArray: true
       name: domain
       required: true
@@ -195,14 +194,14 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score.
+      description: Vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
   - arguments:
     - default: true
-      description: The username to check (CSV supported).
+      description: Comma-separated list of usernames to check.
       isArray: true
       name: username
       required: true
@@ -226,7 +225,7 @@ script:
       description: For malicious usernames, the vendor that made the decision.
       type: String
     - contextPath: Username.Malicious.Description
-      description: For malicious username, the reason that the vendor made the decision.
+      description: For malicious usernames, the reason that the vendor made the decision.
       type: String
   feed: false
   isfetch: false
