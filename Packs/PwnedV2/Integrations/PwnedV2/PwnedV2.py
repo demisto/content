@@ -83,13 +83,11 @@ def http_request(method, url_suffix, params=None, data=None):
 
 def html_description_to_human_readable(breach_description):
     """
-
-    Args:
-        breach_description: Description of breach from API response
-
-    Returns: Description string that altered HTML urls to clickable urls
+    Executing the pwned request for usernames list, in order to support list input, the function returns 3 lists of
+    outputs
+    :param breach_description: Description of breach from API response
+    :return: Description string that altered HTML urls to clickable urls
     for better readability in war-room
-
     """
     html_link_pattern = re.compile('<a href="(.+?)"(.+?)>(.+?)</a>')
     patterns_found = html_link_pattern.findall(breach_description)
@@ -223,12 +221,21 @@ def set_retry_end_time():
 
 
 def test_module(args_dict):
+    """
+    If the http request was successful the test will return OK
+    :param args_dict: needed in order to keep the commands convention.
+    :return: 3 arrays of outputs
+    """
     http_request('GET', SUFFIXES.get("test"))
     return ['ok'], [None], [None]
 
 
-# returning 3 lists
 def pwned_email_command(args_dict):
+    """
+    Executing the pwned request for emails list, in order to support list input, the function returns 3 lists of outputs
+   :param args_dict: the demisto argument - in this case the email list is needed
+   :return: 3 arrays of outputs
+   """
     email_list = argToList(args_dict.get('email', ''))
     api_email_res_list, api_paste_res_list = pwned_email(email_list)
 
@@ -241,8 +248,12 @@ def pwned_email_command(args_dict):
     return md_list, ec_list, api_email_res_list
 
 
-# return lists of api_email_res and api_paste_res
 def pwned_email(email_list):
+    """
+    Executing the http requests
+    :param email_list: the email list that needed for the http requests
+    :return: 2 arrays of http requests outputs
+    """
     api_email_res_list = []
     api_paste_res_list = []
 
@@ -256,6 +267,12 @@ def pwned_email(email_list):
 
 
 def pwned_domain_command(args_dict):
+    """
+    Executing the pwned request for domains list, in order to support list input, the function returns 3 lists of
+    outputs
+   :param args_dict: the demisto argument - in this case the domain list is needed
+   :return: 3 arrays of outputs
+   """
     domain_list = argToList(args_dict.get('domain', ''))
     api_res_list = pwned_domain(domain_list)
 
@@ -269,6 +286,11 @@ def pwned_domain_command(args_dict):
 
 
 def pwned_domain(domain_list):
+    """
+    Executing the http request
+    :param domain_list: the domains list that needed for the http requests
+    :return: an array of http requests outputs
+    """
     api_res_list = []
     for domain in domain_list:
         suffix = SUFFIXES.get("domain") + domain + SUFFIXES.get("domain_truncate_verified")
@@ -277,6 +299,12 @@ def pwned_domain(domain_list):
 
 
 def pwned_username_command(args_dict):
+    """
+    Executing the pwned request for usernames list, in order to support list input, the function returns 3 lists of
+    outputs
+    :param args_dict: the demisto argument - in this case the username list is needed
+    :return: 3 arrays of outputs
+    """
     username_list = argToList(args_dict.get('username', ''))
     api_res_list = pwned_username(username_list)
 
@@ -290,6 +318,11 @@ def pwned_username_command(args_dict):
 
 
 def pwned_username(username_list):
+    """
+    Executing the http request
+    :param username_list: the username list that needed for the http requests
+    :return: an array of http requests outputs
+    """
     api_res_list = []
     for username in username_list:
         suffix = SUFFIXES.get("username") + username + SUFFIXES.get("username_truncate_verified")
