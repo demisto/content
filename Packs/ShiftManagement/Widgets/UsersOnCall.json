@@ -1,6 +1,6 @@
 {
-  "id": "GetUsersOnCall",
-  "name": "GetUsersOnCall",
+  "id": "UsersOnCall",
+  "name": "UsersOnCall",
   "dataType": "scripts",
   "widgetType": "text",
   "query": "GetUsersOnCall"
