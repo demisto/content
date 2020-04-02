@@ -270,24 +270,28 @@ class Project(object):
         return False
 
     def get_matching_column(self, issue_id, issue_info):
+        column_name = ''
         if 'PendingSupport' in issue_info['labels']:
             if not self.is_in_column('Pending Support', issue_id):
                 column_name = 'Pending Support'
 
-            else:  # In Case he is in the queue already
-                return None, None
-
-        elif not issue_info['assignees'] and not self.is_in_column('Queue', issue_id):
-            column_name = 'Queue'
+        elif not issue_info['assignees']:
+            if not self.is_in_column('Queue', issue_id):
+                column_name = 'Queue'
 
         elif issue_info['assignees']:
-            #TODO: if you have review, if review approved
-            column_name = 'In progress'
+            if issue_info['pull_request']:
+                pull_request = issue_info['pull_request']
+                if pull_request['review_completed'] and 'kirbles19' in pull_request['assignees']:
+                    column_name = 'Waiting for Docs'
 
-        else:
-            column_name = 'Queue'
+                else:
+                    column_name = 'Review in progress'
 
-        column_id = self.column_name_to_details[column_name]['id']
+            else:
+                column_name = 'In progress'
+
+        column_id = self.column_name_to_details.get(column_name, {}).get('id', '')
         return column_name, column_id
 
     def get_card_id(self, column_name, issue_id):
@@ -298,33 +302,14 @@ class Project(object):
     def re_order_issues(self, client, issues):
         for issue_id, issue_details in issues.issue_id_to_data.items():
             column_name, column_id = self.get_matching_column(issue_id, issue_details)
+            if not column_id:
+                print(f"No need to move card {issue_id}")
+                continue
+
             card_id = self.get_card_id(column_name, issue_id)
-
             #TODO: add treatment of after_card_id
-            #todo: add treatment of pull request
-
             print("moving issue '{}' to '{}'".format(issue_details['title'], column_name))
             client.move_issue_in_project(card_id, column_id)
-
-            if 'PendingSupport' not in issue_details['labels'] and any([issue_id == val['issue_id'] for val in
-                                                                        self.column_name_to_details['Pending Support'][
-                                                                            'cards'].values()]):
-
-                if issue_details['assignees']:
-                    column_id = self.column_name_to_details['In progress']['id']
-
-                else:
-                    column_id = self.column_name_to_details['Queue']['id']
-
-                card_id = self.get_card_id(issue_id)
-                client.move_issue_in_project(card_id, column_id)
-
-            if issue_details['assignees'] and any(
-                    [issue_id == val['issue_id'] for val in self.column_name_to_details['Queue']['cards'].values()]):
-                column_id = self.column_name_to_details['In progress']['id']
-
-                card_id = self.get_card_id(issue_id)
-                client.move_issue_in_project(card_id, column_id)
 
 
 class Issues(object):
@@ -341,7 +326,7 @@ class Issues(object):
                 'number': node_data['number'],
                 'assignees': self.extract_issue_assignees(node_data['assignees']['edges']),
                 'labels': labels,
-                'pull_request': self.extract_pull_request(node_data)  # TODO: update in the request
+                'pull_request': self.extract_pull_request(node_data)
             }
 
         self.issue_id_to_data = issue_id_to_data
