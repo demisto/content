@@ -217,18 +217,15 @@ class GraphQLClient(object):
 
 class Project(object):
     def __init__(self, git_hub_project):
-        all_issues = set()
-        column_name_to_details = {}
+        self.all_issues = set()
+        self.column_name_to_details = {}
         for column_node in git_hub_project['columns']['nodes']:
             card_id_to_issue_details = self.extract_card_node_data(column_node)
-            column_name_to_details[column_node['name']] = {
+            self.column_name_to_details[column_node['name']] = {
                 'id': column_node['id'],
                 'cards': card_id_to_issue_details
             }
-            all_issues = all_issues.union({val['issue_id'] for val in card_id_to_issue_details.values()})
-
-        self.column_name_to_details = column_name_to_details
-        self.all_issues = all_issues
+            self.all_issues = self.all_issues.union({val['issue_id'] for val in card_id_to_issue_details.values()})
 
     def extract_card_node_data(self, column_node):
         card_id_to_issue_details = {}
@@ -257,6 +254,8 @@ class Project(object):
 
             print("Adding issue '{}' to column '{}'".format(issues.issue_id_to_data[issue_id]['title'], column_name))
             client.add_issues_to_project(issue_id, column_id)
+
+        #todo: need to get the new card id
 
     def is_in_column(self, column_name, issue_id):
         for card in self.column_name_to_details[column_name]['cards'].values():
