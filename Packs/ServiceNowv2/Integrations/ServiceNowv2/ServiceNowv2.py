@@ -1,11 +1,12 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-import re
-import requests
 import json
-from datetime import datetime
+import re
 import shutil
+from datetime import datetime
+from typing import List, Tuple, Dict
+
+import requests
+
+from CommonServerPython import *
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -340,10 +341,10 @@ class Client(BaseClient):
 
         try:
             obj = res.json()
-        except Exception as e:
+        except Exception as err:
             if not res.content:
                 return ''
-            raise Exception('Error parsing reply - {} - {}'.format(res.content, str(e)))
+            raise Exception(f'Error parsing reply - {res.content} - {str(err)}')
 
         if 'error' in obj:
             message = obj.get('error', {}).get('message')
@@ -361,7 +362,7 @@ class Client(BaseClient):
 
         return obj
 
-    def get_table_name(self, ticket_type=None) -> str:
+    def get_table_name(self, ticket_type: str = '') -> str:
         """Get the relevant table name from th client.
 
         Args:
@@ -481,7 +482,7 @@ class Client(BaseClient):
         body = get_body(fields, custom_fields)
         return self.send_request(f'table/{table_name}/{record_id}', 'PATCH', body=body)
 
-    def create(self, table_name: str, fields: list, custom_fields: list) -> dict:
+    def create(self, table_name: str, fields: dict, custom_fields: dict) -> dict:
         """Creates a ticket or a record by sending a POST request.
 
         Args:
@@ -597,8 +598,8 @@ def get_ticket_command(client: Client, args: dict):
         Demisto Outputs.
     """
     ticket_type = client.get_table_name(args.get('ticket_type'))
-    ticket_id = args.get('id')
-    number = args.get('number')
+    ticket_id = str(args.get('id', ''))
+    number = str(args.get('number', ''))
     get_attachments = args.get('get_attachments', 'false')
     custom_fields = str(args.get('custom_fields', ''))
 
@@ -616,7 +617,7 @@ def get_ticket_command(client: Client, args: dict):
     entries = []  # type: List[Dict]
 
     if get_attachments.lower() != 'false':
-        entries = client.get_ticket_attachment_entries(client, ticket.get('sys_id'))
+        entries = client.get_ticket_attachment_entries(ticket.get('sys_id'))
 
     hr = get_ticket_human_readable(ticket, ticket_type)
     context = get_ticket_context(ticket, ticket_type)
@@ -653,13 +654,13 @@ def update_ticket_command(client: Client, args: dict):
     Returns:
         Demisto Outputs.
     """
-    custom_fields = split_fields(args.get('custom_fields'))
-    template_name = args.get('template')
-    ticket_type = client.get_table_name(args.get('ticket_type'))
-    ticket_id = args.get('id')
+    custom_fields = split_fields(args.get('custom_fields', ''))
+    template_name = str(args.get('template', ''))
+    ticket_type = client.get_table_name(args.get('ticket_type', ''))
+    ticket_id = str(args.get('id', ''))
 
     if template_name:
-        template_name = client.get_template(client, template_name)
+        template_name = client.get_template(template_name)
     fields = get_ticket_fields(args, template_name, ticket_type)
 
     result = client.update(ticket_type, ticket_id, fields, custom_fields)
@@ -913,8 +914,8 @@ def delete_record_command(client: Client, args: dict):
     Returns:
         Demisto Outputs.
     """
-    record_id = args.get('id')
-    table_name = args.get('table_name')
+    record_id = str(args.get('id', ''))
+    table_name = str(args.get('table_name', ''))
 
     result = client.delete(table_name, record_id)
 
@@ -939,9 +940,9 @@ def add_link_command(client: Client, args: dict):
     Returns:
         Demisto Outputs.
     """
-    ticket_id = args.get('id')
+    ticket_id = str(args.get('id', ''))
     key = 'comments' if args.get('post-as-comment', 'false').lower() == 'true' else 'work_notes'
-    link_argument = args.get('link')
+    link_argument = str(args.get('link', ''))
     text = args.get('text', link_argument)
     link = f'[code]<a class="web" target="_blank" href="{link_argument}" >{text}</a>[/code]'
     ticket_type = client.get_table_name(args.get('ticket_type'))
@@ -949,7 +950,7 @@ def add_link_command(client: Client, args: dict):
     result = client.add_link(ticket_id, ticket_type, key, link)
 
     if not result or 'result' not in result:
-        return_error('Unable to retrieve response')
+        raise Exception('Unable to retrieve response.')
 
     headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
                'Active', 'Close Notes', 'Close Code', 'Description', 'Opened At', 'Due Date', 'Resolved By',
@@ -978,9 +979,9 @@ def add_comment_command(client: Client, args: dict):
     Returns:
         Demisto Outputs.
     """
-    ticket_id = args.get('id')
+    ticket_id = str(args.get('id', ''))
     key = 'comments' if args.get('post-as-comment', 'false').lower() == 'true' else 'work_notes'
-    text = args['comment']
+    text = str(args.get('comment'))
     ticket_type = client.get_table_name(args.get('ticket_type'))
 
     result = client.add_comment(ticket_id, ticket_type, key, text)
@@ -1017,8 +1018,8 @@ def upload_file_command(client: Client, args: dict):
         Demisto Outputs.
     """
     ticket_type = client.get_table_name(args.get('ticket_type'))
-    ticket_id = args.get('id')
-    file_id = args.get('file_id')
+    ticket_id = str(args.get('id', ''))
+    file_id = str(args.get('file_id', ''))
 
     file_name = args.get('file_name', demisto.dt(demisto.context(), "File(val.EntryID=='" + file_id + "').Name"))
     if not file_name:  # in case of info file
@@ -1074,10 +1075,10 @@ def query_tickets_command(client: Client, args: dict):
     sys_param_limit = args.get('limit', client.sys_param_limit)
     sys_param_offset = args.get('offset', client.sys_param_offset)
 
-    sys_param_query = args.get('query')
+    sys_param_query = str(args.get('query', ''))
     if not sys_param_query:
         # backward compatibility
-        sys_param_query = args.get('sysparm_query')
+        sys_param_query = str(args.get('sysparm_query', ''))
 
     ticket_type = client.get_table_name(args.get('ticket_type'))
 
@@ -1614,7 +1615,7 @@ def main():
 
     fetch_time = params.get('fetch_time', '10 minutes').strip()
     sysparm_query = params.get('sysparm_query')
-    sysparm_limit = params.get('fetch_limit', 10)
+    sysparm_limit = int(params.get('fetch_limit', 10))
     timestamp_field = params.get('timestamp_field', 'opened_at')
     ticket_type = params.get('ticket_type', 'incident')
     get_attachments = params.get('get_attachments', False)

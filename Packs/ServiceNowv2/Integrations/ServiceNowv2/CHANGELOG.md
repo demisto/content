@@ -1,2 +1,2 @@
 ## [Unreleased]
-Added the *custom_fields* argument to the ***servicenow-get-ticket*** command.
+Added the *custom_field* argument to the ***servicenow-get-ticket*** command.
