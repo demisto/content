@@ -306,7 +306,7 @@ def search_alarms_command():
 def search_alarms(start_time=None, end_time=None, status=None, priority=None, show_suppressed=None,
                   limit=100, rule_intent=None, rule_method=None, rule_strategy=None, direction='desc'):
     params = {
-        'page': 1,
+        'page': 0,
         'size': limit,
         'sort': 'timestamp_occured,{}'.format(direction),
         'suppressed': show_suppressed
@@ -422,6 +422,12 @@ def fetch_incidents():
     if incidents:
         #  updating according to latest incident
         time_str = str(incidents[-1].get('occurred'))
+
+        # add one second to last incident occurred time to avoid duplications
+        occurred = datetime.strptime(time_str, '%Y-%m-%dT%H:%M:%S.%fZ')
+        occurred = occurred + timedelta(seconds=1)
+        time_str = occurred.strftime("%Y-%m-%dT%H:%M:%S.000Z")
+
         last_fetch = str(date_to_timestamp(time_str, date_format=parse_time(time_str)))
 
     demisto.setLastRun({'timestamp': last_fetch})
