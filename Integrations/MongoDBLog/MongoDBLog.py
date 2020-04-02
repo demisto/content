@@ -15,8 +15,18 @@ PASSWORD = demisto.params().get('credentials').get('password')
 URI = demisto.params().get('uri')
 # Get Database
 DATABASE = demisto.params().get('database')
-# Connect to MongoDB - Need to add credentials and lock down MongoDB (add auth)
-CLIENT = MongoClient(URI, username=USERNAME, password=PASSWORD, authSource=DATABASE, authMechanism='SCRAM-SHA-1')
+USE_SSL = demisto.params().get('use_ssl', False)
+INSECURE = demisto.params().get('insecure', False)
+TIMEOUT = 5000
+if INSECURE and not USE_SSL:
+    raise DemistoException(f'"Trust any certificate (not secure)" must be ticked with "Use TLS/SSL secured connection"')
+if not INSECURE and not USE_SSL:
+    # Connect to MongoDB - Need to add credentials and lock down MongoDB (add auth)
+    CLIENT = MongoClient(URI, username=USERNAME, password=PASSWORD, authSource=DATABASE, authMechanism='SCRAM-SHA-1',
+                         ssl=USE_SSL, socketTimeoutMS=TIMEOUT)
+else:
+    CLIENT = MongoClient(URI, username=USERNAME, password=PASSWORD, authSource=DATABASE, authMechanism='SCRAM-SHA-1',
+                         ssl=USE_SSL, tlsAllowInvalidCertificates=INSECURE, socketTimeoutMS=TIMEOUT)
 DB = CLIENT[DATABASE]
 # Set Collection
 COLLECTION_NAME = demisto.params().get('collection')
@@ -33,39 +43,43 @@ def test_module():
 def write_log_json():
     """ Gather Args, form json document, write document to MondoDB """
     timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+00:00")
-    entity = demisto.args().get('entity')
+    id_ = demisto.args().get('id')
     playbook = demisto.args().get('playbook')
     action = demisto.args().get('action')
-    analyst = demisto.args().get('analyst')
+    user = demisto.args().get('user')
+    message = demisto.args.get('message')
     logjson = {
         'timestamp': timestamp,
-        'entity': entity,
+        'id': id_,
         'playbook': playbook,
         'action': action,
-        'analyst': analyst,
+        'user': user,
+        'message': message
     }
     # Add json to the document collection in MondoDB
     result = COLLECTION.insert_one(logjson)
     entry_id = result.inserted_id
 
     context = {
-        'ID': str(entry_id),
+        'EntryID': str(entry_id),
         'Timestamp': timestamp,
-        'Entity': entity,
+        'ID': id_,
         'Playbook': playbook,
         'Action': action,
-        'Analyst': analyst
+        'User': user,
+        'Message': message
     }
     ec = {
-        'MongoDB.Entry(val.ID === obj.ID)': context
+        'MongoDB.Entry(val.EntryID === obj.EntryID)': context
     }
     return 'MongoDB Log - 1 document/record added', ec, {}
 
 
 def read_log_json():
     """ Get all log documents/records from MondoDB """
+    limit = int(demisto.args().get('limit'))
     # Point to all the documents
-    cursor = COLLECTION.find({}, {'_id': False})
+    cursor = COLLECTION.find({}, {'_id': False}).limit(limit)
     # Create an empty log list
     entries = []
     # Iterate through those documents
@@ -74,7 +88,8 @@ def read_log_json():
             # Append log entry to list
             entries.append(i)
         return_json = {COLLECTION_NAME: entries}
-        return return_json, {}, {}
+        human_readable = tableToMarkdown(f'The log documents/records for collection "{COLLECTION_NAME}"', return_json)
+        return human_readable, {}, {}
     return 'MongoDB - no documents/records - Log collection is empty', {}, {}
 
 

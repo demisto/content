@@ -15,8 +15,19 @@ PASSWORD = demisto.params().get('credentials').get('password')
 URI = demisto.params().get('uri')
 # Get Database
 DATABASE = demisto.params().get('database')
-# Connect to MongoDB - Need to add credentials and lock down MongoDB (add auth)
-CLIENT = MongoClient(URI, username=USERNAME, password=PASSWORD, authSource=DATABASE, authMechanism='SCRAM-SHA-1')
+USE_SSL = demisto.params().get('use_ssl', False)
+INSECURE = demisto.params().get('insecure', False)
+TIMEOUT = 5000
+if INSECURE and not USE_SSL:
+    raise DemistoException(f'"Trust any certificate (not secure)" must be ticked with "Use TLS/SSL secured connection"')
+if not INSECURE and not USE_SSL:
+    # Connect to MongoDB - Need to add credentials and lock down MongoDB (add auth)
+    CLIENT = MongoClient(URI, username=USERNAME, password=PASSWORD, authSource=DATABASE, authMechanism='SCRAM-SHA-1',
+                         ssl=USE_SSL, socketTimeoutMS=TIMEOUT)
+else:
+    CLIENT = MongoClient(URI, username=USERNAME, password=PASSWORD, authSource=DATABASE, authMechanism='SCRAM-SHA-1',
+                         ssl=USE_SSL, tlsAllowInvalidCertificates=INSECURE, socketTimeoutMS=TIMEOUT)
+
 DB = CLIENT[DATABASE]
 # Set Collection
 COLLECTION_NAME = demisto.params().get('collection')
@@ -34,7 +45,7 @@ def write_key_value_command():
     """ Write key/value document to MondoDB """
     # Get Args needed for the command
     timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+00:00")
-    incident = demisto.args().get('incident_id')
+    incident = demisto.args().get('id')
     key = demisto.args().get('key')
     value = demisto.args().get('value')
     logjson = {
@@ -89,29 +100,10 @@ def write_key_value_command():
     return f'Incident "{incident}" - key/value collection - 1 document updated', ec, {}
 
 
-def get_key_info_command():
-    """ Get key/value info from MondoDB """
-    # Get Args needed for the command
-    incident = demisto.args().get('incident_id')
-    key = demisto.args().get('key')
-    # Search Collection for incident_id and key
-    search = incident + '.key'
-    result = COLLECTION.find_one({search: key}, {'_id': False})
-    contents = {
-        'Incident': incident,
-        'Key': key,
-        'Value': result.get(incident).get('value'),
-        'Modified': result.get(incident).get('modified')
-    }
-    human_readable = tableToMarkdown(f'Information about {key} in incident {incident}', contents)
-    ec = {'MongoDB.Entry(val.Key === obj.Key)': contents}
-    return human_readable, ec, {}
-
-
 def get_key_value_command():
     """ Return value for key stored for the incident """
     # Get Args needed for the command
-    incident = demisto.args().get('incident_id')
+    incident = demisto.args().get('id')
     key = demisto.args().get('key')
     # Search Collection for incident_id and key
     search = incident + '.key'
@@ -120,7 +112,8 @@ def get_key_value_command():
     contents = {
         'Incident': incident,
         'Key': key,
-        'Value': value
+        'Value': value,
+        'Modified': result.get(incident).get('modified')
     }
     human_readable = tableToMarkdown(f'The key and value that is stored for the incident', contents)
     ec = {'MongoDB.Entry(val.Key === obj.Key)': contents}
@@ -129,7 +122,7 @@ def get_key_value_command():
 
 def delete_key_command():
     """ Removes the key/value pair specified by key and incident_id """
-    incident = demisto.args().get('incident_id')
+    incident = demisto.args().get('id')
     key = demisto.args().get('key')
     # Search Collection for incident_id and key
     search = incident + '.key'
@@ -144,7 +137,7 @@ def delete_key_command():
 def num_keys_command():
     """ Returns the count of the key/value pairs for the incident """
     # Get Args needed for the command
-    incident = demisto.args().get('incident_id')
+    incident = demisto.args().get('id')
     # Search Collection counting matching incident_id
     cursor = COLLECTION.find({})
     count = 0
@@ -157,7 +150,7 @@ def num_keys_command():
 def list_key_values_command():
     """ Returns all the key/value pairs stored for the incident """
     # Get Args needed for the command
-    incident = demisto.args().get('incident_id')
+    incident = demisto.args().get('id')
     # Search Collection for matching incident_id
     return_json = []  # type: ignore
     context = []
@@ -192,9 +185,9 @@ def list_key_values_command():
     return human_readable, ec, {}
 
 
-def purge_keys_command():
+def purge_entries_command():
     """ Purges all the key/value pairs stored for the incident """
-    incident = demisto.args().get('incident_id')
+    incident = demisto.args().get('id')
     cursor = COLLECTION.find({})
     deleted = 0
     # Iterate, collecting any name/value pairs associated with the incident
@@ -208,6 +201,22 @@ def purge_keys_command():
     return f'Incident "{incident}" key/value pairs purged - {str(deleted)} documents/records deleted', {}, {}
 
 
+def list_incidents_command():
+    """ List all incidents in the collection """
+    cursor = COLLECTION.find({}, {'_id': False})
+    incidents = []
+    results = []
+    for incident in cursor:
+        for name in incident:
+            incidents.append(name)
+        for i in incidents:
+            if i not in results:
+                results.append(i)
+    human_readable = tableToMarkdown(f'List of incidents in collecion {COLLECTION_NAME}', results,
+                                     headers=['Incidents'])
+    return human_readable, {}, {}
+
+
 def main():
     LOG("Command being called is %s" % (demisto.command()))
     try:
@@ -216,18 +225,18 @@ def main():
             return_outputs(*test_module())
         elif demisto.command() == 'mongodb-write-key-value':
             return_outputs(*write_key_value_command())
-        elif demisto.command() == 'mongodb-get-key-info':
-            return_outputs(*get_key_info_command())
         elif demisto.command() == 'mongodb-get-key-value':
             return_outputs(*get_key_value_command())
         elif demisto.command() == 'mongodb-list-key-values':
             return_outputs(*list_key_values_command())
         elif demisto.command() == 'mongodb-delete-key':
             return_outputs(*delete_key_command())
-        elif demisto.command() == 'mongodb-purge-keys':
-            return_outputs(*purge_keys_command())
+        elif demisto.command() == 'mongodb-purge-entries':
+            return_outputs(*purge_entries_command())
         elif demisto.command() == 'mongodb-get-keys-number':
             return_outputs(*num_keys_command())
+        elif demisto.command() == 'mongodb-list-incidents':
+            return_outputs(*list_incidents_command())
     except Exception as e:
         return_error(f'MongoDB: {str(e)}', error=e)
 

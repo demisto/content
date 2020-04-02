@@ -2457,10 +2457,6 @@
             "playbookID": "illuminate Integration Demonstration - Test"
         },
         {
-            "integrations": "MongoDB Impacted",
-            "playbookID": "MongoDB Impacted - Test"
-        },
-        {
             "integrations": "MongoDB Key Value Store",
             "playbookID": "MongoDB KeyValueStore - Test",
             "pid_threshold": 12
@@ -2807,7 +2803,6 @@
         "Syslog Sender": "syslog",
         "syslog": "syslog",
         "MongoDB Log": "Our instance not using SSL",
-        "MongoDB Impacted": "Our instance not using SSL",
         "MongoDB Key Value Store": "Our instance not using SSL"
     },
     "docker_thresholds": {
