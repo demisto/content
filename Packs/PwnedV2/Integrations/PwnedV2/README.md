@@ -1,7 +1,7 @@
 ## Overview
 ---
 
-Uses the Have I Been Pwned? service to check whether email addresses or domains were compromised in previous breaches.
+Uses the Have I Been Pwned? service to check whether email addresses, domains, or usernames were compromised in previous breaches.
 This integration was integrated and tested with version xx of Have I Been Pwned? V2
 ## Have I Been Pwned? V2 Playbook
 ---
@@ -31,8 +31,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 2. pwned-domain
 3. email
 4. domain
-5. username
-6. pwned-username
+5. pwned-username
 ### 1. pwned-email
 ---
 Checks if an email address was compromised.
@@ -45,7 +44,7 @@ Checks if an email address was compromised.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| email | The email address to check (CSV supported). | Required | 
+| email | Comma-separated list of email addresses to check. | Required | 
 
 
 ##### Context Output
@@ -128,7 +127,7 @@ Checks if a domain was compromised.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | The domain to check (CSV supported). | Required | 
+| domain | Comma-separated list of domains to check. | Required | 
 
 
 ##### Context Output
@@ -191,7 +190,7 @@ Checks if an email address was compromised.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| email | The email address to check (CSV supported). | Required | 
+| email | Comma-separated list of email addresses to check. | Required | 
 
 
 ##### Context Output
@@ -274,7 +273,7 @@ Checks if a domain was compromised.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | The domain to check (CSV supported). | Required | 
+| domain | Comma-separated list of domains to check. | Required | 
 
 
 ##### Context Output
@@ -288,7 +287,7 @@ Checks if a domain was compromised.
 | Domain.Malicious.Description | String | For malicious domains, the reason that the vendor made the decision. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Vendor | String | Vendor used to calculate the score. | 
 | DBotScore.Score | Number | The actual score. | 
 
 
@@ -325,71 +324,7 @@ In October 2013, 153 million Adobe accounts were breached with each containing a
 Data breached: **Email addresses,Password hints,Passwords,Usernames**
 
 
-### 5. username
----
-Checks if a username was compromised.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
-##### Base Command
-
-`username`
-##### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| username | The username to check (CSV supported). | Required | 
-
-
-##### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Username.Pwned-V2.Compromised.Vendor | String | For compromised usernames, the vendor that made the decision. | 
-| Username.Pwned-V2.Compromised.Reporters | String | For compromised usernames, the reporters for the vendor to make the compromised decision. | 
-| Username.Name | String | The username name. | 
-| Username.Malicious.Vendor | String | For malicious usernames, the vendor that made the decision. | 
-| Username.Malicious.Description | String | For malicious username, the reason that the vendor made the decision. | 
-
-
-##### Command Example
-```!username username="jondon" ```
-
-##### Context Example
-```
-{
-    "Domain": {
-        "Pwned-V2": {
-            "Compromised": {
-                "Vendor": "Have I Been Pwned? V2", 
-                "Reporters": "Gawker, hackforums.net"
-            }
-        }, 
-        "Name": "jondon"
-    }, 
-    "DBotScore": {
-        "Vendor": "Have I Been Pwned? V2", 
-        "Indicator": "jondon", 
-        "Score": 2, 
-        "Type": "domain"
-    }
-}
-```
-
-##### Human Readable Output
-### Have I Been Pwned query for username: *jondon*
-#### Gawker (gawker.com): 1247574 records breached [Verified breach]
-Date: **2010-12-11**
-
-In December 2010, Gawker was attacked by the hacker collective &quot;Gnosis&quot; in retaliation for what was reported to be a feud between Gawker and 4Chan. Information about Gawkers 1.3M users was published along with the data from Gawker's other web presences including Gizmodo and Lifehacker. Due to the prevalence of password reuse, many victims of the breach [then had their Twitter accounts compromised to send Acai berry spam](http://www.troyhunt.com/2011/01/why-your-apps-security-design-could.html).
-Data breached: **Email addresses,Passwords,Usernames**
-#### hackforums.net (hackforums.net): 191540 records breached [Verified breach]
-Date: **2011-06-25**
-
-In June 2011, the hacktivist group known as "LulzSec" leaked [one final large data breach they titled "50 days of lulz"](http://www.forbes.com/sites/andygreenberg/2011/06/25/lulzsec-says-goodbye-dumping-nato-att-gamer-data/). The compromised data came from sources such as AT&T, Battlefield Heroes and the [hackforums.net website](http://hackforums.net). The leaked Hack Forums data included credentials and personal information of nearly 200,000 registered forum users.
-Data breached: **Dates of birth,Email addresses,Instant messenger identities,IP addresses,Passwords,Social connections,Spoken languages,Time zones,User website URLs,Usernames,Website activity**
-
-
-### 6. pwned-username
+### 5. pwned-username
 ---
 Checks if a username was compromised.
 ##### Required Permissions
@@ -401,7 +336,7 @@ Checks if a username was compromised.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | The username to check (CSV supported). | Required | 
+| username | Comma-separated list of usernames to check. | Required | 
 
 
 ##### Context Output
@@ -412,7 +347,7 @@ Checks if a username was compromised.
 | Username.Pwned-V2.Compromised.Reporters | String | For compromised usernames, the reporters for the vendor to make the compromised decision. | 
 | Username.Name | String | The username name. | 
 | Username.Malicious.Vendor | String | For malicious usernames, the vendor that made the decision. | 
-| Username.Malicious.Description | String | For malicious username, the reason that the vendor made the decision. | 
+| Username.Malicious.Description | String | For malicious usernames, the reason that the vendor made the decision. | 
 
 
 ##### Command Example
@@ -453,6 +388,6 @@ In June 2011, the hacktivist group known as "LulzSec" leaked [one final large da
 Data breached: **Dates of birth,Email addresses,Instant messenger identities,IP addresses,Passwords,Social connections,Spoken languages,Time zones,User website URLs,Usernames,Website activity**
 
 
-## Possible Errors:
-* 'Max retry time has exceeded.'
-* 'Error in API call to Pwned Integration'
+## Possible Errors (DO NOT PUBLISH ON ZENDESK):
+* Max retry time has exceeded.
+* Error in API call to Pwned Integration
