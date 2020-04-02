@@ -1,0 +1,48 @@
+category: Messaging
+commonfields:
+  id: GooglePubSub
+  version: -1
+configuration:
+- display: Service Account Private Key file contents (JSON)
+  hidden: false
+  name: service_account_json
+  required: true
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: Google Cloud Pub / Sub is a fully-managed real-time messaging service
+  that allows you to send and receive messages between independent applications.
+display: Google Cloud PubSub
+name: GooglePubSub
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The name of whom you want to say hello to.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    deprecated: false
+    description: Hello command - prints hello to anyone
+    execution: false
+    name: helloworld-say-hello
+    outputs:
+    - contextPath: hello
+      description: Should be Hello **something** here
+      type: String
+  dockerimage: devdemisto/google-cloud-storage:1.0.0.7119
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
