@@ -175,8 +175,7 @@ def test_isolate_endpoint(requests_mock):
         "endpoint_id": "1111"
     }
 
-    readable_output, outputs, _ = isolate_endpoint_command(client, args)
-    assert outputs is None
+    readable_output, _, _ = isolate_endpoint_command(client, args)
     assert readable_output == 'The isolation request has been submitted successfully on Endpoint 1111.\n' \
                               'To check the endpoint isolation status please run:' \
                               ' !xdr-get-endpoints endpoint_id_list=1111 and look at the [is_isolated] field.'
@@ -236,8 +235,7 @@ def test_unisolate_endpoint(requests_mock):
         "endpoint_id": "1111"
     }
 
-    readable_output, outputs, _ = unisolate_endpoint_command(client, args)
-    assert outputs is None
+    readable_output, _, _ = unisolate_endpoint_command(client, args)
     assert readable_output == 'The un-isolation request has been submitted successfully on Endpoint 1111.\n' \
                               'To check the endpoint isolation status please run:' \
                               ' !xdr-get-endpoints endpoint_id_list=1111 and look at the [is_isolated] field.'

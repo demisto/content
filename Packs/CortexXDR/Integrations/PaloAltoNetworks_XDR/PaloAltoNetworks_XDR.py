@@ -960,7 +960,7 @@ def isolate_endpoint_command(client, args):
         f'The isolation request has been submitted successfully on Endpoint {endpoint_id}.\n'
         f'To check the endpoint isolation status please run: !xdr-get-endpoints endpoint_id_list={endpoint_id}'
         f' and look at the [is_isolated] field.',
-        None,
+        {f'{INTEGRATION_CONTEXT_BRAND}.Isolation.endpoint_id(val.endpoint_id == val.endpoint_id)': endpoint_id},
         None
     )
 
@@ -1001,7 +1001,7 @@ def unisolate_endpoint_command(client, args):
         f'The un-isolation request has been submitted successfully on Endpoint {endpoint_id}.\n'
         f'To check the endpoint isolation status please run: !xdr-get-endpoints endpoint_id_list={endpoint_id}'
         f' and look at the [is_isolated] field.',
-        None,
+        {f'{INTEGRATION_CONTEXT_BRAND}.UnIsolation.endpoint_id(val.endpoint_id == val.endpoint_id)': endpoint_id},
         None
     )
 
