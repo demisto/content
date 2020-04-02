@@ -1335,6 +1335,7 @@
         {
             "integrations": "Cisco Meraki",
             "playbookID": "Cisco-Meraki-Test"
+        },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender Advanced Threat Protection - Test",
