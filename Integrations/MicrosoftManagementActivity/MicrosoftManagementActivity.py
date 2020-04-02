@@ -169,16 +169,14 @@ class Client(BaseClient):
 
 
 def test_module(client):
-    fetch_delta = demisto.params().get('first_fetch_delta', '1440')
-    if not fetch_delta.isdigit():
-        return 'Error: first fetch start must be a positive integer.'
-    fetch_delta = int(fetch_delta)
-    if fetch_delta > 1440:
-        return 'Error: first fetch start cannot be more than 1440 minutes.'
-    access_token, token_data = client.get_access_token_data()
-    if not access_token:
-        return 'Error: unable to get perform successful authentication. Please re-submit parameters values.'
-    return 'ok'
+    params = demisto.params()
+    fetch_delta = params.get('first_fetch_delta', '24 hours')
+    user_input_fetch_start_date = parse_date_range(fetch_delta)
+    if datetime.now() - timedelta(days=7)  - timedelta(minutes=5)>= user_input_fetch_start_date:
+        return 'Error: first fetch time delta should not be over one week.'
+    if client.self_deployed and not params.get('auth_code'):
+        return 'Error: in the self_deployed authentication flow the authentication code parameter cannot be empty.'
+    return 'The basic parameters are ok, but please use the ms-management-activity-test command to test the credentials.'
 
 
 def get_start_or_stop_subscription_human_readable(content_type, start_or_stop):
@@ -386,24 +384,24 @@ def get_content_types_to_fetch(client):
     return content_types_to_fetch
 
 
-def get_fetch_start_and_end_time(last_run, first_fetch_delta_in_minutes):
-    if not last_run:
-        fetch_start_datetime = datetime.now() - timedelta(minutes=first_fetch_delta_in_minutes)
-        if first_fetch_delta_in_minutes > 1440:
-            fetch_delta_minus_one_day = first_fetch_delta_in_minutes - 1440
-            fetch_end_datetime = datetime.now() - timedelta(minutes=fetch_delta_minus_one_day)
-        else:
-            fetch_end_datetime = datetime.now()
+def get_fetch_end_time_based_on_start_time(fetch_start_datetime):
+    is_fetch_start_time_over_10_minutes_ago = (datetime.now() - timedelta(minutes=10) >= fetch_start_datetime)
+    if is_fetch_start_time_over_10_minutes_ago:
+        # Start and end time can't be over 24, so the fetch will end 24  hours after it's start.
+        fetch_end_datetime = fetch_start_datetime + timedelta(minutes=10)
+    else:
+        fetch_end_datetime = datetime.now()
+    return fetch_end_datetime
 
+
+def get_fetch_start_and_end_time(last_run, first_fetch_datetime):
+    if not last_run:
+        fetch_start_datetime = first_fetch_datetime
     else:
         last_fetch = last_run.get('last_fetch')
         fetch_start_datetime = datetime.strptime(last_fetch, DATE_FORMAT)
-        fetch_start_to_now_delta = datetime.now() - fetch_start_datetime
-        days_since_fetch_start = fetch_start_to_now_delta.days
-        if days_since_fetch_start > 0:
-            fetch_end_datetime = fetch_start_datetime + timedelta(days=1)
-        else:
-            fetch_end_datetime = datetime.now()
+
+    fetch_end_datetime = get_fetch_end_time_based_on_start_time(fetch_start_datetime)
 
     # The API expects strings of format YYYY:DD:MMTHH:MM:SS
     fetch_start_time_str = fetch_start_datetime.strftime(DATE_FORMAT)
@@ -472,7 +470,7 @@ def main():
     base_url = demisto.params().get('base_url', 'https://manage.office.com/api/v1.0/')
     verify_certificate = not demisto.params().get('insecure', False)
 
-    first_fetch_delta = demisto.params().get('first_fetch_delta', '1440').strip()
+    first_fetch_delta = demisto.params().get('first_fetch_delta', '24 hours').strip()
     first_fetch_delta = int(first_fetch_delta)
 
     proxy = demisto.params().get('proxy', False)
