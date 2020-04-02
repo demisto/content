@@ -59,6 +59,32 @@ jobs:
             - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
             - "f5:25:6a:e5:ac:4b:84:fb:60:54:14:82:f1:e9:6c:f9" # disable-secrets-detection
       - run:
+          name: Check if CircleCI's config file is up to date
+          when: always
+          command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping, Should not run on contributor's branch."
+              exit 0
+            fi
+            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo 'Skipping - running only in container number 0.'
+                exit 0;
+            fi
+            # Checks if there's any diff from master
+            if [[ `git diff origin/master -- .circleci/config.yml` ]]; then
+                # Checks if part of the branch's changes
+                if [[ -z `git diff origin/master..."$CIRCLE_BRANCH" --name-only | grep .circleci/config.yml` ]]; then
+                    echo ".circleci/config.yml has been changed. Merge from master"
+                    exit 1
+                else
+                    echo ".circleci/config.yml is part of the branch changes, proceeding"
+                    exit 0
+                fi
+            else
+                echo ".circleci/config.yml is up to date!"
+            fi
+      - run:
           name: Create ID Set
           when: always
           command: |
