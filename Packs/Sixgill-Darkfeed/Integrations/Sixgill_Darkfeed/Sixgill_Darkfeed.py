@@ -3,15 +3,15 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
 
-import requests
+from typing import Dict, List, Any, Callable
 from collections import OrderedDict
+import traceback
+import requests
 
 from sixgill.sixgill_request_classes.sixgill_auth_request import SixgillAuthRequest
 from sixgill.sixgill_feed_client import SixgillFeedClient
 from sixgill.sixgill_constants import FeedStream
 from sixgill.sixgill_utils import is_indicator
-from typing import Dict, List, Any, Callable
-import traceback
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -35,6 +35,9 @@ DESCRIPTION_FIELD_ORDER = OrderedDict([('Description', 'description'),
                                        ('Language', 'lang'),
                                        ('Indicator ID', 'id'),
                                        ('External references (e.g. MITRE ATT&CK)', 'external_reference')])
+
+HASH_MAPPING = {"hashes.md5": "md5", "hashes.\'sha-1\'": "sha1", "hashes.\'sha-256\'": "sha256",
+                "hashes.\'sha-512\'": "sha512", "hashes.ssdeep": "ssdeep"}
 
 ''' HELPER FUNCTIONS '''
 
@@ -105,6 +108,7 @@ def stix2_to_demisto_indicator(stix2obj: Dict[str, Any], log):
     indicators = []
     pattern = stix2obj.get("pattern", "")
     sixgill_feedid = stix2obj.get("sixgill_feedid", "")
+    hashes: Dict[str, Any] = {"md5": None, "sha1": None, "sha256": None, "sha512": None, "ssdeep": None}
 
     for match in stix_regex_parser.findall(pattern):
         try:
@@ -114,11 +118,21 @@ def stix2_to_demisto_indicator(stix2obj: Dict[str, Any], log):
                 indicators_name = demisto_indicator_map.get('name')
                 value = run_pipeline(value, demisto_indicator_map.get('pipeline', []), log)
                 demisto_indicator = to_demisto_indicator(value, indicators_name, stix2obj)
+
+                if demisto_indicator.get("type") == FeedIndicatorType.File and \
+                        HASH_MAPPING.get(sub_type.lower()) in hashes.keys():
+                    if HASH_MAPPING.get(sub_type.lower()):
+                        hashes[HASH_MAPPING[sub_type.lower()]] = value
                 indicators.append(demisto_indicator)
 
         except Exception as e:
             log.error(f"failed converting STIX object to Demisto indicator: {e}, STIX object: {stix2obj}")
             continue
+
+    if all(ioc.get("type") == FeedIndicatorType.File for ioc in indicators):
+        temp_indicator = indicators[0].copy()
+        temp_indicator["fields"].update({hash_k: hash_v for hash_k, hash_v in hashes.items() if hash_v is not None})
+        indicators = [temp_indicator]
 
     return indicators
 
