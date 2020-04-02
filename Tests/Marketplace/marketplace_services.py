@@ -18,20 +18,21 @@ PACKS_FULL_PATH = os.path.join(CONTENT_ROOT_PATH, PACKS_FOLDER)  # full path to 
 IGNORED_FILES = ['__init__.py', 'ApiModules']  # files to ignore inside Packs folder
 IGNORED_PATHS = [os.path.join(PACKS_FOLDER, p) for p in IGNORED_FILES]
 
+
 # the format is defined in issue #19786, may change in the future
-DIR_NAME_TO_CONTENT_TYPE = {
-    "Classifiers": "classifier",
-    "Dashboards": "dashboard",
-    "IncidentFields": "incidentfield",
-    "IncidentTypes": "incidenttype",
-    "IndicatorFields": "reputation",
-    "Integrations": "integration",
-    "Layouts": "layout",
-    "Playbooks": "playbook",
-    "Reports": "report",
-    "Scripts": "automation",
-    "Widgets": "widget"
-}
+# DIR_NAME_TO_CONTENT_TYPE = {
+#     "Classifiers": "classifier",
+#     "Dashboards": "dashboard",
+#     "IncidentFields": "incidentfield",
+#     "IncidentTypes": "incidenttype",
+#     "IndicatorFields": "reputation",
+#     "Integrations": "integration",
+#     "Layouts": "layout",
+#     "Playbooks": "playbook",
+#     "Reports": "report",
+#     "Scripts": "automation",
+#     "Widgets": "widget"
+# }
 
 
 class GCPConfig(object):
@@ -62,6 +63,24 @@ class PackFolders(enum.Enum):
     LAYOUTS = 'Layouts'
     CLASSIFIERS = 'Classifiers'
     MISC = 'Misc'
+
+    @classmethod
+    def pack_displayed_items(cls):
+        return [
+            PackFolders.SCRIPTS.value, PackFolders.DASHBOARDS.value, PackFolders.INCIDENT_FIELDS.value,
+            PackFolders.INCIDENT_TYPES.value, PackFolders.INTEGRATIONS.value, PackFolders.PLAYBOOKS.value,
+            PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value
+        ]
+
+    @classmethod
+    def yml_supported_folders(cls):
+        return [cls.INTEGRATIONS.value, cls.SCRIPTS.value, cls.PLAYBOOKS.value]
+
+    @classmethod
+    def json_supported_folders(cls):
+        all_displayed_packs = cls.pack_displayed_items()
+        yml_supported_folders = cls.yml_supported_folders()
+        return [f for f in all_displayed_packs if f not in yml_supported_folders]
 
 
 class PackStatus(enum.Enum):
@@ -109,7 +128,7 @@ class Pack(object):
     USER_METADATA = "pack_metadata.json"
     METADATA = "metadata.json"
     AUTHOR_IMAGE_NAME = "Author_image.png"
-    EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS.value]
+    EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS]
 
     def __init__(self, pack_name, pack_path):
         self._pack_name = pack_name
@@ -236,66 +255,6 @@ class Pack(object):
 
         return parsed_result
 
-    def collect_content_items(self):
-        # todo rewrite this function, add docstring and unit tests
-        """ Collects specific pack content items.
-
-        """
-        YML_SUPPORTED_DIRS = [
-            "Scripts",
-            "Integrations",
-            "Playbooks"
-        ]
-        data = {}
-        task_status = True
-
-        try:
-            for directory in os.listdir(self._pack_path):
-                if not os.path.isdir(os.path.join(self._pack_path, directory)) or directory == "TestPlaybooks":
-                    continue
-
-                dir_data = []
-                dir_path = os.path.join(self._pack_path, directory)
-
-                for dir_file in os.listdir(dir_path):
-                    file_path = os.path.join(dir_path, dir_file)
-                    if dir_file.endswith('.json') or dir_file.endswith('.yml'):
-                        file_info = {}
-
-                        with open(file_path, 'r') as file_data:
-                            if directory in YML_SUPPORTED_DIRS:
-                                new_data = yaml.safe_load(file_data)
-                            else:
-                                new_data = json.load(file_data)
-
-                            if directory == 'Layouts':
-                                file_info['name'] = new_data.get('TypeName', '')
-                            elif directory == 'Integrations':
-                                file_info['name'] = new_data.get('display', '')
-                                integration_commands = new_data.get('script', {}).get('commands', [])
-                                file_info['commands'] = [
-                                    {'name': c.get('name', ''), 'description': c.get('description', '')}
-                                    for c in integration_commands]
-                            elif directory == "Classifiers":
-                                file_info['name'] = new_data.get('id', '')
-                            else:
-                                file_info['name'] = new_data.get('name', '')
-
-                            if new_data.get('description', ''):
-                                file_info['description'] = new_data.get('description', '')
-                            if new_data.get('comment', ''):
-                                file_info['description'] = new_data.get('comment', '')
-
-                            dir_data.append(file_info)
-
-                data[directory] = dir_data
-        except Exception as e:
-            task_status = False
-            print_error(
-                "Failed to collect pack content items at path :{}\n. Additional info {}".format(self._pack_path, e))
-        finally:
-            return task_status, data
-
     @staticmethod
     def _parse_pack_metadata(user_metadata, pack_content_items, pack_id, integration_images, author_image,
                              dependencies_data):
@@ -351,8 +310,7 @@ class Pack(object):
         pack_metadata['general'] = input_to_list(user_metadata.get('general'))
         pack_metadata['tags'] = input_to_list(user_metadata.get('tags'))
         pack_metadata['categories'] = input_to_list(user_metadata.get('categories'))
-        pack_metadata['contentItems'] = {DIR_NAME_TO_CONTENT_TYPE[k]: v for (k, v) in pack_content_items.items()
-                                         if k in DIR_NAME_TO_CONTENT_TYPE and v}
+        pack_metadata['contentItems'] = pack_content_items
         pack_metadata['integrations'] = Pack._get_all_pack_images(integration_images,
                                                                   user_metadata.get('displayedImages', []),
                                                                   dependencies_data)
@@ -420,7 +378,8 @@ class Pack(object):
                         print(f"Deleted pack {current_directory} directory for {self._pack_name} pack")
                         continue
 
-                    if current_directory == 'Misc' and not fnmatch.fnmatch(pack_file, 'reputation-*.json'):
+                    if current_directory == PackFolders.MISC.value and not fnmatch.fnmatch(pack_file,
+                                                                                           'reputation-*.json'):
                         # reputation in old format aren't supported in 6.0.0 server version
                         os.remove(full_file_path)
                         print(f"Deleted pack {pack_file} file for {self._pack_name} pack")
@@ -529,6 +488,116 @@ class Pack(object):
             task_status = False
             print_error(f"Failed in uploading {self._pack_name} pack to gcs. Additional info:\n {e}")
             return task_status, True
+
+    def collect_content_items(self):
+        task_status = False
+        content_items_result = {}
+
+        try:
+            # the format is defined in issue #19786, may change in the future
+            content_item_name_mapping = {
+                PackFolders.SCRIPTS.value: "automation",
+                PackFolders.PLAYBOOKS.value: "playbook",
+                PackFolders.INTEGRATIONS.value: "integration",
+                PackFolders.INCIDENT_FIELDS.value: "incidentfield",
+                PackFolders.INCIDENT_TYPES.value: "incidenttype",
+                PackFolders.DASHBOARDS.value: "dashboard",
+                PackFolders.INDICATOR_FIELDS.value: "indicatorfield",
+                PackFolders.REPORTS.value: "reports"
+            }
+
+            for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
+                pack_dirs[:] = [d for d in pack_dirs if d not in PackFolders.TEST_PLAYBOOKS.value]
+                current_directory = root.split(os.path.sep)[-1]
+
+                if current_directory not in PackFolders.pack_displayed_items():
+                    continue
+
+                folder_collected_items = []
+                for pack_file_name in pack_files_names:
+                    if not pack_file_name.endswith(('.json', '.yml')):
+                        continue
+
+                    pack_file_path = os.path.join(root, pack_file_name)
+
+                    with open(pack_file_path, 'r') as pack_file:
+                        if current_directory in PackFolders.yml_supported_folders():
+                            content_item = yaml.safe_load(pack_file)
+                        elif current_directory in PackFolders.json_supported_folders():
+                            content_item = json.load(pack_file)
+
+                    if current_directory == PackFolders.SCRIPTS.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name', ""),
+                            'description': content_item.get('comment', ""),
+                            'tags': content_item.get('tags', [])
+                        })
+                    elif current_directory == PackFolders.PLAYBOOKS.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name', ""),
+                            'description': content_item.get('description', "")
+                        })
+                    elif current_directory == PackFolders.INTEGRATIONS.value:
+                        integration_commands = content_item.get('script', {}).get('commands', [])
+
+                        folder_collected_items.append({
+                            'name': content_item.get('display', ""),
+                            'description': content_item.get('description', ""),
+                            'category': content_item.get('category', ""),
+                            'commands': [
+                                {'name': c.get('name', ""), 'description': c.get('description', "")}
+                                for c in integration_commands]
+                        })
+                    elif current_directory == PackFolders.INCIDENT_FIELDS.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name', ""),
+                            'type': content_item.get('type', ""),
+                            'tooltip': content_item.get('tooltip', "")  # todo check with server side
+                        })
+                    elif current_directory == PackFolders.INCIDENT_TYPES.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name', ""),
+                            'description': content_item.get('description', ""),  # todo check with server side
+                            'playbook': content_item.get('playbookId', ""),
+                            'closureScript': content_item.get('closureScript', ""),
+                            'hours': int(content_item.get('hours', 0)),
+                            'days': int(content_item.get('days', 0)),
+                            'weeks': int(content_item.get('weeks', 0))
+                        })
+                    elif current_directory == PackFolders.DASHBOARDS.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name', "")
+                        })
+                    elif current_directory == PackFolders.INDICATOR_FIELDS.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name', ""),
+                            'type': content_item.get('description', ""),  # todo check with server side
+                            'tooltip': content_item.get('description', "")  # todo check with server side
+                        })
+                    elif current_directory == PackFolders.REPORTS.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name', ""),  # todo check with server side again
+                            'fromDate': content_item.get('period', ""),
+                            # "toDate": "0001-01-01T00:00:00Z",
+                            # "period": {
+                            #     "by": "",
+                            #     "byTo": "",
+                            #     "byFrom": "",
+                            #     "toValue": null,
+                            #     "fromValue": null,
+                            #     "field": ""
+                            # },
+                            # "fromDateLicense": "0001-01-01T00:00:00Z"
+                        })
+
+                content_item_key = content_item_name_mapping[current_directory]
+                content_items_result[content_item_key] = folder_collected_items
+
+            task_status = True
+        except Exception as e:
+            print_error(f"Failed collecting content items in {self._pack_name} pack. Additional info:\n {e}")
+        finally:
+            return task_status, content_items_result
 
     def format_metadata(self, pack_content_items, integration_images, author_image, index_folder_path):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
