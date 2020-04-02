@@ -208,8 +208,11 @@ def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Tuple]):
         if isinstance(field, tuple):
             field, regex_extractor, formatter_string = field
 
+        if not raw_json.get(field):
+            continue
+
         try:
-            field_value = re.match(regex_extractor, raw_json[field]).group()  # type: ignore
+            field_value = re.match(regex_extractor, raw_json[field]).group(1)  # type: ignore
         except Exception:
             field_value = raw_json[field]  # type: ignore
 
