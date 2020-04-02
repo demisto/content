@@ -23,6 +23,7 @@
     "contextPath": "CVE(val.ID && val.ID === obj.ID)",
     "contextValue": "ID",
     "excludedBrands": [],
+    "expiration": 43200,
     "defaultMapping": {
       "cvedescription": {
         "simple": "",
