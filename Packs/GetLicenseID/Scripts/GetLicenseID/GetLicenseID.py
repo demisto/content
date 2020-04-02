@@ -12,5 +12,5 @@ def get_license_id():
     return human_readable, {'Demisto License': license_id}
 
 
-if __name__ == '__main__':
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
