@@ -243,16 +243,13 @@ def arrange_context_according_to_user_selection(context_data):
     if not DATA_KEYS_TO_SAVE:
         return
 
-    # each event has it's own attributes
-    remove_unselected_context_keys(context_data[0])
-
     # each related event has it's own attributes
     for event in context_data:
+        # Remove attributes om event
+        remove_unselected_context_keys(event)
         # Remove attributes in Objects
         for obj in event['Object']:
             remove_unselected_context_keys(obj)
-        # Remove attributes om event
-        remove_unselected_context_keys(event)
 
 
 def build_context(response: Union[dict, requests.Response]) -> dict:  # type: ignore
