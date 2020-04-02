@@ -1429,24 +1429,6 @@ script:
       type: string
   - arguments:
     - default: false
-      description: Servicenow group name
-      isArray: false
-      name: name
-      required: true
-      secret: false
-    deprecated: true
-    description: Deprecated. Use servicenow-query-groups instead.
-    execution: false
-    name: servicenow-get-groups
-    outputs:
-    - contextPath: ServiceNowGroups.GroupId
-      description: Group Id
-      type: string
-    - contextPath: ServiceNowGroups.GroupName
-      description: Group name
-      type: string
-  - arguments:
-    - default: false
       description: Record system ID
       isArray: false
       name: id

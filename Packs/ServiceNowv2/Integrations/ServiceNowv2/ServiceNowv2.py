@@ -299,12 +299,12 @@ class Client(BaseClient):
         self._password = password
         self._proxies = handle_proxy() if proxy else None
         self.fetch_time = fetch_time
-        self.sys_param_query = sysparm_query
-        self.sys_param_limit = sysparm_limit
         self.timestamp_field = timestamp_field
         self.ticket_type = ticket_type
         self.get_attachments = get_attachments
-        self.offset = 10
+        self.sys_param_query = sysparm_query
+        self.sys_param_limit = sysparm_limit
+        self.sys_param_offset = 10
 
     def send_request(self, path: str, method: str = 'get', body: dict = None, params: dict = None,
                      headers: dict = None, file=None):
@@ -573,6 +573,17 @@ class Client(BaseClient):
         if sys_param_query:
             query_params['sysparm_query'] = sys_param_query
         return self.send_request(f'table/{table_name}', 'GET', params=query_params)
+
+    def get_table_fields(self, table_name):
+        """Get table fields by sending a GET request.
+
+        Args:
+        table_name: table name
+
+        Returns:
+            Response from API.
+        """
+        return self.send_request(f'table/{table_name}?sysparm_limit=1', 'GET')
 
 
 def get_ticket_command(client: Client, args: dict):
@@ -1061,7 +1072,7 @@ def query_tickets_command(client: Client, args: dict):
         Demisto Outputs.
     """
     sys_param_limit = args.get('limit', client.sys_param_limit)
-    sys_param_offset = args.get('offset', client.offset)
+    sys_param_offset = args.get('offset', client.sys_param_offset)
 
     sys_param_query = args.get('query')
     if not sys_param_query:
@@ -1098,18 +1109,26 @@ def query_tickets_command(client: Client, args: dict):
     return entry
 
 
-def get_ticket_notes_command():
-    args = unicode_to_str_recur(demisto.args())
-    ticket_id = args['id']
-    limit = args.get('limit')
-    offset = args.get('offset')
+def get_ticket_notes_command(client: Client, args: dict):
+    """Get the ticket's note.
 
-    comments_query = 'element_id=' + ticket_id + '^element=comments^ORelement=work_notes'
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
 
-    res = query('sys_journal_field', limit, offset, comments_query)
+    Returns:
+        Demisto Outputs.
+    """
+    ticket_id = args.get('id')
+    sys_param_limit = args.get('limit', client.sys_param_limit)
+    sys_param_offset = args.get('offset', client.sys_param_offset)
 
-    if not res or 'result' not in res:
-        return 'No results found'
+    sys_param_query = f'element_id={ticket_id}^element=comments^ORelement=work_notes'
+
+    result = client.query('sys_journal_field', sys_param_limit, sys_param_offset, sys_param_query)
+
+    if not result or 'result' not in result:
+        return f'No comment found on ticket {ticket_id}.'
 
     headers = ['Value', 'CreatedOn', 'CreatedBy', 'Type']
 
@@ -1118,10 +1137,10 @@ def get_ticket_notes_command():
         'CreatedOn': n.get('sys_created_on'),
         'CreatedBy': n.get('sys_created_by'),
         'Type': 'Work Note' if n.get('element', '') == 'work_notes' else 'Comment'
-    } for n in res['result']]
+    } for n in result['result']]
 
     if not mapped_notes:
-        return 'No results found'
+        return f'No comment found on ticket {ticket_id}.'
 
     ticket = {
         'ID': ticket_id,
@@ -1130,10 +1149,10 @@ def get_ticket_notes_command():
 
     entry = {
         'Type': entryTypes['note'],
-        'Contents': res,
+        'Contents': result,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow notes for ticket ' + ticket_id, mapped_notes, headers=headers,
+        'HumanReadable': tableToMarkdown(f'ServiceNow notes for ticket {ticket_id}', mapped_notes, headers=headers,
                                          headerTransform=pascalToSpace, removeNull=True),
         'EntryContext': {
             'ServiceNow.Ticket(val.ID===obj.ID)': createContext(ticket, removeNull=True)
@@ -1144,10 +1163,19 @@ def get_ticket_notes_command():
 
 
 def query_table_command(client: Client, args: dict):
+    """Query a table.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
     table_name = args.get('table_name')
     sys_param_limit = args.get('limit', client.sys_param_limit)
     sys_param_query = args.get('query')
-    sys_param_offset = args.get('offset', client.offset)
+    sys_param_offset = args.get('offset', client.sys_param_offset)
     fields = args.get('fields')
 
     result = client.query(table_name, sys_param_limit, sys_param_offset, sys_param_query)
@@ -1192,35 +1220,43 @@ def query_table_command(client: Client, args: dict):
     return entry
 
 
-def query_computers_command():
-    args = unicode_to_str_recur(demisto.args())
+def query_computers_command(client: Client, args: dict):
+    """Query computers.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
     table_name = 'cmdb_ci_computer'
-    computer_id = args.get('computer_id')
-    computer_name = args.get('computer_name')
-    asset_tag = args.get('asset_tag')
+    computer_id = args.get('computer_id', None)
+    computer_name = args.get('computer_name', None)
+    asset_tag = args.get('asset_tag', None)
     computer_query = args.get('query', {})
-    offset = args.get('offset', DEFAULTS['offset'])
-    limit = args.get('limit', DEFAULTS['limit'])
+    offset = args.get('offset', client.sys_param_offset)
+    limit = args.get('limit', client.sys_param_limit)
 
     if computer_id:
-        res = client.get(table_name, computer_id)
+        result = client.get(table_name, computer_id)
     else:
         if computer_name:
-            computer_query = 'name=' + computer_name
+            computer_query = f'name={computer_name}'
         elif asset_tag:
-            computer_query = 'asset_tag=' + asset_tag
+            computer_query = f'asset_tag={asset_tag}'
 
-        res = client.query(table_name, limit, offset, computer_query)
+        result = client.query(table_name, limit, offset, computer_query)
 
-    if not res or 'result' not in res:
-        return 'No computers found'
+    if not result or 'result' not in result:
+        return 'No computers found.'
 
-    computers = res['result']
+    computers = result['result']
     if not isinstance(computers, list):
         computers = [computers]
 
     if len(computers) == 0:
-        return 'No computers found'
+        return 'No computers found.'
 
     headers = ['ID', 'AssetTag', 'Name', 'DisplayName', 'SupportGroup', 'OperatingSystem', 'Company', 'AssignedTo',
                'State', 'Cost', 'Comments']
@@ -1243,7 +1279,7 @@ def query_computers_command():
 
     entry = {
         'Type': entryTypes['note'],
-        'Contents': res,
+        'Contents': computers,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('ServiceNow Computers', mapped_computers, headers=headers,
@@ -1257,29 +1293,38 @@ def query_computers_command():
 
 
 def query_groups_command(client: Client, args: dict):
+    """Query groups.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
     table_name = 'sys_user_group'
     group_id = args.get('group_id')
     group_name = args.get('group_name')
     group_query = args.get('query', {})
-    offset = args.get('offset', DEFAULTS['offset'])
-    limit = args.get('limit', DEFAULTS['limit'])
+    offset = args.get('offset', client.sys_param_offset)
+    limit = args.get('limit', client.sys_param_limit)
 
     if group_id:
-        res = client.get(table_name, group_id)
+        result = client.get(table_name, group_id)
     else:
         if group_name:
-            group_query = 'name=' + group_name
-        res = client.query(table_name, limit, offset, group_query)
+            group_query = f'name={group_name}'
+        result = client.query(table_name, limit, offset, group_query)
 
-    if not res or 'result' not in res:
-        return 'No groups found'
+    if not result or 'result' not in result:
+        return 'No groups found.'
 
-    groups = res['result']
+    groups = result['result']
     if not isinstance(groups, list):
         groups = [groups]
 
     if len(groups) == 0:
-        return 'No groups found'
+        return 'No groups found.'
 
     headers = ['ID', 'Description', 'Name', 'Active', 'Manager', 'Updated']
 
@@ -1295,7 +1340,7 @@ def query_groups_command(client: Client, args: dict):
 
     entry = {
         'Type': entryTypes['note'],
-        'Contents': res,
+        'Contents': groups,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('ServiceNow Groups', mapped_groups, headers=headers,
@@ -1308,32 +1353,40 @@ def query_groups_command(client: Client, args: dict):
     return entry
 
 
-def query_users_command():
-    args = unicode_to_str_recur(demisto.args())
+def query_users_command(client: Client, args: dict):
+    """Query users.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
     table_name = 'sys_user'
     user_id = args.get('user_id')
     user_name = args.get('user_name')
     user_query = args.get('query', {})
-    offset = args.get('offset', DEFAULTS['offset'])
-    limit = args.get('limit', DEFAULTS['limit'])
+    offset = args.get('offset', client.sys_param_offset)
+    limit = args.get('limit', client.sys_param_limit)
 
     if user_id:
         res = client.get(table_name, user_id)
     else:
         if user_name:
             user_query = 'user_name=' + user_name
-        res = client.query(table_name, limit, offset, user_query)
+        result = client.query(table_name, limit, offset, user_query)
 
-    if not res or 'result' not in res:
-        return 'No users found'
-    res = unicode_to_str_recur(res)
+    if not result or 'result' not in result:
+        return 'No users found.'
+    result = unicode_to_str_recur(result)
 
-    users = res['result']
+    users = result['result']
     if not isinstance(users, list):
         users = [users]
 
     if len(users) == 0:
-        return 'No users found'
+        return 'No users found.'
 
     headers = ['ID', 'Name', 'UserName', 'Email', 'Created', 'Updated']
 
@@ -1361,68 +1414,34 @@ def query_users_command():
     return entry
 
 
-# Deprecated
-def get_groups_command():
-    args = unicode_to_str_recur(demisto.args())
-    table_name = 'sys_user_group'
-    group_name = args['name']
-    res = query(table_name, None, 0, 'name=' + group_name)
+def list_table_fields_command(client: Client, args: dict):
+    """List table fields.
 
-    if not res or 'result' not in res:
-        return 'No groups found'
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
 
-    hr_groups = []
-    context_groups = []
+    Returns:
+        Demisto Outputs.
+    """
+    table_name = args.get('table_name')
 
-    for group in res['result']:
-        if group['name'] == group_name:
-            hr_groups.append({
-                'ID': group['sys_id'],
-                'Name': group['name'],
-                'Description': group['description'],
-                'Email': group['email'],
-                'Active': group['active'],
-                'Manager': ['manager']
-            })
-            context_groups.append({
-                'GroupId': group['sys_id'],
-                'GroupName': group['name']
-            })
+    result = client.get_table_fields(table_name)
 
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow Group', hr_groups),
-        'EntryContext': {
-            'ServiceNowGroups(val.GroupId==obj.GroupId)': context_groups,
-        }
-    }
+    if not result or 'result' not in result:
+        return 'Table was not found.'
 
-    return entry
-
-
-def list_table_fields_command():
-    args = unicode_to_str_recur(demisto.args())
-    table_name = args['table_name']
-
-    res = get_table_fields(table_name)
-
-    if not res or 'result' not in res:
-        return 'Cannot find table'
-
-    if len(res['result']) == 0:
+    if len(result['result']) == 0:
         return 'Table contains no records'
 
-    fields = [{'Name': k} for k, v in res['result'][0].items()]
+    fields = [{'Name': k} for k, v in result['result'][0].items()]
 
     entry = {
         'Type': entryTypes['note'],
-        'Contents': res,
+        'Contents': result,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow Table fields - ' + table_name, fields),
+        'HumanReadable': tableToMarkdown(f'ServiceNow Table fields - {table_name}', fields),
         'EntryContext': {
             'ServiceNow.Field': createContext(fields),
         }
@@ -1431,31 +1450,28 @@ def list_table_fields_command():
     return entry
 
 
-def get_table_fields(table_name):
-    # Get one record
-    path = 'table/' + table_name + '?sysparm_limit=1'
-    res = send_request(path, 'GET')
+def get_table_name_command(client: Client, args: dict):
+    """List table fields.
 
-    return res
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
 
+    Returns:
+        Demisto Outputs.
+    """
+    label = args.get('label')
+    offset = args.get('offset', client.sys_param_offset)
+    limit = args.get('limit', client.sys_param_limit)
+    table_query = f'label={label}'
 
-def get_table_name_command():
-    args = unicode_to_str_recur(demisto.args())
-    label = args['label']
-    offset = args.get('offset', DEFAULTS['offset'])
-    limit = args.get('limit', DEFAULTS['limit'])
+    result = client.query('sys_db_object', limit, offset, table_query)
 
-    table_query = 'label=' + label
-
-    res = query('sys_db_object', limit, offset, table_query)
-
-    if not res or 'result' not in res:
-        return 'Cannot find table'
-
-    tables = res['result']
-
+    if not result or 'result' not in result:
+        return 'Table was not found.'
+    tables = result['result']
     if len(tables) == 0:
-        return 'Cannot find table'
+        return 'Table was not found.'
 
     headers = ['ID', 'Name', 'SystemName']
 
@@ -1467,10 +1483,10 @@ def get_table_name_command():
 
     entry = {
         'Type': entryTypes['note'],
-        'Contents': res,
+        'Contents': tables,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow Tables for label - ' + label, mapped_tables,
+        'HumanReadable': tableToMarkdown(f'ServiceNow Tables for label - {label}', mapped_tables,
                                          headers=headers, headerTransform=pascalToSpace),
         'EntryContext': {
             'ServiceNow.Table(val.ID===obj.ID)': createContext(mapped_tables),
@@ -1480,7 +1496,7 @@ def get_table_name_command():
     return entry
 
 
-def fetch_incidents(client):
+def fetch_incidents(client: Client):
     query_params = {}
     incidents = []
 
@@ -1491,17 +1507,14 @@ def fetch_incidents(client):
         snow_time = last_run['time']
 
     query = ''
-    if client.sysparm_query:
-        query += client.sysparm_query + '^'
+    if client.sys_param_query:
+        query += f'{client.sys_param_query}^'
     query += 'ORDERBY{0}^{0}>{1}'.format(client.timestamp_field, snow_time)
 
     if query:
         query_params['sysparm_query'] = query
-
-    query_params['sysparm_limit'] = client.sysparm_limit
-
-    path = 'table/' + client.ticket_type
-    res = client.send_request(path, 'get', params=query_params)
+    query_params['sysparm_limit'] = client.sys_param_limit
+    res = client.send_request(f'table/{client.ticket_type}', 'GET', params=query_params)
 
     count = 0
     parsed_snow_time = datetime.strptime(snow_time, '%Y-%m-%d %H:%M:%S')
@@ -1513,7 +1526,7 @@ def fetch_incidents(client):
             raise ValueError("The timestamp field [{}]"
                              " does not exist in the ticket".format(client.timestamp_field))
 
-        if count > client.sysparm_limit:
+        if count > client.sys_param_limit:
             break
 
         try:
@@ -1538,7 +1551,7 @@ def fetch_incidents(client):
 
         file_names = []
         if client.get_attachments:
-            file_entries = get_ticket_attachment_entries(result['sys_id'])
+            file_entries = client.get_ticket_attachment_entries(result['sys_id'])
             for file_result in file_entries:
                 if file_result['Type'] == entryTypes['error']:
                     raise Exception('Error getting attachment: ' + str(file_result['Contents']))
@@ -1557,7 +1570,7 @@ def fetch_incidents(client):
         })
 
         count += 1
-        snow_time = result[client._timestamp_field]
+        snow_time = result[client.timestamp_field]
 
     demisto.incidents(incidents)
     demisto.setLastRun({'time': snow_time})
@@ -1636,6 +1649,8 @@ def main():
             demisto.results(add_comment_command(client, args))
         elif command == 'servicenow-upload-file':
             demisto.results(upload_file_command(client, args))
+        elif command == 'servicenow-get-ticket-notes':
+            demisto.results(get_ticket_notes_command(client, args))
 
         elif command == 'servicenow-get-record':
             demisto.results(get_record_command(client, args))
@@ -1649,19 +1664,15 @@ def main():
             demisto.results(query_table_command(client, args))
 
         elif command == 'servicenow-query-computers':
-            demisto.results(query_computers_command())
+            demisto.results(query_computers_command(client, args))
         elif command == 'servicenow-query-groups':
-            demisto.results(query_groups_command())
+            demisto.results(query_groups_command(client, args))
         elif command == 'servicenow-query-users':
-            demisto.results(query_users_command())
-        elif command == 'servicenow-get-groups':
-            demisto.results(get_groups_command())
+            demisto.results(query_users_command(client, args))
         elif command == 'servicenow-list-table-fields':
-            demisto.results(list_table_fields_command())
+            demisto.results(list_table_fields_command(client, args))
         elif command == 'servicenow-get-table-name':
-            demisto.results(get_table_name_command())
-        elif command == 'servicenow-get-ticket-notes':
-            demisto.results(get_ticket_notes_command())
+            demisto.results(get_table_name_command(client, args))
         else:
             raise NotImplementedError(f'Command {command} was not implemented.')
 
