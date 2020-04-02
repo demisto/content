@@ -28,12 +28,17 @@ HEADERS = {
 DEFAULT_DBOT_SCORE_EMAIL = 2 if demisto.params().get('default_dbot_score_email') == 'SUSPICIOUS' else 3
 DEFAULT_DBOT_SCORE_DOMAIN = 2 if demisto.params().get('default_dbot_score_domain') == 'SUSPICIOUS' else 3
 
-SAMPLE_TEST_SUFFIX = '/breaches?domain=demisto.com'
-PWNED_EMAIL_SUFFIX = '/breachedaccount/'
-PWNED_DOMAIN_SUFFIX = '/breaches?domain='
-PWNED_PASTE_SUFFIX = '/pasteaccount/'
-EMAIL_TRUNCATE_VERIFIED_SUFFIX = '?truncateResponse=false&includeUnverified=true'
-DOMAIN_TRUNCATE_VERIFIED_SUFFIX = '&truncateResponse=false&includeUnverified=true'
+SUFFIXES = {
+    "test": '/breaches?domain=demisto.com',
+    "email": '/breachedaccount/',
+    "domain": '/breaches?domain=',
+    "username": '/breachedaccount/',
+    "paste": '/pasteaccount/',
+    "email_truncate_verified": '?truncateResponse=false&includeUnverified=true',
+    "domain_truncate_verified": '&truncateResponse=false&includeUnverified=true',
+    "username_truncate_verified": '?truncateResponse=false&includeUnverified=true'
+}
+
 
 RETRIES_END_TIME = datetime.min
 
@@ -78,13 +83,10 @@ def http_request(method, url_suffix, params=None, data=None):
 
 def html_description_to_human_readable(breach_description):
     """
-
-    Args:
-        breach_description: Description of breach from API response
-
-    Returns: Description string that altered HTML urls to clickable urls
+    Converting from html description to hr
+    :param breach_description: Description of breach from API response
+    :return: Description string that altered HTML urls to clickable urls
     for better readability in war-room
-
     """
     html_link_pattern = re.compile('<a href="(.+?)"(.+?)>(.+?)</a>')
     patterns_found = html_link_pattern.findall(breach_description)
@@ -217,55 +219,134 @@ def set_retry_end_time():
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def test_module():
-    http_request('GET', SAMPLE_TEST_SUFFIX)
-    demisto.results('ok')
+def test_module(args_dict):
+    """
+    If the http request was successful the test will return OK
+    :param args_dict: needed in order to keep the commands convention.
+    :return: 3 arrays of outputs
+    """
+    http_request('GET', SUFFIXES.get("test"))
+    return ['ok'], [None], [None]
 
 
-def pwned_email_command():
-    email_list = argToList(demisto.args().get('email', ''))
+def pwned_email_command(args_dict):
+    """
+    Executing the pwned request for emails list, in order to support list input, the function returns 3 lists of outputs
+   :param args_dict: the demisto argument - in this case the email list is needed
+   :return: 3 arrays of outputs
+   """
+    email_list = argToList(args_dict.get('email', ''))
+    api_email_res_list, api_paste_res_list = pwned_email(email_list)
+
+    md_list = []
+    ec_list = []
+
+    for email, api_email_res, api_paste_res in zip(email_list, api_email_res_list, api_paste_res_list):
+        md_list.append(data_to_markdown('Email', email, api_email_res, api_paste_res))
+        ec_list.append(email_to_entry_context(email, api_email_res or [], api_paste_res or []))
+    return md_list, ec_list, api_email_res_list
+
+
+def pwned_email(email_list):
+    """
+    Executing the http requests
+    :param email_list: the email list that needed for the http requests
+    :return: 2 arrays of http requests outputs
+    """
+    api_email_res_list = []
+    api_paste_res_list = []
+
     for email in email_list:
-        email_suffix = PWNED_EMAIL_SUFFIX + email + EMAIL_TRUNCATE_VERIFIED_SUFFIX
-        paste_suffix = PWNED_PASTE_SUFFIX + email
-        pwned_email(email, email_suffix, paste_suffix)
+        email_suffix = SUFFIXES.get("email") + email + SUFFIXES.get("email_truncate_verified")
+        paste_suffix = SUFFIXES.get("paste") + email
+        api_email_res_list.append(http_request('GET', url_suffix=email_suffix))
+        api_paste_res_list.append(http_request('GET', url_suffix=paste_suffix))
+
+    return api_email_res_list, api_paste_res_list
 
 
-def pwned_email(email, email_suffix, paste_suffix):
-    api_email_res = http_request('GET', url_suffix=email_suffix)
-    api_paste_res = http_request('GET', url_suffix=paste_suffix)
+def pwned_domain_command(args_dict):
+    """
+    Executing the pwned request for domains list, in order to support list input, the function returns 3 lists of
+    outputs
+   :param args_dict: the demisto argument - in this case the domain list is needed
+   :return: 3 arrays of outputs
+   """
+    domain_list = argToList(args_dict.get('domain', ''))
+    api_res_list = pwned_domain(domain_list)
 
-    md = data_to_markdown('Email', email, api_email_res, api_paste_res)
-    ec = email_to_entry_context(email, api_email_res or [], api_paste_res or [])
-    return_outputs(md, ec, api_email_res)
+    md_list = []
+    ec_list = []
+
+    for domain, api_res in zip(domain_list, api_res_list):
+        md_list.append(data_to_markdown('Domain', domain, api_res))
+        ec_list.append(domain_to_entry_context(domain, api_res or []))
+    return md_list, ec_list, api_res_list
 
 
-def pwned_domain_command():
-    domain_list = argToList(demisto.args().get('domain', ''))
+def pwned_domain(domain_list):
+    """
+    Executing the http request
+    :param domain_list: the domains list that needed for the http requests
+    :return: an array of http requests outputs
+    """
+    api_res_list = []
     for domain in domain_list:
-        suffix = PWNED_DOMAIN_SUFFIX + domain + DOMAIN_TRUNCATE_VERIFIED_SUFFIX
-        pwned_domain(domain, suffix)
+        suffix = SUFFIXES.get("domain") + domain + SUFFIXES.get("domain_truncate_verified")
+        api_res_list.append(http_request('GET', url_suffix=suffix))
+    return api_res_list
 
 
-def pwned_domain(domain, suffix):
-    api_res = http_request('GET', url_suffix=suffix)
-    md = data_to_markdown('Domain', domain, api_res)
-    ec = domain_to_entry_context(domain, api_res or [])
-    return_outputs(md, ec, api_res)
+def pwned_username_command(args_dict):
+    """
+    Executing the pwned request for usernames list, in order to support list input, the function returns 3 lists of
+    outputs
+    :param args_dict: the demisto argument - in this case the username list is needed
+    :return: 3 arrays of outputs
+    """
+    username_list = argToList(args_dict.get('username', ''))
+    api_res_list = pwned_username(username_list)
+
+    md_list = []
+    ec_list = []
+
+    for username, api_res in zip(username_list, api_res_list):
+        md_list.append(data_to_markdown('Username', username, api_res))
+        ec_list.append(domain_to_entry_context(username, api_res or []))
+    return md_list, ec_list, api_res_list
 
 
-''' COMMANDS MANAGER / SWITCH PANEL '''
+def pwned_username(username_list):
+    """
+    Executing the http request
+    :param username_list: the username list that needed for the http requests
+    :return: an array of http requests outputs
+    """
+    api_res_list = []
+    for username in username_list:
+        suffix = SUFFIXES.get("username") + username + SUFFIXES.get("username_truncate_verified")
+        api_res_list.append(http_request('GET', url_suffix=suffix))
+    return api_res_list
 
-LOG('Command being called is %s' % (demisto.command()))
 
+command = demisto.command()
+LOG('Command being called is: {}'.format(command))
 try:
     handle_proxy()
     set_retry_end_time()
-    if demisto.command() == 'test-module':
-        test_module()
-    elif demisto.command() in ['pwned-email', 'email']:
-        pwned_email_command()
-    elif demisto.command() in ['pwned-domain', 'domain']:
-        pwned_domain_command()
+    commands = {
+        'test-module': test_module,
+        'email': pwned_email_command,
+        'pwned-email': pwned_email_command,
+        'domain': pwned_domain_command,
+        'pwned-domain': pwned_domain_command,
+        'pwned-username': pwned_username_command
+    }
+
+    if command in commands:
+        md_list, ec_list, api_email_res_list = commands[command](demisto.args())
+        for md, ec, api_paste_res in zip(md_list, ec_list, api_email_res_list):
+            return_outputs(md, ec, api_paste_res)
 
 # Log exceptions
 except Exception as e:
