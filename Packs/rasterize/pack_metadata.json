@@ -19,13 +19,6 @@
     "useCases": [],
     "keywords": [],
     "price": 0,
-    "dependencies": {
-        "Base": {
-            "mandatory": true,
-            "minVersion": "1.0.0",
-            "name": "Base",
-            "certification": "certified",
-            "author": "Cortex XSOAR"
-          }
-    }
+    "dependencies": {},
+    "displayedImages": []
 }
