@@ -271,7 +271,7 @@ class PolyswarmConnector():
     def file_reputation(self, param):
         file_hash = param.get('hash', param.get('file'))
         if not file_hash:
-            return_error("Please specify a hash or a file to enrich.")
+            return_error("Please specify a file hash to enrich.")
         title = 'PolySwarm File Reputation for Hash: %s' % file_hash
 
         # default values
