@@ -6,5 +6,5 @@
   "query": "GetRolesPerShift",
   "version": -1,
   "description": "Roles per shift 24x7",
-  "isPredefined": false
+  "isPredefined": true
 }
