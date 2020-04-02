@@ -1062,24 +1062,24 @@ def main():
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
     # google cloud storage client initialized
-    # storage_client = init_storage_client(service_account)
-    # storage_bucket = storage_client.bucket(storage_bucket_name)
-    # index_folder_path, index_blob = download_and_extract_index(storage_bucket, extract_destination_path)
+    storage_client = init_storage_client(service_account)
+    storage_bucket = storage_client.bucket(storage_bucket_name)
+    index_folder_path, index_blob = download_and_extract_index(storage_bucket, extract_destination_path)
     index_was_updated = False  # indicates whether one or more index folders were updated
 
     for pack in packs_list:
 
-        # task_status, integration_images = pack.upload_integration_images(storage_bucket)
-        # if not task_status:
-        #     pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
-        #     pack.cleanup()
-        #     continue
-        #
-        # task_status, author_image = pack.upload_author_image(storage_bucket)
-        # if not task_status:
-        #     pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
-        #     pack.cleanup()
-        #     continue
+        task_status, integration_images = pack.upload_integration_images(storage_bucket)
+        if not task_status:
+            pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
+            pack.cleanup()
+            continue
+
+        task_status, author_image = pack.upload_author_image(storage_bucket)
+        if not task_status:
+            pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
+            pack.cleanup()
+            continue
 
         task_status, pack_content_items = pack.collect_content_items()
         if not task_status:
@@ -1087,8 +1087,8 @@ def main():
             pack.cleanup()
             continue
 
-        # task_status = pack.format_metadata(pack_content_items, integration_images, author_image,
-        #                                    index_folder_path)
+        task_status = pack.format_metadata(pack_content_items, integration_images, author_image,
+                                           index_folder_path)
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack.cleanup()
@@ -1106,11 +1106,11 @@ def main():
             pack.cleanup()
             continue
 
-        # task_status = pack.sign_pack(signature_key)
-        # if not task_status:
-        #     pack.status = PackStatus.FAILED_SIGNING_PACKS.name
-        #     pack.cleanup()
-        #     continue
+        task_status = pack.sign_pack(signature_key)
+        if not task_status:
+            pack.status = PackStatus.FAILED_SIGNING_PACKS.name
+            pack.cleanup()
+            continue
 
         task_status, zip_pack_path = pack.zip_pack()
         if not task_status:
@@ -1118,18 +1118,18 @@ def main():
             pack.cleanup()
             continue
 
-        # task_status, skipped_pack_uploading = pack.upload_to_storage(zip_pack_path, pack.latest_version, storage_bucket,
-        #                                                              override_pack)
+        task_status, skipped_pack_uploading = pack.upload_to_storage(zip_pack_path, pack.latest_version, storage_bucket,
+                                                                     override_pack)
         if not task_status:
             pack.status = PackStatus.FAILED_UPLOADING_PACK.name
             pack.cleanup()
             continue
 
         # in case that pack already exist at cloud storage path, skipped further steps
-        # if skipped_pack_uploading:
-        #     pack.status = PackStatus.PACK_ALREADY_EXISTS.name
-        #     pack.cleanup()
-        #     continue
+        if skipped_pack_uploading:
+            pack.status = PackStatus.PACK_ALREADY_EXISTS.name
+            pack.cleanup()
+            continue
 
         task_status = pack.prepare_for_index_upload()
         if not task_status:
@@ -1137,21 +1137,21 @@ def main():
             pack.cleanup()
             continue
 
-        # task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path)
-        # if not task_status:
-        #     pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name
-        #     pack.cleanup()
-        #     continue
+        task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path)
+        if not task_status:
+            pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name
+            pack.cleanup()
+            continue
 
         # detected index update
         index_was_updated = True
         pack.status = PackStatus.SUCCESS.name
 
-    # # finished iteration over content packs
-    # if index_was_updated:
-    #     upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number)
-    # else:
-    #     print_warning(f"Skipping uploading index.zip to storage.")
+    # finished iteration over content packs
+    if index_was_updated:
+        upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number)
+    else:
+        print_warning(f"Skipping uploading index.zip to storage.")
 
     # summary of packs status
     print_packs_summary(packs_list)
