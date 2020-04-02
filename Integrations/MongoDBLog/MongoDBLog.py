@@ -42,12 +42,15 @@ def test_module():
 
 def write_log_json():
     """ Gather Args, form json document, write document to MondoDB """
+    investigation = demisto.investigation()
+    investigation_id = investigation.get('id')
+    investigation_user = investigation.get('user')
     timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+00:00")
-    id_ = demisto.args().get('id')
+    id_ = demisto.args().get('id', investigation_id)
     playbook = demisto.args().get('playbook')
     action = demisto.args().get('action')
-    user = demisto.args().get('user')
-    message = demisto.args.get('message')
+    user = demisto.args().get('user', investigation_user)
+    message = demisto.args().get('message')
     logjson = {
         'timestamp': timestamp,
         'id': id_,

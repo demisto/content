@@ -24,8 +24,8 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: Use SSL/TLS secured connection
-  defaultvalue: false
+- defaultvalue: 'false'
+  display: Use SSL/TLS secured connection
   name: use_ssl
   required: false
   type: 8
@@ -57,13 +57,13 @@ script:
       description: Assigned user.
       isArray: false
       name: user
-      required: true
+      required: false
       secret: false
     - default: false
       description: Entity to write to log.
       isArray: false
       name: id
-      required: true
+      required: false
       secret: false
     - default: false
       description: Action(s) performed
