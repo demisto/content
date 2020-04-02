@@ -1447,33 +1447,6 @@ script:
       type: string
   - arguments:
     - default: false
-      description: machine name
-      isArray: false
-      name: computerName
-      required: true
-      secret: false
-    deprecated: true
-    description: Deprecated. Use servicenow-query-computers instead.
-    execution: false
-    name: servicenow-get-computer
-    outputs:
-    - contextPath: ServiceNowComputer.sys_id
-      description: 'Id '
-      type: string
-    - contextPath: ServiceNowComputer.u_code
-      description: Code
-      type: string
-    - contextPath: ServiceNowComputer.support_group
-      description: Support group
-      type: string
-    - contextPath: ServiceNowComputer.os
-      description: Operating System
-      type: string
-    - contextPath: ServiceNowComputer.comments
-      description: Comments
-      type: string
-  - arguments:
-    - default: false
       description: Record system ID
       isArray: false
       name: id

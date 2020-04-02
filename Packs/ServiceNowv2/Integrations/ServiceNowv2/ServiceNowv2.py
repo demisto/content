@@ -115,11 +115,6 @@ DEFAULT_RECORD_FIELDS = {
     'sys_created_on': 'CreatedAt'
 }
 
-DEPRECATED_COMMANDS = ['servicenow-get', 'servicenow-incident-get',
-                       'servicenow-create', 'servicenow-incident-create',
-                       'servicenow-update', 'servicenow-query',
-                       'servicenow-incidents-query', 'servicenow-incident-update']
-
 
 def create_ticket_context(data: dict, ticket_type: str) -> dict:
     context = {
@@ -144,18 +139,9 @@ def create_ticket_context(data: dict, ticket_type: str) -> dict:
 
     # Try to map fields
     if 'priority' in data:
-        # Backward compatibility
-        if demisto.command() in DEPRECATED_COMMANDS:
-            context['Priority'] = data['priority']
-        else:
-            context['Priority'] = TICKET_PRIORITY.get(data['priority'], data['priority'])
+        context['Priority'] = TICKET_PRIORITY.get(data['priority'], data['priority'])
     if 'state' in data:
-        mapped_state = data['state']
-        # Backward compatibility
-        if demisto.command() not in DEPRECATED_COMMANDS:
-            if ticket_type in TICKET_STATES:
-                mapped_state = TICKET_STATES[ticket_type].get(data['state'], mapped_state)
-        context['State'] = mapped_state
+        context['State'] = data['state']
 
     return createContext(context, removeNull=True)
 
@@ -413,7 +399,42 @@ class Client(BaseClient):
 
         return dic_template
 
-    def get_ticket(self, table_name: str, record_id: str, custom_fields: str = '', number: str = None):
+    def get_ticket_attachments(self, ticket_id: str) -> dict:
+        """Get ticket attachments by sending a GET request.
+
+        Args:
+            ticket_id: ticket id
+
+        Returns:
+            Response from API.
+        """
+        return self.send_request('attachment', 'GET', params={'sysparm_query': f'table_sys_id={ticket_id}'})
+
+    def get_ticket_attachment_entries(self, ticket_id: str):
+        """Get ticket attachments, including file attachments
+        by sending a GET request and using the get_ticket_attachments class function.
+
+        Args:
+            ticket_id: ticket id
+
+        Returns:
+            Response from API.
+        """
+        entries = []
+        links = []  # type: List[Tuple[str, str]]
+        attachments_res = self.get_ticket_attachments(ticket_id)
+        if 'result' in attachments_res and len(attachments_res['result']) > 0:
+            attachments = attachments_res['result']
+            links = [(attachment['download_link'], attachment['file_name']) for attachment in attachments]
+
+        for link in links:
+            file_res = requests.get(link[0], auth=(self._username, self._password), verify=self._verify)
+            if file_res is not None:
+                entries.append(fileResult(link[1], file_res.content))
+
+        return entries
+
+    def get(self, table_name: str, record_id: str, custom_fields: str = '', number: str = None):
         """Get a ticket by sending a GET request.
 
         Args:
@@ -515,21 +536,42 @@ class Client(BaseClient):
         """
         return self.send_request(f'table/{ticket_type}/{ticket_id}', 'PATCH', body={key: text})
 
-    def query(self, table_name: str, sysparam_limit: str, sysparam_offset: str, sysparam_query: str) -> dict:
-        """Query tickets by sending a PATCH request.
+    def upload_file(self, ticket_id: str, file_id: str, file_name: str, ticket_type: str) -> dict:
+        """Adds a file to a ticket by sending a POST request.
 
         Args:
-        table_name: table name
-        sysparam_limit: limit the number of results
-        sysparam_offset: offset the results
-        sysparam_query: the query
+        ticket_id: ticket ID
+        file_id: file ID
+        file_name: file name
+        ticket_type: ticket type
 
         Returns:
             Response from API.
         """
-        query_params = {'sysparm_limit': sysparam_limit, 'sysparm_offset': sysparam_offset}
-        if sysparam_query:
-            query_params['sysparm_query'] = sysparam_query
+        body = {
+            'table_name': ticket_type,
+            'table_sys_id': ticket_id,
+            'file_name': file_name
+        }
+
+        return self.send_request('attachment/upload', 'POST', headers={'Accept': 'application/json'},
+                                 body=body, file={'id': file_id, 'name': file_name})
+
+    def query(self, table_name: str, sys_param_limit: str, sys_param_offset: str, sys_param_query: str) -> dict:
+        """Query tickets by sending a PATCH request.
+
+        Args:
+        table_name: table name
+        sys_param_limit: limit the number of results
+        sys_param_offset: offset the results
+        sys_param_query: the query
+
+        Returns:
+            Response from API.
+        """
+        query_params = {'sysparm_limit': sys_param_limit, 'sysparm_offset': sys_param_offset}
+        if sys_param_query:
+            query_params['sysparm_query'] = sys_param_query
         return self.send_request(f'table/{table_name}', 'GET', params=query_params)
 
 
@@ -549,7 +591,7 @@ def get_ticket_command(client: Client, args: dict):
     get_attachments = args.get('get_attachments', 'false')
     custom_fields = str(args.get('custom_fields', ''))
 
-    result = client.get_ticket(ticket_type, ticket_id, custom_fields, number)
+    result = client.get(ticket_type, ticket_id, custom_fields, number)
     if not result or 'result' not in result:
         return 'Ticket was not found.'
 
@@ -563,7 +605,7 @@ def get_ticket_command(client: Client, args: dict):
     entries = []  # type: List[Dict]
 
     if get_attachments.lower() != 'false':
-        entries = get_ticket_attachment_entries(client, ticket['sys_id'])
+        entries = client.get_ticket_attachment_entries(client, ticket.get('sys_id'))
 
     hr = get_ticket_human_readable(ticket, ticket_type)
     context = get_ticket_context(ticket, ticket_type)
@@ -720,7 +762,7 @@ def get_record_command(client: Client, args: dict):
     record_id = args.get('id')
     fields = args.get('fields')
 
-    result = client.get_ticket(table_name, record_id)
+    result = client.get(table_name, record_id)
 
     if not result or 'result' not in result:
         return 'Cannot find record'
@@ -953,6 +995,61 @@ def add_comment_command(client: Client, args: dict):
     return entry
 
 
+def upload_file_command(client: Client, args: dict):
+    """Upload a file.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    ticket_type = client.get_table_name(args.get('ticket_type'))
+    ticket_id = args.get('id')
+    file_id = args.get('file_id')
+
+    file_name = args.get('file_name', demisto.dt(demisto.context(), "File(val.EntryID=='" + file_id + "').Name"))
+    if not file_name:  # in case of info file
+        file_name = demisto.dt(demisto.context(), "InfoFile(val.EntryID=='" + file_id + "').Name")
+    if not file_name:
+        return_error('Could not find the file. Please add a file to the incident.')
+    file_name = file_name[0] if isinstance(file_name, list) else file_name
+
+    result = client.upload_file(ticket_id, file_id, file_name, ticket_type)
+
+    if not result or 'result' not in result or not result['result']:
+        raise Exception('Unable to upload file.')
+
+    hr = {
+        'Filename': result['result'].get('file_name'),
+        'Download link': result['result'].get('download_link'),
+        'System ID': result['result'].get('sys_id')
+    }
+
+    context = {
+        'ID': ticket_id,
+        'File': {}
+    }
+    context['File']['Filename'] = result['result'].get('file_name')
+    context['File']['Link'] = result['result'].get('download_link')
+    context['File']['SystemID'] = result['result'].get('sys_id')
+
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': result,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('File uploaded successfully.', hr),
+        'EntryContext': {
+            'ServiceNow.Ticket(val.ID===obj.ID)': context,
+            'Ticket(val.ID===obj.ID)': context
+        }
+    }
+
+    return entry
+
+
 def query_tickets_command(client: Client, args: dict):
     """Query tickets.
 
@@ -1001,28 +1098,6 @@ def query_tickets_command(client: Client, args: dict):
     return entry
 
 
-def get_ticket_attachments(ticket_id: str):
-    query_params = {'sysparm_query': f'table_sys_id={ticket_id}'}
-
-    return send_request('attachment', 'GET', params=query_params)
-
-
-def get_ticket_attachment_entries(client, ticket_id):
-    entries = []
-    links = []  # type: List[Tuple[str, str]]
-    attachments_res = get_ticket_attachments(ticket_id)
-    if 'result' in attachments_res and len(attachments_res['result']) > 0:
-        attachments = attachments_res['result']
-        links = [(attachment['download_link'], attachment['file_name']) for attachment in attachments]
-
-    for link in links:
-        file_res = requests.get(link[0], auth=(client._username, client._password), verify=client._verify)
-        if file_res is not None:
-            entries.append(fileResult(link[1], file_res.content))
-
-    return entries
-
-
 def get_ticket_notes_command():
     args = unicode_to_str_recur(demisto.args())
     ticket_id = args['id']
@@ -1068,26 +1143,25 @@ def get_ticket_notes_command():
     return entry
 
 
-def query_table_command():
-    args = unicode_to_str_recur(demisto.args())
-    table_name = args['table_name']
+def query_table_command(client: Client, args: dict):
+    table_name = args.get('table_name')
     sys_param_limit = args.get('limit', client.sys_param_limit)
     sys_param_query = args.get('query')
     sys_param_offset = args.get('offset', client.offset)
     fields = args.get('fields')
 
-    res = query(table_name, sysparm_limit, sysparm_offset, sysparm_query)
+    result = client.query(table_name, sys_param_limit, sys_param_offset, sys_param_query)
 
-    if not res or 'result' not in res or len(res['result']) == 0:
+    if not result or 'result' not in result or len(result['result']) == 0:
         return 'No results found'
 
     entry = {
         'Type': entryTypes['note'],
-        'Contents': res,
+        'Contents': result,
         'ContentsFormat': formats['json']
     }
 
-    result = res['result']
+    result = result['result']
 
     if fields:
         fields = argToList(fields)
@@ -1118,118 +1192,6 @@ def query_table_command():
     return entry
 
 
-def upload_file_command():
-    args = unicode_to_str_recur(demisto.args())
-    ticket_type = get_table_name(args.get('ticket_type'))
-    ticket_id = args['id']
-    file_id = args['file_id']
-    file_name = args.get('file_name', demisto.dt(demisto.context(), "File(val.EntryID=='" + file_id + "').Name"))
-
-    # in case of info file
-    if not file_name:
-        file_name = demisto.dt(demisto.context(), "InfoFile(val.EntryID=='" + file_id + "').Name")
-
-    if not file_name:
-        return_error('Could not find the file')
-
-    file_name = file_name[0] if isinstance(file_name, list) else file_name
-
-    res = upload_file(ticket_id, file_id, file_name, ticket_type)
-
-    if not res or 'result' not in res or not res['result']:
-        return_error('Unable to retrieve response')
-
-    hr = {
-        'Filename': res['result'].get('file_name'),
-        'Download link': res['result'].get('download_link'),
-        'System ID': res['result'].get('sys_id')
-    }
-
-    context = {
-        'ID': ticket_id,
-        'File': {}
-    }
-    context['File']['Filename'] = res['result'].get('file_name')
-    context['File']['Link'] = res['result'].get('download_link')
-    context['File']['SystemID'] = res['result'].get('sys_id')
-
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('File uploaded successfully', hr),
-        'EntryContext': {
-            'ServiceNow.Ticket(val.ID===obj.ID)': context,
-            'Ticket(val.ID===obj.ID)': context
-        }
-    }
-
-    return entry
-
-
-def upload_file(ticket_id, file_id, file_name, ticket_type):
-    headers = {
-        'Accept': 'application/json'
-    }
-
-    body = {
-        'table_name': ticket_type,
-        'table_sys_id': ticket_id,
-        'file_name': file_name
-    }
-
-    path = 'attachment/upload'
-
-    return send_request(path, 'post', headers=headers, body=body, file={'id': file_id, 'name': file_name})
-
-
-# Deprecated
-def get_computer_command():
-    args = unicode_to_str_recur(demisto.args())
-    table_name = 'cmdb_ci_computer'
-    computer_name = args['computerName']
-
-    res = query(table_name, None, 0, 'u_code=' + computer_name)
-
-    if not res or 'result' not in res:
-        return 'Cannot find computer'
-    elif isinstance(res['result'], list):
-        if len(res['result']) == 0:
-            return 'Cannot find computer'
-        computer = res['result'][0]
-    else:
-        computer = res['result']
-
-    if computer['u_code'] != computer_name:
-        return 'Computer not found'
-
-    hr = {
-        'ID': computer['sys_id'],
-        'u_code (computer name)': computer['u_code'],
-        'Support group': computer['support_group'],
-        'Operating System': computer['os'],
-        'Comments': computer['comments']
-    }
-
-    ec = createContext(computer, removeNull=True)
-    if 'support_group' in computer:
-        ec['support_group'] = computer['support_group']['value'] if 'value' in computer['support_group'] else ''
-
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': computer,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow Computer', hr),
-        'EntryContext': {
-            'ServiceNowComputer(val.sys_id==obj.sys_id)': ec,
-        }
-    }
-
-    return entry
-
-
 def query_computers_command():
     args = unicode_to_str_recur(demisto.args())
     table_name = 'cmdb_ci_computer'
@@ -1241,14 +1203,14 @@ def query_computers_command():
     limit = args.get('limit', DEFAULTS['limit'])
 
     if computer_id:
-        res = get_ticket(table_name, computer_id)
+        res = client.get(table_name, computer_id)
     else:
         if computer_name:
             computer_query = 'name=' + computer_name
         elif asset_tag:
             computer_query = 'asset_tag=' + asset_tag
 
-        res = query(table_name, limit, offset, computer_query)
+        res = client.query(table_name, limit, offset, computer_query)
 
     if not res or 'result' not in res:
         return 'No computers found'
@@ -1294,8 +1256,7 @@ def query_computers_command():
     return entry
 
 
-def query_groups_command():
-    args = unicode_to_str_recur(demisto.args())
+def query_groups_command(client: Client, args: dict):
     table_name = 'sys_user_group'
     group_id = args.get('group_id')
     group_name = args.get('group_name')
@@ -1304,11 +1265,11 @@ def query_groups_command():
     limit = args.get('limit', DEFAULTS['limit'])
 
     if group_id:
-        res = get_ticket(table_name, group_id)
+        res = client.get(table_name, group_id)
     else:
         if group_name:
             group_query = 'name=' + group_name
-        res = query(table_name, limit, offset, group_query)
+        res = client.query(table_name, limit, offset, group_query)
 
     if not res or 'result' not in res:
         return 'No groups found'
@@ -1357,11 +1318,11 @@ def query_users_command():
     limit = args.get('limit', DEFAULTS['limit'])
 
     if user_id:
-        res = get_ticket(table_name, user_id)
+        res = client.get(table_name, user_id)
     else:
         if user_name:
             user_query = 'user_name=' + user_name
-        res = query(table_name, limit, offset, user_query)
+        res = client.query(table_name, limit, offset, user_query)
 
     if not res or 'result' not in res:
         return 'No users found'
@@ -1606,10 +1567,9 @@ def test_module(client):
     # Validate fetch_time parameter is valid (if not, parse_date_range will raise the error message)
     parse_date_range(client.fetch_time, '%Y-%m-%d %H:%M:%S')
 
-    path = 'table/' + client.ticket_type + '?sysparm_limit=1'
-    result = client.send_request(path, 'GET')
+    result = client.send_request(f'table/{client.ticket_type}?sysparm_limit=1', 'GET')
     if 'result' not in result:
-        return_error('ServiceNow error: ' + str(result))
+        raise Exception('ServiceNow error: ' + str(result))
     ticket = result.get('result')
     if ticket and demisto.params().get('isFetch'):
         if isinstance(ticket, list):
@@ -1668,6 +1628,15 @@ def main():
         elif command == 'servicenow-delete-ticket':
             demisto.results(delete_ticket_command(client, args))
 
+        elif command == 'servicenow-query-tickets':
+            demisto.results(query_tickets_command(client, args))
+        elif command == 'servicenow-add-link':
+            demisto.results(add_link_command(client, args))
+        elif command == 'servicenow-add-comment':
+            demisto.results(add_comment_command(client, args))
+        elif command == 'servicenow-upload-file':
+            demisto.results(upload_file_command(client, args))
+
         elif command == 'servicenow-get-record':
             demisto.results(get_record_command(client, args))
         elif command == 'servicenow-update-record':
@@ -1676,20 +1645,9 @@ def main():
             demisto.results(create_record_command(client, args))
         elif command == 'servicenow-delete-record':
             demisto.results(delete_record_command(client, args))
-
-        elif command == 'servicenow-incident-add-link':
-            demisto.results(add_link_command(client, args))
-        elif command == 'servicenow-add-comment':
-            demisto.results(add_comment_command(client, args))
-        elif command =='servicenow-query-tickets':
-            demisto.results(query_tickets_command(client, args))
-        elif command == 'servicenow-upload-file':
-            demisto.results(upload_file_command(client, args))
-
         elif command == 'servicenow-query-table':
             demisto.results(query_table_command())
-        elif command == 'servicenow-get-computer':
-            demisto.results(get_computer_command())
+
         elif command == 'servicenow-query-computers':
             demisto.results(query_computers_command())
         elif command == 'servicenow-query-groups':
