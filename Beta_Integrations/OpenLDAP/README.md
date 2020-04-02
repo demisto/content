@@ -62,11 +62,3 @@ Steps required for setting AD roles Mapping:
 7. Login to Demisto using `uid` or full DN and password of creted user from step 1. 
 
 
-## Known Limitations
----
-
-## Troubleshooting
----
-
-
-## Possible Errors (DO NOT PUBLISH ON ZENDESK):
