@@ -190,7 +190,7 @@ class GraphQLClient(object):
             }''', {"after": after})
 
     def add_issues_to_project(self, issue_id, column_id):
-        self.execute_query('''
+        return self.execute_query('''
         mutation addProjectCardAction($contentID: ID!, $columnId: ID!){
           addProjectCard(input: {contentId: $contentID, projectColumnId: $columnId}) {
             cardEdge{
@@ -253,9 +253,14 @@ class Project(object):
             column_name, column_id = self.get_matching_column(issue_id, issues.issue_id_to_data[issue_id])
 
             print("Adding issue '{}' to column '{}'".format(issues.issue_id_to_data[issue_id]['title'], column_name))
-            client.add_issues_to_project(issue_id, column_id)
-
-        #todo: need to get the new card id
+            response = client.add_issues_to_project(issue_id, column_id)
+            card_id = response['addProjectCard']['cardEdge']['node']['id']
+            self.column_name_to_details[column_name]['cards'][card_id] = {
+                'issue_id': issue_id,
+                'title': issues.issue_id_to_data[issue_id]['title'],
+                'number': issues.issue_id_to_data[issue_id]['number']
+            }
+            #todo: need to order the cards
 
     def is_in_column(self, column_name, issue_id):
         for card in self.column_name_to_details[column_name]['cards'].values():
@@ -398,8 +403,7 @@ def get_github_information(client):
 
 def process_issue_moves():
     client = GraphQLClient()
-    project, issues = get_github_information(client)
-
+    # project, issues = get_github_information(client)
     # project.add_issues(client, issues)
     # project.re_order_issues(client, issues)
 
