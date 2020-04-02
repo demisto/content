@@ -20,6 +20,14 @@ configuration:
   name: collection
   required: true
   type: 0
+- display: Use SSL/TLS secured connection
+  name: use_ssl
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
 description: Manipulates key/value pairs by incident - utilizing the MongoDB collection
   named "generic".
 display: MongoDB Key Value Store
@@ -30,7 +38,7 @@ script:
     - default: false
       description: Demisto's Incident Number
       isArray: false
-      name: incident_id
+      name: id
       required: true
       secret: false
     - default: false
@@ -70,7 +78,7 @@ script:
     - default: false
       description: Demisto's Incident Number
       isArray: false
-      name: incident_id
+      name: id
       required: true
       secret: false
     - default: false
@@ -97,7 +105,7 @@ script:
     - default: false
       description: Demisto's Incident Number
       isArray: false
-      name: incident_id
+      name: id
       required: true
       secret: false
     deprecated: false
@@ -118,7 +126,7 @@ script:
     - default: false
       description: Demisto's Incident Number
       isArray: false
-      name: incident_id
+      name: id
       required: true
       secret: false
     - default: false
@@ -135,55 +143,29 @@ script:
     - default: false
       description: Demisto's Incident Number
       isArray: false
-      name: incident_id
+      name: id
       required: true
       secret: false
     deprecated: false
     description: Purges ALL key/values for an incident.  Possibly called when closing
       an incident to clear entries from database.
     execution: false
-    name: mongodb-purge-keys
+    name: mongodb-purge-entries
   - arguments:
     - default: false
       description: Demisto's Incident Number
       isArray: false
-      name: incident_id
-      required: true
-      secret: false
-    - default: false
-      description: Name/Key
-      isArray: false
-      name: key
-      required: true
-      secret: false
-    deprecated: false
-    description: Returns the key/value with last modified timestamp.
-    execution: false
-    name: mongodb-get-key-info
-    outputs:
-    - contextPath: MongoDB.Entry.Key
-      description: The entry key.
-      type: String
-    - contextPath: MongoDB.Entry.Modified
-      description: Entry modified time.
-      type: Date
-    - contextPath: MongoDB.Entry.Value
-      description: The value of the key.
-      type: String
-    - contextPath: MongoDB.Entry.Incident
-      description: Incident ID.
-      type: String
-  - arguments:
-    - default: false
-      description: Demisto's Incident Number
-      isArray: false
-      name: incident_id
+      name: id
       required: true
       secret: false
     deprecated: false
     description: Returns the number of key/value pairs for an incident.
     execution: false
     name: mongodb-get-keys-number
+  - deprecated: false
+    description: List all incidents in the collection.
+    execution: false
+    name: mongodb-list-incidents
   dockerimage: demisto/pymongo:1.0.0.5425
   isfetch: false
   longRunning: false
@@ -191,6 +173,5 @@ script:
   runonce: false
   script: '-'
   type: python
-  subtype: python3
 tests:
-  - MongoDB KeyValueStore - Test
+- MongoDB KeyValueStore - Test

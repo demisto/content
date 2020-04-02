@@ -20,12 +20,29 @@ configuration:
   name: collection
   required: true
   type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use SSL/TLS secured connection
+  defaultvalue: false
+  name: use_ssl
+  required: false
+  type: 8
 description: Writes Log data out to MongoDB collection.
 display: MongoDB Log
 name: MongoDB Log
 script:
   commands:
-  - deprecated: false
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: Limit the number of logs to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
     description: Returns all log entries.
     execution: false
     name: mongodb-read-log
@@ -34,25 +51,31 @@ script:
       description: The playbook that had been used.
       isArray: false
       name: playbook
-      required: true
+      required: false
       secret: false
     - default: false
-      description: Assigned analyst.
+      description: Assigned user.
       isArray: false
-      name: analyst
+      name: user
       required: true
       secret: false
     - default: false
       description: Entity to write to log.
       isArray: false
-      name: entity
+      name: id
       required: true
       secret: false
     - default: false
       description: Action(s) performed
       isArray: false
       name: action
-      required: true
+      required: false
+      secret: false
+    - default: false
+      description: Message for the entry.
+      isArray: false
+      name: message
+      required: false
       secret: false
     deprecated: false
     description: Add log entry.
@@ -62,13 +85,13 @@ script:
     - contextPath: MongoDB.Entry.Action
       description: Action(s) performed
       type: String
-    - contextPath: MongoDB.Entry.Analyst
+    - contextPath: MongoDB.Entry.User
       description: Assigned analyst.
       type: String
-    - contextPath: MongoDB.Entry.Entity
+    - contextPath: MongoDB.Entry.ID
       description: Entity to write to log.
       type: String
-    - contextPath: MongoDB.Entry.ID
+    - contextPath: MongoDB.Entry.EntryID
       description: Entry ID.
       type: String
     - contextPath: MongoDB.Entry.Playbook
@@ -77,6 +100,9 @@ script:
     - contextPath: MongoDB.Entry.Timestamp
       description: Entry timestamp.
       type: Date
+    - contextPath: MongoDB.Entry.Message
+      description: The message of the entry.
+      type: String
   - deprecated: false
     description: Returns the number of log entries.
     execution: false
