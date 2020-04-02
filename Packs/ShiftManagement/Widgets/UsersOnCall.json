@@ -3,5 +3,7 @@
   "name": "UsersOnCall",
   "dataType": "scripts",
   "widgetType": "text",
-  "query": "GetUsersOnCall"
+  "query": "GetUsersOnCall",
+  "version": -1,
+  "description": "Details of users which or on-call"
 }

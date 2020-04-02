@@ -3,5 +3,7 @@
   "name": "RolesPerShift",
   "dataType": "scripts",
   "widgetType": "text",
-  "query": "GetRolesPerShift"
+  "query": "GetRolesPerShift",
+  "version": -1,
+  "description": "Roles per shift 24x7"
 }
