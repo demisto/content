@@ -202,7 +202,7 @@ def get_ticket_human_readable(tickets, ticket_type: str):
     return result
 
 
-def get_ticket_fields(args: dict, template_name: str, ticket_type: str) -> dict:
+def get_ticket_fields(args: dict, template_name: dict, ticket_type: str) -> dict:
     """Inverse the keys and values of those dictionaries
     to map the arguments to their corresponding values in ServiceNow
 
@@ -237,7 +237,7 @@ def get_ticket_fields(args: dict, template_name: str, ticket_type: str) -> dict:
     return ticket_fields
 
 
-def get_body(fields: list, custom_fields: list):
+def get_body(fields: dict, custom_fields: dict):
     body = {}
 
     if fields:
@@ -293,7 +293,7 @@ class Client(BaseClient):
     """
 
     def __init__(self, server_url: str, username: str, password: str, verify: bool, proxy: bool, fetch_time: str,
-                 sysparm_query: str, sysparm_limit: str, timestamp_field: str, ticket_type: str, get_attachments: bool):
+                 sysparm_query: str, sysparm_limit: int, timestamp_field: str, ticket_type: str, get_attachments: bool):
         self._base_url = server_url
         self._verify = verify
         self._username = username
@@ -344,7 +344,7 @@ class Client(BaseClient):
         except Exception as err:
             if not res.content:
                 return ''
-            raise Exception(f'Error parsing reply - {res.content} - {str(err)}')
+            raise Exception(f'Error parsing reply - {str(res.content)} - {str(err)}')
 
         if 'error' in obj:
             message = obj.get('error', {}).get('message')
@@ -354,7 +354,7 @@ class Client(BaseClient):
                     # Return an empty results array
                     'result': []
                 }
-            raise Exception('ServiceNow Error: {}, details: {}'.format(message, details))
+            raise Exception(f'ServiceNow Error: {message}, details: {details}')
 
         if res.status_code < 200 or res.status_code >= 300:
             raise Exception('Got status code {} with url {} with body {} with headers {}'
@@ -467,7 +467,7 @@ class Client(BaseClient):
 
         return self.send_request(path, 'GET', params=query_params)
 
-    def update(self, table_name: str, record_id: str, fields: list, custom_fields: list) -> dict:
+    def update(self, table_name: str, record_id: str, fields: dict, custom_fields: dict) -> dict:
         """Updates a ticket or a record by sending a PATCH request.
 
         Args:
@@ -597,7 +597,7 @@ def get_ticket_command(client: Client, args: dict):
     Returns:
         Demisto Outputs.
     """
-    ticket_type = client.get_table_name(args.get('ticket_type'))
+    ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
     ticket_id = str(args.get('id', ''))
     number = str(args.get('number', ''))
     get_attachments = args.get('get_attachments', 'false')
@@ -656,12 +656,12 @@ def update_ticket_command(client: Client, args: dict):
     """
     custom_fields = split_fields(args.get('custom_fields', ''))
     template_name = str(args.get('template', ''))
-    ticket_type = client.get_table_name(args.get('ticket_type', ''))
+    ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
     ticket_id = str(args.get('id', ''))
 
     if template_name:
-        template_name = client.get_template(template_name)
-    fields = get_ticket_fields(args, template_name, ticket_type)
+        template_dict = client.get_template(template_name)
+    fields = get_ticket_fields(args, template_dict, ticket_type)
 
     result = client.update(ticket_type, ticket_id, fields, custom_fields)
 
@@ -698,7 +698,7 @@ def create_ticket_command(client: Client, args: dict):
     """
     custom_fields = split_fields(args.get('custom_fields'))
     template = args.get('template')
-    ticket_type = client.get_table_name(args.get('ticket_type'))
+    ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
 
     if template:
         template = client.get_template(template)
@@ -744,8 +744,8 @@ def delete_ticket_command(client: Client, args: dict):
     Returns:
         Demisto Outputs.
     """
-    ticket_id = args.get('id')
-    ticket_type = client.get_table_name(args.get('ticket_type'))
+    ticket_id = str(args.get('id', ''))
+    ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
 
     result = client.delete(ticket_type, ticket_id)
 
@@ -770,9 +770,9 @@ def get_record_command(client: Client, args: dict):
     Returns:
         Demisto Outputs.
     """
-    table_name = args.get('table_name')
-    record_id = args.get('id')
-    fields = args.get('fields')
+    table_name = str(args.get('table_name', ''))
+    record_id = str(args.get('id', ''))
+    fields = str(args.get('fields', ''))
 
     result = client.get(table_name, record_id)
 
@@ -830,9 +830,9 @@ def create_record_command(client: Client, args: dict):
     Returns:
         Demisto Outputs.
     """
-    table_name = args.get('table_name')
-    fields = args.get('fields')
-    custom_fields = args.get('custom_fields')
+    table_name = str(args.get('table_name', ''))
+    fields = str(args.get('fields', ''))
+    custom_fields = str(args.get('custom_fields', ''))
 
     if fields:
         fields = split_fields(fields)
@@ -871,10 +871,10 @@ def update_record_command(client: Client, args: dict):
     Returns:
         Demisto Outputs.
     """
-    table_name = args.get('table_name')
-    record_id = args.get('id')
-    fields = args.get('fields', {})
-    custom_fields = args.get('custom_fields')
+    table_name = str(args.get('table_name', ''))
+    record_id = str(args.get('id', ''))
+    fields = str(args.get('fields', ''))
+    custom_fields = str(args.get('custom_fields', ''))
 
     if fields:
         fields = split_fields(fields)
@@ -945,7 +945,7 @@ def add_link_command(client: Client, args: dict):
     link_argument = str(args.get('link', ''))
     text = args.get('text', link_argument)
     link = f'[code]<a class="web" target="_blank" href="{link_argument}" >{text}</a>[/code]'
-    ticket_type = client.get_table_name(args.get('ticket_type'))
+    ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
 
     result = client.add_link(ticket_id, ticket_type, key, link)
 
@@ -981,7 +981,7 @@ def add_comment_command(client: Client, args: dict):
     """
     ticket_id = str(args.get('id', ''))
     key = 'comments' if args.get('post-as-comment', 'false').lower() == 'true' else 'work_notes'
-    text = str(args.get('comment'))
+    text = str(args.get('comment', ''))
     ticket_type = client.get_table_name(args.get('ticket_type'))
 
     result = client.add_comment(ticket_id, ticket_type, key, text)
@@ -1032,20 +1032,22 @@ def upload_file_command(client: Client, args: dict):
 
     if not result or 'result' not in result or not result['result']:
         raise Exception('Unable to upload file.')
+    result = result.get('result')
 
     hr = {
-        'Filename': result['result'].get('file_name'),
-        'Download link': result['result'].get('download_link'),
-        'System ID': result['result'].get('sys_id')
+        'Filename': result.get('file_name'),
+        'Download link': result.get('download_link'),
+        'System ID': result.get('sys_id')
     }
 
     context = {
         'ID': ticket_id,
-        'File': {}
+        'File': {
+            'Filename': result.get('file_name'),
+            'Link': result.get('download_link'),
+            'SystemID': result.get('sys_id')
+        }
     }
-    context['File']['Filename'] = result['result'].get('file_name')
-    context['File']['Link'] = result['result'].get('download_link')
-    context['File']['SystemID'] = result['result'].get('sys_id')
 
     entry = {
         'Type': entryTypes['note'],
@@ -1080,7 +1082,7 @@ def query_tickets_command(client: Client, args: dict):
         # backward compatibility
         sys_param_query = str(args.get('sysparm_query', ''))
 
-    ticket_type = client.get_table_name(args.get('ticket_type'))
+    ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
 
     result = client.query(ticket_type, sys_param_limit, sys_param_offset, sys_param_query)
 
@@ -1173,9 +1175,9 @@ def query_table_command(client: Client, args: dict):
     Returns:
         Demisto Outputs.
     """
-    table_name = args.get('table_name')
+    table_name = str(args.get('table_name', ''))
     sys_param_limit = args.get('limit', client.sys_param_limit)
-    sys_param_query = args.get('query')
+    sys_param_query = str(args.get('query', ''))
     sys_param_offset = args.get('offset', client.sys_param_offset)
     fields = args.get('fields')
 
