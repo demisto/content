@@ -74,7 +74,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: USe the Azure Sentinel integration to get and manage incidents and get related entity information for incidents.
+description: Use the Azure Sentinel integration to get and manage incidents and get related entity information for incidents.
 display: Azure Sentinel
 name: Azure Sentinel
 script:
