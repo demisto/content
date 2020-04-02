@@ -696,7 +696,7 @@ def create_ticket_command(client: Client, args: dict):
     Returns:
         Demisto Outputs.
     """
-    custom_fields = split_fields(args.get('custom_fields'))
+    custom_fields = split_fields(str(args.get('custom_fields', '')))
     template = args.get('template')
     ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
 
@@ -835,9 +835,9 @@ def create_record_command(client: Client, args: dict):
     custom_fields_str = str(args.get('custom_fields', ''))
 
     if fields_str:
-        fields = split_fields(fields_str)
+        fields: dict = split_fields(fields_str)
     if custom_fields_str:
-        custom_fields = split_fields(custom_fields_str)
+        custom_fields: dict = split_fields(custom_fields_str)
 
     result = client.create(table_name, fields, custom_fields)
 
@@ -873,13 +873,13 @@ def update_record_command(client: Client, args: dict):
     """
     table_name = str(args.get('table_name', ''))
     record_id = str(args.get('id', ''))
-    fields = str(args.get('fields', ''))
-    custom_fields = str(args.get('custom_fields', ''))
+    fields_str = str(args.get('fields', ''))
+    custom_fields_str = str(args.get('custom_fields', ''))
 
-    if fields:
-        fields = split_fields(fields)
-    if custom_fields:
-        custom_fields = split_fields(custom_fields)
+    if fields_str:
+        fields: dict = split_fields(fields_str)
+    if custom_fields_str:
+        custom_fields: dict = custom_fields_str(custom_fields_str)
 
     result = client.update(table_name, record_id, fields, custom_fields)
 
