@@ -1,5 +1,5 @@
 ## [Unreleased]
-￿Fixed an issue where deprecated commands did not reffer to the correct replacement commands in their description.
+Fixed an issue where the description for deprecated commands did not refer to commands that replace them.
 
 ## [19.12.1] - 2019-12-25
  - Deprecated the ***cb-memdeump*** command. Use the ***cb-memdump*** command instead.
