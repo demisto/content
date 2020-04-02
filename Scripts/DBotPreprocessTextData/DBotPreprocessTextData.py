@@ -165,7 +165,7 @@ def main():
     whitelist_fields = demisto.args().get('whitelistFields').split(",") if demisto.args().get(
         'whitelistFields') else None
     output_format = demisto.args()['outputFormat']
-    output_original_text_fields = demisto.args()['outputOriginalTextFields'] == 'true'
+    output_original_text_fields = demisto.args().get('outputOriginalTextFields', 'false') == 'true'
 
     description = ""
     # read data
