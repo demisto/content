@@ -23,7 +23,7 @@
     "contextPath": "",
     "contextValue": "",
     "excludedBrands": [],
-    "expiration": 43200,
+    "expiration": 0,
     "defaultMapping": {
         "namefield": {
             "simple": "",
@@ -103,7 +103,7 @@
                 }]
             }
         },
-        "trafficlightprotocoltlp": {
+        "trafficlightprotocol": {
             "simple": "",
             "complex": {
                 "root": "RegistryKey",

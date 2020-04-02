@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+Added the **pwned-username** command the allow searching usernames. 
 
 ## [20.3.3] - 2020-03-18
 -
@@ -10,7 +10,6 @@ Added batch support for domain and email commands.
 ## [19.10.0] - 2019-10-03
   - Added handling for cases where the rate limit is exceeded.
   - Added the *max_retry_time* integration parameter, which defines the maximum time per request.
-
 
 ## [19.8.2] - 2019-08-22
 #### New Integration
