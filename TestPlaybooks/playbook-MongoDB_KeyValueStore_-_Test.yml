@@ -1,4 +1,4 @@
-id: MongoDB KeyValueStore - Test
+id: MongoDB KeyValueStore - Testv
 version: -1
 name: MongoDB KeyValueStore - Test
 starttaskid: "0"
@@ -160,7 +160,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "6"
     scriptarguments:
       incident_id:
         simple: ${MongoDB.Entry.Incident}
@@ -179,46 +179,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "5":
-    id: "5"
-    taskid: a212e252-3b42-4b70-8b6f-ac87925a2558
-    type: regular
-    task:
-      id: a212e252-3b42-4b70-8b6f-ac87925a2558
-      version: -1
-      name: MongoDB get key info
-      description: Returns the key/value with last modified timestamp.
-      script: '|||mongodb-get-key-info'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      incident_id:
-        simple: ${MongoDB.Entry.Incident}
-      key:
-        simple: ${MongoDB.Entry.Key}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 930
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "6":
     id: "6"
-    taskid: 43bc5934-a466-4e8e-8f29-8db3c2f14f8d
+    taskid: d8931fa6-fe9a-420e-8134-3cb344bb4e4d
     type: condition
     task:
-      id: 43bc5934-a466-4e8e-8f29-8db3c2f14f8d
+      id: d8931fa6-fe9a-420e-8134-3cb344bb4e4d
       version: -1
       name: Verify Context
       type: condition
@@ -245,7 +211,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1120
+          "y": 970
         }
       }
     note: false
@@ -277,7 +243,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1290
+          "y": 1190
         }
       }
     note: false
@@ -308,7 +274,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1460
+          "y": 1410
         }
       }
     note: false
@@ -321,7 +287,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1505,
+        "height": 1455,
         "width": 380,
         "x": 450,
         "y": 50
