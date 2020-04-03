@@ -1,4 +1,5 @@
 ## [Unreleased]
+  - Added a default value to the indicator timeline field **Category** when a value is not provided in an entry's timeline data.
   - Deprecated the following enums: 
     - **entryTypes**
     - **formats**
@@ -18,8 +19,7 @@
     - **CommandResults** (returns results to the War Room)
 
 ## [20.3.4] - 2020-03-30
-- Added support for successful empty responses (status code 204) in the base client
-
+- Added support for successful empty responses (status code 204) in the base client.
 
 ## [20.3.3] - 2020-03-18
 Added ***remove_empty_elements*** command.

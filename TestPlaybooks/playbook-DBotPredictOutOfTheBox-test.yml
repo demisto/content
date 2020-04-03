@@ -1,16 +1,17 @@
 elasticcommonfields: {}
 id: DbotPredictOufOfTheBoxTest
-version: 2
+version: -1
 name: DbotPredictOufOfTheBoxTest
+fromversion: 4.5.0
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e93817b4-04c5-43f5-8e0f-ec7fb0e44e4e
+    taskid: e2db382a-939c-41e7-8520-d3e3d9b7f315
     type: start
     task:
       elasticcommonfields: {}
-      id: e93817b4-04c5-43f5-8e0f-ec7fb0e44e4e
+      id: e2db382a-939c-41e7-8520-d3e3d9b7f315
       version: -1
       name: ""
       iscommand: false
@@ -22,7 +23,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
@@ -33,11 +34,11 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 09bc3c85-b312-46bf-8e5e-a6ab6bd71e98
+    taskid: 3c4a437b-9c9c-43b5-8d13-d8641587b077
     type: regular
     task:
       elasticcommonfields: {}
-      id: 09bc3c85-b312-46bf-8e5e-a6ab6bd71e98
+      id: 3c4a437b-9c9c-43b5-8d13-d8641587b077
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -47,7 +48,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "5"
     scriptarguments:
       all:
         simple: "yes"
@@ -59,8 +60,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 260
+          "x": 50,
+          "y": 195
         }
       }
     note: false
@@ -70,11 +71,11 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 301a29e6-a9f4-461c-8d0d-f894852eee6c
+    taskid: 64b551fa-6c41-4856-89ba-04f168e0e782
     type: regular
     task:
       elasticcommonfields: {}
-      id: 301a29e6-a9f4-461c-8d0d-f894852eee6c
+      id: 64b551fa-6c41-4856-89ba-04f168e0e782
       version: -1
       name: Predict Using Out Of The Box Model
       scriptName: DBotPredictOutOfTheBox
@@ -98,8 +99,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 480
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -109,11 +110,11 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: f9592464-35d0-453f-830e-e080c5e3feaa
+    taskid: b938a13c-ba9f-454e-8418-21496f794394
     type: condition
     task:
       elasticcommonfields: {}
-      id: f9592464-35d0-453f-830e-e080c5e3feaa
+      id: b938a13c-ba9f-454e-8418-21496f794394
       version: -1
       name: Check Prediction
       type: condition
@@ -145,8 +146,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 670
+          "x": 50,
+          "y": 895
         }
       }
     note: false
@@ -156,11 +157,11 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 446acd1a-f953-420e-832b-3547957f51fd
+    taskid: 416d87d9-5b9f-4fb5-884e-6a81aeba8c88
     type: title
     task:
       elasticcommonfields: {}
-      id: 446acd1a-f953-420e-832b-3547957f51fd
+      id: 416d87d9-5b9f-4fb5-884e-6a81aeba8c88
       version: -1
       name: Done
       type: title
@@ -170,8 +171,83 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 880
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 8b49572a-0b69-4ea4-82cc-39a39235938f
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 8b49572a-0b69-4ea4-82cc-39a39235938f
+      version: -1
+      name: Load Automation's Docker
+      description: Predict phishing incidents using the out-of-the-box pretrained
+        model.
+      scriptName: DBotPredictOutOfTheBox
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      emailBody:
+        simple: test
+      emailBodyHTML: {}
+      emailSubject: {}
+      labelProbabilityThreshold: {}
+      minTextLength: {}
+      returnError: {}
+      topWordsLimit: {}
+      wordThreshold: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: efed33b9-745c-4bfc-84fe-102cdf1731bf
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: efed33b9-745c-4bfc-84fe-102cdf1731bf
+      version: -1
+      name: Wait for automation
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -184,9 +260,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 895,
+        "height": 1085,
         "width": 380,
-        "x": 450,
+        "x": 50,
         "y": 50
       }
     }
