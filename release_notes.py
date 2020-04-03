@@ -9,12 +9,12 @@ import argparse
 import requests
 import yaml
 
-from Tests.scripts.constants import INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR, DASHBOARDS_DIR, \
-    WIDGETS_DIR, INCIDENT_FIELDS_DIR, LAYOUTS_DIR, CLASSIFIERS_DIR, MISC_DIR
-from Tests.test_utils import print_error, print_warning, get_last_release_version, filter_packagify_changes, \
-    run_command, server_version_compare, get_release_notes_file_path, get_latest_release_notes_text, get_remote_file, \
-    is_file_path_in_pack
-from Tests.scripts.validate_files import FilesValidator
+from demisto_sdk.commands.common.constants import INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR, \
+    DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR, LAYOUTS_DIR, CLASSIFIERS_DIR, MISC_DIR
+from demisto_sdk.commands.common.tools import print_error, print_warning, get_last_release_version, \
+    filter_packagify_changes, is_file_path_in_pack, \
+    run_command, server_version_compare, get_release_notes_file_path, get_latest_release_notes_text, get_remote_file
+from demisto_sdk.commands.validate.file_validator import FilesValidator
 
 CONTENT_LIB_PATH = "./"
 
@@ -663,7 +663,8 @@ def main():
 
         release_notes = "\n---\n".join(res)
         beta_release_notes = "\n---\n".join(beta_res)
-        create_content_descriptor(args.version, args.asset_id, release_notes, args.github_token, beta_rn=beta_release_notes)
+        create_content_descriptor(args.version, args.asset_id, release_notes, args.github_token,
+                                  beta_rn=beta_release_notes)
 
         if missing_release_notes:
             print_error("Error: some release notes are missing. See previous errors.")

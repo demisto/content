@@ -170,7 +170,7 @@ def quarantine_messages_command():
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(
-                'Proofpoint Server Protection Quarantine Search Messages Results',
+                'Proofpoint Protection Server Quarantine Search Messages Results',
                 messages,
                 headers
             ),
@@ -305,7 +305,7 @@ def smart_search_command():
             'Contents': response,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Proofpoint smart search results', output),
+            'HumanReadable': tableToMarkdown('Proofpoint Protection Server Smart Search Results', output),
             'EntryContext': ec
         })
     else:
@@ -373,7 +373,7 @@ def quarantine_folders_command():
         'Contents': folders,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Proofpoint Email Protection Quarantine Folders', folders),
+        'HumanReadable': tableToMarkdown('Proofpoint Protection Server Quarantine Folders', folders),
         'EntryContext': ec
     })
 
@@ -398,7 +398,7 @@ def add_to_blocked_senders_list_command():
         blocked_senders_list = blocked_sender
     add_to_blocked_senders_list(blocked_senders_list)
 
-    demisto.results('Successfully {} added to the Blocked Senders list'.format(blocked_sender))
+    demisto.results('Successfully added {} to the Blocked Senders list'.format(blocked_sender))
 
 
 def add_to_blocked_senders_list(blocked_senders_list):
@@ -438,7 +438,7 @@ def add_to_safe_senders_list_command():
         safe_senders_list = safe_sender
     add_to_safe_senders_list(safe_senders_list)
 
-    demisto.results('Successfully {} added to the Safe Senders list'.format(safe_sender))
+    demisto.results('Successfully added {} to the Safe Senders list'.format(safe_sender))
 
 
 def add_to_safe_senders_list(safe_senders_list):
@@ -479,7 +479,7 @@ def remove_from_blocked_senders_list_command():
 
     remove_from_blocked_senders_list(blocked_senders_list, unblocked_sender)
 
-    demisto.results('Successfully {} removed from the Blocked Senders list'.format(unblocked_sender))
+    demisto.results('Successfully removed {} from the Blocked Senders list'.format(unblocked_sender))
 
 
 def remove_from_blocked_senders_list(blocked_senders_list, unblocked_sender):
@@ -521,7 +521,7 @@ def remove_from_safe_senders_list_command():
 
     remove_from_safe_senders_list(safe_senders_list, unsafe_sender)
 
-    demisto.results('Successfully {} removed from the Safe Senders list'.format(unsafe_sender))
+    demisto.results('Successfully removed {} from the Safe Senders list'.format(unsafe_sender))
 
 
 def remove_from_safe_senders_list(safe_senders_list, unsafe_sender):
