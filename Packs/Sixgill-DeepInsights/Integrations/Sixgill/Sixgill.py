@@ -88,7 +88,7 @@ def fetch_incidents():
     max_incidents = get_limit(demisto.params().get('maxIncidents', MAX_INCIDENTS), MAX_INCIDENTS)
 
     sixgill_alerts_client = SixgillAlertClient(demisto.params()['client_id'], demisto.params()['client_secret'],
-                                               CHANNEL_CODE, demisto, max_incidents, SESSION)
+                                               CHANNEL_CODE, demisto, max_incidents, SESSION, VERIFY)
 
     filter_alerts_kwargs = get_incident_init_params()
 
