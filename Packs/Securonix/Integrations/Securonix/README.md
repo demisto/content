@@ -1,6 +1,6 @@
 ## Overview
-<br>Use the Securonix integration to manage incidents and watchlists.</br>
-<br>Integration was build and tested with SNYPR Version 6.3.</br>
+Use the Securonix integration to manage incidents and watchlists.
+Integration was build and tested with SNYPR Version 6.3.
 
 ## Configure Securonix on Demisto
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
