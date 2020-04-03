@@ -358,7 +358,9 @@ def get_alert_activity():
                     demisto.get(activity, 'AdditionalInformation.RemediationBlocklistUpdate'))
                 if demisto.get(activity, 'AdditionalInformation') else '',
                 'AskTheAnalyst': {'Replies': demisto.get(activity, 'AdditionalInformation.AskTheAnalyst.Replies')},
-                'Mail': extract_mail(demisto.get(activity, 'AdditionalInformation.Mail.Replies')),
+                'Mail': extract_mail(
+                    demisto.get(activity, 'AdditionalInformation.Mail.Replies'))
+                if demisto.get(activity, 'AdditionalInformation.Mail') else '',
                 'ReadBy': demisto.get(activity, 'ReadBy')
             })
 
