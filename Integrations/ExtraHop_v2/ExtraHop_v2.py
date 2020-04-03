@@ -907,7 +907,7 @@ try:
     if demisto.command() == 'test-module':
         test_module()
         demisto.results('ok')
-    elif demisto.command() == 'extrahop-get-alerts':
+    elif demisto.command() == 'extrahop-get-alert-rules':
         get_alerts_command()
     elif demisto.command() == 'extrahop-query-records':
         query_records_command()
@@ -917,9 +917,9 @@ try:
         edit_watchlist_command()
     elif demisto.command() == 'extrahop-get-watchlist':
         get_watchlist_command()
-    elif demisto.command() == 'extrahop-create-alert':
+    elif demisto.command() == 'extrahop-create-alert-rule':
         create_or_edit_alert_command()
-    elif demisto.command() == 'extrahop-edit-alert':
+    elif demisto.command() == 'extrahop-edit-alert-rule':
         create_or_edit_alert_command()
     elif demisto.command() == 'extrahop-track-ticket':
         track_ticket_command()
