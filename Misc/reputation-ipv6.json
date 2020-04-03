@@ -202,7 +202,7 @@
                 ]
             }
         },
-        "trafficlightprotocoltlp": {
+        "trafficlightprotocol": {
             "simple": "",
             "complex": {
                 "root": "IPv6",
