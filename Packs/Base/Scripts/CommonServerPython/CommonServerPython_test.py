@@ -838,8 +838,8 @@ class TestBuildDBotEntry(object):
 
 class TestCommandResults:
     def test_return_command_results(self):
-        from CommonServerPython import IP, DBotScore, CommandResults, EntryFormat, EntryType, DBotScoreType
-        ip = IP(
+        from CommonServerPython import Common, CommandResults, EntryFormat, EntryType, DBotScoreType
+        ip = Common.IP(
             ip='8.8.8.8',
             asn='some asn',
             hostname='test.com',
@@ -851,11 +851,11 @@ class TestCommandResults:
             detection_engines=None
         )
 
-        dbot_score = DBotScore(
+        dbot_score = Common.DBotScore(
             indicator='8.8.8.8',
             integration_name='Virus Total',
             indicator_type=DBotScoreType.IP,
-            score=DBotScore.GOOD
+            score=Common.DBotScore.GOOD
         )
         ip.set_dbot_score(dbot_score)
 
@@ -887,13 +887,13 @@ class TestCommandResults:
         }
 
     def test_create_dbot_score(self):
-        from CommonServerPython import DBotScore, CommandResults, EntryFormat, EntryType, DBotScoreType
+        from CommonServerPython import Common, CommandResults, EntryFormat, EntryType, DBotScoreType
 
-        dbot_score = DBotScore(
+        dbot_score = Common.DBotScore(
             indicator='8.8.8.8',
             integration_name='Virus Total',
             indicator_type=DBotScoreType.IP,
-            score=DBotScore.GOOD
+            score=Common.DBotScore.GOOD
         )
 
         results = CommandResults(
@@ -947,10 +947,10 @@ class TestCommandResults:
         }
 
     def test_create_dbot_score_with_invalid_score(self):
-        from CommonServerPython import DBotScore, DBotScoreType
+        from CommonServerPython import Common, DBotScoreType
 
         try:
-            DBotScore(
+            Common.DBotScore(
                 indicator='8.8.8.8',
                 integration_name='Virus Total',
                 score=100,
@@ -962,9 +962,9 @@ class TestCommandResults:
             assert True
 
     def test_create_ip(self):
-        from CommonServerPython import IP
+        from CommonServerPython import Common
 
-        ip = IP(
+        ip = Common.IP(
             ip='8.8.8.8',
             asn='some asn',
             hostname='test.com',
@@ -979,15 +979,15 @@ class TestCommandResults:
         assert ip is not None
 
     def test_create_domain(self):
-        from CommonServerPython import CommandResults, Domain, WHOIS, EntryType, EntryFormat, DBotScoreType, DBotScore
+        from CommonServerPython import CommandResults, Common, EntryType, EntryFormat, DBotScoreType
 
-        domain = Domain(
+        domain = Common.Domain(
             domain='somedomain.com',
             dns='dns.somedomain',
             detection_engines=10,
             positive_detections=5,
             organization='Some Organization',
-            whois=WHOIS(
+            whois=Common.WHOIS(
                 admin_phone='18000000',
                 admin_email='admin@test.com',
 
@@ -1011,11 +1011,11 @@ class TestCommandResults:
             ]
         )
 
-        dbot_score = DBotScore(
+        dbot_score = Common.DBotScore(
             indicator='somedomain.com',
             integration_name='Virus Total',
             indicator_type=DBotScoreType.DOMAIN,
-            score=DBotScore.GOOD
+            score=Common.DBotScore.GOOD
         )
         domain.set_dbot_score(dbot_score)
 

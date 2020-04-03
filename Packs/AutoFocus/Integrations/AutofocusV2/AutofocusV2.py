@@ -1289,14 +1289,14 @@ def search_ip_command(ip):
         raw_tags = raw_res.get('tags')
 
         score = calculate_dbot_score(indicator, indicator_type)
-        dbot_score = DBotScore(
+        dbot_score = Common.DBotScore(
             indicator=ip_address,
             indicator_type=DBotScoreType.IP,
             integration_name=VENDOR_NAME,
             score=score
         )
 
-        ip = IP(
+        ip = Common.IP(
             ip=ip_address,
             dbot_score=dbot_score
         )
@@ -1352,7 +1352,7 @@ def search_domain_command(args):
 
         score = calculate_dbot_score(indicator, indicator_type)
 
-        dbot_score = DBotScore(
+        dbot_score = Common.DBotScore(
             indicator=domain_name,
             indicator_type=DBotScoreType.DOMAIN,
             integration_name=VENDOR_NAME,
@@ -1360,10 +1360,10 @@ def search_domain_command(args):
         )
         demisto.log(json.dumps(raw_res, indent=4))
 
-        domain = Domain(
+        domain = Common.Domain(
             domain=domain_name,
             dbot_score=dbot_score,
-            whois=WHOIS(
+            whois=Common.WHOIS(
                 creation_date=indicator.get('whoisDomainCreationDate'),
                 expiration_date=indicator.get('whoisDomainExpireDate'),
                 update_date=indicator.get('whoisDomainUpdateDate'),
@@ -1429,14 +1429,14 @@ def search_url_command(url):
 
         score = calculate_dbot_score(indicator, indicator_type)
 
-        dbot_score = DBotScore(
+        dbot_score = Common.DBotScore(
             indicator=url_name,
             indicator_type=DBotScoreType.URL,
             integration_name=VENDOR_NAME,
             score=score
         )
 
-        url = URL(
+        url = Common.URL(
             url=url_name,
             dbot_score=dbot_score
         )
@@ -1490,14 +1490,14 @@ def search_file_command(file):
         raw_tags = raw_res.get('tags')
 
         score = calculate_dbot_score(indicator, indicator_type)
-        dbot_score = DBotScore(
+        dbot_score = Common.DBotScore(
             indicator=sha256,
             indicator_type=DBotScoreType.FILE,
             integration_name=VENDOR_NAME,
             score=score
         )
 
-        file = File(
+        file = Common.File(
             sha256=sha256,
             dbot_score=dbot_score
         )
@@ -1653,13 +1653,13 @@ def main():
         elif active_command == 'autofocus-get-export-list-indicators':
             get_export_list_command(args)
         elif active_command == 'ip':
-            demisto.results(search_ip_command(**args))
+            return_results(search_ip_command(**args))
         elif active_command == 'domain':
-            demisto.results(search_domain_command(args))
+            return_results(search_domain_command(args))
         elif active_command == 'url':
-            demisto.results(search_url_command(**args))
+            return_results(search_url_command(**args))
         elif active_command == 'file':
-            demisto.results(search_file_command(**args))
+            return_results(search_file_command(**args))
 
     except Exception as e:
         return_error(f'Unexpected error: {e}')

@@ -23,7 +23,7 @@ PY_PRIVATE_FUNCS = ["raiseTable", "zoomField", "epochToTimestamp", "formatTimeCo
                     "createContextSingle", "IntegrationLogger", "tblToMd", "DemistoException",
                     "BaseHTTPClient", "DemistoHandler", "DebugLogger", "FeedIndicatorType", "Indicator",
                     "IndicatorType", "IP", "Domain", "DBotScore", "EntryType", "EntryFormat", "CommandResults",
-                    "old_demisto_results", "new_demisto_results", "abstractmethod"]
+                    "old_demisto_results", "new_demisto_results", "abstractmethod", "Common"]
 
 PY_IRREGULAR_FUNCS = {"LOG": {"argList": ["message"]}}
 
