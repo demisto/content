@@ -12,7 +12,7 @@ def start_graphql_client():
         url=BASE_URL + '/graphql',
         use_json=True,
         headers={
-            'Authorization': "Bearer 50e16ef3982c6e79d70fc5b364fba7f43e6f68a1"
+            'Authorization': "Bearer "
         },
         verify=False
     )
