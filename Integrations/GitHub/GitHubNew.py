@@ -42,6 +42,7 @@ class GraphQLClient(object):
                         id
                         cards(first: 100) {
                           edges {
+                            cursor
                             node {
                               note
                               state
@@ -134,6 +135,7 @@ class GraphQLClient(object):
                         id
                         cards(first: 100) {
                           edges {
+                            cursor
                             node {
                               note
                               state
@@ -261,7 +263,8 @@ class Project(object):
             card_id_to_issue_details[card.get('node', {}).get('id')] = {
                 'issue_id': card_content['id'],
                 'title': card_content['title'],
-                'number': card_content['number']
+                'number': card_content['number'],
+                'cursor': card['cursor']
             }
 
         return card_id_to_issue_details
