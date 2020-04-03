@@ -22,8 +22,8 @@ PY_PRIVATE_FUNCS = ["raiseTable", "zoomField", "epochToTimestamp", "formatTimeCo
                     "internal_to_elem", "json2elem", "elem2json", "json2xml", "OrderedDict", "datetime", "timedelta",
                     "createContextSingle", "IntegrationLogger", "tblToMd", "DemistoException",
                     "BaseHTTPClient", "DemistoHandler", "DebugLogger", "FeedIndicatorType", "Indicator",
-                    "IndicatorType", "IP", "Domain", "DBotScore", "EntryType", "EntryFormat", "CommandResults",
-                    "old_demisto_results", "new_demisto_results", "abstractmethod", "Common"]
+                    "IndicatorType", "EntryType", "EntryFormat", "CommandResults", "return_results", "abstractmethod",
+                    "Common"]
 
 PY_IRREGULAR_FUNCS = {"LOG": {"argList": ["message"]}}
 
@@ -156,6 +156,7 @@ def create_py_documentation(path, origin, language):
                 try:
                     y = parser.parse_docstring(docstring)
                     y["name"] = a
+                    print('Processing {}'.format(a))
 
                     if inspect.isclass(ns.get(a)):
                         y["argList"] = list(inspect.getargspec(ns.get(a).__init__))[0] \
