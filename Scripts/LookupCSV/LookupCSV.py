@@ -94,14 +94,12 @@ def main():
                     "CSV column spec must be integer if header_row not supplied (got {})".format(search_column))
             csv_data = search_lists(search_column, search_value, csv_data)
 
-    if not csv_data:
-        output = {
-            'LookupCSV.missing': search_value
+    output = {
+        'LookupCSV': {
+            'FoundResult': True if csv_data else False,
+            'Result': csv_data if csv_data else None
         }
-    else:
-        output = {
-            'LookupCSV.result': csv_data
-        }
+    }
 
     demisto.results({
         "Type": entryTypes["note"],

@@ -6,16 +6,20 @@ tags:
   - csv
   - Utility
 comment: Parses a CSV and looks for a specific value in a specific column, returning
-  a dict of the entire matching row.
+  a dict of the entire matching row. If no column value is specified, the entire CSV is read into the context.
 enabled: true
 args:
   - name: entryID
     required: true
     description: EntryID of CSV file.
   - name: header_row
-    description: CSV file has a header row
+    description: CSV file has a header row.
+    auto: PREDEFINED
+    predefined:
+      - "true"
+      - "false"
   - name: column
-    description: Column to search for value in
+    description: Column to search for value in, if not specified, entire CSV is parsed into the context.
   - name: value
     description: value to search for
 outputs:
