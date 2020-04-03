@@ -1708,8 +1708,8 @@ def return_outputs(readable_output, outputs=None, raw_response=None, timeline=No
         indicator's timeline. if the 'Category' field is not present in the timeline dict(s), it will automatically
         be be added to the dict(s) with its value set to 'Integration Update'.
 
-    :type timeline: ``bool``
-    :param timeline: expects a bool value. if true then the warroom entry readable_output will not be auto enriched.
+    :type ignore_auto_extract: ``bool``
+    :param ignore_auto_extract: expects a bool value. if true then the warroom entry readable_output will not be auto enriched.
 
     :return: None
     :rtype: ``None``
