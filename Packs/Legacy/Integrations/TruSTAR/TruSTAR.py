@@ -1,5 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
+
+
 ''' IMPORTS '''
 import requests
 import time
@@ -565,6 +567,7 @@ def get_correlated_reports(indicators, enclave_ids, distribution_type, page_size
         current_report['updated'] = normalize_time(current_report['updated'])
         current_report['created'] = normalize_time(current_report['created'])
         current_report['timeBegan'] = normalize_time(current_report['timeBegan'])
+        return current_report
         correlated_reports.append(current_report)
     if correlated_reports:
         title = 'TruSTAR correlated reports'
