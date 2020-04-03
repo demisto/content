@@ -1,6 +1,6 @@
 commonfields:
   id: TruSTAR
-  version: -1
+  version: 2
 name: TruSTAR
 display: TruSTAR
 category: Data Enrichment & Threat Intelligence
@@ -59,7 +59,6 @@ configuration:
 script:
   script: ''
   type: python
-  subtype: python2
   commands:
   - name: trustar-related-indicators
     arguments:
@@ -482,7 +481,7 @@ script:
       description: Is the indicator whitelisted
       type: boolean
     - contextPath: TruSTAR.File.Priority
-      description: "Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH"
+      description: Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH
       type: string
     - contextPath: File.Malicious.Description
       description: For malicious files, the reason for the vendor to make the decision
@@ -529,7 +528,7 @@ script:
       description: Is the indicator whitelisted
       type: boolean
     - contextPath: TruSTAR.IP.Priority
-      description: "Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH"
+      description: Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH
     description: Check IP Reputation on TruSTAR
   - name: url
     arguments:
@@ -573,7 +572,7 @@ script:
       description: Is the indicator whitelisted
       type: boolean
     - contextPath: TruSTAR.URL.Priority
-      description: "Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH"
+      description: Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH
       type: string
     description: Check URL reputation on TruSTAR
   - name: domain
@@ -618,7 +617,71 @@ script:
       description: Is the indicator whitelisted
       type: boolean
     - contextPath: TruSTAR.Domain.Priority
-      description: "Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH"
+      description: Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH
       type: string
     description: Check Domain reputation on TruStar
+  - name: tustar-get-all-phishing-submissions
+    arguments:
+    - name: from
+      description: 'Unix timestamp: start of time window (milliseconds since epoch)
+        (default: 24 hours, max: 2 weeks back)'
+    - name: to
+      description: 'Unix timestamp: end of time window (milliseconds since epoch)
+        (default: currentTime)'
+    - name: normalizedTriageScore
+      description: score of email submission
+      isArray: true
+      defaultValue: -1,0,1,2,3
+    - name: enclaveIds
+      description: 'comma-separated list of enclave ids (defaults: all of user’s enclaves)'
+      isArray: true
+    - name: status
+      description: a list of triage statuses for submissions; only email submissions
+        marked with atleast one of these statuses will be returned
+      defaultValue: '"UNRESOLVED”'
+    description: Fetches all phishing submissions that fit the given criteria
+  - name: trustar-mark-triage-status
+    arguments:
+    - name: submissionId
+      required: true
+      description: ID of the email submission
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - CONFIRMED
+      - IGNORED
+    description: Marks a phishing email submission with one of the phishing namespace
+      tags
+  - name: trustar-get-all-phishing-indicators
+    arguments:
+    - name: from
+      description: 'Unix timestamp: start of time window (milliseconds since epoch)
+        (default: 24 hours, max: 2 weeks back)'
+    - name: to
+      description: 'Unix timestamp: end of time window (milliseconds since epoch)
+        (default: currentTime)'
+    - name: normalizedSourceScore
+      default: true
+      description: 'List<Int>:  intel score of the indicator (default: [3])'
+      defaultValue: "3"
+    - name: normalizedTriageScore
+      description: 'List<Int>: score of email submission (default: [-1,0,1,2,3])'
+      isArray: true
+      defaultValue: -1,0,1,2,3
+    - name: status
+      description: 'List<String>: a list of triage statuses for submissions; only
+        email submissions marked with atleast one of these statuses will be returned
+        (default: ["UNRESOLVED”])'
+      isArray: true
+      defaultValue: UNRESOLVED
+    - name: enclaveIds
+      description: ' List<String>: comma-separated list of enclave ids (defaults:
+        all of user’s enclaves)'
+    - name: cursor
+      description: 'String (Optional): a Base64-encoded string that contains information
+        on how to retrieve the next page. If you don’t pass a cursor, it will default
+        to pageSize: 25, pageNumber: 0'
   dockerimage: demisto/trustar:latest
+  runonce: false
+  subtype: python3
+sourcemoduleid: TruSTAR
