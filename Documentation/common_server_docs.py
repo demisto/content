@@ -5,7 +5,7 @@ import yaml
 import os
 import re
 from parinx import parser
-from package_creator import clean_python_code
+from demisto_sdk.commands.unify.unifier import Unifier
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/..')
@@ -136,7 +136,7 @@ def create_py_documentation(path, origin, language):
     is_error_py = False
 
     with open(path, 'r') as file:
-        py_script = clean_python_code(file.read(), remove_print_future=False)
+        py_script = Unifier.clean_python_code(file.read(), remove_print_future=False)
 
     code = compile(py_script, '<string>', 'exec')
     ns = {'demisto': demistomock}
