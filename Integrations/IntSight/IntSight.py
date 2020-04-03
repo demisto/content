@@ -330,12 +330,18 @@ def get_alert_activity():
     """
     alert_id = demisto.getArg('alert-id')
     response = http_request('GET', 'public/v1/data/alerts/activity-log/' + alert_id, json_response=True)
+
+    alert = {'ID': alert_id, 'Activities': []}
     if not response:
-        demisto.results('Alert activities were not found.')
+        demisto.results({
+            'Type': entryTypes['note'],
+            'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': alert},
+            'Contents': response,
+            'HumanReadable': 'Alert {} does not have activities.'.format(alert_id),
+            'ContentsFormat': formats['json']
+        })
     else:
         human_readable_arr = []
-        alert = {'ID': alert_id, 'Activities': []}
-
         for activity in response:
             alert['Activities'].append({
                 'ID': demisto.get(activity, '_id'),
@@ -366,11 +372,14 @@ def get_alert_activity():
 
         headers = ['ID', 'Type', 'Initiator', 'CreatedDate', 'UpdateDate',
                    'RemediationBlocklistUpdate', 'AskTheAnalyst', 'Mail', 'ReadBy']
+        human_readable = tableToMarkdown('IntSights Alert {} Activity Log'.format(alert_id),
+                                         t=human_readable_arr, headers=headers),
+
         demisto.results({
             'Type': entryTypes['note'],
             'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': alert},
             'Contents': response,
-            'HumanReadable': tableToMarkdown('IntSights Alert Activity Log', human_readable_arr, headers=headers),
+            'HumanReadable': human_readable,
             'ContentsFormat': formats['json']
         })
 
