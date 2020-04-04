@@ -11,7 +11,7 @@ from distutils.util import strtobool
 from distutils.version import LooseVersion
 from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
-from Tests.test_utils import print_error, print_warning, print_color, LOG_COLORS
+from demisto_sdk.commands.common.tools import print_error, print_warning, print_color, LOG_COLORS
 
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
 PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
