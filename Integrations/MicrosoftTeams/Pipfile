@@ -10,6 +10,11 @@ pytest-mock = "*"
 requests-mock = "*"
 
 [packages]
+flask = "*"
+gevent = "*"
+jwt = "*"
+jwt-algorithms = "*"
+pyjwt = "*"
 
 [requires]
 python_version = "3.7"

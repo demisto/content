@@ -1,5 +1,5 @@
 from __future__ import print_function
-from mock import patch
+from unittest.mock import patch
 from Tests.mock_server import AMIConnection, clean_filename, get_mock_file_path, get_log_file_path, get_folder_path
 
 

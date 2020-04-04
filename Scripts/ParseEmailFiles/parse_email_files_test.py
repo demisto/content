@@ -523,3 +523,17 @@ def test_no_content_file(mocker):
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert 'Could not extract email from file' in results[0]['Contents']
+
+
+def test_eml_contains_htm_attachment(mocker):
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('eml_contains_htm_attachment.eml'))
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+    main()
+
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert results[0]['EntryContext']['Email'][u'Attachments'] == '1.htm'
