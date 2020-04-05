@@ -1342,16 +1342,6 @@
             "playbookID": "Cisco-Meraki-Test"
         },
         {
-            "integrations": "Windows Defender Advanced Threat Protection",
-            "playbookID": "Test - Windows Defender Advanced Threat Protection",
-            "instance_names": "windows_defender_atp_dev"
-        },
-        {
-            "integrations": "Windows Defender Advanced Threat Protection",
-            "playbookID": "Test - Windows Defender Advanced Threat Protection",
-            "instance_names": "windows_defender_atp_prod"
-        },
-        {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender Advanced Threat Protection - Test",
             "instance_names": "microsoft_defender_atp_prod"
@@ -2685,7 +2675,7 @@
         "ZeroFox": "Issue 19161",
         "Jask": "Issue 18879",
         "vmray": "Issue 18752",
-        "Anomali ThreatStream v2": "Issue 18561",
+        "Anomali ThreatStream v2": "Issue 19182",
         "Anomali ThreatStream": "Issue 19182",
         "SCADAfence CNM": "Issue 18376",
         "ArcSight ESM v2": "Issue #18328",
@@ -2798,7 +2788,6 @@
         "MicrosoftGraphMail": "Test direct access to oproxy",
         "Microsoft Graph User": "Test direct access to oproxy",
         "Microsoft_Graph_Files": "Test direct access to oproxy",
-        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
         "Microsoft Graph Groups": "Test direct access to oproxy",
         "SafeBreach": "SSL Issues",
         "AWS - CloudWatchLogs": "Issue 20958",
