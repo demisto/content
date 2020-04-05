@@ -2486,7 +2486,7 @@
             "integrations": "Feodo Tracker Hashes Feed",
             "playbookID": "playbook-feodoteackerhash_test",
             "fromversion": "5.5.0",
-            "memory_threshold": "130",
+            "memory_threshold": 130,
             "timeout": 600
         },
         {
@@ -2585,6 +2585,11 @@
         {
             "integrations": "MongoDB",
             "playbookID": "MongoDB - Test"
+        },
+        {
+            "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
+            "timeout" : 60000,
+            "fromversion": "4.5.0"
         }
     ],
     "skipped_tests": {
@@ -2670,7 +2675,7 @@
         "ZeroFox": "Issue 19161",
         "Jask": "Issue 18879",
         "vmray": "Issue 18752",
-        "Anomali ThreatStream v2": "Issue 18561",
+        "Anomali ThreatStream v2": "Issue 19182",
         "Anomali ThreatStream": "Issue 19182",
         "SCADAfence CNM": "Issue 18376",
         "ArcSight ESM v2": "Issue #18328",
