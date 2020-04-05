@@ -90,7 +90,7 @@ DEFAULT_RECORD_FIELDS = {
 }
 
 
-def create_ticket_context(data: dict, ticket_type: str) -> dict:
+def create_ticket_context(data: dict) -> dict:
     context = {
         'ID': data.get('sys_id'),
         'Summary': data.get('short_description'),
@@ -120,13 +120,13 @@ def create_ticket_context(data: dict, ticket_type: str) -> dict:
     return createContext(context, removeNull=True)
 
 
-def get_ticket_context(data, ticket_type: str):
+def get_ticket_context(data):
     if not isinstance(data, list):
-        return create_ticket_context(data, ticket_type)
+        return create_ticket_context(data)
 
     tickets = []
     for d in data:
-        tickets.append(create_ticket_context(d, ticket_type))
+        tickets.append(create_ticket_context(d))
     return tickets
 
 
@@ -588,7 +588,7 @@ def get_ticket_command(client: Client, args: dict):
         entries = client.get_ticket_attachment_entries(ticket.get('sys_id'))
 
     hr = get_ticket_human_readable(ticket, ticket_type)
-    context = get_ticket_context(ticket, ticket_type)
+    context = get_ticket_context(ticket)
 
     headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
                'Active', 'Close Notes', 'Close Code',
@@ -637,7 +637,7 @@ def update_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     hr = get_ticket_human_readable(result['result'], ticket_type)
     human_readable = tableToMarkdown(f'ServiceNow ticket updated successfully\nTicket type: {ticket_type}',
                                      t=hr, removeNull=True)
-    entry_context = get_ticket_context(result['result'], ticket_type)
+    entry_context = get_ticket_context(result['result'])
 
     return human_readable, entry_context, result
 
@@ -673,7 +673,7 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
                'Additional Comments']
     human_readable = tableToMarkdown('ServiceNow ticket was created successfully.', t=hr,
                                      headers=headers, removeNull=True)
-    entry_context = get_ticket_context(result['result'], ticket_type)
+    entry_context = get_ticket_context(result['result'])
 
     return human_readable, entry_context, result
 
@@ -966,9 +966,9 @@ def query_tickets_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
 
     if not result or 'result' not in result or len(result['result']) == 0:
         return 'No ServiceNow tickets matched the query.', {}, {}
-
-    hr_ = get_ticket_human_readable(result['result'], ticket_type)
-    context = get_ticket_context(result['result'], ticket_type)
+    tickets = result.get('result', {})
+    hr_ = get_ticket_human_readable(tickets, ticket_type)
+    context = get_ticket_context(tickets)
 
     headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
                'Active', 'Close Notes', 'Close Code',
@@ -981,7 +981,7 @@ def query_tickets_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
         'ServiceNow.Ticket(val.ID===obj.ID)': context
     }
 
-    return human_readable, entry_context, result
+    return human_readable, entry_context, tickets
 
 
 def get_ticket_notes_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
