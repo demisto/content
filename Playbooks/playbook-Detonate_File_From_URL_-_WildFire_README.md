@@ -65,4 +65,6 @@ This playbook does not use any scripts.
 | WildFire.Report.Status | The status of the submission. | string |
 | WildFire.Report.Size | The size of the submission. | number |
 
+## Playbook Image
+---
 ![Detonate_File_From_URL_WildFire](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_File_From_URL_WildFire.png)

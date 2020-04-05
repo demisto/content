@@ -44,4 +44,6 @@ This playbook does not use any commands.
 | DBotPredictPhishingEvaluation.Precision | The precision score (0-1). | number |
 | DBotTextClassifier.ListName | The model list name in Demisto. | unknown |
 
+## Playbook Image
+---
 ![DBotCreatePhishingClassifier](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/DBot_Create_Phishing_Classifier.png)

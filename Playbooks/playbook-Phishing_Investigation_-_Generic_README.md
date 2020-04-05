@@ -39,4 +39,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ---
 There are no outputs for this playbook.
 
+## Playbook Image
+---
 ![Phishing_Investigation_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Phishing_Investigation_Generic.png)

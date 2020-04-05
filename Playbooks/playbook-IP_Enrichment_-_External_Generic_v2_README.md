@@ -44,4 +44,6 @@ This playbook does not use any sub-playbooks.
 | Endpoint.MAC | A list of Endpoint MAC addresses. | unknown |
 | Endpoint.Domain | The Endpoint domain name. | string |
 
+## Playbook Image
+---
 ![IP_Enrichment_External_Generic_v2](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/IP_Enrichment_External_Generic_v2.png)

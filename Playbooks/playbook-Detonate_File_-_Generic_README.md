@@ -194,4 +194,6 @@ This playbook does not use any commands.
 | File.Malicious.Description | The reason that the vendor made the decision tha the file is malicious. | String |
 | ANYRUN.Task.Status | The task analysis status. | String |
 
+## Playbook Image
+---
 ![Detonate_File_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_File_Generic.png)

@@ -36,4 +36,6 @@ This playbook does not use any integrations.
 | ExtraHop.Device | The details on the host and any peer devices found.  | unknown |
 | ExtraHop.ActivityMap | The link to a visual activity map in ExtraHop. | string |
 
+## Playbook Image
+---
 ![ExtraHop_Get_Peers_by_Host](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/ExtraHop_Get_Peers_by_Host.png)

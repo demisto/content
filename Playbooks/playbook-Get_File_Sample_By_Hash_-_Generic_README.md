@@ -31,4 +31,6 @@ This playbook does not use any commands.
 | --- | --- | --- |
 | File | The file sample object. | unknown |
 
+## Playbook Image
+---
 ![Get_File_Sample_By_Hash_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Get_File_Sample_By_Hash_Generic.png) 

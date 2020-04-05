@@ -48,4 +48,6 @@ This playbook does not use any integrations.
 | QRadar.DetectedInternalHosts | The internal host names detected based on hosts in your assets table. Note that the data accuracy depends on how the asset mapping is configured in QRadar. | string |
 | QRadar.DetectedExternalHosts | The external host names detected based on hosts in your assets table. Note that the data accuracy depends on how the asset mapping is configured in QRadar. | string |
 
+## Playbook Image
+---
 ![QRadar_Indicator_Hunting_V2](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/QRadar_Indicator_Hunting_V2.png)

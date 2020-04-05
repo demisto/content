@@ -30,4 +30,6 @@ There are no inputs for this playbook.
 | ExtraHop.ActivityMap | The link to a visual activity map in ExtraHop. | string |
 | ExtraHop.Record.Source | The associated transaction records from ExtraHop. | unknown |
 
+## Playbook Image
+---
 ![ExtraHop_Default](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/ExtraHop_Default.png)

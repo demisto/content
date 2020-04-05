@@ -54,4 +54,6 @@ This playbook does not use any scripts.
 | Sample.State | The sample state. | unknown |
 | Sample.ID | The sample ID. | unknown |
 
+## Playbook Image
+---
 ![Detonate_URL_ThreatGrid](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_URL_ThreatGrid.png)

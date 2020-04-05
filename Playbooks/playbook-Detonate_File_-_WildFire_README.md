@@ -62,4 +62,6 @@ This playbook does not use any integrations.
 | WildFire.Report.FileType | The type of the submission. | string |
 | WildFire.Report.Size | The size of the submission. | number |
 
+## Playbook Image
+---
 ![Detonate_File_WildFire](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/WildFire_Detonate_file.png)

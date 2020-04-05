@@ -42,4 +42,6 @@ This playbook does not use any scripts.
 | Nexpose.Scan.Vulnerabilities.Severe | The number of severe vulnerabilities. | unknown |
 | Nexpose.Scan.Vulnerabilities.Total | The total number of vulnerabilities. | unknown |
 
+## Playbook Image
+---
 ![Scan_Nexpose_Site](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Scan_Nexpose_Site.png)

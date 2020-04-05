@@ -29,4 +29,6 @@ This playbook does not use any commands.
 | --- | --- | --- |
 | Severities.EmailAuthenticitySeverity | The maliciousness score evaluated by the `Calculate Severity - Email Authenticity` playbook. | number |
 
+## Playbook Image
+---
 ![Calculate_Severity_By_Email_Authenticity](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Calculate_Severity_By_Email_Authenticity.png)

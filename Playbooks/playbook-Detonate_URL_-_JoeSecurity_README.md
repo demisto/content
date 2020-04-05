@@ -67,4 +67,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | DBotScore | The DBotScore object. | unknown |
 | DBotScore.Malicious | The DBotScore malicious object. | unknown |
 
+## Playbook Image
+---
 ![Detonate_URL_JoeSecurity](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_URL_JoeSecurity.png)

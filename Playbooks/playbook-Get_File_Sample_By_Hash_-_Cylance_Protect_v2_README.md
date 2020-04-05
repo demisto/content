@@ -27,4 +27,6 @@ This playbook does not use any scripts.
 ---
 There are no outputs for this playbook.
 
+## Playbook Image
+---
 ![Get_File_Sample_By_Hash_Cylance_Protect_v2](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Get_File_Sample_By_Hash_Cylance_Protect_v2.png)

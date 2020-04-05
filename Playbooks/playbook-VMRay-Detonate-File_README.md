@@ -99,4 +99,6 @@ This playbook does not use any scripts.
 | VMRay.ThreatIndicator.ID | The ID of the a threat indicator. | unknown |
 | VMRay.ThreatIndicator.Operation | The operation that the indicators caused. | unknown |
 
+## Playbook Image
+---
 ![VMRay-Detonate-File](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/VMRay-Detonate-File.png) 

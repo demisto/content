@@ -46,4 +46,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | CriticalAssets.CriticalUsers | The critical users involved in the incident. | unknown |
 | CriticalAssets.CriticalUserGroups | The critical user-groups involved in the incident. | unknown |
 
+## Playbook Image
+---
 ![Calculate_Severity_Generic_v2](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Calculate_Severity_Generic_v2.png)

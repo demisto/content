@@ -46,4 +46,6 @@ This playbook does not use any scripts.
 | Uptycs.Children.upt_add_time | The time that the process was spawned. | date |
 | Uptycs.Children.upt_remove_time | The time that the process was removed. | date |
 
+## Playbook Image
+---
 ![Uptycs_Bad_IP_Incident](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Uptycs_Bad_IP_Incident.png)

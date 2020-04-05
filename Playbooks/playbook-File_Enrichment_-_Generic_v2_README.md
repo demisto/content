@@ -46,4 +46,6 @@ This playbook does not use any scripts.
 | File.VirusTotal.Scans.Detected | Whether a scan was detected for this hash. Can be, "True" or "False". | unknown |
 | File.VirusTotal.Scans.Result | Scan result for this hash. For example, signature, etc. | unknown |
 
+## Playbook Image
+---
 ![File_Enrichment_Generic_v2](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/File_Enrichment_Generic_v2.png)
