@@ -1,8 +1,8 @@
 import requests
 import sys
 import re
-from Tests.test_utils import print_error, print_warning, print_color, LOG_COLORS
-from Tests.scripts.constants import EXTERNAL_PR_REGEX
+from demisto_sdk.commands.common.tools import print_error, print_warning, print_color, LOG_COLORS
+from demisto_sdk.commands.common.constants import EXTERNAL_PR_REGEX
 
 
 def get_base_branch(pr_num):

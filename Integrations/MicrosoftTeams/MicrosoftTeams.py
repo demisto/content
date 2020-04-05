@@ -1434,7 +1434,7 @@ def message_handler(integration_context: dict, request_body: dict, channel_data:
                                 and 'none' not in mirrored_channel.get('mirror_type', ''):
                             investigation_id: str = mirrored_channel.get('investigation_id', '')
                             username: str = from_property.get('name', '')
-                            user_email: str = get_team_member(integration_context, team_member_id).get('user_mail', '')
+                            user_email: str = get_team_member(integration_context, team_member_id).get('user_email', '')
                             demisto.addEntry(
                                 id=investigation_id,
                                 entry=message,
@@ -1610,7 +1610,7 @@ def long_running_loop():
         else:
             demisto.info('Starting HTTP Server')
 
-        server = WSGIServer(('', port), APP, **ssl_args)
+        server = WSGIServer(('0.0.0.0', port), APP, **ssl_args)
         server.serve_forever()
     except Exception as e:
         if certificate_path:

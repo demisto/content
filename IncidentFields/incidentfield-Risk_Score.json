@@ -3,6 +3,7 @@
 	"associatedTypes": [
 		"Prisma Cloud",
 		"ExtraHop Detection",
+		"GCP Compute Engine Misconfiguration",
 		"AWS CloudTrail Misconfiguration",
 		"AWS IAM Policy Misconfiguration",
 		"AWS EC2 Instance Misconfiguration"

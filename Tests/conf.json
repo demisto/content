@@ -177,11 +177,13 @@
         },
         {
             "integrations": "HelloWorld",
-            "playbookID": "TestHelloWorld"
+            "playbookID": "TestHelloWorld",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "HelloWorld",
-            "playbookID": "TestHelloWorldPlaybook"
+            "playbookID": "TestHelloWorldPlaybook",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "ThreatQ v2",
@@ -1320,6 +1322,10 @@
             "nightly": true
         },
         {
+            "integrations": "Cisco ASA",
+            "playbookID": "Cisco ASA - Test Playbook"
+        },
+        {
             "integrations": "VirusTotal - Private API",
             "instance_names": "virus_total_private_api_preferred_vendors",
             "playbookID": "virusTotalPrivateAPI-test-preferred-vendors",
@@ -1329,16 +1335,6 @@
         {
             "integrations": "Cisco Meraki",
             "playbookID": "Cisco-Meraki-Test"
-        },
-        {
-            "integrations": "Windows Defender Advanced Threat Protection",
-            "playbookID": "Test - Windows Defender Advanced Threat Protection",
-            "instance_names": "windows_defender_atp_dev"
-        },
-        {
-            "integrations": "Windows Defender Advanced Threat Protection",
-            "playbookID": "Test - Windows Defender Advanced Threat Protection",
-            "instance_names": "windows_defender_atp_prod"
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
@@ -2342,7 +2338,8 @@
           "integrations": "EWS v2",
           "playbookID": "Get EWS Folder Test",
           "fromversion": "4.5.0",
-          "instance_names": "ewv2_regular"
+          "instance_names": "ewv2_regular",
+          "timeout": 1200
         },
         {
           "integrations": "QRadar",
@@ -2561,7 +2558,8 @@
         },
         {
             "playbookID": "DbotPredictOufOfTheBoxTest",
-            "fromversion": "4.5.0"
+            "fromversion": "4.5.0",
+            "timeout": 1000
         },
         {
            "integrations": "AlienVault OTX TAXII Feed",
@@ -2587,6 +2585,11 @@
         {
             "integrations": "MongoDB",
             "playbookID": "MongoDB - Test"
+        },
+        {
+            "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
+            "timeout" : 60000,
+            "fromversion": "4.5.0"
         }
     ],
     "skipped_tests": {
@@ -2607,8 +2610,6 @@
         "test-Expanse": "Expanse should provide domain that they have in their system",
         "TestProofpointFeed": "Issue 22229",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 22227",
-        "Tenable.io test": "Issue 22184",
-        "ThreatQ - Test": "Issue 22175",
         "PostgreSQL Test": "Issue 22172",
         "Test-Detonate URL - Crowdstrike": "Issue 19439",
         "Git_Integration-Test": "Issue 20029",
@@ -2674,7 +2675,7 @@
         "ZeroFox": "Issue 19161",
         "Jask": "Issue 18879",
         "vmray": "Issue 18752",
-        "Anomali ThreatStream v2": "Issue 18561",
+        "Anomali ThreatStream v2": "Issue 19182",
         "Anomali ThreatStream": "Issue 19182",
         "SCADAfence CNM": "Issue 18376",
         "ArcSight ESM v2": "Issue #18328",
@@ -2787,7 +2788,6 @@
         "MicrosoftGraphMail": "Test direct access to oproxy",
         "Microsoft Graph User": "Test direct access to oproxy",
         "Microsoft_Graph_Files": "Test direct access to oproxy",
-        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
         "Microsoft Graph Groups": "Test direct access to oproxy",
         "SafeBreach": "SSL Issues",
         "AWS - CloudWatchLogs": "Issue 20958",
