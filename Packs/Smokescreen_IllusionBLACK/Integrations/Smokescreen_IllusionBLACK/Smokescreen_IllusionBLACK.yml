@@ -25,6 +25,11 @@ configuration:
   name: client_id
   required: true
   type: 0
+- display: First fetch time for fetching incidents (2 days, 3 weeks, etc)
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
 description: Smokescreen IllusionBLACK is a deception based threat defence platform
   designed to accurately and efficiently detect targeted threats including reconnaissance,
   lateral movement, malware-less attacks, social engineering, Man-in-the-Middle attacks,

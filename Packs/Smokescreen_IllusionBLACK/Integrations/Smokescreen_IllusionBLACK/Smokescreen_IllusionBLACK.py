@@ -295,10 +295,11 @@ def create_incident(raw_incident):
     }
 
 
-def fetch_incidents(client):
+def fetch_incidents(first_fetch, client):
     """
     Automated fetching of incidents from IllusionBLACK. For first run 2 days is the fixed duration for events.
     Args:
+        first_fetch: For first fetch the timespan to consider to fetch incidents. Example: 2 days, 5 weeks etc
         client: IllusionBLACK client
     Returns: Demisto Incidents
     """
@@ -308,7 +309,7 @@ def fetch_incidents(client):
     if "last_run" in demisto_last_run:
         last_run = datetime.fromisoformat(demisto_last_run["last_run"])
     else:
-        last_run = now - timedelta(days=2)
+        last_run, _ = parse_date_range(first_fetch, utc=False)
     if now - last_run < timedelta(minutes=5):
         return
     from_time = last_run.replace(microsecond=0).isoformat()
@@ -376,7 +377,7 @@ def main():
                 event
             )
         elif demisto.command() == "fetch-incidents":
-            demisto.incidents(fetch_incidents(client=client))
+            demisto.incidents(fetch_incidents(demisto.params().get("first_fetch", "2 days"), client=client))
 
     # Log exceptions
     except Exception as e:
