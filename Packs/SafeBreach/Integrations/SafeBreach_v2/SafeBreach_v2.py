@@ -132,8 +132,8 @@ def contains(list_a, list_b):
     return list(set(list_a) & set(list_b))
 
 
-def unescape_string(str):
-    return str.encode('utf-8').decode('unicode_escape')
+def unescape_string(string):
+    return string.encode('utf-8').decode('unicode_escape')
 
 
 def extract_data(data):
@@ -179,38 +179,12 @@ def get_demisto_context_path(data_type):
     return mapper.get(data_type) or "SafeBreach.Insight(val.Id == obj.Id)"
 
 
-def get_filterd_remediation_data(data, mapper):
-    output = {}
-    for key in data:
-        if mapper.get(key):
-            output[key] = data[key]
-    return []
-
-
 def get_insights_ids_by_category(insight_category: List[str]) -> Union[List[int], None]:
     output: Any = []
     for category in insight_category:
         if CATEGORY_MAPPER.get(category):
             output.append(CATEGORY_MAPPER.get(category))
     return list(set([y for x in output for y in x]))
-
-
-def create_context(value, data_type):
-    demisto_data_type = SAFEBREACH_TO_DEMISTO_MAPPER.get(data_type)
-    return {
-        "Malicious": {
-            "Description": "SafeBreach Insights",
-            "Vendor": "SafeBreach"
-        },
-        demisto_data_type: value
-    }
-
-
-def insight_filter_provided():
-    if demisto.args().get('insightCategory') or demisto.args().get('insightDataType'):
-        return True
-
-    return False
 
 
 def refactor_rerun_data(rerun_data, simulation):
@@ -252,7 +226,7 @@ def get_node_display_name(node_role, simulation):
     node_name = simulation.get(f'{node_role}NodeName')
     internal_ip = simulation.get(f'{node_role}InternalIp')
     external_ip = simulation.get(f'{node_role}ExternalIp')
-    return f"{node_name} ({internal_ip},{external_ip})",
+    return f"{node_name} ({internal_ip},{external_ip})"
 
 
 def get_category_and_data_type_filters(args, predefine_insight_category, predefine_insight_data_type):
@@ -326,8 +300,8 @@ def get_indicators_command(client: Client, insight_category: list, insight_data_
                     continue
                 raw_json = {'value': value,
                             'dataType': data_type,
-                            'insightId':
-                                insight.get('ruleId'), 'insightTime': ''}
+                            'insightId': insight.get('ruleId'),
+                            'insightTime': insight.get('maxExecutionTime')}
                 mapping = {
                     'description': 'SafeBreach Insight - {0}'.format(insight['actionBasedTitle']),
                     demisto_indicator_type.lower(): value,
@@ -551,7 +525,7 @@ def get_insights_command(client: Client, args: Dict, no_output_mode: bool) -> Li
             List[Dict] -- List of insights from SafeBreach
         """
     insight_ids = args.get('insightIds')
-
+    insights: Any
     if isinstance(insight_ids, str):
         insight_ids = literal_eval(insight_ids)
     if isinstance(insight_ids, int):
@@ -880,5 +854,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ["__builtin__", "builtins"]:
     main()

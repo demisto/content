@@ -93,6 +93,7 @@ configuration:
   - suddenDeath
   required: false
   type: 17
+  display: ''
 - defaultvalue: '1440'
   display: Feed Fetch Interval
   name: feedFetchInterval
@@ -109,6 +110,7 @@ configuration:
   name: feedExpirationInterval
   required: false
   type: 1
+  display: ''
 description: SafeBreach automatically executes thousands of breach methods from its
   extensive and growing Hacker’s Playbook™ to validate security control effectiveness.  Simulations
   are automatically correlated with network, endpoint, and SIEM solutions providing
@@ -291,7 +293,7 @@ script:
       type: Date
   - arguments:
     - default: false
-      defaultValue: '1000'
+      defaultValue: 1000
       description: Limits the maximal number of generated indicators. Default - 1000.
       isArray: false
       name: limit
