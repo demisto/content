@@ -50,11 +50,12 @@ def get_limit(str_limit, default_limit):
 
 
 def get_incident_init_params():
-    return {
+    params_dict = {
         'severity': demisto.params().get('severity', None),
         'threat_level': demisto.params().get('threat_level', None),
         'threat_type': demisto.params().get('threat_type', None)
     }
+    return {k: v for param_k, param_v in params_dict.items() if param_v is not None}
 
 
 def item_to_incident(item):
