@@ -1028,7 +1028,7 @@ script:
       description: Timestamp for when the group's membership was last updated.
       type: Date
     - contextPath: Okta.Group.Type
-      description: The group type, which determines how a group's profile and membership are managed. Can be "OKTA_GROUP", "APP_GROUP", or "BUILT_IN".
+      description: The group type, which determines how a group's profile and membership are managed. Can be "OKTA_GROUP", "APP_GROUP", or "BUILT_IN". 
       type: String
     - contextPath: Okta.Group.Name
       description: Name of the group.
@@ -1492,7 +1492,7 @@ script:
       description: ID of a target.
       type: String
     - contextPath: Okta.Logs.Events.target.type
-      description: Type of a target.
+      description: Target type.
       type: String
     - contextPath: Okta.Logs.Events.target.alternateId
       description: Alternative ID of a target.
@@ -1548,7 +1548,7 @@ script:
       description: ID of the actor.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
-      description: A raw string representation of user agent, formatted according
+      description: A raw string representation of the user agent, formatted according
         to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the
         OS fields can be derived from this field.
       type: String
@@ -1574,7 +1574,7 @@ script:
         if available. For example, Seattle, San Francisco.
       type: String
     - contextPath: Okta.Logs.Events.client.geographicalContext.state
-      description: Full name of the state or province encompassing in the area containing
+      description: Full name of the state or province encompassing the area containing
         the geo-location coordinates. For example, Montana, Incheon.
       type: String
     - contextPath: Okta.Logs.Events.client.geographicalContext.country
