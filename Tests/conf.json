@@ -15,7 +15,8 @@
         {
             "integrations": "Cisco Firepower",
             "playbookID": "Cisco Firepower - Test",
-            "timeout": 1000
+            "timeout": 1000,
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "JSON Feed",
