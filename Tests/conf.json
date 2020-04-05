@@ -2599,6 +2599,7 @@
         }
     ],
     "skipped_tests": {
+        "Test-Shodan_v2": "Issue 23370",
         "Send Investigation Summary Reports - Test": "Issue 22299",
         "Symantec Deepsight Test": "Issue 22971",
         "OTRS Test": "Issue 23167",
@@ -2649,6 +2650,7 @@
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
+        "Awake Security": "Issue 23376",
         "RiskSense": "We should get an instance talk to Francesco",
         "Palo Alto Networks Cortex": "Issue 22300",
         "AWS - IAM": "Issue 21401",
