@@ -37,7 +37,7 @@ class Client(BaseClient):
             1. 'indicator_field': 'value_from_feed'
             2. 'indicator_field': ('value_from_feed', regex_string_extractor, string_formatter)
                 * regex_string_extractor will extract the first match from the value_from_feed.
-                * string_formatter will format the data in your preferred way.
+                * string_formatter will format the data in your preferred way, Use None to get the extracted field.
         :param fieldnames: list of field names in the file. If *null* the values in the first row of the file are
             used as names. Default: *null*
         :param insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
