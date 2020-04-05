@@ -15,9 +15,9 @@ ONE_MINUTE = 60
 ONE_HOUR = ONE_MINUTE * 60
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 BASE_URL = "https://api.logz.io/"
-TRIGGERED_RULES_API_SUFFIX = "v2/security/rules/events/search"  # "v1/alerts/triggered-alerts"
+TRIGGERED_RULES_API_SUFFIX = "v2/security/rules/events/search"
 SEARCH_LOGS_API_SUFFIX = "v1/search"
-SEARCH_RULE_LOGS_API_SUFFIX = "v2/rules/logs/search"
+SEARCH_RULE_LOGS_API_SUFFIX = "v2/security/rules/events/logs/search"
 
 
 class Client:
@@ -52,14 +52,7 @@ class Client:
         }
         remove_nulls_from_dictionary(payload["filter"])
         remove_nulls_from_dictionary(payload)
-        payload_string = json.dumps(payload)
-        headers = {
-            'X-API-TOKEN': self.security_api_token,
-            'Content-Type': "application/json",
-        }
-        response = requests.request("POST", url, data=payload_string, headers=headers, verify=self.verify, proxies=self.proxies)
-        if response.status_code != 200:
-            return_error('Error in API call [%d] - %s' % (response.status_code, response.reason))
+        response = execute_api(url, payload, self.security_api_token)
         result = None
         try:
             result = response.json()
@@ -93,38 +86,32 @@ class Client:
                     "range": {"@timestamp": time_filter}
                 }
             )
-        # print(json.dumps(payload))
-
-        headers = {
-            'Content-Type': 'application/json',
-            'X-API-TOKEN': self.op_api_token
-        }
-
-        response = requests.request("POST", self.get_search_api(), headers=headers, data=json.dumps(payload))
-        if response.status_code != 200:
-            return_error('Error in API call [%d] - %r: %r' % (response.status_code, response.reason, response.content))
-
+        response = execute_api(self.get_search_api(), payload, self.op_api_token)
         try:
             return response.json()["hits"]["hits"]
         except Exception as e:
             return_error('Could not parse response to json: %s' % response.text, e)
 
-    def get_rule_logs(self, id):
+    def get_rule_logs(self, id, size, page_size=1000):
         payload = {
-            "id": id
-        }
-
-        headers = {
-            'Content-Type': 'application/json',
-            'X-API-TOKEN': self.op_api_token
-        }
-
-        response = requests.request("POST", self.get_rule_logs_api(), headers=headers, data=json.dumps(payload))
-        if response.status_code != 200:
-            return_error('Error in API call [%d] - %r: %r' % (response.status_code, response.reason, response.content))
-
+                      "filter": {
+                        "alertEventId": id
+                      },
+                      "pagination": {
+                        "pageNumber": 1,
+                        "pageSize": page_size
+                      }
+                  }
+        response = execute_api(self.get_rule_logs_api(), payload, self.security_api_token)
         try:
-            return response.json()["hits"]["hits"]
+            total = response.json()["total"]
+            results = response.json()["results"]
+            if total > page_size and size > page_size:
+                for i in range(2, (min(size, total) + page_size - 1) // page_size + 1):  # Ceiling division
+                    payload["pagination"]["pageNumber"] = i
+                    response = execute_api(self.get_rule_logs_api(), payload, self.security_api_token)
+                    results += response.json()["results"]
+            return results
         except Exception as e:
             return_error('Could not parse response to json: %s' % response.text, e)
 
@@ -150,6 +137,17 @@ class Client:
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
+
+
+def execute_api(url, payload, api_token):
+    headers = {
+        'Content-Type': 'application/json',
+        'X-API-TOKEN': api_token
+    }
+    response = requests.request("POST", url, headers=headers, data=json.dumps(payload))
+    if response.status_code != 200:
+        return_error('Error in API call [%d] - %r: %r' % (response.status_code, response.reason, response.content))
+    return response
 
 
 def test_module(client):
@@ -205,17 +203,18 @@ def search_logs_by_fields_command(client, args):
 
 
 def get_rule_logs_by_id_command(client, args):
-    resp = client.get_rule_logs(args.get("id"))
-    content = [res["_source"] for res in resp]
+    id = args.get("id")
+    size = args.get("size", 100)
+    page_size = args.get("page_size")
+    resp = client.get_rule_logs(id, size, page_size)
     return {
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
-        'Contents': content,
+        'Contents': resp,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown("Logs", content),
+        'HumanReadable': tableToMarkdown("Logs", resp),
         'EntryContext': {
-            'Logzio.Logs.Count': len(content),
-            'Logzio.Logs.Results': content
+            'Logzio.Logs.Results': resp
         }
     }
 
@@ -230,12 +229,12 @@ def fetch_incidents(client, last_run, search, severities, first_fetch_time):
         next_run["last_fetch"] = max(start_query_time, time.time() - ONE_HOUR)
     raw_events = client.fetch_triggered_rules(search=search, severities=severities,
                                               start_time=start_query_time)
-    # print(raw_events)
     for event in raw_events["results"]:
         if "groupBy" in event:
             for field in event["groupBy"]:
                 event[field] = event["groupBy"][field]
             del event["groupBy"]
+        del event["hits"]  # this field is incorrect
         event_date = datetime.fromtimestamp(event["eventDate"])
         event_date_string = event_date.strftime(DATE_FORMAT)
         incident = {
@@ -266,15 +265,12 @@ def main():
 
         client = Client(region, security_api_token, op_api_token, verify, proxies)
         command = demisto.command()
-        # demisto.log('Command being called is {}'.format(command))
         # Run the commands
         if command == 'logzio-search-logs':
-            # readable, outputs, resp =
             demisto.results(search_logs_command(client, demisto.args()))
-            # return_outputs(readable, outputs, resp)
         elif command == 'logzio-search-logs-by-fields':
             demisto.results(search_logs_by_fields_command(client, demisto.args()))
-        elif command == 'logzio-get-rule-logs-by-id':
+        elif command == 'logzio-get-logs-by-rule-id':
             demisto.results(get_rule_logs_by_id_command(client, demisto.args()))
         elif demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.

@@ -2,6 +2,7 @@ import time
 import Logzio
 import json
 from Logzio import BASE_URL
+
 SEARCH_LOGS_RESPONSE_EMPTY_BODY = {
     "hits": {
         "hits": []
@@ -17,7 +18,8 @@ TRIGGERED_RULES_RESPONSE_BODY = {
             "alertWindowEndDate": 1581418327.791,
             "eventDate": time.time() - (50 * 60),
             "alertWindowStartDate": 1581414727.791,
-            "name": "Test Alert 2"
+            "name": "Test Alert 2",
+            "hits": 0
         },
         {
             "alertEventId": "aaaaa-vvvv-wwww-gggg-333333333",
@@ -26,7 +28,8 @@ TRIGGERED_RULES_RESPONSE_BODY = {
             "alertWindowEndDate": 1581418327.791,
             "eventDate": (time.time() - (30 * 60)),
             "alertWindowStartDate": 1581414727.791,
-            "name": "Test Alert 1"
+            "name": "Test Alert 1",
+            "hits": 0
         }
     ]
 }
@@ -34,35 +37,38 @@ TRIGGERED_RULES_RESPONSE_BODY = {
 TRIGGERED_RULES_EMPTY_RESPONSE_BODY = {
     "results": []
 }
-client = Logzio.Client("us", "ac4f3246-c684-4194-9ac9-709b33bc33a9",
-                "8f974a9b-b83f-47cb-8fd7-4361fe3d198e", True, False)
-Logzio.test_module(client)
-# inc, last = Logzio.fetch_incidents(client, {}, None, ["MEDIUM", "HIGH"], '24 hours')
-# print(inc)
-# print(last)
-# while True:
-#     time.sleep(60)
-#     inc, last = Logzio.fetch_incidents(client, last, None, ["MEDIUM", "HIGH"], '1 hours')
-#     print(inc)
-#     print(last)
-#
-args = {
-    "query": "*",
-    # "key1": "EPOevent.SoftwareInfo.Event.CommonFields.SourceURL",
-    # "value1": "http:",
-    "size": 10,
-    "from_time": 1583021892000
-    # "to_time": 1580376254000
+
+RULE_LOGS_RESPONSE_BODY = {
+    "total": 3,
+    "results": [
+        {
+            "rule": "test rule",
+            "type": "falco",
+            "output": "Error File below",
+            "message": "{\"output\":\"17:46:16.520316598: Error File below / or /root opened for writing\"}",
+            "@timestamp": "2020-03-29T14:46:17.236Z",
+        },
+        {
+            "rule": "test rule",
+            "type": "falco",
+            "output": "Error File below",
+            "message": "{\"output\":\"17:46:16.520316598: Error File below / or /root opened for writing\"}",
+            "@timestamp": "2020-03-29T14:46:14.236Z",
+        }
+    ],
+    "pagination": {
+        "pageNumber": 1,
+        "pageSize": 2
+    }
 }
 
 
-print json.dumps(Logzio.search_logs_command(client, args)["EntryContext"])
 class TestLogzio:
 
     def test_logzio_fetch_incidents(self, requests_mock):
         requests_mock.post("{}{}".format(BASE_URL, Logzio.TRIGGERED_RULES_API_SUFFIX),
                            json=TRIGGERED_RULES_RESPONSE_BODY)
-        client = Logzio.Client(BASE_URL, "us", "fake-security-token", "fake-operational-token", False, False)
+        client = Logzio.Client("us", "fake-security-token", "fake-operational-token", False, False)
         search = "Test"
         severities = ["HIGH", "MEDIUM"]
         first_fetch_time = '1 hours'
@@ -93,7 +99,7 @@ class TestLogzio:
         assert next_run == next_run2
 
     def test_logzio_search_logs_command(self, requests_mock):
-        client = Logzio.Client(BASE_URL, "us", "fake-security-token", "fake-operational-token", False, False)
+        client = Logzio.Client("us", "fake-security-token", "fake-operational-token", False, False)
         args = {
             "query": "name:test",
             "size": 20,
@@ -111,21 +117,34 @@ class TestLogzio:
         time_range = request_body["query"]["bool"]["must"][1]["range"]["@timestamp"]
         assert time_range["to"] == 1581174759
         assert time_range["from"] == 1581261159
-#
-# # print search_logs_by_fields_command(client, args)
+
+    #
+    # # print search_logs_by_fields_command(client, args)
 
     def test_logzio_get_rule_logs(self, requests_mock):
-        client = Logzio.Client(BASE_URL, "us", "fake-security-token", "fake-operational-token", False, False)
+        client = Logzio.Client("us", "fake-security-token", "fake-operational-token", False, False)
         args = {
-            "id": 123
+            "id": 123,
+            "size": 100,
+            "page_size": 2
         }
 
         requests_mock.post("{}{}".format(BASE_URL, Logzio.SEARCH_RULE_LOGS_API_SUFFIX),
-                           json=SEARCH_LOGS_RESPONSE_EMPTY_BODY)
+                           json=RULE_LOGS_RESPONSE_BODY)
 
         Logzio.get_rule_logs_by_id_command(client, args)
+
+        assert len(requests_mock.request_history) == 2
         request_body = requests_mock.request_history[0].json()
 
-        assert "id" in request_body
-        assert request_body["id"] == 123
+        assert "alertEventId" in request_body["filter"]
+        assert request_body["filter"]["alertEventId"] == 123
+        assert "pageNumber" in request_body["pagination"]
+        assert request_body["pagination"]["pageNumber"] == 1
+        assert "pageSize" in request_body["pagination"]
+        assert request_body["pagination"]["pageSize"] == 2
+
+        request_body2 = requests_mock.request_history[1].json()
+        assert "pageNumber" in request_body2["pagination"]
+        assert request_body2["pagination"]["pageNumber"] == 2
 
