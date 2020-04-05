@@ -744,7 +744,7 @@ def get_record_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, result
 
 
-def create_record_command(client: Client, args: dict) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+def create_record_command(client: Client, args: dict) -> Tuple[str, Dict[Any, Any], Any]:
     """Create a record.
 
     Args:
@@ -778,7 +778,7 @@ def create_record_command(client: Client, args: dict) -> Tuple[str, Dict[Any, An
     return human_readable, entry_context, result
 
 
-def update_record_command(client: Client, args: dict) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+def update_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
     """Update a record.
 
     Args:
@@ -802,8 +802,8 @@ def update_record_command(client: Client, args: dict) -> Tuple[str, Dict[Any, An
 
     if not result or 'result' not in result:
         return 'Could not retrieve record.', {}, {}
-    record = result.get('result', {})
 
+    record = result.get('result', {})
     mapped_record = {DEFAULT_RECORD_FIELDS[k]: record[k] for k in DEFAULT_RECORD_FIELDS if k in record}
     human_readable = tableToMarkdown(f'ServiceNow record with ID {record_id} updated successfully',
                                      t=mapped_record, removeNull=True),
@@ -1070,7 +1070,7 @@ def query_table_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, table_entries
 
 
-def query_computers_command(client: Client, args: dict) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+def query_computers_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
     """Query computers.
 
     Args:
@@ -1101,14 +1101,14 @@ def query_computers_command(client: Client, args: dict) -> Tuple[str, Dict[Any, 
     if not result or 'result' not in result:
         return 'No computers found.', {}, {}
 
-    computers = result['result']
+    computers = result.get('result', {})
     if not isinstance(computers, list):
         computers = [computers]
 
     if len(computers) == 0:
         return 'No computers found.', {}, {}
 
-    compuer_statuses = {
+    computer_statuses = {
         '1': 'In use',
         '2': 'On order',
         '3': 'On maintenance',
@@ -1128,7 +1128,7 @@ def query_computers_command(client: Client, args: dict) -> Tuple[str, Dict[Any, 
         if isinstance(computer.get('company'), dict) else computer.get('company'),
         'AssignedTo': computer.get('assigned_to', {}).get('value')
         if isinstance(computer.get('assigned_to'), dict) else computer.get('assigned_to'),
-        'State': compuer_statuses.get(computer.get('install_status', ''), computer.get('install_status')),
+        'State': computer_statuses.get(computer.get('install_status', ''), computer.get('install_status')),
         'Cost': f"{computer.get('cost', '').rstrip()} {computer.get('cost_cc', '').rstrip()}",
         'Comments': computer.get('comments')
     } for computer in computers]
@@ -1142,7 +1142,7 @@ def query_computers_command(client: Client, args: dict) -> Tuple[str, Dict[Any, 
     return human_readable, entry_context, computers
 
 
-def query_groups_command(client: Client, args: dict) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+def query_groups_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
     """Query groups.
 
     Args:
@@ -1169,7 +1169,7 @@ def query_groups_command(client: Client, args: dict) -> Tuple[str, Dict[Any, Any
     if not result or 'result' not in result:
         return 'No groups found.', {}, {}
 
-    groups = result['result']
+    groups = result.get('result', {})
     if not isinstance(groups, list):
         groups = [groups]
 
@@ -1195,7 +1195,7 @@ def query_groups_command(client: Client, args: dict) -> Tuple[str, Dict[Any, Any
     return human_readable, entry_context, groups
 
 
-def query_users_command(client: Client, args: dict) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+def query_users_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
     """Query users.
 
     Args:
@@ -1222,7 +1222,7 @@ def query_users_command(client: Client, args: dict) -> Tuple[str, Dict[Any, Any]
     if not result or 'result' not in result:
         return 'No users found.', {}, {}
 
-    users = result['result']
+    users = result.get('result', {})
     if not isinstance(users, list):
         users = [users]
 
@@ -1246,7 +1246,7 @@ def query_users_command(client: Client, args: dict) -> Tuple[str, Dict[Any, Any]
     return human_readable, entry_context, users
 
 
-def list_table_fields_command(client: Client, args: dict) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+def list_table_fields_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
     """List table fields.
 
     Args:
@@ -1261,10 +1261,10 @@ def list_table_fields_command(client: Client, args: dict) -> Tuple[str, Dict[Any
     result = client.get_table_fields(table_name)
 
     if not result or 'result' not in result:
-        return 'Table was not found.', {}
+        return 'Table was not found.', {}, {}
 
     if len(result['result']) == 0:
-        return 'Table contains no records.', {}
+        return 'Table contains no records.', {}, {}
 
     fields = [{'Name': k} for k, v in result['result'][0].items()]
 
@@ -1274,7 +1274,7 @@ def list_table_fields_command(client: Client, args: dict) -> Tuple[str, Dict[Any
     return human_readable, entry_context, result
 
 
-def get_table_name_command(client: Client, args: dict) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+def get_table_name_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
     """List table fields.
 
     Args:
@@ -1293,7 +1293,7 @@ def get_table_name_command(client: Client, args: dict) -> Tuple[str, Dict[Any, A
 
     if not result or 'result' not in result:
         return 'Table was not found.', {}, {}
-    tables = result['result']
+    tables = result.get('result', {})
     if len(tables) == 0:
         return 'Table was not found.', {}, {}
 
