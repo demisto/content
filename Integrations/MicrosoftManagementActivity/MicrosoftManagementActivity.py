@@ -209,7 +209,7 @@ def start_or_stop_subscription_command(client, args, start_or_stop):
     return_outputs(
         readable_output=human_readable,
         outputs=entry_context,
-        raw_response=res
+        raw_response={}
     )
 
 
