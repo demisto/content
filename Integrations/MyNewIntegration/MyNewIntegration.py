@@ -45,7 +45,7 @@ class Client(BaseClient):
             },
             {
                 'incident_id': 2,
-                'description': 'Hello incident 2',
+                'description': 'Hello incident 3',
                 'created_time': datetime.utcnow().strftime(DATE_FORMAT)
             }
         ]
