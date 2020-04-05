@@ -492,7 +492,7 @@
         "author": "fb_official2",
         "date": "2018-12-10",
         "forum": "bcbm4y7yusdxthg3.onion",
-        "post": "&lt;mark&gt;NETFLIX&lt;/mark&gt; TODAY\n\nACCOUNT:  example@gmail.com\nPASS: THEdonbone",
+        "post": "&lt;mark&gt;NETFLIX&lt;/mark&gt; TODAY\n\nACCOUNT:  fbofficialtv010@tvstar.com\nPASS: THEdonbone",
         "thread_url": "http://bcbm4y7yusdxthg3.onion/showthread.php?t=28120",
         "title": "FREE &lt;mark&gt;NETFLIX&lt;/mark&gt; ACCOUNT DAILY.."
       },
@@ -508,7 +508,7 @@
         "author": "fb_official2",
         "date": "2018-12-09",
         "forum": "sky-fraud",
-        "post": "https://www.lifewire.com/thmb/3AYgoV...f77283d151.jpg\n\n\n\n\n&lt;mark&gt;NETFLIX&lt;/mark&gt; TODAY\n\nACCOUNT:  example.gmail.com\nPASS: THEdonbone",
+        "post": "https://www.lifewire.com/thmb/3AYgoV...f77283d151.jpg\n\n\n\n\n&lt;mark&gt;NETFLIX&lt;/mark&gt; TODAY\n\nACCOUNT:  fbofficialtv015@tvstar.com\nPASS: THEdonbone",
         "thread_url": "https://sky-fraud.ru/showthread.php?t=28120",
         "title": "FREE &lt;mark&gt;NETFLIX&lt;/mark&gt; ACCOUNT DAILY.."
       },
@@ -516,7 +516,7 @@
         "author": "piscedor",
         "date": "2018-12-09",
         "forum": "https://bitshacking.com",
-        "post": "grosspam@msn.com:dylan1\r\nCaptured Keys:\r\n&lt;------------&gt;\r\nFirstname: Pam\r\nLastname: Gross\r\nCountry: US\n\n\example.gmail.com:matthew\r\nCaptured Keys:\r\n&lt;------------&gt;\r\nFirstname: Jim\r\nLastname: Dutton\r\nCountry: US\n\n\example.gmail.com:axleaxle\r\nCaptured Keys:\r\n&lt;------------&gt;\r\nFirstname: Berni\r\nLastname: Hartford\r\nCountry: CA\n\n\example@gmail.com:jtrocks\r\nCaptured Keys:\r\n&lt;------------&gt;\r\nFirstname: James\r\nLastname: Roselle\r\nCountry: US\n\n\example.gmail.com:helpme\r\nCaptured Keys:\r\n&lt;------------&gt;\r\nFirstname: Jessica\r\nLastname: Cacciola\r\nCountry: US\n\n\njbur1111@yahoo.com:wilson\r\nCaptured Keys:\r\n&lt;------------&gt;\r\nFirstname: Colleen\r\nLastname: Burke\r\nCountry: US\n\n\example.gmail.com:callie\r\nCaptured Keys:\r\n&lt;------------&gt;\r\nFirstname: Donald\r\nLastname: Graves\r\nCountry: US\n\n\nglennzenner@yahoo.com:colorado\r\nCaptured Keys:\r\n&lt;------------&gt;\r\nFirstname: Glenn\r\nLastname: Zenner\r\nCountry: US\n\n\example@gmail.com:anthony13\r\nCaptured Keys:\r\n&lt;------------&gt;\r\nFirstname: Anthony D.\r\nLastname: ORTIZ\r\nCountry: US\n\n\example.gmail.com:goodguys1\r\nCaptured Keys:\r\n&lt;------------&gt;\r\nFirstname: Garrick\r\nLastname: Lew\r\nCountry: US",
+        "post": "grosspam@msn.com:dylan1\r\nCaptured Keys:\r\n&lt;------------&gt;\r\nFirstname: Pam\r\nLastname: Gross\r\nCountry: US\n\n\nidajd@q.com:matthew\r\nCaptured Keys:\r\n&lt;------------&gt;\r\nFirstname: Jim\r\nLastname: Dutton\r\nCountry: US\n\n\nhartford@telusplanet.net:axleaxle\r\nCaptured Keys:\r\n&lt;------------&gt;\r\nFirstname: Berni\r\nLastname: Hartford\r\nCountry: CA\n\n\njimtros31@aol.com:jtrocks\r\nCaptured Keys:\r\n&lt;------------&gt;\r\nFirstname: James\r\nLastname: Roselle\r\nCountry: US\n\n\njesscacciola@comcast.net:helpme\r\nCaptured Keys:\r\n&lt;------------&gt;\r\nFirstname: Jessica\r\nLastname: Cacciola\r\nCountry: US\n\n\njbur1111@yahoo.com:wilson\r\nCaptured Keys:\r\n&lt;------------&gt;\r\nFirstname: Colleen\r\nLastname: Burke\r\nCountry: US\n\n\ngravesfamily@cox.net:callie\r\nCaptured Keys:\r\n&lt;------------&gt;\r\nFirstname: Donald\r\nLastname: Graves\r\nCountry: US\n\n\nglennzenner@yahoo.com:colorado\r\nCaptured Keys:\r\n&lt;------------&gt;\r\nFirstname: Glenn\r\nLastname: Zenner\r\nCountry: US\n\n\nguillermodeharo@sbcglobal.net:anthony13\r\nCaptured Keys:\r\n&lt;------------&gt;\r\nFirstname: Anthony D.\r\nLastname: ORTIZ\r\nCountry: US\n\n\ngsl@defendergroup.com:goodguys1\r\nCaptured Keys:\r\n&lt;------------&gt;\r\nFirstname: Garrick\r\nLastname: Lew\r\nCountry: US",
         "thread_url": "http://www.bitshacking.com/forum/accounts-database-section/146703-10-x-netflix-premium-accounts.html",
         "title": "10 x &lt;mark&gt;Netflix&lt;/mark&gt; premium accounts"
       },
@@ -524,7 +524,7 @@
         "author": "piscedor",
         "date": "2018-12-09",
         "forum": "https://bitshacking.com",
-        "post": "example.gmail.com|alphadog666\example.gmail.com|slamdunk1991\example@gmail.com|dennick6892",
+        "post": "net_striker@gmx.at|alphadog666\nnguyenlenamanh@yahoo.de|slamdunk1991\nnickel_92@hotmail.de|dennick6892",
         "thread_url": "http://www.bitshacking.com/forum/accounts-database-section/146705-3x-netflix-account.html",
         "title": "3x &lt;mark&gt;netflix&lt;/mark&gt; account"
       }
@@ -999,7 +999,7 @@
 </table>
 <h5> </h5>
 <h5>Command Example</h5>
-<pre>!vigilante-query-accounts emails="<a href="mailto:example@gmail.com">example@gmail.com</a>,<a href="mailto:example.gmail.com">example.gmail.com</a>" limit="3"</pre>
+<pre>!vigilante-query-accounts emails="<a href="mailto:16@gmail.com">16@gmail.com</a>,<a href="mailto:carlymharden@gmail.com">carlymharden@gmail.com</a>" limit="3"</pre>
 <h5>Context Example</h5>
 <pre><code>{
   "VigilanteATI": {
@@ -1322,7 +1322,7 @@
       {
         "date added": "2018-06-19",
         "date notified": "",
-        "identifier": "example.gmail.com",
+        "identifier": "Pamela.Long@applebees.com",
         "tag": "",
         "type": "email"
       }

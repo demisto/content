@@ -1569,7 +1569,7 @@
 <h5>Command Example</h5>
 <pre>!umbrella-get-whois-for-domain domain=cnn.com</pre>
 <h5>Context Example</h5>
-<p>Umbrella:{} 1 item<br> WHOIS:{} 2 items<br> Data:{} 10 items<br> Nameservers:[] 4 items<br> 0:ns-1086.awsdns-07.org<br> 1:ns-1630.awsdns-11.co.uk<br> 2:ns-47.awsdns-05.com<br> 3:ns-576.awsdns-08.net<br> IANAID:299<br> Created:1993-09-22<br> Name:cnn.com<br> LastRetrieved:1537481654499<br> Expires:2026-09-21<br> Emails:[] 2 items<br> 0:<a href="mailto:example.gmail.com">example.gmail.com</a><br> 1:<a href="mailto:example.gmail.com">example.gmail.com</a><br> RegistrarName:CSC CORPORATE DOMAINS, INC.<br> Updated:2018-04-10<br> LastObserved:2018-09-20 16:53:49.000 UTC<br> Domain:cnn.com</p>
+<p>Umbrella:{} 1 item<br> WHOIS:{} 2 items<br> Data:{} 10 items<br> Nameservers:[] 4 items<br> 0:ns-1086.awsdns-07.org<br> 1:ns-1630.awsdns-11.co.uk<br> 2:ns-47.awsdns-05.com<br> 3:ns-576.awsdns-08.net<br> IANAID:299<br> Created:1993-09-22<br> Name:cnn.com<br> LastRetrieved:1537481654499<br> Expires:2026-09-21<br> Emails:[] 2 items<br> 0:<a href="mailto:hostmaster@turner.com">hostmaster@turner.com</a><br> 1:<a href="mailto:tmgroup@turner.com">tmgroup@turner.com</a><br> RegistrarName:CSC CORPORATE DOMAINS, INC.<br> Updated:2018-04-10<br> LastObserved:2018-09-20 16:53:49.000 UTC<br> Domain:cnn.com</p>
 <h5>Human Readable Output</h5>
 <p><a href="https://user-images.githubusercontent.com/12241410/46916628-d131aa00-cfc5-11e8-8661-33f6a8e3105a.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46916628-d131aa00-cfc5-11e8-8661-33f6a8e3105a.png" alt="image" width="751" height="506"></a></p>
 <h3 id="h_3979943983261539679228550">17. Get malicious domains associated with an IP address</h3>

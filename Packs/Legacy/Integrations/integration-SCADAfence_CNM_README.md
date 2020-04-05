@@ -36,9 +36,9 @@
 <pre>[
     {
         "createdOn": "2018-08-05T12:06:22.278Z",
-        "details": "1.1.1.1 sent suspicious write command to PLC 2.2.2.2.",
+        "details": "140.80.0.101 sent suspicious write command to PLC 140.80.0.25.",
         "id": "5b600cecfeb8001f1cc5d2ea",
-        "ip": "2.2.2.2",
+        "ip": "140.80.0.25",
         "severity": "Critical",
         "status": "InProgress",
         "type": "Suspicious write command to PLC"
@@ -90,9 +90,9 @@
 <pre><code>[
     {
         "createdOn": "2018-08-05T12:06:22.278Z",
-        "details": "140.80.0.101 sent suspicious write command to PLC 2.2.2.2.",
+        "details": "140.80.0.101 sent suspicious write command to PLC 140.80.0.25.",
         "id": "5b600cecfeb8001f1cc5d2ea",
-        "ip": "2.2.2.2",
+        "ip": "140.80.0.25",
         "severity": "Critical",
         "status": "Resolved",
         "type": "Suspicious write command to PLC"
@@ -156,9 +156,9 @@
 <tr>
 <td style="width: 63px;">Resolved</td>
 <td style="width: 68px;">Critical</td>
-<td style="width: 83px;">2.2.2.2</td>
+<td style="width: 83px;">140.80.0.25</td>
 <td style="width: 134px;">2018-08-05T12:06:22.278Z</td>
-<td style="width: 96px;">140.80.0.101 sent suspicious write command to PLC 2.2.2.2.</td>
+<td style="width: 96px;">140.80.0.101 sent suspicious write command to PLC 140.80.0.25.</td>
 <td style="width: 75px;">Suspicious write command to PLC</td>
 <td style="width: 197px;">5b600cecfeb8001f1cc5d2ea</td>
 </tr>
@@ -227,7 +227,7 @@
         "firstSeen": "2016-05-23T12:25:03.838Z",
         "hostname": "wmhtp25",
         "internalIpsCount": 13,
-        "ip": "3.3.3.3",
+        "ip": "140.80.0.101",
         "lastSeen": "2016-05-23T12:25:03.838Z",
         "mac": "E8:39:35:BD:24:76",
         "nicType": "Ethernet",
@@ -281,7 +281,7 @@
 <td>hmi, server</td>
 <td>0</td>
 <td>Hewlett-Packard Company</td>
-<td>3.3.3.3</td>
+<td>140.80.0.101</td>
 <td>0</td>
 <td>wmhtp25</td>
 <td>Ethernet</td>
@@ -393,7 +393,7 @@
     {
         "dir": "DEST",
         "hostname": "",
-        "ip": "1.1.1.1",
+        "ip": "140.80.0.22",
         "mac": "08:00:06:01:00:02",
         "port": null,
         "proto": "TCP",
@@ -402,7 +402,7 @@
     {
         "dir": "DEST",
         "hostname": "t20102173",
-        "ip": "2.2.2.2",
+        "ip": "140.80.0.25",
         "mac": "00:80:80:8E:8F:F0",
         "port": null,
         "proto": "TCP",
@@ -411,7 +411,7 @@
     {
         "dir": "SRC",
         "hostname": "",
-        "ip": "3.3.3.3",
+        "ip": "140.80.255.255",
         "mac": "",
         "port": null,
         "proto": "UDP",
@@ -420,7 +420,7 @@
     {
         "dir": "SRC",
         "hostname": "",
-        "ip": "4.4.4.4",
+        "ip": "224.0.0.252",
         "mac": "",
         "port": 5355,
         "proto": "UDP",
@@ -470,13 +470,13 @@
 </table>
 <h5> </h5>
 <h5>Command Example</h5>
-<pre><code>!scadafence-getAssetConnections ipAddress=3.3.3.3</code></pre>
+<pre><code>!scadafence-getAssetConnections ipAddress=140.80.0.101</code></pre>
 <h5>Context Example</h5>
 <pre>[
     {
         "dir": "DEST",
         "hostname": "",
-        "ip": "1.1.1.1",
+        "ip": "140.80.0.22",
         "mac": "08:00:06:01:00:02",
         "port": null,
         "proto": "TCP",
@@ -485,7 +485,7 @@
     {
         "dir": "DEST",
         "hostname": "t20102173",
-        "ip": "2.2.2.2",
+        "ip": "140.80.0.25",
         "mac": "00:80:80:8E:8F:F0",
         "port": null,
         "proto": "TCP",
@@ -494,7 +494,7 @@
     {
         "dir": "SRC",
         "hostname": "",
-        "ip": "3.3.3.3",
+        "ip": "140.80.255.255",
         "mac": "",
         "port": null,
         "proto": "UDP",
@@ -503,7 +503,7 @@
     {
         "dir": "SRC",
         "hostname": "",
-        "ip": "4.4.4.4",
+        "ip": "224.0.0.252",
         "mac": "",
         "port": 5355,
         "proto": "UDP",
@@ -528,7 +528,7 @@
 <tbody>
 <tr>
 <td>TCP</td>
-<td>1.1.1.1</td>
+<td>140.80.0.22</td>
 <td> </td>
 <td>08:00:06:01:00:02</td>
 <td>9691680</td>
@@ -537,7 +537,7 @@
 </tr>
 <tr>
 <td>TCP</td>
-<td>2.2.2.2</td>
+<td>140.80.0.25</td>
 <td>t20102173</td>
 <td>00:80:80:8E:8F:F0</td>
 <td>101410609</td>
@@ -546,7 +546,7 @@
 </tr>
 <tr>
 <td>UDP</td>
-<td>3.3.3.3</td>
+<td>140.80.255.255</td>
 <td> </td>
 <td> </td>
 <td>24768</td>
@@ -555,7 +555,7 @@
 </tr>
 <tr>
 <td>UDP</td>
-<td>4.4.4.4</td>
+<td>224.0.0.252</td>
 <td> </td>
 <td> </td>
 <td>816</td>
@@ -644,7 +644,7 @@
 </table>
 <h5> </h5>
 <h5>Command Example</h5>
-<pre><code>!scadafence-getAssetTraffic ipAddress=3.3.3.3</code></pre>
+<pre><code>!scadafence-getAssetTraffic ipAddress=140.80.0.101</code></pre>
 <h5>Context Example</h5>
 <pre>{
     "TCP": {
@@ -856,36 +856,36 @@
 <pre>[
   {
     "dest_hostname": "",
-    "dest_ip": "1.1.1.1",
+    "dest_ip": "192.168.60.142",
     "dest_mac": "F4:54:33:A9:13:23",
     "dest_port": 44818,
     "proto": "TCP",
     "src_hostname": "",
-    "src_ip": "4.4.4.4",
+    "src_ip": "192.168.60.20",
     "src_mac": "00:0C:29:65:1C:29",
     "src_port": 50153,
     "traffic": 234840
   },
   {
     "dest_hostname": "",
-    "dest_ip": "2.2.2.2",
+    "dest_ip": "192.168.60.143",
     "dest_mac": "F4:54:33:A9:0E:60",
     "dest_port": 44818,
     "proto": "TCP",
     "src_hostname": "",
-    "src_ip": "3.3.3.3",
+    "src_ip": "192.168.60.20",
     "src_mac": "00:0C:29:65:1C:29",
     "src_port": 50154,
     "traffic": 151722
   },
   {
     "dest_hostname": "",
-    "dest_ip": "4.4.4.4",
+    "dest_ip": "192.168.60.141",
     "dest_mac": "F4:54:33:A8:33:93",
     "dest_port": 44818,
     "proto": "TCP",
     "src_hostname": "",
-    "src_ip": "5.5.5.5",
+    "src_ip": "192.168.60.20",
     "src_mac": "00:0C:29:65:1C:29",
     "src_port": 50108,
     "traffic": 23936
@@ -914,36 +914,36 @@
 <td>TCP</td>
 <td> </td>
 <td> </td>
-<td>1.1.1.1</td>
+<td>192.168.60.20</td>
 <td>234840</td>
 <td>F4:54:33:A9:13:23</td>
 <td>44818</td>
 <td>00:0C:29:65:1C:29</td>
-<td>4.4.4.4</td>
+<td>192.168.60.142</td>
 </tr>
 <tr>
 <td>50154</td>
 <td>TCP</td>
 <td> </td>
 <td> </td>
-<td>1.1.1.1</td>
+<td>192.168.60.20</td>
 <td>151722</td>
 <td>F4:54:33:A9:0E:60</td>
 <td>44818</td>
 <td>00:0C:29:65:1C:29</td>
-<td>1.1.1.1</td>
+<td>192.168.60.143</td>
 </tr>
 <tr>
 <td>50108</td>
 <td>TCP</td>
 <td> </td>
 <td> </td>
-<td>1.1.1.1</td>
+<td>192.168.60.20</td>
 <td>23936</td>
 <td>F4:54:33:A8:33:93</td>
 <td>44818</td>
 <td>00:0C:29:65:1C:29</td>
-<td>4.4.4.4</td>
+<td>192.168.60.141</td>
 </tr>
 </tbody>
 </table>

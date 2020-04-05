@@ -697,7 +697,7 @@
                 ], 
                 "Active": true, 
                 "GivenName": "Craig", 
-                "Email": "example.gmail.com", 
+                "Email": "craig.campbell@skaj.ai", 
                 "FirstSeen": "2018-03-01T16:52:50"
             }, 
             {

@@ -2806,7 +2806,7 @@
 <h5>Context Output</h5>
 <p>There is no context output for this command.</p>
 <h5>Command Example</h5>
-<pre>!threat-grid-search-urls ip=1.1.1.3</pre>
+<pre>!threat-grid-search-urls ip=83.136.254.57</pre>
 <h3 id="h_644064911124401540724766844">25. Get the states of samples</h3>
 <hr>
 <p>Returns Threat Grid samples state.</p>

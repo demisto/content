@@ -2226,7 +2226,7 @@
     "GitHub.Commit": {
         "Author": {
             "Date": "2019-09-16T15:42:43Z",
-            "Email": "55035720example.user1@users.noreply.github.com",
+            "Email": "55035720+example-user1@users.noreply.github.com",
             "Name": "example-user1"
         },
         "Committer": {
@@ -2243,7 +2243,7 @@
         "SHA": "8a67a078139498f3e8e1bd2e26ffc5a2fea1b918",
         "TreeSHA": "42fdb6c89538099a141e94fabe4bbc58098f4d90",
         "Verification": {
-            "Payload": "tree 42fdb6c89538099a141e94fabe4bbc58098f4d90\nparent d6bafef5a0021a6d9ab0a22e11bd0afd5801d936\nauthor example-user1 &lt;55035720example.user1@users.noreply.github.com&gt; 1568648563 +0300\ncommitter GitHub &lt;noreply@github.com&gt; 1568648563 +0300\n\nUpdate config.yml",
+            "Payload": "tree 42fdb6c89538099a141e94fabe4bbc58098f4d90\nparent d6bafef5a0021a6d9ab0a22e11bd0afd5801d936\nauthor example-user1 &lt;55035720+example-user1@users.noreply.github.com&gt; 1568648563 +0300\ncommitter GitHub &lt;noreply@github.com&gt; 1568648563 +0300\n\nUpdate config.yml",
             "Reason": "valid",
             "Signature": "-----BEGIN PGP SIGNATURE-----\n\nwsBcBAABCAAQBQJ****************************sIKrPT2jUSWyzfu5wnu\noWz7+2KMdaglV****************************M08HXTm\na9eO/ahlodARkgH/bWjulomeO+jDEgbZenlPUrBnX136QzPPqgl4uvxfquAOj1/a\na89YtPAFh2X1+1q7pl5dVtZfYpo6mYJoY9dwVpDRbLoVHJRa1wnqEv4kxRHrrRL9\nmGWSMHqK8I6j9zXi4niod8pQpl0k4O/2SlNh81RyeILEYb587Zs1XGuIYQEDrcAf\nu+FURxEHSuT4yaZ+oBwhhcIsmsWQMGkfABbwo1Fi2BMtEgZpzd/TScNg1KeSrVI=\n=dWrz\n-----END PGP SIGNATURE-----\n",
             "Verified": true
@@ -2267,13 +2267,13 @@
 </thead>
 <tbody>
 <tr>
-<td>Date: 2019-09-16T15:42:43Z<br> Name: example-user1<br> Email: 55035720example.user1@users.noreply.github.com</td>
+<td>Date: 2019-09-16T15:42:43Z<br> Name: example-user1<br> Email: 55035720+example-user1@users.noreply.github.com</td>
 <td>Date: 2019-09-16T15:42:43Z<br> Name: GitHub<br> Email: noreply@github.com</td>
 <td>Update config.yml</td>
 <td>{'SHA': 'd6bafef5a0021a6d9ab0a22e11bd0afd5801d936'}</td>
 <td>8a67a078139498f3e8e1bd2e26ffc5a2fea1b918</td>
 <td>42fdb6c89538099a141e94fabe4bbc58098f4d90</td>
-<td>Verified: true<br> Reason: valid<br> Signature: -----BEGIN PGP SIGNATURE-----<br> <br> wsBcBAABCAAQBQJ****************************sIKrPT2jUSWyzfu5wnu<br> oWz7+2KMdaglV****************************M08HXTm<br> a9eO/ahlodARkgH/bWjulomeO+jDEgbZenlPUrBnX136QzPPqgl4uvxfquAOj1/a<br> a89YtPAFh2X1+1q7pl5dVtZfYpo6mYJoY9dwVpDRbLoVHJRa1wnqEv4kxRHrrRL9<br> mGWSMHqK8I6j9zXi4niod8pQpl0k4O/2SlNh81RyeILEYb587Zs1XGuIYQEDrcAf<br> u+FURxEHSuT4yaZ+oBwhhcIsmsWQMGkfABbwo1Fi2BMtEgZpzd/TScNg1KeSrVI=<br> =dWrz<br> -----END PGP SIGNATURE-----<br> <br> Payload: tree 42fdb6c89538099a141e94fabe4bbc58098f4d90<br> parent d6bafef5a0021a6d9ab0a22e11bd0afd5801d936<br> author example-user1 &lt;55035720example.user1@users.noreply.github.com&gt; 1568648563 +0300<br> committer GitHub &lt;noreply@github.com&gt; 1568648563 +0300<br> <br> Update config.yml</td>
+<td>Verified: true<br> Reason: valid<br> Signature: -----BEGIN PGP SIGNATURE-----<br> <br> wsBcBAABCAAQBQJ****************************sIKrPT2jUSWyzfu5wnu<br> oWz7+2KMdaglV****************************M08HXTm<br> a9eO/ahlodARkgH/bWjulomeO+jDEgbZenlPUrBnX136QzPPqgl4uvxfquAOj1/a<br> a89YtPAFh2X1+1q7pl5dVtZfYpo6mYJoY9dwVpDRbLoVHJRa1wnqEv4kxRHrrRL9<br> mGWSMHqK8I6j9zXi4niod8pQpl0k4O/2SlNh81RyeILEYb587Zs1XGuIYQEDrcAf<br> u+FURxEHSuT4yaZ+oBwhhcIsmsWQMGkfABbwo1Fi2BMtEgZpzd/TScNg1KeSrVI=<br> =dWrz<br> -----END PGP SIGNATURE-----<br> <br> Payload: tree 42fdb6c89538099a141e94fabe4bbc58098f4d90<br> parent d6bafef5a0021a6d9ab0a22e11bd0afd5801d936<br> author example-user1 &lt;55035720+example-user1@users.noreply.github.com&gt; 1568648563 +0300<br> committer GitHub &lt;noreply@github.com&gt; 1568648563 +0300<br> <br> Update config.yml</td>
 </tr>
 </tbody>
 </table>

@@ -228,7 +228,7 @@
             "Products_Brand": "Alternative",
             "Products_ItemName": "Alternative Women's Alice Drop Shoulder V-Neck",
             "Users_Name": "Chelsea Mccormick",
-            "Users_Email": "example@gmail.com"
+            "Users_Email": "cmccormick@gmail.com"
         }, 
         {
             "OrderItems_Id": 63757,
@@ -239,7 +239,7 @@
             "Products_Brand": "Lucky Brand",
             "Products_ItemName": "Lucky Brand Women's Plus-Size Moroccan Medallion Tee",
             "Users_Name": "Darrell Nelson",
-            "Users_Email": "example@aol.com"
+            "Users_Email": "darrellnelson@aol.com"
         }
     ]
 }
@@ -277,7 +277,7 @@
 <td>Alternative</td>
 <td>Alternative Women’s Alice Drop Shoulder V-Neck</td>
 <td>Chelsea Mccormick</td>
-<td><a href="mailto:example.gmail.com">example.gmail.com</a></td>
+<td><a href="mailto:cmccormick@gmail.com">cmccormick@gmail.com</a></td>
 </tr>
 <tr>
 <td>63757</td>
@@ -288,7 +288,7 @@
 <td>Lucky Brand</td>
 <td>Lucky Brand Women’s Plus-Size Moroccan Medallion Tee</td>
 <td>Darrell Nelson</td>
-<td><a href="mailto:example.gmail.com">example.gmail.com</a></td>
+<td><a href="mailto:darrellnelson@aol.com">darrellnelson@aol.com</a></td>
 </tr>
 </tbody>
 </table>

@@ -715,7 +715,7 @@
 </table>
 <p> </p>
 <h5>Command Example</h5>
-<pre>  !email email=example.gmail.com</pre>
+<pre>  !email email=guykeller@gmail.com</pre>
 <h5>Human Readable Output</h5>
 <p><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/ThreatQ_v2_email.png" alt="email.png"></p>
 <h3 id="h_e60fe097-2ce1-4ec1-87da-d54bb142782f">6. Check a domain</h3>
