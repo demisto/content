@@ -117,7 +117,7 @@ def test_certificate(mocker):
 
 
 def test_behavior(mocker):
-    mocker.patch.object(demisto, 'args', return_value={'ip': TEST_IP})
+    mocker.patch.object(demisto, 'args', return_value={'ip': TEST_IP, 'start_time': '2020-03-28T00:00:00.000Z'})
     mocker.patch('Expanse.http_request', side_effect=http_request_mock)
     mocker.patch.object(demisto, 'command', return_value='behavior')
     mocker.patch.object(demisto, 'results')

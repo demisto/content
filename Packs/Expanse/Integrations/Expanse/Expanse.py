@@ -139,7 +139,7 @@ def http_request(method, endpoint, params=None, token=False):
         return_error("No authorization token provided")
     head = make_headers(endpoint, token)
     url = make_url(endpoint)
-    demisto.info("Making request to {} with params: {}".format(url, params))
+    demisto.debug("Making request to {} with params: {}".format(url, params))
     r = requests.request(
         method,
         url,
@@ -805,13 +805,16 @@ def behavior_command():
     searches by ip for behavior details from Expanse
     """
     search = demisto.args()['ip']
+    start_time = demisto.args().get('start_time')
 
     now = datetime.today()
     time_range = datetime.strftime(now - timedelta(days=FIRST_RUN), "%Y-%m-%d")
+    if start_time is None:
+        start_time = time_range + 'T00:00:00.000Z'
     params = {
         "filter[internal-ip-range]": search,
         'page[limit]': 20,
-        'filter[created-after]': time_range + 'T00:00:00.000Z',
+        'filter[created-after]': start_time,
     }
     token = do_auth()
     results = http_request('GET', 'behavior/risky-flows', params, token=token)
@@ -821,16 +824,9 @@ def behavior_command():
         demisto.results("No data found")
         return
 
-    dbot_context = {
-        "Indicator": search,
-        "Type": "behavior",
-        "Vendor": "Expanse",
-        "Score": 0
-    }
     expanse_behavior_context = get_expanse_behavior_context(behaviors)
 
     ec = {
-        'DBotScore': dbot_context,
         'Expanse.Behavior(val.SearchTerm == obj.SearchTerm)': expanse_behavior_context
     }
     human_readable = tableToMarkdown("Expanse Behavior information for: {search}".format(search=search), expanse_behavior_context)
@@ -874,10 +870,10 @@ def main():
         elif active_command == 'domain':
             domain_command()
 
-        elif active_command == 'certificate':
+        elif active_command == 'expanse-get-certificate':
             certificate_command()
 
-        elif active_command == 'behavior':
+        elif active_command == 'expanse-get-behavior':
             behavior_command()
 
     # Log exceptions

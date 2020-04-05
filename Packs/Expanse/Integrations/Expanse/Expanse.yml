@@ -401,53 +401,8 @@ script:
     deprecated: false
     description: certificate command
     execution: false
-    name: certificate
+    name: expanse-get-certificate
     outputs:
-    - contextPath: Certificate.SearchTerm
-      description: Domain used to search
-      type: String
-    - contextPath: Certificate.CommonName
-      description: Certificate common name
-      type: String
-    - contextPath: Certificate.Provider
-      description: Certificate Provider
-      type: String
-    - contextPath: Certificate.NotValidBefore
-      description: Certificate Not-valid-before date
-      type: Date
-    - contextPath: Certificate.NotValidAfter
-      description: Certificate Not-valid-after date
-      type: Date
-    - contextPath: Certificate.Properties
-      description: Certificate properties (expired)
-      type: String
-    - contextPath: Certificate.MD5Hash
-      description: MD5 hash
-      type: String
-    - contextPath: Certificate.PublicKeyAlgorithm
-      description: Public Key Algorithm used
-      type: String
-    - contextPath: Certificate.PublicKeyBits
-      description: Public Key size
-      type: String
-    - contextPath: Certificate.Issuer.Name
-      description: Name of issuer
-      type: String
-    - contextPath: Certificate.Issuer.Email
-      description: Email of issuer
-      type: String
-    - contextPath: Certificate.Issuer.Country
-      description: Country of issuer
-      type: String
-    - contextPath: Certificate.Subject.Name
-      description: Name of subject
-      type: String
-    - contextPath: Certificate.Subject.Email
-      description: Email of subject
-      type: String
-    - contextPath: Certificate.Subject.Country
-      description: Country of subject
-      type: String
     - contextPath: Expanse.Certificate.SearchTerm
       description: Domain used to search
       type: String
@@ -554,10 +509,16 @@ script:
       name: ip
       required: true
       secret: false
+    - default: false
+      description: ISO-8601 UTC timestamp denoting the earlier behavior data to fetch
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
     deprecated: false
     description: Returns Risky Flows for specified IP (truncated to 20 results)
     execution: false
-    name: behavior
+    name: expanse-get-behavior
     outputs:
     - contextPath: Expanse.Behavior.SearchTerm
       description: IP used to search
