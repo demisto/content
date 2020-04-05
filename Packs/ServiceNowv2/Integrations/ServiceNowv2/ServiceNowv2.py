@@ -117,7 +117,7 @@ def create_ticket_context(data: dict) -> dict:
     return createContext(context, removeNull=True)
 
 
-def get_ticket_context(data) -> list:
+def get_ticket_context(data) -> dict:
     if not isinstance(data, list):
         return create_ticket_context(data)
 
@@ -607,7 +607,7 @@ def get_ticket_command(client: Client, args: dict):
     return entries
 
 
-def update_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def update_ticket_command(client: Client, args: dict) -> Tuple[Any, Dict, Dict]:
     """Update a ticket.
 
     Args:
@@ -1253,7 +1253,7 @@ def list_table_fields_command(client: Client, args: dict) -> Tuple[Any, Dict[Any
     Returns:
         Demisto Outputs.
     """
-    table_name = args.get('table_name')
+    table_name = str(args.get('table_name', ''))
 
     result = client.get_table_fields(table_name)
 
