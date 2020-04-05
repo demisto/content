@@ -1,5 +1,5 @@
 Automate Detection and Response to Network Threats and data leakage in your organization with Fidelis Elevate Network Integration.
-This integration was integrated and tested with version xx of Fidelis Elevate Network
+This integration was integrated and tested with version 9.2.4 of Fidelis Elevate Network
 ## Configure Fidelis Elevate Network on Demisto
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
