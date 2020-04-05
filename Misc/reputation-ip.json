@@ -238,7 +238,7 @@
                 ]
             }
         },
-        "trafficlightprotocoltlp": {
+        "trafficlightprotocol": {
             "simple": "",
             "complex": {
                 "root": "IP",

@@ -3,7 +3,7 @@ import os
 import ast
 import demisto_client
 
-from Tests.test_utils import print_error
+from demisto_sdk.commands.common.tools import print_error
 
 
 def options_handler():

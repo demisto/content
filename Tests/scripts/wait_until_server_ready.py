@@ -7,7 +7,7 @@ import datetime
 import requests
 import urllib3.util
 
-from Tests.test_utils import run_command, print_error, print_warning
+from demisto_sdk.commands.common.tools import run_command, print_error, print_warning
 
 # Disable insecure warnings
 urllib3.disable_warnings()
