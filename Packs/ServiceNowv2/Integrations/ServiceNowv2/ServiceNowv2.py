@@ -255,23 +255,6 @@ def split_fields(fields: str) -> dict:
     return dic_fields
 
 
-# Converts unicode elements of obj (incl. dictionary and list) to string recursively
-def unicode_to_str_recur(obj):
-    if isinstance(obj, dict):
-        obj = {unicode_to_str_recur(k): unicode_to_str_recur(v) for k, v in obj.items()}
-    elif isinstance(obj, list):
-        obj = list(map(unicode_to_str_recur, obj))
-    return obj
-
-
-# Converts to an str
-def convert_to_str(obj):
-    try:
-        return str(obj)
-    except ValueError:
-        return obj
-
-
 class Client(BaseClient):
     """
     Client to use in the ServiceNow integration. Overrides BaseClient.
@@ -1241,7 +1224,6 @@ def query_users_command(client: Client, args: dict) -> Tuple[str, Dict[Any, Any]
 
     if not result or 'result' not in result:
         return 'No users found.', {}, {}
-    result = unicode_to_str_recur(result)
 
     users = result['result']
     if not isinstance(users, list):
@@ -1258,7 +1240,6 @@ def query_users_command(client: Client, args: dict) -> Tuple[str, Dict[Any, Any]
         'Created': user.get('sys_created_on'),
         'Updated': user.get('sys_updated_on'),
     } for user in users]
-    mapped_users = unicode_to_str_recur(mapped_users)
 
     headers = ['ID', 'Name', 'UserName', 'Email', 'Created', 'Updated']
     human_readable = tableToMarkdown('ServiceNow Users', t=mapped_users, headers=headers, removeNull=True,
@@ -1485,7 +1466,7 @@ def main():
             'servicenow-list-table-fields': list_table_fields_command,
             'servicenow-get-table-name': get_table_name_command
         }
-        args = unicode_to_str_recur(demisto.args())
+        args = demisto.args()
         if command == 'fetch-incidents':
             raise_exception = True
             fetch_incidents(client)
