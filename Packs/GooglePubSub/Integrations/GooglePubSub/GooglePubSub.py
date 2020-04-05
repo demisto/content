@@ -27,6 +27,32 @@ SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
 ''' HELPER FUNCTIONS '''
 
 
+class GoogleNameParser:
+    FULL_PROJECT_PREFIX = 'projects/{}'
+    FULL_TOPIC_PREFIX = '/topics/{}'
+    FULL_SUBSCRIPTION_PREFIX = '/subscriptions/{}'
+
+    @staticmethod
+    def get_full_project_name(project_name):
+        return GoogleNameParser.FULL_PROJECT_PREFIX.format(project_name)
+
+    @staticmethod
+    def get_full_topic_name(project_name, topic_name):
+        return GoogleNameParser.get_full_project_name(project_name) + GoogleNameParser.FULL_TOPIC_PREFIX.format(
+            topic_name)
+
+    @staticmethod
+    def get_full_subscription_project_name(project_name, subscription_name):
+        return GoogleNameParser.get_full_project_name(project_name) + GoogleNameParser.FULL_SUBSCRIPTION_PREFIX.format(
+            subscription_name)
+
+    @staticmethod
+    def get_full_subscription_topic_name(project_name, topic_name, subscription_name):
+        return GoogleNameParser.get_full_topic_name(project_name,
+                                                    topic_name) + GoogleNameParser.FULL_SUBSCRIPTION_PREFIX.format(
+            subscription_name)
+
+
 class GoogleClient:
     """
     A Client class to wrap the google cloud api library.
@@ -99,22 +125,25 @@ def topics_list_command(client: GoogleClient, project_name: str, page_size: str 
     :param page_token: page token, as returned from the api
     :return: list of topics
     """
-    topics_list = client.service.projects().topics().list(project=project_name, pageSize=page_size,
-                                                          pageToken=page_token).execute()
+    full_project_name = GoogleNameParser.get_full_project_name(project_name)
+    res = client.service.projects().topics().list(project=full_project_name, pageSize=page_size,
+                                                  pageToken=page_token).execute()
 
-    # readable output will be in markdown format - https://www.markdownguide.org/basic-syntax/
-    readable_output = tableToMarkdown(f'Topics for project {project_name}', topics_list)
-    outputs = {
-        'GoogleCloudPubSub.Topics': {project_name: topics_list}
-    }
-    return (
-        readable_output,
-        outputs,
-        topics_list  # raw response - the original response
-    )
+    if res and 'topics' in res:
+        topics_list_names = [topic.get('name') for topic in res.get('topics')]
+        readable_output = tableToMarkdown(f'Topics for project {project_name}', topics_list_names, headers='Topic Name')
+        outputs = {
+            'GoogleCloudPubSub.Topics': {project_name: res}
+        }
+        return (
+            readable_output,
+            outputs,
+            res  # raw response - the original response
+        )
+    return '', {}, {}
 
 
-def publish_message_command(client: GoogleClient, topic_name: str = None, message_data: str = None,
+def publish_message_command(client: GoogleClient, project_name: str, topic_name: str, message_data: str = None,
                             message_attributes: str = None) -> Tuple[str, dict, dict]:
     """
     Publishes message in the topic
@@ -123,15 +152,16 @@ def publish_message_command(client: GoogleClient, topic_name: str = None, messag
         https://www.googleapis.com/auth/pubsub
         https://www.googleapis.com/auth/cloud-platform
 
+    :param project_name: project name
+    :param topic_name: topic name without project name prefix
     :param message_attributes: message attributes separated by key=val pairs sepearated by ','
     :param message_data: message data str
-    :param topic_name: topic name with project name prefix
     :param client: GoogleClient
     :return: list of topics
     """
     body = get_publish_body(message_attributes, message_data)
     published_messages = client.service.projects().topics().publish(
-        topic=topic_name,
+        topic=GoogleNameParser.get_full_topic_name(project_name, topic_name),
         body=body
     ).execute()
 
@@ -182,6 +212,79 @@ def attribute_pairs_to_dict(attrs_str: str, delim_char: str = ';'):
         attrs.update({match.group(1): match.group(2)})
 
     return attrs
+
+
+def subscriptions_list_command(client: GoogleClient, project_name: str, page_size: str = None, page_token: str = None,
+                               topic_name: str = None) -> Tuple[str, dict, dict]:
+    """
+    Get subscription list by project_name or by topic_name
+    Requires one of the following OAuth scopes:
+
+        https://www.googleapis.com/auth/pubsub
+        https://www.googleapis.com/auth/cloud-platform
+
+    :param client: GoogleClient
+    :param project_name: project name
+    :param page_size: page size
+    :param page_token: page token, as returned from the api
+    :param topic_name: topic name
+    :return: list of subscriptions
+    """
+    title = f'Subscriptions'
+    if topic_name:
+        full_topic_name = GoogleNameParser.get_full_topic_name(project_name, topic_name)
+        subscriptions = client.service.projects().topics().subscriptions().list(
+            topic=full_topic_name,
+            pageSize=page_size,
+            pageToken=page_token).execute()
+        title += f' for topic {topic_name}'
+        ec_key = full_topic_name
+    else:
+        full_project_name = GoogleNameParser.get_full_project_name(project_name)
+        subscriptions = client.service.projects().subscriptions().list(
+            project=full_project_name,
+            pageSize=page_size,
+            pageToken=page_token).execute()
+        ec_key = project_name
+
+    title += f' in project {project_name}'
+    readable_output = tableToMarkdown(title, subscriptions)
+    outputs = {
+        'GoogleCloudPubSub.Subscriptions': {ec_key: subscriptions}
+    }
+    return (
+        readable_output,
+        outputs,
+        subscriptions
+    )
+
+
+def get_subscription_command(client: GoogleClient, project_name: str, subscription_name: str) -> Tuple[str, dict, dict]:
+    """
+    Get subscription list by project_name or by topic_name
+    Requires one of the following OAuth scopes:
+
+        https://www.googleapis.com/auth/pubsub
+        https://www.googleapis.com/auth/cloud-platform
+
+    :param subscription_name:
+    :param client: GoogleClient
+    :param project_name: project name
+    :return: subscription
+    """
+    full_sub_name = GoogleNameParser.get_full_subscription_project_name(project_name, subscription_name)
+    subs = client.service.projects().subscriptions().get(subscription=full_sub_name, ).execute()
+
+    title = f'Subscription {subscription_name}'
+    readable_output = tableToMarkdown(title, subs)
+    outputs = {
+        'GoogleCloudPubSub.Subscriptions': {project_name: subs}
+    }
+    return (
+        readable_output,
+        outputs,
+        subs
+    )
 
 
 def fetch_incidents(client, last_run, first_fetch_time):
@@ -249,6 +352,8 @@ def main():
                 'test-module': test_module,
                 'google-cloud-pubsub-topics-list': topics_list_command,
                 'google-cloud-pubsub-topic-publish-message': publish_message_command,
+                'google-cloud-pubsub-topic-subscriptions-list': subscriptions_list_command,
+                'google-cloud-pubsub-topic-subscription-get-by-name': get_subscription_command,
             }
             return_outputs(*commands[command](client, **args))  # type: ignore[operator]
 

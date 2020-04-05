@@ -44,7 +44,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Name of the topic with projects prefix. i.e. "projects/demisto/topics/dmst"
+      description: Name of the topic without prefix, i.e. without "projects/{project_name}/topics/".
       isArray: false
       name: topic_name
       required: true
@@ -63,10 +63,33 @@ script:
       name: attributes
       required: false
       secret: false
+    - default: false
+      description: Project name.
+      isArray: false
+      name: project_name
+      required: true
+      secret: false
     deprecated: false
     description: Publish a message in a topic.
     execution: false
     name: google-cloud-pubsub-topic-publish-message
+  - arguments:
+    - default: false
+      description: Name of the project the subscription belongs to.
+      isArray: false
+      name: project_name
+      required: true
+      secret: false
+    - default: false
+      description: Name of the subscription, without project/topic prefix.
+      isArray: false
+      name: subscription_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get topic's subscription by name.
+    execution: false
+    name: google-cloud-pubsub-topic-subscription-get-by-name
   dockerimage: demisto/googleapi-python3:1.0.0.6696
   feed: false
   isfetch: true
