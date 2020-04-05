@@ -16,7 +16,7 @@ from distutils.util import strtobool
 from distutils.version import LooseVersion
 from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
-from Tests.test_utils import run_command, print_error, print_warning, print_color, LOG_COLORS
+from demisto_sdk.commands.common.tools import run_command, print_error, print_warning, print_color, LOG_COLORS
 
 # global constants
 STORAGE_BASE_PATH = "content/packs"  # base path for packs in gcs
