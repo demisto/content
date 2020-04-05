@@ -35,8 +35,8 @@ def get_modified_packs(specific_packs=""):
             print(f"Number of selected packs is: {len(all_packs)}")
             return all_packs
         else:
-            print((f"Folder {PACKS_FOLDER} was not found "
-                   f"at the following path: {PACKS_FULL_PATH}"))
+            print_error((f"Folder {PACKS_FOLDER} was not found "
+                         f"at the following path: {PACKS_FULL_PATH}"))
             sys.exit(1)
 
     elif specific_packs:
@@ -44,7 +44,7 @@ def get_modified_packs(specific_packs=""):
         print(f"Number of selected packs is: {len(modified_packs)}")
         return modified_packs
     else:
-        cmd = f"git diff --name-only HEAD..HEAD^ | grep 'Packs/'"
+        cmd = "git diff --name-only HEAD..HEAD^ | grep 'Packs/'"
         modified_packs_path = run_command(cmd, use_shell=True).splitlines()
         modified_packs = {p.split('/')[1] for p in modified_packs_path if p not in IGNORED_PATHS}
         print(f"Number of modified packs is: {len(modified_packs)}")
@@ -391,7 +391,7 @@ def main():
     if index_was_updated:
         upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number)
     else:
-        print_warning(f"Skipping uploading index.zip to storage.")
+        print_warning("Skipping uploading index.zip to storage.")
 
     # summary of packs status
     print_packs_summary(packs_list)
