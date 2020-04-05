@@ -28,8 +28,7 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: Manipulates key/value pairs by incident - utilizing the MongoDB collection
-  named "generic".
+description: Manipulates key/value pairs by incident - utilizing the MongoDB collection.
 display: MongoDB Key Value Store
 name: MongoDB Key Value Store
 script:
