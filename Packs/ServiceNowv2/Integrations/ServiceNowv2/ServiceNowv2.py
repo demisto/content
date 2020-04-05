@@ -300,7 +300,7 @@ class Client(BaseClient):
         body = body if body is not None else {}
         params = params if params is not None else {}
 
-        url = '{}{}'.format(self._base_url, path)
+        url = f'{self._base_url}{path}'
         if not headers:
             headers = {
                 'Accept': 'application/json',
@@ -342,8 +342,8 @@ class Client(BaseClient):
             raise Exception(f'ServiceNow Error: {message}, details: {details}')
 
         if res.status_code < 200 or res.status_code >= 300:
-            raise Exception('Got status code {} with url {} with body {} with headers {}'
-                            .format(str(res.status_code), url, str(res.content), str(res.headers)))
+            raise Exception(f'Got status code {str(res.status_code)} with url {url} with body {str(res.content)}'
+                            f' with headers {str(res.headers)}')
 
         return obj
 
@@ -761,7 +761,7 @@ def get_record_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, result
 
 
-def create_record_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def create_record_command(client: Client, args: dict) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
     """Create a record.
 
     Args:
@@ -795,7 +795,7 @@ def create_record_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, result
 
 
-def update_record_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def update_record_command(client: Client, args: dict) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
     """Update a record.
 
     Args:
@@ -829,7 +829,7 @@ def update_record_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, result
 
 
-def delete_record_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def delete_record_command(client: Client, args: dict) -> Tuple[str, Dict[Any, Any], Dict]:
     """Delete a record.
 
     Args:
@@ -1090,7 +1090,7 @@ def query_table_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, result
 
 
-def query_computers_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def query_computers_command(client: Client, args: dict) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
     """Query computers.
 
     Args:
@@ -1162,7 +1162,7 @@ def query_computers_command(client: Client, args: dict) -> Tuple[str, Dict, Dict
     return human_readable, entry_context, computers
 
 
-def query_groups_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def query_groups_command(client: Client, args: dict) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
     """Query groups.
 
     Args:
@@ -1215,7 +1215,7 @@ def query_groups_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, groups
 
 
-def query_users_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def query_users_command(client: Client, args: dict) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
     """Query users.
 
     Args:
@@ -1268,7 +1268,7 @@ def query_users_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, users
 
 
-def list_table_fields_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def list_table_fields_command(client: Client, args: dict) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
     """List table fields.
 
     Args:
@@ -1296,7 +1296,7 @@ def list_table_fields_command(client: Client, args: dict) -> Tuple[str, Dict, Di
     return human_readable, entry_context, result
 
 
-def get_table_name_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def get_table_name_command(client: Client, args: dict) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
     """List table fields.
 
     Args:
@@ -1347,7 +1347,7 @@ def fetch_incidents(client: Client):
     query = ''
     if client.sys_param_query:
         query += f'{client.sys_param_query}^'
-    query += 'ORDERBY{0}^{0}>{1}'.format(client.timestamp_field, snow_time)
+    query += f'ORDERBY{client.timestamp_field}^{client.timestamp_field}>{snow_time}'
 
     if query:
         query_params['sysparm_query'] = query
@@ -1357,19 +1357,13 @@ def fetch_incidents(client: Client):
     count = 0
     parsed_snow_time = datetime.strptime(snow_time, '%Y-%m-%d %H:%M:%S')
 
-    # Map SNOW severity to Demisto severity for incident creation
-    severity_map = {
-        '1': 3,
-        '2': 2,
-        '3': 1
-    }
+    severity_map = {'1': 3, '2': 2, '3': 1}  # Map SNOW severity to Demisto severity for incident creation
 
     for result in res.get('result', []):
         labels = []
 
         if client.timestamp_field not in result:
-            raise ValueError("The timestamp field [{}]"
-                             " does not exist in the ticket".format(client.timestamp_field))
+            raise ValueError(f"The timestamp field [{client.timestamp_field}] does not exist in the ticket"
 
         if count > client.sys_param_limit:
             break
@@ -1433,7 +1427,7 @@ def test_module(client: Client, *_):
         if isinstance(ticket, list):
             ticket = ticket[0]
         if client.timestamp_field not in ticket:
-            raise ValueError("The timestamp field [{}] does not exist in the ticket.".format(client.timestamp_field))
+            raise ValueError(f"The timestamp field [{client.timestamp_field}] does not exist in the ticket.")
     demisto.results('ok')
     return '', {}, {}
 
