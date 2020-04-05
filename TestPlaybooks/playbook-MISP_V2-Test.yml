@@ -157,7 +157,7 @@ tasks:
       version: -1
       name: Delete context
       scriptName: DeleteContext
-      description: Delet context
+      description: Delete context
       type: regular
       iscommand: false
       brand: ""
