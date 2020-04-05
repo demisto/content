@@ -1,7 +1,7 @@
 id: MISP V2 Test
 version: -1
 name: MISP V2 Test
-description: Testbook for MISP V2 integration
+description: Test playbook for MISP V2 integration
 fromversion: 5.0.0
 starttaskid: "0"
 tasks:
@@ -140,7 +140,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 8595
+          "y": 8245
         }
       }
     note: false
@@ -810,7 +810,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 8245
+          "y": 7895
         }
       }
     note: false
@@ -848,7 +848,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 8420
+          "y": 8070
         }
       }
     note: false
@@ -1564,10 +1564,10 @@ tasks:
     quietmode: 0
   "49":
     id: "49"
-    taskid: 8f0a6e92-b7d5-4120-83c7-ce5b766e1a4f
+    taskid: a3bcfce7-bc42-478b-877a-3d884af2c7e8
     type: regular
     task:
-      id: 8f0a6e92-b7d5-4120-83c7-ce5b766e1a4f
+      id: a3bcfce7-bc42-478b-877a-3d884af2c7e8
       version: -1
       name: Delete event
       description: Deletes an event according to event ID.
@@ -1577,16 +1577,16 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "65"
+      - "23"
     scriptarguments:
       event_id:
-        simple: ${MISP.Event.[0].ID}
+        simple: ${MISP.Event.ID}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": 7895
+          "x": 275,
+          "y": 7720
         }
       }
     note: false
@@ -1905,7 +1905,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "73"
+      - "49"
     scriptarguments:
       category: {}
       eventid: {}
@@ -2006,38 +2006,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "65":
-    id: "65"
-    taskid: 2ea94904-65e4-4df5-8da9-a0db02049c94
-    type: regular
-    task:
-      id: 2ea94904-65e4-4df5-8da9-a0db02049c94
-      version: -1
-      name: Delete event
-      description: Deletes an event according to event ID.
-      script: '|||misp-delete-event'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "23"
-    scriptarguments:
-      event_id:
-        simple: ${MISP.Event.[1].ID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 8070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "66":
     id: "66"
     taskid: 447f68d6-ac83-4217-8467-bee377c92361
@@ -2061,8 +2029,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
-          "y": 1590
+          "x": 265,
+          "y": 1595
         }
       }
     note: false
@@ -2234,78 +2202,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "73":
-    id: "73"
-    taskid: 39fe27b1-e05e-428d-8cc2-be68ebe66159
-    type: condition
-    task:
-      id: 39fe27b1-e05e-428d-8cc2-be68ebe66159
-      version: -1
-      name: Check if both events created, Delete both it created
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "74"
-      "yes":
-      - "49"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: hasLength
-          left:
-            value:
-              simple: MISP.Event
-            iscontext: true
-          right:
-            value:
-              simple: "2"
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 7720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "74":
-    id: "74"
-    taskid: 98d80352-5997-47aa-8528-41218d9ca3ba
-    type: regular
-    task:
-      id: 98d80352-5997-47aa-8528-41218d9ca3ba
-      version: -1
-      name: Delete event
-      description: Deletes an event according to event ID.
-      script: '|||misp-delete-event'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "23"
-    scriptarguments:
-      event_id:
-        simple: ${MISP.Event.ID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 60,
-          "y": 8070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -2314,7 +2210,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 8610,
+        "height": 8260,
         "width": 922.5,
         "x": 50,
         "y": 50
