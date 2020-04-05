@@ -1,14 +1,18 @@
+from typing import Tuple
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 # IMPORTS
+import httplib2
+import urllib.parse
+from oauth2client import service_account
+from googleapiclient.discovery import build
+
 import json
 import requests
 import dateparser
-from google.cloud import pubsub_v1
-
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -16,114 +20,168 @@ requests.packages.urllib3.disable_warnings()
 # CONSTANTS
 RFC3339_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 DEMISTO_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S'
+SERVICE_NAME = 'pubsub'
+SERVICE_VERSION = 'v1'
+SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
 
 ''' HELPER FUNCTIONS '''
 
 
-class PubSubClient:
-    """Manages pub/sub command requests"""
-    def __init__(self, service_account_json, insecure):
-        self._sub_client = None
-        self._pub_client = None
-        self._credentials_file_path = self.create_credentials_file(service_account_json)
+class GoogleClient:
+    """
+    A Client class to wrap the google cloud api library.
+    """
 
-        self.init_requests(insecure)
+    def __init__(self, service_name, service_version, client_secret, scopes, proxy):
+        credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(client_secret, scopes)
+        if proxy:
+            http_client = credentials.authorize(self.get_http_client_with_proxy())
+            self.service = build(service_name, service_version, http=http_client, credentials=credentials)
+        else:
+            self.service = build(service_name, service_version, credentials=credentials)
 
-    def get_sub_client(self) -> pubsub_v1.SubscriberClient:
-        if self._sub_client is None:
-            self._init_sub_client()
-        return self._sub_client
-
-    def get_pub_client(self) -> pubsub_v1.PublisherClient:
-        if self._pub_client is None:
-            self._init_pub_client()
-        return self._pub_client
-
-    def _init_pub_client(self):
-        """Creates the Python API PublisherClient for Google Cloud Pub"""
-        self._pub_client = pubsub_v1.PublisherClient.from_service_account_json(self._credentials_file_path)
-
-    def _init_sub_client(self):
-        """Creates the Python API SubscriberClient for Google Cloud Sub"""
-        self._sub_client = pubsub_v1.SubscriberClient.from_service_account_json(self._credentials_file_path)
-
+    # disable-secrets-detection-start
     @staticmethod
-    def create_credentials_file(service_account_json):
-        """
-        Creates the credentials file the Google Cloud API clients expect
-        :param service_account_json: Json string of the service_account
-        :return: File path
-        """
-        cur_directory_path = os.getcwd()
-        credentials_file_name = demisto.uniqueFile() + '.json'
-        credentials_file_path = os.path.join(cur_directory_path, credentials_file_name)
-        with open(credentials_file_path, 'w') as creds_file:
-            json_object = json.loads(service_account_json)
-            json.dump(json_object, creds_file)
-        return credentials_file_path
-
-    @staticmethod
-    def init_requests(disable_tls_verification):
-        """Overrides merge_environment_settings of requests. This accomplishes:
-           1. Handling requests proxies
-           2. Enabling `insecure` requests
-        """
-        original_method = requests.Session.merge_environment_settings
-        _proxies = handle_proxy()
-
-        def merge_environment_settings(self, url, proxies, stream, verify, cert):
-            settings = original_method(self, url, _proxies, stream, verify, cert)
-            if disable_tls_verification:
-                settings['verify'] = False
-            return settings
-
-        # noinspection PyTypeHints
-        requests.Session.merge_environment_settings = merge_environment_settings  # type: ignore
+    def get_http_client_with_proxy():
+        proxies = handle_proxy()
+        if not proxies or not proxies['https']:
+            raise Exception('https proxy value is empty. Check Demisto server configuration')
+        https_proxy = proxies['https']
+        if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
+            https_proxy = 'https://' + https_proxy
+        parsed_proxy = urllib.parse.urlparse(https_proxy)
+        proxy_info = httplib2.ProxyInfo(
+            proxy_type=httplib2.socks.PROXY_TYPE_HTTP,
+            proxy_host=parsed_proxy.hostname,
+            proxy_port=parsed_proxy.port,
+            proxy_user=parsed_proxy.username,
+            proxy_pass=parsed_proxy.password)
+        return httplib2.Http(proxy_info=proxy_info)
+    # disable-secrets-detection-end
 
 
-def test_module(client: PubSubClient):
+def init_google_client(params) -> GoogleClient:
+    # insecure = not params.get('insecure')
+    proxy = params.get('proxy')
+    try:
+        service_account_json = json.loads(params.get('service_account_json'))
+    except ValueError:
+        return_error(
+            'Failed to parse Service Account Private Key in json format, please make sure you entered it correctly')
+    client = GoogleClient(SERVICE_NAME, SERVICE_VERSION, service_account_json, SCOPES, proxy)
+    return client
+
+
+''' COMMAND FUNCTIONS '''
+
+
+def test_module(client: GoogleClient):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
-    :param client: PubSubClient
+    :param client: GoogleClient
     :return: 'ok' if test passed, anything else will fail the test.
     """
-    client.get_sub_client()
-    client.get_pub_client()
-    return 'ok'
+    return 'ok', {}
 
 
-def say_hello_command(client, args):
+def topics_list_command(client: GoogleClient, project_name: str, page_size: str = None, page_token: str = None) -> \
+        Tuple[str, dict, dict]:
     """
-    Returns Hello {somename}
+    Get topics list by project_name
+    Requires one of the following OAuth scopes:
 
-    Args:
-        client (Client): HelloWorld client.
-        args (dict): all command arguments.
+        https://www.googleapis.com/auth/pubsub
+        https://www.googleapis.com/auth/cloud-platform
 
-    Returns:
-        Hello {someone}
-
-        readable_output (str): This will be presented in the war room - should be in markdown syntax - human readable
-        outputs (dict): Dictionary/JSON - saved in the incident context in order to be used as inputs
-                        for other tasks in the playbook
-        raw_response (dict): Used for debugging/troubleshooting purposes -
-                            will be shown only if the command executed with raw-response=true
+    :param client: GoogleClient
+    :param project_name: project name
+    :param page_size: page size
+    :param page_token: page token, as returned from the api
+    :return: list of topics
     """
-    name = args.get('name')
-
-    result = client.say_hello(name)
+    topics_list = client.service.projects().topics().list(project=project_name, pageSize=page_size,
+                                                          pageToken=page_token).execute()
 
     # readable output will be in markdown format - https://www.markdownguide.org/basic-syntax/
-    readable_output = f'## {result}'
+    readable_output = tableToMarkdown(f'Topics for project {project_name}', topics_list)
     outputs = {
-        'hello': result
+        'GoogleCloudPubSub.Topics': {project_name: topics_list}
     }
-
     return (
         readable_output,
         outputs,
-        result  # raw response - the original response
+        topics_list  # raw response - the original response
     )
+
+
+def publish_message_command(client: GoogleClient, topic_name: str = None, message_data: str = None,
+                            message_attributes: str = None) -> Tuple[str, dict, dict]:
+    """
+    Publishes message in the topic
+    Requires one of the following OAuth scopes:
+
+        https://www.googleapis.com/auth/pubsub
+        https://www.googleapis.com/auth/cloud-platform
+
+    :param message_attributes: message attributes separated by key=val pairs sepearated by ','
+    :param message_data: message data str
+    :param topic_name: topic name with project name prefix
+    :param client: GoogleClient
+    :return: list of topics
+    """
+    body = get_publish_body(message_attributes, message_data)
+    published_messages = client.service.projects().topics().publish(
+        topic=topic_name,
+        body=body
+    ).execute()
+
+    output = []
+    for msg_id in published_messages["messageIds"]:
+        output.append({"topic": topic_name, "messageId": msg_id})
+
+    ec = {'GoogleCloudPubSub.PublishedMessages(val.messageId === obj.messageId)': output}
+    return (
+        tableToMarkdown('Google Cloud PubSub Published Messages', published_messages, removeNull=True),
+        ec,
+        published_messages
+    )
+
+
+def get_publish_body(message_attributes, message_data):
+    """
+    Creates publish messages body from given arguments
+    :param message_attributes: message attributes
+    :param message_data: message data
+    :return: publish message body
+    """
+    message = {}
+    if message_data:
+        # convert to base64 string
+        message['data'] = str(base64.b64encode(message_data.encode('utf8')))[2:-1]
+    if message_attributes:
+        message['attributes'] = attribute_pairs_to_dict(message_attributes)
+    body = {'messages': [message]}
+    return body
+
+
+def attribute_pairs_to_dict(attrs_str: str, delim_char: str = ';'):
+    """
+    Transforms a string of multiple inputs to a dictionary list
+
+    :param attrs_str: attributes separated by key=val pairs sepearated by ','
+    :param delim_char: delimiter character between atrribute pairs
+    :return:
+    """
+    attrs = {}
+    regex = re.compile(r'(.*)=(.*)')
+    for f in attrs_str.split(delim_char):
+        match = regex.match(f)
+        if match is None:
+            raise ValueError(f'Could not parse field: {f}')
+
+        attrs.update({match.group(1): match.group(2)})
+
+    return attrs
 
 
 def fetch_incidents(client, last_run, first_fetch_time):
@@ -171,16 +229,11 @@ def fetch_incidents(client, last_run, first_fetch_time):
 
 def main():
     params = demisto.params()
-    insecure = not params.get('insecure')
-    service_account_json = params.get('service_account_json')
-    client = PubSubClient(service_account_json, insecure)
+    client = init_google_client(params)
     command = demisto.command()
     LOG(f'Command being called is {command}')
     try:
-        if demisto.command() == 'test-module':
-            demisto.results(test_module(client))
-
-        elif demisto.command() == 'fetch-incidents':
+        if command == 'fetch-incidents':
             # Set and define the fetch incidents command to run after activated via integration settings.
             first_fetch_time = params.get('fetch_time', '3 days').strip()
             next_run, incidents = fetch_incidents(
@@ -190,9 +243,14 @@ def main():
 
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
-
-        elif demisto.command() == 'helloworld-say-hello':
-            return_outputs(*say_hello_command(client, demisto.args()))
+        else:
+            args = demisto.args()
+            commands = {
+                'test-module': test_module,
+                'google-cloud-pubsub-topics-list': topics_list_command,
+                'google-cloud-pubsub-topic-publish-message': publish_message_command,
+            }
+            return_outputs(*commands[command](client, **args))  # type: ignore[operator]
 
     # Log exceptions
     except Exception as e:

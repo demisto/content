@@ -7,7 +7,7 @@ configuration:
   hidden: false
   name: service_account_json
   required: true
-  type: 0
+  type: 4
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -24,20 +24,50 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The name of whom you want to say hello to.
+      description: Name of the project to look in.
       isArray: false
-      name: name
+      name: project_name
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: pageSize
       required: false
       secret: false
     deprecated: false
-    description: Hello command - prints hello to anyone
+    description: List PubSub topics.
     execution: false
-    name: helloworld-say-hello
+    name: google-cloud-pubsub-topics-list
     outputs:
     - contextPath: hello
       description: Should be Hello **something** here
       type: String
-  dockerimage: devdemisto/google-cloud-storage:1.0.0.7119
+  - arguments:
+    - default: false
+      description: Name of the topic with projects prefix. i.e. "projects/demisto/topics/dmst"
+      isArray: false
+      name: topic_name
+      required: true
+      secret: false
+    - default: false
+      description: The message data field. If this field is empty, the message must
+        contain at least one attribute.
+      isArray: false
+      name: data
+      required: false
+      secret: false
+    - default: false
+      description: Attributes for this message. If this field is empty, the message
+        must contain non-empty data.
+      isArray: false
+      name: attributes
+      required: false
+      secret: false
+    deprecated: false
+    description: Publish a message in a topic.
+    execution: false
+    name: google-cloud-pubsub-topic-publish-message
+  dockerimage: demisto/googleapi-python3:1.0.0.6696
   feed: false
   isfetch: true
   longRunning: false
