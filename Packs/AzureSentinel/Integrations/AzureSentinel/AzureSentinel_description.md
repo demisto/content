@@ -1,3 +1,5 @@
+Full documentation for this integration is available at our [support center](https://support.demisto.com).
+
 ## Authorize Cortex XSOAR for Azure Sentinel
 
 You need to grant Cortex XSOAR authorization to access Azure Sentinel.
@@ -7,6 +9,7 @@ You need to grant Cortex XSOAR authorization to access Azure Sentinel.
 3. Click the **Accept** button and you will receive your ID, token, and key. You will need to enter these when you configure the Azure Sentinel integration instance in Cortex XSOAR.
 
 ## Authorize Cortex XSOAR for Azure Sentinel (self-deployed configuration)
+
 Follow these steps for a self-deployed configuration.
 
 1. Copy the following URL and replace the ***CLIENT_ID*** and ***REDIRECT_URI*** with your own client ID and redirect URI, accordingly.
@@ -17,3 +20,7 @@ Follow these steps for a self-deployed configuration.
 4. Enter your client ID in the ***ID*** parameter. 
 5. Enter your client secret in the ***Key*** parameter.
 6. Enter your tenant ID in the ***Token*** parameter.
+
+## Get the additional instance parameters
+
+To get the ***Subscription ID***, ***Workspace Name*** and ***Resource Group*** parameters, navigate in the Azure Portal to ***Azure Sentinel > YOUR-WORKSPACE > Settings*** and click on ***Workspace Settings*** tab.
