@@ -171,5 +171,5 @@ outputs:
   description: The email subject
   type: string
 tests:
-  - Phishing test - attachment
-  - Phishing test - Inline
+  - Phishing v2 Test - Attachment
+  - Phishing v2 Test - Inline
