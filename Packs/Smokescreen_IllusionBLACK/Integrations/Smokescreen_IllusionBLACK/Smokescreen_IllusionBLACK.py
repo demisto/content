@@ -362,7 +362,7 @@ def main():
             events, _ = client.get_events(args.get("limit"), args.get("query"), args.get("from"), args.get("to"))
             return_outputs(
                 tableToMarkdown("IllusionBLACK Events", events),
-                {"IllusionBlack.Events(val.id==obj.id)": events},
+                {"IllusionBlack.Event(val.id==obj.id)": events},
                 events
             )
         elif demisto.command() == "illusionblack-get-event-by-id":

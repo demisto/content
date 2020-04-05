@@ -120,7 +120,7 @@ script:
     execution: false
     name: illusionblack-get-events
     outputs:
-    - contextPath: IllusionBlack.Events
+    - contextPath: IllusionBlack.Event
       description: IllusionBLACK Events
       type: Unknown
   - arguments:
