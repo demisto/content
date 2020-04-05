@@ -1233,10 +1233,10 @@ def query_users_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     limit = args.get('limit', client.sys_param_limit)
 
     if user_id:
-        res = client.get(table_name, user_id)
+        result = client.get(table_name, user_id)
     else:
         if user_name:
-            user_query = 'user_name=' + user_name
+            user_query = f'user_name={user_name}'
         result = client.query(table_name, limit, offset, user_query)
 
     if not result or 'result' not in result:
