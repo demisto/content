@@ -24,5 +24,6 @@ def test_get_url(mocker):
             'Port': 8443,
             'URL': 'https://www.eizelulz.com:8443'
         }},
+        'IgnoreAutoExtract': False,
         'IndicatorTimeline': None
     }
