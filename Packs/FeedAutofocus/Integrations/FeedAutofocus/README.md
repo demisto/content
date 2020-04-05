@@ -1,4 +1,6 @@
 Use the AutoFocus Feeds integration to fetch indicators from AutoFocus.
+For more information see the [AutoFocus documentation](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/autofocus-feeds.html).
+
 ## Configure AutoFocus Feed on Demisto
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -8,9 +10,9 @@ Use the AutoFocus Feeds integration to fetch indicators from AutoFocus.
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | feed | Fetch indicators | False |
-| indicator_feeds | Indicator Feed | True |
+| indicator_feeds | Indicator Feed - Choose the requested indicator feeds - Custom Feeds and Daily Threat Feed. | True |
 | api_key | The AutoFocus API key | True |
-| custom_feed_urls | The URL for the custom feed to fetch | False |
+| custom_feed_urls | The URL for the custom feed to fetch - Only in cases a Custom Feed is requested | False |
 | feedReputation | Indicator Reputation | False |
 | feedReliability | Source Reliability | True |
 | feedExpirationPolicy |  | False |
@@ -21,13 +23,21 @@ Use the AutoFocus Feeds integration to fetch indicators from AutoFocus.
 | proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+#### Custom Feed info:
+To connect a custom AutoFocus feed you need to provide the Custom Feed URL.
+
+The Custom Feed URL should be in this form:
+https://autofocus.paloaltonetworks.com/IOCFeed/{Output_Feed_ID}/{Output_Feed_Name}
+
+
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### autofocus-get-indicators
 ***
 Gets the indicators from AutoFocus.
-
+Note: This command does not create indicators within Cortex XSOAR.
 
 ##### Base Command
 
@@ -36,7 +46,7 @@ Gets the indicators from AutoFocus.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of indicators to return. The default value is 10. | Required | 
+| limit | The maximum number of indicators to return. The default value is 10. | Optional | 
 | offset | The index of the first indicator to fetch. | Optional | 
 
 
