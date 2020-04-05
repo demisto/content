@@ -345,19 +345,20 @@ def main():
         if TLS == 'SSL/TLS':
             SERVER = SMTP_SSL(demisto.getParam('host'), int(demisto.params().get('port', 0)), local_hostname=FQDN)
         else:
-            SERVER = SMTP(demisto.getParam('host'), int(demisto.params().get('port', 0)), local_hostname=FQDN)  # type: ignore
+            SERVER = SMTP(demisto.getParam('host'),     # type: ignore[assignment]
+                          int(demisto.params().get('port', 0)), local_hostname=FQDN)
 
-        SERVER.ehlo()   # type: ignore
+        SERVER.ehlo()  # type: ignore
         # For BC purposes where TLS was a checkbox (no value only true or false) if TLS=True or TLS='STARTTLS' we enter
         # this condition, otherwise it means TLS is not configured (TLS=False) or is set to 'SSL/TLS' or 'None'.
         if TLS is True or TLS == 'STARTTLS':
-            SERVER.starttls()   # type: ignore
+            SERVER.starttls()  # type: ignore
         user, password = get_user_pass()
         if user:
-            SERVER.login(user, password)    # type: ignore
+            SERVER.login(user, password)  # type: ignore[union-attr]
     except Exception as e:
         # also reset at the bottom finally
-        swap_stderr(stderr_org)  # type: ignore
+        swap_stderr(stderr_org)  # type: ignore[union-attr]
         smtplib.SMTP.debuglevel = 0
         demisto.error('Failed test: {}\nStack trace: {}'.format(e, traceback.format_exc()))
         return_error_mail_sender(e)
@@ -369,8 +370,8 @@ def main():
             msg['Subject'] = 'Test mail from Demisto'
             msg['From'] = FROM
             msg['To'] = FROM
-            SERVER.sendmail(FROM, [FROM], msg.as_string())  # type: ignore
-            SERVER.quit()   # type: ignore
+            SERVER.sendmail(FROM, [FROM], msg.as_string())  # type: ignore[union-attr]
+            SERVER.quit()  # type: ignore[union-attr]
             demisto.results('ok')
         elif demisto.command() == 'send-mail':
             raw_message = demisto.getArg('raw_message')
@@ -382,8 +383,8 @@ def main():
             else:
                 (str_msg, to, cc, bcc) = create_msg()
 
-            SERVER.sendmail(FROM, to + cc + bcc, str_msg)  # type: ignore
-            SERVER.quit()  # type: ignore
+            SERVER.sendmail(FROM, to + cc + bcc, str_msg)  # type: ignore[union-attr]
+            SERVER.quit()  # type: ignore[union-attr]
             demisto.results('Mail sent successfully')
         else:
             return_error_mail_sender('Command not recognized')
@@ -393,7 +394,7 @@ def main():
     except Exception as e:
         return_error_mail_sender(e)
     finally:
-        swap_stderr(stderr_org)  # type: ignore
+        swap_stderr(stderr_org)  # type: ignore[union-attr]
         smtplib.SMTP.debuglevel = 0
 
 
