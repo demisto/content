@@ -20,22 +20,6 @@ IGNORED_FILES = ['__init__.py', 'ApiModules']  # files to ignore inside Packs fo
 IGNORED_PATHS = [os.path.join(PACKS_FOLDER, p) for p in IGNORED_FILES]
 
 
-# the format is defined in issue #19786, may change in the future
-# DIR_NAME_TO_CONTENT_TYPE = {
-#     "Classifiers": "classifier",
-#     "Dashboards": "dashboard",
-#     "IncidentFields": "incidentfield",
-#     "IncidentTypes": "incidenttype",
-#     "IndicatorFields": "reputation",
-#     "Integrations": "integration",
-#     "Layouts": "layout",
-#     "Playbooks": "playbook",
-#     "Reports": "report",
-#     "Scripts": "automation",
-#     "Widgets": "widget"
-# }
-
-
 class GCPConfig(object):
     """ Google cloud storage basic configurations
 
@@ -137,7 +121,7 @@ class Pack(object):
         self._pack_repo_path = os.path.join(PACKS_FULL_PATH, pack_name)
         self._status = None
         self._relative_storage_path = ""
-        self._remove_files_list = []
+        self._remove_files_list = []  # tracking temporary files, in order to delete in later step
 
     @property
     def name(self):
@@ -493,6 +477,12 @@ class Pack(object):
             return task_status, True
 
     def collect_content_items(self):
+        """ Iterates over content items folders inside pack and collects content items data.
+
+        Returns:
+            dict: Parsed content items
+            .
+        """
         task_status = False
         content_items_result = {}
 
@@ -574,23 +564,13 @@ class Pack(object):
                     elif current_directory == PackFolders.INDICATOR_FIELDS.value:
                         folder_collected_items.append({
                             'name': content_item.get('name', ""),
-                            'type': content_item.get('description', ""),  # todo check with server side
+                            'type': content_item.get('description', ""),
                             'tooltip': content_item.get('description', "")  # todo check with server side
                         })
                     elif current_directory == PackFolders.REPORTS.value:
                         folder_collected_items.append({
                             'name': content_item.get('name', ""),  # todo check with server side again
-                            'fromDate': content_item.get('period', ""),
-                            # "toDate": "0001-01-01T00:00:00Z",
-                            # "period": {
-                            #     "by": "",
-                            #     "byTo": "",
-                            #     "byFrom": "",
-                            #     "toValue": null,
-                            #     "fromValue": null,
-                            #     "field": ""
-                            # },
-                            # "fromDateLicense": "0001-01-01T00:00:00Z"
+                            'fromDate': content_item.get('period', "")
                         })
 
                 content_item_key = content_item_name_mapping[current_directory]
@@ -675,6 +655,7 @@ class Pack(object):
 
         Returns:
             bool: whether the operation succeeded.
+
         """
         task_status = False
         files_to_leave = [Pack.METADATA, Pack.CHANGELOG_JSON, Pack.README]
@@ -699,6 +680,16 @@ class Pack(object):
 
     @staticmethod
     def _get_spitted_yml_image_data(root, target_folder_files):
+        """ Retrieves pack integration image and integration display name and returns binding image data.
+
+        Args:
+            root (str): full path to the target folder to search integration image.
+            target_folder_files (list): list of files inside the targeted folder.
+
+        Returns:
+            dict: path to integration image and display name of the integration.
+
+        """
         image_data = {}
 
         for pack_file in target_folder_files:
@@ -714,6 +705,16 @@ class Pack(object):
         return image_data
 
     def _get_not_spitted_yml_image_data(self, root, target_folder_files):
+        """ Creates temporary image file and retrieves integration display name.
+
+        Args:
+            root (str): full path to the target folder to search integration image.
+            target_folder_files (list): list of files inside the targeted folder.
+
+        Returns:
+            dict: path to temporary integration image and display name of the integration.
+
+        """
         image_data = {}
 
         for pack_file in target_folder_files:
@@ -731,7 +732,7 @@ class Pack(object):
                 with open(temp_image_path, 'wb') as image_file:
                     image_file.write(base64.b64decode(base64_image))
 
-                self._remove_files_list.append(temp_image_name)
+                self._remove_files_list.append(temp_image_name)  # add temporary file to tracking list
                 image_data['repo_image_path'] = temp_image_path
 
         return image_data
@@ -881,6 +882,14 @@ class Pack(object):
 
 
 def input_to_list(input_data):
-    # todo add docstring and unit tests
+    """ Helper function for handling input list or str from the user.
+
+    Args:
+        input_data (list or str): input from the user to handle.
+
+    Returns:
+        list: returns the original list or list that was split by comma.
+
+    """
     input_data = input_data if input_data else []
     return input_data if isinstance(input_data, list) else [s for s in input_data.split(',') if s]
