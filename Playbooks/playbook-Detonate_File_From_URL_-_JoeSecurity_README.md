@@ -51,4 +51,6 @@ This playbook does not use any scripts.
 | IP.Address | The IP addresses's relevant to the sample. | string |
 | DBotScore.Score | The actual score (only in case of report type=json). | number |
 
+## Playbook Image
+---
 ![Detonate_File_From_URL_JoeSecurity](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_File_From_URL_JoeSecurity.png)

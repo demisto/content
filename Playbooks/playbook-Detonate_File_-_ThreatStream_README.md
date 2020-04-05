@@ -49,4 +49,6 @@ This playbook does not use any integrations.
 | DBotScore.Vendor | The vendor used to calculate the score. | string |
 | DBotScore.Score | The actual score. | number |
 
+## Playbook Image
+---
 ![Detonate_File_ThreatStream](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_File_ThreatStream.png)

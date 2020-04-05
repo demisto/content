@@ -33,4 +33,6 @@ This playbook does not use any commands.
 ---
 There are no outputs for this playbook.
 
+## Playbook Image
+---
 ![Retrieve_File_from_Endpoint_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Retrieve_File_from_Endpoint_Generic.png)

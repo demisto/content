@@ -32,4 +32,6 @@ This playbook does not use any scripts.
 | --- | --- | --- |
 | HybridAnalysis.URL.SubmissionType | The type of the submission. Can be, "file" or "url". | unknown |
 
+## Playbook Image
+---
 ![Hybrid-analysis_quick-scan](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Hybrid-analysis_quick-scan.png)

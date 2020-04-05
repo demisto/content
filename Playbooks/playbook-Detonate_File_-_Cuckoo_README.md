@@ -66,4 +66,6 @@ This playbook does not use any integrations.
 | File.Extension | The file's extension. | unknown |
 
 
+## Playbook Image
+---
 ![Detonate_File_Cuckoo](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_File_Cuckoo.png)

@@ -45,4 +45,6 @@ This playbook does not use any scripts.
 | DBotScore.Vendor | Vendor used to calculate the score. | string |
 | DBotScore.Score | The actual score. | number |
 
+## Playbook Image
+---
 ![Intezer_Analyze_by_hash](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Intezer_Analyze_by_hash.png)

@@ -72,4 +72,6 @@ This playbook does not use any commands.
 | CheckpointFWRule.Hits.Percentage | The percentage of hits. | unknown |
 | CheckpointFWRule.Hits.Value | The value of hits. | unknown |
 
+## Playbook Image
+---
 ![Block_Indicators_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Block_Indicators_Generic.png)

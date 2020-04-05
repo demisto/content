@@ -43,4 +43,6 @@ This playbook does not use any sub-playbooks.
 | URL.Vendor | The vendor that labeled the URL as malicious. | string |
 | URL.Description | The additional information for the URL. | string |
 
+## Playbook Image
+---
 ![URL_Enrichment_Generic_v2](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/URL_Enrichment_Generic_v2.png)

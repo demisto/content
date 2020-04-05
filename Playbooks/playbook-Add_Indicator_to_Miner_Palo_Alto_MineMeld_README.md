@@ -27,4 +27,6 @@ This playbook does not use any scripts.
 ---
 There are no outputs for this playbook.
 
+## Playbook Image
+---
 ![Add_Indicator_to_Miner_Palo_Alto_MineMeld](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Add_Indicator_to_Miner_Palo_Alto_MineMeld.png)

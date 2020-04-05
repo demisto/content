@@ -65,4 +65,6 @@ This playbook does not use any integrations.
 | GoogleVault.Matter.Export.ViewID | The ID to be used by the `get-X-results` command (X=drive/mail/groups). | string |
 | GoogleVault.Matter | The matter object. | unknown |
 
+## Playbook Image
+---
 ![GVault_Search_Mail](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Google_Vault_Search_Mail.png)

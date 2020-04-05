@@ -81,4 +81,6 @@ This playbook does not use any commands.
 | ActiveDirectory.Users.memberOf | The groups the user is a member of. | unknown |
 | CylanceProtectDevice | The device information about the hostname that was enriched using Cylance Protect v2. | unknown |
 
+## Playbook Image
+---
 ![Entity_Enrichment_Generic_v2](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Entity_Enrichment_Generic_v2.png)

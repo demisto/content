@@ -41,4 +41,6 @@ There are no inputs for this playbook.
 | Email.Headers | The email headers. | unknown |
 | Email.Subject | The email subject. | string |
 
+## Playbook Image
+---
 ![Get_Original_Email_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Get_Original_Email_Generic.png)

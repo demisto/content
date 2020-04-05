@@ -41,4 +41,6 @@ This playbook does not use any integrations.
 | DBotScore.Type | The 'file' for file samples. | string |
 | DBotScore.Score | The actual score. | number |
 
+## Playbook Image
+---
 ![Detonate_File_-_BitDam](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_File_-_BitDam.png)

@@ -31,4 +31,6 @@ This playbook does not use any commands.
 | --- | --- | --- |
 | File | The file to sample. | unknown |
 
+## Playbook Image
+---
 ![Get_File_Sample_From_Path_Carbon_Black_Enterprise_Response](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Get_File_Sample_From_Path_Carbon_Black_Enterprise_Response.png)

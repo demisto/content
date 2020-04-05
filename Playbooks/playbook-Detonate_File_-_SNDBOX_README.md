@@ -73,4 +73,6 @@ This playbook does not use any integrations.
 | File MD5 | The MD5 hash of the file. | string |
 | File.Extension | The file extension. | string |
 
+## Playbook Image
+---
 ![Detonate_File_SNDBOX](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_File_SNDBOX.png)

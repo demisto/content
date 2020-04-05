@@ -23,4 +23,6 @@ There are no inputs for this playbook.
 ---
 There are no outputs for this playbook.
 
+## Playbook Image
+---
 ![DBot_Create_Phishing_Classifier_V2_Job](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/DBot_Create_Phishing_Classifier_V2_Job.png)

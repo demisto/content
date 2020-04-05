@@ -57,4 +57,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | Endpoint.MAC | The list of endpoint MAC addresses. | unknown |
 | Endpoint.Domain | The endpoint domain name. | string |
 
+## Playbook Image
+---
 ![Access_Investigation_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Access_Investigation_Generic.png)

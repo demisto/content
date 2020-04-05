@@ -39,4 +39,6 @@ This playbook does not use any commands.
 | SANS - Lessons Learned.Answers.6 | Share ideas and information in order to improve team effectiveness in future incidents. | longText |
 | SANS - Lessons Learned.Answers.name | The returned username or email address. | unknown |
 
+## Playbook Image
+---
 ![NIST_Lessons_Learned](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/NIST_Lessons_Learned.png)

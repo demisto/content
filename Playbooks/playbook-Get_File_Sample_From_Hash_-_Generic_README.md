@@ -27,4 +27,6 @@ This playbook does not use any commands.
 ---
 There are no outputs for this playbook.
 
+## Playbook Image
+---
 ![Get_File_Sample_From_Hash_Generic]()

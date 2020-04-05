@@ -32,4 +32,6 @@ This playbook does not use any commands.
 | foundDuplicates | Whether any duplicate incidents were found. | boolean |
 | duplicateCandidate | The duplicate top candidate. | unknown |
 
+## Playbook Image
+---
 ![DeDup_incidents_ML](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/DeDup_incidents_-_ML.png)

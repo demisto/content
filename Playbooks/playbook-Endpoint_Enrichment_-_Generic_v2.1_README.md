@@ -76,4 +76,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | ExtraHop.Device.NetbiosName | The NetBIOS name associated with the device. | string |
 | ExtraHop.Device.Url | Link to the device details page in ExtraHop. | string |
 
+## Playbook Image
+---
 ![Endpoint_Enrichment_Generic_v2.1](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Endpoint_Enrichment_Generic_v2.1.png)

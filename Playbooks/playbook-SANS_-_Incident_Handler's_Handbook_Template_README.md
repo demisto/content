@@ -27,4 +27,6 @@ There are no inputs for this playbook.
 ---
 There are no outputs for this playbook.
 
+## Playbook Image
+---
 ![SANS_Incident_Handlers_Handbook_Template](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/SANS_-_Incident_Handler's_Handbook_Template.png)

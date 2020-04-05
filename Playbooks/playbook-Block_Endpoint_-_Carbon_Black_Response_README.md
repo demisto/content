@@ -31,4 +31,6 @@ This playbook does not use any scripts.
 | CbResponse.Sensors.CbSensorID | The Carbon Black Response Sensors IDs that has been isolated. | unknown |
 | Endpoint | The isolated enpoint. | unknown |
 
+## Playbook Image
+---
 ![Block_Endpoint_Carbon_Black_Response](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Block_Endpoint_Carbon_Black_Response.png)
