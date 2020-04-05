@@ -19,7 +19,8 @@ Use the Export Indicators Service integration to provide an endpoint with a list
     * __Update On Demand Only__: When set to true, will only update the service indicators via **eis-update** command.
     * __Refresh Rate__: How often to refresh the export indicators list (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3
     months, 1 year)
-    * __Collapse IPs__: Whether to collapse IPs and if so - to ranges or CIDRs
+    * __Collapse IPs__: Whether to collapse IPs and if so - to ranges or CIDRs.
+    * __Show CSV Formats as Text__: If checked, csv and XSOAR-csv formats will create a textual web page instead of downloading a csv file.
     * __Long Running Instance__: Must be set to true, otherwise the service will be available.
     * __Listen Port__: Will run the *Export Indicators Service* on this port from within Demisto
     * __Certificate (Required for HTTPS)__: HTTPS Certificate provided by pasting its values into this field.
@@ -62,6 +63,7 @@ Use the following arguments in the URL to change the request:
 | cd | Only with `proxysg` format. The default category for the exported indicators. | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=proxysg&cd=default_category |
 | ca | Only with `proxysg` format. The categories which will be exported. Indicators not falling to these categories will be classified as the default category. | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=proxysg&ca=category1,category2 |
 | tr | Whether to collapse IPs. 0 - to not collapse, 1 - collapse to ranges or 2 - collapse to CIDRs | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?q="type:ip and sourceBrand:my_source"&tr=1 |
+| tx | Whether to output `csv` or `xsoar-csv` formats as textual web pages. | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=xsoar-csv&tx |
 
 
 ##### Base Command
@@ -82,6 +84,7 @@ Use the following arguments in the URL to change the request:
 | category_attribute | For use with Symantec ProxySG format - set the categories that should be listed in the output. If not set will list all existing categories. | Optional |
 | category_default | For use with Symantec ProxySG format - set the default category for the output. | Optional |
 | collapse_ips | Whether to collapse IPs, and if so - to ranges or CIDRs | Optional |
+| csv_text | If True, will output csv and XSOAR-csv formats as textual web pages | Optional |
  
 
 ##### Context Output
