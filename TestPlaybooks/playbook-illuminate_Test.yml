@@ -1,6 +1,6 @@
-id: illuminate Integration
+id: illuminate Integration Test
 version: -1
-name: illuminate Integration
+name: illuminate Integration Test
 description: illuminate Integration testplaybook
 starttaskid: "0"
 tasks:
