@@ -115,6 +115,19 @@ description: SafeBreach automatically executes thousands of breach methods from 
   extensive and growing Hacker’s Playbook™ to validate security control effectiveness.  Simulations
   are automatically correlated with network, endpoint, and SIEM solutions providing
   data-driven SafeBreach Insights for holistic remediation to harden enterprise defenses.
+detaileddescription: |-
+  ## SafeBreach Simulations & Insights
+  This integration allows to leverage SafeBreach simulation results and insights to automatically remediate multiple malicious indicators with immediate threat to your environment.
+
+  To configure the integration on SafeBreach:
+  1. Open the **Navigation bar** → … → **CLI Console**
+  2. Type **config accounts** to find out the account id
+  3. Use the id as the **accountId** parameter in Demisto configuration
+  4. Type **config apikeys** to list existing API keys \
+  OR \
+  Add a new one by typing: **config apikeys add --name <key_name>**
+  5. Use the generated API token as **apiKey** parameter in Demisto configuration
+  6. Use your SafeBreach Management URL as the **url** parameter in Demisto configuration
 display: SafeBreach v2
 name: SafeBreach v2
 script:
@@ -138,8 +151,8 @@ script:
       description: Insight unique id number
       type: Number
     - contextPath: SafeBreach.Insight.DataType
-      description: 'Insight data type. Options: Hash, Domain, URI, Command, Port,
-        Protocol'
+      description: Insight data type. Options are Hash, Domain, URI, Command, Port,
+        Protocol
       type: String
     - contextPath: SafeBreach.Insight.Category
       description: Security control category name
@@ -196,7 +209,7 @@ script:
       description: Malware SHA256
       type: String
     - contextPath: SafeBreach.Insight.Domain
-      description: 'Malicious domains '
+      description: Malicious domains
       type: String
     - contextPath: SafeBreach.Insight.IP
       description: Malicious IPs
@@ -241,10 +254,10 @@ script:
       description: Suspicious commands
       type: String
     - contextPath: DBotScore.Indicator
-      description: 'Indicator value. Can be: IP, SHA1, MD5, SHA256, Email, or Url'
+      description: Indicator value. Options are IP, SHA1, MD5, SHA256, Email, or Url
       type: String
     - contextPath: DBotScore.Type
-      description: 'Indicator type. Can be: ip, file, email, or url'
+      description: Indicator type. Options are ip, file, email, or url
       type: String
     - contextPath: DBotScore.Vendor
       description: SafeBreach. This is the vendor reporting the score of the indicator
@@ -343,7 +356,7 @@ script:
       description: Name of the test
       type: String
     - contextPath: SafeBreach.Test.Status
-      description: 'Test run status. Options: PENDING, RUNNING, CANCELED, COMPLETED'
+      description: Test run status. Options are PENDING, RUNNING, CANCELED, COMPLETED
       type: String
     - contextPath: SafeBreach.Test.StartTime
       description: Staring time of the test
@@ -370,7 +383,7 @@ script:
       description: Id of the simulation result
       type: String
     - contextPath: SafeBreach.Simulation.FinalStatus
-      description: 'Simulation final status: Missed,Detected,Stopped,Prevented,Inconsistent'
+      description: Simulation final status, one of - Missed, Detected, Stopped, Prevented, Inconsistent
       type: String
     - contextPath: SafeBreach.Simulation.Result
       description: Indicates whether the simulation was blocked or not
@@ -400,12 +413,12 @@ script:
       description: Description of the attack flow
       type: String
     - contextPath: SafeBreach.Simulation.Attack.Phase
-      description: 'The phase of the attack: Infiltration, Exfiltration ,Lateral Movement,Host
-        Level'
+      description: The phase of the attack, one of - Infiltration, Exfiltration ,Lateral Movement, Host
+        Level
       type: String
     - contextPath: SafeBreach.Simulation.Attack.Type
-      description: The type of the attack. For example:,Real C2 Communication,Malware
-        Transfer,Malware Write to Disk
+      description: The type of the attack. For example, Real C2 Communication, Malware
+        Transfer or Malware Write to Disk
       type: String
     - contextPath: SafeBreach.Simulation.Attack.SecurityControl
       description: Related security control category
@@ -445,7 +458,7 @@ script:
       description: Simulation run detailed logs from the target simulator
       type: JSON
     - contextPath: SafeBreach.Simulation.Network.Direction
-      description: 'Attack network direction relative to the target: inbound / outbound'
+      description: Attack network direction relative to the target - inbound / outbound
       type: String
     - contextPath: SafeBreach.Simulation.Network.SourceIp
       description: The IP initiated the network communication
@@ -498,7 +511,7 @@ script:
     - contextPath: SafeBreach.Simulation.Rerun.Id
       description: Id of the rerun test
       type: String
-    - contextPath: 'SafeBreach.Simulation.Rerun.ScheduledTime '
+    - contextPath: SafeBreach.Simulation.Rerun.ScheduledTime
       description: Time at which the rerun was triggered
       type: Datetime
     - contextPath: SafeBreach.Test.Id

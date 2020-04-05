@@ -25,7 +25,8 @@ SAFEBREACH_TO_DEMISTO_MAPPER = {
     'FQDNs/IPs': 'Data',
     'FQDN/IP': 'Data',
     'Commands': 'Command',
-    'URIs': 'URI'
+    'URIs': 'URI',
+    'URI': 'URI'
 }
 
 INDICATOR_TYPE_MAPPER = {
@@ -47,7 +48,8 @@ INDICATOR_TYPE_SB_TO_DEMISTO_MAPPER = {
     'FQDNs/IPs': 'Domain',
     'FQDN/IP': 'Domain',
     'Commands': 'Command',
-    'URIs': 'URI'
+    'URIs': 'URI',
+    'URI': 'URI'
 }
 
 INSIGHT_DATA_TYPE_MAPPER = {
@@ -159,7 +161,7 @@ def extract_data(data):
 def get_dbot_type(data_type, value):
     if data_type.lower() in ['sha1', 'md5', 'sha256s', 'sha256']:
         return 'file'
-    if data_type in ['Domain', 'URIs', 'FQDNs/IPs', 'FQDN/IP']:
+    if data_type in ['Domain', 'URIs', 'FQDNs/IPs', 'FQDN/IP', 'URI']:
         if is_ip(value):
             return 'ip'
         return 'url'
@@ -175,7 +177,8 @@ def get_demisto_context_path(data_type):
         'IP': 'URL(val.Data == obj.Data)',
         'Domain': 'URL(val.Data == obj.Data)',
         'Commands': 'Process(val.CommandLine == obj.CommandLine)',
-        'URIs': 'URL(val.URI == obj.URI)'
+        'URIs': 'URL(val.URI == obj.URI)',
+        'URI': 'URL(val.URI == obj.URI)'
     }
     return mapper.get(data_type)
 
@@ -277,7 +280,8 @@ def get_indicators_command(client: Client, insight_category: list, insight_data_
         'FQDN/IP': 'Domain',
         'Domain': 'Domain',
         'Commands': 'Command',
-        'URIs': 'URI'
+        'URIs': 'URI',
+        'URI': 'URI'
     }
 
     # These variable be filled directly from the integration configuration or as arguments.
@@ -288,6 +292,8 @@ def get_indicators_command(client: Client, insight_category: list, insight_data_
 
     # Filter insight by category
     insights: Any = list([item for item in raw_insights if int(item.get('ruleId')) in insights_ids])
+    print('insights_ids: ', insights_ids, 'insight_category: ', insight_category, 'insight_data_type: ',
+          insight_data_type)
     for insight in insights:
         # Fetch remediation data for each insight
         processed_data = get_remediation_data_command(client, {'insightId': insight.get('ruleId')}, False)
@@ -389,7 +395,7 @@ def get_remediation_data_command(client: Client, args: dict, no_output_mode: boo
         demisto_standard_path = get_demisto_context_path(data_type)  # e.g URL(val.Data == obj.Data)
         demisto_data_type = SAFEBREACH_TO_DEMISTO_MAPPER.get(data_type)  # SHA256,Port,Protocol,Data,Command,URI
         for value in processed_data[data_type]:
-            if data_type in ['DropPaths', 'URIs']:
+            if data_type in ['DropPaths', 'URIs', 'URI']:
                 value = value.encode('utf-8').decode('unicode_escape').encode('latin1').decode('utf-8')
             if demisto_data_type:
                 dbot_score = {
@@ -401,7 +407,7 @@ def get_remediation_data_command(client: Client, args: dict, no_output_mode: boo
                 primary_standard_context = {
                     demisto_data_type: value,  # e.g Data : <URL>, SHA256:<SHA256>
                     "Malicious": {
-                        "Description": f"SafeBreach Insight - {insight.get('actionBasedTitle')}",
+                        "Description": f"SafeBreach Insights - ({insight_id}){insight.get('actionBasedTitle')}",
                         "Vendor": "SafeBreach"
                     }
                 }
@@ -411,7 +417,7 @@ def get_remediation_data_command(client: Client, args: dict, no_output_mode: boo
                         secondary_standard_context_dict = {
                             'IP': value,
                             "Malicious": {
-                                "Description": "SafeBreach Insights",
+                                "Description": f"SafeBreach Insights - ({insight_id}){insight.get('actionBasedTitle')}",
                                 "Vendor": "SafeBreach"
                             }
                         }
@@ -420,7 +426,7 @@ def get_remediation_data_command(client: Client, args: dict, no_output_mode: boo
                         secondary_standard_context_dict = {
                             'Name': value,
                             "Malicious": {
-                                "Description": "SafeBreach Insights",
+                                "Description": f"SafeBreach Insights - ({insight_id}){insight.get('actionBasedTitle')}",
                                 "Vendor": "SafeBreach"
                             }
                         }

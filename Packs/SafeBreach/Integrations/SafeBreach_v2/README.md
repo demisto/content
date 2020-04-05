@@ -1,6 +1,17 @@
 SafeBreach automatically executes thousands of breach methods from its extensive and growing Hacker’s Playbook™ to validate security control effectiveness.  Simulations are automatically correlated with network, endpoint, and SIEM solutions providing data-driven SafeBreach Insights for holistic remediation to harden enterprise defenses.
 This integration was integrated and tested with version xx of SafeBreach v2
-## Configure SafeBreach v2 on Demisto
+## Configure SafeBreach for Demisto Integration
+
+1. Open the **Navigation bar** → … → **CLI Console**
+2. Type **config accounts** to find out the account id
+3. Use the id as the **accountId** parameter in Demisto configuration
+4. Type **config apikeys** to list existing API keys \
+OR \
+Add a new one by typing: **config apikeys add --name <key_name>**
+5. Use the generated API token as **apiKey** parameter in Demisto configuration
+6. Use your SafeBreach Management URL as the **url** parameter in Demisto configuration
+
+## Configure SafeBreach on Demisto
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for SafeBreach v2.
@@ -8,19 +19,13 @@ This integration was integrated and tested with version xx of SafeBreach v2
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | SafeBreach Managment URL | True |
-| accountId | Account ID | True |
-| apiKey | API Key | True |
-| insightCategory | Insight Category | False |
-| insightDataType | Insight Data Type | False |
-| indicatorLimit | Indicators Limit | False |
-| feed | Fetch indicators | False |
-| feedReputation | Indicator Reputation | False |
-| feedReliability | Source Reliability | True |
-| feedExpirationPolicy |  | False |
-| feedFetchInterval | Feed Fetch Interval | False |
-| feedBypassExclusionList | Bypass exclusion list | False |
-| feedExpirationInterval |  | False |
+| SafeBreach Managment URL | For example, https://yourorg.safebreach.com | True |
+| Account ID | Obtained with "config accounts" SafeBreach command | True |
+| API Key | Generated with "config apikeys add" SafeBreach command | True |
+| Insight Category | Network Access,Network Inspection,Endpoint,Email,Web,Data Leak | False |
+| Insight Data Type | Hash,Domain,URI,Command,Port,Protocol | False |
+| Indicators Limit | Amount of indicators to generate. Default = 1000 | False |
+
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -298,42 +303,6 @@ Rerun a specific SafeBreach Insight related simulations in your environment.
 |# Attacks|Insight Id|Name|Test Id|
 |---|---|---|---|
 | 1 | 5 | Insight (Demisto) - Blacklist malicious domains | 1585820785074.33 |
-
-
-### safebreach-get-indicators
-***
-Fetches SafeBreach Insights and extracts indicators out of them, creating new or updating existing indicators.
-
-
-##### Base Command
-
-`safebreach-get-indicators`
-##### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| limit | Limits the maximal number of generated indicators. Default - 1000. | Optional | 
-| insightCategory | Multi-select option for category of the insights to get remediation data for:<br/>Network Access, Network Inspection, Endpoint, Email, Web, Data Leak | Optional | 
-| insightDataType | Multi-select option for remediation data type to get:<br/>Hash, Domain, URI, Command, Port, Protocol, Registry | Optional | 
-
-
-##### Context Output
-
-There is no context output for this command.
-
-##### Command Example
-```!safebreach-get-indicators limit=10```
-
-##### Context Example
-```
-{}
-```
-
-##### Human Readable Output
-### Indicators:
-|Value|Type|
-|---|---|
-| srv.desk-top-app.info | Domain |
 
 
 ### safebreach-get-test-status
@@ -685,3 +654,37 @@ Rerun a specific SafeBreach simulation in your environment
 |---|---|---|
 | d937cd0e5fd4e2c9266801b7bd17e097 | 1585820802418.34 | Rerun (Demisto) - #(3055) Write wannacry malware to disk |
 
+### safebreach-get-indicators
+***
+Fetches SafeBreach Insights and extracts indicators out of them, creating new or updating existing indicators.
+
+
+##### Base Command
+
+`safebreach-get-indicators`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | Limits the maximal number of generated indicators. Default - 1000. | Optional | 
+| insightCategory | Multi-select option for category of the insights to get remediation data for:<br/>Network Access, Network Inspection, Endpoint, Email, Web, Data Leak | Optional | 
+| insightDataType | Multi-select option for remediation data type to get:<br/>Hash, Domain, URI, Command, Port, Protocol, Registry | Optional | 
+
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+```!safebreach-get-indicators limit=10```
+
+##### Context Example
+```
+{}
+```
+
+##### Human Readable Output
+### Indicators:
+|Value|Type|
+|---|---|
+| srv.desk-top-app.info | Domain |
