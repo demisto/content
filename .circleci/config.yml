@@ -215,9 +215,6 @@ jobs:
             unzip -q "$CIRCLE_ARTIFACTS/content_test.zip" -d "test_content_dir"
             zip -j "$CIRCLE_ARTIFACTS/all_content.zip" test_content_dir/*
             rm -r test_content_dir
-      - store_artifacts:
-          path: artifacts
-          destination: artifacts
       - run:
           name: Run Unit Testing and Lint
           when: always
@@ -238,30 +235,9 @@ jobs:
             fi
       - store_test_results:
           path: ./unit-tests
-      - run:
-          name: Run Unit Testing and Lint
-          when: always
-          command: |
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 1 ] ;
-              then
-                echo "Skipping - unit tests are running only in container number 1"
-                exit 0
-            fi
-            echo "demisto-sdk version: $(demisto-sdk --version)"
-            echo "mypy version: $(mypy --version)"
-            echo "flake8 py2 version: $(python2 -m flake8 --version)"
-            echo "flake8 py3 version: $(python3 -m flake8 --version)"
-            echo "bandit py2 version: $(python2 -m bandit --version 2>&1)"
-            echo "bandit py3 version: $(python3 -m bandit --version 2>&1)"
-            echo "vulture py2 version: $(python2 -m vulture --version) 2>&1"
-            echo "vulture py3 version: $(python3 -m vulture --version) 2>&1"
-            SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
-            if [ -n "$SHOULD_LINT_ALL" ]; then
-              echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-              demisto-sdk lint --run-all-tests --parallel --outfile ./artifacts/failed_unittests.txt -v
-            else
-              demisto-sdk lint --git --parallel --outfile ./artifacts/failed_unittests.txt -v
-            fi
+      - store_artifacts:
+          path: artifacts
+          destination: artifacts
       - run:
           name: Verify Base Branch for Contribution
           when: always
