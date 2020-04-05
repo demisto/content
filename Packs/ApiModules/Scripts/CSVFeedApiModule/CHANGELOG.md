@@ -1,5 +1,5 @@
 ## [Unreleased]
-Added support for mapping with regex extraction and string formatting.
+Added support for mapping by regex extraction and by string formatting.
 
 
 ## [20.3.4] - 2020-03-30
