@@ -1,7 +1,7 @@
 import argparse
 
-from Tests.test_utils import str2bool, run_command
-from Tests.scripts.constants import FILTER_CONF, RUN_ALL_TESTS_FORMAT
+from demisto_sdk.commands.common.tools import str2bool, run_command
+from demisto_sdk.commands.common.constants import FILTER_CONF, RUN_ALL_TESTS_FORMAT
 
 
 SERVER_GA = "Demisto-Circle-CI-Content-GA*"
