@@ -6,16 +6,6 @@ from CommonServerPython import *
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-
-def get_server_url(server_url: str) -> str:
-    url = server_url
-    url = re.sub('/[/]+$/', '', url)
-    url = re.sub('/$', '', url)
-    return url
-
-
-''' GLOBAL VARIABLES '''
-
 TICKET_STATES = {
     'incident': {
         '1': '1 - New',
@@ -90,6 +80,13 @@ DEFAULT_RECORD_FIELDS = {
 }
 
 
+def get_server_url(server_url: str) -> str:
+    url = server_url
+    url = re.sub('/[/]+$/', '', url)
+    url = re.sub('/$', '', url)
+    return url
+
+
 def create_ticket_context(data: dict) -> dict:
     context = {
         'ID': data.get('sys_id'),
@@ -120,7 +117,7 @@ def create_ticket_context(data: dict) -> dict:
     return createContext(context, removeNull=True)
 
 
-def get_ticket_context(data):
+def get_ticket_context(data) -> list:
     if not isinstance(data, list):
         return create_ticket_context(data)
 
@@ -130,7 +127,7 @@ def get_ticket_context(data):
     return tickets
 
 
-def get_ticket_human_readable(tickets, ticket_type: str):
+def get_ticket_human_readable(tickets, ticket_type: str) -> list:
     if not isinstance(tickets, list):
         tickets = [tickets]
 
@@ -222,7 +219,7 @@ def get_ticket_fields(args: dict, template_name: dict, ticket_type: str) -> dict
     return ticket_fields
 
 
-def get_body(fields: dict, custom_fields: dict):
+def get_body(fields: dict, custom_fields: dict) -> dict:
     body = {}
 
     if fields:
@@ -379,7 +376,7 @@ class Client(BaseClient):
         """
         return self.send_request('attachment', 'GET', params={'sysparm_query': f'table_sys_id={ticket_id}'})
 
-    def get_ticket_attachment_entries(self, ticket_id: str):
+    def get_ticket_attachment_entries(self, ticket_id: str) -> list:
         """Get ticket attachments, including file attachments
         by sending a GET request and using the get_ticket_attachments class function.
 
@@ -387,7 +384,7 @@ class Client(BaseClient):
             ticket_id: ticket id
 
         Returns:
-            Response from API.
+            Array of attachments entries.
         """
         entries = []
         links = []  # type: List[Tuple[str, str]]
@@ -491,7 +488,7 @@ class Client(BaseClient):
         """
         return self.send_request(f'table/{ticket_type}/{ticket_id}', 'PATCH', body={key: link})
 
-    def add_comment(self, ticket_id: str, ticket_type: str, key: str, text: str):
+    def add_comment(self, ticket_id: str, ticket_type: str, key: str, text: str) -> dict:
         """Adds a comment to a ticket by sending a PATCH request.
 
         Args:
@@ -543,7 +540,7 @@ class Client(BaseClient):
             query_params['sysparm_query'] = sys_param_query
         return self.send_request(f'table/{table_name}', 'GET', params=query_params)
 
-    def get_table_fields(self, table_name):
+    def get_table_fields(self, table_name: str) -> dict:
         """Get table fields by sending a GET request.
 
         Args:
@@ -744,7 +741,7 @@ def get_record_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, result
 
 
-def create_record_command(client: Client, args: dict) -> Tuple[str, Dict[Any, Any], Any]:
+def create_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Any]:
     """Create a record.
 
     Args:
@@ -768,14 +765,14 @@ def create_record_command(client: Client, args: dict) -> Tuple[str, Dict[Any, An
     if not result or 'result' not in result:
         return 'Could not create record.', {}, {}
 
-    result = result.get('result', {})
+    record = result.get('result', {})
 
-    mapped_record = {DEFAULT_RECORD_FIELDS[k]: result[k] for k in DEFAULT_RECORD_FIELDS if k in result}
+    mapped_record = {DEFAULT_RECORD_FIELDS[k]: result[k] for k in DEFAULT_RECORD_FIELDS if k in record}
 
     human_readable = tableToMarkdown('ServiceNow record created successfully', mapped_record, removeNull=True),
     entry_context = {'ServiceNow.Record(val.ID===obj.ID)': createContext(mapped_record)}
 
-    return human_readable, entry_context, result
+    return human_readable, entry_context, record
 
 
 def update_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
