@@ -87,7 +87,15 @@ def get_server_url(server_url: str) -> str:
     return url
 
 
-def create_ticket_context(data: dict) -> dict:
+def create_ticket_context(data: dict) -> Any:
+    """Create ticket context.
+
+    Args:
+        data: ticket data.
+
+    Returns:
+        ticket context.
+    """
     context = {
         'ID': data.get('sys_id'),
         'Summary': data.get('short_description'),
@@ -117,7 +125,15 @@ def create_ticket_context(data: dict) -> dict:
     return createContext(context, removeNull=True)
 
 
-def get_ticket_context(data) -> dict:
+def get_ticket_context(data: Any) -> Any:
+    """Manager of ticket context creation.
+
+    Args:
+        data: ticket data. in the form of a dict or a list of dict.
+
+    Returns:
+        ticket context. in the form of a dict or a list of dict.
+    """
     if not isinstance(data, list):
         return create_ticket_context(data)
 
@@ -128,6 +144,15 @@ def get_ticket_context(data) -> dict:
 
 
 def get_ticket_human_readable(tickets, ticket_type: str) -> list:
+    """Get ticket human readable.
+
+    Args:
+        tickets: tickets data. in the form of a dict or a list of dict.
+        ticket_type: ticket type.
+
+    Returns:
+        ticket human readable.
+    """
     if not isinstance(tickets, list):
         tickets = [tickets]
 
@@ -180,7 +205,7 @@ def get_ticket_human_readable(tickets, ticket_type: str) -> list:
 
 def get_ticket_fields(args: dict, template_name: dict, ticket_type: str) -> dict:
     """Inverse the keys and values of those dictionaries
-    to map the arguments to their corresponding values in ServiceNow
+    to map the arguments to their corresponding values in ServiceNow.
 
     Args:
         args: Demisto args
@@ -188,7 +213,7 @@ def get_ticket_fields(args: dict, template_name: dict, ticket_type: str) -> dict
         ticket_type: ticket type
 
     Returns:
-        ticket fields
+        ticket fields.
     """
     ticket_severity = {
         '1': '1 - High',
@@ -220,6 +245,15 @@ def get_ticket_fields(args: dict, template_name: dict, ticket_type: str) -> dict
 
 
 def get_body(fields: dict, custom_fields: dict) -> dict:
+    """Generates a body from fields and custom fields.
+
+    Args:
+        fields: fields data.
+        custom_fields: custom fields data.
+
+    Returns:
+        body object for SNOW requests.
+    """
     body = {}
 
     if fields:
@@ -238,6 +272,14 @@ def get_body(fields: dict, custom_fields: dict) -> dict:
 
 
 def split_fields(fields: str) -> dict:
+    """Split str fields of Demisto arguments to SNOW request fields.
+
+    Args:
+        fields: fields in a string representation.
+
+    Returns:
+        dic_fields object for SNOW requests.
+    """
     dic_fields = {}
 
     if fields:
@@ -259,6 +301,21 @@ class Client(BaseClient):
 
     def __init__(self, server_url: str, username: str, password: str, verify: bool, proxy: bool, fetch_time: str,
                  sysparm_query: str, sysparm_limit: int, timestamp_field: str, ticket_type: str, get_attachments: bool):
+        """
+
+        Args:
+            server_url: SNOW serveer url
+            username: SNOW username
+            password: SNOW password
+            verify: whether to verify the request
+            proxy: whether to allow proxy
+            fetch_time: first time fetch for fetch_incidents
+            sysparm_query: system query
+            sysparm_limit: system limit
+            timestamp_field: timestamp field for fetch_incidents
+            ticket_type: default ticket type
+            get_attachments: whether to get ticket attachments by default
+        """
         self._base_url = server_url
         self._verify = verify
         self._username = username
