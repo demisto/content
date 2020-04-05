@@ -18,7 +18,7 @@ This script uses the following commands and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| domain | The domain name of the site. For example, www<span>.example<span>.com, hello.example<span>.com, example<span>.com |
+| domain | The domain name of the site. For example, www.example.com, hello.example.com, example.com |
 
 ## Outputs
 ---

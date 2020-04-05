@@ -33,7 +33,7 @@ This playbook does not use any scripts.
 | action | The rule action. | Optional |
 | port-dst | The destination port. | Optional |
 | rule | The rule name. For example, "Allow all outbound". | Optional |
-| url | The URL. For example, "safebrowsing<span>.googleapis<span>.com". | Optional |
+| url | The URL. For example, "safebrowsing.googleapis.com". | Optional |
 | filedigest | The file hash (for WildFIre logs only). | Optional |
 
 ## Playbook Outputs

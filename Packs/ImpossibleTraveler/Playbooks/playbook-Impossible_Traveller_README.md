@@ -35,7 +35,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | MaxMilesPerHourAllowed | The maximum miles per hour that is still considered reasonable. If the geographical distance and difference in time between logins is greater than this value, the user will be considered an impossible traveler. | 600 | Optional |
 | WhitelistedIPs | CSV of IP addresses that are allowed to be used across long distances. | - | Optional |
 | AutomaticallyBlockIPs | Whether to automatically block the source IP addresses that the login originated from. Can be "False" or "True". | False | Optional |
-| DefaultMapLink | The default link from which to create a travel map. The "SOURCE" and "DESTINATION" words are replaced with the previous coordinates and current coordinates of the traveler, respectively. | https:<span>//bing<span>.com/maps/default.aspx?rtp=pos.SOURCE~pos.DESTINATION | Optional |
+| DefaultMapLink | The default link from which to create a travel map. The "SOURCE" and "DESTINATION" words are replaced with the previous coordinates and current coordinates of the traveler, respectively. | https://bing.com/maps/default.aspx?rtp=pos.SOURCE~pos.DESTINATION | Optional |
 | AutomaticallyDisableUser | Whether to automatically disable the impossible traveler account using Active Directory. | False | Optional |
 | ContactUserManager | Whether to ask the user manager for the legitimacy of the login events, in case of an alleged impossible traveler. | False | Optional |
 

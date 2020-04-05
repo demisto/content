@@ -22,7 +22,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Required** |
 | --- | --- | --- | 
-| url | The URL. For example, "safebrowsing<span>.googleapis<span>.com". | Optional |
+| url | The URL. For example, "safebrowsing.googleapis.com". | Optional |
 | filedigest | The file hash (for WildFire logs only). |Optional |
 | ip | The source or destination address.| Optional |
 

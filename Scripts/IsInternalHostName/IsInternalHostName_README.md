@@ -16,7 +16,7 @@ Checks if the supplied hostnames match either the organization's internal naming
 | --- | --- |
 | hostName | A comma-separated list of hostnames to check. |
 | internalRegex | The regex pattern for the organization's hostname for example wwwd$\|www$. for hosts that look like pcx1 or pcx. |
-| domainName | The domain name for the organization. For a single domain use this format: "bla.com". For multiple domains use this format: (bla<span>.com\|blabla<span>.com), where the pipe and the brackets are the OR condition for regex. |
+| domainName | The domain name for the organization. For a single domain use this format: "bla.com". For multiple domains use this format: (bla.com\|blabla.com), where the pipe and the brackets are the OR condition for regex. |
 
 ## Outputs
 ---
