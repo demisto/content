@@ -1,6 +1,7 @@
-id: 0691780a-ff12-4135-8c02-f6a0a9b94119
-version: 3
-name: illuminate Integration Test_copy
+id: illuminate Integration
+version: -1
+name: illuminate Integration
+description: illuminate Integration testplaybook
 starttaskid: "0"
 tasks:
   "0":
