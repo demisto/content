@@ -292,8 +292,6 @@ def get_indicators_command(client: Client, insight_category: list, insight_data_
 
     # Filter insight by category
     insights: Any = list([item for item in raw_insights if int(item.get('ruleId')) in insights_ids])
-    print('insights_ids: ', insights_ids, 'insight_category: ', insight_category, 'insight_data_type: ',
-          insight_data_type)
     for insight in insights:
         # Fetch remediation data for each insight
         processed_data = get_remediation_data_command(client, {'insightId': insight.get('ruleId')}, False)
