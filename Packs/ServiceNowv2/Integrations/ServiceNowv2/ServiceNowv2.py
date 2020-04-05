@@ -1,10 +1,5 @@
-import json
-import re
 import shutil
-from datetime import datetime
-from typing import List, Tuple, Dict
-
-import requests
+from typing import List, Tuple, Dict, Callable, Any
 
 from CommonServerPython import *
 
@@ -63,34 +58,12 @@ TICKET_STATES = {
     }
 }
 
-TICKET_SEVERITY = {
-    '1': '1 - High',
-    '2': '2 - Medium',
-    '3': '3 - Low'
-}
-
 TICKET_PRIORITY = {
     '1': '1 - Critical',
     '2': '2 - High',
     '3': '3 - Moderate',
     '4': '4 - Low',
     '5': '5 - Planning'
-}
-
-COMPUTER_STATUS = {
-    '1': 'In use',
-    '2': 'On order',
-    '3': 'On maintenance',
-    '6': 'In stock/In transit',
-    '7': 'Retired',
-    '100': 'Missing'
-}
-
-# Map SNOW severity to Demisto severity for incident creation
-SEVERITY_MAP = {
-    '1': 3,
-    '2': 2,
-    '3': 1
 }
 
 SNOW_ARGS = ['active', 'activity_due', 'opened_at', 'short_description', 'additional_assignee_list', 'approval_history',
@@ -161,6 +134,12 @@ def get_ticket_human_readable(tickets, ticket_type: str):
     if not isinstance(tickets, list):
         tickets = [tickets]
 
+    ticket_severity = {
+        '1': '1 - High',
+        '2': '2 - Medium',
+        '3': '3 - Low'
+    }
+
     result = []
     for ticket in tickets:
 
@@ -186,11 +165,11 @@ def get_ticket_human_readable(tickets, ticket_type: str):
 
         # Try to map the fields
         if 'impact' in ticket:
-            hr['Impact'] = TICKET_SEVERITY.get(ticket['impact'], ticket['impact'])
+            hr['Impact'] = ticket_severity.get(ticket['impact'], ticket['impact'])
         if 'urgency' in ticket:
-            hr['Urgency'] = TICKET_SEVERITY.get(ticket['urgency'], ticket['urgency'])
+            hr['Urgency'] = ticket_severity.get(ticket['urgency'], ticket['urgency'])
         if 'severity' in ticket:
-            hr['Severity'] = TICKET_SEVERITY.get(ticket['severity'], ticket['severity'])
+            hr['Severity'] = ticket_severity.get(ticket['severity'], ticket['severity'])
         if 'priority' in ticket:
             hr['Priority'] = TICKET_PRIORITY.get(ticket['priority'], ticket['priority'])
         if 'state' in ticket:
@@ -214,7 +193,13 @@ def get_ticket_fields(args: dict, template_name: dict, ticket_type: str) -> dict
     Returns:
         ticket fields
     """
-    inv_severity = {v: k for k, v in TICKET_SEVERITY.items()}
+    ticket_severity = {
+        '1': '1 - High',
+        '2': '2 - Medium',
+        '3': '3 - Low'
+    }
+
+    inv_severity = {v: k for k, v in ticket_severity.items()}
     inv_priority = {v: k for k, v in TICKET_PRIORITY.items()}
     states = TICKET_STATES.get(ticket_type)
     inv_states = {v: k for k, v in states.items()} if states else {}
@@ -435,7 +420,7 @@ class Client(BaseClient):
 
         return entries
 
-    def get(self, table_name: str, record_id: str, custom_fields: str = '', number: str = None):
+    def get(self, table_name: str, record_id: str, custom_fields: str = '', number: str = None) -> dict:
         """Get a ticket by sending a GET request.
 
         Args:
@@ -605,11 +590,11 @@ def get_ticket_command(client: Client, args: dict):
 
     result = client.get(ticket_type, ticket_id, custom_fields, number)
     if not result or 'result' not in result:
-        return 'Ticket was not found.'
+        return 'Ticket was not found.', {}, {}
 
     if isinstance(result['result'], list):
         if len(result['result']) == 0:
-            return 'Ticket was not found.'
+            return 'Ticket was not found.', {}, {}
         ticket = result['result'][0]
     else:
         ticket = result['result']
@@ -638,13 +623,11 @@ def get_ticket_command(client: Client, args: dict):
             'ServiceNow.Ticket(val.ID===obj.ID)': context
         }
     }
-
     entries.append(entry)
-
     return entries
 
 
-def update_ticket_command(client: Client, args: dict):
+def update_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     """Update a ticket.
 
     Args:
@@ -669,24 +652,14 @@ def update_ticket_command(client: Client, args: dict):
         raise Exception('Unable to retrieve response.')
 
     hr = get_ticket_human_readable(result['result'], ticket_type)
-    context = get_ticket_context(result['result'], ticket_type)
+    human_readable = tableToMarkdown(f'ServiceNow ticket updated successfully\nTicket type: {ticket_type}',
+                                     t=hr, removeNull=True)
+    entry_context = get_ticket_context(result['result'], ticket_type)
 
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': result,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(f'ServiceNow ticket updated successfully\nTicket type: {ticket_type}',
-                                         t=hr, removeNull=True),
-        'EntryContext': {
-            'ServiceNow.Ticket(val.ID===obj.ID)': context
-        }
-    }
-
-    return entry
+    return human_readable, entry_context, result
 
 
-def create_ticket_command(client: Client, args: dict):
+def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     """Create a ticket.
 
     Args:
@@ -710,31 +683,19 @@ def create_ticket_command(client: Client, args: dict):
         raise Exception('Unable to retrieve response.')
 
     hr = get_ticket_human_readable(result['result'], ticket_type)
-    context = get_ticket_context(result['result'], ticket_type)
-
     headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On',
                'Created By',
                'Active', 'Close Notes', 'Close Code',
                'Description', 'Opened At', 'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description',
                'Additional Comments']
+    human_readable = tableToMarkdown('ServiceNow ticket was created successfully.', t=hr,
+                                     headers=headers, removeNull=True)
+    entry_context = get_ticket_context(result['result'], ticket_type)
 
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': result,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow ticket was created successfully.', hr,
-                                         headers=headers, removeNull=True),
-        'EntryContext': {
-            'Ticket(val.ID===obj.ID)': context,
-            'ServiceNow.Ticket(val.ID===obj.ID)': context
-        }
-    }
-
-    return entry
+    return human_readable, entry_context, result
 
 
-def delete_ticket_command(client: Client, args: dict):
+def delete_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     """Delete a ticket.
 
     Args:
@@ -749,18 +710,10 @@ def delete_ticket_command(client: Client, args: dict):
 
     result = client.delete(ticket_type, ticket_id)
 
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': result,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['text'],
-        'HumanReadable': f'Ticket with ID {ticket_id} was successfully deleted.'
-    }
-
-    return entry
+    return f'Ticket with ID {ticket_id} was successfully deleted.', {}, result
 
 
-def get_record_command(client: Client, args: dict):
+def get_record_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     """Get a record.
 
     Args:
@@ -777,20 +730,14 @@ def get_record_command(client: Client, args: dict):
     result = client.get(table_name, record_id)
 
     if not result or 'result' not in result:
-        return 'Cannot find record'
+        return f'ServiceNow record with ID {record_id} was not found.', {}, {}
 
     if isinstance(result['result'], list):
         if len(result['result']) == 0:
-            return f'ServiceNow record with ID {record_id} was not found.'
+            return f'ServiceNow record with ID {record_id} was not found.', {}, result
         record = result['result'][0]
     else:
         record = result['result']
-
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': result,
-        'ContentsFormat': formats['json']
-    }
 
     if fields:
         list_fields = argToList(fields)
@@ -804,23 +751,17 @@ def get_record_command(client: Client, args: dict):
                 # For objects that refer to a record in the database, take their value(system ID).
                 record[k] = v.get('value', record[k])
         record['ID'] = record.pop('sys_id')
-        entry['ReadableContentsFormat'] = formats['markdown']
-        entry['HumanReadable'] = tableToMarkdown('ServiceNow record', record, removeNull=True)
-        entry['EntryContext'] = {
-            'ServiceNow.Record(val.ID===obj.ID)': createContext(record)
-        }
+        human_readable = tableToMarkdown('ServiceNow record', record, removeNull=True)
+        entry_context = {'ServiceNow.Record(val.ID===obj.ID)': createContext(record)}
     else:
         mapped_record = {DEFAULT_RECORD_FIELDS[k]: record[k] for k in DEFAULT_RECORD_FIELDS if k in record}
-        entry['ReadableContentsFormat'] = formats['markdown']
-        entry['HumanReadable'] = tableToMarkdown(f'ServiceNow record {record_id}', mapped_record, removeNull=True)
-        entry['EntryContext'] = {
-            'ServiceNow.Record(val.ID===obj.ID)': createContext(mapped_record)
-        }
+        human_readable = tableToMarkdown(f'ServiceNow record {record_id}', mapped_record, removeNull=True)
+        entry_context = {'ServiceNow.Record(val.ID===obj.ID)': createContext(mapped_record)}
 
-    return entry
+    return human_readable, entry_context, result
 
 
-def create_record_command(client: Client, args: dict):
+def create_record_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     """Create a record.
 
     Args:
@@ -842,26 +783,19 @@ def create_record_command(client: Client, args: dict):
     result = client.create(table_name, fields, custom_fields)
 
     if not result or 'result' not in result:
-        return 'Could not Create record.'
+        return 'Could not create record.', {}, {}
 
     result = result['result']
 
     mapped_record = {DEFAULT_RECORD_FIELDS[k]: result[k] for k in DEFAULT_RECORD_FIELDS if k in result}
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': result,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow record created successfully', mapped_record, removeNull=True),
-        'EntryContext': {
-            'ServiceNow.Record(val.ID===obj.ID)': createContext(mapped_record)
-        }
-    }
 
-    return entry
+    human_readable = tableToMarkdown('ServiceNow record created successfully', mapped_record, removeNull=True),
+    entry_context = {'ServiceNow.Record(val.ID===obj.ID)': createContext(mapped_record)}
+
+    return human_readable, entry_context, result
 
 
-def update_record_command(client: Client, args: dict):
+def update_record_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     """Update a record.
 
     Args:
@@ -884,27 +818,18 @@ def update_record_command(client: Client, args: dict):
     result = client.update(table_name, record_id, fields, custom_fields)
 
     if not result or 'result' not in result:
-        return 'Could not retrieve record.'
-
+        return 'Could not retrieve record.', {}, {}
     result = result['result']
 
     mapped_record = {DEFAULT_RECORD_FIELDS[k]: result[k] for k in DEFAULT_RECORD_FIELDS if k in result}
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': result,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(f'ServiceNow record with ID {record_id} updated successfully',
-                                         t=mapped_record, removeNull=True),
-        'EntryContext': {
-            'ServiceNow.Record(val.ID===obj.ID)': createContext(mapped_record)
-        }
-    }
+    human_readable = tableToMarkdown(f'ServiceNow record with ID {record_id} updated successfully',
+                                     t=mapped_record, removeNull=True),
+    entry_context = {'ServiceNow.Record(val.ID===obj.ID)': createContext(mapped_record)}
 
-    return entry
+    return human_readable, entry_context, result
 
 
-def delete_record_command(client: Client, args: dict):
+def delete_record_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     """Delete a record.
 
     Args:
@@ -919,18 +844,10 @@ def delete_record_command(client: Client, args: dict):
 
     result = client.delete(table_name, record_id)
 
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': result,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['text'],
-        'HumanReadable': f'ServiceNow record with ID {record_id} was successfully deleted.'
-    }
-
-    return entry
+    return f'ServiceNow record with ID {record_id} was successfully deleted.', {}, result
 
 
-def add_link_command(client: Client, args: dict):
+def add_link_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     """Add a link.
 
     Args:
@@ -955,21 +872,14 @@ def add_link_command(client: Client, args: dict):
     headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
                'Active', 'Close Notes', 'Close Code', 'Description', 'Opened At', 'Due Date', 'Resolved By',
                'Resolved At', 'SLA Due', 'Short Description', 'Additional Comments']
-    hr = get_ticket_human_readable(result['result'], ticket_type)
+    hr_ = get_ticket_human_readable(result['result'], ticket_type)
+    human_readable = tableToMarkdown('Link successfully added to ServiceNow ticket', t=hr_,
+                                     headers=headers, removeNull=True)
 
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': result,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Link successfully added to ServiceNow ticket', t=hr,
-                                         headers=headers, removeNull=True)
-    }
-
-    return entry
+    return human_readable, {}, result
 
 
-def add_comment_command(client: Client, args: dict):
+def add_comment_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     """Add a comment.
 
     Args:
@@ -993,21 +903,14 @@ def add_comment_command(client: Client, args: dict):
                'Active', 'Close Notes', 'Close Code',
                'Description', 'Opened At', 'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description',
                'Additional Comments']
-    hr = get_ticket_human_readable(result['result'], ticket_type)
+    hr_ = get_ticket_human_readable(result['result'], ticket_type)
+    human_readable = tableToMarkdown('Comment successfully added to ServiceNow ticket', t=hr_,
+                                     headers=headers, removeNull=True)
 
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': result,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Comment successfully added to ServiceNow ticket', hr,
-                                         headers=headers, removeNull=True)
-    }
-
-    return entry
+    return human_readable, {}, result
 
 
-def upload_file_command(client: Client, args: dict):
+def upload_file_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     """Upload a file.
 
     Args:
@@ -1025,7 +928,7 @@ def upload_file_command(client: Client, args: dict):
     if not file_name:  # in case of info file
         file_name = demisto.dt(demisto.context(), "InfoFile(val.EntryID=='" + file_id + "').Name")
     if not file_name:
-        return_error('Could not find the file. Please add a file to the incident.')
+        raise Exception('Could not find the file. Please add a file to the incident.')
     file_name = file_name[0] if isinstance(file_name, list) else file_name
 
     result = client.upload_file(ticket_id, file_id, file_name, ticket_type)
@@ -1034,12 +937,12 @@ def upload_file_command(client: Client, args: dict):
         raise Exception('Unable to upload file.')
     result: dict = result.get('result', {})
 
-    hr = {
+    hr_ = {
         'Filename': result.get('file_name'),
         'Download link': result.get('download_link'),
         'System ID': result.get('sys_id')
     }
-
+    human_readable = tableToMarkdown(f'File uploaded successfully to ticket {ticket_id}.', hr_)
     context = {
         'ID': ticket_id,
         'File': {
@@ -1048,23 +951,15 @@ def upload_file_command(client: Client, args: dict):
             'SystemID': result.get('sys_id')
         }
     }
-
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': result,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('File uploaded successfully.', hr),
-        'EntryContext': {
-            'ServiceNow.Ticket(val.ID===obj.ID)': context,
-            'Ticket(val.ID===obj.ID)': context
-        }
+    entry_context = {
+        'ServiceNow.Ticket(val.ID===obj.ID)': context,
+        'Ticket(val.ID===obj.ID)': context
     }
 
-    return entry
+    return human_readable, entry_context, result
 
 
-def query_tickets_command(client: Client, args: dict):
+def query_tickets_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     """Query tickets.
 
     Args:
@@ -1087,9 +982,9 @@ def query_tickets_command(client: Client, args: dict):
     result = client.query(ticket_type, sys_param_limit, sys_param_offset, sys_param_query)
 
     if not result or 'result' not in result or len(result['result']) == 0:
-        return 'No ServiceNow tickets matched the query.'
+        return 'No ServiceNow tickets matched the query.', {}, {}
 
-    hr = get_ticket_human_readable(result['result'], ticket_type)
+    hr_ = get_ticket_human_readable(result['result'], ticket_type)
     context = get_ticket_context(result['result'], ticket_type)
 
     headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
@@ -1097,22 +992,16 @@ def query_tickets_command(client: Client, args: dict):
                'Description', 'Opened At', 'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description',
                'Additional Comments']
 
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': result,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow tickets', hr, headers=headers, removeNull=True),
-        'EntryContext': {
-            'Ticket(val.ID===obj.ID)': context,
-            'ServiceNow.Ticket(val.ID===obj.ID)': context
-        }
+    human_readable = tableToMarkdown('ServiceNow tickets', t=hr_, headers=headers, removeNull=True)
+    entry_context = {
+        'Ticket(val.ID===obj.ID)': context,
+        'ServiceNow.Ticket(val.ID===obj.ID)': context
     }
 
-    return entry
+    return human_readable, entry_context, result
 
 
-def get_ticket_notes_command(client: Client, args: dict):
+def get_ticket_notes_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     """Get the ticket's note.
 
     Args:
@@ -1131,41 +1020,33 @@ def get_ticket_notes_command(client: Client, args: dict):
     result = client.query('sys_journal_field', sys_param_limit, sys_param_offset, sys_param_query)
 
     if not result or 'result' not in result:
-        return f'No comment found on ticket {ticket_id}.'
+        return f'No comment found on ticket {ticket_id}.', {}, {}
 
     headers = ['Value', 'CreatedOn', 'CreatedBy', 'Type']
 
     mapped_notes = [{
-        'Value': n.get('value'),
-        'CreatedOn': n.get('sys_created_on'),
-        'CreatedBy': n.get('sys_created_by'),
-        'Type': 'Work Note' if n.get('element', '') == 'work_notes' else 'Comment'
-    } for n in result['result']]
+        'Value': note.get('value'),
+        'CreatedOn': note.get('sys_created_on'),
+        'CreatedBy': note.get('sys_created_by'),
+        'Type': 'Work Note' if note.get('element', '') == 'work_notes' else 'Comment'
+    } for note in result['result']]
 
     if not mapped_notes:
-        return f'No comment found on ticket {ticket_id}.'
+        return f'No comment found on ticket {ticket_id}.', {}, {}
 
     ticket = {
         'ID': ticket_id,
         'Note': mapped_notes
     }
 
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': result,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(f'ServiceNow notes for ticket {ticket_id}', mapped_notes, headers=headers,
-                                         headerTransform=pascalToSpace, removeNull=True),
-        'EntryContext': {
-            'ServiceNow.Ticket(val.ID===obj.ID)': createContext(ticket, removeNull=True)
-        }
-    }
+    human_readable = tableToMarkdown(f'ServiceNow notes for ticket {ticket_id}', t=mapped_notes, headers=headers,
+                                     headerTransform=pascalToSpace, removeNull=True)
+    entry_context = {'ServiceNow.Ticket(val.ID===obj.ID)': createContext(ticket, removeNull=True)}
 
-    return entry
+    return human_readable, entry_context, result
 
 
-def query_table_command(client: Client, args: dict):
+def query_table_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     """Query a table.
 
     Args:
@@ -1182,16 +1063,8 @@ def query_table_command(client: Client, args: dict):
     fields = args.get('fields')
 
     result = client.query(table_name, sys_param_limit, sys_param_offset, sys_param_query)
-
     if not result or 'result' not in result or len(result['result']) == 0:
-        return 'No results found'
-
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': result,
-        'ContentsFormat': formats['json']
-    }
-
+        return 'No results found', {}, {}
     result = result['result']
 
     if fields:
@@ -1207,23 +1080,17 @@ def query_table_command(client: Client, args: dict):
                 if isinstance(v, dict):
                     # For objects that refer to a record in the database, take their value (system ID).
                     r[k] = v.get('value', v)
-        entry['ReadableContentsFormat'] = formats['markdown']
-        entry['HumanReadable'] = tableToMarkdown('ServiceNow records', records, removeNull=True)
-        entry['EntryContext'] = {
-            'ServiceNow.Record(val.ID===obj.ID)': createContext(records)
-        }
+        human_readable = tableToMarkdown('ServiceNow records', records, removeNull=True)
+        entry_context = {'ServiceNow.Record(val.ID===obj.ID)': createContext(records)}
     else:
         mapped_records = [{DEFAULT_RECORD_FIELDS[k]: r[k] for k in DEFAULT_RECORD_FIELDS if k in r} for r in result]
-        entry['ReadableContentsFormat'] = formats['markdown']
-        entry['HumanReadable'] = tableToMarkdown('ServiceNow records', mapped_records, removeNull=True)
-        entry['EntryContext'] = {
-            'ServiceNow.Record(val.ID===obj.ID)': createContext(mapped_records)
-        }
+        human_readable = tableToMarkdown('ServiceNow records', mapped_records, removeNull=True)
+        entry_context = {'ServiceNow.Record(val.ID===obj.ID)': createContext(mapped_records)}
 
-    return entry
+    return human_readable, entry_context, result
 
 
-def query_computers_command(client: Client, args: dict):
+def query_computers_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     """Query computers.
 
     Args:
@@ -1252,50 +1119,50 @@ def query_computers_command(client: Client, args: dict):
         result = client.query(table_name, limit, offset, computer_query)
 
     if not result or 'result' not in result:
-        return 'No computers found.'
+        return 'No computers found.', {}, {}
 
     computers = result['result']
     if not isinstance(computers, list):
         computers = [computers]
 
     if len(computers) == 0:
-        return 'No computers found.'
+        return 'No computers found.', {}, {}
 
-    headers = ['ID', 'AssetTag', 'Name', 'DisplayName', 'SupportGroup', 'OperatingSystem', 'Company', 'AssignedTo',
-               'State', 'Cost', 'Comments']
+    compuer_statuses = {
+        '1': 'In use',
+        '2': 'On order',
+        '3': 'On maintenance',
+        '6': 'In stock/In transit',
+        '7': 'Retired',
+        '100': 'Missing'
+    }
 
     mapped_computers = [{
         'ID': computer.get('sys_id'),
         'AssetTag': computer.get('asset_tag'),
         'Name': computer.get('name'),
-        'DisplayName': '{} - {}'.format(computer.get('asset_tag', ''), computer.get('name', '')),
+        'DisplayName': f"{computer.get('asset_tag', '')} - {computer.get('name', '')}",
         'SupportGroup': computer.get('support_group'),
         'OperatingSystem': computer.get('os'),
         'Company': computer.get('company', {}).get('value')
         if isinstance(computer.get('company'), dict) else computer.get('company'),
         'AssignedTo': computer.get('assigned_to', {}).get('value')
         if isinstance(computer.get('assigned_to'), dict) else computer.get('assigned_to'),
-        'State': COMPUTER_STATUS.get(computer.get('install_status', ''), computer.get('install_status')),
-        'Cost': '{} {}'.format(computer.get('cost', ''), computer.get('cost_cc', '')).rstrip(),
+        'State': compuer_statuses.get(computer.get('install_status', ''), computer.get('install_status')),
+        'Cost': f"{computer.get('cost', '').rstrip()} {computer.get('cost_cc', '').rstrip()}",
         'Comments': computer.get('comments')
     } for computer in computers]
 
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': computers,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow Computers', mapped_computers, headers=headers,
-                                         removeNull=True, headerTransform=pascalToSpace),
-        'EntryContext': {
-            'ServiceNow.Computer(val.ID===obj.ID)': createContext(mapped_computers, removeNull=True),
-        }
-    }
+    headers = ['ID', 'AssetTag', 'Name', 'DisplayName', 'SupportGroup', 'OperatingSystem', 'Company', 'AssignedTo',
+               'State', 'Cost', 'Comments']
+    human_readable = tableToMarkdown('ServiceNow Computers', t=mapped_computers, headers=headers,
+                                     removeNull=True, headerTransform=pascalToSpace),
+    entry_context = {'ServiceNow.Computer(val.ID===obj.ID)': createContext(mapped_computers, removeNull=True)}
 
-    return entry
+    return human_readable, entry_context, computers
 
 
-def query_groups_command(client: Client, args: dict):
+def query_groups_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     """Query groups.
 
     Args:
@@ -1320,14 +1187,14 @@ def query_groups_command(client: Client, args: dict):
         result = client.query(table_name, limit, offset, group_query)
 
     if not result or 'result' not in result:
-        return 'No groups found.'
+        return 'No groups found.', {}, {}
 
     groups = result['result']
     if not isinstance(groups, list):
         groups = [groups]
 
     if len(groups) == 0:
-        return 'No groups found.'
+        return 'No groups found.', {}, {}
 
     headers = ['ID', 'Description', 'Name', 'Active', 'Manager', 'Updated']
 
@@ -1341,22 +1208,14 @@ def query_groups_command(client: Client, args: dict):
         'Updated': group.get('sys_updated_on'),
     } for group in groups]
 
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': groups,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow Groups', mapped_groups, headers=headers,
-                                         removeNull=True, headerTransform=pascalToSpace),
-        'EntryContext': {
-            'ServiceNow.Group(val.ID===obj.ID)': createContext(mapped_groups, removeNull=True),
-        }
-    }
+    human_readable = tableToMarkdown('ServiceNow Groups', t=mapped_groups, headers=headers,
+                                     removeNull=True, headerTransform=pascalToSpace),
+    entry_context = {'ServiceNow.Group(val.ID===obj.ID)': createContext(mapped_groups, removeNull=True)}
 
-    return entry
+    return human_readable, entry_context, groups
 
 
-def query_users_command(client: Client, args: dict):
+def query_users_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     """Query users.
 
     Args:
@@ -1381,7 +1240,7 @@ def query_users_command(client: Client, args: dict):
         result = client.query(table_name, limit, offset, user_query)
 
     if not result or 'result' not in result:
-        return 'No users found.'
+        return 'No users found.', {}, {}
     result = unicode_to_str_recur(result)
 
     users = result['result']
@@ -1389,35 +1248,27 @@ def query_users_command(client: Client, args: dict):
         users = [users]
 
     if len(users) == 0:
-        return 'No users found.'
-
-    headers = ['ID', 'Name', 'UserName', 'Email', 'Created', 'Updated']
+        return 'No users found.', {}, {}
 
     mapped_users = [{
         'ID': user.get('sys_id'),
-        'Name': '{} {}'.format(user.get('first_name', ''), user.get('last_name', '')).rstrip(),
+        'Name': f"{user.get('first_name', '').rstrip()} {user.get('last_name', '').rstrip()}",
         'UserName': user.get('user_name'),
         'Email': user.get('email'),
         'Created': user.get('sys_created_on'),
         'Updated': user.get('sys_updated_on'),
     } for user in users]
     mapped_users = unicode_to_str_recur(mapped_users)
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow Users', mapped_users, headers=headers, removeNull=True,
-                                         headerTransform=pascalToSpace),
-        'EntryContext': {
-            'ServiceNow.User(val.ID===obj.ID)': createContext(mapped_users, removeNull=True),
-        }
-    }
 
-    return entry
+    headers = ['ID', 'Name', 'UserName', 'Email', 'Created', 'Updated']
+    human_readable = tableToMarkdown('ServiceNow Users', t=mapped_users, headers=headers, removeNull=True,
+                                     headerTransform=pascalToSpace)
+    entry_context = {'ServiceNow.User(val.ID===obj.ID)': createContext(mapped_users, removeNull=True)}
+
+    return human_readable, entry_context, users
 
 
-def list_table_fields_command(client: Client, args: dict):
+def list_table_fields_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     """List table fields.
 
     Args:
@@ -1432,28 +1283,20 @@ def list_table_fields_command(client: Client, args: dict):
     result = client.get_table_fields(table_name)
 
     if not result or 'result' not in result:
-        return 'Table was not found.'
+        return 'Table was not found.', {}
 
     if len(result['result']) == 0:
-        return 'Table contains no records'
+        return 'Table contains no records.', {}
 
     fields = [{'Name': k} for k, v in result['result'][0].items()]
 
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': result,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(f'ServiceNow Table fields - {table_name}', fields),
-        'EntryContext': {
-            'ServiceNow.Field': createContext(fields),
-        }
-    }
+    human_readable = tableToMarkdown(f'ServiceNow Table fields - {table_name}', fields),
+    entry_context = {'ServiceNow.Field': createContext(fields)}
 
-    return entry
+    return human_readable, entry_context, result
 
 
-def get_table_name_command(client: Client, args: dict):
+def get_table_name_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     """List table fields.
 
     Args:
@@ -1471,10 +1314,10 @@ def get_table_name_command(client: Client, args: dict):
     result = client.query('sys_db_object', limit, offset, table_query)
 
     if not result or 'result' not in result:
-        return 'Table was not found.'
+        return 'Table was not found.', {}, {}
     tables = result['result']
     if len(tables) == 0:
-        return 'Table was not found.'
+        return 'Table was not found.', {}, {}
 
     headers = ['ID', 'Name', 'SystemName']
 
@@ -1484,19 +1327,11 @@ def get_table_name_command(client: Client, args: dict):
         'SystemName': table.get('sys_name')
     } for table in tables]
 
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': tables,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(f'ServiceNow Tables for label - {label}', mapped_tables,
-                                         headers=headers, headerTransform=pascalToSpace),
-        'EntryContext': {
-            'ServiceNow.Table(val.ID===obj.ID)': createContext(mapped_tables),
-        }
-    }
+    human_readable = tableToMarkdown(f'ServiceNow Tables for label - {label}', t=mapped_tables,
+                                     headers=headers, headerTransform=pascalToSpace),
+    entry_context = {'ServiceNow.Table(val.ID===obj.ID)': createContext(mapped_tables)}
 
-    return entry
+    return human_readable, entry_context, result
 
 
 def fetch_incidents(client: Client):
@@ -1521,6 +1356,13 @@ def fetch_incidents(client: Client):
 
     count = 0
     parsed_snow_time = datetime.strptime(snow_time, '%Y-%m-%d %H:%M:%S')
+
+    # Map SNOW severity to Demisto severity for incident creation
+    severity_map = {
+        '1': 3,
+        '2': 2,
+        '3': 1
+    }
 
     for result in res.get('result', []):
         labels = []
@@ -1550,7 +1392,7 @@ def fetch_incidents(client: Client):
                     'value': json.dumps(v)
                 })
 
-        severity = SEVERITY_MAP.get(result.get('severity', ''), 0)
+        severity = severity_map.get(result.get('severity', ''), 0)
 
         file_names = []
         if client.get_attachments:
@@ -1579,7 +1421,7 @@ def fetch_incidents(client: Client):
     demisto.setLastRun({'time': snow_time})
 
 
-def test_module(client):
+def test_module(client: Client, *_):
     # Validate fetch_time parameter is valid (if not, parse_date_range will raise the error message)
     parse_date_range(client.fetch_time, '%Y-%m-%d %H:%M:%S')
 
@@ -1592,6 +1434,8 @@ def test_module(client):
             ticket = ticket[0]
         if client.timestamp_field not in ticket:
             raise ValueError("The timestamp field [{}] does not exist in the ticket.".format(client.timestamp_field))
+    demisto.results('ok')
+    return '', {}, {}
 
 
 def main():
@@ -1626,58 +1470,38 @@ def main():
     try:
         client = Client(server_url, username, password, verify, proxy, fetch_time, sysparm_query, sysparm_limit,
                         timestamp_field, ticket_type, get_attachments)
+        commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
+            'test-module': test_module,
+            'servicenow-update-ticket': update_ticket_command,
+            'servicenow-create-ticket': create_ticket_command,
+            'servicenow-delete-ticket': delete_ticket_command,
+            'servicenow-query-tickets': query_tickets_command,
+            'servicenow-add-link': add_link_command,
+            'servicenow-add-comment': add_comment_command,
+            'servicenow-upload-file': upload_file_command,
+            'servicenow-get-ticket-notes': get_ticket_notes_command,
+            'servicenow-get-record': get_record_command,
+            'servicenow-update-record': update_record_command,
+            'servicenow-create-record': create_record_command,
+            'servicenow-delete-record': delete_record_command,
+            'servicenow-query-table': query_table_command,
+            'servicenow-query-computers': query_computers_command,
+            'servicenow-query-groups': query_groups_command,
+            'servicenow-query-users': query_users_command,
+            'servicenow-list-table-fields': list_table_fields_command,
+            'servicenow-get-table-name': get_table_name_command
+        }
         args = unicode_to_str_recur(demisto.args())
-        if command == 'test-module':
-            test_module(client)
-            demisto.results('ok')
-
-        elif command == 'fetch-incidents':
+        if command == 'fetch-incidents':
             raise_exception = True
             fetch_incidents(client)
-
         elif command == 'servicenow-get-ticket':
-            demisto.results(get_ticket_command(client, args))
-        elif command == 'servicenow-update-ticket':
-            demisto.results(update_ticket_command(client, args))
-        elif command == 'servicenow-create-ticket':
-            demisto.results(create_ticket_command(client, args))
-        elif command == 'servicenow-delete-ticket':
-            demisto.results(delete_ticket_command(client, args))
-
-        elif command == 'servicenow-query-tickets':
-            demisto.results(query_tickets_command(client, args))
-        elif command == 'servicenow-add-link':
-            demisto.results(add_link_command(client, args))
-        elif command == 'servicenow-add-comment':
-            demisto.results(add_comment_command(client, args))
-        elif command == 'servicenow-upload-file':
-            demisto.results(upload_file_command(client, args))
-        elif command == 'servicenow-get-ticket-notes':
-            demisto.results(get_ticket_notes_command(client, args))
-
-        elif command == 'servicenow-get-record':
-            demisto.results(get_record_command(client, args))
-        elif command == 'servicenow-update-record':
-            demisto.results(update_record_command(client, args))
-        elif command == 'servicenow-create-record':
-            demisto.results(create_record_command(client, args))
-        elif command == 'servicenow-delete-record':
-            demisto.results(delete_record_command(client, args))
-        elif command == 'servicenow-query-table':
-            demisto.results(query_table_command(client, args))
-
-        elif command == 'servicenow-query-computers':
-            demisto.results(query_computers_command(client, args))
-        elif command == 'servicenow-query-groups':
-            demisto.results(query_groups_command(client, args))
-        elif command == 'servicenow-query-users':
-            demisto.results(query_users_command(client, args))
-        elif command == 'servicenow-list-table-fields':
-            demisto.results(list_table_fields_command(client, args))
-        elif command == 'servicenow-get-table-name':
-            demisto.results(get_table_name_command(client, args))
+            get_ticket_command(client, args)
+        elif command in commands:
+            md_, ec_, raw_response = commands[command](client, args)
+            return_outputs(md_, ec_, raw_response)
         else:
-            raise NotImplementedError(f'Command {command} was not implemented.')
+            raise NotImplementedError(f'Command "{command}" is not implemented.')
 
     except Exception as err:
         LOG(err)
