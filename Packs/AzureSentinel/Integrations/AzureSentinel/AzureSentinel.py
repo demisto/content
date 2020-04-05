@@ -176,13 +176,24 @@ def comment_data_to_demisto_format(comment_data, inc_id):
     return formatted_data
 
 
-def related_resource_data_to_demisto_format(resource_data, entity_id):
+def incident_related_resource_data_to_demisto_format(resource_data, incident_id):
     properties = resource_data.get('properties', {})
 
     formatted_data = {
         'ID': properties.get('relatedResourceName'),
         'Kind': properties.get('relatedResourceKind'),
-        'IncidentID': entity_id
+        'IncidentID': incident_id
+    }
+    return formatted_data
+
+
+def entity_related_resource_data_to_demisto_format(resource_data, entity_id):
+    properties = resource_data.get('properties', {})
+
+    formatted_data = {
+        'ID': properties.get('relatedResourceName'),
+        'Kind': properties.get('relatedResourceKind'),
+        'EntityID': entity_id
     }
     return formatted_data
 
@@ -440,7 +451,9 @@ def list_entity_relations_command(client, args):
 
         result = client.http_request('GET', url_suffix, params=params)
 
-    relations = [related_resource_data_to_demisto_format(resource, entity_id) for resource in result.get('value')]
+    relations = [
+        entity_related_resource_data_to_demisto_format(resource, entity_id) for resource in result.get('value')
+    ]
 
     outputs = {f'AzureSentinel.EntityRelatedResource(val.ID === obj.ID && val.EntityID == {entity_id})': relations}
 
@@ -490,7 +503,9 @@ def list_incident_relations_command(client, args):
 
         result = client.http_request('GET', url_suffix, params=params)
 
-    relations = [related_resource_data_to_demisto_format(resource, inc_id) for resource in result.get('value')]
+    relations = [
+        incident_related_resource_data_to_demisto_format(resource, inc_id) for resource in result.get('value')
+    ]
 
     outputs = {f'AzureSentinel.IncidentRelatedResource(val.ID === obj.ID && val.IncidentID == {inc_id})': relations}
 
