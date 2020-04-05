@@ -2,11 +2,11 @@ commonfields:
   id: Proofpoint Server Protection
   version: -1
 name: Proofpoint Server Protection
-display: Proofpoint Server Protection
+display: Proofpoint Protection Server
 category: Email Gateway
 description: Proofpoint email security appliance.
 configuration:
-- display: Server URL (e.g. https://192.168.0.1:10000)
+- display: Server URL (e.g., https://192.168.0.1:10000)
   name: server
   defaultvalue: ""
   type: 0
@@ -33,7 +33,7 @@ script:
     - name: message_id
       required: true
       default: true
-      description: Email message ID to download
+      description: Email message ID to download.
     description: Download email message by ID.
   - name: proofpoint-quarantine-messages
     arguments:
@@ -51,7 +51,7 @@ script:
       type: string
     - contextPath: Proofpoint.Quarantine.Message.Date
       description: Message date
-      type: string
+      type: date
     - contextPath: Proofpoint.Quarantine.Message.Recipient
       description: Message recipient
       type: string
@@ -64,7 +64,7 @@ script:
     - contextPath: Proofpoint.Quarantine.Message.Folder
       description: Message folder
       type: string
-    description: Quarantine email message.
+    description: Retrieves quarantined email messages.
   - name: proofpoint-smart-search
     arguments:
     - name: sender
@@ -124,7 +124,7 @@ script:
     - contextPath: Proofpoint.SmartSearch.MessageID
       type: string
       description: Search results email message ID
-    - contextPath: Proofpoint.SmartSearch.Proofpoint.SmartSearch.Suborg
+    - contextPath: Proofpoint.SmartSearch.Suborg
       type: string
       description: Search results sub organization
     - contextPath: Proofpoint.SmartSearch.Agent
