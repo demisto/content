@@ -768,7 +768,7 @@ def create_record_command(client: Client, args: dict) -> Tuple[str, Dict[Any, An
     if not result or 'result' not in result:
         return 'Could not create record.', {}, {}
 
-    result = result['result']
+    result = result.get('result', {})
 
     mapped_record = {DEFAULT_RECORD_FIELDS[k]: result[k] for k in DEFAULT_RECORD_FIELDS if k in result}
 
@@ -802,14 +802,14 @@ def update_record_command(client: Client, args: dict) -> Tuple[str, Dict[Any, An
 
     if not result or 'result' not in result:
         return 'Could not retrieve record.', {}, {}
-    result = result['result']
+    record = result.get('result', {})
 
-    mapped_record = {DEFAULT_RECORD_FIELDS[k]: result[k] for k in DEFAULT_RECORD_FIELDS if k in result}
+    mapped_record = {DEFAULT_RECORD_FIELDS[k]: record[k] for k in DEFAULT_RECORD_FIELDS if k in record}
     human_readable = tableToMarkdown(f'ServiceNow record with ID {record_id} updated successfully',
                                      t=mapped_record, removeNull=True),
     entry_context = {'ServiceNow.Record(val.ID===obj.ID)': createContext(mapped_record)}
 
-    return human_readable, entry_context, result
+    return human_readable, entry_context, record
 
 
 def delete_record_command(client: Client, args: dict) -> Tuple[str, Dict[Any, Any], Dict]:
@@ -1044,7 +1044,7 @@ def query_table_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     result = client.query(table_name, sys_param_limit, sys_param_offset, sys_param_query)
     if not result or 'result' not in result or len(result['result']) == 0:
         return 'No results found', {}, {}
-    result = result['result']
+    table_entries = result.get('result', {})
 
     if fields:
         fields = argToList(fields)
@@ -1052,7 +1052,7 @@ def query_table_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
             # ID is added by default
             fields.append('sys_id')
         # Filter the records according to the given fields
-        records = [dict([kv_pair for kv_pair in iter(r.items()) if kv_pair[0] in fields]) for r in result]
+        records = [dict([kv_pair for kv_pair in iter(r.items()) if kv_pair[0] in fields]) for r in table_entries]
         for r in records:
             r['ID'] = r.pop('sys_id')
             for k, v in r.items():
@@ -1062,11 +1062,12 @@ def query_table_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
         human_readable = tableToMarkdown('ServiceNow records', records, removeNull=True)
         entry_context = {'ServiceNow.Record(val.ID===obj.ID)': createContext(records)}
     else:
-        mapped_records = [{DEFAULT_RECORD_FIELDS[k]: r[k] for k in DEFAULT_RECORD_FIELDS if k in r} for r in result]
+        mapped_records = [{DEFAULT_RECORD_FIELDS[k]: r[k] for k in DEFAULT_RECORD_FIELDS if k in r}
+                          for r in table_entries]
         human_readable = tableToMarkdown('ServiceNow records', mapped_records, removeNull=True)
         entry_context = {'ServiceNow.Record(val.ID===obj.ID)': createContext(mapped_records)}
 
-    return human_readable, entry_context, result
+    return human_readable, entry_context, table_entries
 
 
 def query_computers_command(client: Client, args: dict) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
