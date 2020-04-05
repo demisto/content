@@ -35,10 +35,12 @@ configuration:
   required: false
 - display: Fetch incidents
   name: isFetch
+  defaultvalue: ""
   type: 8
   required: false
 - display: Incident type
   name: incidentType
+  defaultvalue: ""
   type: 13
   required: false
 - display: Timezone offset in minutes of the RSA Archer server machine (+60, -60,
@@ -2486,7 +2488,7 @@ script:
         }
 
         var cache = getIntegrationContext();
-        if (Object.keys(cache).length > 0 && Object.keys(cache).indexOf(appId) > -1) {
+        if (Object.keys(cache).length > 0 && isKeyInCache(appId)) {
             levels = cache[appId]["levels"];
             createRecordMapping = cache[appId]["mapping"];
             logDebug("createRecordMapping is: {0}".format((JSON.stringify(createRecordMapping))));
@@ -2610,7 +2612,7 @@ script:
         }
         var incidentId = dataArgs.incidentId;
         if (incidentId){
-            contentId = getContentIdsFromIncIds(appId, incidentId.toString())[0];
+            contentId = getContentIdsFromIncIds(appId, incidentId)[0];
         }
         if (fieldsToValue === null || typeof fieldsToValue !== 'object') {
             throw 'Invalid Argument fieldToValue';
@@ -2620,7 +2622,7 @@ script:
 
         var cache = getIntegrationContext();
         var updateRecordMapping;
-        if (Object.keys(cache).length > 0 && Object.keys(cache).indexOf(appId) > -1) {
+        if (Object.keys(cache).length > 0 && isKeyInCache(appId) ) {
             levels = cache[appId]["levels"];
             updateRecordMapping = cache[appId]["mapping"];
             logDebug("updateRecordMapping value is: {0}".format(JSON.stringify(updateRecordMapping)));
@@ -2734,7 +2736,7 @@ script:
         var incidentId = args.incidentId;
 
         if (incidentId){
-            contentId = getContentIdsFromIncIds(applicationId, incidentId.toString())[0];
+            contentId = getContentIdsFromIncIds(applicationId, incidentId)[0];
         }
         extendAppIdMapping(applicationId);
         var rawResponse = getRecordSendSoapRequest(command, applicationId, contentId);
@@ -2874,7 +2876,7 @@ script:
 
         var cache = getIntegrationContext();
         var nameToFieldMapping;
-        if (Object.keys(cache).length > 0 && Object.keys(cache).indexOf(appId) > -1) {
+        if (Object.keys(cache).length > 0 && isKeyInCache(appId)) {
             levels = cache[appId]["levels"];
             nameToFieldMapping = cache[appId]["mapping"];
             logDebug("nameToFieldMapping value is: {0}".format(JSON.stringify(nameToFieldMapping)));
@@ -3010,7 +3012,7 @@ script:
         var contentId = dataArgs.contentId;
         var incidentId = dataArgs.incidentId;
         if (incidentId){
-            contentId = getContentIdsFromIncIds(appId, incidentId.toString())[0];
+            contentId = getContentIdsFromIncIds(appId, incidentId)[0];
         }
         var token = getAuthToken();
         var soap =  deleteContentSoapRequest(token, appId, contentId);
@@ -3318,7 +3320,7 @@ script:
         var associatedField = args.associatedField;
 
         if (incidentId){
-            contentIdsFromInc = getContentIdsFromIncIds(applicationId, incidentId.toString());
+            contentIdsFromInc = getContentIdsFromIncIds(applicationId, incidentId);
             if (contentIdsFromInc.length > 0){
                 contentId = contentIdsFromInc[0];
             } else {
@@ -3375,7 +3377,7 @@ script:
         }
 
         if (incidentId){
-            contentId = getContentIdsFromIncIds(applicationId, incidentId.toString())[0];
+            contentId = getContentIdsFromIncIds(applicationId, incidentId)[0];
         }
         var value = args.value;
 
@@ -3530,8 +3532,24 @@ script:
         };
     }
 
+    function isKeyInCache(key){
+        cache = getIntegrationContext();
+        if (key in cache && cache[key] !== null) {
+            return true;
+        }
+        return false;
+    }
+
     function resetIntegrationCache(){
-        setIntegrationContext({});
+        currentIntegrationContext = getIntegrationContext();
+        newIntegrationContext = {}
+        keysNotToReset = ["token", "lock", "valid"]
+        Object.keys(currentIntegrationContext).forEach(function(key) {
+            if (keysNotToReset.indexOf(key) === -1) {
+                newIntegrationContext[key] = null
+            }
+        });
+        setIntegrationContext(newIntegrationContext);
     }
 
     function test() {
@@ -3545,22 +3563,36 @@ script:
         return 'ok';
     }
 
+    function mergeDicts(dictA, dictB) {
+        newDict = {}
+        Object.keys(dictA).forEach(function(key){
+            newDict[key] = dictA[key]
+        })
+        Object.keys(dictB).forEach(function(key){
+            newDict[key] = dictB[key]
+        })
+        return newDict
+    }
+
     try {
          /*
          current workaround for known missing mapping. If this issue appears again
          it would be better to put missing application ids (such as 411) as integration params.
          it's ok if this fails, the client might not have this module.
          */
+
         var cache = getIntegrationContext();
         var appId = "411";
-        if (Object.keys(cache).length > 0 && Object.keys(cache).indexOf(appId) > -1) {
+        if (Object.keys(cache).length > 0 && isKeyInCache(appId)) {
             newMapping = cache[appId]["mapping"];
             for (var attrname in newMapping) {
                 GLOBAL_MAPPING[attrname] = newMapping[attrname];
             }
         } else {
             var levels = getLevelsByApplicationId(appId);
-            var newMapping = createMappingFieldIdToName(levels);
+            var mappingIDToName = createMappingFieldIdToName(levels);
+            var mappingNameToID = createMappingNameToFieldId(levels);
+            newMapping = mergeDicts(mappingIDToName, mappingNameToID);
             for (var attrname in newMapping) {
                 GLOBAL_MAPPING[attrname] = newMapping[attrname];
             }
@@ -3570,7 +3602,6 @@ script:
             innerDic["mapping"] = newMapping;
             dic[appId] = innerDic;
             var updatedCache = mergeOptions(cache, dic);
-
             setIntegrationContext(updatedCache);
             // todo add new levels to the cache
         }
@@ -3918,5 +3949,3 @@ script:
       the fields of your Archer application
   isfetch: true
   runonce: false
-tests:
-  - Archer-Test-Playbook
