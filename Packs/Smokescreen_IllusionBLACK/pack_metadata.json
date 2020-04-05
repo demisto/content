@@ -10,9 +10,7 @@
     "categories": [
         "Deception"
     ],
-    "tags": [
-        ""
-    ],
+    "tags": [],
     "created": "2020-03-16T16:11:43Z",
     "updated": "2020-03-16T16:11:43Z",
     "beta": false,
@@ -20,6 +18,6 @@
     "certification": "certified",
     "useCases": [],
     "keywords": [],
-    "price": "",
+    "price": 0,
     "dependencies": {}
 }
