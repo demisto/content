@@ -198,10 +198,10 @@ script:
       type: date
     - contextPath: MicrosoftManagement.ContentRecord.RecordType
       description: The type of the record.
-      type: Unknown
+      type: string
     - contextPath: MicrosoftManagement.ContentRecord.Operation
       description: The operation described in the record.
-      type: Unknown
+      type: string
     - contextPath: MicrosoftManagement.ContentRecord.UserType
       description: The type of the related user.
       type: string
