@@ -20,6 +20,7 @@ SAFEBREACH_TO_DEMISTO_MAPPER = {
     'SHA256s': 'SHA256',
     'SHA256': 'SHA256',
     'Ports': 'Port',
+    'Port': 'Port',
     'Protocols': 'Protocol',
     'FQDNs/IPs': 'Data',
     'FQDN/IP': 'Data',
@@ -162,7 +163,7 @@ def get_dbot_type(data_type, value):
         if is_ip(value):
             return 'ip'
         return 'url'
-    return 'Other'
+    return data_type
 
 
 def get_demisto_context_path(data_type):
@@ -176,7 +177,7 @@ def get_demisto_context_path(data_type):
         'Commands': 'Process(val.CommandLine == obj.CommandLine)',
         'URIs': 'URL(val.URI == obj.URI)'
     }
-    return mapper.get(data_type) or "SafeBreach.Insight(val.Id == obj.Id)"
+    return mapper.get(data_type)
 
 
 def get_insights_ids_by_category(insight_category: List[str]) -> Union[List[int], None]:
@@ -359,7 +360,8 @@ def get_remediation_data_command(client: Client, args: dict, no_output_mode: boo
     standard_context_dict = {}
     readable_output_list = []
     primary_standard_context = {}
-    secondary_standard_context: Any = {}
+    secondary_standard_context_dict: Any = {}
+    secondary_standard_context_list = []
     secondary_path = ''
 
     # SafeBreach Context:
@@ -396,7 +398,6 @@ def get_remediation_data_command(client: Client, args: dict, no_output_mode: boo
                     "Vendor": "SafeBreach",
                     "Score": 3
                 }
-
                 primary_standard_context = {
                     demisto_data_type: value,  # e.g Data : <URL>, SHA256:<SHA256>
                     "Malicious": {
@@ -407,7 +408,7 @@ def get_remediation_data_command(client: Client, args: dict, no_output_mode: boo
                 if data_type in ['FQDNs/IPs', 'FQDN/IP']:
                     if re.match(IP_REGEX, value):
                         secondary_path = 'IP(val.Address == obj.Address)'
-                        secondary_standard_context = {
+                        secondary_standard_context_dict = {
                             'IP': value,
                             "Malicious": {
                                 "Description": "SafeBreach Insights",
@@ -416,21 +417,22 @@ def get_remediation_data_command(client: Client, args: dict, no_output_mode: boo
                         }
                     else:
                         secondary_path = 'Domain(val.Name == obj.Name)'
-                        secondary_standard_context = {
-                            'Domain': value,
+                        secondary_standard_context_dict = {
+                            'Name': value,
                             "Malicious": {
                                 "Description": "SafeBreach Insights",
                                 "Vendor": "SafeBreach"
                             }
                         }
-                standard_context_list.append(primary_standard_context)
-
+                if demisto_standard_path:
+                    standard_context_list.append(primary_standard_context)
+                secondary_standard_context_list.append(secondary_standard_context_dict)
                 dbot_score_list.append(dbot_score)
 
-            if len(standard_context_list) > 0:
+            if len(standard_context_list) > 0 and demisto_standard_path:
                 standard_context_dict[demisto_standard_path] = standard_context_list
                 if secondary_path:
-                    standard_context_dict[secondary_path] = secondary_standard_context
+                    standard_context_dict[secondary_path] = secondary_standard_context_list
 
     output_context = {
         "DBotScore(val.Indicator == obj.Indicator)": dbot_score_list,
@@ -467,8 +469,7 @@ def insight_rerun_command(client: Client, args: dict):
         "matrix": {
             "name": "Insight (Demisto) - {0}".format(insight['actionBasedTitle']),
             "moveIds": insight['attacks'],
-            "nodeIds": nodes_ids,
-            "draft": False
+            "nodeIds": nodes_ids
         },
         "force": True
     }
