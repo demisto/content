@@ -14,7 +14,7 @@ Gets the string distance for the sender from our domain.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| domain | The domain to be measured against the domain in the sender's email address. Usually the domain used by the company for email. For example, "acme<span>.com", when users are assigned jane@acme<span>.com (could be multiple domains with a comma-separator). |
+| domain | The domain to be measured against the domain in the sender's email address. Usually the domain used by the company for email. For example, "acme.com", when users are assigned jane@acme.com (could be multiple domains with a comma-separator). |
 | sender | The sender's email address. |
 | distance | The distance that is considered close. |
 

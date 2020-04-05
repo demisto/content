@@ -1,4 +1,4 @@
-Converts "https:%2F%2Fexample.com" into "https:/<span>/example.com".
+Converts "https:%2F%2Fexample.com" into "https://example.com".
 
 ## Script Data
 ---
