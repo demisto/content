@@ -1363,7 +1363,7 @@ def fetch_incidents(client: Client):
         labels = []
 
         if client.timestamp_field not in result:
-            raise ValueError(f"The timestamp field [{client.timestamp_field}] does not exist in the ticket"
+            raise ValueError(f"The timestamp field [{client.timestamp_field}] does not exist in the ticket")
 
         if count > client.sys_param_limit:
             break
