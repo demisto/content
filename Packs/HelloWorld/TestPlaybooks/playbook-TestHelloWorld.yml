@@ -2,6 +2,7 @@ id: TestHelloWorld
 version: -1
 name: TestHelloWorld
 starttaskid: '0'
+fromversion: 5.0.0
 tasks:
   '0':
     id: '0'
