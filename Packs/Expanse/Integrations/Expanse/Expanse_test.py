@@ -108,22 +108,20 @@ def test_domain(mocker):
 def test_certificate(mocker):
     mocker.patch.object(demisto, 'args', return_value={'common_name': TEST_DOMAIN})
     mocker.patch('Expanse.http_request', side_effect=http_request_mock)
-    mocker.patch.object(demisto, 'command', return_value='certificate')
+    mocker.patch.object(demisto, 'command', return_value='expanse-get-certificate')
     mocker.patch.object(demisto, 'results')
     main()
     results = demisto.results.call_args[0]
-    assert results[0]['EntryContext']['DBotScore']['Type'] == 'certificate'
     assert results[0]['EntryContext']['Certificate(val.SearchTerm == obj.SearchTerm)']['CommonName'] == TEST_DOMAIN
 
 
 def test_behavior(mocker):
     mocker.patch.object(demisto, 'args', return_value={'ip': TEST_IP, 'start_time': '2020-03-28T00:00:00.000Z'})
     mocker.patch('Expanse.http_request', side_effect=http_request_mock)
-    mocker.patch.object(demisto, 'command', return_value='behavior')
+    mocker.patch.object(demisto, 'command', return_value='expanse-get-behavior')
     mocker.patch.object(demisto, 'results')
     main()
     results = demisto.results.call_args[0]
-    assert results[0]['EntryContext']['DBotScore']['Type'] == 'behavior'
     assert results[0]['EntryContext']['Expanse.Behavior(val.SearchTerm == obj.SearchTerm)']['SearchTerm'] == TEST_IP
     assert results[0]['EntryContext']['Expanse.Behavior(val.SearchTerm == obj.SearchTerm)']['ExternalAddresses'] \
         == '169.255.204.27'
