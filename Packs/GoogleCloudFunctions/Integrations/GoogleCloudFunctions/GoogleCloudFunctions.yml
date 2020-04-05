@@ -1,0 +1,165 @@
+category: Utilities
+commonfields:
+  id: GoogleCloudFunctions
+  version: -1
+configuration:
+- display: Service Account Private Key file contents (JSON)
+  name: credentials_json
+  required: true
+  type: 0
+- display: Default Project ID
+  name: project_id
+  required: false
+  type: 0
+- display: Default Region
+  name: region
+  required: false
+  type: 0
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: Google Cloud Functions is an event-driven serverless compute platform.
+  Run your code locally or in the cloud without having to provision servers.
+display: Google Cloud Functions
+name: GoogleCloudFunctions
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The project_id the function is in. Default is the instance's project.
+      isArray: false
+      name: project_id
+      required: false
+      secret: false
+    - default: false
+      description: The region of the function. You can get a full list of regions
+        using `google-cloud-function-regionss-list`. Defualt is all regions
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    deprecated: false
+    description: Lists all google cloud functions
+    execution: false
+    name: google-cloud-functions-list
+    outputs:
+    - contextPath: GoogleCloudFunctions.Function.name
+      description: A user-defined name of the function
+      type: String
+    - contextPath: GoogleCloudFunctions.Function.status
+      description: Status of the function deployment. Could be ACTIVE, OFFLINE, DEPLOY_IN_PROGRESS,
+        DELETE_IN_PROGRESS, UNKNOWN
+      type: String
+    - contextPath: GoogleCloudFunctions.Function.labels
+      description: Labels associated with this Cloud Function.
+      type: Unknown
+    - contextPath: GoogleCloudFunctions.Function.runtime
+      description: The runtime in which to run the function.
+      type: String
+  - arguments:
+    - default: false
+      description: The project_id. Default is the instance's project.
+      isArray: false
+      name: project_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Lists all regions in project.
+    execution: false
+    name: google-cloud-function-regions-list
+    outputs:
+    - contextPath: GoogleCloudFunctions.Region.locationId
+      description: The region's location ID.
+      type: String
+    - contextPath: GoogleCloudFunctions.Region.name
+      description: The full name of the region.
+      type: String
+    - contextPath: GoogleCloudFunctions.Region.labels
+      description: The labels for the region.
+      type: String
+  - arguments:
+    - default: false
+      description: The project_id. Default is the instance's project.
+      isArray: false
+      name: project_id
+      required: false
+      secret: false
+    - default: false
+      description: The region of the function. You can get a full list of regions
+        using `google-cloud-function-regions-list`. Defualt is all regions.
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The name of the function.
+      isArray: false
+      name: function_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the details of a specific function.
+    execution: false
+    name: google-cloud-function-get-by-name
+    outputs:
+    - contextPath: GoogleCloudFunctions.Function.name
+      description: A user-defined name of the function
+      type: String
+    - contextPath: GoogleCloudFunctions.Function.status
+      description: Status of the function deployment. Could be ACTIVE, OFFLINE, DEPLOY_IN_PROGRESS,
+        DELETE_IN_PROGRESS, UNKNOWN
+      type: String
+    - contextPath: GoogleCloudFunctions.Function.labels
+      description: Labels associated with this Cloud Function.
+      type: Unknown
+    - contextPath: GoogleCloudFunctions.Function.runtime
+      description: The runtime in which to run the function.
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the function to execute.
+      isArray: false
+      name: function_name
+      required: true
+      secret: false
+    - default: false
+      description: The region of the function. You can get a full list of regions
+        using `google-cloud-function-regions-list`. Defualt is all regions.
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The function parameters in a key:value format. Multiple parameters
+        should be comma seperated (i.e. key1:value1,key2:value2)
+      isArray: false
+      name: parameters
+      required: false
+      secret: false
+    deprecated: false
+    description: Execute a cloud function.
+    execution: false
+    name: google-cloud-function-execute
+    outputs:
+    - contextPath: GoogleCloudFunctions.Execution.executionId
+      description: Execution id of function invocation.
+      type: String
+    - contextPath: GoogleCloudFunctions.Execution.result
+      description: Result populated for successful execution of synchronous function.
+        Will not be populated if function does not return a result through context.
+      type: String
+    - contextPath: GoogleCloudFunctions.Execution.error
+      description: Either system or user-function generated error. Set if execution
+        was not successful.
+      type: Unknown
+  dockerimage: demisto/google-api-py3:1.0.0.6697
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
