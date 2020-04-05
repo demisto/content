@@ -1,15 +1,14 @@
 id: Smokescreen_IllusionBLACK-Test
-name: Smokescreen_IllusionBLACK-Test
 version: -1
-fromversion: 5.0.0
+name: Smokescreen_IllusionBLACK-Test
 starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: '0'
+    taskid: 4c27b98d-5462-4170-8929-c862e56878dc
     type: start
     task:
-      id: '0'
+      id: 4c27b98d-5462-4170-8929-c862e56878dc
       version: -1
       name: ''
       iscommand: false
@@ -17,25 +16,25 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '1'
+      - '14'
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 50}}'
+    view: "{\n  \"position\": {\n    \"x\": 200,\n    \"y\": -130\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
   '1':
-    id: 1
-    taskid: '1'
+    id: '1'
+    taskid: 3f524f7d-4d53-4744-87d8-31221f3e8573
     type: regular
     task:
-      id: '1'
+      id: 3f524f7d-4d53-4744-87d8-31221f3e8573
       version: -1
       name: DeleteContext
-      description: ''
       script: DeleteContext
       type: regular
       iscommand: true
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '2'
@@ -43,46 +42,43 @@ tasks:
       all:
         simple: yes
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 200}}'
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 200\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
   '2':
-    id: 2
-    taskid: '2'
+    id: '2'
+    taskid: df91e2f9-86bd-4b38-82e7-eff171706955
     type: regular
     task:
-      id: '2'
+      id: df91e2f9-86bd-4b38-82e7-eff171706955
       version: -1
       name: illusionblack-get-ad-decoys
-      description: ''
       script: '|||illusionblack-get-ad-decoys'
       type: regular
       iscommand: true
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '3'
-    scriptarguments: {}
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 400}}'
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 400\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
   '3':
     id: '3'
-    taskid: '3'
+    taskid: 639b3f7d-1b77-4dbd-8d42-9796da17ac74
     type: condition
     task:
-      id: '3'
+      id: 639b3f7d-1b77-4dbd-8d42-9796da17ac74
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
       brand: ''
+      description: ''
     nexttasks:
       yes:
       - '4'
@@ -95,46 +91,43 @@ tasks:
             value:
               simple: IllusionBlack.AdDecoy
             iscontext: true
-    view: '{"position": {"x": 50, "y": 600}}'
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 600\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
   '4':
-    id: 4
-    taskid: '4'
+    id: '4'
+    taskid: 282fd606-d53b-4c09-8d1b-78d38e9c9247
     type: regular
     task:
-      id: '4'
+      id: 282fd606-d53b-4c09-8d1b-78d38e9c9247
       version: -1
       name: illusionblack-get-network-decoys
-      description: ''
       script: '|||illusionblack-get-network-decoys'
       type: regular
       iscommand: true
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '5'
-    scriptarguments: {}
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 800}}'
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 800\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
   '5':
     id: '5'
-    taskid: '5'
+    taskid: e5df4b19-a978-4dd2-8ef2-15164f8168ab
     type: condition
     task:
-      id: '5'
+      id: e5df4b19-a978-4dd2-8ef2-15164f8168ab
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
       brand: ''
+      description: ''
     nexttasks:
       yes:
       - '6'
@@ -147,46 +140,43 @@ tasks:
             value:
               simple: IllusionBlack.NetworkDecoy
             iscontext: true
-    view: '{"position": {"x": 50, "y": 1000}}'
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1000\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
   '6':
-    id: 6
-    taskid: '6'
+    id: '6'
+    taskid: dac12479-5dcc-4ec8-8b98-b06fa5e313fc
     type: regular
     task:
-      id: '6'
+      id: dac12479-5dcc-4ec8-8b98-b06fa5e313fc
       version: -1
       name: illusionblack-get-ti-decoys
-      description: ''
       script: '|||illusionblack-get-ti-decoys'
       type: regular
       iscommand: true
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '7'
-    scriptarguments: {}
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 1200}}'
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1200\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
   '7':
     id: '7'
-    taskid: '7'
+    taskid: 9287b7b3-36ee-49e1-8b3b-bc1753522771
     type: condition
     task:
-      id: '7'
+      id: 9287b7b3-36ee-49e1-8b3b-bc1753522771
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
       brand: ''
+      description: ''
     nexttasks:
       yes:
       - '8'
@@ -199,115 +189,115 @@ tasks:
             value:
               simple: IllusionBlack.TIDecoy
             iscontext: true
-    view: '{"position": {"x": 50, "y": 1400}}'
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1400\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
   '8':
-    id: 8
-    taskid: '8'
+    id: '8'
+    taskid: ae6ac6aa-b5b8-4a80-8a27-82d8d03e001e
     type: regular
     task:
-      id: '8'
+      id: ae6ac6aa-b5b8-4a80-8a27-82d8d03e001e
       version: -1
       name: illusionblack-is-host-decoy
-      description: ''
       script: '|||illusionblack-is-host-decoy'
       type: regular
       iscommand: true
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '9'
-    scriptarguments: {}
+    scriptarguments:
+      host:
+        simple: SAP44
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 1600}}'
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1600\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
   '9':
-    id: 9
-    taskid: '9'
+    id: '9'
+    taskid: 94a2ff22-af21-4920-85df-3e251f55006d
     type: regular
     task:
-      id: '9'
+      id: 94a2ff22-af21-4920-85df-3e251f55006d
       version: -1
       name: illusionblack-is-user-decoy
-      description: ''
       script: '|||illusionblack-is-user-decoy'
       type: regular
       iscommand: true
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '10'
-    scriptarguments: {}
+    scriptarguments:
+      user:
+        simple: sqladmin
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 1800}}'
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1800\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
   '10':
-    id: 10
-    taskid: '10'
+    id: '10'
+    taskid: d7ae08ba-698e-4378-87f9-2fd0a5b04986
     type: regular
     task:
-      id: '10'
+      id: d7ae08ba-698e-4378-87f9-2fd0a5b04986
       version: -1
       name: illusionblack-is-subdomain-decoy
-      description: ''
       script: '|||illusionblack-is-subdomain-decoy'
       type: regular
       iscommand: true
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '11'
-    scriptarguments: {}
+    scriptarguments:
+      subdomain:
+        simple: experience.illusionblack.com
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 2000}}'
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2000\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
   '11':
-    id: 11
-    taskid: '11'
+    id: '11'
+    taskid: 4a3be4ab-de9d-4581-883a-d61d886ed413
     type: regular
     task:
-      id: '11'
+      id: 4a3be4ab-de9d-4581-883a-d61d886ed413
       version: -1
       name: illusionblack-get-events
-      description: ''
       script: '|||illusionblack-get-events'
       type: regular
       iscommand: true
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '12'
-    scriptarguments: {}
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 2200}}'
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2200\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
   '12':
     id: '12'
-    taskid: '12'
+    taskid: a101163e-e789-43f5-8d5d-73c1cf73d755
     type: condition
     task:
-      id: '12'
+      id: a101163e-e789-43f5-8d5d-73c1cf73d755
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
       brand: ''
+      description: ''
     nexttasks:
       yes:
       - '13'
@@ -320,17 +310,16 @@ tasks:
             value:
               simple: IllusionBlack.Events
             iscontext: true
-    view: '{"position": {"x": 50, "y": 2400}}'
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2400\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
   '13':
     id: '13'
-    taskid: '13'
+    taskid: 313f2844-baa8-4a6d-86b0-96c38ab86a87
     type: title
     task:
-      id: '13'
+      id: 313f2844-baa8-4a6d-86b0-96c38ab86a87
       version: -1
       name: Test Done
       type: title
@@ -338,12 +327,55 @@ tasks:
       brand: ''
       description: ''
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 2600}}'
+    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 2600\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
-  380, "x": 50, "y": 50}}}'
+  '14':
+    id: '14'
+    taskid: 6c23bd4f-695e-44d3-8ff6-8bed1d433465
+    type: condition
+    task:
+      id: 6c23bd4f-695e-44d3-8ff6-8bed1d433465
+      version: -1
+      name: Is Smokescreen IllusionBLACK enabled?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '13'
+      yes:
+      - '1'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+          right:
+            value:
+              simple: Smokescreen_IllusionBLACK
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    view: "{\n  \"position\": {\n    \"x\": 200,\n    \"y\": 30\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 2795,\n      \"width\": 630,\n      \"x\": 50,\n      \"y\": -130\n\
+  \    }\n  }\n}"
 inputs: []
 outputs: []
+fromversion: 5.0.0
+description: ''
