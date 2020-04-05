@@ -1,5 +1,6 @@
 ## [Unreleased]
-
+  - Set the listener host to 0.0.0.0 in order to handle IPv6.
+  - Fixed an issue where the email address of the message sender was not handled properly.
 
 ## [20.3.4] - 2020-03-30
  - Added the ***microsoft-teams-ring-user*** command.

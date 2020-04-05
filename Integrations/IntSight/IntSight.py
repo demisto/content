@@ -188,6 +188,8 @@ def extract_mail(replies):
 
 
 def extract_remediation(remidiations):
+    if not remidiations:
+        return ''
     remedies = []
     string_format = "{0} - Status: {1}"
     for remedy in remidiations:
@@ -329,43 +331,57 @@ def get_alert_activity():
     alert_id = demisto.getArg('alert-id')
     response = http_request('GET', 'public/v1/data/alerts/activity-log/' + alert_id, json_response=True)
 
-    human_readable_arr = []
     alert = {'ID': alert_id, 'Activities': []}
-
-    for activity in response:
-        alert['Activities'].append({
-            'ID': demisto.get(activity, '_id'),
-            'Type': demisto.get(activity, 'Type'),
-            'Initiator': demisto.get(activity, 'Initiator'),
-            'CreatedDate': demisto.get(activity, 'CreatedDate'),
-            'UpdateDate': demisto.get(activity, 'UpdateDate'),
-            'RemediationBlocklistUpdate': demisto.get(activity, 'AdditionalInformation.RemediationBlocklistUpdate'),
-            'AskTheAnalyst': {'Replies': demisto.get(activity, 'AdditionalInformation.AskTheAnalyst.Replies')},
-            'Mail': {'Replies': demisto.get(activity, 'AdditionalInformation.Mail.Replies')},
-            'ReadBy': demisto.get(activity, 'ReadBy')
+    if not response:
+        demisto.results({
+            'Type': entryTypes['note'],
+            'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': alert},
+            'Contents': response,
+            'HumanReadable': 'Alert {} does not have activities.'.format(alert_id),
+            'ContentsFormat': formats['json']
         })
-        human_readable_arr.append({
-            'ID': demisto.get(activity, '_id'),
-            'Type': demisto.get(activity, 'Type'),
-            'Initiator': demisto.get(activity, 'Initiator'),
-            'CreatedDate': demisto.get(activity, 'CreatedDate'),
-            'UpdateDate': demisto.get(activity, 'UpdateDate'),
-            'RemediationBlocklistUpdate': extract_remediation(
-                demisto.get(activity, 'AdditionalInformation.RemediationBlocklistUpdate')),
-            'AskTheAnalyst': {'Replies': demisto.get(activity, 'AdditionalInformation.AskTheAnalyst.Replies')},
-            'Mail': extract_mail(demisto.get(activity, 'AdditionalInformation.Mail.Replies')),
-            'ReadBy': demisto.get(activity, 'ReadBy')
-        })
+    else:
+        human_readable_arr = []
+        for activity in response:
+            alert['Activities'].append({
+                'ID': demisto.get(activity, '_id'),
+                'Type': demisto.get(activity, 'Type'),
+                'Initiator': demisto.get(activity, 'Initiator'),
+                'CreatedDate': demisto.get(activity, 'CreatedDate'),
+                'UpdateDate': demisto.get(activity, 'UpdateDate'),
+                'RemediationBlocklistUpdate': demisto.get(activity, 'AdditionalInformation.RemediationBlocklistUpdate'),
+                'AskTheAnalyst': {'Replies': demisto.get(activity, 'AdditionalInformation.AskTheAnalyst.Replies')},
+                'Mail': {'Replies': demisto.get(activity, 'AdditionalInformation.Mail.Replies')},
+                'ReadBy': demisto.get(activity, 'ReadBy')
+            })
+            human_readable_arr.append({
+                'ID': demisto.get(activity, '_id'),
+                'Type': demisto.get(activity, 'Type'),
+                'Initiator': demisto.get(activity, 'Initiator'),
+                'CreatedDate': demisto.get(activity, 'CreatedDate'),
+                'UpdateDate': demisto.get(activity, 'UpdateDate'),
+                'RemediationBlocklistUpdate': extract_remediation(
+                    demisto.get(activity, 'AdditionalInformation.RemediationBlocklistUpdate'))
+                if demisto.get(activity, 'AdditionalInformation') else '',
+                'AskTheAnalyst': {'Replies': demisto.get(activity, 'AdditionalInformation.AskTheAnalyst.Replies')},
+                'Mail': extract_mail(
+                    demisto.get(activity, 'AdditionalInformation.Mail.Replies'))
+                if demisto.get(activity, 'AdditionalInformation.Mail') else '',
+                'ReadBy': demisto.get(activity, 'ReadBy')
+            })
 
-    headers = ['ID', 'Type', 'Initiator', 'CreatedDate', 'UpdateDate',
-               'RemediationBlocklistUpdate', 'AskTheAnalyst', 'Mail', 'ReadBy']
-    demisto.results({
-        'Type': entryTypes['note'],
-        'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': alert},
-        'Contents': response,
-        'HumanReadable': tableToMarkdown('IntSights Alert Activity Log', human_readable_arr, headers=headers),
-        'ContentsFormat': formats['json']
-    })
+        headers = ['ID', 'Type', 'Initiator', 'CreatedDate', 'UpdateDate',
+                   'RemediationBlocklistUpdate', 'AskTheAnalyst', 'Mail', 'ReadBy']
+        human_readable = tableToMarkdown('IntSights Alert {} Activity Log'.format(alert_id),
+                                         t=human_readable_arr, headers=headers),
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': alert},
+            'Contents': response,
+            'HumanReadable': human_readable,
+            'ContentsFormat': formats['json']
+        })
 
 
 def change_severity():
