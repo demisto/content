@@ -525,7 +525,7 @@ def get_stix_indicator(indicator: dict) -> stix.core.STIXPackage:
     handling = None
 
     # Add TLP if available
-    share_level = indicator.get('trafficlightprotocoltlp', '').upper()
+    share_level = indicator.get('trafficlightprotocol', '').upper()
     if share_level and share_level in ['WHITE', 'GREEN', 'AMBER', 'RED']:
         marking_specification = stix.data_marking.MarkingSpecification()
         marking_specification.controlled_structure = "//node() | //@*"
