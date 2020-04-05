@@ -545,12 +545,11 @@ class Pack(object):
                         folder_collected_items.append({
                             'name': content_item.get('name', ""),
                             'type': content_item.get('type', ""),
-                            'tooltip': content_item.get('tooltip', "")  # todo check with server side
+                            'description': content_item.get('description', "")
                         })
                     elif current_directory == PackFolders.INCIDENT_TYPES.value:
                         folder_collected_items.append({
                             'name': content_item.get('name', ""),
-                            'description': content_item.get('description', ""),  # todo check with server side
                             'playbook': content_item.get('playbookId', ""),
                             'closureScript': content_item.get('closureScript', ""),
                             'hours': int(content_item.get('hours', 0)),
@@ -565,12 +564,17 @@ class Pack(object):
                         folder_collected_items.append({
                             'name': content_item.get('name', ""),
                             'type': content_item.get('description', ""),
-                            'tooltip': content_item.get('description', "")  # todo check with server side
+                            'description': content_item.get('description', "")
                         })
                     elif current_directory == PackFolders.REPORTS.value:
+                        dash_board_section = content_item.get('dashboard', {})
+
                         folder_collected_items.append({
-                            'name': content_item.get('name', ""),  # todo check with server side again
-                            'fromDate': content_item.get('period', "")
+                            'name': content_item.get('name', ""),
+                            'fromDate': dash_board_section.get('fromDate', ""),
+                            'toDate': dash_board_section.get('toDate', ""),
+                            'period': dash_board_section.get('period', {}),
+                            'fromDateLicense': dash_board_section.get('fromDateLicense', "")
                         })
 
                 content_item_key = content_item_name_mapping[current_directory]
