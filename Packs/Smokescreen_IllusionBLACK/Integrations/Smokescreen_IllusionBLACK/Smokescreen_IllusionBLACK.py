@@ -356,7 +356,7 @@ def main():
             demisto.results(client.is_host_decoy(demisto.args()["host"]))
         elif demisto.command() == "illusionblack-is-user-decoy":
             demisto.results(client.is_user_decoy(demisto.args()["user"]))
-        elif demisto.command() == "illusionblack-is-host-decoy":
+        elif demisto.command() == "illusionblack-is-subdomain-decoy":
             demisto.results(client.is_subdomain_decoy(demisto.args()["subdomain"]))
         elif demisto.command() == "illusionblack-get-events":
             args = demisto.args()
