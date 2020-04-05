@@ -954,11 +954,7 @@ def query_tickets_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     """
     sys_param_limit = args.get('limit', client.sys_param_limit)
     sys_param_offset = args.get('offset', client.sys_param_offset)
-
     sys_param_query = str(args.get('query', ''))
-    if not sys_param_query:
-        # backward compatibility
-        sys_param_query = str(args.get('sysparm_query', ''))
 
     ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
 
