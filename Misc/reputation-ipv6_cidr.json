@@ -179,7 +179,7 @@
                 ]
             }
         },
-        "trafficlightprotocoltlp": {
+        "trafficlightprotocol": {
             "simple": "",
             "complex": {
                 "root": "IPv6CIDR",
