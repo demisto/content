@@ -13,7 +13,7 @@
             "timeout": 1000
         },
         {
-            "integrations": "GoogleCloudFunctions",
+            "integrations": "Google Cloud Functions",
             "playbookID": "test playbook - Google Cloud Functions",
             "fromversion": "5.5.0"
         },

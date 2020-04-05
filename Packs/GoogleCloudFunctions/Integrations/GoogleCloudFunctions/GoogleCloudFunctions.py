@@ -162,9 +162,6 @@ def main():
         if cmd_func == 'test-module':
             region_list_command(client, {})
             demisto.results('ok')
-            sys.exit(0)
-        if not cmd_func:
-            raise NotImplementedError(f'Command "{cmd_func}" is not implemented.')
         else:
             hr, outputs, raw = commands[cmd_func](client, demisto.args())
             return_outputs(hr, outputs, raw)

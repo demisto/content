@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: GoogleCloudFunctions
+  id: Google Cloud Functions
   version: -1
 configuration:
 - display: Service Account Private Key file contents (JSON)
@@ -26,7 +26,7 @@ configuration:
 description: Google Cloud Functions is an event-driven serverless compute platform.
   Run your code locally or in the cloud without having to provision servers.
 display: Google Cloud Functions
-name: GoogleCloudFunctions
+name: Google Cloud Functions
 script:
   commands:
   - arguments:
@@ -163,3 +163,4 @@ script:
   script: '-'
   type: python
   subtype: python3
+  fromversion: 5.0.0
