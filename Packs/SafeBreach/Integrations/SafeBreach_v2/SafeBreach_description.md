@@ -1,5 +1,5 @@
 ## SafeBreach Simulations & Insights
-  This integration allows to leverage SafeBreach simulation results and insights to automatically remediate multiple malicious indicators with immediate threat to your environment.
+This integration leverages SafeBreach simulation results and insights to remediate malicious indicators that expose your environment to real risks.
 
   To configure the integration on SafeBreach:
   1. Open the **Navigation bar** → … → **CLI Console**
