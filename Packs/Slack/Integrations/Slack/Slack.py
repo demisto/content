@@ -27,7 +27,6 @@ SEVERITY_DICT = {
     'Critical': 4
 }
 
-LOOP = None
 USER_TAG_EXPRESSION = '<@(.*?)>'
 CHANNEL_TAG_EXPRESSION = '<#(.*?)>'
 URL_EXPRESSION = r'<(https?://.+?)(?:\|.+)?>'
