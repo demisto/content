@@ -251,7 +251,7 @@ ip command
 ### IP information for: 74.142.119.130
 |Address|Annotations|BusinessUnits|Geo|IPRange|SeverityCounts|Version|
 |---|---|---|---|---|---|---|
-| 74.142.119.130 | AdditionalNotes: <br>PointsOfContact: null<br>Tags: null </br>| Acme Latex Supply | Description: AKRON<br>Latitude: 41.0433<br>Longitude: -81.5239<br>City: AKRON<br>RegionCode: OH<br>CountryCode: US<br>Location: 41.0433:-81.5239 | StartAddress: 74.142.119.128<br>EndAddress: 74.142.119.135<br>RangeSize: 8<br>ResponsiveIPCount: 2<br>RangeIntroduced: 2019-08-02<br>AttributionReasons: This parent range is attributed via IP network registration records for 74.142.119.128–74.142.119.135 | CRITICAL: 1<br>ROUTINE: 4<br>WARNING: 2 | 4 |
+| 74.142.119.130 | AdditionalNotes: <br>PointsOfContact: null<br/>Tags: null| Acme Latex Supply | Description: AKRON<br>Latitude: 41.0433<br>Longitude: -81.5239<br>City: AKRON<br>RegionCode: OH<br>CountryCode: US<br>Location: 41.0433:-81.5239 | StartAddress: 74.142.119.128<br>EndAddress: 74.142.119.135<br>RangeSize: 8<br>ResponsiveIPCount: 2<br>RangeIntroduced: 2019-08-02<br>AttributionReasons: This parent range is attributed via IP network registration records for 74.142.119.128–74.142.119.135 | CRITICAL: 1<br>ROUTINE: 4<br>WARNING: 2 | 4 |
 
 
 ### 2. domain
