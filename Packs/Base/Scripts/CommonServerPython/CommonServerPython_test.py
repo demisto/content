@@ -1105,6 +1105,21 @@ class TestReturnOutputs:
         assert 'Category' in results['IndicatorTimeline'][0].keys()
         assert results['IndicatorTimeline'][0]['Category'] == 'Integration Update'
 
+    def test_return_outputs_ignore_auto_extract(self, mocker):
+        mocker.patch.object(demisto, 'results')
+        md = 'md'
+        outputs = {'Event': 1}
+        raw_response = {'event': 1}
+        ignore_auto_extract = True
+        return_outputs(md, outputs, raw_response, ignore_auto_extract=ignore_auto_extract)
+        results = demisto.results.call_args[0][0]
+        assert len(demisto.results.call_args[0]) == 1
+        assert demisto.results.call_count == 1
+        assert raw_response == results['Contents']
+        assert outputs == results['EntryContext']
+        assert md == results['HumanReadable']
+        assert ignore_auto_extract == results['IgnoreAutoExtract']
+
 
 def test_argToBoolean():
     assert argToBoolean('true') is True
