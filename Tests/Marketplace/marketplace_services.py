@@ -737,7 +737,7 @@ class Pack(object):
                     print_warning(f"{integration_name} integration image was not found in {self._pack_name} pack")
                     continue  # no image found current integration
 
-                temp_image_name = f'{integration_name}_image.png'
+                temp_image_name = f'{integration_name.replace(" ", "_")}_image.png'
                 temp_image_path = os.path.join(self._pack_path, temp_image_name)
 
                 with open(temp_image_path, 'wb') as image_file:
