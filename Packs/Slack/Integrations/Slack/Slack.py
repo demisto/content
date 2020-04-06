@@ -10,10 +10,6 @@ import asyncio
 import concurrent
 import requests
 import ssl
-import json
-import re
-import time
-from datetime import datetime
 from typing import Tuple, Dict, List, Optional
 import threading
 
@@ -1842,7 +1838,7 @@ def init_globals():
     proxy_url = demisto.params().get('proxy_url')
     PROXY_URL = proxy_url or PROXIES.get('http')  # aiohttp only supports http proxy
     DEDICATED_CHANNEL = demisto.params().get('incidentNotificationChannel')
-    CLIENT = slack.WebClient(token=BOT_TOKEN, proxy=PROXY_URL, ssl=SSL_CONTEXT, )
+    CLIENT = slack.WebClient(token=BOT_TOKEN, proxy=PROXY_URL, ssl=SSL_CONTEXT)
     CHANNEL_CLIENT = slack.WebClient(token=ACCESS_TOKEN, proxy=PROXY_URL, ssl=SSL_CONTEXT)
     SEVERITY_THRESHOLD = SEVERITY_DICT.get(demisto.params().get('min_severity', 'Low'), 1)
     ALLOW_INCIDENTS = demisto.params().get('allow_incidents', False)
@@ -1912,7 +1908,6 @@ def main():
             long_running_main()
 
     except Exception as e:
-        print(e)
         LOG(e)
         return_error(str(e))
 
