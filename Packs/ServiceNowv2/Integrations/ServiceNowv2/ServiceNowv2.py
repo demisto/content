@@ -1431,7 +1431,7 @@ def fetch_incidents(client: Client):
         file_names = []
         if client.get_attachments:
             file_entries = client.get_ticket_attachment_entries(result.get('sys_id', ''))
-            if isinstance(file_result, list):
+            if isinstance(file_entries, list):
                 for file_result in file_entries:
                     if file_result['Type'] == entryTypes['error']:
                         raise Exception(f"Error getting attachment: {str(file_result.get('Contents', ''))}")
