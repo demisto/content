@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
-#from CommonServerUserPython import *
+from CommonServerUserPython import *
 import slack
 from slack.errors import SlackApiError
 from slack.web.slack_response import SlackResponse
@@ -72,6 +72,7 @@ BOT_NAME: str
 BOT_ICON_URL: str
 MAX_LIMIT_TIME: int
 PAGINATED_COUNT: int
+SLACK_COMMAND_TIMEOUT: int
 
 ''' HELPER FUNCTIONS '''
 
@@ -1873,6 +1874,7 @@ class SlackCommandTimedThread(threading.Thread):
         self.start()
         time.sleep(self.timeout)
         self.join()
+
 
 def main():
     """
