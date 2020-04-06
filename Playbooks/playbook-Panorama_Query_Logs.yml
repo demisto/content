@@ -185,7 +185,7 @@ tasks:
       PollingCommandName:
         simple: panorama-check-logs-status
       Timeout:
-        simple: "10"
+        simple: "15"
       dt:
         simple: Panorama.Monitor(val.Status != 'Completed' && val.Status != 'Failed').JobID
     separatecontext: true
