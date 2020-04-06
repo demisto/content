@@ -3,8 +3,9 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-import urllib3
 import csv
+import gzip
+import urllib3
 from typing import Optional, Pattern, Dict, Any
 
 # disable insecure warnings
@@ -134,14 +135,14 @@ class Client(BaseClient):
                 return_error('Exception in request: {} {}'.format(r.status_code, r.content))
                 raise
 
-            response = r.content.decode(self.encoding).split('\n')
+            response = self.get_feed_content_divided_to_lines(url, r)
             if self.feed_url_to_config:
                 fieldnames = self.feed_url_to_config.get(url, {}).get('fieldnames', [])
             else:
                 fieldnames = self.fieldnames
             if self.ignore_regex is not None:
-                response = filter(
-                    lambda x: self.ignore_regex.match(x) is None,  # type: ignore[union-attr]
+                response = filter(  # type: ignore
+                    lambda x: self.ignore_regex.match(x) is None,  # type: ignore
                     response
                 )
 
@@ -154,6 +155,23 @@ class Client(BaseClient):
             results.append({url: csvreader})
 
         return results
+
+    def get_feed_content_divided_to_lines(self, url, raw_response):
+        """Fetch feed data and divides its content to lines
+
+        Args:
+            url: Current feed's url.
+            raw_response: The raw response from the feed's url.
+
+        Returns:
+            List. List of lines from the feed content.
+        """
+        if self.feed_url_to_config and self.feed_url_to_config.get(url).get('is_zipped_file'):  # type: ignore
+            response_content = gzip.decompress(raw_response.content)
+        else:
+            response_content = raw_response.content
+
+        return response_content.decode(self.encoding).split('\n')
 
 
 def determine_indicator_type(indicator_type, default_indicator_type, value):

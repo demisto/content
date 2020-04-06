@@ -7,7 +7,9 @@
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "categories": ["Messaging"],
+    "categories": [
+        "Messaging"
+    ],
     "tags": [],
     "created": "2020-03-11T12:58:02Z",
     "updated": "2020-03-11T12:58:02Z",
@@ -15,7 +17,10 @@
     "deprecated": false,
     "certification": "certified",
     "useCases": [],
-    "keywords": ["ActiveMQ"],
+    "keywords": [
+        "ActiveMQ"
+    ],
     "price": 0,
-    "dependencies": {}
+    "dependencies": {},
+    "displayedImages": []
 }

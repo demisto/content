@@ -1,4 +1,5 @@
 ## [Unreleased]
+Added classification to 'GCP Compute Engine Misconfiguration' incident type.
 
 
 ## [20.3.3] - 2020-03-18

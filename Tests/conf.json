@@ -3,15 +3,35 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Tanium Threat Response",
+            "playbookID": "Tanium Threat Response Test"
+        },
+        {
             "integrations": ["Syslog Sender", "syslog"],
             "playbookID": "Test Syslog",
             "fromversion": "5.5.0",
             "timeout": 1000
         },
         {
+            "integrations": "Cisco Firepower",
+            "playbookID": "Cisco Firepower - Test",
+            "timeout": 1000,
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "JSON Feed",
+            "playbookID": "JSON_Feed_Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Plain Text Feed",
             "playbookID": "PlainText Feed - Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Silverfort",
+            "playbookID": "Silverfort-test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Fastly Feed",
@@ -159,11 +179,17 @@
             "integrations": "AutoFocus V2",
             "playbookID": "Autofocus Query Samples, Sessions and Tags Test Playbook",
             "fromversion": "4.5.0",
-            "timeout": 500
+            "timeout": 1000
         },
         {
             "integrations": "HelloWorld",
-            "playbookID": "TestHelloWorld"
+            "playbookID": "TestHelloWorld",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "HelloWorld",
+            "playbookID": "TestHelloWorldPlaybook",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "ThreatQ v2",
@@ -914,6 +940,10 @@
             "playbookID": "dedup_-_generic_-_test"
         },
         {
+            "playbookID": "Dedup - Generic v2 - Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "playbookID": "TestDedupIncidentsPlaybook"
         },
         {
@@ -1304,6 +1334,10 @@
             "nightly": true
         },
         {
+            "integrations": "Cisco ASA",
+            "playbookID": "Cisco ASA - Test Playbook"
+        },
+        {
             "integrations": "VirusTotal - Private API",
             "instance_names": "virus_total_private_api_preferred_vendors",
             "playbookID": "virusTotalPrivateAPI-test-preferred-vendors",
@@ -1315,14 +1349,14 @@
             "playbookID": "Cisco-Meraki-Test"
         },
         {
-            "integrations": "Windows Defender Advanced Threat Protection",
-            "playbookID": "Test - Windows Defender Advanced Threat Protection",
-            "instance_names": "windows_defender_atp_dev"
+            "integrations": "Microsoft Defender Advanced Threat Protection",
+            "playbookID": "Microsoft Defender Advanced Threat Protection - Test",
+            "instance_names": "microsoft_defender_atp_prod"
         },
         {
-            "integrations": "Windows Defender Advanced Threat Protection",
-            "playbookID": "Test - Windows Defender Advanced Threat Protection",
-            "instance_names": "windows_defender_atp_prod"
+            "integrations": "Microsoft Defender Advanced Threat Protection",
+            "playbookID": "Microsoft Defender Advanced Threat Protection - Test",
+            "instance_names": "microsoft_defender_atp_dev"
         },
         {
             "integrations": "Tanium",
@@ -2151,6 +2185,9 @@
             "playbookID": "PhishLabsTestPopulateIndicators"
         },
         {
+            "playbookID": "Test_HTMLtoMD"
+        },
+        {
             "integrations": "PhishLabs IOC",
             "playbookID": "PhishLabsIOC TestPlaybook",
             "fromversion": "4.1.0"
@@ -2167,7 +2204,9 @@
         {
             "integrations": "AutoFocus V2",
             "playbookID": "AutoFocus V2 test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 1000
+
         },
         {
             "playbookID": "Process Email - Generic for Rasterize"
@@ -2311,7 +2350,8 @@
           "integrations": "EWS v2",
           "playbookID": "Get EWS Folder Test",
           "fromversion": "4.5.0",
-          "instance_names": "ewv2_regular"
+          "instance_names": "ewv2_regular",
+          "timeout": 1200
         },
         {
           "integrations": "QRadar",
@@ -2458,7 +2498,8 @@
             "integrations": "Feodo Tracker Hashes Feed",
             "playbookID": "playbook-feodoteackerhash_test",
             "fromversion": "5.5.0",
-            "memory_threshold": "130"
+            "memory_threshold": 130,
+            "timeout": 600
         },
         {
             "integrations": "Feodo Tracker IP Blocklist Feed",
@@ -2529,7 +2570,8 @@
         },
         {
             "playbookID": "DbotPredictOufOfTheBoxTest",
-            "fromversion": "4.5.0"
+            "fromversion": "4.5.0",
+            "timeout": 1000
         },
         {
            "integrations": "AlienVault OTX TAXII Feed",
@@ -2539,26 +2581,48 @@
         {
             "playbookID": "ExtractDomainAndFQDNFromUrlAndEmail-Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Cortex Data Lake",
+            "playbookID": "Cortex Data Lake Test",
+            "instance_names": "cdl_prod",
+            "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "Cortex Data Lake",
+            "playbookID": "Cortex Data Lake Test",
+            "instance_names": "cdl_dev",
+            "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "MongoDB",
+            "playbookID": "MongoDB - Test"
+        },
+        {
+            "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
+            "timeout" : 60000,
+            "fromversion": "4.5.0"
         }
     ],
     "skipped_tests": {
+        "Test-Shodan_v2": "Issue 23370",
+        "Send Investigation Summary Reports - Test": "Issue 22299",
+        "Symantec Deepsight Test": "Issue 22971",
+        "OTRS Test": "Issue 23167",
+        "Akamai_WAF_SIEM-Test": "Issue 22225",
+        "Cloaken-Test": "Issue 20036",
+        "Test-VulnDB": "Issue 23138",
         "test_MsGraphFiles": "Issue 22853 ",
         "TestCofenseFeed": "Issue 22854",
         "RecordedFutureFeed - Test": "Issue 22855",
-        "Blocklist_de - Test": "Issue 22856",
         "Cybereason Test": "Issue 22683",
-        "CVE Search v2 - Test": "Issue 22661",
         "AbuseIPDB Test": "Issue 22658",
         "Bluecat Address Manager test": "Issue 22616",
         "Office365_Feed_Test": "Issue 22517",
-        "Test XDR Playbook": "Issue 22512",
         "Send Investigation Summary Reports": "Issue 22299",
         "test-Expanse": "Expanse should provide domain that they have in their system",
         "TestProofpointFeed": "Issue 22229",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 22227",
-        "test_Qradar": "Issue 22186",
-        "Tenable.io test": "Issue 22184",
-        "ThreatQ - Test": "Issue 22175",
         "PostgreSQL Test": "Issue 22172",
         "Test-Detonate URL - Crowdstrike": "Issue 19439",
         "Git_Integration-Test": "Issue 20029",
@@ -2577,7 +2641,6 @@
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
         "get_file_sample_from_path_-_d2_-_test": "Issue 19844",
         "Cofense Triage Test": "Creds only works on demo4",
-        "Test - Windows Defender Advanced Threat Protection": "Issue - #18552",
         "nexpose_test": "Issue 18694",
         "Recorded Future Test": "Issue 18922",
         "IntSights Mssp Test": "Issue #16351",
@@ -2593,6 +2656,7 @@
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
+        "Awake Security": "Issue 23376",
         "RiskSense": "We should get an instance talk to Francesco",
         "Palo Alto Networks Cortex": "Issue 22300",
         "AWS - IAM": "Issue 21401",
@@ -2611,6 +2675,7 @@
         "Fidelis Elevate Network": "Issue 20735",
         "Minerva Labs Anti-Evasion Platform": "Issue 18835",
         "PolySwarm": "contribution",
+        "Silverfort": "contribution",
         "fireeye": "Issue 19839",
         "DomainTools": "Issue 8298",
         "Remedy On-Demand": "Issue 19835",
@@ -2624,7 +2689,7 @@
         "ZeroFox": "Issue 19161",
         "Jask": "Issue 18879",
         "vmray": "Issue 18752",
-        "Anomali ThreatStream v2": "Issue 18561",
+        "Anomali ThreatStream v2": "Issue 19182",
         "Anomali ThreatStream": "Issue 19182",
         "SCADAfence CNM": "Issue 18376",
         "ArcSight ESM v2": "Issue #18328",
@@ -2670,6 +2735,7 @@
         "urlscan.io": "Issue 21831",
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
         "HelloWorldSimple": "This is just an example integration - no need for test",
+        "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lockpath KeyLight": "Deprecated. No tests.",
         "SafeBreach": "pending rewrite",
         "Cymulate": "Partner didn't provided test playbook",
@@ -2688,9 +2754,12 @@
     "nightly_integrations": [
         "Lastline v2",
         "TruSTAR",
-        "SlackV2"
+        "SlackV2",
+        "VulnDB"
     ],
     "unmockable_integrations": {
+        "MongoDB": "Our instance not using SSL",
+        "Cortex Data Lake": "Integration requires SSL",
         "Google Key Management Service": "The API requires an SSL secure connection to work.",
         "McAfee ESM-v10": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
         "mysql": "Does not use http",
@@ -2733,7 +2802,6 @@
         "MicrosoftGraphMail": "Test direct access to oproxy",
         "Microsoft Graph User": "Test direct access to oproxy",
         "Microsoft_Graph_Files": "Test direct access to oproxy",
-        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
         "Microsoft Graph Groups": "Test direct access to oproxy",
         "SafeBreach": "SSL Issues",
         "AWS - CloudWatchLogs": "Issue 20958",

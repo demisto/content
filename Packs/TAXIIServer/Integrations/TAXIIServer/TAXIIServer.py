@@ -481,18 +481,6 @@ TYPE_MAPPING = {
         'indicator_type': stix.common.vocabs.IndicatorType.TERM_DOMAIN_WATCHLIST,
         'mapper': create_stix_domain_observable
     },
-    FeedIndicatorType.SHA256: {
-        'indicator_type': stix.common.vocabs.IndicatorType.TERM_FILE_HASH_WATCHLIST,
-        'mapper': create_stix_hash_observable
-    },
-    FeedIndicatorType.SHA1: {
-        'indicator_type': stix.common.vocabs.IndicatorType.TERM_FILE_HASH_WATCHLIST,
-        'mapper': create_stix_hash_observable
-    },
-    FeedIndicatorType.MD5: {
-        'indicator_type': stix.common.vocabs.IndicatorType.TERM_FILE_HASH_WATCHLIST,
-        'mapper': create_stix_hash_observable
-    },
     FeedIndicatorType.File: {
         'indicator_type': stix.common.vocabs.IndicatorType.TERM_FILE_HASH_WATCHLIST,
         'mapper': create_stix_hash_observable
@@ -537,7 +525,7 @@ def get_stix_indicator(indicator: dict) -> stix.core.STIXPackage:
     handling = None
 
     # Add TLP if available
-    share_level = indicator.get('trafficlightprotocoltlp', '').upper()
+    share_level = indicator.get('trafficlightprotocol', '').upper()
     if share_level and share_level in ['WHITE', 'GREEN', 'AMBER', 'RED']:
         marking_specification = stix.data_marking.MarkingSpecification()
         marking_specification.controlled_structure = "//node() | //@*"

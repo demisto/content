@@ -10,13 +10,18 @@
     "categories": [
         "Messaging"
     ],
-    "tags": ["Syslog"],
+    "tags": [
+        "Syslog"
+    ],
     "created": "2020-03-15T17:02:40Z",
     "beta": false,
     "deprecated": false,
     "certification": "certified",
     "useCases": [],
-    "keywords": ["Syslog"],
+    "keywords": [
+        "Syslog"
+    ],
     "price": "0",
-    "dependencies": {}
+    "dependencies": {},
+    "displayedImages": []
 }
