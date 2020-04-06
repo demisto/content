@@ -3,12 +3,13 @@ commonfields:
   id: Blocklist_de Feed
   version: -1
 configuration:
-- defaultvalue: 'true'
+- defaultvalue: true
   display: Fetch indicators
   name: feed
   required: false
   type: 8
-- defaultvalue: Bad
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
+- defaultvalue: Suspicious
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -16,9 +17,11 @@ configuration:
   - Good
   - Suspicious
   - Bad
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
   required: false
   type: 18
 - defaultvalue: C - Fairly reliable
+  additionalinfo: Reliability of the source providing the intelligence data
   display: Source Reliability
   name: feedReliability
   options:
@@ -52,6 +55,7 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -80,7 +84,7 @@ configuration:
   - bruteforcelogin
   required: true
   type: 16
-- display: Tags
+- display: FeedTags
   name: tags
   required: false
   type: 0
@@ -109,6 +113,7 @@ script:
     execution: false
     name: blocklist_de-get-indicators
   dockerimage: demisto/python3:3.8.2.6981
+  feed: true
   isfetch: false
   longRunning: false
   longRunningPort: false
