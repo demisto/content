@@ -13,6 +13,12 @@
             "timeout": 1000
         },
         {
+            "integrations": "Cisco Firepower",
+            "playbookID": "Cisco Firepower - Test",
+            "timeout": 1000,
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "JSON Feed",
             "playbookID": "JSON_Feed_Test",
             "fromversion": "5.5.0"
@@ -562,7 +568,7 @@
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama",
             "playbookID": "Panorama Query Logs - Test",
-            "timeout": 1000,
+            "timeout": 1500,
             "nightly": true
         },
         {
@@ -1021,6 +1027,12 @@
             "integrations": "okta",
             "playbookID": "okta_test_playbook",
             "timeout": 240
+        },
+        {
+            "integrations": "Okta v2",
+            "playbookID": "OktaV2-Test",
+            "nightly": true,
+            "timeout": 300
         },
         {
             "playbookID": "Test filters & transformers scripts"
@@ -2272,7 +2284,7 @@
         {
             "playbookID": "PAN-OS Query Logs For Indicators Test",
             "fromversion": "4.5.0",
-            "timeout": 600,
+            "timeout": 1500,
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama"
         },
@@ -2486,7 +2498,7 @@
             "integrations": "Feodo Tracker Hashes Feed",
             "playbookID": "playbook-feodoteackerhash_test",
             "fromversion": "5.5.0",
-            "memory_threshold": "130",
+            "memory_threshold": 130,
             "timeout": 600
         },
         {
@@ -2585,9 +2597,15 @@
         {
             "integrations": "MongoDB",
             "playbookID": "MongoDB - Test"
+        },
+        {
+            "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
+            "timeout" : 60000,
+            "fromversion": "4.5.0"
         }
     ],
     "skipped_tests": {
+        "Test-Shodan_v2": "Issue 23370",
         "Send Investigation Summary Reports - Test": "Issue 22299",
         "Symantec Deepsight Test": "Issue 22971",
         "OTRS Test": "Issue 23167",
@@ -2638,6 +2656,7 @@
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
+        "Awake Security": "Issue 23376",
         "RiskSense": "We should get an instance talk to Francesco",
         "Palo Alto Networks Cortex": "Issue 22300",
         "AWS - IAM": "Issue 21401",
@@ -2670,7 +2689,7 @@
         "ZeroFox": "Issue 19161",
         "Jask": "Issue 18879",
         "vmray": "Issue 18752",
-        "Anomali ThreatStream v2": "Issue 18561",
+        "Anomali ThreatStream v2": "Issue 19182",
         "Anomali ThreatStream": "Issue 19182",
         "SCADAfence CNM": "Issue 18376",
         "ArcSight ESM v2": "Issue #18328",
