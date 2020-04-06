@@ -2,7 +2,7 @@
 Use the Azure Sentinel integration to get and manage incidents and get related entity information for incidents.
 This integration was integrated and tested with API version ***2019-01-01-preview*** of Azure Sentinel.
 
-Full documentation for this integration is available at our [support center](https://support.demisto.com).
+Full documentation for this integration is available at our [reference docs](https://xsoar.pan.dev/docs/reference/integrations/azure-sentinel).
 
 ## Authorize Cortex XSOAR for Azure Sentinel
 

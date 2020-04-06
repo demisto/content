@@ -1,4 +1,4 @@
-Full documentation for this integration is available at our [support center](https://support.demisto.com).
+Full documentation for this integration is available at our [reference docs](https://xsoar.pan.dev/docs/reference/integrations/azure-sentinel).
 
 ## Authorize Cortex XSOAR for Azure Sentinel
 
