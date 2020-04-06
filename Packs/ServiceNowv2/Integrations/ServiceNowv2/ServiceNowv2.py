@@ -1,4 +1,5 @@
 import shutil
+import traceback
 from typing import List, Tuple, Dict, Callable, Any
 
 from CommonServerPython import *
@@ -1546,7 +1547,7 @@ def main():
         LOG(err)
         LOG.print_log()
         if not raise_exception:
-            return_error(str(err))
+            return_error(f'Unexpected error: {str(err)}, traceback: {traceback.format_exc()}')
         else:
             raise
 

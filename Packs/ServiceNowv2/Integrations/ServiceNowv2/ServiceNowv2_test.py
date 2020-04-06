@@ -1,6 +1,6 @@
 import pytest
 from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_readable, \
-    generate_body, split_fields, Client, update_ticket_command, create_ticket_command
+    generate_body, split_fields, Client, update_ticket_command, create_ticket_command, delete_ticket_command
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_CREATE_TICKET
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \
@@ -61,3 +61,15 @@ def test_commands(command, args, response, expected_result, mocker):
     # print('\n')
     # print(str(result[1]))
     assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
+
+
+@pytest.mark.parametrize('command, args, response, expected_result', [
+    (delete_ticket_command, {'id': '1234'}, {}, {})
+])  # noqa: E124
+def test_delete_ticket(command, args, response, expected_result, mocker):
+    client = Client('server_url', 'username', 'password', 'verify', 'proxy', 'fetch_time', 'sysparm_query',
+                    'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments')
+    mocker.patch.object(client, 'send_request', return_value=response)
+    result = command(client, args)
+    # HR is found in the 1st place in the result of the command
+    assert 'Ticket with ID 1234 was successfully deleted.' == result[0]
