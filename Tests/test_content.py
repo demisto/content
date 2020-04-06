@@ -16,11 +16,11 @@ import demisto_client.demisto_api
 from slackclient import SlackClient
 
 from Tests.mock_server import MITMProxy, AMIConnection
-from Tests.test_integration import test_integration, disable_all_integrations
-from Tests.scripts.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF, PB_Status
+from Tests.test_integration import Docker, test_integration, disable_all_integrations
+from demisto_sdk.commands.common.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF, PB_Status
 from Tests.test_dependencies import get_used_integrations, get_tests_allocation_for_threads
-from Tests.test_utils import print_color, print_error, print_warning, \
-    LOG_COLORS, str2bool, server_version_compare, Docker
+from demisto_sdk.commands.common.tools import print_color, print_error, print_warning, \
+    LOG_COLORS, str2bool, server_version_compare
 
 # Disable insecure warnings
 urllib3.disable_warnings()
