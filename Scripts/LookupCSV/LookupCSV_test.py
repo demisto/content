@@ -43,6 +43,7 @@ class TestLookupCSV:
         }
 
     def test_main_csv(self, mocker):
+        # Test a "full parse" i.e with no lookup
         from LookupCSV import main
         with open("./TestData/simple_results.json") as f:
             expected = json.load(f)
@@ -51,7 +52,24 @@ class TestLookupCSV:
         result = self.get_demisto_results()
         assert expected == result
 
+    def test_add_header_row(self, mocker):
+        # Test a full parse when the user has added a row used add_header_row
+        from LookupCSV import main
+        with open("./TestData/simple_results.json") as f:
+            expected = json.load(f)
+
+        args_value = {
+            "entryID": "entry_id",
+            "add_header_row": "sourceIP,count"
+        }
+        self.mock_demisto(mocker, file_obj=self.create_file_object("./TestData/simple_no_header.csv"),
+                          args_value=args_value)
+        main()
+        result = self.get_demisto_results()
+        assert expected == result
+
     def test_main_csv_no_headers(self, mocker):
+        # Test a full parse on a file without headers (returns a list of lists instead of dicts)
         from LookupCSV import main
         args_value = {
             "entryID": "entry_id",
@@ -66,6 +84,7 @@ class TestLookupCSV:
         assert expected == result
 
     def test_main_csv_search(self, mocker):
+        # Basic search
         from LookupCSV import main
         with open("./TestData/column_search_results.json") as f:
             expected = json.load(f)
@@ -83,6 +102,7 @@ class TestLookupCSV:
         assert expected == result
 
     def test_main_csv_missing(self, mocker):
+        # Same as basic except no match found
         from LookupCSV import main
         with open("./TestData/column_search_missing_results.json") as f:
             expected = json.load(f)
@@ -98,7 +118,6 @@ class TestLookupCSV:
         main()
         result = self.get_demisto_results()
         assert expected == result
-
 
     def test_main_csv_search_multi(self, mocker):
         from LookupCSV import main

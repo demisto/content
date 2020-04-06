@@ -50,6 +50,8 @@ def main():
 
     search_value = d_args['value'] if 'value' in d_args else None
 
+    add_row = d_args['add_header_row'] if 'add_header_row' in d_args else None
+
     res = demisto.getFilePath(entry_id)
     if not res:
         return_error("Entry {} not found".format(entry_id))
@@ -76,6 +78,19 @@ def main():
                 for i, h in enumerate(headers):
                     d[h] = row[i]
                 csv_data.append(d)
+        elif add_row:
+            if len(lines[0].split(",")) != len(add_row.split(",")):
+                return_error(
+                    "Added row via add_row has invalid length.")
+
+            headers = add_row.split(",")
+            for line in lines:
+                d = {}
+                row = line.split(",")
+                for i, h in enumerate(headers):
+                    d[h] = row[i]
+                csv_data.append(d)
+
         else:
             for line in lines:
                 row = line.split(",")

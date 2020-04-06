@@ -12,15 +12,18 @@
     }
   ],
   "EntryContext": {
-    "LookupCSV.result": [
-      {
-        "sourceIP": "4.4.4.4",
-        "count": "5"
-      },
-      {
-        "sourceIP": "4.4.4.4",
-        "count": "6"
-      }
-    ]
+    "LookupCSV": {
+      "FoundResult": true,
+      "Result": [
+        {
+          "sourceIP": "4.4.4.4",
+          "count": "5"
+        },
+        {
+          "sourceIP": "4.4.4.4",
+          "count": "6"
+        }
+      ]
+    }
   }
 }

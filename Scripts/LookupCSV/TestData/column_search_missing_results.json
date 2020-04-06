@@ -3,6 +3,9 @@
   "ContentsFormat": "json",
   "Contents": [],
   "EntryContext": {
-    "LookupCSV.missing": "4.4.4.4"
+    "LookupCSV": {
+      "FoundResult": false,
+      "Result": null
+    }
   }
 }
