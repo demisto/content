@@ -11,7 +11,7 @@ with open('Tests/scripts/infrastructure_tests/tests_data/mock_conf.json', 'r') a
 class TestChangedPlaybook:
     TEST_ID = 'Calculate Severity - Standard - Test'
     # points at a real file. if that file changes path the test should fail
-    GIT_DIFF_RET = "M Playbooks/playbook-Calculate_Severity_By_Highest_DBotScore.yml"
+    GIT_DIFF_RET = "M Packs/Legacy/Playbooks/playbook-Calculate_Severity_By_Highest_DBotScore.yml"
 
     def test_changed_runnable_test__unmocked_get_modified_files(self):
         filterd_tests = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
@@ -108,7 +108,7 @@ class TestChangedTestPlaybook:
 class TestChangedIntegration:
     TEST_ID = 'PagerDuty Test'
     # points at a real file. if that file changes path the test should fail
-    GIT_DIFF_RET = "M Integrations/PagerDuty/PagerDuty.yml"
+    GIT_DIFF_RET = "M Packs/Legacy/Integrations/PagerDuty/PagerDuty.yml"
 
     def test_changed_runnable_test__unmocked_get_modified_files(self):
         filterd_tests = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
@@ -141,8 +141,8 @@ class TestChangedIntegration:
 class TestChangedIntegrationAndPlaybook:
     TEST_ID = 'PagerDuty Test\nCalculate Severity - Standard - Test'
     # points at a real file. if that file changes path the test should fail
-    GIT_DIFF_RET = "M Integrations/PagerDuty/PagerDuty.py\n" \
-                   "M Playbooks/playbook-Calculate_Severity_By_Highest_DBotScore.yml"
+    GIT_DIFF_RET = "M Packs/Legacy/Integrations/PagerDuty/PagerDuty.py\n" \
+                   "M Packs/Legacy/Playbooks/playbook-Calculate_Severity_By_Highest_DBotScore.yml"
 
     def test_changed_runnable_test__unmocked_get_modified_files(self):
         filterd_tests = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
@@ -153,7 +153,7 @@ class TestChangedIntegrationAndPlaybook:
 class TestChangedScript:
     TEST_ID = 'Extract Indicators From File - test'
     # points at a real file. if that file changes path the test should fail
-    GIT_DIFF_RET = "M Scripts/ExtractIndicatorsFromTextFile/ExtractIndicatorsFromTextFile.yml"
+    GIT_DIFF_RET = "M Packs/Legacy/Scripts/ExtractIndicatorsFromTextFile/ExtractIndicatorsFromTextFile.yml"
 
     def test_changed_runnable_test__unmocked_get_modified_files(self):
         filterd_tests = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
