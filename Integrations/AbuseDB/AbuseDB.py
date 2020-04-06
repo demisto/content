@@ -103,7 +103,7 @@ def http_request(method, url_suffix, params=None, headers=HEADERS, threshold=THR
         analysis = session.request(method, SERVER + url_suffix, headers=headers, params=params, verify=not INSECURE)
 
         if analysis.status_code not in {200, 204, 429}:
-            return_error('Bad connection attempet. Status code: ' + str(analysis.status_code))
+            return_error('Bad connection attempt. Status code: ' + str(analysis.status_code))
         if analysis.status_code == 429:
             if demisto.params().get('disregard_quota'):
                 return API_QUOTA_REACHED_MESSAGE
