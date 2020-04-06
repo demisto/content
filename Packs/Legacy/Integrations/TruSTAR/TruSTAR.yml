@@ -655,19 +655,18 @@ script:
   - name: trustar-get-all-phishing-indicators
     arguments:
     - name: normalized_source_score
-      default: true
       description: Intel score of the indicator
-      defaultValue: 3
+      defaultValue: 0,1,2,3
     - name: normalized_triage_score
       description: Score of email submission
       isArray: true
-      defaultValue: 3
+      defaultValue: 0,1,2,3
     - name: status
+      description: A list of triage statuses for submissions; only email submissions
+        marked with at least one of these statuses will be returned. Options are 'UNRESOLVED',
+        'CONFIRMED', 'IGNORED'
       isArray: true
-      defaultValue: UNRESOLVED
-      description: A list of triage statuses for submissions; 
-        only email submissions marked with at least one of these statuses will be returned.
-        Options are 'UNRESOLVED', 'CONFIRMED', 'IGNORED'
+      defaultValue: UNRESOLVED,CONFIRMED,IGNORED
     outputs:
     - contextPath: File.Name
       description: File name
