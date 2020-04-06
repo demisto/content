@@ -4,6 +4,8 @@ from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 # IMPORTS
 from typing import Tuple
+import traceback
+import dateparser
 import httplib2
 import urllib.parse
 from oauth2client import service_account
@@ -24,6 +26,9 @@ SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
 
 
 class GoogleNameParser:
+    """
+    Used to easily transform Google Cloud Pub/Sub names
+    """
     FULL_PROJECT_PREFIX = "projects/{}"
     FULL_TOPIC_PREFIX = "/topics/{}"
     FULL_SUBSCRIPTION_PREFIX = "/subscriptions/{}"
@@ -53,20 +58,20 @@ class GoogleNameParser:
 
 class GoogleClient:
     """
-    A Client class to wrap the google cloud api library.
+    A Client class to wrap the google cloud api library
     """
 
     def __init__(
-        self,
-        service_name,
-        service_version,
-        client_secret,
-        scopes,
-        proxy,
-        default_subscription,
-        default_project,
-        default_max_msgs,
-        **kwargs
+            self,
+            service_name,
+            service_version,
+            client_secret,
+            scopes,
+            proxy,
+            default_subscription,
+            default_project,
+            default_max_msgs,
+            **kwargs
     ):
         self.default_project = default_project
         self.default_subscription = default_subscription
@@ -85,26 +90,26 @@ class GoogleClient:
     def get_topic_list(self, project_name, page_size, page_token):
         return (
             self.service.projects()
-            .topics()
-            .list(project=project_name, pageSize=page_size, pageToken=page_token)
-            .execute()
+                .topics()
+                .list(project=project_name, pageSize=page_size, pageToken=page_token)
+                .execute()
         )
 
     def get_topic_subs(self, topic_name, page_size, page_token):
         return (
             self.service.projects()
-            .topics()
-            .subscriptions()
-            .list(topic=topic_name, pageSize=page_size, pageToken=page_token)
-            .execute()
+                .topics()
+                .subscriptions()
+                .list(topic=topic_name, pageSize=page_size, pageToken=page_token)
+                .execute()
         )
 
     def get_project_subs(self, project_name, page_size, page_token):
         return (
             self.service.projects()
-            .subscriptions()
-            .list(project=project_name, pageSize=page_size, pageToken=page_token)
-            .execute()
+                .subscriptions()
+                .list(project=project_name, pageSize=page_size, pageToken=page_token)
+                .execute()
         )
 
     def get_sub(self, sub_name):
@@ -115,30 +120,54 @@ class GoogleClient:
     def publish_message(self, project_name, topic_name, req_body):
         return (
             self.service.projects()
-            .topics()
-            .publish(
+                .topics()
+                .publish(
                 topic=GoogleNameParser.get_full_topic_name(project_name, topic_name),
                 body=req_body,
-            )
-            .execute()
+            ).execute()
         )
 
     def pull_messages(self, sub_name, max_messages, ret_immediately=True):
         req_body = {"returnImmediately": ret_immediately, "maxMessages": max_messages}
         return (
             self.service.projects()
-            .subscriptions()
-            .pull(subscription=sub_name, body=req_body)
-            .execute()
+                .subscriptions()
+                .pull(subscription=sub_name, body=req_body)
+                .execute()
         )
 
     def ack_messages(self, sub_name, acks):
         body = {"ackIds": acks}
         return (
             self.service.projects()
-            .subscriptions()
-            .acknowledge(subscription=sub_name, body=body)
-            .execute()
+                .subscriptions()
+                .acknowledge(subscription=sub_name, body=body)
+                .execute()
+        )
+
+    def create_subscription(self, full_sub_name, topic_name, push_endpoint, push_attributes, ack_deadline_seconds,
+                            retain_acked_messages, message_retention_duration, labels, expiration_ttl):
+        if push_endpoint or push_attributes:
+            push_config = assign_params(
+                pushEndpoint=push_endpoint,
+                attributes=attribute_pairs_to_dict(push_attributes),
+            )
+        else:
+            push_config = None
+        body = assign_params(
+            topic=topic_name,
+            pushConfig=push_config,
+            ackDeadlineSeconds=ack_deadline_seconds,
+            retainAckedMessages=retain_acked_messages,
+            messageRetentionDuration=message_retention_duration,
+            labels=attribute_pairs_to_dict(labels),
+            expiration_ttl=expiration_ttl
+        )
+        return (
+            self.service.projects()
+                .subscriptions()
+                .create(name=full_sub_name, body=body)
+                .execute()
         )
 
     # disable-secrets-detection-start
@@ -165,16 +194,23 @@ class GoogleClient:
     # disable-secrets-detection-end
 
 
+def publish_datetime_to_str(publish_time):
+    try:
+        return publish_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+    except ValueError:
+        return publish_time.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
 """ HELPER FUNCTIONS"""
 
 
 def init_google_client(
-    proxy,
-    service_account_json,
-    default_subscription,
-    default_project,
-    default_max_msgs,
-    **kwargs,
+        proxy,
+        service_account_json,
+        default_subscription,
+        default_project,
+        default_max_msgs,
+        **kwargs,
 ) -> GoogleClient:
     try:
         service_account_json = json.loads(service_account_json)
@@ -197,11 +233,37 @@ def init_google_client(
 
 
 def message_to_incident(message):
+    """
+    Create incident from a message
+    """
     incident = {
         "name": f'Google PubSub Message {message.get("messageId")}',
         "rawJSON": json.dumps(message),
+        "occurred": publish_datetime_to_str(dateparser.parse(message.get("publishTime")))
     }
     return incident
+
+
+def attribute_pairs_to_dict(attrs_str: str, delim_char: str = ";"):
+    """
+    Transforms a string of multiple inputs to a dictionary list
+
+    :param attrs_str: attributes separated by key=val pairs sepearated by ','
+    :param delim_char: delimiter character between atrribute pairs
+    :return:
+    """
+    if not attrs_str:
+        return attrs_str
+    attrs = {}
+    regex = re.compile(r"(.*)=(.*)")
+    for f in attrs_str.split(delim_char):
+        match = regex.match(f)
+        if match is None:
+            raise ValueError(f"Could not parse field: {f}")
+
+        attrs.update({match.group(1): match.group(2)})
+
+    return attrs
 
 
 """ COMMAND FUNCTIONS """
@@ -217,10 +279,10 @@ def test_module(client: GoogleClient):
 
 
 def topics_list_command(
-    client: GoogleClient,
-    project_name: str,
-    page_size: str = None,
-    page_token: str = None,
+        client: GoogleClient,
+        project_name: str,
+        page_size: str = None,
+        page_token: str = None,
 ) -> Tuple[str, dict, dict]:
     """
     Get topics list by project_name
@@ -240,16 +302,16 @@ def topics_list_command(
 
     topics = res.get("topics", [])
     readable_output = tableToMarkdown(f"Topics for project {project_name}", topics)
-    outputs = {"GoogleCloudPubSub.Topics": {project_name: topics}}
-    return (readable_output, outputs, res)  # raw response - the original response
+    outputs = {"GoogleCloudPubSub": {project_name: topics}}
+    return readable_output, outputs, res
 
 
 def publish_message_command(
-    client: GoogleClient,
-    project_name: str,
-    topic_name: str,
-    message_data: str = None,
-    message_attributes: str = None,
+        client: GoogleClient,
+        project_name: str,
+        topic_name: str,
+        data: str = None,
+        attributes: str = None,
 ) -> Tuple[str, dict, dict]:
     """
     Publishes message in the topic
@@ -260,24 +322,24 @@ def publish_message_command(
 
     :param project_name: project name
     :param topic_name: topic name without project name prefix
-    :param message_attributes: message attributes separated by key=val pairs sepearated by ','
-    :param message_data: message data str
+    :param attributes: message attributes separated by key=val pairs sepearated by ','
+    :param data: message data str
     :param client: GoogleClient
     :return: list of topics
     """
-    body = get_publish_body(message_attributes, message_data)
+    body = get_publish_body(attributes, data)
     published_messages = client.publish_message(project_name, topic_name, body)
 
     output = []
     for msg_id in published_messages["messageIds"]:
-        output.append({"topic": topic_name, "messageId": msg_id})
+        output.append({"Topic": topic_name, "MessageID": msg_id})
 
     ec = {
         "GoogleCloudPubSub.PublishedMessages(val.messageId === obj.messageId)": output
     }
     return (
         tableToMarkdown(
-            "Google Cloud PubSub Published Messages",
+            "Google Cloud PubSub has published the message successfully",
             published_messages,
             removeNull=True,
         ),
@@ -303,32 +365,12 @@ def get_publish_body(message_attributes, message_data):
     return body
 
 
-def attribute_pairs_to_dict(attrs_str: str, delim_char: str = ";"):
-    """
-    Transforms a string of multiple inputs to a dictionary list
-
-    :param attrs_str: attributes separated by key=val pairs sepearated by ','
-    :param delim_char: delimiter character between atrribute pairs
-    :return:
-    """
-    attrs = {}
-    regex = re.compile(r"(.*)=(.*)")
-    for f in attrs_str.split(delim_char):
-        match = regex.match(f)
-        if match is None:
-            raise ValueError(f"Could not parse field: {f}")
-
-        attrs.update({match.group(1): match.group(2)})
-
-    return attrs
-
-
 def pull_messages_command(
-    client: GoogleClient,
-    project_name: str,
-    subscription_name: str,
-    max_messages: str = None,
-    ack: str = None,
+        client: GoogleClient,
+        project_name: str,
+        subscription_name: str,
+        max_messages: str = None,
+        ack: str = None,
 ) -> Tuple[str, dict, list]:
     """
     Pulls messages from the subscription
@@ -351,7 +393,7 @@ def pull_messages_command(
     if "receivedMessages" in raw_msgs:
         acknowledges, msgs = extract_acks_and_msgs(raw_msgs)
         ec = {
-            f"GoogleCloudPubSub.Subscriptions.{project_name}.Messages(val && val.messageId === obj.messageId)": msgs
+            f"GoogleCloudPubSubSubscriptions.Messages(val && val.messageId === obj.messageId)": msgs
         }
         if ack == "true":
             client.ack_messages(full_subscription_name, acknowledges)
@@ -366,7 +408,7 @@ def extract_acks_and_msgs(raw_msgs):
     acknowledges = []
     for raw_msg in raw_msgs["receivedMessages"]:
         msg = raw_msg.get("message", {})
-        decoded_data = base64.b64decode(str(msg.get("data")))
+        decoded_data = str(base64.b64decode(str(msg.get("data"))))[2:-1]
         try:
             decoded_data = json.loads(decoded_data)
         except Exception:
@@ -380,11 +422,11 @@ def extract_acks_and_msgs(raw_msgs):
 
 
 def subscriptions_list_command(
-    client: GoogleClient,
-    project_name: str,
-    page_size: str = None,
-    page_token: str = None,
-    topic_name: str = None,
+        client: GoogleClient,
+        project_name: str,
+        page_size: str = None,
+        page_token: str = None,
+        topic_name: str = None,
 ) -> Tuple[str, dict, dict]:
     """
     Get subscription list by project_name or by topic_name
@@ -405,22 +447,19 @@ def subscriptions_list_command(
         full_topic_name = GoogleNameParser.get_full_topic_name(project_name, topic_name)
         raw_response = client.get_topic_subs(full_topic_name, page_size, page_token)
         title += f" for topic {topic_name}"
-        ec_key = full_topic_name
     else:
         full_project_name = GoogleNameParser.get_full_project_name(project_name)
         raw_response = client.get_project_subs(full_project_name, page_size, page_token)
-        ec_key = project_name
-    ec_key += "(val && val.name === obj.name)"
 
     title += f" in project {project_name}"
     subs = raw_response.get("subscriptions", "")
     readable_output = tableToMarkdown(title, subs)
-    outputs = {f"GoogleCloudPubSub.Subscriptions.{ec_key}": subs}
+    outputs = {f"GoogleCloudPubSubSubscriptions(val && val.name === obj.name)": subs}
     return readable_output, outputs, raw_response
 
 
 def get_subscription_command(
-    client: GoogleClient, project_name: str, subscription_name: str
+        client: GoogleClient, project_name: str, subscription_name: str
 ) -> Tuple[str, dict, dict]:
     """
     Get subscription list by project_name or by topic_name
@@ -442,9 +481,48 @@ def get_subscription_command(
     title = f"Subscription {subscription_name}"
     readable_output = tableToMarkdown(title, subs)
     outputs = {
-        f"GoogleCloudPubSub.Subscriptions.{project_name}(val && val.name === obj.name)": subs
+        f"GoogleCloudPubSubSubscriptions.(val && val.name === obj.name)": subs
     }
     return readable_output, outputs, subs
+
+
+def create_subscription_command(
+        client: GoogleClient, project_name: str, subscription_name: str, topic_name: str, push_endpoint: str = '',
+        push_attributes: str = '', ack_deadline_seconds: str = '', retain_acked_messages: str = '',
+        message_retention_duration: str = '', labels: str = '', expiration_ttl: str = ''
+) -> Tuple[str, dict, dict]:
+    """
+    Requires one of the following OAuth scopes:
+
+        https://www.googleapis.com/auth/pubsub
+        https://www.googleapis.com/auth/cloud-platform
+
+    :param client: GoogleClient
+    :param project_name: Name of the project from which the subscription is receiving messages.
+    :param subscription_name: Name of the created subscription.
+    :param topic_name: Name of the topic from which the subscription is receiving messages.
+    :param push_endpoint: A URL locating the endpoint to which messages should be pushed.
+    :param push_attributes: Input format: "key=val" pairs sepearated by ",".
+    :param ack_deadline_seconds: The amount of time Pub/Sub waits for the subscriber to ack.
+    :param retain_acked_messages: if 'true' then retain acknowledged messages
+    :param message_retention_duration: How long to retain unacknowledged messages
+    :param labels: Input format: "key=val" pairs sepearated by ",".
+    :param expiration_ttl: The "time-to-live" duration for the subscription.
+    :return: Created subscription
+    """
+    full_sub_name = GoogleNameParser.get_full_subscription_project_name(project_name, subscription_name)
+    full_topic_name = GoogleNameParser.get_full_topic_name(project_name, topic_name)
+    sub = client.create_subscription(full_sub_name, full_topic_name, push_endpoint, push_attributes,
+                                     ack_deadline_seconds, retain_acked_messages, message_retention_duration, labels,
+                                     expiration_ttl)
+    title = f"Subscription {subscription_name} was created successfully"
+    readable_output = tableToMarkdown(title, sub)
+    sub['ProjectName'] = project_name
+    sub['SubscriptionName'] = subscription_name
+    outputs = {
+        f"GoogleCloudPubSubSubscriptions": sub
+    }
+    return readable_output, outputs, sub
 
 
 def fetch_incidents(client: GoogleClient):
@@ -484,12 +562,14 @@ def main():
                 "google-cloud-pubsub-topic-messages-pull": pull_messages_command,
                 "google-cloud-pubsub-topic-subscriptions-list": subscriptions_list_command,
                 "google-cloud-pubsub-topic-subscription-get-by-name": get_subscription_command,
+                "google-cloud-pubsub-topic-subscription-create": create_subscription_command,
             }
             return_outputs(*commands[command](client, **args))  # type: ignore[operator]
 
     # Log exceptions
     except Exception as e:
-        return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")
+        return_error(
+            f"Failed to execute {demisto.command()} command. Error: {str(e)} , traceback: {traceback.format_exc()}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

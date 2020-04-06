@@ -33,9 +33,17 @@ configuration:
   name: default_max_msgs
   required: false
   type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Google Cloud Pub / Sub is a fully-managed real-time messaging service
   that allows you to send and receive messages between independent applications.
-display: Google Cloud PubSub
+display: Google Cloud Pub/Sub
 name: GooglePubSub
 script:
   commands:
@@ -47,18 +55,26 @@ script:
       required: true
       secret: false
     - default: false
+      description: Max amount of entries to get.
       isArray: false
-      name: pageSize
+      name: page_size
       required: false
       secret: false
+    - default: false
+      description: Next page token as returned from "google-cloud-pubsub-topics-list"
+        command
+      isArray: false
+      name: page_token
+      required: false
+      secret: false
+    outputs:
+    - contextPath: GoogleCloudPubSub.topics.name
+      description: 'Name of the topic'
+      type: String
     deprecated: false
     description: List PubSub topics.
     execution: false
     name: google-cloud-pubsub-topics-list
-    outputs:
-    - contextPath: hello
-      description: Should be Hello **something** here
-      type: String
   - arguments:
     - default: false
       description: Name of the topic without prefix, i.e. without "projects/{project_name}/topics/".
@@ -74,8 +90,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Attributes for this message. If this field is empty, the message
-        must contain non-empty data.
+      description: 'Attributes for this message. If this field is empty, the message
+        must contain non-empty data. Input format: "key=val" pairs sepearated by ",".'
       isArray: false
       name: attributes
       required: false
@@ -86,6 +102,13 @@ script:
       name: project_name
       required: true
       secret: false
+    outputs:
+    - contextPath: GoogleCloudPubSub.PublishedMessages.MessageID
+      description: 'ID of the published message'
+      type: String
+    - contextPath: GoogleCloudPubSub.PublishedMessages.Topic
+      description: 'Topic of the published message'
+      type: String
     deprecated: false
     description: Publish a message in a topic.
     execution: false
@@ -103,6 +126,23 @@ script:
       name: subscription_name
       required: true
       secret: false
+    outputs:
+    - contextPath: GoogleCloudPubSubSubscriptions.ackDeadlineSeconds
+      description: The amount of time Pub/Sub waits for the subscriber to acknowledge
+        receipt before resending the message.
+      type: Number
+    - contextPath: GoogleCloudPubSubSubscriptions.expirationPolicy.ttl
+      description: 'The "time-to-live" duration for the subscription.'
+      type: String
+    - contextPath: GoogleCloudPubSubSubscriptions.messageRetentionDuration
+      description: How long to retain unacknowledged messages in the subscription's backlog
+      type: String
+    - contextPath: GoogleCloudPubSubSubscriptions.name
+      description: 'Name of the subscription'
+      type: String
+    - contextPath: GoogleCloudPubSubSubscriptions.topic
+      description: 'Name of the topic from which the subscription is receiving messages'
+      type: String
     deprecated: false
     description: Get subscription details by subscription name.
     execution: false
@@ -132,6 +172,26 @@ script:
       name: page_token
       required: false
       secret: false
+    outputs:
+    - contextPath: GoogleCloudPubSubSubscriptions.ackDeadlineSeconds
+      description: The amount of time Pub/Sub waits for the subscriber to acknowledge
+        receipt before resending the message.
+      type: Number
+    - contextPath: GoogleCloudPubSubSubscriptions.expirationPolicy.ttl
+      description: The "time-to-live" duration for the subscription
+      type: String
+    - contextPath: GoogleCloudPubSubSubscriptions.messageRetentionDuration
+      description: How long to retain unacknowledged messages in the subscription's backlog
+      type: String
+    - contextPath: GoogleCloudPubSubSubscriptions.name
+      description: Name of the subscription
+      type: String
+    - contextPath: GoogleCloudPubSubSubscriptions.topic
+      description: Name of the topic from which the subscription is receiving messages.
+      type: String
+    - contextPath: GoogleCloudPubSubSubscriptions.pushConfig.pushEndpoint
+      description: A URL locating the endpoint to which messages should be pushed.
+      type: String
     deprecated: false
     description: Get list of subscription by project name or topic name.
     execution: false
@@ -168,10 +228,116 @@ script:
       - 'true'
       required: false
       secret: false
+    outputs:
+    - contextPath: GoogleCloudPubSubSubscriptions.Messages.data
+      description: Text data of the message
+      type: String
+    - contextPath: GoogleCloudPubSubSubscriptions.Messages.messageId
+      description: ID of the message
+      type: String
+    - contextPath: GoogleCloudPubSubSubscriptions.Messages.publishTime
+      description: The time the message was published
+      type: Date
     deprecated: false
     description: Pull messages that were published.
     execution: false
     name: google-cloud-pubsub-topic-messages-pull
+  - arguments:
+    - default: false
+      description: Name of the project from which the subscription is receiving messages.
+      isArray: false
+      name: project_name
+      required: true
+      secret: false
+    - default: false
+      description: Name of the created subscription.
+      isArray: false
+      name: subscription_name
+      required: true
+      secret: false
+    - default: false
+      description: Name of the topic from which the subscription is receiving messages.
+      isArray: false
+      name: topic_name
+      required: true
+      secret: false
+    - default: false
+      description: A URL locating the endpoint to which messages should be pushed.
+      isArray: false
+      name: push_endpoint
+      required: false
+      secret: false
+    - default: false
+      description: 'Endpoint configuration attributes that can be used to control
+        the message delivery, such as "x-goog-version", which you can use to change
+        the format of the pushed message. Input format: "key=val" pairs sepearated
+        by ",".'
+      isArray: false
+      name: push_attributes
+      required: false
+      secret: false
+    - default: false
+      description: The amount of time Pub/Sub waits for the subscriber to acknowledge
+        receipt before resending the message.
+      isArray: false
+      name: ack_deadline_seconds
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Indicates whether to retain acknowledged messages.
+      isArray: false
+      name: retain_acked_messages
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      secret: false
+    - default: false
+      description: How long to retain unacknowledged messages in the subscription's
+        backlog. A duration of seconds e.g. "4.2s"
+      isArray: false
+      name: message_retention_duration
+      required: false
+      secret: false
+    - default: false
+      description: 'Input format: "key=val" pairs sepearated by ",".'
+      isArray: false
+      name: labels
+      required: false
+      secret: false
+    - default: false
+      description: The "time-to-live" duration for the subscription.
+      isArray: false
+      name: expiration_ttl
+      required: false
+      secret: false
+      outputs:
+      - contextPath: GoogleCloudPubSubSubscriptions.ackDeadlineSeconds
+        description: The amount of time Pub/Sub waits for the subscriber to acknowledge
+          receipt before resending the message.
+        type: Number
+      - contextPath: GoogleCloudPubSubSubscriptions.expirationPolicy.ttl
+        description: The "time-to-live" duration for the subscription.
+        type: String
+      - contextPath: GoogleCloudPubSubSubscriptions.messageRetentionDuration
+        description: How long to retain unacknowledged messages in the subscription's
+          backlog
+        type: String
+      - contextPath: GoogleCloudPubSubSubscriptions.name
+        description: Name of the subscription
+        type: String
+      - contextPath: GoogleCloudPubSubSubscriptions.topic
+        description: Name of the topic from which the subscription is receiving messages
+        type: String
+      - contextPath: GoogleCloudPubSubSubscriptions.ProjectName
+        description: Name of the project from which the subscription is receiving messages
+        type: String
+    deprecated: false
+    description: Create a pull or push subscription.
+    execution: false
+    name: google-cloud-pubsub-topic-subscription-create
   dockerimage: demisto/googleapi-python3:1.0.0.6696
   feed: false
   isfetch: true
