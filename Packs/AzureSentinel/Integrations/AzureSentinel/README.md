@@ -24,6 +24,7 @@ Follow these steps for a self-deployed configuration.
 4. Enter your client ID in the ***ID*** parameter. 
 5. Enter your client secret in the ***Key*** parameter.
 6. Enter your tenant ID in the ***Token*** parameter.
+7. Enter your redirect URI in the ***Redirect URI*** parameter.
 
 ## Get the additional instance parameters
 

@@ -221,7 +221,9 @@ def severity_to_level(severity):
 ''' INTEGRATION COMMANDS '''
 
 
-def test_connection(client):
+def test_connection(client, params):
+    if params.get('self_deployed', False) and not params.get('auth_code'):
+        return_error('You must enter an authorization code in a self-deployed configuration.')
     client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
     return_outputs('```✅ Success!```')
 
@@ -614,7 +616,7 @@ def main():
             raise Exception("Please use !azure-sentinel-test instead")
 
         elif demisto.command() == 'azure-sentinel-test':
-            test_connection(client)
+            test_connection(client, params)
 
         elif demisto.command() == 'fetch-incidents':
             # How much time before the first fetch to retrieve incidents
