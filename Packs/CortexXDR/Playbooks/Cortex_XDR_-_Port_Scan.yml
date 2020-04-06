@@ -3080,7 +3080,7 @@ inputs:
   value:
     simple: false
   required: false
-  description: Set to true to assign only the user that is currently on shift.
+  description: Set to true to assign only the users that are currently on shift.
 outputs: []
 fromversion: 5.0.0
 tests:
