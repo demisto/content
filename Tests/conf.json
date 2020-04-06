@@ -3,11 +3,6 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": "Azure Sentinel",
-            "playbookID": "TestAzureSentinelPlaybook",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "Tanium Threat Response",
             "playbookID": "Tanium Threat Response Test"
         },
@@ -2808,7 +2803,6 @@
         "Microsoft Graph User": "Test direct access to oproxy",
         "Microsoft_Graph_Files": "Test direct access to oproxy",
         "Microsoft Graph Groups": "Test direct access to oproxy",
-        "Azure Sentinel": "Test direct access to oproxy",
         "SafeBreach": "SSL Issues",
         "AWS - CloudWatchLogs": "Issue 20958",
         "Gmail Single User" : "googleclient sdk has time based challenge exchange",
