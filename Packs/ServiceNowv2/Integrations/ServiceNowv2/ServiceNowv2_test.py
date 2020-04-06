@@ -1,5 +1,5 @@
 import pytest
-from ServiceNowv2 import get_server_url, create_ticket_context, get_ticket_context, get_ticket_human_readable, \
+from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_readable, \
     generate_body, split_fields, Client, update_ticket_command
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \

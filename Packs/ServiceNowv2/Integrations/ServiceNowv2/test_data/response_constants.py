@@ -106,4 +106,3 @@ RESPONSE_UPDATE_TICKET = {
         'correlation_id': '', 'location': {'link': 'demisto.com', 'value': 'test'}, 'category': 'network'
     }
 }
-
