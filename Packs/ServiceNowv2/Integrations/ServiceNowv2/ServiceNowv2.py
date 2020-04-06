@@ -109,18 +109,20 @@ def create_ticket_context(data: dict) -> Any:
 
     # These fields refer to records in the database, the value is their system ID.
     if 'closed_by' in data:
-        context['ResolvedBy'] = data['closed_by']['value'] if 'value' in data['closed_by'] else ''
+        context['ResolvedBy'] = data['closed_by'].get('value', '')
     if 'opened_by' in data:
-        context['OpenedBy'] = data['opened_by']['value'] if 'value' in data['opened_by'] else ''
-        context['Creator'] = data['opened_by']['value'] if 'value' in data['opened_by'] else ''
+        context['OpenedBy'] = data['opened_by'].get('value', '')
+        context['Creator'] = data['opened_by'].get('value', '')
     if 'assigned_to' in data:
-        context['Assignee'] = data['assigned_to']['value'] if 'value' in data['assigned_to'] else ''
+        context['Assignee'] = data['assigned_to'].get('value', '')
 
     # Try to map fields
-    if 'priority' in data:
-        context['Priority'] = TICKET_PRIORITY.get(data['priority'], data['priority'])
-    if 'state' in data:
-        context['State'] = data['state']
+    priority = data.get('priority')
+    if priority:
+        context['Priority'] = TICKET_PRIORITY.get(priority)
+    state = data.get('state')
+    if state:
+        context['State'] = state
 
     return createContext(context, removeNull=True)
 
@@ -167,7 +169,7 @@ def get_ticket_human_readable(tickets, ticket_type: str) -> list:
 
         hr = {
             'Number': ticket.get('number'),
-            'System ID': ticket['sys_id'],
+            'System ID': ticket.get('sys_id'),
             'Created On': ticket.get('sys_created_on'),
             'Created By': ticket.get('sys_created_by'),
             'Active': ticket.get('active'),
@@ -186,18 +188,23 @@ def get_ticket_human_readable(tickets, ticket_type: str) -> list:
         }
 
         # Try to map the fields
-        if 'impact' in ticket:
-            hr['Impact'] = ticket_severity.get(ticket['impact'], ticket['impact'])
-        if 'urgency' in ticket:
-            hr['Urgency'] = ticket_severity.get(ticket['urgency'], ticket['urgency'])
-        if 'severity' in ticket:
-            hr['Severity'] = ticket_severity.get(ticket['severity'], ticket['severity'])
-        if 'priority' in ticket:
-            hr['Priority'] = TICKET_PRIORITY.get(ticket['priority'], ticket['priority'])
-        if 'state' in ticket:
-            mapped_state = ticket['state']
+        impact = ticket.get('impact', '')
+        if impact:
+            hr['Impact'] = ticket_severity.get(impact, impact)
+        urgency = ticket.get('urgency', '')
+        if urgency:
+            hr['Urgency'] = ticket_severity.get(urgency, urgency)
+        severity = ticket.get('severity', '')
+        if severity:
+            hr['Severity'] = ticket_severity.get(severity, severity)
+        priority = ticket.get('priority', '')
+        if priority:
+            hr['Priority'] = TICKET_PRIORITY.get(priority, priority)
+        state = ticket.get('state', '')
+        if state:
+            mapped_state = state
             if ticket_type in TICKET_STATES:
-                mapped_state = TICKET_STATES[ticket_type].get(ticket['state'], mapped_state)
+                mapped_state = TICKET_STATES[ticket_type].get(state, mapped_state)
             hr['State'] = mapped_state
         result.append(hr)
     return result
@@ -347,8 +354,8 @@ class Client(BaseClient):
             # Not supported in v2
             url = url.replace('v2', 'v1')
             try:
-                file_entry = file['id']
-                file_name = file['name']
+                file_entry = file.get('id', '')
+                file_name = file('name', '')
                 shutil.copy(demisto.getFilePath(file_entry)['path'], file_name)
                 with open(file_name, 'rb') as f:
                     files = {'file': f}
@@ -412,7 +419,7 @@ class Client(BaseClient):
         if len(result['result']) == 0:
             raise ValueError("Incorrect template name.")
 
-        template = result['result'][0]['template'].split('^')
+        template = result['result'][0].get('template', '').split('^')
         dic_template = {}
 
         for i in range(len(template) - 1):
@@ -448,7 +455,8 @@ class Client(BaseClient):
         attachments_res = self.get_ticket_attachments(ticket_id)
         if 'result' in attachments_res and len(attachments_res['result']) > 0:
             attachments = attachments_res['result']
-            links = [(attachment['download_link'], attachment['file_name']) for attachment in attachments]
+            links = [(attachment.get('download_link', ''), attachment.get('file_name', ''))
+                     for attachment in attachments]
 
         for link in links:
             file_res = requests.get(link[0], auth=(self._username, self._password), verify=self._verify)
@@ -471,14 +479,14 @@ class Client(BaseClient):
         """
         query_params = {}  # type: Dict
         if record_id:
-            path = 'table/' + table_name + '/' + record_id
+            path = f'table/{table_name}/{record_id}'
         elif number:
-            path = 'table/' + table_name
+            path = f'table/{table_name}'
             query_params = {
                 'number': number
             }
         elif custom_fields:
-            path = 'table/' + table_name
+            path = f'table/{table_name}'
             custom_fields_dict = {
                 k: v.strip('"') for k, v in [i.split("=", 1) for i in custom_fields.split(',')]
             }
@@ -1422,14 +1430,15 @@ def fetch_incidents(client: Client):
 
         file_names = []
         if client.get_attachments:
-            file_entries = client.get_ticket_attachment_entries(result['sys_id'])
-            for file_result in file_entries:
-                if file_result['Type'] == entryTypes['error']:
-                    raise Exception('Error getting attachment: ' + str(file_result['Contents']))
-                file_names.append({
-                    'path': file_result['FileID'],
-                    'name': file_result['File']
-                })
+            file_entries = client.get_ticket_attachment_entries(result.get('sys_id', ''))
+            if isinstance(file_result, list):
+                for file_result in file_entries:
+                    if file_result['Type'] == entryTypes['error']:
+                        raise Exception(f"Error getting attachment: {str(file_result.get('Contents', ''))}")
+                    file_names.append({
+                        'path': file_result.get('FileID', ''),
+                        'name': file_result.ge('File', '')
+                    })
 
         incidents.append({
             'name': 'ServiceNow Incident ' + result.get('number'),
@@ -1441,7 +1450,7 @@ def fetch_incidents(client: Client):
         })
 
         count += 1
-        snow_time = result[client.timestamp_field]
+        snow_time = result.get(client.timestamp_field)
 
     demisto.incidents(incidents)
     demisto.setLastRun({'time': snow_time})
