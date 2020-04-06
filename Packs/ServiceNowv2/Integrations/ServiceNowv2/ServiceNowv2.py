@@ -255,7 +255,7 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '
     return ticket_fields
 
 
-def get_body(fields: dict, custom_fields: dict) -> dict:
+def generate_body(fields: dict, custom_fields: dict) -> dict:
     """Generates a body from fields and custom fields.
 
     Args:
@@ -469,7 +469,7 @@ class Client(BaseClient):
 
         return entries
 
-    def get(self, table_name: str, record_id: str, custom_fields: str = '', number: str = None) -> dict:
+    def get(self, table_name: str, record_id: str, custom_fields: dict = {}, number: str = None) -> dict:
         """Get a ticket by sending a GET request.
 
         Args:
@@ -491,10 +491,7 @@ class Client(BaseClient):
             }
         elif custom_fields:
             path = f'table/{table_name}'
-            custom_fields_dict = {
-                k: v.strip('"') for k, v in [i.split("=", 1) for i in custom_fields.split(',')]
-            }
-            query_params = custom_fields_dict
+            query_params = custom_fields
         else:
             # Only in cases where the table is of type ticket
             raise ValueError('servicenow-get-ticket requires either ticket ID (sys_id) or ticket number.')
@@ -513,7 +510,7 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        body = get_body(fields, custom_fields)
+        body = generate_body(fields, custom_fields)
         return self.send_request(f'table/{table_name}/{record_id}', 'PATCH', body=body)
 
     def create(self, table_name: str, fields: dict, custom_fields: dict) -> dict:
@@ -528,7 +525,7 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        body = get_body(fields, custom_fields)
+        body = generate_body(fields, custom_fields)
         return self.send_request(f'table/{table_name}', 'POST', body=body)
 
     def delete(self, table_name: str, record_id: str) -> dict:
@@ -635,7 +632,7 @@ def get_ticket_command(client: Client, args: dict):
     ticket_id = str(args.get('id', ''))
     number = str(args.get('number', ''))
     get_attachments = args.get('get_attachments', 'false')
-    custom_fields = str(args.get('custom_fields', ''))
+    custom_fields = split_fields(str(args.get('custom_fields', '')))
 
     result = client.get(ticket_type, ticket_id, custom_fields, number)
     if not result or 'result' not in result:
