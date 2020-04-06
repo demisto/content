@@ -38,7 +38,7 @@ tasks:
     nexttasks:
       '#default#':
       - '4'
-      yes:
+      'yes':
       - '2'
     separatecontext: false
     conditions:
@@ -87,7 +87,7 @@ tasks:
     nexttasks:
       '#default#':
       - '4'
-      yes:
+      'yes':
       - '3'
     separatecontext: false
     conditions:
