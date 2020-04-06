@@ -1,4 +1,4 @@
-comment: Retrieves users which are currently on-call (on shift).
+comment: Retrieves users that are currently on-call (on shift).
 commonfields:
   id: GetUsersOnCall
   version: -1
