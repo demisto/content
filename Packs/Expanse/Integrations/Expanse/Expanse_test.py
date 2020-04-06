@@ -112,7 +112,7 @@ def test_certificate(mocker):
     mocker.patch.object(demisto, 'results')
     main()
     results = demisto.results.call_args[0]
-    assert results[0]['EntryContext']['Certificate(val.SearchTerm == obj.SearchTerm)']['CommonName'] == TEST_DOMAIN
+    assert results[0]['EntryContext']['Expanse.Certificate(val.SearchTerm == obj.SearchTerm)']['CommonName'] == TEST_DOMAIN
 
 
 def test_behavior(mocker):

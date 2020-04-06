@@ -4,6 +4,7 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 
+import dateparser
 import json
 import re
 import requests
@@ -819,7 +820,7 @@ def behavior_command():
         'Expanse.Behavior(val.SearchTerm == obj.SearchTerm)': expanse_behavior_context
     }
 
-    del expanse_behavior_context['Flows'] # Remove flow objects from human readable response
+    del expanse_behavior_context['Flows']  # Remove flow objects from human readable response
     human_readable = tableToMarkdown("Expanse Behavior information for: {search}".format(search=search), expanse_behavior_context)
 
     return_outputs(human_readable, ec, behaviors)
