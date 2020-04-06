@@ -472,33 +472,6 @@ def get_expanse_domain_context(data):
     return c
 
 
-def get_certificate_context(data):
-    """
-    provide standard context information about certificate with data from Expanse API.
-    """
-    return {
-        "SearchTerm": data['search'],
-        "CommonName": data['commonName'],
-        "Provider": data['providers'][0]['name'],
-        "NotValidBefore": data['certificate']['validNotBefore'],
-        "NotValidAfter": data['certificate']['validNotAfter'],
-        "Issuer": {
-            "Name": data['certificate']['issuerName'],
-            "Email": data['certificate']['issuerEmail'],
-            "Country": data['certificate']['issuerCountry']
-        },
-        "Subject": {
-            "Name": data['certificate']['subjectName'],
-            "Email": data['certificate']['subjectEmail'],
-            "Country": data['certificate']['subjectCountry'],
-        },
-        "Properties": data['properties'][0],
-        "MD5Hash": data['certificate']['md5Hash'],
-        "PublicKeyAlgorithm": data['certificate']['publicKeyAlgorithm'],
-        "PublicKeyBits": data['certificate']['publicKeyBits']
-    }
-
-
 def get_expanse_certificate_context(data):
     """
     provide custom context information about certificate with data from Expanse API
@@ -566,12 +539,27 @@ def get_expanse_behavior_context(data):
             t=flow['observationTimestamp']
         )
 
+    def flow_to_obj(flow):
+        return {
+            "InternalAddress": flow['internalAddress'],
+            "InternalPort": flow['internalPort'],
+            "InternalCountryCode": flow['internalCountryCode'],
+            "ExternalAddress": flow['externalAddress'],
+            "ExternalPort": flow['externalPort'],
+            "ExternalCountryCode": flow['externalCountryCode'],
+            "Protocol": flow['protocol'],
+            "Timestamp": flow['observationTimestamp'],
+            "Direction": flow['flowDirection'],
+            "RiskRule": flow['riskRule']['name']
+        }
+
     return {
         "SearchTerm": data[0]['internalAddress'],
         "InternalAddress": data[0]['internalAddress'],
         "InternalCountryCode": data[0]['internalCountryCode'],
         "BusinessUnit": data[0]['businessUnit']['name'],
-        "Flows": '\n'.join([flow_to_str(flow) for flow in data]),
+        "FlowSummaries": '\n'.join([flow_to_str(flow) for flow in data]),
+        "Flows": [flow_to_obj(flow) for flow in data],
         "ExternalAddresses": ','.join(set([flow['externalAddress'] for flow in data])),
         "InternalDomains": ','.join(data[0]['internalDomains']),
         "InternalIPRanges": ','.join(data[0]['internalTags']['ipRange']),
@@ -774,6 +762,9 @@ def certificate_command():
     results = http_request('GET', 'assets/certificates', params, token=token)
     try:
         certs = results['data']
+        if len(results['data']) == 0:
+            demisto.results("No data found")
+            return
     except Exception:
         demisto.results("No data found")
         return
@@ -781,18 +772,9 @@ def certificate_command():
     cert = certs[0]  # just return the first one
     cert['search'] = search
 
-    dbot_context = {
-        "Indicator": search,
-        "Type": "certificate",
-        "Vendor": "Expanse",
-        "Score": 0
-    }
-    cert_context = get_certificate_context(cert)
     expanse_cert_context = get_expanse_certificate_context(cert)
 
     ec = {
-        'DBotScore': dbot_context,
-        'Certificate(val.SearchTerm == obj.SearchTerm)': cert_context,
         'Expanse.Certificate(val.SearchTerm == obj.SearchTerm)': expanse_cert_context
     }
     human_readable = tableToMarkdown("Certificate information for: {search}".format(search=search), expanse_cert_context)
@@ -805,7 +787,11 @@ def behavior_command():
     searches by ip for behavior details from Expanse
     """
     search = demisto.args()['ip']
-    start_time = demisto.args().get('start_time')
+    start_time = arg_to_timestamp(
+        demisto.args().get('start_time'),
+        arg_name='start_time',
+        required=False
+    )
 
     now = datetime.today()
     time_range = datetime.strftime(now - timedelta(days=FIRST_RUN), "%Y-%m-%d")
@@ -820,6 +806,9 @@ def behavior_command():
     results = http_request('GET', 'behavior/risky-flows', params, token=token)
     try:
         behaviors = results['data']
+        if len(behaviors) == 0:
+            demisto.results("No data found")
+            return
     except Exception:
         demisto.results("No data found")
         return
@@ -829,9 +818,32 @@ def behavior_command():
     ec = {
         'Expanse.Behavior(val.SearchTerm == obj.SearchTerm)': expanse_behavior_context
     }
+
+    del expanse_behavior_context['Flows'] # Remove flow objects from human readable response
     human_readable = tableToMarkdown("Expanse Behavior information for: {search}".format(search=search), expanse_behavior_context)
 
     return_outputs(human_readable, ec, behaviors)
+
+
+def arg_to_timestamp(arg, arg_name: str, required: bool = False):
+    if arg is None:
+        if required is True:
+            raise ValueError(f'Missing "{arg_name}"')
+        return None
+
+    if isinstance(arg, str) and arg.isdigit():
+        # timestamp that str - we just convert it to int
+        return int(arg)
+    if isinstance(arg, str):
+        # if the arg is string of date format 2019-10-23T00:00:00 or "3 days", etc
+        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+        if date is None:
+            # if d is None it means dateparser failed to parse it
+            raise ValueError(f'Invalid date: {arg_name}')
+
+        return int(date.timestamp())
+    if isinstance(arg, (int, float)):
+        return arg
 
 
 def test_module():
