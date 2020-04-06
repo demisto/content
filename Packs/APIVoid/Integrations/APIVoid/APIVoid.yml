@@ -9,36 +9,36 @@ description: APIVoid wraps up a number of services such as ipvoid & urlvoid
 configuration:
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
+  defaultvalue: ''
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
+  defaultvalue: ''
   type: 8
   required: false
 - display: API KEY
   name: apikey
-  defaultvalue: ""
+  defaultvalue: ''
   type: 4
   required: true
 - display: Good Reputation (Percentage)
   name: good
-  defaultvalue: "10"
+  defaultvalue: '10'
   type: 0
   required: true
   additionalinfo: If the percentage of detections is BELOW this value, the indicator
     is considered GOOD
 - display: Suspicious Reputation (Percentage)
   name: suspicious
-  defaultvalue: "30"
+  defaultvalue: '30'
   type: 0
   required: true
   additionalinfo: If the percentage of detections is ABOVE this value, the indicator
     is considered SUSPICIOUS
 - display: Bad Reputation (Percentage)
   name: bad
-  defaultvalue: "60"
+  defaultvalue: '60'
   type: 0
   required: true
   additionalinfo: If the percentage of detections is ABOVE this value, the indicator
@@ -457,6 +457,8 @@ script:
     - name: ip
       required: true
       description: The IP to query.
+      default: true
+      isArray: true
     outputs:
     - contextPath: IP
     - contextPath: IP.Address
@@ -489,6 +491,8 @@ script:
     - name: domain
       required: true
       description: The Domain to query.
+      default: true
+      isArray: true
     outputs:
     - contextPath: Domain
     - contextPath: Domain.DNS
@@ -514,6 +518,8 @@ script:
     - name: url
       required: true
       description: The URL to query.
+      default: true
+      isArray: true
     outputs:
     - contextPath: URL
     - contextPath: URL.Data
@@ -1121,3 +1127,4 @@ script:
   dockerimage: demisto/python3:3.7.4.977
   runonce: false
   subtype: python3
+fromversion: 5.0.0
