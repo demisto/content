@@ -1,4 +1,5 @@
 ## [Unreleased]
+-
   - Improved logging for fetch_incidents.
   - Improved error handling.
   

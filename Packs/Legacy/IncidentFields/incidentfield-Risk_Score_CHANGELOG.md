@@ -1,4 +1,5 @@
 ## [Unreleased]
+-
 Associated to new 'GCP Compute Engine Misconfiguration' incident type.
 
 

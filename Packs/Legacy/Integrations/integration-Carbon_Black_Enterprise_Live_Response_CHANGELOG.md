@@ -1,4 +1,5 @@
 ## [Unreleased]
+-
 Fixed an issue where the description for deprecated commands did not refer to commands that replace them.
 
 ## [19.12.1] - 2019-12-25

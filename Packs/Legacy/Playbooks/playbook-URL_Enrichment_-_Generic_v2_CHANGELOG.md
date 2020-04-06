@@ -1,4 +1,5 @@
 ## [Unreleased]
+-
 The playbook will not stop if Rasterize fails. This improves the playbook stability when rasterizing URLs of websites that are currently down.
 
 ## [19.10.2] - 2019-10-29

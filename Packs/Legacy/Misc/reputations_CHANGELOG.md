@@ -1,4 +1,5 @@
 ## [Unreleased]
+-
 The **CVE CVSS Score** indicator type is only available in Demisto version 4.5.x and earlier.
 
 ## [19.11.1] - 2019-11-26

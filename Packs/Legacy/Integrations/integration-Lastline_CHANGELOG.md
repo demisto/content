@@ -1,4 +1,5 @@
 ## [Unreleased]
+-
   - Deprecated. Use the Lastline v2 integration instead.
   
 ## [18.8.2] - 2018-08-21

@@ -1,4 +1,5 @@
 ## [Unreleased]
+-
 - Added the ***splunk-job-status*** command, which checks the status of a job.
 
 ## [20.3.4] - 2020-03-30

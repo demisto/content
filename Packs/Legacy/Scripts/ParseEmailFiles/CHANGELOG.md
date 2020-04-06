@@ -1,4 +1,5 @@
 ## [Unreleased]
+-
 Improved handling of attachments.
 
 ## [20.2.0] - 2020-02-04

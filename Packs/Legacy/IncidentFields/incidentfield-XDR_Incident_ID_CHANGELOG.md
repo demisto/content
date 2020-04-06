@@ -1,4 +1,5 @@
 ## [Unreleased]
+-
 Associated the XDR Incident ID field to the Cortex XDR Port Scan incident type.
 
 ## [19.9.0] - 2019-09-04
