@@ -734,7 +734,7 @@ class Pack(object):
                 base64_image = integration_yml['image'].split(',')[1] if integration_yml.get('image') else None
 
                 if not base64_image:
-                    print_warning(f"No integration image was found for {image_data['display_name']}")
+                    print_warning(f"No image was found with integration name: {image_data['name']}")
                     continue  # no image found current integration
 
                 temp_image_name = f'{integration_name}_image.png'
