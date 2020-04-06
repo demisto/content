@@ -147,7 +147,7 @@ configuration:
   - SqlManagement
   required: true
   type: 16
-- display: Tags
+- display: FeedTags
   name: tags
   required: false
   type: 0

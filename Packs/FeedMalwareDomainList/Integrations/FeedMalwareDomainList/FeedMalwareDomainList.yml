@@ -61,7 +61,7 @@ configuration:
   required: false
   type: 8
   defaultvalue: ""
-- display: Tags
+- display: FeedTags
   name: tags
   required: false
   type: 0
