@@ -1,0 +1,63 @@
+category: Case Management
+commonfields:
+  id: ArcherV2
+  version: -1
+configuration:
+- defaultvalue: https://example.net
+  display: Server URL (e.g. https://example.net)
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Instance name
+  hidden: false
+  name: instanceName
+  required: false
+  type: 0
+- display: User domain
+  hidden: false
+  name: userDomain
+  required: false
+  type: 0
+description: This is the Hello World integration for getting started.
+display: RSA Archer V2
+name: ArcherV2
+script:
+  commands:
+  - arguments:
+    - default: false
+      isArray: false
+      name: application-id
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: archer-search-applications
+  dockerimage: demisto/python3:3.7.4.2245
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
