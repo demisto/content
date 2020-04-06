@@ -92,8 +92,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '10'
-      description: The maximum number of indicators to return. The default value is
-        10.
+      description: The maximum number of indicators to return.
       isArray: false
       name: limit
       required: false
