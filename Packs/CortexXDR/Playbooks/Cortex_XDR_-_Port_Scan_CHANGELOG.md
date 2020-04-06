@@ -1,2 +1,2 @@
 ## [Unreleased]
-Added the *OnCall* input to assign only users that are on shift.
+Added the *OnCall* input, which enables you to assign only users that are currently on shift.
