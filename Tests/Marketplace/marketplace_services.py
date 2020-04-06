@@ -716,12 +716,14 @@ class Pack(object):
             target_folder_files (list): list of files inside the targeted folder.
 
         Returns:
-            dict: path to temporary integration image and display name of the integration.
+            list: collection of paths to temporary integration images and display names of the integrations.
 
         """
-        image_data = {}
+        images_data_collection = []
 
         for pack_file in target_folder_files:
+            image_data = {}
+
             if pack_file.endswith('.yml'):
                 with open(os.path.join(root, pack_file), 'r') as integration_file:
                     integration_yml = yaml.safe_load(integration_file)
@@ -729,7 +731,12 @@ class Pack(object):
                 image_data['display_name'] = integration_yml.get('display', '')
                 # create temporary file of base64 decoded data
                 integration_name = integration_yml.get('name', '')
-                base64_image = integration_yml.get('image').split(',')[1]
+                base64_image = integration_yml['image'].split(',')[1] if integration_yml.get('image') else None
+
+                if not base64_image:
+                    print_warning(f"No integration image was found for {image_data['display_name']}")
+                    continue  # no image found current integration
+
                 temp_image_name = f'{integration_name}_image.png'
                 temp_image_path = os.path.join(self._pack_path, temp_image_name)
 
@@ -739,7 +746,10 @@ class Pack(object):
                 self._remove_files_list.append(temp_image_name)  # add temporary file to tracking list
                 image_data['repo_image_path'] = temp_image_path
 
-        return image_data
+                if image_data:
+                    images_data_collection.append(image_data)
+
+        return images_data_collection
 
     def _search_for_images(self, target_folder, folder_depth=2):
         """ Searches for png files in targeted folder.
@@ -766,13 +776,16 @@ class Pack(object):
                         # detected spitted integration yml file
                         image_data = Pack._get_spitted_yml_image_data(root, target_folder_files)
 
+                        if image_data:
+                            local_repo_images.append(image_data)
+
                     elif any(f.endswith('.yml') for f in target_folder_files) \
                             and not any(f.endswith('_image.png') for f in target_folder_files):
                         # detected not spitted integration file
-                        image_data = self._get_not_spitted_yml_image_data(root, target_folder_files)
+                        images_data_collection = self._get_not_spitted_yml_image_data(root, target_folder_files)
 
-                    if image_data:
-                        local_repo_images.append(image_data)
+                        if images_data_collection:
+                            local_repo_images.extend(images_data_collection)
 
         return local_repo_images
 
