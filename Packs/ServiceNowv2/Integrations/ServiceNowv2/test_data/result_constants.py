@@ -114,3 +114,15 @@ EXPECTED_UPDATE_TICKET = {
         'Priority': '4 - Low', 'State': '1'
     }
 }
+EXPECTED_CREATE_TICKET = {
+    'Ticket(val.ID===obj.ID)': {
+        'ID': 'sys_id', 'Number': 'INC0010007', 'CreatedOn': '2020-04-06 13:04:44',
+        'Active': 'true', 'OpenedAt': '2020-04-06 13:04:44', 'OpenedBy': 'test',
+        'Creator': 'test', 'Priority': '5 - Planning', 'State': '1'
+    },
+    'ServiceNow.Ticket(val.ID===obj.ID)': {
+        'ID': 'sys_id', 'Number': 'INC0010007', 'CreatedOn': '2020-04-06 13:04:44',
+        'Active': 'true', 'OpenedAt': '2020-04-06 13:04:44', 'OpenedBy': 'test',
+        'Creator': 'test', 'Priority': '5 - Planning', 'State': '1'
+    }
+}

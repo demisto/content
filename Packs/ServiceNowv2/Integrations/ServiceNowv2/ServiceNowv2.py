@@ -874,7 +874,7 @@ def update_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
                                      t=mapped_record, removeNull=True),
     entry_context = {'ServiceNow.Record(val.ID===obj.ID)': createContext(mapped_record)}
 
-    return human_readable, entry_context, record
+    return human_readable, entry_context, result
 
 
 def delete_record_command(client: Client, args: dict) -> Tuple[str, Dict[Any, Any], Dict]:
