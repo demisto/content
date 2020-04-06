@@ -128,18 +128,24 @@ def execute_function_command(client: GoogleClient, args: dict):
 '''HELPER FUNCTIONS'''
 
 
+@logger
 def format_parameters(parameters: str) -> str:
-    final_s = ''
-    for i in parameters.split(','):
-        temp = i.strip()
-        if len(temp.split(':')) != 2:
-            raise ValueError(f"Key:Value pair {i} is not in the correct format.")
-        key, value = temp.split(':')
-        final_s += key.strip() + ':' + value.strip() + ','
-    final_s = final_s[:-1]
-    final_s = final_s.replace(',', '","')
-    final_s = '{"' + final_s.replace(':', '":"') + '"}'
-    return final_s
+    """
+    Receives a key:value string and retuns a dictionary string ({"key":"value"}). In the process strips trailing and
+    leading spaces.
+    :param parameters: The key-value-list
+    :return:
+    """
+    if not parameters:
+        return '{}'
+    pairs = []
+    for item in parameters.split(','):
+        try:
+            key, value = item.split(':')
+        except ValueError:
+            raise ValueError(f"Got unexpected parameters {item}.")
+        pairs.append((key.strip(), value.strip()))
+    return json.dumps(dict(pairs))
 
 
 def main():
@@ -160,7 +166,7 @@ def main():
     LOG(f'Command being called is {cmd_func}')
     try:
         if cmd_func == 'test-module':
-            region_list_command(client, {})
+            functions_list_command(client, {})
             demisto.results('ok')
         else:
             hr, outputs, raw = commands[cmd_func](client, demisto.args())
@@ -173,5 +179,3 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
-# TODO Check Proxy

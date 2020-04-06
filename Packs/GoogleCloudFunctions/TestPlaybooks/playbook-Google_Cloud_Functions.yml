@@ -1,4 +1,4 @@
-id: test playbook - Google Cloud Functions
+id: Google Cloud Functions
 version: -1
 name: test playbook - Google Cloud Functions
 starttaskid: "0"

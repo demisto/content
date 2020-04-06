@@ -1,7 +1,7 @@
 {
     "name": "Google Cloud Functions",
     "description": "",
-    "support": "demisto",
+    "support": "Cortex XSOAR",
     "serverMinVersion": "5.0.0",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

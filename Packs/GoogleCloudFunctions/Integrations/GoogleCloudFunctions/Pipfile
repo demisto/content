@@ -13,6 +13,10 @@ pytest-asyncio = "*"
 [packages]
 pytest = "*"
 requests = "*"
+urllib = "*"
+httplib2 = "*"
+oauth2client = "*"
+apiclient = "*"
 
 [requires]
 python_version = "3.7"
