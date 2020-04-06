@@ -39,7 +39,7 @@ tasks:
     nexttasks:
       '#default#':
       - '19'
-      yes:
+      'yes':
       - '6'
     scriptarguments:
       value:
@@ -76,7 +76,7 @@ tasks:
     nexttasks:
       '#default#':
       - '19'
-      yes:
+      'yes':
       - '20'
     scriptarguments:
       value:
@@ -156,7 +156,7 @@ tasks:
     nexttasks:
       '#default#':
       - '19'
-      yes:
+      'yes':
       - '17'
     scriptarguments:
       value:
