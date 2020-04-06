@@ -41,6 +41,14 @@ Use the Export Indicators Service integration to provide an endpoint with a list
     be listed in the output. If not set will list all existing categories.
 4. Click __Test__ to validate the URLs, token, and connection.
 
+### Access the Export Indicators Service by Instance Name (HTTPS)
+**The route will be open without security hardening and might expose you to network risks.**
+
+To access the EDL service by instance name, make sure ***Instance execute external*** is enabled. 
+
+1. In Demisto, go to **Settings > About > Troubleshooting**.
+2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/integrations/long-running#invoking-http-integrations-via-cortex-xsoar-servers-route-handling) for further information.
+3. In a web browser, go to **https://*<demisto_address>*/instance/execute/*<instance_name>*** .
 
 ### Update values in the export indicators service
 ---
