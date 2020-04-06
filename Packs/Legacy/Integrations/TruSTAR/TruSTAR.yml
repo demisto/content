@@ -1,6 +1,6 @@
 commonfields:
   id: TruSTAR
-  version: 2
+  version: -1
 name: TruSTAR
 display: TruSTAR
 category: Data Enrichment & Threat Intelligence
@@ -650,38 +650,54 @@ script:
       predefined:
       - CONFIRMED
       - IGNORED
-    description: Marks a phishing email submission with one of the phishing namespace
-      tags
+      description: Submission status
+    description: Marks a phishing email submission with one of the phishing namespace tags
   - name: trustar-get-all-phishing-indicators
     arguments:
-    - name: from
-      description: 'Unix timestamp: start of time window (milliseconds since epoch)
-        (default: 24 hours, max: 2 weeks back)'
-    - name: to
-      description: 'Unix timestamp: end of time window (milliseconds since epoch)
-        (default: currentTime)'
-    - name: normalizedSourceScore
+    - name: normalized_source_score
       default: true
-      description: 'List<Int>:  intel score of the indicator (default: [3])'
-      defaultValue: "3"
-    - name: normalizedTriageScore
-      description: 'List<Int>: score of email submission (default: [-1,0,1,2,3])'
+      description: Intel score of the indicator
+      defaultValue: 3
+    - name: normalized_triage_score
+      description: Score of email submission
       isArray: true
-      defaultValue: -1,0,1,2,3
+      defaultValue: 3
     - name: status
-      description: 'List<String>: a list of triage statuses for submissions; only
-        email submissions marked with atleast one of these statuses will be returned
-        (default: ["UNRESOLVED”])'
       isArray: true
       defaultValue: UNRESOLVED
-    - name: enclaveIds
-      description: ' List<String>: comma-separated list of enclave ids (defaults:
-        all of user’s enclaves)'
-    - name: cursor
-      description: 'String (Optional): a Base64-encoded string that contains information
-        on how to retrieve the next page. If you don’t pass a cursor, it will default
-        to pageSize: 25, pageNumber: 0'
-  dockerimage: demisto/trustar:latest
+      description: A list of triage statuses for submissions; 
+        only email submissions marked with at least one of these statuses will be returned.
+        Options are 'UNRESOLVED', 'CONFIRMED', 'IGNORED'
+    outputs:
+    - contextPath: File.Name
+      description: File name
+      type: string
+    - contextPath: File.MD5
+      description: File MD5
+      type: string
+    - contextPath: File.SHA1
+      description: File SHA1
+      type: string
+    - contextPath: File.SHA256
+      description: File SHA256
+      type: string
+    - contextPath: URL.Address
+      description: URL address
+      type: string
+    - contextPath: IP.Address
+      description: IP address
+      type: string
+    - contextPath: Account.Email.Address
+      description: Email address
+      type: string
+    - contextPath: RegistryKey.Path
+      description: Registry key path
+      type: string
+    - contextPath: CVE.ID
+      description: CVE ID
+      type: string
+    description: Get phishing indicators that match the given criteria.
+  dockerimage: demisto/trustar:1.0.0.7265
   runonce: false
   subtype: python3
 sourcemoduleid: TruSTAR

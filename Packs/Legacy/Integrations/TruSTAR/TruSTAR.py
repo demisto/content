@@ -651,6 +651,27 @@ def get_enclaves():
     return entry
 
 
+def get_all_phishing_indicators(normalized_triage_score, normalized_source_score, status):
+    cursor = "eyJwYWdlU2l6ZSI6MTAwLCJwYWdlTnVtYmVyIjowfQ=="  # Base64 for '{"pageSize":100,"pageNumber":0}'
+    response = ts.get_phishing_indicators_page(normalized_triage_score=normalized_triage_score,
+                                               normalized_source_score=normalized_source_score,
+                                               status=status,
+                                               cursor=cursor)
+    indicators, ec = translate_indicators(response.items)
+    if indicators:
+        title = f'TruSTAR phishing indicators'
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': indicators,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, indicators),
+            'EntryContext': ec
+        }
+        return entry
+    return 'No phishing indicators were found.'
+
+
 ''' EXECUTION CODE '''
 config = {
     'user_api_key': API_KEY,
@@ -742,6 +763,9 @@ try:
     elif demisto.command() == 'domain':
         demisto.results(generic_search_indicator(demisto.args().get('domain'), demisto.params().get('domain_threshold'),
                                                  ('Domain', 'URL',), create_domain_ec))
+
+    elif demisto.command() == 'trustar-get-all-phishing-indicators':
+        demisto.results(get_all_phishing_indicators(None, None, None))
 
 except Exception as e:
     return_error(str(e))
