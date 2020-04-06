@@ -180,6 +180,8 @@ def get_alerts_helper(params):
 
 
 def extract_mail(replies):
+    if not replies:
+        return ''
     mails = []
     for reply in replies:
         mails.append(reply.get('Email'))
