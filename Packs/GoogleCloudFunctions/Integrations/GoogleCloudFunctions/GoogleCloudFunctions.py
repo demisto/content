@@ -14,34 +14,36 @@ class GoogleClient:
     """
     A Client class to wrap the google cloud api library.
     """
-    def __init__(self, service_name, service_version, client_secret, proxy, **kwargs):
+    def __init__(self, service_name, service_version, client_secret, proxy, insecure, **kwargs):
         self.project = kwargs.get('project', '')
         self.region = kwargs.get('region', '-')
         credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(client_secret)
-        if proxy:
-            http_client = credentials.authorize(self.get_http_client_with_proxy())
-            self.service = discovery.build(service_name, service_version, http=http_client)
+        # Currently proxy or insecure not implemented so will always be false.
+        if proxy or insecure:
+            http_client = credentials.authorize(self.get_http_client_with_proxy(proxy, insecure))
+            self.service = discovery.build(service_name, service_version, credentials=credentials, http=http_client)
         else:
             self.service = discovery.build(service_name, service_version, credentials=credentials)
 
     # disable-secrets-detection-start
     @staticmethod
-    def get_http_client_with_proxy():
-        proxies = handle_proxy()
-        if not proxies or not proxies['https']:
-            raise Exception('https proxy value is empty. Check Demisto server configuration')
-        https_proxy = proxies['https']
-        if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
-            https_proxy = 'https://' + https_proxy
-        parsed_proxy = urllib.parse.urlparse(https_proxy)
-        proxy_info = httplib2.ProxyInfo(
-            proxy_type=httplib2.socks.PROXY_TYPE_HTTP,
-            proxy_host=parsed_proxy.hostname,
-            proxy_port=parsed_proxy.port,
-            proxy_user=parsed_proxy.username,
-            proxy_pass=parsed_proxy.password)
-        return httplib2.Http(proxy_info=proxy_info)
-
+    def get_http_client_with_proxy(proxy, insecure):
+        if proxy:
+            proxies = handle_proxy()
+            if not proxies or not proxies['https']:
+                raise Exception('https proxy value is empty. Check Demisto server configuration')
+            https_proxy = proxies['https']
+            if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
+                https_proxy = 'https://' + https_proxy
+            parsed_proxy = urllib.parse.urlparse(https_proxy)
+            proxy_info = httplib2.ProxyInfo(
+                proxy_type=httplib2.socks.PROXY_TYPE_HTTP,
+                proxy_host=parsed_proxy.hostname,
+                proxy_port=parsed_proxy.port,
+                proxy_user=parsed_proxy.username,
+                proxy_pass=parsed_proxy.password)
+            return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=insecure)
+        return httplib2.Http(disable_ssl_certificate_validation=insecure)
     # disable-secrets-detection-end
 
     def functions_list(self, region=None, project_id=None):
@@ -151,14 +153,16 @@ def format_parameters(parameters: str) -> str:
 def main():
     credentials_json = json.loads(demisto.params().get('credentials_json', {}))
     project = demisto.params().get('project_id', '')
-    proxy = demisto.params().get('proxy', False)
     region = demisto.params().get('region')
-    client = GoogleClient('cloudfunctions', 'v1', credentials_json, proxy, project=project, region=region)
+    # proxy and insecure not yet implemented
+    proxy = demisto.params().get('proxy', False)
+    insecure = demisto.params().get('insecure', False)
+    client = GoogleClient('cloudfunctions', 'v1', credentials_json, proxy, insecure, project=project, region=region)
     commands = {
         'google-cloud-functions-list': functions_list_command,
         'google-cloud-function-regions-list': region_list_command,
         'google-cloud-function-get-by-name': get_function_by_name_command,
-        'google-cloud-function-execute': execute_function_command
+        'google-cloud-function-execute': execute_function_command,
     }
 
     '''EXECUTION CODE'''
