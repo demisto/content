@@ -108,18 +108,22 @@ def create_ticket_context(data: dict) -> Any:
     }
 
     # These fields refer to records in the database, the value is their system ID.
-    if 'closed_by' in data:
-        context['ResolvedBy'] = data['closed_by'].get('value', '')
-    if 'opened_by' in data:
-        context['OpenedBy'] = data['opened_by'].get('value', '')
-        context['Creator'] = data['opened_by'].get('value', '')
-    if 'assigned_to' in data:
-        context['Assignee'] = data['assigned_to'].get('value', '')
+
+    closed_by = data.get('closed_by')
+    if closed_by:
+        context['ResolvedBy'] = closed_by.get('value', '')
+    opened_by = data.get('opened_by')
+    if opened_by:
+        context['OpenedBy'] = opened_by.get('value', '')
+        context['Creator'] = opened_by.get('value', '')
+    assigned_to = data.get('assigned_to')
+    if assigned_to:
+        context['Assignee'] = assigned_to.get('value', '')
 
     # Try to map fields
     priority = data.get('priority')
     if priority:
-        context['Priority'] = TICKET_PRIORITY.get(priority)
+        context['Priority'] = TICKET_PRIORITY.get(priority, priority)
     state = data.get('state')
     if state:
         context['State'] = state
@@ -210,7 +214,7 @@ def get_ticket_human_readable(tickets, ticket_type: str) -> list:
     return result
 
 
-def get_ticket_fields(args: dict, template_name: dict, ticket_type: str) -> dict:
+def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '') -> dict:
     """Inverse the keys and values of those dictionaries
     to map the arguments to their corresponding values in ServiceNow.
 
@@ -683,23 +687,20 @@ def update_ticket_command(client: Client, args: dict) -> Tuple[Any, Dict, Dict]:
         Demisto Outputs.
     """
     custom_fields = split_fields(str(args.get('custom_fields', '')))
-    template_name = str(args.get('template', ''))
     ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
     ticket_id = str(args.get('id', ''))
 
-    if template_name:
-        template_dict = client.get_template(template_name)
-    fields = get_ticket_fields(args, template_dict, ticket_type)
+    fields = get_ticket_fields(args, ticket_type=ticket_type)
 
     result = client.update(ticket_type, ticket_id, fields, custom_fields)
-
     if not result or 'result' not in result:
         raise Exception('Unable to retrieve response.')
+    ticket = result['result']
 
-    hr = get_ticket_human_readable(result['result'], ticket_type)
+    hr_ = get_ticket_human_readable(ticket, ticket_type)
     human_readable = tableToMarkdown(f'ServiceNow ticket updated successfully\nTicket type: {ticket_type}',
-                                     t=hr, removeNull=True)
-    entry_context = get_ticket_context(result['result'])
+                                     t=hr_, removeNull=True)
+    entry_context = get_ticket_context(ticket)
 
     return human_readable, entry_context, result
 
