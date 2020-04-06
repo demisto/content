@@ -106,3 +106,11 @@ EXPECTED_MULTIPLE_TICKET_HR = [
         'Urgency': '3 - Low'
     }
 ]
+EXPECTED_UPDATE_TICKET = {
+    'ServiceNow.Ticket(val.ID===obj.ID)': {
+        'ID': 'sys_id', 'Summary': 'Trouble getting to Oregon mail server',
+        'Number': 'INC0000039', 'CreatedOn': '2019-09-05 00:42:29', 'Active': 'true', 'OpenedAt': '2019-09-05 00:41:01',
+        'OpenedBy': 'test', 'Creator': 'test',
+        'Priority': '4 - Low', 'State': '1'
+    }
+}

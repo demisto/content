@@ -697,7 +697,7 @@ def update_ticket_command(client: Client, args: dict) -> Tuple[Any, Dict, Dict]:
     hr_ = get_ticket_human_readable(ticket, ticket_type)
     human_readable = tableToMarkdown(f'ServiceNow ticket updated successfully\nTicket type: {ticket_type}',
                                      t=hr_, removeNull=True)
-    entry_context = get_ticket_context(ticket)
+    entry_context = {'ServiceNow.Ticket(val.ID===obj.ID)': get_ticket_context(ticket)}
 
     return human_readable, entry_context, result
 
@@ -724,16 +724,21 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
 
     if not result or 'result' not in result:
         raise Exception('Unable to retrieve response.')
+    ticket = result['result']
 
-    hr = get_ticket_human_readable(result['result'], ticket_type)
+    hr_ = get_ticket_human_readable(ticket, ticket_type)
     headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On',
                'Created By',
                'Active', 'Close Notes', 'Close Code',
                'Description', 'Opened At', 'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description',
                'Additional Comments']
-    human_readable = tableToMarkdown('ServiceNow ticket was created successfully.', t=hr,
+    human_readable = tableToMarkdown('ServiceNow ticket was created successfully.', t=hr_,
                                      headers=headers, removeNull=True)
-    entry_context = get_ticket_context(result['result'])
+    created_ticket_context = get_ticket_context(ticket)
+    entry_context = {
+        'Ticket(val.ID===obj.ID)': created_ticket_context,
+        'ServiceNow.Ticket(val.ID===obj.ID)': created_ticket_context
+    }
 
     return human_readable, entry_context, result
 
@@ -1532,6 +1537,7 @@ def main():
             get_ticket_command(client, args)
         elif command in commands:
             md_, ec_, raw_response = commands[command](client, args)
+            demisto.log(str(ec_))
             return_outputs(md_, ec_, raw_response)
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
