@@ -160,7 +160,7 @@ def test_data_filtering(mocker):
     mock_misp(mocker)
     mocker.patch('MISP_V2.DATA_KEYS_TO_SAVE', ['Category', 'EventID', 'UUID'])
 
-    import test_constants
+    from test_data import test_constants
     from MISP_V2 import build_context
 
     full_response = test_constants.full_response_before_filtering

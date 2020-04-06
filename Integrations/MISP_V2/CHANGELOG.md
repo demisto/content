@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+- Fix integration filter parameter, Influence on the Entry context returned.
 
 ## [20.3.3] - 2020-03-18
 -
