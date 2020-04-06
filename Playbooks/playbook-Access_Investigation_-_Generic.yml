@@ -925,7 +925,7 @@ inputs:
   value:
     simple: false
   required: false
-  description: Set to true to assign only user that is currently on shift.
+  description: Set to true to assign only the users that are currently on shift.
 outputs:
 - contextPath: Account.Email.Address
   description: The email address object associated with the Account
