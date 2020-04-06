@@ -19,7 +19,8 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: Select which attribute data fields of the event will be saved to context. Leave empty to select all attributes.
+- display: Select which attribute data fields of the event will be saved to context.
+    Leave empty to select all attributes.
   name: context_select
   options:
   - Category
@@ -29,6 +30,7 @@ configuration:
   - Distribution
   - EventID
   - Galaxy
+  - Tag
   - ID
   - ObjectID
   - ObjectRelation
@@ -1944,6 +1946,7 @@ script:
       description: Description of the object.
       type: String
   dockerimage: demisto/pymisp:1.0.0.52
+  feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false
