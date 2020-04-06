@@ -251,6 +251,16 @@ def get_category_and_data_type_filters(args, predefine_insight_category, predefi
     return insight_category, insight_data_type
 
 
+def get_node_ids_from_insight(insight):
+    node_ids = []
+    for target in insight.get('targets'):
+        node_ids.append(target.get('targetNodeId'))
+        for attacker in target['attackers']:
+            node_ids.append(attacker.get('attackerNodeId'))
+
+    return list(set(node_ids))
+
+
 ''' Commands '''
 
 
@@ -468,7 +478,8 @@ def insight_rerun_command(client: Client, args: dict):
     if not insight:
         raise ValueError('Insight ID is invalid')
 
-    nodes_ids = list(map(lambda node: node['targetNodeId'], insight['targets']))
+    nodes_ids = get_node_ids_from_insight(insight)
+
     rerun_data = {
         "matrix": {
             "name": "Insight (Demisto) - {0}".format(insight['actionBasedTitle']),
@@ -553,6 +564,7 @@ def get_insights_command(client: Client, args: Dict, no_output_mode: bool) -> Li
     insight_output = []
     insight_readable = []
     headers = []
+
     for insight in insights:
         context_insight = {
             'Name': insight['actionBasedTitle'],
@@ -745,6 +757,18 @@ def get_safebreach_simulation_command(client: Client, args: Dict):
 
 
 def rerun_simulation_command(client: Client, args: dict):
+    """Rerun a specific SafeBreach simulation in your environment.
+
+            Arguments:
+                client {Client} -- Client derives from BaseClient
+                args {dict}  -- function arguments
+
+            Keyword Arguments:
+                simulationId {str} -- The id of the simulation to rerun.
+
+            Returns:
+                None
+            """
     rerun_data = {}
     simulation_id = args.get('simulationId')
     if not simulation_id:
@@ -777,7 +801,7 @@ def rerun_simulation_command(client: Client, args: dict):
         test_context_dict = {
             'Id': response['runId'],
             'Name': rerun_data['matrix']['name'],
-            'Status': 'Pending',
+            'Status': 'PENDING',
             'AttacksCount': len(rerun_data['matrix']['moveIds'])
         }
 
