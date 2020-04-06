@@ -634,6 +634,16 @@ def main():
     file_validator = FilesValidator()
     try:
         change_log = run_command('git diff --name-status {}'.format(args.git_sha1), exit_on_error=False)
+    except RuntimeError:
+        print_error('Unable to get the SHA1 of the commit in which the version was released. This can happen if your '
+                    'branch is not updated with origin master. Merge from origin master and, try again.\n'
+                    'If you\'re not on a fork, run "git merge origin/master".\n'
+                    'If you are on a fork, first set https://github.com/demisto/content to be '
+                    'your upstream by running "git remote add upstream https://github.com/demisto/content". After '
+                    'setting the upstream, run "git fetch upstream", and then run "git merge upstream/master". Doing '
+                    'these steps will merge your branch with content master as a base.')
+        sys.exit(1)
+    else:
         modified_files, added_files, removed_files, _ = file_validator.get_modified_files(change_log)
         modified_files, added_files, removed_files = filter_packagify_changes(modified_files, added_files,
                                                                               removed_files, tag=tag)
@@ -669,14 +679,6 @@ def main():
         if missing_release_notes:
             print_error("Error: some release notes are missing. See previous errors.")
             sys.exit(1)
-    except RuntimeError:
-        print_error('Unable to get the SHA1 of the commit in which the version was released. This can happen if your '
-                    'branch is not updated with origin master. Merge from origin master and, try again.\n'
-                    'If you\'re not on a fork, run "git merge origin/master".\n'
-                    'If you are on a fork, first set https://github.com/demisto/content to be '
-                    'your upstream by running "git remote add upstream https://github.com/demisto/content". After '
-                    'setting the upstream, run "git fetch upstream", and then run "git merge upstream/master". Doing '
-                    'these steps will merge your branch with content master as a base.')
 
 
 if __name__ == "__main__":
