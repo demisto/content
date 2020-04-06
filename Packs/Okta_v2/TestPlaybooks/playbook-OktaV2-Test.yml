@@ -1,0 +1,1365 @@
+elasticcommonfields: {}
+id: OktaV2-Test
+version: -1
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+name: OktaV2-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: "1"
+    type: start
+    task:
+      elasticcommonfields: {}
+      id: "1"
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: "2"
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: "2"
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: "571"
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: "571"
+      version: -1
+      name: create user with activation
+      description: Creates a new user with an option of setting password, recovery
+        question and answer.The new user will immediately be able to login after activation
+        with the assigned password. This flow is common when developing a custom user
+        registration experience.
+      script: Okta v2|||okta-create-user
+      type: regular
+      iscommand: true
+      brand: Okta v2
+    nexttasks:
+      '#none#':
+      - "7"
+      - "36"
+    scriptarguments:
+      activate:
+        simple: "true"
+      city:
+        simple: Tel-Aviv
+      costCenter: {}
+      countryCode: {}
+      department: {}
+      displayName:
+        simple: Test 1 that
+      division: {}
+      email:
+        simple: Test1@test.com
+      employeeNumber:
+        simple: "12345"
+      firstName:
+        simple: 'Test 1 '
+      groupIds: {}
+      honificSuffix: {}
+      honorificPrefix: {}
+      honorificSuffix: {}
+      lastName:
+        simple: Test1
+      locale: {}
+      login:
+        simple: Test1@test.com
+      manager: {}
+      managerId: {}
+      middleName: {}
+      mobilePhone: {}
+      nickName:
+        simple: Testush
+      organization: {}
+      password:
+        simple: Aa123456
+      passwordAnswer:
+        simple: testush test t 123455
+      passwordQuestion:
+        simple: whats the first school?
+      postalAddress: {}
+      preferredLanguage:
+        simple: en
+      primaryPhone: {}
+      profileUrl: {}
+      providerName: {}
+      providerType:
+        simple: OKTA
+      secondEmail: {}
+      state: {}
+      streetAddress: {}
+      timezone: {}
+      title: {}
+      userType: {}
+      zipCode: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: "586"
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: "586"
+      version: -1
+      name: deactivate user
+      description: Deactivate User.
+      script: Okta v2|||okta-deactivate-user
+      type: regular
+      iscommand: true
+      brand: Okta v2
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      username:
+        simple: Test1@test.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: "576"
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: "576"
+      version: -1
+      name: add user to Demisto group
+      description: Adds a user to a group with OKTA_GROUP type
+      script: Okta v2|||okta-add-to-group
+      type: regular
+      iscommand: true
+      brand: Okta v2
+    nexttasks:
+      '#none#':
+      - "11"
+      - "10"
+    scriptarguments:
+      groupId: {}
+      groupName:
+        simple: Demisto
+      userId: {}
+      username:
+        simple: Test1@test.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: "587"
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: "587"
+      version: -1
+      name: activate user
+      description: Activates a specific user.
+      script: Okta v2|||okta-activate-user
+      type: regular
+      iscommand: true
+      brand: Okta v2
+    nexttasks:
+      '#none#':
+      - "15"
+      - "8"
+    scriptarguments:
+      username:
+        simple: Test1@test.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: "589"
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: "589"
+      version: -1
+      name: get Demisto group members
+      description: Enumerates all users that are members of  a group
+      script: Okta v2|||okta-get-group-members
+      type: regular
+      iscommand: true
+      brand: Okta v2
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      groupId: {}
+      groupName:
+        simple: Demisto
+      limit: {}
+      verbose: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: "577"
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: "577"
+      version: -1
+      name: get groups for user
+      description: Returns all user groups associated with a specified user.
+      script: Okta v2|||okta-get-groups
+      type: regular
+      iscommand: true
+      brand: Okta v2
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      username:
+        simple: Test1@test.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: "588"
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: "588"
+      version: -1
+      name: remove from group
+      description: Removes a user from a group with OKTA_GROUP type
+      script: Okta v2|||okta-remove-from-group
+      type: regular
+      iscommand: true
+      brand: Okta v2
+    nexttasks:
+      '#none#':
+      - "40"
+      - "29"
+    scriptarguments:
+      groupId: {}
+      groupName:
+        simple: Demisto
+      userId: {}
+      username:
+        simple: Test1@test.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: "581"
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: "581"
+      version: -1
+      name: update user
+      description: Update user with a given login, all fields are optional, fields
+        which are not set will not be overriden.
+      script: Okta v2|||okta-update-user
+      type: regular
+      iscommand: true
+      brand: Okta v2
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      city: {}
+      costCenter: {}
+      countryCode: {}
+      department: {}
+      displayName: {}
+      division: {}
+      email: {}
+      employeeNumber: {}
+      firstName:
+        simple: Test1 Updated
+      honorificPrefix: {}
+      honorificSuffix: {}
+      lastName: {}
+      locale: {}
+      manager: {}
+      managerId: {}
+      middleName: {}
+      mobilePhone: {}
+      nickName: {}
+      organization: {}
+      password: {}
+      passwordAnswer: {}
+      passwordQuestion: {}
+      postalAddress: {}
+      postalSddress: {}
+      preferredLanguage: {}
+      "preferredLanguage\t": {}
+      primaryPhone: {}
+      profileUrl: {}
+      providerName: {}
+      providerType: {}
+      secondEmail: {}
+      state: {}
+      streetAddress: {}
+      timezone: {}
+      "timezone\t": {}
+      title: {}
+      userType: {}
+      username:
+        simple: Test1@test.com
+      zipCode: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: "578"
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: "578"
+      version: -1
+      name: suspend user
+      description: Suspends a user. This operation can only be performed on users
+        with an ACTIVE status. The user has a status of SUSPENDED when the process
+        is completed
+      script: Okta v2|||okta-suspend-user
+      type: regular
+      iscommand: true
+      brand: Okta v2
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      username:
+        simple: Test1@test.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: "583"
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: "583"
+      version: -1
+      name: unsuspend user
+      description: Returns a user to ACTIVE status. This operation can only be performed
+        on users that have a SUSPENDED status.
+      script: Okta v2|||okta-unsuspend-user
+      type: regular
+      iscommand: true
+      brand: Okta v2
+    nexttasks:
+      '#none#':
+      - "14"
+      - "30"
+    scriptarguments:
+      username:
+        simple: Test1@test.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: "87"
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: "87"
+      version: -1
+      name: verify results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Account.Group.Name
+            iscontext: true
+          right:
+            value:
+              simple: Demisto
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: "80"
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: "80"
+      version: -1
+      name: verify results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Account.Username
+            iscontext: true
+          right:
+            value:
+              simple: Test1@test.com
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: "570"
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: "570"
+      version: -1
+      name: get-user
+      description: Fetches information for a specific user. You must enter one or
+        more parameters for the command to run
+      script: Okta v2|||okta-get-user
+      type: regular
+      iscommand: true
+      brand: Okta v2
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      userId: {}
+      userid: {}
+      username:
+        simple: Test1@test.com
+      verbose: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: "536"
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: "536"
+      version: -1
+      name: verify result
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: Account.DisplayName
+            iscontext: true
+          right:
+            value:
+              simple: Test1 Updated
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: "590"
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: "590"
+      version: -1
+      name: okta-delete-user
+      description: Delete specified user
+      script: Okta v2|||okta-delete-user
+      type: regular
+      iscommand: true
+      brand: Okta v2
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      userId: {}
+      username:
+        simple: Test1@test.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: "579"
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: "579"
+      version: -1
+      name: set-password
+      description: Sets passwords without validating existing user credentials
+      script: Okta v2|||okta-set-password
+      type: regular
+      iscommand: true
+      brand: Okta v2
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      password:
+        simple: Bb123456
+      username:
+        simple: Test1@test.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: "572"
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: "572"
+      version: -1
+      name: okta-search
+      description: Search for Okta users
+      script: Okta v2|||okta-search
+      type: regular
+      iscommand: true
+      brand: Okta v2
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      limit: {}
+      term:
+        simple: Test1@test.com
+      verbose: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: "242"
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: "242"
+      version: -1
+      name: verify result
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: Account.Username
+            iscontext: true
+          right:
+            value:
+              simple: Test1@test.com
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: "585"
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: "585"
+      version: -1
+      name: get-user-factors
+      description: Returns all the enrolled facors for the specified user.
+      script: Okta v2|||okta-get-user-factors
+      type: regular
+      iscommand: true
+      brand: Okta v2
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      userId:
+        simple: 00upt1w8t40wFQM2v0h7
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1145,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: "297"
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: "297"
+      version: -1
+      name: verify result
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: Account
+                accessor: Factor.FactorType
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+          right:
+            value:
+              simple: sms
+    view: |-
+      {
+        "position": {
+          "x": 1145,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: "298"
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: "298"
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: "584"
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: "584"
+      version: -1
+      name: okta-search
+      description: Search for Okta users
+      script: Okta v2|||okta-search
+      type: regular
+      iscommand: true
+      brand: Okta v2
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      limit: {}
+      term:
+        simple: Test1@test.com
+      verbose: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: "582"
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: "582"
+      version: -1
+      name: get Demisto group members
+      description: Enumerates all users that are members of  a group
+      script: Okta v2|||okta-get-group-members
+      type: regular
+      iscommand: true
+      brand: Okta v2
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      groupId: {}
+      groupName:
+        simple: Demisto
+      limit: {}
+      verbose: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: "537"
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: "537"
+      version: -1
+      name: verify results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsString
+          left:
+            value:
+              simple: Account.Username
+            iscontext: true
+          right:
+            value:
+              simple: Test1@test.com
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: "533"
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: "533"
+      version: -1
+      name: verify result
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsString
+          left:
+            value:
+              simple: Account.Username
+            iscontext: true
+          right:
+            value:
+              simple: Test1@test.com
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: "574"
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: "574"
+      version: -1
+      name: list groups with query =de
+      description: Lists groups in your organization. A subset of groups can be returned
+        that match a supported filter expression or query.
+      script: Okta v2|||okta-list-groups
+      type: regular
+      iscommand: true
+      brand: Okta v2
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      filter: {}
+      limit: {}
+      query:
+        simple: de
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: "544"
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: "544"
+      version: -1
+      name: verify results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Okta.Group.Name
+            iscontext: true
+          right:
+            value:
+              simple: Demisto
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: "573"
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: "573"
+      version: -1
+      name: get-group-assignments
+      description: Get events for when a user added to a group
+      script: Okta v2|||okta-get-group-assignments
+      type: regular
+      iscommand: true
+      brand: Okta v2
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      limit:
+        simple: "1"
+      since: {}
+      sortOrder: {}
+      until: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: "545"
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: "545"
+      version: -1
+      name: verify results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Okta
+                accessor: Logs.Events.displayMessage
+            iscontext: true
+          right:
+            value:
+              simple: Add user to group membership
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: "662"
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: "662"
+      version: -1
+      name: verify results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Okta
+                accessor: Logs.Events.displayMessage
+            iscontext: true
+          right:
+            value:
+              simple: Add user to application membership
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: "546"
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: "546"
+      version: -1
+      name: Logs
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+      - "53"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 2310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: "542"
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: "542"
+      version: -1
+      name: End of Logs
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: "575"
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: "575"
+      version: -1
+      name: application-assignments
+      description: Returnes events for when a user was assigned to an application
+      script: Okta v2|||okta-get-application-assignments
+      type: regular
+      iscommand: true
+      brand: Okta v2
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      limit:
+        simple: "1"
+      since: {}
+      sortOrder: {}
+      until: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3010,
+        "width": 1885,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
