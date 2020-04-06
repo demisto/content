@@ -69,7 +69,9 @@ def run_pipeline(value, pipeline, log):
     return value
 
 
-def to_demisto_score(feed_id: str):
+def to_demisto_score(feed_id: str, revoked: bool):
+    if revoked:
+        return 0
     if feed_id in SUSPICIOUS_FEED_IDS:
         return 2
     return 3
@@ -94,7 +96,7 @@ def to_demisto_indicator(value, indicators_name, stix2obj):
             "tags": stix2obj.get("labels"),
             "firstseenbysource": stix2obj.get("created"),
             "description": get_description(stix2obj)},
-        "score": to_demisto_score(stix2obj.get("sixgill_feedid"))}
+        "score": to_demisto_score(stix2obj.get("sixgill_feedid"), stix2obj.get("revoked", False))}
 
 
 def get_limit(str_limit, default_limit):
