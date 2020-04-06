@@ -5,6 +5,6 @@
   "widgetType": "text",
   "query": "GetUsersOnCall",
   "version": -1,
-  "description": "Details of users which or on-call",
+  "description": "Details of the users that are currently on-call",
   "isPredefined": true
 }
