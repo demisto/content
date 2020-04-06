@@ -3,16 +3,23 @@ commonfields:
   id: Maltiverse
   version: -1
 configuration:
+- defaultvalue: https://api.maltiverse.com
+  display: Server URL
+  name: server_url
+  required: false
+  type: 0
 - display: API Key
   name: api_key
   required: false
-  type: 12
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
+  type: 4
 - display: Use system proxy settings
   name: proxy
+  required: false
+  type: 8
+- defaultvalue: https://api.maltiverse.com
+  display: Trust any certificate (not secure)
+  hidden: false
+  name: insecure
   required: false
   type: 8
 description: Analyze suspicious hashes, URLs, domains and IP addresses
@@ -412,4 +419,4 @@ script:
   subtype: python3
   type: python
 tests:
-- No test
+- Maltiverse Test

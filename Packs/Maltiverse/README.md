@@ -2,12 +2,14 @@
 ---
 
 Analyze suspicious hashes, URLs, domains and IP addresses
-This integration was integrated and tested with version xx of Maltiverse
-## Maltiverse Playbook
----
+This integration was integrated and tested with version 1.0.0-oas3 of Maltiverse
 
 ## Use Cases
 ---
+1. Enriching information about different IOC types.
+2. Search for Reputation about different IOC types.
+3. Calculate DBot Score for indicators.
+
 
 ## Configure Maltiverse on Demisto
 ---
@@ -20,8 +22,6 @@ This integration was integrated and tested with version xx of Maltiverse
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
 4. Click __Test__ to validate the URLs, token, and connection.
-## Fetched Incidents Data
----
 
 ## Commands
 ---
@@ -34,8 +34,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### 1. ip
 ---
 Checks the reputation of an IP address
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `ip`
@@ -73,13 +71,11 @@ Checks the reputation of an IP address
 ```!ip ip=8.8.8.8```
 
 ##### Human Readable Output
-
+![image](https://user-images.githubusercontent.com/61732335/78559499-24806380-781d-11ea-83c0-03449acffb9e.png)
 
 ### 2. domain
 ---
 Checks the reputation of a Domain
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `domain`
@@ -123,13 +119,12 @@ Checks the reputation of a Domain
 ```!domain domain=google.com```
 
 ##### Human Readable Output
+![image](https://user-images.githubusercontent.com/61732335/78558991-4200fd80-781c-11ea-8d2f-cf6f006ea84f.png)
 
 
 ### 3. url
 ---
 Checks the reputation of an URL
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `url`
@@ -172,13 +167,12 @@ Checks the reputation of an URL
 ```!url url=https://dv-expert.org```
 
 ##### Human Readable Output
+![image](https://user-images.githubusercontent.com/61732335/78559165-90160100-781c-11ea-832f-e8b88ff7f838.png)
 
 
 ### 4. file
 ---
 Check the reputation of a file
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `file`
@@ -230,7 +224,7 @@ Check the reputation of a file
 ```!file file=edb2f88c29844117cd74acf8bb357edf92487a1b142fe6f60b6ac5e15d2d718f```
 
 ##### Human Readable Output
-
+![image](https://user-images.githubusercontent.com/61732335/78559369-eedb7a80-781c-11ea-916f-bf39c5d93e6b.png)
 
 ## Additional Information
 ---

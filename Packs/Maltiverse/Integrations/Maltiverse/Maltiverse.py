@@ -18,6 +18,23 @@ DBOT_SCORE_KEY = 'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.
 DEFAULT_THRESHOLD = 5
 
 
+class Error(Exception):
+    """Base class for exceptions in this module."""
+    pass
+
+
+class NotFoundError(Error):
+    """Exception raised for errors in the input.
+
+    Attributes:
+        expression -- input expression in which the error occurred
+        message -- explanation of the error
+    """
+
+    def __init__(self, message):
+        self.message = message
+
+
 class Client(BaseClient):
     """
     Client will implement the service API, and should not contain any Demisto logic.
@@ -25,24 +42,68 @@ class Client(BaseClient):
     """
 
     def __init__(self, url: str, use_ssl: bool, use_proxy: bool, auth_token=None):
+        self.auth_token = auth_token
         super().__init__(url, verify=use_ssl, proxy=use_proxy, headers={'Accept': 'application/json'})
-        if auth_token:
-            self._headers.update({'Authorization': 'Bearer ' + auth_token})
+        if self.auth_token:
+            self._headers.update({'Authorization': 'Bearer ' + self.auth_token})
+
+    def http_request(self, method, url_suffix):
+        ok_codes = (200, 403, 404, 500)  # includes responses that are ok (200) and error responses that should be
+        # handled by the client and not in the BaseClient  todo: check if should add 400/401
+        try:
+            res = self._http_request(method, url_suffix, resp_type='response', ok_codes=ok_codes)
+            if res.status_code == 200:
+                try:
+                    return res.json()
+                except ValueError as exception:
+                    raise DemistoException('Failed to parse json object from response: {}'
+                                           .format(res.content), exception)
+
+            if res.status_code == 403 or res.status_code == 500:
+                try:
+                    err_msg = str(res.json())
+                    if self.auth_token:
+                        err_msg += ' - Check server URL and API key'
+                    else:
+                        err_msg += " - Check server URL or try using an API key"
+                except ValueError:
+                    err_msg = 'Check server URL or API key'
+                raise DemistoException(err_msg)
+
+            if res.status_code == 404:
+                raise NotFoundError('Page Not Found')
+
+        except Exception as e:
+            raise e
 
     def ip_report(self, ip: str) -> dict:
         if not is_ip_valid(ip):
             raise DemistoException('The given IP was invalid')
-        return self._http_request('GET', f'/ip/{ip}')
+        return self.http_request('GET', f'/ip/{ip}')
 
     def url_report(self, url: str) -> dict:
         sha256_url = urlToSHA256(url)
-        return self._http_request('GET', f'/url/{sha256_url}')
+        try:
+            report = self.http_request('GET', f'/url/{sha256_url}')
+            return report
+        except NotFoundError:
+            LOG(f'URL {url} was not found')
+            return {'NotFound': True}
+        except Exception as e:
+            raise e
 
     def domain_report(self, domain: str) -> dict:
-        return self._http_request('GET', f'/hostname/{domain}')
+        return self.http_request('GET', f'/hostname/{domain}')
 
     def file_report(self, sha256: str) -> dict:
-        return self._http_request('GET', f'/sample/{sha256}')
+        try:
+            report = self.http_request('GET', f'/sample/{sha256}')
+            return report
+        except NotFoundError:
+            LOG(f'file {sha256} was not found')
+            return {'NotFound': True}
+        except Exception as e:
+            raise e
 
 
 def test_module(client=None):
@@ -50,12 +111,18 @@ def test_module(client=None):
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
 
     Args:
-        client: HelloWorld client
+        client: Maltiverse client
 
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    return 'ok' if client.ip_report('8.8.8.8') else 'Connection failed'
+    try:
+        client.http_request('GET', '/ip/8.8.8.8')
+        return 'ok'
+    except NotFoundError as e:
+        return_error(e.message + ' - Check server URL')
+    except Exception as e:
+        raise e
 
 
 def calculate_score(positive_detections: int, classification: str, threshold: int, anti_virus: int = 0) -> int:
@@ -100,6 +167,7 @@ def urlToSHA256(url: str) -> str:
     return hashlib.sha256(url.encode('utf-8')).hexdigest()
 
 
+# todo: remove this function after talking to Yuval
 def create_blacklist_context(blacklist):
     """
     Creates the Blacklist part of the context.
@@ -151,13 +219,15 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         report = client.ip_report(ip)
         positive_detections = len(report.get('blacklist', []))
 
-        blacklist_context = create_blacklist_context(report.get('blacklist', []))
+        # blacklist_context = create_blacklist_context(report.get('blacklist', []))
+        blacklist_context = {'Blacklist': report.get('blacklist', [])}
 
         outputs = {
             'Address': report.get('ip_addr', ''),
-            'Geo.Country': report.get('country_code', ''),
+            'Geo': {'Country': report.get('country_code', '')},
             'PositiveDetections': positive_detections,
-            'Malicious.Description': blacklist_context['Blacklist']['Description']
+            'Malicious': {'Description': [blacklist_context['Blacklist'][i]['description'] for i in
+                                          range(len(report.get('blacklist', [])))]}
         }
 
         additional_info = {string_to_context_key(field): report.get(field, '') for field in
@@ -173,7 +243,14 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         context[f'Maltiverse.{outputPaths["ip"]}'].append(maltiverse_ip)
         context[DBOT_SCORE_KEY].append(dbot_score)
 
-        markdown += tableToMarkdown(f'Maltiverse IP reputation for: {report["ip_addr"]}\n', outputs, removeNull=True)
+        md_outputs = {
+            'IP.Address': report.get('ip_addr', ''),
+            'IP.Geo.Country': report.get('country_code', ''),
+            'IP.PositiveDetections': positive_detections,
+            'IP.Malicious.Description': [blacklist_context['Blacklist'][i]['description'] for i in
+                                         range(len(report.get('blacklist', [])))]
+        }
+        markdown += tableToMarkdown(f'Maltiverse IP reputation for: {report["ip_addr"]}\n', md_outputs, removeNull=True)
         reports.append(report)
 
     return markdown, context, reports
@@ -199,8 +276,12 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
 
     for url in argToList(args.get('url', '')):
         report = client.url_report(url)
+        if 'NotFound' in report:
+            markdown += f'No results found for {url}'
+            break
         positive_detections = len(report.get('blacklist', []))
-        blacklist_context = create_blacklist_context(report.get('blacklist', []))
+        # blacklist_context = create_blacklist_context(report.get('blacklist', []))
+        blacklist_context = {'Blacklist': report.get('blacklist', [])}
 
         outputs = {'Data': report.get('url', ''),
                    'PositiveDetections': positive_detections
@@ -224,12 +305,14 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         if positive_detections > 0:
             malicious_info = {
                 'Malicious': {
-                    'Description': blacklist_context['Blacklist']['Description'],
+                    'Description': [blacklist_context['Blacklist'][i]['description'] for i in
+                                    range(len(report.get('blacklist', [])))],
                     'Vendor': 'Maltiverse'
                 }
             }
             outputs = {**outputs, **malicious_info}
-            md_info['URL.Malicious.Description'] = blacklist_context['Blacklist']['Description']
+            md_info['URL.Malicious.Description'] = [blacklist_context['Blacklist'][i]['description'] for i in
+                                                    range(len(report.get('blacklist', [])))],
             md_info['URL.Malicious.Vendor'] = 'Maltiverse'
 
         context[outputPaths['url']].append(outputs)
@@ -273,8 +356,9 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any
         dbot_score = {'Indicator': report.get('hostname', ''), 'Type': 'Domain', 'Vendor': 'Maltiverse',
                       'Score': calculate_score(positive_detections, report.get('classification', ''), threshold)}
 
-        blacklist_context = create_blacklist_context(report.get('blacklist', []))
+        blacklist_context = {'Blacklist': report.get('blacklist', [])}
 
+        # todo: remove after asking Yuval
         resolvedIP_info = {
             'ResolvedIP':
                 {
@@ -287,8 +371,9 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any
                              ['creation_time', 'modification_time', 'tld', 'classification', 'tag']
                              }
         maltiverse_domain['Address'] = report.get('hostname', '')
+        maltiverse_domain['ResolvedIP'] = report.get('resolved_ip', '')
         maltiverse_domain = {**maltiverse_domain, **blacklist_context}
-        maltiverse_domain = {**maltiverse_domain, **resolvedIP_info}
+        # maltiverse_domain = {**maltiverse_domain, **resolvedIP_info}
 
         context[outputPaths['domain']].append(outputs)
         context[DBOT_SCORE_KEY].append(dbot_score)
@@ -331,6 +416,9 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
 
     for file in argToList(args.get('file', '')):
         report = client.file_report(file)
+        if 'NotFound' in report:
+            markdown += f'No results found for {file}'
+            break
         positive_detections = len(report.get('blacklist', []))
 
         outputs = {string_to_context_key(field): report.get(field, '') for field in
@@ -344,7 +432,7 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
                       'Score': calculate_score(positive_detections, report.get('classification', ''), threshold,
                                                len(report.get('antivirus', [])))}
 
-        blacklist_context = create_blacklist_context(report.get('blacklist', []))
+        blacklist_context = {'Blacklist': report.get('blacklist', [])}
 
         process_list = {
             'ProcessList': {
@@ -355,7 +443,8 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         file_malicious = {
             'Malicious': {
                 'Vendor': 'Maltiverse',
-                'Description': blacklist_context['Blacklist']['Description']
+                'Description': [blacklist_context['Blacklist'][i]['description'] for i in
+                                range(len(report.get('blacklist', [])))],
             }
         }
 
@@ -391,8 +480,9 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
 
 def main():
     params = demisto.params()
+    server_url = params.get('server_url') if params.get('server_url') else SERVER_URL
 
-    client = Client(SERVER_URL,
+    client = Client(url=server_url,
                     use_ssl=not params.get('insecure', False),
                     use_proxy=params.get('proxy', False),
                     auth_token=params.get('api_key', None))
