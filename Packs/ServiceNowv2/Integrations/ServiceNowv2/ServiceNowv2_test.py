@@ -43,14 +43,17 @@ def test_split_fields():
                              'sla_due': "2020-10-10 10:10:11"}, RESPONSE_CREATE_TICKET, EXPECTED_CREATE_TICKET)
 ])  # noqa: E124
 def test_commands(command, args, response, expected_result, mocker):
-    """Unit test for integration commands.
-    Integration was build and tested with: SNYPR Version 6.3
-    Args:
-        command: func name in .py
-        args: func args
-        response: response as mocked from 'SNYPR 6.3 CU4 Administration Guide'
-        expected_result: expected result in demisto
-        mocker: mocker object
+    """Unit test
+    Given
+    - command main func
+    - command args
+    - command raw response
+    When
+    - mock the ServiceNow response
+    Then
+    - convert the result to human readable table
+    - create the context
+    validate the entry context
     """
     client = Client('server_url', 'username', 'password', 'verify', 'proxy', 'fetch_time', 'sysparm_query',
                     'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments')
@@ -63,13 +66,25 @@ def test_commands(command, args, response, expected_result, mocker):
     assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
 
 
-@pytest.mark.parametrize('command, args, response, expected_result', [
-    (delete_ticket_command, {'id': '1234'}, {}, {})
+@pytest.mark.parametrize('command, args, response, expected_hr', [
+    (delete_ticket_command, {'id': '1234'}, {}, 'Ticket with ID 1234 was successfully deleted.')
 ])  # noqa: E124
-def test_delete_ticket(command, args, response, expected_result, mocker):
+def test_delete_commands(command, args, response, expected_hr, mocker):
+    """Unit test
+    Given
+    - delete command main func
+    - command args
+    - command raw response
+    When
+    - mock the ServiceNow response
+    Then
+    - convert the result to human readable table
+    - create the context
+    validate the human readable
+    """
     client = Client('server_url', 'username', 'password', 'verify', 'proxy', 'fetch_time', 'sysparm_query',
                     'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments')
     mocker.patch.object(client, 'send_request', return_value=response)
     result = command(client, args)
     # HR is found in the 1st place in the result of the command
-    assert 'Ticket with ID 1234 was successfully deleted.' == result[0]
+    assert expected_hr == result[0]
