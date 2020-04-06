@@ -4,9 +4,9 @@ This integration was integrated and tested with version 1.0 of Microsoft Teams.
 ## Integration Architecture
 Data is passed between Microsoft Teams and Demisto through the bot that you will configure in Microsoft Teams. A webhook (which you will configure) receives the data from Teams and passes it to the messaging endpoint. The web server on which the integration runs in Demisto listens to the messaging endpoint and processes the data from Teams. You can use an engine for communication between Teams and the Demisto server. In order to mirror messages from Teams to Demisto, the bot must be mentioned, using the @ symbol, in the message.
 
-The web server for the integration runs within a long-running Docker container. Demisto maps the Docker port to which the server listens, to the host port (to which Teams posts messages). For more information, see the [Docker documentation](https://docs.docker.com/config/containers/container-networking/).
+The web server for the integration runs within a long-running Docker container. Demisto maps the Docker port to which the server listens, to the host port (to which Teams posts messages). For more information, see [our documentation](https://xsoar.pan.dev/docs/integrations/long-running#invoking-http-integrations-via-cortex-xsoar-servers-route-handling) and [Docker documentation](https://docs.docker.com/config/containers/container-networking/).
 ### Protocol Diagram
-![image](doc_files/MicrosoftTeamsProtocalDiagram.png)
+![image](https://raw.githubusercontent.com/demisto/content/b222375925eb13feaaa28cd8b1c814b4d212f2e4/Integrations/MicrosoftTeams/doc_files/MicrosoftTeamsProtocalDiagram.png)
 
 ## Important Information
  - The messaging endpoint must be either the URL of the Demisto server, including the configured port, or the proxy that redirects the messages received from Teams to the Demisto server. 
@@ -56,7 +56,7 @@ Before you can create an instance of the Microsoft Teams integration in Demisto,
   - Select all checkboxes.
 
 11. Record the **Bot ID**, which you will need when configuring the integration in Demisto.
-![image](doc_files/MSTeams-BotID.png)
+![image](https://raw.githubusercontent.com/demisto/content/b222375925eb13feaaa28cd8b1c814b4d212f2e4/Integrations/MicrosoftTeams/doc_files/MSTeams-BotID.png)
 12. Click **Generate new password**. Record the password, which you will need when configuring the integration in Demisto.
 13. In the **Messaging endpoints** section, enter the URL to which messages will be sent (to the Demisto Bot).
   - To enable calling capabilities on the Bot enter the same URL to the **Calling endpoints** section.
@@ -351,4 +351,4 @@ There is no context output for this command.
 ##### Human Readable Output
 The channel "example channel" was created successfully
 
-[Demisto Bot zip](doc_files/DemistoBot.zip)
+[Demisto Bot zip](https://raw.githubusercontent.com/demisto/content/b222375925eb13feaaa28cd8b1c814b4d212f2e4/Integrations/MicrosoftTeams/doc_files/DemistoBot.zip)
