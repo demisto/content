@@ -1,7 +1,7 @@
 """Run content installation on the AMI instances"""
 from time import sleep
 from threading import Thread
-from Tests.test_utils import run_command, run_threads_list
+from demisto_sdk.commands.common.tools import run_command, run_threads_list
 import json
 
 

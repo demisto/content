@@ -22,6 +22,7 @@ def main():
     })
 
     params['ignore_regex'] = '#'
+
     params['custom_fields_mapping'] = {
         "firstseenbysource": "firstseenbysource",
         "malwarefamily": "malwarefamily"

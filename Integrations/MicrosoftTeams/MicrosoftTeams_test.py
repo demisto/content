@@ -160,7 +160,7 @@ def test_message_handler(mocker):
         'id': '1',
         'entry': 'waz up',
         'username': 'Bruce Willis',
-        'email': '',
+        'email': 'bwillis@email.com',
         'footer': '\n**From Microsoft Teams**'
     }
 

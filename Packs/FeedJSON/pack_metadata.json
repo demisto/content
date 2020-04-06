@@ -1,0 +1,27 @@
+{
+    "name": "JSON Feed",
+    "description": "Indicators feed from a JSON file",
+    "support": "Cortex XSOAR",
+    "serverMinVersion": "5.5.0",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "created": "2020-03-09T16:04:45Z",
+    "updated": "2020-03-09T16:04:45Z",
+    "beta": false,
+    "deprecated": false,
+    "certification": "certified",
+    "useCases": [],
+    "keywords": [
+        "JSON",
+        "Feed"
+    ],
+    "price": 0,
+    "dependencies": {},
+    "displayedImages": []
+}
