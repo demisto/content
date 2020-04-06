@@ -8,6 +8,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 * Block Endpoint - Carbon Black Response
 * Traps Isolate Endpoint
+* Isolate Endpoint - Cybereason
 
 ### Integrations
 This playbook does not use any integrations.
