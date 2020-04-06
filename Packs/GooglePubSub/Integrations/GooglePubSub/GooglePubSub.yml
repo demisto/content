@@ -16,6 +16,23 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- additionalinfo: Subscripcription to fetch incidents from.
+  display: Fetch Incidents Subscription
+  hidden: false
+  name: default_subscription
+  required: false
+  type: 0
+- display: Fetch Incidents Project
+  hidden: false
+  name: default_project
+  required: false
+  type: 0
+- defaultvalue: '50'
+  display: Max Incidents Per Fetch
+  hidden: false
+  name: default_max_msgs
+  required: false
+  type: 0
 description: Google Cloud Pub / Sub is a fully-managed real-time messaging service
   that allows you to send and receive messages between independent applications.
 display: Google Cloud PubSub
@@ -87,9 +104,74 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get topic's subscription by name.
+    description: Get subscription details by subscription name.
     execution: false
     name: google-cloud-pubsub-topic-subscription-get-by-name
+  - arguments:
+    - default: false
+      description: Name of the project the subscription belongs to.
+      isArray: false
+      name: project_name
+      required: true
+      secret: false
+    - default: false
+      description: Name of the topic thesubscription belongs to.
+      isArray: false
+      name: topic_name
+      required: false
+      secret: false
+    - default: false
+      description: Max number of results
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: Next page token as returned from the API.
+      isArray: false
+      name: page_token
+      required: false
+      secret: false
+    deprecated: false
+    description: Get list of subscription by project name or topic name.
+    execution: false
+    name: google-cloud-pubsub-topic-subscriptions-list
+  - arguments:
+    - default: false
+      description: Project name to pull messages from.
+      isArray: false
+      name: project_name
+      required: true
+      secret: false
+    - default: false
+      description: Subscription name to pull messages from.
+      isArray: false
+      name: subscription_name
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: The maximum number of messages to return for this request. Must
+        be a positive integer.
+      isArray: false
+      name: max_messages
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Acknowledge the messages pulled.
+      isArray: false
+      name: ack
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      secret: false
+    deprecated: false
+    description: Pull messages that were published.
+    execution: false
+    name: google-cloud-pubsub-topic-messages-pull
   dockerimage: demisto/googleapi-python3:1.0.0.6696
   feed: false
   isfetch: true
