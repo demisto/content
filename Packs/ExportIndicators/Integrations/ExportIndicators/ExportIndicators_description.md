@@ -7,6 +7,8 @@ In a web browser, go to **http://*demisto_address*:*listen_port***.
 In case of several Export Indicators Service integration instances - make sure to use **different listening ports** to separate the outbound feeds.
 
 ### Access the Export Indicators Service by Instance Name (HTTPS)
+**The route will be open without security hardening and might expose you to network risks.**
+
 To access the EDL service by instance name, make sure ***Instance execute external*** is enabled. 
 
 1. In Demisto, go to **Settings > About > Troubleshooting**.

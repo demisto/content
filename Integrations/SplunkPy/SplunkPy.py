@@ -282,10 +282,34 @@ def build_search_human_readable(args, parsed_search_results):
     if parsed_search_results and len(parsed_search_results) > 0:
         if not isinstance(parsed_search_results[0], dict):
             headers = "results"
+        else:
+            search_for_table_args = re.search(' table (?P<table>.*)(\|)?', args.get('query', ''))
+            if search_for_table_args:
+                table_args = search_for_table_args.group('table')
+                table_args = table_args if '|' not in table_args else table_args.split(' |')[0]
+                chosen_fields = [field for field in re.split(' |,', table_args) if field]
+
+                headers = update_headers_from_field_names(parsed_search_results, chosen_fields)
 
     human_readable = tableToMarkdown("Splunk Search results for query: {}".format(args['query']),
                                      parsed_search_results, headers)
     return human_readable
+
+
+def update_headers_from_field_names(search_result, chosen_fields):
+    headers = []
+    search_result_keys = search_result[0].keys()
+    for field in chosen_fields:
+        if field[-1] == '*':
+            temp_field = field.replace('*', '.*')
+            for key in search_result_keys:
+                if re.search(temp_field, key):
+                    headers.append(key)
+
+        elif field in search_result_keys:
+            headers.append(field)
+
+    return headers
 
 
 def get_current_results_batch(search_job, batch_size, results_offset):
@@ -386,10 +410,14 @@ def splunk_job_create_command(service):
 
 def splunk_results_command(service):
     res = []
+    sid = demisto.args().get('sid', '')
     try:
-        job = service.job(demisto.args().get('sid', ''))
+        job = service.job(sid)
     except HTTPError as error:
-        return_error(error.message, error)
+        if error.message == 'HTTP 404 Not Found -- Unknown sid.':
+            demisto.results("Found no job for sid: {}".format(sid))
+        else:
+            return_error(error.message, error)
     else:
         for result in results.ResultsReader(job.results()):
             if isinstance(result, results.Message):
@@ -398,10 +426,7 @@ def splunk_results_command(service):
                 # Normal events are returned as dicts
                 res.append(result)
 
-        if not res:
-            demisto.results("Found no job for sid: " + demisto.args()['sid'])
-        else:
-            demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res)})
+        demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res)})
 
 
 def fetch_incidents(service):
@@ -580,6 +605,32 @@ def splunk_edit_notable_event_command(proxy):
     demisto.results('Splunk ES Notable events: ' + response_info['message'])
 
 
+def splunk_job_status(service):
+    sid = demisto.args().get('sid')
+    try:
+        job = service.job(sid)
+    except HTTPError as error:
+        if error.message == 'HTTP 404 Not Found -- Unknown sid.':
+            demisto.results("Not found job for SID: {}".format(sid))
+        else:
+            return_error(error.message, error)
+    else:
+        status = job.state.content.get('dispatchState')
+        entry_context = {
+            'SID': sid,
+            'Status': status
+        }
+        context = {'Splunk.JobStatus(val.SID && val.SID === obj.SID)': entry_context}
+        human_readable = tableToMarkdown('Splunk Job Status', entry_context)
+        demisto.results({
+            "Type": entryTypes['note'],
+            "Contents": entry_context,
+            "ContentsFormat": formats["json"],
+            "EntryContext": context,
+            "HumanReadable": human_readable
+        })
+
+
 def splunk_parse_raw_command():
     raw = demisto.args().get('raw', '')
     rawDict = rawToDict(raw)
@@ -664,6 +715,8 @@ def main():
         splunk_parse_raw_command()
     if demisto.command() == 'splunk-submit-event-hec':
         splunk_submit_event_hec_command()
+    if demisto.command() == 'splunk-job-status':
+        splunk_job_status(service)
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
