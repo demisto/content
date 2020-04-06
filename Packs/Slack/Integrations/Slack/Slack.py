@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
+#from CommonServerUserPython import *
 import slack
 from slack.errors import SlackApiError
 from slack.web.slack_response import SlackResponse
@@ -10,7 +10,12 @@ import asyncio
 import concurrent
 import requests
 import ssl
+import json
+import re
+import time
+from datetime import datetime
 from typing import Tuple, Dict, List, Optional
+import threading
 
 # disable unsecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -26,7 +31,7 @@ SEVERITY_DICT = {
     'Critical': 4
 }
 
-
+LOOP = None
 USER_TAG_EXPRESSION = '<@(.*?)>'
 CHANNEL_TAG_EXPRESSION = '<#(.*?)>'
 URL_EXPRESSION = r'<(https?://.+?)(?:\|.+)?>'
@@ -1320,6 +1325,8 @@ def slack_send():
     else:
         demisto.results('Could not send the message to Slack.')
 
+    return 0
+
 
 def save_entitlement(entitlement, thread, reply, expiry, default_response):
     """
@@ -1817,7 +1824,7 @@ def init_globals():
     """
     global BOT_TOKEN, ACCESS_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT, CHANNEL_CLIENT
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, NOTIFY_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT
-    global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT
+    global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, SLACK_COMMAND_TIMEOUT
 
     VERIFY_CERT = not demisto.params().get('unsecure', False)
     if not VERIFY_CERT:
@@ -1834,7 +1841,7 @@ def init_globals():
     proxy_url = demisto.params().get('proxy_url')
     PROXY_URL = proxy_url or PROXIES.get('http')  # aiohttp only supports http proxy
     DEDICATED_CHANNEL = demisto.params().get('incidentNotificationChannel')
-    CLIENT = slack.WebClient(token=BOT_TOKEN, proxy=PROXY_URL, ssl=SSL_CONTEXT)
+    CLIENT = slack.WebClient(token=BOT_TOKEN, proxy=PROXY_URL, ssl=SSL_CONTEXT, )
     CHANNEL_CLIENT = slack.WebClient(token=ACCESS_TOKEN, proxy=PROXY_URL, ssl=SSL_CONTEXT)
     SEVERITY_THRESHOLD = SEVERITY_DICT.get(demisto.params().get('min_severity', 'Low'), 1)
     ALLOW_INCIDENTS = demisto.params().get('allow_incidents', False)
@@ -1844,7 +1851,28 @@ def init_globals():
     BOT_ICON_URL = demisto.params().get('bot_icon')
     MAX_LIMIT_TIME = int(demisto.params().get('max_limit_time', '60'))
     PAGINATED_COUNT = int(demisto.params().get('paginated_count', '200'))
+    SLACK_COMMAND_TIMEOUT = int(demisto.params().get('timeout', 2))
 
+
+class SlackCommandTimedThread(threading.Thread):
+    """
+        Attributes:
+            target (method): The method the created thread will run.
+            timeout (int): how many seconds does the thread have untill it is terminated
+    """
+    def __init__(self, target, timeout=2):
+        self.timeout = timeout
+        threading.Thread.__init__(self, target=target)
+
+    def timed_run(self):
+        """Run the thread for the given time.
+
+        Returns:
+
+        """
+        self.start()
+        time.sleep(self.timeout)
+        self.join()
 
 def main():
     """
@@ -1873,8 +1901,16 @@ def main():
 
     try:
         command_func = commands[demisto.command()]
-        command_func()
+        # Run non-long running commands
+        if command_func != long_running_main:
+            timed_thread = SlackCommandTimedThread(command_func, SLACK_COMMAND_TIMEOUT)
+            timed_thread.timed_run()
+
+        else:
+            long_running_main()
+
     except Exception as e:
+        print(e)
         LOG(e)
         return_error(str(e))
 
