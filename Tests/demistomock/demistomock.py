@@ -429,17 +429,17 @@ def setLastRun(obj):
     return None
 
 
-def info(*args):
-    log(args)
+def info(msg, *args):
+    logging.getLogger().info(msg, args)
 
 
-def error(*args):
+def error(msg, *args):
     # print to stdout so pytest fail if not mocked
-    print(args)
+    print(msg, args)
 
 
-def debug(*args):
-    log(args)
+def debug(msg, *args):
+    logging.getLogger().info(msg, args)
 
 
 def getAllSupportedCommands():
