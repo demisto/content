@@ -1,11 +1,13 @@
+# type: ignore
+
 import logging
 import warnings
 from typing import Union, List, Any, Tuple, Dict
 from urllib.parse import urlparse
 
 import requests
-from pymisp import ExpandedPyMISP, PyMISPError, MISPObject  # type: ignore
-from pymisp.tools import EMailObject, GenericObjectGenerator  # type: ignore
+from pymisp import ExpandedPyMISP, PyMISPError, MISPObject
+from pymisp.tools import EMailObject, GenericObjectGenerator
 
 from CommonServerPython import *
 
@@ -243,12 +245,13 @@ def arrange_context_according_to_user_selection(context_data):
     if not DATA_KEYS_TO_SAVE:
         return
 
-    # each event has it's own attributes
-    remove_unselected_context_keys(context_data[0])
-
     # each related event has it's own attributes
-    for obj in context_data[0]['Object']:
-        remove_unselected_context_keys(obj)
+    for event in context_data:
+        # Remove attributes om event
+        remove_unselected_context_keys(event)
+        # Remove attributes in Objects
+        for obj in event['Object']:
+            remove_unselected_context_keys(obj)
 
 
 def build_context(response: Union[dict, requests.Response]) -> dict:  # type: ignore
