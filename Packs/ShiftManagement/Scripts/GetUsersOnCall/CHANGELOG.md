@@ -1,3 +1,3 @@
 ## [Unreleased]
 #### New Script
-Retrieves users which are currently on-call (on shift).
+Retrieves users that are currently on-call (on shift).
