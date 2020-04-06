@@ -1,5 +1,5 @@
-import demistomock as demisto
-from CommonServerPython import *
+# import demistomock as demisto
+# from CommonServerPython import *
 
 
 ''' IMPORTS '''
@@ -765,7 +765,10 @@ try:
                                                  ('Domain', 'URL',), create_domain_ec))
 
     elif demisto.command() == 'trustar-get-all-phishing-indicators':
-        demisto.results(get_all_phishing_indicators(None, None, None))
+        nts = argToList(demisto.args().get('normalized_triage_score'))
+        nss = argToList(demisto.args().get('normalized_source_score'))
+        st = argToList(demisto.args().get('status'))
+        demisto.results(get_all_phishing_indicators(nts, nss, st))
 
 except Exception as e:
     return_error(str(e))
