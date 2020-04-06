@@ -2,11 +2,11 @@
 """
 This script is used to create a filter_file.txt file which will run only the needed the tests for a given change.
 """
+import re
 import os
 import re
 import sys
 import json
-import time
 import glob
 import random
 import argparse
@@ -73,33 +73,15 @@ CHECKED_TYPES_REGEXES = [
 ]
 
 # File names
-COMMON_YML_LIST = ["scripts/script-CommonIntegration.yml", "scripts/script-CommonIntegrationPython.yml",
-                   "Packs/Base/Scripts/script-CommonServer.yml", "scripts/script-CommonServerUserPython.yml",
-                   "scripts/script-CommonUserServer.yml",
-                   "Packs/Base/Scripts/CommonServerPython/CommonServerPython.yml"]
+ALL_TESTS = ["scripts/script-CommonIntegration.yml", "scripts/script-CommonIntegrationPython.yml",
+             "scripts/script-CommonServer.yml", "scripts/script-CommonServerUserPython.yml",
+             "scripts/script-CommonUserServer.yml", "scripts/CommonServerPython/CommonServerPython.yml"]
 
 # secrets white list file to be ignored in tests to prevent full tests running each time it is updated
 SECRETS_WHITE_LIST = 'secrets_white_list.json'
 
-# number of random tests to run when there're no runnable tests
-RANDOM_TESTS_NUM = 3
-
 # Global used to indicate if failed during any of the validation states
 _FAILED = False
-
-
-def is_runnable_in_server_version(from_v, server_v, to_v):
-    """
-    Checks whether an obj is runnable in a version
-    Args:
-        from_v (string): string representing Demisto version (fromversion comparable)
-        server_v (string): string representing Demisto version (version to be ran on)
-        to_v (string): string representing Demisto version (toversion comparable)
-
-    Returns:
-        bool. true if obj is runnable
-    """
-    return server_version_compare(from_v, server_v) <= 0 and server_version_compare(server_v, to_v) <= 0
 
 
 def checked_type(file_path, regex_list):
@@ -122,7 +104,7 @@ def get_modified_files(files_string):
     is_indicator_json = False
 
     sample_tests = []
-    changed_common = []
+    all_tests = []
     modified_files_list = []
     modified_tests_list = []
     all_files = files_string.split('\n')
@@ -131,11 +113,9 @@ def get_modified_files(files_string):
         file_data = _file.split()
         if not file_data:
             continue
+
+        file_path = file_data[1]
         file_status = file_data[0]
-        if file_status.lower().startswith('r'):
-            file_path = file_data[2]
-        else:
-            file_path = file_data[1]
 
         # ignoring deleted files.
         # also, ignore files in ".circle", ".github" and ".hooks" directories and .gitignore
@@ -146,8 +126,9 @@ def get_modified_files(files_string):
                 file_path = glob.glob(dir_path + "/*.yml")[0]
 
             # Common scripts (globally used so must run all tests)
-            if checked_type(file_path, COMMON_YML_LIST):
-                changed_common.append(file_path)
+            if checked_type(file_path, ALL_TESTS):
+                all_tests.append(file_path)
+                modified_files_list.append(file_path)
 
             # integrations, scripts, playbooks, test-scripts
             elif checked_type(file_path, CHECKED_TYPES_REGEXES):
@@ -177,12 +158,11 @@ def get_modified_files(files_string):
             elif re.match(DOCS_REGEX, file_path) or os.path.splitext(file_path)[-1] in ['.md', '.png']:
                 continue
 
-            elif all(file not in file_path for file in
-                     (SECRETS_WHITE_LIST, PACKS_PACK_META_FILE_NAME, PACKS_WHITELIST_FILE_NAME)):
+            elif SECRETS_WHITE_LIST not in file_path:
                 sample_tests.append(file_path)
 
-    return (modified_files_list, modified_tests_list, changed_common, is_conf_json, sample_tests, is_reputations_json,
-            is_indicator_json)
+    return (modified_files_list, modified_tests_list, all_tests, is_conf_json, sample_tests,
+            is_reputations_json, is_indicator_json)
 
 
 def get_name(file_path):
@@ -200,8 +180,7 @@ def get_tests(file_path):
         return data_dictionary.get('tests', [])
 
 
-def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, catched_playbooks, tests_set, id_set,
-                  conf):
+def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, catched_playbooks, tests_set):
     """Collect tests for the affected script_ids,playbook_ids,integration_ids.
 
     :param script_ids: The ids of the affected scripts in your change set.
@@ -210,8 +189,6 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
     :param catched_scripts: The names of the scripts we already identified a test for.
     :param catched_playbooks: The names of the scripts we already v a test for.
     :param tests_set: The names of the tests we alredy identified.
-    :param id_set: The id_set json.
-    :param conf: The conf json.
 
     :return: (test_ids, missing_ids) - All the names of possible tests, the ids we didn't match a test for.
     """
@@ -222,9 +199,8 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
     skipped_tests = conf.get_skipped_tests()
     skipped_integrations = conf.get_skipped_integrations()
 
-    if not id_set:
-        with open("./Tests/id_set.json", 'r') as id_set_file:
-            id_set = json.load(id_set_file)
+    with open("./Tests/id_set.json", 'r') as conf_file:
+        id_set = json.load(conf_file)
 
     integration_set = id_set['integrations']
     test_playbooks_set = id_set['TestPlaybooks']
@@ -424,10 +400,9 @@ def find_tests_for_modified_files(modified_files, conf, id_set):
     integration_ids = set([])
 
     tests_set, catched_scripts, catched_playbooks = collect_changed_ids(integration_ids, playbook_names,
-                                                                        script_names, modified_files, id_set)
+                                                                        script_names, modified_files)
     test_ids, missing_ids, caught_missing_test = collect_tests(script_names, playbook_names, integration_ids,
-                                                               catched_scripts, catched_playbooks, tests_set, id_set,
-                                                               conf)
+                                                               catched_scripts, catched_playbooks, tests_set)
     missing_ids = update_with_tests_sections(missing_ids, modified_files, test_ids, tests_set)
 
     missing_ids, tests_set = check_if_fetch_incidents_is_tested(missing_ids, integration_ids, id_set, conf, tests_set)
@@ -469,7 +444,7 @@ def update_with_tests_sections(missing_ids, modified_files, test_ids, tests):
     return missing_ids
 
 
-def collect_changed_ids(integration_ids, playbook_names, script_names, modified_files, id_set):
+def collect_changed_ids(integration_ids, playbook_names, script_names, modified_files):
     tests_set = set([])
     updated_script_names = set([])
     updated_playbook_names = set([])
@@ -499,9 +474,8 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
             integration_ids.add(_id)
             integration_to_version[_id] = (get_from_version(file_path), get_to_version(file_path))
 
-    if not id_set:
-        with open("./Tests/id_set.json", 'r') as conf_file:
-            id_set = json.load(conf_file)
+    with open("./Tests/id_set.json", 'r') as conf_file:
+        id_set = json.load(conf_file)
 
     script_set = id_set['scripts']
     playbook_set = id_set['playbooks']
@@ -950,12 +924,12 @@ def get_random_tests(tests_num, conf=None, id_set=None, server_version='0'):
 
 def get_test_list(files_string, branch_name, two_before_ga_ver='0', conf=None, id_set=None):
     """Create a test list that should run"""
-    (modified_files, modified_tests_list, changed_common, is_conf_json, sample_tests, is_reputations_json,
+    (modified_files, modified_tests_list, all_tests, is_conf_json, sample_tests, is_reputations_json,
      is_indicator_json) = get_modified_files(files_string)
 
     tests = set([])
     if modified_files:
-        tests = find_tests_for_modified_files(modified_files, conf, id_set)
+        tests = find_tests_for_modified_files(modified_files)
 
     # Adding a unique test for a json file.
     if is_reputations_json:
@@ -972,7 +946,11 @@ def get_test_list(files_string, branch_name, two_before_ga_ver='0', conf=None, i
             tests.add(test)
 
     if is_conf_json:
-        tests = tests.union(get_test_from_conf(branch_name, conf))
+        tests = tests.union(get_test_from_conf(branch_name))
+
+    if all_tests:
+        print_warning('Running all tests due to: {}'.format(','.join(all_tests)))
+        tests.add("Run all tests")
 
     if not tests:
         tests = get_random_tests(tests_num=RANDOM_TESTS_NUM, conf=conf, id_set=id_set, server_version=two_before_ga_ver)
@@ -984,9 +962,6 @@ def get_test_list(files_string, branch_name, two_before_ga_ver='0', conf=None, i
             print_warning("Running Sanity check only")
             tests.add('DocumentationTest')  # test with integration configured
             tests.add('TestCommonPython')  # test with no integration configured
-
-    if changed_common:
-        tests.add('TestCommonPython')
 
     return tests
 
@@ -1059,6 +1034,18 @@ if __name__ == "__main__":
 
     # Create test file based only on committed files
     create_test_file(options.nightly, options.skip_save)
+    # disable-secrets-detection-start
+    print("Rewrite filter_file.txt to use tests that rerecorded in recent nightly build")
+    tests = 'ThreatX-test\nrsa_packets_and_logs_test\nACM-Test\nCanaryTools Test\nhashicorp_test\nWildfire Test' \
+            '\nDetonate URL - WildFire-v2 - Test\nAlexa Test Playbook\nSNDBOX_Test\nTenable.io test\nRTIR Test\n' \
+            'devo_test_playbook\nBigFixTest\nTest Playbook McAfee ATD\nSplunk-Test\nSplunkPySearch_Test\n' \
+            'urlscan_malicious_Test\nCylance Protect v2 Test\nCybereason Test\nvirusTotalPrivateAPI-test-playbook\n' \
+            'Symantec Messaging Gateway Test\ntest_Qradar\nFireEye HX Test\nRSA NetWitness Test\n' \
+            'Calculate Severity - Standard - Test\nLogRhythm REST test\nQRadar Indicator Hunting Test'
+    # disable-secrets-detection-end
+    with open("./Tests/filter_file.txt", "w") as filter_file:
+        filter_file.write(tests)
+
     if not _FAILED:
         print_color("Finished test configuration", LOG_COLORS.GREEN)
         sys.exit(0)
