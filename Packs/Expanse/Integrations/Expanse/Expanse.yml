@@ -84,7 +84,7 @@ script:
       type: string
     - contextPath: DBotScore.Score
       description: The actual score.
-      type: number
+      type: Number
     - contextPath: Expanse.IP.Address
       description: Internet Protocol Address
       type: String
@@ -510,7 +510,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: ISO-8601 UTC timestamp denoting the earlier behavior data to fetch
+      description: ISO-8601 UTC timestamp denoting the earliest behavior data to fetch
       isArray: false
       name: start_time
       required: false
@@ -541,11 +541,44 @@ script:
     - contextPath: Expanse.Behavior.InternalExposureTypes
       description: Known Exposures for IP
       type: String
-    - contextPath: Expanse.Behavior.Flows
-      description: Summary of 20 most recents risky flows for IP
-      type: String
     - contextPath: Expanse.Behavior.ExternalAddresses
       description: External IP addresses with known communication to IP
+      type: String
+    - contextPath: Expanse.Behavior.FlowSummaries
+      description: Summaries of most recents risky flows for IP
+      type: String
+    - contextPath: Expanse.Behavior.Flows
+      description: Array of Flow Objects
+      type: String
+    - contextPath: Expanse.Behavior.Flows.InternalAddress
+      description: Internal IP address for flow
+      type: String
+    - contextPath: Expanse.Behavior.Flows.InternalPort
+      description: Internal Port for flow
+      type: Number
+    - contextPath: Expanse.Behavior.Flows.InternalCountryCode
+      description: Internal country code for flow
+      type: String
+    - contextPath: Expanse.Behavior.Flows.ExternalAddress
+      description: External IP address for flow
+      type: String
+    - contextPath: Expanse.Behavior.Flows.ExternalPort
+      description: External Port for flow
+      type: Number
+    - contextPath: Expanse.Behavior.Flows.ExternalCountryCode
+      description: External country code for flow
+      type: String
+    - contextPath: Expanse.Behavior.Flows.Timestamp
+      description: Timestamp of flow
+      type: Date
+    - contextPath: Expanse.Behavior.Flows.Protocol
+      description: Protocol of flow (UDP, TCP)
+      type: String
+    - contextPath: Expanse.Behavior.Flows.Direction
+      description: Direction of flow
+      type: String
+    - contextPath: Expanse.Behavior.Flows.RiskRule
+      description: Risk rule violated by flow
       type: String
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
