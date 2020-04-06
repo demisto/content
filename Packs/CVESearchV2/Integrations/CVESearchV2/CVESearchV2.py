@@ -21,11 +21,11 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, headers=headers, verify=verify, proxy=proxy)
 
     def cve_latest(self, limit) -> List[Dict[str, Any]]:
-        res = self._http_request(method='GET', url_suffix=f'/last/{limit}', timeout=2400)
+        res = self._http_request(method='GET', url_suffix=f'/last/{limit}', timeout=60)
         return res
 
     def cve(self, cve_id) -> Dict[str, Any]:
-        res: Dict[str, Any] = self._http_request(method='GET', url_suffix=f'cve/{cve_id}', timeout=2400)
+        res: Dict[str, Any] = self._http_request(method='GET', url_suffix=f'cve/{cve_id}', timeout=60)
         return res or {}
 
 
