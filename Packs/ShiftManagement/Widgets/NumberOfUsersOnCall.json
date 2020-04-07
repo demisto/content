@@ -25,5 +25,6 @@
   },
   "size": 0,
   "category": "",
-  "fromVersion": "5.5.0"
+  "fromVersion": "5.5.0",
+  "description": "Displays the number of users that are currently on-call."
 }
