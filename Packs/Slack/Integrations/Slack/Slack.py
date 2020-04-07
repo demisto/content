@@ -11,7 +11,7 @@ import concurrent
 import requests
 import ssl
 from typing import Tuple, Dict, List, Optional
-import threading
+from concurrent.futures import ThreadPoolExecutor
 
 # disable unsecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -1850,27 +1850,6 @@ def init_globals():
     SLACK_COMMAND_TIMEOUT = int(demisto.params().get('timeout', 2))
 
 
-class SlackCommandTimedThread(threading.Thread):
-    """
-        Attributes:
-            target (method): The method the created thread will run.
-            timeout (int): how many seconds does the thread have untill it is terminated
-    """
-    def __init__(self, target, timeout=2):
-        self.timeout = timeout
-        threading.Thread.__init__(self, target=target)
-
-    def timed_run(self):
-        """Run the thread for the given time.
-
-        Returns:
-
-        """
-        self.start()
-        time.sleep(self.timeout)
-        self.join()
-
-
 def main():
     """
     Main
@@ -1898,13 +1877,10 @@ def main():
 
     try:
         command_func = commands[demisto.command()]
-        # Run non-long running commands
-        if command_func != long_running_main:
-            timed_thread = SlackCommandTimedThread(command_func, SLACK_COMMAND_TIMEOUT)
-            timed_thread.timed_run()
-
-        else:
-            long_running_main()
+        with ThreadPoolExecutor() as p:
+            loop = asyncio.get_event_loop()
+            loop.set_default_executor(p)
+            command_func()
 
     except Exception as e:
         LOG(e)
