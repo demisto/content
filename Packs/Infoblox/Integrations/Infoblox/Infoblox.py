@@ -83,8 +83,9 @@ class Client(BaseClient):
         if params:
             self.params.update(params)
         try:
-            return super()._http_request(method, url_suffix, full_url, headers, auth, json_data, self.params, data,
-                                         files, timeout, resp_type, ok_codes, **kwargs)
+            return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
+                                         auth=auth, json_data=json_data, params=self.params, data=data, files=files,
+                                         timeout=timeout, resp_type=resp_type, ok_codes=ok_codes, **kwargs)
         except DemistoException as error:
             raise parse_demisto_exception(error, 'text')
 
