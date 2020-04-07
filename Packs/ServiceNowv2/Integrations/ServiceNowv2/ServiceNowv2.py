@@ -283,8 +283,8 @@ def generate_body(fields: dict = {}, custom_fields: dict = {}) -> dict:
     return body
 
 
-def split_fields(fields: str = {}) -> dict:
-    """Split str fields of Demisto arguments to SNOW request fields.
+def split_fields(fields: str = '') -> dict:
+    """Split str fields of Demisto arguments to SNOW request fields by the char - ;.
 
     Args:
         fields: fields in a string representation.
@@ -295,7 +295,6 @@ def split_fields(fields: str = {}) -> dict:
     dic_fields = {}
 
     if fields:
-        # As received by the command
         arr_fields = fields.split(';')
 
         for f in arr_fields:

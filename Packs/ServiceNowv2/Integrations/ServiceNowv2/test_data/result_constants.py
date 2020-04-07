@@ -201,4 +201,3 @@ EXPECTED_CREATE_RECORD = {
         'CreatedAt': '2020-04-07 12:48:38'
     }
 }
-
