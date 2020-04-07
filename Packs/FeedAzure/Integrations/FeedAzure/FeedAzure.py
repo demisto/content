@@ -255,12 +255,12 @@ def get_indicators_command(client: Client, feedTags: list) -> Tuple[str, Dict, D
     return human_readable, {}, {'raw_response': raw_response}
 
 
-def fetch_indicators_command(client: Client, tags: list, limit: int = -1) -> Tuple[List[Dict], List]:
+def fetch_indicators_command(client: Client, feedTags: list, limit: int = -1) -> Tuple[List[Dict], List]:
     """Fetches indicators from the feed to the indicators tab.
     Args:
         client (Client): Client object configured according to instance arguments.
         limit (int): Maximum number of indicators to return.
-        tags (list): Indicator tags
+        feedTags (list): Indicator tags
     Returns:
         Tuple of:
             str. Information to be printed to war room.
@@ -320,7 +320,7 @@ def main():
             'azure-get-indicators': get_indicators_command
         }
         if feedTags:
-            demisto.args['feedTags'] = feedTags
+            demisto.args().get('feedTags') = feedTags
         if command in commands:
             return_outputs(*commands[command](client, demisto.args()))
 
