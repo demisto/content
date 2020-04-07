@@ -27,12 +27,15 @@ incident1 = {
 
 context1 = {
     'simpleValue': 'simple',
-    'listValue': [{'name': 'test1'}, {'name': 'test2'}]
+    'listValue': [{'name': 'test1'}, {'name': 'test2'}],
+    'dictListValue': {'test': ['1', '2']}
 }
 context2 = context1
 
 context3 = {
-    'listValue': [{'name': 'test1'}, {'name': 'test3'}]
+    'listValue': [{'name': 'test1'}, {'name': 'test3'}],
+    'dictListValue': {'test': ['2', '1']}
+
 }
 
 incident2 = {
@@ -158,7 +161,7 @@ def test_similar_context(mocker):
     mocker.patch.object(demisto, 'incidents', return_value=[incident1])
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
     mocker.patch.object(demisto, 'context', return_value=context1)
-
+    mocker.patch.object(demisto, 'dt', side_effect=dt_res)
     result = main()
     assert len(result['EntryContext']['similarIncidentList']) == 1
     assert result['EntryContext']['similarIncidentList'][0]['rawId'] == 2
@@ -170,6 +173,44 @@ def test_similar_context(mocker):
 
     args.update({'similarIncidentFields': 'name', 'similarContextKeys': 'listValue.name'})
     result = main()
+    assert len(result['EntryContext']['similarIncidentList']) == 1
+    assert result['EntryContext']['similarIncidentList'][0]['rawId'] == 2
+
+    args.update({'similarIncidentFields': 'name', 'similarContextKeys': 'dictListValue.test'})
+    result = main()
     assert len(result['EntryContext']['similarIncidentList']) == 2
     assert result['EntryContext']['similarIncidentList'][0]['rawId'] == 3
     assert result['EntryContext']['similarIncidentList'][1]['rawId'] == 2
+
+    args.update({'similarIncidentFields': 'name', 'similarContextKeys': 'dictListValue'})
+    result = main()
+    assert len(result['EntryContext']['similarIncidentList']) == 1
+    assert result['EntryContext']['similarIncidentList'][0]['rawId'] == 2
+
+
+def dt_res(context, key):
+    if key == 'simpleValue':
+        if context is context2:
+            return 'simple'
+        else:
+            return ''
+    elif key == 'listValue':
+        if context is context2:
+            return [{'name': 'test1'}, {'name': 'test2'}]
+        elif context is context3:
+            return [{'name': 'test1'}, {'name': 'test3'}]
+    elif key == 'listValue.name':
+        if context is context2:
+            return ['test1', 'test2']
+        elif context is context3:
+            return ['test1', 'test3']
+    elif key == 'dictListValue.test':
+        if context is context2:
+            return ['1', '2']
+        elif context is context3:
+            return ['2', '1']
+    elif key == 'dictListValue':
+        if context is context2:
+            return {'test': ['1', '2']}
+        elif context is context3:
+            return {'test': ['2', '1']}
