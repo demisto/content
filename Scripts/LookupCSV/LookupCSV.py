@@ -81,7 +81,7 @@ def main():
         elif add_row:
             if len(lines[0].split(",")) != len(add_row.split(",")):
                 return_error(
-                    "Added row via add_row has invalid length.")
+                    "Added row via add_header_row has invalid length.")
 
             headers = add_row.split(",")
             for line in lines:
