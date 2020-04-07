@@ -1090,4 +1090,3 @@ RESPONSE_CREATE_RECORD = {
         'lease_id': '', 'salvage_value': '0'
     }
 }
-
