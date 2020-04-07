@@ -15,7 +15,9 @@ SIMULATION_ID = '8fae303defd52a7745044ce2ba54a391'
 client = Client(
     base_url=MOCK_URL,
     api_key=MOCK_API_KEY,
-    account_id=MOCK_ACCOUNT_ID
+    account_id=MOCK_ACCOUNT_ID,
+    proxies=False,
+    verify=False,
 )
 
 
