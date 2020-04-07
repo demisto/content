@@ -189,4 +189,16 @@ EXPECTED_GET_RECORD = {
         'asset_tag': 'P1000479', 'display_name': 'P1000479 - Apple MacBook Pro 15"', 'ID': 'sys_id'
     }
 }
+EXPECTED_UPDATE_RECORD = {
+    'ServiceNow.Record(val.ID===obj.ID)': {
+        'ID': 'sys_id', 'UpdatedBy': 'system', 'UpdatedAt': '2020-04-07 06:31:50', 'CreatedBy': 'admin',
+        'CreatedAt': '2019-02-23 08:14:21'
+    }
+}
+EXPECTED_CREATE_RECORD = {
+    'ServiceNow.Record(val.ID===obj.ID)': {
+        'ID': 'sys_id', 'UpdatedBy': 'admin', 'UpdatedAt': '2020-04-07 12:48:38', 'CreatedBy': 'admin',
+        'CreatedAt': '2020-04-07 12:48:38'
+    }
+}
 

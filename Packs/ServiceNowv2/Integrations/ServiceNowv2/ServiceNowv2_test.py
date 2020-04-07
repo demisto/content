@@ -2,14 +2,14 @@ import pytest
 from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_readable, \
     generate_body, split_fields, Client, update_ticket_command, create_ticket_command, delete_ticket_command, \
     query_tickets_command, add_link_command, add_comment_command, upload_file_command, get_ticket_notes_command, \
-    get_record_command
+    get_record_command, update_record_command, create_record_command, delete_record_command
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_CREATE_TICKET, RESPONSE_QUERY_TICKETS, RESPONSE_ADD_LINK, RESPONSE_ADD_COMMENT, RESPONSE_UPLOAD_FILE, \
-    RESPONSE_GET_TICKET_NOTES, RESPONSE_GET_RECORD
+    RESPONSE_GET_TICKET_NOTES, RESPONSE_GET_RECORD, RESPONSE_UPDATE_RECORD, RESPONSE_CREATE_RECORD
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \
     EXPECTED_TICKET_HR, EXPECTED_MULTIPLE_TICKET_HR, EXPECTED_UPDATE_TICKET, EXPECTED_CREATE_TICKET, \
     EXPECTED_QUERY_TICKETS, EXPECTED_ADD_LINK_HR, EXPECTED_ADD_COMMENT_HR, EXPECTED_UPLOAD_FILE, \
-    EXPECTED_GET_TICKET_NOTES, EXPECTED_GET_RECORD
+    EXPECTED_GET_TICKET_NOTES, EXPECTED_GET_RECORD, EXPECTED_UPDATE_RECORD, EXPECTED_CREATE_RECORD
 
 
 def test_get_server_url():
@@ -52,7 +52,11 @@ def test_split_fields():
      EXPECTED_UPLOAD_FILE),
     (get_ticket_notes_command, {'id': "sys_id"}, RESPONSE_GET_TICKET_NOTES, EXPECTED_GET_TICKET_NOTES),
     (get_record_command, {'table_name': "alm_asset", 'id': "sys_id", 'fields': "asset_tag,display_name"},
-     RESPONSE_GET_RECORD, EXPECTED_GET_RECORD)
+     RESPONSE_GET_RECORD, EXPECTED_GET_RECORD),
+    (update_record_command, {'name': "alm_asset", 'id': "1234", 'custom_fields': "display_name=test4"},
+     RESPONSE_UPDATE_RECORD, EXPECTED_UPDATE_RECORD),
+    (create_record_command, {'table_name': "alm_asset", 'fields': "asset_tag=P4325434;display_name=my_test_record"},
+     RESPONSE_CREATE_RECORD, EXPECTED_CREATE_RECORD)
 ])  # noqa: E124
 def test_commands(command, args, response, expected_result, mocker):
     """Unit test
@@ -82,7 +86,9 @@ def test_commands(command, args, response, expected_result, mocker):
     (delete_ticket_command, {'id': '1234'}, {}, 'Ticket with ID 1234 was successfully deleted.'),
     (add_link_command, {'id': '1234', 'link': "http://www.demisto.com", 'text': 'demsito_link'}, RESPONSE_ADD_LINK,
      EXPECTED_ADD_LINK_HR),
-    (add_comment_command, {'id': "1234", 'comment': "Nice work!"}, RESPONSE_ADD_COMMENT, EXPECTED_ADD_COMMENT_HR)
+    (add_comment_command, {'id': "1234", 'comment': "Nice work!"}, RESPONSE_ADD_COMMENT, EXPECTED_ADD_COMMENT_HR),
+    (delete_record_command, {'table_name': "alm_asset", 'id': '1234'}, {},
+     'ServiceNow record with ID 1234 was successfully deleted.')
 ])  # noqa: E124
 def test_no_ec_commands(command, args, response, expected_hr, mocker):
     """Unit test

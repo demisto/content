@@ -965,3 +965,129 @@ RESPONSE_GET_RECORD = {
         "work_notes": ""
     }
 }
+RESPONSE_UPDATE_RECORD = {
+    "result": {
+        "acquisition_method": "",
+        "asset_tag": "P1000479",
+        "assigned": "2017-10-31 07:00:00",
+        "assigned_to": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "beneficiary": "",
+        "checked_in": "",
+        "checked_out": "",
+        "ci": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "comments": "",
+        "company": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "cost": "1799.99",
+        "cost_center": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "delivery_date": "2017-04-20 07:00:00",
+        "department": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "depreciated_amount": "1023.64",
+        "depreciation": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "depreciation_date": "2017-06-03 07:00:00",
+        "display_name": "P1000479 - Apple MacBook Pro 15\"",
+        "disposal_reason": "",
+        "due": "",
+        "due_in": "",
+        "expenditure_type": "",
+        "gl_account": "",
+        "install_date": "2017-06-02 07:00:00",
+        "install_status": "1",
+        "invoice_number": "",
+        "justification": "",
+        "lease_id": "",
+        "location": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "managed_by": "",
+        "model": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "model_category": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "old_status": "",
+        "old_substatus": "",
+        "order_date": "2017-03-27 07:00:00",
+        "owned_by": "",
+        "parent": "",
+        "po_number": "PO100004",
+        "pre_allocated": "false",
+        "purchase_date": "2017-04-09",
+        "quantity": "1",
+        "request_line": "",
+        "resale_price": "0",
+        "reserved_for": "",
+        "residual": "776.35",
+        "residual_date": "2020-04-07",
+        "retired": "",
+        "retirement_date": "",
+        "salvage_value": "0",
+        "serial_number": "BQP-854-D33246-GH",
+        "skip_sync": "false",
+        "stockroom": "",
+        "substatus": "",
+        "support_group": "",
+        "supported_by": "",
+        "sys_class_name": "alm_hardware",
+        "sys_created_by": "admin",
+        "sys_created_on": "2019-02-23 08:14:21",
+        "sys_domain": {
+            "link": "demisto.com",
+            "value": "global"
+        },
+        "sys_domain_path": "/",
+        "sys_id": "sys_id",
+        "sys_mod_count": "18",
+        "sys_tags": "",
+        "sys_updated_by": "system",
+        "sys_updated_on": "2020-04-07 06:31:50",
+        "vendor": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "warranty_expiration": "2020-06-01",
+        "work_notes": ""
+    }
+}
+RESPONSE_CREATE_RECORD = {
+    "result": {
+        'parent': '', 'skip_sync': 'false', 'residual_date': '', 'residual': '0',
+        'sys_updated_on': '2020-04-07 12:48:38', 'request_line': '', 'sys_updated_by': 'admin',
+        'due_in': '', 'model_category': '', 'sys_created_on': '2020-04-07 12:48:38',
+        'sys_domain': {'link': 'demisto.com', 'value': 'global'}, 'disposal_reason': '', 'model': '',
+        'install_date': '', 'gl_account': '', 'invoice_number': '', 'sys_created_by': 'admin',
+        'warranty_expiration': '', 'asset_tag': 'P4325434', 'depreciated_amount': '0', 'substatus': '',
+        'pre_allocated': 'false', 'owned_by': '', 'checked_out': '', 'display_name': 'P4325434 -',
+        'sys_domain_path': '/', 'delivery_date': '', 'retirement_date': '', 'beneficiary': '',
+        'install_status': '1', 'cost_center': '', 'supported_by': '', 'assigned': '', 'purchase_date': '',
+        'work_notes': '', 'managed_by': '', 'sys_class_name': 'alm_asset', 'sys_id': 'sys_id', 'po_number': '',
+        'stockroom': '', 'checked_in': '', 'resale_price': '0', 'vendor': '', 'company': '', 'retired': '',
+        'justification': '', 'department': '', 'expenditure_type': '', 'depreciation': '', 'assigned_to': '',
+        'depreciation_date': '', 'old_status': '', 'comments': '', 'cost': '0', 'quantity': '1',
+        'acquisition_method': '', 'ci': '', 'sys_mod_count': '0', 'old_substatus': '', 'serial_number': '',
+        'sys_tags': '', 'order_date': '', 'support_group': '', 'reserved_for': '', 'due': '', 'location': '',
+        'lease_id': '', 'salvage_value': '0'
+    }
+}
+

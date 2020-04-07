@@ -256,7 +256,7 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '
     return ticket_fields
 
 
-def generate_body(fields: dict, custom_fields: dict) -> dict:
+def generate_body(fields: dict = {}, custom_fields: dict = {}) -> dict:
     """Generates a body from fields and custom fields.
 
     Args:
@@ -283,7 +283,7 @@ def generate_body(fields: dict, custom_fields: dict) -> dict:
     return body
 
 
-def split_fields(fields: str) -> dict:
+def split_fields(fields: str = {}) -> dict:
     """Split str fields of Demisto arguments to SNOW request fields.
 
     Args:
@@ -499,7 +499,7 @@ class Client(BaseClient):
 
         return self.send_request(path, 'GET', params=query_params)
 
-    def update(self, table_name: str, record_id: str, fields: dict, custom_fields: dict) -> dict:
+    def update(self, table_name: str, record_id: str, fields: dict = {}, custom_fields: dict = {}) -> dict:
         """Updates a ticket or a record by sending a PATCH request.
 
         Args:
@@ -514,7 +514,7 @@ class Client(BaseClient):
         body = generate_body(fields, custom_fields)
         return self.send_request(f'table/{table_name}/{record_id}', 'PATCH', body=body)
 
-    def create(self, table_name: str, fields: dict, custom_fields: dict) -> dict:
+    def create(self, table_name: str, fields: dict = {}, custom_fields: dict = {}) -> dict:
         """Creates a ticket or a record by sending a POST request.
 
         Args:
@@ -1019,10 +1019,12 @@ def create_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
     fields_str = str(args.get('fields', ''))
     custom_fields_str = str(args.get('custom_fields', ''))
 
+    fields = {}
     if fields_str:
-        fields: dict = split_fields(fields_str)
+        fields = split_fields(fields_str)
+    custom_fields = {}
     if custom_fields_str:
-        custom_fields: dict = split_fields(custom_fields_str)
+        custom_fields = split_fields(custom_fields_str)
 
     result = client.create(table_name, fields, custom_fields)
 
@@ -1030,13 +1032,12 @@ def create_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
         return 'Could not create record.', {}, {}
 
     record = result.get('result', {})
+    mapped_record = {DEFAULT_RECORD_FIELDS[k]: record[k] for k in DEFAULT_RECORD_FIELDS if k in record}
 
-    mapped_record = {DEFAULT_RECORD_FIELDS[k]: result[k] for k in DEFAULT_RECORD_FIELDS if k in record}
-
-    human_readable = tableToMarkdown('ServiceNow record created successfully', mapped_record, removeNull=True),
+    human_readable = tableToMarkdown('ServiceNow record created successfully', mapped_record, removeNull=True)
     entry_context = {'ServiceNow.Record(val.ID===obj.ID)': createContext(mapped_record)}
 
-    return human_readable, entry_context, record
+    return human_readable, entry_context, result
 
 
 def update_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
@@ -1054,10 +1055,12 @@ def update_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
     fields_str = str(args.get('fields', ''))
     custom_fields_str = str(args.get('custom_fields', ''))
 
+    fields = {}
     if fields_str:
-        fields: dict = split_fields(fields_str)
+        fields = split_fields(fields_str)
+    custom_fields = {}
     if custom_fields_str:
-        custom_fields: dict = split_fields(custom_fields_str)
+        custom_fields = split_fields(custom_fields_str)
 
     result = client.update(table_name, record_id, fields, custom_fields)
 
@@ -1067,7 +1070,7 @@ def update_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
     record = result.get('result', {})
     mapped_record = {DEFAULT_RECORD_FIELDS[k]: record[k] for k in DEFAULT_RECORD_FIELDS if k in record}
     human_readable = tableToMarkdown(f'ServiceNow record with ID {record_id} updated successfully',
-                                     t=mapped_record, removeNull=True),
+                                     t=mapped_record, removeNull=True)
     entry_context = {'ServiceNow.Record(val.ID===obj.ID)': createContext(mapped_record)}
 
     return human_readable, entry_context, result
