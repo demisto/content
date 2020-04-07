@@ -16,7 +16,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: https://api.maltiverse.com
+- defaultvalue: false
   display: Trust any certificate (not secure)
   hidden: false
   name: insecure
