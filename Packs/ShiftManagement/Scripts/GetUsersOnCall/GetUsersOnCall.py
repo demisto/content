@@ -10,7 +10,11 @@ def main():
     if is_error(get_users_response):
         demisto.error(f'Failed to get users on call: {str(get_error(get_users_response))}')
     else:
-        demisto.results(get_users_response[0]['HumanReadable'])
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': get_users_response[0]['HumanReadable']
+        })
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):

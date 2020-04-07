@@ -24,6 +24,15 @@ DAY_NUM_TO_DAY_HEADER = {
 }
 
 
+def hour_in_shift(day, hour, shift):
+    check_time_bottom = day * 24 * 60 + hour * 60
+    check_time_top = day * 24 * 60 + hour * 60 + 59
+    shift_from_time = shift.get('fromDay', 0) * 24 * 60 + shift.get('fromHour', 0) * 60 + shift.get('fromMinute', 0)
+    shift_to_time = shift.get('toDay', 0) * 24 * 60 + shift.get('toHour', 0) * 60 + shift.get('toMinute', 0)
+    return (shift_from_time <= check_time_bottom < shift_to_time) or \
+           (shift_from_time <= check_time_top < shift_to_time)
+
+
 def main():
     get_roles_response: List = demisto.executeCommand('getRoles', {})
     if is_error(get_roles_response):
@@ -44,29 +53,28 @@ def main():
             } for hour in range(24)
         ]
 
-        for role in roles:
-            role_name = role.get('name', '')
-            shifts = role.get('shifts') or []
-            for shift in shifts:
-                from_day = shift.get('fromDay', 0)
-                to_day = shift.get('toDay', 0)
-                from_hour = shift.get('fromHour', 0)
-                to_hour = shift.get('toHour', 0)
-                for hour in range(from_hour, to_hour):
-                    for day in range(from_day, to_day + 1):
-                        if shifts_table[hour][DAY_NUM_TO_DAY_HEADER[day]]:
-                            shifts_table[hour][DAY_NUM_TO_DAY_HEADER[day]] += f', {role_name}'
-                        else:
-                            shifts_table[hour][DAY_NUM_TO_DAY_HEADER[day]] = role_name
+        for day in range(7):
+            for hour in range(24):
+                collected_roles = []
+                for role in roles:
+                    role_name = role.get('name', '')
+                    shifts = role.get('shifts') or []
+                    for shift in shifts:
+                        if hour_in_shift(day, hour, shift):
+                            collected_roles.append(role_name)
+                            break
+                shifts_table[hour][DAY_NUM_TO_DAY_HEADER[day]] = ', '.join(collected_roles)
 
-        demisto.results(
-            tableToMarkdown(
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': tableToMarkdown(
                 name='Roles Per Shift',
                 t=shifts_table,
-                headers=[HOURS_DAYS_HEADER, SUNDAY_HEADER, MONDAY_HEADER, TUESDAY_HEADER,
+                headers=[HOURS_DAYS_HEADER, SUNDAY_HEADER, MONDAY_HEADER, TUESDAY_HEADER,  # disable-secrets-detection
                          WEDNESDAY_HEADER, THURSDAY_HEADER, FRIDAY_HEADER, SATURDAY_HEADER]
             )
-        )
+        })
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
