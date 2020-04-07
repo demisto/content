@@ -1,4 +1,8 @@
 ## [Unreleased]
+Added default mapping of indicator's fields.
+
+
+## [20.3.4] - 2020-03-30
 - Renamed the **Sub-Feeds** parameter to **Services** in the instance configuration.
 - Added 5 new services:
     - **C2 All Indicator Feed**
