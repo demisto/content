@@ -568,7 +568,7 @@
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama",
             "playbookID": "Panorama Query Logs - Test",
-            "timeout": 1000,
+            "timeout": 1500,
             "nightly": true
         },
         {
@@ -2284,7 +2284,7 @@
         {
             "playbookID": "PAN-OS Query Logs For Indicators Test",
             "fromversion": "4.5.0",
-            "timeout": 600,
+            "timeout": 1500,
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama"
         },
