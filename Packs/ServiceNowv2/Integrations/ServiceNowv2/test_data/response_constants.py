@@ -537,3 +537,245 @@ RESPONSE_QUERY_TICKETS = {
         }
     ]
 }
+RESPONSE_ADD_LINK = {
+    "result": {
+        "active": "false",
+        "activity_due": "",
+        "additional_assignee_list": "",
+        "approval": "",
+        "approval_history": "",
+        "approval_set": "",
+        "assigned_to": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "assignment_group": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "business_duration": "1970-01-22 21:46:21",
+        "business_service": "",
+        "business_stc": "1892781",
+        "calendar_duration": "1970-04-02 20:46:21",
+        "calendar_stc": "7937181",
+        "caller_id": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "category": "network",
+        "caused_by": "",
+        "child_incidents": "",
+        "close_code": "Closed/Resolved by Caller",
+        "close_notes": "Closed before close notes were made mandatory\n\t\t",
+        "closed_at": "2019-09-03 23:10:06",
+        "closed_by": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "cmdb_ci": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "comments": "",
+        "comments_and_work_notes": "",
+        "company": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "contact_type": "",
+        "correlation_display": "",
+        "correlation_id": "",
+        "delivery_plan": "",
+        "delivery_task": "",
+        "description": "User can't access email on mail.company.com.\n\t\t",
+        "due_date": "",
+        "escalation": "0",
+        "expected_start": "",
+        "follow_up": "",
+        "group_list": "",
+        "hold_reason": "",
+        "impact": "1",
+        "incident_state": "7",
+        "knowledge": "false",
+        "location": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "made_sla": "false",
+        "notify": "1",
+        "number": "INC0000001",
+        "opened_at": "2019-09-02 23:09:51",
+        "opened_by": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "order": "",
+        "parent": "",
+        "parent_incident": "",
+        "priority": "1",
+        "problem_id": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "reassignment_count": "1",
+        "reopen_count": "",
+        "reopened_by": "",
+        "reopened_time": "",
+        "resolved_at": "2019-12-03 19:56:12",
+        "resolved_by": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "rfc": "",
+        "severity": "1",
+        "short_description": "Can't read email",
+        "sla_due": "",
+        "state": "7",
+        "subcategory": "",
+        "sys_class_name": "incident",
+        "sys_created_by": "pat",
+        "sys_created_on": "2018-04-03 18:24:13",
+        "sys_domain": {
+            "link": "demisto.com",
+            "value": "global"
+        },
+        "sys_domain_path": "/",
+        "sys_id": "sys_id",
+        "sys_mod_count": "23",
+        "sys_tags": "",
+        "sys_updated_by": "admin",
+        "sys_updated_on": "2020-04-07 07:26:01",
+        "time_worked": "",
+        "u_custom_field_test": "",
+        "upon_approval": "",
+        "upon_reject": "",
+        "urgency": "1",
+        "user_input": "",
+        "watch_list": "",
+        "work_end": "",
+        "work_notes": "",
+        "work_notes_list": "",
+        "work_start": ""
+    }
+}
+RESPONSE_ADD_COMMENT = {
+    "result": {
+        "active": "false",
+        "activity_due": "",
+        "additional_assignee_list": "",
+        "approval": "",
+        "approval_history": "",
+        "approval_set": "",
+        "assigned_to": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "assignment_group": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "business_duration": "1970-01-22 21:46:21",
+        "business_service": "",
+        "business_stc": "1892781",
+        "calendar_duration": "1970-04-02 20:46:21",
+        "calendar_stc": "7937181",
+        "caller_id": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "category": "network",
+        "caused_by": "",
+        "child_incidents": "",
+        "close_code": "Closed/Resolved by Caller",
+        "close_notes": "Closed before close notes were made mandatory\n\t\t",
+        "closed_at": "2019-09-03 23:10:06",
+        "closed_by": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "cmdb_ci": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "comments": "",
+        "comments_and_work_notes": "",
+        "company": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "contact_type": "",
+        "correlation_display": "",
+        "correlation_id": "",
+        "delivery_plan": "",
+        "delivery_task": "",
+        "description": "User can't access email on mail.company.com.\n\t\t",
+        "due_date": "",
+        "escalation": "0",
+        "expected_start": "",
+        "follow_up": "",
+        "group_list": "",
+        "hold_reason": "",
+        "impact": "1",
+        "incident_state": "7",
+        "knowledge": "false",
+        "location": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "made_sla": "false",
+        "notify": "1",
+        "number": "INC0000001",
+        "opened_at": "2019-09-02 23:09:51",
+        "opened_by": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "order": "",
+        "parent": "",
+        "parent_incident": "",
+        "priority": "1",
+        "problem_id": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "reassignment_count": "1",
+        "reopen_count": "",
+        "reopened_by": "",
+        "reopened_time": "",
+        "resolved_at": "2019-12-03 19:56:12",
+        "resolved_by": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "rfc": "",
+        "severity": "1",
+        "short_description": "Can't read email",
+        "sla_due": "",
+        "state": "7",
+        "subcategory": "",
+        "sys_class_name": "incident",
+        "sys_created_by": "pat",
+        "sys_created_on": "2018-04-03 18:24:13",
+        "sys_domain": {
+            "link": "demisto.com",
+            "value": "global"
+        },
+        "sys_domain_path": "/",
+        "sys_id": "sys_id",
+        "sys_mod_count": "23",
+        "sys_tags": "",
+        "sys_updated_by": "admin",
+        "sys_updated_on": "2020-04-07 07:26:01",
+        "time_worked": "",
+        "u_custom_field_test": "",
+        "upon_approval": "",
+        "upon_reject": "",
+        "urgency": "1",
+        "user_input": "",
+        "watch_list": "",
+        "work_end": "",
+        "work_notes": "",
+        "work_notes_list": "",
+        "work_start": ""
+    }
+}

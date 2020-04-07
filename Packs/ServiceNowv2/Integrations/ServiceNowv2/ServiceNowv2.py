@@ -800,6 +800,163 @@ def query_tickets_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, result
 
 
+def add_link_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+    """Add a link.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    ticket_id = str(args.get('id', ''))
+    key = 'comments' if args.get('post-as-comment', 'false').lower() == 'true' else 'work_notes'
+    link_argument = str(args.get('link', ''))
+    text = args.get('text', link_argument)
+    link = f'[code]<a class="web" target="_blank" href="{link_argument}" >{text}</a>[/code]'
+    ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
+
+    result = client.add_link(ticket_id, ticket_type, key, link)
+
+    if not result or 'result' not in result:
+        raise Exception('Unable to retrieve response.')
+
+    headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
+               'Active', 'Close Notes', 'Close Code', 'Description', 'Opened At', 'Due Date', 'Resolved By',
+               'Resolved At', 'SLA Due', 'Short Description', 'Additional Comments']
+    hr_ = get_ticket_human_readable(result['result'], ticket_type)
+    human_readable = tableToMarkdown('Link successfully added to ServiceNow ticket', t=hr_,
+                                     headers=headers, removeNull=True)
+
+    return human_readable, {}, result
+
+
+def add_comment_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+    """Add a comment.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    ticket_id = str(args.get('id', ''))
+    key = 'comments' if args.get('post-as-comment', 'false').lower() == 'true' else 'work_notes'
+    text = str(args.get('comment', ''))
+    ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
+
+    result = client.add_comment(ticket_id, ticket_type, key, text)
+
+    if not result or 'result' not in result:
+        return_error('Unable to retrieve response')
+
+    headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
+               'Active', 'Close Notes', 'Close Code',
+               'Description', 'Opened At', 'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description',
+               'Additional Comments']
+    hr_ = get_ticket_human_readable(result['result'], ticket_type)
+    human_readable = tableToMarkdown('Comment successfully added to ServiceNow ticket', t=hr_,
+                                     headers=headers, removeNull=True)
+
+    return human_readable, {}, result
+
+
+def upload_file_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+    """Upload a file.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
+    ticket_id = str(args.get('id', ''))
+    file_id = str(args.get('file_id', ''))
+
+    file_name = args.get('file_name', demisto.dt(demisto.context(), "File(val.EntryID=='" + file_id + "').Name"))
+    if not file_name:  # in case of info file
+        file_name = demisto.dt(demisto.context(), "InfoFile(val.EntryID=='" + file_id + "').Name")
+    if not file_name:
+        raise Exception('Could not find the file. Please add a file to the incident.')
+    file_name = file_name[0] if isinstance(file_name, list) else file_name
+
+    result = client.upload_file(ticket_id, file_id, file_name, ticket_type)
+
+    if not result or 'result' not in result or not result['result']:
+        raise Exception('Unable to upload file.')
+    result: dict = result.get('result', {})
+
+    hr_ = {
+        'Filename': result.get('file_name'),
+        'Download link': result.get('download_link'),
+        'System ID': result.get('sys_id')
+    }
+    human_readable = tableToMarkdown(f'File uploaded successfully to ticket {ticket_id}.', t=hr_)
+    context = {
+        'ID': ticket_id,
+        'File': {
+            'Filename': result.get('file_name'),
+            'Link': result.get('download_link'),
+            'SystemID': result.get('sys_id')
+        }
+    }
+    entry_context = {
+        'ServiceNow.Ticket(val.ID===obj.ID)': context,
+        'Ticket(val.ID===obj.ID)': context
+    }
+
+    return human_readable, entry_context, result
+
+
+def get_ticket_notes_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+    """Get the ticket's note.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    ticket_id = args.get('id')
+    sys_param_limit = args.get('limit', client.sys_param_limit)
+    sys_param_offset = args.get('offset', client.sys_param_offset)
+
+    sys_param_query = f'element_id={ticket_id}^element=comments^ORelement=work_notes'
+
+    result = client.query('sys_journal_field', sys_param_limit, sys_param_offset, sys_param_query)
+
+    if not result or 'result' not in result:
+        return f'No comment found on ticket {ticket_id}.', {}, {}
+
+    headers = ['Value', 'CreatedOn', 'CreatedBy', 'Type']
+
+    mapped_notes = [{
+        'Value': note.get('value'),
+        'CreatedOn': note.get('sys_created_on'),
+        'CreatedBy': note.get('sys_created_by'),
+        'Type': 'Work Note' if note.get('element', '') == 'work_notes' else 'Comment'
+    } for note in result['result']]
+
+    if not mapped_notes:
+        return f'No comment found on ticket {ticket_id}.', {}, {}
+
+    ticket = {
+        'ID': ticket_id,
+        'Note': mapped_notes
+    }
+
+    human_readable = tableToMarkdown(f'ServiceNow notes for ticket {ticket_id}', t=mapped_notes, headers=headers,
+                                     headerTransform=pascalToSpace, removeNull=True)
+    entry_context = {'ServiceNow.Ticket(val.ID===obj.ID)': createContext(ticket, removeNull=True)}
+
+    return human_readable, entry_context, result
+
+
 def get_record_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     """Get a record.
 
@@ -934,163 +1091,6 @@ def delete_record_command(client: Client, args: dict) -> Tuple[str, Dict[Any, An
     return f'ServiceNow record with ID {record_id} was successfully deleted.', {}, result
 
 
-def add_link_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
-    """Add a link.
-
-    Args:
-        client: Client object with request.
-        args: Usually demisto.args()
-
-    Returns:
-        Demisto Outputs.
-    """
-    ticket_id = str(args.get('id', ''))
-    key = 'comments' if args.get('post-as-comment', 'false').lower() == 'true' else 'work_notes'
-    link_argument = str(args.get('link', ''))
-    text = args.get('text', link_argument)
-    link = f'[code]<a class="web" target="_blank" href="{link_argument}" >{text}</a>[/code]'
-    ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
-
-    result = client.add_link(ticket_id, ticket_type, key, link)
-
-    if not result or 'result' not in result:
-        raise Exception('Unable to retrieve response.')
-
-    headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
-               'Active', 'Close Notes', 'Close Code', 'Description', 'Opened At', 'Due Date', 'Resolved By',
-               'Resolved At', 'SLA Due', 'Short Description', 'Additional Comments']
-    hr_ = get_ticket_human_readable(result['result'], ticket_type)
-    human_readable = tableToMarkdown('Link successfully added to ServiceNow ticket', t=hr_,
-                                     headers=headers, removeNull=True)
-
-    return human_readable, {}, result
-
-
-def add_comment_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
-    """Add a comment.
-
-    Args:
-        client: Client object with request.
-        args: Usually demisto.args()
-
-    Returns:
-        Demisto Outputs.
-    """
-    ticket_id = str(args.get('id', ''))
-    key = 'comments' if args.get('post-as-comment', 'false').lower() == 'true' else 'work_notes'
-    text = str(args.get('comment', ''))
-    ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
-
-    result = client.add_comment(ticket_id, ticket_type, key, text)
-
-    if not result or 'result' not in result:
-        return_error('Unable to retrieve response')
-
-    headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
-               'Active', 'Close Notes', 'Close Code',
-               'Description', 'Opened At', 'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description',
-               'Additional Comments']
-    hr_ = get_ticket_human_readable(result['result'], ticket_type)
-    human_readable = tableToMarkdown('Comment successfully added to ServiceNow ticket', t=hr_,
-                                     headers=headers, removeNull=True)
-
-    return human_readable, {}, result
-
-
-def upload_file_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
-    """Upload a file.
-
-    Args:
-        client: Client object with request.
-        args: Usually demisto.args()
-
-    Returns:
-        Demisto Outputs.
-    """
-    ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
-    ticket_id = str(args.get('id', ''))
-    file_id = str(args.get('file_id', ''))
-
-    file_name = args.get('file_name', demisto.dt(demisto.context(), "File(val.EntryID=='" + file_id + "').Name"))
-    if not file_name:  # in case of info file
-        file_name = demisto.dt(demisto.context(), "InfoFile(val.EntryID=='" + file_id + "').Name")
-    if not file_name:
-        raise Exception('Could not find the file. Please add a file to the incident.')
-    file_name = file_name[0] if isinstance(file_name, list) else file_name
-
-    result = client.upload_file(ticket_id, file_id, file_name, ticket_type)
-
-    if not result or 'result' not in result or not result['result']:
-        raise Exception('Unable to upload file.')
-    result: dict = result.get('result', {})
-
-    hr_ = {
-        'Filename': result.get('file_name'),
-        'Download link': result.get('download_link'),
-        'System ID': result.get('sys_id')
-    }
-    human_readable = tableToMarkdown(f'File uploaded successfully to ticket {ticket_id}.', hr_)
-    context = {
-        'ID': ticket_id,
-        'File': {
-            'Filename': result.get('file_name'),
-            'Link': result.get('download_link'),
-            'SystemID': result.get('sys_id')
-        }
-    }
-    entry_context = {
-        'ServiceNow.Ticket(val.ID===obj.ID)': context,
-        'Ticket(val.ID===obj.ID)': context
-    }
-
-    return human_readable, entry_context, result
-
-
-def get_ticket_notes_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
-    """Get the ticket's note.
-
-    Args:
-        client: Client object with request.
-        args: Usually demisto.args()
-
-    Returns:
-        Demisto Outputs.
-    """
-    ticket_id = args.get('id')
-    sys_param_limit = args.get('limit', client.sys_param_limit)
-    sys_param_offset = args.get('offset', client.sys_param_offset)
-
-    sys_param_query = f'element_id={ticket_id}^element=comments^ORelement=work_notes'
-
-    result = client.query('sys_journal_field', sys_param_limit, sys_param_offset, sys_param_query)
-
-    if not result or 'result' not in result:
-        return f'No comment found on ticket {ticket_id}.', {}, {}
-
-    headers = ['Value', 'CreatedOn', 'CreatedBy', 'Type']
-
-    mapped_notes = [{
-        'Value': note.get('value'),
-        'CreatedOn': note.get('sys_created_on'),
-        'CreatedBy': note.get('sys_created_by'),
-        'Type': 'Work Note' if note.get('element', '') == 'work_notes' else 'Comment'
-    } for note in result['result']]
-
-    if not mapped_notes:
-        return f'No comment found on ticket {ticket_id}.', {}, {}
-
-    ticket = {
-        'ID': ticket_id,
-        'Note': mapped_notes
-    }
-
-    human_readable = tableToMarkdown(f'ServiceNow notes for ticket {ticket_id}', t=mapped_notes, headers=headers,
-                                     headerTransform=pascalToSpace, removeNull=True)
-    entry_context = {'ServiceNow.Ticket(val.ID===obj.ID)': createContext(ticket, removeNull=True)}
-
-    return human_readable, entry_context, result
-
-
 def query_table_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     """Query a table.
 
@@ -1119,12 +1119,12 @@ def query_table_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
             fields.append('sys_id')
         # Filter the records according to the given fields
         records = [dict([kv_pair for kv_pair in iter(r.items()) if kv_pair[0] in fields]) for r in table_entries]
-        for r in records:
-            r['ID'] = r.pop('sys_id')
-            for k, v in r.items():
+        for record in records:
+            record['ID'] = record.pop('sys_id')
+            for k, v in record.items():
                 if isinstance(v, dict):
                     # For objects that refer to a record in the database, take their value (system ID).
-                    r[k] = v.get('value', v)
+                    record[k] = v.get('value', v)
         human_readable = tableToMarkdown('ServiceNow records', records, removeNull=True)
         entry_context = {'ServiceNow.Record(val.ID===obj.ID)': createContext(records)}
     else:
@@ -1133,7 +1133,7 @@ def query_table_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
         human_readable = tableToMarkdown('ServiceNow records', mapped_records, removeNull=True)
         entry_context = {'ServiceNow.Record(val.ID===obj.ID)': createContext(mapped_records)}
 
-    return human_readable, entry_context, table_entries
+    return human_readable, entry_context, result
 
 
 def query_computers_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
@@ -1205,7 +1205,7 @@ def query_computers_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, 
                                      removeNull=True, headerTransform=pascalToSpace),
     entry_context = {'ServiceNow.Computer(val.ID===obj.ID)': createContext(mapped_computers, removeNull=True)}
 
-    return human_readable, entry_context, computers
+    return human_readable, entry_context, result
 
 
 def query_groups_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
@@ -1258,7 +1258,7 @@ def query_groups_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any
                                      removeNull=True, headerTransform=pascalToSpace),
     entry_context = {'ServiceNow.Group(val.ID===obj.ID)': createContext(mapped_groups, removeNull=True)}
 
-    return human_readable, entry_context, groups
+    return human_readable, entry_context, result
 
 
 def query_users_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
@@ -1309,7 +1309,7 @@ def query_users_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any]
                                      headerTransform=pascalToSpace)
     entry_context = {'ServiceNow.User(val.ID===obj.ID)': createContext(mapped_users, removeNull=True)}
 
-    return human_readable, entry_context, users
+    return human_readable, entry_context, result
 
 
 def list_table_fields_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
