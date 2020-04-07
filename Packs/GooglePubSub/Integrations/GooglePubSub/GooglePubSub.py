@@ -232,7 +232,6 @@ def init_google_client(
 ) -> PubSubClient:
     try:
         service_account_json = json.loads(service_account_json)
-        print(json.dumps(service_account_json))
         client = PubSubClient(
             default_project=default_project,
             default_subscription=default_subscription,
