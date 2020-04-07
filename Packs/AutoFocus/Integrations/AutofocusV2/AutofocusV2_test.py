@@ -1,6 +1,4 @@
 import json
-from AutofocusV2 import search_samples_command, samples_search_results_command
-import pytest
 IP_ADDRESS = '127.0.0.1'
 
 FILE_RES_JSON = {
@@ -124,6 +122,3 @@ def test_get_indicator_outputs(mocker):
     assert outputs['IP(val.Address && val.Address == obj.Address)'][0]['Malicious']['Vendor'] == 'AutoFocus V2'
     assert outputs['AutoFocus.IP(val.IndicatorValue === obj.IndicatorValue)'][0]['IndicatorValue'] == IP_ADDRESS
     assert outputs['AutoFocus.IP(val.IndicatorValue === obj.IndicatorValue)'][0]['Tags'][0]['TagName'] == 'Upatre'
-
-
-

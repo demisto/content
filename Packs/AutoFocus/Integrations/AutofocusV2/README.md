@@ -311,7 +311,7 @@ Returns the results of a previous samples search.
 |---|---|---|---|---|---|
 | 1 | 0 | 145006 | Domain | suspect | carder.bit |
 | 1 | 0 | 208393 | Domain | suspect | ransomware.bit |
-| 373 | 67 | 317773 | IPv4 | suspect | 66.171.248.178 |,
+| 373 | 67 | 317773 | IPv4 | suspect | 66.171.248.178 |
 
 
 ### Get results of a sessions search
