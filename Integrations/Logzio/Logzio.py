@@ -205,7 +205,7 @@ def search_logs_by_fields_command(client, args):
 def get_rule_logs_by_id_command(client, args):
     id = args.get("id")
     size = args.get("size", 100)
-    page_size = args.get("page_size")
+    page_size = args.get("page_size", 1000)
     resp = client.get_rule_logs(id, size, page_size)
     return {
         'ContentsFormat': formats['json'],
