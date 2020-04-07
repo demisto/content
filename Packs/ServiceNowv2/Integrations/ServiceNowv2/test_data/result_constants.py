@@ -171,3 +171,22 @@ EXPECTED_UPLOAD_FILE = {
         'ID': 'sys_id', 'File': {'Filename': 'test_file', 'Link': 'test_link', 'SystemID': 'system_id'}
     }
 }
+EXPECTED_GET_TICKET_NOTES = {
+    'ServiceNow.Ticket(val.ID===obj.ID)': {
+        'ID': 'sys_id', 'Note': [
+            {'Value': '[code]<a class="web" target="_blank" href="http://www.demisto.com" >demsito_link</a>[/code]',
+             'CreatedOn': '2020-04-07 07:32:12', 'CreatedBy': 'admin', 'Type': 'Work Note'},
+            {'Value': '[code]<a class="web" target="_blank" href="http://www.demisto.com" >demsito_link</a>[/code]',
+             'CreatedOn': '2020-04-07 07:25:51', 'CreatedBy': 'admin', 'Type': 'Work Note'},
+            {'Value': 'Nice work!', 'CreatedOn': '2020-04-07 07:46:34', 'CreatedBy': 'admin', 'Type': 'Work Note'},
+            {'Value': 'Nice work!', 'CreatedOn': '2020-04-07 07:46:25', 'CreatedBy': 'admin', 'Type': 'Work Note'},
+            {'Value': '[code]<a class="web" target="_blank" href="http://www.demisto.com" >demsito_link</a>[/code]',
+             'CreatedOn': '2020-04-07 07:26:01', 'CreatedBy': 'admin', 'Type': 'Work Note'}]
+    }
+}
+EXPECTED_GET_RECORD = {
+    'ServiceNow.Record(val.ID===obj.ID)': {
+        'asset_tag': 'P1000479', 'display_name': 'P1000479 - Apple MacBook Pro 15"', 'ID': 'sys_id'
+    }
+}
+

@@ -1,12 +1,15 @@
 import pytest
 from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_readable, \
     generate_body, split_fields, Client, update_ticket_command, create_ticket_command, delete_ticket_command, \
-    query_tickets_command, add_link_command, add_comment_command, upload_file_command
+    query_tickets_command, add_link_command, add_comment_command, upload_file_command, get_ticket_notes_command, \
+    get_record_command
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
-    RESPONSE_CREATE_TICKET, RESPONSE_QUERY_TICKETS, RESPONSE_ADD_LINK, RESPONSE_ADD_COMMENT, RESPONSE_UPLOAD_FILE
+    RESPONSE_CREATE_TICKET, RESPONSE_QUERY_TICKETS, RESPONSE_ADD_LINK, RESPONSE_ADD_COMMENT, RESPONSE_UPLOAD_FILE, \
+    RESPONSE_GET_TICKET_NOTES, RESPONSE_GET_RECORD
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \
     EXPECTED_TICKET_HR, EXPECTED_MULTIPLE_TICKET_HR, EXPECTED_UPDATE_TICKET, EXPECTED_CREATE_TICKET, \
-    EXPECTED_QUERY_TICKETS, EXPECTED_ADD_LINK_HR, EXPECTED_ADD_COMMENT_HR, EXPECTED_UPLOAD_FILE
+    EXPECTED_QUERY_TICKETS, EXPECTED_ADD_LINK_HR, EXPECTED_ADD_COMMENT_HR, EXPECTED_UPLOAD_FILE, \
+    EXPECTED_GET_TICKET_NOTES, EXPECTED_GET_RECORD
 
 
 def test_get_server_url():
@@ -46,7 +49,10 @@ def test_split_fields():
     (query_tickets_command, {'limit': "3", 'query': "impact<2^short_descriptionISNOTEMPTY", 'ticket_type': "incident"},
      RESPONSE_QUERY_TICKETS, EXPECTED_QUERY_TICKETS),
     (upload_file_command, {'id': "sys_id", 'file_id': "entry_id", 'file_name': 'test_file'}, RESPONSE_UPLOAD_FILE,
-     EXPECTED_UPLOAD_FILE)
+     EXPECTED_UPLOAD_FILE),
+    (get_ticket_notes_command, {'id': "sys_id"}, RESPONSE_GET_TICKET_NOTES, EXPECTED_GET_TICKET_NOTES),
+    (get_record_command, {'table_name': "alm_asset", 'id': "sys_id", 'fields': "asset_tag,display_name"},
+     RESPONSE_GET_RECORD, EXPECTED_GET_RECORD)
 ])  # noqa: E124
 def test_commands(command, args, response, expected_result, mocker):
     """Unit test
