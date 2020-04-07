@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Reduced the limit of the max threads used by the integration.
 
 ## [20.3.4] - 2020-03-30
 Fixed a bug where messages were not sent to a channel if it was the dedicated channel for notifications.
