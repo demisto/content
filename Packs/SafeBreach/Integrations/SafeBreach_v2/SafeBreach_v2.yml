@@ -335,7 +335,7 @@ script:
   - arguments:
     - default: false
       description: The id of the test to track
-      isArray: false
+      isArray: true
       name: testId
       required: true
       secret: false
