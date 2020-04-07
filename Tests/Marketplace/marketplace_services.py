@@ -29,7 +29,6 @@ class GCPConfig(object):
     GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
     BASE_PACK = "Base"  # base pack name
     INDEX_NAME = "index"  # main index folder name
-    PRIVATE_INDEX_NAME = "private_index"
 
 
 class PackFolders(enum.Enum):
