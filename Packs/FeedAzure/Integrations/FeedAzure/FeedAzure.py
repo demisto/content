@@ -234,12 +234,12 @@ def test_module(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     return 'ok', {}, {}
 
 
-def get_indicators_command(client: Client, tags: list) -> Tuple[str, Dict, Dict]:
+def get_indicators_command(client: Client, feedTags: list) -> Tuple[str, Dict, Dict]:
     """Retrieves indicators from the feed to the war-room.
 
     Args:
         client (Client): Client object configured according to instance arguments.
-        tags: The indicator tags.
+        feedTags: The indicator tags.
 
     Returns:
         Tuple of:
@@ -247,7 +247,7 @@ def get_indicators_command(client: Client, tags: list) -> Tuple[str, Dict, Dict]
             Dict. The raw data of the indicators.
     """
     limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 10
-    indicators, raw_response = fetch_indicators_command(client, tags, limit)
+    indicators, raw_response = fetch_indicators_command(client, feedTags, limit)
 
     human_readable = tableToMarkdown('Indicators from Azure Feed:', indicators,
                                      headers=['value', 'type'], removeNull=True)
@@ -280,7 +280,7 @@ def fetch_indicators_command(client: Client, tags: list, limit: int = -1) -> Tup
             'type': indicator['type'],
             'fields': {
                 'region': indicator.get('azure_region'),
-                'tags': tags
+                'tags': feedTags
             },
             'rawJSON': indicator
         })
@@ -302,7 +302,7 @@ def main():
     if not services_list:
         services_list = ['All']
 
-    tags = argToList(demisto.params().get('tags'))
+    feedTags = argToList(demisto.params().get('feedTags'))
 
     polling_arg = demisto.params().get('polling_timeout', '')
     polling_timeout = int(polling_arg) if polling_arg.isdigit() else 20
@@ -319,13 +319,13 @@ def main():
             'test-module': test_module,
             'azure-get-indicators': get_indicators_command
         }
-        if tags:
-            demisto.args['tags'] = tags
+        if feedTags:
+            demisto.args['feedTags'] = feedTags
         if command in commands:
             return_outputs(*commands[command](client, demisto.args()))
 
         elif command == 'fetch-indicators':
-            indicators, _ = fetch_indicators_command(client, tags)
+            indicators, _ = fetch_indicators_command(client, feedTags)
 
             for single_batch in batch(indicators, batch_size=2000):
                 demisto.createIndicators(single_batch)
