@@ -304,7 +304,7 @@ Returns the results of a previous samples search.
 ### Search Samples Result is in progress
 |Created|FileType|Finished|ID|MD5|Region|SHA1|SHA256|Size|Tags|Verdict|imphash|ssdeep|tag_groups|tasks|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 2020-04-05T00:03:49 | PE | 2020-04-05T00:11:59 | d455abd39edc7a2f03fa43b4d0f9194a11e73fce9c794021b5ca050dd0bc156d | 77c94c76214c7069b7fc5e7634b7e225 | us | 1460b6a9a0955f0d5c011edba569786c13b6d8a6 | d455abd39edc7a2f03fa43b4d0f9194a11e73fce9c794021b5ca050dd0bc156d | 362331 | Unit42.IPAddressLookup,<br>Unit42.InitialSystemDataEnumeration,<br>Unit42.RunOnce,<br>Unit42.GandCrab | 1 | f456e8b8fd5e0768c2e3120e086c8ebc | 6144 | Ransomware | {'metadata_compilation_ts': '2018-06-11T11:15:25'} |
+| 2020-04-05T00:03:49 | PE | 2020-04-05T00:11:59 | d455abd39edc7a2f03fa43b4d0f9194a11e73fce9c794021b5ca050dd0bc156d | 77c94c76214c7069b7fc5e7634b7e225 | us | 1460b6a9a0955f0d5c011edba569786c13b6d8a6 | d455abd39edc7a2f03fa43b4d0f9194a11e73fce9c794021b5ca050dd0bc156d | 362331 | Unit42.IPAddressLookup,Unit42.InitialSystemDataEnumeration,Unit42.RunOnce,Unit42.GandCrab | 1 | f456e8b8fd5e0768c2e3120e086c8ebc | 6144 | Ransomware | {'metadata_compilation_ts': '2018-06-11T11:15:25'} |
 
 ### Artifacts for Sample: 
 |b|g|m|indicator_type|confidence|indicator|
