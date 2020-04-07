@@ -335,7 +335,7 @@ def run_search(search_object, query, scope=None, size=None, sort=None, order=Non
         'AFCookie': result.get('af_cookie'),
         'Status': status,
         'SessionStart': datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-        }
+    }
     return search_info
 
 
