@@ -96,7 +96,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: Whether to add the original texrt fields to the output. Default is "false".
+  description: Whether to add the original text fields to the output. Default is "false".
   isArray: false
   name: outputOriginalTextFields
   predefined:
