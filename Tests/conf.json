@@ -986,7 +986,7 @@
                 "Gmail"
             ],
             "playbookID": "Mail Sender (New) Test",
-             "instance_names": ["Mail_Sender_(New)_STARTTLS"]
+            "instance_names": ["Mail_Sender_(New)_STARTTLS"]
         },
         {
             "playbookID": "buildewsquery_test"
