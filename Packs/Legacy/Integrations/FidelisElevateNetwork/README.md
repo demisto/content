@@ -1019,7 +1019,7 @@ Get the alert's decoding path.
 ### Alert 9
 |Attribute Map|Clickable Dpaths|Decoding Paths|Original Attributes|Original D Path|
 |---|---|---|---|---|
-| HTTP: {u'endIndex': 29, u'name': u'Filename', u'valueFirst255': u'file.pcap', u'highLights': [], u'value': u'file.pcap', u'startIndex': 0, u'link': False, u'partialAttr': u'HTTP\x0cFilename\tfile.pcap\n'} | HTTP(file.pcap) | {u'clickable': True, u'highLights': [], u'linkPath': u':HTTP(file.pcap)', u'path': u'HTTP(file.pcap)'} | HTTPFilename	file.pcap<br> | :HTTP(file.pcap) |
+| HTTP: {u'endIndex': 29, u'name': u'Filename', u'valueFirst255': u'file.pcap', u'highLights': [], u'value': u'file.pcap', u'startIndex': 0, u'link': False, u'partialAttr': u'HTTP\x0cFilename\tfile.pcap\n'} | HTTP(file.pcap) | {u'clickable': True, u'highLights': [], u'linkPath': u':HTTP(file.pcap)', u'path': u'HTTP(file.pcap)'} | HTTPFilename	file.pcap<br/> | :HTTP(file.pcap) |
 
 
 ### fidelis-update-alert-status
