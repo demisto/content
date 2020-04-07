@@ -116,6 +116,11 @@ def main():
         }
     }
 
+    # If the result was not found we also set the "Missing" key in case the user wants to know which specific keys
+    # were not found.
+    if not csv_data:
+        output['LookupCSV']['Missing'] = search_value
+
     demisto.results({
         "Type": entryTypes["note"],
         "ContentsFormat": formats["json"],
