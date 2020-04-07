@@ -97,23 +97,25 @@ def init_storage_client(service_account=None):
         return storage_client
 
 
-def download_and_extract_index(storage_bucket, extract_destination_path, file_name=GCPConfig.INDEX_NAME):
+def download_and_extract_index(storage_bucket, extract_destination_path):
     """Downloads and extracts index zip from cloud storage.
 
     Args:
         storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where index.zip is stored.
         extract_destination_path (str): the full path of extract folder.
-        file_name (str): The index file name.
     Returns:
         str: extracted index folder full path.
         Blob: google cloud storage object that represents index.zip blob.
 
     """
-    index_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{file_name}.zip")
-    download_index_path = os.path.join(extract_destination_path, )
+    index_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
+    download_index_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_NAME}.zip")
 
     index_blob = storage_bucket.blob(index_storage_path)
-    index_folder_path = os.path.join(extract_destination_path, f"{file_name}.zip")
+    index_folder_path = os.path.join(extract_destination_path, GCPConfig.INDEX_NAME)
+
+    if not os.path.exists(extract_destination_path):
+        os.mkdir(extract_destination_path)
 
     if not index_blob.exists():
         os.mkdir(index_folder_path)
@@ -128,15 +130,15 @@ def download_and_extract_index(storage_bucket, extract_destination_path, file_na
             index_zip.extractall(extract_destination_path)
 
         if not os.path.exists(index_folder_path):
-            print_error(f"Failed creating {file_name} folder with extracted data.")
+            print_error(f"Failed creating {GCPConfig.INDEX_NAME} folder with extracted data.")
             sys.exit(1)
 
         os.remove(download_index_path)
-        print(f"Finished downloading and extracting {file_name} file to {extract_destination_path}")
+        print(f"Finished downloading and extracting {GCPConfig.INDEX_NAME} file to {extract_destination_path}")
 
         return index_folder_path, index_blob
     else:
-        print_error(f"Failed to download {file_name}.zip file from cloud storage.")
+        print_error(f"Failed to download {GCPConfig.INDEX_NAME}.zip file from cloud storage.")
         sys.exit(1)
 
 
@@ -211,7 +213,7 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
 
 
 def get_private_packs(private_index_path):
-    metadata_files = glob.glob(f"{private_index_path}/metadata.json")
+    metadata_files = glob.glob(f"{private_index_path}/**/metadata.json")
     private_packs = []
 
     for metadata_file_path in metadata_files:
@@ -331,8 +333,8 @@ def main():
     storage_bucket = storage_client.bucket(storage_bucket_name)
     private_storage_bucket = storage_client.bucket(private_bucket_name)
     index_folder_path, index_blob = download_and_extract_index(storage_bucket, extract_destination_path)
-    private_index_path, _ = download_and_extract_index(private_storage_bucket, extract_destination_path,
-                                                       file_name=GCPConfig.PRIVATE_INDEX_NAME)
+    private_index_path, _ = download_and_extract_index(private_storage_bucket,
+                                                       os.path.join(extract_destination_path, 'private'))
 
     # detect new or modified packs
     modified_packs = get_modified_packs(specific_packs, private_index_path)
@@ -416,8 +418,10 @@ def main():
         pack.status = PackStatus.SUCCESS.name
 
     # Add private packs to index
-    for p in os.listdir(private_index_path):
-        update_index_folder(index_folder_path, os.path.basename(os.path.normpath(p)), p)
+    for d in os.scandir(private_index_path):
+        if os.path.isdir(d.path):
+            update_index_folder(index_folder_path, d.name, d.path)
+    shutil.rmtree(private_index_path)
 
     # finished iteration over content packs
     upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs)
