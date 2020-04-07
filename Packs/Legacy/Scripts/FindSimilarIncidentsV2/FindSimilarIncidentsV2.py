@@ -291,13 +291,13 @@ def main():
     incident_similar_labels = get_map_from_nested_dict(labels_map, SIMILAR_LABELS_MAP.keys(),
                                                        raise_error=RAISE_ERROR_MISSING_VALUES)
     incident_similar_context = demisto.context()
-    context_map = {}
+    original_context_map = {}
 
     if incident_similar_context:
         for key in SIMILAR_CONTEXT_MAP.keys():
-            res = demisto.dt(incident_similar_context, key)
-            context_map[key] = res
-            if not res and RAISE_ERROR_MISSING_VALUES:
+            response = demisto.dt(incident_similar_context, key)
+            original_context_map[key] = response
+            if not response and RAISE_ERROR_MISSING_VALUES:
                 return_error("Missing context field for incident: %s" % key)
 
     log_message = 'Incident fields with exact match: %s' % exact_match_incident_fields
@@ -309,10 +309,10 @@ def main():
     if len(incident_similar_labels) > 0:
         demisto.log('Similar labels: %s' % incident_similar_labels)
     if len(incident_similar_context) > 0:
-        demisto.log('Similar context keys: %s' % context_map)
+        demisto.log('Similar context keys: %s' % original_context_map)
 
     if len(exact_match_incident_fields) == 0 and len(similar_incident_fields) == 0 and len(
-            incident_similar_labels) == 0 and len(context_map) == 0:
+            incident_similar_labels) == 0 and len(original_context_map) == 0:
         return_error("Does not have any field to compare in the current incident")
 
     duplicate_incidents = get_incidents_by_keys(exact_match_incident_fields, TIME_FIELD, incident[TIME_FIELD],
@@ -343,18 +343,18 @@ def main():
                                                     SIMILAR_INCIDENTS_FIELDS_MAP)
                                ]
     filter_by_context = []
-    if context_map:
+    if original_context_map:
         for c in duplicate_incidents:
             other_incident_context = get_context(c['id'])
 
             if other_incident_context:
-                other_context_map = {}
+                other_incident_context_map = {}
 
                 for key in SIMILAR_CONTEXT_MAP.keys():
-                    res = demisto.dt(other_incident_context, key)
-                    if res:
-                        other_context_map[key] = res
-                        if verify_map_equals(context_map, other_context_map, SIMILAR_CONTEXT_MAP):
+                    response = demisto.dt(other_incident_context, key)
+                    if response:
+                        other_incident_context_map[key] = response
+                        if verify_map_equals(original_context_map, other_incident_context_map, SIMILAR_CONTEXT_MAP):
                             filter_by_context.append(c)
         duplicate_incidents = filter_by_context
 
