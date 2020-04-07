@@ -40,8 +40,8 @@ class Client(BaseClient):
         insecure(bool): Use SSH on http request.
         proxy(str): Use system proxy.
         indicator_feeds(List): A list of indicator feed types to bring from AutoFocus.
-        scope_type(str): The scope type of the AutoFocus sample feed.
-        sample_query(str): The query to use to fetch indicators from AutoFocus sample feed.
+        scope_type(str): The scope type of the AutoFocus samples feed.
+        sample_query(str): The query to use to fetch indicators from AutoFocus samples feed.
         custom_feed_urls(str): The URLs of the custom feeds to fetch.
     """
 
@@ -60,15 +60,15 @@ class Client(BaseClient):
 
             self.custom_feed_url_list = url_list
 
-        if 'Sample Feed' in indicator_feeds:
+        if 'Samples Feed' in indicator_feeds:
             self.scope_type = scope_type
 
             if not sample_query:
-                return_error(f'{SOURCE_NAME} - Sample Query can not be empty for Sample Feed')
+                return_error(f'{SOURCE_NAME} - Samples Query can not be empty for Samples Feed')
             try:
                 self.sample_query = json.loads(sample_query)
             except Exception:
-                return_error(f'{SOURCE_NAME} - Sample Query is not a well formed JSON object')
+                return_error(f'{SOURCE_NAME} - Samples Query is not a well formed JSON object')
 
         self.verify = not insecure
         if proxy:
@@ -98,7 +98,7 @@ class Client(BaseClient):
         """The HTTP request for daily and custom feeds.
 
         Args:
-            feed_type(str): The feed type (Daily / Custom feed / Sample feed).
+            feed_type(str): The feed type (Daily / Custom feed / Samples feed).
 
         Returns:
             list. A list of indicators fetched from the feed.
@@ -128,7 +128,7 @@ class Client(BaseClient):
         return indicator_list
 
     def sample_http_request(self) -> list:
-        """The HTTP request for the sample feed.
+        """The HTTP request for the samples feed.
 
         Args:
 
@@ -165,29 +165,71 @@ class Client(BaseClient):
 
         indicator_list = []  # type:List
 
-        for single_sample in get_results_res.json()['hits']:
+        for single_sample in get_results_res.json().get('hits'):
             indicator_list.extend(self.create_indicators_from_single_sample_response(single_sample))
 
         return indicator_list
 
     @staticmethod
-    def create_indicators_for_file(raw_json_data: dict, file_hashes: list):
-        indicators = []  # type: list
-        for file_indicator in file_hashes:
-            if file_indicator:
-                raw_json_data_copy = raw_json_data
-                raw_json_data_copy['value'] = file_indicator
-                raw_json_data_copy['type'] = FeedIndicatorType.File
+    def get_basic_raw_json(single_sample: dict):
+        single_sample_data = single_sample.get('_source', {})
+        artifacts = single_sample_data.get('artifact', [])
 
-                indicators.append(
-                    {
-                        'value': raw_json_data_copy['value'],
-                        'type': raw_json_data_copy['type'],
-                        'rawJSON': raw_json_data_copy
-                    }
-                )
+        raw_json_data = {
+            'autofocus_id': single_sample.get('_id'),
+            'autofocus_region': single_sample_data.get('region', []),
+            'autofocus_tags': single_sample_data.get('tag', []),
+            'autofocus_tags_groups': single_sample_data.get('tag_groups', []),
+            'autofocus_num_matching_artifacts': len(artifacts),
+        }
 
-        return indicators
+        create_date = single_sample_data.get('create_date', None)
+        if create_date is not None:
+            create_date = datetime.strptime(create_date, '%Y-%m-%dT%H:%M:%S')
+            raw_json_data['autofocus_create_date'] = datetime_to_epoch(create_date)
+
+        update_date = single_sample_data.get('update_date', None)
+        if update_date is not None:
+            update_date = datetime.strptime(update_date, '%Y-%m-%dT%H:%M:%S')
+            raw_json_data['autofocus_update_date'] = datetime_to_epoch(update_date)
+
+        return raw_json_data
+
+    @staticmethod
+    def create_indicators_for_file(raw_json_data: dict, full_sample_json: dict):
+        raw_json_data['type'] = FeedIndicatorType.File
+        raw_json_data['md5'] = full_sample_json.get('md5')
+        raw_json_data['size'] = full_sample_json.get('size')
+        raw_json_data['sha1'] = full_sample_json.get('sha1')
+        raw_json_data['value'] = full_sample_json.get('sha256')
+        raw_json_data['sha256'] = full_sample_json.get('sha256')
+        raw_json_data['ssdeep'] = full_sample_json.get('ssdeep')
+        raw_json_data['imphash'] = full_sample_json.get('imphash')
+        raw_json_data['autofocus_filetype'] = full_sample_json.get('filetype')
+        raw_json_data['autofocus_malware'] = full_sample_json.get('malware', 0)
+
+        fields_mapping = {
+            'md5': full_sample_json.get('md5'),
+            'tags': full_sample_json.get('tag'),
+            'size': full_sample_json.get('size'),
+            'sha1': full_sample_json.get('sha1'),
+            'sha256': full_sample_json.get('sha256'),
+            'ssdeep': full_sample_json.get('ssdeep'),
+            '???': full_sample_json.get('malware', 0),
+            'imphash': full_sample_json.get('imphash'),
+            'filetype': full_sample_json.get('filetype'),
+            'threattype': full_sample_json.get('tag_groups'),
+            'creationdate': raw_json_data.get('autofocus_create_date'),
+        }
+
+        return [
+            {
+                'value': raw_json_data['value'],
+                'type': raw_json_data['type'],
+                'rawJSON': raw_json_data,
+                'fields': fields_mapping
+            }
+        ]
 
     @staticmethod
     def create_indicator_from_artifact(raw_json_data: dict, artifact: dict):
@@ -227,39 +269,17 @@ class Client(BaseClient):
         if not single_sample_data:
             return []
 
-        artifacts = single_sample_data.get('artifact', [])
-
-        raw_json_data = {
-            'autofocus_id': single_sample.get('_id'),
-            'autofocus_region': single_sample_data.get('region', []),
-            'autofocus_malware': single_sample_data.get('malware', 0),
-            'autofocus_tags': single_sample_data.get('tag', []),
-            'autofocus_tags_groups': single_sample_data.get('tag_groups', []),
-            'autofocus_num_matching_artifacts': len(artifacts),
-        }
-
-        update_date = single_sample_data.get('update_date', None)
-        if update_date is not None:
-            update_date = datetime.strptime(update_date, '%Y-%m-%dT%H:%M:%S')
-            raw_json_data['autofocus_update_date'] = datetime_to_epoch(update_date)
-
-        create_date = single_sample_data.get('update_date', None)
-        if create_date is not None:
-            create_date = datetime.strptime(create_date, '%Y-%m-%dT%H:%M:%S')
-            raw_json_data['autofocus_create_date'] = datetime_to_epoch(create_date)
-
-        sha256 = single_sample_data.get('sha256', '...')
-        sha1 = single_sample_data.get('sha1', None)
-        md5 = single_sample_data.get('md5')
-
         # When the user do not have access to sample's details a truncated sha256 is used.
-        if '...' in sha256:
+        if '...' in single_sample_data.get('sha256', '...'):
             return []
 
-        indicators = Client.create_indicators_for_file(raw_json_data, [sha256, sha1, md5])
+        indicators = Client.create_indicators_for_file(Client.get_basic_raw_json(single_sample), single_sample_data)
+
+        artifacts = single_sample_data.get('artifact', [])
 
         for artifact in artifacts:
-            indicator_from_artifact = Client.create_indicator_from_artifact(raw_json_data, artifact)
+            indicator_from_artifact = Client.create_indicator_from_artifact(Client.get_basic_raw_json(single_sample),
+                                                                            artifact)
             if indicator_from_artifact:
                 indicators.append(indicator_from_artifact)
 
@@ -355,7 +375,7 @@ class Client(BaseClient):
                     }
                 })
 
-        if "Sample Feed" in self.indicator_feeds:
+        if "Samples Feed" in self.indicator_feeds:
             parsed_indicators.extend(self.sample_http_request())
 
         # for get_indicator_command only
@@ -398,12 +418,12 @@ def module_test_command(client: Client, args: dict):
                                       f"\nCheck your API key the URL for the feed and Check "
                                       f"if they are Enabled in AutoFocus.")
 
-    if 'Sample Feed' in indicator_feeds:
-        client.indicator_feeds = ['Sample Feed']
+    if 'Samples Feed' in indicator_feeds:
+        client.indicator_feeds = ['Samples Feed']
         try:
             client.build_iterator(1, 0)
         except Exception:
-            exception_list.append("Could not fetch Sample Feed\n"
+            exception_list.append("Could not fetch Samples Feed\n"
                                   "\nCheck your instance configuration and your connection to AutoFocus.")
 
     if len(exception_list) > 0:
@@ -432,15 +452,17 @@ def get_indicators_command(client: Client, args: dict):
         hr_indicators.append({
             'Value': indicator.get('value'),
             'Type': indicator.get('type'),
-            'rawJSON': indicator.get('rawJSON')
+            'rawJSON': indicator.get('rawJSON'),
+            'fields': indicator.get('fields'),
         })
 
     human_readable = tableToMarkdown("Indicators from AutoFocus:", hr_indicators,
-                                     headers=['Value', 'Type', 'rawJSON'], removeNull=True)
+                                     headers=['Value', 'Type', 'rawJSON', 'fields'], removeNull=True)
 
     if args.get('limit'):
         human_readable = human_readable + f"\nTo bring the next batch of indicators run:\n!autofocus-get-indicators " \
-            f"limit={args.get('limit')} offset={int(str(args.get('limit'))) + int(str(args.get('offset')))}"
+                                          f"limit={args.get('limit')} " \
+                                          f"offset={int(str(args.get('limit'))) + int(str(args.get('offset')))}"
 
     return human_readable, {}, indicators
 
