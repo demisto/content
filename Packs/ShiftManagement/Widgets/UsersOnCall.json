@@ -6,5 +6,6 @@
   "query": "GetUsersOnCall",
   "version": -1,
   "description": "Details of the users that are currently on-call",
-  "isPredefined": true
+  "isPredefined": true,
+  "fromVersion": "5.5.0"
 }

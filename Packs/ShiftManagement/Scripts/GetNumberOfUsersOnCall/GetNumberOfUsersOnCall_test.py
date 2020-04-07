@@ -26,7 +26,7 @@ def execute_command(name, args=None):
         return None
 
 
-def test_get_users_on_call(mocker):
+def test_get_number_of_users_oncall(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
     mocker.patch.object(demisto, 'results')
     main()

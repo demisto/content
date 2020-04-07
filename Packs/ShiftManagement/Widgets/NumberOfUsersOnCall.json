@@ -24,5 +24,6 @@
       }
   },
   "size": 0,
-  "category": ""
+  "category": "",
+  "fromVersion": "5.5.0"
 }
