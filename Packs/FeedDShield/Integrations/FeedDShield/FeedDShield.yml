@@ -3,9 +3,9 @@ commonfields:
   id: DShield Feed
   version: -1
 configuration:
-- display: Fetch indicators
+- defaultvalue: 'true'
+  display: Fetch indicators
   name: feed
-  defaultvalue: true
   required: false
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
@@ -34,6 +34,7 @@ configuration:
   required: true
   type: 15
 - defaultvalue: indicatorType
+  display: Feed Expiration Policy
   name: feedExpirationPolicy
   options:
   - never
@@ -42,14 +43,11 @@ configuration:
   - suddenDeath
   required: false
   type: 17
-  display: ""
 - defaultvalue: '20160'
   name: feedExpirationInterval
   required: false
   type: 1
-  display: ""
 - defaultvalue: '1440'
-  display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
   type: 19
@@ -60,12 +58,11 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
-  defaultvalue: ""
-- display: FeedTags
-  name: tags
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
   required: false
   type: 0
-  additionalinfo: Supports CSV values.
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -78,7 +75,6 @@ description: This integration fetches a list that summarizes the top 20 attackin
   class C (/24) subnets over the last three days from Dshield.
 display: DShield Feed
 name: DShield Feed
-fromversion: 5.5.0
 script:
   commands:
   - arguments:
@@ -102,3 +98,4 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 5.5.0

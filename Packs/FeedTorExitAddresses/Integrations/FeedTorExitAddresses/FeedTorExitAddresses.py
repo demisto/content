@@ -37,7 +37,7 @@ class Client(BaseClient):
         date = parse(str(date_string))
         return int(date.timestamp() * 1000)
 
-    def build_iterator(self, tags, limit):
+    def build_iterator(self, feedTags, limit):
         raw_res = self.http_request_indicators()
         raw_indicator_list = raw_res.split('\n')
         indicator_list = []  # type: List
@@ -66,7 +66,7 @@ class Client(BaseClient):
                     'firstseenbysource': indicator.get('firstseenbysource'),
                     'lastseenbysource': indicator.get('lastseenbysource'),
                     'name': indicator.get('name'),
-                    'tags': tags
+                    'tags': feedTags
                 }
                 indicator_list.append(indicator)
 
@@ -77,8 +77,8 @@ class Client(BaseClient):
         return indicator_list
 
 
-def fetch_indicators_command(client, tags=None, limit=None):
-    indicator_list = client.build_iterator(tags, limit)
+def fetch_indicators_command(client, feedTags=None, limit=None):
+    indicator_list = client.build_iterator(feedTags, limit)
     return indicator_list
 
 
@@ -100,7 +100,7 @@ def module_test_command(client: Client, args: dict):
 
 def main():
     params = demisto.params()
-    tags = argToList(params.get('tags'))
+    feedTags = argToList(params.get('feedTags'))
     client = Client(params.get('insecure'),
                     params.get('proxy'))
 
@@ -113,7 +113,7 @@ def main():
     }
     try:
         if demisto.command() == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, tags)
+            indicators = fetch_indicators_command(client, feedTags)
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)

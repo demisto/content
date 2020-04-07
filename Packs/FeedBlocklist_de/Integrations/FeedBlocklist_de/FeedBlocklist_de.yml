@@ -3,13 +3,14 @@ commonfields:
   id: Blocklist_de Feed
   version: -1
 configuration:
-- defaultvalue: true
+- defaultvalue: 'true'
   display: Fetch indicators
   name: feed
   required: false
   type: 8
-  additionalinfo: Indicators from this integration instance will be marked with this reputation
-- defaultvalue: Suspicious
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+  defaultvalue: Suspicious
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -17,11 +18,10 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  additionalinfo: Indicators from this integration instance will be marked with this reputation
   required: false
   type: 18
-- defaultvalue: C - Fairly reliable
-  additionalinfo: Reliability of the source providing the intelligence data
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: C - Fairly reliable
   display: Source Reliability
   name: feedReliability
   options:
@@ -34,7 +34,6 @@ configuration:
   required: true
   type: 15
 - defaultvalue: indicatorType
-  display: Feed Expiration Policy
   name: feedExpirationPolicy
   options:
   - never
@@ -44,7 +43,6 @@ configuration:
   required: false
   type: 17
 - defaultvalue: '20160'
-  display: Feed Expiration Interval
   name: feedExpirationInterval
   required: false
   type: 1
@@ -53,11 +51,13 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
-- display: Bypass exclusion list
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+  display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
   type: 8
-  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -86,11 +86,11 @@ configuration:
   - bruteforcelogin
   required: true
   type: 16
-- display: FeedTags
-  name: tags
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
   required: false
   type: 0
-  additionalinfo: Supports CSV values.
 description: Use the Blocklist.de feed integration to fetch indicators from the feed.
 display: Blocklist_de Feed
 name: Blocklist_de Feed
@@ -121,8 +121,8 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 tests:
 - Blocklist_de - Test
 fromversion: 5.5.0
