@@ -34,7 +34,7 @@ configuration:
   required: true
   type: 15
 - defaultvalue: indicatorType
-  display: Feed Expiration Policy
+  display: ''
   name: feedExpirationPolicy
   options:
   - never
@@ -49,7 +49,7 @@ configuration:
   required: false
   type: 1
 - defaultvalue: '1440'
-  display: ''
+  display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
   type: 19
