@@ -7,6 +7,7 @@ import shutil
 import uuid
 import prettytable
 import google.auth
+import glob
 from google.cloud import storage
 from datetime import datetime
 from zipfile import ZipFile
@@ -15,7 +16,7 @@ from Tests.Marketplace.marketplace_services import Pack, PackStatus, GCPConfig, 
 from demisto_sdk.commands.common.tools import run_command, print_error, print_warning, print_color, LOG_COLORS
 
 
-def get_modified_packs(specific_packs=""):
+def get_modified_packs(specific_packs="", private_packs_path=""):
     """Detects and returns modified or new packs names.
 
     Checks the git difference between two commits, current and previous and greps only ones with prefix Packs/.
@@ -24,16 +25,18 @@ def get_modified_packs(specific_packs=""):
 
     Args:
         specific_packs (str): comma separated packs names or `All` for all available packs in content.
+        private_packs_path (str): Path for private packs to return.
 
     Returns:
         set: unique collection of modified/new packs names.
 
     """
+
     if specific_packs.lower() == "all":
         if os.path.exists(PACKS_FULL_PATH):
             all_packs = {p for p in os.listdir(PACKS_FULL_PATH) if p not in IGNORED_FILES}
             print(f"Number of selected packs is: {len(all_packs)}")
-            return all_packs
+            packs = all_packs
         else:
             print_error((f"Folder {PACKS_FOLDER} was not found "
                          f"at the following path: {PACKS_FULL_PATH}"))
@@ -42,14 +45,16 @@ def get_modified_packs(specific_packs=""):
     elif specific_packs:
         modified_packs = {p.strip() for p in specific_packs.split(',')}
         print(f"Number of selected packs is: {len(modified_packs)}")
-        return modified_packs
+        packs = modified_packs
     else:
         cmd = "git diff --name-only HEAD..HEAD^ | grep 'Packs/'"
         modified_packs_path = run_command(cmd, use_shell=True).splitlines()
         modified_packs = {p.split('/')[1] for p in modified_packs_path if p not in IGNORED_PATHS}
         print(f"Number of modified packs is: {len(modified_packs)}")
 
-        return modified_packs
+        packs = modified_packs
+
+    return packs
 
 
 def extract_packs_artifacts(packs_artifacts_path, extract_destination_path):
@@ -92,23 +97,23 @@ def init_storage_client(service_account=None):
         return storage_client
 
 
-def download_and_extract_index(storage_bucket, extract_destination_path):
+def download_and_extract_index(storage_bucket, extract_destination_path, file_name=GCPConfig.INDEX_NAME):
     """Downloads and extracts index zip from cloud storage.
 
     Args:
         storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where index.zip is stored.
         extract_destination_path (str): the full path of extract folder.
-
+        file_name (str): The index file name.
     Returns:
         str: extracted index folder full path.
         Blob: google cloud storage object that represents index.zip blob.
 
     """
-    index_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
-    download_index_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_NAME}.zip")
+    index_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{file_name}.zip")
+    download_index_path = os.path.join(extract_destination_path, )
 
     index_blob = storage_bucket.blob(index_storage_path)
-    index_folder_path = os.path.join(extract_destination_path, GCPConfig.INDEX_NAME)
+    index_folder_path = os.path.join(extract_destination_path, f"{file_name}.zip")
 
     if not index_blob.exists():
         os.mkdir(index_folder_path)
@@ -123,15 +128,15 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
             index_zip.extractall(extract_destination_path)
 
         if not os.path.exists(index_folder_path):
-            print_error(f"Failed creating {GCPConfig.INDEX_NAME} folder with extracted data.")
+            print_error(f"Failed creating {file_name} folder with extracted data.")
             sys.exit(1)
 
         os.remove(download_index_path)
-        print(f"Finished downloading and extracting {GCPConfig.INDEX_NAME} file to {extract_destination_path}")
+        print(f"Finished downloading and extracting {file_name} file to {extract_destination_path}")
 
         return index_folder_path, index_blob
     else:
-        print_error(f"Failed to download {GCPConfig.INDEX_NAME}.zip file from cloud storage.")
+        print_error(f"Failed to download {file_name}.zip file from cloud storage.")
         sys.exit(1)
 
 
@@ -163,7 +168,7 @@ def update_index_folder(index_folder_path, pack_name, pack_path):
         return task_status
 
 
-def upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number):
+def upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs):
     """Upload updated index zip to cloud storage.
 
     Args:
@@ -171,6 +176,7 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
         extract_destination_path (str): extract folder full path.
         index_blob (Blob): google cloud storage object that represents index.zip blob.
         build_number (str): circleCI build number, used as an index revision.
+        private_packs (list): List of private packs and their price.
 
     """
     with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json"), "w+") as index_file:
@@ -186,7 +192,8 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
                     'New',
                     'Getting Started'
                 ]
-            }
+            },
+            'packs': private_packs
         }
         json.dump(index, index_file, indent=4)
 
@@ -201,6 +208,24 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
     index_blob.upload_from_filename(index_zip_path)
     shutil.rmtree(index_folder_path)
     print_color(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.", LOG_COLORS.GREEN)
+
+
+def get_private_packs(private_index_path):
+    metadata_files = glob.glob(f"{private_index_path}/metadata.json")
+    private_packs = []
+
+    for metadata_file_path in metadata_files:
+        with open(metadata_file_path, "r") as metadata_file:
+            file_data = metadata_file.read()
+
+        if file_data:
+            metadata = json.loads(file_data)
+            private_packs.append({
+                'id': metadata.get('id'),
+                'price': metadata.get('price')
+            })
+
+    return private_packs
 
 
 def _build_summary_table(packs_input_list):
@@ -284,6 +309,7 @@ def option_handler():
                         action='store_true', required=False)
     parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
                         required=False)
+    parser.add_argument('-P', '--private_bucket_name', help="Private storage bucket name", required=False)
     # disable-secrets-detection-end
     return parser.parse_args()
 
@@ -293,23 +319,27 @@ def main():
     packs_artifacts_path = option.artifacts_path
     extract_destination_path = option.extract_path
     storage_bucket_name = option.bucket_name
+    private_bucket_name = option.private_bucket_name
     service_account = option.service_account
     specific_packs = option.pack_names
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
     override_pack = option.override_pack
     signature_key = option.key_string
 
-    # detect new or modified packs
-    modified_packs = get_modified_packs(specific_packs)
-    extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
-    packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in modified_packs
-                  if os.path.exists(os.path.join(extract_destination_path, pack_name))]
-
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
+    private_storage_bucket = storage_client.bucket(private_bucket_name)
     index_folder_path, index_blob = download_and_extract_index(storage_bucket, extract_destination_path)
-    index_was_updated = False  # indicates whether one or more index folders were updated
+    private_index_path, _ = download_and_extract_index(private_storage_bucket, extract_destination_path,
+                                                       file_name=GCPConfig.PRIVATE_INDEX_NAME)
+
+    # detect new or modified packs
+    modified_packs = get_modified_packs(specific_packs, private_index_path)
+    private_packs = get_private_packs(private_index_path)
+    extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
+    packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in modified_packs
+                  if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
     for pack in packs_list:
         task_status, integration_images = pack.upload_integration_images(storage_bucket)
@@ -383,15 +413,14 @@ def main():
             pack.cleanup()
             continue
 
-        # detected index update
-        index_was_updated = True
         pack.status = PackStatus.SUCCESS.name
 
+    # Add private packs to index
+    for p in os.listdir(private_index_path):
+        update_index_folder(index_folder_path, os.path.basename(os.path.normpath(p)), p)
+
     # finished iteration over content packs
-    if index_was_updated:
-        upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number)
-    else:
-        print_warning("Skipping uploading index.zip to storage.")
+    upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs)
 
     # summary of packs status
     print_packs_summary(packs_list)
