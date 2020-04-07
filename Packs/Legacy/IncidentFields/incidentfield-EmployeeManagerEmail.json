@@ -25,7 +25,8 @@
 	"group": 0,
 	"hidden": false,
 	"associatedTypes": [
-		"Employee Offboarding"
+		"Employee Offboarding",
+		"Port Scan"
 	],
 	"systemAssociatedTypes": null,
 	"associatedToAll": false,

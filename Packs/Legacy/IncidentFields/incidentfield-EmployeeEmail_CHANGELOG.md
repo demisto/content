@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+Associated the field with the Port Scan incident type.
 
 
 ## [20.2.3] - 2020-02-18

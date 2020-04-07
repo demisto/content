@@ -24,7 +24,8 @@
 	"hidden": false,
 	"associatedTypes": [
 		"GDPR Data Breach",
-		"Impossible Traveler"
+		"Impossible Traveler",
+		"Port Scan"
 	],
 	"systemAssociatedTypes": null,
 	"associatedToAll": false,

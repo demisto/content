@@ -1,7 +1,8 @@
 {
 	"associatedToAll": false,
 	"associatedTypes": [
-		"Cortex XDR Port Scan"
+		"Cortex XDR Port Scan",
+		"Port Scan"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
