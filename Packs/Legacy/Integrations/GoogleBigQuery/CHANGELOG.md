@@ -1,2 +1,2 @@
 ## [Unreleased]
-- Fix: Handle issue where date objects were not handled correctly.
+Fixed an issue where date objects were not handled correctly.
