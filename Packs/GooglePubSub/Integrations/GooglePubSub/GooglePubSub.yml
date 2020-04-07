@@ -1,38 +1,14 @@
 category: Messaging
+fromversion: 5.0.0
 commonfields:
   id: GooglePubSub
   version: -1
 configuration:
-- display: Service Account Private Key file contents (JSON)
+- display: Service Account Private Key File Contents (JSON)
   hidden: false
   name: service_account_json
   required: true
   type: 4
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
-- additionalinfo: Subscripcription to fetch incidents from.
-  display: Fetch Incidents Subscription
-  hidden: false
-  name: default_subscription
-  required: false
-  type: 0
-- display: Fetch Incidents Project
-  hidden: false
-  name: default_project
-  required: false
-  type: 0
-- defaultvalue: '50'
-  display: Max Incidents Per Fetch
-  hidden: false
-  name: default_max_msgs
-  required: false
-  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -41,6 +17,33 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Fetch Incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- additionalinfo: Subscription ID to fetch incidents from.
+  display: Fetch Incidents Subscription ID
+  hidden: false
+  name: default_subscription
+  required: false
+  type: 0
+- display: Fetch Incidents Project ID
+  additionalinfo: ID of the project from which the subscription is receiving messages.
+  hidden: false
+  name: default_project
+  required: false
+  type: 0
+- defaultvalue: '50'
+  additionalinfo: Max numbers of incidents created per fetch.
+  display: Max Incidents Per Fetch
+  hidden: false
+  name: default_max_msgs
+  required: false
+  type: 0
 description: Google Cloud Pub / Sub is a fully-managed real-time messaging service
   that allows you to send and receive messages between independent applications.
 display: Google Cloud Pub/Sub
@@ -49,9 +52,9 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Name of the project to look in.
+      description: ID of the project to look in.
       isArray: false
-      name: project_name
+      name: project_id
       required: true
       secret: false
     - default: false
@@ -68,18 +71,18 @@ script:
       required: false
       secret: false
     outputs:
-    - contextPath: GoogleCloudPubSub.topics.name
+    - contextPath: GoogleCloudPubSub.Topics.name
       description: 'Name of the topic'
       type: String
     deprecated: false
-    description: List PubSub topics.
+    description: Get a list of the project's topics.
     execution: false
     name: google-cloud-pubsub-topics-list
   - arguments:
     - default: false
-      description: Name of the topic without prefix, i.e. without "projects/{project_name}/topics/".
+      description: ID of the topic e.g. "projects/{project_id}/topics/topic_id".
       isArray: false
-      name: topic_name
+      name: topic_id
       required: true
       secret: false
     - default: false
@@ -97,9 +100,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: Project name.
+      description: Project ID.
       isArray: false
-      name: project_name
+      name: project_id
       required: true
       secret: false
     outputs:
@@ -115,15 +118,15 @@ script:
     name: google-cloud-pubsub-topic-publish-message
   - arguments:
     - default: false
-      description: Name of the project the subscription belongs to.
+      description: ID of the project from which the subscription is receiving messages.
       isArray: false
-      name: project_name
+      name: project_id
       required: true
       secret: false
     - default: false
-      description: Name of the subscription, without project/topic prefix.
+      description: ID of the subscription, without project/topic prefix.
       isArray: false
-      name: subscription_name
+      name: subscription_id
       required: true
       secret: false
     outputs:
@@ -144,20 +147,20 @@ script:
       description: 'Name of the topic from which the subscription is receiving messages'
       type: String
     deprecated: false
-    description: Get subscription details by subscription name.
+    description: Get subscription details by subscription ID.
     execution: false
     name: google-cloud-pubsub-topic-subscription-get-by-name
   - arguments:
     - default: false
-      description: Name of the project the subscription belongs to.
+      description: ID of the project from which the subscription is receiving messages.
       isArray: false
-      name: project_name
+      name: project_id
       required: true
       secret: false
     - default: false
-      description: Name of the topic thesubscription belongs to.
+      description: ID of the topic from which the subscription is receiving messages.
       isArray: false
-      name: topic_name
+      name: topic_id
       required: false
       secret: false
     - default: false
@@ -193,20 +196,20 @@ script:
       description: A URL locating the endpoint to which messages should be pushed.
       type: String
     deprecated: false
-    description: Get list of subscription by project name or topic name.
+    description: Get a list of subscriptions by project ID or topic ID.
     execution: false
     name: google-cloud-pubsub-topic-subscriptions-list
   - arguments:
     - default: false
-      description: Project name to pull messages from.
+      description: Project ID to pull messages from.
       isArray: false
-      name: project_name
+      name: project_id
       required: true
       secret: false
     - default: false
-      description: Subscription name to pull messages from.
+      description: Subscription ID to pull messages from.
       isArray: false
-      name: subscription_name
+      name: subscription_id
       required: true
       secret: false
     - default: false
@@ -244,21 +247,21 @@ script:
     name: google-cloud-pubsub-topic-messages-pull
   - arguments:
     - default: false
-      description: Name of the project from which the subscription is receiving messages.
+      description: ID of the project from which the subscription is receiving messages.
       isArray: false
-      name: project_name
+      name: project_id
       required: true
       secret: false
     - default: false
-      description: Name of the created subscription.
+      description: ID of the created subscription.
       isArray: false
-      name: subscription_name
+      name: subscription_id
       required: true
       secret: false
     - default: false
-      description: Name of the topic from which the subscription is receiving messages.
+      description: ID of the topic from which the subscription is receiving messages.
       isArray: false
-      name: topic_name
+      name: topic_id
       required: true
       secret: false
     - default: false

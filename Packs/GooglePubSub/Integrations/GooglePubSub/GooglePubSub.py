@@ -9,7 +9,7 @@ import dateparser
 import httplib2
 import urllib.parse
 from oauth2client import service_account
-from googleapiclient.discovery import build
+from googleapiclient import discovery
 
 import json
 import requests
@@ -34,95 +34,136 @@ class GoogleNameParser:
     FULL_SUBSCRIPTION_PREFIX = "/subscriptions/{}"
 
     @staticmethod
-    def get_full_project_name(project_name):
-        return GoogleNameParser.FULL_PROJECT_PREFIX.format(project_name)
+    def get_full_project_name(project_id):
+        return GoogleNameParser.FULL_PROJECT_PREFIX.format(project_id)
 
     @staticmethod
-    def get_full_topic_name(project_name, topic_name):
+    def get_full_topic_name(project_id, topic_id):
         return GoogleNameParser.get_full_project_name(
-            project_name
-        ) + GoogleNameParser.FULL_TOPIC_PREFIX.format(topic_name)
+            project_id
+        ) + GoogleNameParser.FULL_TOPIC_PREFIX.format(topic_id)
 
     @staticmethod
-    def get_full_subscription_project_name(project_name, subscription_name):
+    def get_full_subscription_project_name(project_id, subscription_id):
         return GoogleNameParser.get_full_project_name(
-            project_name
-        ) + GoogleNameParser.FULL_SUBSCRIPTION_PREFIX.format(subscription_name)
+            project_id
+        ) + GoogleNameParser.FULL_SUBSCRIPTION_PREFIX.format(subscription_id)
 
     @staticmethod
-    def get_full_subscription_topic_name(project_name, topic_name, subscription_name):
+    def get_full_subscription_topic_name(project_id, topic_id, subscription_id):
         return GoogleNameParser.get_full_topic_name(
-            project_name, topic_name
-        ) + GoogleNameParser.FULL_SUBSCRIPTION_PREFIX.format(subscription_name)
+            project_id, topic_id
+        ) + GoogleNameParser.FULL_SUBSCRIPTION_PREFIX.format(subscription_id)
 
 
-class GoogleClient:
+# disable-secrets-detection-start
+class BaseGoogleClient:
     """
-    A Client class to wrap the google cloud api library
+    A Client class to wrap the google cloud api library as a service.
     """
 
-    def __init__(
-            self,
-            service_name,
-            service_version,
-            client_secret,
-            scopes,
-            proxy,
-            default_subscription,
-            default_project,
-            default_max_msgs,
-            **kwargs
-    ):
+    def __init__(self, service_name: str, service_version: str, client_secret: str, scopes: list, proxy: bool,
+                 insecure: bool, **kwargs):
+        """
+        :param service_name: The name of the service. You can find this and the service  here
+         https://github.com/googleapis/google-api-python-client/blob/master/docs/dyn/index.md
+        :param service_version:The version of the API.
+        :param client_secret: A string of the generated credentials.json
+        :param scopes: The scope needed for the project. (i.e. ['https://www.googleapis.com/auth/cloud-platform'])
+        :param proxy: Proxy flag
+        :param insecure: Insecure flag
+        :param kwargs: Potential arguments dict
+        """
+        credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(client_secret, scopes=scopes)
+        if proxy or insecure:
+            http_client = credentials.authorize(self.get_http_client_with_proxy(proxy, insecure))
+            self.service = discovery.build(service_name, service_version, http=http_client)
+        else:
+            self.service = discovery.build(service_name, service_version, credentials=credentials)
+
+    @staticmethod
+    def get_http_client_with_proxy(proxy, insecure):
+        """
+        Create an http client with proxy with whom to use when using a proxy.
+        :param proxy: Whether to use a proxy.
+        :param insecure: Whether to disable ssl and use an insecure connection.
+        :return:
+        """
+        if proxy:
+            proxies = handle_proxy()
+            if not proxies or not proxies['https']:
+                raise Exception('https proxy value is empty. Check Demisto server configuration')
+            https_proxy = proxies['https']
+            if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
+                https_proxy = 'https://' + https_proxy
+            parsed_proxy = urllib.parse.urlparse(https_proxy)
+            proxy_info = httplib2.ProxyInfo(
+                proxy_type=httplib2.socks.PROXY_TYPE_HTTP,
+                proxy_host=parsed_proxy.hostname,
+                proxy_port=parsed_proxy.port,
+                proxy_user=parsed_proxy.username,
+                proxy_pass=parsed_proxy.password)
+            return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=insecure)
+        return httplib2.Http(disable_ssl_certificate_validation=insecure)
+
+
+# disable-secrets-detection-end
+
+
+class PubSubClient(BaseGoogleClient):
+    def __init__(self, default_project, default_subscription, default_max_msgs, client_secret, **kwargs):
+        super().__init__(client_secret=client_secret, **kwargs)
         self.default_project = default_project
+        if not default_project:
+            self.default_project = self._extract_project_from_client_secret(client_secret)
         self.default_subscription = default_subscription
         self.default_max_msgs = default_max_msgs
-        credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(
-            client_secret, scopes
-        )
-        if proxy:
-            http_client = credentials.authorize(self.get_http_client_with_proxy())
-            self.service = build(
-                service_name, service_version, http=http_client, credentials=credentials
-            )
-        else:
-            self.service = build(service_name, service_version, credentials=credentials)
 
-    def get_topic_list(self, project_name, page_size, page_token):
+    def _extract_project_from_client_secret(self, client_secret):
+        project_id = client_secret.get('project_id')
+        if isinstance(project_id, list):
+            project_id = project_id[0]
+        return project_id
+
+    def get_topic_list(self, project_id, page_size, page_token=None):
         return (
             self.service.projects()
                 .topics()
-                .list(project=project_name, pageSize=page_size, pageToken=page_token)
+                .list(project=project_id, pageSize=page_size, pageToken=page_token)
                 .execute()
         )
 
-    def get_topic_subs(self, topic_name, page_size, page_token):
+    def get_topic_subs(self, topic_id, page_size, page_token=None):
         return (
             self.service.projects()
                 .topics()
                 .subscriptions()
-                .list(topic=topic_name, pageSize=page_size, pageToken=page_token)
+                .list(topic=topic_id, pageSize=page_size, pageToken=page_token)
                 .execute()
         )
 
-    def get_project_subs(self, project_name, page_size, page_token):
+    def get_project_subs(self, project_id, page_size, page_token=None):
         return (
             self.service.projects()
                 .subscriptions()
-                .list(project=project_name, pageSize=page_size, pageToken=page_token)
+                .list(project=project_id, pageSize=page_size, pageToken=page_token)
                 .execute()
         )
 
     def get_sub(self, sub_name):
         return (
-            self.service.projects().subscriptions().get(subscription=sub_name).execute()
+            self.service.projects()
+                .subscriptions()
+                .get(subscription=sub_name)
+                .execute()
         )
 
-    def publish_message(self, project_name, topic_name, req_body):
+    def publish_message(self, project_id, topic_id, req_body):
         return (
             self.service.projects()
                 .topics()
                 .publish(
-                topic=GoogleNameParser.get_full_topic_name(project_name, topic_name),
+                topic=GoogleNameParser.get_full_topic_name(project_id, topic_id),
                 body=req_body,
             ).execute()
         )
@@ -145,7 +186,7 @@ class GoogleClient:
                 .execute()
         )
 
-    def create_subscription(self, full_sub_name, topic_name, push_endpoint, push_attributes, ack_deadline_seconds,
+    def create_subscription(self, full_sub_name, topic_id, push_endpoint, push_attributes, ack_deadline_seconds,
                             retain_acked_messages, message_retention_duration, labels, expiration_ttl):
         if push_endpoint or push_attributes:
             push_config = assign_params(
@@ -155,13 +196,13 @@ class GoogleClient:
         else:
             push_config = None
         body = assign_params(
-            topic=topic_name,
+            topic=topic_id,
             pushConfig=push_config,
             ackDeadlineSeconds=ack_deadline_seconds,
             retainAckedMessages=retain_acked_messages,
             messageRetentionDuration=message_retention_duration,
             labels=attribute_pairs_to_dict(labels),
-            expiration_ttl=expiration_ttl
+            expirationPolicy=assign_params(ttl=expiration_ttl)
         )
         return (
             self.service.projects()
@@ -169,29 +210,6 @@ class GoogleClient:
                 .create(name=full_sub_name, body=body)
                 .execute()
         )
-
-    # disable-secrets-detection-start
-    @staticmethod
-    def get_http_client_with_proxy():
-        proxies = handle_proxy()
-        if not proxies or not proxies["https"]:
-            raise Exception(
-                "https proxy value is empty. Check Demisto server configuration"
-            )
-        https_proxy = proxies["https"]
-        if not https_proxy.startswith("https") and not https_proxy.startswith("http"):
-            https_proxy = "https://" + https_proxy
-        parsed_proxy = urllib.parse.urlparse(https_proxy)
-        proxy_info = httplib2.ProxyInfo(
-            proxy_type=httplib2.socks.PROXY_TYPE_HTTP,
-            proxy_host=parsed_proxy.hostname,
-            proxy_port=parsed_proxy.port,
-            proxy_user=parsed_proxy.username,
-            proxy_pass=parsed_proxy.password,
-        )
-        return httplib2.Http(proxy_info=proxy_info)
-
-    # disable-secrets-detection-end
 
 
 def publish_datetime_to_str(publish_time):
@@ -205,31 +223,33 @@ def publish_datetime_to_str(publish_time):
 
 
 def init_google_client(
-        proxy,
         service_account_json,
         default_subscription,
         default_project,
         default_max_msgs,
+        insecure,
         **kwargs,
-) -> GoogleClient:
+) -> PubSubClient:
     try:
         service_account_json = json.loads(service_account_json)
-    except ValueError:
+        print(json.dumps(service_account_json))
+        client = PubSubClient(
+            default_project=default_project,
+            default_subscription=default_subscription,
+            default_max_msgs=default_max_msgs,
+            service_name=SERVICE_NAME,
+            service_version=SERVICE_VERSION,
+            client_secret=service_account_json,
+            scopes=SCOPES,
+            insecure=insecure,
+            **kwargs
+        )
+        return client
+    except ValueError as e:
         return_error(
             "Failed to parse Service Account Private Key in json format, please make sure you entered it correctly"
         )
-    client = GoogleClient(
-        SERVICE_NAME,
-        SERVICE_VERSION,
-        service_account_json,
-        SCOPES,
-        proxy,
-        default_subscription,
-        default_project,
-        default_max_msgs,
-        **kwargs
-    )
-    return client
+        raise e
 
 
 def message_to_incident(message):
@@ -269,47 +289,54 @@ def attribute_pairs_to_dict(attrs_str: str, delim_char: str = ";"):
 """ COMMAND FUNCTIONS """
 
 
-def test_module(client: GoogleClient):
+def test_module(client: PubSubClient, is_fetch: bool):
     """
-    Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
+    Returning 'ok' indicates that the integration works like it is supposed to:
+        1. Connection to the service is successful.
+        2. Fetch incidents is configured properly
     :param client: GoogleClient
     :return: 'ok' if test passed, anything else will fail the test.
     """
-    return "ok", {}
+    client.get_topic_list(GoogleNameParser.get_full_project_name(client.default_project), page_size=1)
+    if is_fetch:
+        client.pull_messages(
+            GoogleNameParser.get_full_subscription_project_name(client.default_project, client.default_subscription),
+            max_messages=1)
+    return "ok"
 
 
 def topics_list_command(
-        client: GoogleClient,
-        project_name: str,
+        client: PubSubClient,
+        project_id: str,
         page_size: str = None,
         page_token: str = None,
 ) -> Tuple[str, dict, dict]:
     """
-    Get topics list by project_name
+    Get topics list by project_id
     Requires one of the following OAuth scopes:
 
         https://www.googleapis.com/auth/pubsub
         https://www.googleapis.com/auth/cloud-platform
 
     :param client: GoogleClient
-    :param project_name: project name
+    :param project_id: project name
     :param page_size: page size
     :param page_token: page token, as returned from the api
     :return: list of topics
     """
-    full_project_name = GoogleNameParser.get_full_project_name(project_name)
+    full_project_name = GoogleNameParser.get_full_project_name(project_id)
     res = client.get_topic_list(full_project_name, page_size, page_token)
 
-    topics = res.get("topics", [])
-    readable_output = tableToMarkdown(f"Topics for project {project_name}", topics)
-    outputs = {"GoogleCloudPubSub": {project_name: topics}}
+    topics = list(res.get("topics", []))
+    readable_output = tableToMarkdown(f"Topics for project {project_id}", topics, ['name'])
+    outputs = {"GoogleCloudPubSub.Topics(val && val.name === obj.name)": topics}
     return readable_output, outputs, res
 
 
 def publish_message_command(
-        client: GoogleClient,
-        project_name: str,
-        topic_name: str,
+        client: PubSubClient,
+        project_id: str,
+        topic_id: str,
         data: str = None,
         attributes: str = None,
 ) -> Tuple[str, dict, dict]:
@@ -320,19 +347,19 @@ def publish_message_command(
         https://www.googleapis.com/auth/pubsub
         https://www.googleapis.com/auth/cloud-platform
 
-    :param project_name: project name
-    :param topic_name: topic name without project name prefix
+    :param project_id: project name
+    :param topic_id: topic name without project name prefix
     :param attributes: message attributes separated by key=val pairs sepearated by ','
     :param data: message data str
     :param client: GoogleClient
     :return: list of topics
     """
     body = get_publish_body(attributes, data)
-    published_messages = client.publish_message(project_name, topic_name, body)
+    published_messages = client.publish_message(project_id, topic_id, body)
 
     output = []
     for msg_id in published_messages["messageIds"]:
-        output.append({"Topic": topic_name, "MessageID": msg_id})
+        output.append({"Topic": topic_id, "MessageID": msg_id})
 
     ec = {
         "GoogleCloudPubSub.PublishedMessages(val.messageId === obj.messageId)": output
@@ -366,9 +393,9 @@ def get_publish_body(message_attributes, message_data):
 
 
 def pull_messages_command(
-        client: GoogleClient,
-        project_name: str,
-        subscription_name: str,
+        client: PubSubClient,
+        project_id: str,
+        subscription_id: str,
         max_messages: str = None,
         ack: str = None,
 ) -> Tuple[str, dict, list]:
@@ -380,14 +407,14 @@ def pull_messages_command(
         https://www.googleapis.com/auth/cloud-platform
 
     :param client: GoogleClient
-    :param project_name: project name
-    :param subscription_name: Subscription name to pull messages from
+    :param project_id: project name
+    :param subscription_id: Subscription name to pull messages from
     :param max_messages: The maximum number of messages to return for this request. Must be a positive integer
     :param ack: Acknowledge the messages pulled if set to true.
     :return: list of messages
     """
     full_subscription_name = GoogleNameParser.get_full_subscription_project_name(
-        project_name, subscription_name
+        project_id, subscription_id
     )
     raw_msgs = client.pull_messages(full_subscription_name, max_messages)
     if "receivedMessages" in raw_msgs:
@@ -404,7 +431,10 @@ def pull_messages_command(
 
 
 def extract_acks_and_msgs(raw_msgs):
-    output = []
+    """
+    Extracts acknowledges and message data from raw_msgs
+    """
+    msg_list = []
     acknowledges = []
     for raw_msg in raw_msgs["receivedMessages"]:
         msg = raw_msg.get("message", {})
@@ -416,78 +446,81 @@ def extract_acks_and_msgs(raw_msgs):
             pass
 
         msg["data"] = decoded_data
-        output.append(msg)
+        msg_list.append(msg)
         acknowledges.append(raw_msg["ackId"])
-    return acknowledges, output
+    return acknowledges, msg_list
 
 
 def subscriptions_list_command(
-        client: GoogleClient,
-        project_name: str,
+        client: PubSubClient,
+        project_id: str,
         page_size: str = None,
         page_token: str = None,
-        topic_name: str = None,
+        topic_id: str = None,
 ) -> Tuple[str, dict, dict]:
     """
-    Get subscription list by project_name or by topic_name
+    Get subscription list by project_id or by topic_id
     Requires one of the following OAuth scopes:
 
         https://www.googleapis.com/auth/pubsub
         https://www.googleapis.com/auth/cloud-platform
 
     :param client: GoogleClient
-    :param project_name: project name
+    :param project_id: project name
     :param page_size: page size
     :param page_token: page token, as returned from the api
-    :param topic_name: topic name
+    :param topic_id: topic name
     :return: list of subscriptions
     """
     title = f"Subscriptions"
-    if topic_name:
-        full_topic_name = GoogleNameParser.get_full_topic_name(project_name, topic_name)
+    if topic_id:
+        full_topic_name = GoogleNameParser.get_full_topic_name(project_id, topic_id)
         raw_response = client.get_topic_subs(full_topic_name, page_size, page_token)
-        title += f" for topic {topic_name}"
+        subs = [{'name': sub} for sub in raw_response.get("subscriptions", [])]
+        title += f" for topic {topic_id} in project {project_id}"
+        readable_output = tableToMarkdown(title, subs, headers=["name"], headerTransform=pascalToSpace)
     else:
-        full_project_name = GoogleNameParser.get_full_project_name(project_name)
+        full_project_name = GoogleNameParser.get_full_project_name(project_id)
         raw_response = client.get_project_subs(full_project_name, page_size, page_token)
-
-    title += f" in project {project_name}"
-    subs = raw_response.get("subscriptions", "")
-    readable_output = tableToMarkdown(title, subs)
+        subs = raw_response.get("subscriptions", "")
+        title += f" in project {project_id}"
+        readable_output = tableToMarkdown(title, subs, headers=["name", "topic", "ackDeadlineSeconds", "labels"],
+                                          headerTransform=pascalToSpace)
     outputs = {f"GoogleCloudPubSubSubscriptions(val && val.name === obj.name)": subs}
+
     return readable_output, outputs, raw_response
 
 
 def get_subscription_command(
-        client: GoogleClient, project_name: str, subscription_name: str
+        client: PubSubClient, project_id: str, subscription_id: str
 ) -> Tuple[str, dict, dict]:
     """
-    Get subscription list by project_name or by topic_name
+    Get subscription list by project_id or by topic_id
     Requires one of the following OAuth scopes:
 
         https://www.googleapis.com/auth/pubsub
         https://www.googleapis.com/auth/cloud-platform
 
-    :param subscription_name:
+    :param subscription_id:
     :param client: GoogleClient
-    :param project_name: project name
+    :param project_id: project name
     :return: subscription
     """
     full_sub_name = GoogleNameParser.get_full_subscription_project_name(
-        project_name, subscription_name
+        project_id, subscription_id
     )
     subs = client.get_sub(full_sub_name)
 
-    title = f"Subscription {subscription_name}"
+    title = f"Subscription {subscription_id}"
     readable_output = tableToMarkdown(title, subs)
     outputs = {
-        f"GoogleCloudPubSubSubscriptions.(val && val.name === obj.name)": subs
+        f"GoogleCloudPubSubSubscriptions(val && val.name === obj.name)": subs
     }
     return readable_output, outputs, subs
 
 
 def create_subscription_command(
-        client: GoogleClient, project_name: str, subscription_name: str, topic_name: str, push_endpoint: str = '',
+        client: PubSubClient, project_id: str, subscription_id: str, topic_id: str, push_endpoint: str = '',
         push_attributes: str = '', ack_deadline_seconds: str = '', retain_acked_messages: str = '',
         message_retention_duration: str = '', labels: str = '', expiration_ttl: str = ''
 ) -> Tuple[str, dict, dict]:
@@ -498,9 +531,9 @@ def create_subscription_command(
         https://www.googleapis.com/auth/cloud-platform
 
     :param client: GoogleClient
-    :param project_name: Name of the project from which the subscription is receiving messages.
-    :param subscription_name: Name of the created subscription.
-    :param topic_name: Name of the topic from which the subscription is receiving messages.
+    :param project_id: Name of the project from which the subscription is receiving messages.
+    :param subscription_id: Name of the created subscription.
+    :param topic_id: Name of the topic from which the subscription is receiving messages.
     :param push_endpoint: A URL locating the endpoint to which messages should be pushed.
     :param push_attributes: Input format: "key=val" pairs sepearated by ",".
     :param ack_deadline_seconds: The amount of time Pub/Sub waits for the subscriber to ack.
@@ -510,22 +543,22 @@ def create_subscription_command(
     :param expiration_ttl: The "time-to-live" duration for the subscription.
     :return: Created subscription
     """
-    full_sub_name = GoogleNameParser.get_full_subscription_project_name(project_name, subscription_name)
-    full_topic_name = GoogleNameParser.get_full_topic_name(project_name, topic_name)
+    full_sub_name = GoogleNameParser.get_full_subscription_project_name(project_id, subscription_id)
+    full_topic_name = GoogleNameParser.get_full_topic_name(project_id, topic_id)
     sub = client.create_subscription(full_sub_name, full_topic_name, push_endpoint, push_attributes,
                                      ack_deadline_seconds, retain_acked_messages, message_retention_duration, labels,
                                      expiration_ttl)
-    title = f"Subscription {subscription_name} was created successfully"
+    title = f"Subscription {subscription_id} was created successfully"
     readable_output = tableToMarkdown(title, sub)
-    sub['ProjectName'] = project_name
-    sub['SubscriptionName'] = subscription_name
+    sub['ProjectName'] = project_id
+    sub['SubscriptionName'] = subscription_id
     outputs = {
         f"GoogleCloudPubSubSubscriptions": sub
     }
     return readable_output, outputs, sub
 
 
-def fetch_incidents(client: GoogleClient):
+def fetch_incidents(client: PubSubClient):
     """
     This function will execute each interval (default is 1 minute).
     :param client: GoogleClient initiallized with default_project, default_subscription and default_max_msgs
@@ -551,12 +584,14 @@ def main():
     command = demisto.command()
     LOG(f"Command being called is {command}")
     try:
-        if command == "fetch-incidents":
+        if command == "test-module":
+            demisto.results(test_module(client, params.get('isFetch')))
+
+        elif command == "fetch-incidents":
             demisto.incidents(fetch_incidents(client=client))
         else:
             args = demisto.args()
             commands = {
-                "test-module": test_module,
                 "google-cloud-pubsub-topics-list": topics_list_command,
                 "google-cloud-pubsub-topic-publish-message": publish_message_command,
                 "google-cloud-pubsub-topic-messages-pull": pull_messages_command,
