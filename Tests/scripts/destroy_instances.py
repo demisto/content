@@ -2,7 +2,7 @@ import sys
 import os
 import json
 import subprocess
-from Tests.test_utils import print_warning, print_error
+from demisto_sdk.commands.common.tools import print_warning, print_error
 import Tests.scripts.awsinstancetool.aws_functions as aws_functions
 
 
