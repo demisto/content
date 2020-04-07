@@ -67,7 +67,6 @@ BOT_NAME: str
 BOT_ICON_URL: str
 MAX_LIMIT_TIME: int
 PAGINATED_COUNT: int
-SLACK_COMMAND_TIMEOUT: int
 
 ''' HELPER FUNCTIONS '''
 
@@ -1321,8 +1320,6 @@ def slack_send():
     else:
         demisto.results('Could not send the message to Slack.')
 
-    return 0
-
 
 def save_entitlement(entitlement, thread, reply, expiry, default_response):
     """
@@ -1820,7 +1817,7 @@ def init_globals():
     """
     global BOT_TOKEN, ACCESS_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT, CHANNEL_CLIENT
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, NOTIFY_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT
-    global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, SLACK_COMMAND_TIMEOUT
+    global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT
 
     VERIFY_CERT = not demisto.params().get('unsecure', False)
     if not VERIFY_CERT:
@@ -1847,7 +1844,6 @@ def init_globals():
     BOT_ICON_URL = demisto.params().get('bot_icon')
     MAX_LIMIT_TIME = int(demisto.params().get('max_limit_time', '60'))
     PAGINATED_COUNT = int(demisto.params().get('paginated_count', '200'))
-    SLACK_COMMAND_TIMEOUT = int(demisto.params().get('timeout', 2))
 
 
 def main():

@@ -76,13 +76,6 @@ configuration:
   name: proxy_url
   required: false
   type: 0
-- additionalinfo: Set how much time the command tries to work.
-  defaultvalue: '2'
-  display: Command Timeout
-  hidden: false
-  name: timeout
-  required: false
-  type: 0
 description: Send messages and notifications to your Slack team.
 display: Slack v2
 name: SlackV2
