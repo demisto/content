@@ -736,4 +736,5 @@ script:
   subtype: python3
 deprecated: true
 tests:
-- Test - Windows Defender Advanced Threat Protection
+- No Tests - Deprected (Test - Windows Defender Advanced Threat Protection is in NonCircleTests directory)
+
