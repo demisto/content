@@ -25,8 +25,8 @@ try:
 except Exception:
     pass
 
-CONTENT_RELEASE_VERSION = '2.5.0'
-CONTENT_BRANCH_NAME = 'content_legacy_pack'
+CONTENT_RELEASE_VERSION = '0.0.0'
+CONTENT_BRANCH_NAME = 'master'
 IS_PY3 = sys.version_info[0] == 3
 
 # pylint: disable=undefined-variable
@@ -2653,3 +2653,4 @@ def batch(iterable, batch_size=1):
         yield current_batch
         current_batch = not_batched[:batch_size]
         not_batched = not_batched[batch_size:]
+
