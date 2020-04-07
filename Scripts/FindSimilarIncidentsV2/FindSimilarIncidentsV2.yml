@@ -120,10 +120,10 @@ comment: |-
   It's highly recommended to use incident keys if possible (e.g., "type" for the same incident type).
   For best performance, it's recommended to avoid using context keys if possible (for example, if the value also appears in a label key, use label).
 commonfields:
-  id: FindSimilarIncidents-test
+  id: FindSimilarIncidents
   version: -1
 enabled: true
-name: FindSimilarIncidents-test
+name: FindSimilarIncidents
 outputs:
 - contextPath: similarIncident.rawId
   description: Similar incident ID.
