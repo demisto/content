@@ -1,6 +1,6 @@
 {
   "id": "RolesPerShift",
-  "name": "RolesPerShift",
+  "name": "Roles Per Shift",
   "dataType": "scripts",
   "widgetType": "text",
   "query": "GetRolesPerShift",

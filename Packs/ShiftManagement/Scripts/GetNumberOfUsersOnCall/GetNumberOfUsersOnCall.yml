@@ -1,9 +1,9 @@
-comment: Retrieves roles per shift.
+comment: Retrieves number of users that are currently on-call (on shift).
 commonfields:
-  id: GetRolesPerShift
+  id: GetNumberOfUsersOnCall
   version: -1
 enabled: false
-name: GetRolesPerShift
+name: GetNumberOfUsersOnCall
 script: '-'
 tags:
 - Shift Management
