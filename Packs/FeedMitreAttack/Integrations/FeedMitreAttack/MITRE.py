@@ -181,9 +181,6 @@ class Client:
 
 
 def test_module(client):
-    client.getServer()
-    client.getRoots()
-    client.getCollections()
     if client.collections:
         demisto.results('ok')
     else:
@@ -192,7 +189,6 @@ def test_module(client):
 
 def fetch_indicators(client):
 
-    client.initialise()
     indicators = client.build_iterator()
     return indicators
 
@@ -204,7 +200,6 @@ def get_indicators_command(client, args):
     raw = True if args.get('raw') == "True" else False
     counter = 0
 
-    client.initialise()
     indicators = client.build_iterator(limit=limit)
 
     if raw:
@@ -226,7 +221,6 @@ def get_indicators_command(client, args):
     )
 
 def show_feeds_command(client, args):
-    client.initialise()
     feeds = list()
     for collection in client.collections:
         feeds.append({"Name": collection.title, "ID": collection.id})
@@ -290,17 +284,10 @@ def search_command(client, args):
         demisto.results({
             "indicators": json.dumps()
         })
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': returnListMD,
-        'ContentsFormat': formats['json'],
-        'HumanReadable': tableToMarkdown(f'MITRE Indicator search:', returnListMD),
-        'ReadableContentsFormat': formats['markdown'],
-        'EntryContext': {
-            'indicators(val.id && val.id == obj.id)': entries
-            }
-    })
+        
+    md = tableToMarkdown(f'MITRE Indicator search:', returnListMD)
+    ec = {'indicators(val.id && val.id == obj.id)': entries}
+    return_outputs(md, ec, returnListMD)
 
 
 def reputation_command(client, args):
@@ -341,16 +328,8 @@ def reputation_command(client, args):
                 'customFields': customFields
             }
         }
-        entry = {
-            'Type': entryTypes['note'],
-            'Contents': score,
-            'ContentsFormat': formats['json'],
-            'HumanReadable': md,
-            'ReadableContentsFormat': formats['markdown'],
-            'EntryContext': ec
-        }
-        demisto.results(entry)
-    #demisto.results(entries)
+
+        return_outputs(md, ec, score)
 
 
 def main():
@@ -368,6 +347,7 @@ def main():
 
     #try:
     client = Client(url, proxies, verify_certificate, includeAPT)
+    client.initialise()
     commands = {
         'mitre-get-indicators': get_indicators_command,
         'mitre-show-feeds': show_feeds_command,
