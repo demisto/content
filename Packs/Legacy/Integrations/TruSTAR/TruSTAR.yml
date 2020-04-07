@@ -620,7 +620,7 @@ script:
       description: Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH
       type: string
     description: Check Domain reputation on TruStar
-  - name: tustar-get-all-phishing-submissions
+  - name: tustar-get-phishing-submissions
     arguments:
     - name: from
       description: 'Unix timestamp: start of time window (milliseconds since epoch)
@@ -640,7 +640,7 @@ script:
         marked with atleast one of these statuses will be returned
       defaultValue: '"UNRESOLVED”'
     description: Fetches all phishing submissions that fit the given criteria
-  - name: trustar-mark-triage-status
+  - name: trustar-set-triage-status
     arguments:
     - name: submissionId
       required: true
@@ -656,11 +656,22 @@ script:
     arguments:
     - name: normalized_source_score
       description: Intel score of the indicator
+      isArray: true
       defaultValue: 0,1,2,3
     - name: normalized_triage_score
       description: Score of email submission
       isArray: true
       defaultValue: 0,1,2,3
+    - name: from_time
+      description: Start of time window (defaults to 7 days ago) (YYYY-MM-DD HH:MM:SS)
+    - name: to_time
+      description: End of time window (defaults to current time) (YYYY-MM-DD HH:MM:SS)
+    - name: page_size
+      description: Elements on a page
+      defaultValue: 25
+    - name: page_number
+      description: Page number
+      defaultValue: 0
     - name: status
       description: A list of triage statuses for submissions; only email submissions
         marked with at least one of these statuses will be returned. Options are 'UNRESOLVED',
