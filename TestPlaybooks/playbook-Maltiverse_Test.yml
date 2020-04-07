@@ -31,10 +31,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: d8f3618a-53ed-476d-8728-7c79d4e6dc38
+    taskid: a594d6f9-fe9b-4d8d-88ca-9b5f9b9f168b
     type: regular
     task:
-      id: d8f3618a-53ed-476d-8728-7c79d4e6dc38
+      id: a594d6f9-fe9b-4d8d-88ca-9b5f9b9f168b
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -67,10 +67,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: eb8ea395-34d7-45f9-80e5-3f7d0c4339de
+    taskid: 4e2a026b-91b9-4627-82cc-ae4bb8dbfb3d
     type: regular
     task:
-      id: eb8ea395-34d7-45f9-80e5-3f7d0c4339de
+      id: 4e2a026b-91b9-4627-82cc-ae4bb8dbfb3d
       version: -1
       name: ip
       description: Checks the reputation of an IP address
@@ -81,18 +81,22 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
+      - "16"
     scriptarguments:
       fullResponse: {}
       ip:
         simple: 1.1.1.1
       long: {}
+      retries: {}
+      sampleSize: {}
       threshold: {}
+      wait: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 370
+          "y": 360
         }
       }
     note: false
@@ -102,12 +106,12 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: d7ccc3a3-26f7-4c6d-8bd1-2f6670aebc06
+    taskid: f7e01d8c-84f8-4d5e-8a68-9c6f8147dbe6
     type: condition
     task:
-      id: d7ccc3a3-26f7-4c6d-8bd1-2f6670aebc06
+      id: f7e01d8c-84f8-4d5e-8a68-9c6f8147dbe6
       version: -1
-      name: VerifyContext
+      name: VerifyAddress
       description: Check whether the values provided in arguments are equal. If either
         of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
@@ -128,7 +132,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 265,
           "y": 545
         }
       }
@@ -196,7 +200,7 @@ tasks:
       long: {}
       threshold: {}
       url:
-        simple: http://assocolours.com/mu/i/LoginVerification.php  # disable-secrets-detection
+        simple: http://assocolours.com/mu/i/LoginVerification.php
     separatecontext: false
     view: |-
       {
@@ -212,12 +216,12 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 279f0adc-cc0a-4539-8186-cd1b2565e46d
+    taskid: f03f9f4a-4765-41e3-8b5d-d6055a55bc1d
     type: condition
     task:
-      id: 279f0adc-cc0a-4539-8186-cd1b2565e46d
+      id: f03f9f4a-4765-41e3-8b5d-d6055a55bc1d
       version: -1
-      name: VerifyContext
+      name: VerifyVendor
       description: Check whether the values provided in arguments are equal. If either
         of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
@@ -238,7 +242,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 1070
         }
       }
@@ -249,12 +253,12 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 98d8a2ad-bc45-4750-8db5-c66a32dc90c6
+    taskid: 2922514b-0107-48d8-8ecf-9eb4d9b1e6a9
     type: condition
     task:
-      id: 98d8a2ad-bc45-4750-8db5-c66a32dc90c6
+      id: 2922514b-0107-48d8-8ecf-9eb4d9b1e6a9
       version: -1
-      name: VerifyContext
+      name: VerifyDomainName
       description: Check whether the values provided in arguments are equal. If either
         of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
@@ -275,7 +279,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 480,
           "y": 1070
         }
       }
@@ -286,12 +290,12 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 6df1f3e9-7620-4f5b-821e-b997475562e3
+    taskid: e0816f1c-8d51-43e7-87ca-a80a603aba83
     type: condition
     task:
-      id: 6df1f3e9-7620-4f5b-821e-b997475562e3
+      id: e0816f1c-8d51-43e7-87ca-a80a603aba83
       version: -1
-      name: VerifyContext
+      name: VerifyTLD
       description: Check whether the values provided in arguments are equal. If either
         of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
@@ -312,7 +316,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 910,
           "y": 1070
         }
       }
@@ -359,10 +363,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: a0fd55af-4081-430b-8509-9b0ed285ae9f
+    taskid: 4b8a25cd-e7b6-4e6a-8294-7412c8bdaf27
     type: regular
     task:
-      id: a0fd55af-4081-430b-8509-9b0ed285ae9f
+      id: 4b8a25cd-e7b6-4e6a-8294-7412c8bdaf27
       version: -1
       name: domain
       description: Checks the reputation of a Domain
@@ -373,12 +377,16 @@ tasks:
     nexttasks:
       '#none#':
       - "11"
+      - "17"
     scriptarguments:
       domain:
         simple: google.com
       fullResponse: {}
       long: {}
+      retries: {}
+      sampleSize: {}
       threshold: {}
+      wait: {}
     separatecontext: false
     view: |-
       {
@@ -394,12 +402,12 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: fbb6bab5-ea1a-44f5-8cc9-ff4e2212e8e7
+    taskid: d5e1a7f3-6707-485f-88dc-c45de5cc24a4
     type: condition
     task:
-      id: fbb6bab5-ea1a-44f5-8cc9-ff4e2212e8e7
+      id: d5e1a7f3-6707-485f-88dc-c45de5cc24a4
       version: -1
-      name: VerifyContext
+      name: VerifyDomainName
       description: Check whether the values provided in arguments are equal. If either
         of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
@@ -420,8 +428,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1590
+          "x": 265,
+          "y": 1595
         }
       }
     note: false
@@ -467,10 +475,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 877a3b61-1fa2-4c07-8a3f-e69c8988e2d5
+    taskid: 7e1b518b-69b3-46fe-853c-4ee617769079
     type: regular
     task:
-      id: 877a3b61-1fa2-4c07-8a3f-e69c8988e2d5
+      id: 7e1b518b-69b3-46fe-853c-4ee617769079
       version: -1
       name: file
       description: Check the reputation of a file
@@ -481,13 +489,16 @@ tasks:
     nexttasks:
       '#none#':
       - "14"
+      - "18"
     scriptarguments:
       file:
         simple: c383e5592a8ae962464f57af2e306e0fb5d954cb14091e8ae0df4c3e6e3e2966
       fullResponse: {}
       hash: {}
       long: {}
+      retries: {}
       threshold: {}
+      wait: {}
     separatecontext: false
     view: |-
       {
@@ -503,12 +514,12 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: f69ef25d-ecef-4364-8081-5a85dc16af55
+    taskid: c5367ba8-ddcc-44ce-80fd-2ae92a5f61c8
     type: condition
     task:
-      id: f69ef25d-ecef-4364-8081-5a85dc16af55
+      id: c5367ba8-ddcc-44ce-80fd-2ae92a5f61c8
       version: -1
-      name: VerifyContext
+      name: VerifyFileName
       description: Check whether the values provided in arguments are equal. If either
         of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
@@ -529,7 +540,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 265,
           "y": 2120
         }
       }
@@ -555,6 +566,117 @@ tasks:
         "position": {
           "x": 480,
           "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: c470ef70-dc18-4f1b-8c08-e5293bebcd1e
+    type: condition
+    task:
+      id: c470ef70-dc18-4f1b-8c08-e5293bebcd1e
+      version: -1
+      name: VerifyVendor
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    scriptarguments:
+      left:
+        simple: ${DBotScore.Vendor}
+      right:
+        simple: Maltiverse
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 9ae46c4c-4083-474d-854b-c43435a70124
+    type: condition
+    task:
+      id: 9ae46c4c-4083-474d-854b-c43435a70124
+      version: -1
+      name: VerifyDomainTld
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    scriptarguments:
+      left:
+        simple: ${Maltiverse.Domain.Tld}
+      right:
+        simple: com
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 7b6711a2-21ee-4c62-8733-53ce994995eb
+    type: condition
+    task:
+      id: 7b6711a2-21ee-4c62-8733-53ce994995eb
+      version: -1
+      name: VerifyFileHash
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    scriptarguments:
+      left:
+        simple: ${Maltiverse.File.ProcessList.Sha256}
+      right:
+        simple: c383e5592a8ae962464f57af2e306e0fb5d954cb14091e8ae0df4c3e6e3e2966
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2120
         }
       }
     note: false

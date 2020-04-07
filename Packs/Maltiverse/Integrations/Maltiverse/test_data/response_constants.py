@@ -1,38 +1,27 @@
 IP_RESPONSE = {
-    'address': '100 CenturyLink Drive',
-    'as_name': 'AS15169 Google Inc',
-    'asn_cidr': '8.8.8.0/24',
-    'asn_country_code': 'US',
-    'asn_date': '1992-12-01 00:00:00',
-    'asn_registry': 'arin',
+    'address': 'PO Box 3646\nSouth Brisbane, QLD 4101\nAustralia',
+    'asn_cidr': '1.1.1.0/24',
+    'asn_country_code': 'AU',
+    'asn_date': '2011-08-11 00:00:00',
+    'asn_registry': 'apnic',
     'blacklist': [
-        {'count': 1,
-         'description': 'Malware site',
-         'first_seen': '2018-07-21 15:45:10',
-         'last_seen': '2018-07-21 15:45:10',
-         'source': 'Hybrid-Analysis'
-         },
-        {'count': 1,
-         'description': 'HTTP Spammer',
-         'first_seen': '2018-09-14 07:13:13',
-         'last_seen': '2018-11-12 07:15:06',
-         'source': 'Cleantalk.org'
-         },
+        {'description': 'Anonymizer',
+         'first_seen': '2018-08-02 07:59:16',
+         'last_seen': '2018-08-02 07:59:16',
+         'source': 'Maltiverse'
+         }
     ],
-    'cidr': ['8.0.0.0/9'],
-    'city': 'Monroe',
-    'classification': 'whitelist',
-    'country_code': 'US',
-    'creation_time': '2018-07-21 15:45:10',
-    'email': ['ipaddressing@level3.com'],
-    'ip_addr': '1.2.3.4',
-    'last_updated': '2018-04-23 00:00:00',
-    'location': {'lat': 37.751, 'lon': -97.822},
-    'modification_time': '2020-03-25 07:52:07',
-    'postal_code': '71203',
-    'registrant_name': 'Level 3 Parent, LLC',
-    'state': 'LA',
-    'tag': ['phishing', 'abuse', 'bot'],
+    'cidr': ['1.1.1.0/24'],
+    'classification': 'malicious',
+    'country_code': 'AU',
+    'creation_time': '2018-08-02 07:59:16',
+    'email': ['resolver-abuse@cloudflare.com', 'abuse@apnic.net', 'helpdesk@apnic.net', 'research@apnic.net'],
+    'ip_addr': '1.1.1.0',
+    'location': {'lat': -37.7, 'lon': 145.1833},
+    'modification_time': '2018-08-02 07:59:16',
+    'registrant_name': 'APNIC and Cloudflare DNS Resolver project\nRouted globally by AS13335/Cloudflare\nResearch '
+                       'prefix for APNIC Labs',
+    'tag': ['anonymizer'],
     'type': 'ip'
 }
 
@@ -60,17 +49,29 @@ URL_RESPONSE = {
 DOMAIN_RESPONSE = {
     'as_name': 'AS15169 Google Inc.',
     'blacklist': [
-        {'description': 'Malicious URL',
-         'first_seen': '2019-03-17 12:57:27',
-         'last_seen': '2019-03-17 12:57:28',
-         'source': 'Maltiverse'
-         },
-        {'description': 'apple phishing',
-         'first_seen': '2019-06-11 08:10:59',
-         'last_seen': '2019-06-11 08:10:59',
-         'ref': [279],
-         'source': 'Antiphishing.com.ar'
-         }
+        {
+            'count': 1,
+            'description': 'Malicious URL',
+            'first_seen': '2019-03-17 12:57:27',
+            'last_seen': '2019-03-17 12:57:28',
+            'source': 'Maltiverse'
+        },
+        {
+            'count': 1,
+            'description': 'apple phishing',
+            'first_seen': '2019-06-11 08:10:59',
+            'last_seen': '2019-06-11 08:10:59',
+            'ref': [279],
+            'source': 'Antiphishing.com.ar'
+        },
+        {
+            'count': 1,
+            'description': 'Malicious URL',
+            'first_seen': '2020-04-03 10:41:04',
+            'last_seen': '2020-04-03 10:41:04',
+            'ref': [2],
+            'source': 'Maltiverse Research Team'
+        }
     ],
     'classification': 'suspicious',
     'creation_time': '2019-03-17 12:57:27',
@@ -79,31 +80,64 @@ DOMAIN_RESPONSE = {
     'domain_lenght': 10,
     'entropy': 2.6464393446710157,
     'hostname': 'google.com',
-    'modification_time': '2019-06-11 08:10:59',
+    'modification_time': '2020-04-03 10:41:04',
     'resolved_ip': [
-        {'ip_addr': '172.217.7.174',
-         'timestamp': '2019-03-17 12:57:27'
-         }
+        {
+            'ip_addr': '172.217.7.174',
+            'timestamp': '2019-03-17 12:57:27'
+        }
     ],
     'tag': ['phishing'],
     'tld': 'com',
-    'type': 'hostname',
-    'visits': 0
+    'type': 'hostname'
 }
 
 FILE_RESPONSE = {
     'antivirus': [
-        {'description': 'Trojan.InstallCore.3953', 'name': 'DrWeb'},
-        {'description': 'Artemis!AA212C59CD30', 'name': 'McAfee'},
-        {'description': 'PUA.Win32.FusionCore.UKJAL', 'name': 'TrendMicro'},
-        {'description': 'a variant of Win32/FusionCore.AY.gen potentially unwanted', 'name': 'ESET-NOD32'},
-        {'description': 'PUA.FusionCore!8.124 (CLOUD)', 'name': 'Rising'},
-        {'description': 'FusionCore', 'name': 'McAfee-GW-Edition'},
-        {'description': 'W32/FusionCore.D.gen!Eldorado', 'name': 'Cyren'},
-        {'description': 'PUA/Fusion.cij', 'name': 'Avira'},
-        {'description': 'PUA:Win32/FusionCore', 'name': 'Microsoft'},
-        {'description': 'TScope.Trojan.Delf', 'name': 'VBA32'},
-        {'description': 'PUA.Win32.FusionCore.UKJAL', 'name': 'TrendMicro-HouseCall'}
+        {
+            'description': 'Trojan.InstallCore.3953',
+            'name': 'DrWeb'
+        },
+        {
+            'description': 'Artemis!AA212C59CD30',
+            'name': 'McAfee'
+        },
+        {
+            'description': 'PUA.Win32.FusionCore.UKJAL',
+            'name': 'TrendMicro'
+        },
+        {
+            'description': 'a variant of Win32/FusionCore.AY.gen potentially unwanted',
+            'name': 'ESET-NOD32'
+        },
+        {
+            'description': 'PUA.FusionCore!8.124 (CLOUD)',
+            'name': 'Rising'
+        },
+        {
+            'description': 'FusionCore',
+            'name': 'McAfee-GW-Edition'
+        },
+        {
+            'description': 'W32/FusionCore.D.gen!Eldorado',
+            'name': 'Cyren'
+        },
+        {
+            'description': 'PUA/Fusion.cij',
+            'name': 'Avira'
+        },
+        {
+            'description': 'PUA:Win32/FusionCore',
+            'name': 'Microsoft'
+        },
+        {
+            'description': 'TScope.Trojan.Delf',
+            'name': 'VBA32'
+        },
+        {
+            'description': 'PUA.Win32.FusionCore.UKJAL',
+            'name': 'TrendMicro-HouseCall'
+        }
     ],
     'av_ratio': 15,
     'blacklist': [

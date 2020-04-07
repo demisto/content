@@ -1,31 +1,33 @@
 EXPECTED_IP_RESULT = {
     'IP(val.Address && val.Address == obj.Address)': [
         {
-            'Address': '1.2.3.4',
-            'Geo.Country': 'US',
-            'PositiveDetections': 2,
-            'Malicious.Description': ['Malware site', 'HTTP Spammer']
+            'Address': '1.1.1.0',
+            'Geo': {'Country': 'AU'},
+            'PositiveDetections': 1,
+            'Malicious': {'Description': ['Anonymizer']}
         }
     ],
     'Maltiverse.IP(val.Address && val.Address == obj.Address)': [
         {
-            'Blacklist': {
-                'Description': ['Malware site', 'HTTP Spammer'],
-                'FirstSeen': ['2018-07-21 15:45:10', '2018-09-14 07:13:13'],
-                'LastSeen': ['2018-07-21 15:45:10', '2018-11-12 07:15:06'],
-                'Source': ['Hybrid-Analysis', 'Cleantalk.org']
-            },
-            'Classification': 'whitelist',
-            'Tag': ['phishing', 'abuse', 'bot'],
-            'Address': '1.2.3.4'
+            'Blacklist': [
+                {
+                    'Description': 'Anonymizer',
+                    'FirstSeen': '2018-08-02 07:59:16',
+                    'LastSeen': '2018-08-02 07:59:16',
+                    'Source': 'Maltiverse'
+                }
+            ],
+            'Classification': 'malicious',
+            'Tag': ['anonymizer'],
+            'Address': '1.1.1.0'
         }
     ],
     'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': [
         {
-            'Indicator': '1.2.3.4',
+            'Indicator': '1.1.1.0',
             'Type': 'ip',
             'Vendor': 'Maltiverse',
-            'Score': 1
+            'Score': 3
         }
     ]
 }
@@ -41,14 +43,16 @@ EXPECTED_URL_RESULT = {
             }
         }
     ],
+    'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': [
+        {
+            'Indicator': 'dv-expert.org',
+            'Type': 'url',
+            'Vendor': 'Maltiverse',
+            'Score': 3
+        }
+    ],
     'Maltiverse.URL(val.Data && val.Data == obj.Data)': [
         {
-            'Blacklist': {
-                'Description': ['Phishing Aetna Health Plans &amp; Dental Coverage'],
-                'FirstSeen': ['2020-03-29 02:54:46'],
-                'LastSeen': ['2020-03-29 02:54:46'],
-                'Source': ['Phishtank']
-            },
             'Classification': 'malicious',
             'Tag': ['phishing'],
             'ModificationTime': '2020-03-29 02:54:46',
@@ -57,52 +61,75 @@ EXPECTED_URL_RESULT = {
             'Domain': 'dv-expert.org',
             'Tld': 'org',
             'Address': 'https://dv-expert.org',
-        }
-    ],
-    'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': [
-        {
-            'Indicator': 'dv-expert.org',
-            'Type': 'url',
-            'Vendor': 'Maltiverse',
-            'Score': 3
+            'Blacklist': [
+                {
+                    'Count': 1,
+                    'Description': 'Phishing Aetna Health Plans &amp; Dental Coverage',
+                    'FirstSeen': '2020-03-29 02:54:46',
+                    'LastSeen': '2020-03-29 02:54:46',
+                    'Source': 'Phishtank'
+                }
+            ]
         }
     ]
 }
 
 EXPECTED_DOMAIN_RESULT = {
     'Domain(val.Name && val.Name == obj.Name)': [
-        {'CreationTime': '2019-03-17 12:57:27',
-         'ModificationTime': '2019-06-11 08:10:59',
-         'Tld': 'com',
-         'Name': 'google.com',
-         'ASName': 'AS15169 Google Inc.'
-         }
+        {
+            'CreationTime': '2019-03-17 12:57:27',
+            'ModificationTime': '2020-04-03 10:41:04',
+            'Tld': 'com',
+            'Name': 'google.com',
+            'ASName': 'AS15169 Google Inc.'
+        }
     ],
     'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': [
-        {'Indicator': 'google.com',
-         'Type': 'Domain',
-         'Vendor': 'Maltiverse',
-         'Score': 2
-         }
+        {
+            'Indicator': 'google.com',
+            'Type': 'Domain',
+            'Vendor': 'Maltiverse',
+            'Score': 2
+        }
     ],
     'Maltiverse.Domain(val.Name && val.Name == obj.Name)': [
-        {'CreationTime': '2019-03-17 12:57:27',
-         'ModificationTime': '2019-06-11 08:10:59',
-         'Tld': 'com',
-         'Classification': 'suspicious',
-         'Tag': ['phishing'],
-         'Address': 'google.com',
-         'Blacklist': {
-             'Description': ['Malicious URL', 'apple phishing'],
-             'FirstSeen': ['2019-03-17 12:57:27', '2019-06-11 08:10:59'],
-             'LastSeen': ['2019-03-17 12:57:28', '2019-06-11 08:10:59'],
-             'Source': ['Maltiverse', 'Antiphishing.com.ar']
-         },
-         'ResolvedIP': {
-             'IP': ['172.217.7.174'],
-             'Timestamp': ['2019-03-17 12:57:27']
-         }
-         }
+        {
+            'CreationTime': '2019-03-17 12:57:27',
+            'ModificationTime': '2020-04-03 10:41:04',
+            'Tld': 'com',
+            'Classification': 'suspicious',
+            'Tag': ['phishing'],
+            'Address': 'google.com',
+            'Blacklist': [
+                {
+                    'Count': 1,
+                    'Description': 'Malicious URL',
+                    'FirstSeen': '2019-03-17 12:57:27',
+                    'LastSeen': '2019-03-17 12:57:28',
+                    'Source': 'Maltiverse'
+                },
+                {
+                    'Count': 1,
+                    'Description': 'apple phishing',
+                    'FirstSeen': '2019-06-11 08:10:59',
+                    'LastSeen': '2019-06-11 08:10:59',
+                    'Ref': [279],
+                    'Source': 'Antiphishing.com.ar'
+                },
+                {
+                    'Count': 1,
+                    'Description': 'Malicious URL',
+                    'FirstSeen': '2020-04-03 10:41:04',
+                    'LastSeen': '2020-04-03 10:41:04',
+                    'Ref': [2],
+                    'Source': 'Maltiverse Research Team'
+                }
+            ],
+            'ResolvedIP': {
+                'IP': ['172.217.7.174'],
+                'Timestamp': ['2019-03-17 12:57:27']
+            }
+        }
     ]
 }
 
@@ -139,8 +166,7 @@ EXPECTED_FILE_RESULT = {
             'CreationTime': '2020-03-11 15:00:52',
             'Size': 10032728,
             'ContactedHost': ['136.243.154.86', '52.84.125.27'],
-            'DnsRequest': ['cloud.nitehe-nutete.com', 'isrg.trustid.ocsp.identrust.com',
-                           'offers.filezilla-project.org'],
+            'DnsRequest': ['cloud.nitehe-nutete.com', 'isrg.trustid.ocsp.identrust.com', 'offers.filezilla-project.org'],
             'PositiveDetections': 1,
             'Name': 'FileZilla_3.47.2.1_win64_sponsored-setup.exe',
             'Tag': '',
@@ -150,12 +176,14 @@ EXPECTED_FILE_RESULT = {
                 'Sha256': 'edb2f88c29844117cd74acf8bb357edf92487a1b142fe6f60b6ac5e15d2d718f',
                 'Uid': '00016638-00002652'
             },
-            'Blacklist': {
-                'Description': ['PUA.FusionCore'],
-                'FirstSeen': ['2020-03-11 15:00:52'],
-                'LastSeen': ['2020-03-11 15:00:52'],
-                'Source': ['Hybrid-Analysis']
-            },
+            'Blacklist': [
+                {
+                    'Description': 'PUA.FusionCore',
+                    'FirstSeen': '2020-03-11 15:00:52',
+                    'LastSeen': '2020-03-11 15:00:52',
+                    'Source': 'Hybrid-Analysis'
+                }
+            ],
             'Malicious': {
                 'Vendor': 'Maltiverse',
                 'Description': ['PUA.FusionCore']

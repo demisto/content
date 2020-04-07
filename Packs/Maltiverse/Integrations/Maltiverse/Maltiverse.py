@@ -24,13 +24,11 @@ class Error(Exception):
 
 
 class NotFoundError(Error):
-    """Exception raised for errors in the input.
+    """Exception raised for 404 - Page Not Found errors.
 
     Attributes:
-        expression -- input expression in which the error occurred
         message -- explanation of the error
     """
-
     def __init__(self, message):
         self.message = message
 
@@ -171,6 +169,15 @@ def urlToSHA256(url: str) -> str:
 
 
 def create_blacklist_keys(blacklist):
+    """
+    Converts the Blacklist keys into conetxt keys format.
+
+    Args:
+    blacklist (list): a list of dictionaries, where each dictionary is a positive detection of the IoC
+
+    Returns:
+    A new blacklist in which the keys are context keys
+    """
     if not blacklist:
         return []
     new_blacklist = []
