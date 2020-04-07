@@ -359,16 +359,16 @@ class Client(BaseClient):
             # Not supported in v2
             url = url.replace('v2', 'v1')
             try:
-                file_entry = file.get('id', '')
-                file_name = file('name', '')
+                file_entry = file['id']
+                file_name = file['name']
                 shutil.copy(demisto.getFilePath(file_entry)['path'], file_name)
                 with open(file_name, 'rb') as f:
                     files = {'file': f}
                     res = requests.request(method, url, headers=headers, params=params, data=body, files=files,
                                            auth=(self._username, self._password), verify=self._verify)
                 shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
-            except Exception as e:
-                raise Exception('Failed to upload file - ' + str(e))
+            except Exception as err:
+                raise Exception('Failed to upload file - ' + str(err))
         else:
             res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {}, params=params,
                                    auth=(self._username, self._password), verify=self._verify)
@@ -888,20 +888,20 @@ def upload_file_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
 
     if not result or 'result' not in result or not result['result']:
         raise Exception('Unable to upload file.')
-    result: dict = result.get('result', {})
+    uploaded_file_resp = result.get('result', {})
 
     hr_ = {
-        'Filename': result.get('file_name'),
-        'Download link': result.get('download_link'),
-        'System ID': result.get('sys_id')
+        'Filename': uploaded_file_resp.get('file_name'),
+        'Download link': uploaded_file_resp.get('download_link'),
+        'System ID': uploaded_file_resp.get('sys_id')
     }
     human_readable = tableToMarkdown(f'File uploaded successfully to ticket {ticket_id}.', t=hr_)
     context = {
         'ID': ticket_id,
         'File': {
-            'Filename': result.get('file_name'),
-            'Link': result.get('download_link'),
-            'SystemID': result.get('sys_id')
+            'Filename': uploaded_file_resp.get('file_name'),
+            'Link': uploaded_file_resp.get('download_link'),
+            'SystemID': uploaded_file_resp.get('sys_id')
         }
     }
     entry_context = {

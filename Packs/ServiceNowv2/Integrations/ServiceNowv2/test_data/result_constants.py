@@ -163,3 +163,11 @@ EXPECTED_QUERY_TICKETS = {
 }
 EXPECTED_ADD_LINK_HR = '### Link successfully added to ServiceNow ticket'
 EXPECTED_ADD_COMMENT_HR = '### Comment successfully added to ServiceNow ticket'
+EXPECTED_UPLOAD_FILE = {
+    'ServiceNow.Ticket(val.ID===obj.ID)': {
+        'ID': 'sys_id', 'File': {'Filename': 'test_file', 'Link': 'test_link', 'SystemID': 'system_id'}
+    },
+    'Ticket(val.ID===obj.ID)': {
+        'ID': 'sys_id', 'File': {'Filename': 'test_file', 'Link': 'test_link', 'SystemID': 'system_id'}
+    }
+}

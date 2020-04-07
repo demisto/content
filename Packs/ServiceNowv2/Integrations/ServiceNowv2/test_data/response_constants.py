@@ -779,3 +779,27 @@ RESPONSE_ADD_COMMENT = {
         "work_start": ""
     }
 }
+RESPONSE_UPLOAD_FILE = {
+    "result": {
+        "average_image_color": "",
+        "chunk_size_bytes": "734003",
+        "compressed": "true",
+        "content_type": "text/plain",
+        "download_link": "test_link",
+        "file_name": "test_file",
+        "image_height": "",
+        "image_width": "",
+        "size_bytes": "224925",
+        "size_compressed": "163377",
+        "state": "pending",
+        "sys_created_by": "admin",
+        "sys_created_on": "2020-04-07 08:07:44",
+        "sys_id": "system_id",
+        "sys_mod_count": "0",
+        "sys_tags": "",
+        "sys_updated_by": "admin",
+        "sys_updated_on": "2020-04-07 08:07:44",
+        "table_name": "incident",
+        "table_sys_id": "system_id"
+    }
+}
