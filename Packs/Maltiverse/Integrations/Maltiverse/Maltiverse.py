@@ -48,8 +48,8 @@ class Client(BaseClient):
             self._headers.update({'Authorization': 'Bearer ' + self.auth_token})
 
     def http_request(self, method, url_suffix):
-        ok_codes = (200, 403, 404, 500)  # includes responses that are ok (200) and error responses that should be
-        # handled by the client and not in the BaseClient  todo: check if should add 400/401
+        ok_codes = (200, 401, 403, 404, 500)  # includes responses that are ok (200) and error responses that should be
+        # handled by the client and not in the BaseClient
         try:
             res = self._http_request(method, url_suffix, resp_type='response', ok_codes=ok_codes)
             if res.status_code == 200:
@@ -59,7 +59,7 @@ class Client(BaseClient):
                     raise DemistoException('Failed to parse json object from response: {}'
                                            .format(res.content), exception)
 
-            if res.status_code == 403 or res.status_code == 500:
+            if res.status_code in [401, 403, 500]:
                 try:
                     err_msg = str(res.json())
                     if self.auth_token:
@@ -74,6 +74,9 @@ class Client(BaseClient):
                 raise NotFoundError('Page Not Found')
 
         except Exception as e:
+            if '<requests.exceptions.ConnectionError>' in e.args[0]:
+                raise DemistoException('Connection error - Verify that the server URL parameter is correct and that '
+                                       'you have access to the server from your host.\n')
             raise e
 
     def ip_report(self, ip: str) -> dict:
@@ -167,34 +170,16 @@ def urlToSHA256(url: str) -> str:
     return hashlib.sha256(url.encode('utf-8')).hexdigest()
 
 
-# todo: remove this function after talking to Yuval
-def create_blacklist_context(blacklist):
-    """
-    Creates the Blacklist part of the context.
-
-    Args:
-        blacklist (dict): the 'blacklist' field of the report, containing all information required for the blacklist
-        part in the context.
-
-    Returns:
-        dict - the dictionary that should be added into the context
-    """
-    all_fields = [blacklist[i][field] for field in
-                  ['description', 'first_seen', 'last_seen', 'source'] for i in range(len(blacklist))]
-    description = all_fields[:len(blacklist)]
-    first_seen = all_fields[len(blacklist): 2 * len(blacklist)]
-    last_seen = all_fields[2 * len(blacklist): 3 * len(blacklist)]
-    source = all_fields[3 * len(blacklist):]
-    blacklist_context = {
-        'Blacklist': {
-            'Description': description,
-            'FirstSeen': first_seen,
-            'LastSeen': last_seen,
-            'Source': source
-        }
-    }
-
-    return blacklist_context
+def create_blacklist_keys(blacklist):
+    if not blacklist:
+        return []
+    new_blacklist = []
+    for detection in blacklist:
+        detection_keys = {}
+        for key in detection.keys():
+            detection_keys[string_to_context_key(key)] = detection[key]
+        new_blacklist.append(detection_keys)
+    return new_blacklist
 
 
 def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
@@ -219,14 +204,14 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         report = client.ip_report(ip)
         positive_detections = len(report.get('blacklist', []))
 
-        # blacklist_context = create_blacklist_context(report.get('blacklist', []))
         blacklist_context = {'Blacklist': report.get('blacklist', [])}
+        blacklist_context['Blacklist'] = create_blacklist_keys(blacklist_context['Blacklist'])
 
         outputs = {
             'Address': report.get('ip_addr', ''),
             'Geo': {'Country': report.get('country_code', '')},
             'PositiveDetections': positive_detections,
-            'Malicious': {'Description': [blacklist_context['Blacklist'][i]['description'] for i in
+            'Malicious': {'Description': [blacklist_context['Blacklist'][i]['Description'] for i in
                                           range(len(report.get('blacklist', [])))]}
         }
 
@@ -247,7 +232,7 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
             'IP.Address': report.get('ip_addr', ''),
             'IP.Geo.Country': report.get('country_code', ''),
             'IP.PositiveDetections': positive_detections,
-            'IP.Malicious.Description': [blacklist_context['Blacklist'][i]['description'] for i in
+            'IP.Malicious.Description': [blacklist_context['Blacklist'][i]['Description'] for i in
                                          range(len(report.get('blacklist', [])))]
         }
         markdown += tableToMarkdown(f'Maltiverse IP reputation for: {report["ip_addr"]}\n', md_outputs, removeNull=True)
@@ -280,8 +265,8 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
             markdown += f'No results found for {url}'
             break
         positive_detections = len(report.get('blacklist', []))
-        # blacklist_context = create_blacklist_context(report.get('blacklist', []))
         blacklist_context = {'Blacklist': report.get('blacklist', [])}
+        blacklist_context['Blacklist'] = create_blacklist_keys(blacklist_context['Blacklist'])
 
         outputs = {'Data': report.get('url', ''),
                    'PositiveDetections': positive_detections
@@ -305,13 +290,13 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         if positive_detections > 0:
             malicious_info = {
                 'Malicious': {
-                    'Description': [blacklist_context['Blacklist'][i]['description'] for i in
+                    'Description': [blacklist_context['Blacklist'][i]['Description'] for i in
                                     range(len(report.get('blacklist', [])))],
                     'Vendor': 'Maltiverse'
                 }
             }
             outputs = {**outputs, **malicious_info}
-            md_info['URL.Malicious.Description'] = [blacklist_context['Blacklist'][i]['description'] for i in
+            md_info['URL.Malicious.Description'] = [blacklist_context['Blacklist'][i]['Description'] for i in
                                                     range(len(report.get('blacklist', [])))],
             md_info['URL.Malicious.Vendor'] = 'Maltiverse'
 
@@ -357,8 +342,8 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any
                       'Score': calculate_score(positive_detections, report.get('classification', ''), threshold)}
 
         blacklist_context = {'Blacklist': report.get('blacklist', [])}
+        blacklist_context['Blacklist'] = create_blacklist_keys(blacklist_context['Blacklist'])
 
-        # todo: remove after asking Yuval
         resolvedIP_info = {
             'ResolvedIP':
                 {
@@ -371,9 +356,8 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any
                              ['creation_time', 'modification_time', 'tld', 'classification', 'tag']
                              }
         maltiverse_domain['Address'] = report.get('hostname', '')
-        maltiverse_domain['ResolvedIP'] = report.get('resolved_ip', '')
         maltiverse_domain = {**maltiverse_domain, **blacklist_context}
-        # maltiverse_domain = {**maltiverse_domain, **resolvedIP_info}
+        maltiverse_domain = {**maltiverse_domain, **resolvedIP_info}
 
         context[outputPaths['domain']].append(outputs)
         context[DBOT_SCORE_KEY].append(dbot_score)
@@ -417,7 +401,7 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     for file in argToList(args.get('file', '')):
         report = client.file_report(file)
         if 'NotFound' in report:
-            markdown += f'No results found for {file}'
+            markdown += f'No results found for file hash {file}'
             break
         positive_detections = len(report.get('blacklist', []))
 
@@ -433,6 +417,7 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
                                                len(report.get('antivirus', [])))}
 
         blacklist_context = {'Blacklist': report.get('blacklist', [])}
+        blacklist_context['Blacklist'] = create_blacklist_keys(blacklist_context['Blacklist'])
 
         process_list = {
             'ProcessList': {
@@ -443,7 +428,7 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         file_malicious = {
             'Malicious': {
                 'Vendor': 'Maltiverse',
-                'Description': [blacklist_context['Blacklist'][i]['description'] for i in
+                'Description': [blacklist_context['Blacklist'][i]['Description'] for i in
                                 range(len(report.get('blacklist', [])))],
             }
         }
