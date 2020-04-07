@@ -14,14 +14,35 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
 sys.path.append(CONTENT_DIR)
 
-from Tests.scripts.constants import *  # noqa: E402
-from Tests.test_utils import get_yaml, str2bool, get_from_version, get_to_version, \
+from demisto_sdk.commands.common.constants import *  # noqa: E402
+from demisto_sdk.commands.common.tools import get_yaml, str2bool, get_from_version, get_to_version, \
     collect_ids, get_script_or_integration_id, run_command, LOG_COLORS, print_error, print_color, \
-    print_warning, is_runnable_in_server_version  # noqa: E402
+    print_warning, server_version_compare  # noqa: E402
 
 # Search Keyword for the changed file
 NO_TESTS_FORMAT = 'No test( - .*)?'
-
+PACKS_SCRIPT_REGEX = r'{}/([^/]+)/{}/(script-[^\\/]+)\.yml$'.format(PACKS_DIR, SCRIPTS_DIR)
+FILE_IN_INTEGRATIONS_DIR_REGEX = r'{}/(.+)'.format(INTEGRATIONS_DIR)
+FILE_IN_SCRIPTS_DIR_REGEX = r'{}/(.+)'.format(SCRIPTS_DIR)
+FILE_IN_PACKS_INTEGRATIONS_DIR_REGEX = r'{}/([^/]+)/{}/(.+)'.format(
+    PACKS_DIR, INTEGRATIONS_DIR)
+FILE_IN_PACKS_SCRIPTS_DIR_REGEX = r'{}/([^/]+)/{}/(.+)'.format(
+    PACKS_DIR, SCRIPTS_DIR)
+INTEGRATION_REGEXES = [
+    INTEGRATION_REGEX,
+    BETA_INTEGRATION_REGEX,
+    PACKS_INTEGRATION_REGEX
+]
+INCIDENT_FIELD_REGEXES = [
+    INCIDENT_FIELD_REGEX,
+    PACKS_INCIDENT_FIELDS_REGEX
+]
+FILES_IN_SCRIPTS_OR_INTEGRATIONS_DIRS_REGEXES = [
+    FILE_IN_INTEGRATIONS_DIR_REGEX,
+    FILE_IN_SCRIPTS_DIR_REGEX,
+    FILE_IN_PACKS_INTEGRATIONS_DIR_REGEX,
+    FILE_IN_PACKS_SCRIPTS_DIR_REGEX
+]
 CHECKED_TYPES_REGEXES = [
     # Integrations
     INTEGRATION_REGEX,
@@ -54,6 +75,20 @@ RANDOM_TESTS_NUM = 3
 
 # Global used to indicate if failed during any of the validation states
 _FAILED = False
+
+
+def is_runnable_in_server_version(from_v, server_v, to_v):
+    """
+    Checks whether an obj is runnable in a version
+    Args:
+        from_v (string): string representing Demisto version (fromversion comparable)
+        server_v (string): string representing Demisto version (version to be ran on)
+        to_v (string): string representing Demisto version (toversion comparable)
+
+    Returns:
+        bool. true if obj is runnable
+    """
+    return server_version_compare(from_v, server_v) <= 0 and server_version_compare(server_v, to_v) <= 0
 
 
 def checked_type(file_path, regex_list):
