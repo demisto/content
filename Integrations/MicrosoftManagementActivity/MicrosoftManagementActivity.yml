@@ -28,7 +28,7 @@ configuration:
   required: false
   type: 8
 - display: The authentication code you got for the service. For instructions on how
-    to receive it, see the detailed description ('?') section.
+    to receive it, see the detailed description (?) section.
   name: auth_code
   required: false
   type: 4
@@ -101,7 +101,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Starts a subscription to a given content type
+    description: Starts a subscription to a given content type.
     execution: false
     name: ms-management-activity-start-subscription
   - arguments:
@@ -118,21 +118,21 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Stops a subscription to a given content type
+    description: Stops a subscription to a given content type.
     execution: false
     name: ms-management-activity-stop-subscription
   - deprecated: false
-    description: List the content types you are currently subscribed to
+    description: Lists the content types you are currently subscribed to.
     execution: false
     name: ms-management-activity-list-subscriptions
     outputs:
     - contextPath: MicrosoftManagement.Subscription
-      description: List of current subscriptions
+      description: List of current subscriptions.
       type: string
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The content type you wish to receive content of.
+      description: The content type of which you wish to receive content.
       isArray: false
       name: content_type
       predefined:
@@ -144,8 +144,8 @@ script:
       secret: false
     - default: false
       description: 'The earliest time to get content from. If start_time is specified,
-        end_time must be specified as well. The start_time must be before the end_time,
-        can be at most 7 days ago, and has to be within 24 hours from end_time. Required
+        end_time must be specified as well. The start_time can be at most 7 days ago, 
+        and has to be up to 24 hours before the end_time. Required
         format: YYYY-MM-DDTHH-MM-SS. If not specified, start time will be 24 hours
         ago.'
       isArray: false
@@ -154,8 +154,8 @@ script:
       secret: false
     - default: false
       description: 'The latest time to get content from. If end_time is specified,
-        start_time must be specified as well. The start_time must be before the end_time
-        and has to be within 24 hours from start_time. Required format: YYYY-MM-DDTHH-MM-SS.
+        start_time must be specified as well. The end_time
+        and has to be up to 24 hours after the start_time. Required format: YYYY-MM-DDTHH-MM-SS.
         If not specified, end_time will be now.'
       isArray: false
       name: end_time
@@ -186,7 +186,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns all content of a specific content type.
+    description: Returns all the content for a specific content type.
     execution: false
     name: ms-management-activity-list-content
     outputs:
@@ -234,3 +234,4 @@ script:
   runonce: false
   script: ''
   type: python
+  subtype: python3
