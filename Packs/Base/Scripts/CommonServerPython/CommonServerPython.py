@@ -2479,7 +2479,7 @@ def return_results(results):
 
 
 # deprecated
-def return_outputs(readable_output, outputs=None, raw_response=None, timeline=None):
+def return_outputs(readable_output, outputs=None, raw_response=None, timeline=None, ignore_auto_extract=False):
     """
     DEPRECATED: use return_results() instead
 
@@ -2501,6 +2501,9 @@ def return_outputs(readable_output, outputs=None, raw_response=None, timeline=No
         indicator's timeline. if the 'Category' field is not present in the timeline dict(s), it will automatically
         be be added to the dict(s) with its value set to 'Integration Update'.
 
+    :type ignore_auto_extract: ``bool``
+    :param ignore_auto_extract: expects a bool value. if true then the warroom entry readable_output will not be auto enriched.
+
     :return: None
     :rtype: ``None``
     """
@@ -2516,6 +2519,7 @@ def return_outputs(readable_output, outputs=None, raw_response=None, timeline=No
         "ContentsFormat": formats["json"],
         "Contents": raw_response,
         "EntryContext": outputs,
+        'IgnoreAutoExtract': ignore_auto_extract,
         "IndicatorTimeline": timeline_list
     }
     # Return 'readable_output' only if needed

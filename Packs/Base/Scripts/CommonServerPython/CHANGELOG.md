@@ -1,4 +1,5 @@
 ## [Unreleased]
+  - Added the argument *ignore_auto_extract* to the ***return_outputs*** command.
   - Added a default value to the indicator timeline field **Category** when a value is not provided in an entry's timeline data.
   - Deprecated the following enums: 
     - **entryTypes**
