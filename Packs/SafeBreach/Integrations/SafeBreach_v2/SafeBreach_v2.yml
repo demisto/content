@@ -20,7 +20,7 @@ configuration:
   hidden: false
   name: apiKey
   required: true
-  type: 0
+  type: 4
 - defaultvalue: Endpoint,Web
   display: Insight Category
   hidden: false
