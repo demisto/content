@@ -20,7 +20,7 @@ class TestZabbix():
         }
 
         zabbix = Zabbix.ZabbixIntegration()
-        result = zabbix.execute_command(zapi,'host.get', args)
+        result = zabbix.execute_command(zapi, 'host.get', args)
 
         assert result['status'] == 'Ok'
         spy.assert_called_once_with('host.get', {})

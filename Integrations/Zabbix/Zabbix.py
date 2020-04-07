@@ -21,7 +21,7 @@ class ZabbixIntegration:
     def execute_command(self, zapi, method, args):
         params = json.loads(args.get('params', '{}'))
         for key in args:
-            if key.startswith("params_") and args[key] != None:
+            if key.startswith("params_") and args[key] is not None:
                 params[key.replace("params_", "")] = args[key]
         return zapi.do_request(method, params)['result']
 
