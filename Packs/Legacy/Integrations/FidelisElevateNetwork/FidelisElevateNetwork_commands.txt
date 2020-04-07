@@ -17,7 +17,7 @@
 !fidelis-get-alert-session-data alert_id=9
 !fidelis-manage-alert-label action=Add alert_id=3 label="example-label"
 !fidelis-update-alert-status alert_id=1 status=Actionable
-!fidelis-upload-pcap component_ip=172.20.22.182 entry_id=7317@99f96547-c492-48d1-84bc-070759449a5d
-!fidelis-run-pcap component_ip=172.20.22.182 files=ipv4frags.pcap
+!fidelis-upload-pcap component_ip=1.1.1.1 entry_id=7317@99f96547-c492-48d1-84bc-070759449a5d
+!fidelis-run-pcap component_ip=1.1.1.1 files=ipv4frags.pcap
 !fidelis-download-malware-file alert_id=9
 !fidelis-delete-alert alert_id=12
