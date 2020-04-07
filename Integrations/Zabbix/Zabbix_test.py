@@ -20,9 +20,9 @@ class TestZabbix():
         }
 
         zabbix = Zabbix.ZabbixIntegration()
-        result = zabbix.execute_command(zapi, args)
+        result = zabbix.execute_command(zapi,'host.get', args)
 
-        assert result['result'] == 'Ok'
+        assert result['status'] == 'Ok'
         spy.assert_called_once_with('host.get', {})
 
     def test_login(self, mocker):
@@ -92,7 +92,9 @@ class ZabbixApiStub(object):
 
     def do_request(self, method, params=None):
         return {
-            'result': 'Ok'
+            'result': {
+                'status': 'Ok'
+            }
         }
 
 

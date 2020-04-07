@@ -18,10 +18,12 @@ class ZabbixIntegration:
         self.ZABBIX_USER = params.get('credentials').get('identifier')
         self.ZABBIX_PASSWORD = params.get('credentials').get('password')
 
-    def execute_command(self, zapi, args):
-        method = args.get('method')
+    def execute_command(self, zapi, method, args):
         params = json.loads(args.get('params', '{}'))
-        return zapi.do_request(method, params)
+        for key in args:
+            if key.startswith("params_") and args[key] != None:
+                params[key.replace("params_", "")] = args[key]
+        return zapi.do_request(method, params)['result']
 
     def login(self):
         zapi = ZabbixAPI(self.ZABBIX_URL)
@@ -31,12 +33,11 @@ class ZabbixIntegration:
     def logout(self, zapi):
         zapi.do_request('user.logout')
 
-    def testmodule(self, zapi):
-        return zapi.apiinfo.version()
-
     def main(self):
         try:
+            known_commands = ['host_get', 'hostgroup_get', 'trigger_get', 'event_get']
             command = demisto.command()
+            args = demisto.args()
             if command == 'test-module':
                 demisto.results('ok')
                 return
@@ -44,12 +45,21 @@ class ZabbixIntegration:
             result = None
             zapi = self.login()
             if command == 'execute_command':
-                result = self.execute_command(zapi, demisto.args())
+                result = self.execute_command(zapi, args.get('method'), args)
+            elif command in known_commands:
+                result = self.execute_command(zapi, command.replace('_', '.'), demisto.args())
             else:
                 return_error("Unknown command " + command)
 
             self.logout(zapi)
-            demisto.results(result)
+
+            return_outputs(
+                tableToMarkdown(f'{command}, {str(args)}', result if isinstance(result, list) else [result]),
+                outputs={
+                    f'Zabbix.{command}': result
+                },
+                raw_response=result
+            )
 
         except Exception as e:
             return_error(str(e))
