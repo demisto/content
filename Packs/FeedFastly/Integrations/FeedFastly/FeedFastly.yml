@@ -3,7 +3,7 @@ commonfields:
   id: Fastly Feed
   version: -1
 configuration:
-- defaultvalue: 'true'
+- defaultvalue: true
   display: Fetch indicators
   name: feed
   required: false
