@@ -5,6 +5,7 @@ import hashlib
 from typing import Any, Dict
 import dateparser
 import urllib3
+import traceback
 from CommonServerPython import *
 
 # Disable insecure warnings
@@ -1370,7 +1371,8 @@ def main():
         if demisto.command() == 'fetch-incidents':
             LOG(str(err))
             raise
-        demisto.error()
+        
+        demisto.error(traceback.format_exc())
         return_error(str(err))
 
 
