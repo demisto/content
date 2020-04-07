@@ -298,7 +298,7 @@ def main():
             response = demisto.dt(incident_similar_context, key)
             original_context_map[key] = response
             if not response and RAISE_ERROR_MISSING_VALUES:
-                return_error("Missing context field for incident: %s" % key)
+                raise ValueError("Error: Missing context key for incident: %s" % key)
 
     log_message = 'Incident fields with exact match: %s' % exact_match_incident_fields
     if len(exact_match_incident_fields) > 1:
