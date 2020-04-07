@@ -1215,6 +1215,85 @@ script:
     name: servicenow-delete-ticket
   - arguments:
     - default: false
+      defaultValue: '10'
+      description: Limit for how many tickets to retrieve
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: incident
+      description: Ticket type
+      isArray: false
+      name: ticket_type
+      predefined:
+      - incident
+      - problem
+      - change_request
+      - sc_request
+      - sc_task
+      required: false
+      secret: false
+    - default: false
+      description: The query to run. To learn about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Starting record index to begin retrieving records from
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve ticket info with a query
+    execution: false
+    name: servicenow-query-tickets
+    outputs:
+    - contextPath: Ticket.ID
+      description: The unique ticket identifier.
+      type: string
+    - contextPath: Ticket.Creator
+      description: A string field that indicates the user who created the ticket.
+      type: string
+    - contextPath: Ticket.CreatedOn
+      description: The date and time when the ticket was created.
+      type: date
+    - contextPath: Ticket.Assignee
+      description: Specifies the user assigned to complete the ticket. By default,
+        this field uses a reference qualifier to only display users with the itil
+        role.
+      type: string
+    - contextPath: Ticket.State
+      description: Status of the ticket.
+      type: string
+    - contextPath: Ticket.Summary
+      description: A human-readable title for the record.
+      type: string
+    - contextPath: Ticket.Number
+      description: The display value of the ticket.
+      type: string
+    - contextPath: Ticket.Active
+      description: Specifies whether work is still being done on a task or whether
+        the work for the task is complete.
+      type: boolean
+    - contextPath: Ticket.AdditionalComments
+      description: Comments about the task record.
+      type: Unknown
+    - contextPath: Ticket.Priority
+      description: Specifies how high a priority the ticket should be for the assignee.
+      type: string
+    - contextPath: Ticket.OpenedAt
+      description: The date and time when the ticket was opened for the first time.
+      type: date
+    - contextPath: Ticket.Escalation
+      description: Indicates how long the ticket has been open.
+      type: string
+  - arguments:
+    - default: false
       description: Ticket System ID
       isArray: false
       name: id
@@ -1300,85 +1379,6 @@ script:
     description: Add comment to specific ticket by providing ticket id
     execution: false
     name: servicenow-add-comment
-  - arguments:
-    - default: false
-      defaultValue: '10'
-      description: Limit for how many tickets to retrieve
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: incident
-      description: Ticket type
-      isArray: false
-      name: ticket_type
-      predefined:
-      - incident
-      - problem
-      - change_request
-      - sc_request
-      - sc_task
-      required: false
-      secret: false
-    - default: false
-      description: The query to run. To learn about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
-      isArray: false
-      name: query
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
-      description: Starting record index to begin retrieving records from
-      isArray: false
-      name: offset
-      required: false
-      secret: false
-    deprecated: false
-    description: Retrieve ticket info with a query
-    execution: false
-    name: servicenow-query-tickets
-    outputs:
-    - contextPath: Ticket.ID
-      description: The unique ticket identifier.
-      type: string
-    - contextPath: Ticket.Creator
-      description: A string field that indicates the user who created the ticket.
-      type: string
-    - contextPath: Ticket.CreatedOn
-      description: The date and time when the ticket was created.
-      type: date
-    - contextPath: Ticket.Assignee
-      description: Specifies the user assigned to complete the ticket. By default,
-        this field uses a reference qualifier to only display users with the itil
-        role.
-      type: string
-    - contextPath: Ticket.State
-      description: Status of the ticket.
-      type: string
-    - contextPath: Ticket.Summary
-      description: A human-readable title for the record.
-      type: string
-    - contextPath: Ticket.Number
-      description: The display value of the ticket.
-      type: string
-    - contextPath: Ticket.Active
-      description: Specifies whether work is still being done on a task or whether
-        the work for the task is complete.
-      type: boolean
-    - contextPath: Ticket.AdditionalComments
-      description: Comments about the task record.
-      type: Unknown
-    - contextPath: Ticket.Priority
-      description: Specifies how high a priority the ticket should be for the assignee.
-      type: string
-    - contextPath: Ticket.OpenedAt
-      description: The date and time when the ticket was opened for the first time.
-      type: date
-    - contextPath: Ticket.Escalation
-      description: Indicates how long the ticket has been open.
-      type: string
   - arguments:
     - default: false
       description: Ticket System ID

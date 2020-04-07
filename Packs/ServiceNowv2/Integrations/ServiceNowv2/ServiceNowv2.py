@@ -762,6 +762,44 @@ def delete_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     return f'Ticket with ID {ticket_id} was successfully deleted.', {}, result
 
 
+def query_tickets_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+    """Query tickets.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    sys_param_limit = args.get('limit', client.sys_param_limit)
+    sys_param_offset = args.get('offset', client.sys_param_offset)
+    sys_param_query = str(args.get('query', ''))
+
+    ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
+
+    result = client.query(ticket_type, sys_param_limit, sys_param_offset, sys_param_query)
+
+    if not result or 'result' not in result or len(result['result']) == 0:
+        return 'No ServiceNow tickets matched the query.', {}, {}
+    tickets = result.get('result', {})
+    hr_ = get_ticket_human_readable(tickets, ticket_type)
+    context = get_ticket_context(tickets)
+
+    headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
+               'Active', 'Close Notes', 'Close Code',
+               'Description', 'Opened At', 'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description',
+               'Additional Comments']
+
+    human_readable = tableToMarkdown('ServiceNow tickets', t=hr_, headers=headers, removeNull=True)
+    entry_context = {
+        'Ticket(val.ID===obj.ID)': context,
+        'ServiceNow.Ticket(val.ID===obj.ID)': context
+    }
+
+    return human_readable, entry_context, result
+
+
 def get_record_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     """Get a record.
 
@@ -1006,44 +1044,6 @@ def upload_file_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     }
 
     return human_readable, entry_context, result
-
-
-def query_tickets_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
-    """Query tickets.
-
-    Args:
-        client: Client object with request.
-        args: Usually demisto.args()
-
-    Returns:
-        Demisto Outputs.
-    """
-    sys_param_limit = args.get('limit', client.sys_param_limit)
-    sys_param_offset = args.get('offset', client.sys_param_offset)
-    sys_param_query = str(args.get('query', ''))
-
-    ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
-
-    result = client.query(ticket_type, sys_param_limit, sys_param_offset, sys_param_query)
-
-    if not result or 'result' not in result or len(result['result']) == 0:
-        return 'No ServiceNow tickets matched the query.', {}, {}
-    tickets = result.get('result', {})
-    hr_ = get_ticket_human_readable(tickets, ticket_type)
-    context = get_ticket_context(tickets)
-
-    headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
-               'Active', 'Close Notes', 'Close Code',
-               'Description', 'Opened At', 'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description',
-               'Additional Comments']
-
-    human_readable = tableToMarkdown('ServiceNow tickets', t=hr_, headers=headers, removeNull=True)
-    entry_context = {
-        'Ticket(val.ID===obj.ID)': context,
-        'ServiceNow.Ticket(val.ID===obj.ID)': context
-    }
-
-    return human_readable, entry_context, tickets
 
 
 def get_ticket_notes_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
@@ -1524,10 +1524,10 @@ def main():
             'servicenow-create-record': create_record_command,
             'servicenow-delete-record': delete_record_command,
             'servicenow-query-table': query_table_command,
+            'servicenow-list-table-fields': list_table_fields_command,
             'servicenow-query-computers': query_computers_command,
             'servicenow-query-groups': query_groups_command,
             'servicenow-query-users': query_users_command,
-            'servicenow-list-table-fields': list_table_fields_command,
             'servicenow-get-table-name': get_table_name_command
         }
         args = demisto.args()
@@ -1547,7 +1547,7 @@ def main():
         LOG(err)
         LOG.print_log()
         if not raise_exception:
-            return_error(f'Unexpected error: {str(err)}, traceback: {traceback.format_exc()}')
+            return_error(f'Unexpected error: {str(err)}', error=traceback.format_exc())
         else:
             raise
 

@@ -1,10 +1,12 @@
 import pytest
 from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_readable, \
-    generate_body, split_fields, Client, update_ticket_command, create_ticket_command, delete_ticket_command
+    generate_body, split_fields, Client, update_ticket_command, create_ticket_command, delete_ticket_command, \
+    query_tickets_command
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
-    RESPONSE_CREATE_TICKET
+    RESPONSE_CREATE_TICKET, RESPONSE_QUERY_TICKETS
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \
-    EXPECTED_TICKET_HR, EXPECTED_MULTIPLE_TICKET_HR, EXPECTED_UPDATE_TICKET, EXPECTED_CREATE_TICKET
+    EXPECTED_TICKET_HR, EXPECTED_MULTIPLE_TICKET_HR, EXPECTED_UPDATE_TICKET, EXPECTED_CREATE_TICKET, \
+    EXPECTED_QUERY_TICKETS
 
 
 def test_get_server_url():
@@ -40,7 +42,9 @@ def test_split_fields():
 @pytest.mark.parametrize('command, args, response, expected_result', [
     (update_ticket_command, {'id': '1234', 'impact': '3 - Low'}, RESPONSE_UPDATE_TICKET, EXPECTED_UPDATE_TICKET),
     (create_ticket_command, {'active': 'true', 'severity': "2 - Medium", 'description': "creating a test ticket",
-                             'sla_due': "2020-10-10 10:10:11"}, RESPONSE_CREATE_TICKET, EXPECTED_CREATE_TICKET)
+                             'sla_due': "2020-10-10 10:10:11"}, RESPONSE_CREATE_TICKET, EXPECTED_CREATE_TICKET),
+    (query_tickets_command, {'limit': "3", 'query': "impact<2^short_descriptionISNOTEMPTY", 'ticket_type': "incident"},
+     RESPONSE_QUERY_TICKETS, EXPECTED_QUERY_TICKETS)
 ])  # noqa: E124
 def test_commands(command, args, response, expected_result, mocker):
     """Unit test

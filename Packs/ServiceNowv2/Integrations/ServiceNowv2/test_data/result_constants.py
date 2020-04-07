@@ -126,3 +126,38 @@ EXPECTED_CREATE_TICKET = {
         'Creator': 'test', 'Priority': '5 - Planning', 'State': '1'
     }
 }
+EXPECTED_QUERY_TICKETS = {
+    'Ticket(val.ID===obj.ID)': [
+        {
+            'ID': 'sys_id', 'Summary': "Can't read email", 'Number': 'INC0000001',
+            'CreatedOn': '2018-04-03 18:24:13', 'Active': 'false', 'CloseCode': 'Closed/Resolved by Caller',
+            'OpenedAt': '2019-09-02 23:09:51', 'ResolvedBy': 'admin', 'OpenedBy': 'admin', 'Creator': 'admin',
+            'Assignee': 'admin', 'Priority': '1 - Critical', 'State': '7'
+        },
+        {
+            'ID': 'sys_id', 'Summary': 'Network file shares access issue', 'Number': 'INC0000002',
+            'CreatedOn': '2018-03-23 22:30:06', 'Active': 'true', 'OpenedAt': '2019-08-27 23:07:12',
+            'OpenedBy': 'admin', 'Creator': 'admin', 'Assignee': 'admin', 'Priority': '1 - Critical', 'State': '3'
+        },
+        {'ID': 'sys_id', 'Summary': 'Wireless access is down in my area', 'Number': 'INC0000003',
+         'CreatedOn': '2018-04-07 14:41:46', 'Active': 'true', 'OpenedAt': '2019-09-03 23:07:30',
+         'OpenedBy': 'admin', 'Creator': 'admin', 'Assignee': 'admin', 'Priority': '1 - Critical', 'State': '2'
+         }
+    ],
+    'ServiceNow.Ticket(val.ID===obj.ID)': [
+        {
+            'ID': 'sys_id', 'Summary': "Can't read email", 'Number': 'INC0000001', 'CreatedOn': '2018-04-03 18:24:13',
+            'Active': 'false', 'CloseCode': 'Closed/Resolved by Caller', 'OpenedAt': '2019-09-02 23:09:51',
+            'ResolvedBy': 'admin', 'OpenedBy': 'admin', 'Creator': 'admin', 'Assignee': 'admin',
+            'Priority': '1 - Critical', 'State': '7'
+        },
+        {'ID': 'sys_id', 'Summary': 'Network file shares access issue', 'Number': 'INC0000002',
+         'CreatedOn': '2018-03-23 22:30:06', 'Active': 'true', 'OpenedAt': '2019-08-27 23:07:12',
+         'OpenedBy': 'admin', 'Creator': 'admin', 'Assignee': 'admin', 'Priority': '1 - Critical', 'State': '3'
+         },
+        {'ID': 'sys_id', 'Summary': 'Wireless access is down in my area', 'Number': 'INC0000003',
+         'CreatedOn': '2018-04-07 14:41:46', 'Active': 'true', 'OpenedAt': '2019-09-03 23:07:30', 'OpenedBy': 'admin',
+         'Creator': 'admin', 'Assignee': 'admin', 'Priority': '1 - Critical', 'State': '2'
+         }
+    ]
+}
