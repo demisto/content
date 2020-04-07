@@ -39,6 +39,7 @@ API_PARAM_DICT = {
         'Ascending': 'asc',
         'Descending': 'desc'
     },
+    'artifact': 'artifactSource',
     'sort': {
         'App Name': 'app_name',
         'App Packagename': 'app_packagename',
@@ -151,7 +152,8 @@ API_PARAM_DICT = {
         'filename': 'FileName',
         'device_industry': 'Industry',
         'upload_src': 'UploadSource',
-        'fileurl': 'FileURL'
+        'fileurl': 'FileURL',
+        'artifact': 'Artifact',
     }
 }
 SAMPLE_ANALYSIS_LINE_KEYS = {
@@ -295,15 +297,17 @@ def http_request(url_suffix, method='POST', data={}, err_operation=None):
     return parse_response(res, err_operation)
 
 
-def validate_sort_and_order(sort, order):
-    if sort and not order:
+def validate_sort_and_order_and_artifact(sort, order, artifact_source):
+    if artifact_source == 'true' and sort:
+        return_error('artifact and sort are not supported for scan and scroll together, Please Remove one.')
+    elif sort and not order:
         return_error('Please specify the order of sorting (Ascending or Descending).')
-    if order and not sort:
+    elif order and not sort:
         return_error('Please specify a field to sort by.')
     return sort and order
 
 
-def do_search(search_object, query, scope, size=None, sort=None, order=None, err_operation=None):
+def do_search(search_object, query, scope, size=None, sort=None, order=None, err_operation=None, artifact_source=None):
     path = '/samples/search' if search_object == 'samples' else '/sessions/search'
     data = {
         'query': query,
@@ -311,25 +315,27 @@ def do_search(search_object, query, scope, size=None, sort=None, order=None, err
     }
     if scope:
         data.update({'scope': API_PARAM_DICT['scope'][scope]})  # type: ignore
-    if validate_sort_and_order(sort, order):
+    if validate_sort_and_order_and_artifact(sort, order, artifact_source):
         data.update({'sort': {API_PARAM_DICT['sort'][sort]: {'order': API_PARAM_DICT['order'][order]}}})  # type: ignore
-
+    if artifact_source == 'true':
+        data.update({'artifactSource': 'af'})
+        data.update({'type': 'scan'})
     # Remove nulls
     data = createContext(data, removeNull=True)
     result = http_request(path, data=data, err_operation=err_operation)
     return result
 
 
-def run_search(search_object, query, scope=None, size=None, sort=None, order=None):
+def run_search(search_object, query, scope=None, size=None, sort=None, order=None, artifact_source=None):
     result = do_search(search_object, query=json.loads(query), scope=scope, size=size, sort=sort, order=order,
-                       err_operation='Search operation failed')
+                       artifact_source=artifact_source, err_operation='Search operation failed')
     in_progress = result.get('af_in_progress')
     status = 'in progress' if in_progress else 'complete'
     search_info = {
         'AFCookie': result.get('af_cookie'),
         'Status': status,
-        'SessionStart': datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
-    }
+        'SessionStart': datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+        }
     return search_info
 
 
@@ -684,12 +690,13 @@ def filter_object_entries_by_dict_values(result_object, response_dict_name):
 
 
 def search_samples(query=None, scope=None, size=None, sort=None, order=None, file_hash=None, domain=None, ip=None,
-                   url=None, wildfire_verdict=None, first_seen=None, last_updated=None):
+                   url=None, wildfire_verdict=None, first_seen=None, last_updated=None, artifact_source=None):
     validate_no_query_and_indicators(query, [file_hash, domain, ip, url, wildfire_verdict, first_seen, last_updated])
     if not query:
         validate_no_multiple_indicators_for_search([file_hash, domain, ip, url])
         query = build_sample_search_query(file_hash, domain, ip, url, wildfire_verdict, first_seen, last_updated)
-    return run_search('samples', query=query, scope=scope, size=size, sort=sort, order=order)
+    return run_search('samples', query=query, scope=scope, size=size, sort=sort, order=order,
+                      artifact_source=artifact_source)
 
 
 def build_sample_search_query(file_hash, domain, ip, url, wildfire_verdict, first_seen, last_updated):
@@ -1103,9 +1110,10 @@ def search_samples_command():
     max_results = args.get('max_results')
     sort = args.get('sort')
     order = args.get('order')
+    artifact_source = args.get('artifact')
     info = search_samples(query=query, scope=scope, size=max_results, sort=sort, order=order, file_hash=file_hash,
                           domain=domain, ip=ip, url=url, wildfire_verdict=wildfire_verdict, first_seen=first_seen,
-                          last_updated=last_updated)
+                          last_updated=last_updated, artifact_source=artifact_source)
     md = tableToMarkdown(f'Search Samples Info:', info)
     demisto.results({
         'Type': entryTypes['note'],
@@ -1145,23 +1153,43 @@ def samples_search_results_command():
     af_cookie = args.get('af_cookie')
     results, status = get_search_results('samples', af_cookie)
     files = get_files_data_from_results(results)
+    hr = ''
     if not results:
-        md = results = 'No entries found that match the query'
+        hr = results = 'No entries found that match the query'
         status = 'complete'
-    else:
-        md = tableToMarkdown(f'Search Samples Results is {status}', results)
     context = {
         'AutoFocus.SamplesResults(val.ID === obj.ID)': results,
         'AutoFocus.SamplesSearch(val.AFCookie ==== obj.AFCookie)': {'Status': status, 'AFCookie': af_cookie},
         outputPaths['file']: files
     }
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['text'],
-        'Contents': results,
-        'EntryContext': context,
-        'HumanReadable': md
-    })
+    if not results:
+        return_outputs(readable_output=hr, outputs=context, raw_response={})
+    else:
+        # for each result a new entry will be set with two tables, one of the result and one of its artifacts
+        for result in results:
+            if 'Artifact' in result:
+                hr = samples_search_result_hr(result, status)
+                return_outputs(readable_output=hr, outputs=context, raw_response=results)
+            else:
+                hr = tableToMarkdown(f'Search Samples Result is {status}', result)
+                hr += tableToMarkdown(f'Artifacts for Sample: ', [])
+                return_outputs(readable_output=hr, outputs=context, raw_response=results)
+
+
+def samples_search_result_hr(result, status):
+    Artifact = result.pop('Artifact')
+    updated_artifact = []
+    for indicator in Artifact:
+        # Filter on returned indicator types, as we do not support Mutex and User Agent.
+        if 'Mutex' not in indicator.get('indicator_type') and 'User Agent' not in indicator.get('indicator_type'):
+            updated_artifact.append(indicator)
+    rest = result
+    hr = ''
+    hr += tableToMarkdown(f'Search Samples Result is {status}', rest)
+    hr += '\n\n'
+    hr += tableToMarkdown(f'Artifacts for Sample: ', updated_artifact, headers=["b", "g", "m", "indicator_type",
+                                                                                "confidence", "indicator"])
+    return hr
 
 
 def sessions_search_results_command():

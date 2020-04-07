@@ -1,5 +1,6 @@
 import json
-
+from AutofocusV2 import search_samples_command, samples_search_results_command
+import pytest
 IP_ADDRESS = '127.0.0.1'
 
 FILE_RES_JSON = {
@@ -35,7 +36,8 @@ IP_RES_JSON = {
             "tag_definition_status_id": 1,
             "count": 7692947,
             "lasthit": "2019-12-11 02:29:45",
-            "description": "The Upatre Trojan typically arrives as an e-mail attachment or through an e-mail with a link to the malware. Upatre's function is to download additional malware onto the system, in most cases when the malware was initially observed downloading the Dyre banking Trojan which then attempts to steal the users online banking credentials which may may be used for fraud.\n\nSince then, the operators have diversified, with Upatre frequently seen downloading other banking trojans.\n",  # noqa: E501
+            "description": "The Upatre Trojan typically arrives as an e-mail attachment or through an e-mail with a link to the malware. Upatre's function is to download additional malware onto the system, in most cases when the malware was initially observed downloading the Dyre banking Trojan which then attempts to steal the users online banking credentials which may may be used for fraud.\n\nSince then, the operators have diversified, with Upatre frequently seen downloading other banking trojans.\n",
+            # noqa: E501
             "customer_name": "Palo Alto Networks Unit42",
             "customer_industry": "High Tech",
             "upVotes": 2,
@@ -47,7 +49,8 @@ IP_RES_JSON = {
             "tagGroups": [
                 {
                     "tag_group_name": "Downloader",
-                    "description": "This type of malware secretly downloads malicious files from a remote server, then installs and executes the files."  # noqa: E501
+                    "description": "This type of malware secretly downloads malicious files from a remote server, then installs and executes the files."
+                    # noqa: E501
                 }
             ],
             "aliases": [
@@ -81,7 +84,8 @@ INDICATOR_RES = {
             "TagClassID": 3,
             "Count": 7692947,
             "Lasthit": "2019-12-11 02:29:45",
-            "Description": "The Upatre Trojan typically arrives as an e-mail attachment or through an e-mail with a link to the malware. Upatre's function is to download additional malware onto the system, in most cases when the malware was initially observed downloading the Dyre banking Trojan which then attempts to steal the users online banking credentials which may may be used for fraud.\n\nSince then, the operators have diversified, with Upatre frequently seen downloading other banking trojans.\n"  # noqa: E501
+            "Description": "The Upatre Trojan typically arrives as an e-mail attachment or through an e-mail with a link to the malware. Upatre's function is to download additional malware onto the system, in most cases when the malware was initially observed downloading the Dyre banking Trojan which then attempts to steal the users online banking credentials which may may be used for fraud.\n\nSince then, the operators have diversified, with Upatre frequently seen downloading other banking trojans.\n"
+            # noqa: E501
         }
     ]
 }
@@ -120,3 +124,6 @@ def test_get_indicator_outputs(mocker):
     assert outputs['IP(val.Address && val.Address == obj.Address)'][0]['Malicious']['Vendor'] == 'AutoFocus V2'
     assert outputs['AutoFocus.IP(val.IndicatorValue === obj.IndicatorValue)'][0]['IndicatorValue'] == IP_ADDRESS
     assert outputs['AutoFocus.IP(val.IndicatorValue === obj.IndicatorValue)'][0]['Tags'][0]['TagName'] == 'Upatre'
+
+
+
