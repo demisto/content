@@ -113,7 +113,7 @@ def main():
         'LookupCSV': {
             'FoundResult': True if csv_data and search_column else False,
             'Result': csv_data if csv_data else None,
-            'SearchValue': search_value
+            'SearchValue': '' if not search_value else search_value
         }
     }
 
