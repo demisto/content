@@ -192,7 +192,8 @@ def http_request(uri: str, method: str, headers: Dict = {},
                     error_message += (f'\nDevice Group: {DEVICE_GROUP} does not exist.'
                                       f' The available Device Groups for this instance:'
                                       f' {", ".join(device_group_names)}.')
-            raise PAN_OS_Not_Found(error_message)
+                    raise PAN_OS_Not_Found(error_message)
+            return_warning('List not found and might be empty', True)
         if json_result['response']['@code'] not in ['19', '20']:
             # error code non exist in dict and not of success
             if 'msg' in json_result['response']:
