@@ -1,7 +1,8 @@
 ## [Unreleased]
--
-
-
+ - Removed duplicate fields from ***domain*** and ***whois*** commands output.
+ - Added the *Domain.Whois.QueryValue* context output to ***whois*** command.
+ - Added ability to query Whois with subdomains (ignoring it).  
+ 
 ## [20.3.3] - 2020-03-18
 Added the ***domain*** command to enable domain enrichment.
 

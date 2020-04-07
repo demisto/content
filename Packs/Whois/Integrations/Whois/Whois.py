@@ -16,7 +16,6 @@ ENTRY_TYPE = entryTypes['error'] if demisto.params().get('with_error', False) el
     the following - https://github.com/joepie91/python-whois
 """
 
-
 ''' HELPER FUNCTIONS '''
 # About the drop some mean regex right now disable-secrets-detection-start
 tlds = {
@@ -2884,6 +2883,9 @@ tlds = {
         "host": "whois.ikano.tld-box.at"
     },
     "il": {
+        "host": "whois.isoc.org.il"
+    },
+    "co.il": {
         "host": "whois.isoc.org.il"
     },
     "im": {
@@ -7270,15 +7272,15 @@ def whois_request(domain, server, port=43):
             d = buff.decode("latin-1")
 
         return d
-    finally:        
+    finally:
         sock.close()
 
 
-airports = {} # type: dict
-countries = {} # type: dict
-states_au = {} # type: dict
-states_us = {} # type: dict
-states_ca = {} # type: dict
+airports = {}  # type: dict
+countries = {}  # type: dict
+states_au = {}  # type: dict
+states_us = {}  # type: dict
+states_ca = {}  # type: dict
 
 
 class WhoisException(Exception):
@@ -7611,10 +7613,12 @@ organization_regexes = (
     r"\ss\.?a\.?r\.?l\.?($|\s)",
 )
 
+
 grammar["_data"]["id"] = precompile_regexes(grammar["_data"]["id"], re.IGNORECASE)    # type: ignore
 grammar["_data"]["status"] = precompile_regexes(grammar["_data"]["status"], re.IGNORECASE)  # type: ignore
 grammar["_data"]["creation_date"] = precompile_regexes(grammar["_data"]["creation_date"], re.IGNORECASE)  # type: ignore
-grammar["_data"]["expiration_date"] = precompile_regexes(grammar["_data"]["expiration_date"], re.IGNORECASE)  # type: ignore
+grammar["_data"]["expiration_date"] = precompile_regexes(grammar["_data"]["expiration_date"],  # type: ignore
+                                                         re.IGNORECASE)
 grammar["_data"]["updated_date"] = precompile_regexes(grammar["_data"]["updated_date"], re.IGNORECASE)  # type: ignore
 grammar["_data"]["registrar"] = precompile_regexes(grammar["_data"]["registrar"], re.IGNORECASE)  # type: ignore
 grammar["_data"]["whois_server"] = precompile_regexes(grammar["_data"]["whois_server"], re.IGNORECASE)  # type: ignore
@@ -8238,10 +8242,23 @@ def get_whois(domain, normalized=None):
     return parse_raw_whois(raw_data, normalized=normalized, never_query_handles=False,
                            handle_server=server_list[-1])
 
+
 # Drops the mic disable-secrets-detection-end
 
+def get_domain_from_query(query):
+    # checks for largest matching suffix inside tlds dictionary
+    suffix_len = max([len(suffix) for suffix in tlds if query.endswith('.{}'.format(suffix))] or [0])
+    if suffix_len != 0:
+        suffix_len += 1
+    suffixless_query = query[:-suffix_len]
+    domain = query
+    # checks if query includes subdomain
+    if suffixless_query.count(".") > 0:
+        domain = query[suffixless_query.rindex(".") + 1:]
+    return domain
 
-def create_outputs(whois_result, domain):
+
+def create_outputs(whois_result, domain, query=None):
     md = {'Name': domain}
     ec = {'Name': domain}
     standard_ec = {}  # type:dict
@@ -8314,6 +8331,7 @@ def create_outputs(whois_result, domain):
 
     standard_ec['Name'] = domain
     standard_ec['Whois'] = ec
+    standard_ec['Whois']['QueryValue'] = query
 
     dbot_score = {
         'Score': 0,
@@ -8342,11 +8360,11 @@ def domain_command():
         }
     })
 
-
 def whois_command():
-    domain = demisto.args().get('query')
+    query = demisto.args().get('query')
+    domain = get_domain_from_query(query)
     whois_result = get_whois(domain)
-    md, standard_ec, dbot_score = create_outputs(whois_result, domain)
+    md, standard_ec, dbot_score = create_outputs(whois_result, domain, query)
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['markdown'],
@@ -8379,7 +8397,7 @@ def setup_proxy():
         'socks4a': [socks.PROXY_TYPE_SOCKS4, True],
         'http': [socks.PROXY_TYPE_HTTP, True]
     }
-    proxy_url = demisto.params().get('proxy_url')    
+    proxy_url = demisto.params().get('proxy_url')
     def_scheme = 'socks5h'
     if proxy_url == 'system_http':
         system_proxy = handle_proxy('proxy_url')
@@ -8420,6 +8438,7 @@ def main():
     finally:
         socks.set_default_proxy()  # clear proxy settings
         socket.socket = org_socket  # type: ignore
+
 
 # python2 uses __builtin__ python3 uses builtins
 if __name__ == "__builtin__" or __name__ == "builtins":

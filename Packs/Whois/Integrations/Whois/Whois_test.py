@@ -22,6 +22,17 @@ def test_test_command(mocker):
     assert_results_ok()
 
 
+@pytest.mark.parametrize(
+    'query,expected',
+    [("app.paloaltonetwork.com", "paloaltonetwork.com"),
+     ("test.this.google.co.il", "google.co.il"),
+     ("app.XSOAR.test", "app.XSOAR.test")]
+)
+def test_get_domain_from_query(query, expected):
+    from Whois import get_domain_from_query
+    assert get_domain_from_query(query) == expected
+
+
 def test_socks_proxy_fail(mocker):
     mocker.patch.object(demisto, 'params', return_value={'proxy_url': 'socks5://localhost:1180'})
     mocker.patch.object(demisto, 'command', return_value='test-module')
