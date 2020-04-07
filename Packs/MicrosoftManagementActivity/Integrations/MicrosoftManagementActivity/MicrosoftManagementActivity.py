@@ -176,8 +176,7 @@ def test_module(client):
         return 'Error: first fetch time delta should not be over one week.'
     if client.self_deployed and not params.get('auth_code'):
         return 'Error: in the self_deployed authentication flow the authentication code parameter cannot be empty.'
-    return 'The basic parameters are ok, but please ' \
-           'use the ms-management-activity-test command to test the credentials.'
+    return 'The basic parameters are ok, authentication cannot be checked using the test module'
 
 
 def get_start_or_stop_subscription_human_readable(content_type, start_or_stop):
