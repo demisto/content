@@ -14,7 +14,7 @@ class GoogleClient:
     """
     A Client class to wrap the google cloud api library.
     """
-    def __init__(self, service_name: str, service_version: str, client_secret: str , scopes: list, proxy: bool,
+    def __init__(self, service_name: str, service_version: str, client_secret: str, scopes: list, proxy: bool,
                  insecure: bool, **kwargs):
         """
         :param service_name: The name of the service. You can find this and the service  here

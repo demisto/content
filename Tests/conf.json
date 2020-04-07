@@ -14,7 +14,7 @@
         },
         {
             "integrations": "Google Cloud Functions",
-            "playbookID": "Google Cloud Functions",
+            "playbookID": "test playbook - Google Cloud Functions",
             "fromversion": "5.0.0"
         },
         {
