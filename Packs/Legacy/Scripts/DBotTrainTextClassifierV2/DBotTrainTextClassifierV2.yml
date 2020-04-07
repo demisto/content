@@ -133,7 +133,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: Whether to return a file contains the model's predictions on the test
+  description: Whether to return a file that contains the model's predictions on the test
     set. Can be "true" or "false". Default is "false".
   isArray: false
   name: returnPredictionsOnTestSet
