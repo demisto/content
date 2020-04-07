@@ -14,20 +14,37 @@ class GoogleClient:
     """
     A Client class to wrap the google cloud api library.
     """
-    def __init__(self, service_name, service_version, client_secret, proxy, insecure, **kwargs):
+    def __init__(self, service_name: str, service_version: str, client_secret: str , scopes: list, proxy: bool,
+                 insecure: bool, **kwargs):
+        """
+        :param service_name: The name of the service. You can find this and the service  here
+         https://github.com/googleapis/google-api-python-client/blob/master/docs/dyn/index.md
+        :param service_version:The version of the API.
+        :param client_secret: A string of the credentials.json generated
+        :param scopes: The scope needed for the project. Might be different per function.
+        (i.e. ['https://www.googleapis.com/auth/cloud-platform'])
+        :param proxy:
+        :param insecure:
+        :param kwargs:
+        """
         self.project = kwargs.get('project', '')
         self.region = kwargs.get('region', '-')
-        credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(client_secret)
-        # Currently proxy or insecure not implemented so will always be false.
+        credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(client_secret, scopes=scopes)
         if proxy or insecure:
             http_client = credentials.authorize(self.get_http_client_with_proxy(proxy, insecure))
-            self.service = discovery.build(service_name, service_version, credentials=credentials, http=http_client)
+            self.service = discovery.build(service_name, service_version, http=http_client)
         else:
             self.service = discovery.build(service_name, service_version, credentials=credentials)
 
     # disable-secrets-detection-start
     @staticmethod
     def get_http_client_with_proxy(proxy, insecure):
+        """
+        Create an http client with proxy with whom to use when using a proxy.
+        :param proxy: Wether to use a proxy.
+        :param insecure: Wether to disable ssl and use an insecure connection.
+        :return:
+        """
         if proxy:
             proxies = handle_proxy()
             if not proxies or not proxies['https']:
@@ -157,7 +174,9 @@ def main():
     # proxy and insecure not yet implemented
     proxy = demisto.params().get('proxy', False)
     insecure = demisto.params().get('insecure', False)
-    client = GoogleClient('cloudfunctions', 'v1', credentials_json, proxy, insecure, project=project, region=region)
+    scopes = ['https://www.googleapis.com/auth/cloud-platform']
+    client = GoogleClient('cloudfunctions', 'v1', credentials_json, scopes, proxy, insecure, project=project,
+                          region=region)
     commands = {
         'google-cloud-functions-list': functions_list_command,
         'google-cloud-function-regions-list': region_list_command,

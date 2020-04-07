@@ -15,6 +15,14 @@ configuration:
   name: region
   required: false
   type: 0
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
 description: Google Cloud Functions is an event-driven serverless compute platform.
   Run your code locally or in the cloud without having to provision servers.
 display: Google Cloud Functions
@@ -154,4 +162,3 @@ script:
   runonce: false
   script: '-'
   type: python
-  subtype: pyuthon3
