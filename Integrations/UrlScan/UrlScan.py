@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 '''IMPORTS'''
 import requests
 import collections
-from urlparse import urlparse
+from urllib.parse import urlparse
 from requests.utils import quote  # type: ignore
 import time
 
@@ -24,7 +24,8 @@ BASE_URL = 'https://urlscan.io/api/v1/'
 APIKEY = demisto.params().get('apikey')
 THRESHOLD = int(demisto.params().get('url_threshold', '1'))
 USE_SSL = not demisto.params().get('insecure', False)
-
+BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist. ' \
+                                'For your own safety we did not perform this scan...'
 
 '''HELPER FUNCTIONS'''
 

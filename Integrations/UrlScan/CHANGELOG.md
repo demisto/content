@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added ***continue_on_blacklisted_urls*** argument to the ***urlscan-submit*** command.
 
 ## [19.11.0] - 2019-11-12
 Fixed a typo in an error message.
