@@ -13,7 +13,7 @@ from typing import Optional, Pattern, List
 urllib3.disable_warnings()
 
 ''' GLOBALS '''
-TAGS = 'tags'
+TAGS = 'feedTags'
 
 
 class Client(BaseClient):
@@ -262,13 +262,13 @@ def datestring_to_millisecond_timestamp(datestring):
     return int(date.timestamp() * 1000)
 
 
-def get_indicator_fields(line, url, tags: list, client: Client):
+def get_indicator_fields(line, url, feedTags: list, client: Client):
     """
     Extract indicators according to the feed type
     :param line: The current line in the feed
     :param url: The feed URL
     :param client: The client
-    :param tags: The indicator tags.
+    :param feedTags: The indicator tags.
     :return: The indicator
     """
     attributes = None
@@ -324,17 +324,17 @@ def get_indicator_fields(line, url, tags: list, client: Client):
                     attributes[f] = i
         attributes['value'] = value = extracted_indicator
         attributes['type'] = feed_config.get('indicator_type', client.indicator_type)
-        attributes['tags'] = tags
+        attributes['tags'] = feedTags
     return attributes, value
 
 
-def fetch_indicators_command(client, tags, itype, **kwargs):
+def fetch_indicators_command(client, feedTags, itype, **kwargs):
     iterators = client.build_iterator(**kwargs)
     indicators = []
     for iterator in iterators:
         for url, lines in iterator.items():
             for line in lines:
-                attributes, value = get_indicator_fields(line, url, tags, client)
+                attributes, value = get_indicator_fields(line, url, feedTags, client)
                 if value:
                     if 'lastseenbysource' in attributes.keys():
                         attributes['lastseenbysource'] = datestring_to_millisecond_timestamp(
@@ -361,8 +361,8 @@ def fetch_indicators_command(client, tags, itype, **kwargs):
 def get_indicators_command(client: Client, args):
     itype = args.get('indicator_type', client.indicator_type)
     limit = int(args.get('limit'))
-    tags = args.get('tags')
-    indicators_list = fetch_indicators_command(client, tags, itype)[:limit]
+    feedTags = args.get('feedTags')
+    indicators_list = fetch_indicators_command(client, feedTags, itype)[:limit]
     entry_result = camelize(indicators_list)
     hr = tableToMarkdown('Indicators', entry_result, headers=['Value', 'Type', 'Rawjson'])
     return hr, {}, indicators_list
@@ -389,7 +389,7 @@ def feed_main(feed_name, params=None, prefix=''):
         params = assign_params(**demisto.params())
     if 'feed_name' not in params:
         params['feed_name'] = feed_name
-    tags = argToList(demisto.params().get('tags'))
+    feedTags = argToList(demisto.params().get('feedTags'))
     client = Client(**params)
     command = demisto.command()
     if command != 'fetch-indicators':
@@ -403,15 +403,15 @@ def feed_main(feed_name, params=None, prefix=''):
     }
     try:
         if command == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, tags, params.get('indicator_type'))
+            indicators = fetch_indicators_command(client, feedTags, params.get('indicator_type'))
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
         else:
             args = demisto.args()
             args['feed_name'] = feed_name
-            if tags:
-                args['tags'] = tags
+            if feedTags:
+                feedTags['tags'] = feedTags
             readable_output, outputs, raw_response = commands[command](client, args)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
