@@ -45,7 +45,7 @@ def test_get_indicators_with_mapping():
             'fieldnames': ['value', 'a'],
             'indicator_type': 'IP',
             'mapping': {
-                'a': 'AAA'
+                'AAA': 'a'
             }
         }
     }
