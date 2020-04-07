@@ -25,8 +25,8 @@ try:
 except Exception:
     pass
 
-CONTENT_RELEASE_VERSION = '2.5.0'
-CONTENT_BRANCH_NAME = 'content_legacy_pack'
+CONTENT_RELEASE_VERSION = '0.0.0'
+CONTENT_BRANCH_NAME = 'master'
 IS_PY3 = sys.version_info[0] == 3
 
 # pylint: disable=undefined-variable
