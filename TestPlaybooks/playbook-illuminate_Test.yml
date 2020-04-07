@@ -1,22 +1,22 @@
 id: illuminate Integration Test
 version: -1
 name: illuminate Integration Test
-description: illuminate Integration testplaybook
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 99d17fdc-e2cd-405f-8dcd-c1283198acbc
+  '0':
+    id: '0'
+    taskid: dbb96c84-e0f0-4ec6-8914-0796203f389b
     type: start
     task:
-      id: 99d17fdc-e2cd-405f-8dcd-c1283198acbc
+      id: dbb96c84-e0f0-4ec6-8914-0796203f389b
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
     view: |-
       {
@@ -28,26 +28,25 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "1":
-    id: "1"
-    taskid: 7feada3a-589c-47a7-8597-45b7baed9efc
+  '1':
+    id: '1'
+    taskid: 0dc1e0d0-5d5e-423d-8cfe-9e9455858fa1
     type: regular
     task:
-      id: 7feada3a-589c-47a7-8597-45b7baed9efc
+      id: 0dc1e0d0-5d5e-423d-8cfe-9e9455858fa1
       version: -1
       name: DeleteContext
       script: DeleteContext
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
     separatecontext: false
     view: |-
       {
@@ -59,28 +58,25 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "2":
-    id: "2"
-    taskid: 94d880d2-b26d-4ac2-8bf2-a73d795377c2
+  '2':
+    id: '2'
+    taskid: 73744c8a-0154-460f-8e45-354e182e2694
     type: regular
     task:
-      id: 94d880d2-b26d-4ac2-8bf2-a73d795377c2
+      id: 73744c8a-0154-460f-8e45-354e182e2694
       version: -1
       name: domain
-      script: illuminate|||domain
+      script: '|||domain'
       type: regular
       iscommand: true
-      brand: illuminate
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       domain:
         simple: abc.com
-      long: {}
-      threshold: {}
     separatecontext: false
     view: |-
       {
@@ -92,25 +88,24 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "3":
-    id: "3"
-    taskid: c2af8198-d5ca-4c98-8f88-f7be31d6012d
+  '3':
+    id: '3'
+    taskid: 374956c8-5caa-4968-826a-f032ce5fb07d
     type: condition
     task:
-      id: c2af8198-d5ca-4c98-8f88-f7be31d6012d
+      id: 374956c8-5caa-4968-826a-f032ce5fb07d
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
-      "yes":
-      - "4"
+      'yes':
+      - '4'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isEqualNumber
           left:
@@ -119,7 +114,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2043650"
+              simple: '2043650'
     view: |-
       {
         "position": {
@@ -130,23 +125,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "4":
-    id: "4"
-    taskid: 9427ed8f-67ef-4cc0-8657-bb40a75eda6b
+  '4':
+    id: '4'
+    taskid: adc8b837-0f76-43b1-868f-89a7dfcbe403
     type: regular
     task:
-      id: 9427ed8f-67ef-4cc0-8657-bb40a75eda6b
+      id: adc8b837-0f76-43b1-868f-89a7dfcbe403
       version: -1
       name: email
-      script: illuminate|||email
+      script: '|||email'
       type: regular
       iscommand: true
-      brand: illuminate
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     scriptarguments:
       email:
         simple: 001toxic@gmail.com
@@ -161,25 +155,24 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "5":
-    id: "5"
-    taskid: 5a8f4147-b082-4aeb-88db-b77c14023c6a
+  '5':
+    id: '5'
+    taskid: 8376549e-07b6-459b-853b-92372dcad84e
     type: condition
     task:
-      id: 5a8f4147-b082-4aeb-88db-b77c14023c6a
+      id: 8376549e-07b6-459b-853b-92372dcad84e
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
-      "yes":
-      - "6"
+      'yes':
+      - '6'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isEqualNumber
           left:
@@ -188,7 +181,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "1637756"
+              simple: '1637756'
     view: |-
       {
         "position": {
@@ -199,28 +192,25 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "6":
-    id: "6"
-    taskid: 1adef7ee-d248-45cf-8bd9-aabb9b573eb2
+  '6':
+    id: '6'
+    taskid: a6e3a086-3ee3-45e2-8da2-0390574f9c23
     type: regular
     task:
-      id: 1adef7ee-d248-45cf-8bd9-aabb9b573eb2
+      id: a6e3a086-3ee3-45e2-8da2-0390574f9c23
       version: -1
       name: ip
-      script: illuminate|||ip
+      script: '|||ip'
       type: regular
       iscommand: true
-      brand: illuminate
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     scriptarguments:
       ip:
         simple: 0.154.17.105
-      long: {}
-      threshold: {}
     separatecontext: false
     view: |-
       {
@@ -232,25 +222,24 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "7":
-    id: "7"
-    taskid: 1c4413f3-bbb3-4d40-8f95-760ec5ded96a
+  '7':
+    id: '7'
+    taskid: 6e1c7992-2c20-40df-8f72-28de3c37a74e
     type: condition
     task:
-      id: 1c4413f3-bbb3-4d40-8f95-760ec5ded96a
+      id: 6e1c7992-2c20-40df-8f72-28de3c37a74e
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
-      "yes":
-      - "8"
+      'yes':
+      - '8'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isEqualNumber
           left:
@@ -259,7 +248,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "51469"
+              simple: '51469'
     view: |-
       {
         "position": {
@@ -270,29 +259,25 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "8":
-    id: "8"
-    taskid: 58aceeaf-2628-4eba-833e-69c54ddd97cd
+  '8':
+    id: '8'
+    taskid: 3271f89b-f0a4-41c1-8601-315c12e010ac
     type: regular
     task:
-      id: 58aceeaf-2628-4eba-833e-69c54ddd97cd
+      id: 3271f89b-f0a4-41c1-8601-315c12e010ac
       version: -1
       name: file
-      description: Queries the illuminate REST API and enriches the given file with
-        illuminate indicator data.
-      script: illuminate|||file
+      script: '|||file'
       type: regular
       iscommand: true
-      brand: illuminate
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     scriptarguments:
       file:
-        simple: "00000000000000000000000000000000"
-      long: {}
+        simple: '00000000000000000000000000000000'
     separatecontext: false
     view: |-
       {
@@ -304,25 +289,24 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "9":
-    id: "9"
-    taskid: 400dba72-583a-44ba-8f3e-1d842dae1674
+  '9':
+    id: '9'
+    taskid: 89b2d3c5-2baf-4719-89dc-9f9efd820ec0
     type: condition
     task:
-      id: 400dba72-583a-44ba-8f3e-1d842dae1674
+      id: 89b2d3c5-2baf-4719-89dc-9f9efd820ec0
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
-      "yes":
-      - "10"
+      'yes':
+      - '10'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isEqualNumber
           left:
@@ -331,7 +315,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "1527155"
+              simple: '1527155'
     view: |-
       {
         "position": {
@@ -342,23 +326,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "10":
-    id: "10"
-    taskid: 77190d09-6936-4179-8769-840ee551799c
+  '10':
+    id: '10'
+    taskid: d9327b78-64e3-41d9-8697-16ad884b8283
     type: regular
     task:
-      id: 77190d09-6936-4179-8769-840ee551799c
+      id: d9327b78-64e3-41d9-8697-16ad884b8283
       version: -1
       name: illuminate-enrich-string
       script: '|||illuminate-enrich-string'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     scriptarguments:
       string:
         simple: ??
@@ -373,25 +356,24 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "11":
-    id: "11"
-    taskid: 6af13c9a-f337-43fa-807f-083c25f43aab
+  '11':
+    id: '11'
+    taskid: a126bbf4-ebe8-4f4e-8dbe-3cfb8c42beef
     type: condition
     task:
-      id: 6af13c9a-f337-43fa-807f-083c25f43aab
+      id: a126bbf4-ebe8-4f4e-8dbe-3cfb8c42beef
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
-      "yes":
-      - "12"
+      'yes':
+      - '12'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isEqualNumber
           left:
@@ -400,7 +382,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "90548"
+              simple: '90548'
     view: |-
       {
         "position": {
@@ -411,23 +393,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "12":
-    id: "12"
-    taskid: 0c433982-8194-4c33-8d14-980e4efe6e0b
+  '12':
+    id: '12'
+    taskid: d442863c-60f9-410e-8359-f0c7c5339c79
     type: regular
     task:
-      id: 0c433982-8194-4c33-8d14-980e4efe6e0b
+      id: d442863c-60f9-410e-8359-f0c7c5339c79
       version: -1
       name: illuminate-enrich-ipv6
       script: '|||illuminate-enrich-ipv6'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "13"
+      - '13'
     scriptarguments:
       ip:
         simple: '16::'
@@ -442,25 +423,24 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "13":
-    id: "13"
-    taskid: 5d033663-e4cd-4865-8f81-7b88dd3fd5a6
+  '13':
+    id: '13'
+    taskid: 59c6a4b2-8add-42c3-8eb6-991b305c9c9d
     type: condition
     task:
-      id: 5d033663-e4cd-4865-8f81-7b88dd3fd5a6
+      id: 59c6a4b2-8add-42c3-8eb6-991b305c9c9d
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
-      "yes":
-      - "14"
+      'yes':
+      - '14'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isEqualNumber
           left:
@@ -469,7 +449,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2623838"
+              simple: '2623838'
     view: |-
       {
         "position": {
@@ -480,23 +460,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "14":
-    id: "14"
-    taskid: 9dead863-6d75-4caa-8939-1a42eba5cbc6
+  '14':
+    id: '14'
+    taskid: 46d89ec3-2317-43ee-8ce8-364b6ead0310
     type: regular
     task:
-      id: 9dead863-6d75-4caa-8939-1a42eba5cbc6
+      id: 46d89ec3-2317-43ee-8ce8-364b6ead0310
       version: -1
       name: illuminate-enrich-mutex
       script: '|||illuminate-enrich-mutex'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     scriptarguments:
       mutex:
         simple: ??
@@ -511,25 +490,24 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "15":
-    id: "15"
-    taskid: 43fa7d06-092a-413e-814a-2b3c76ebdc93
+  '15':
+    id: '15'
+    taskid: ad4d067a-c2e9-46df-83d3-e87489f41c50
     type: condition
     task:
-      id: 43fa7d06-092a-413e-814a-2b3c76ebdc93
+      id: ad4d067a-c2e9-46df-83d3-e87489f41c50
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
-      "yes":
-      - "16"
+      'yes':
+      - '16'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isEqualNumber
           left:
@@ -538,7 +516,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "95267"
+              simple: '95267'
     view: |-
       {
         "position": {
@@ -549,23 +527,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "16":
-    id: "16"
-    taskid: d08547f7-726e-4cff-859e-39b03fe20ff6
+  '16':
+    id: '16'
+    taskid: 7dacb1e3-205b-47b7-8ac3-8b2f43dc3031
     type: regular
     task:
-      id: d08547f7-726e-4cff-859e-39b03fe20ff6
+      id: 7dacb1e3-205b-47b7-8ac3-8b2f43dc3031
       version: -1
       name: illuminate-enrich-http-request
       script: '|||illuminate-enrich-http-request'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
     scriptarguments:
       http-request:
         simple: /~
@@ -580,25 +557,24 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "17":
-    id: "17"
-    taskid: 60ad71b3-dac0-434f-8d6e-5c34f929f4ee
+  '17':
+    id: '17'
+    taskid: d9536545-d430-4fef-8a2a-57683947fce2
     type: condition
     task:
-      id: 60ad71b3-dac0-434f-8d6e-5c34f929f4ee
+      id: d9536545-d430-4fef-8a2a-57683947fce2
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
-      "yes":
-      - "18"
+      'yes':
+      - '18'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isEqualNumber
           left:
@@ -607,7 +583,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2885382"
+              simple: '2885382'
     view: |-
       {
         "position": {
@@ -618,23 +594,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "18":
-    id: "18"
-    taskid: 50c33870-00a8-49dd-8823-104c0c9909cb
+  '18':
+    id: '18'
+    taskid: 571b2372-b82d-4d02-8bbc-69fe2fb44d1e
     type: regular
     task:
-      id: 50c33870-00a8-49dd-8823-104c0c9909cb
+      id: 571b2372-b82d-4d02-8bbc-69fe2fb44d1e
       version: -1
       name: url
-      script: illuminate|||url
+      script: '|||url'
       type: regular
       iscommand: true
-      brand: illuminate
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
     scriptarguments:
       url:
         simple: 104.218.120.128/check.aspx
@@ -649,25 +624,24 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "19":
-    id: "19"
-    taskid: bce55c05-94ed-48e7-87aa-6743133a6235
+  '19':
+    id: '19'
+    taskid: 301d0c48-c495-432e-8236-58df2af10e89
     type: condition
     task:
-      id: bce55c05-94ed-48e7-87aa-6743133a6235
+      id: 301d0c48-c495-432e-8236-58df2af10e89
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
-      "yes":
-      - "20"
+      'yes':
+      - '20'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isEqualNumber
           left:
@@ -676,7 +650,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2699554"
+              simple: '2699554'
     view: |-
       {
         "position": {
@@ -687,19 +661,18 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "20":
-    id: "20"
-    taskid: a5ccd8c3-ee49-4146-86c1-7bed4bce1f0e
+  '20':
+    id: '20'
+    taskid: 67460ec1-7dec-4657-84ac-762d17219906
     type: title
     task:
-      id: a5ccd8c3-ee49-4146-86c1-7bed4bce1f0e
+      id: 67460ec1-7dec-4657-84ac-762d17219906
       version: -1
       name: Test Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -711,8 +684,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -727,3 +698,5 @@ view: |-
   }
 inputs: []
 outputs: []
+description: ''
+fromversion: 1.8.7

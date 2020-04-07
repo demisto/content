@@ -2653,4 +2653,3 @@ def batch(iterable, batch_size=1):
         yield current_batch
         current_batch = not_batched[:batch_size]
         not_batched = not_batched[batch_size:]
-
