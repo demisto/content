@@ -16,7 +16,7 @@ from Tests.Marketplace.marketplace_services import Pack, PackStatus, GCPConfig, 
 from demisto_sdk.commands.common.tools import run_command, print_error, print_warning, print_color, LOG_COLORS
 
 
-def get_modified_packs(specific_packs="", private_packs_path=""):
+def get_modified_packs(specific_packs=""):
     """Detects and returns modified or new packs names.
 
     Checks the git difference between two commits, current and previous and greps only ones with prefix Packs/.
@@ -25,7 +25,6 @@ def get_modified_packs(specific_packs="", private_packs_path=""):
 
     Args:
         specific_packs (str): comma separated packs names or `All` for all available packs in content.
-        private_packs_path (str): Path for private packs to return.
 
     Returns:
         set: unique collection of modified/new packs names.
@@ -213,21 +212,41 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
 
 
 def get_private_packs(private_index_path):
+    """
+    Get the list of ID and price of the private packs.
+    Args:
+        private_index_path: The path for the index of the private packs.
+
+    Returns:
+        private_packs: A list of ID and price of the private packs.
+    """
     metadata_files = glob.glob(f"{private_index_path}/**/metadata.json")
     private_packs = []
 
     for metadata_file_path in metadata_files:
         with open(metadata_file_path, "r") as metadata_file:
-            file_data = metadata_file.read()
-
-        if file_data:
-            metadata = json.loads(file_data)
+            metadata = json.load(metadata_file)
+        if metadata:
             private_packs.append({
                 'id': metadata.get('id'),
                 'price': metadata.get('price')
             })
 
     return private_packs
+
+
+def add_private_packs_to_index(index_folder_path, private_index_path):
+    """
+    Add the private packs to the index folder.
+    Args:
+        index_folder_path: The index folder path.
+        private_index_path: The path for the index of the private packs.
+
+    """
+    for d in os.scandir(private_index_path):
+        if os.path.isdir(d.path):
+            update_index_folder(index_folder_path, d.name, d.path)
+    shutil.rmtree(private_index_path)
 
 
 def _build_summary_table(packs_input_list):
@@ -337,11 +356,13 @@ def main():
                                                        os.path.join(extract_destination_path, 'private'))
 
     # detect new or modified packs
-    modified_packs = get_modified_packs(specific_packs, private_index_path)
+    modified_packs = get_modified_packs(specific_packs)
     private_packs = get_private_packs(private_index_path)
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in modified_packs
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
+
+    add_private_packs_to_index(index_folder_path, private_index_path)
 
     for pack in packs_list:
         task_status, integration_images = pack.upload_integration_images(storage_bucket)
@@ -416,12 +437,6 @@ def main():
             continue
 
         pack.status = PackStatus.SUCCESS.name
-
-    # Add private packs to index
-    for d in os.scandir(private_index_path):
-        if os.path.isdir(d.path):
-            update_index_folder(index_folder_path, d.name, d.path)
-    shutil.rmtree(private_index_path)
 
     # finished iteration over content packs
     upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs)
