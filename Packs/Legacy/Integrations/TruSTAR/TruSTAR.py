@@ -3,6 +3,7 @@ from CommonServerPython import *
 
 
 ''' IMPORTS '''
+import base64
 import requests
 import time
 import trustar
@@ -309,6 +310,11 @@ def create_domain_ec(indicators, url, threshold):
         outputPaths['domain']: domain_ec,
         'TruSTAR.Domain(val.Value === obj.Value)': trustar_ec
     }
+
+
+def encode_cursor(page_size, page_number):
+    cursor = '{' + f'"pageSize":{page_size},"pageNumber":{page_number}' + '}'
+    return base64.b64encode(cursor.encode()).decode()
 
 
 ''' FUNCTIONS '''
@@ -651,12 +657,21 @@ def get_enclaves():
     return entry
 
 
-def get_all_phishing_indicators(normalized_triage_score, normalized_source_score, status):
-    cursor = "eyJwYWdlU2l6ZSI6MTAwLCJwYWdlTnVtYmVyIjowfQ=="  # Base64 for '{"pageSize":100,"pageNumber":0}'
-    response = ts.get_phishing_indicators_page(normalized_triage_score=normalized_triage_score,
-                                               normalized_source_score=normalized_source_score,
-                                               status=status,
-                                               cursor=cursor)
+def get_all_phishing_indicators(normalized_triage_score,
+                                normalized_source_score,
+                                from_time,
+                                to_time,
+                                page_size,
+                                page_number,
+                                status):
+    cursor = encode_cursor(page_size, page_number)
+    args = {'normalized_triage_score': normalized_triage_score,
+            'normalized_source_score': normalized_source_score,
+            'status': status,
+            'cursor': cursor,
+            'from_time': date_to_unix(from_time) if from_time else None,
+            'to_time': date_to_unix(to_time) if to_time else None}
+    response = ts.get_phishing_indicators_page(**args)
     indicators, ec = translate_indicators(response.items)
     if indicators:
         title = f'TruSTAR phishing indicators'
