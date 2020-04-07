@@ -300,11 +300,11 @@ def http_request(url_suffix, method='POST', data={}, err_operation=None):
 
 
 def validate_sort_and_order_and_artifact(sort: Optional[str], order: Optional[str], artifact_source: Optional[str])\
-        -> Optional[str]:
+        -> bool:
     """
     Function that validates the arguments combination.
-    sort and order arguments have come together.
-    Sort and order cant appear with artifact.
+    sort and order arguments must be defined together.
+    Sort and order can't appear with artifact.
     Args:
         sort: variable to sort by.
         order: the order which the results is ordered by.
@@ -313,16 +313,19 @@ def validate_sort_and_order_and_artifact(sort: Optional[str], order: Optional[st
         true if arguments are valid for the request, false otherwise.
     """
     if artifact_source == 'true' and sort:
-        return_error('Please remove or disable one of sort or artifact, As they are not supported in the api together.')
+        raise Exception('Please remove or disable one of sort or artifact,'
+                        ' As they are not supported in the api together.')
     elif sort and not order:
-        return_error('Please specify the order of sorting (Ascending or Descending).')
+        raise Exception('Please specify the order of sorting (Ascending or Descending).')
     elif order and not sort:
-        return_error('Please specify a field to sort by.')
-    return sort and order
+        raise Exception('Please specify a field to sort by.')
+    elif sort and order:
+        return True
+    return False
 
 
-def do_search(search_object: str, query: dict, scope: Optional[str], size: Optional[str] = None, sort: Optional[str] = None,
-              order: Optional[str] = None, err_operation: Optional[str] = None,
+def do_search(search_object: str, query: dict, scope: Optional[str], size: Optional[str] = None,
+              sort: Optional[str] = None, order: Optional[str] = None, err_operation: Optional[str] = None,
               artifact_source: Optional[str] = None) -> dict:
     """
     This function created the data to be sent in http request and sends it.
