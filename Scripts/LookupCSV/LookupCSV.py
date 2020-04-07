@@ -112,14 +112,10 @@ def main():
     output = {
         'LookupCSV': {
             'FoundResult': True if csv_data else False,
-            'Result': csv_data if csv_data else None
+            'Result': csv_data if csv_data else None,
+            'SearchValue': search_value
         }
     }
-
-    # If the result was not found we also set the "Missing" key in case the user wants to know which specific keys
-    # were not found.
-    if not csv_data:
-        output['LookupCSV']['Missing'] = search_value
 
     demisto.results({
         "Type": entryTypes["note"],
