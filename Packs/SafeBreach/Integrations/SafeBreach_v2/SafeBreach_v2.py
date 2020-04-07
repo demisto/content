@@ -73,10 +73,12 @@ IP_REGEX = r"^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$"
 
 
 class Client:
-    def __init__(self, base_url, account_id, api_key):
+    def __init__(self, base_url, account_id, api_key, proxies, verify):
         self.base_url = base_url
         self.account_id = account_id
         self.api_key = api_key
+        self.verify = verify
+        self.proxies = proxies
 
     def http_request(self, method, endpoint_url, url_suffix, body=None):
         full_url = urljoin(self.base_url, endpoint_url + '/v1/accounts/' + str(self.account_id) + url_suffix)
@@ -84,7 +86,9 @@ class Client:
             method,
             full_url,
             json=body,
-            headers={'Accept': 'application/json', 'x-apitoken': self.api_key}
+            headers={'Accept': 'application/json', 'x-apitoken': self.api_key},
+            verify=self.verify,
+            proxies=self.proxies
         )
 
     def rerun_at_safebreach(self, rerun_data):
@@ -622,42 +626,42 @@ def get_test_status_command(client: Client, args: Dict):
             Returns:
                None
             """
-    test_id = args.get('testId')
-    tries = 0
-    time.sleep(5)
-    response: Any
-    while tries < 2:
-        response = client.get_test_status(test_id)
-        if response.status_code == 200:
-            break
-        tries += 1
+    test_ids = argToList(args.get('testId'))
+    for test_id in test_ids:
+        tries = 0
+        response: Any
+        while tries < 3:
+            response = client.get_test_status(test_id)
+            if response.status_code == 200:
+                break
+            tries += 1
 
-    if response.status_code < 200 or response.status_code >= 300 or not response.json():
-        raise ValueError(f'Failed to get status of test: {test_id}')
-    try:
-        response = response.json()
-    except ValueError:
-        raise ValueError('Response body does not contain valid json')
-    t = {
-        'Test Id': response['id'],
-        'Name': response['matrixName'],
-        'Status': response['status'],
-        'Start Time': response['startTime'],
-        'End Time': response['endTime'],
-        'Total Simulation Number': response['blocked'] + response['notBlocked'] + response['internalFail']
-    }
-    readable_output = tableToMarkdown(name='Test Status', t=t, headers=list(t.keys()), removeNull=True)
-    safebreach_context = {
-        "SafeBreach.Test(val.Id == obj.Id)": {
-            'Id': response['id'],
+        if response.status_code < 200 or response.status_code >= 300 or not response.json():
+            raise ValueError(f'Failed to get status of test: {test_id}')
+        try:
+            response = response.json()
+        except ValueError:
+            raise ValueError('Response body does not contain valid json')
+        t = {
+            'Test Id': response['id'],
             'Name': response['matrixName'],
             'Status': response['status'],
-            'StartTime': response['startTime'],
-            'EndTime': response['endTime'],
-            'TotalSimulationNumber': response['blocked'] + response['notBlocked']
+            'Start Time': response['startTime'],
+            'End Time': response['endTime'],
+            'Total Simulation Number': response['blocked'] + response['notBlocked'] + response['internalFail']
         }
-    }
-    return_outputs(readable_output=readable_output, outputs=safebreach_context)
+        readable_output = tableToMarkdown(name='Test Status', t=t, headers=list(t.keys()), removeNull=True)
+        safebreach_context = {
+            "SafeBreach.Test(val.Id == obj.Id)": {
+                'Id': response['id'],
+                'Name': response['matrixName'],
+                'Status': response['status'],
+                'StartTime': response['startTime'],
+                'EndTime': response['endTime'],
+                'TotalSimulationNumber': response['blocked'] + response['notBlocked']
+            }
+        }
+        return_outputs(readable_output=readable_output, outputs=safebreach_context)
 
 
 def get_safebreach_simulation_command(client: Client, args: Dict):
@@ -843,9 +847,11 @@ def main():
     url = fix_url(params.get('url'))
     insight_category_filter = params.get('insightCategory')
     insight_data_type_filter = params.get('insightDataType')
-
+    verify_certificate = not params.get('insecure', False)
+    proxies = handle_proxy()
     try:
-        client = Client(base_url=url, account_id=account_id, api_key=api_key)
+        client = Client(base_url=url, account_id=account_id, api_key=api_key, proxies=proxies,
+                        verify=verify_certificate)
 
         if command == 'safebreach-get-insights':
             get_insights_command(client, demisto.args(), True)

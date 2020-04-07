@@ -216,3 +216,5 @@ outputs:
 - contextPath: SafeBreach.Insight.AttacksCount
   description: List of all insight related SafeBreach attack ids
 fromversion: 5.5.0
+tests:
+  - No Test
