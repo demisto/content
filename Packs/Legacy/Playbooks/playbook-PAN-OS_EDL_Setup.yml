@@ -731,3 +731,5 @@ inputs:
   required: false
   description: The device group to work on. Exists only in panorama!
 outputs: []
+tests:
+  - No test

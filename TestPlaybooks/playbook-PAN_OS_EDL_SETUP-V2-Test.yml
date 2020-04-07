@@ -1,17 +1,16 @@
-id: PAN-OS EDL Setup Test
+id: PAN-OS EDL Setup V2 Test
 version: -1
-name: PAN-OS EDL Setup Test
+name: PAN-OS EDL Setup V2 Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 9a5bf4d8-203c-4163-8f01-6df980d0157b
+    taskid: e0fd3092-abc1-401e-8b67-d12e10260b81
     type: start
     task:
-      id: 9a5bf4d8-203c-4163-8f01-6df980d0157b
+      id: e0fd3092-abc1-401e-8b67-d12e10260b81
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -30,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: d72305c8-a58b-43f8-8abb-62c639b8660e
+    taskid: 28e6570a-1e74-42dd-8714-e563882060bb
     type: regular
     task:
-      id: d72305c8-a58b-43f8-8abb-62c639b8660e
+      id: 28e6570a-1e74-42dd-8714-e563882060bb
       version: -1
       name: find external file
       description: Gets metadata for an external file.
@@ -68,10 +67,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 404b26b1-39c7-4414-8763-f629234c6c8e
+    taskid: 0f59d93e-a791-4b81-8ef0-38accfb7c010
     type: condition
     task:
-      id: 404b26b1-39c7-4414-8763-f629234c6c8e
+      id: 0f59d93e-a791-4b81-8ef0-38accfb7c010
       version: -1
       name: is the external file exists
       description: checks if the external file exists
@@ -114,12 +113,13 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: b6d80c5b-a406-46d2-81f8-52989581ad84
+    taskid: c0c11e5f-61c7-45d7-8524-8aee93ffd6ab
     type: title
     task:
-      id: b6d80c5b-a406-46d2-81f8-52989581ad84
+      id: c0c11e5f-61c7-45d7-8524-8aee93ffd6ab
       version: -1
       name: Done
+      description: '-'
       type: title
       iscommand: false
       brand: ""
@@ -136,10 +136,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 0f82e89f-b1cf-4f81-8ebf-4abf6966b9e3
+    taskid: d73bf7a9-df9a-4c6c-8717-b3665339cad3
     type: regular
     task:
-      id: 0f82e89f-b1cf-4f81-8ebf-4abf6966b9e3
+      id: d73bf7a9-df9a-4c6c-8717-b3665339cad3
       version: -1
       name: Dump internal list content to context
       description: Dumps (copies) instance context to either the incident context
@@ -168,10 +168,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: da28374c-d52c-42d3-86b6-ce3ff6c7f80a
+    taskid: c43e3754-35c8-4edc-8314-228d9d96883a
     type: condition
     task:
-      id: da28374c-d52c-42d3-86b6-ce3ff6c7f80a
+      id: c43e3754-35c8-4edc-8314-228d9d96883a
       version: -1
       name: Check if internal list exists
       description: Checks whether the internal list exists
@@ -206,10 +206,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: a7788c2e-d570-4ea2-80f2-c5bfb287ea8b
+    taskid: ef65e600-8264-4b02-8c54-f057ee66953d
     type: regular
     task:
-      id: a7788c2e-d570-4ea2-80f2-c5bfb287ea8b
+      id: ef65e600-8264-4b02-8c54-f057ee66953d
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -219,7 +219,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "13"
     scriptarguments:
       all:
         simple: "yes"
@@ -240,10 +240,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 2767000c-6685-4759-8302-b87433c0edfd
+    taskid: 5646efaf-932d-47ea-8a5c-42bcad9c14c6
     type: regular
     task:
-      id: 2767000c-6685-4759-8302-b87433c0edfd
+      id: 5646efaf-932d-47ea-8a5c-42bcad9c14c6
       version: -1
       name: Dump internal list content to context
       description: Dumps (copies) instance context to either the incident context
@@ -273,10 +273,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 058e88f5-ef59-4269-8128-194ca34553e2
+    taskid: 0d9c5e19-f678-4bb4-8f79-f1dcca3336e4
     type: regular
     task:
-      id: 058e88f5-ef59-4269-8128-194ca34553e2
+      id: 0d9c5e19-f678-4bb4-8f79-f1dcca3336e4
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -307,10 +307,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 82a21cf1-fcf0-49ed-861e-cfb7f3cae2a7
+    taskid: 622ea9cc-d6ff-4f93-87e4-179ac8098760
     type: condition
     task:
-      id: 82a21cf1-fcf0-49ed-861e-cfb7f3cae2a7
+      id: 622ea9cc-d6ff-4f93-87e4-179ac8098760
       version: -1
       name: Check if internal list exists
       description: Checks whether the internal list exists
@@ -343,16 +343,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "11":
-    id: "11"
-    taskid: 74e187e3-9524-4045-8019-fe7938b3ffce
+  "13":
+    id: "13"
+    taskid: c45e1edf-4a7f-4f23-87be-95b027ef6366
     type: playbook
     task:
-      id: 74e187e3-9524-4045-8019-fe7938b3ffce
+      id: c45e1edf-4a7f-4f23-87be-95b027ef6366
       version: -1
-      name: PAN-OS EDL Setup
-      description: ""
-      playbookName: PAN-OS EDL Setup
+      name: PAN-OS EDL Setup v2
+      description: '-'
+      playbookName: PAN-OS EDL Setup v2
       type: playbook
       iscommand: false
       brand: ""
@@ -363,10 +363,14 @@ tasks:
       action-type:
         simple: drop
       auto-commit:
-        simple: "No"
-      inbound-or-outbound-rule: {}
+        simple: "Yes"
+      device-group: {}
+      inbound-or-outbound-rule:
+        simple: outbound
       ioc-type:
         simple: IP
+      list-items:
+        simple: 1.1.1.1
       list-name:
         simple: ${inputs.list-name}
       log-forwarding-object-name: {}
@@ -388,7 +392,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1060
+          "y": 1070
         }
       }
     note: false
