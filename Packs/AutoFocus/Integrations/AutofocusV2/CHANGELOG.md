@@ -1,6 +1,6 @@
 ## [Unreleased]
-Added to ***autofocus-search-samples*** command a new argument, artifact which is set true by default
-Added to ***autofocus-samples-search-results*** artifacts results to context and divided human readable to a new entry for each sample.
+Added to ***autofocus-search-samples*** command the *artifact* argument which is set true by default and retrieves the artifacts of the sample.
+
 
 ## [20.3.4] - 2020-03-30
   - Fixed an issue where *get_search_results* mistakenly returns "no results".

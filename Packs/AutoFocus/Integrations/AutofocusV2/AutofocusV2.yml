@@ -137,7 +137,7 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: 'true'
-      description: 'Set True when artifacts of samples are wanted '
+      description: 'Whether artifacts of samples should be returned.'
       isArray: false
       name: artifact
       predefined:

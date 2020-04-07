@@ -1,3 +1,5 @@
+from typing import Optional
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -297,9 +299,21 @@ def http_request(url_suffix, method='POST', data={}, err_operation=None):
     return parse_response(res, err_operation)
 
 
-def validate_sort_and_order_and_artifact(sort, order, artifact_source):
+def validate_sort_and_order_and_artifact(sort: Optional[str], order: Optional[str], artifact_source: Optional[str])\
+        -> Optional[str]:
+    """
+    Function that validates the arguments combination.
+    sort and order arguments have come together.
+    Sort and order cant appear with artifact.
+    Args:
+        sort: variable to sort by.
+        order: the order which the results is ordered by.
+        artifact_source: true if artifacts are needed and false otherwise.
+    Returns:
+        true if arguments are valid for the request, false otherwise.
+    """
     if artifact_source == 'true' and sort:
-        return_error('artifact and sort are not supported for scan and scroll together, Please Remove one.')
+        return_error('Please remove or disable one of sort or artifact, As they are not supported in the api together.')
     elif sort and not order:
         return_error('Please specify the order of sorting (Ascending or Descending).')
     elif order and not sort:
@@ -307,7 +321,23 @@ def validate_sort_and_order_and_artifact(sort, order, artifact_source):
     return sort and order
 
 
-def do_search(search_object, query, scope, size=None, sort=None, order=None, err_operation=None, artifact_source=None):
+def do_search(search_object: str, query: dict, scope: Optional[str], size: Optional[str] = None, sort: Optional[str] = None,
+              order: Optional[str] = None, err_operation: Optional[str] = None,
+              artifact_source: Optional[str] = None) -> dict:
+    """
+    This function created the data to be sent in http request and sends it.
+    Args:
+        search_object: Type of search sessions or samples.
+        query: Query based on conditions specified within this object.
+        scope:  Scope of the search. Only available and required for: samples. e.g. Public, Global, Private.
+        size: Number of results to provide.
+        sort: Sort based on the provided artifact.
+        order: How to display sort results in ascending or descending order.
+        err_operation: String error which specificed which command failed.
+        artifact_source: Whether artifacts are wanted or not.
+    Returns:
+        raw response of the http request.
+    """
     path = '/samples/search' if search_object == 'samples' else '/sessions/search'
     data = {
         'query': query,
@@ -326,7 +356,23 @@ def do_search(search_object, query, scope, size=None, sort=None, order=None, err
     return result
 
 
-def run_search(search_object, query, scope=None, size=None, sort=None, order=None, artifact_source=None):
+def run_search(search_object: str, query: str, scope: Optional[str] = None, size: str = None, sort: str = None,
+               order: str = None, artifact_source: str = None) -> dict:
+    """
+    This function searches the relevent search and returns search info for result command.
+    Args:
+        search_object: Type of search sessions or samples.
+        query: Query based on conditions specified within this object.
+        scope:  Scope of the search. Only available and required for: samples. e.g. Public, Global, Private.
+        size: Number of results to provide.
+        sort: Sort based on the provided artifact.
+        order: How to display sort results in ascending or descending order.
+        artifact_source: Whether artifacts are wanted or not.
+    Returns:
+        dict of response for result commands.
+
+
+    """
     result = do_search(search_object, query=json.loads(query), scope=scope, size=size, sort=sort, order=order,
                        artifact_source=artifact_source, err_operation='Search operation failed')
     in_progress = result.get('af_in_progress')
@@ -1176,10 +1222,19 @@ def samples_search_results_command():
                 return_outputs(readable_output=hr, outputs=context, raw_response=results)
 
 
-def samples_search_result_hr(result, status):
-    Artifact = result.pop('Artifact')
+def samples_search_result_hr(result: dict, status: str) -> str:
+    """
+    Function which created a human readable for a specific entry which contains two tables, one for the result's
+    values and another for the artifacts that are related to it.
+    Args:
+        result: one result of the search sample command.
+        status: status of result command.
+    Returns:
+        human readable of two tables for this result.
+    """
+    artifact = result.pop('Artifact')
     updated_artifact = []
-    for indicator in Artifact:
+    for indicator in artifact:
         # Filter on returned indicator types, as we do not support Mutex and User Agent.
         if 'Mutex' not in indicator.get('indicator_type') and 'User Agent' not in indicator.get('indicator_type'):
             updated_artifact.append(indicator)
