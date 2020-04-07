@@ -14,6 +14,7 @@
   "EntryContext": {
     "LookupCSV": {
       "FoundResult": true,
+      "SearchValue": "4.4.4.4",
       "Result": [
         {
           "sourceIP": "4.4.4.4",
