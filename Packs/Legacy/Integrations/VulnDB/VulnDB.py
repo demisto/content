@@ -42,9 +42,10 @@ class Client(BaseClient):
         res = self._http_request("GET",
                                  url_suffix=url_suffix,
                                  params=params)
+        # The details could reside in either error or details, not both
         for error_attribute in ['error', 'details']:
             if error_attribute in res:
-                return_error(res[error_attribute])
+                raise DemistoException(res[error_attribute])
         return res
 
 
@@ -383,7 +384,7 @@ def vulndb_get_cve_command(args: dict, client: Client):
 def main():
     params = demisto.params()
     # Remove trailing slash to prevent wrong URL path to service
-    api_url = params['api_url'].rstrip('/')
+    api_url = params['api_url']
     client_id = params['client_id']
     client_secret = params['client_secret']
     use_ssl = not params.get('insecure', False)
@@ -391,8 +392,7 @@ def main():
     client = Client(proxy, use_ssl, api_url, client_id, client_secret)
     args = demisto.args()
     command = demisto.command()
-    LOG('Command being called is %s' % (demisto.command()))
-
+    LOG(f'Command being called is {command}')
     try:
         if command == 'test-module':
             # This is the call made when pressing the integration test button.
@@ -421,7 +421,7 @@ def main():
         elif command == 'cve':
             vulndb_get_cve_command(args, client)
     except Exception as e:
-        error_message = str(e)
+        error_message = f'Failed to execute {command} command. Error: {str(e)}'
         return_error(error_message)
 
 
