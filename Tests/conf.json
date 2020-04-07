@@ -568,7 +568,7 @@
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama",
             "playbookID": "Panorama Query Logs - Test",
-            "timeout": 1000,
+            "timeout": 1500,
             "nightly": true
         },
         {
@@ -1027,6 +1027,12 @@
             "integrations": "okta",
             "playbookID": "okta_test_playbook",
             "timeout": 240
+        },
+        {
+            "integrations": "Okta v2",
+            "playbookID": "OktaV2-Test",
+            "nightly": true,
+            "timeout": 300
         },
         {
             "playbookID": "Test filters & transformers scripts"
@@ -1988,7 +1994,7 @@
             "timeout": 1000
         },
         {
-            "playbookID": "PAN-OS EDL Setup Test",
+            "playbookID": "PAN-OS EDL Setup V2 Test",
             "integrations": ["Panorama", "palo_alto_networks_pan_os_edl_management"],
             "instance_names": "palo_alto_panorama",
             "timeout": 1000
@@ -2278,7 +2284,7 @@
         {
             "playbookID": "PAN-OS Query Logs For Indicators Test",
             "fromversion": "4.5.0",
-            "timeout": 600,
+            "timeout": 1500,
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama"
         },
