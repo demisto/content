@@ -286,7 +286,6 @@ def create_incident(raw_incident):
         raw_incident: The data in the raw incident processed from raw events and Threat Parse from IllusionBLACK
     Returns: Demisto incident dict
     """
-    LOG(f"Severity is {raw_incident['severity']}")
     demisto.info(f"Severity is {raw_incident['severity']}")
     return {
         "name": raw_incident["title"],
@@ -311,7 +310,7 @@ def fetch_incidents(first_fetch, client):
     else:
         last_run, _ = parse_date_range(first_fetch, utc=False)
     if now - last_run < timedelta(minutes=5):
-        return
+        return []
     from_time = last_run.replace(microsecond=0).isoformat()
     to_time = now.replace(microsecond=0).isoformat()
     demisto.debug(f"IllusionBLACK: Getting raw events from {from_time} to {to_time}")
