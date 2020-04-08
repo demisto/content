@@ -2,6 +2,9 @@ import demistomock as demisto
 from CommonServerPython import *
 
 
+
+
+
 ''' IMPORTS '''
 import base64
 import requests
@@ -661,10 +664,8 @@ def get_all_phishing_indicators(normalized_triage_score,
                                 normalized_source_score,
                                 from_time,
                                 to_time,
-                                page_size,
-                                page_number,
                                 status):
-    cursor = encode_cursor(page_size, page_number)
+    cursor = encode_cursor(1000, 0)
     args = {'normalized_triage_score': normalized_triage_score,
             'normalized_source_score': normalized_source_score,
             'status': status,
@@ -672,6 +673,7 @@ def get_all_phishing_indicators(normalized_triage_score,
             'from_time': date_to_unix(from_time) if from_time else None,
             'to_time': date_to_unix(to_time) if to_time else None}
     response = ts.get_phishing_indicators_page(**args)
+    demisto.results(response)
     indicators, ec = translate_indicators(response.items)
     if indicators:
         title = f'TruSTAR phishing indicators'
@@ -686,6 +688,36 @@ def get_all_phishing_indicators(normalized_triage_score,
         return entry
     return 'No phishing indicators were found.'
 
+
+def get_phishing_submissions(normalized_triage_score,
+                             from_time,
+                             to_time,
+                             status):
+    cursor = encode_cursor(1000, 0)
+    args = {'normalized_triage_score': normalized_triage_score,
+            'status': status,
+            'cursor': cursor,
+            'from_time': date_to_unix(from_time) if from_time else None,
+            'to_time': date_to_unix(to_time) if to_time else None}
+    response = ts.get_phishing_submissions_page(**args)
+    demisto.results(response)
+    if not response.items:
+        return 'No phishing submissions were found.'
+    # indicators, ec = translate_indicators(response.items)
+    # if indicators:
+    #     title = f'TruSTAR phishing indicators'
+    #     entry = {
+    #         'Type': entryTypes['note'],
+    #         'Contents': indicators,
+    #         'ContentsFormat': formats['json'],
+    #         'ReadableContentsFormat': formats['markdown'],
+    #         'HumanReadable': tableToMarkdown(title, indicators),
+    #         'EntryContext': ec
+    #     }
+    #     return entry
+
+def set_triage_status(submission_id, status):
+    response = ts.mark_triage_status(submission_id, status)
 
 ''' EXECUTION CODE '''
 config = {
@@ -782,8 +814,21 @@ try:
     elif demisto.command() == 'trustar-get-all-phishing-indicators':
         nts = argToList(demisto.args().get('normalized_triage_score'))
         nss = argToList(demisto.args().get('normalized_source_score'))
+        ft = demisto.args().get('from_time')
+        tt = demisto.args().get('to_time')
         st = argToList(demisto.args().get('status'))
-        demisto.results(get_all_phishing_indicators(nts, nss, st))
+        demisto.results(get_all_phishing_indicators(nts, nss, ft, tt, st))
+    elif demisto.command() == 'tustar-get-phishing-submissions':
+        nts = argToList(demisto.args().get('normalized_triage_score'))
+        ft = demisto.args().get('from_time')
+        tt = demisto.args().get('to_time')
+        st = argToList(demisto.args().get('status'))
+        demisto.results(get_phishing_submissions(nts, ft, tt, st))
+    elif demisto.command() == 'trustar-set-triage-status':
+        demisto.results(set_triage_status(demisto.args().get('submission_id'),
+                                          demisto.args().get('status')))
+
+
 
 except Exception as e:
     return_error(str(e))
