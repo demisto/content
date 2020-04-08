@@ -1,11 +1,11 @@
 {
-	"brandName": "Smokescreen_IllusionBLACK",
+	"brandName": "Smokescreen IllusionBLACK",
 	"custom": true,
 	"defaultIncidentType": "",
 	"id": "b0b032ca-24fc-406b-8927-9081d7c236fa",
 	"incidentSamples": [],
 	"instanceId": "fa293f56-6aef-4435-8d21-ca1f5674054f",
-	"instanceName": "Smokescreen_IllusionBLACK_instance_1",
+	"instanceName": "Smokescreen IllusionBLACK_instance_1",
 	"isDefault": false,
 	"keyTypeMap": {
 		"IllusionBLACK": "IllusionBLACK"

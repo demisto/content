@@ -1,6 +1,6 @@
-id: Smokescreen_IllusionBLACK-Test
+id: Smokescreen IllusionBLACK-Test
 version: -1
-name: Smokescreen_IllusionBLACK-Test
+name: Smokescreen IllusionBLACK-Test
 starttaskid: '0'
 tasks:
   '0':
@@ -308,7 +308,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: IllusionBlack.Events
+              simple: IllusionBlack.Event
             iscontext: true
     view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2400\n  }\n}"
     note: false
@@ -359,7 +359,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Smokescreen_IllusionBLACK
+              simple: Smokescreen IllusionBLACK
       - - operator: isEqualString
           left:
             value:

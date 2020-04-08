@@ -1,6 +1,6 @@
 category: Deception
 commonfields:
-  id: Smokescreen_IllusionBLACK
+  id: Smokescreen IllusionBLACK
   version: -1
 configuration:
 - defaultvalue: https://example.net
@@ -35,7 +35,7 @@ description: Smokescreen IllusionBLACK is a deception based threat defence platf
   lateral movement, malware-less attacks, social engineering, Man-in-the-Middle attacks,
   and ransomware in real-time.
 display: Smokescreen IllusionBLACK
-name: Smokescreen_IllusionBLACK
+name: Smokescreen IllusionBLACK
 script:
   commands:
   - deprecated: false
