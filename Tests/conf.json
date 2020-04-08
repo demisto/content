@@ -985,7 +985,8 @@
                 "Mail Sender (New)",
                 "Gmail"
             ],
-            "playbookID": "Mail Sender (New) Test"
+            "playbookID": "Mail Sender (New) Test",
+            "instance_names": ["Mail_Sender_(New)_STARTTLS"]
         },
         {
             "playbookID": "buildewsquery_test"
@@ -2741,6 +2742,7 @@
         "Cymulate": "Partner didn't provided test playbook",
 
         "_comment": "~~~ QUOTA ISSUES ~~~",
+        "WildFire-v2": "Issue 23450",
         "Google Chronicle Backstory": "Issue 22720",
         "XFE_v2": "Issue 22715",
         "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
