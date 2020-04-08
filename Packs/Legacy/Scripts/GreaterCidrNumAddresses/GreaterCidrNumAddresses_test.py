@@ -12,8 +12,3 @@ def test_cidr_network_addresses_greater_from_const(cidr: str, min_num_addresses:
     assert cidr_network_addresses_greater_from_const(ip_cidr=cidr,
                                                      min_num_addresses=min_num_addresses) == expected
 # Drops the mic disable-secrets-detection-end
-
-
-
-
-
