@@ -312,7 +312,8 @@ def fetch_incidents(first_fetch, client):
     if "last_run" in demisto_last_run:
         last_run = datetime.fromisoformat(demisto_last_run["last_run"])
     else:
-        last_run, _ = parse_date_range(first_fetch, utc=False)
+        last_run, _ = parse_date_range(first_fetch)
+        last_run = last_run.replace(tzinfo=timezone.utc)
     if now - last_run < timedelta(minutes=5):
         return []
     from_time = last_run.replace(microsecond=0).isoformat()
