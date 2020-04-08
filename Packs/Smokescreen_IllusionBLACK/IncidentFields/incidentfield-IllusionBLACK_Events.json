@@ -9,7 +9,7 @@
 	"closeForm": false,
 	"columns": [
 		{
-			"displayName": "Column Header 1",
+			"displayName": "",
 			"fieldCalcScript": "",
 			"isDefault": true,
 			"isReadOnly": false,
@@ -21,7 +21,7 @@
 			"width": 150
 		},
 		{
-			"displayName": "Column Header 2",
+			"displayName": "",
 			"fieldCalcScript": "",
 			"isDefault": true,
 			"isReadOnly": false,
@@ -33,7 +33,7 @@
 			"width": 150
 		},
 		{
-			"displayName": "Column Header 3",
+			"displayName": "",
 			"fieldCalcScript": "",
 			"isDefault": true,
 			"isReadOnly": false,
