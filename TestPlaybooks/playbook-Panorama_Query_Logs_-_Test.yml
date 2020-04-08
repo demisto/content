@@ -200,10 +200,10 @@ tasks:
       action: {}
       addr-dst: {}
       addr-src:
-        simple: '["1.1.1.1", "2.2.2.2", "192.168.1.11"]'
+        simple: '["10.2.2.20"]'
       filedigest: {}
       log_type:
-        simple: traffic
+        simple: threat
       port-dst: {}
       query: {}
       rule: {}
@@ -246,10 +246,10 @@ tasks:
       addr-dst: {}
       addr-src: {}
       ip:
-        simple: '["1.1.1.1", "2.2.2.2", "192.168.1.11"]'
+        simple: '["10.2.2.20"]'
       filedigest: {}
       log_type:
-        simple: traffic
+        simple: wildfire
       port-dst: {}
       query: {}
       rule: {}
