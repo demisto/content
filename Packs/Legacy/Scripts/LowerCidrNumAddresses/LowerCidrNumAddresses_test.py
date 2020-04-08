@@ -1,5 +1,6 @@
 import pytest
 
+
 # About the drop some mean regex right now disable-secrets-detection-start
 @pytest.mark.parametrize(argnames="cidr, max_num_addresses, expected",
                          argvalues=[('192.168.0.0/24', 257, True),

@@ -1,6 +1,7 @@
 import pytest
 import json
 
+
 # About the drop some mean regex right now disable-secrets-detection-start
 @pytest.mark.parametrize(argnames="cidr, expected_ec",
                          argvalues=[('192.168.0.4/24', 'ipv4_cidr.json'),
