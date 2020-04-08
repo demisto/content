@@ -597,4 +597,4 @@ Verify if the user has the necessary permissions to execute the operation
 
 ## Possible Errors (DO NOT PUBLISH ON ZENDESK):
 * "Unknown command " + command
-* str(e
+* Generic error
