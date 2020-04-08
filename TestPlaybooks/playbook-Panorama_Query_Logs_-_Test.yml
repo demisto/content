@@ -200,7 +200,7 @@ tasks:
       action: {}
       addr-dst: {}
       addr-src:
-        simple: '["10.2.2.20"]'
+        simple:
       filedigest: {}
       log_type:
         simple: threat
@@ -246,7 +246,7 @@ tasks:
       addr-dst: {}
       addr-src: {}
       ip:
-        simple: '["10.2.2.20"]'
+        simple:
       filedigest: {}
       log_type:
         simple: wildfire
