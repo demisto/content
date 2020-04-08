@@ -73,6 +73,10 @@ script:
     description: Check if a host or IP Address is a network decoy
     execution: false
     name: illusionblack-is-host-decoy
+    outputs:
+    - contextPath: IllusionBlack.IsHostDecoy
+      description: A mapping of host and whether it's an IllusionBLACK network decoy
+      type: Unknown
   - arguments:
     - default: false
       description: Active Directory user name to check
@@ -84,6 +88,10 @@ script:
     description: Check if Active Directory user is a decoy
     execution: false
     name: illusionblack-is-user-decoy
+    outputs:
+    - contextPath: IllusionBlack.IsUserDecoy
+      description: A mapping of user and whether it's an IllusionBLACK AD user decoy
+      type: Unknown
   - arguments:
     - default: false
       description: 'Subdomain to check (For example: dec.smokescreen.io)'
@@ -95,6 +103,10 @@ script:
     description: Check if a subdomain is a Threat Intel decoy
     execution: false
     name: illusionblack-is-subdomain-decoy
+    outputs:
+    - contextPath: IllusionBlack.IsSubdomainDecoy
+      description: A mapping of subdomain and whether it's an IllusionBLACK TI decoy
+      type: Unknown
   - arguments:
     - default: false
       description: Number of events. It can be between 1 and 1000.

@@ -208,19 +208,19 @@ def test_get_ti_decoys(mocker):
     assert len(CLIENT.get_ti_decoys()[2]) == 1
 
 
-@pytest.mark.parametrize("host, output", [("FOO", True), ("random", False)])
+@pytest.mark.parametrize("host, output", [("FOO", "True"), ("random", "False")])
 def test_is_host_decoy(mocker, host, output):
     mocker.patch("Smokescreen_IllusionBLACK.Client._http_request", mock_http_request)
-    assert CLIENT.is_host_decoy(host) is output
+    assert CLIENT.is_host_decoy(host)[0] is output
 
 
-@pytest.mark.parametrize("user, output", [("foo_bar", True), ("random", False)])
+@pytest.mark.parametrize("user, output", [("foo_bar", "True"), ("random", "False")])
 def test_is_user_decoy(mocker, user, output):
     mocker.patch("Smokescreen_IllusionBLACK.Client._http_request", mock_http_request)
-    assert CLIENT.is_user_decoy(user) is output
+    assert CLIENT.is_user_decoy(user)[0] is output
 
 
-@pytest.mark.parametrize("subdomain, output", [("experience.illusionblack.com", True), ("random", False)])
+@pytest.mark.parametrize("subdomain, output", [("experience.illusionblack.com", "True"), ("random", "False")])
 def test_is_subdomain_decoy(mocker, subdomain, output):
     mocker.patch("Smokescreen_IllusionBLACK.Client._http_request", mock_http_request)
-    assert CLIENT.is_subdomain_decoy(subdomain) is output
+    assert CLIENT.is_subdomain_decoy(subdomain)[0] is output
