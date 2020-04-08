@@ -65,7 +65,7 @@ args:
   defaultValue: '*'
   description: 'A comma-separated list of email tags values and mapping. The script
     considers only the tags specified in this field. You can map label to another
-    value by using this format: LABEL:MAPPED_LABEL. For example, for 
+    value by using this format: LABEL:MAPPED_LABEL. For example, for
     4 values in email tag: malicious, credentials harvesting, inner communitcation,
     external legit email, unclassified. While training, we want to ignore "unclassified"
     tag, and refer to "credentials harvesting" as "malicious" too. Also, we want to     merge
@@ -128,6 +128,29 @@ args:
   predefined:
   - 'true'
   - 'false'
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: Whether to return a file that contains the model's predictions on the test
+    set. Can be "true" or "false". Default is "false".
+  isArray: false
+  name: returnPredictionsOnTestSet
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+- default: false
+  defaultValue: emailsubject|name,emailbody|emailbodyhtml
+  description: |-
+    A comma-separated list of incident fields names with the unprocessed text.
+    You can also use "|" if you want to choose the first non-empty value from a list of fields.
+  isArray: false
+  name: originalTextFields
+  predefined:
+  - ''
   required: false
   secret: false
 comment: Train a machine learning text classifier.
