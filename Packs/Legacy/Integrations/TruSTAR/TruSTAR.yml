@@ -622,36 +622,43 @@ script:
     description: Check Domain reputation on TruStar
   - name: tustar-get-phishing-submissions
     arguments:
-    - name: from
-      description: 'Unix timestamp: start of time window (milliseconds since epoch)
-        (default: 24 hours, max: 2 weeks back)'
-    - name: to
-      description: 'Unix timestamp: end of time window (milliseconds since epoch)
-        (default: currentTime)'
-    - name: normalizedTriageScore
-      description: score of email submission
+    - name: normalized_triage_score
+      description: Score of email submission
       isArray: true
-      defaultValue: -1,0,1,2,3
-    - name: enclaveIds
-      description: 'comma-separated list of enclave ids (defaults: all of user’s enclaves)'
-      isArray: true
+      defaultValue: 0,1,2,3
+    - name: from_time
+      description: Start of time window (defaults to 7 days ago) (YYYY-MM-DD HH:MM:SS)
+    - name: to_time
+      description: End of time window (defaults to current time) (YYYY-MM-DD HH:MM:SS)
     - name: status
       description: a list of triage statuses for submissions; only email submissions
         marked with atleast one of these statuses will be returned
-      defaultValue: '"UNRESOLVED”'
+      isArray: true
+      defaultValue: UNRESOLVED
+    outputs:
+    - contextPath: TruSTAR.Phishing.submissionId
+      description: ""
+      type: string
+    - contextPath: TruSTAR.Phishing.title
+      type: string
+    - contextPath: TruSTAR.Phishing.normalizedTriageScore
+      type: number
+    - contextPath: TruSTAR.Phishing.context
     description: Fetches all phishing submissions that fit the given criteria
   - name: trustar-set-triage-status
     arguments:
-    - name: submissionId
+    - name: submission_id
       required: true
       description: ID of the email submission
     - name: status
+      required: true
       auto: PREDEFINED
       predefined:
       - CONFIRMED
       - IGNORED
       description: Submission status
-    description: Marks a phishing email submission with one of the phishing namespace tags
+    description: Marks a phishing email submission with one of the phishing namespace
+      tags
   - name: trustar-get-all-phishing-indicators
     arguments:
     - name: normalized_source_score
@@ -666,12 +673,6 @@ script:
       description: Start of time window (defaults to 7 days ago) (YYYY-MM-DD HH:MM:SS)
     - name: to_time
       description: End of time window (defaults to current time) (YYYY-MM-DD HH:MM:SS)
-    - name: page_size
-      description: Elements on a page
-      defaultValue: 25
-    - name: page_number
-      description: Page number
-      defaultValue: 0
     - name: status
       description: A list of triage statuses for submissions; only email submissions
         marked with at least one of these statuses will be returned. Options are 'UNRESOLVED',
