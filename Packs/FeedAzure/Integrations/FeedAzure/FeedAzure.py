@@ -208,7 +208,7 @@ class Client(BaseClient):
             raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {err}')
 
 
-def test_module(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def test_module(client: Client) -> Tuple[str, Dict, Dict]:
     """Test the ability to fetch Azure file.
     Args:
         client: Client object.
@@ -311,19 +311,15 @@ def main():
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
-
+    command = demisto.command()
     try:
         client = Client(regions_list, services_list, polling_timeout, insecure, proxy)
-
-        commands = {
-            'test-module': test_module,
-            'azure-get-indicators': get_indicators_command
-        }
-        if feedTags:
-            demisto.args().get('feedTags') = feedTags
-        if command in commands:
-            return_outputs(*commands[command](client, demisto.args()))
-
+        if command == 'test-module':
+            return_outputs(*test_module(client))
+        elif command == 'azure-get-indicators':
+            if feedTags:
+                feedTags['tags'] = feedTags
+            return_outputs(*get_indicators_command(client, feedTags))
         elif command == 'fetch-indicators':
             indicators, _ = fetch_indicators_command(client, feedTags)
 
