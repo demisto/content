@@ -117,8 +117,8 @@ class Client(BaseClient):
         hosts: List = response["items"]
         for decoy_host in hosts:
             if host == decoy_host["name"]:
-                return True
-        return False
+                return "True", {"IllusionBlack.IsHostDecoy": {host: True}}
+        return "False", {"IllusionBlack.IsHostDecoy": {host: False}}
 
     def is_user_decoy(self, user):
         """
@@ -135,8 +135,8 @@ class Client(BaseClient):
         users: List = response["items"]
         for decoy_user in users:
             if user.lower() == decoy_user["user_name"]:
-                return True
-        return False
+                return "True", {"IllusionBlack.IsUserDecoy": {user: True}}
+            return "False", {"IllusionBlack.IsUserDecoy": {user: False}}
 
     def is_subdomain_decoy(self, subdomain):
         """
@@ -153,8 +153,8 @@ class Client(BaseClient):
         ti_decoys: List = response["items"]
         for ti_decoy in ti_decoys:
             if subdomain == ti_decoy["name"]:
-                return True
-        return False
+                return "True", {"IllusionBlack.IsSubdomainDecoy": {subdomain: True}}
+            return "False", {"IllusionBlack.IsSubdomainDecoy": {subdomain: False}}
 
     def get_events(self, limit=None, query=None, from_time=None, to_time=None):
         """
@@ -356,11 +356,11 @@ def main():
         elif demisto.command() == "illusionblack-get-ti-decoys":
             return_outputs(*client.get_ti_decoys())
         elif demisto.command() == "illusionblack-is-host-decoy":
-            demisto.results(client.is_host_decoy(demisto.args()["host"]))
+            return_outputs(*client.is_host_decoy(demisto.args()["host"]))
         elif demisto.command() == "illusionblack-is-user-decoy":
-            demisto.results(client.is_user_decoy(demisto.args()["user"]))
+            return_outputs(*client.is_user_decoy(demisto.args()["user"]))
         elif demisto.command() == "illusionblack-is-subdomain-decoy":
-            demisto.results(client.is_subdomain_decoy(demisto.args()["subdomain"]))
+            return_outputs(*client.is_subdomain_decoy(demisto.args()["subdomain"]))
         elif demisto.command() == "illusionblack-get-events":
             args = demisto.args()
             events, _ = client.get_events(args.get("limit"), args.get("query"), args.get("from"), args.get("to"))
