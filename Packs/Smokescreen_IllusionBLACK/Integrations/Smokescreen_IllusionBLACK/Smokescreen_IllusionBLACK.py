@@ -198,11 +198,15 @@ def test_module(client):
     Returns:
         "ok" if test passed, anything else will fail the test.
     """
-    message = client.ping()
-    if message == "pong":
-        return "ok"
-    else:
-        return "Failed to connect to IllusionBLACK API. Please verify client_id and token"
+    try:
+        message = client.ping()
+        if message == "pong":
+            return "ok"
+    except DemistoException as e:
+        if e.args[0] == "Error in API call [401] - Unauthorized":
+            return_error("Failed to connect to IllusionBLACK. External API Token or Client Id might be invalid.")
+        else:
+            raise e
 
 
 def convert_to_demisto_severity(ib_severity="medium", tp_score_based=False, score=0):
