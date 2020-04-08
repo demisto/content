@@ -55,3 +55,5 @@ inputs:
   description: IllusionBLACK event IDs for an incident
 outputs: []
 fromversion: 5.0.0
+tests:
+  - no tests
