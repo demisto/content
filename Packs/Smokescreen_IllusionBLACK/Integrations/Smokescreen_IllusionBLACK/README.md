@@ -205,14 +205,23 @@ Check if a host or IP Address is a network decoy
 
 ##### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| IllusionBlack.IsHostDecoy | Unknown | A mapping of host and whether it's an IllusionBLACK network decoy | 
+
 
 ##### Command Example
 ```!illusionblack-is-host-decoy host="SAP44"```
 
 ##### Context Example
 ```
-{}
+{
+    "IllusionBlack": {
+        "IsHostDecoy": {
+            "SAP44": true
+        }
+    }
+}
 ```
 
 ##### Human Readable Output
@@ -235,14 +244,23 @@ Check if Active Directory user is a decoy
 
 ##### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| IllusionBlack.IsUserDecoy | Unknown | A mapping of user and whether it&\#x27;s an IllusionBLACK AD user decoy | 
+
 
 ##### Command Example
 ```!illusionblack-is-user-decoy user="sqladmin"```
 
 ##### Context Example
 ```
-{}
+{
+    "IllusionBlack": {
+        "IsUserDecoy": {
+            "sqladmin": true
+        }
+    }
+}
 ```
 
 ##### Human Readable Output
@@ -265,14 +283,23 @@ Check if a subdomain is a Threat Intel decoy
 
 ##### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| IllusionBlack.IsSubdomainDecoy | Unknown | A mapping of subdomain and whether it&\#x27;s an IllusionBLACK TI decoy | 
+
 
 ##### Command Example
 ```!illusionblack-is-subdomain-decoy subdomain="experience.illusionblack.com"```
 
 ##### Context Example
 ```
-{}
+{
+    "IllusionBlack": {
+        "IsSubdomainDecoy": {
+            "experience.illusionblack.com": false
+        }
+    }
+}
 ```
 
 ##### Human Readable Output
@@ -349,7 +376,7 @@ Get events from IllusionBLACK
                 "threat_parse_ids": [
                     "lm_file_open"
                 ],
-                "timestamp": "2020-04-05T10:52:01Z",
+                "timestamp": "2020-04-08T07:26:01Z",
                 "type": "endpoint",
                 "whitelisted": false
             },
@@ -392,7 +419,7 @@ Get events from IllusionBLACK
                 "threat_parse_ids": [
                     "lm_file_open"
                 ],
-                "timestamp": "2020-04-05T10:52:01Z",
+                "timestamp": "2020-04-08T07:26:01Z",
                 "type": "endpoint",
                 "whitelisted": false
             },
@@ -434,7 +461,7 @@ Get events from IllusionBLACK
                 "threat_parse_ids": [
                     "lm_file_active_monitoring"
                 ],
-                "timestamp": "2020-04-05T10:48:20Z",
+                "timestamp": "2020-04-08T07:22:20Z",
                 "type": "endpoint",
                 "whitelisted": false
             }
@@ -447,9 +474,9 @@ Get events from IllusionBLACK
 ### IllusionBLACK Events
 |attacker.id|attacker.name|attacker.score|attacker.threat_parse_ids|decoy.appliance.id|decoy.appliance.name|decoy.client.id|decoy.client.name|decoy.group|decoy.id|decoy.name|decoy.type|file.name|file.operation|file.operation_string|file.process.command_line|file.process.domain_name|file.process.exit_code|file.process.id|file.process.image_name|file.process.user_name|file.process.user_sid|file.thread_id|id|kill_chain_phase|mitre_ids|record_type|severity|sub_type|threat_parse_ids|timestamp|type|whitelisted|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| ADMIN-PC-001\admin | ADMIN-PC-001\admin | 175 | lm_file_open,<br>lm_file_active_monitoring | cmc | CMC | experience | experience | Endpoint | endpoint:admin-pc-001 | admin-pc-001 | endpoint | C:\Users\admin\Desktop\passwords\Passwords.xlsx | 67 | Read | "C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe" -executionpolicy bypass | ADMIN-PC-001 | -1 | 10228 | powershell.exe | admin | S-1-5-21-399445878-2258755057-882339928-1000 | 8588 | 2020-02-25T09:49:15Z-76c99a22-03b9-439e-8638-37306c2d8e7f | Data Theft | T1005 | event | high | file | lm_file_open | 2020-04-05T10:52:01Z | endpoint | false |
-| NT AUTHORITY\SYSTEM | NT AUTHORITY\SYSTEM | 250 | filetheft_unattend,<br>lm_file_active_monitoring,<br>lm_file_open | cmc | CMC | experience | experience | Endpoint | endpoint:admin-pc-001 | admin-pc-001 | endpoint | C:\Users\admin\Desktop\passwords\Passwords.xlsx | 67 | Read |  | NT AUTHORITY | -1 | 2824 | MsMpEng.exe | SYSTEM | S-1-5-18 | 724 | 2020-02-25T09:49:15Z-0950f80f-7571-4382-b4b8-5e04c160c4c0 | Data Theft | T1005 | event | high | file | lm_file_open | 2020-04-05T10:52:01Z | endpoint | false |
-| ADMIN-PC-001\admin | ADMIN-PC-001\admin | 175 | lm_file_open,<br>lm_file_active_monitoring | cmc | CMC | experience | experience | Endpoint | endpoint:admin-pc-001 | admin-pc-001 | endpoint | C:\Users\admin\Desktop\docs\vulnerability assessment report\vulnerability assessment report.xlsx | 65 | Cleanup | "C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe" -executionpolicy bypass | ADMIN-PC-001 | -1 | 10228 | powershell.exe | admin | S-1-5-21-399445878-2258755057-882339928-1000 | 0 | 2020-02-25T09:45:48Z-fa248a98-bc8a-4275-93c7-e63ff1ee8d34 | Data Theft | T1005 | event | high | file | lm_file_active_monitoring | 2020-04-05T10:48:20Z | endpoint | false |
+| ADMIN-PC-001\admin | ADMIN-PC-001\admin | 175 | lm_file_open,<br>lm_file_active_monitoring | cmc | CMC | experience | experience | Endpoint | endpoint:admin-pc-001 | admin-pc-001 | endpoint | C:\Users\admin\Desktop\passwords\Passwords.xlsx | 67 | Read | "C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe" -executionpolicy bypass | ADMIN-PC-001 | -1 | 10228 | powershell.exe | admin | S-1-5-21-399445878-2258755057-882339928-1000 | 8588 | 2020-02-25T09:49:15Z-76c99a22-03b9-439e-8638-37306c2d8e7f | Data Theft | T1005 | event | high | file | lm_file_open | 2020-04-08T07:26:01Z | endpoint | false |
+| NT AUTHORITY\SYSTEM | NT AUTHORITY\SYSTEM | 250 | filetheft_unattend,<br>lm_file_active_monitoring,<br>lm_file_open | cmc | CMC | experience | experience | Endpoint | endpoint:admin-pc-001 | admin-pc-001 | endpoint | C:\Users\admin\Desktop\passwords\Passwords.xlsx | 67 | Read |  | NT AUTHORITY | -1 | 2824 | MsMpEng.exe | SYSTEM | S-1-5-18 | 724 | 2020-02-25T09:49:15Z-0950f80f-7571-4382-b4b8-5e04c160c4c0 | Data Theft | T1005 | event | high | file | lm_file_open | 2020-04-08T07:26:01Z | endpoint | false |
+| ADMIN-PC-001\admin | ADMIN-PC-001\admin | 175 | lm_file_open,<br>lm_file_active_monitoring | cmc | CMC | experience | experience | Endpoint | endpoint:admin-pc-001 | admin-pc-001 | endpoint | C:\Users\admin\Desktop\docs\vulnerability assessment report\vulnerability assessment report.xlsx | 65 | Cleanup | "C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe" -executionpolicy bypass | ADMIN-PC-001 | -1 | 10228 | powershell.exe | admin | S-1-5-21-399445878-2258755057-882339928-1000 | 0 | 2020-02-25T09:45:48Z-fa248a98-bc8a-4275-93c7-e63ff1ee8d34 | Data Theft | T1005 | event | high | file | lm_file_active_monitoring | 2020-04-08T07:22:20Z | endpoint | false |
 
 
 ### illusionblack-get-event-by-id
@@ -525,7 +552,7 @@ Gets exactly one event by it's ID
             "threat_parse_ids": [
                 "lm_file_open"
             ],
-            "timestamp": "2020-04-05T10:52:01Z",
+            "timestamp": "2020-04-08T07:26:01Z",
             "type": "endpoint",
             "whitelisted": false
         }
@@ -537,5 +564,5 @@ Gets exactly one event by it's ID
 ### IllusionBLACK Single Event
 |attacker.id|attacker.name|attacker.score|attacker.threat_parse_ids|decoy.appliance.id|decoy.appliance.name|decoy.client.id|decoy.client.name|decoy.group|decoy.id|decoy.name|decoy.type|file.name|file.operation|file.operation_string|file.process.command_line|file.process.domain_name|file.process.exit_code|file.process.id|file.process.image_name|file.process.user_name|file.process.user_sid|file.thread_id|id|kill_chain_phase|mitre_ids|record_type|severity|sub_type|threat_parse_ids|timestamp|type|whitelisted|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| NT AUTHORITY\SYSTEM | NT AUTHORITY\SYSTEM | 250 | filetheft_unattend,<br>lm_file_active_monitoring,<br>lm_file_open | cmc | CMC | experience | experience | Endpoint | endpoint:admin-pc-001 | admin-pc-001 | endpoint | C:\Users\admin\Desktop\passwords\Passwords.xlsx | 67 | Read |  | NT AUTHORITY | -1 | 2824 | MsMpEng.exe | SYSTEM | S-1-5-18 | 724 | 2020-02-25T09:49:15Z-0950f80f-7571-4382-b4b8-5e04c160c4c0 | Data Theft | T1005 | event | high | file | lm_file_open | 2020-04-05T10:52:01Z | endpoint | false |
+| NT AUTHORITY\SYSTEM | NT AUTHORITY\SYSTEM | 250 | filetheft_unattend,<br>lm_file_active_monitoring,<br>lm_file_open | cmc | CMC | experience | experience | Endpoint | endpoint:admin-pc-001 | admin-pc-001 | endpoint | C:\Users\admin\Desktop\passwords\Passwords.xlsx | 67 | Read |  | NT AUTHORITY | -1 | 2824 | MsMpEng.exe | SYSTEM | S-1-5-18 | 724 | 2020-02-25T09:49:15Z-0950f80f-7571-4382-b4b8-5e04c160c4c0 | Data Theft | T1005 | event | high | file | lm_file_open | 2020-04-08T07:26:01Z | endpoint | false |
 
