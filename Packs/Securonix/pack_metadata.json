@@ -1,0 +1,22 @@
+{
+    "name": "Securonix",
+    "description": "Use the Securonix integration to manage incidents and watchlists.",
+    "support": "Cortex XSOAR",
+    "serverMinVersion": "4.5.0",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": "Analytics & SIEM",
+    "tags": "Securonix",
+    "created": "2020-04-10T00:00:00Z",
+    "updated": "2020-04-10T00:00:00Z",
+    "beta": false,
+    "deprecated": false,
+    "certification": "certified",
+    "useCases": [],
+    "keywords": [],
+    "price": "0",
+    "dependencies": {},
+    "displayedImages": []
+}

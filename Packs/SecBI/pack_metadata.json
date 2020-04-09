@@ -1,0 +1,22 @@
+{
+    "name": "SecBI",
+    "description": "A threat, intelligence, and investigation platform, enabled by automation of detection and investigation, including remediation and prevention policy enforcements on all integrated appliances.",
+    "support": "Cortex XSOAR",
+    "serverMinVersion": "1.0.0",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": "Network Security",
+    "tags": "SecBI",
+    "created": "2020-04-10T00:00:00Z",
+    "updated": "2020-04-10T00:00:00Z",
+    "beta": false,
+    "deprecated": false,
+    "certification": "certified",
+    "useCases": [],
+    "keywords": [],
+    "price": "0",
+    "dependencies": {},
+    "displayedImages": []
+}
