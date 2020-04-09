@@ -1142,7 +1142,7 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_types: s
             if incident_id > last_incident_id:
                 incident_name = get_incident_name(incident, incident_id)  # Try to get incident reason as incident name
                 demisto_incidents.append({
-                    'name':  incident_name,
+                    'name': incident_name,
                     'occurred': timestamp_to_datestring(incident.get('lastUpdateDate')),
                     'severity': incident_priority_to_dbot_score(incident.get('priority')),
                     'rawJSON': json.dumps(incident)

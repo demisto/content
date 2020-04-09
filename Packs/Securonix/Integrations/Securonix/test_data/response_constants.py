@@ -356,4 +356,3 @@ RESPONSE_FETCH_INCIDENT_ITEM_MULTIPLE_REASONS = {
     "watchlisted": False,
     "workflowName": "SOCTeamReview"
 }
-
