@@ -253,13 +253,12 @@ def create_address_command():
     address_name = demisto.args().get('name', '')
     address = demisto.args().get('address', '')
     mask = demisto.args().get('mask', '')
-    fqdn = demisto.args().get('fqdn','')
-    subnet = address + " " + mask
+    fqdn = demisto.args().get('fqdn', '')
 
     if fqdn and address:
         return_error("Please provide only one of the two arguments: fqdn or address")
 
-    create_address_request(address_name, address, mask,fqdn)
+    create_address_request(address_name, address, mask, fqdn)
 
     if address:
         contents.append({
@@ -292,7 +291,7 @@ def create_address_command():
     })
 
 
-def create_address_request(address_name, address, mask,fqdn):
+def create_address_request(address_name, address, mask, fqdn):
     uri_suffix = 'cmdb/firewall/address/'
     if does_path_exist(uri_suffix + address_name):
         return_error('Address already exists.')
