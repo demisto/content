@@ -1140,21 +1140,9 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_types: s
         for incident in incidents_items:
             incident_id = incident.get('incidentId')
             if incident_id > last_incident_id:
-                # Try to get incident reason as incident name
-                incident_reasons = incident.get('reason', [])
-                for reason in incident_reasons:
-                    incident_reason = ''
-                    if reason.startswith('Policy: '):
-                        incident_reason += f"{reason[8:]}, "
-
-                if incident_reason:
-                    # Remove ", " last chars and concatenate with the incident ID
-                    name = f"{incident_reason[:-2]}: {incident_id}"
-                else:
-                    name = f"Securonix Incident: {incident_id}."
-
+                incident_name = get_incident_name(incident, incident_id)  # Try to get incident reason as incident name
                 demisto_incidents.append({
-                    'name':  name,
+                    'name':  incident_name,
                     'occurred': timestamp_to_datestring(incident.get('lastUpdateDate')),
                     'severity': incident_priority_to_dbot_score(incident.get('priority')),
                     'rawJSON': json.dumps(incident)
@@ -1166,6 +1154,34 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_types: s
     new_last_run.update({'time': now})
     demisto.setLastRun(new_last_run)
     return demisto_incidents
+
+
+def get_incident_name(incident: Dict, incident_id: str) -> str:
+    """Get the incident name by concatenating the incident reasons if possible
+
+    Args:
+        incident: incident details
+        incident_id: the incident id
+
+
+    Returns:
+        incident name.
+    """
+    incident_reasons = incident.get('reason', [])
+    try:
+        incident_reason = ''
+        for reason in incident_reasons:
+            if reason.startswith('Policy: '):
+                incident_reason += f"{reason[8:]}, "
+        if incident_reason:
+            # Remove ", " last chars and concatenate with the incident ID
+            incident_name = f"{incident_reason[:-2]}: {incident_id}"
+        else:
+            incident_name = f"Securonix Incident: {incident_id}."
+    except ValueError:
+        incident_name = f"Securonix Incident: {incident_id}."
+
+    return incident_name
 
 
 def main():
