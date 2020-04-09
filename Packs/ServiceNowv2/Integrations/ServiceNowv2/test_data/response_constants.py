@@ -1638,3 +1638,51 @@ RESPONSE_QUERY_COMPUTERS = {
         "warranty_expiration": "2020-07-28"
     }
 }
+RESPONSE_GET_TABLE_NAME = {
+    "result": [
+        {
+            "access": "",
+            "actions_access": "true",
+            "alter_access": "true",
+            "client_scripts_access": "true",
+            "configuration_access": "false",
+            "create_access": "true",
+            "create_access_controls": "false",
+            "delete_access": "false",
+            "extension_model": "",
+            "is_extendable": "false",
+            "label": "ACE",
+            "live_feed_enabled": "false",
+            "name": "cmdb_ci_lb_ace",
+            "number_ref": "",
+            "read_access": "true",
+            "super_class": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "sys_class_code": "!.",
+            "sys_class_name": "sys_db_object",
+            "sys_class_path": "/!!/!2/!(/!!/!$/!.",
+            "sys_created_by": "system",
+            "sys_created_on": "2019-12-04 05:02:05",
+            "sys_id": "123",
+            "sys_mod_count": "0",
+            "sys_name": "CMDB CI Lb Ace",
+            "sys_package": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "sys_policy": "",
+            "sys_scope": {
+                "link": "demisto.com",
+                "value": "global"
+            },
+            "sys_update_name": "sys_db_object_547a54c1e86100107850694c2d9d2d3e",
+            "sys_updated_by": "system",
+            "sys_updated_on": "2019-12-04 05:02:05",
+            "update_access": "true",
+            "user_role": "",
+            "ws_access": "true"
+        }
+    ]
+}

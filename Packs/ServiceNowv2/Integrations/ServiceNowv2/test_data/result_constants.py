@@ -247,4 +247,12 @@ EXPECTED_QUERY_COMPUTERS = {
         }
     ]
 }
+EXPECTED_GET_TABLE_NAME = {
+    'ServiceNow.Table(val.ID===obj.ID)': [
+        {
+            'ID': '123', 'Name': 'cmdb_ci_lb_ace', 'SystemName': 'CMDB CI Lb Ace'
+        }
+    ]
+}
+
 

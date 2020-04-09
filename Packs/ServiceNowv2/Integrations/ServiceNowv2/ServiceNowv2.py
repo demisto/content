@@ -338,7 +338,7 @@ class Client(BaseClient):
         self.get_attachments = get_attachments
         self.sys_param_query = sysparm_query
         self.sys_param_limit = sysparm_limit
-        self.sys_param_offset = 10
+        self.sys_param_offset = 0
 
     def send_request(self, path: str, method: str = 'get', body: dict = None, params: dict = None,
                      headers: dict = None, file=None):
@@ -1257,7 +1257,7 @@ def query_groups_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any
     } for group in groups]
 
     human_readable = tableToMarkdown('ServiceNow Groups', t=mapped_groups, headers=headers,
-                                     removeNull=True, headerTransform=pascalToSpace),
+                                     removeNull=True, headerTransform=pascalToSpace)
     entry_context = {'ServiceNow.Group(val.ID===obj.ID)': createContext(mapped_groups, removeNull=True)}
 
     return human_readable, entry_context, result
@@ -1540,7 +1540,6 @@ def main():
             get_ticket_command(client, args)
         elif command in commands:
             md_, ec_, raw_response = commands[command](client, args)
-            demisto.log(str(ec_))
             return_outputs(md_, ec_, raw_response)
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')

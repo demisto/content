@@ -3,16 +3,16 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     generate_body, split_fields, Client, update_ticket_command, create_ticket_command, delete_ticket_command, \
     query_tickets_command, add_link_command, add_comment_command, upload_file_command, get_ticket_notes_command, \
     get_record_command, update_record_command, create_record_command, delete_record_command, query_table_command, \
-    list_table_fields_command, query_computers_command
+    list_table_fields_command, query_computers_command, get_table_name_command
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_CREATE_TICKET, RESPONSE_QUERY_TICKETS, RESPONSE_ADD_LINK, RESPONSE_ADD_COMMENT, RESPONSE_UPLOAD_FILE, \
     RESPONSE_GET_TICKET_NOTES, RESPONSE_GET_RECORD, RESPONSE_UPDATE_RECORD, RESPONSE_CREATE_RECORD, \
-    RESPONSE_QUERY_TABLE, RESPONSE_LIST_TABLE_FIELDS, RESPONSE_QUERY_COMPUTERS
+    RESPONSE_QUERY_TABLE, RESPONSE_LIST_TABLE_FIELDS, RESPONSE_QUERY_COMPUTERS, RESPONSE_GET_TABLE_NAME
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \
     EXPECTED_TICKET_HR, EXPECTED_MULTIPLE_TICKET_HR, EXPECTED_UPDATE_TICKET, EXPECTED_CREATE_TICKET, \
     EXPECTED_QUERY_TICKETS, EXPECTED_ADD_LINK_HR, EXPECTED_ADD_COMMENT_HR, EXPECTED_UPLOAD_FILE, \
     EXPECTED_GET_TICKET_NOTES, EXPECTED_GET_RECORD, EXPECTED_UPDATE_RECORD, EXPECTED_CREATE_RECORD, \
-    EXPECTED_QUERY_TABLE, EXPECTED_LIST_TABLE_FIELDS, EXPECTED_QUERY_COMPUTERS
+    EXPECTED_QUERY_TABLE, EXPECTED_LIST_TABLE_FIELDS, EXPECTED_QUERY_COMPUTERS, EXPECTED_GET_TABLE_NAME
 
 
 def test_get_server_url():
@@ -63,7 +63,8 @@ def test_split_fields():
     (query_table_command, {'table_name': "alm_asset", 'fields': "asset_tag,sys_updated_by,display_name",
     'query': "display_nameCONTAINSMacBook", 'limit': 3}, RESPONSE_QUERY_TABLE, EXPECTED_QUERY_TABLE),
     (list_table_fields_command, {'table_name': "alm_asset"}, RESPONSE_LIST_TABLE_FIELDS, EXPECTED_LIST_TABLE_FIELDS),
-    (query_computers_command, {'computer_id': '1234'}, RESPONSE_QUERY_COMPUTERS, EXPECTED_QUERY_COMPUTERS)
+    (query_computers_command, {'computer_id': '1234'}, RESPONSE_QUERY_COMPUTERS, EXPECTED_QUERY_COMPUTERS),
+    (get_table_name_command, {'label': "ACE"}, RESPONSE_GET_TABLE_NAME, EXPECTED_GET_TABLE_NAME)
 ])  # noqa: E124
 def test_commands(command, args, response, expected_result, mocker):
     """Unit test
@@ -82,10 +83,6 @@ def test_commands(command, args, response, expected_result, mocker):
                     'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments')
     mocker.patch.object(client, 'send_request', return_value=response)
     result = command(client, args)
-    # print('\n')
-    # print(str(expected_result))
-    # print('\n')
-    # print(str(result[1]))
     assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
 
 
