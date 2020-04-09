@@ -1143,11 +1143,13 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_types: s
                 # Try to get incident reason as incident name
                 incident_reasons = incident.get('reason', [])
                 for reason in incident_reasons:
+                    incident_reason = ''
                     if 'Policy' in reason:
-                        incident_reason = reason
-                        break
+                        incident_reason += f"{reason}, "
+
                 if incident_reason:
-                    name = f"{incident_reason}: {incident_id}"
+                    # Remove ", " last chars and concatenate with the incident ID
+                    name = f"{incident_reason[:-2]}: {incident_id}"
                 else:
                     name = f"Securonix Incident: {incident_id}."
 
