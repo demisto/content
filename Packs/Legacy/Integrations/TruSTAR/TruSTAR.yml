@@ -620,7 +620,7 @@ script:
       description: Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH
       type: string
     description: Check Domain reputation on TruStar
-  - name: tustar-get-phishing-submissions
+  - name: trustar-get-phishing-submissions
     arguments:
     - name: normalized_triage_score
       description: Score of email submission
@@ -631,19 +631,30 @@ script:
     - name: to_time
       description: End of time window (defaults to current time) (YYYY-MM-DD HH:MM:SS)
     - name: status
-      description: a list of triage statuses for submissions; only email submissions
-        marked with atleast one of these statuses will be returned
+      description: A list of triage statuses for submissions (UNRESOLVED,CONFIRMED,IGNORED);
+        only email submissions marked with at least one of these statuses will be
+        returned
       isArray: true
       defaultValue: UNRESOLVED
     outputs:
     - contextPath: TruSTAR.Phishing.submissionId
-      description: ""
+      description: The submission ID
       type: string
     - contextPath: TruSTAR.Phishing.title
+      description: Submission title
       type: string
     - contextPath: TruSTAR.Phishing.normalizedTriageScore
+      description: Submission triage score
       type: number
-    - contextPath: TruSTAR.Phishing.context
+    - contextPath: TruSTAR.Phishing.context.indicatorType
+      description: Indicator type
+      type: string
+    - contextPath: TruSTAR.Phishing.context.sourceKey
+      description: Indicator source
+      type: string
+    - contextPath: TruSTAR.Phishing.context.normalizedSourceScore
+      description: Indicator score
+      type: number
     description: Fetches all phishing submissions that fit the given criteria
   - name: trustar-set-triage-status
     arguments:
@@ -659,7 +670,7 @@ script:
       description: Submission status
     description: Marks a phishing email submission with one of the phishing namespace
       tags
-  - name: trustar-get-all-phishing-indicators
+  - name: trustar-get-phishing-indicators
     arguments:
     - name: normalized_source_score
       description: Intel score of the indicator
