@@ -1137,12 +1137,26 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_types: s
     if securonix_incidents:
         incidents_items = list(securonix_incidents.get('incidentItems'))  # type: ignore
         last_incident_id = last_run.get('id', '0')
-        demisto_incidents = [{
-            'name': f"Securonix Incident: {incident.get('incidentId')}",
-            'occurred': timestamp_to_datestring(incident.get('lastUpdateDate')),
-            'severity': incident_priority_to_dbot_score(incident.get('priority')),
-            'rawJSON': json.dumps(incident)
-        } for incident in incidents_items if incident.get('incidentId') > last_incident_id]
+        for incident in incidents_items:
+            incident_id = incident.get('incidentId')
+            if incident_id > last_incident_id:
+                # Try to get incident reason as incident name
+                incident_reasons = incident.get('reason', [])
+                for reason in incident_reasons:
+                    if 'Policy' in reason:
+                        incident_reason = reason
+                        break
+                if incident_reason:
+                    name = f"{incident_reason}: {incident_id}"
+                else:
+                    name = f"Securonix Incident: {incident_id}."
+
+                demisto_incidents.append({
+                    'name':  name,
+                    'occurred': timestamp_to_datestring(incident.get('lastUpdateDate')),
+                    'severity': incident_priority_to_dbot_score(incident.get('priority')),
+                    'rawJSON': json.dumps(incident)
+                })
         if demisto_incidents:
             last_incident_id = incidents_items[-1].get('incidentId')
             new_last_run.update({'id': last_incident_id})
