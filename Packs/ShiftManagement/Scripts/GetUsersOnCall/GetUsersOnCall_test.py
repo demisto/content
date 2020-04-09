@@ -28,4 +28,4 @@ def test_get_users_on_call(mocker):
     main()
     results = demisto.results.call_args[0]
     assert len(results) == 1
-    assert USERS_ON_CALL_RESULTS[0]['HumanReadable'] == results[0]
+    assert USERS_ON_CALL_RESULTS[0]['HumanReadable'] == results[0]['Contents']
