@@ -200,6 +200,9 @@ RESPONSE_CREATE_INCIDENT = {
         }
     }
 }
+RESPONSE_PERFORM_ACTION_ON_INCIDENT = {
+    'result': 'submitted'
+}
 RESPONSE_LIST_WATCHLISTS = {
     "result": [
         "Domain_Admin", "Privileged_Users", "Privileged_Accounts", "Recent_Hires"
