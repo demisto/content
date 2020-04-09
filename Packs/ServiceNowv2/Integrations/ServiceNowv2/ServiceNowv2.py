@@ -340,7 +340,7 @@ class Client(BaseClient):
         self.sys_param_limit = sysparm_limit
         self.sys_param_offset = 0
 
-    def send_request(self, path: str, method: str = 'get', body: dict = None, params: dict = None,
+    def send_request(self, path: str, method: str = 'GET', body: dict = None, params: dict = None,
                      headers: dict = None, file=None):
         """
         Generic request to ServiceNow.
@@ -383,10 +383,7 @@ class Client(BaseClient):
             message = obj.get('error', {}).get('message')
             details = obj.get('error', {}).get('detail')
             if message == 'No Record found':
-                return {
-                    # Return an empty results array
-                    'result': []
-                }
+                return {'result': []}  # Return an empty results array
             raise Exception(f'ServiceNow Error: {message}, details: {details}')
 
         if res.status_code < 200 or res.status_code >= 300:
@@ -849,7 +846,7 @@ def add_comment_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     result = client.add_comment(ticket_id, ticket_type, key, text)
 
     if not result or 'result' not in result:
-        return_error('Unable to retrieve response')
+        raise Exception('Unable to retrieve response.')
 
     headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
                'Active', 'Close Notes', 'Close Code',
