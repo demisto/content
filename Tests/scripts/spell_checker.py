@@ -5,7 +5,7 @@ import argparse
 
 from spellchecker import SpellChecker
 
-from Tests.test_utils import print_error
+from demisto_sdk.commands.common.tools import print_error
 
 DISPLAYABLE_LINES = [
     "description",

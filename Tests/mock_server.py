@@ -92,9 +92,9 @@ class AMIConnection:
         Returns:
             string. The IP of the AMI on the docker bridge.
         """
-        out = self.check_output(['/usr/sbin/ip', 'addr', 'show', 'docker0']).split('\n')
+        out = self.check_output(['/usr/sbin/ip', 'addr', 'show', 'docker0']).decode().split('\n')
         lines_of_words = map(lambda y: y.strip().split(' '), out)  # Split output to lines[words[]]
-        address_lines = filter(lambda x: x[0] == 'inet', lines_of_words)  # Take only lines with ipv4 addresses
+        address_lines = list(filter(lambda x: x[0] == 'inet', lines_of_words))  # Take only lines with ipv4 addresses
         if len(address_lines) != 1:
             raise Exception("docker bridge interface has {} ipv4 addresses, should only have one."
                             .format(len(address_lines)))

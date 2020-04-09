@@ -1,5 +1,9 @@
 ## [Unreleased]
+  - Added the argument *ignore_auto_extract* to the ***return_outputs*** command.
+  - Added a default value to the indicator timeline field **Category** when a value is not provided in an entry's timeline data.
 
+## [20.3.4] - 2020-03-30
+- Added support for successful empty responses (status code 204) in the base client.
 
 ## [20.3.3] - 2020-03-18
 Added ***remove_empty_elements*** command.

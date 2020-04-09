@@ -1,0 +1,165 @@
+{
+    "id": "cveRep",
+    "version": -1,
+    "fromVersion": "5.5.0",
+    "modified": "2019-07-18T10:54:31.059794766Z",
+    "sortValues": null,
+    "commitMessage": "",
+    "shouldPublish": false,
+    "shouldCommit": false,
+    "regex": "CVE-\\d{4}-\\d{4,7}",
+    "details": "CVE",
+    "prevDetails": "CVE",
+    "reputationScriptName": "cveReputation",
+    "reputationCommand": "cve",
+    "enhancementScriptNames": [],
+    "system": false,
+    "locked": false,
+    "disabled": false,
+    "file": false,
+    "updateAfter": 0,
+    "mergeContext": false,
+    "formatScript": "",
+    "contextPath": "CVE(val.ID && val.ID === obj.ID)",
+    "contextValue": "ID",
+    "excludedBrands": [],
+    "expiration": 0,
+    "defaultMapping": {
+      "cvedescription": {
+        "simple": "",
+        "complex": {
+          "root": "CVE",
+          "filters": [],
+          "accessor": "CVEDescription",
+          "transformers": [
+            {
+              "operator": "uniq",
+              "args": {}
+            }
+          ]
+        }
+      },
+      "cvss": {
+        "simple": "",
+        "complex": {
+          "root": "CVE",
+          "filters": [],
+          "accessor": "CVSS",
+          "transformers": [
+            {
+              "operator": "uniq",
+              "args": {}
+            }
+          ]
+        }
+      },
+      "indicatoridentification": {
+        "simple": "",
+        "complex": {
+          "root": "CVE",
+          "filters": [],
+          "accessor": "ID",
+          "transformers": [
+            {
+              "operator": "toUpperCase",
+              "args": {}
+            },
+            {
+              "operator": "uniq",
+              "args": {}
+            }
+          ]
+        }
+      },
+      "cvemodified": {
+        "simple": "",
+        "complex": {
+          "root": "CVE",
+          "filters": [],
+          "accessor": "Modified",
+          "transformers": [
+            {
+              "operator": "uniq",
+              "args": {}
+            }
+          ]
+        }
+      },
+      "published": {
+        "simple": "",
+        "complex": {
+          "root": "CVE",
+          "filters": [],
+          "accessor": "Published",
+          "transformers": [
+            {
+              "operator": "uniq",
+              "args": {}
+            }
+          ]
+        }
+      },
+      "associations": {
+        "simple": "",
+        "complex": {
+          "root": "CVE",
+          "filters": [],
+          "accessor": "Associations",
+          "transformers": [{
+            "operator": "uniq",
+            "args": {}
+          }]
+        }
+      },
+      "reportedby": {
+        "simple": "",
+        "complex": {
+          "root": "CVE",
+          "filters": [],
+          "accessor": "ReportedBy",
+          "transformers": [{
+            "operator": "uniq",
+            "args": {}
+          }]
+        }
+      },
+      "threattypes": {
+        "simple": "",
+        "complex": {
+          "root": "CVE",
+          "filters": [],
+          "accessor": "ThreatTypes",
+          "transformers": [{
+            "operator": "uniq",
+            "args": {}
+          }]
+        }
+      },
+      "trafficlightprotocol": {
+        "simple": "",
+        "complex": {
+          "root": "CVE",
+          "filters": [],
+          "accessor": "TrafficLightProtocol",
+          "transformers": [{
+            "operator": "uniq",
+            "args": {}
+          }]
+        }
+      },
+      "tags": {
+        "simple": "",
+        "complex": {
+          "root": "CVE",
+          "filters": [],
+          "accessor": "Tags",
+          "transformers": [{
+            "operator": "uniq",
+            "args": {}
+          }]
+        }
+      }
+    },
+    "manualMapping": null,
+    "fileHashesPriority": null
+  }
