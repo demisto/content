@@ -1090,3 +1090,317 @@ RESPONSE_CREATE_RECORD = {
         'lease_id': '', 'salvage_value': '0'
     }
 }
+RESPONSE_QUERY_TABLE = {
+    "result": [
+        {
+            "acquisition_method": "",
+            "asset_tag": "P1000807",
+            "assigned": "2018-08-07 07:00:00",
+            "assigned_to": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "beneficiary": "",
+            "checked_in": "",
+            "checked_out": "",
+            "ci": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "comments": "",
+            "company": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "cost": "2499.99",
+            "cost_center": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "delivery_date": "2018-03-14 08:00:00",
+            "department": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "depreciated_amount": "934.59",
+            "depreciation": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "depreciation_date": "2018-05-27 07:00:00",
+            "display_name": "P1000807 - Apple MacBook Pro 17\"",
+            "disposal_reason": "",
+            "due": "",
+            "due_in": "",
+            "expenditure_type": "",
+            "gl_account": "",
+            "install_date": "2018-05-26 07:00:00",
+            "install_status": "1",
+            "invoice_number": "",
+            "justification": "",
+            "lease_id": "",
+            "location": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "managed_by": "",
+            "model": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "model_category": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "old_status": "",
+            "old_substatus": "",
+            "order_date": "2018-02-22 08:00:00",
+            "owned_by": "",
+            "parent": "",
+            "po_number": "PO100008",
+            "pre_allocated": "false",
+            "purchase_date": "2018-03-09",
+            "quantity": "1",
+            "request_line": "",
+            "resale_price": "0",
+            "reserved_for": "",
+            "residual": "1565.4",
+            "residual_date": "2020-04-09",
+            "retired": "",
+            "retirement_date": "",
+            "salvage_value": "0",
+            "serial_number": "IKS-131-F44462-HL",
+            "skip_sync": "false",
+            "stockroom": "",
+            "substatus": "",
+            "support_group": "",
+            "supported_by": "",
+            "sys_class_name": "alm_hardware",
+            "sys_created_by": "admin",
+            "sys_created_on": "2019-02-23 08:14:09",
+            "sys_domain": {
+                "link": "demisto.com",
+                "value": "global"
+            },
+            "sys_domain_path": "/",
+            "sys_id": "sys_id2",
+            "sys_mod_count": "20",
+            "sys_tags": "",
+            "sys_updated_by": "system",
+            "sys_updated_on": "2020-04-09 06:20:19",
+            "vendor": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "warranty_expiration": "2021-05-25",
+            "work_notes": ""
+        },
+        {
+            "acquisition_method": "",
+            "asset_tag": "P1000637",
+            "assigned": "2019-07-03 07:00:00",
+            "assigned_to": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "beneficiary": "",
+            "checked_in": "",
+            "checked_out": "",
+            "ci": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "comments": "",
+            "company": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "cost": "1599.99",
+            "cost_center": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "delivery_date": "2018-12-19 08:00:00",
+            "department": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "depreciated_amount": "389.71",
+            "depreciation": {
+                "link": "admin",
+                "value": "demisto.com"
+            },
+            "depreciation_date": "2019-01-19 08:00:00",
+            "display_name": "P1000637 - Apple MacBook Air 13\"",
+            "disposal_reason": "",
+            "due": "",
+            "due_in": "",
+            "expenditure_type": "",
+            "gl_account": "",
+            "install_date": "2019-01-18 08:00:00",
+            "install_status": "1",
+            "invoice_number": "",
+            "justification": "",
+            "lease_id": "",
+            "location": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "managed_by": "",
+            "model": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "model_category": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "old_status": "",
+            "old_substatus": "",
+            "order_date": "2018-11-24 08:00:00",
+            "owned_by": "",
+            "parent": "",
+            "po_number": "PO100011",
+            "pre_allocated": "false",
+            "purchase_date": "2018-12-09",
+            "quantity": "1",
+            "request_line": "",
+            "resale_price": "0",
+            "reserved_for": "",
+            "residual": "1210.28",
+            "residual_date": "2020-04-09",
+            "retired": "",
+            "retirement_date": "",
+            "salvage_value": "0",
+            "serial_number": "BXV-671-O15099-HI",
+            "skip_sync": "false",
+            "stockroom": "",
+            "substatus": "",
+            "support_group": "",
+            "supported_by": "",
+            "sys_class_name": "alm_hardware",
+            "sys_created_by": "admin",
+            "sys_created_on": "2019-02-23 08:13:36",
+            "sys_domain": {
+                "link": "demisto.com",
+                "value": "global"
+            },
+            "sys_domain_path": "/",
+            "sys_id": "sys_id3",
+            "sys_mod_count": "20",
+            "sys_tags": "",
+            "sys_updated_by": "system",
+            "sys_updated_on": "2020-04-09 06:20:19",
+            "vendor": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "warranty_expiration": "2022-01-17",
+            "work_notes": ""
+        },
+        {
+            "acquisition_method": "",
+            "asset_tag": "P1000412",
+            "assigned": "2017-08-17 07:00:00",
+            "assigned_to": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "beneficiary": "",
+            "checked_in": "",
+            "checked_out": "",
+            "ci": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "comments": "",
+            "company": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "cost": "2499.99",
+            "cost_center": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "delivery_date": "2017-01-20 08:00:00",
+            "department": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "depreciated_amount": "1564.03",
+            "depreciation": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "depreciation_date": "2017-02-20 08:00:00",
+            "display_name": "P1000412 - Apple MacBook Pro 17\"",
+            "disposal_reason": "",
+            "due": "",
+            "due_in": "",
+            "expenditure_type": "",
+            "gl_account": "",
+            "install_date": "2017-02-19 08:00:00",
+            "install_status": "1",
+            "invoice_number": "",
+            "justification": "",
+            "lease_id": "",
+            "location": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "managed_by": "",
+            "model": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "model_category": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "old_status": "",
+            "old_substatus": "",
+            "order_date": "2016-12-28 08:00:00",
+            "owned_by": "",
+            "parent": "",
+            "po_number": "PO100002",
+            "pre_allocated": "false",
+            "purchase_date": "2017-01-09",
+            "quantity": "1",
+            "request_line": "",
+            "resale_price": "0",
+            "reserved_for": "",
+            "residual": "935.96",
+            "residual_date": "2020-04-09",
+            "retired": "",
+            "retirement_date": "",
+            "salvage_value": "0",
+            "serial_number": "FQC-294-U60540-FN",
+            "skip_sync": "false",
+            "stockroom": "",
+            "substatus": "",
+            "support_group": "",
+            "supported_by": "",
+            "sys_class_name": "alm_hardware",
+            "sys_created_by": "admin",
+            "sys_created_on": "2019-02-23 08:13:40",
+            "sys_domain": {
+                "link": "demisto.com",
+                "value": "global"
+            },
+            "sys_domain_path": "/",
+            "sys_id": "sys_id4",
+            "sys_mod_count": "21",
+            "sys_tags": "",
+            "sys_updated_by": "system",
+            "sys_updated_on": "2020-04-09 06:20:20",
+            "vendor": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "warranty_expiration": "2020-02-19",
+            "work_notes": ""
+        }
+    ]
+}
+

@@ -201,3 +201,19 @@ EXPECTED_CREATE_RECORD = {
         'CreatedAt': '2020-04-07 12:48:38'
     }
 }
+EXPECTED_QUERY_TABLE = {
+    'ServiceNow.Record(val.ID===obj.ID)': [
+        {
+            'sys_updated_by': 'system', 'asset_tag': 'P1000807', 'display_name': 'P1000807 - Apple MacBook Pro 17"',
+            'ID': 'sys_id2'
+        },
+        {
+            'sys_updated_by': 'system', 'asset_tag': 'P1000637', 'display_name': 'P1000637 - Apple MacBook Air 13"',
+            'ID': 'sys_id3'
+        },
+        {
+            'sys_updated_by': 'system', 'asset_tag': 'P1000412', 'display_name':
+            'P1000412 - Apple MacBook Pro 17"', 'ID': 'sys_id4'
+        }
+    ]
+}
