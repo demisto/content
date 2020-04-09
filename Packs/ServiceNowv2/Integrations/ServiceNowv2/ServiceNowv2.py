@@ -1204,7 +1204,7 @@ def query_computers_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, 
     headers = ['ID', 'AssetTag', 'Name', 'DisplayName', 'SupportGroup', 'OperatingSystem', 'Company', 'AssignedTo',
                'State', 'Cost', 'Comments']
     human_readable = tableToMarkdown('ServiceNow Computers', t=mapped_computers, headers=headers,
-                                     removeNull=True, headerTransform=pascalToSpace),
+                                     removeNull=True, headerTransform=pascalToSpace)
     entry_context = {'ServiceNow.Computer(val.ID===obj.ID)': createContext(mapped_computers, removeNull=True)}
 
     return human_readable, entry_context, result
@@ -1336,7 +1336,7 @@ def list_table_fields_command(client: Client, args: dict) -> Tuple[Any, Dict[Any
 
     fields = [{'Name': k} for k, v in result['result'][0].items()]
 
-    human_readable = tableToMarkdown(f'ServiceNow Table fields - {table_name}', fields),
+    human_readable = tableToMarkdown(f'ServiceNow Table fields - {table_name}', fields)
     entry_context = {'ServiceNow.Field': createContext(fields)}
 
     return human_readable, entry_context, result
@@ -1374,7 +1374,7 @@ def get_table_name_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, A
     } for table in tables]
 
     human_readable = tableToMarkdown(f'ServiceNow Tables for label - {label}', t=mapped_tables,
-                                     headers=headers, headerTransform=pascalToSpace),
+                                     headers=headers, headerTransform=pascalToSpace)
     entry_context = {'ServiceNow.Table(val.ID===obj.ID)': createContext(mapped_tables)}
 
     return human_readable, entry_context, result

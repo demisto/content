@@ -1403,4 +1403,238 @@ RESPONSE_QUERY_TABLE = {
         }
     ]
 }
-
+RESPONSE_LIST_TABLE_FIELDS = {
+    "result": [
+        {
+            "acquisition_method": "",
+            "asset_tag": "P1000479",
+            "assigned": "2017-10-31 07:00:00",
+            "assigned_to": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "beneficiary": "",
+            "checked_in": "",
+            "checked_out": "",
+            "ci": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "comments": "",
+            "company": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "cost": "1799.99",
+            "cost_center": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "delivery_date": "2017-04-20 07:00:00",
+            "department": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "depreciated_amount": "1025.61",
+            "depreciation": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "depreciation_date": "2017-06-03 07:00:00",
+            "display_name": "P1000479 - Apple MacBook Pro 15\"",
+            "disposal_reason": "",
+            "due": "",
+            "due_in": "",
+            "expenditure_type": "",
+            "gl_account": "",
+            "install_date": "2017-06-02 07:00:00",
+            "install_status": "1",
+            "invoice_number": "",
+            "justification": "",
+            "lease_id": "",
+            "location": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "managed_by": "",
+            "model": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "model_category": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "old_status": "",
+            "old_substatus": "",
+            "order_date": "2017-03-27 07:00:00",
+            "owned_by": "",
+            "parent": "",
+            "po_number": "PO100004",
+            "pre_allocated": "false",
+            "purchase_date": "2017-04-09",
+            "quantity": "1",
+            "request_line": "",
+            "resale_price": "0",
+            "reserved_for": "",
+            "residual": "774.38",
+            "residual_date": "2020-04-09",
+            "retired": "",
+            "retirement_date": "",
+            "salvage_value": "0",
+            "serial_number": "BQP-854-D33246-GH",
+            "skip_sync": "false",
+            "stockroom": "",
+            "substatus": "",
+            "support_group": "",
+            "supported_by": "",
+            "sys_class_name": "alm_hardware",
+            "sys_created_by": "admin",
+            "sys_created_on": "2019-02-23 08:14:21",
+            "sys_domain": {
+                "link": "demisto.com",
+                "value": "global"
+            },
+            "sys_domain_path": "/",
+            "sys_id": "00a96c0d3790200044e0bfc8bcbe5dc3",
+            "sys_mod_count": "20",
+            "sys_tags": "",
+            "sys_updated_by": "system",
+            "sys_updated_on": "2020-04-09 06:20:10",
+            "vendor": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "warranty_expiration": "2020-06-01",
+            "work_notes": ""
+        }
+    ]
+}
+RESPONSE_QUERY_COMPUTERS = {
+    "result": {
+        "asset": {
+            "link": "demisto.com",
+            "value": "a"
+        },
+        "asset_tag": "P1000357",
+        "assigned": "2017-09-09 07:00:00",
+        "assigned_to": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "assignment_group": "",
+        "attributes": "",
+        "can_print": "false",
+        "category": "Hardware",
+        "cd_rom": "false",
+        "cd_speed": "",
+        "change_control": "",
+        "chassis_type": "",
+        "checked_in": "",
+        "checked_out": "",
+        "comments": "",
+        "company": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "correlation_id": "",
+        "cost": "1329",
+        "cost_cc": "USD",
+        "cost_center": {
+            "link": "demisto.com",
+            "value": "a"
+        },
+        "cpu_core_count": "1",
+        "cpu_core_thread": "",
+        "cpu_count": "1",
+        "cpu_manufacturer": "",
+        "cpu_name": "",
+        "cpu_speed": "",
+        "cpu_type": "",
+        "default_gateway": "",
+        "delivery_date": "2017-05-21 07:00:00",
+        "department": {
+            "link": "demisto.com",
+            "value": "a"
+        },
+        "discovery_source": "",
+        "disk_space": "",
+        "dns_domain": "",
+        "due": "",
+        "due_in": "",
+        "fault_count": "0",
+        "first_discovered": "",
+        "floppy": "",
+        "form_factor": "",
+        "fqdn": "",
+        "gl_account": "",
+        "hardware_status": "installed",
+        "hardware_substatus": "",
+        "install_date": "2017-07-29 07:00:00",
+        "install_status": "1",
+        "invoice_number": "",
+        "ip_address": "",
+        "justification": "",
+        "last_discovered": "",
+        "lease_id": "",
+        "location": {
+            "link": "demisto.com",
+            "value": "a"
+        },
+        "mac_address": "",
+        "maintenance_schedule": "",
+        "managed_by": "",
+        "manufacturer": {
+            "link": "demisto.com",
+            "value": "a"
+        },
+        "model_id": {
+            "link": "demisto.com",
+            "value": "a"
+        },
+        "model_number": "",
+        "monitor": "false",
+        "name": "Precision T5500 Workstation",
+        "object_id": "",
+        "operational_status": "1",
+        "order_date": "2017-04-26 07:00:00",
+        "os": "Windows XP Professional",
+        "os_address_width": "",
+        "os_domain": "",
+        "os_service_pack": "",
+        "os_version": "",
+        "owned_by": "",
+        "po_number": "PO100005",
+        "purchase_date": "2017-05-09",
+        "ram": "",
+        "schedule": "",
+        "serial_number": "VVM-370-F60616-KN",
+        "short_description": "",
+        "skip_sync": "false",
+        "start_date": "",
+        "subcategory": "Computer",
+        "support_group": "",
+        "supported_by": "",
+        "sys_class_name": "cmdb_ci_computer",
+        "sys_class_path": "/!!/!2/!(",
+        "sys_created_by": "admin",
+        "sys_created_on": "2012-02-18 08:14:45",
+        "sys_domain": {
+            "link": "demisto.com",
+            "value": "global"
+        },
+        "sys_domain_path": "/",
+        "sys_id": "1234",
+        "sys_mod_count": "18",
+        "sys_tags": "",
+        "sys_updated_by": "system",
+        "sys_updated_on": "2020-04-09 06:20:21",
+        "unverified": "false",
+        "vendor": {
+            "link": "demisto.com",
+            "value": "a"
+        },
+        "virtual": "false",
+        "warranty_expiration": "2020-07-28"
+    }
+}

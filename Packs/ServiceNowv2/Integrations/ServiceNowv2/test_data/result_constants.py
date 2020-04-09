@@ -217,3 +217,34 @@ EXPECTED_QUERY_TABLE = {
         }
     ]
 }
+EXPECTED_LIST_TABLE_FIELDS = {
+    'ServiceNow.Field': [
+        {'Name': 'acquisition_method'}, {'Name': 'asset_tag'}, {'Name': 'assigned'}, {'Name': 'assigned_to'},
+        {'Name': 'beneficiary'}, {'Name': 'checked_in'}, {'Name': 'checked_out'}, {'Name': 'ci'}, {'Name': 'comments'},
+        {'Name': 'company'}, {'Name': 'cost'}, {'Name': 'cost_center'}, {'Name': 'delivery_date'},
+        {'Name': 'department'}, {'Name': 'depreciated_amount'}, {'Name': 'depreciation'}, {'Name': 'depreciation_date'},
+        {'Name': 'display_name'}, {'Name': 'disposal_reason'}, {'Name': 'due'}, {'Name': 'due_in'},
+        {'Name': 'expenditure_type'}, {'Name': 'gl_account'}, {'Name': 'install_date'}, {'Name': 'install_status'},
+        {'Name': 'invoice_number'}, {'Name': 'justification'}, {'Name': 'lease_id'}, {'Name': 'location'},
+        {'Name': 'managed_by'}, {'Name': 'model'}, {'Name': 'model_category'}, {'Name': 'old_status'},
+        {'Name': 'old_substatus'}, {'Name': 'order_date'}, {'Name': 'owned_by'}, {'Name': 'parent'},
+        {'Name': 'po_number'}, {'Name': 'pre_allocated'}, {'Name': 'purchase_date'}, {'Name': 'quantity'},
+        {'Name': 'request_line'}, {'Name': 'resale_price'}, {'Name': 'reserved_for'}, {'Name': 'residual'},
+        {'Name': 'residual_date'}, {'Name': 'retired'}, {'Name': 'retirement_date'}, {'Name': 'salvage_value'},
+        {'Name': 'serial_number'}, {'Name': 'skip_sync'}, {'Name': 'stockroom'}, {'Name': 'substatus'},
+        {'Name': 'support_group'}, {'Name': 'supported_by'}, {'Name': 'sys_class_name'}, {'Name': 'sys_created_by'},
+        {'Name': 'sys_created_on'}, {'Name': 'sys_domain'}, {'Name': 'sys_domain_path'}, {'Name': 'sys_id'},
+        {'Name': 'sys_mod_count'}, {'Name': 'sys_tags'}, {'Name': 'sys_updated_by'}, {'Name': 'sys_updated_on'},
+        {'Name': 'vendor'}, {'Name': 'warranty_expiration'}, {'Name': 'work_notes'}
+    ]
+}
+EXPECTED_QUERY_COMPUTERS = {
+    'ServiceNow.Computer(val.ID===obj.ID)': [
+        {
+            'ID': '1234', 'AssetTag': 'P1000357', 'Name': 'Precision T5500 Workstation',
+            'DisplayName': 'P1000357 - Precision T5500 Workstation', 'OperatingSystem': 'Windows XP Professional',
+            'Company': 'admin', 'AssignedTo': 'admin', 'State': 'In use', 'Cost': '1329 USD'
+        }
+    ]
+}
+

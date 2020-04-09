@@ -2,16 +2,17 @@ import pytest
 from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_readable, \
     generate_body, split_fields, Client, update_ticket_command, create_ticket_command, delete_ticket_command, \
     query_tickets_command, add_link_command, add_comment_command, upload_file_command, get_ticket_notes_command, \
-    get_record_command, update_record_command, create_record_command, delete_record_command, query_table_command
+    get_record_command, update_record_command, create_record_command, delete_record_command, query_table_command, \
+    list_table_fields_command, query_computers_command
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_CREATE_TICKET, RESPONSE_QUERY_TICKETS, RESPONSE_ADD_LINK, RESPONSE_ADD_COMMENT, RESPONSE_UPLOAD_FILE, \
     RESPONSE_GET_TICKET_NOTES, RESPONSE_GET_RECORD, RESPONSE_UPDATE_RECORD, RESPONSE_CREATE_RECORD, \
-    RESPONSE_QUERY_TABLE
+    RESPONSE_QUERY_TABLE, RESPONSE_LIST_TABLE_FIELDS, RESPONSE_QUERY_COMPUTERS
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \
     EXPECTED_TICKET_HR, EXPECTED_MULTIPLE_TICKET_HR, EXPECTED_UPDATE_TICKET, EXPECTED_CREATE_TICKET, \
     EXPECTED_QUERY_TICKETS, EXPECTED_ADD_LINK_HR, EXPECTED_ADD_COMMENT_HR, EXPECTED_UPLOAD_FILE, \
     EXPECTED_GET_TICKET_NOTES, EXPECTED_GET_RECORD, EXPECTED_UPDATE_RECORD, EXPECTED_CREATE_RECORD, \
-    EXPECTED_QUERY_TABLE
+    EXPECTED_QUERY_TABLE, EXPECTED_LIST_TABLE_FIELDS, EXPECTED_QUERY_COMPUTERS
 
 
 def test_get_server_url():
@@ -60,7 +61,9 @@ def test_split_fields():
     (create_record_command, {'table_name': "alm_asset", 'fields': "asset_tag=P4325434;display_name=my_test_record"},
      RESPONSE_CREATE_RECORD, EXPECTED_CREATE_RECORD),
     (query_table_command, {'table_name': "alm_asset", 'fields': "asset_tag,sys_updated_by,display_name",
-    'query': "display_nameCONTAINSMacBook", 'limit': 3}, RESPONSE_QUERY_TABLE, EXPECTED_QUERY_TABLE)
+    'query': "display_nameCONTAINSMacBook", 'limit': 3}, RESPONSE_QUERY_TABLE, EXPECTED_QUERY_TABLE),
+    (list_table_fields_command, {'table_name': "alm_asset"}, RESPONSE_LIST_TABLE_FIELDS, EXPECTED_LIST_TABLE_FIELDS),
+    (query_computers_command, {'computer_id': '1234'}, RESPONSE_QUERY_COMPUTERS, EXPECTED_QUERY_COMPUTERS)
 ])  # noqa: E124
 def test_commands(command, args, response, expected_result, mocker):
     """Unit test
