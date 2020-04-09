@@ -1144,8 +1144,8 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_types: s
                 incident_reasons = incident.get('reason', [])
                 for reason in incident_reasons:
                     incident_reason = ''
-                    if 'Policy' in reason:
-                        incident_reason += f"{reason}, "
+                    if reason.startswith('Policy: '):
+                        incident_reason += f"{reason[8:]}, "
 
                 if incident_reason:
                     # Remove ", " last chars and concatenate with the incident ID
