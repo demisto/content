@@ -1,0 +1,32 @@
+{
+    "name": "ArcSight ESM v2",
+    "description": "ArcSight ESM SIEM by Micro Focus (Formerly HPE Software).",
+    "support": "Cortex XSOAR",
+    "serverMinVersion": "1.0.0",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Messaging",
+        "Email Gateway",
+        "Network Security",
+        "Analytics & SIEM"
+    ],
+    "tags": [
+        "Microsoft Teams",
+        "Proofpoint TAP v2",
+        "FortiGate",
+        "ArcSight ESM v2"
+    ],
+    "created": "2020-04-10T00:00:00Z",
+    "updated": "2020-04-10T00:00:00Z",
+    "beta": false,
+    "deprecated": false,
+    "certification": "certified",
+    "useCases": [],
+    "keywords": [],
+    "price": "0",
+    "dependencies": {},
+    "displayedImages": []
+}

@@ -1,0 +1,30 @@
+{
+    "name": "FortiGate",
+    "description": "Manage FortiGate Firewall",
+    "support": "Cortex XSOAR",
+    "serverMinVersion": "1.0.0",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Messaging",
+        "Email Gateway",
+        "Network Security"
+    ],
+    "tags": [
+        "Microsoft Teams",
+        "Proofpoint TAP v2",
+        "FortiGate"
+    ],
+    "created": "2020-04-10T00:00:00Z",
+    "updated": "2020-04-10T00:00:00Z",
+    "beta": false,
+    "deprecated": false,
+    "certification": "certified",
+    "useCases": [],
+    "keywords": [],
+    "price": "0",
+    "dependencies": {},
+    "displayedImages": []
+}

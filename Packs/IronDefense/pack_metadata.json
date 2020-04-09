@@ -1,0 +1,36 @@
+{
+    "name": "IronDefense",
+    "description": "The IronDefense Integration allows users to interact with IronDefense alerts within Demisto. The Integration provides the ability to rate alerts, update alert statuses, add comments to alerts, and to report observed bad activity.",
+    "support": "Cortex XSOAR",
+    "serverMinVersion": "1.0.0",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Case Management",
+        "Endpoint",
+        "Analytics & SIEM",
+        "Endpoint",
+        "Case Management",
+        "Network Security"
+    ],
+    "tags": [
+        "Cherwell",
+        "Tanium",
+        "Devo v2",
+        "Carbon Black Enterprise Protection V2",
+        "Freshdesk",
+        "IronDefense"
+    ],
+    "created": "2020-04-10T00:00:00Z",
+    "updated": "2020-04-10T00:00:00Z",
+    "beta": false,
+    "deprecated": false,
+    "certification": "certified",
+    "useCases": [],
+    "keywords": [],
+    "price": "0",
+    "dependencies": {},
+    "displayedImages": []
+}
