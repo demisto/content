@@ -1,9 +1,5 @@
-import demistomock as demisto
-from CommonServerPython import *
-
-
-
-
+# import demistomock as demisto
+# from CommonServerPython import *
 
 ''' IMPORTS '''
 import base64
@@ -717,7 +713,12 @@ def get_phishing_submissions(normalized_triage_score,
     #     return entry
 
 def set_triage_status(submission_id, status):
-    response = ts.mark_triage_status(submission_id, status)
+    try:
+        response = ts.mark_triage_status(submission_id, status)
+        response.raise_for_status()
+        return f"Submission ID {submission_id} is {status}"
+    except requests.exceptions.HTTPError as err:
+        return str(err)
 
 ''' EXECUTION CODE '''
 config = {
