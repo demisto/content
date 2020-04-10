@@ -2139,7 +2139,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: ServiceNow
+                  simple: ServiceNowv2
           accessor: name
     separatecontext: false
     view: |-
