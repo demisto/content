@@ -527,7 +527,7 @@ jobs:
           when: always
       - run:
           name: Store Artifacts to GCS
-          run: ./Tests/scripts/upload_artifacts.sh
+          command: ./Tests/scripts/upload_artifacts.sh
           when: always
 
 workflows:
