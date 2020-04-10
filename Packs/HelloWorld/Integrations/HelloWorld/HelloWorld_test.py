@@ -242,35 +242,22 @@ def test_fetch_incidents(requests_mock):
         client=client,
         last_run=last_run,
         alert_status='ACTIVE',
+        severity=None,
         alert_type=None,
-        first_fetch_time='3 days'
+        first_fetch_time='3 days',
     )
 
     assert new_incidents == [
         {
             'name': 'Hello World Alert 100',
-            'details': 'Hello World Alert 100',
             'occurred': '2020-02-17T23:34:23.000Z',
             'rawJSON': json.dumps(mock_response['alerts'][0]),
             'severity': 4,  # critical
-            'type': 'Hello World Alert',
-            'CustomFields': {
-                'helloworldid': '100',
-                'helloworldtype': 'Science Fiction',
-                'helloworldstatus': 'ACTIVE'
-            }
         },
         {
             'name': 'Hello World Alert 200',
-            'details': 'Hello World Alert 200',
             'occurred': '2020-02-17T23:34:23.000Z',
             'rawJSON': json.dumps(mock_response['alerts'][1]),
             'severity': 1,  # critical
-            'type': 'Hello World Alert',
-            'CustomFields': {
-                'helloworldid': '200',
-                'helloworldtype': 'Science Fiction',
-                'helloworldstatus': 'ACTIVE'
-            }
         }
     ]

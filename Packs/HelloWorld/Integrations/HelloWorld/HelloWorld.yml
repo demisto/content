@@ -42,6 +42,16 @@ configuration:
   name: alert_type
   required: false
   type: 0
+- defaultvalue: 0
+  display: Fetch alert with severity
+  name: severity
+  options:
+  - Low
+  - Medium
+  - High
+  - Critical
+  required: false
+  type: 15
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
