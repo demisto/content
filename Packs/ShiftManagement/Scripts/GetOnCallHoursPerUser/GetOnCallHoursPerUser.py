@@ -1,8 +1,10 @@
+import operator
+from functools import reduce
+from typing import Dict, List
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-
-from typing import List, Dict
 
 
 def count_hours_in_shift(shift: Dict) -> int:
@@ -30,20 +32,22 @@ def main():
         demisto.error(f'Failed to get roles: {str(get_error(get_roles_response))}')
     else:
         hours_per_user: Dict[str, int] = {}
-        roles = get_roles_response[0]['Contents']
-        for role in roles:
-            get_users_response: List = demisto.executeCommand('getUsers', {'roles': role.get('name')})
-            if is_error(get_roles_response):
-                demisto.error(f'Failed to get users: {str(get_error(get_users_response))}')
-            else:
+        get_users_response: List = demisto.executeCommand('getUsers', {})
+        if is_error(get_roles_response):
+            demisto.error(f'Failed to get users: {str(get_error(get_users_response))}')
+        else:
+            users = get_users_response[0]['Contents']
+            roles = get_roles_response[0]['Contents']
+            for role in roles:
                 role_on_call_hours = 0
                 shifts = role.get('shifts') or []
                 for shift in shifts:
                     role_on_call_hours += count_hours_in_shift(shift)
-
-                role_users = get_users_response[0]['Contents']
-                for user in role_users:
-                    username = user.get('name')
+                role_users = map(
+                    lambda role_user: role_user.get('name', ''),
+                    filter(lambda u: role.get('name') in reduce(operator.add, u.get('roles', {}).values()), users)
+                )
+                for username in role_users:
                     if username in hours_per_user:
                         hours_per_user[username] += role_on_call_hours
                     else:

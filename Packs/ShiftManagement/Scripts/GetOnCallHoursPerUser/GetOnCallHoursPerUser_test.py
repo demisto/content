@@ -1,4 +1,5 @@
 import json
+
 import demistomock as demisto
 from GetOnCallHoursPerUser import main
 
@@ -29,41 +30,37 @@ GET_ROLES_RESPONSE = [{
     'Contents': ROLES
 }]
 
-SHIFT1_USERS = [
+USERS = [
     {
         'Type': 1,
         'Contents': [
             {
                 'id': 'user1',
-                'name': 'User1'
+                'name': 'User1',
+                'roles': {
+                    'demisto': ['Shift1']
+                }
             },
             {
                 'id': 'user2',
-                'name': 'User2'
-            }
-        ]
-    }
-]
-
-SHIFT2_USERS = [
-    {
-        'Type': 1,
-        'Contents': [
+                'name': 'User2',
+                'roles': {
+                    'demisto': ['Shift1']
+                }
+            },
             {
                 'id': 'user3',
-                'name': 'User2'
-            }
-        ]
-    }
-]
-
-ADMIN_USERS = [
-    {
-        'Type': 1,
-        'Contents': [
+                'name': 'User3',
+                'roles': {
+                    'demisto': ['Shift2']
+                }
+            },
             {
                 'id': 'admin',
-                'name': 'Admin'
+                'name': 'Admin',
+                'roles': {
+                    'demisto': ['Administrator']
+                }
             }
         ]
     }
@@ -74,12 +71,7 @@ def execute_command(name, args=None):
     if name == 'getRoles':
         return GET_ROLES_RESPONSE
     elif name == 'getUsers':
-        if args['roles'] == 'Shift1':
-            return SHIFT1_USERS
-        elif args['roles'] == 'Shift2':
-            return SHIFT2_USERS
-        elif args['roles'] == 'Administrator':
-            return ADMIN_USERS
+        return USERS
     else:
         return None
 
@@ -95,9 +87,12 @@ def test_get_oncall_hours_per_user(mocker):
             "name": "User1", "data": [128], "groups": [{"name": "User1", "data": [128]}]
         },
         {
-            "name": "User2", "data": [331], "groups": [{"name": "User2", "data": [331]}]
+            "name": "User2", "data": [128], "groups": [{"name": "User2", "data": [128]}]
         },
         {
             "name": "Admin", "data": [0], "groups": [{"name": "Admin", "data": [0]}]
+        },
+        {
+            "name": "User3", "data": [203], "groups": [{"name": "User3", "data": [203]}]
         }
     ]
