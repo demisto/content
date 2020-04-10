@@ -7,8 +7,12 @@
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "categories": "Endpoint",
-    "tags": "Red Canary",
+    "categories": [
+        "Endpoint"
+    ],
+    "tags": [
+        "Red Canary"
+    ],
     "created": "2020-04-10T00:00:00Z",
     "updated": "2020-04-10T00:00:00Z",
     "beta": false,
