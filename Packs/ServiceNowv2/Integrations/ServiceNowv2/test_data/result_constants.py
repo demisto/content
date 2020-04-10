@@ -254,5 +254,3 @@ EXPECTED_GET_TABLE_NAME = {
         }
     ]
 }
-
-
