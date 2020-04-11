@@ -5181,7 +5181,7 @@ def panorama_show_running_config(target: str):
 
 
 def panorama_show_running_config_command():
-    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
+    target = demisto.args().get('target')
     result = panorama_show_running_config(target)
 
     return result
