@@ -1,0 +1,74 @@
+commonfields:
+  id: 412dcb72-8362-4062-8f6d-746e37afb69e
+  version: -1
+name: FindIPFromConfig
+comment: Locate the ogject from the configuration file and provide the full path
+script: |
+  import json
+
+
+  # Getting config file from the war room
+  d_args = demisto.args()
+  entry_id = d_args['entryID'] if 'entryID' in d_args else None
+  res = demisto.getFilePath(entry_id)
+  file_path = res['path']
+  if not res:
+      return_error("Entry {} not found".format(entry_id))
+
+
+  # List of objects to check
+  obj_arg = demisto.args().get('Object_List')
+  objects = obj_arg.split()
+
+  data = json.load(open(file_path));
+
+  results = {}
+  res = '## Objects/Assets List To Search\n'
+  for obj in objects:
+      def find_yield(ip, data, path):
+          if type(data) is dict:
+              for k, v in data.items():
+                  path.append(k)
+                  yield from find_yield(ip, v, path)
+                  path.pop()
+          if type(data) is list:
+              for i, v in enumerate(data):
+                  yield from find_yield(ip, v, path)
+          if type(data) is str:
+              if ip in data:
+                  pathstr = "->".join(path)
+                  yield {"Path": pathstr, "Data": data}
+              else:
+                  return
+      objResults = []
+      cpath = []
+      for r in find_yield(obj, data, cpath):
+          objResults.append(r)
+      if objResults:
+          results[obj] = objResults
+          sectionTitle = '\n #### Object` %s` was found at the following path/s: \n' % (obj)
+          res += tableToMarkdown(sectionTitle,objResults, headers=["Path", "Data"])
+      else:
+          res += '\n ### `%s` Not Found on this device\n' % (obj)
+  demisto.results({'ContentsFormat': formats['markdown'],
+                  'Type': entryTypes['note'],
+                  'Contents': res,
+                  'EntryContext': {'Panorama.AssetSearch.Results': results}
+  })
+type: python
+tags: []
+comment: Locate the ogject from the configuration file and provide the full path
+enabled: true
+args:
+- name: entryID
+  required: true
+- name: Object_List
+  required: true
+  description: Object to search
+outputs:
+- contextPath: Panorama.AssetSearch.Results
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.8.2.6712
+runas: DBotWeakRole

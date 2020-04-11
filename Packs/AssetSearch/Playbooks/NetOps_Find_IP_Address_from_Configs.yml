@@ -1,0 +1,219 @@
+id: 771368ef-6a54-4a0b-8d6d-0fffda7455f4
+version: 1
+name: NetOps Find IP Address from Configs
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2aa30f1e-d97e-4885-87db-6ed4251f486d
+    type: start
+    task:
+      id: 2aa30f1e-d97e-4885-87db-6ed4251f486d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: a6bbc406-e136-4ea0-8157-4b1686d727e1
+    type: regular
+    task:
+      id: a6bbc406-e136-4ea0-8157-4b1686d727e1
+      version: -1
+      name: panorama-show-running-config
+      description: Show Panorama/Firewall running configuration
+      script: Panorama|||panorama-show-running-config
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      target: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: f6559eeb-fd6a-4efe-897e-516bb9a4dbf9
+    type: regular
+    task:
+      id: f6559eeb-fd6a-4efe-897e-516bb9a4dbf9
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: dfa59d5c-b461-45f0-8570-e9394af2718b
+    type: regular
+    task:
+      id: dfa59d5c-b461-45f0-8570-e9394af2718b
+      version: -1
+      name: Find Assets IPs
+      scriptName: FindIPFromConfig
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      Object_List:
+        simple: ${incident.assetlist}
+      entryID:
+        simple: ${File.EntryID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 2be493b4-2737-44b0-82a1-58f538f7bf37
+    type: condition
+    task:
+      id: 2be493b4-2737-44b0-82a1-58f538f7bf37
+      version: -1
+      name: Any mentions found?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Panorama.AssetSearch.Results
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 98c56562-d4b7-4f1b-8a23-31cc10efdae5
+    type: regular
+    task:
+      id: 98c56562-d4b7-4f1b-8a23-31cc10efdae5
+      version: -1
+      name: Analyst Review
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 1e13e0c1-db06-4124-873e-e6938545da5e
+    type: title
+    task:
+      id: 1e13e0c1-db06-4124-873e-e6938545da5e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1225,
+        "width": 730,
+        "x": 400,
+        "y": 20
+      }
+    }
+  }
+inputs: []
+outputs: []

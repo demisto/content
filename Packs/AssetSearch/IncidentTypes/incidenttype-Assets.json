@@ -1,0 +1,23 @@
+{
+	"autorun": false,
+	"closureScript": "",
+	"color": "#67c8d1",
+	"days": 0,
+	"daysR": 0,
+	"default": false,
+	"disabled": false,
+	"hours": 0,
+	"hoursR": 0,
+	"id": "Assets",
+	"locked": false,
+	"name": "Assets",
+	"playbookId": "771368ef-6a54-4a0b-8d6d-0fffda7455f4",
+	"preProcessingScript": "",
+	"readonly": false,
+	"reputationCalc": 0,
+	"sortValues": null,
+	"system": false,
+	"version": -1,
+	"weeks": 0,
+	"weeksR": 0
+}
