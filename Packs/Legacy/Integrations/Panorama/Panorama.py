@@ -5163,6 +5163,30 @@ def panorama_device_reboot_command():
     demisto.results(result['response']['result'])
 
 
+@logger
+def panorama_show_running_config(target: str):
+    params = {
+        'type': 'config',
+        'cmd': '<show><config><running></running></config></show>',
+        'target': target,
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+    config_result = result['response']['result']
+    demisto.results(fileResult('running_config.json', json.dumps(config_result)))
+
+
+def panorama_show_running_config_command():
+    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
+    result = panorama_show_running_config(target)
+
+    return result
+
+
 def main():
     LOG(f'Command being called is: {demisto.command()}')
 
@@ -5427,6 +5451,10 @@ def main():
         # Reboot Panorama Device
         elif demisto.command() == 'panorama-device-reboot':
             panorama_device_reboot_command()
+
+        # Show Panorama/Firewall running configuration
+        elif demisto.command() == 'panorama-show-running-config':
+            panorama_show_running_config_command()
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} was not implemented.')

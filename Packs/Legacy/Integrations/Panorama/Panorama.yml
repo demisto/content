@@ -3558,6 +3558,10 @@ script:
     description: Reboots the Firewall device.
     execution: false
     name: panorama-device-reboot
+  - deprecated: false
+    description: Show Panorama/Firewall running configuration
+    execution: false
+    name: panorama-show-running-config
   dockerimage: demisto/python3:3.7.3.221
   feed: false
   isfetch: false
