@@ -5176,7 +5176,7 @@ def panorama_show_running_config(target: str):
         'GET',
         params=params
     )
-    config_result = result['response']['result']
+    config_result = result.get('response', {}).get('result')
     demisto.results(fileResult('running_config.json', json.dumps(config_result)))
 
 
