@@ -12,6 +12,10 @@ IOC_RES_LEN = 38
 
 @pytest.mark.helper_commands
 class TestHelperFunctions:
+    def test_get_outbound_mimetype(self):
+        from ExportIndicators import get_outbound_mimetype
+        assert get_outbound_mimetype() == 'text/plain'
+
     @pytest.mark.get_outbound_ioc_values
     def test_get_outbound_ioc_values_1(self, mocker):
         """Test on_demand"""
@@ -566,7 +570,3 @@ class TestHelperFunctions:
         assert "1.1.1.3" not in ip_range_list
         assert "2.2.2.2" in ip_range_list
         assert "25.24.23.22" in ip_range_list
-
-    def test_get_outbound_mimetype(self):
-        from ExportIndicators import get_outbound_mimetype
-        assert get_outbound_mimetype() == 'text/plain'
