@@ -1,6 +1,7 @@
 id: Port Scan - External Source
 version: -1
 name: Port Scan - External Source
+description: This playbook remediates port scans originating outside of the organization's network.
 starttaskid: '0'
 tasks:
   '0':
@@ -30,7 +31,7 @@ tasks:
       id: 210e916c-29cd-4362-8b55-06c0cacaa491
       version: -1
       name: Is there a geo-location for the attacker IP?
-      description: Checks whether geo-location is exists for the attacker's IP address.
+      description: Checks whether geo-location exists for the attacker's IP address.
       type: condition
       iscommand: false
       brand: ''
@@ -83,7 +84,7 @@ tasks:
       id: 5b736377-454c-4e17-81c7-2c87d3a2a041
       version: -1
       name: Save originating country of attacker to incident field
-      description: Saves the country of the attacker's IP address in an incident field.
+      description: Saves the country of the attacker's IP address in the Country incident field.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -472,7 +473,7 @@ tasks:
       id: b1181f95-859f-4ff8-8cde-5ce34367eac9
       version: -1
       name: Update NIST stage - Containment
-      description: commands.local.cmd.set.incident
+      description: Updates the NIST Stage field to Containment.
       type: regular
       iscommand: true
       brand: Builtin
@@ -982,7 +983,7 @@ tasks:
       id: 1fea69cd-c7ac-447a-8329-4c74ebb37fe1
       version: -1
       name: Manually block IPs
-      description: Manually block the attacker IP in the firewall.
+      description: Manually block the attacker IPs in the firewall.
       type: regular
       iscommand: false
       brand: ''
@@ -1023,7 +1024,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ''
-      description: ''
+      description: 'Pivots are used to gather data that share a common attribute with a domain. For instance, pivoting on an IP Address will give you back all domains related to that IP address.'
     nexttasks:
       '#none#':
       - '49'
@@ -1591,7 +1592,7 @@ tasks:
       id: d9b01339-2f8a-4985-8697-296e07c5b4e3
       version: -1
       name: Save attacker IP to local context
-      description: Saves the attacker IP address to a new context key, outside of
+      description: Saves the attacker IP address to the SourceExternalIPs context key, outside of
         the playbook inputs.
       scriptName: SetAndHandleEmpty
       type: regular
@@ -2430,21 +2431,21 @@ inputs:
 - key: SourceExternalIPs
   value: {}
   required: false
-  description: The external IP address/es that initiated the port scan.
+  description: The external IP address(es) that initiated the port scan.
 - key: BlockMaliciousDomains
   value:
     simple: 'False'
   required: true
-  description: In the case that reverse IP lookup is performed and a malicious domain
-    is found - setting this to True will automatically block the malicious domains.
-    If set to False, the analyst will have the chance to manually block the domains.
+  description: In the event that reverse IP lookup is performed, and a malicious domain
+    is found, setting this to True will automatically block the malicious domains.
+    If set to False, an analyst can manually block the domains.
 - key: DBotScore
   value:
     complex:
       root: DBotScore
   required: false
-  description: All the DBotScores that were calculated either automatically by auto-reputation
-    or using specific tasks when the incident was ingested. This is used to calculate
+  description: All the DBotScores that were calculated, either automatically by auto-reputation
+    or using specific tasks, when the incident was ingested. This is used to calculate
     the incident severity at a later stage.
 outputs: []
 sourceplaybookid: Port Scan - Generic
