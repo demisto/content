@@ -1,7 +1,7 @@
 """
-Given a CSV file in the war room by entry ID, searches based on column and value.
+Given a CSV file in the War Room by entry ID, searches based on column and value.
 
-If column is not present, simply parse the CSV into a list of lists or list of dicts (if header row supplied)
+If the column is not present, simply parse the CSV into a list of lists or list of dicts (if header row supplied).
 """
 from CommonServerPython import *
 
