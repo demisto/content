@@ -1,6 +1,5 @@
 ## [Unreleased]
--
-
+Removed test playbook
 
 ## [19.12.1] - 2019-12-25
 Rule position is not mandatory anymore, the default is Top

@@ -1,6 +1,5 @@
 ## [Unreleased]
--
-
+Added a better error message when commit or push fails
 
 ## [20.3.3] - 2020-03-18
 Fixed a bug where the commit failed but the playbook succeeded. Now it will fail on unsuccessful commit or push.
