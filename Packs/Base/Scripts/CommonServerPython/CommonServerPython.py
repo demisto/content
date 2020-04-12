@@ -13,6 +13,7 @@ import re
 import socket
 import sys
 import time
+import traceback
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
 from datetime import datetime, timedelta
@@ -1755,6 +1756,7 @@ def return_error(message, error='', outputs=None):
         :return: Error entry object
         :rtype: ``dict``
     """
+    message = "{}\n\nTrace:{}".format(message, traceback.format_exc())
     LOG(message)
     if error:
         LOG(str(error))
