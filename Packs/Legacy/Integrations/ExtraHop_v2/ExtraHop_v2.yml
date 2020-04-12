@@ -34,6 +34,72 @@ script:
   subtype: python3
   commands:
   - name: extrahop-get-alerts
+    deprecated: true
+    arguments: []
+    outputs:
+    - contextPath: Extrahop.Alert.Operator
+      description: The logical operator applied when comparing the value of the operand
+        field to alert conditions.
+      type: String
+    - contextPath: Extrahop.Alert.FieldName
+      description: The name of the monitored metric.
+      type: String
+    - contextPath: Extrahop.Alert.NotifySnmp
+      description: 'Indicates whether to send an SNMP trap when an alert is generated. '
+      type: Boolean
+    - contextPath: Extrahop.Alert.Operand
+      description: The value to compare against alert conditions.
+      type: String
+    - contextPath: Extrahop.Alert.IntervalLength
+      description: The length of the alert interval, expressed in seconds.
+      type: Number
+    - contextPath: Extrahop.Alert.Author
+      description: 'The name of the user that created the alert. '
+      type: String
+    - contextPath: Extrahop.Alert.Name
+      description: The unique, friendly name for the alert.
+      type: String
+    - contextPath: Extrahop.Alert.FieldName2
+      description: The second monitored metric when applying a ratio.
+      type: String
+    - contextPath: Extrahop.Alert.RefireInterval
+      description: The time interval in which alert conditions are monitored, expressed
+        in seconds.
+      type: Number
+    - contextPath: Extrahop.Alert.ModTime
+      description: 'The time of the most recent update, expressed in milliseconds
+        since the epoch. '
+      type: Number
+    - contextPath: Extrahop.Alert.Units
+      description: The interval in which to evaluate the alert condition.
+      type: String
+    - contextPath: Extrahop.Alert.ApplyAll
+      description: Indicates whether the alert is assigned to all available data sources.
+      type: Boolean
+    - contextPath: Extrahop.Alert.Type
+      description: The type of alert.
+      type: String
+    - contextPath: Extrahop.Alert.FieldOp
+      description: The type of comparison between the "field_name" and "field_name2"
+        fields when applying a ratio.
+      type: String
+    - contextPath: Extrahop.Alert.Id
+      description: The unique identifier for the alert.
+      type: Number
+    - contextPath: Extrahop.Alert.Disabled
+      description: Indicates whether the alert is disabled.
+      type: Boolean
+    - contextPath: Extrahop.Alert.Description
+      description: An optional description for the alert.
+      type: String
+    - contextPath: Extrahop.Alert.Severity
+      description: The severity level of the alert.
+      type: Number
+    - contextPath: Extrahop.Alert.StatName
+      description: The statistic name for the alert.
+      type: String
+    description: Get all alert rules from Reveal(x).
+  - name: extrahop-get-alert-rules
     arguments: []
     outputs:
     - contextPath: Extrahop.Alert.Operator
@@ -2298,6 +2364,130 @@ script:
       type: string
     description: Get all devices on the watchlist in Reveal(x).
   - name: extrahop-create-alert
+    deprecated: true
+    arguments:
+    - name: apply_all
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Indicates whether the alert is assigned to all available data sources.
+    - name: disabled
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Indicates whether the alert is disabled.
+    - name: name
+      required: true
+      description: The unique, friendly name for the alert.
+    - name: notify_snmp
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Indicates whether to send an SNMP trap when an alert is generated.
+    - name: refire_interval
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "300"
+      - "600"
+      - "900"
+      - "1800"
+      - "3600"
+      - "7200"
+      - "14400"
+      description: 'The time interval in which alert conditions are monitored, expressed
+        in seconds. '
+    - name: severity
+      required: true
+      description: 'The severity level of the alert, which is displayed in the Alert
+        History, email notifications, and SNMP traps. Supported values: 0, 1, 2, 3,
+        4, 5, 6, 7'
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - detection
+      - threshold
+      description: 'The type of alert. '
+    - name: object_type
+      auto: PREDEFINED
+      predefined:
+      - application
+      - device
+      description: 'The type of metric source monitored by the alert configuration.
+        Only applicable to detection alerts. '
+    - name: protocols
+      description: The list of monitored protocols. Only applicable to detection alerts.
+    - name: field_name
+      description: The name of the monitored metric. Only applicable to threshold
+        alerts.
+    - name: field_name2
+      description: The second monitored metric when applying a ratio. Only applicable
+        to threshold alerts.
+    - name: stat_name
+      description: The statistic name for the alert. Only applicable to threshold
+        alerts.
+    - name: units
+      auto: PREDEFINED
+      predefined:
+      - none
+      - period
+      - 1 sec
+      - 1 min
+      - 1 hr
+      description: "The interval in which to evaluate the alert condition. Only applicable\
+        \ to threshold alerts. \nSupported values: \"none\", \"period\", \"1 sec\"\
+        , \"1 min\", \"1 hr\""
+    - name: interval_length
+      auto: PREDEFINED
+      predefined:
+      - "30"
+      - "60"
+      - "120"
+      - "300"
+      - "600"
+      - "900"
+      - "1200"
+      - "1800"
+      description: "The length of the alert interval, expressed in seconds. Only applicable\
+        \ to threshold alerts. \nSupported values: 30, 60, 120, 300, 600, 900, 1200,\
+        \ 1800"
+      defaultValue: "30"
+    - name: operand
+      description: The value to compare against alert conditions. The compare method
+        is specified by the value of the operator field. Only applicable to threshold
+        alerts.
+    - name: operator
+      auto: PREDEFINED
+      predefined:
+      - ==
+      - '>'
+      - <
+      - '>='
+      - <=
+      description: The logical operator applied when comparing the value of the operand
+        field to alert conditions. Only applicable to threshold alerts.
+    - name: field_op
+      auto: PREDEFINED
+      predefined:
+      - /
+      - "null"
+      description: The type of comparison between the field_name and field_name2 fields
+        when applying a ratio. Only applicable to threshold alerts.
+    - name: param
+      description: The first alert parameter, which is either a key pattern or a data
+        point. Only applicable to threshold alerts.
+    - name: param2
+      description: The second alert parameter, which is either a key pattern or a
+        data point. Only applicable to threshold alerts.
+    description: Create a new alert rule in Reveal(x).
+  - name: extrahop-create-alert-rule
     arguments:
     - name: apply_all
       required: true
@@ -2421,6 +2611,139 @@ script:
         data point. Only applicable to threshold alerts.
     description: Create a new alert rule in Reveal(x).
   - name: extrahop-edit-alert
+    deprecated: true
+    arguments:
+    - name: alert_id
+      required: true
+      description: The unique identifier for the alert.
+    - name: apply_all
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Indicates whether the alert is assigned to all available data sources.
+    - name: disabled
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Indicates whether the alert is disabled.
+    - name: name
+      required: true
+      description: The unique, friendly name for the alert.
+    - name: notify_snmp
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Indicates whether to send an SNMP trap when an alert is generated.
+    - name: field_name
+      description: The name of the monitored metric. Only applicable to threshold
+        alerts.
+    - name: stat_name
+      description: The statistic name for the alert. Only applicable to threshold
+        alerts.
+    - name: units
+      auto: PREDEFINED
+      predefined:
+      - none
+      - period
+      - 1 sec
+      - 1 min
+      - 1 hr
+      description: The interval in which to evaluate the alert condition. Only applicable
+        to threshold alerts.
+    - name: interval_length
+      auto: PREDEFINED
+      predefined:
+      - "30"
+      - "60"
+      - "120"
+      - "300"
+      - "600"
+      - "900"
+      - "1200"
+      - "1800"
+      description: The length of the alert interval, expressed in seconds. Only applicable
+        to threshold alerts.
+    - name: operand
+      description: The value to compare against alert conditions. The compare method
+        is specified by the value of the operator field. Only applicable to threshold
+        alerts.
+    - name: refire_interval
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "300"
+      - "600"
+      - "900"
+      - "1800"
+      - "3600"
+      - "7200"
+      - "14400"
+      description: The time interval in which alert conditions are monitored, expressed
+        in seconds.
+    - name: severity
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+      - "5"
+      - "6"
+      - "7"
+      description: The severity level of the alert, which is displayed in the Alert
+        History, email notifications, and SNMP traps.
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - detection
+      - threshold
+      description: The type of alert.
+    - name: object_type
+      auto: PREDEFINED
+      predefined:
+      - application
+      - device
+      description: The type of metric source monitored by the alert configuration.
+        Only applicable to detection alerts.
+    - name: protocols
+      description: The list of monitored protocols. Only applicable to detection alerts.
+    - name: operator
+      auto: PREDEFINED
+      predefined:
+      - ==
+      - '>'
+      - <
+      - '>='
+      - <=
+      description: The logical operator applied when comparing the value of the operand
+        field to alert conditions. Only applicable to threshold alerts.
+    - name: field_name2
+      description: The second monitored metric when applying a ratio. Only applicable
+        to threshold alerts.
+    - name: field_op
+      auto: PREDEFINED
+      predefined:
+      - /
+      - "null"
+      description: The type of comparison between the field_name and field_name2 fields
+        when applying a ratio. Only applicable to threshold alerts.
+    - name: param
+      description: The first alert parameter, which is either a key pattern or a data
+        point. Only applicable to threshold alerts.
+    - name: param2
+      description: The second alert parameter, which is either a key pattern or a
+        data point. Only applicable to threshold alerts.
+    description: Modify an alert rule in Reveal(x).
+  - name: extrahop-edit-alert-rule
     arguments:
     - name: alert_id
       required: true

@@ -1,13 +1,13 @@
 # pylint: disable=no-member
-from CommonServerPython import *
-import uuid
 import pickle
+import uuid
 from HTMLParser import HTMLParser
 from io import BytesIO, StringIO
-import base64
 
 import demisto_ml
 import pandas as pd
+
+from CommonServerPython import *
 
 DBOT_TEXT_FIELD = 'dbot_text'
 DBOT_PROCESSED_TEXT_FIELD = 'dbot_processed_text'
@@ -165,6 +165,7 @@ def main():
     whitelist_fields = demisto.args().get('whitelistFields').split(",") if demisto.args().get(
         'whitelistFields') else None
     output_format = demisto.args()['outputFormat']
+    output_original_text_fields = demisto.args().get('outputOriginalTextFields', 'false') == 'true'
 
     description = ""
     # read data
@@ -194,6 +195,9 @@ def main():
     except Exception:
         pass
 
+    if output_original_text_fields:
+        for field in text_fields:
+            whitelist_fields += [x.strip() for x in field.split('|')]
     if whitelist_fields and len(whitelist_fields) > 0:
         whitelist_fields.append(DBOT_PROCESSED_TEXT_FIELD)
         data = whitelist_dict_fields(data, whitelist_fields)

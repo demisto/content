@@ -534,7 +534,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "16"
+      - "21"
       "yes":
       - "12"
     separatecontext: false
@@ -573,7 +573,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "17"
+      - "22"
       "yes":
       - "5"
     separatecontext: false
@@ -598,68 +598,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "16":
-    id: "16"
-    taskid: 1312dacc-0f37-48ba-884d-e8fa9697e965
-    type: regular
-    task:
-      id: 1312dacc-0f37-48ba-884d-e8fa9697e965
-      version: -1
-      name: Print Commit Error
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      message:
-        simple: Panorama Commit Failed
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 620,
-          "y": 1660
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "17":
-    id: "17"
-    taskid: 0de2ff3e-cdac-4477-8939-cc6722a78b99
-    type: regular
-    task:
-      id: 0de2ff3e-cdac-4477-8939-cc6722a78b99
-      version: -1
-      name: Print Push Error
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      message:
-        simple: Panorama Commit Failed
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 370,
-          "y": 3610
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "18":
     id: "18"
     taskid: 3e46d493-9404-476d-8d95-68b8ad017a84
@@ -667,7 +605,7 @@ tasks:
     task:
       id: 3e46d493-9404-476d-8d95-68b8ad017a84
       version: -1
-      name: Fix errors and commit manually
+      name: Fix errors and commit manually      
       description: '-'
       type: regular
       iscommand: false
@@ -712,6 +650,96 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 436104a6-cd0a-4787-8987-3a4ed048bad5
+    type: regular
+    task:
+      id: 436104a6-cd0a-4787-8987-3a4ed048bad5
+      version: -1
+      name: Print Commit Error
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      value:
+        complex:
+          root: Panorama
+          accessor: Commit.Details
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Panorama commit failed: '
+              suffix: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 1640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 6531e5bf-f09a-4bab-8455-76b9b8321bc5
+    type: regular
+    task:
+      id: 6531e5bf-f09a-4bab-8455-76b9b8321bc5
+      version: -1
+      name: Print Push Error
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      value:
+        complex:
+          root: Panorama
+          accessor: Push.Details
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Panorama push failed: '
+              suffix: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 3620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -721,7 +749,6 @@ view: |-
       "13_5_#default#": 0.1,
       "13_6_Panorama": 0.73,
       "14_12_yes": 0.24,
-      "15_17_#default#": 0.2,
       "15_5_yes": 0.1,
       "1_5_#default#": 0.17
     },

@@ -59,7 +59,7 @@ tasks:
         simple: 'yes'
       unsecure: {}
       url:
-        simple: https://github.com/demisto/content/raw/master/Scripts/StixParser/TestData/stix1/file-stix-ioc.xml
+        simple: https://github.com/demisto/content/raw/master/Packs/Legacy/Scripts/StixParser/TestData/stix1/file-stix-ioc.xml
       username: {}
     separatecontext: false
     view: |-
@@ -103,7 +103,7 @@ tasks:
         simple: 'yes'
       unsecure: {}
       url:
-        simple: https://github.com/demisto/content/raw/master/Scripts/StixParser/TestData/stix2.json
+        simple: https://github.com/demisto/content/raw/master/Packs/Legacy/Scripts/StixParser/TestData/stix2.json
       username: {}
     separatecontext: false
     view: |-
