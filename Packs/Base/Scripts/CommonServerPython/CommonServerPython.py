@@ -1756,7 +1756,10 @@ def return_error(message, error='', outputs=None):
         :return: Error entry object
         :rtype: ``dict``
     """
-    message = "{}\n\nTrace:{}".format(message, traceback.format_exc())
+    trace = traceback.format_exc()
+    if 'NoneType: None\n' != trace:  # Checking that an exception occured
+        message = "{}\n\n{}".format(message, trace)
+
     LOG(message)
     if error:
         LOG(str(error))
