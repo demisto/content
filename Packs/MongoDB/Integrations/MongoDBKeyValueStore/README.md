@@ -2,7 +2,7 @@
 ---
 
 Manipulates key/value pairs according to an incident utilizing the MongoDB collection.
-This integration was integrated and tested with version xx of MongoDB Key Value Store
+This integration was integrated and tested with version v4.2.3 of MongoDB.
 
 The account user must have appropriate permissions -  ***root*** role to execute the API calls.
 
@@ -201,11 +201,6 @@ There is no context output for this command.
 ##### Command Example
 ```!mongodb-delete-key key=hello id=1234```
 
-##### Context Example
-```
-{}
-```
-
 ##### Human Readable Output
 Incident "1234" - key/value collection - 1 document deleted
 
@@ -228,11 +223,6 @@ There is no context output for this command.
 
 ##### Command Example
 ```!mongodb-purge-entries id=2468```
-
-##### Context Example
-```
-{}
-```
 
 ##### Human Readable Output
 Incident "2468" key/value pairs purged - 1 document/record deleted
@@ -257,11 +247,6 @@ There is no context output for this command.
 ##### Command Example
 ```!mongodb-get-keys-number id=1234```
 
-##### Context Example
-```
-{}
-```
-
 ##### Human Readable Output
 The count of the key/value pairs for the incident - 2
 
@@ -281,11 +266,6 @@ There is no context output for this command.
 
 ##### Command Example
 ```!mongodb-list-incidents```
-
-##### Context Example
-```
-{}
-```
 
 ##### Human Readable Output
 ### List of incidents in collecion generic
