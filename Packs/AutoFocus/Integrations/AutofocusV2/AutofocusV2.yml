@@ -137,7 +137,7 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: 'true'
-      description: 'Whether artifacts of samples should be returned.'
+      description: 'Whether to return artifacts of samples.'
       isArray: false
       name: artifact
       predefined:
@@ -355,13 +355,13 @@ script:
       description: How many set the artifact as malicious.
       type: Number
     - contextPath: AutoFocus.SamplesResults.Artifact.confidence
-      description: How confident the decision.
+      description: Confidence in the decision.
       type: String
     - contextPath: AutoFocus.SamplesResults.Artifact.indicator
       description: The indicator that was tested.
       type: String
     - contextPath: AutoFocus.SamplesResults.Artifact.indicator_type
-      description: 'The type of the indicator e.g. : Mutex, User agent, IPv4, Domain.'
+      description: 'The indicator type, for example: Mutex, User agent, IPv4, Domain.'
       type: String
   - arguments:
     - default: false
