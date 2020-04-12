@@ -5,7 +5,7 @@
     "name": "Associated Malicious Domains",
     "ownerOnly": false,
     "placeholder": "",
-    "description": "Malicious domains that were found to be associated with the IP addresses.",
+    "description": "Malicious domains that were found to be associated with the external IP addresses that initiated the port scan.",
     "cliName": "associatedmaliciousdomains",
     "type": "shortText",
     "closeForm": false,
