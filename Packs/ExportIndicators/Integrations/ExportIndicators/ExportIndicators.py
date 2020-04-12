@@ -581,7 +581,11 @@ def create_values_for_returned_dict(iocs: list, request_args: RequestArguments) 
 
 
 def get_outbound_mimetype() -> str:
-    """Returns the mimetype of the export_iocs"""
+    """Gets the mimetype of the last exported IOCs (text/plain by default)
+
+    Returns:
+        str. The mimetype of the IOCs
+    """
     ctx = demisto.getIntegrationContext().get('last_output')
     return ctx.get(CTX_MIMETYPE_KEY, 'text/plain')
 

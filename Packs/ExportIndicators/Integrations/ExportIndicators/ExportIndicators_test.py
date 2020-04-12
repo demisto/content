@@ -566,3 +566,7 @@ class TestHelperFunctions:
         assert "1.1.1.3" not in ip_range_list
         assert "2.2.2.2" in ip_range_list
         assert "25.24.23.22" in ip_range_list
+
+    def test_get_outbound_mimetype(self):
+        from ExportIndicators import get_outbound_mimetype
+        assert get_outbound_mimetype() == 'text/plain'
