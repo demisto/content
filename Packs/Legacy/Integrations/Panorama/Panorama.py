@@ -572,12 +572,16 @@ def panorama_commit_status_command():
         if result['response']['result']['job']['result'] == 'PEND':
             commit_status_output['Status'] = 'Pending'
 
+    # WARNINGS - Job warnings
+    commit_status_output["Warnings"] = result.get("response", {}).get('result', {}).get('job', {}).get('warnings',
+                                                                                                       {}).get('line', "")
+
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': result,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Commit status:', commit_status_output, ['JobID', 'Status', 'Details'],
+        'HumanReadable': tableToMarkdown('Commit status:', commit_status_output, ['JobID', 'Status', 'Details', 'Warnings'],
                                          removeNull=True),
         'EntryContext': {"Panorama.Commit(val.JobID == obj.JobID)": commit_status_output}
     })
