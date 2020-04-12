@@ -1,5 +1,6 @@
-from CSVFeedApiModule import *
+import requests
 import requests_mock
+from CSVFeedApiModule import *
 
 
 def test_get_indicators_1():
@@ -44,7 +45,7 @@ def test_get_indicators_with_mapping():
             'fieldnames': ['value', 'a'],
             'indicator_type': 'IP',
             'mapping': {
-                'a': 'AAA'
+                'AAA': 'a'
             }
         }
     }
@@ -110,3 +111,40 @@ def test_get_indicators_2():
             assert ind_type == itype
             assert ind_rawjson['value'] == ind_val
             assert ind_rawjson['type'] == ind_type
+
+
+def test_get_feed_content():
+    """Test that it can handle both zipped and unzipped files correctly"""
+    with open('test_data/ip_ranges.txt', 'rb') as ip_ranges_txt:
+        ip_ranges_unzipped = ip_ranges_txt.read()
+
+    with open('test_data/ip_ranges.gz', 'rb') as ip_ranges_gz:
+        ip_ranges_zipped = ip_ranges_gz.read()
+
+    expected_output = ip_ranges_unzipped.decode('utf8').split('\n')
+
+    feed_url_to_config = {
+        'https://ipstack1.com': {
+            'content': ip_ranges_unzipped
+        },
+        'https://ipstack2.com': {
+            'content': ip_ranges_unzipped,
+            'is_zipped_file': False,
+        },
+        'https://ipstack3.com': {
+            'content': ip_ranges_zipped,
+            'is_zipped_file': True
+        }
+    }
+
+    with requests_mock.Mocker() as m:
+        for url in feed_url_to_config:
+            client = Client(
+                url=url,
+                feed_url_to_config=feed_url_to_config,
+            )
+
+            m.get(url, content=feed_url_to_config.get(url).get('content'))
+            raw_response = requests.get(url)
+
+            assert client.get_feed_content_divided_to_lines(url, raw_response) == expected_output
