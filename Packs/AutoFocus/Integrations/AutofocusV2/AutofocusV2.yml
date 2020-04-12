@@ -363,6 +363,9 @@ script:
     - contextPath: AutoFocus.SamplesResults.Artifact.indicator_type
       description: 'The type of the indicator e.g. : Mutex, User agent, IPv4, Domain.'
       type: String
+    - contextPath: AutoFocus.SamplesResults.ID
+      description: ID of sample search
+      type: String
   - arguments:
     - default: false
       description: The AF Cookie for retrieving the results of a previous search.

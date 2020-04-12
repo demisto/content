@@ -7,11 +7,11 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 69108c33-3563-4fad-8a35-d709974e16ac
+    taskid: 213cfbb9-c7fe-46f1-8fb0-fec6f9d9190d
     type: start
     task:
       elasticcommonfields: {}
-      id: 69108c33-3563-4fad-8a35-d709974e16ac
+      id: 213cfbb9-c7fe-46f1-8fb0-fec6f9d9190d
       version: -1
       name: ""
       iscommand: false
@@ -34,16 +34,17 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 6626c128-de4c-4f4c-8f49-946e6bf6532e
+    taskid: c2607a0c-a85d-402d-855b-50fd59dbd0c5
     type: regular
     task:
       elasticcommonfields: {}
-      id: 6626c128-de4c-4f4c-8f49-946e6bf6532e
+      id: c2607a0c-a85d-402d-855b-50fd59dbd0c5
       version: -1
       name: autofocus-search-samples
-      description: 'Search for samples. To view results run autofocus-samples-search-results
-        with the returned Af Cookie. Note: The AF Cookie expires 120 seconds after
-        the search completes.'
+      description: Searches for samples in AutoFocus. To view results, run the autofocus-samples-search-results
+        command with the returned AF Cookie. The AF Cookie expires 120 seconds after
+        the search completes. `Autofocus Query Samples, Sessions and Tags` Playbook
+        is recommended for querying and polling.
       script: AutoFocus V2|||autofocus-search-samples
       type: regular
       iscommand: true
@@ -52,8 +53,8 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      advanced_query:
-        simple: '`{"operator":"all","children":[{"field":"sample.malware","operator":"is","value":1}]}`'
+      artifact:
+        simple: "true"
       domain: {}
       file_hash: {}
       first_seen: {}
@@ -65,7 +66,7 @@ tasks:
         simple: '{"operator":"all","children":[{"field":"sample.malware","operator":"is","value":1},{"field":"sample.tag","operator":"is
           in the list","value":["Unit42.RunOnce"]}]}'
       scope:
-        simple: Global
+        simple: Public
       sort: {}
       url: {}
       wildfire_verdict: {}
@@ -84,16 +85,17 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 1d201391-2ce8-4537-866b-32f5bdb35da1
+    taskid: f0c871b5-bfb2-438d-8a5f-f5010f040227
     type: regular
     task:
       elasticcommonfields: {}
-      id: 1d201391-2ce8-4537-866b-32f5bdb35da1
+      id: f0c871b5-bfb2-438d-8a5f-f5010f040227
       version: -1
       name: autofocus-search-sessions
-      description: 'Search for sessions. To view results run autofocus-sessions-search-results
-        with the returned Af Cookie. Note: The AF Cookie expires 120 seconds after
-        the search completes.'
+      description: Searches for sessions in AutoFocus. To view results, run the autofocus-sessions-search-results
+        command with the returned AF Cookie. The AF Cookie expires 120 seconds after
+        the search completes. `Autofocus Query Samples, Sessions and Tags` Playbook
+        is recommended for querying and polling.
       script: AutoFocus V2|||autofocus-search-sessions
       type: regular
       iscommand: true
@@ -102,14 +104,19 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      advanced_query:
-        simple: '{"operator":"all","children":[{"field":"sample.malware","operator":"is","value":1}]},"scope":"public","size":50,"from":0,"sort":{"create_date":{"order":"desc"}}'
+      domain: {}
+      file_hash: {}
+      ip: {}
       max_results: {}
       order: {}
       query:
         simple: '{"operator": "all","children": [{"field": "sample.malware","operator":
           "is","value": "1"}]}'
       sort: {}
+      time_after: {}
+      time_before: {}
+      time_range: {}
+      url: {}
     separatecontext: false
     view: |-
       {
@@ -125,11 +132,11 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 23e99ea9-76e9-4d26-84f9-5a0fc236dbc6
+    taskid: 5c11c041-9533-48e1-8c4b-8c8849336399
     type: condition
     task:
       elasticcommonfields: {}
-      id: 23e99ea9-76e9-4d26-84f9-5a0fc236dbc6
+      id: 5c11c041-9533-48e1-8c4b-8c8849336399
       version: -1
       name: Verify context
       type: condition
@@ -166,11 +173,11 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: cc0d0956-1882-4a8b-82a5-0d0902c71c78
+    taskid: a14385a8-39c5-45f6-8d92-0905006e9568
     type: condition
     task:
       elasticcommonfields: {}
-      id: cc0d0956-1882-4a8b-82a5-0d0902c71c78
+      id: a14385a8-39c5-45f6-8d92-0905006e9568
       version: -1
       name: Verify context
       type: condition
@@ -207,11 +214,11 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 88a04b87-d67b-4e6f-8adb-57bb3f5e88ea
+    taskid: f919f357-150f-4435-8593-826953470f8a
     type: regular
     task:
       elasticcommonfields: {}
-      id: 88a04b87-d67b-4e6f-8adb-57bb3f5e88ea
+      id: f919f357-150f-4435-8593-826953470f8a
       version: -1
       name: autofocus-samples-search-results
       description: Get results of a previous samples search
@@ -240,11 +247,11 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: b0d0c6b2-e838-4506-89e5-0450fcac37ff
+    taskid: e26b4c39-5ca2-45de-8a34-1f90c50e442b
     type: regular
     task:
       elasticcommonfields: {}
-      id: b0d0c6b2-e838-4506-89e5-0450fcac37ff
+      id: e26b4c39-5ca2-45de-8a34-1f90c50e442b
       version: -1
       name: autofocus-sessions-search-results
       description: Get results of a previous sessions search
@@ -273,11 +280,11 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: c5b24e4c-5996-4e65-8b1a-7450737ce4a2
+    taskid: 24c7afa8-de15-4de4-8b66-0ed733aad00c
     type: condition
     task:
       elasticcommonfields: {}
-      id: c5b24e4c-5996-4e65-8b1a-7450737ce4a2
+      id: 24c7afa8-de15-4de4-8b66-0ed733aad00c
       version: -1
       name: Verify context
       type: condition
@@ -366,12 +373,17 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: AutoFocus.SamplesResults.Artifacts.b
+              simple: AutoFocus.SamplesResults.Artifact.b
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: AutoFocus.SamplesResults.Artifacts.g
+              simple: AutoFocus.SamplesResults.Artifact.g
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.SamplesResults.Artifact.m
             iscontext: true
     view: |-
       {
@@ -387,11 +399,11 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 29244780-aebf-4022-80c7-23adec4658fa
+    taskid: c9c72273-562b-488d-8792-20b6b3040400
     type: condition
     task:
       elasticcommonfields: {}
-      id: 29244780-aebf-4022-80c7-23adec4658fa
+      id: c9c72273-562b-488d-8792-20b6b3040400
       version: -1
       name: Verify context
       type: condition
@@ -477,11 +489,11 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 3ce49d8b-36b6-4e87-87d7-709db3f27248
+    taskid: 8ce063ad-45f3-4203-8356-ccde53c31e7f
     type: regular
     task:
       elasticcommonfields: {}
-      id: 3ce49d8b-36b6-4e87-87d7-709db3f27248
+      id: 8ce063ad-45f3-4203-8356-ccde53c31e7f
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -516,11 +528,11 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 4b4ce9d5-f715-4cf9-8e78-70c015e91b97
+    taskid: fef8b75f-0864-4ccd-8f36-6bddf06ea070
     type: regular
     task:
       elasticcommonfields: {}
-      id: 4b4ce9d5-f715-4cf9-8e78-70c015e91b97
+      id: fef8b75f-0864-4ccd-8f36-6bddf06ea070
       version: -1
       name: autofocus-sample-analysis
       description: |-
@@ -540,7 +552,11 @@ tasks:
       os: {}
       platforms: {}
       sample_id:
-        simple: dd0d26ceea034b3ae32a4f6a477466ac598ee17f811f88cf14b2c708240fb993
+        complex:
+          root: AutoFocus
+          accessor: SamplesResults.SHA256
+          transformers:
+          - operator: FirstArrayElement
       sections: {}
     separatecontext: false
     view: |-
@@ -557,11 +573,11 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 36f60349-741e-44cf-846a-07aa58ff44a6
+    taskid: f15f1e61-7c66-49e8-8bb3-8a08a6ba8fdd
     type: regular
     task:
       elasticcommonfields: {}
-      id: 36f60349-741e-44cf-846a-07aa58ff44a6
+      id: f15f1e61-7c66-49e8-8bb3-8a08a6ba8fdd
       version: -1
       name: autofocus-get-session-details
       description: Get session details by session ID
@@ -598,11 +614,11 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 988e8ded-ae74-4d61-824c-63ce8f0a36ac
+    taskid: d1c57b96-711b-4c7c-8d4e-655659b31d79
     type: condition
     task:
       elasticcommonfields: {}
-      id: 988e8ded-ae74-4d61-824c-63ce8f0a36ac
+      id: d1c57b96-711b-4c7c-8d4e-655659b31d79
       version: -1
       name: Verify context
       type: condition
@@ -659,11 +675,11 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: f2278cba-26f1-4a19-8e02-1def1ddef5ee
+    taskid: aa091c5e-c596-4951-8977-63749be84505
     type: condition
     task:
       elasticcommonfields: {}
-      id: f2278cba-26f1-4a19-8e02-1def1ddef5ee
+      id: aa091c5e-c596-4951-8977-63749be84505
       version: -1
       name: Verify context
       type: condition
@@ -739,11 +755,11 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: da0bb36a-cecc-4844-8ede-07d596f3b1a6
+    taskid: 2e3eaa48-31bf-4c27-830e-912778c4e461
     type: regular
     task:
       elasticcommonfields: {}
-      id: da0bb36a-cecc-4844-8ede-07d596f3b1a6
+      id: 2e3eaa48-31bf-4c27-830e-912778c4e461
       version: -1
       name: autofocus-top-tags-search
       description: Perform a search to Identify the most popular tags
@@ -780,11 +796,11 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 0a507b19-3f7f-4391-87e1-38d3ac744221
+    taskid: 3b603461-6be1-407f-8cbf-09db8f0d7bc5
     type: regular
     task:
       elasticcommonfields: {}
-      id: 0a507b19-3f7f-4391-87e1-38d3ac744221
+      id: 3b603461-6be1-407f-8cbf-09db8f0d7bc5
       version: -1
       name: autofocus-top-tags-results
       description: Get the results of a previous top tags search
@@ -813,11 +829,11 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 4ec48395-3569-4975-832f-0df9460388fa
+    taskid: 519e9b45-827c-40dc-8312-fb3b269e27e4
     type: regular
     task:
       elasticcommonfields: {}
-      id: 4ec48395-3569-4975-832f-0df9460388fa
+      id: 519e9b45-827c-40dc-8312-fb3b269e27e4
       version: -1
       name: autofocus-tag-details
       description: Get details on a given tag
@@ -854,11 +870,11 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 0ff0be33-ba66-4074-8330-1f5bcd6ed36d
+    taskid: 03b9e781-80a9-4dbc-83ef-52cb3583ea9f
     type: condition
     task:
       elasticcommonfields: {}
-      id: 0ff0be33-ba66-4074-8330-1f5bcd6ed36d
+      id: 03b9e781-80a9-4dbc-83ef-52cb3583ea9f
       version: -1
       name: Verify context
       type: condition
@@ -895,11 +911,11 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: da3342c0-ed45-4848-82c4-2f4b6c7ecad3
+    taskid: 069ebc2b-ceb1-4925-88a3-83a17c03f90f
     type: condition
     task:
       elasticcommonfields: {}
-      id: da3342c0-ed45-4848-82c4-2f4b6c7ecad3
+      id: 069ebc2b-ceb1-4925-88a3-83a17c03f90f
       version: -1
       name: Verify context
       type: condition
@@ -946,11 +962,11 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: 5cfff5ad-4c4c-4535-8852-9c4a6af19bcd
+    taskid: 6d763e73-f6b2-4293-8fc9-3cde4bdbc421
     type: condition
     task:
       elasticcommonfields: {}
-      id: 5cfff5ad-4c4c-4535-8852-9c4a6af19bcd
+      id: 6d763e73-f6b2-4293-8fc9-3cde4bdbc421
       version: -1
       name: Verify context
       type: condition
@@ -1027,11 +1043,11 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: 9b6e0dd4-645d-45ba-8e78-b39c74e5b59c
+    taskid: 8053b744-49fc-48cd-81ae-74804840ce5b
     type: title
     task:
       elasticcommonfields: {}
-      id: 9b6e0dd4-645d-45ba-8e78-b39c74e5b59c
+      id: 8053b744-49fc-48cd-81ae-74804840ce5b
       version: -1
       name: DONE
       type: title
@@ -1052,11 +1068,11 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: 9279f899-69a0-49d1-80a6-a15a0f9111a5
+    taskid: e5ccc2a9-ee8e-47d5-81fb-be551aaf5dd9
     type: regular
     task:
       elasticcommonfields: {}
-      id: 9279f899-69a0-49d1-80a6-a15a0f9111a5
+      id: e5ccc2a9-ee8e-47d5-81fb-be551aaf5dd9
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -1085,11 +1101,11 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: 1f002d57-5998-4d56-8a80-84bef442ada2
+    taskid: 1c302e12-a3e3-470f-8fa1-88237bbab60f
     type: regular
     task:
       elasticcommonfields: {}
-      id: 1f002d57-5998-4d56-8a80-84bef442ada2
+      id: 1c302e12-a3e3-470f-8fa1-88237bbab60f
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -1118,11 +1134,11 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: af71d798-5df7-479d-8934-acc356cc80eb
+    taskid: bb047b02-695c-4dad-8774-64083fd09de5
     type: regular
     task:
       elasticcommonfields: {}
-      id: af71d798-5df7-479d-8934-acc356cc80eb
+      id: bb047b02-695c-4dad-8774-64083fd09de5
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -1151,20 +1167,21 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 72a7d3dd-ae89-4de3-86d1-000274eff6b8
+    taskid: f26d220e-17ce-4c40-8d6b-7eb45fe09f48
     type: regular
     task:
       elasticcommonfields: {}
-      id: 72a7d3dd-ae89-4de3-86d1-000274eff6b8
+      id: f26d220e-17ce-4c40-8d6b-7eb45fe09f48
       version: -1
       name: autofocus-search-samples
-      description: Search for samples. To view results run the autofocus-samples-search-results
-        command with the returned Af Cookie. The AF Cookie expires 120 seconds after
-        the search completes.
-      script: '|||autofocus-search-samples'
+      description: Searches for samples in AutoFocus. To view results, run the autofocus-samples-search-results
+        command with the returned AF Cookie. The AF Cookie expires 120 seconds after
+        the search completes. `Autofocus Query Samples, Sessions and Tags` Playbook
+        is recommended for querying and polling.
+      script: AutoFocus V2|||autofocus-search-samples
       type: regular
       iscommand: true
-      brand: ""
+      brand: AutoFocus V2
     nexttasks:
       '#none#':
       - "33"
@@ -1201,36 +1218,36 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: e458a60b-1687-463e-8f4a-c0f64f51fdf1
+    taskid: a4990a73-457a-4517-8e70-88c14f24fc2a
     type: regular
     task:
       elasticcommonfields: {}
-      id: e458a60b-1687-463e-8f4a-c0f64f51fdf1
+      id: a4990a73-457a-4517-8e70-88c14f24fc2a
       version: -1
       name: autofocus-search-sessions
-      description: Search for sessions. To view results run the autofocus-sessions-search-results
+      description: Searches for sessions in AutoFocus. To view results, run the autofocus-sessions-search-results
         command with the returned AF Cookie. The AF Cookie expires 120 seconds after
-        the search completes.
-      script: '|||autofocus-search-sessions'
+        the search completes. `Autofocus Query Samples, Sessions and Tags` Playbook
+        is recommended for querying and polling.
+      script: AutoFocus V2|||autofocus-search-sessions
       type: regular
       iscommand: true
-      brand: ""
+      brand: AutoFocus V2
     nexttasks:
       '#none#':
       - "34"
     scriptarguments:
       domain: {}
       file_hash: {}
-      from_time:
-        simple: 2019-07-09T23:00:00
       ip:
         simple: 23.62.60.187
       max_results: {}
       order: {}
       query: {}
       sort: {}
-      to_time:
-        simple: 2019-07-28T10:00:00
+      time_after: {}
+      time_before: {}
+      time_range: {}
       url: {}
     separatecontext: false
     view: |-
@@ -1247,11 +1264,11 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: ad645014-16f1-4490-85e3-c78271cc98c9
+    taskid: 42c8054e-6078-44c4-8241-a842a787db56
     type: regular
     task:
       elasticcommonfields: {}
-      id: ad645014-16f1-4490-85e3-c78271cc98c9
+      id: 42c8054e-6078-44c4-8241-a842a787db56
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -1280,11 +1297,11 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: f1635554-fc8b-4507-852a-9df320908bf9
+    taskid: df7ec9ce-cb5c-4bb2-8fd7-3b99db73f9a2
     type: regular
     task:
       elasticcommonfields: {}
-      id: f1635554-fc8b-4507-852a-9df320908bf9
+      id: df7ec9ce-cb5c-4bb2-8fd7-3b99db73f9a2
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -1313,18 +1330,19 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: a96d5441-2777-49ae-82cb-cf09906b1746
+    taskid: 76558fcb-f9c9-4be7-8dfa-21493042a465
     type: regular
     task:
       elasticcommonfields: {}
-      id: a96d5441-2777-49ae-82cb-cf09906b1746
+      id: 76558fcb-f9c9-4be7-8dfa-21493042a465
       version: -1
       name: autofocus-samples-search-results
-      description: Returns results of a previous samples search.
-      script: '|||autofocus-samples-search-results'
+      description: Returns results of a previous samples search. `Autofocus Query
+        Samples, Sessions and Tags` Playbook is recommended for querying and polling.
+      script: AutoFocus V2|||autofocus-samples-search-results
       type: regular
       iscommand: true
-      brand: ""
+      brand: AutoFocus V2
     nexttasks:
       '#none#':
       - "37"
@@ -1346,11 +1364,11 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: d3aeed56-cd36-4a66-84db-4a4678b21d9e
+    taskid: 23e2f6ca-f48c-4fa4-84b9-5d25415e147d
     type: condition
     task:
       elasticcommonfields: {}
-      id: d3aeed56-cd36-4a66-84db-4a4678b21d9e
+      id: 23e2f6ca-f48c-4fa4-84b9-5d25415e147d
       version: -1
       name: Verify context
       type: condition
@@ -1387,11 +1405,11 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: c093e374-d68c-41af-8e3b-9c06ff7be080
+    taskid: 249d1bc6-52fe-4ccb-8fe8-e741dc7f7164
     type: condition
     task:
       elasticcommonfields: {}
-      id: c093e374-d68c-41af-8e3b-9c06ff7be080
+      id: 249d1bc6-52fe-4ccb-8fe8-e741dc7f7164
       version: -1
       name: Verify context
       type: condition
@@ -1428,14 +1446,15 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: e788471d-5b2e-4cce-8c1a-e12560969fe7
+    taskid: 087cee60-6294-4e55-821e-af7327dad8c2
     type: regular
     task:
       elasticcommonfields: {}
-      id: e788471d-5b2e-4cce-8c1a-e12560969fe7
+      id: 087cee60-6294-4e55-821e-af7327dad8c2
       version: -1
       name: autofocus-sessions-search-results
-      description: Get results of a previous sessions search
+      description: Returns results of a previous sessions search. `Autofocus Query
+        Samples, Sessions and Tags` Playbook is recommended for querying and polling.
       script: AutoFocus V2|||autofocus-sessions-search-results
       type: regular
       iscommand: true
@@ -1461,11 +1480,11 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: 90997f51-1fb8-425c-83a0-b094faf0bb8f
+    taskid: e3e00e66-0ab6-4fd6-8e7e-ff6fc9972355
     type: condition
     task:
       elasticcommonfields: {}
-      id: 90997f51-1fb8-425c-83a0-b094faf0bb8f
+      id: e3e00e66-0ab6-4fd6-8e7e-ff6fc9972355
       version: -1
       name: Verify context
       type: condition
@@ -1544,11 +1563,11 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: 179b2aa5-79f9-42dc-8463-e0322e240f35
+    taskid: dbd7655a-7687-4cf4-814d-e90b3fd1c7cf
     type: condition
     task:
       elasticcommonfields: {}
-      id: 179b2aa5-79f9-42dc-8463-e0322e240f35
+      id: dbd7655a-7687-4cf4-814d-e90b3fd1c7cf
       version: -1
       name: Verify context
       type: condition
@@ -1648,11 +1667,11 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: c37b3e92-c009-4c6f-8c66-710432d0a755
+    taskid: 6af7409f-68d0-4b37-8fce-ae0314b97ff2
     type: regular
     task:
       elasticcommonfields: {}
-      id: c37b3e92-c009-4c6f-8c66-710432d0a755
+      id: 6af7409f-68d0-4b37-8fce-ae0314b97ff2
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1686,11 +1705,11 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: c5d8e8b0-f7f6-452d-8f47-ecca45850ae3
+    taskid: 2be1a24f-9716-4cca-8a20-d0d6b4dad38a
     type: title
     task:
       elasticcommonfields: {}
-      id: c5d8e8b0-f7f6-452d-8f47-ecca45850ae3
+      id: 2be1a24f-9716-4cca-8a20-d0d6b4dad38a
       version: -1
       name: Indicators Reputation
       type: title
@@ -1714,11 +1733,11 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: 198903d1-29fd-4f73-88b7-a8067c8b0c59
+    taskid: a02e0766-e040-4eaf-8861-2e1eeb17bd7e
     type: regular
     task:
       elasticcommonfields: {}
-      id: 198903d1-29fd-4f73-88b7-a8067c8b0c59
+      id: a02e0766-e040-4eaf-8861-2e1eeb17bd7e
       version: -1
       name: Check URL Reputation
       description: Checks the reputation of the url in Autofocus.
@@ -1755,11 +1774,11 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: bf773c46-5ef6-4f5b-8f40-ca50eefc1efa
+    taskid: 6ffcd714-6d78-4249-8fed-a9e71c3d7eb5
     type: condition
     task:
       elasticcommonfields: {}
-      id: bf773c46-5ef6-4f5b-8f40-ca50eefc1efa
+      id: 6ffcd714-6d78-4249-8fed-a9e71c3d7eb5
       version: -1
       name: Validate URL Reputation
       type: condition
@@ -1801,11 +1820,11 @@ tasks:
     quietmode: 0
   "42":
     id: "42"
-    taskid: d32dae5a-7093-409d-871a-6c6481686e57
+    taskid: f1c1db67-6b0f-45e0-832d-b1dfe286aaad
     type: title
     task:
       elasticcommonfields: {}
-      id: d32dae5a-7093-409d-871a-6c6481686e57
+      id: f1c1db67-6b0f-45e0-832d-b1dfe286aaad
       version: -1
       name: done
       type: title
@@ -1826,11 +1845,11 @@ tasks:
     quietmode: 0
   "43":
     id: "43"
-    taskid: b2f051f9-5329-4f0f-84a1-57a879ba137e
+    taskid: c24a6aef-9a3b-4b1b-8958-4b6e37a00997
     type: regular
     task:
       elasticcommonfields: {}
-      id: b2f051f9-5329-4f0f-84a1-57a879ba137e
+      id: c24a6aef-9a3b-4b1b-8958-4b6e37a00997
       version: -1
       name: Check IP Reputation
       description: Checks the reputation of an IP address in Autofocus.
@@ -1867,11 +1886,11 @@ tasks:
     quietmode: 0
   "44":
     id: "44"
-    taskid: d6916a49-82bf-4546-8e9a-76387997c85f
+    taskid: c3083bf4-4be7-4737-88fe-2beafb7eddb7
     type: condition
     task:
       elasticcommonfields: {}
-      id: d6916a49-82bf-4546-8e9a-76387997c85f
+      id: c3083bf4-4be7-4737-88fe-2beafb7eddb7
       version: -1
       name: Validate IP Reputation
       type: condition
@@ -1913,11 +1932,11 @@ tasks:
     quietmode: 0
   "45":
     id: "45"
-    taskid: 653649f8-2d0a-43a9-8c60-0afecce5620b
+    taskid: afb7cabe-ee72-4c6e-8238-e94e05c71b43
     type: regular
     task:
       elasticcommonfields: {}
-      id: 653649f8-2d0a-43a9-8c60-0afecce5620b
+      id: afb7cabe-ee72-4c6e-8238-e94e05c71b43
       version: -1
       name: Check File Reputation
       description: Checks the reputation of a file in Autofocus.
@@ -1957,11 +1976,11 @@ tasks:
     quietmode: 0
   "46":
     id: "46"
-    taskid: e2a1dad0-a087-42de-897a-2c3c4d536e18
+    taskid: 2c6af78a-e4fa-4b4b-8044-d205b22acb56
     type: condition
     task:
       elasticcommonfields: {}
-      id: e2a1dad0-a087-42de-897a-2c3c4d536e18
+      id: 2c6af78a-e4fa-4b4b-8044-d205b22acb56
       version: -1
       name: Validate File Reputation
       type: condition
@@ -2003,11 +2022,11 @@ tasks:
     quietmode: 0
   "47":
     id: "47"
-    taskid: 9e77b88d-422f-483f-800b-7b95fe400344
+    taskid: be2211fb-24aa-4fd1-89df-f7408c6846ac
     type: regular
     task:
       elasticcommonfields: {}
-      id: 9e77b88d-422f-483f-800b-7b95fe400344
+      id: be2211fb-24aa-4fd1-89df-f7408c6846ac
       version: -1
       name: Check Domain Reputation
       description: Checks the reputation of a domain in Autofocus.
@@ -2044,11 +2063,11 @@ tasks:
     quietmode: 0
   "48":
     id: "48"
-    taskid: 5e46fdce-b581-4bc3-8ab8-365e41100454
+    taskid: 29230223-87c4-4c2d-846e-bc5a812fa86f
     type: condition
     task:
       elasticcommonfields: {}
-      id: 5e46fdce-b581-4bc3-8ab8-365e41100454
+      id: 29230223-87c4-4c2d-846e-bc5a812fa86f
       version: -1
       name: Validate Domain Reputation
       type: condition
