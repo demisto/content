@@ -62,25 +62,25 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: Record types to fetch (A comma separated list of the record types you wish to fetch. Content
-    records with a record  type that isn't specified will not be fetched. If this
+- display: Record types to fetch (Comma-separated list of the record types to fetch. Content
+    records with a record type that isn't specified will not be fetched. If this
     field is left empty, all record types will be fetched.)
   name: record_types_filter
   required: false
   type: 0
-- display: Workloads to fetch (A comma separated list of the workloads you wish to fetch. Content
+- display: Workloads to fetch (Comma-separated list of the workloads to fetch. Content
     records with a workload that isn't specified will not be fetched. If this
     field is left empty, all workloads will be fetched.)
   name: workloads_filter
   required: false
   type: 0
-- display: Operations to (A comma separated list of the operations you wish to fetch. Content
+- display: Operations to (Comma-separated list of the operations to fetch. Content
     records with an operation that isn't specified will not be fetched. If this
     field is left empty, all operations will be fetched.)
   name: operations_filter
   required: false
   type: 0
-description: The Microsoft Management Activity API integration allows you to subscribe
+description: The Microsoft Management Activity API integration enables you to subscribe
   or unsubscribe to different audits, receive their content and fetch new content
   as incidents.
 display: Microsoft Management Activity API (O365/Azure Events) - Beta
@@ -107,7 +107,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The content type to stop being subscribed to.
+      description: The content type to unsubscribe from.
       isArray: false
       name: content_type
       predefined:
@@ -132,7 +132,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The content type of which you wish to receive content.
+      description: The content type for which to receive content.
       isArray: false
       name: content_type
       predefined:
@@ -144,7 +144,7 @@ script:
       secret: false
     - default: false
       description: 'The earliest time to get content from. If start_time is specified,
-        end_time must be specified as well. The start_time can be at most 7 days ago, 
+        end_time must also be specified. The start_time can be at most 7 days ago, 
         and has to be up to 24 hours before the end_time. Required
         format: YYYY-MM-DDTHH-MM-SS. If not specified, start time will be 24 hours
         ago.'
@@ -154,7 +154,7 @@ script:
       secret: false
     - default: false
       description: 'The latest time to get content from. If end_time is specified,
-        start_time must be specified as well. The end_time
+        start_time must also be specified. The end_time
         and has to be up to 24 hours after the start_time. Required format: YYYY-MM-DDTHH-MM-SS.
         If not specified, end_time will be now.'
       isArray: false
@@ -162,7 +162,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma separated list of the record types you wish to fetch. Content
+      description: A comma-separated list of the record types to fetch. Content
         records with a record  type that isn't specified will not be fetched. If this
         field is left empty, all record types will be fetched.
       isArray: false
@@ -170,7 +170,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma separated list of the workloads you wish to fetch. Content
+      description: A comma-separated list of the workloads to fetch. Content
         records with a workload that isn't specified will not be fetched. If this
         field is left empty, all workloads will be fetched.
       isArray: false
@@ -178,7 +178,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma separated list of the operations you wish to fetch. Content
+      description: A comma-separated list of the operations to fetch. Content
         records with an operation that isn't specified will not be fetched. If this
         field is left empty, all operations will be fetched.
       isArray: false
@@ -186,7 +186,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns all the content for a specific content type.
+    description: Returns all content for a specific content type.
     execution: false
     name: ms-management-activity-list-content
     outputs:
