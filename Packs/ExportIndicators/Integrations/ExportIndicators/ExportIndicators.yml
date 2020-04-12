@@ -34,8 +34,8 @@ configuration:
   - To Ranges
   required: false
   type: 15
-- additionalinfo: If checked, csv and XSOAR-csv formats will create a textual web
-    page instead of downloading a csv file.
+- additionalinfo: If selected, csv and XSOAR-csv formats will create a textual web
+    page instead of downloading a CSV file.
   display: Show CSV Formats as Text
   hidden: false
   name: csv_text
@@ -134,7 +134,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: 'The query used to retrieve indicators from the system. leave empty
+      description: 'The query used to retrieve indicators from the system. Leave empty
         to use the query from the integration parameters. '
       isArray: false
       name: query
