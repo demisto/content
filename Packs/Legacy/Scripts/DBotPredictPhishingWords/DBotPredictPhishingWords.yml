@@ -92,12 +92,6 @@ args:
   - 'false'
   required: false
   secret: false
-- default: false
-  description: the original incident id to set its fields
-  isArray: false
-  name: originalIncidentId
-  required: false
-  secret: false
 comment: Predict text label using a pre-trained machine learning phishing model, and
   get the most important words used in the classification decision.
 commonfields:

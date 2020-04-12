@@ -52,9 +52,6 @@ def predict_phishing_words():
     dargs = demisto.args()
     dargs['modelName'] = OUT_OF_THE_BOX_MODEL_NAME
     dargs['hashSeed'] = '5381'
-    incident_context = demisto.incidents()[0]
-    if not incident_context['isPlayground']:
-        dargs['originalIncidentId'] = incident_context['id']
     res = demisto.executeCommand('DBotPredictPhishingWords', dargs)
     if is_error(res):
         return_error(get_error(res))

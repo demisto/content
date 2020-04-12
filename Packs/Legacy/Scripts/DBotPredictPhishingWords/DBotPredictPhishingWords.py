@@ -32,8 +32,7 @@ def handle_error(message, is_return_error):
 
 
 def predict_phishing_words(model_name, model_store_type, email_subject, email_body, min_text_length, label_threshold,
-                           word_threshold, top_word_limit, is_return_error, original_incident_id=None,
-                           set_incidents_fields=False):
+                           word_threshold, top_word_limit, is_return_error, set_incidents_fields=False):
     model_data = get_model_data(model_name, model_store_type, is_return_error)
     model = demisto_ml.decode_model(model_data)
     text = "%s %s" % (email_subject, email_body)
@@ -94,13 +93,11 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
     explain_result_hr['Probability'] = "%.2f" % predicted_prob
     explain_result_hr['PositiveWords'] = ", ".join(positive_words)
     explain_result_hr['NegativeWords'] = ", ".join(negative_words)
-    if set_incidents_fields:
-        arg = {'customFields': {'DBotPrediction': predicted_label,
-                                'DBotPredictionProbability': predicted_prob,
-                                'DBotTextSuggestionHighlighted': highlighted_text_markdown}}
-        if original_incident_id is not None:
-            arg['id'] = original_incident_id
-        demisto.executeCommand("setIncident", arg)
+    incident_context = demisto.incidents()[0]
+    if not incident_context['isPlayground'] and set_incidents_fields:
+        demisto.executeCommand("setIncident", {'dbotprediction': predicted_label,
+                                'dbotpredictionprobability': predicted_prob,
+                                'dbottextsuggestionhighlighted' : highlighted_text_markdown})
     return {
         'Type': entryTypes['note'],
         'Contents': explain_result,
@@ -134,7 +131,6 @@ def main():
                                     float(demisto.args().get('wordThreshold', 0)),
                                     int(demisto.args()['topWordsLimit']),
                                     demisto.args()['returnError'] == 'true',
-                                    demisto.args().get('originalIncidentId', None),
                                     demisto.args().get('setIncidentFields', 'false') == 'true'
                                     )
 
