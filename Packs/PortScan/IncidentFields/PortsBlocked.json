@@ -5,7 +5,7 @@
     "name": "Ports Blocked",
     "ownerOnly": false,
     "placeholder": "",
-    "description": "Whether the necessary ports were blocked in the firewall. Can either be True or False.",
+    "description": "Did we receive an indication that the necessary ports were blocked?",
     "cliName": "portsblocked",
     "type": "boolean",
     "closeForm": false,
