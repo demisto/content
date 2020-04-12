@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: devdemisto/content-build:3.0.0.3368  # disable-secrets-detection
+      - image: devdemisto/content-build:3.0.0.7332  # disable-secrets-detection
     resource_class: medium+
     parallelism: 2
     environment:
@@ -472,11 +472,6 @@ jobs:
 
           when: always
       - run:
-          name: Validate Docker Images
-          shell: /bin/bash
-          command: ./Tests/scripts/validate_docker_images.sh
-          when: always
-      - run:
           name: Instance Test
           command: |
             if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 1 ] ;
@@ -529,6 +524,10 @@ jobs:
       - store_artifacts:
           path: artifacts
           destination: artifacts
+          when: always
+      - run:
+          name: Store Artifacts to GCS
+          command: ./Tests/scripts/upload_artifacts.sh
           when: always
 
 workflows:

@@ -44,13 +44,13 @@
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>
-  <li>Get all alert rules: extrahop-get-alerts</li>
+  <li>Get all alert rules: extrahop-get-alert-rules</li>
   <li>Query records: extrahop-query-records</li>
   <li>Search for devices: extrahop-device-search</li>
   <li>Add or remove devices from the watchlist: extrahop-edit-watchlist</li>
   <li>Get all devices on the watchlist: extrahop-get-watchlist</li>
-  <li>Create a new alert rule: extrahop-create-alert</li>
-  <li>Modify an alert rule: extrahop-edit-alert</li>
+  <li>Create a new alert rule: extrahop-create-alert-rule</li>
+  <li>Modify an alert rule: extrahop-edit-alert-rule</li>
   <li>Link an ExtraHop Detection to a Demisto Investigation: extrahop-track-ticket</li>
   <li>Get all peers for a device: extrahop-get-peers</li>
   <li>Get all active network protocols for a device: extrahop-get-protocols</li>
@@ -63,7 +63,7 @@
 <p>Get all alert rules from ExtraHop.</p>
 <h5>Base Command</h5>
 <p>
-  <code>extrahop-get-alerts</code>
+  <code>extrahop-get-alert-rules</code>
 </p>
 <h5>Required Permissions</h5>
 <ul>
@@ -207,7 +207,7 @@
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!extrahop-get-alerts</code>
+  <code>!extrahop-get-alert-rules</code>
 </p>
 <h5>Context Example</h5>
 <pre>
@@ -3025,7 +3025,7 @@ Successful Modification
 <p>Create a new alert rule in ExtraHop.</p>
 <h5>Base Command</h5>
 <p>
-  <code>extrahop-create-alert</code>
+  <code>extrahop-create-alert-rule</code>
 </p>
 <h5>Required Permissions</h5>
 <ul>
@@ -3153,7 +3153,7 @@ There are no context output for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!extrahop-create-alert apply_all=false disabled=true name="Demisto Test Alert" notify_snmp=false refire_interval=3600 severity=3 type=threshold object_type=device operator=> operand=0.1 field_name=rsp_error field_name2=rsp field_op=/ units=none stat_name="extrahop.application.http"</code>
+  <code>!extrahop-create-alert-rule apply_all=false disabled=true name="Demisto Test Alert" notify_snmp=false refire_interval=3600 severity=3 type=threshold object_type=device operator=> operand=0.1 field_name=rsp_error field_name2=rsp field_op=/ units=none stat_name="extrahop.application.http"</code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -3168,7 +3168,7 @@ Successfully Created
 <p>Modify an alert rule in ExtraHop.</p>
 <h5>Base Command</h5>
 <p>
-  <code>extrahop-edit-alert</code>
+  <code>extrahop-edit-alert-rule</code>
 </p>
 <h5>Required Permissions</h5>
 <ul>
@@ -3299,7 +3299,7 @@ There are no context output for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!extrahop-edit-alert alert_id=32 apply_all=false disabled=true name="Demisto Test" notify_snmp=false refire_interval=3600 severity=3 type=threshold object_type=device operator=> operand=0.1 field_name=rsp_error field_name2=rsp field_op=/ units=none stat_name="extrahop.application.http"  interval_length=30</code>
+  <code>!extrahop-edit-alert-rule alert_id=32 apply_all=false disabled=true name="Demisto Test" notify_snmp=false refire_interval=3600 severity=3 type=threshold object_type=device operator=> operand=0.1 field_name=rsp_error field_name2=rsp field_op=/ units=none stat_name="extrahop.application.http"  interval_length=30</code>
 </p>
 
 <h5>Human Readable Output</h5>
