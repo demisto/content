@@ -1,6 +1,5 @@
 ## [Unreleased]
--
-
+Fixed transformer and task input.
 
 ## [20.2.0] - 2020-02-04
 #### New Playbook
