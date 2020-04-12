@@ -1,5 +1,5 @@
 ## [Unreleased]
-Added to ***autofocus-search-samples*** command the *artifact* argument which is set true by default and retrieves the artifacts of the sample.
+Added the *artifact* argument to the ***autofocus-search-samples*** command, which by default is set to "true" and retrieves the artifacts of the sample.
 
 
 ## [20.3.4] - 2020-03-30
