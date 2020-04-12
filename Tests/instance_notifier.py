@@ -5,7 +5,7 @@ import demisto_client
 from slackclient import SlackClient
 from Tests.test_integration import __create_integration_instance, __delete_integrations_instances
 from Tests.test_content import ParallelPrintsManager
-from Tests.test_utils import str2bool, print_color, print_error, LOG_COLORS, print_warning
+from demisto_sdk.commands.common.tools import str2bool, print_color, print_error, LOG_COLORS, print_warning
 from Tests.configure_and_test_integration_instances import update_content_on_demisto_instance
 
 SERVER_URL = "https://{}"
@@ -131,14 +131,11 @@ if __name__ == "__main__":
     if options.instance_tests:
         with open('./env_results.json', 'r') as json_file:
             env_results = json.load(json_file)
-            for env in env_results:
-                if env["Role"] == "Server Master":
-                    server = SERVER_URL.format(env["InstanceDNS"])
-                    break
+            server = SERVER_URL.format(env_results[0]["InstanceDNS"])
 
         slack_notifier(options.slack, options.secret, server, options.user, options.password, options.buildUrl)
         # create this file for destroy_instances script
-        with open("./Tests/is_build_passed_{}.txt".format(env["Role"].replace(' ', '')), 'a'):
+        with open("./Tests/is_build_passed_{}.txt".format(env_results[0]["Role"].replace(' ', '')), 'a'):
             pass
     else:
         print_error("Not instance tests build, stopping Slack Notifications about instances")

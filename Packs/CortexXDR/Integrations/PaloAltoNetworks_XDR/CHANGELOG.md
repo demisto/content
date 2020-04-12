@@ -1,5 +1,6 @@
 ## [Unreleased]
-
+- Fixed issue where **xdr-isolate-endpoint** was failing if the isolation was still pending
+- Fixed issue where **xdr-unisolate-endpoint** was failing if the isolation cancellation was still pending
 
 ## [20.2.0] - 2020-02-04
   - Fixed issue where trailing whitespaces would effect outputs. 

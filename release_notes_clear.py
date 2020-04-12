@@ -4,10 +4,11 @@ import argparse
 from datetime import datetime
 import yaml
 
-from Tests.scripts.constants import UNRELEASE_HEADER, INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR,\
-    DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR, LAYOUTS_DIR, CLASSIFIERS_DIR, MISC_DIR
-from Tests.test_utils import server_version_compare, run_command, get_release_notes_file_path, print_warning
-from Tests.scripts.validate_files import FilesValidator
+from demisto_sdk.commands.common.constants import UNRELEASE_HEADER, INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, \
+    REPORTS_DIR, DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR, LAYOUTS_DIR, CLASSIFIERS_DIR, MISC_DIR
+from demisto_sdk.commands.common.tools import server_version_compare, run_command, get_release_notes_file_path, \
+    print_warning
+from demisto_sdk.commands.validate.file_validator import FilesValidator
 from release_notes import LAYOUT_TYPE_TO_NAME
 
 
