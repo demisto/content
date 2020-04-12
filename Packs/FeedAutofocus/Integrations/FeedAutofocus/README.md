@@ -16,9 +16,9 @@ For more information click [here](https://docs.paloaltonetworks.com/autofocus/au
 | feedReputation | The indicator reputation. | False |
 | feedReliability | The source's reliability. | True |
 | feedExpirationPolicy | The feed's expiration policy. | False |
-| feedExpirationInterval | The interval in which the feed expires. | False |
+| feedExpirationInterval | The interval after which the feed expires. | False |
 | feedFetchInterval | The feed fetch interval. | False |
-| feedBypassExclusionList | The bypass exclusion list. | False |
+| feedBypassExclusionList | Whether to bypass exclusion list. | False |
 | insecure | Whether to trust any certificate (not secure). | False |
 | proxy | Whether to use the system proxy settings. | False |
 
