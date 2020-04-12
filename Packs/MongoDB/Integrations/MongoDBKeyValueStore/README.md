@@ -15,7 +15,7 @@ The account user must have appropriate permissions -  ***root*** role to execute
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
     * __MongoDB username__
-    * __URI (mongodb://<IP/FQDN>:<Port Number>)__
+    * __URI (mongodb://IP/FQDN:Port Number)__
     * __MongoDB database name__
     * __MongoDB collection name__
     * __Use an SSL/TLS secured connection__
