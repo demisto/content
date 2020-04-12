@@ -1,5 +1,5 @@
 ## [Unreleased]
-Fixed an issue where ***!file*** only accepted lower case hash.
+Fixed an issue where ***!file*** only accepted a lower case hash.
 
 ## [20.3.4] - 2020-03-30
   - Fixed an issue where *get_search_results* mistakenly returns "no results".
