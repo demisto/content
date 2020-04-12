@@ -29,15 +29,36 @@ context1 = {
     'simpleValue': 'simple',
     'listValue': [{'name': 'test1'}, {'name': 'test2'}],
     'dictListValue': {'test': ['1', '2']},
-    'simpleListValue': ['1', '2', '3']
+    'simpleListValue': ['1', '2', '3'],
+    'dictListValue2': {'first': ['1', '2', '3'], 'second': ['1']},
+    'multipleDictsValue': {
+        'test':
+            {
+                'first':
+                    {
+                        'word1': '1', 'word2': '2'
+                    },
+                'second': ['word3', 'word4']
+            }
+    }
 }
 context2 = context1
 
 context3 = {
     'listValue': [{'name': 'test1'}, {'name': 'test3'}],
     'dictListValue': {'test': ['2', '1']},
-    'simpleListValue': ['2', '1', '3']
-
+    'simpleListValue': ['2', '1', '3'],
+    'dictListValue2': {'first': ['1', '2', '3']},
+    'multipleDictsValue': {
+        'test':
+            {
+                'first':
+                    {
+                        'word1': '4', 'word2': '2'
+                    },
+                'second': ['word3', 'word4']
+            }
+    }
 }
 
 incident2 = {
@@ -210,6 +231,63 @@ def test_similar_context_dict_list_value(mocker):
     assert result['EntryContext']['similarIncidentList'][1]['rawId'] == 2
 
 
+def test_similar_context_dict_list_value2(mocker):
+    args = dict(default_args)
+    args.update({'similarIncidentFields': 'name', 'similarContextKeys': 'dictListValue2'})
+
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(demisto, 'incidents', return_value=[incident1])
+    mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
+    mocker.patch.object(demisto, 'context', return_value=context1)
+    mocker.patch.object(demisto, 'dt', side_effect=dt_res)
+
+    result = main()
+    assert len(result['EntryContext']['similarIncidentList']) == 1
+    assert result['EntryContext']['similarIncidentList'][0]['rawId'] == 2
+
+    args.update({'similarIncidentFields': 'name', 'similarContextKeys': 'dictListValue2.first'})
+    result = main()
+    assert len(result['EntryContext']['similarIncidentList']) == 2
+    assert result['EntryContext']['similarIncidentList'][0]['rawId'] == 3
+    assert result['EntryContext']['similarIncidentList'][1]['rawId'] == 2
+
+    args.update({'similarIncidentFields': 'name', 'similarContextKeys': 'dictListValue2.second'})
+    result = main()
+    assert len(result['EntryContext']['similarIncidentList']) == 1
+    assert result['EntryContext']['similarIncidentList'][0]['rawId'] == 2
+
+
+def test_similar_context_multiple_dicts_value(mocker):
+    args = dict(default_args)
+    args.update({'similarIncidentFields': 'name', 'similarContextKeys': 'multipleDictsValue'})
+
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(demisto, 'incidents', return_value=[incident1])
+    mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
+    mocker.patch.object(demisto, 'context', return_value=context1)
+    mocker.patch.object(demisto, 'dt', side_effect=dt_res)
+
+    result = main()
+    assert len(result['EntryContext']['similarIncidentList']) == 1
+    assert result['EntryContext']['similarIncidentList'][0]['rawId'] == 2
+
+    args.update({'similarIncidentFields': 'name', 'similarContextKeys': 'multipleDictsValue.test.second'})
+    result = main()
+    assert len(result['EntryContext']['similarIncidentList']) == 2
+    assert result['EntryContext']['similarIncidentList'][0]['rawId'] == 3
+    assert result['EntryContext']['similarIncidentList'][1]['rawId'] == 2
+
+    args.update({'similarIncidentFields': 'name', 'similarContextKeys': 'multipleDictsValue.test'})
+    result = main()
+    assert len(result['EntryContext']['similarIncidentList']) == 1
+    assert result['EntryContext']['similarIncidentList'][0]['rawId'] == 2
+
+    args.update({'similarIncidentFields': 'name', 'similarContextKeys': 'multipleDictsValue.test.first'})
+    result = main()
+    assert len(result['EntryContext']['similarIncidentList']) == 1
+    assert result['EntryContext']['similarIncidentList'][0]['rawId'] == 2
+
+
 def test_similar_context_simple_list_value(mocker):
     args = dict(default_args)
     args.update({'similarIncidentFields': 'name', 'similarContextKeys': 'simpleListValue'})
@@ -249,12 +327,12 @@ def dt_res(context, keys_to_search):
             if isinstance(context_key_value, list):
                 list_value = []
                 for value in context_key_value:
-                    if isinstance(context_key_value, dict):
+                    if isinstance(value, dict):
                         if value.get(key):
                             list_value.append(value[key])
                     else:
                         list_value.append(value)
-                context = context_key_value = list_value
+                context_key_value = list_value
 
             elif isinstance(context_key_value, dict):
                 dict_list_value = []
@@ -265,7 +343,7 @@ def dt_res(context, keys_to_search):
                         else:
                             dict_list_value.append(context_key_value[dict_key])
 
-                context = context_key_value = dict_list_value
+                context_key_value = dict_list_value
 
             else:
                 context = context_key_value
