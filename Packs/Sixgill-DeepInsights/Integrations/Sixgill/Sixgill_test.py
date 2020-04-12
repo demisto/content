@@ -139,9 +139,7 @@ def init_params():
 
 def test_test_module_raise_exception(mocker):
     mocker.patch.object(demisto, 'params', return_value=init_params())
-
-    from sixgill.sixgill_request_classes.sixgill_auth_request import SixgillAuthRequest
-    mocker.patch.object(SixgillAuthRequest, 'send', return_value=MockedResponse(400))
+    mocker.patch('requests.sessions.Session.send', return_value=MockedResponse(400))
 
     from Sixgill import test_module
 
@@ -151,9 +149,7 @@ def test_test_module_raise_exception(mocker):
 
 def test_test_module(mocker):
     mocker.patch.object(demisto, 'params', return_value=init_params())
-
-    from sixgill.sixgill_request_classes.sixgill_auth_request import SixgillAuthRequest
-    mocker.patch.object(SixgillAuthRequest, 'send', return_value=MockedResponse(200))
+    mocker.patch('requests.sessions.Session.send', return_value=MockedResponse(200))
 
     from Sixgill import test_module
     test_module()
@@ -177,24 +173,6 @@ def test_fetch_incidents(mocker):
 
     assert(len(incidents) == 6)
     assert (incidents == expected_alert_output)
-
-
-def test_get_indicators(mocker):
-    mocker.patch.object(demisto, 'params', return_value=init_params())
-    mocker.patch.object(demisto, 'results')
-
-    from sixgill.sixgill_darkfeed_client import SixgillDarkFeedClient
-
-    mocker.patch.object(SixgillDarkFeedClient, 'get_bundle', return_value=iocs_bundle)
-    mocker.patch.object(SixgillDarkFeedClient, 'commit_indicators', return_value=None)
-
-    from Sixgill import sixgill_get_indicators_command
-    sixgill_get_indicators_command()
-
-    assert demisto.results.call_count == 1
-    results = demisto.results.call_args_list[0][0][0]
-    results['FileID'] = ''
-    assert results == expected_ioc_output
 
 
 def test_item_to_incident():
