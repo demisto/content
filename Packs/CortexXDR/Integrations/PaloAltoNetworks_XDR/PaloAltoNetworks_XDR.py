@@ -1371,7 +1371,7 @@ def main():
         if demisto.command() == 'fetch-incidents':
             LOG(str(err))
             raise
-        
+
         demisto.error(traceback.format_exc())
         return_error(str(err))
 
