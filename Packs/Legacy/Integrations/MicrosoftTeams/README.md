@@ -116,7 +116,7 @@ Before you can create an instance of the Microsoft Teams integration in Demisto,
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### send-notification
+### Send a message to teams
 ***
 Sends a message to the specified teams.
 To mention a user in the message, add a semicolon ";" at the end of the user mention. For example: @Bruce Willis;
@@ -153,7 +153,7 @@ There is no context output for this command.
 ##### Human Readable Output
 Message was sent successfully.
 
-### mirror-investigation
+### Mirror an investigation to a Microsoft Teams channel
 ***
 Mirrors the Demisto investigation to the specified Microsoft Teams channel.
 
@@ -190,7 +190,7 @@ There is no context output for this command.
 ##### Human Readable Output
 Investigation mirrored successfully in channel incident-100.
 
-### close-channel
+### Delete a channel
 ***
 Deletes the specified Microsoft Teams channel.
 
@@ -223,7 +223,7 @@ There is no context output for this command.
 ##### Human Readable Output
 Channel was successfully closed.
 
-### microsoft-teams-integration-health
+### Get information on the integration status
 ***
 Returns real-time and historical data on the integration status.
 
@@ -250,9 +250,9 @@ There is no context output for this command.
 | Operational | Operational |
 No mirrored channels.
 
-### microsoft-teams-ring-user
+### Ring a user's Team account
 ***
-Ring a user's Teams account. Note: This is a ring only! no media will play in case the generated call is answered. To use this make sure your Bot has the following premissions - Calls.Initiate.All and Calls.InitiateGroupCall.All
+Rings a user's Teams account. Note: This is a ring only! no media will play in case the generated call is answered. To use this make sure your Bot has the following premissions - Calls.Initiate.All and Calls.InitiateGroupCall.All
 
 
 ##### Base Command
@@ -282,7 +282,7 @@ There is no context output for this command.
 ##### Human Readable Output
 Calling Avishai Brandeis
 
-### microsoft-teams-add-user-to-channel
+### Add a user to a channel
 ***
 Adds a member (user) to a private channel.
 
@@ -316,7 +316,7 @@ There is no context output for this command.
 ##### Human Readable Output
 The User "itayadmin" has been added to channel "example channel" successfully.
 
-### microsoft-teams-create-channel
+### Create a channel
 ***
 Creates a new channel in a Microsoft Teams team.
 
