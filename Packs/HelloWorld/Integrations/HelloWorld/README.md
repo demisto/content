@@ -1,5 +1,5 @@
 This is the Hello World integration for getting started.
-The integration is a sample integration to get you started fast.
+The integration is a sample integration to quickly get you started.
 It demonstrates how to build an integration using the recommended `Client` class architecture.
 
 ## Configure HelloWorld on Demisto
@@ -10,12 +10,12 @@ It demonstrates how to build an integration using the recommended `Client` class
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL (e.g. https://example.net) | True |
+| url | Server URL (e.g., https://example.net) | True |
 | credentials | Username | True |
-| isFetch | Fetch incidents | False |
-| incidentType | Incident type | False |
-| insecure | Trust any certificate (not secure) | False |
-| proxy | Use system proxy settings | False |
+| isFetch | Fetch incidents. | False |
+| incidentType | Incident type. | False |
+| insecure | Trust any certificate (not secure). | False |
+| proxy | Use system proxy settings. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -23,7 +23,7 @@ You can execute these commands from the Demisto CLI, as part of an automation, o
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### helloworld-say-hello
 ***
-Hello command - prints hello to anyone
+Hello command - prints hello to the specified name
 
 
 ##### Base Command
@@ -33,12 +33,12 @@ Hello command - prints hello to anyone
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of whom you want to say hello to. | Optional | 
+| name | The name hello to.  | Optional | 
 
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| hello | String | Should be Hello **something** here | 
+| hello | String | Should be Hello **something** here. | 
 
