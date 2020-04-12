@@ -2473,12 +2473,14 @@
         {
             "integrations": "MongoDB Key Value Store",
             "playbookID": "MongoDB KeyValueStore - Test",
-            "pid_threshold": 12
+            "pid_threshold": 12,
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "MongoDB Log",
             "playbookID": "MongoDBLog - Test",
-            "pid_threshold": 12
+            "pid_threshold": 12,
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Google Chronicle Backstory",
