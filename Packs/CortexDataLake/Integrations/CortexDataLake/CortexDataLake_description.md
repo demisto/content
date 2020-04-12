@@ -12,10 +12,10 @@ This integration was integrated and tested with version 2 of Cortex Data Lake
 
 ---
 
-1. Go to the [HUB](https://apps.paloaltonetworks.com/apps) and select the `Demisto v2` app
+1. Go to the [HUB](https://apps.paloaltonetworks.com/apps) and select the `Cortex™ XSOAR` app
 2. In the War Room, run the command `!GetLicenseID` to get the `license ID`.
-3. Go to __Settings__ > __ABOUT__ > __License__ to get the `Costumer Name`.
-4. Insert the `license ID` and the `Costumer Name` in the required fields and complete the authentication process in order  
+3. Go to __Settings__ > __ABOUT__ > __License__ to get the `Customer Name`.
+4. Insert the `license ID` and the `Customer Name` in the required fields and complete the authentication process in order  
 to get the __Authentication Token__  __Registration ID__ __Encryption Key__
 5. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 6. Search for Palo Alto Networks Cortex v2.

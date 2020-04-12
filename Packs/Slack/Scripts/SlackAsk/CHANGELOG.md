@@ -1,4 +1,7 @@
 ## [Unreleased]
+The script will now send a message using the **Slack V2** integration only.
+
+## [20.3.4] - 2020-03-30
 -
 
 ## [19.11.1] - 2019-11-26

@@ -1,4 +1,3 @@
-elasticcommonfields: {}
 id: Carbon Black Enterprise Protection V2 Test
 version: -1
 name: Carbon Black Enterprise Protection V2 Test
@@ -10,7 +9,6 @@ tasks:
     taskid: ec8293b9-6204-4af7-8618-4caee1d9014f
     type: start
     task:
-      elasticcommonfields: {}
       id: ec8293b9-6204-4af7-8618-4caee1d9014f
       version: -1
       name: ""
@@ -49,7 +47,6 @@ tasks:
     taskid: 8d11fec8-cea2-4784-8951-c736e56eff82
     type: regular
     task:
-      elasticcommonfields: {}
       id: 8d11fec8-cea2-4784-8951-c736e56eff82
       version: -1
       name: Search connector
@@ -87,7 +84,6 @@ tasks:
     taskid: c89c3177-7950-4009-8508-105de4646421
     type: title
     task:
-      elasticcommonfields: {}
       id: c89c3177-7950-4009-8508-105de4646421
       version: -1
       name: Connector
@@ -115,7 +111,6 @@ tasks:
     taskid: 4f1db350-520c-4cd9-861b-d314892ee589
     type: regular
     task:
-      elasticcommonfields: {}
       id: 4f1db350-520c-4cd9-861b-d314892ee589
       version: -1
       name: Get 3rd connector
@@ -149,7 +144,6 @@ tasks:
     taskid: 43ff4558-bb5f-400e-8a4f-2b97e3627941
     type: title
     task:
-      elasticcommonfields: {}
       id: 43ff4558-bb5f-400e-8a4f-2b97e3627941
       version: -1
       name: Done
@@ -174,7 +168,6 @@ tasks:
     taskid: 64a75967-9cfd-4e0b-8e0f-9f6a3dd64c66
     type: title
     task:
-      elasticcommonfields: {}
       id: 64a75967-9cfd-4e0b-8e0f-9f6a3dd64c66
       version: -1
       name: Computer
@@ -202,7 +195,6 @@ tasks:
     taskid: 23cbbd8c-7366-434b-8b15-b3ebe564afa4
     type: regular
     task:
-      elasticcommonfields: {}
       id: 23cbbd8c-7366-434b-8b15-b3ebe564afa4
       version: -1
       name: Search computer
@@ -244,7 +236,6 @@ tasks:
     taskid: d345b858-b13c-4e50-89e7-3d2e528d1824
     type: condition
     task:
-      elasticcommonfields: {}
       id: d345b858-b13c-4e50-89e7-3d2e528d1824
       version: -1
       name: Verify context
@@ -295,7 +286,6 @@ tasks:
     taskid: c5cb59fd-1d79-48a7-8e78-54a41a8c79ef
     type: regular
     task:
-      elasticcommonfields: {}
       id: c5cb59fd-1d79-48a7-8e78-54a41a8c79ef
       version: -1
       name: Get computer
@@ -329,7 +319,6 @@ tasks:
     taskid: 56de5273-118f-4abf-8638-d1a885d2bd0b
     type: condition
     task:
-      elasticcommonfields: {}
       id: 56de5273-118f-4abf-8638-d1a885d2bd0b
       version: -1
       name: Verify context
@@ -380,7 +369,6 @@ tasks:
     taskid: 258f69da-4be4-4c9d-8f1b-fe1de80c65ad
     type: title
     task:
-      elasticcommonfields: {}
       id: 258f69da-4be4-4c9d-8f1b-fe1de80c65ad
       version: -1
       name: File Catalog
@@ -408,7 +396,6 @@ tasks:
     taskid: e3fe0654-0810-4f6f-815e-e3cc47e05d5e
     type: regular
     task:
-      elasticcommonfields: {}
       id: e3fe0654-0810-4f6f-815e-e3cc47e05d5e
       version: -1
       name: Search file catalog using query
@@ -446,7 +433,6 @@ tasks:
     taskid: 39acf1ef-749f-4977-8079-183fc3157ebe
     type: condition
     task:
-      elasticcommonfields: {}
       id: 39acf1ef-749f-4977-8079-183fc3157ebe
       version: -1
       name: Verify context
@@ -507,7 +493,6 @@ tasks:
     taskid: 9c2c6608-62ed-4586-88cc-74dea1139134
     type: title
     task:
-      elasticcommonfields: {}
       id: 9c2c6608-62ed-4586-88cc-74dea1139134
       version: -1
       name: File Instance
@@ -535,7 +520,6 @@ tasks:
     taskid: 1ff538be-9cbf-4e23-82d4-d9fe782db254
     type: regular
     task:
-      elasticcommonfields: {}
       id: 1ff538be-9cbf-4e23-82d4-d9fe782db254
       version: -1
       name: Search file instance
@@ -574,7 +558,6 @@ tasks:
     taskid: f67a0ea9-0a8d-4d08-8b2e-cf97efc50e22
     type: condition
     task:
-      elasticcommonfields: {}
       id: f67a0ea9-0a8d-4d08-8b2e-cf97efc50e22
       version: -1
       name: Verify context
@@ -655,7 +638,6 @@ tasks:
     taskid: 97d22ce2-89b8-45ca-8728-2a9d7106f175
     type: title
     task:
-      elasticcommonfields: {}
       id: 97d22ce2-89b8-45ca-8728-2a9d7106f175
       version: -1
       name: Event
@@ -683,7 +665,6 @@ tasks:
     taskid: 4f3128f6-e11c-4537-80ee-25de08a771b2
     type: regular
     task:
-      elasticcommonfields: {}
       id: 4f3128f6-e11c-4537-80ee-25de08a771b2
       version: -1
       name: Search events using sort and limit
@@ -719,11 +700,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: a90ad947-8503-4ece-8984-683417cafe08
+    taskid: 27a121f3-fa4d-420c-8751-06678c8bd76e
     type: condition
     task:
-      elasticcommonfields: {}
-      id: a90ad947-8503-4ece-8984-683417cafe08
+      id: 27a121f3-fa4d-420c-8751-06678c8bd76e
       version: -1
       name: Verify context
       type: condition
@@ -736,26 +716,20 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualNumber
+      - - operator: isExists
           left:
             value:
               complex:
                 root: CBP
                 accessor: Event.StringID
             iscontext: true
-          right:
-            value:
-              simple: "200"
-      - - operator: isEqualNumber
+      - - operator: isExists
           left:
             value:
               complex:
                 root: CBP
                 accessor: Event.ID
             iscontext: true
-          right:
-            value:
-              simple: "432798"
     view: |-
       {
         "position": {
@@ -773,7 +747,6 @@ tasks:
     taskid: ac5d0915-51b3-42da-8f90-42b838422b9f
     type: title
     task:
-      elasticcommonfields: {}
       id: ac5d0915-51b3-42da-8f90-42b838422b9f
       version: -1
       name: File rule
@@ -801,7 +774,6 @@ tasks:
     taskid: 0effadea-0e17-403a-86e2-9ab589333a54
     type: regular
     task:
-      elasticcommonfields: {}
       id: 0effadea-0e17-403a-86e2-9ab589333a54
       version: -1
       name: Create file rule
@@ -848,7 +820,6 @@ tasks:
     taskid: 500a0ab6-0560-41ca-8489-1cb1c5ac1011
     type: regular
     task:
-      elasticcommonfields: {}
       id: 500a0ab6-0560-41ca-8489-1cb1c5ac1011
       version: -1
       name: Delete file rule
@@ -884,7 +855,6 @@ tasks:
     taskid: 682eed7d-7c0a-4f5a-8ef0-5f8bdb23d403
     type: regular
     task:
-      elasticcommonfields: {}
       id: 682eed7d-7c0a-4f5a-8ef0-5f8bdb23d403
       version: -1
       name: Get deleted file rule
@@ -920,7 +890,6 @@ tasks:
     taskid: da3ef820-f3bb-4827-8e49-5959023203b6
     type: condition
     task:
-      elasticcommonfields: {}
       id: da3ef820-f3bb-4827-8e49-5959023203b6
       version: -1
       name: Verify file was deleted
@@ -961,7 +930,6 @@ tasks:
     taskid: 4c834321-6ec0-4b51-8769-18554618c74e
     type: regular
     task:
-      elasticcommonfields: {}
       id: 4c834321-6ec0-4b51-8769-18554618c74e
       version: -1
       name: Search file rule
@@ -1008,7 +976,6 @@ tasks:
     taskid: 617ea85e-9487-4b8e-8afa-b702792eabb3
     type: condition
     task:
-      elasticcommonfields: {}
       id: 617ea85e-9487-4b8e-8afa-b702792eabb3
       version: -1
       name: Verify context
@@ -1049,7 +1016,6 @@ tasks:
     taskid: 3f9f37db-36f7-4adf-8e66-b749a0d35396
     type: title
     task:
-      elasticcommonfields: {}
       id: 3f9f37db-36f7-4adf-8e66-b749a0d35396
       version: -1
       name: Policy
@@ -1077,7 +1043,6 @@ tasks:
     taskid: cb1ad7b0-a802-4687-8481-4dbaf04dc799
     type: regular
     task:
-      elasticcommonfields: {}
       id: cb1ad7b0-a802-4687-8481-4dbaf04dc799
       version: -1
       name: Policy query
@@ -1115,7 +1080,6 @@ tasks:
     taskid: af5af476-4355-44dc-8716-6c6fb028c6c1
     type: condition
     task:
-      elasticcommonfields: {}
       id: af5af476-4355-44dc-8716-6c6fb028c6c1
       version: -1
       name: Verify context
@@ -1170,7 +1134,6 @@ tasks:
     taskid: 6e0a4dbd-4a49-40be-8904-2fc242d80b16
     type: title
     task:
-      elasticcommonfields: {}
       id: 6e0a4dbd-4a49-40be-8904-2fc242d80b16
       version: -1
       name: Server Config
@@ -1198,7 +1161,6 @@ tasks:
     taskid: 32beb2af-5e25-4632-8ad4-7ea325a48cf9
     type: regular
     task:
-      elasticcommonfields: {}
       id: 32beb2af-5e25-4632-8ad4-7ea325a48cf9
       version: -1
       name: Search server config
@@ -1236,7 +1198,6 @@ tasks:
     taskid: 4cca414f-a6ea-4540-8e2a-5652f3e1fe05
     type: condition
     task:
-      elasticcommonfields: {}
       id: 4cca414f-a6ea-4540-8e2a-5652f3e1fe05
       version: -1
       name: Verify context
@@ -1287,7 +1248,6 @@ tasks:
     taskid: 9f365f78-b60e-4f96-8388-b81a3dfd32c2
     type: title
     task:
-      elasticcommonfields: {}
       id: 9f365f78-b60e-4f96-8388-b81a3dfd32c2
       version: -1
       name: Publisher
@@ -1315,7 +1275,6 @@ tasks:
     taskid: c017472e-1540-422d-8f2b-b5f71c00a2d1
     type: regular
     task:
-      elasticcommonfields: {}
       id: c017472e-1540-422d-8f2b-b5f71c00a2d1
       version: -1
       name: Search publisher
@@ -1356,7 +1315,6 @@ tasks:
     taskid: 6a4cd2c0-3e12-4cb4-8083-6d7cc45cce79
     type: condition
     task:
-      elasticcommonfields: {}
       id: 6a4cd2c0-3e12-4cb4-8083-6d7cc45cce79
       version: -1
       name: Verify context
@@ -1417,7 +1375,6 @@ tasks:
     taskid: 82c0efce-127a-4d7c-8e30-56b13fa86ce0
     type: title
     task:
-      elasticcommonfields: {}
       id: 82c0efce-127a-4d7c-8e30-56b13fa86ce0
       version: -1
       name: File Analysis
@@ -1445,7 +1402,6 @@ tasks:
     taskid: 681902ac-4e83-4f7d-8fe8-825f6c8c03b2
     type: regular
     task:
-      elasticcommonfields: {}
       id: 681902ac-4e83-4f7d-8fe8-825f6c8c03b2
       version: -1
       name: Create file analysis
@@ -1485,7 +1441,6 @@ tasks:
     taskid: eb70d38a-fc1b-47d1-89da-081a2d2dcf7b
     type: condition
     task:
-      elasticcommonfields: {}
       id: eb70d38a-fc1b-47d1-89da-081a2d2dcf7b
       version: -1
       name: Verify context
@@ -1546,7 +1501,6 @@ tasks:
     taskid: 815efed4-e9b0-4540-84f2-5ccd472095ca
     type: regular
     task:
-      elasticcommonfields: {}
       id: 815efed4-e9b0-4540-84f2-5ccd472095ca
       version: -1
       name: Get file analysis
@@ -1579,7 +1533,6 @@ tasks:
     taskid: c1b0aa22-268f-47f4-8cab-57a0a6d18f77
     type: condition
     task:
-      elasticcommonfields: {}
       id: c1b0aa22-268f-47f4-8cab-57a0a6d18f77
       version: -1
       name: Verify context
@@ -1620,7 +1573,6 @@ tasks:
     taskid: e24fbc88-8ab5-4544-8521-cedf5f4c968e
     type: title
     task:
-      elasticcommonfields: {}
       id: e24fbc88-8ab5-4544-8521-cedf5f4c968e
       version: -1
       name: File Upload
@@ -1648,7 +1600,6 @@ tasks:
     taskid: 2a487814-d494-4928-8869-91d964ef3a29
     type: regular
     task:
-      elasticcommonfields: {}
       id: 2a487814-d494-4928-8869-91d964ef3a29
       version: -1
       name: Search file upload
@@ -1690,7 +1641,6 @@ tasks:
     taskid: 2ace3fd9-a2c9-4661-8938-6be22e2ce36a
     type: regular
     task:
-      elasticcommonfields: {}
       id: 2ace3fd9-a2c9-4661-8938-6be22e2ce36a
       version: -1
       name: Get file upload
@@ -1724,7 +1674,6 @@ tasks:
     taskid: ba2c54fe-85c5-46c8-89a1-905337f23abc
     type: condition
     task:
-      elasticcommonfields: {}
       id: ba2c54fe-85c5-46c8-89a1-905337f23abc
       version: -1
       name: Verify context
@@ -1773,7 +1722,6 @@ tasks:
     taskid: cce5d8e7-e734-434d-8f5f-793463758538
     type: title
     task:
-      elasticcommonfields: {}
       id: cce5d8e7-e734-434d-8f5f-793463758538
       version: -1
       name: Connector
@@ -1801,7 +1749,6 @@ tasks:
     taskid: 4ceec1b6-5378-46df-8a40-bfdd0f8729b5
     type: regular
     task:
-      elasticcommonfields: {}
       id: 4ceec1b6-5378-46df-8a40-bfdd0f8729b5
       version: -1
       name: Search connectors offset 1
@@ -1839,7 +1786,6 @@ tasks:
     taskid: 68299722-bed6-4b05-8d58-42798e86bc6f
     type: regular
     task:
-      elasticcommonfields: {}
       id: 68299722-bed6-4b05-8d58-42798e86bc6f
       version: -1
       name: Get first connector
@@ -1873,7 +1819,6 @@ tasks:
     taskid: ac259c69-8973-4f72-8f81-f03d4cb98f2b
     type: condition
     task:
-      elasticcommonfields: {}
       id: ac259c69-8973-4f72-8f81-f03d4cb98f2b
       version: -1
       name: Verify context
@@ -1926,7 +1871,6 @@ tasks:
     taskid: 272a82fa-7c47-4a07-8412-897576644b4a
     type: regular
     task:
-      elasticcommonfields: {}
       id: 272a82fa-7c47-4a07-8412-897576644b4a
       version: -1
       name: Fetch Incidents
@@ -1961,7 +1905,6 @@ tasks:
     taskid: e66c7c4f-3539-4c7b-8c18-210a346b0a7d
     type: regular
     task:
-      elasticcommonfields: {}
       id: e66c7c4f-3539-4c7b-8c18-210a346b0a7d
       version: -1
       name: Search file catalog using specific query args
@@ -2006,7 +1949,6 @@ tasks:
     taskid: 7e95ae9f-bf8d-43db-8742-20e587e5f2c0
     type: condition
     task:
-      elasticcommonfields: {}
       id: 7e95ae9f-bf8d-43db-8742-20e587e5f2c0
       version: -1
       name: Verify context
@@ -2045,7 +1987,6 @@ tasks:
     taskid: 57b89cb9-be1b-4e24-82b6-546eebf34a79
     type: regular
     task:
-      elasticcommonfields: {}
       id: 57b89cb9-be1b-4e24-82b6-546eebf34a79
       version: -1
       name: Search file instance using specific query args
@@ -2087,7 +2028,6 @@ tasks:
     taskid: 5bdb8694-c0ab-4069-825d-6e27ddc1ff20
     type: regular
     task:
-      elasticcommonfields: {}
       id: 5bdb8694-c0ab-4069-825d-6e27ddc1ff20
       version: -1
       name: Search events using specific query arguments
@@ -2139,7 +2079,6 @@ tasks:
     taskid: 6ea5aed6-5317-4ffa-8643-33be847b98a3
     type: regular
     task:
-      elasticcommonfields: {}
       id: 6ea5aed6-5317-4ffa-8643-33be847b98a3
       version: -1
       name: Search file analysis using custom filters
@@ -2182,7 +2121,6 @@ tasks:
     taskid: eb53536c-e380-49c7-84d0-a945c0d6fa61
     type: condition
     task:
-      elasticcommonfields: {}
       id: eb53536c-e380-49c7-84d0-a945c0d6fa61
       version: -1
       name: Verify context
@@ -2221,7 +2159,6 @@ tasks:
     taskid: b663275d-4226-4ea7-8103-2b4cb225e83b
     type: regular
     task:
-      elasticcommonfields: {}
       id: b663275d-4226-4ea7-8103-2b4cb225e83b
       version: -1
       name: Search with specific query arguments
