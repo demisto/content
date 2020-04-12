@@ -13,8 +13,8 @@ This integration was integrated and tested with version 2 of Cortex Data Lake
 
 1. Go to the [HUB](https://apps.paloaltonetworks.com/apps) and select the `Demisto v2` app
 2. In the War Room, run the command `!GetLicenseID` to get the `license ID`.
-3. Go to __Settings__ > __ABOUT__ > __License__ to get the `Costumer Name`.
-4. Insert the `license ID` and the `Costumer Name` in the required fields and complete the authentication process in order to get the __Authentication Token__  __Registration ID__ __Encryption Key__
+3. Go to __Settings__ > __ABOUT__ > __License__ to get the `Customer Name`.
+4. Insert the `license ID` and the `Customer Name` in the required fields and complete the authentication process in order to get the __Authentication Token__  __Registration ID__ __Encryption Key__
 5. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 6. Search for Palo Alto Networks Cortex v2.
 7. Click __Add instance__ to create and configure a new integration instance.
@@ -197,7 +197,7 @@ Runs a query on the Cortex logging service, according to preset queries.
 
 
 ##### Command Example
-```!cdl-get-critical-threat-logs limit="1" time_range="1 weeks"```
+```!cdl-get-critical-threat-logs limit="1" time_range="10 days"```
 ##### Context Example
 
 ```
@@ -322,7 +322,7 @@ Runs a query on the Cortex logging service, according to preset queries.
 
 
 ##### Command Example
-```!cdl-get-social-applications limit="2" time_range="1 weeks"```
+```!cdl-get-social-applications limit="2" time_range="10 days"```
 ##### Context Example
 ```
 {
@@ -495,7 +495,7 @@ Runs a query on the threat table with the query 'SELECT * FROM `firewall.threat`
 
 
 ##### Command Example
-```!cdl-search-by-file-hash SHA256="cbdf1f3cccd949e6e96c425b3d7ccc463b956f002f694472e4d24a12ff2cea4d" limit=1 time_range="1 weeks"```
+```!cdl-search-by-file-hash SHA256="cbdf1f3cccd949e6e96c425b3d7ccc463b956f002f694472e4d24a12ff2cea4d" limit=1 time_range="10 days"```
 ##### Context Example
 ```
 {
@@ -632,7 +632,7 @@ Searches the Cortex firewall.traffic table. Traffic logs contain entries for the
 
 
 ##### Command Example
-```!cdl-query-traffic-logs action="allow" fields="vendor_name,log_source,rule_matched,dest_location,log_time" time_range="1 weeks" limit="5"```
+```!cdl-query-traffic-logs action="allow" fields="vendor_name,log_source,rule_matched,dest_location,log_time" time_range="10 days" limit="5"```
 
 ##### Context Example
 ```
@@ -767,7 +767,7 @@ Searches the Cortex panw.threat table, which is the threat logs table for PAN-OS
 
 
 ##### Command Example
-```!cdl-query-threat-logs action="allow" fields="vendor_name,log_source,rule_matched,dest_location,log_time" time_range="1 weeks" limit="1"```
+```!cdl-query-threat-logs action="allow" fields="vendor_name,log_source,rule_matched,dest_location,log_time" time_range="10 days" limit="1"```
 
 ##### Context Example
 ```
