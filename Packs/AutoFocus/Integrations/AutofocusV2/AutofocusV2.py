@@ -838,11 +838,11 @@ def search_indicator(indicator_type, indicator_value):
             text_error = {}
         error_message = text_error.get('message')
         if error_message:
-            raise ValueError(f'Request Failed with status: {result.status_code}.\n'
-                             f'Reason is: {str(error_message)}.')
+            return_error(f'Request Failed with status: {result.status_code}.\n'
+                         f'Reason is: {str(error_message)}.')
         elif str(result.status_code) in ERROR_DICT:
-            raise ValueError(f'Request Failed with status: {result.status_code}.\n'
-                             f'Reason is: {ERROR_DICT[str(result.status_code)]}.')
+            return_error(f'Request Failed with status: {result.status_code}.\n'
+                         f'Reason is: {ERROR_DICT[str(result.status_code)]}.')
         else:
             err_msg = f'Request Failed with message: {err}.'
         return return_error(err_msg)
@@ -1320,14 +1320,7 @@ def search_file_command(file):
     file_list = argToList(file)
     indicator_details = []
     for _file in file_list:
-        try:
-            # first try with case sensitive hash
-            raw_res = search_indicator('sha256', _file)
-
-        except Exception:
-            # if failed use lower case
-            raw_res = search_indicator('sha256', _file.lower())
-
+        raw_res = search_indicator('sha256', _file.lower())
         score = calculate_dbot_score(raw_res, indicator_type)
         res = parse_indicator_response(raw_res, indicator_type)
         indicator_details.append({'raw_response': raw_res, 'value': _file, 'score': score, 'response': res})
