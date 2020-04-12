@@ -289,3 +289,4 @@ inputs:
   description: 'Maximum number of log entires to query from QRadar (default: 20)'
   playbookInputQuery: null
 outputs: []
+fromversion: 3.5.0

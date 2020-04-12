@@ -17,6 +17,7 @@ tasks:
     taskid: 608f0ec1-4001-4e68-8ead-e160f7802b35
     type: start
     task:
+      description: ""
       id: 608f0ec1-4001-4e68-8ead-e160f7802b35
       version: -1
       name: ""
@@ -43,6 +44,7 @@ tasks:
     taskid: a252b3c7-0c82-4ce5-8432-1c2100d4fb82
     type: condition
     task:
+      description: ""
       id: a252b3c7-0c82-4ce5-8432-1c2100d4fb82
       version: -1
       name: Is this a QRadar offense?
@@ -94,6 +96,7 @@ tasks:
     task:
       id: edc69a27-88bc-4edb-8fca-8a111d2b6785
       version: -1
+      description: ""
       name: Done
       type: title
       iscommand: false
@@ -120,6 +123,7 @@ tasks:
       version: -1
       name: Get offense information
       type: title
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -149,6 +153,7 @@ tasks:
       name: Should query for the correlations' logs?
       type: condition
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#default#':
@@ -316,6 +321,7 @@ tasks:
       scriptName: ChangeContext
       type: regular
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#none#':
@@ -352,6 +358,7 @@ tasks:
       version: -1
       name: is All or OnlyCRE
       type: condition
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -391,6 +398,7 @@ tasks:
       id: 8c29cfba-7371-44fc-88fb-a4631f94983a
       version: -1
       name: is All or OnlyNotCRE
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -627,6 +635,7 @@ tasks:
     task:
       id: b39e5759-64e0-4a88-8a77-b97d6258fd7b
       version: -1
+      description: ""
       name: QRadarCorrelationLog
       playbookName: QRadarCorrelationLog
       type: playbook
@@ -681,6 +690,7 @@ tasks:
       id: 6480781e-0508-4a7d-8054-1ddcde06e3f7
       version: -1
       name: Change Context
+      description: ""
       scriptName: ChangeContext
       type: regular
       iscommand: false
