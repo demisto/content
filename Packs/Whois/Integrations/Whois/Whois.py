@@ -6,6 +6,7 @@ import socket
 import sys
 from codecs import encode, decode
 import socks
+import errno
 
 ENTRY_TYPE = entryTypes['error'] if demisto.params().get('with_error', False) else entryTypes['warning']
 
@@ -7165,7 +7166,14 @@ def get_whois_raw(domain, server="", previous=None, rfc3490=True, never_cut=Fals
         request_domain = "=%s" % domain  # Avoid partial matches
     else:
         request_domain = domain
-    response = whois_request(request_domain, target_server)
+    response = ""
+    for i in range(0, 3):
+        try:
+            response = whois_request(request_domain, target_server)
+        except socket.error as err:
+            if err.errno == errno.ECONNRESET:
+                continue
+            break
     if never_cut:
         # If the caller has requested to 'never cut' responses, he will get the original response from the server (
         # this is useful for callers that are only interested in the raw data). Otherwise, if the target is
@@ -7613,8 +7621,7 @@ organization_regexes = (
     r"\ss\.?a\.?r\.?l\.?($|\s)",
 )
 
-
-grammar["_data"]["id"] = precompile_regexes(grammar["_data"]["id"], re.IGNORECASE)    # type: ignore
+grammar["_data"]["id"] = precompile_regexes(grammar["_data"]["id"], re.IGNORECASE)  # type: ignore
 grammar["_data"]["status"] = precompile_regexes(grammar["_data"]["status"], re.IGNORECASE)  # type: ignore
 grammar["_data"]["creation_date"] = precompile_regexes(grammar["_data"]["creation_date"], re.IGNORECASE)  # type: ignore
 grammar["_data"]["expiration_date"] = precompile_regexes(grammar["_data"]["expiration_date"],  # type: ignore
@@ -8359,6 +8366,7 @@ def domain_command():
             'DBotScore(val.Indicator && val.Indicator == obj.Indicator)': dbot_score
         }
     })
+
 
 def whois_command():
     query = demisto.args().get('query')
