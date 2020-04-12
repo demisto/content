@@ -1,6 +1,5 @@
 ## [Unreleased]
--
-
+- Added **slashnext-api-quota** command to get information about user's API quota.
 
 ## [19.10.2] - 2019-10-29
 #### New Integration
