@@ -180,10 +180,10 @@ def get_encrypted(content: str, key: str) -> str:
 class MsGraphClient:
 
     def __init__(self, tenant, auth_and_token_url, enc_key, app_name, base_url, verify,
-                 proxy, default_user):
+                 proxy, default_user, self_deployed):
         self.ms_client = MicrosoftClient(tenant_id=tenant, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=verify,
-                                         proxy=proxy)
+                                         proxy=proxy, self_deployed=self_deployed)
         self.default_user = default_user
 
     def test_function(self):
@@ -561,6 +561,8 @@ def main():
     verify = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     default_user = params.get('default_user')
+    self_deployed: bool = params.get('self_deployed', False)
+
 
     commands = {
         'test-module': module_test_function_command,
@@ -577,7 +579,7 @@ def main():
 
     try:
         client: MsGraphClient = MsGraphClient(tenant, auth_and_token_url, enc_key, APP_NAME,
-                                              url, verify, proxy, default_user)
+                                              url, verify, proxy, default_user, self_deployed)
         if 'user' not in demisto.args():
             demisto.args()['user'] = client.default_user
         # Run the command
