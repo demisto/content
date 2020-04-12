@@ -563,7 +563,6 @@ def main():
     default_user = params.get('default_user')
     self_deployed: bool = params.get('self_deployed', False)
 
-
     commands = {
         'test-module': module_test_function_command,
         'msgraph-calendar-list-calendars': list_calendars_command,
