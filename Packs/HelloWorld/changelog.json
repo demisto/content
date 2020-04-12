@@ -2,7 +2,7 @@
   "2.0.0": {
     "displayName": "2.0.0",
     "released" : "2020-03-12T09:57:18Z",
-    "releaseNotes": "## Integrations\\n### HelloWorld\\n- Fixed bug where HelloWorld command was returning image of bored developer.\\n## Scripts\\n### HelloWorldScript\\n- Those in responsible for the sacking of the dev, have been sacked."
+    "releaseNotes": "## Integrations\n### HelloWorld\n- Fixed bug where HelloWorld command was returning image of bored developer.\n## Scripts\n### HelloWorldScript\n- Those in responsible for the sacking of the dev, have been sacked."
   },
   "1.0.1": {
     "displayName" : "1.0.1",
