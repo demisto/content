@@ -107,7 +107,7 @@ def num_log_json():
 
 
 def main():
-    LOG("Command being called is %s" % (demisto.command()))
+    LOG(f'Command being called is {demisto.command()}')
     try:
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.

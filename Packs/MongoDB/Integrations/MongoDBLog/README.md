@@ -2,7 +2,7 @@
 ---
 
 Writes log data to a MongoDB collection.
-This integration was integrated and tested with version xx of MongoDB Log
+This integration was integrated and tested with version v4.2.3 of MongoDB.
 
 The account user must have appropriate permissions -  ***root*** role to execute the API calls.
 
@@ -55,10 +55,6 @@ There is no context output for this command.
 ##### Command Example
 ```!mongodb-read-log limit=5```
 
-##### Context Example
-```
-{}
-```
 
 ##### Human Readable Output
 ### The log documents/records for collection "log"
@@ -134,11 +130,6 @@ There is no context output for this command.
 
 ##### Command Example
 ```!mongodb-logs-number```
-
-##### Context Example
-```
-{}
-```
 
 ##### Human Readable Output
 The count of log documents/records is 56
