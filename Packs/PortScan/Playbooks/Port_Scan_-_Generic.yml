@@ -3,8 +3,8 @@ version: -1
 name: Port Scan - Generic
 description: "Investigates a port scan incident. The incident may originate from outside\
   \ or within the network. The playbook:\n- Enriches the hostname and IP address of\
-  \ the attacking endpoint\n- Escalates the incident in the case that a critical asset\
-  \ has been involved\n- Hunts malware associated with the alerts across the organization\n\
+  \ the attacking endpoint\n- Escalates the incident in case a critical asset\
+  \ is involved\n- Hunts malware associated with the alerts across the organization\n\
   - Blocks detected malware associated with the incident\n- Blocks IP addresses associated\
   \ with the malware, if a malicious file was involved\n- Pivots from the attacking\
   \ IP to detect and block malicious domains hosted on the IP (for external scan)\n\
@@ -163,7 +163,7 @@ tasks:
       id: e0ec2761-02d5-45c1-80d8-1dcd6431d33a
       version: -1
       name: Update NIST stage - Recovery
-      description: Updates the NIST stage to "Recovery".
+      description: Updates the NIST stage to Recovery.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -666,9 +666,9 @@ tasks:
     task:
       id: 6de91900-7ee9-487b-8806-b214ba5dbd03
       version: -1
-      name: Port Scan - Internal Source_dev
-      description: Provides response to port scans originating from within the network.
-      playbookName: Port Scan - Internal Source_dev
+      name: Port Scan - Internal Source
+      description: Remediates port scans originating within the network.
+      playbookName: Port Scan - Internal Source
       type: playbook
       iscommand: false
       brand: ''
@@ -767,8 +767,8 @@ tasks:
     task:
       id: abf22fdc-9a18-4e90-80de-687b6dffd22d
       version: -1
-      name: Port Scan - External Source_dev
-      playbookName: Port Scan - External Source_dev
+      name: Port Scan - External Source
+      playbookName: Port Scan - External Source
       type: playbook
       iscommand: false
       brand: ''
@@ -816,8 +816,8 @@ tasks:
     task:
       id: 45115f54-2c88-4923-85a4-9b91d0ae6a5f
       version: -1
-      name: Ensure incident was treated
-      description: Make sure that the incident was properly fully treated. Take additional
+      name: Ensure incident was remediated
+      description: Make sure that the incident was fully remediated. Take additional
         steps as necessary to complete the investigation and containment, and then
         proceed.
       type: regular
@@ -869,7 +869,7 @@ tasks:
       id: 89a8a6f0-3ce3-40c9-8fdc-70e9be424956
       version: -1
       name: Update NIST stage - Analysis
-      description: Updates the NIST stage to "Detection".
+      description: Updates the NIST stage to Analysis.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -1042,7 +1042,7 @@ tasks:
       measurestomitigate: {}
       name: {}
       niststage:
-        simple: Detection
+        simple: Analysis
       occurred: {}
       offboardingdate: {}
       offboardingstage: {}
@@ -1284,9 +1284,9 @@ tasks:
     task:
       id: b7ef3d4e-e864-43dd-8bb3-4b4a8b3210a4
       version: -1
-      name: Ask the firewall approver to block connections using the port
+      name: Ask the firewall approver to block connections using the unncessary open ports
       description: Sends an email to the address configured in the FirewallApproverEmail
-        playbook input, asking for them to confirm that they created a rule to block
+        playbook input, asking them to confirm that they created a rule to block
         the necessary ports in the firewall.
       type: condition
       iscommand: false
@@ -1312,7 +1312,7 @@ tasks:
           The IP that performed the scan was ${inputs.SourceIPs}, and it scanned ${inputs.DestinationIPs}
           across the following unique ports: ${UniquePorts}. Please confirm that you
           have created a firewall rule to block the necessary ports. If for any reason
-          you are not able to create such rules, please reject.'
+          you are not able to create such rules, click Reject.'
       methods:
       - email
       format: ''
@@ -1783,12 +1783,12 @@ tasks:
         Open or Accepted - the host sent a reply indicating that a service is listening\
         \ on the port.\nClosed or Denied or Not Listening - the host sent a reply\
         \ indicating that connections will be denied to the port.\nFiltered, Dropped\
-        \ or Blocked: There was no reply from the host.\n\nManually block the port/s\
+        \ or Blocked - There was no reply from the host.\n\nManually block the port/s\
         \ on which the host is listening. Pay extra attention to vulnerable ports\
-        \ that may have been or could be used in the future for exploitation on the\
+        \ that may have been, or could be used in the future, for exploitation on the\
         \ host. Also make sure the host does not accept connections on ports that\
         \ it’s not supposed to. If such ports exist, you should create a rule in the\
-        \ firewall to block the relevant connections. When creating the rule you must\
+        \ firewall to block the relevant connections. When creating the rule, you must\
         \ determine the scope in which the port will be blocked - is it a local issue\
         \ with the specific endpoint that is listening on a port it shouldn’t, or\
         \ should the port be blocked organization-wide?\n"
@@ -2248,7 +2248,7 @@ tasks:
       id: 11c7359a-276a-44cb-8c9f-8329dc617462
       version: -1
       name: Update ports blocked incident field
-      description: Updates the "Ports Blocked" incident field to True.
+      description: Updates the Ports Blocked incident field to True.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -2960,8 +2960,7 @@ inputs:
   required: true
   description: Whether to automatically isolate endpoints if the incident severity
     is critical and the endpoint is not on the WhitelistedHostnames input, or opt
-    for manual user approval. True means isolation will be done automatically in that
-    case.
+    for manual user approval. True means isolation will be done automatically when the conditions are met.
 - key: InternalIPRanges
   value: {}
   required: false
@@ -2973,7 +2972,7 @@ inputs:
 - key: RoleForEscalation
   value: {}
   required: false
-  description: The name of the Demisto role of the users that the incident can be
+  description: The name of the Cortex XSOAR role of the users that the incident can be
     escalated to in case the severity is determined to be critical.
 - key: BlockMaliciousFiles
   value:
@@ -2984,20 +2983,20 @@ inputs:
 - key: SourceIPs
   value: {}
   required: false
-  description: The source IP address/es that performed the port scan. If the source
+  description: The source IP address(es) that performed the port scan. If the source
     is an external IP, this input is mandatory for a proper incident response. If
     the source is an internal IP, then either this or the SourceHostnames input must
     be filled. The value must be unique.
 - key: SourceHostnames
   value: {}
   required: false
-  description: The source hostname/s that performed the port scan. If the soruce is
+  description: The source hostname(s) that performed the port scan. If the source is
     an external IP, this input can remain empty. If the source was internal, then
     either this or the SourceIPs input must be filled. The value must be unique.
 - key: SourceUsernames
   value: {}
   required: false
-  description: The Active Directory username/s that were used in the port scan attack.
+  description: The Active Directory username(s) that were used in the port scan attack.
 - key: InvolvedFileMD5
   value: {}
   required: false
