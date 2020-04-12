@@ -11,10 +11,10 @@ This integration was integrated and tested with version v3.10.7.4 of Smokescreen
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | url | Server URL \(e.g. https://example.net\) | True |
+| client_id | IllusionBLACK API Client Id | True |
 | token | IllusionBLACK External API Token | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
-| client_id | IllusionBLACK API Client Id | True |
 | first_fetch | First fetch time for fetching incidents \(2 days, 3 weeks, etc\) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -23,7 +23,7 @@ You can execute these commands from the Demisto CLI, as part of an automation, o
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### illusionblack-get-ad-decoys
 ***
-Get a list of Active Directory Decoys
+Gets a list of Active Directory decoys.
 
 
 ##### Base Command
@@ -37,7 +37,7 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IllusionBlack.AdDecoy | Unknown | IllusionBLACK AD Decoy Users | 
+| IllusionBlack.AdDecoy | Unknown | IllusionBLACK AD Decoy users. | 
 
 
 ##### Command Example
@@ -67,7 +67,7 @@ There are no input arguments for this command.
 
 ### illusionblack-get-network-decoys
 ***
-Get a list of Network Decoys
+Gets a list of Network decoys.
 
 
 ##### Base Command
@@ -81,7 +81,7 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IllusionBlack.NetworkDecoy | Unknown | IllusionBLACK Network Decoys | 
+| IllusionBlack.NetworkDecoy | Unknown | IllusionBLACK Network decoys. | 
 
 
 ##### Command Example
@@ -147,7 +147,7 @@ There are no input arguments for this command.
 
 ### illusionblack-get-ti-decoys
 ***
-Get a list of Threat Intel Decoys
+Gets a list of Threat Intel decoys.
 
 
 ##### Base Command
@@ -161,7 +161,7 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IllusionBlack.TIDecoy | Unknown | IllusionBLACK TI Decoys | 
+| IllusionBlack.TIDecoy | Unknown | IllusionBLACK TI Decoys. | 
 
 
 ##### Command Example
@@ -190,7 +190,7 @@ There are no input arguments for this command.
 
 ### illusionblack-is-host-decoy
 ***
-Check if a host or IP Address is a network decoy
+Checks if a host or IP address is a network decoy.
 
 
 ##### Base Command
@@ -200,14 +200,16 @@ Check if a host or IP Address is a network decoy
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host | Hostname or IP Address to check | Required | 
+| host | Hostname or IP address to check. | Required | 
 
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IllusionBlack.IsHostDecoy | Unknown | A mapping of host and whether it's an IllusionBLACK network decoy | 
+| IllusionBlack.IsHostDecoy | Unknown | A mapping of a host and whether it's an IllusionBLACK network decoy. | 
+| IllusionBlack.IsHostDecoy.Host | String | The IP address or hostname submitted to IllusionBLACK to check. | 
+| IllusionBlack.IsHostDecoy.Value | Boolean | The boolean value whether the host is a decoy or not. | 
 
 
 ##### Command Example
@@ -218,7 +220,8 @@ Check if a host or IP Address is a network decoy
 {
     "IllusionBlack": {
         "IsHostDecoy": {
-            "SAP44": true
+            "Host": "SAP44",
+            "Value": true
         }
     }
 }
@@ -229,7 +232,7 @@ True
 
 ### illusionblack-is-user-decoy
 ***
-Check if Active Directory user is a decoy
+Checks if an Active Directory user is a decoy.
 
 
 ##### Base Command
@@ -239,14 +242,16 @@ Check if Active Directory user is a decoy
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user | Active Directory user name to check | Required | 
+| user | Active Directory user name to check. | Required | 
 
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IllusionBlack.IsUserDecoy | Unknown | A mapping of user and whether it&\#x27;s an IllusionBLACK AD user decoy | 
+| IllusionBlack.IsUserDecoy | Unknown | A mapping of a user and whether it's an IllusionBLACK AD user decoy. | 
+| IllusionBlack.IsUserDecoy.User | String | The AD username submitted to IllusionBLACK to check. | 
+| IllusionBlack.IsUserDecoy.Value | Boolean | The boolean value whether the user is a decoy or not. | 
 
 
 ##### Command Example
@@ -257,7 +262,8 @@ Check if Active Directory user is a decoy
 {
     "IllusionBlack": {
         "IsUserDecoy": {
-            "sqladmin": true
+            "User": "sqladmin",
+            "Value": true
         }
     }
 }
@@ -268,7 +274,7 @@ True
 
 ### illusionblack-is-subdomain-decoy
 ***
-Check if a subdomain is a Threat Intel decoy
+Checks if a subdomain is a Threat Intel decoy.
 
 
 ##### Base Command
@@ -278,14 +284,16 @@ Check if a subdomain is a Threat Intel decoy
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subdomain | Subdomain to check (For example: dec.smokescreen.io) | Required | 
+| subdomain | Subdomain to check. For example: dec.smokescreen.io. | Required | 
 
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IllusionBlack.IsSubdomainDecoy | Unknown | A mapping of subdomain and whether it&\#x27;s an IllusionBLACK TI decoy | 
+| IllusionBlack.IsSubdomainDecoy | Unknown | A mapping of a subdomain and whether it's an IllusionBLACK TI decoy. | 
+| IllusionBlack.IsSubdomainDecoy.Subdomain | String | The subdomain submitted to IllusionBLACK to check. | 
+| IllusionBlack.IsSubdomainDecoy.Value | Boolean | The boolean value whether the subdomain is a decoy or not. | 
 
 
 ##### Command Example
@@ -296,7 +304,8 @@ Check if a subdomain is a Threat Intel decoy
 {
     "IllusionBlack": {
         "IsSubdomainDecoy": {
-            "experience.illusionblack.com": false
+            "Subdomain": "experience.illusionblack.com",
+            "Value": false
         }
     }
 }
@@ -307,7 +316,7 @@ False
 
 ### illusionblack-get-events
 ***
-Get events from IllusionBLACK
+Gets events from IllusionBLACK.
 
 
 ##### Base Command
@@ -319,15 +328,15 @@ Get events from IllusionBLACK
 | --- | --- | --- |
 | limit | Number of events. It can be between 1 and 1000. | Optional | 
 | query | IllusionBLACK query. For example: &quot;attacker.ip is \&quot;1.2.3.4\&quot;&quot; | Optional | 
-| from | ISO 8601 formatted date string | Optional | 
-| to | ISO 8601 formatted date string | Optional | 
+| from | ISO 8601 formatted date string. | Optional | 
+| to | ISO 8601 formatted date string. | Optional | 
 
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IllusionBlack.Event | Unknown | IllusionBLACK Events | 
+| IllusionBlack.Event | Unknown | IllusionBLACK Events. | 
 
 
 ##### Command Example
@@ -376,7 +385,7 @@ Get events from IllusionBLACK
                 "threat_parse_ids": [
                     "lm_file_open"
                 ],
-                "timestamp": "2020-04-08T07:26:01Z",
+                "timestamp": "2020-04-12T08:27:01Z",
                 "type": "endpoint",
                 "whitelisted": false
             },
@@ -419,7 +428,7 @@ Get events from IllusionBLACK
                 "threat_parse_ids": [
                     "lm_file_open"
                 ],
-                "timestamp": "2020-04-08T07:26:01Z",
+                "timestamp": "2020-04-12T08:27:01Z",
                 "type": "endpoint",
                 "whitelisted": false
             },
@@ -461,7 +470,7 @@ Get events from IllusionBLACK
                 "threat_parse_ids": [
                     "lm_file_active_monitoring"
                 ],
-                "timestamp": "2020-04-08T07:22:20Z",
+                "timestamp": "2020-04-12T08:23:20Z",
                 "type": "endpoint",
                 "whitelisted": false
             }
@@ -474,14 +483,14 @@ Get events from IllusionBLACK
 ### IllusionBLACK Events
 |attacker.id|attacker.name|attacker.score|attacker.threat_parse_ids|decoy.appliance.id|decoy.appliance.name|decoy.client.id|decoy.client.name|decoy.group|decoy.id|decoy.name|decoy.type|file.name|file.operation|file.operation_string|file.process.command_line|file.process.domain_name|file.process.exit_code|file.process.id|file.process.image_name|file.process.user_name|file.process.user_sid|file.thread_id|id|kill_chain_phase|mitre_ids|record_type|severity|sub_type|threat_parse_ids|timestamp|type|whitelisted|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| ADMIN-PC-001\admin | ADMIN-PC-001\admin | 175 | lm_file_open,<br>lm_file_active_monitoring | cmc | CMC | experience | experience | Endpoint | endpoint:admin-pc-001 | admin-pc-001 | endpoint | C:\Users\admin\Desktop\passwords\Passwords.xlsx | 67 | Read | "C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe" -executionpolicy bypass | ADMIN-PC-001 | -1 | 10228 | powershell.exe | admin | S-1-5-21-399445878-2258755057-882339928-1000 | 8588 | 2020-02-25T09:49:15Z-76c99a22-03b9-439e-8638-37306c2d8e7f | Data Theft | T1005 | event | high | file | lm_file_open | 2020-04-08T07:26:01Z | endpoint | false |
-| NT AUTHORITY\SYSTEM | NT AUTHORITY\SYSTEM | 250 | filetheft_unattend,<br>lm_file_active_monitoring,<br>lm_file_open | cmc | CMC | experience | experience | Endpoint | endpoint:admin-pc-001 | admin-pc-001 | endpoint | C:\Users\admin\Desktop\passwords\Passwords.xlsx | 67 | Read |  | NT AUTHORITY | -1 | 2824 | MsMpEng.exe | SYSTEM | S-1-5-18 | 724 | 2020-02-25T09:49:15Z-0950f80f-7571-4382-b4b8-5e04c160c4c0 | Data Theft | T1005 | event | high | file | lm_file_open | 2020-04-08T07:26:01Z | endpoint | false |
-| ADMIN-PC-001\admin | ADMIN-PC-001\admin | 175 | lm_file_open,<br>lm_file_active_monitoring | cmc | CMC | experience | experience | Endpoint | endpoint:admin-pc-001 | admin-pc-001 | endpoint | C:\Users\admin\Desktop\docs\vulnerability assessment report\vulnerability assessment report.xlsx | 65 | Cleanup | "C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe" -executionpolicy bypass | ADMIN-PC-001 | -1 | 10228 | powershell.exe | admin | S-1-5-21-399445878-2258755057-882339928-1000 | 0 | 2020-02-25T09:45:48Z-fa248a98-bc8a-4275-93c7-e63ff1ee8d34 | Data Theft | T1005 | event | high | file | lm_file_active_monitoring | 2020-04-08T07:22:20Z | endpoint | false |
+| ADMIN-PC-001\admin | ADMIN-PC-001\admin | 175 | lm_file_open,<br>lm_file_active_monitoring | cmc | CMC | experience | experience | Endpoint | endpoint:admin-pc-001 | admin-pc-001 | endpoint | C:\Users\admin\Desktop\passwords\Passwords.xlsx | 67 | Read | "C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe" -executionpolicy bypass | ADMIN-PC-001 | -1 | 10228 | powershell.exe | admin | S-1-5-21-399445878-2258755057-882339928-1000 | 8588 | 2020-02-25T09:49:15Z-76c99a22-03b9-439e-8638-37306c2d8e7f | Data Theft | T1005 | event | high | file | lm_file_open | 2020-04-12T08:27:01Z | endpoint | false |
+| NT AUTHORITY\SYSTEM | NT AUTHORITY\SYSTEM | 250 | filetheft_unattend,<br>lm_file_active_monitoring,<br>lm_file_open | cmc | CMC | experience | experience | Endpoint | endpoint:admin-pc-001 | admin-pc-001 | endpoint | C:\Users\admin\Desktop\passwords\Passwords.xlsx | 67 | Read |  | NT AUTHORITY | -1 | 2824 | MsMpEng.exe | SYSTEM | S-1-5-18 | 724 | 2020-02-25T09:49:15Z-0950f80f-7571-4382-b4b8-5e04c160c4c0 | Data Theft | T1005 | event | high | file | lm_file_open | 2020-04-12T08:27:01Z | endpoint | false |
+| ADMIN-PC-001\admin | ADMIN-PC-001\admin | 175 | lm_file_open,<br>lm_file_active_monitoring | cmc | CMC | experience | experience | Endpoint | endpoint:admin-pc-001 | admin-pc-001 | endpoint | C:\Users\admin\Desktop\docs\vulnerability assessment report\vulnerability assessment report.xlsx | 65 | Cleanup | "C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe" -executionpolicy bypass | ADMIN-PC-001 | -1 | 10228 | powershell.exe | admin | S-1-5-21-399445878-2258755057-882339928-1000 | 0 | 2020-02-25T09:45:48Z-fa248a98-bc8a-4275-93c7-e63ff1ee8d34 | Data Theft | T1005 | event | high | file | lm_file_active_monitoring | 2020-04-12T08:23:20Z | endpoint | false |
 
 
 ### illusionblack-get-event-by-id
 ***
-Gets exactly one event by it's ID
+Gets a single event by the event ID.
 
 
 ##### Base Command
@@ -491,19 +500,19 @@ Gets exactly one event by it's ID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | IllusionBLACK Event ID | Required | 
+| id | IllusionBLACK Event ID. | Required | 
 
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IllusionBlack.Event | Unknown | IllusionBLACK Single Event | 
-| IllusionBlack.Event.attacker.id	 | Unknown | IllusionBLACK Event Attacker ID | 
-| IllusionBlack.Event.decoy.id | Unknown | IllusionBLACK Event Decoy ID | 
-| IllusionBlack.Event.id | Unknown | IllusionBLACK Event ID | 
-| IllusionBlack.Event.severity | Unknown | IllusionBLACK Event Severity | 
-| IllusionBlack.Event.type | Unknown | IllusionBLACK Event Attack Type | 
+| IllusionBlack.Event | Unknown | IllusionBLACK Single Event. | 
+| IllusionBlack.Event.attacker.id	 | Unknown | IllusionBLACK Event Attacker ID. | 
+| IllusionBlack.Event.decoy.id | Unknown | IllusionBLACK Event Decoy ID. | 
+| IllusionBlack.Event.id | Unknown | IllusionBLACK Event ID. | 
+| IllusionBlack.Event.severity | Unknown | IllusionBLACK Event Severity. | 
+| IllusionBlack.Event.type | Unknown | IllusionBLACK Event Attack Type. | 
 
 
 ##### Command Example
@@ -552,7 +561,7 @@ Gets exactly one event by it's ID
             "threat_parse_ids": [
                 "lm_file_open"
             ],
-            "timestamp": "2020-04-08T07:26:01Z",
+            "timestamp": "2020-04-12T08:27:01Z",
             "type": "endpoint",
             "whitelisted": false
         }
@@ -564,5 +573,5 @@ Gets exactly one event by it's ID
 ### IllusionBLACK Single Event
 |attacker.id|attacker.name|attacker.score|attacker.threat_parse_ids|decoy.appliance.id|decoy.appliance.name|decoy.client.id|decoy.client.name|decoy.group|decoy.id|decoy.name|decoy.type|file.name|file.operation|file.operation_string|file.process.command_line|file.process.domain_name|file.process.exit_code|file.process.id|file.process.image_name|file.process.user_name|file.process.user_sid|file.thread_id|id|kill_chain_phase|mitre_ids|record_type|severity|sub_type|threat_parse_ids|timestamp|type|whitelisted|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| NT AUTHORITY\SYSTEM | NT AUTHORITY\SYSTEM | 250 | filetheft_unattend,<br>lm_file_active_monitoring,<br>lm_file_open | cmc | CMC | experience | experience | Endpoint | endpoint:admin-pc-001 | admin-pc-001 | endpoint | C:\Users\admin\Desktop\passwords\Passwords.xlsx | 67 | Read |  | NT AUTHORITY | -1 | 2824 | MsMpEng.exe | SYSTEM | S-1-5-18 | 724 | 2020-02-25T09:49:15Z-0950f80f-7571-4382-b4b8-5e04c160c4c0 | Data Theft | T1005 | event | high | file | lm_file_open | 2020-04-08T07:26:01Z | endpoint | false |
+| NT AUTHORITY\SYSTEM | NT AUTHORITY\SYSTEM | 250 | filetheft_unattend,<br>lm_file_active_monitoring,<br>lm_file_open | cmc | CMC | experience | experience | Endpoint | endpoint:admin-pc-001 | admin-pc-001 | endpoint | C:\Users\admin\Desktop\passwords\Passwords.xlsx | 67 | Read |  | NT AUTHORITY | -1 | 2824 | MsMpEng.exe | SYSTEM | S-1-5-18 | 724 | 2020-02-25T09:49:15Z-0950f80f-7571-4382-b4b8-5e04c160c4c0 | Data Theft | T1005 | event | high | file | lm_file_open | 2020-04-12T08:27:01Z | endpoint | false |
 
