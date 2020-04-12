@@ -77,6 +77,12 @@ script:
     - contextPath: IllusionBlack.IsHostDecoy
       description: A mapping of a host and whether it's an IllusionBLACK network decoy.
       type: Unknown
+    - contextPath: IllusionBlack.IsHostDecoy.Host
+      description: The IP address or hostname submitted to IllusionBLACK to check.
+      type: String
+    - contextPath: IllusionBlack.IsHostDecoy.Value
+      description: The boolean value whether the host is a decoy or not.
+      type: Boolean
   - arguments:
     - default: false
       description: Active Directory user name to check.
@@ -92,6 +98,12 @@ script:
     - contextPath: IllusionBlack.IsUserDecoy
       description: A mapping of a user and whether it's an IllusionBLACK AD user decoy.
       type: Unknown
+    - contextPath: IllusionBlack.IsUserDecoy.User
+      description: The AD username submitted to IllusionBLACK to check.
+      type: String
+    - contextPath: IllusionBlack.IsUserDecoy.Value
+      description: The boolean value whether the user is a decoy or not.
+      type: Boolean
   - arguments:
     - default: false
       description: 'Subdomain to check. For example: dec.smokescreen.io.'
@@ -107,6 +119,12 @@ script:
     - contextPath: IllusionBlack.IsSubdomainDecoy
       description: A mapping of a subdomain and whether it's an IllusionBLACK TI decoy.
       type: Unknown
+    - contextPath: IllusionBlack.IsSubdomainDecoy.Subdomain
+      description: The subdomain submitted to IllusionBLACK to check.
+      type: String
+    - contextPath: IllusionBlack.IsSubdomainDecoy.Value
+      description: The boolean value whether the subdomain is a decoy or not.
+      type: Boolean
   - arguments:
     - default: false
       description: Number of events. It can be between 1 and 1000.

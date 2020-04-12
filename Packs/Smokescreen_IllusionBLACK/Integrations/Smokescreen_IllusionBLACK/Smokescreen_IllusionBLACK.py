@@ -117,8 +117,8 @@ class Client(BaseClient):
         hosts: List = response["items"]
         for decoy_host in hosts:
             if host == decoy_host["name"]:
-                return "True", {"IllusionBlack.IsHostDecoy": {host: True}}
-        return "False", {"IllusionBlack.IsHostDecoy": {host: False}}
+                return "True", {"IllusionBlack.IsHostDecoy": {"Host": host, "Value": True}}
+        return "False", {"IllusionBlack.IsHostDecoy": {"Host": host, "Value": False}}
 
     def is_user_decoy(self, user):
         """
@@ -135,8 +135,8 @@ class Client(BaseClient):
         users: List = response["items"]
         for decoy_user in users:
             if user.lower() == decoy_user["user_name"]:
-                return "True", {"IllusionBlack.IsUserDecoy": {user: True}}
-            return "False", {"IllusionBlack.IsUserDecoy": {user: False}}
+                return "True", {"IllusionBlack.IsUserDecoy": {"User": user, "Value": True}}
+            return "False", {"IllusionBlack.IsUserDecoy": {"User": user, "Value": False}}
 
     def is_subdomain_decoy(self, subdomain):
         """
@@ -153,8 +153,8 @@ class Client(BaseClient):
         ti_decoys: List = response["items"]
         for ti_decoy in ti_decoys:
             if subdomain == ti_decoy["name"]:
-                return "True", {"IllusionBlack.IsSubdomainDecoy": {subdomain: True}}
-            return "False", {"IllusionBlack.IsSubdomainDecoy": {subdomain: False}}
+                return "True", {"IllusionBlack.IsSubdomainDecoy": {"Subdomain": subdomain, "Value": True}}
+            return "False", {"IllusionBlack.IsSubdomainDecoy": {"Subdomain": subdomain, "Value": False}}
 
     def get_events(self, limit=None, query=None, from_time=None, to_time=None):
         """
