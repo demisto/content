@@ -1,5 +1,5 @@
 ## [Unreleased]
-Added the **file** argument to the ***file*** command.
+Added the *file* argument to the ***file*** command.
 
 
 ## [19.11.1] - 2019-11-19
