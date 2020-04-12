@@ -221,7 +221,7 @@ tasks:
       version: -1
       name: Get ExtraHop alert rules
       description: Get all alert rules from ExtraHop.
-      script: ExtraHop v2|||extrahop-get-alerts
+      script: ExtraHop v2|||extrahop-get-alert-rules
       type: regular
       iscommand: true
       brand: ExtraHop v2

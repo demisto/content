@@ -1,6 +1,5 @@
 ## [Unreleased]
--
-
+Added an option to retrieve the full model predictions on the test set.
 
 ## [20.3.3] - 2020-03-18
 Added support for training on a boolean target field.
