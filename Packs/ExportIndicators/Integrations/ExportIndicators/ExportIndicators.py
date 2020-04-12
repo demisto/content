@@ -586,7 +586,7 @@ def get_outbound_mimetype() -> str:
     Returns:
         str. The mimetype of the IOCs
     """
-    ctx = demisto.getIntegrationContext().get('last_output')
+    ctx = demisto.getIntegrationContext().get('last_output', {})
     return ctx.get(CTX_MIMETYPE_KEY, 'text/plain')
 
 
