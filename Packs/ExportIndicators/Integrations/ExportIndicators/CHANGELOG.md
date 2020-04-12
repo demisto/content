@@ -1,10 +1,10 @@
 ## [Unreleased]
- - Fixed an issue where running On-Demand mode an error appeared if export was not initialized.
- - Now  when not entering a `query` argument in ***eis-update*** command - the query from the integration parameters is used.
- - Added feature to output `csv` and `XSOAR-csv` formats as textual web pages. This can be done by:
-   - The integration configuration.
-   - The URL parameter 'tx'.
-   - The 'csv_text' argument for the 'eis-update command. 
+  - Fixed an issue where running **On-Demand** mode an error appeared if export was not initialized.
+  - Now when the *query* argument in the ***eis-update*** command is not supplied, the query from the integration parameters is used.
+  - Added a feature to output *csv* and *XSOAR-csv* formats as textual web pages. This can be done by:
+    - The integration configuration.
+    - The URL parameter *tx*.
+    - The *csv_text* argument for the ***eis-update*** command. 
 
 ## [20.3.4] - 2020-03-30
   - Added support for the following inline URL parameters.
