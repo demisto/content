@@ -31,7 +31,7 @@ tasks:
       id: 71221472-29d2-482b-8272-5a226ebf8d16
       version: -1
       name: Is Cybereason integration enabled?
-      description: "Check if Cybereason active in the system.\n"
+      description: "Check if the Cybereason integration is enabled.\n"
       type: condition
       iscommand: false
       brand: ''
@@ -112,7 +112,7 @@ tasks:
       version: -1
       name: Isolate endpoint
       description: Isolates a machine that has been infected from the rest of the
-        network
+        network.
       script: '|||cybereason-isolate-machine'
       type: regular
       iscommand: true
