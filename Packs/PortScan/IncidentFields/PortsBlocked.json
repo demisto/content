@@ -5,7 +5,7 @@
     "name": "Ports Blocked",
     "ownerOnly": false,
     "placeholder": "",
-    "description": "Did we receive an indication that the necessary ports were blocked?",
+    "description": "Whether an indication that the necessary ports were blocked was received.",
     "cliName": "portsblocked",
     "type": "boolean",
     "closeForm": false,
