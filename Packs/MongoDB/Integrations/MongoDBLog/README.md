@@ -60,7 +60,7 @@ There is no context output for this command.
 ### The log documents/records for collection "log"
 |log|
 |---|
-| {'name': 'Midhuna', 'age': 23, 'cars': ['BMW 320d', 'Audi R8'], 'place': 'Amaravati'},<br>{'timestamp': '2020-03-22T18:57:33+00:00', 'entity': 'test', 'playbook': 'my playbook', 'action': 'create', 'analyst': 'admin'},<br>{'test': 'value'},<br>{'123': {'modified': '2020-03-22T19:14:29+00:00', 'key': 'test', 'value': '123'}},<br>{'timestamp': '2020-03-23T10:45:39+00:00', 'entity': '{test: demisto}', 'playbook': 'mongodb', 'action': 'create', 'analyst': 'admin'} |
+| {'name': 'Midhuna', 'age': 23, 'cars': ['BMW 320d', 'Audi R8'], 'place': 'Amaravati'},{'timestamp': '2020-03-22T18:57:33+00:00', 'entity': 'test', 'playbook': 'my playbook', 'action': 'create', 'analyst': 'admin'},{'test': 'value'},{'123': {'modified': '2020-03-22T19:14:29+00:00', 'key': 'test', 'value': '123'}},{'timestamp': '2020-03-23T10:45:39+00:00', 'entity': '{test: demisto}', 'playbook': 'mongodb', 'action': 'create', 'analyst': 'admin'} |
 
 
 ### 2. mongodb-write-log
