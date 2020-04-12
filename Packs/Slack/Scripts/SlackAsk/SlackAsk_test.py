@@ -87,7 +87,7 @@ def test_slack_ask_user(mocker):
     mocker.patch.object(demisto, 'investigation', return_value={'id': '22'})
     mocker.patch.object(demisto, 'args', return_value={
         'user': 'alexios', 'message': 'wat up', 'option1': 'yes#red', 'option2': 'no#red',
-        'reply': 'Thank you brother.', 'lifetime': '24 hours', 'defaultResponse': 'NoResponse'
+        'reply': 'Thank you brother.', 'lifetime': '24 hours', 'defaultResponse': 'NoResponse', 'using-brand': 'SlackV2'
     })
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(dateparser, 'parse', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
@@ -99,6 +99,7 @@ def test_slack_ask_user(mocker):
     # Assert
     assert call_args[1] == {
         'ignoreAddURL': 'true',
+        'using-brand': 'SlackV2',
         'blocks': json.dumps({
             'blocks': json.dumps(BLOCKS),
             'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22',
@@ -118,7 +119,7 @@ def test_slack_ask_user_additional(mocker):
     mocker.patch.object(demisto, 'args', return_value={
         'user': 'alexios', 'message': 'wat up', 'option1': 'yes#red', 'option2': 'no#red',
         'additionalOptions': 'maybe', 'reply': 'Thank you brother.', 'lifetime': '24 hours',
-        'defaultResponse': 'NoResponse'
+        'defaultResponse': 'NoResponse', 'using-brand': 'SlackV2'
     })
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(dateparser, 'parse', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
@@ -130,6 +131,7 @@ def test_slack_ask_user_additional(mocker):
     # Assert
     assert call_args[1] == {
         'ignoreAddURL': 'true',
+        'using-brand': 'SlackV2',
         'blocks': json.dumps({
             'blocks': json.dumps(BLOCKS_ADDITIONAL),
             'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22',
@@ -148,7 +150,7 @@ def test_slack_ask_channel(mocker):
     mocker.patch.object(demisto, 'investigation', return_value={'id': '22'})
     mocker.patch.object(demisto, 'args', return_value={
         'channel': 'general', 'message': 'wat up', 'option1': 'yes#red', 'option2': 'no#red',
-        'reply': 'Thank you brother.', 'lifetime': '24 hours', 'defaultResponse': 'NoResponse'
+        'reply': 'Thank you brother.', 'lifetime': '24 hours', 'defaultResponse': 'NoResponse', 'using-brand': 'SlackV2'
     })
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(dateparser, 'parse', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
@@ -160,6 +162,7 @@ def test_slack_ask_channel(mocker):
     # Assert
     assert call_args[1] == {
         'ignoreAddURL': 'true',
+        'using-brand': 'SlackV2',
         'blocks': json.dumps({
             'blocks': json.dumps(BLOCKS),
             'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22',
@@ -178,7 +181,7 @@ def test_slack_ask_user_threads(mocker):
     mocker.patch.object(demisto, 'investigation', return_value={'id': '22'})
     mocker.patch.object(demisto, 'args', return_value={
         'user': 'alexios', 'message': 'wat up', 'responseType': 'thread', 'option1': 'yes#red', 'option2': 'no#red',
-        'reply': 'Thank you brother.', 'lifetime': '24 hours', 'defaultResponse': 'NoResponse'
+        'reply': 'Thank you brother.', 'lifetime': '24 hours', 'defaultResponse': 'NoResponse', 'using-brand': 'SlackV2'
     })
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(dateparser, 'parse', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
@@ -197,6 +200,7 @@ def test_slack_ask_user_threads(mocker):
             'default_response': 'NoResponse'
         }),
         'ignoreAddURL': 'true',
+        'using-brand': 'SlackV2',
         'to': 'alexios',
     }
 
@@ -208,7 +212,7 @@ def test_slack_ask_user_threads_additional(mocker):
     mocker.patch.object(demisto, 'args', return_value={
         'user': 'alexios', 'message': 'wat up', 'option1': 'yes#red', 'option2': 'no#red',
         'additionalOptions': 'maybe', 'responseType': 'thread', 'reply': 'Thank you brother.',
-        'lifetime': '24 hours', 'defaultResponse': 'NoResponse'
+        'lifetime': '24 hours', 'defaultResponse': 'NoResponse', 'using-brand': 'SlackV2'
     })
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(dateparser, 'parse', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
@@ -227,6 +231,7 @@ def test_slack_ask_user_threads_additional(mocker):
             'default_response': 'NoResponse'
         }),
         'ignoreAddURL': 'true',
+        'using-brand': 'SlackV2',
         'to': 'alexios',
     }
 
@@ -237,7 +242,7 @@ def test_slack_ask_channel_threads(mocker):
     mocker.patch.object(demisto, 'investigation', return_value={'id': '22'})
     mocker.patch.object(demisto, 'args', return_value={
         'channel': 'general', 'message': 'wat up', 'responseType': 'thread', 'option1': 'yes#red', 'option2': 'no#red',
-        'reply': 'Thank you brother.', 'lifetime': '24 hours', 'defaultResponse': 'NoResponse'
+        'reply': 'Thank you brother.', 'lifetime': '24 hours', 'defaultResponse': 'NoResponse', 'using-brand': 'SlackV2'
     })
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(dateparser, 'parse', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
@@ -256,5 +261,6 @@ def test_slack_ask_channel_threads(mocker):
             'default_response': 'NoResponse'
         }),
         'ignoreAddURL': 'true',
+        'using-brand': 'SlackV2',
         'channel': 'general',
     }
