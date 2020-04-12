@@ -1,4 +1,5 @@
 ## [Unreleased]
+Added default mapping of indicator's fields.
 
 
 ## [20.3.4] - 2020-03-30
