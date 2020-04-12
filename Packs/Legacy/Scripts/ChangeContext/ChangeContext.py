@@ -1,9 +1,8 @@
-import demistomock as demisto
 from CommonServerPython import *
 
 import json
 
-context_key =  demisto.args().get('key', '')
+context_key = demisto.args().get('key', '')
 key_list = context_key.split('.')
 inplace = demisto.args().get('inplace') == 'True'
 capitalize = demisto.args().get('capitalize') == 'True'
@@ -32,7 +31,7 @@ if isinstance(context, list) and isinstance(context[0], dict):
         cap_context.append(title_context)
 
 elif isinstance(context, dict):
-    cap_context = {}
+    cap_context = {}  # type: ignore
     for k in context.keys():
         if k in replace_dict:
             cap_context[replace_dict[k]] = context[k]
@@ -47,5 +46,5 @@ else:
 if inplace:
     demisto.executeCommand("Set", {'key': context_key, 'value': cap_context})
     return_outputs(f"Capitalized {context_key} successfully")
-if not inplace:
-    return_outputs(f"Capitalized {context_key} successfully",{context_key: title_context}, '')
+else:
+    return_outputs(f"Capitalized {context_key} successfully", {context_key: cap_context}, '')
