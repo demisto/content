@@ -215,7 +215,6 @@ class Client(BaseClient):
             'sha1': full_sample_json.get('sha1'),
             'sha256': full_sample_json.get('sha256'),
             'ssdeep': full_sample_json.get('ssdeep'),
-            '???': full_sample_json.get('malware', 0),
             'imphash': full_sample_json.get('imphash'),
             'filetype': full_sample_json.get('filetype'),
             'threattype': full_sample_json.get('tag_groups'),
