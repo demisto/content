@@ -3,9 +3,9 @@ commonfields:
   id: Fastly Feed
   version: -1
 configuration:
-- display: Fetch indicators
+- defaultvalue: 'true'
+  display: Fetch indicators
   name: feed
-  defaultvalue: true
   required: false
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
@@ -34,7 +34,7 @@ configuration:
   required: true
   type: 15
 - defaultvalue: indicatorType
-  display: ""
+  display: ''
   name: feedExpirationPolicy
   options:
   - never
@@ -44,7 +44,7 @@ configuration:
   required: false
   type: 17
 - defaultvalue: '20160'
-  display: ""
+  display: ''
   name: feedExpirationInterval
   required: false
   type: 1
@@ -59,8 +59,11 @@ configuration:
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
-  defaultvalue: ""
   type: 8
+- display: Tags
+  name: feedTags
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -69,7 +72,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use Fastly Feed to get assigned CIDRs and add them to your firewall's allowlist in order to enable using Fastly's services.
+description: Use Fastly Feed to get assigned CIDRs and add them to your firewall's
+  allowlist in order to enable using Fastly's services.
 display: Fastly Feed
 name: Fastly Feed
 script:
@@ -86,10 +90,13 @@ script:
     description: Fetches indicators from the feed.
     execution: false
     name: fastly-get-indicators
-  feed: true
+  dockerimage: demisto/jmespath:1.0.0.6980
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
-  dockerimage: demisto/jmespath:1.0.0.6980
+  type: python
 fromversion: 5.5.0
