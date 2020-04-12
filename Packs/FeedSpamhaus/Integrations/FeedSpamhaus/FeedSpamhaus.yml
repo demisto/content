@@ -11,10 +11,10 @@ configuration:
   - https://www.spamhaus.org/drop/drop.txt
   required: false
   type: 16
-- display: Fetch indicators
+- defaultvalue: 'true'
+  display: Fetch indicators
   name: feed
   required: false
-  defaultvalue: true
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
@@ -28,7 +28,8 @@ configuration:
   - Bad
   required: false
   type: 18
-- defaultvalue: B - Usually reliable
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: B - Usually reliable
   display: Source Reliability
   name: feedReliability
   options:
@@ -40,21 +41,20 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-  additionalinfo: Reliability of the source providing the intelligence data
 - defaultvalue: indicatorType
-  display: ""
+  display: ''
   name: feedExpirationPolicy
-  required: false
-  type: 17
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
-- display: ""
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  display: ''
   name: feedExpirationInterval
   required: false
-  defaultvalue: "20160"
   type: 1
 - defaultvalue: '60'
   display: Feed Fetch Interval
@@ -67,8 +67,12 @@ configuration:
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
-  defaultvalue: ""
   type: 8
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false

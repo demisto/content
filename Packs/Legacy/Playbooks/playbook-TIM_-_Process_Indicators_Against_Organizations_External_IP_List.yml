@@ -368,7 +368,7 @@ inputs:
     runFromLastJobTime: false
 - key: OrganizationsExternalIPListName
   value:
-    simple: ExternalIPaddresses
+    simple: {}
   required: false
   description: A Cortex XSOAR list containing the organization's External IP address values.
     IP Indicators that appear in the list are tagged as organizations external
