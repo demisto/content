@@ -1,0 +1,25 @@
+{
+    "name": "Mail Sender (New)",
+    "description": "",
+    "support": "demisto",
+    "serverMinVersion": "4.5.0",
+    "currentVersion": "1.0.0",
+    "author": "Demisto",
+    "url": "",
+    "email": "",
+    "categories": [
+        "Messaging"
+    ],
+    "tags": [
+        ""
+    ],
+    "created": "2020-04-12T13:51:32Z",
+    "updated": "2020-04-12T13:51:32Z",
+    "beta": false,
+    "deprecated": false,
+    "certification": "certified",
+    "useCases": [],
+    "keywords": [],
+    "price": "",
+    "dependencies": {}
+}

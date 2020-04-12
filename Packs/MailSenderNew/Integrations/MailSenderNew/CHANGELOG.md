@@ -1,6 +1,6 @@
 ## [Unreleased]
--
--
+Added support for the *SSL/TLS* parameter to configure SSL/TLS connection, which is not STARTTLS.
+
 
 ## [20.2.3] - 2020-02-18
 Fixed an issue where in some cases attachments display as being empty.
