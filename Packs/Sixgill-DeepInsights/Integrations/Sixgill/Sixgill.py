@@ -8,7 +8,8 @@ import requests
 
 from sixgill.sixgill_request_classes.sixgill_auth_request import SixgillAuthRequest
 from sixgill.sixgill_alert_client import SixgillAlertClient
-from sixgill.sixgill_darkfeed_client import SixgillDarkFeedClient
+from sixgill.sixgill_feed_client import SixgillFeedClient
+from sixgill.sixgill_constants import FeedStream
 from sixgill.sixgill_utils import is_indicator
 from typing import Dict, List, Any
 
@@ -30,6 +31,9 @@ THREAT_LEVEL_TO_SEVERITY = {
 SCORE_LIST = ["Low", "Medium", "High"]
 MAX_SIXGILL_SEVERITY = 100
 SEVERITY_RATIO = (MAX_SIXGILL_SEVERITY + 1) // len(SCORE_LIST)
+VERIFY = not demisto.params().get("insecure", True)
+SESSION = requests.Session()
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -46,11 +50,12 @@ def get_limit(str_limit, default_limit):
 
 
 def get_incident_init_params():
-    return {
+    params_dict = {
         'severity': demisto.params().get('severity', None),
         'threat_level': demisto.params().get('threat_level', None),
         'threat_type': demisto.params().get('threat_type', None)
     }
+    return {k: v for param_k, param_v in params_dict.items() if param_v is not None}
 
 
 def item_to_incident(item):
@@ -72,7 +77,8 @@ def test_module():
     """
     Performs basic Auth request
     """
-    response = SixgillAuthRequest(demisto.params()['client_id'], demisto.params()['client_secret']).send()
+    response = SESSION.send(request=SixgillAuthRequest(demisto.params()['client_id'],
+                                                       demisto.params()['client_secret']).prepare(), verify=VERIFY)
     if not response.ok:
         raise Exception("Auth request failed - please verify client_id, and client_secret.")
 
@@ -83,7 +89,7 @@ def fetch_incidents():
     max_incidents = get_limit(demisto.params().get('maxIncidents', MAX_INCIDENTS), MAX_INCIDENTS)
 
     sixgill_alerts_client = SixgillAlertClient(demisto.params()['client_id'], demisto.params()['client_secret'],
-                                               CHANNEL_CODE, bulk_size=max_incidents, logger=demisto)
+                                               CHANNEL_CODE, demisto, max_incidents, SESSION, VERIFY)
 
     filter_alerts_kwargs = get_incident_init_params()
 
@@ -105,8 +111,9 @@ def fetch_incidents():
 def sixgill_get_indicators_command():
     max_indicators = get_limit(demisto.args().get('maxIndicators', MAX_INDICATORS), MAX_INDICATORS)
 
-    sixgill_darkfeed_client = SixgillDarkFeedClient(demisto.params()['client_id'], demisto.params()['client_secret'],
-                                                    CHANNEL_CODE, bulk_size=max_indicators, logger=demisto)
+    sixgill_darkfeed_client = SixgillFeedClient(demisto.params()['client_id'], demisto.params()['client_secret'],
+                                                CHANNEL_CODE, FeedStream.DARKFEED, demisto, max_indicators, SESSION,
+                                                VERIFY)
 
     bundle = sixgill_darkfeed_client.get_bundle()
     sixgill_darkfeed_client.commit_indicators()
@@ -133,6 +140,8 @@ def sixgill_get_indicators_command():
 
 
 try:
+    SESSION.proxies = handle_proxy()
+
     if demisto.command() == 'test-module':
         test_module()
         demisto.results('ok')
