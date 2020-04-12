@@ -369,70 +369,70 @@ outputs:
   description: File's SHA256
   type: string
 - contextPath: File.Malicious.Vendor
-  description: For malicious files, the vendor that made the decision
+  description: For malicious files, the vendor that determined the file is malicious.
   type: string
 - contextPath: File.Malicious.Detections
-  description: For malicious files. Total detections.
+  description: For malicious files, the total number of detections.
   type: number
 - contextPath: File.Malicious.TotalEngines
-  description: For malicious files. Total engines
+  description: For malicious files, the total number of engines.
   type: number
 - contextPath: DBotScore.Indicator
-  description: The indicator we tested
+  description: The indicator we tested.
   type: string
 - contextPath: DBotScore.Type
-  description: The type of the indicator
+  description: The type of the indicator.
   type: string
 - contextPath: DBotScore.Vendor
-  description: Vendor used to calculate the score
+  description: Vendor used to calculate the score.
   type: string
 - contextPath: DBotScore.Score
-  description: The actual score
+  description: The actual score.
   type: number
 - contextPath: File.VirusTotal.Scans.Source
-  description: Scan vendor for this hash
+  description: The vendor used to scan this hash.
   type: string
 - contextPath: File.VirusTotal.Scans.Detected
-  description: Scan detection for this hash (True,False)
+  description: Scan detection for this hash (True,False).
   type: boolean
 - contextPath: File.VirusTotal.Scans.Result
   description: Scan result for this hash - signature, etc.
   type: string
 - contextPath: File.SSDeep
-  description: The ssdeep value for the file
+  description: The ssdeep value for the file.
   type: string
 - contextPath: File.Type
-  description: File type as determined by Virus Total
+  description: File type as determined by Virus Total.
   type: string
 - contextPath: File.Size
-  description: Size of File in bytes
+  description: File size, in bytes.
   type: number
 - contextPath: File.VirusTotal.Tags
-  description: File tags
+  description: Virus Total file tags.
   type: string
 - contextPath: File.Tags
-  description: File tags
+  description: File tags.
   type: string
 - contextPath: File.VirusTotal.MagicLiteral
-  description: File magic literals
+  description: File magic literals.
   type: string
 - contextPath: File.VirusTotal.FirstSeen
-  description: Time where the File was first seen
+  description: Time where the file was first seen.
   type: string
 - contextPath: File.VirusTotal.CommunityReputation
-  description: Community Reputation of the File
+  description: Community reputation of the file.
   type: number
 - contextPath: File.VirusTotal.CommunityComments
-  description: Community Comments about the File
+  description: Community comments about the file.
   type: string
 - contextPath: File.VirusTotal.AuthentiHash
-  description: AuthentiHash of the File
+  description: AuthentiHash of the file.
   type: string
 - contextPath: File.Authentihash
-  description: AuthentiHash of the File
+  description: AuthentiHash of the file.
   type: string
 - contextPath: File.VirusTotal.ImpHash
-  description: ImpHash of the File
+  description: ImpHash of the file.
   type: string
 - contextPath: VirusTotal.ID
   description: The ID of the file uploaded to VirusTotal. (The file hash)
