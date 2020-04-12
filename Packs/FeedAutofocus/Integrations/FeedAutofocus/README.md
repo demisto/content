@@ -1,5 +1,5 @@
 Use the AutoFocus Feeds integration to fetch indicators from AutoFocus.
-For more information see the [AutoFocus documentation](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/autofocus-feeds.html).
+For more information click [here](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/autofocus-feeds.html).
 
 ## Configure AutoFocus Feed on Demisto
 
@@ -9,18 +9,18 @@ For more information see the [AutoFocus documentation](https://docs.paloaltonetw
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| feed | Fetch indicators | False |
-| indicator_feeds | Indicator Feed - Choose the requested indicator feeds - Custom Feeds and Daily Threat Feed. | True |
-| api_key | The AutoFocus API key | True |
-| custom_feed_urls | The URL for the custom feed to fetch - Only in cases a Custom Feed is requested | False |
-| feedReputation | Indicator Reputation | False |
-| feedReliability | Source Reliability | True |
-| feedExpirationPolicy |  | False |
-| feedExpirationInterval |  | False |
-| feedFetchInterval | Feed Fetch Interval | False |
-| feedBypassExclusionList | Bypass exclusion list | False |
-| insecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings | False |
+| feed | The fetch indicators. | False |
+| indicator_feeds | The indicator feed. Choose the requested indicator feeds. The Custom Feeds and Daily Threat Feed. | True |
+| api_key | The AutoFocus API key. | True |
+| custom_feed_urls | The URL for the custom feed to fetch. This applies only in cases where a Custom Feed is requested. | False |
+| feedReputation | The indicator reputation. | False |
+| feedReliability | The source's reliability. | True |
+| feedExpirationPolicy | The feed's expiration policy. | False |
+| feedExpirationInterval | The interval in which the feed expires. | False |
+| feedFetchInterval | The feed fetch interval. | False |
+| feedBypassExclusionList | The bypass exclusion list. | False |
+| insecure | Whether to trust any certificate (not secure). | False |
+| proxy | Whether to use the system proxy settings. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -28,15 +28,17 @@ For more information see the [AutoFocus documentation](https://docs.paloaltonetw
 To connect a custom AutoFocus feed you need to provide the Custom Feed URL.
 
 The Custom Feed URL should be in this form:
-https://autofocus.paloaltonetworks.com/IOCFeed/{Output_Feed_ID}/{Output_Feed_Name}
+https:/<span>/autofocus.paloaltonetworks.com/IOCFeed/{Output_Feed_ID}/{Output_Feed_Name}
 
 
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### autofocus-get-indicators
+
+### Get Indicators
 ***
 Gets the indicators from AutoFocus.
+
 Note: This command does not create indicators within Cortex XSOAR.
 
 ##### Base Command
@@ -62,10 +64,10 @@ There is no context output for this command.
 ### Indicators from AutoFocus:
 |Value|Type|
 |---|---|
-| demisto.com | Domain |
+| demisto<Span>.com | Domain |
 | {file hash} | File |
 | 8.8.8.8 | IP |
-| demsito.com/some/aditional/path | URL |
+| demsito<Span>.com/some/aditional/path | URL |
 
 To bring the next batch of indicators run:
-!autofocus-get-indicators limit=4 offset=4
+`!autofocus-get-indicators limit=4 offset=4`
