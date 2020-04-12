@@ -1534,13 +1534,12 @@ def main():
             raise_exception = True
             fetch_incidents(client)
         elif command == 'servicenow-get-ticket':
-            get_ticket_command(client, args)
+            demisto.results(get_ticket_command(client, args))
         elif command in commands:
             md_, ec_, raw_response = commands[command](client, args)
             return_outputs(md_, ec_, raw_response)
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
-
     except Exception as err:
         LOG(err)
         LOG.print_log()
