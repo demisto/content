@@ -1,0 +1,291 @@
+id: QRadarCorrelationLog
+version: -1
+name: QRadarCorrelationLog
+description: This playbook get the correlation logs of multiple QIDs.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8eac4af4-139b-450e-86ee-fe015bd40bf3
+    type: start
+    task:
+      id: 8eac4af4-139b-450e-86ee-fe015bd40bf3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 348b8d88-5937-485d-8b83-467be5b462b3
+    type: playbook
+    task:
+      id: 348b8d88-5937-485d-8b83-467be5b462b3
+      version: -1
+      name: Run Correlation Log Search
+      description: This playbook runs a QRadar query and return its results to the
+        context.
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      headers: {}
+      interval:
+        simple: "1"
+      query_expression:
+        simple: "\t\tselect qid QID,\n\t\tsourceip as \"SourceIP\",\n\t\tdestinationip
+          as \"DestinationIP\",\n\t\teventcount as \"EventCount\",\n\t\tsourceport
+          as \"SourcePort\",\n\t\tusername as \"Username\",\n\t\tstarttime as \"StartTime\",\n\t\tdestinationport
+          as \"DestinationPort\",\n\t\tmagnitude as \"Magnitude\",\n\t\tidentityip
+          as \"IdentityIP\",\n\t\tCATEGORYNAME(category) as \"Category\",\n\t\tPROTOCOLNAME(protocolid)
+          as \"ProtocolName\",\n\t\tLOGSOURCENAME(logsourceid)${inputs.additionalQueryFields}\n\t\tfrom
+          events where (RULENAME(${inputs.QID}) ILIKE '%') AND \"CRE Name\" IS NULL
+          AND INOFFENSE(${inputs.OffenseID})\nLIMIT ${inputs.MaxLogsCount}\n START
+          '${inputs.OffenseStartTime}'"
+      range: {}
+      timeout:
+        simple: "600"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: acf1d671-7a06-47d7-8f34-0d9a9def2b20
+    type: title
+    task:
+      id: acf1d671-7a06-47d7-8f34-0d9a9def2b20
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 557f3ad8-f7fd-4c5d-8e28-dadd7c59acc9
+    type: condition
+    task:
+      id: 557f3ad8-f7fd-4c5d-8e28-dadd7c59acc9
+      version: -1
+      name: Is OnlyNotCRE or ALL
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: inputs.GetOnlyCREEvents
+            iscontext: true
+          right:
+            value:
+              simple: OnlyNotCRE,All
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: ee41e8ef-5236-4fbd-84c3-c8dda0fd9593
+    type: condition
+    task:
+      id: ee41e8ef-5236-4fbd-84c3-c8dda0fd9593
+      version: -1
+      name: Is OnlyCRE or ALL
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: inputs.GetOnlyCREEvents
+            iscontext: true
+          right:
+            value:
+              simple: OnlyCRE,All
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 20bf5108-3e20-4ad1-8f44-2d7bfad0e07a
+    type: playbook
+    task:
+      id: 20bf5108-3e20-4ad1-8f44-2d7bfad0e07a
+      version: -1
+      name: Run Correlation Log Search
+      description: This playbook runs a QRadar query and return its results to the
+        context.
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      headers: {}
+      interval:
+        simple: "1"
+      query_expression:
+        simple: "\t\tselect qid QID,\n\t\tsourceip as \"SourceIP\",\n\t\tdestinationip
+          as \"DestinationIP\",\n\t\teventcount as \"EventCount\",\n\t\tsourceport
+          as \"SourcePort\",\n\t\tusername as \"Username\",\n\t\tstarttime as \"StartTime\",\n\t\tdestinationport
+          as \"DestinationPort\",\n\t\tmagnitude as \"Magnitude\",\n\t\tidentityip
+          as \"IdentityIP\",\n\t\tCATEGORYNAME(category) as \"Category\",\n\t\tPROTOCOLNAME(protocolid)
+          as \"ProtocolName\",\n\t\tLOGSOURCENAME(logsourceid)${inputs.additionalQueryFields}\n\t\tfrom
+          events where (RULENAME(${inputs.QID}) ILIKE '%') AND \"CRE Name\" <> NULL
+          AND INOFFENSE(${inputs.OffenseID}) \nLIMIT ${inputs.MaxLogsCount}\n START
+          '${inputs.OffenseStartTime}'"
+      range: {}
+      timeout:
+        simple: "600"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 1035,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: QID
+  value: {}
+  required: true
+  description: The correlation QID.
+  playbookInputQuery: null
+- key: OffenseStartTime
+  value: {}
+  required: true
+  description: The offense start time.
+  playbookInputQuery: null
+- key: OffenseID
+  value: {}
+  required: true
+  description: The offense ID.
+  playbookInputQuery: null
+- key: additionalQueryFields
+  value: {}
+  required: false
+  description: Add more fields for basic query (a list with comma separators)
+  playbookInputQuery: null
+- key: GetOnlyCREEvents
+  value:
+    simple: OnlyCRE
+  required: false
+  description: |-
+    If value "OnlyCRE" get only events made by CRE.
+    Values can be "OnlyCRE", "OnlyNotCRE", "All".
+  playbookInputQuery: null
+- key: MaxLogsCount
+  value:
+    simple: "20"
+  required: false
+  description: 'Maximum number of log entires to query from QRadar (default: 20)'
+  playbookInputQuery: null
+outputs: []
