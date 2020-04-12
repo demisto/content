@@ -158,6 +158,5 @@ inputs:
   required: true
   description: The hostname of the endpoint to isolate using Cybereason.
 outputs: []
-description: ''
 tests:
   - No Test
