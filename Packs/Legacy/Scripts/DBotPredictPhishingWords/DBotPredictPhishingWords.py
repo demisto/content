@@ -96,8 +96,8 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
     incident_context = demisto.incidents()[0]
     if not incident_context['isPlayground'] and set_incidents_fields:
         demisto.executeCommand("setIncident", {'dbotprediction': predicted_label,
-                                'dbotpredictionprobability': predicted_prob,
-                                'dbottextsuggestionhighlighted' : highlighted_text_markdown})
+                                               'dbotpredictionprobability': predicted_prob,
+                                               'dbottextsuggestionhighlighted': highlighted_text_markdown})
     return {
         'Type': entryTypes['note'],
         'Contents': explain_result,
