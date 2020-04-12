@@ -475,6 +475,7 @@ tasks:
       name: Update NIST stage - Containment
       description: Updates the NIST Stage field to Containment.
       type: regular
+      script: Builtin|||setIncident
       iscommand: true
       brand: Builtin
     nexttasks:
