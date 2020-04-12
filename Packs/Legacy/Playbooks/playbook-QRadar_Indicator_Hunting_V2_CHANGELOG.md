@@ -1,6 +1,5 @@
 ## [Unreleased]
--
-
+Improved AQL query.
 
 ## [20.3.1] - 2020-03-04
 Fixed missing task links.
