@@ -220,17 +220,27 @@ def get_private_packs(private_index_path):
     Returns:
         private_packs: A list of ID and price of the private packs.
     """
-    metadata_files = glob.glob(f"{private_index_path}/**/metadata.json")
-    private_packs = []
+    try:
+        metadata_files = glob.glob(f"{private_index_path}/**/metadata.json")
+    except Exception as e:
+        print_warning(f'Could not find metadata files in {private_index_path}: {str(e)}')
+        return []
 
+    if not metadata_files:
+        print_warning(f'No metadata files found in [{private_index_path}]')
+
+    private_packs = []
     for metadata_file_path in metadata_files:
-        with open(metadata_file_path, "r") as metadata_file:
-            metadata = json.load(metadata_file)
-        if metadata:
-            private_packs.append({
-                'id': metadata.get('id'),
-                'price': metadata.get('price')
-            })
+        try:
+            with open(metadata_file_path, "r") as metadata_file:
+                metadata = json.load(metadata_file)
+            if metadata:
+                private_packs.append({
+                    'id': metadata.get('id'),
+                    'price': metadata.get('price')
+                })
+        except ValueError as e:
+            print_error(f'Invalid JSON in the metadata file [{metadata_file_path}]: {str(e)}')
 
     return private_packs
 
@@ -246,7 +256,6 @@ def add_private_packs_to_index(index_folder_path, private_index_path):
     for d in os.scandir(private_index_path):
         if os.path.isdir(d.path):
             update_index_folder(index_folder_path, d.name, d.path)
-    shutil.rmtree(private_index_path)
 
 
 def _build_summary_table(packs_input_list):
@@ -362,7 +371,13 @@ def main():
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in modified_packs
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
-    add_private_packs_to_index(index_folder_path, private_index_path)
+    # Add private packs to the index
+    try:
+        add_private_packs_to_index(index_folder_path, private_index_path)
+    except Exception as e:
+        print_warning(f'Could not add private packs to the index: {str(e)}')
+    finally:
+        shutil.rmtree(private_index_path, ignore_errors=True)
 
     for pack in packs_list:
         task_status, integration_images = pack.upload_integration_images(storage_bucket)
