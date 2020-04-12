@@ -199,7 +199,7 @@ tasks:
         simple: "yes"
       unsecure: {}
       url:
-        simple: https://github.com/demisto/content/raw/master/Scripts/ParseEmailFiles/test_data/utf_subject.msg
+        simple: https://github.com/demisto/content/raw/master/Packs/Legacy/Scripts/ParseEmailFiles/test_data/utf_subject.msg
       username: {}
     separatecontext: false
     view: |-
