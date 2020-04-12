@@ -6,7 +6,7 @@ from CommonServerUserPython import *
 import csv
 import gzip
 import urllib3
-from typing import Optional, Pattern, Dict, Any
+from typing import Optional, Pattern, Dict, Any, Tuple, Union
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -29,10 +29,16 @@ class Client(BaseClient):
                 'fieldnames': ['value'],
                 'indicator_type': 'IP',
                 'mapping': {
-                    'date': 'Date'
+                    'Date': 'date' / 'Date': ('date', r'(regex_string)', 'The date is {}')
                 }
             }
          }
+         For the mapping you can use either:
+            1. 'indicator_field': 'value_from_feed'
+            2. 'indicator_field': ('value_from_feed', regex_string_extractor, string_formatter)
+                * regex_string_extractor will extract the first match from the value_from_feed,
+                Use None to get the full value of the field.
+                * string_formatter will format the data in your preferred way, Use None to get the extracted field.
         :param fieldnames: list of field names in the file. If *null* the values in the first row of the file are
             used as names. Default: *null*
         :param insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
@@ -193,6 +199,29 @@ def module_test_command(client: Client, args):
     return 'ok', {}, {}
 
 
+def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tuple, str]]):
+    fields_mapping = {}  # type: dict
+
+    for key, field in mapping.items():
+        regex_extractor = None
+        formatter_string = None
+
+        if isinstance(field, tuple):
+            field, regex_extractor, formatter_string = field
+
+        if not raw_json.get(field):  # type: ignore
+            continue
+
+        try:
+            field_value = re.match(regex_extractor, raw_json[field]).group(1)  # type: ignore
+        except Exception:
+            field_value = raw_json[field]  # type: ignore
+
+        fields_mapping[key] = formatter_string.format(field_value) if formatter_string else field_value
+
+    return fields_mapping
+
+
 def fetch_indicators_command(client: Client, default_indicator_type: str, **kwargs):
     iterator = client.build_iterator(**kwargs)
     indicators = []
@@ -214,7 +243,7 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, **kwar
                         'value': value,
                         'type': indicator_type,
                         'rawJSON': raw_json,
-                        'fields': {field: raw_json[key] for key, field in mapping.items()}
+                        'fields': create_fields_mapping(raw_json, mapping) if mapping else {}
                     }
                     indicators.append(indicator)
 
@@ -226,7 +255,7 @@ def get_indicators_command(client, args):
     limit = int(args.get('limit'))
     indicators_list = fetch_indicators_command(client, itype)
     entry_result = indicators_list[:limit]
-    hr = tableToMarkdown('Indicators', entry_result, headers=['value', 'type'])
+    hr = tableToMarkdown('Indicators', entry_result, headers=['value', 'type', 'fields'])
     return hr, {}, indicators_list
 
 
