@@ -7,6 +7,7 @@ import os
 import json
 import requests
 from google.cloud import bigquery
+from datetime import date
 
 
 # Disable insecure warnings
