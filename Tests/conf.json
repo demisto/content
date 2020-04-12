@@ -2471,6 +2471,18 @@
             "playbookID": "illuminate Integration Demonstration - Test"
         },
         {
+            "integrations": "MongoDB Key Value Store",
+            "playbookID": "MongoDB KeyValueStore - Test",
+            "pid_threshold": 12,
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "MongoDB Log",
+            "playbookID": "MongoDBLog - Test",
+            "pid_threshold": 12,
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Google Chronicle Backstory",
             "playbookID": "Google Chronicle Backstory Asset - Test",
             "fromversion": "5.0.0"
@@ -2812,7 +2824,9 @@
         "Google Chronicle Backstory": "SDK",
         "Google Vision AI": "SDK",
         "Syslog Sender": "syslog",
-        "syslog": "syslog"
+        "syslog": "syslog",
+        "MongoDB Log": "Our instance not using SSL",
+        "MongoDB Key Value Store": "Our instance not using SSL"
     },
     "docker_thresholds": {
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
