@@ -84,6 +84,7 @@ class PackStatus(enum.Enum):
     FAILED_UPLOADING_PACK = "Failed in uploading pack zip to gcs"
     PACK_ALREADY_EXISTS = "Specified pack already exists in gcs under latest version"
     FAILED_REMOVING_PACK_SKIPPED_FOLDERS = "Failed to remove pack hidden and skipped folders"
+    FAILED_RELEASE_NOTES = "Failed to generate releaseNotes.json"
 
 
 class Pack(object):
@@ -113,7 +114,8 @@ class Pack(object):
     USER_METADATA = "pack_metadata.json"
     METADATA = "metadata.json"
     AUTHOR_IMAGE_NAME = "Author_image.png"
-    EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS]
+    EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS, "ReleaseNotes"]
+    RELEASE_NOTES = "ReleaseNotes"
 
     def __init__(self, pack_name, pack_path):
         self._pack_name = pack_name

@@ -52,12 +52,6 @@ def get_modified_packs(specific_packs=""):
         return modified_packs
 
 
-def input_to_list(input_data):
-    # todo add docstring and unit tests
-    input_data = input_data if input_data else []
-    return input_data if isinstance(input_data, list) else [s for s in input_data.split(',') if s]
-
-
 def extract_packs_artifacts(packs_artifacts_path, extract_destination_path):
     """Extracts all packs from content pack artifact zip.
 
@@ -339,6 +333,13 @@ def main():
         task_status = pack.parse_release_notes()
         if not task_status:
             pack.status = PackStatus.FAILED_RELEASE_NOTES.name
+            pack.cleanup()
+            continue
+
+        task_status = pack.format_metadata(pack_content_items, integration_images, author_image,
+                                           index_folder_path)
+        if not task_status:
+            pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack.cleanup()
             continue
 
