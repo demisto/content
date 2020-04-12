@@ -226,7 +226,7 @@ class Client(BaseClient):
         raw_json_data['ssdeep'] = full_sample_json.get('ssdeep')
         raw_json_data['imphash'] = full_sample_json.get('imphash')
         raw_json_data['autofocus_filetype'] = full_sample_json.get('filetype')
-        raw_json_data['autofocus_malware'] = VERDICTS_TO_TEXT.get(full_sample_json.get('malware'))
+        raw_json_data['autofocus_malware'] = VERDICTS_TO_TEXT.get(full_sample_json.get('malware'))  # type: ignore
 
         fields_mapping = {
             'md5': full_sample_json.get('md5'),
@@ -247,7 +247,7 @@ class Client(BaseClient):
                 'type': raw_json_data['type'],
                 'rawJSON': raw_json_data,
                 'fields': fields_mapping,
-                'score': VERDICTS_TO_DBOTSCORE.get(full_sample_json.get('malware'), 0)
+                'score': VERDICTS_TO_DBOTSCORE.get(full_sample_json.get('malware'), 0)  # type: ignore
             }
         ]
 
@@ -289,7 +289,7 @@ class Client(BaseClient):
             'type': raw_json_data['type'],
             'rawJSON': raw_json_data,
             'fields': fields_mapping,
-            'score': CONFIDENCE_TO_DBOTSCORE.get(artifact.get('confidence'), 0)
+            'score': CONFIDENCE_TO_DBOTSCORE.get(artifact.get('confidence'), 0)  # type: ignore
         }
 
     @staticmethod
