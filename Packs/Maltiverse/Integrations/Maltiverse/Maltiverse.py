@@ -61,11 +61,11 @@ class Client(BaseClient):
                 try:
                     err_msg = str(res.json())
                     if self.auth_token:
-                        err_msg += ' - Check server URL and API key'
+                        err_msg = f'Check server URL and API key \n{err_msg}'
                     else:
-                        err_msg += " - Check server URL or try using an API key"
+                        err_msg = f'Check server URL or try using an API key \n{err_msg}'
                 except ValueError:
-                    err_msg = 'Check server URL or API key'
+                    err_msg = 'Check server URL or API key' + str(res)
                 raise DemistoException(err_msg)
 
             if res.status_code == 404:
