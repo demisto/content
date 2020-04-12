@@ -8,22 +8,22 @@ This integration was integrated and tested with version 0.1.2 of sixgill clients
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| client_id | Sixgill API client ID | True |
-| client_secret | Sixgill API client secret | True |
-| feed | Fetch indicators | False |
-| feedReputation | Indicator Reputation | False |
-| feedReliability | Source Reliability | True |
+| client_id | Sixgill API client ID. | True |
+| client_secret | Sixgill API client secret. | True |
+| feed | Fetch indicators. | False |
+| feedReputation | The reputation to apply to the fetched indicators. | False |
+| feedReliability | The reliability of the this feed. | True |
 | feedExpirationPolicy |  | False |
 | feedExpirationInterval |  | False |
 | feedFetchInterval | Feed Fetch Interval | False |
 | feedBypassExclusionList | Bypass exclusion list | False |
-| maxIndicators | Max number of indicators that can be fetched | False |
+| maxIndicators | The maximum number of indicators to fetch. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### sixgill-get-indicators
+### Fetch indicators
 ***
 Fetching Sixgill DarkFeed indicators
 ##### Required Permissions
