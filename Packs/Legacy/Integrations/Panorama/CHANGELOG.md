@@ -1,5 +1,5 @@
 ## [Unreleased]
-- Adding warnings to panorama-commit-status command.
+Added warnings to the ***panorama-commit-status*** command.
 
 ## [20.3.3] - 2020-03-18
 Improved handling in cases where a field value is None.
