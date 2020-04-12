@@ -2450,6 +2450,5 @@ inputs:
 outputs: []
 sourceplaybookid: Port Scan - Generic
 fromversion: 5.0.0
-description: ''
 tests:
   - no test
