@@ -1,4 +1,3 @@
-import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import json
@@ -7,11 +6,8 @@ import sys
 
 from cStringIO import StringIO
 
-if not demisto.params()['proxy']:
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+handle_proxy(demisto.params().get('proxy'))
+
 
 # disable python from generating a .pyc file
 sys.dont_write_bytecode = True
@@ -41,13 +37,45 @@ except Exception:
     raise
 
 
-def csvstr_to_list(str):
-    lines = str.splitlines()
-    if len(lines) < 2:
+def gather_line(lines, total_column_num, current_line):
+    line_values = lines[current_line].split(',')
+    while len(line_values) < total_column_num:
+        current_line += 1
+        line_below = lines[current_line].split(',')
+        line_values[-1] = line_values[-1] + " " + line_below[0]
+        if len(line_below) == 1:
+            continue
+
+        else:
+            line_below = line_below[1:]
+            line_values.extend(line_below)
+
+    return line_values, current_line
+
+
+def csvstr_to_list(text_content):
+    lines = text_content.splitlines()
+    headers = lines[0].split(',')
+    total_column_num = len(headers)
+    if len(lines) == 1:
         return []
-    else:
-        headers = lines[0].split(',')
-        return [dict(zip(headers, line.split(','))) for line in lines[1:]]
+
+    lines = lines[1:]
+    total_lines_num = len(lines)
+    result = []
+    current_line = 0
+    while current_line < total_lines_num:
+        line_dict = {}
+        line_values, current_line = gather_line(lines, total_column_num, current_line)
+
+        for index in range(total_column_num):
+            line_dict[headers[index]] = line_values[index]
+
+        current_line += 1
+
+        result.append(line_dict)
+
+    return result
 
 
 def parseToJson(handler, response):
@@ -92,10 +120,10 @@ def filter_list(lst, keys):
 def get_handler():
     handler_args = {}
 
-    handler_args['username'] = demisto.params()['credentials']['identifier']
-    handler_args['password'] = demisto.params()['credentials']['password']
-    handler_args['host'] = demisto.params()['host']
-    handler_args['port'] = demisto.params()['port']
+    handler_args['username'] = demisto.params().get('credentials', {}).get('identifier')
+    handler_args['password'] = demisto.params().get('credentials', {}).get('password')
+    handler_args['host'] = demisto.params().get('host')
+    handler_args['port'] = demisto.params().get('port')
 
     handler_args['loglevel'] = 1
     handler_args['debugformat'] = False
