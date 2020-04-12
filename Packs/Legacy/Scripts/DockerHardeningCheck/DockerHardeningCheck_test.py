@@ -4,7 +4,7 @@ import os
 
 
 def test_check_memory():
-    assert check_memory("10m")  # will return an error string
+    assert 'memory cgroup configuration' in check_memory("10m", "cgroup")
 
 
 def test_mem_size():
