@@ -29,7 +29,7 @@ configuration:
   name: use_ssl
   required: false
   type: 8
-description: Writes Log data out to MongoDB collection.
+description: Writes log data to a MongoDB collection.
 display: MongoDB Log
 name: MongoDB Log
 script:
@@ -37,7 +37,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: Limit the number of logs to return.
+      description: The maximum number of logs to return.
       isArray: false
       name: limit
       required: false
@@ -48,25 +48,25 @@ script:
     name: mongodb-read-log
   - arguments:
     - default: false
-      description: The playbook that had been used.
+      description: The playbook that was used.
       isArray: false
       name: playbook
       required: false
       secret: false
     - default: false
-      description: Assigned user.
+      description: The assigned user.
       isArray: false
       name: user
       required: false
       secret: false
     - default: false
-      description: Entity to write to log.
+      description: Entity to write to the log.
       isArray: false
       name: id
       required: false
       secret: false
     - default: false
-      description: Action(s) performed
+      description: The actions that were performed.
       isArray: false
       name: action
       required: false
@@ -78,24 +78,24 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Add log entry.
+    description: Adds a log entry.
     execution: false
     name: mongodb-write-log
     outputs:
     - contextPath: MongoDB.Entry.Action
-      description: Action(s) performed
+      description: The actions that were performed.
       type: String
     - contextPath: MongoDB.Entry.User
       description: Assigned analyst.
       type: String
     - contextPath: MongoDB.Entry.ID
-      description: Entity to write to log.
+      description: Entity to write to the log.
       type: String
     - contextPath: MongoDB.Entry.EntryID
       description: Entry ID.
       type: String
     - contextPath: MongoDB.Entry.Playbook
-      description: The playbook that had been used.
+      description: The playbook that was used.
       type: String
     - contextPath: MongoDB.Entry.Timestamp
       description: Entry timestamp.
