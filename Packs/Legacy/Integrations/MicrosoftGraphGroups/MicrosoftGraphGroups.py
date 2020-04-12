@@ -326,11 +326,20 @@ class Client(BaseClient):
             Response from API.
         """
         if next_link:  # pagination
+            demisto.debug('Entered next_link in list_members command')
             members = self.http_request('GET', next_link)
+            demisto.debug(f'The type of "members" is: {type(members)}')
+            demisto.debug(f'The value of "members" is: {str(members)}')
         elif filter_:
+            demisto.debug('Entered filter_ condition in list_members command')
             members = self.http_request('GET', f'groups/{group_id}/members?$filter={filter_}&$top={top}')
+            demisto.debug(f'The type of "members" is: {type(members)}')
+            demisto.debug(f'The value of "members" is: {str(members)}')
         else:
+            demisto.debug('Entered else condition in list_members command')
             members = self.http_request('GET', f'groups/{group_id}/members?$top={top}')
+            demisto.debug(f'The type of "members" is: {type(members)}')
+            demisto.debug(f'The value of "members" is: {str(members)}')
 
         return members
 
@@ -496,7 +505,8 @@ def list_members_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     top = args.get('top')
     filter_ = args.get('filter')
     members = client.list_members(group_id, next_link, top, filter_)
-
+    demisto.debug(f'The type of "members" is: {type(members)}')
+    demisto.debug(f'The value of "members" is: {str(members)}')
     if not members['value']:
         human_readable = f'The group {group_id} has no members.'
         return human_readable, NO_OUTPUTS, NO_OUTPUTS
