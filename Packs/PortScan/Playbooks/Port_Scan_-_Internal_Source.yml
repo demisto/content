@@ -1,7 +1,7 @@
 id: Port Scan - Internal Source
 version: -1
 name: Port Scan - Internal Source
-description: Provides response to port scans originating from within the network.
+description: Remediates port scans originating within the network.
 starttaskid: '0'
 tasks:
   '0':
@@ -32,7 +32,7 @@ tasks:
       id: 73358588-28f9-4aa2-8a79-d93a66fe1544
       version: -1
       name: Save source IPs
-      description: Saves the IP address from which the port scan originated.
+      description: Saves the IP addresses from which the port scan originated.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -68,7 +68,7 @@ tasks:
       id: b7ec1a38-f51d-4731-8712-1516c6c7644d
       version: -1
       name: Save source hostnames
-      description: Saves the hostname that performed the port scan.
+      description: Saves the hostnames that performed the port scan.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -122,8 +122,7 @@ tasks:
       id: 3f50b66e-f577-49cf-8df3-eecbb4b40877
       version: -1
       name: Were internal hosts infected with malware?
-      description: Checks whether internal hosts were related in any way to the SHA256
-        hash of the malware associated with this incident.
+      description: Checks whether internal hosts were related in any way to the hash of the malware associated with this incident.
       type: condition
       iscommand: false
       brand: ''
@@ -220,7 +219,7 @@ tasks:
       id: e3c2a026-7ed6-4351-8962-83590a490d1f
       version: -1
       name: Is the file associated with malicious IPs?
-      description: Checks whether the SHA256 hash of the malware associated with this
+      description: Checks whether the hash of the malware associated with this
         incident was found related to any malicious external IP addresses.
       type: condition
       iscommand: false
@@ -296,8 +295,7 @@ tasks:
       id: b45e6a3d-cc4b-44ec-81ba-9c6290f02670
       version: -1
       name: Can the external IPs be blocked automatically?
-      description: Checks whether the external IPs associated with the malware's SHA256
-        hash can be blocked automatically.
+      description: Checks whether the external IPs associated with the malware's hash can be blocked automatically.
       type: condition
       iscommand: false
       brand: ''
@@ -684,9 +682,9 @@ tasks:
     task:
       id: e11def39-0b65-4b3a-8e9b-de90186c4e58
       version: -1
-      name: xdr-get-endpoints
+      name: Get Cortex XDR endpoints
       description: Gets a list of endpoints, according to the passed filters. Filtering
-        by multiple fields will be concatenated using AND condition (OR is not supported).
+        by multiple fields will be concatenated using the AND condition (OR is not supported).
         Maximum result set size is 100. Offset is the zero-based number of endpoint
         from the start of the result set (start by counting from 0).
       script: '|||xdr-get-endpoints'
@@ -901,7 +899,7 @@ tasks:
       id: 301706c1-991d-491e-83cf-5fa8736d549b
       version: -1
       name: Update NIST stage - Containment
-      description: Updates the NIST stage to "Containment".
+      description: Updates the NIST stage to Containment.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -1550,8 +1548,9 @@ tasks:
     task:
       id: 205a206f-0abd-4863-8110-30f4a80230ed
       version: -1
-      name: Save user display name and manager email in incident fields
-      description: commands.local.cmd.set.incident
+      name: Save user info and manager email in incident fields
+      description: Saves the user's email address and display name to the Employee Email and Employee Display Name fields, respectively,
+      and the user's manager email is saved to the Employee Manager Email field.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -3421,7 +3420,7 @@ tasks:
       id: 51b32da1-2fa3-41ef-8bbc-843fdb7c06f2
       version: -1
       name: Update scan source type
-      description: commands.local.cmd.set.incident
+      description: Sets the Scan Source Type field to Internal.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -3779,11 +3778,11 @@ inputs:
   required: true
   description: Whether to automatically isolate endpoints if the severity is critical
     and the endpoint is not on the WhitelistedHostnames input, or opt for manual user
-    approval. True means isolation will be done automatically in that case.
+    approval. True means isolation will be done automatically if the conditions are met.
 - key: RoleForEscalation
   value: {}
   required: false
-  description: The name of the Demisto role of the users that the incident can be
+  description: The name of the Cortex XSOAR role of the users that the incident can be
     escalated to, in case of developments like lateral movement.
 - key: BlockMaliciousFiles
   value:
@@ -3794,19 +3793,19 @@ inputs:
 - key: InternalSourceIPs
   value: {}
   required: false
-  description: The internal IP address/es that performed the port scan. In order to
+  description: The internal IP address(es) that performed the port scan. In order to
     properly respond to internal scans, either this or the SourceHostnames input has
     to be filled with data.
 - key: SourceHostnames
   value: {}
   required: false
-  description: The source hostname/s that performed the port scan. In order to properly
+  description: The source hostname(s) that performed the port scan. In order to properly
     respond to internal scans, either this or the InternalSourceIPs input has to be
     filled with data.
 - key: SourceUsernames
   value: {}
   required: false
-  description: The Active Directory username/s that were used in the port scan attack.
+  description: The Active Directory username(s) that were used in the port scan attack.
 - key: InvolvedFileMD5
   value: {}
   required: false
@@ -3824,8 +3823,8 @@ inputs:
     complex:
       root: DBotScore
   required: false
-  description: All the DBotScores that were calculated either automatically by auto-reputation
-    or using specific tasks when the incident was ingested. This is used to calculate
+  description: All the DBotScores that were calculated either automatically by auto-reputation,
+    or using specific tasks, when the incident was ingested. This is used to calculate
     the incident severity at a later stage.
 outputs: []
 sourceplaybookid: Port Scan - Generic
