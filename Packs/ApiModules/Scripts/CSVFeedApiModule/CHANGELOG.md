@@ -1,4 +1,9 @@
 ## [Unreleased]
+Added support for mapping by regex extraction and by string formatting.
+
+
+## [20.3.4] - 2020-03-30
+Added support for zipped files.
 
 
 ## [20.3.3] - 2020-03-18

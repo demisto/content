@@ -115,9 +115,6 @@ class FeedIndicatorType(object):
     Email = "Email"
     File = "File"
     FQDN = "Domain"
-    MD5 = "File MD5"
-    SHA1 = "File SHA-1"
-    SHA256 = "File SHA-256"
     Host = "Host"
     IP = "IP"
     CIDR = "CIDR"
@@ -136,9 +133,6 @@ class FeedIndicatorType(object):
             FeedIndicatorType.DomainGlob,
             FeedIndicatorType.Email,
             FeedIndicatorType.File,
-            FeedIndicatorType.MD5,
-            FeedIndicatorType.SHA1,
-            FeedIndicatorType.SHA256,
             FeedIndicatorType.Host,
             FeedIndicatorType.IP,
             FeedIndicatorType.CIDR,
@@ -1694,7 +1688,7 @@ def is_ip_valid(s, accept_v6_ips=False):
         return True
 
 
-def return_outputs(readable_output, outputs=None, raw_response=None, timeline=None):
+def return_outputs(readable_output, outputs=None, raw_response=None, timeline=None, ignore_auto_extract=False):
     """
     This function wraps the demisto.results(), makes the usage of returning results to the user more intuitively.
 
@@ -1707,22 +1701,33 @@ def return_outputs(readable_output, outputs=None, raw_response=None, timeline=No
 
     :type raw_response: ``dict`` | ``list``
     :param raw_response: must be dictionary, if not provided then will be equal to outputs. usually must be the original
-    raw response from the 3rd party service (originally Contents)
+        raw response from the 3rd party service (originally Contents)
 
     :type timeline: ``dict`` | ``list``
-    :param timeline: expects a list, if a dict is passed it will be put into a list. used by server to populate an 
-    indicator's timeline
+    :param timeline: expects a list, if a dict is passed it will be put into a list. used by server to populate an
+        indicator's timeline. if the 'Category' field is not present in the timeline dict(s), it will automatically
+        be be added to the dict(s) with its value set to 'Integration Update'.
+
+    :type ignore_auto_extract: ``bool``
+    :param ignore_auto_extract: expects a bool value. if true then the warroom entry readable_output will not be auto enriched.
 
     :return: None
     :rtype: ``None``
     """
+    timeline_list = [timeline] if isinstance(timeline, dict) else timeline
+    if timeline_list:
+        for tl_obj in timeline_list:
+            if 'Category' not in tl_obj.keys():
+                tl_obj['Category'] = 'Integration Update'
+
     return_entry = {
         "Type": entryTypes["note"],
         "HumanReadable": readable_output,
         "ContentsFormat": formats["json"],
         "Contents": raw_response,
         "EntryContext": outputs,
-        "IndicatorTimeline": [timeline] if isinstance(timeline, dict) else timeline
+        'IgnoreAutoExtract': ignore_auto_extract,
+        "IndicatorTimeline": timeline_list
     }
     # Return 'readable_output' only if needed
     if readable_output and not outputs and not raw_response:
@@ -2479,7 +2484,7 @@ if 'requests' in sys.modules:
 
         def _http_request(self, method, url_suffix, full_url=None, headers=None,
                           auth=None, json_data=None, params=None, data=None, files=None,
-                          timeout=10, resp_type='json', ok_codes=None, **kwargs):
+                          timeout=10, resp_type='json', ok_codes=None, return_empty_response = False, **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
             :type method: ``str``
@@ -2565,6 +2570,10 @@ if 'requests' in sys.modules:
                     except ValueError as exception:
                         raise DemistoException(err_msg, exception)
 
+                is_response_empty_and_successful = (res.status_code == 204)
+                if is_response_empty_and_successful and return_empty_response:
+                    return res
+
                 resp_type = resp_type.lower()
                 try:
                     if resp_type == 'json':
@@ -2644,3 +2653,4 @@ def batch(iterable, batch_size=1):
         yield current_batch
         current_batch = not_batched[:batch_size]
         not_batched = not_batched[batch_size:]
+
