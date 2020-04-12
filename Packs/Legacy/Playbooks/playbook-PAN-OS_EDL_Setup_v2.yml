@@ -867,7 +867,5 @@ inputs:
   description: The device group to work on. Exists only in panorama!
 outputs:
 - contextPath: Panorama.EDL.Name
-  description: Name of theEDL.
-tests:
-  - No test
+  description: Name of the EDL.
 
