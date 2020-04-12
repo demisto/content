@@ -8,6 +8,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Search Endpoints By Hash - Carbon Black Response
 * Search Endpoints By Hash - TIE
 * Search Endpoints By Hash - CrowdStrike
+* Search Endpoints By Hash - Cybereason
 
 ### Integrations
 This playbook does not use any integrations.
