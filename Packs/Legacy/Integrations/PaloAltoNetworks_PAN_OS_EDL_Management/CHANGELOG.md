@@ -1,5 +1,5 @@
 ## [Unreleased]
-- 
+- Remove http/https form items added.
 
 ## [19.12.1] - 2019-12-25
 -
