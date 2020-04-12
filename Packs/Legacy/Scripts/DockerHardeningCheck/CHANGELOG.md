@@ -1,6 +1,5 @@
 ## [Unreleased]
--
-
+Added the *memory_check* argument to specify how to test memory limitations.
 
 ## [20.3.3] - 2020-03-18
 Decreased the CPU check sensitivity to accommodate loaded systems. 
