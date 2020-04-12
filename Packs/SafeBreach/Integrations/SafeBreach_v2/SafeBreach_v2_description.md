@@ -9,4 +9,4 @@ This integration leverages SafeBreach simulation results and insights to remedia
   OR \
   Add a new one by typing: **config apikeys add --name <key_name>**
   5. Use the generated API token as **apiKey** parameter when configuring the SafeBreach integration in Demisto.
-  6. Use your SafeBreach Management URL as the **url** parameter when configuring the SafeBreach integration in Demisto.ion.
+  6. Use your SafeBreach Management URL as the **url** parameter when configuring the SafeBreach integration in Demisto.
