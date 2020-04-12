@@ -66,7 +66,7 @@ script: |-
       elif str(demisto.get(resCheckSB[0], 'Contents.response.te.status.code')) == '1001':
           sandblastDone = True
           data = demisto.get(resCheckSB[0], 'Contents.response')
-          data = {x:data[x] for x in ['file_name', 'file_type', 'md5', 'te']}
+          data = {x:data.get(x,'') for x in ['file_name', 'file_type', 'md5', 'te']}
           raiseTable(data, 'te')
           res.append({ "Type" : entryTypes["note"], "ContentsFormat" : formats["table"], "Contents" : flattenRow(data) })
 
@@ -115,7 +115,7 @@ script: |-
           elif str(demisto.get(resSBReport[0], 'Contents.response.te.status.code')) == '1001':
               sandblastDone = True
               data = demisto.get(resSBReport[0], 'Contents.response')
-              data = {x:data[x] for x in ['file_name', 'file_type', 'md5', 'te']}
+              data = {x:data.get(x,'') for x in ['file_name', 'file_type', 'md5', 'te']}
               raiseTable(data, 'te')
               res.append({ "Type" : entryTypes["note"], "ContentsFormat" : formats["table"], "Contents" : flattenRow(data) })
           elif str(demisto.get(resSBReport[0], 'Contents.response.te.status.code')) == '1004' and sec > timeout/2: # Give sandblast time to sync that the file has been uploaded, disregard this for a while
