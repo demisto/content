@@ -5,14 +5,14 @@
     "serverMinVersion": "5.0.0",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
+    "url": "",
     "email": "",
     "categories": [
-        "Authentication"
+        "Data Enrichment & Threat Intelligence"
     ],
     "tags": [],
-    "created": "2020-03-10T08:37:18Z",
-    "updated": "2020-03-10T08:37:18Z",
+    "created": "",
+    "updated": "",
     "beta": false,
     "deprecated": false,
     "certification": "certified",
