@@ -1,5 +1,5 @@
-Microsoft Graph lets your app get authorized access to a user's Outlook mail data in a personal or organization account.
-This integration was integrated and tested with version xx of MicrosoftGraphMail
+Use the Microsoft Graph integration to let your applications get authorized access to a user's Outlook mail data in a personal or organization account.
+
 ## Configure MicrosoftGraphMail on Demisto
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -8,25 +8,26 @@ This integration was integrated and tested with version xx of MicrosoftGraphMail
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL | True |
-| auth_id | ID (received from the admin consent - see Detailed Instructions (?) | True |
-| tenant_id | Token (received from the admin consent - see Detailed Instructions (?) section) | True |
-| enc_key | Key (received from the admin consent - see Detailed Instructions (?) | True |
-| isFetch | Fetch incidents | False |
-| mailbox_to_fetch | Email address from which to fetch incidents (e.g. "example@demisto.com") | False |
-| folder_to_fetch | Name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g. Inbox/Phishing) | False |
-| first_fetch | First fetch timestamp ((number) (time unit), e.g., 12 hours, 7 days) | False |
-| fetch_limit | Maximum number of emails to pull per fetch | False |
-| insecure | Trust any certificate (not secure) | False |
-| proxy | Use system proxy settings | False |
-| self_deployed | Use a self deployed Azure Application | False |
-| incidentType | Incident type | False |
+| url | The server URL. | True |
+| auth_id | The ID (received from the admin consent - see the Detailed Instructions (?) section). | True |
+| tenant_id | The token (received from the admin consent - see the Detailed Instructions (?) section). | True |
+| enc_key | The Key (received from the admin consent - see the Detailed Instructions (?) section). | True |
+| isFetch | The fetched incidents. | False |
+| mailbox_to_fetch | The email address from which to fetch incidents (e.g. "example<span>@demisto.com"). | False |
+| folder_to_fetch | The name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g. Inbox/Phishing). | False |
+| first_fetch | The first fetched timestamp ((number) (time unit), e.g., 12 hours, 7 days). | False |
+| fetch_limit | The maximum number of emails to pull per fetch. | False |
+| insecure | Whether to trust any certificate (not secure). | False |
+| proxy | Whether to use system proxy settings. | False |
+| self_deployed | Whether to use a self deployed Azure Application. | False |
+| incidentType | The incident type. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### msgraph-mail-list-emails
+
+### Get properties of returned emails
 ***
 Gets the properties of returned emails.
 
@@ -42,11 +43,11 @@ Gets the properties of returned emails.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | User ID from which to pull mails (can be principal ID (email address)). | Required | 
-| folder_id |  A comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box).  | Optional | 
-| odata | An OData query. | Optional | 
-| search | The term for which to search. This argument cannot contain reserved characters such as !, $, #, @, etc. For further information, see https://tools.ietf.org/html/rfc3986#section-2.2 | Optional | 
-| pages_to_pull | The number of pages of emails to return (maximum is 10 emails per page). | Optional | 
+| user_id | The user ID from which to pull emails (can be principal ID (email address)). | Required | 
+| folder_id |  The comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box).  | Optional | 
+| odata | The OData query. | Optional | 
+| search | The term for which to search. This argument cannot contain reserved characters such as "!, $, #, @, etc". Click [here](https://tools.ietf.org/html/rfc3986#section-2.2) for further information. | Optional | 
+| pages_to_pull | The number of pages of emails to return. The maximum is 10 emails per page. | Optional | 
 
 
 ##### Context Output
@@ -60,10 +61,10 @@ Gets the properties of returned emails.
 | MSGraphMail.SendTime | Date | The time the email was sent. | 
 | MSGraphMail.Categories | String | Categories of the email. | 
 | MSGraphMail.HasAttachments | Boolean | Whether the email has attachments. | 
-| MSGraphMail.Subject | String | The subject of email. | 
+| MSGraphMail.Subject | String | The subject of the email. | 
 | MSGraphMail.IsDraft | Boolean | Whether the email is a draft. | 
 | MSGraphMail.Body | String | The content (body) of the email. | 
-| MSGraphMail.Sender.Name | String | The name of sender. | 
+| MSGraphMail.Sender.Name | String | The name of the sender. | 
 | MSGraphMail.Sender.Address | String | The email address of the sender. | 
 | MSGraphMail.From.Name | String | The name of the user in the 'from' field of the email. | 
 | MSGraphMail.From.Address | String | The email address of the user in the 'from' field of the email | 
@@ -116,19 +117,19 @@ Gets the properties of returned emails.
 ```
 
 ##### Human Readable Output
-### ### Total of 7 of mails received
+##### ### Total of 7 of mails received
 |Subject|From|SendTime|
 |---|---|---|
-| Demo test send mail | Name: demisto dev, Address: dev@demistodev.onmicrosoft.com | 2020-03-29T09:56:37Z |
-| RE: Demo test | Name: demisto dev, Address: dev@demistodev.onmicrosoft.com | 2020-03-29T09:56:18Z |
-| Demo test send mail | Name: demisto dev, Address: dev@demistodev.onmicrosoft.com | 2020-03-29T09:52:59Z |
-| RE: Demo test | Name: demisto dev, Address: dev@demistodev.onmicrosoft.com | 2020-03-29T09:52:41Z |
-| RE: Demo test | Name: demisto dev, Address: dev@demistodev.onmicrosoft.com | 2020-03-29T09:51:06Z |
-| Demo test send mail | Name: demisto dev, Address: dev@demistodev.onmicrosoft.com | 2020-03-29T09:06:54Z |
-| Demo test | Name: demisto dev, Address: dev@demistodev.onmicrosoft.com | 2020-03-26T09:21:14Z |
+| Demo test send mail | Name: demisto dev, Address: dev<span>@demistodev.onmicrosoft.com | 2020-03-29T09:56:37Z |
+| RE: Demo test | Name: demisto dev, Address: dev<span>@demistodev.onmicrosoft.com | 2020-03-29T09:56:18Z |
+| Demo test send mail | Name: demisto dev, Address: dev<span>@demistodev.onmicrosoft.com | 2020-03-29T09:52:59Z |
+| RE: Demo test | Name: demisto dev, Address: dev<span>@demistodev.onmicrosoft.com | 2020-03-29T09:52:41Z |
+| RE: Demo test | Name: demisto dev, Address: dev<span>@demistodev.onmicrosoft.com | 2020-03-29T09:51:06Z |
+| Demo test send mail | Name: demisto dev, Address: dev<span>@demistodev.onmicrosoft.com | 2020-03-29T09:06:54Z |
+| Demo test | Name: demisto dev, Address: dev<span>@demistodev.onmicrosoft.com | 2020-03-26T09:21:14Z |
 
 
-### msgraph-mail-get-email
+### Get the properties of a single email
 ***
 Returns the properties of an email.
 
@@ -143,11 +144,11 @@ Returns the properties of an email.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required | 
+| user_id | The user ID or principal ID (usually an email address in the format someuser<span>@example.com). | Required | 
 | message_id | The message ID. | Required | 
 | folder_id | The folder ID. | Optional | 
-| odata | OData. | Optional | 
-| get_body | Whether to return the message body. Can ge "true" or "false". | Optional | 
+| odata | The OData. | Optional | 
+| get_body | Whether to return the message body. Can be "true" or "false". | Optional | 
 
 
 ##### Context Output
@@ -159,12 +160,12 @@ Returns the properties of an email.
 | MSGraphMail.LastModifiedTime | Date | The time the email was last modified. | 
 | MSGraphMail.ReceivedTime | Date | The time the email was received. | 
 | MSGraphMail.SendTime | Date | The time the email was sent. | 
-| MSGraphMail.Categories | String | Categories of the email. | 
+| MSGraphMail.Categories | String | The categories of the email. | 
 | MSGraphMail.HasAttachments | Boolean | Whether the email has attachments. | 
-| MSGraphMail.Subject | String | The subject of email. | 
+| MSGraphMail.Subject | String | The subject of the email. | 
 | MSGraphMail.IsDraft | Boolean | Whether the email is a draft. | 
 | MSGraphMail.Body | String | The content (body) of the email. | 
-| MSGraphMail.Sender.Name | String | The name of sender. | 
+| MSGraphMail.Sender.Name | String | The name of the sender. | 
 | MSGraphMail.Sender.Address | String | The email address of the sender. | 
 | MSGraphMail.From.Name | String | The name of the user in the 'from' field of the email. | 
 | MSGraphMail.From.Address | String | The email address of the user in the 'from' field of the email. | 
@@ -215,16 +216,16 @@ Returns the properties of an email.
 ```
 
 ##### Human Readable Output
-### Results for message ID ""
+##### Results for message ID ""
 |ID|Subject|SendTime|Sender|From|HasAttachments|Body|
 |---|---|---|---|---|---|---|
-| "" | Demo test | 2020-03-26T09:21:14Z | Name: demisto dev, Address: dev@demistodev.onmicrosoft.com | Name: demisto dev, Address: dev@demistodev.onmicrosoft.com | false |  |
+| "" | Demo test | 2020-03-26T09:21:14Z | Name: demisto dev, Address: dev<span>@demistodev.onmicrosoft.com | Name: demisto dev, Address: dev<span>@demistodev.onmicrosoft.com | false |  |
 
 ##### Required Permissions
 **The following permissions are required for this command:**
 - Mail.ReadWrite (Application)
 
-### msgraph-mail-delete-email
+### Delete an email
 ***
 Deletes an email.
 
@@ -236,9 +237,9 @@ Deletes an email.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required | 
-| message_id | Message ID. | Required | 
-| folder_id | A comma-separated list of folder IDs. For example, mailFolders,childFolders,childFolders. | Optional | 
+| user_id | The user ID or principal ID (usually an email address in the format someuser<span>@example.com). | Required | 
+| message_id | The message ID. | Required | 
+| folder_id | The comma-separated list of folder IDs. For example, "mailFolders,childFolders,childFolders". | Optional | 
 
 
 ##### Context Output
@@ -254,15 +255,15 @@ There is no context output for this command.
 ```
 
 ##### Human Readable Output
-### Message has been deleted successfully
+##### Message has been deleted successfully
 |Message ID|User ID|
 |---|---|
-| "" | dev@demistodev.onmicrosoft.com |
+| "" | dev<span>@demistodev.onmicrosoft.com |
 
 
-### msgraph-mail-list-attachments
+### List attachments of an email
 ***
-Lists all of the attachments of given email
+Lists all of the attachments of a given email.
 
 ##### Required Permissions
 **The following permissions are required for this command:**
@@ -275,9 +276,9 @@ Lists all of the attachments of given email
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required | 
-| message_id | Message ID. | Required | 
-| folder_id |  A comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box).  | Optional | 
+| user_id | The user ID or principal ID (usually an email address in the format someuser<span>@example.com). | Required | 
+| message_id | The message ID. | Required | 
+| folder_id |  The comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box).  | Optional | 
 
 
 ##### Context Output
@@ -312,13 +313,13 @@ Lists all of the attachments of given email
 ```
 
 ##### Human Readable Output
-### Total of 1 attachments found in message "" from user dev@demistodev.onmicrosoft.com
+##### Total of 1 attachments found in message "" from user dev<span>@demistodev.onmicrosoft.com
 |File names|
 |---|
 | test_attachment |
 
 
-### msgraph-mail-get-attachment
+### Get an attachment from an email
 ***
 Gets an attachment from the email.
 
@@ -333,10 +334,10 @@ Gets an attachment from the email.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required | 
-| message_id | Message ID. | Required | 
-| folder_id | A comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box). | Optional | 
-| attachment_id | ID of the attachment. | Required | 
+| user_id | The user ID or principal ID (usually an email address in the format someuser<span>@example.com). | Required | 
+| message_id | The message ID. | Required | 
+| folder_id | The comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box). | Optional | 
+| attachment_id | The ID of the attachment. | Required | 
 
 
 ##### Context Output
@@ -377,9 +378,9 @@ Gets an attachment from the email.
 ```
 
 ##### Human Readable Output
+There is no Human Readable Output.
 
-
-### msgraph-mail-list-folders
+### Get the mail folder list under the root folder
 ***
 Returns the mail folder list directly under the root folder.
 
@@ -395,8 +396,8 @@ Returns the mail folder list directly under the root folder.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required | 
-| limit | The maximum number of mail folder lists to return. Default is 20. | Optional | 
+| user_id | The user ID or principal ID (usually an email address in the format someuser<span>@example.com). | Required | 
+| limit | The maximum number of mail folder lists to return. The default is 20. | Optional | 
 
 
 ##### Context Output
@@ -441,14 +442,16 @@ Returns the mail folder list directly under the root folder.
 ```
 
 ##### Human Readable Output
-### Mail Folder collection under root folder for user dev@demistodev.onmicrosoft.com
+
+##### Mail Folder collection under root folder for user dev<span>@demistodev.onmicrosoft.com
+
 |ChildFolderCount|DisplayName|ID|ParentFolderID|TotalItemCount|UnreadItemCount|
 |---|---|---|---|---|---|
 | 0 | Archive | "" | "" | 0 | 0 |
 | 1 | Conversation History | "" | "" | 0 | 0 |
 
 
-### msgraph-mail-list-child-folders
+### Get the folder list for a folder
 ***
 Returns the folder list under the specified folder.
 
@@ -464,9 +467,9 @@ Returns the folder list under the specified folder.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required | 
+| user_id | The user ID or principal ID (usually an email address in the format someuser<Span>@example.com). | Required | 
 | parent_folder_id | The ID of the parent folder. | Required | 
-| limit | The maximum number of mail folder lists to return. Default is 20. | Optional | 
+| limit | The maximum number of mail folder lists to return. The default is 20. | Optional | 
 
 
 ##### Context Output
@@ -511,16 +514,16 @@ Returns the folder list under the specified folder.
 ```
 
 ##### Human Readable Output
-### Mail Folder collection under inbox folder for user dev@demistodev.onmicrosoft.com
+##### Mail Folder collection under inbox folder for user dev<span>@demistodev.onmicrosoft.com
 |ChildFolderCount|DisplayName|ID|ParentFolderID|TotalItemCount|UnreadItemCount|
 |---|---|---|---|---|---|
 | 0 | child_folder | "" | "" | 0 | 0 |
 | 0 | new_test | "" | "" | 0 | 0 |
 
 
-### msgraph-mail-create-folder
+### Create a new child folder
 ***
-Creates a new folder under specified the specified folder (parent).
+Creates a new folder under the specified folder (parent).
 
 ##### Required Permissions
 **The following permissions are required for this command:**
@@ -533,7 +536,7 @@ Creates a new folder under specified the specified folder (parent).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required | 
+| user_id | The user ID or principal ID (usually an email address in the format someuser<span>@example.com). | Required | 
 | new_folder_name | The display name of the new folder. | Required | 
 | parent_folder_id | The ID of the parent folder under which to create a new folder. | Optional | 
 
@@ -570,14 +573,14 @@ Creates a new folder under specified the specified folder (parent).
 ```
 
 ##### Human Readable Output
-### Mail folder was created with display name: Testing
+##### Mail folder was created with display name: Testing
 |ChildFolderCount|DisplayName|ID|ParentFolderID|TotalItemCount|UnreadItemCount|
 |---|---|---|---|---|---|
 | 0 | Testing | "" | "" | 0 | 0 |
 
 
 
-### msgraph-mail-update-folder
+### Update a folder's properties
 ***
 Updates the properties of the specified folder.
 
@@ -592,7 +595,7 @@ Updates the properties of the specified folder.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required | 
+| user_id | The user ID or principal ID (usually an email address in the format someuser<span>@example.com). | Required | 
 | folder_id | The ID of the folder to update. | Required | 
 | new_display_name | The mail folder display name. | Required | 
 
@@ -629,13 +632,13 @@ Updates the properties of the specified folder.
 ```
 
 ##### Human Readable Output
-### Mail folder "" was updated with display name: new_test
+##### Mail folder "" was updated with display name: new_test
 |ChildFolderCount|DisplayName|ID|ParentFolderID|TotalItemCount|UnreadItemCount|
 |---|---|---|---|---|---|
 | 0 | new_test | "" | "" | 0 | 0 |
 
 
-### msgraph-mail-delete-folder
+### Delete a folder
 ***
 Deletes the specified mail folder.
 
@@ -650,7 +653,7 @@ Deletes the specified mail folder.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required | 
+| user_id | The user ID or principal ID (usually an email address in the format someuser<Span>@example.com). | Required | 
 | folder_id | The ID of the folder to delete. | Required | 
 
 
@@ -670,7 +673,7 @@ There is no context output for this command.
 The folder "" was deleted successfully
 
 
-### msgraph-mail-move-email
+### Move a message to a different folder
 ***
 Moves a message to a different folder.
 
@@ -685,16 +688,16 @@ Moves a message to a different folder.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message_id | Message ID. | Required | 
+| message_id | The message ID. | Required | 
 | destination_folder_id | The ID of the destination folder. | Required | 
-| user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required | 
+| user_id | The user ID or principal ID (usually an email address in the format someuser<span>@example.com). | Required | 
 
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphMail.MovedEmails.DestinationFolderID | String | The folder where the email message was moved. | 
+| MSGraphMail.MovedEmails.DestinationFolderID | String | The folder where the email message was moved to. | 
 | MSGraphMail.MovedEmails.ID | String | The new ID of the moved email message. | 
 | MSGraphMail.MovedEmails.UserID | String | The user ID. | 
 
@@ -713,14 +716,14 @@ Moves a message to a different folder.
 ```
 
 ##### Human Readable Output
-### The email was moved successfully. Updated email data:
+##### The email was moved successfully. Updated email data:
 |DestinationFolderID|ID|UserID|
 |---|---|---|
-| inbox | "" | dev@demistodev.onmicrosoft.com |
+| inbox | "" | dev<span>@demistodev.onmicrosoft.com |
 
 
 
-### msgraph-mail-get-email-as-eml
+### Get an email message by ID and upload the content
 ***
 Retrieves an email message by message ID and uploads the content as an EML file.
 
@@ -735,7 +738,7 @@ Retrieves an email message by message ID and uploads the content as an EML file.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required | 
+| user_id | The user ID or principal ID (usually an email address in the format someuser<span>@example.com). | Required | 
 | message_id | The message ID. | Required | 
 
 
@@ -779,9 +782,9 @@ Retrieves an email message by message ID and uploads the content as an EML file.
 ```
 
 ##### Human Readable Output
+There is No Human Readable Output.
 
-
-### msgraph-mail-create-draft
+### Create a draft message in a user's mailbox
 ***
 Creates a draft message in the specified user's mailbox.
 
@@ -796,18 +799,18 @@ Creates a draft message in the specified user's mailbox.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| to | A comma-separated list of email addresses for the 'to' field. | Optional | 
-| cc | A comma-separated list of email addresses for the 'cc' field. | Optional | 
-| bcc | A comma-separated list of email addresses for the 'bcc' field. | Optional | 
+| to | The comma-separated list of email addresses for the 'to' field. | Optional | 
+| cc | The comma-separated list of email addresses for the 'cc' field. | Optional | 
+| bcc | The comma-separated list of email addresses for the 'bcc' field. | Optional | 
 | subject | The subject for the draft. | Required | 
 | body | The contents (body) of the draft. | Optional | 
-| bodyType | The body type of the email. Can be: "text", or "HTML". | Optional | 
-| flag | The flag value that indicates the status of the draft. Can be: "notFlagged", "complete", or "flagged". | Optional | 
-| importance | The importance of the draft. Can be: "Low", "Normal", or "High". | Optional | 
-| headers | A comma-separated list of additional headers in the format, headerName:headerValue. For example, "headerName1:headerValue1,headerName2:headerValue2". | Optional | 
-| attachIDs | A comma-separated list of War Room entry IDs that contain files, which are used to attach files to the draft. For example, attachIDs=15@8,19@8. | Optional | 
-| attachNames | A comma-separated list of names of attachments to be displayed in the draft. Must be the same number of elements as attachIDs. | Optional | 
-| attachCIDs | A comma-separated list of CIDs to embed attachments within the actual email. | Optional | 
+| bodyType | The body type of the email. Can be, "text", or "HTML". | Optional | 
+| flag | The flag value that indicates the status of the draft. Can be, "notFlagged", "complete", or "flagged". | Optional | 
+| importance | The importance of the draft. Can be, "Low", "Normal", or "High". | Optional | 
+| headers | The comma-separated list of additional headers in the format, "headerName:headerValue". For example, "headerName1:headerValue1,headerName2:headerValue2". | Optional | 
+| attachIDs | The comma-separated list of War Room entry IDs that contain files, which are used to attach files to the draft. For example, "attachIDs=15@8,19@8". | Optional | 
+| attachNames | The comma-separated list of names of attachments to be displayed in the draft. Must be the same number of elements as attachIDs. | Optional | 
+| attachCIDs | The comma-separated list of CIDs to embed attachments within the actual email. | Optional | 
 | from | The email address from which the draft is created. | Required | 
 
 
@@ -871,13 +874,13 @@ Creates a draft message in the specified user's mailbox.
 ```
 
 ##### Human Readable Output
-### Created draft with id: ""
+##### Created draft with id: ""
 |ID|From|Sender|To|Subject|Body|BodyType|Cc|Bcc|Headers|Importance|MessageID|ConversationID|CreatedTime|SentTime|ReceivedTime|ModifiedTime|IsDraft|IsRead|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| "" |  |  | dev@demistodev.onmicrosoft.com | This is a draft | This is a body | text |  |  |  | low | <AM6PR07MB44530DA96C2DF255705F30FD83CA0@AM6PR07MB4453.eurprd07.prod.outlook.com> | "" | 2020-03-29T09:57:38Z | 2020-03-29T09:57:38Z | 2020-03-29T09:57:38Z | 2020-03-29T09:57:38Z | true | true |
+| "" |  |  | dev<span>@demistodev.onmicrosoft.com | This is a draft | This is a body | text |  |  |  | low | <AM6PR07MB44530DA96C2DF255705F30FD83CA0@AM6PR07MB4453.eurprd07.prod.outlook.<span>com> | "" | 2020-03-29T09:57:38Z | 2020-03-29T09:57:38Z | 2020-03-29T09:57:38Z | 2020-03-29T09:57:38Z | true | true |
 
 
-### send-mail
+### Send an email
 ***
 Sends an email using Microsoft Graph.
 
@@ -892,18 +895,18 @@ Sends an email using Microsoft Graph.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| to | A comma-separated list of email addresses for the 'to' field. | Optional | 
-| cc | A comma-separated list of email addresses for the 'cc' field. | Optional | 
-| bcc | A comma-separated list of email addresses for the 'bcc' field. | Optional | 
+| to | The comma-separated list of email addresses for the 'to' field. | Optional | 
+| cc | The comma-separated list of email addresses for the 'cc' field. | Optional | 
+| bcc | The comma-separated list of email addresses for the 'bcc' field. | Optional | 
 | subject | The subject of the email. | Required | 
 | body | The contents (body) of the email. | Optional | 
-| bodyType | The body type of the email. Can be: "text", or "HTML". | Optional | 
-| flag | The flag value that indicates the status for the email. Can be: "notFlagged", "complete", or "flagged". | Optional | 
-| importance | The importance of the email. Can be: "Low", "Normal", or "High". | Optional | 
-| headers | A comma-separated list of additional headers in the format: headerName:headerValue. For example: "headerName1:headerValue1,headerName2:headerValue2". | Optional | 
-| attachIDs | A comma-separated list of War Room entry IDs that contain files, which are used to attach files for the email to send. For example, attachIDs=15@8,19@8. | Optional | 
-| attachNames | A comma-separated list of names of attachments to display in the email to send. Must be the same number of elements as attachIDs. | Optional | 
-| attachCIDs | A comma-separated list of CIDs to embed attachments within the actual email. | Optional | 
+| bodyType | The body type of the email. Can be, "text" or "HTML". | Optional | 
+| flag | The flag value that indicates the status for the email. Can be, "notFlagged", "complete", or "flagged". | Optional | 
+| importance | The importance of the email. Can be, "Low", "Normal", or "High". | Optional | 
+| headers | The comma-separated list of additional headers in the format: "headerName:headerValue". For example, "headerName1:headerValue1,headerName2:headerValue2". | Optional | 
+| attachIDs | The comma-separated list of War Room entry IDs that contain files, which are used to attach files for the email to send. For example, attachIDs=15@8,19@8. | Optional | 
+| attachNames | The comma-separated list of names of attachments to display in the email to send. It must have the same number of elements as attachIDs. | Optional | 
+| attachCIDs | The comma-separated list of CIDs to embed attachments within the actual email. | Optional | 
 | from | The email address from which to send the email. | Optional | 
 
 
@@ -948,15 +951,15 @@ Sends an email using Microsoft Graph.
 ```
 
 ##### Human Readable Output
-### Email was sent successfully.
+##### Email was sent successfully.
 |body|flag|importance|subject|toRecipients|
 |---|---|---|---|---|
-| content: contentType: text | flagStatus: notFlagged | Low | Demo test send mail | dev@demistodev.onmicrosoft.com |
+| content: contentType: text | flagStatus: notFlagged | Low | Demo test send mail | dev<span>@demistodev.onmicrosoft.com |
 
 
-### msgraph-mail-reply-to
+### Reply to a message
 ***
-The replies to the recipients of a message.
+Replies to the recipients of a message.
 
 ##### Required Permissions
 **The following permissions are required for this command:**
@@ -971,7 +974,7 @@ The replies to the recipients of a message.
 | --- | --- | --- |
 | ID | The ID of the message. | Required | 
 | body | The comment of the replied message. | Required | 
-| to | A comma-separated list of email addresses for the 'to' field. | Required | 
+| to | The comma-separated list of email addresses for the 'to' field. | Required | 
 | from | The email address from which to reply. | Required | 
 
 
@@ -988,9 +991,9 @@ There is no context output for this command.
 ```
 
 ##### Human Readable Output
-### Replied to: dev@demistodev.onmicrosoft.com with comment: reply_body
+##### Replied to: dev<span>@demistodev.onmicrosoft.com with comment: reply_body
 
-### msgraph-mail-send-draft
+### Send a draft email
 ***
 Sends a draft email using Microsoft Graph.
 
@@ -1022,5 +1025,4 @@ There is no context output for this command.
 ```
 
 ##### Human Readable Output
-### Draft with: "" id was sent successfully.
-
+##### Draft with: "" id was sent successfully.
