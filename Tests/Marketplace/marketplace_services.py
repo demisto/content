@@ -113,7 +113,7 @@ class Pack(object):
     USER_METADATA = "pack_metadata.json"
     METADATA = "metadata.json"
     AUTHOR_IMAGE_NAME = "Author_image.png"
-    EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS]
+    EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS.value]
 
     def __init__(self, pack_name, pack_path):
         self._pack_name = pack_name
