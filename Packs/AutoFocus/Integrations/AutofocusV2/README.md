@@ -70,7 +70,7 @@ Searches for samples. To view results run the `autofocus-samples-search-results`
 | domain | The domain to search. | Optional | 
 | ip | The IP address to search. | Optional | 
 | url | The URL to search. | Optional | 
-| artifact | Whether artifacts of samples should be returned. | Optional | 
+| artifact | Whether to return artifacts of samples. | Optional | 
 | wildfire_verdict | The WildFire verdict. Can be "Malware", "Grayware", "Benign", or "Phishing". | Optional | 
 | first_seen | The date range of the creation date. Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end. Example: 2019-09-09T00:00:00,2019-09-09T23:01:59 | Optional | 
 | last_updated | The date range of the last updated date. Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end. Example: 2019-09-09T00:00:00,2019-09-09T23:01:59 | Optional | 
@@ -213,7 +213,7 @@ Returns the results of a previous samples search.
 | AutoFocus.SamplesSearch.Artifact.m | Number | How many set the artifact as malicious. | 
 | AutoFocus.SamplesSearch.Artifact.confidence | String | How confident the decision. | 
 | AutoFocus.SamplesSearch.Artifact.indicator | String | The indicator that was tested. | 
-| AutoFocus.SamplesSearch.Artifact.indicator_type | String | The type of the indicator e.g. : Mutex, User agent, IPv4, Domain. | 
+| AutoFocus.SamplesSearch.Artifact.indicator_type | String | The indicator type, for example: Mutex, User agent, IPv4, Domain. | 
 | File.Size | Number | The size of the file in bytes. | 
 | File.SHA1 | String | The SHA1 hash of the file. | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
