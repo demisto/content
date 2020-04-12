@@ -2,6 +2,7 @@ id: Isolate Endpoint - Cybereason
 version: -1
 fromversion: 4.5.0
 name: Isolate Endpoint - Cybereason
+description: This playbook accepts an hostname and performs isolation on this endpoint.
 starttaskid: '0'
 tasks:
   '0':
