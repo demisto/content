@@ -146,11 +146,12 @@ def test_module(client, params) -> str:
     return 'ok'
 
 
-def fetch_indicators_command(client: Client, indicator_type: str, **kwargs) -> Union[Dict, List[Dict]]:
+def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list, **kwargs) -> Union[Dict, List[Dict]]:
     """
     Fetches the indicators from client.
     :param client: Client of a JSON Feed
     :param indicator_type: the default indicator type
+    :param feedTags: the indicator tags
     """
     indicators = []
     for result in client.build_iterator(**kwargs):
@@ -165,7 +166,7 @@ def fetch_indicators_command(client: Client, indicator_type: str, **kwargs) -> U
                 if not current_indicator_type:
                     continue
 
-                indicator = {'value': indicator_value, 'type': current_indicator_type, 'fields': {}}
+                indicator = {'value': indicator_value, 'type': current_indicator_type, 'fields': {'tags': feedTags}}
 
                 attributes = {'source_name': service_name, 'value': indicator_value,
                               'type': current_indicator_type}
@@ -225,6 +226,7 @@ def feed_main(params, feed_name, prefix):
 
     client = Client(**params)
     indicator_type = params.get('indicator_type')
+    feedTags = argToList(params.get('feedTags'))
     command = demisto.command()
     if prefix and not prefix.endswith('-'):
         prefix += '-'
@@ -235,14 +237,14 @@ def feed_main(params, feed_name, prefix):
             return_outputs(test_module(client, params))
 
         elif command == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, indicator_type)
+            indicators = fetch_indicators_command(client, indicator_type, feedTags)
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
 
         elif command == f'{prefix}get-indicators':
             # dummy command for testing
             limit = int(demisto.args().get('limit', 10))
-            indicators = fetch_indicators_command(client, indicator_type)[:limit]
+            indicators = fetch_indicators_command(client, indicator_type, feedTags)[:limit]
             hr = tableToMarkdown('Indicators', indicators, headers=['value', 'type', 'rawJSON'])
             return_outputs(hr, {}, indicators)
 
