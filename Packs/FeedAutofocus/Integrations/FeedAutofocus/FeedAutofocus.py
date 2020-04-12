@@ -26,6 +26,26 @@ af_indicator_type_to_demisto = {
     'IPv4': FeedIndicatorType.IP
 }
 
+VERDICTS_TO_DBOTSCORE = {
+    '0': 1,
+    '1': 3,
+    '2': 2,
+    '4': 3,
+}
+
+VERDICTS_TO_TEXT = {
+    '0': 'benign',
+    '1': 'malware',
+    '2': 'grayware',
+    '4': 'phishing',
+}
+
+CONFIDENCE_TO_DBOTSCORE = {
+    'interesting': 2,
+    'suspect': 3,
+    'highly_suspect': 3
+}
+
 
 def datetime_to_epoch(dt_to_convert):
     delta_from_epoch_base = dt_to_convert - EPOCH_BASE
@@ -206,7 +226,7 @@ class Client(BaseClient):
         raw_json_data['ssdeep'] = full_sample_json.get('ssdeep')
         raw_json_data['imphash'] = full_sample_json.get('imphash')
         raw_json_data['autofocus_filetype'] = full_sample_json.get('filetype')
-        raw_json_data['autofocus_malware'] = full_sample_json.get('malware', 0)
+        raw_json_data['autofocus_malware'] = VERDICTS_TO_TEXT.get(full_sample_json.get('malware'))
 
         fields_mapping = {
             'md5': full_sample_json.get('md5'),
@@ -217,7 +237,7 @@ class Client(BaseClient):
             'ssdeep': full_sample_json.get('ssdeep'),
             'imphash': full_sample_json.get('imphash'),
             'filetype': full_sample_json.get('filetype'),
-            'threattype': full_sample_json.get('tag_groups'),
+            'threattypes': {'threatcategory': full_sample_json.get('tag_groups')},
             'creationdate': raw_json_data.get('autofocus_create_date'),
         }
 
@@ -226,7 +246,8 @@ class Client(BaseClient):
                 'value': raw_json_data['value'],
                 'type': raw_json_data['type'],
                 'rawJSON': raw_json_data,
-                'fields': fields_mapping
+                'fields': fields_mapping,
+                'score': VERDICTS_TO_DBOTSCORE.get(full_sample_json.get('malware'), 0)
             }
         ]
 
@@ -256,10 +277,19 @@ class Client(BaseClient):
             indicator_value, port = indicator_value.split(':', 1)
             raw_json_data['autofocus_port'] = port
 
+        fields_mapping = {
+            'firstseenbysource': raw_json_data.get('autofocus_create_date'),
+            'region': raw_json_data.get('autofocus_region'),
+            'tags': raw_json_data.get('autofocus_tags'),
+            'threattypes': {'threatcategory': raw_json_data.get('autofocus_tags_groups')}
+        }
+
         return {
             'value': raw_json_data['value'],
             'type': raw_json_data['type'],
-            'rawJSON': raw_json_data
+            'rawJSON': raw_json_data,
+            'fields': fields_mapping,
+            'score': CONFIDENCE_TO_DBOTSCORE.get(artifact.get('confidence'), 0)
         }
 
     @staticmethod
