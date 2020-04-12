@@ -1,6 +1,7 @@
 ## [Unreleased]
--
-
+* Added the ***aws-ec2-delete-subnets***, ***aws-ec2-describe-internet-gateway***, 
+ ***aws-ec2-detach-internet-gateway***, ***aws-ec2-delete-internet-gateway***,
+ ***aws-ec2-create-traffic-mirror-session*** and ***aws-ec2-delete-vpc*** commands.
 
 ## [20.3.4] - 2020-03-30
 * Improved handling of error messages.
