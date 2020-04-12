@@ -1,5 +1,5 @@
 ## [Unreleased]
-  - Added token parameter
+Added the *token* parameter to the integration instance configuration.
 
 ## [19.11.0] - 2019-11-12
   - Fixed an issue where events were not fetched properly.
