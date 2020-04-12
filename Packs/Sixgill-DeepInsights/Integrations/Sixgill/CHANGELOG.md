@@ -1,11 +1,11 @@
 ## [Unreleased]
-- Updated Readme
-- Updated Integration DockerImage
-- Allow Proxy use
-- Updated Test
-- Changed picture
-- Removed get-indicators command
-- Removed playbooks that used get-indicators command
+  - Updated the README.
+  - Updated the integration Docker image.
+  - Added support to use proxies.
+  - Updated tests.
+  - Updated the integration logo.
+  - Removed the ***get-indicators*** command.
+  - Removed playbooks that used the ***get-indicators*** command.
 
 ## [20.2.0] - 2020-02-04
 
