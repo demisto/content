@@ -32,7 +32,7 @@ This integration was integrated and tested with the fully-hosted SaaS implementa
     * __Fetch incidents__: Check this box to enable fetching of incidents
     * __Incident type__: Select which Demisto incident type to map ingested Code42 alerts to
     * __Alert severities to fetch when fetching incidents__: If desired, select which Alert severities to ingest.
-    * __First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)__: When first run, how long to go back to retrieve alerts.
+    * __First fetch time range (&lt;number&gt; &lt;time unit&gt;, e.g., 1 hour, 30 minutes)__: When first run, how long to go back to retrieve alerts.
     * __Alerts to fetch per run; note that increasing this value may result in slow performance if too many results are returned at once__: Alerts to fetch and process per run. Setting this value too high may have a negative impact on performance.
     * __Include the list of files in returned incidents.__: If checked, will also fetch the file events associated with the alert.
 4. Click __Test__ to validate the URLs, token, and connection.

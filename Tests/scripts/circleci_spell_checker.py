@@ -2,8 +2,8 @@ import re
 import sys
 
 from Tests.scripts.spell_checker import spell_checker
-from Tests.test_utils import run_command, checked_type
-from Tests.scripts.constants import SPELLCHECK_FILE_TYPES, DESCRIPTION_REGEX
+from demisto_sdk.commands.common.tools import run_command, checked_type
+from demisto_sdk.commands.common.constants import SPELLCHECK_FILE_TYPES, DESCRIPTION_REGEX
 
 
 def get_modified_files(files_string):
