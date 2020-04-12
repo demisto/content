@@ -1,6 +1,5 @@
 import json
 import os
-import sys
 import subprocess
 import fnmatch
 import shutil
