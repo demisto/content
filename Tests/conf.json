@@ -1822,7 +1822,8 @@
         {
             "integrations": "GooglePubSub",
             "playbookID": "GooglePubSub_Test",
-            "nightly": true
+            "nightly": true,
+            "fromversion": "5.0.0"
         },
         {
             "playbookID": "Calculate Severity - Generic v2 - Test",

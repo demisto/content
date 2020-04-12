@@ -186,12 +186,12 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoogleCloudPubSub.PublishedMessages.MessageID
+              simple: GoogleCloudPubSubPublishedMessages.messageId
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoogleCloudPubSub.PublishedMessages.Topic
+              simple: GoogleCloudPubSubPublishedMessages.topic
             iscontext: true
     view: |-
       {
@@ -445,17 +445,17 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: GoogleCloudPubSubSubscriptions.Messages.data
+              simple: GoogleCloudPubSubPulledMessages.data
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoogleCloudPubSubSubscriptions.Messages.messageId
+              simple: GoogleCloudPubSubPulledMessages.messageId
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoogleCloudPubSubSubscriptions.Messages.publishTime
+              simple: GoogleCloudPubSubPulledMessages.publishTime
             iscontext: true
     view: |-
       {

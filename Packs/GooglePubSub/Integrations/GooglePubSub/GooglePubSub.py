@@ -212,13 +212,6 @@ class PubSubClient(BaseGoogleClient):
         )
 
 
-def publish_datetime_to_str(publish_time):
-    try:
-        return publish_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-    except ValueError:
-        return publish_time.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-
 """ HELPER FUNCTIONS"""
 
 
@@ -258,12 +251,24 @@ def message_to_incident(message):
     incident = {
         "name": f'Google PubSub Message {message.get("messageId")}',
         "rawJSON": json.dumps(message),
-        "occurred": publish_datetime_to_str(dateparser.parse(message.get("publishTime")))
+        "occurred": convert_publish_datetime_to_str(dateparser.parse(message.get("publishTime")))
     }
     return incident
 
 
-def attribute_pairs_to_dict(attrs_str: str, delim_char: str = ";"):
+def convert_publish_datetime_to_str(publish_time):
+    """
+    Converts datetime to str in "%Y-%m-%dT%H:%M:%S.%fZ" format
+    :param publish_time: Datetime
+    :return: date str in "%Y-%m-%dT%H:%M:%S.%fZ" format
+    """
+    try:
+        return publish_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+    except ValueError:
+        return publish_time.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def attribute_pairs_to_dict(attrs_str: str, delim_char: str = ","):
     """
     Transforms a string of multiple inputs to a dictionary list
 
@@ -358,16 +363,17 @@ def publish_message_command(
 
     output = []
     for msg_id in published_messages["messageIds"]:
-        output.append({"Topic": topic_id, "MessageID": msg_id})
+        output.append({"topic": topic_id, "messageId": msg_id, "data": data, "attributes": body.get('attributes')})
 
     ec = {
-        "GoogleCloudPubSub.PublishedMessages(val.messageId === obj.messageId)": output
+        "GoogleCloudPubSubPublishedMessages(val.messageId === obj.messageId)": output
     }
     return (
         tableToMarkdown(
             "Google Cloud PubSub has published the message successfully",
-            published_messages,
+            output,
             removeNull=True,
+            headerTransform=pascalToSpace
         ),
         ec,
         published_messages,
@@ -419,7 +425,7 @@ def pull_messages_command(
     if "receivedMessages" in raw_msgs:
         acknowledges, msgs = extract_acks_and_msgs(raw_msgs)
         ec = {
-            f"GoogleCloudPubSubSubscriptions.Messages(val && val.messageId === obj.messageId)": msgs
+            f"GoogleCloudPubSubPulledMessages(val && val.messageId === obj.messageId)": msgs
         }
         if ack == "true":
             client.ack_messages(full_subscription_name, acknowledges)
@@ -435,18 +441,22 @@ def extract_acks_and_msgs(raw_msgs):
     """
     msg_list = []
     acknowledges = []
-    for raw_msg in raw_msgs["receivedMessages"]:
-        msg = raw_msg.get("message", {})
-        decoded_data = str(base64.b64decode(str(msg.get("data"))))[2:-1]
-        try:
-            decoded_data = json.loads(decoded_data)
-        except Exception:
-            # display message with b64 value
-            pass
+    if isinstance(raw_msgs, dict):
+        rcvd_msgs = raw_msgs.get("receivedMessages", [])
+        for raw_msg in rcvd_msgs:
+            msg = raw_msg.get("message", {})
+            decoded_data = str(msg.get("data", ''))
+            try:
+                decoded_data = str(base64.b64decode(decoded_data))[2:-1]
+            except Exception:
+                # display message with b64 value
+                pass
 
-        msg["data"] = decoded_data
-        msg_list.append(msg)
-        acknowledges.append(raw_msg["ackId"])
+            msg["data"] = decoded_data
+            msg_list.append(msg)
+            ack_id = raw_msg.get("ackId")
+            if ack_id:
+                acknowledges.append(ack_id)
     return acknowledges, msg_list
 
 

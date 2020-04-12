@@ -1,5 +1,4 @@
 category: Messaging
-fromversion: 5.0.0
 commonfields:
   id: GooglePubSub
   version: -1
@@ -31,14 +30,14 @@ configuration:
   name: default_subscription
   required: false
   type: 0
-- display: Fetch Incidents Project ID
-  additionalinfo: ID of the project from which the subscription is receiving messages.
+- additionalinfo: ID of the project from which the subscription is receiving messages.
+  display: Fetch Incidents Project ID
   hidden: false
   name: default_project
   required: false
   type: 0
-- defaultvalue: '50'
-  additionalinfo: Max numbers of incidents created per fetch.
+- additionalinfo: Max numbers of incidents created per fetch.
+  defaultvalue: '50'
   display: Max Incidents Per Fetch
   hidden: false
   name: default_max_msgs
@@ -70,14 +69,14 @@ script:
       name: page_token
       required: false
       secret: false
-    outputs:
-    - contextPath: GoogleCloudPubSub.Topics.name
-      description: 'Name of the topic'
-      type: String
     deprecated: false
     description: Get a list of the project's topics.
     execution: false
     name: google-cloud-pubsub-topics-list
+    outputs:
+    - contextPath: GoogleCloudPubSub.Topics.name
+      description: Name of the topic
+      type: String
   - arguments:
     - default: false
       description: ID of the topic e.g. "projects/{project_id}/topics/topic_id".
@@ -105,17 +104,23 @@ script:
       name: project_id
       required: true
       secret: false
-    outputs:
-    - contextPath: GoogleCloudPubSub.PublishedMessages.MessageID
-      description: 'ID of the published message'
-      type: String
-    - contextPath: GoogleCloudPubSub.PublishedMessages.Topic
-      description: 'Topic of the published message'
-      type: String
     deprecated: false
     description: Publish a message in a topic.
     execution: false
     name: google-cloud-pubsub-topic-publish-message
+    outputs:
+    - contextPath: GoogleCloudPubSubPublishedMessages.messageId
+      description: ID of the published message
+      type: String
+    - contextPath: GoogleCloudPubSubPublishedMessages.topic
+      description: Topic of the published message
+      type: String
+    - contextPath: GoogleCloudPubSubPublishedMessages.data
+      description: Text data of the published message.
+      type: String
+    - contextPath: GoogleCloudPubSubPublishedMessages.attributes
+      description: The message attributes.
+      type: Unknown
   - arguments:
     - default: false
       description: ID of the project from which the subscription is receiving messages.
@@ -129,27 +134,28 @@ script:
       name: subscription_id
       required: true
       secret: false
+    deprecated: false
+    description: Get subscription details by subscription ID.
+    execution: false
+    name: google-cloud-pubsub-topic-subscription-get-by-name
     outputs:
     - contextPath: GoogleCloudPubSubSubscriptions.ackDeadlineSeconds
       description: The amount of time Pub/Sub waits for the subscriber to acknowledge
         receipt before resending the message.
       type: Number
     - contextPath: GoogleCloudPubSubSubscriptions.expirationPolicy.ttl
-      description: 'The "time-to-live" duration for the subscription.'
+      description: The "time-to-live" duration for the subscription.
       type: String
     - contextPath: GoogleCloudPubSubSubscriptions.messageRetentionDuration
-      description: How long to retain unacknowledged messages in the subscription's backlog
+      description: How long to retain unacknowledged messages in the subscription's
+        backlog
       type: String
     - contextPath: GoogleCloudPubSubSubscriptions.name
-      description: 'Name of the subscription'
+      description: Name of the subscription
       type: String
     - contextPath: GoogleCloudPubSubSubscriptions.topic
-      description: 'Name of the topic from which the subscription is receiving messages'
+      description: Name of the topic from which the subscription is receiving messages
       type: String
-    deprecated: false
-    description: Get subscription details by subscription ID.
-    execution: false
-    name: google-cloud-pubsub-topic-subscription-get-by-name
   - arguments:
     - default: false
       description: ID of the project from which the subscription is receiving messages.
@@ -175,6 +181,10 @@ script:
       name: page_token
       required: false
       secret: false
+    deprecated: false
+    description: Get a list of subscriptions by project ID or topic ID.
+    execution: false
+    name: google-cloud-pubsub-topic-subscriptions-list
     outputs:
     - contextPath: GoogleCloudPubSubSubscriptions.ackDeadlineSeconds
       description: The amount of time Pub/Sub waits for the subscriber to acknowledge
@@ -184,7 +194,8 @@ script:
       description: The "time-to-live" duration for the subscription
       type: String
     - contextPath: GoogleCloudPubSubSubscriptions.messageRetentionDuration
-      description: How long to retain unacknowledged messages in the subscription's backlog
+      description: How long to retain unacknowledged messages in the subscription's
+        backlog
       type: String
     - contextPath: GoogleCloudPubSubSubscriptions.name
       description: Name of the subscription
@@ -195,10 +206,6 @@ script:
     - contextPath: GoogleCloudPubSubSubscriptions.pushConfig.pushEndpoint
       description: A URL locating the endpoint to which messages should be pushed.
       type: String
-    deprecated: false
-    description: Get a list of subscriptions by project ID or topic ID.
-    execution: false
-    name: google-cloud-pubsub-topic-subscriptions-list
   - arguments:
     - default: false
       description: Project ID to pull messages from.
@@ -231,20 +238,23 @@ script:
       - 'true'
       required: false
       secret: false
-    outputs:
-    - contextPath: GoogleCloudPubSubSubscriptions.Messages.data
-      description: Text data of the message
-      type: String
-    - contextPath: GoogleCloudPubSubSubscriptions.Messages.messageId
-      description: ID of the message
-      type: String
-    - contextPath: GoogleCloudPubSubSubscriptions.Messages.publishTime
-      description: The time the message was published
-      type: Date
     deprecated: false
     description: Pull messages that were published.
     execution: false
     name: google-cloud-pubsub-topic-messages-pull
+    outputs:
+    - contextPath: GoogleCloudPubSubPulledMessages.data
+      description: Text data of the pulled message.
+      type: String
+    - contextPath: GoogleCloudPubSubPulledMessages.messageId
+      description: ID of the message
+      type: String
+    - contextPath: GoogleCloudPubSubPulledMessages.publishTime
+      description: The time the message was published
+      type: Date
+    - contextPath: GoogleCloudPubSubPulledMessages.attributes
+      description: The message attributes.
+      type: Unknown
   - arguments:
     - default: false
       description: ID of the project from which the subscription is receiving messages.
@@ -316,6 +326,10 @@ script:
       name: expiration_ttl
       required: false
       secret: false
+    deprecated: false
+    description: Create a pull or push subscription.
+    execution: false
+    name: google-cloud-pubsub-topic-subscription-create
     outputs:
     - contextPath: GoogleCloudPubSubSubscriptions.ackDeadlineSeconds
       description: The amount of time Pub/Sub waits for the subscriber to acknowledge
@@ -337,10 +351,6 @@ script:
     - contextPath: GoogleCloudPubSubSubscriptions.ProjectName
       description: Name of the project from which the subscription is receiving messages
       type: String
-    deprecated: false
-    description: Create a pull or push subscription.
-    execution: false
-    name: google-cloud-pubsub-topic-subscription-create
   dockerimage: demisto/googleapi-python3:1.0.0.6696
   feed: false
   isfetch: true
@@ -350,3 +360,4 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 5.0.0
