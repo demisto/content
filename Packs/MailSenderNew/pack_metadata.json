@@ -11,7 +11,6 @@
         "Messaging"
     ],
     "tags": [
-        ""
     ],
     "created": "2020-04-12T13:51:32Z",
     "updated": "2020-04-12T13:51:32Z",
@@ -20,6 +19,6 @@
     "certification": "certified",
     "useCases": [],
     "keywords": [],
-    "price": "",
+    "price": "0",
     "dependencies": {}
 }
