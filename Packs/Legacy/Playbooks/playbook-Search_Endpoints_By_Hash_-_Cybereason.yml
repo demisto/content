@@ -2,7 +2,7 @@ id: Search Endpoints By Hash - Cybereason
 version: -1
 fromversion: 3.5.0
 name: Search Endpoints By Hash - Cybereason
-description: This playbook uses the Cybereason integration to see which endpoints were affected by the existence of a certain hash..
+description: This playbook uses the Cybereason integration to see which endpoints were affected by the existence of a certain hash.
 starttaskid: '0'
 tasks:
   '0':
@@ -106,7 +106,7 @@ tasks:
       id: b597f784-7966-4eb9-889a-4176205b9b1a
       version: -1
       name: Hunt for devices infected with the MD5
-      description: Checks if the hash exists on the organization endpoints.
+      description: Checks if the hash exists on any of the endpoints in the organization.
       script: '|||cybereason-query-file'
       type: regular
       iscommand: true
@@ -260,7 +260,7 @@ tasks:
       id: ead67021-31b1-468d-8bf2-930a38e067f2
       version: -1
       name: Hunt for devices infected with the SHA1
-      description: Checks if the hash exists on the organization endpoints.
+      description: Checks if the hash exists on any endpoints in the organization.
       script: '|||cybereason-query-file'
       type: regular
       iscommand: true
