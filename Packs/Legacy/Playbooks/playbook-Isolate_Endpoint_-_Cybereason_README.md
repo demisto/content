@@ -1,4 +1,4 @@
-This playbook isolates a given endpoint using Cybereason integration.
+This playbook isolates a given endpoint using the Cybereason integration.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
