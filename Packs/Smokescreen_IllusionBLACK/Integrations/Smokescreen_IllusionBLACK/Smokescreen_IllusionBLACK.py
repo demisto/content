@@ -166,7 +166,7 @@ class Client(BaseClient):
             to_time: ISO-8601 formatted datetime string of the ending time in the filter
         Returns: A tuple with raw events and threat parse data corresponding to the events
         """
-        raw_events, raw_threat_parse, offset = [], {}, 0
+        raw_events, raw_threat_parse, offset = [], {}, 0    # type: ignore
         while True:
             response = self._http_request(
                 method="GET",

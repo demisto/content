@@ -74,9 +74,6 @@ script:
     execution: false
     name: illusionblack-is-host-decoy
     outputs:
-    - contextPath: IllusionBlack.IsHostDecoy
-      description: A mapping of a host and whether it's an IllusionBLACK network decoy.
-      type: Unknown
     - contextPath: IllusionBlack.IsHostDecoy.Host
       description: The IP address or hostname submitted to IllusionBLACK to check.
       type: String
@@ -95,9 +92,6 @@ script:
     execution: false
     name: illusionblack-is-user-decoy
     outputs:
-    - contextPath: IllusionBlack.IsUserDecoy
-      description: A mapping of a user and whether it's an IllusionBLACK AD user decoy.
-      type: Unknown
     - contextPath: IllusionBlack.IsUserDecoy.User
       description: The AD username submitted to IllusionBLACK to check.
       type: String
@@ -116,9 +110,6 @@ script:
     execution: false
     name: illusionblack-is-subdomain-decoy
     outputs:
-    - contextPath: IllusionBlack.IsSubdomainDecoy
-      description: A mapping of a subdomain and whether it's an IllusionBLACK TI decoy.
-      type: Unknown
     - contextPath: IllusionBlack.IsSubdomainDecoy.Subdomain
       description: The subdomain submitted to IllusionBLACK to check.
       type: String
