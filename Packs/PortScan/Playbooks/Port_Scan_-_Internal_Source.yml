@@ -1549,8 +1549,8 @@ tasks:
       id: 205a206f-0abd-4863-8110-30f4a80230ed
       version: -1
       name: Save user info and manager email in incident fields
-      description: Saves the user's email address and display name to the Employee Email and Employee Display Name fields, respectively,
-      and the user's manager email is saved to the Employee Manager Email field.
+      description: "Saves the user's email address and display name to the Employee Email and Employee Display Name fields, respectively,\
+      \and the user's manager email is saved to the Employee Manager Email field."
       script: Builtin|||setIncident
       type: regular
       iscommand: true
