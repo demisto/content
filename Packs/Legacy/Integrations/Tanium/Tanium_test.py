@@ -21,7 +21,7 @@ RESULT_DICT_1 = [
 RESULT_DICT_2 = [
     {
         "header1": "col1",
-        "header2": "\"col2_1 col2_2\"",
+        "header2": "col2_1 col2_2",
         "header3": "col3"
     },
     {

@@ -43,6 +43,13 @@ def gather_line(lines, total_column_num, current_line):
         current_line += 1
         line_below = lines[current_line].split(',')
         line_values[-1] = line_values[-1] + " " + line_below[0]
+
+        if line_values[-1].startswith('\"'):
+            line_values[-1] = line_values[-1][1:]
+
+        if line_values[-1].endswith('\"'):
+            line_values = line_values[-1][:-1]
+
         if len(line_below) == 1:
             continue
 
