@@ -83,7 +83,7 @@ class Client(BaseClient):
                                          enc_key=self.enc_key,
                                          app_name=APP_NAME,
                                          base_url=base_url,
-                                         grant_type = AUTHORIZATION_CODE,
+                                         grant_type=AUTHORIZATION_CODE,
                                          verify=verify,
                                          proxy=proxy,
                                          refresh_token=self.refresh_token,
@@ -201,7 +201,7 @@ def get_start_or_stop_subscription_context(content_type, start_or_stop):
 
 def start_or_stop_subscription_command(client, args, start_or_stop):
     content_type = args.get('content_type')
-    res = client.start_or_stop_subscription_request(content_type, start_or_stop)
+    client.start_or_stop_subscription_request(content_type, start_or_stop)
     human_readable = get_start_or_stop_subscription_human_readable(content_type, start_or_stop)
     entry_context = get_start_or_stop_subscription_context(content_type, start_or_stop)
 
@@ -326,15 +326,19 @@ def record_types_to_type_ids(record_types_to_fetch):
     return record_type_ids_to_fetch
 
 
-def does_record_match_filters(record, filter_accepted_record_type_ids, filter_accepted_workloads, filter_accepted_operations):
+def does_record_match_filters(record, filter_accepted_record_type_ids, filter_accepted_workloads,
+                              filter_accepted_operations):
     should_filter_by_record_types = filter_accepted_record_type_ids is not None
-    record_matches_record_type_filter = not should_filter_by_record_types or record.get('RecordType') in filter_accepted_record_type_ids
+    record_matches_record_type_filter = not should_filter_by_record_types or record.get('RecordType') in \
+        filter_accepted_record_type_ids
 
     should_filter_by_workloads = filter_accepted_workloads is not None
-    record_matches_workloads_filter = not should_filter_by_workloads or record.get('Workload') in filter_accepted_workloads
+    record_matches_workloads_filter = not should_filter_by_workloads or record.get('Workload') in \
+        filter_accepted_workloads
 
     should_filter_by_operations = filter_accepted_operations is not None
-    record_matches_operations_filter = not should_filter_by_operations or record.get('Operation') in filter_accepted_operations
+    record_matches_operations_filter = not should_filter_by_operations or record.get('Operation') in \
+        filter_accepted_operations
 
     return record_matches_record_type_filter and record_matches_workloads_filter and record_matches_operations_filter
 
@@ -351,7 +355,8 @@ def filter_records(content_records, filter_data):
 
     filtered_records = []
     for record in content_records:
-        if does_record_match_filters(record, filter_accepted_record_type_ids, filter_accepted_workloads, filter_accepted_operations):
+        if does_record_match_filters(record, filter_accepted_record_type_ids, filter_accepted_workloads,
+                                     filter_accepted_operations):
             filtered_records.append(record)
     return filtered_records
 
@@ -411,7 +416,8 @@ def get_fetch_start_and_end_time(last_run, first_fetch_datetime):
 
 def get_all_content_records_of_specified_types(client, content_types_to_fetch, start_time, end_time):
     all_content_records = []
-    content_types_to_fetch = content_types_to_fetch.split(',') if type(content_types_to_fetch) is str else content_types_to_fetch
+    content_types_to_fetch = content_types_to_fetch.split(',') if type(content_types_to_fetch) is str \
+        else content_types_to_fetch
     for content_type in content_types_to_fetch:
         content_records_of_current_type = get_all_content_type_records(client, content_type, start_time, end_time)
         all_content_records.extend(content_records_of_current_type)
@@ -479,7 +485,7 @@ def main():
     try:
         args = demisto.args()
         params = demisto.params()
-        refresh_token = params.get('refresh_token',  '')
+        refresh_token = params.get('refresh_token', '')
         self_deployed = params.get('self_deployed', False)
         tenant_id = refresh_token if self_deployed else ''
         auth_id = params['auth_id']
@@ -531,6 +537,7 @@ def main():
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+
 
 from MicrosoftApiModule import *  # noqa: E402
 
