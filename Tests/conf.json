@@ -1820,6 +1820,11 @@
             "nightly": true
         },
         {
+            "integrations": "GooglePubSub",
+            "playbookID": "GooglePubSub_Test",
+            "nightly": true
+        },
+        {
             "playbookID": "Calculate Severity - Generic v2 - Test",
             "integrations": [
                 "Palo Alto Minemeld",

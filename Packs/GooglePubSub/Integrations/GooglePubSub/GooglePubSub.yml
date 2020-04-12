@@ -17,7 +17,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Fetch Incidents
+- display: Fetch incidents
   name: isFetch
   required: false
   type: 8
@@ -316,27 +316,27 @@ script:
       name: expiration_ttl
       required: false
       secret: false
-      outputs:
-      - contextPath: GoogleCloudPubSubSubscriptions.ackDeadlineSeconds
-        description: The amount of time Pub/Sub waits for the subscriber to acknowledge
-          receipt before resending the message.
-        type: Number
-      - contextPath: GoogleCloudPubSubSubscriptions.expirationPolicy.ttl
-        description: The "time-to-live" duration for the subscription.
-        type: String
-      - contextPath: GoogleCloudPubSubSubscriptions.messageRetentionDuration
-        description: How long to retain unacknowledged messages in the subscription's
-          backlog
-        type: String
-      - contextPath: GoogleCloudPubSubSubscriptions.name
-        description: Name of the subscription
-        type: String
-      - contextPath: GoogleCloudPubSubSubscriptions.topic
-        description: Name of the topic from which the subscription is receiving messages
-        type: String
-      - contextPath: GoogleCloudPubSubSubscriptions.ProjectName
-        description: Name of the project from which the subscription is receiving messages
-        type: String
+    outputs:
+    - contextPath: GoogleCloudPubSubSubscriptions.ackDeadlineSeconds
+      description: The amount of time Pub/Sub waits for the subscriber to acknowledge
+        receipt before resending the message.
+      type: Number
+    - contextPath: GoogleCloudPubSubSubscriptions.expirationPolicy.ttl
+      description: The "time-to-live" duration for the subscription.
+      type: String
+    - contextPath: GoogleCloudPubSubSubscriptions.messageRetentionDuration
+      description: How long to retain unacknowledged messages in the subscription's
+        backlog
+      type: String
+    - contextPath: GoogleCloudPubSubSubscriptions.name
+      description: Name of the subscription
+      type: String
+    - contextPath: GoogleCloudPubSubSubscriptions.topic
+      description: Name of the topic from which the subscription is receiving messages
+      type: String
+    - contextPath: GoogleCloudPubSubSubscriptions.ProjectName
+      description: Name of the project from which the subscription is receiving messages
+      type: String
     deprecated: false
     description: Create a pull or push subscription.
     execution: false
