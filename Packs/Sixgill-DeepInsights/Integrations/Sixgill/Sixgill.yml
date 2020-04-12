@@ -12,7 +12,7 @@ configuration:
   required: true
   type: 4
 - defaultvalue: '20'
-  display: Max number of incidents that can be fetched
+  display: Maximum number of incidents that can be fetched
   name: maxIncidents
   required: false
   type: 0
@@ -64,9 +64,9 @@ configuration:
   name: incidentType
   type: 13
   required: false
-description: Define key assets relevant to your brand, industry and geolocation. Obtain
-  bespoke threat intelligence automatically gathered from exclusive deep, dark and
-  surface web sources-delivered straight into the Demisto platform. Detailed actionable
+description: Defines key assets relevant to your brand, industry, and geolocation. Obtain
+  bespoke threat intelligence automatically gathered from exclusive deep, dark, and
+  surface web sources-delivered straight into Cortex XSOAR. Detailed actionable
   insights include the assessment of the event, the relevant intelligence item, and
   recommendations for action.
 display: Sixgill Deep Insights
