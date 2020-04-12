@@ -14,6 +14,16 @@ args:
   description: The amount of memory to check. Can specify in bytes or append MB/GB
     for Mega/Giga bytes. Default is 1 GB.
   defaultValue: 1GB
+- name: memory_check
+  auto: PREDEFINED
+  predefined:
+  - cgroup
+  - allocate
+  description: 'The memory check type to perform: cgroup - check memory cgroup configuration,
+    allocate - try allocating actual memory and verify that the allocation fails.
+    Note the allocate test  on some configurations may cause the container to be killed
+    by the linux memory manager and the whole test will then time out.'
+  defaultValue: cgroup
 - name: pids
   description: The maximum number of PIDs to check.
   defaultValue: "256"
@@ -29,6 +39,6 @@ args:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.8.1.6120
+dockerimage: demisto/python3:3.8.2.6981
 runas: DBotWeakRole
 fromversion: 5.0.0
