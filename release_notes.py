@@ -503,11 +503,14 @@ def handle_deleted_file(full_file_name, git_sha1):
     :return: None
     """
     data = get_remote_file(full_file_name, git_sha1)
-    name = data.get('name') or data.get('name') or full_file_name
-    file_type = full_file_name.split("/")[0]
-    file_type_mapping = RELEASE_NOTE_GENERATOR.get(file_type)
-    if file_type_mapping is not None:
-        file_type_mapping.add('D', name)
+    # If the data that returns is {} than the file is a md file,
+    # for such files we will not have a release note generator and we will skip
+    if data:
+        name = data.get('name') or full_file_name
+        file_type = full_file_name.split("/")[0]
+        file_type_mapping = RELEASE_NOTE_GENERATOR.get(file_type)
+        if file_type_mapping is not None:
+            file_type_mapping.add('D', name)
 
 
 def create_file_release_notes(change_type, full_file_name):

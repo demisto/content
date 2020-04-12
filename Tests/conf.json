@@ -2582,6 +2582,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "SafeBreach v2",
+            "playbookID": "playbook-SafeBreach-Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "playbookID": "DbotPredictOufOfTheBoxTest",
             "fromversion": "4.5.0",
             "timeout": 1000
@@ -2750,6 +2755,7 @@
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lockpath KeyLight": "Deprecated. No tests.",
         "SafeBreach": "pending rewrite",
+        "SafeBreach v2": "it is a partner integration, no instance",
         "Cymulate": "Partner didn't provided test playbook",
 
         "_comment": "~~~ QUOTA ISSUES ~~~",
