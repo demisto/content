@@ -366,13 +366,13 @@ def main():
 
     # detect new or modified packs
     modified_packs = get_modified_packs(specific_packs)
-    private_packs = get_private_packs(private_index_path)
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in modified_packs
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
     # Add private packs to the index
     try:
+        private_packs = get_private_packs(private_index_path)
         add_private_packs_to_index(index_folder_path, private_index_path)
     except Exception as e:
         print_warning(f'Could not add private packs to the index: {str(e)}')
