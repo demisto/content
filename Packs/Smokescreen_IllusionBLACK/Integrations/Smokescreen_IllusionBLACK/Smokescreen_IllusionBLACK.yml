@@ -30,7 +30,7 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-description: Smokescreen IllusionBLACK is a deception based threat defence platform
+description: Smokescreen IllusionBLACK is a deception-based threat defense platform
   designed to accurately and efficiently detect targeted threats including reconnaissance,
   lateral movement, malware-less attacks, social engineering, Man-in-the-Middle attacks,
   and ransomware in real-time.
@@ -39,73 +39,73 @@ name: Smokescreen IllusionBLACK
 script:
   commands:
   - deprecated: false
-    description: Get a list of Active Directory Decoys
+    description: Gets a list of Active Directory decoys.
     execution: false
     name: illusionblack-get-ad-decoys
     outputs:
     - contextPath: IllusionBlack.AdDecoy
-      description: IllusionBLACK AD Decoy Users
+      description: IllusionBLACK AD Decoy users.
       type: Unknown
   - deprecated: false
-    description: Get a list of Network Decoys
+    description: Gets a list of Network decoys.
     execution: false
     name: illusionblack-get-network-decoys
     outputs:
     - contextPath: IllusionBlack.NetworkDecoy
-      description: IllusionBLACK Network Decoys
+      description: IllusionBLACK Network decoys.
       type: Unknown
   - deprecated: false
-    description: Get a list of Threat Intel Decoys
+    description: Gets a list of Threat Intel decoys.
     execution: false
     name: illusionblack-get-ti-decoys
     outputs:
     - contextPath: IllusionBlack.TIDecoy
-      description: IllusionBLACK TI Decoys
+      description: IllusionBLACK TI Decoys.
       type: Unknown
   - arguments:
     - default: false
-      description: Hostname or IP Address to check
+      description: Hostname or IP address to check.
       isArray: false
       name: host
       required: true
       secret: false
     deprecated: false
-    description: Check if a host or IP Address is a network decoy
+    description: Checks if a host or IP address is a network decoy.
     execution: false
     name: illusionblack-is-host-decoy
     outputs:
     - contextPath: IllusionBlack.IsHostDecoy
-      description: A mapping of host and whether it's an IllusionBLACK network decoy
+      description: A mapping of a host and whether it's an IllusionBLACK network decoy.
       type: Unknown
   - arguments:
     - default: false
-      description: Active Directory user name to check
+      description: Active Directory user name to check.
       isArray: false
       name: user
       required: true
       secret: false
     deprecated: false
-    description: Check if Active Directory user is a decoy
+    description: Checks if an Active Directory user is a decoy.
     execution: false
     name: illusionblack-is-user-decoy
     outputs:
     - contextPath: IllusionBlack.IsUserDecoy
-      description: A mapping of user and whether it's an IllusionBLACK AD user decoy
+      description: A mapping of a user and whether it's an IllusionBLACK AD user decoy.
       type: Unknown
   - arguments:
     - default: false
-      description: 'Subdomain to check (For example: dec.smokescreen.io)'
+      description: 'Subdomain to check. For example: dec.smokescreen.io.'
       isArray: false
       name: subdomain
       required: true
       secret: false
     deprecated: false
-    description: Check if a subdomain is a Threat Intel decoy
+    description: Checks if a subdomain is a Threat Intel decoy.
     execution: false
     name: illusionblack-is-subdomain-decoy
     outputs:
     - contextPath: IllusionBlack.IsSubdomainDecoy
-      description: A mapping of subdomain and whether it's an IllusionBLACK TI decoy
+      description: A mapping of a subdomain and whether it's an IllusionBLACK TI decoy.
       type: Unknown
   - arguments:
     - default: false
@@ -121,54 +121,54 @@ script:
       required: false
       secret: false
     - default: false
-      description: ISO 8601 formatted date string
+      description: ISO 8601 formatted date string.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: ISO 8601 formatted date string
+      description: ISO 8601 formatted date string.
       isArray: false
       name: to
       required: false
       secret: false
     deprecated: false
-    description: Get events from IllusionBLACK
+    description: Gets events from IllusionBLACK.
     execution: false
     name: illusionblack-get-events
     outputs:
     - contextPath: IllusionBlack.Event
-      description: IllusionBLACK Events
+      description: IllusionBLACK Events.
       type: Unknown
   - arguments:
     - default: false
-      description: IllusionBLACK Event ID
+      description: IllusionBLACK Event ID.
       isArray: false
       name: id
       required: true
       secret: false
     deprecated: false
-    description: Gets exactly one event by it's ID
+    description: Gets a single event by the event ID.
     execution: false
     name: illusionblack-get-event-by-id
     outputs:
     - contextPath: IllusionBlack.Event
-      description: IllusionBLACK Single Event
+      description: IllusionBLACK Single Event.
       type: Unknown
     - contextPath: "IllusionBlack.Event.attacker.id\t"
-      description: IllusionBLACK Event Attacker ID
+      description: IllusionBLACK Event Attacker ID.
       type: Unknown
     - contextPath: IllusionBlack.Event.decoy.id
-      description: IllusionBLACK Event Decoy ID
+      description: IllusionBLACK Event Decoy ID.
       type: Unknown
     - contextPath: IllusionBlack.Event.id
-      description: IllusionBLACK Event ID
+      description: IllusionBLACK Event ID.
       type: Unknown
     - contextPath: IllusionBlack.Event.severity
-      description: IllusionBLACK Event Severity
+      description: IllusionBLACK Event Severity.
       type: Unknown
     - contextPath: IllusionBlack.Event.type
-      description: IllusionBLACK Event Attack Type
+      description: IllusionBLACK Event Attack Type.
       type: Unknown
   dockerimage: demisto/python3:3.8.2.6981
   feed: false
