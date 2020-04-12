@@ -199,22 +199,20 @@ def test():
     """
 
     global FETCH_TIME
-    if FETCH_TIME:
-        try:
-            datetime.strptime(FETCH_TIME, TIME_FORMAT)
-        except ValueError as error:
-            return_error('There is something wrong with the fetch date. Error: {}'.format(error))
 
-        if FETCH_TIME[-1] != 'Z':
-            FETCH_TIME = FETCH_TIME + 'Z'
+    try:
+        datetime.strptime(FETCH_TIME, TIME_FORMAT)
+    except ValueError as error:
+        return_error('There is something wrong with the fetch date. Error: {}'.format(error))
 
+    if FETCH_TIME[-1] != 'Z':
+        FETCH_TIME = FETCH_TIME + 'Z'
     get_incidents_request(
         {
             'created_after': date.today(),
             'state': 'open'
         }
     )
-    demisto.results('ok')
 
 
 # TRAP API
@@ -270,7 +268,7 @@ def create_incidents_context(incidents_list):
     Returns:
         list. The context created from the incidents list
     """
-    context = list(incidents_list)
+    context = incidents_list.copy()
     for incident in context:
         incident['incident_field_values'] = create_incident_field_context(incident)
 
