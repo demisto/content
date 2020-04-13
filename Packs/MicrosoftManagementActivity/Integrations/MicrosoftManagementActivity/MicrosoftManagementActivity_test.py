@@ -552,20 +552,6 @@ def test_start_and_stop_subscription(requests_mock, command, ):
     # This test does not assert anything, it only tests if the command matches the mocked endpoints.
 
 
-@pytest.mark.parametrize('first_fetch_delta, expected_output_prefix', [("not_an_int", "Error"), ("-1567", "Error"),
-                                                                       ("1900", "Error")])
-def test_the_test_module(mocker, requests_mock, first_fetch_delta, expected_output_prefix):
-    from MicrosoftManagementActivity import test_module
-    client = create_client()
-    set_requests_mock(client, requests_mock)
-    params = {
-        "first_fetch_delta": first_fetch_delta
-    }
-    mocker.patch.object(demisto, "params", return_value=params)
-    test_result = test_module(client)
-    assert test_result.startswith(expected_output_prefix)
-
-
 def test_list_subscriptions(requests_mock, ):
     from MicrosoftManagementActivity import list_subscriptions_command
     client = create_client()
