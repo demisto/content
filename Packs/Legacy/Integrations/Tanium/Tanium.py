@@ -43,6 +43,7 @@ def gather_line(lines, total_column_num, current_line):
     while len(line_values) < total_column_num:
         current_line += 1
         line_below = lines[current_line].split(',')
+        # combine the split value from the line below to the current line.
         line_values[-1] = line_values[-1] + " " + line_below[0]
 
         if line_values[-1].startswith('\"'):
@@ -51,9 +52,12 @@ def gather_line(lines, total_column_num, current_line):
         if line_values[-1].endswith('\"'):
             line_values[-1] = line_values[-1][:-1]
 
+        # in case the line below includes just a single value - we added it above
         if len(line_below) == 1:
             continue
 
+        # in case more than a single value exists in the line
+        # add the rest of the line to the current value list.
         else:
             line_below = line_below[1:]
             line_values.extend(line_below)
@@ -600,57 +604,63 @@ sout = sys.stdout
 sys.stdout = StringIO()
 
 
-try:
-    handler = get_handler()
-    LOG("successfully logged into Tanium")
-    d_args = demisto.args()
+def main():
+    try:
+        handler = get_handler()
+        LOG("successfully logged into Tanium")
+        d_args = demisto.args()
 
-    if demisto.command() == 'test-module':
-        test_question = 'get Computer Name from all machines with Computer Name contains "this is a test"'
-        final_result = ask_parsed_question(handler, test_question, '1')
-        restore_sout_and_exit('ok')
-    if demisto.command() == 'tn-get-package':
-        final_result = get_package(handler)
-    if demisto.command() == 'tn-get-saved-question':
-        final_result = get_saved_question(handler)
-    if demisto.command() == 'tn-get-object':
-        final_result = get_object(handler, unicode(d_args['object_type']), d_args.get('name'), d_args.get('id'))
-    if demisto.command() == 'tn-get-all-objects':
-        final_result = get_all_objects(handler, unicode(d_args['object_type']))
-    if demisto.command() == 'tn-get-all-packages':
-        final_result = getAllPackages(handler)
-    if demisto.command() == 'tn-get-all-sensors':
-        final_result = get_all_sensors(handler)
-    if demisto.command() == 'tn-get-all-saved-questions':
-        final_result = get_all_saved_questions(handler)
-    if demisto.command() == 'tn-get-all-saved-actions':
-        final_result = get_all_saved_actions(handler)
-    if demisto.command() == 'tn-get-all-pending-actions':
-        final_result = getAllPendingActions(handler)
-    if demisto.command() == 'tn-deploy-package':
-        final_result = deploy_action(handler)
-    if demisto.command() == 'tn-ask-system':
-        final_result = ask_parsed_question(handler, 'Get Computer Name from all machines with Computer Name matching \"'
-                                           + demisto.args()['hostname'] + '\"', '1')
-    if demisto.command() == 'tn-ask-question':
-        final_result = ask_parsed_question(handler, d_args['question'], d_args.get('index', '1'))
-    if demisto.command() == 'tn-create-package':
-        final_result = create_package(handler)
-    if demisto.command() == 'tn-approve-pending-action':
-        final_result = approveSavedAction(handler, d_args.get('id'),
-                                          d_args.get('saved_action_id', d_args.get('action_id')))
-    if demisto.command() == 'tn-ask-manual-question':
-        final_result = ask_manual_question(handler, d_args)
-    if demisto.command() == 'tn-parse-query':
-        final_result = get_parse_query_options(handler, d_args['question'])
-    if demisto.command() == 'tn-get-sensor':
-        final_result = get_sensor(handler)
-    if demisto.command() == 'tn-get-action':
-        final_result = get_action(handler)
+        if demisto.command() == 'test-module':
+            test_question = 'get Computer Name from all machines with Computer Name contains "this is a test"'
+            final_result = ask_parsed_question(handler, test_question, '1')
+            restore_sout_and_exit('ok')
+        if demisto.command() == 'tn-get-package':
+            final_result = get_package(handler)
+        if demisto.command() == 'tn-get-saved-question':
+            final_result = get_saved_question(handler)
+        if demisto.command() == 'tn-get-object':
+            final_result = get_object(handler, unicode(d_args['object_type']), d_args.get('name'), d_args.get('id'))
+        if demisto.command() == 'tn-get-all-objects':
+            final_result = get_all_objects(handler, unicode(d_args['object_type']))
+        if demisto.command() == 'tn-get-all-packages':
+            final_result = getAllPackages(handler)
+        if demisto.command() == 'tn-get-all-sensors':
+            final_result = get_all_sensors(handler)
+        if demisto.command() == 'tn-get-all-saved-questions':
+            final_result = get_all_saved_questions(handler)
+        if demisto.command() == 'tn-get-all-saved-actions':
+            final_result = get_all_saved_actions(handler)
+        if demisto.command() == 'tn-get-all-pending-actions':
+            final_result = getAllPendingActions(handler)
+        if demisto.command() == 'tn-deploy-package':
+            final_result = deploy_action(handler)
+        if demisto.command() == 'tn-ask-system':
+            final_result = ask_parsed_question(handler, 'Get Computer Name from all machines with Computer Name matching \"'
+                                               + demisto.args()['hostname'] + '\"', '1')
+        if demisto.command() == 'tn-ask-question':
+            final_result = ask_parsed_question(handler, d_args['question'], d_args.get('index', '1'))
+        if demisto.command() == 'tn-create-package':
+            final_result = create_package(handler)
+        if demisto.command() == 'tn-approve-pending-action':
+            final_result = approveSavedAction(handler, d_args.get('id'),
+                                              d_args.get('saved_action_id', d_args.get('action_id')))
+        if demisto.command() == 'tn-ask-manual-question':
+            final_result = ask_manual_question(handler, d_args)
+        if demisto.command() == 'tn-parse-query':
+            final_result = get_parse_query_options(handler, d_args['question'])
+        if demisto.command() == 'tn-get-sensor':
+            final_result = get_sensor(handler)
+        if demisto.command() == 'tn-get-action':
+            final_result = get_action(handler)
 
-except Exception:
-    sys.stdout = sout
-    LOG.print_log()
-    raise
+    except Exception:
+        sys.stdout = sout
+        LOG.print_log()
+        raise
 
-restore_sout_and_exit(final_result)
+    restore_sout_and_exit(final_result)
+
+
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == "__builtin__" or __name__ == "builtins" or __name__ == "__main__":
+    main()
