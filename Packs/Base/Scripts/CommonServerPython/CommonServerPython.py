@@ -25,8 +25,8 @@ try:
 except Exception:
     pass
 
-CONTENT_RELEASE_VERSION = '2.5.0'
-CONTENT_BRANCH_NAME = 'content_legacy_pack'
+CONTENT_RELEASE_VERSION = '0.0.0'
+CONTENT_BRANCH_NAME = 'master'
 IS_PY3 = sys.version_info[0] == 3
 
 # pylint: disable=undefined-variable
@@ -2567,8 +2567,9 @@ if 'requests' in sys.modules:
                         error_entry = res.json()
                         err_msg += '\n{}'.format(json.dumps(error_entry))
                         raise DemistoException(err_msg)
-                    except ValueError as exception:
-                        raise DemistoException(err_msg, exception)
+                    except ValueError:
+                        err_msg += '\n{}'.format(res.text)
+                        raise DemistoException(err_msg)
 
                 is_response_empty_and_successful = (res.status_code == 204)
                 if is_response_empty_and_successful and return_empty_response:
@@ -2653,3 +2654,4 @@ def batch(iterable, batch_size=1):
         yield current_batch
         current_batch = not_batched[:batch_size]
         not_batched = not_batched[batch_size:]
+

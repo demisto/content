@@ -234,11 +234,12 @@ def test_module(client: Client) -> Tuple[str, Dict, Dict]:
     return 'ok', {}, {}
 
 
-def get_indicators_command(client: Client) -> Tuple[str, Dict, Dict]:
+def get_indicators_command(client: Client, feedTags: list) -> Tuple[str, Dict, Dict]:
     """Retrieves indicators from the feed to the war-room.
 
     Args:
         client (Client): Client object configured according to instance arguments.
+        feedTags: The indicator tags.
 
     Returns:
         Tuple of:
@@ -246,8 +247,7 @@ def get_indicators_command(client: Client) -> Tuple[str, Dict, Dict]:
             Dict. The raw data of the indicators.
     """
     limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 10
-
-    indicators, raw_response = fetch_indicators_command(client, limit)
+    indicators, raw_response = fetch_indicators_command(client, feedTags, limit)
 
     human_readable = tableToMarkdown('Indicators from Azure Feed:', indicators,
                                      headers=['value', 'type'], removeNull=True)
@@ -255,11 +255,12 @@ def get_indicators_command(client: Client) -> Tuple[str, Dict, Dict]:
     return human_readable, {}, {'raw_response': raw_response}
 
 
-def fetch_indicators_command(client: Client, limit: int = -1) -> Tuple[List[Dict], List]:
+def fetch_indicators_command(client: Client, feedTags: list, limit: int = -1) -> Tuple[List[Dict], List]:
     """Fetches indicators from the feed to the indicators tab.
     Args:
         client (Client): Client object configured according to instance arguments.
         limit (int): Maximum number of indicators to return.
+        feedTags (list): Indicator tags
     Returns:
         Tuple of:
             str. Information to be printed to war room.
@@ -277,7 +278,10 @@ def fetch_indicators_command(client: Client, limit: int = -1) -> Tuple[List[Dict
         indicators.append({
             'value': indicator['value'],
             'type': indicator['type'],
-            'fields': {'region': indicator.get('azure_region')},
+            'fields': {
+                'region': indicator.get('azure_region'),
+                'tags': feedTags
+            },
             'rawJSON': indicator
         })
 
@@ -298,6 +302,8 @@ def main():
     if not services_list:
         services_list = ['All']
 
+    feedTags = argToList(demisto.params().get('feedTags'))
+
     polling_arg = demisto.params().get('polling_timeout', '')
     polling_timeout = int(polling_arg) if polling_arg.isdigit() else 20
     insecure = demisto.params().get('insecure', False)
@@ -305,20 +311,17 @@ def main():
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
-
+    command = demisto.command()
     try:
         client = Client(regions_list, services_list, polling_timeout, insecure, proxy)
-
-        commands = {
-            'test-module': test_module,
-            'azure-get-indicators': get_indicators_command
-        }
-
-        if command in commands:
-            return_outputs(*commands[command](client))
-
+        if command == 'test-module':
+            return_outputs(*test_module(client))
+        elif command == 'azure-get-indicators':
+            if feedTags:
+                feedTags['tags'] = feedTags
+            return_outputs(*get_indicators_command(client, feedTags))
         elif command == 'fetch-indicators':
-            indicators, _ = fetch_indicators_command(client)
+            indicators, _ = fetch_indicators_command(client, feedTags)
 
             for single_batch in batch(indicators, batch_size=2000):
                 demisto.createIndicators(single_batch)
