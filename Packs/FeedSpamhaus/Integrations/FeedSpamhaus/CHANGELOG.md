@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added the *Tags* parameter.
 
 ## [20.3.4] - 2020-03-30
 Renamed the **Sub-Feeds** parameter to **Services** in the instance configuration.
