@@ -269,7 +269,10 @@ class PolyswarmConnector():
         return True
 
     def file_reputation(self, param):
-        title = 'PolySwarm File Reputation for Hash: %s' % param['hash']
+        file_hash = param.get('file', param.get('hash'))
+        if not file_hash:
+            return_error("Please specify a file hash to enrich.")
+        title = 'PolySwarm File Reputation for Hash: %s' % file_hash
 
         # default values
         total_scans = 0
@@ -285,7 +288,7 @@ class PolyswarmConnector():
         uuid = 'null'
 
         try:
-            status_code, response = self.polyswarm_api.search_hash(param['hash'])
+            status_code, response = self.polyswarm_api.search_hash(file_hash)
 
             # load json response for iteration
             try:
@@ -322,7 +325,7 @@ class PolyswarmConnector():
 
         return self._get_results(title, total_scans,
                                  positives, uuid,
-                                 param['hash'])
+                                 file_hash)
 
     def get_file(self, param):
         # Polywarm API Response
