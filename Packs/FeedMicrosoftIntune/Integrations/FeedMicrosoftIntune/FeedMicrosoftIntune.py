@@ -33,8 +33,7 @@ class Client(BaseClient):
             A list of objects, containing the indicators.
         """
         result = []
-        r = self._http_request('GET', url_suffix='', full_url=self._base_url, resp_type='str')
-        r = r.text
+        r = self._http_request('GET', url_suffix='', full_url=self._base_url, resp_type='text')
 
         soup = BeautifulSoup(r, 'html.parser')
 
@@ -45,12 +44,12 @@ class Client(BaseClient):
             return text
 
         try:
-            scraped_urls = sum([subs(cell.text).rstrip().split() for cell in soup.select(
+            scraped_domains = sum([subs(cell.text).rstrip().split() for cell in soup.select(
                 "tbody tr td") if re.findall(r'microsoft\.(com|net)', cell.text)], [])
-            for url in scraped_urls:
+            for domain in scraped_domains:
                 result.append({
-                    "value": url,
-                    'type': 'URL',
+                    "value": domain,
+                    'type': FeedIndicatorType.DomainGlob if '*' in domain else FeedIndicatorType.Domain,
                     "FeedURL": self._base_url
                 })
 
@@ -100,7 +99,7 @@ def fetch_indicators(client: Client, limit: int = -1) -> List[Dict]:
         iterator = iterator[:limit]
     for item in iterator:
         value = item.get('value')
-        type_ = item.get('type', 'url')
+        type_ = item.get('type', FeedIndicatorType.Domain)
         raw_data = {
             'value': value,
             'type': type_,

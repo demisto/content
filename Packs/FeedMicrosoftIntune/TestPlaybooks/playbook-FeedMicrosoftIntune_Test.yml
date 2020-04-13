@@ -1,7 +1,7 @@
 id: playbook-FeedMicrosoftIntune_Test
 name: playbook-FeedMicrosoftIntune_Test
 version: -1
-fromversion: 4.5.0
+fromversion: 5.5.0
 starttaskid: '0'
 tasks:
   '0':
@@ -64,7 +64,9 @@ tasks:
     nexttasks:
       '#none#':
       - '3'
-    scriptarguments: {}
+    scriptarguments: 
+      extend-context:
+        simple: first_object=.[0]
     separatecontext: false
     view: '{"position": {"x": 50, "y": 400}}'
     note: false
