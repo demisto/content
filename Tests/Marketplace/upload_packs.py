@@ -361,8 +361,10 @@ def main():
     storage_bucket = storage_client.bucket(storage_bucket_name)
     private_storage_bucket = storage_client.bucket(private_bucket_name)
     index_folder_path, index_blob = download_and_extract_index(storage_bucket, extract_destination_path)
-    private_index_path, _ = download_and_extract_index(private_storage_bucket,
-                                                       os.path.join(extract_destination_path, 'private'))
+    private_index_path = ''
+    if private_bucket_name:
+        private_index_path, _ = download_and_extract_index(private_storage_bucket,
+                                                           os.path.join(extract_destination_path, 'private'))
 
     # detect new or modified packs
     modified_packs = get_modified_packs(specific_packs)
@@ -371,13 +373,14 @@ def main():
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
     # Add private packs to the index
-    try:
-        private_packs = get_private_packs(private_index_path)
-        add_private_packs_to_index(index_folder_path, private_index_path)
-    except Exception as e:
-        print_warning(f'Could not add private packs to the index: {str(e)}')
-    finally:
-        shutil.rmtree(private_index_path, ignore_errors=True)
+    if private_index_path:
+        try:
+            private_packs = get_private_packs(private_index_path)
+            add_private_packs_to_index(index_folder_path, private_index_path)
+        except Exception as e:
+            print_warning(f'Could not add private packs to the index: {str(e)}')
+        finally:
+            shutil.rmtree(private_index_path, ignore_errors=True)
 
     for pack in packs_list:
         task_status, integration_images = pack.upload_integration_images(storage_bucket)
