@@ -21,6 +21,7 @@ from demisto_sdk.commands.common.constants import YML_INTEGRATION_REGEXES, INTEG
     BETA_INTEGRATION_REGEX, RUN_ALL_TESTS_FORMAT
 from Tests.test_content import server_version_compare
 from Tests.update_content_data import update_content
+from Tests.search_and_install_packs import search_and_install_pack_and_its_dependencies
 
 
 def options_handler():
@@ -230,6 +231,11 @@ def get_new_and_modified_integrations(git_sha1):
         isinstance(file_path, str) and checked_type(file_path, all_integration_regexes)
     ]
 
+    integrations_name_to_path_dict = dict([
+        (filepath_to_integration_name(file_path), file_path)
+        for file_path in (added_integration_files + modified_integration_files)
+    ])
+
     new_integrations_names = [
         filepath_to_integration_name(file_path) for
         file_path in added_integration_files if filepath_to_integration_name(file_path)
@@ -238,7 +244,7 @@ def get_new_and_modified_integrations(git_sha1):
         filepath_to_integration_name(file_path) for
         file_path in modified_integration_files if filepath_to_integration_name(file_path)
     ]
-    return new_integrations_names, modified_integrations_names
+    return new_integrations_names, modified_integrations_names, integrations_name_to_path_dict
 
 
 def is_content_update_in_progress(client, prints_manager, thread_index):
@@ -674,12 +680,26 @@ def main():
 
     # get a list of brand new integrations that way we filter them out to only configure instances
     # after updating content
-    new_integrations_names, modified_integrations_names = get_new_and_modified_integrations(git_sha1)
+    new_integrations_names, modified_integrations_names, name_to_path_dict = get_new_and_modified_integrations(git_sha1)
     if new_integrations_names:
         new_integrations_names_message = \
             'New Integrations Since Last Release:\n{}\n'.format('\n'.join(new_integrations_names))
         prints_manager.add_print_job(new_integrations_names_message, print_warning, 0)
     if modified_integrations_names:
+
+        # Test packs search and installation - beginning of infrastructure
+        threads_list = []
+        for index, int_name in enumerate(modified_integrations_names):
+            client = demisto_client.configure(base_url=servers[0], username=username, password=password,
+                                              verify_ssl=False)
+            thread = Thread(target=search_and_install_pack_and_its_dependencies,
+                            kwargs={'client': client,
+                                    'prints_manager': prints_manager,
+                                    'thread_index': index,
+                                    'path': name_to_path_dict[int_name]})
+            threads_list.append(thread)
+        run_threads_list(threads_list)
+
         modified_integrations_names_message = \
             'Updated Integrations Since Last Release:\n{}\n'.format('\n'.join(modified_integrations_names))
         prints_manager.add_print_job(modified_integrations_names_message, print_warning, 0)
