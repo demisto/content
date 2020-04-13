@@ -7,10 +7,11 @@ from CommonServerPython import *
 
 requests.packages.urllib3.disable_warnings()
 
-'''HELPER FUNCTIONS'''
 
-
-def http_request(method, url_suffix, params=None, json=None):
+def http_request(method, url_suffix, json=None):
+    """
+    Helper function to perform http request
+    """
     base_url = demisto.params().get('base_url')
     api_key = demisto.params().get('apikey')
     api_suffix = "/api/v1"
@@ -25,7 +26,6 @@ def http_request(method, url_suffix, params=None, json=None):
         base_url + api_suffix + url_suffix,
         json=json,
         headers=headers,
-        params=params,
         verify=False
     )
 
@@ -131,12 +131,10 @@ def fetch_incidents():
     last_id = demisto.params().get('first_fetch_id')
 
     last_run = demisto.getLastRun()
-    if last_run:
-        if last_run.has_key('last_id'):
-            last_id = last_run.get('last_id')
+    if last_run and last_run.get('last_id') is not None:
+        last_id = last_run.get('last_id')
 
-    params = {"after_id": last_id}
-    events = http_request('GET', '/events', params)
+    events = http_request('GET', '/events/?after_id='+str(last_id))
     while events and events['events']:
         for event in events['events']:
             incident = {
@@ -147,8 +145,7 @@ def fetch_incidents():
             incidents.append(incident)
 
         demisto.setLastRun({'start_time': str(datetime.now().time()), 'last_id': events['last_id']})
-        params = {"after_id": events['last_id']}
-        events = http_request('GET', '/events', params)
+        events = http_request('GET', '/events/?after_id='+str(events['last_id']))
 
     demisto.incidents(incidents)
 
@@ -156,6 +153,7 @@ def fetch_incidents():
 def test_module():
     http_request('GET', "/health_check")
     demisto.results("ok")
+
 
 def main():
     # Commands
