@@ -97,3 +97,5 @@ script:
   script: '-'
   subtype: python3
   type: python
+beta: True
+fromversion: 5.0.0
