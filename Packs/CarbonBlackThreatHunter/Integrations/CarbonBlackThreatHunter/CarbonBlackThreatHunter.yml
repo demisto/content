@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: CarbonBlack ThreatHunter
+  id: Carbon Black Threat Hunter
   version: -1
 configuration:
 - display: Server URL
@@ -29,8 +29,8 @@ configuration:
   required: true
   type: 0
 description: TODO
-display: CarbonBlack ThreatHunter
-name: CarbonBlack ThreatHunter
+display: Carbon Black Threat Hunter
+name: Carbon Black Threat Hunter
 script:
   commands:
   - arguments:
@@ -42,9 +42,9 @@ script:
       secret: false
     - default: false
       defaultValue: '1'
-      description: Windows Time
+      description: Window time for the query in days.
       isArray: false
-      name: timeWindow
+      name: time_window
       required: false
       secret: false
     - auto: PREDEFINED

@@ -1,9 +1,11 @@
 from typing import Dict, Callable, Tuple, Any
 
+import urllib3
+
 from CommonServerPython import *
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 class Client(BaseClient):
@@ -11,6 +13,15 @@ class Client(BaseClient):
     Client to use in the Securonix integration. Overrides BaseClient
     """
     def __init__(self, server_url: str, org_key: str, auth_token: str, verify: bool, proxy: bool):
+        """
+
+        Args:
+            server_url: server url
+            org_key: organization key
+            auth_token: auth token, as derived from the app id and the API token.
+            verify: whether to trust any certificate
+            proxy: whether to run the request over a proxy
+        """
         super().__init__(base_url=server_url, verify=verify)
         self.org_key = org_key
         self._cb_time_format = '%Y-%m-%dT%H:%M:%SZ'
@@ -22,13 +33,26 @@ class Client(BaseClient):
         }
 
     @staticmethod
-    def get_respective_date(time_window: int, cb_time_format: str) -> str:
+    def calculate_respective_date(time_window: int, cb_time_format: str) -> str:
+        """Calculate the respective date.
+
+        Args:
+            time_window: time window in days
+            cb_time_format: CarbonBlack time format
+        Returns:
+            The time difference in CarbonBlack time format.
+        """
         now = datetime.now()
         start_time = now - timedelta(days=int(time_window))
         return str(start_time.strftime(cb_time_format))
 
     @staticmethod
     def delete_unnecessary_fields(response: dict) -> dict:
+        """Delete unnecessary fields from the response.
+
+        Args:
+            response: the response dictionary.
+        """
         if 'crossproc' in response:
             del response['crossproc']
         if 'crossproc_target_complete' in response:
@@ -46,8 +70,10 @@ class Client(BaseClient):
         if 'regmod_complete' in response:
             del response['regmod_complete']
 
-    def http_request(self, method: str, url_suffix: str, version: str, params: str = None, data: dict = None,
-                     safe: bool = False, parse_json: bool = True):
+    def http_request(self, method: str, url_suffix: str, version: str, params: str = None, data: dict = None):
+        """
+        Generic request to CarbonBlack ThreatHunter
+        """
         url = f'{self._base_url}{version}{url_suffix}'
         try:
             result = requests.request(
@@ -63,8 +89,6 @@ class Client(BaseClient):
                             f'Please make sure you entered the URL correctly. {str(err)}')
         # Handle error responses gracefully
         if result.status_code not in {200, 201}:
-            if safe:
-                return None
             if result.status_code == 401:
                 raise Exception('Unauthorized. Please check your API token')
             try:
@@ -73,30 +97,54 @@ class Client(BaseClient):
                 reason = result.reason
             raise Exception(f'Error in API call. status code: {result.status_code}, reason: {reason}')
 
-        if parse_json:
-            return result.json()
-        return result.content
+        return result.json()
 
-    def search_jobs(self, payload: dict, query_type: str, version: str):
+    def search_jobs(self, payload: dict, query_type: str, version: str) -> dict:
+        """Search jobs in Threat Hunter.
+
+        Args:
+            payload: payload
+            query_type: query type
+            version: API version
+        Returns:
+            Response from API.
+        """
         result = self.http_request('POST', url_suffix=f'/orgs/{self.org_key}/{query_type}/search_jobs',
-                                   version=version, payload=payload)
+                                   version=version, data=payload)
         if ('job_id' not in result) and ('query_id' not in result):
-            raise Exception("An error occurred while running the query")
+            raise Exception("An error occurred while running the query in CarbonBlack ThreatHunter.")
 
         return result
 
-    def get_job_results(self, job_id, query_type, max_rows):
-        result = self.http_request('GET', url_suffix=f'/orgs/{self.org_key}/{query_type}/search_jobs/{job_id}/results',
-                                   version='v2', params=f'start=0&rows={max_rows}')
-        return result
+    def get_job_results(self, job_id: str, query_type: str, max_rows: str):
+        """Get Threat Hunter job results.
 
-    def cb_query_request(self, query: str, query_type: str, time_window: int):
+        Args:
+            job_id: job ID
+            query_type: query type
+            max_rows: max rows of the job to return
+        Returns:
+            Response from API.
+        """
+        return self.http_request('GET', url_suffix=f'/orgs/{self.org_key}/{query_type}/search_jobs/{job_id}/results',
+                                 version='v2', params=f'start=0&rows={max_rows}')
+
+    def cb_query_request(self, query: str, query_type: str, time_window: int) -> dict:
+        """Query Threat Hunter.
+
+        Args:
+            query: query string
+            query_type: query type
+            time_window: time span for the query
+        Returns:
+            Response from API.
+        """
         result = self.http_request('GET', url_suffix=f'/orgs/{self.org_key}/processes/search_validation',
                                    version='v1', params=f'q=({query})')
-        if not result('valid', False):
+        if not result.get('valid', False):
             raise Exception('Error in CarbonBlack ThreatHunter query')
 
-        start_time = self.get_respective_date(time_window, self._cb_time_format)
+        start_time = self.calculate_respective_date(time_window, self._cb_time_format)
         payload = {
             "query": query,
             "fields": ["*", "document_guid"],
@@ -113,7 +161,17 @@ class Client(BaseClient):
         job_id = self.search_jobs(payload, query_type, 'v2').get('job_id', {})
         return self.get_job_results(job_id, query_type, '50')
 
-    def cb_get_process_details_request(self, process_guid: str, document_guid: str, query_type: str = 'processes'):
+    def cb_get_process_details_request(self, process_guid: str, document_guid: str, query_type: str = 'processes') \
+            -> dict:
+        """Get process details
+
+        Args:
+            process_guid: process ID
+            document_guid: document ID
+            query_type: query type
+        Returns:
+            Response from API.
+        """
         if document_guid:
             query = f"process_guid:{process_guid} AND document_guid:{document_guid}"
         else:
@@ -133,48 +191,75 @@ class Client(BaseClient):
         }
 
         query_id = self.search_jobs(payload, query_type, '1').get('query_id', {})
-        response = self.get_job_results(query_id, query_type, '1').get('results', [])[0]
+        response = self.get_job_results(query_id, query_type, '1').get('results', [])
+        if not response:
+            raise Exception(f'No process details where retrieved from Carbon Black Threat Hunter'
+                            f' for process:{process_guid}.')
+        if response and isinstance(response, list):
+            response = response[0]
         self.delete_unnecessary_fields(response)  # Remove all unnecessary fields from result
 
         return response
 
 
-def test_module(client: Client) -> Tuple[str, Dict, Dict]:
+def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
     """
-    Performs basic get request to get item samples
+    Performs basic get request to test the instance configuration.
     """
     result = client.http_request('GET', url_suffix=f'/orgs/{client.org_key}/processes/'
-                                                   f'search_validation?q=(netconn_ipv4%3A8.8.8.8)', version='1')
+                                                   f'search_validation?q=(netconn_ipv4%3A8.8.8.8)', version='v1')
     if result.get('valid', False):
-        'ok', {}, {}
+        return 'ok', {}, {}
     raise Exception(f'CarbonBlack ThreatHunter test-module failed with: {dir(result)}')  # TODO find real reason
 
 
 def cb_query(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+    """Query Threat Hunter.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+    Returns:
+        Demisto Outputs.
+    """
     query = f"({str(args.get('query', ''))})"
     query_type = str(args.get('type', ''))
-    time_window = int(args.get('timeWindow', 1))
+    try:
+        time_window = int(args.get('time_window', 1))
+    except ValueError:
+        raise Exception('time_window argument must receive an integer, e.g: 4.')
 
-    response = client.cn_query_request(client, query, query_type, time_window)
+    response = client.cb_query_request(query, query_type, time_window)
     if response.get('results'):
-        md_ = tableToMarkdown('Carbon Black Threat Hunter Query Result', response['results'])
+        result = response.get('results')
+        md_ = tableToMarkdown('Carbon Black Threat Hunter Query Result', result)
     else:
+        result = response
         md_ = "No result found for the given query."
+    # TODO - add a prettify for the ec obj
     entry_context = {
-        'CB.ThreatHunter.Query.Result(val["Event ID"] && val["Event ID"] == obj["Event ID"])': response['results']
+        'CB.ThreatHunter.Query.Result(val["Event ID"] && val["Event ID"] == obj["Event ID"])': result
     }
-    return md_, entry_context, response
+    return md_, entry_context, result
 
 
 def cb_get_process_details(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+    """Get process details.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+    Returns:
+        Demisto Outputs.
+    """
     process_guid = str(args.get('process_guid', ''))
     document_guid = str(args.get('document_guid', ''))
 
     response = client.cb_get_process_details_request(client, process_guid, document_guid)
-
+    # TODO - add a prettify for the ec obj
     entry_context = {'CB.ThreatHunter.Process.Details(val["Event ID"] && val["Event ID"] == obj["Event ID"])': response}
 
-    return f'Process details for: {process_guid} retrieved successfully,', entry_context, response
+    return f'Process details for: {process_guid} retrieved successfully.', entry_context, response
 
 
 def main():
