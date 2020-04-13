@@ -10,35 +10,39 @@ This integration was integrated and tested with Splunk v6.5.
 * Create a new event in Splunk
 * Get results of a search that was executed in Splunk
 ## Configure SplunkPy on Demisto
----
 
-1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for SplunkPy.
-3. Click __Add instance__ to create and configure a new integration instance.
-    * __Name__: a textual name for the integration instance.
-    * __Host - ip (x.x.x.x)__
-    * __Username__
-    * __Port__
-    * __Fetch notable events ES query__
-    * __Fetch Limit (Max.- 200, Recommended less than 50)__
-    * __Fetch incidents__
-    * __First fetch timestamp (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3 months, 1 year)__ 
-    * __Incident type__
-    * __Proxy - in format: 127.0.0.1:8080__
-    * __Timezone of the Splunk server, in minutes. For example, GMT is gmt +3, set +180 (set only if different than Demisto server). Relevant only for fetching notable events.__
-    * __Parse Raw part of notable events__
-    * __Extract Fields - CSV fields that will be parsed out of _raw notable events__
-    * __Earliest time to fetch (the name of the Splunk field whose value defines the query's earliest time to fetch)__
-    * __Latest time to fetch (the name of the Splunk field whose value defines the query's latest time to fetch)__
-    Params: `Earliest time to fetch` and `Latest time to fetch` are search parameters options.
-By default when you run a search from the CLI, the search use~~~~s All Time as the time          range. You can specify time ranges using one of the CLI search parameters, such  as earliest_time, index_earliest, or latest_time.
-    * __The app context of the namespace__
-    * __HEC Token (HTTP Event Collector)__
-    * __HEC URL (e.g: https://localhost:8088)__
-    * __Use Splunk Clock Time For Fetch__
-    * __Use Splunk Clock Time For Fetch__
-    * __Trust any certificate (unsecure)__
-4. Click __Test__ to validate the URLs, token, and connection.
+3. Click **Add instance** to create and configure a new integration instance.
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| host | Host \- ip \(x.x.x.x\) | True |
+| authentication | Username | True |
+| port | Port | True |
+| fetchQuery | Fetch notable events ES query | False |
+| fetch_limit | Fetch Limit \(Max.\- 200, Recommended less than 50\) | False |
+| isFetch | Fetch incidents | False |
+| incidentType | Incident type | False |
+| proxy | Use system proxy settings | False |
+| timezone | Timezone of the Splunk server, in minutes. For example, GMT is gmt \+3, set \+180 \(set only if different than Demisto server\). Relevant only for fetching notable events. | False |
+| parseNotableEventsRaw | Parse Raw part of notable events | False |
+| replaceKeys | Replace with Underscore in Incident Fields | False |
+| extractFields | Extract Fields \- CSV fields that will be parsed out of \_raw notable events | False |
+| useSplunkTime | Use Splunk Clock Time For Fetch | False |
+| unsecure | Trust any certificate \(not secure\) | False |
+| earliest_fetch_time_fieldname | Earliest time to fetch \(the name of the Splunk field whose value defines the query&\#x27;s earliest time to fetch\) | False |
+| latest_fetch_time_fieldname | Latest time to fetch \(the name of the Splunk field whose value defines the query&\#x27;s latest time to fetch\) | False |
+| app | The app context of the namespace | False |
+| hec_token | HEC Token \(HTTP Event Collector\) | False |
+| hec_url | HEC URL \(e.g: https://localhost:8088\). | False |
+| fetch_time | First fetch timestamp \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year\) | False |
+
+(!) `Earliest time to fetch` and `Latest time to fetch` are search parameters options.
+By default when you run a search from the CLI, the search uses All Time as the time range. You can specify time ranges using one of the CLI search parameters, such  as earliest_time, index_earliest, or latest_time.
+
+4. Click **Test** to validate the URLs, token, and connection.
+
 ### Configure Splunk to Produce Alerts for SplunkPy
 We recommend that you configure Splunk to produce basic alerts that the SplunkPy integration can ingest, by creating a summary index in which alerts are stored. The SplunkPy integration can then query that index for incident ingestion. We do not recommend using the Demisto App for Splunk for routine event consumption because this method is not monitorable nor scalable.
 
@@ -66,23 +70,13 @@ Use the following naming convention: (demisto_fields_{type}).
 
 
 ## Commands
----
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-1. Get the results of a previous search: splunk-results
-2. Search SplunkPy: splunk-search
-3. Create a new event: splunk-submit-event
-4. Get index: splunk-get-indexes
-5. Edit a noteable event: splunk-notable-event-edit
-6. Create a job: splunk-job-create
-7. Parse the raw part of the event: splunk-parse-raw
-8. Send events to an HTTP Event Collector using the Splunk platform JSON event protocol: splunk-submit-event-hec
-9. Returns the status of a job: splunk-job-status
 
-
-### 1. splunk-results
----
+### splunk-results
+***
 Returns the results of a previous Splunk search. You can use this command in conjunction with the splunk-job-create command.
+
 ##### Base Command
 
 `splunk-results`
@@ -100,9 +94,11 @@ There is no context output for this command.
 ##### Command Example
 ``` !splunk-results sid="1566221331.1186" ```
 
-### 2. splunk-search
----
+### splunk-search
+***
 Searches Splunk for events.
+
+
 ##### Base Command
 
 `splunk-search`
@@ -135,9 +131,12 @@ Searches Splunk for events.
 |_bkt|_cd|_indextime|_kv|_raw|_serial|_si|_sourcetype|_time|host|index|linecount|source|sourcetype|splunk_server|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | main~445~66D21DF4-F4FD-4886-A986-82E72ADCBFE9 | 445:897774 | 1585462906 | 1 | InsertedAt=\"2020-03-29 06:21:43\"; EventID=\"837005\"; EventType=\"Application control\"; Action=\"None\"; ComputerName=\"ACME-code-007\"; ComputerDomain=\"DOMAIN\"; ComputerIPAddress=\"127.0.0.1\"; EventTime=\"2020-03-29 06:21:43\"; EventTypeID=\"5\"; Name=\"LogMeIn\"; EventName=\"LogMeIn\"; UserName=\""; ActionID=\"6\"; ScanTypeID=\"200\"; ScanType=\"Unknown\"; SubTypeID=\"23\"; SubType=\"Remote management tool\"; GroupName=\"";\u003cbr\u003e | 2 | ip-172-31-44-193,<br>main | sophos:appcontrol | 2020-03-28T23:21:43.000-07:00 | 127.0.0.1 | main | 2 | eventgen | sophos:appcontrol | ip-172-31-44-193 |
-### 3. splunk-submit-event
----
+
+### splunk-submit-event
+***
 Creates a new event in Splunk.
+
+
 ##### Base Command
 
 `splunk-submit-event`
@@ -163,8 +162,8 @@ There is no context output for this command.
 ![image](https://user-images.githubusercontent.com/50324325/63268589-2fda4b00-c29d-11e9-95b5-4b9fcf6c08ee.png)
 
 
-### 4. splunk-get-indexes
----
+### splunk-get-indexes
+***
 Prints all Splunk index names.
 ##### Base Command
 
@@ -184,8 +183,9 @@ There is no context output for this command.
 
 ![image](https://user-images.githubusercontent.com/50324325/63268447-d8d47600-c29c-11e9-88a4-5003971a492e.png)
 
-### 5. splunk-notable-event-edit
----
+
+### splunk-notable-event-edit
+***
 Update an existing Notable event in Splunk ES
 ##### Base Command
 
@@ -212,9 +212,11 @@ There is no context output for this command.
 ![image](https://user-images.githubusercontent.com/50324325/63522203-914e2400-c500-11e9-949a-0b55eb2c5871.png)
 
 
-### 6. splunk-job-create
----
+### splunk-job-create
+***
 Creates a new search job in Splunk.
+
+
 ##### Base Command
 
 `splunk-job-create`
@@ -247,9 +249,11 @@ Creates a new search job in Splunk.
 ![image](https://user-images.githubusercontent.com/50324325/63269769-75981300-c29f-11e9-950a-6ca77bcf564c.png)
 
 
-### 7. splunk-parse-raw
----
+### splunk-parse-raw
+***
 Parses the raw part of the event.
+
+
 ##### Base Command
 
 `splunk-parse-raw`
@@ -271,8 +275,8 @@ Parses the raw part of the event.
 ``` !splunk-parse-raw ```
 
 
-### 8. splunk-submit-event-hec
----
+### splunk-submit-event-hec
+***
 Sends events to an HTTP Event Collector using the Splunk platform JSON event protocol.
 ##### Base Command
 
@@ -299,9 +303,8 @@ There is no context output for this command.
 ##### Human Readable Output
 The event was sent successfully to Splunk.
 
-9. Returns the status of a job: splunk-job-status
-### 9. splunk-job-status
----
+### splunk-job-status
+***
 Returns the status of a job
 
 ##### Base Command
