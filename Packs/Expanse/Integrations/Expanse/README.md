@@ -1,8 +1,8 @@
 ## Overview
 ---
 
-The Expanse App for Demisto leverages the Expander API to retrieve network exposures and create incidents in Demisto.  This application also allows for IP and Domain enrichment, retrieving assets and exposures information drawn from Expanse’s unparalleled view of the Internet.
-This integration was integrated and tested with version xx of Expanse
+The Expanse App for Demisto leverages the Expander API to retrieve network exposures and create incidents in Demisto.  This application also allows for IP, Domain, Certificate, and Behavior enrichment, retrieving assets and exposures information drawn from Expanse’s unparalleled view of the Internet.
+This integration was integrated and tested with Expanse Events API v1, Assets API v2, and Behavior API v1.
 
 ## Use Cases
 ---
@@ -17,6 +17,7 @@ This integration was integrated and tested with version xx of Expanse
     * __Name__: a textual name for the integration instance.
     * __API Key__
     * __Fetch incidents__
+    * __Include Behavior data in incidents__
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
     * __How many events to pull from Expander per run__
@@ -90,6 +91,46 @@ This integration was integrated and tested with version xx of Expanse
     'id': 'b4a1e2e6-165a-31a5-9e6a-af286adc3dcd'
 }
 ```
+## Fetched Behavior Incident Data
+---
+```
+{
+    "id": "c9704240-5021-321e-a82b-32865e07d541",
+    "tenantBusinessUnitId": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5",
+    "businessUnit": {
+        "id": "6b73ef6c-b230-3797-b321-c4a340169eb7",
+        "name": "Acme Latex Supply"
+    },
+    "riskRule": {
+        "id": "02b6c647-65f4-4b69-b4b0-64af34fd1b29",
+        "name": "Connections to and from Blacklisted Countries",
+        "description": "Connections to and from Blacklisted Countries (Belarus, Côte d'Ivoire, Cuba, Democratic Republic of the Congo, Iran, Iraq, Liberia, North Korea, South Sudan, Sudan, Syria, Zimbabwe)",
+        "additionalDataFields": "[]"
+    },
+    "internalAddress": "184.174.38.51",
+    "internalPort": 35125,
+    "externalAddress": "217.218.108.188",
+    "externalPort": 443,
+    "flowDirection": "OUTBOUND",
+    "acked": true,
+    "protocol": "TCP",
+    "externalCountryCodes": [
+        "IR"
+    ],
+    "internalCountryCodes": [
+        "US"
+    ],
+    "externalCountryCode": "IR",
+    "internalCountryCode": "US",
+    "internalExposureTypes": [],
+    "internalDomains": [],
+    "internalTags": {
+        "ipRange": []
+    },
+    "observationTimestamp": "2020-03-23T14:59:04.211Z",
+    "created": "2020-03-24T02:45:28.450131Z"
+}
+```
 
 ## Commands
 ---
@@ -97,6 +138,9 @@ You can execute these commands from the Demisto CLI, as part of an automation, o
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. ip
 2. domain
+3. expanse-get-certificate
+4. expanse-get-behavior
+
 ### 1. ip
 ---
 ip command
@@ -207,7 +251,7 @@ ip command
 ### IP information for: 74.142.119.130
 |Address|Annotations|BusinessUnits|Geo|IPRange|SeverityCounts|Version|
 |---|---|---|---|---|---|---|
-| 74.142.119.130 | Tags: <br>AdditionalNotes: <br>PointsOfContact:  | Acme Latex Supply | Location: 41.0433:-81.5239<br>Description: AKRON<br>Latitude: 41.0433<br>Longitude: -81.5239<br>City: AKRON<br>RegionCode: OH<br>CountryCode: US | StartAddress: 74.142.119.128<br>EndAddress: 74.142.119.135<br>RangeSize: 8<br>ResponsiveIPCount: 1<br>RangeIntroduced: 2019-08-02<br>AttributionReasons: This parent range is attributed via IP network registration records for 74.142.119.128–74.142.119.135 | CRITICAL: 2<br>ROUTINE: 2<br>WARNING: 4 | 4 |
+| 74.142.119.130 | AdditionalNotes: null<br />PointsOfContact: null<br />Tags: null| Acme Latex Supply | Description: AKRON<br />Latitude: 41.0433<br />Longitude: -81.5239<br />City: AKRON<br />RegionCode: OH<br />CountryCode: US<br />Location: 41.0433:-81.5239 | StartAddress: 74.142.119.128<br />EndAddress: 74.142.119.135<br />RangeSize: 8<br />ResponsiveIPCount: 2<br />RangeIntroduced: 2019-08-02<br />AttributionReasons: This parent range is attributed via IP network registration records for 74.142.119.128–74.142.119.135 | CRITICAL: 1<br />ROUTINE: 4<br />WARNING: 2 | 4 |
 
 
 ### 2. domain
@@ -335,8 +379,8 @@ domain command
         }, 
         "WHOIS": {
             "Admin": {
-                "Phone": "14806242599", 
-                "Email": "ENRON.COM@domainsbyproxy.com", 
+                "Phone": "14806242599",
+                "Email": "ENRON.COM@domainsbyproxy.com",
                 "Name": "Registration Private"
             }, 
             "DomainStatus": [
@@ -446,7 +490,206 @@ domain command
 ### Domain information for: atlas.enron.com
 |Admin|BusinessUnits|CloudResources|CreationDate|DNS|DNSSEC|DateAdded|DomainStatus|ExpirationDate|FirstObserved|HasLinkedCloudResources|LastObserved|LastSampledIP|LastSubdomainMetadata|Name|NameServers|Organization|RecentIPs|Registrant|ServiceStatus|SourceDomain|Tenant|WHOIS|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Country: UNITED STATES<br>Email: ENRON.COM@domainsbyproxy.com<br>Name: Registration Private<br>Phone: 14806242599 | VanDelay Industries |  | 1995-10-10T04:00:00Z |  |  | 2020-01-04T04:57:48.580Z | HAS_DNS_RESOLUTION | 2019-10-10T04:00:00Z | 2020-01-02T09:30:00.374Z | false | 2020-01-02T09:30:00.374Z | 192.64.147.150 |  | atlas.enron.com | NS73.DOMAINCONTROL.COM,<br>NS74.DOMAINCONTROL.COM | Domains By Proxy, LLC |  | Country: UNITED STATES<br>Email: ENRON.COM@domainsbyproxy.com<br>Name: Registration Private<br>Phone: 14806242599 | NO_ACTIVE_SERVICE,<br>NO_ACTIVE_CLOUD_SERVICE,<br>NO_ACTIVE_ON_PREM_SERVICE | enron.com | VanDelay Industries | DomainStatus: clientDeleteProhibited clientRenewProhibited clientTransferProhibited clientUpdateProhibited<br>NameServers: NS73.DOMAINCONTROL.COM,<br>NS74.DOMAINCONTROL.COM<br>CreationDate: 1995-10-10T04:00:00Z<br>UpdatedDate: 2015-07-29T16:20:56Z<br>ExpirationDate: 2019-10-10T04:00:00Z<br>Registrant: {"Email": "ENRON.COM@domainsbyproxy.com", "Name": "Registration Private", "Phone": "14806242599"}<br>Registrar: {"Name": "GoDaddy.com, LLC", "AbuseEmail": null, "AbusePhone": null}<br>Admin: {"Name": "Registration Private", "Email": "ENRON.COM@domainsbyproxy.com", "Phone": "14806242599"} |
+| Country: UNITED STATES<br />Email: ENRON.COM@domainsbyproxy.com<br />Name: Registration Private<br />Phone: 14806242599 | VanDelay Industries |  | 1995-10-10T04:00:00Z |  |  | 2020-01-04T04:57:48.580Z | HAS_DNS_RESOLUTION | 2019-10-10T04:00:00Z | 2020-01-02T09:30:00.374Z | false | 2020-01-02T09:30:00.374Z | 192.64.147.150 |  | atlas.enron.com | NS73.DOMAINCONTROL.COM,<br />NS74.DOMAINCONTROL.COM | Domains By Proxy, LLC |  | Country: UNITED STATES<br />Email: ENRON.COM@domainsbyproxy.com<br />Name: Registration Private<br />Phone: 14806242599 | NO_ACTIVE_SERVICE,<br />NO_ACTIVE_CLOUD_SERVICE,<br />NO_ACTIVE_ON_PREM_SERVICE | enron.com | VanDelay Industries | DomainStatus: clientDeleteProhibited clientRenewProhibited clientTransferProhibited clientUpdateProhibited<br />NameServers: NS73.DOMAINCONTROL.COM,<br />NS74.DOMAINCONTROL.COM<br />CreationDate: 1995-10-10T04:00:00Z<br />UpdatedDate: 2015-07-29T16:20:56Z<br />ExpirationDate: 2019-10-10T04:00:00Z<br />Registrant: {"Email": "ENRON.COM@domainsbyproxy.com", "Name": "Registration Private", "Phone": "14806242599"}<br />Registrar: {"Name": "GoDaddy.com, LLC", "AbuseEmail": null, "AbusePhone": null}<br />Admin: {"Name": "Registration Private", "Email": "ENRON.COM@domainsbyproxy.com", "Phone": "14806242599"} |
+
+### 3. expanse-get-certificate
+---
+expanse-get-certificate command
+##### Required Permissions
+**none**
+##### Base Command
+
+`expanse-get-certificate`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| common_name | domain to search | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Expanse.Certificate.SearchTerm | string | The common name searched for |
+| Expanse.Certificate.CommonName | string | The certificate common name |
+| Expanse.Certificate.FirstObserved | date | Certificate first observation date |
+| Expanse.Certificate.LastObserved | date | Certificate last observation date |
+| Expanse.Certificate.DateAdded | date | Date certificate was added to Expanse |
+| Expanse.Certificate.Provider | string | The certificate provider |
+| Expanse.Certificate.NotValidBefore | date | Certificate not-valid-before date |
+| Expanse.Certificate.NotValidAfter | date | Certificate not-valid-after date |
+| Expanse.Certificate.Properties | string | Certificate properties |
+| Expanse.Certificate.MD5Hash | string | Certificate MD5 Hash |
+| Expanse.Certificate.PublicKeyAlgorithm | string | Certificate public key algorithm used |
+| Expanse.Certificate.PublicKeyBits | number | Public key size |
+| Expanse.Certificate.BusinessUnits | string | Business Unit for certificate |
+| Expanse.Certificate.CertificateAdvertisementStatus | string | Is Certificate advertised |
+| Expanse.Certificate.ServiceStatus | string | Any detected services for the certificate |
+| Expanse.Certificate.RecentIPs | string | Any recent IPs the certificate was detected on |
+| Expanse.Certificate.CloudResources | string | Any cloud resources returning the certificate |
+| Expanse.Certificate.PemSha1 | string | SHA1 hash of the certificate PEM |
+| Expanse.Certificate.PemSha256 | string | SHA256 hash of the certificate PEM |
+| Expanse.Certificate.Issuer.Name | string | Certificate Issuer name |
+| Expanse.Certificate.Issuer.Email | string | Certificate Issuer email |
+| Expanse.Certificate.Issuer.Country | string | Certificate Issuer country |
+| Expanse.Certificate.Issuer.Org | string | Certificate Issuer Org |
+| Expanse.Certificate.Issuer.Unit | string | Certificate Issuer Unit |
+| Expanse.Certificate.Issuer.AltNames | string | Certificate Issuer alternative names |
+| Expanse.Certificate.Issuer.Raw | string | Certificate Issuer raw details |
+| Expanse.Certificate.Subject.Name | string | Certificate Subject name |
+| Expanse.Certificate.Subject.Email | string | Certificate Subject email |
+| Expanse.Certificate.Subject.Country | string | Certificate Subject country |
+| Expanse.Certificate.Subject.Org | string | Certificate Subject Org |
+| Expanse.Certificate.Subject.Unit | string | Certificate Subject Unit |
+| Expanse.Certificate.Subject.AltNames | string | Certificate Subject alternative names | 
+| Expanse.Certificate.Subject.Raw | string | Certificate Subject raw details |
+
+##### Command Example
+```!expanse-get-certificate common_name=atlas.enron.com```
+
+##### Context Example
+```
+{
+    "Expanse.Certificate": {
+        "BusinessUnits": "VanDelay Industries",
+        "CertificateAdvertisementStatus": "NO_CERTIFICATE_ADVERTISEMENT",
+        "CloudResources": "",
+        "CommonName": "atlas.enron.com",
+        "DateAdded": "2019-11-21T09:14:27.308679Z",
+        "FirstObserved": "2019-11-21T09:14:27.308679Z",
+        "Issuer": {
+            "AltNames": "",
+            "Country": "US",
+            "Email": null,
+            "Name": "Let's Encrypt Authority X3",
+            "Org": "Let's Encrypt",
+            "Raw": "C=US,O=Let's Encrypt,CN=Let's Encrypt Authority X3",
+            "Unit": null
+        },
+        "LastObserved": ""2019-12-19T09:13:47.208679Z",
+        "MD5Hash": "VEwAbJfmIFAVcZ_x4lm42g==",
+        "NotValidAfter": "2019-03-31T00:27:46Z",
+        "NotValidBefore": "2018-12-31T00:27:46Z",
+        "PemSha1": "3LAYlmV3xtn4ONJ3C9JN_ogz0u8=",
+        "PemSha256": "kyERnydF-dzOuCCpG4jDnkGr4fI2a--lBZQz2hyhb30=",
+        "Properties": "EXPIRED",
+        "Provider": "None",
+        "PublicKeyAlgorithm": "RSA",
+        "PublicKeyBits": 2048,
+        "RecentIPs": "",
+        "SearchTerm": "atlas.enron.com",
+        "ServiceStatus": "NO_ACTIVE_SERVICE,NO_ACTIVE_ON_PREM_SERVICE,NO_ACTIVE_CLOUD_SERVICE",
+        "Subject": {
+            "AltNames": "atlas.enron.com",
+            "Country": "US",
+            "Email": "ENRON.COM@domainsbyproxy.com",
+            "Name": "atlas.enron.com",
+            "Org": "ENRON",
+            "Raw": "CN=api-dev.radioshack.com",
+            "Unit": null
+        }
+    }
+}
+```
+
+##### Human Readable Output
+### Certificate information for: atlas.enron.com
+|BusinessUnits|CertificateAdvertisementStatus|CloudResources|CommonName|DateAdded|FirstObserved|Issuer|LastObserved|MD5Hash|NotValidAfter|NotValidBefore|PemSha1|PemSha256|Properties|Provider|PublicKeyAlgorithm|PublicKeyBits|RecentIPs|SearchTerm|ServiceStatus|Subject|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| VanDelay Industries | NO_CERTIFICATE_ADVERTISEMENT |  | atlas.enron.com | 2019-11-21T09:14:27.308679Z |  | Name: Let's Encrypt Authority X3<br />Email: null<br />Country: US<br />Org: Let's Encrypt<br />Unit: null<br />AltNames: <br />Raw: C=US,O=Let's Encrypt,CN=Let's Encrypt Authority X3 |  | VEwAbJfmIFAVcZ_x4lm42g== | 2019-03-31T00:27:46Z | 2018-12-31T00:27:46Z | 3LAYlmV3xtn4ONJ3C9JN_ogz0u8= | kyERnydF-dzOuCCpG4jDnkGr4fI2a--lBZQz2hyhb30= | EXPIRED | None | RSA | 2048 |  | atlas.enron.com | NO_ACTIVE_SERVICE,NO_ACTIVE_ON_PREM_SERVICE,NO_ACTIVE_CLOUD_SERVICE | Name: atlas.enron.com<br />Email: ENRON.COM@domainsbyproxy.com<br />Country: US<br />Org: null<br />Unit: null<br />AltNames: atlas.enron.com<br />Raw: CN=atlas.enron.com |
+
+
+### 4. expanse-get-behavior
+---
+expanse-get-behavior command
+##### Required Permissions
+**none**
+##### Base Command
+
+`expanse-get-behavior`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | ip to search| Required |
+| start_time | ISO-8601 UTC timestamp denoting the earliest behavior data to fetch| Required |
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Expanse.Behavior.SearchTerm | string | IP used to search |
+| Expanse.Behavior.InternalAddress| string | IP internal to Organization |
+| Expanse.Behavior.InternalCountryCode | string | Internal IP Country Geolocation country |
+| Expanse.Behavior.BusinessUnit | string | Buisness unit of IP |
+| Expanse.Behavior.InternalDomains | string | Known domains associated with IP |
+| Expanse.Behavior.InternalIPRanges | string | Known Internal IP ranges containing IP |
+| Expanse.Behavior.InternalExposureTypes | string | Known Exposures for IP |
+| Expanse.Behavior.ExternalAddresses | string | External IP addresses with known communication to IP |
+| Expanse.Behavior.FlowSummaries | string | Summaries of most recents risky flows for IP |
+| Expanse.Behavior.Flows | string | Array of Flow Objects |
+| Expanse.Behavior.Flows.InternalAddress | string | Internal IP address for flow |
+| Expanse.Behavior.Flows.InternalPort | number | Internal Port for flow |
+| Expanse.Behavior.Flows.InternalCountryCode | string | Internal country code for flow |
+| Expanse.Behavior.Flows.ExternalAddress | string | External IP address for flow |
+| Expanse.Behavior.Flows.ExternalPort | number | External Port for flow |
+| Expanse.Behavior.Flows.ExternalCountryCode | string | External country code for flow |
+| Expanse.Behavior.Flows.Timestamp | date | Timestamp of flow |
+| Expanse.Behavior.Flows.Protocol | string | Protocol of flow (UDP, TCP) |
+| Expanse.Behavior.Flows.Direction | string | Direction of flow |
+| Expanse.Behavior.Flows.RiskRule | string | Risk rule violated by flow | 
+
+##### Command Example
+```!expanse-get-behavior ip=74.142.119.130 start_time=7```
+
+##### Context Example
+```
+{
+    "BusinessUnit": "VanDelay Industries",
+    "ExternalAddresses": "66.110.49.36,66.110.49.72",
+    "FlowSummaries": "74.142.119.130:57475 (US) -\u003e 66.110.49.72:443 (CA) TCP violates Outbound Flows from Servers at 2020-04-05T21:18:56.889Z\n74.142.119.130:61694 (US) -\u003e 66.110.49.36:443 (CA) TCP violates Outbound Flows from Servers at 2020-04-05T21:03:50.867Z\n",
+    "Flows": [
+        {
+            "Direction": "OUTBOUND",
+            "ExternalAddress": "66.110.49.72",
+            "ExternalCountryCode": "CA",
+            "ExternalPort": 443,
+            "InternalAddress": "74.142.119.130",
+            "InternalCountryCode": "US",
+            "InternalPort": 57475,
+            "Protocol": "TCP",
+            "RiskRule": "Outbound Flows from Servers",
+            "Timestamp": "2020-04-05T21:18:56.889Z"
+        },
+        {
+            "Direction": "OUTBOUND",
+            "ExternalAddress": "66.110.49.36",
+            "ExternalCountryCode": "CA",
+            "ExternalPort": 443,
+            "InternalAddress": "74.142.119.130",
+            "InternalCountryCode": "US",
+            "InternalPort": 61694,
+            "Protocol": "TCP",
+            "RiskRule": "Outbound Flows from Servers",
+            "Timestamp": "2020-04-05T21:03:50.867Z"
+        }
+    ],
+    "InternalAddress": "74.142.119.130",
+    "InternalCountryCode": "US",
+    "InternalDomains": "",
+    "InternalExposureTypes": "HttpServer",
+    "InternalIPRanges": "",
+    "SearchTerm": "74.142.119.130"
+}
+```
+
+##### Human Readable Output
+### Expanse Behavior information for: 74.142.119.130
+|BusinessUnit|ExternalAddresses|FlowSummaries|InternalAddress|InternalCountryCode|InternalDomains|InternalExposureTypes|InternalIPRanges|SearchTerm|
+|---|---|---|---|---|---|---|---|---|
+| VanDelay Industries | 66.110.49.36,66.110.49.72 | 74.142.119.130:57475 (US) -> 66.110.49.72:443 (CA) TCP violates Outbound Flows from Servers at 2020-04-05T21:18:56.889Z<br />74.142.119.130:61694 (US) -> 66.110.49.36:443 (CA) TCP violates Outbound Flows from Servers at 2020-04-05T21:03:50.867Z | 74.142.119.130 | US |  | HttpServer |  | 74.142.119.130 |
 
 
 ## Additional Information
@@ -461,4 +704,3 @@ domain command
 ## Contact Details
 ---
 For Product Support, please contact your Technical Account Manager or email help@expanseinc.com
-

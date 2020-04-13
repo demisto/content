@@ -1803,7 +1803,7 @@ tasks:
                   simple: (.*)
               replaceWith:
                 value:
-                  simple: UTF8(payload) LIKE  '$1'
+                  simple: UTF8(payload) ILIKE  '%$1%'
           - operator: join
             args:
               separator:
@@ -2139,7 +2139,7 @@ tasks:
                   simple: (.*)
               replaceWith:
                 value:
-                  simple: UTF8(payload) LIKE  '$1'
+                  simple: UTF8(payload) ILIKE  '%$1%'
           - operator: join
             args:
               separator:
@@ -2242,7 +2242,7 @@ tasks:
                   simple: (.*)
               replaceWith:
                 value:
-                  simple: UTF8(payload) LIKE  '$1'
+                  simple: UTF8(payload) ILIKE  '%$1%'
           - operator: join
             args:
               separator:
@@ -2345,7 +2345,7 @@ tasks:
                   simple: (.*)
               replaceWith:
                 value:
-                  simple: UTF8(payload) LIKE  '$1'
+                  simple: UTF8(payload) ILIKE  '%$1%'
           - operator: join
             args:
               separator:
