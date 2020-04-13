@@ -8,6 +8,7 @@ tags:
 - QRadar
 comment: Return the QRadar offense correlations if exist in logs.
 system: true
+deprecated: true
 args:
 - name: offenseID
   required: true
@@ -33,7 +34,7 @@ args:
   predefined:
   - "True"
   - "False"
-  description: Determines whether the CRE name is null by default.  
+  description: Determines whether the CRE name is null by default.
   defaultValue: "False"
 outputs:
 - contextPath: QRadar.Correlation

@@ -8,6 +8,7 @@ tags:
 - QRadar
 comment: Return the QRadar Correlation logs if exist
 system: true
+deprecated: true
 args:
 - name: offenseID
   required: true
