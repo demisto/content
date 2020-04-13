@@ -4,7 +4,9 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 
+import dateparser
 import json
+import re
 import requests
 import traceback
 from datetime import datetime, timedelta
@@ -21,6 +23,7 @@ FIRST_RUN = int(demisto.params().get('first_run', '7'))
 SERVER = 'https://expander.expanse.co'
 VERIFY_CERTIFICATES = not demisto.params().get('insecure')
 PROXY = demisto.params().get('proxy')
+BEHAVIOR_ENABLED = demisto.params().get('behavior', False)
 BASE_URL = SERVER
 EXPOSURE_EVENT_TYPES = "ON_PREM_EXPOSURE_APPEARANCE,ON_PREM_EXPOSURE_REAPPEARANCE"
 API_ENDPOINTS = {
@@ -38,6 +41,12 @@ API_ENDPOINTS = {
     },
     "events": {
         "version": 1
+    },
+    "behavior/risky-flows": {
+        "version": 1
+    },
+    "assets/certificates": {
+        "version": 2
     }
 }
 
@@ -60,7 +69,7 @@ def make_headers(endpoint, token):
     headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'User-Agent': 'Expanse_Demisto/1.0.0'
+        'User-Agent': 'Expanse_Demisto/1.1.0'
     }
     if endpoint == "IdToken":
         headers['Authorization'] = 'Bearer ' + token
@@ -88,6 +97,14 @@ def get_page_token(url):
         r = i.split("=")
         o[r[0]] = r[1]
     return o['pageToken']
+
+
+def get_next_offset(url):
+    offset = 0
+    matches = re.findall(r'offset\]\=(\d+)', url)
+    if matches != []:
+        offset = matches[0]
+    return offset
 
 
 def do_auth():
@@ -123,6 +140,7 @@ def http_request(method, endpoint, params=None, token=False):
         return_error("No authorization token provided")
     head = make_headers(endpoint, token)
     url = make_url(endpoint)
+    demisto.debug("Making request to {} with params: {}".format(url, params))
     r = requests.request(
         method,
         url,
@@ -162,6 +180,32 @@ def parse_events(events):
                 'expanserawjsonevent': json.dumps(event)
             },
             'severity': EXPOSURE_SEVERITY_MAPPING[event['payload']['severity']]
+        }
+        incidents.append(incident)
+    return incidents
+
+
+def parse_behavior(risky_flows):
+    """
+    build incidents from risky flows
+    """
+    incidents = []
+    for flow in risky_flows['data']:
+        incident = {
+            'name': "{rule} {int_}{int_port} : {ext}{ext_port}".format(
+                rule=flow['riskRule']['name'],
+                int_=flow['internalAddress'],
+                int_port=flow['internalPort'],
+                ext=flow['externalAddress'],
+                ext_port=flow['externalPort']
+            ),
+            'occurred': flow['observationTimestamp'],
+            'rawJSON': json.dumps(flow),
+            'type': 'Expanse Behavior',
+            'CustomFields': {
+                'expanserawjsonevent': json.dumps(flow)
+            },
+            'severity': 2  # All behavior is cast to a warning, we can revisit if critically is added to flow data
         }
         incidents.append(incident)
     return incidents
@@ -429,10 +473,159 @@ def get_expanse_domain_context(data):
     return c
 
 
-def fetch_incidents_command():
+def get_expanse_certificate_context(data):
+    """
+    provide custom context information about certificate with data from Expanse API
+    """
+    return {
+        "SearchTerm": data['search'],
+        "CommonName": data['commonName'],
+        "FirstObserved": data['firstObserved'],
+        "LastObserved": data['lastObserved'],
+        "DateAdded": data['dateAdded'],
+        "Provider": data['providers'][0]['name'],
+        "NotValidBefore": data['certificate']['validNotBefore'],
+        "NotValidAfter": data['certificate']['validNotAfter'],
+        "Issuer": {
+            "Name": data['certificate']['issuerName'],
+            "Email": data['certificate']['issuerEmail'],
+            "Country": data['certificate']['issuerCountry'],
+            "Org": data['certificate']['issuerOrg'],
+            "Unit": data['certificate']['issuerOrgUnit'],
+            "AltNames": data['certificate']['issuerAlternativeNames'],
+            "Raw": data['certificate']['issuer']
+        },
+        "Subject": {
+            "Name": data['certificate']['subjectName'],
+            "Email": data['certificate']['subjectEmail'],
+            "Country": data['certificate']['subjectCountry'],
+            "Org": data['certificate']['subjectOrg'],
+            "Unit": data['certificate']['subjectOrgUnit'],
+            "AltNames": data['certificate']['subjectAlternativeNames'],
+            "Raw": data['certificate']['subject']
+        },
+        "Properties": data['properties'][0],
+        "MD5Hash": data['certificate']['md5Hash'],
+        "PublicKeyAlgorithm": data['certificate']['publicKeyAlgorithm'],
+        "PublicKeyBits": data['certificate']['publicKeyBits'],
+        "BusinessUnits": data['businessUnits'][0]['name'],
+        "CertificateAdvertisementStatus": data['certificateAdvertisementStatus'][0],
+        "ServiceStatus": ','.join(data['serviceStatus']),
+        "RecentIPs": ','.join(data['details']['recentIps']),
+        "CloudResources": ','.join(data['details']['cloudResources']),
+        "PemSha1": data['certificate']['pemSha1'],
+        "PemSha256": data['certificate']['pemSha256']
+    }
+
+
+def get_expanse_behavior_context(data):
+    """
+    provides custom context information from the Expanse Behavior API
+    """
+
+    def flow_to_str(flow):
+        """
+        Reduces a risky flow to a summary string
+        """
+        return "{in_ip}:{in_port} ({in_co}) {direction} {ex_ip}:{ex_port} ({ex_co}) {pro} violates {rule} at {t}".format(
+            in_ip=flow['internalAddress'],
+            in_port=flow['internalPort'],
+            in_co=flow['internalCountryCode'],
+            direction="<-" if flow['flowDirection'] == "INBOUND" else "->",
+            ex_ip=flow['externalAddress'],
+            ex_port=flow['externalPort'],
+            ex_co=flow['externalCountryCode'],
+            pro=flow['protocol'],
+            rule=flow['riskRule']['name'],
+            t=flow['observationTimestamp']
+        )
+
+    def flow_to_obj(flow):
+        return {
+            "InternalAddress": flow['internalAddress'],
+            "InternalPort": flow['internalPort'],
+            "InternalCountryCode": flow['internalCountryCode'],
+            "ExternalAddress": flow['externalAddress'],
+            "ExternalPort": flow['externalPort'],
+            "ExternalCountryCode": flow['externalCountryCode'],
+            "Protocol": flow['protocol'],
+            "Timestamp": flow['observationTimestamp'],
+            "Direction": flow['flowDirection'],
+            "RiskRule": flow['riskRule']['name']
+        }
+
+    return {
+        "SearchTerm": data[0]['internalAddress'],
+        "InternalAddress": data[0]['internalAddress'],
+        "InternalCountryCode": data[0]['internalCountryCode'],
+        "BusinessUnit": data[0]['businessUnit']['name'],
+        "FlowSummaries": '\n'.join([flow_to_str(flow) for flow in data]),
+        "Flows": [flow_to_obj(flow) for flow in data],
+        "ExternalAddresses": ','.join(set([flow['externalAddress'] for flow in data])),
+        "InternalDomains": ','.join(data[0]['internalDomains']),
+        "InternalIPRanges": ','.join(data[0]['internalTags']['ipRange']),
+        "InternalExposureTypes": ','.join(data[0]['internalExposureTypes'])
+    }
+
+
+def fetch_events_incidents_command(start_date, end_date, token, next_=None):
     """
     retrieve active exposures from Expanse API and create incidents
     """
+    params = {
+        'startDateUtc': start_date,
+        'endDateUtc': end_date,
+        'eventType': EXPOSURE_EVENT_TYPES,
+        'limit': PAGE_LIMIT
+    }
+
+    if next_:
+        params['pageToken'] = next_
+
+    events = http_request('GET', 'events', params=params, token=token)
+
+    if events['meta']['dataAvailable'] is True:
+
+        if events['pagination']['next']:
+            # will retrieve more data with pageToken next run
+            next_page_token = get_page_token(events['pagination']['next'])
+        else:
+            next_page_token = None
+
+        incidents = parse_events(events)
+        return (incidents, next_page_token)
+    return ([], None)
+
+
+def fetch_behavior_incidents_command(start_date, token, offset=0):
+    """
+    retrieve risky flow details from Expanse Behavior API and create incidents
+    """
+    params = {
+        'filter[created-after]': start_date + 'T00:00:00.000Z',
+        'page[limit]': PAGE_LIMIT,
+        'page[offset]': offset if offset is not None else 0
+    }
+
+    flows = http_request('GET', 'behavior/risky-flows', params=params, token=token)
+
+    if flows['meta']['totalCount'] is not None and flows['meta']['totalCount'] > 0:
+        if flows['pagination']['next']:
+            next_offset = get_next_offset(flows['pagination']['next'])
+        else:
+            next_offset = None
+
+        incidents = parse_behavior(flows)
+        return (incidents, next_offset)
+    return ([], None)
+
+
+def fetch_incidents_command():
+    """
+    Parent command to wrap events and behavior fetch commands
+    """
+
+    # Check if it's been run
     now = datetime.today()
     today = datetime.strftime(now, "%Y-%m-%d")
     yesterday = datetime.strftime(now - timedelta(days=1), "%Y-%m-%d")
@@ -443,57 +636,44 @@ def fetch_incidents_command():
     if "start_time" not in last_run or "complete_for_today" not in last_run:
         # first time integration is running
         start_date = datetime.strftime(now - timedelta(days=FIRST_RUN), "%Y-%m-%d")
-        demisto.setLastRun({
-            'start_time': start_date,
-            'complete_for_today': False
-        })
 
     if last_run.get('complete_for_today') is True and last_run.get('start_time') == today:
         # wait until tomorrow to try again
-        demisto.incidents([])
         return
 
-    # fetch events
-    params = {
-        'startDateUtc': start_date,
-        'endDateUtc': end_date,
-        'eventType': EXPOSURE_EVENT_TYPES,
-        'limit': PAGE_LIMIT
-    }
+    # Refresh JWT
     token = do_auth()
 
-    if last_run.get('next'):
-        # continue pulling events
-        params['pageToken'] = last_run.get('next')
+    # Fetch Events
+    more_events = True
+    page_token = None
 
-    events = http_request('GET', 'events', params=params, token=token)
+    while more_events:
+        event_incidents, page_token = fetch_events_incidents_command(start_date, end_date, token, page_token)
+        for incident in event_incidents:
+            demisto.debug("Adding event incident name={name}, type={type}, severity={severity}".format(**incident))
+        demisto.incidents(event_incidents)
+        if page_token is None:
+            more_events = False
 
-    next_run = {
-        "next": False,
-        "complete_for_today": False,
+    # Fetch Behavior
+    if BEHAVIOR_ENABLED:
+        more_behavior = True
+        next_offset = None
+
+        while more_behavior:
+            behavior_incidents, next_offset = fetch_behavior_incidents_command(start_date, token, next_offset)
+            for incident in behavior_incidents:
+                demisto.debug("Adding behavior incident name={name}, type={type}, severity={severity}".format(**incident))
+            demisto.incidents(behavior_incidents)
+            if next_offset is None:
+                more_behavior = False
+
+    # Save last_run
+    demisto.setLastRun({
+        "complete_for_today": True,
         "start_time": yesterday
-    }
-
-    if events['meta']['dataAvailable'] is True:
-        # parse events into incidents
-
-        if events['pagination']['next']:
-            # will retrieve more data with pageToken next run
-            next = get_page_token(events['pagination']['next'])
-            next_run['complete_for_today'] = False
-            next_run['next'] = next
-
-        else:
-            # end of data, wait for tomorrow
-            next_run['complete_for_today'] = True
-            next_run['start_time'] = today
-
-        incidents = parse_events(events)
-        demisto.incidents(incidents)
-    else:
-        demisto.incidents([])
-
-    demisto.setLastRun(next_run)
+    })
 
 
 def ip_command():
@@ -571,6 +751,102 @@ def domain_command():
     return_outputs(human_readable, ec, domain)
 
 
+def certificate_command():
+    """
+    searches by domain name for certificate information
+    """
+    search = demisto.args()['common_name']
+    params = {
+        "commonNameSearch": search
+    }
+    token = do_auth()
+    results = http_request('GET', 'assets/certificates', params, token=token)
+    try:
+        certs = results['data']
+        if len(results['data']) == 0:
+            demisto.results("No data found")
+            return
+    except Exception:
+        demisto.results("No data found")
+        return
+
+    cert = certs[0]  # just return the first one
+    cert['search'] = search
+
+    expanse_cert_context = get_expanse_certificate_context(cert)
+
+    ec = {
+        'Expanse.Certificate(val.SearchTerm == obj.SearchTerm)': expanse_cert_context
+    }
+    human_readable = tableToMarkdown("Certificate information for: {search}".format(search=search), expanse_cert_context)
+
+    return_outputs(human_readable, ec, cert)
+
+
+def behavior_command():
+    """
+    searches by ip for behavior details from Expanse
+    """
+    search = demisto.args()['ip']
+    start_time = arg_to_timestamp(
+        demisto.args().get('start_time'),
+        arg_name='start_time',
+        required=False
+    )
+
+    now = datetime.today()
+    time_range = datetime.strftime(now - timedelta(days=FIRST_RUN), "%Y-%m-%d")
+    if start_time is None:
+        start_time = time_range + 'T00:00:00.000Z'
+    params = {
+        "filter[internal-ip-range]": search,
+        'page[limit]': 20,
+        'filter[created-after]': start_time,
+    }
+    token = do_auth()
+    results = http_request('GET', 'behavior/risky-flows', params, token=token)
+    try:
+        behaviors = results['data']
+        if len(behaviors) == 0:
+            demisto.results("No data found")
+            return
+    except Exception:
+        demisto.results("No data found")
+        return
+
+    expanse_behavior_context = get_expanse_behavior_context(behaviors)
+
+    ec = {
+        'Expanse.Behavior(val.SearchTerm == obj.SearchTerm)': expanse_behavior_context
+    }
+
+    del expanse_behavior_context['Flows']  # Remove flow objects from human readable response
+    human_readable = tableToMarkdown("Expanse Behavior information for: {search}".format(search=search), expanse_behavior_context)
+
+    return_outputs(human_readable, ec, behaviors)
+
+
+def arg_to_timestamp(arg, arg_name: str, required: bool = False):
+    if arg is None:
+        if required is True:
+            raise ValueError(f'Missing "{arg_name}"')
+        return None
+
+    if isinstance(arg, str) and arg.isdigit():
+        # timestamp that str - we just convert it to int
+        return int(arg)
+    if isinstance(arg, str):
+        # if the arg is string of date format 2019-10-23T00:00:00 or "3 days", etc
+        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+        if date is None:
+            # if d is None it means dateparser failed to parse it
+            raise ValueError(f'Invalid date: {arg_name}')
+
+        return int(date.timestamp())
+    if isinstance(arg, (int, float)):
+        return arg
+
+
 def test_module():
     token = do_auth()
     now = datetime.today()
@@ -606,6 +882,12 @@ def main():
 
         elif active_command == 'domain':
             domain_command()
+
+        elif active_command == 'expanse-get-certificate':
+            certificate_command()
+
+        elif active_command == 'expanse-get-behavior':
+            behavior_command()
 
     # Log exceptions
     except Exception as e:
