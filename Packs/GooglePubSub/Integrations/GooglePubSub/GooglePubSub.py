@@ -128,6 +128,26 @@ class PubSubClient(BaseGoogleClient):
             project_id = project_id[0]
         return project_id
 
+    def _create_subscription_body(self, ack_deadline_seconds, expiration_ttl, labels, message_retention_duration,
+                                  push_attributes, push_endpoint, retain_acked_messages, topic_name):
+        if push_endpoint or push_attributes:
+            push_config = assign_params(
+                pushEndpoint=push_endpoint,
+                attributes=attribute_pairs_to_dict(push_attributes),
+            )
+        else:
+            push_config = None
+        body = assign_params(
+            topic=topic_name,
+            pushConfig=push_config,
+            ackDeadlineSeconds=ack_deadline_seconds,
+            retainAckedMessages=retain_acked_messages,
+            messageRetentionDuration=message_retention_duration,
+            labels=attribute_pairs_to_dict(labels),
+            expirationPolicy=assign_params(ttl=expiration_ttl)
+        )
+        return body
+
     def get_topic_list(self, project_id, page_size, page_token=None):
         return (
             self.service.projects()
@@ -218,26 +238,44 @@ class PubSubClient(BaseGoogleClient):
 
         :return: Subscription
         """
-        if push_endpoint or push_attributes:
-            push_config = assign_params(
-                pushEndpoint=push_endpoint,
-                attributes=attribute_pairs_to_dict(push_attributes),
-            )
-        else:
-            push_config = None
-        body = assign_params(
-            topic=topic_name,
-            pushConfig=push_config,
-            ackDeadlineSeconds=ack_deadline_seconds,
-            retainAckedMessages=retain_acked_messages,
-            messageRetentionDuration=message_retention_duration,
-            labels=attribute_pairs_to_dict(labels),
-            expirationPolicy=assign_params(ttl=expiration_ttl)
-        )
+        body = self._create_subscription_body(ack_deadline_seconds, expiration_ttl, labels, message_retention_duration,
+                                              push_attributes, push_endpoint, retain_acked_messages, topic_name)
         return (
             self.service.projects()
                 .subscriptions()
                 .create(name=sub_name, body=body)
+                .execute()
+        )
+
+    def update_subscription(self, sub_name, topic_name, update_mask, push_endpoint, push_attributes,
+                            ack_deadline_seconds, retain_acked_messages, message_retention_duration, labels,
+                            expiration_ttl):
+        """
+        Updates a subscription
+        :param sub_name: full sub name
+        :param topic_name: full topic name
+        :param update_mask: Indicates which fields in the provided subscription to update.
+        :param push_endpoint: A URL locating the endpoint to which messages should be pushed.
+        :param push_attributes: Input format: "key=val" pairs sepearated by ",".
+        :param ack_deadline_seconds: The amount of time Pub/Sub waits for the subscriber to ack.
+        :param retain_acked_messages: if 'true' then retain acknowledged messages
+        :param message_retention_duration: How long to retain unacknowledged messages
+        :param labels: Input format: "key=val" pairs sepearated by ",".
+        :param expiration_ttl: The "time-to-live" duration for the subscription.
+
+        :return: Subscription
+        """
+        sub_body = self._create_subscription_body(ack_deadline_seconds, expiration_ttl, labels,
+                                                  message_retention_duration, push_attributes, push_endpoint,
+                                                  retain_acked_messages, topic_name)
+        body = assign_params(
+            subscription=sub_body,
+            updateMask=update_mask
+        )
+        return (
+            self.service.projects()
+                .subscriptions()
+                .patch(name=sub_name, body=body)
                 .execute()
         )
 
@@ -248,7 +286,6 @@ class PubSubClient(BaseGoogleClient):
         :param labels: "key=val" pairs sepearated by ",".'
         :param allowed_persistence_regions: an str representing a list of IDs of GCP regions
         :param kms_key_name: The full name of the Cloud KMS CryptoKey to be used to restrict access on this topic.
-
         :return: Topic
         """
         message_storage_policy = assign_params(allowedPersistenceRegions=allowed_persistence_regions)
@@ -274,6 +311,33 @@ class PubSubClient(BaseGoogleClient):
             self.service.projects()
                 .topics()
                 .delete(topic=topic_name)
+                .execute()
+        )
+
+    def update_topic(self, topic_name, labels, allowed_persistence_regions, kms_key_name, update_mask):
+        """
+        Updates a topic in the project
+        :param topic_name: name of the topic to be updated
+        :param labels: "key=val" pairs sepearated by ",".'
+        :param allowed_persistence_regions: an str representing a list of IDs of GCP regions
+        :param kms_key_name: The full name of the Cloud KMS CryptoKey to be used to restrict access on this topic.
+        :param update_mask: Indicates which fields in the provided topic to update.
+        :return: Topic
+        """
+        message_storage_policy = assign_params(allowedPersistenceRegions=allowed_persistence_regions)
+        topic = assign_params(
+            labels=attribute_pairs_to_dict(labels),
+            messageStoragePolicy=message_storage_policy,
+            kmsKeyName=kms_key_name
+        )
+        body = assign_params(
+            topic=topic,
+            updateMask=update_mask
+        )
+        return (
+            self.service.projects()
+                .topics()
+                .patch(name=topic_name, body=body)
                 .execute()
         )
 
@@ -635,9 +699,52 @@ def create_subscription_command(
     return readable_output, outputs, raw_sub
 
 
+def update_subscription_command(
+        client: PubSubClient, project_id: str, subscription_id: str, topic_id: str, update_mask: str,
+        push_endpoint: str = '', push_attributes: str = '', ack_deadline_seconds: str = '',
+        retain_acked_messages: str = '', message_retention_duration: str = '', labels: str = '',
+        expiration_ttl: str = ''
+) -> Tuple[str, dict, dict]:
+    """
+    Creates a subscription
+    Requires one of the following OAuth scopes:
+
+        https://www.googleapis.com/auth/pubsub
+        https://www.googleapis.com/auth/cloud-platform
+
+    :param client: GoogleClient
+    :param project_id: Name of the project from which the subscription is receiving messages.
+    :param subscription_id: Name of the created subscription.
+    :param topic_id: Name of the topic from which the subscription is receiving messages.
+    :param update_mask: Indicates which fields in the provided subscription to update.
+    :param push_endpoint: A URL locating the endpoint to which messages should be pushed.
+    :param push_attributes: Input format: "key=val" pairs sepearated by ",".
+    :param ack_deadline_seconds: The amount of time Pub/Sub waits for the subscriber to ack.
+    :param retain_acked_messages: if 'true' then retain acknowledged messages
+    :param message_retention_duration: How long to retain unacknowledged messages
+    :param labels: Input format: "key=val" pairs sepearated by ",".
+    :param expiration_ttl: The "time-to-live" duration for the subscription.
+    :return: Created subscription
+    """
+    full_sub_name = GoogleNameParser.get_full_subscription_project_name(project_id, subscription_id)
+    full_topic_name = GoogleNameParser.get_full_topic_name(project_id, topic_id)
+    raw_sub = client.update_subscription(full_sub_name, full_topic_name, update_mask, push_endpoint, push_attributes,
+                                         ack_deadline_seconds, retain_acked_messages, message_retention_duration,
+                                         labels, expiration_ttl)
+    sub = dict(raw_sub)
+    title = f"Subscription {subscription_id} was updated successfully"
+    readable_output = tableToMarkdown(title, sub)
+    sub['projectName'] = project_id
+    sub['subscriptionName'] = subscription_id
+    outputs = {
+        f"GoogleCloudPubSubSubscriptions(val && val.name === obj.name)": sub
+    }
+    return readable_output, outputs, raw_sub
+
+
 def create_topic_command(
         client: PubSubClient, project_id: str, topic_id: str,
-        allowed_persistence_regions: str, kms_key_name: str = None, labels: str = None
+        allowed_persistence_regions: str = '', kms_key_name: str = None, labels: str = None
 ) -> Tuple[str, dict, dict]:
     """
     Creates a topic
@@ -652,7 +759,7 @@ def create_topic_command(
     topic_name = GoogleNameParser.get_full_topic_name(project_id, topic_id)
     allowed_persistence_regions = argToList(allowed_persistence_regions)
     raw_topic = client.create_topic(topic_name, labels, allowed_persistence_regions, kms_key_name)
-    title = f"Topic {topic_id} was created successfully"
+    title = f"Topic **{topic_id}** was created successfully"
     readable_output = tableToMarkdown(title, raw_topic, headerTransform=pascalToSpace)
     outputs = {
         f"GoogleCloudPubSubTopics": raw_topic
@@ -672,8 +779,34 @@ def delete_topic_command(
     """
     topic_name = GoogleNameParser.get_full_topic_name(project_id, topic_id)
     raw_topic = client.delete_topic(topic_name)
-    readable_output = f"Topic {topic_id} was deleted successfully"
+    readable_output = f"Topic **{topic_id}** was deleted successfully"
     return readable_output, {}, raw_topic
+
+
+def update_topic_command(
+        client: PubSubClient, project_id: str, topic_id: str, update_mask: str,
+        allowed_persistence_regions: str = '', kms_key_name: str = None, labels: str = None
+) -> Tuple[str, dict, dict]:
+    """
+    Creates a topic
+    :param client: PubSub client instance
+    :param project_id: project ID
+    :param topic_id: topic ID
+    :param labels: "key=val" pairs sepearated by ",".'
+    :param allowed_persistence_regions: an str representing a list of IDs of GCP regions
+    :param kms_key_name: The full name of the Cloud KMS CryptoKey to be used to restrict access on this topic.
+    :param update_mask: Indicates which fields in the provided topic to update.
+    :return: Created topic
+    """
+    topic_name = GoogleNameParser.get_full_topic_name(project_id, topic_id)
+    allowed_persistence_regions = argToList(allowed_persistence_regions)
+    raw_topic = client.update_topic(topic_name, labels, allowed_persistence_regions, kms_key_name, update_mask)
+    title = f"Topic {topic_id} was updated successfully"
+    readable_output = tableToMarkdown(title, raw_topic, headerTransform=pascalToSpace)
+    outputs = {
+        f"GoogleCloudPubSubTopics(val && val.name === obj.name)": raw_topic
+    }
+    return readable_output, outputs, raw_topic
 
 
 def fetch_incidents(client: PubSubClient):
@@ -709,8 +842,10 @@ def main():
             "google-cloud-pubsub-topic-subscriptions-list": subscriptions_list_command,
             "google-cloud-pubsub-topic-subscription-get-by-name": get_subscription_command,
             "google-cloud-pubsub-topic-subscription-create": create_subscription_command,
+            "google-cloud-pubsub-topic-subscription-update": update_subscription_command,
             "google-cloud-pubsub-topic-create": create_topic_command,
             "google-cloud-pubsub-topic-delete": delete_topic_command,
+            "google-cloud-pubsub-topic-update": update_topic_command,
         }
         if command == "test-module":
             demisto.results(test_module(client, params.get('isFetch')))

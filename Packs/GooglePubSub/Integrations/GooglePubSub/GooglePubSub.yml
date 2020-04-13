@@ -379,7 +379,7 @@ script:
         https://cloud.google.com/compute/docs/regions-zones#locations
       isArray: true
       name: allowed_persistence_regions
-      required: true
+      required: false
       secret: false
     - default: false
       description: |-
@@ -426,6 +426,203 @@ script:
     description: Delete a topic.
     execution: false
     name: google-cloud-pubsub-topic-delete
+  - arguments:
+    - default: false
+      description: ID of the project the topic belongs to.
+      isArray: false
+      name: project_id
+      required: true
+      secret: false
+    - default: false
+      description: ID of the topic.
+      isArray: false
+      name: topic_id
+      required: true
+      secret: false
+    - default: false
+      description: '''Input format: "key=val" pairs sepearated by ",".'''
+      isArray: false
+      name: labels
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        A comma separated list of IDs of GCP regions where messages that are published to the topic may be persisted in storage. e.g. "us-east4,asia-1".
+        https://cloud.google.com/compute/docs/regions-zones#locations
+      isArray: true
+      name: allowed_persistence_regions
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        The full name of the Cloud KMS CryptoKey to be used to restrict access to messages published on this topic.
+
+        Full name format: projects/*/locations/*/keyRings/*/cryptoKeys/*.
+      isArray: false
+      name: kms_key_name
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Indicates which fields in the provided topic to update.
+        A comma-separated list of fields. Example: "labels,messageStoragePolicy".
+      isArray: false
+      name: update_mask
+      required: true
+      secret: false
+    deprecated: false
+    description: Updates a topic.
+    execution: false
+    name: google-cloud-pubsub-topic-update
+    outputs:
+    - contextPath: GoogleCloudPubSubTopics.name
+      description: Name of the topic
+      type: String
+    - contextPath: GoogleCloudPubSubTopics.labels
+      description: 'An object containing a list of "key": value pairs.'
+      type: Unknown
+    - contextPath: GoogleCloudPubSubTopics.messageStoragePolicy.allowedPersistenceRegions
+      description: A list of IDs of GCP regions where messages that are published
+        to the topic may be persisted in storage.
+      type: Unknown
+    - contextPath: GoogleCloudPubSubTopics.kmsKeyName
+      description: The resource name of the Cloud KMS CryptoKey to be used to restrict
+        access.
+      type: String
+  - arguments:
+    - default: false
+      description: |-
+        Indicates which fields in the provided subscription to update.
+        A comma-separated list of fully qualified names of fields.
+        Example: "pushConfig.pushEndpoint,ackDeadlineSeconds".
+      isArray: false
+      name: update_mask
+      required: true
+      secret: false
+    - default: false
+      description: ID of the project from which the subscription is receiving messages.
+      isArray: false
+      name: project_id
+      required: true
+      secret: false
+    - default: false
+      description: ID of the updated subscription.
+      isArray: false
+      name: subscription_id
+      required: true
+      secret: false
+    - default: false
+      description: ID of the topic from which the subscription is receiving messages.
+      isArray: false
+      name: topic_id
+      required: true
+      secret: false
+    - default: false
+      description: A URL locating the endpoint to which messages should be pushed.
+      isArray: false
+      name: push_endpoint
+      required: false
+      secret: false
+    - default: false
+      description: 'Endpoint configuration attributes that can be used to control
+        the message delivery. Input format: "key=val" pairs sepearated by ",".'
+      isArray: false
+      name: push_attributes
+      required: false
+      secret: false
+    - default: false
+      description: The amount of time Pub/Sub waits for the subscriber to acknowledge
+        receipt before resending the message.
+      isArray: false
+      name: ack_deadline_seconds
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Indicates whether to retain acknowledged messages.
+      isArray: false
+      name: retain_acked_messages
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      secret: false
+    - default: false
+      description: How long to retain unacknowledged messages in the subscription's
+        backlog. A duration of seconds e.g. "4.2s"
+      isArray: false
+      name: message_retention_duration
+      required: false
+      secret: false
+    - default: false
+      description: 'Input format: "key=val" pairs sepearated by ",".'
+      isArray: false
+      name: labels
+      required: false
+      secret: false
+    - default: false
+      description: The "time-to-live" duration for the subscription.
+      isArray: false
+      name: expiration_ttl
+      required: false
+      secret: false
+    deprecated: false
+    description: Update a subscription.
+    execution: false
+    name: google-cloud-pubsub-topic-subscription-update
+    outputs:
+    - contextPath: GoogleCloudPubSubSubscriptions.ackDeadlineSeconds
+      description: The amount of time Pub/Sub waits for the subscriber to acknowledge
+        receipt before resending the message.
+      type: Number
+    - contextPath: GoogleCloudPubSubSubscriptions.expirationPolicy.ttl
+      description: The "time-to-live" duration for the subscription.
+      type: String
+    - contextPath: GoogleCloudPubSubSubscriptions.messageRetentionDuration
+      description: How long to retain unacknowledged messages in the subscription's
+        backlog
+      type: String
+    - contextPath: GoogleCloudPubSubSubscriptions.name
+      description: Name of the subscription
+      type: String
+    - contextPath: GoogleCloudPubSubSubscriptions.topic
+      description: Name of the topic from which the subscription is receiving messages
+      type: String
+    - contextPath: GoogleCloudPubSubSubscriptions.projectName
+      description: Name of the project from which the subscription is receiving messages
+      type: String
+    - contextPath: GoogleCloudPubSubSubscriptions.subscriptionName
+      description: Name of the newly created subscription
+      type: String
+  - arguments:
+    - default: false
+      isArray: false
+      name: project_id
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: subscription_id
+      required: true
+      secret: false
+    - default: false
+      description: 'A timestamp in RFC3339 UTC "Zulu" format, accurate to nanoseconds.
+        Example: "2014-10-02T15:01:23.045123456Z".'
+      isArray: false
+      name: time
+      required: false
+      secret: false
+    - default: false
+      description: The snapshot to seek to.
+      isArray: false
+      name: snapshot
+      required: false
+      secret: false
+    deprecated: false
+    description: Seeks a subscription to a given point in time or to a given snapshot.
+    execution: false
+    name: google-cloud-pubsub-topic-messages-seek
   dockerimage: demisto/googleapi-python3:1.0.0.6696
   feed: false
   isfetch: true
