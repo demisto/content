@@ -112,10 +112,8 @@ class ParallelPrintsManager:
         return current_time - thread_last_update > 300
 
     def add_print_job(self, message_to_print, print_function_to_execute, thread_index, message_color=None):
-        if message_color:
-            print_job = PrintJob(message_to_print, print_function_to_execute, message_color)
-        else:
-            print_job = PrintJob(message_to_print, print_function_to_execute)
+        message_to_print = f'[{datetime.now()}] {message_to_print}'
+        print_job = PrintJob(message_to_print, print_function_to_execute, message_color=message_color)
         self.threads_print_jobs[thread_index].append(print_job)
         if self.should_update_thread_status(thread_index):
             print("Thread {} is still running.".format(thread_index))
