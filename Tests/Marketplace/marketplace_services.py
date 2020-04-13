@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 import re
 import subprocess
 import fnmatch
@@ -117,7 +118,7 @@ class Pack(object):
     USER_METADATA = "pack_metadata.json"
     METADATA = "metadata.json"
     AUTHOR_IMAGE_NAME = "Author_image.png"
-    EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS, "ReleaseNotes"]
+    EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS.value, "ReleaseNotes"]
     RELEASE_NOTES = "ReleaseNotes"
 
     def __init__(self, pack_name, pack_path):
