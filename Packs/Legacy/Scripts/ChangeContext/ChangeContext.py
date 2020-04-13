@@ -2,49 +2,41 @@ from CommonServerPython import *
 
 import json
 
-context_key = demisto.args().get('key', '')
-key_list = context_key.split('.')
-inplace = demisto.args().get('inplace') == 'True'
-capitalize = demisto.args().get('capitalize') == 'True'
-context = demisto.context()
-replace_dict = json.loads(demisto.args().get('replace_dict', "{}"))
 
+def replace_context(args: dict) -> tuple:
+    context = args.get('input', '')
+    output_key = args.get('output_key', '')
+    inplace = args.get('inplace', 'True') == 'True'
+    capitalize = args.get('capitalize') == 'True'
+    replace_dict = json.loads(args.get('replace_dict', "{}"))
 
-# find the right key
-for key in key_list:
     if not context:
-        return_error("The context key doesn't exist.")
-    context = context.get(key)
+        return "The context key you've entered is empty. Nothing has happened.", {}, {}
 
-# Change Context
-if isinstance(context, list) and isinstance(context[0], dict):
-    cap_context = []
-    for i in context:
-        title_context = {}
-        for k in i.keys():
-            if k in replace_dict:
-                title_context[replace_dict[k]] = i[k]
-            elif k[0] != k[0].upper() and capitalize:
-                title_context[k.title()] = i[k]
-            else:
-                title_context[k] = i[k]
-        cap_context.append(title_context)
+    if not isinstance(context, (list, dict)):
+        return "The context key you've entered is at the lowest level and cannot be changed.", {}, {}
 
-elif isinstance(context, dict):
-    cap_context = {}  # type: ignore
-    for k in context.keys():
-        if k in replace_dict:
-            cap_context[replace_dict[k]] = context[k]
-        elif k[0] != k[0].upper() and capitalize:
-            cap_context[k.title()] = context[k]
+    def replace_func(key):
+        if key in replace_dict.keys():
+            return replace_dict.get(key)
         else:
-            cap_context[k] = context[k]
-else:
-    return_error("Context key is not a dictionary or a list of dictionaries.")
+            if capitalize:
+                return key.title()
+            return key
 
-# How to return context
-if inplace:
-    demisto.executeCommand("Set", {'key': context_key, 'value': cap_context})
-    return_outputs(f"Capitalized {context_key} successfully")
-else:
-    return_outputs(f"Capitalized {context_key} successfully", {context_key: cap_context}, '')
+    new_context = createContext(context, keyTransform=replace_func)
+
+    if inplace:
+        demisto.executeCommand("Set", {'key': output_key, 'value': new_context})
+        return f"Changed {output_key} successfully", {}, {}
+    else:
+        return f"Appended {output_key} successfully", {output_key: new_context}, {}
+
+
+def main():
+    hr, ec, raw = replace_context(demisto.args())
+    return_outputs(hr, ec, raw)
+
+
+if __name__ in ['__main__', 'builtin', 'builtins']:
+    main()

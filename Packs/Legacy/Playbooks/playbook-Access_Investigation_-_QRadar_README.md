@@ -6,7 +6,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Sub-playbooks
 * Access Investigation - Generic
-* QRadar - Get offense correlations
+* QRadar - Get offense correlations v2
 
 ## Integrations
 * Builtin
