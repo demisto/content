@@ -11,6 +11,10 @@ import concurrent
 import requests
 import ssl
 from typing import Tuple, Dict, List, Optional
+import sys
+import traceback
+import threading
+import os
 
 # disable unsecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -1828,6 +1832,11 @@ def init_globals():
         # Use default SSL context
         SSL_CONTEXT = None
 
+    loop = asyncio.get_event_loop()
+    if not loop._default_executor:  # type: ignore[attr-defined]
+        demisto.info(f'setting _default_executor on loop: {loop} id: {id(loop)}')
+        loop.set_default_executor(concurrent.futures.ThreadPoolExecutor(max_workers=4))
+
     BOT_TOKEN = demisto.params().get('bot_token')
     ACCESS_TOKEN = demisto.params().get('access_token')
     PROXIES = handle_proxy()
@@ -1846,11 +1855,30 @@ def init_globals():
     PAGINATED_COUNT = int(demisto.params().get('paginated_count', '200'))
 
 
+def print_thread_dump():
+    demisto.info(f'current thread: {threading.current_thread().name}')
+    for threadId, stack in sys._current_frames().items():
+        stack_str = "\n".join(traceback.format_stack(stack))
+        demisto.info(f'{threadId} stack: {stack_str}')
+
+
+def loop_info(loop: asyncio.AbstractEventLoop):
+    if not loop:
+        return "loop is None"
+    info = f'loop: {loop}. id: {id(loop)}.'
+    info += f'executor: {loop._default_executor} id: {id(loop._default_executor)}'  # type: ignore[attr-defined]
+    if loop._default_executor:   # type: ignore[attr-defined]
+        info += f' executor threads size: {len(loop._default_executor._threads)}'  # type: ignore[attr-defined]
+        info += f' max: {loop._default_executor._max_workers} {loop._default_executor._threads}'  # type: ignore[attr-defined]
+    return info
+
+
 def main():
     """
     Main
     """
-
+    if is_debug_mode():
+        os.environ['PYTHONASYNCIODEBUG'] = "1"
     init_globals()
 
     commands = {
@@ -1872,11 +1900,16 @@ def main():
     }
 
     try:
-        command_func = commands[demisto.command()]
+        command_name = demisto.command()
+        command_func = commands[command_name]
         command_func()
     except Exception as e:
         LOG(e)
         return_error(str(e))
+    finally:
+        demisto.info(f'{command_name} completed. loop: {loop_info(CLIENT._event_loop)}')
+        if is_debug_mode():
+            print_thread_dump()
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
