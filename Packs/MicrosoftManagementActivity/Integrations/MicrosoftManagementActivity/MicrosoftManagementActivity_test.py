@@ -380,52 +380,12 @@ def create_client():
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
 
-    client = Client(base_url, username='', password='', headers='', verify=verify_certificate, proxy=proxy)
+    client = Client(base_url, verify=verify_certificate, proxy=proxy)
 
     return client
 
 
 ''' TESTS '''
-
-
-@pytest.mark.parametrize('integration_context, output', [(FIRST_RUN, "auth_code"), (EXPIRED_TOKEN, "refresh_token"),
-                                                         (ACTIVE_TOKEN, "refresh_token")])
-def test_get_access_token_request_data(mocker, integration_context, output):
-    from MicrosoftManagementActivity import Client
-    mocker.patch.object(demisto, 'params', return_value={})
-    data_for_request = Client.build_access_token_request_data(integration_context)
-
-    if output == 'auth_code':
-        assert 'grant_type' in data_for_request and data_for_request['grant_type'] == 'authorization_code'
-        assert 'code' in data_for_request and 'refresh_token' not in data_for_request
-    else:
-        assert 'grant_type' in data_for_request and data_for_request['grant_type'] == 'refresh_token'
-        assert 'refresh_token' in data_for_request and 'code' not in data_for_request
-
-
-def test_integration_context_update_after_token_request(mocker):
-    from MicrosoftManagementActivity import Client
-    new_context = Client.create_new_integration_context(GET_ACCESS_TOKEN_RESPONSE)
-    assert 'refresh_token' in new_context and new_context['refresh_token'] == "refresh"
-    assert 'access_token' in new_context and new_context['access_token'] == "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVC" \
-                                                                            "J9.eyJ0aWQiOiIxMjM0NTY3ODkwIiwiZXhw" \
-                                                                            "IjoxNTgyNzkzNTg2fQ.-p8gaG2vG90SH" \
-                                                                            "CvrDSratgPv-Bfti4iF2YTZ9AvIeJY"
-    assert 'expires_on' in new_context and new_context['expires_on'] == "1582793586"
-
-
-def test_get_access_token_data(requests_mock):
-    client = create_client()
-    requests_mock.post('https://login.windows.net/common/oauth2/token', json=GET_ACCESS_TOKEN_RESPONSE)
-    access_token_jwt, token_data = client.get_access_token_data()
-    assert access_token_jwt == "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ" \
-                               "0aWQiOiIxMjM0NTY3ODkwIiwiZXhwIjoxNTgyNzk" \
-                               "zNTg2fQ.-p8gaG2vG90SHCvrDSratgPv-Bfti4iF2YTZ9AvIeJY"
-    data = {
-        "tid": "1234567890",
-        "exp": 1582793586
-    }
-    assert token_data == data
 
 
 @pytest.mark.parametrize('last_run, first_fetch_delta, expected_start_time_'
