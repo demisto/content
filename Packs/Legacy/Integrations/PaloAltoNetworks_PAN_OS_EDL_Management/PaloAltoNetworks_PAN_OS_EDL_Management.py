@@ -143,7 +143,7 @@ def parse_url(item: str) -> str:
         >>> parse_url('https://google.com/hello_world')
         'google.com/hello_world'
         >>> parse_url('not url')
-        'google.com/hello_world'
+        'not url'yp
     """
     try:
         url_obj: ParseResult = urlparse(item)
