@@ -62,7 +62,7 @@ class BaseGoogleClient:
     A Client class to wrap the google cloud api library as a service.
     """
 
-    def __init__(self, service_name: str, service_version: str, client_secret: str, scopes: list, proxy: bool,
+    def __init__(self, service_name: str, service_version: str, client_secret: dict, scopes: list, proxy: bool,
                  insecure: bool, **kwargs):
         """
         :param service_name: The name of the service. You can find this and the service  here
@@ -91,12 +91,14 @@ class BaseGoogleClient:
         """
         if proxy:
             proxies = handle_proxy()
-            if not proxies or not proxies['https']:
-                raise Exception('https proxy value is empty. Check Demisto server configuration')
-            https_proxy = proxies['https']
-            if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
-                https_proxy = 'https://' + https_proxy
-            parsed_proxy = urllib.parse.urlparse(https_proxy)
+            https_proxy = proxies.get('https')
+            http_proxy = proxies.get('http')
+            if not https_proxy and not http_proxy:
+                raise Exception('https_proxy and http_proxy values are empty. Check Demisto server configuration')
+            proxy_conf = https_proxy if https_proxy else http_proxy
+            if not proxy_conf.startswith('https') and not proxy_conf.startswith('http'):
+                proxy_conf = 'https://' + proxy_conf
+            parsed_proxy = urllib.parse.urlparse(proxy_conf)
             proxy_info = httplib2.ProxyInfo(
                 proxy_type=httplib2.socks.PROXY_TYPE_HTTP,
                 proxy_host=parsed_proxy.hostname,
@@ -110,6 +112,7 @@ class BaseGoogleClient:
 # disable-secrets-detection-end
 
 
+# TODO: finish docstring
 class PubSubClient(BaseGoogleClient):
     def __init__(self, default_project, default_subscription, default_max_msgs, client_secret, **kwargs):
         super().__init__(client_secret=client_secret, **kwargs)
@@ -169,6 +172,13 @@ class PubSubClient(BaseGoogleClient):
         )
 
     def pull_messages(self, sub_name, max_messages, ret_immediately=True):
+        """
+        Pull messages for the subscription
+        :param sub_name: Subscription name
+        :param max_messages: The maximum number of messages to return for this request. Must be a positive integer
+        :param ret_immediately: when set to true will return immediately, otherwise will be async
+        :return: Messages
+        """
         req_body = {"returnImmediately": ret_immediately, "maxMessages": max_messages}
         return (
             self.service.projects()
@@ -178,6 +188,12 @@ class PubSubClient(BaseGoogleClient):
         )
 
     def ack_messages(self, sub_name, acks):
+        """
+        Ack a list of messages
+        :param sub_name: subscription name
+        :param acks: ack ids to ack
+        :return:
+        """
         body = {"ackIds": acks}
         return (
             self.service.projects()
@@ -186,8 +202,22 @@ class PubSubClient(BaseGoogleClient):
                 .execute()
         )
 
-    def create_subscription(self, full_sub_name, topic_id, push_endpoint, push_attributes, ack_deadline_seconds,
+    def create_subscription(self, sub_name, topic_name, push_endpoint, push_attributes, ack_deadline_seconds,
                             retain_acked_messages, message_retention_duration, labels, expiration_ttl):
+        """
+        Creates a subscription
+        :param sub_name: full sub name
+        :param topic_name: full topic name
+        :param push_endpoint: A URL locating the endpoint to which messages should be pushed.
+        :param push_attributes: Input format: "key=val" pairs sepearated by ",".
+        :param ack_deadline_seconds: The amount of time Pub/Sub waits for the subscriber to ack.
+        :param retain_acked_messages: if 'true' then retain acknowledged messages
+        :param message_retention_duration: How long to retain unacknowledged messages
+        :param labels: Input format: "key=val" pairs sepearated by ",".
+        :param expiration_ttl: The "time-to-live" duration for the subscription.
+
+        :return: Subscription
+        """
         if push_endpoint or push_attributes:
             push_config = assign_params(
                 pushEndpoint=push_endpoint,
@@ -196,7 +226,7 @@ class PubSubClient(BaseGoogleClient):
         else:
             push_config = None
         body = assign_params(
-            topic=topic_id,
+            topic=topic_name,
             pushConfig=push_config,
             ackDeadlineSeconds=ack_deadline_seconds,
             retainAckedMessages=retain_acked_messages,
@@ -207,7 +237,43 @@ class PubSubClient(BaseGoogleClient):
         return (
             self.service.projects()
                 .subscriptions()
-                .create(name=full_sub_name, body=body)
+                .create(name=sub_name, body=body)
+                .execute()
+        )
+
+    def create_topic(self, topic_name, labels, allowed_persistence_regions, kms_key_name):
+        """
+        Create a topic in the project
+        :param topic_name: name of the topic to be created
+        :param labels: "key=val" pairs sepearated by ",".'
+        :param allowed_persistence_regions: an str representing a list of IDs of GCP regions
+        :param kms_key_name: The full name of the Cloud KMS CryptoKey to be used to restrict access on this topic.
+
+        :return: Topic
+        """
+        message_storage_policy = assign_params(allowedPersistenceRegions=allowed_persistence_regions)
+        body = assign_params(
+            labels=attribute_pairs_to_dict(labels),
+            messageStoragePolicy=message_storage_policy,
+            kmsKeyName=kms_key_name
+        )
+        return (
+            self.service.projects()
+                .topics()
+                .create(name=topic_name, body=body)
+                .execute()
+        )
+
+    def delete_topic(self, topic_name):
+        """
+        Deletes a topic in the project
+        :param topic_name: name of the topic to be created
+        :return: Delete response
+        """
+        return (
+            self.service.projects()
+                .topics()
+                .delete(topic=topic_name)
                 .execute()
         )
 
@@ -333,7 +399,7 @@ def topics_list_command(
 
     topics = list(res.get("topics", []))
     readable_output = tableToMarkdown(f"Topics for project {project_id}", topics, ['name'])
-    outputs = {"GoogleCloudPubSub.Topics(val && val.name === obj.name)": topics}
+    outputs = {"GoogleCloudPubSubTopics(val && val.name === obj.name)": topics}
     return readable_output, outputs, res
 
 
@@ -534,6 +600,7 @@ def create_subscription_command(
         message_retention_duration: str = '', labels: str = '', expiration_ttl: str = ''
 ) -> Tuple[str, dict, dict]:
     """
+    Creates a subscription
     Requires one of the following OAuth scopes:
 
         https://www.googleapis.com/auth/pubsub
@@ -554,17 +621,59 @@ def create_subscription_command(
     """
     full_sub_name = GoogleNameParser.get_full_subscription_project_name(project_id, subscription_id)
     full_topic_name = GoogleNameParser.get_full_topic_name(project_id, topic_id)
-    sub = client.create_subscription(full_sub_name, full_topic_name, push_endpoint, push_attributes,
-                                     ack_deadline_seconds, retain_acked_messages, message_retention_duration, labels,
-                                     expiration_ttl)
+    raw_sub = client.create_subscription(full_sub_name, full_topic_name, push_endpoint, push_attributes,
+                                         ack_deadline_seconds, retain_acked_messages, message_retention_duration,
+                                         labels, expiration_ttl)
+    sub = dict(raw_sub)
     title = f"Subscription {subscription_id} was created successfully"
     readable_output = tableToMarkdown(title, sub)
-    sub['ProjectName'] = project_id
-    sub['SubscriptionName'] = subscription_id
+    sub['projectName'] = project_id
+    sub['subscriptionName'] = subscription_id
     outputs = {
         f"GoogleCloudPubSubSubscriptions": sub
     }
-    return readable_output, outputs, sub
+    return readable_output, outputs, raw_sub
+
+
+def create_topic_command(
+        client: PubSubClient, project_id: str, topic_id: str,
+        allowed_persistence_regions: str, kms_key_name: str = None, labels: str = None
+) -> Tuple[str, dict, dict]:
+    """
+    Creates a topic
+    :param client: PubSub client instance
+    :param project_id: project ID
+    :param topic_id: topic ID
+    :param labels: "key=val" pairs sepearated by ",".'
+    :param allowed_persistence_regions: an str representing a list of IDs of GCP regions
+    :param kms_key_name: The full name of the Cloud KMS CryptoKey to be used to restrict access on this topic.
+    :return: Created topic
+    """
+    topic_name = GoogleNameParser.get_full_topic_name(project_id, topic_id)
+    allowed_persistence_regions = argToList(allowed_persistence_regions)
+    raw_topic = client.create_topic(topic_name, labels, allowed_persistence_regions, kms_key_name)
+    title = f"Topic {topic_id} was created successfully"
+    readable_output = tableToMarkdown(title, raw_topic, headerTransform=pascalToSpace)
+    outputs = {
+        f"GoogleCloudPubSubTopics": raw_topic
+    }
+    return readable_output, outputs, raw_topic
+
+
+def delete_topic_command(
+        client: PubSubClient, project_id: str, topic_id: str
+) -> Tuple[str, dict, dict]:
+    """
+    Delete a topic
+    :param client: PubSub client instance
+    :param project_id: project ID
+    :param topic_id: topic ID
+    :return: Command success/error message
+    """
+    topic_name = GoogleNameParser.get_full_topic_name(project_id, topic_id)
+    raw_topic = client.delete_topic(topic_name)
+    readable_output = f"Topic {topic_id} was deleted successfully"
+    return readable_output, {}, raw_topic
 
 
 def fetch_incidents(client: PubSubClient):
@@ -593,6 +702,16 @@ def main():
     command = demisto.command()
     LOG(f"Command being called is {command}")
     try:
+        commands = {
+            "google-cloud-pubsub-topics-list": topics_list_command,
+            "google-cloud-pubsub-topic-publish-message": publish_message_command,
+            "google-cloud-pubsub-topic-messages-pull": pull_messages_command,
+            "google-cloud-pubsub-topic-subscriptions-list": subscriptions_list_command,
+            "google-cloud-pubsub-topic-subscription-get-by-name": get_subscription_command,
+            "google-cloud-pubsub-topic-subscription-create": create_subscription_command,
+            "google-cloud-pubsub-topic-create": create_topic_command,
+            "google-cloud-pubsub-topic-delete": delete_topic_command,
+        }
         if command == "test-module":
             demisto.results(test_module(client, params.get('isFetch')))
 
@@ -600,14 +719,6 @@ def main():
             demisto.incidents(fetch_incidents(client=client))
         else:
             args = demisto.args()
-            commands = {
-                "google-cloud-pubsub-topics-list": topics_list_command,
-                "google-cloud-pubsub-topic-publish-message": publish_message_command,
-                "google-cloud-pubsub-topic-messages-pull": pull_messages_command,
-                "google-cloud-pubsub-topic-subscriptions-list": subscriptions_list_command,
-                "google-cloud-pubsub-topic-subscription-get-by-name": get_subscription_command,
-                "google-cloud-pubsub-topic-subscription-create": create_subscription_command,
-            }
             return_outputs(*commands[command](client, **args))  # type: ignore[operator]
 
     # Log exceptions

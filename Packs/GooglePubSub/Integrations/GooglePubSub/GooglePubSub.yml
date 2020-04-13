@@ -74,7 +74,7 @@ script:
     execution: false
     name: google-cloud-pubsub-topics-list
     outputs:
-    - contextPath: GoogleCloudPubSub.Topics.name
+    - contextPath: GoogleCloudPubSubTopics.name
       description: Name of the topic
       type: String
   - arguments:
@@ -348,9 +348,84 @@ script:
     - contextPath: GoogleCloudPubSubSubscriptions.topic
       description: Name of the topic from which the subscription is receiving messages
       type: String
-    - contextPath: GoogleCloudPubSubSubscriptions.ProjectName
+    - contextPath: GoogleCloudPubSubSubscriptions.projectName
       description: Name of the project from which the subscription is receiving messages
       type: String
+    - contextPath: GoogleCloudPubSubSubscriptions.subscriptionName
+      description: Name of the newly created subscription
+      type: String
+  - arguments:
+    - default: false
+      description: ID of the project the topic will belong to.
+      isArray: false
+      name: project_id
+      required: true
+      secret: false
+    - default: false
+      description: ID of the newly created topic.
+      isArray: false
+      name: topic_id
+      required: true
+      secret: false
+    - default: false
+      description: '''Input format: "key=val" pairs sepearated by ",".'''
+      isArray: false
+      name: labels
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        A comma separated list of IDs of GCP regions where messages that are published to the topic may be persisted in storage. e.g. "us-east4,asia-1".
+        https://cloud.google.com/compute/docs/regions-zones#locations
+      isArray: true
+      name: allowed_persistence_regions
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        The full name of the Cloud KMS CryptoKey to be used to restrict access to messages published on this topic.
+
+        Full name format: projects/*/locations/*/keyRings/*/cryptoKeys/*.
+      isArray: false
+      name: kms_key_name
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a topic.
+    execution: false
+    name: google-cloud-pubsub-topic-create
+    outputs:
+    - contextPath: GoogleCloudPubSubTopics.name
+      description: Name of the topic
+      type: String
+    - contextPath: GoogleCloudPubSubTopics.labels
+      description: 'An object containing a list of "key": value pairs.'
+      type: Unknown
+    - contextPath: GoogleCloudPubSubTopics.messageStoragePolicy.allowedPersistenceRegions
+      description: A list of IDs of GCP regions where messages that are published
+        to the topic may be persisted in storage.
+      type: Unknown
+    - contextPath: GoogleCloudPubSubTopics.kmsKeyName
+      description: The resource name of the Cloud KMS CryptoKey to be used to restrict
+        access.
+      type: String
+  - arguments:
+    - default: false
+      description: ID of the project the topic will belong to.
+      isArray: false
+      name: project_id
+      required: true
+      secret: false
+    - default: false
+      description: ID of the newly created topic.
+      isArray: false
+      name: topic_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a topic.
+    execution: false
+    name: google-cloud-pubsub-topic-delete
   dockerimage: demisto/googleapi-python3:1.0.0.6696
   feed: false
   isfetch: true
