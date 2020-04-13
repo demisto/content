@@ -1,0 +1,99 @@
+category: Endpoint
+commonfields:
+  id: CarbonBlack ThreatHunter
+  version: -1
+configuration:
+- display: Server URL
+  name: serverurl
+  required: true
+  type: 0
+- display: API Token
+  name: api_token
+  required: true
+  type: 4
+- display: Application ID
+  name: app_id
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Organization Key
+  hidden: false
+  name: org_key
+  required: true
+  type: 0
+description: TODO
+display: CarbonBlack ThreatHunter
+name: CarbonBlack ThreatHunter
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Query CB Investigation
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: Windows Time
+      isArray: false
+      name: timeWindow
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: processes
+      description: Either Processes or Enriched-Events
+      isArray: false
+      name: type
+      predefined:
+      - processes
+      - enriched_events
+      required: false
+      secret: false
+    deprecated: false
+    description: Query CB Investigation
+    execution: false
+    name: cb-query
+    outputs:
+    - contextPath: CB.ThreatHunter.Query.Result
+      description: Output of CB Query
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Process Id
+      isArray: false
+      name: process_guid
+      required: true
+      secret: false
+    - default: false
+      description: Document Id available in process result
+      isArray: false
+      name: document_guid
+      required: false
+      secret: false
+    deprecated: false
+    description: Query CB Hunter to get the parent process given process_guid and
+      document_guid
+    execution: false
+    name: cb-get-process-details
+    outputs:
+    - contextPath: CB.ThreatHunter.Process.Details
+      description: Process details.
+      type: Unknown
+  dockerimage: demisto/python3:3.8.1.6120
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
