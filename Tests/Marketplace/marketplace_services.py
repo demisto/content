@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import subprocess
 import fnmatch
 import shutil
@@ -17,6 +18,9 @@ PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
 PACKS_FULL_PATH = os.path.join(CONTENT_ROOT_PATH, PACKS_FOLDER)  # full path to Packs folder in content repo
 IGNORED_FILES = ['__init__.py', 'ApiModules']  # files to ignore inside Packs folder
 IGNORED_PATHS = [os.path.join(PACKS_FOLDER, p) for p in IGNORED_FILES]
+MODIFIED_DATE_STRING_REGEX = r'(?P<mod_str>Last Modified: )(?P<date>(19|20)\d\d-(0[1-9]|1[012])-(' \
+                             r'[012]\d|3[01])T([01]\d|2[0-3]):([0-5]\d):([0-5]\d)Z)'
+DISPLAY_NAME_STRING_REGEX = r"(?P<disp_str>DisplayName: )(?P<disp_name>.*)"
 
 
 class GCPConfig(object):
@@ -647,6 +651,8 @@ class Pack(object):
         task_status = False
         try:
             release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
+            modified_pattern = re.compile(MODIFIED_DATE_STRING_REGEX)
+            display_name_pattern = re.compile(DISPLAY_NAME_STRING_REGEX)
             changelog_dict = {}
             for filename in os.listdir(release_notes_dir):
                 version = str(filename).replace('.md', '')
@@ -655,7 +661,30 @@ class Pack(object):
                     rn_path = os.path.join(release_notes_dir, filename)
                     with open(rn_path, 'r') as changelog_md:
                         changelog_lines = changelog_md.read()
-                        changelog_dict[version] = changelog_lines
+                        # Attempt to grab a DisplayName from the release notes
+                        if display_name_pattern.search(changelog_lines):
+                            display_dict = display_name_pattern.search(changelog_lines).groupdict()
+                            display_name = display_dict.get('disp_name')
+                        else:
+                            print_warning(f"Display Name not found in changelog for {self._pack_name}.")
+                            display_name = version
+                        '''
+                        Some release notes may not have a date in them. If not, we print a warning
+                        and set an arbitrary date.
+                        '''
+
+                        if modified_pattern.search(changelog_lines):
+                            modified_dict = modified_pattern.search(changelog_lines).groupdict()
+                            version_changelog = {'releaseNotes': changelog_lines,
+                                                 'displayName': display_name,
+                                                 'released': modified_dict.get('date')}
+                        else:
+                            print_warning(f"Modified date not found in changelog for {self._pack_name}. ")
+                            version_changelog = {'releaseNotes': changelog_lines,
+                                                 'displayName': display_name,
+                                                 'released': '2020-04-19T16:30:00Z'}
+                        changelog_dict[version] = version_changelog
+
                 else:
                     task_status = False
                     print_error(

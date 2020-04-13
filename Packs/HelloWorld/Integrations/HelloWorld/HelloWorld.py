@@ -551,6 +551,8 @@ def main():
                 alert_type=alert_type
             )
 
+
+
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
