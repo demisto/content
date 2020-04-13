@@ -1688,7 +1688,7 @@ def is_ip_valid(s, accept_v6_ips=False):
         return True
 
 
-def return_outputs(readable_output, outputs=None, raw_response=None, timeline=None):
+def return_outputs(readable_output, outputs=None, raw_response=None, timeline=None, ignore_auto_extract=False):
     """
     This function wraps the demisto.results(), makes the usage of returning results to the user more intuitively.
 
@@ -1708,6 +1708,9 @@ def return_outputs(readable_output, outputs=None, raw_response=None, timeline=No
         indicator's timeline. if the 'Category' field is not present in the timeline dict(s), it will automatically
         be be added to the dict(s) with its value set to 'Integration Update'.
 
+    :type ignore_auto_extract: ``bool``
+    :param ignore_auto_extract: expects a bool value. if true then the warroom entry readable_output will not be auto enriched.
+
     :return: None
     :rtype: ``None``
     """
@@ -1723,6 +1726,7 @@ def return_outputs(readable_output, outputs=None, raw_response=None, timeline=No
         "ContentsFormat": formats["json"],
         "Contents": raw_response,
         "EntryContext": outputs,
+        'IgnoreAutoExtract': ignore_auto_extract,
         "IndicatorTimeline": timeline_list
     }
     # Return 'readable_output' only if needed
@@ -2563,8 +2567,9 @@ if 'requests' in sys.modules:
                         error_entry = res.json()
                         err_msg += '\n{}'.format(json.dumps(error_entry))
                         raise DemistoException(err_msg)
-                    except ValueError as exception:
-                        raise DemistoException(err_msg, exception)
+                    except ValueError:
+                        err_msg += '\n{}'.format(res.text)
+                        raise DemistoException(err_msg)
 
                 is_response_empty_and_successful = (res.status_code == 204)
                 if is_response_empty_and_successful and return_empty_response:
@@ -2649,3 +2654,4 @@ def batch(iterable, batch_size=1):
         yield current_batch
         current_batch = not_batched[:batch_size]
         not_batched = not_batched[batch_size:]
+

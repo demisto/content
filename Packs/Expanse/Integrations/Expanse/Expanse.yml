@@ -24,6 +24,10 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Include Behavior data in incidents
+  name: behavior
+  required: false
+  type: 8
 - defaultvalue: '10'
   display: How many events to pull from Expander per run
   hidden: false
@@ -46,28 +50,28 @@ script:
   commands:
   - arguments:
     - default: true
-      description: ip address
+      description: The IP address to search.
       isArray: true
       name: ip
       required: true
       secret: false
     deprecated: false
-    description: ip command
+    description: Submits an IP address to check.
     execution: false
     name: ip
     outputs:
     - contextPath: IP.Address
-      description: Internet Protocol Address
+      description: The IP address.
       type: String
     - contextPath: IP.Geo.Location
       description: 'The geolocation where the IP address is located, in the format:
-        latitude:longitude'
+        latitude:longitude.'
       type: String
     - contextPath: IP.Geo.Country
       description: The country in which the IP address is located.
       type: String
     - contextPath: IP.Geo.Description
-      description: Additional information about the location
+      description: Additional information about the location.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -80,85 +84,85 @@ script:
       type: string
     - contextPath: DBotScore.Score
       description: The actual score.
-      type: number
+      type: Number
     - contextPath: Expanse.IP.Address
-      description: Internet Protocol Address
+      description: The IP address.
       type: String
     - contextPath: Expanse.IP.Version
-      description: Internet Protocol Address Version
+      description: The IP address version.
       type: String
     - contextPath: Expanse.IP.BusinessUnits
-      description: Expanse Business Units this IP belongs to
+      description: Expanse Business Units this IP belongs to.
       type: String
     - contextPath: Expanse.IP.IPRange.StartAdress
-      description: First IP address in IP Network this IP address belongs to
+      description: The first IP address in the IP network this IP address belongs to.
       type: String
     - contextPath: Expanse.IP.IPRange.EndAddress
-      description: Last IP address in IP Network this IP address belongs to
+      description: The last IP address in the IP network this IP address belongs to.
       type: String
     - contextPath: Expanse.IP.IPRange.RangeSize
-      description: Number of IP addresses in IP Network this IP address belongs to
+      description: The number of IP addresses in the IP network this IP address belongs to.
       type: Number
     - contextPath: Expanse.IP.IPRange.ResponsiveIPCount
-      description: Number of responsive IP addresses in IP Network this IP address
-        belongs to
+      description: Number of responsive IP addresses in IP network this IP address
+        belongs to.
       type: Number
     - contextPath: Expanse.IP.IPRange.RangeIntroduced
       description: Date the IP network this IP address belongs to was introduced to
-        Expanse
+        Expanse.
       type: Date
     - contextPath: Expanse.IP.IPRange.AttributionReasons
-      description: The reason why this IP belongs to the IP Range
+      description: The reason why this IP belongs to the IP range.
       type: String
     - contextPath: Expanse.IP.Geo.Latitude
-      description: 'Geo coordinates: Latitude of IP address'
+      description: 'The latitude of the IP address.'
       type: String
     - contextPath: Expanse.IP.Geo.Longitude
-      description: 'Geo coordinates: Longitude of IP address'
+      description: 'The longitude of the IP address.'
       type: String
     - contextPath: Expanse.IP.Geo.City
-      description: Geo coordinates city for this IP address
+      description: The city in which the IP address is located.
       type: String
     - contextPath: Expanse.IP.Geo.RegionCode
-      description: Geo coordinates Region Code for this IP address
+      description: The region code for this IP address.
       type: String
     - contextPath: Expanse.IP.Geo.CountryCode
-      description: Geo coordinates Country Code for this IP address
+      description: The country code for this IP address.
       type: String
     - contextPath: Expanse.IP.Annotations.Tags
-      description: Customer defined Tags from Expanse related to this IP Range
+      description: Customer defined Tags from Expanse related to this IP range.
       type: String
     - contextPath: Expanse.IP.Annotations.AdditionalNotes
-      description: Customer defined Notes from Expanse related to this IP Range
+      description: Customer defined Notes from Expanse related to this IP range.
       type: String
     - contextPath: Expanse.IP.Annotations.PointsOfContact
       description: Customer defined Points of Contact from Expanse related to this
-        IP Range
+        IP range.
       type: String
     - contextPath: Expanse.IP.SeverityCounts.CRITICAL
-      description: Count of CRITICAL Events for this IP address
+      description: The number of CRITICAL Events for this IP address.
       type: Number
     - contextPath: Expanse.IP.SeverityCounts.ROUTINE
-      description: Count of ROUTINE Events for this IP address
+      description: The number of ROUTINE Events for this IP address.
       type: Number
     - contextPath: Expanse.IP.SeverityCounts.WARNING
-      description: Count of WARNING Events for this IP address
+      description: The number of WARNING Events for this IP address
       type: Number
     - contextPath: Expanse.IP.Geo.Description
-      description: Additional information about the location
+      description: Additional information about the location.
       type: String
     - contextPath: Expanse.IP.Geo.Country
       description: The country in which the IP address is located.
       type: String
   - arguments:
     - default: true
-      description: domain to search
+      description: The domain to search.
       isArray: true
       name: domain
       required: true
       secret: false
     deprecated: false
-    description: domain command
+    description: Submits a domain to check.
     execution: false
     name: domain
     outputs:
@@ -169,85 +173,85 @@ script:
       description: A list of IP objects resolved by DNS
       type: String
     - contextPath: Domain.CreationDate
-      description: The date that the domain was created
+      description: The date that the domain was created.
       type: Date
     - contextPath: Domain.DomainStatus
-      description: The status of the domain
+      description: The status of the domain.
       type: String
     - contextPath: Domain.ExpirationDate
-      description: The expiration date of the domain
+      description: The expiration date of the domain.
       type: Date
     - contextPath: Domain.NameServers
-      description: Name servers of the domain
+      description: Name servers of the domain.
       type: String
     - contextPath: Domain.Organization
-      description: The organization of the domain
+      description: The organization of the domain.
       type: String
     - contextPath: Domain.Admin.Country
-      description: The country of the domain administrator
+      description: The country of the domain administrator.
       type: String
     - contextPath: Domain.Admin.Email
-      description: The email of the domain administrator
+      description: The email address of the domain administrator.
       type: String
     - contextPath: Domain.Admin.Name
-      description: The name of the domain administrator
+      description: The name of the domain administrator.
       type: String
     - contextPath: Domain.Admin.Phone
-      description: The phone of the domain administrator
+      description: The phone number of the domain administrator.
       type: String
     - contextPath: Domain.Registrant.Country
-      description: The country of the registrant
+      description: The country of the registrant.
       type: String
     - contextPath: Domain.Registrant.Email
-      description: The email of the registrant
+      description: The email address of the registrant.
       type: String
     - contextPath: Domain.Registrant.Name
-      description: The name of the registrant
+      description: The name of the registrant.
       type: String
     - contextPath: Domain.Registrant.Phone
-      description: The phone of the registrant
+      description: The phone number of the registrant.
       type: String
     - contextPath: Domain.WHOIS.DomainStatus
-      description: The status of the domain
+      description: The status of the domain.
       type: String
     - contextPath: Domain.WHOIS.NameServers
-      description: 'A list of name servers, for example: "ns1.bla.com, ns2.bla.com"'
+      description: 'A list of name servers, for example: "ns1.bla.com, ns2.bla.com".'
       type: String
     - contextPath: Domain.WHOIS.CreationDate
-      description: The date that the domain was created
+      description: The date that the domain was created.
       type: Date
     - contextPath: Domain.WHOIS.UpdatedDate
-      description: The date that the domain was last updated
+      description: The date that the domain was last updated.
       type: Date
     - contextPath: Domain.WHOIS.ExpirationDate
-      description: The date that the domain expires
+      description: The date that the domain expires.
       type: Date
     - contextPath: Domain.WHOIS.Registrant.Email
-      description: The email address of the registrant
+      description: The email address of the registrant.
       type: String
     - contextPath: Domain.WHOIS.Registrant.Name
-      description: The name of the registrant
+      description: The name of the registrant.
       type: String
     - contextPath: Domain.WHOIS.Registrant.Phone
-      description: The phone of the registrant
+      description: The phone of the registrant.
       type: String
     - contextPath: Domain.WHOIS.Registrar.Name
-      description: 'The name of the registrar, for example: "GoDaddy"'
+      description: 'The name of the registrar, for example: "GoDaddy".'
       type: String
     - contextPath: Domain.WHOIS.Registrar.AbuseEmail
-      description: The email address of the contact for reporting abuse
+      description: The email address of the contact for reporting abuse.
       type: String
     - contextPath: Domain.WHOIS.Registrar.AbusePhone
-      description: The phone number of contact for reporting abuse
+      description: The phone number of contact for reporting abuse.
       type: String
     - contextPath: Domain.WHOIS.Admin.Name
-      description: The name of the domain administrator
+      description: The name of the domain administrator.
       type: String
     - contextPath: Domain.WHOIS.Admin.Email
-      description: The email address of the domain administrator
+      description: The email address of the domain administrator.
       type: String
     - contextPath: Domain.WHOIS.Admin.Phone
-      description: The phone number of the domain administrator
+      description: The phone number of the domain administrator.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -262,43 +266,43 @@ script:
       description: The actual score.
       type: number
     - contextPath: Expanse.Domain.Name
-      description: 'The domain name, for example: "google.com'
+      description: 'The domain name, for example: "google.com".'
       type: String
     - contextPath: Expanse.Domain.DateAdded
-      description: Date the domain was added to Expanse
+      description: The date the domain was added to Expanse.
       type: Date
     - contextPath: Expanse.Domain.FirstObserved
-      description: Date Expanse first observed the domain
+      description: The date that Expanse first observed the domain.
       type: Date
     - contextPath: Expanse.Domain.LastObserved
-      description: Date Expanse last observed the domain
+      description: Date that Expanse last observed the domain.
       type: Date
     - contextPath: Expanse.Domain.HasLinkedCloudResources
-      description: Does this domain have linked cloud resources ?
+      description: Whether this domain has linked cloud resources.
       type: Boolean
     - contextPath: Expanse.Domain.SourceDomain
-      description: Top level domain
+      description: Top-level domain.
       type: String
     - contextPath: Expanse.Domain.Tenant
-      description: Customer defined Tenant from Expanse
+      description: Customer defined Tenant from Expanse.
       type: String
     - contextPath: Expanse.Domain.BusinessUnits
-      description: Customer defined Business Units from Expanse
+      description: Customer defined Business Units from Expanse.
       type: String
     - contextPath: Expanse.Domain.DNSSEC
-      description: DNSSEC info
+      description: DNSSEC information.
       type: String
     - contextPath: Expanse.Domain.RecentIPs
-      description: Any recent IP addresses Expanse has seen for this domain
+      description: Any recent IP addresses that Expanse has seen for this domain.
       type: String
     - contextPath: Expanse.Domain.CloudResources
-      description: Any Cloud Resources Expanse has seen for this domain
+      description: Any Cloud Resources that Expanse has seen for this domain.
       type: String
     - contextPath: Expanse.Domain.LastSubdomainMetadata
-      description: Any recent subdomain metadata Expanse has seen for this domain
+      description: Any recent subdomain metadata that Expanse has seen for this domain.
       type: String
     - contextPath: Expanse.Domain.ServiceStatus
-      description: Service Status Expanse sees for this domain
+      description: Service Status that Expanse sees for this domain.
       type: String
     - contextPath: Expanse.Domain.LastSampledIP
       description: Last seen IP address for this domain
@@ -307,85 +311,274 @@ script:
       description: A list of IP objects resolved by DNS
       type: String
     - contextPath: Expanse.Domain.CreationDate
-      description: The date that the domain was created
+      description: The date that the domain was created.
       type: Date
     - contextPath: Expanse.Domain.DomainStatus
-      description: The status of the domain
+      description: The status of the domain.
       type: String
     - contextPath: Expanse.Domain.ExpirationDate
-      description: The expiration date of the domain
+      description: The expiration date of the domain.
       type: Date
     - contextPath: Expanse.Domain.NameServers
-      description: Name servers of the domain
+      description: Name servers of the domain.
       type: String
     - contextPath: Expanse.Domain.Organization
-      description: The organization of the domain
+      description: The organization of the domain.
       type: String
     - contextPath: Expanse.Domain.Admin.Country
-      description: The country of the domain administrator
+      description: The country of the domain administrator.
       type: String
     - contextPath: Expanse.Domain.Admin.Email
-      description: The email address of the domain administrator
+      description: The email address of the domain administrator.
       type: String
     - contextPath: Expanse.Domain.Admin.Name
-      description: The name of the domain administrator
+      description: The name of the domain administrator.
       type: String
     - contextPath: Expanse.Domain.Admin.Phone
-      description: The phone number of the domain administrator
+      description: The phone number of the domain administrator.
       type: String
     - contextPath: Expanse.Domain.Registrant.Country
-      description: The country of the registrant
+      description: The country of the registrant.
       type: String
     - contextPath: Expanse.Domain.Registrant.Email
-      description: The email address of the registrant
+      description: The email address of the registrant.
       type: String
     - contextPath: Expanse.Domain.Registrant.Name
-      description: The name of the registrant
+      description: The name of the registrant.
       type: String
     - contextPath: Expanse.Domain.Registrant.Phone
-      description: The phone number for receiving abuse reports
+      description: The phone number for receiving abuse reports.
       type: String
     - contextPath: Expanse.Domain.WHOIS.DomainStatus
-      description: The status of the domain
+      description: The status of the domain.
       type: String
     - contextPath: Expanse.Domain.WHOIS.NameServers
-      description: 'A list of name servers, for example: "ns1.bla.com, ns2.bla.com"'
+      description: 'A list of name servers, for example: "ns1.bla.com, ns2.bla.com".'
       type: String
     - contextPath: Expanse.Domain.WHOIS.CreationDate
-      description: The date that the domain was created
+      description: The date that the domain was created.
       type: Date
     - contextPath: Expanse.Domain.WHOIS.UpdatedDate
-      description: The date that the domain was last updated
+      description: The date that the domain was last updated.
       type: Date
     - contextPath: Expanse.Domain.WHOIS.ExpirationDate
-      description: The date that the domain expires
+      description: The date that the domain expires.
       type: Date
     - contextPath: Expanse.Domain.WHOIS.Registrant.Email
-      description: The email address of the registrant
+      description: The email address of the registrant.
       type: String
     - contextPath: Expanse.Domain.WHOIS.Registrant.Name
-      description: The name of the registrant
+      description: The name of the registrant.
       type: String
     - contextPath: Expanse.Domain.WHOIS.Registrant.Phone
-      description: The phone number of the registrant
+      description: The phone number of the registrant.
       type: String
     - contextPath: Expanse.Domain.WHOIS.Registrar.Name
-      description: 'The name of the registrar, for example: "GoDaddy"'
+      description: 'The name of the registrar, for example: "GoDaddy".'
       type: String
     - contextPath: Expanse.Domain.WHOIS.Registrar.AbuseEmail
-      description: The email address of the contact for reporting abuse
+      description: The email address of the contact for reporting abuse.
       type: String
     - contextPath: Expanse.Domain.WHOIS.Registrar.AbusePhone
-      description: The phone number of contact for reporting abuse
+      description: The phone number of contact for reporting abuse.
       type: String
     - contextPath: Expanse.Domain.WHOIS.Admin.Name
-      description: The name of the domain administrator
+      description: The name of the domain administrator.
       type: String
     - contextPath: Expanse.Domain.WHOIS.Admin.Email
-      description: The email address of the domain administrator
+      description: The email address of the domain administrator.
       type: String
     - contextPath: Expanse.Domain.WHOIS.Admin.Phone
-      description: The phone number of the domain administrator
+      description: The phone number of the domain administrator.
+      type: String
+  - arguments:
+    - default: true
+      description: The domain to search.
+      isArray: true
+      name: common_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns information about the domain certificate.
+    execution: false
+    name: expanse-get-certificate
+    outputs:
+    - contextPath: Expanse.Certificate.SearchTerm
+      description: The domain that was searched.
+      type: String
+    - contextPath: Expanse.Certificate.CommonName
+      description: The common name of the certificate.
+      type: String
+    - contextPath: Expanse.Certificate.FirstObserved
+      description: The date that the certificate was first observed.
+      type: Date
+    - contextPath: Expanse.Certificate.LastObserved
+      description: The date that the certificate was last observed.
+      type: Date
+    - contextPath: Expanse.Certificate.DateAdded
+      description: Certificate data added to Expanse.
+      type: Date
+    - contextPath: Expanse.Certificate.Provider
+      description: The certificate provider.
+      type: String
+    - contextPath: Expanse.Certificate.NotValidBefore
+      description: The not-valid-before date of the certificate.
+      type: Date
+    - contextPath: Expanse.Certificate.NotValidAfter
+      description: The not-valid-after date of the certificate.
+      type: Date
+    - contextPath: Expanse.Certificate.Properties
+      description: Certificate properties (expired).
+      type: String
+    - contextPath: Expanse.Certificate.MD5Hash
+      description: The MD5 hash of the certificate.
+      type: String
+    - contextPath: Expanse.Certificate.PublicKeyAlgorithm
+      description: Public Key Algorithm used.
+      type: String
+    - contextPath: Expanse.Certificate.PublicKeyBits
+      description: Public Key size.
+      type: String
+    - contextPath: Expanse.Certificate.BusinessUnits
+      description: Expanse Business units for the certificate.
+      type: String
+    - contextPath: Expanse.Certificate.CertificateAdvertisementStatus
+      description: Whether the certificate is advertised.
+      type: String
+    - contextPath: Expanse.Certificate.ServiceStatus
+      description: Any detected services for the certificate.
+      type: String
+    - contextPath: Expanse.Certificate.RecentIPs
+      description: Any IP addresses returning the certificate.
+      type: String
+    - contextPath: Expanse.Certificate.CloudResources
+      description: Any Cloud Resources returning the certificate.
+      type: String
+    - contextPath: Expanse.Certificate.PemSha1
+      description: The SHA1 hash of the certificate PEM.
+      type: String
+    - contextPath: Expanse.Certificate.PemSha256
+      description: The SHA256 hash of the certifiacte PEM.
+      type: String
+    - contextPath: Expanse.Certificate.Issuer.Name
+      description: Name of the certificate issuer.
+      type: String
+    - contextPath: Expanse.Certificate.Issuer.Email
+      description: Email address of the issuer.
+      type: String
+    - contextPath: Expanse.Certificate.Issuer.Country
+      description: Country of the certificate issuer.
+      type: String
+    - contextPath: Expanse.Certificate.Issuer.Org
+      description: Organization of the certificate issuer.
+      type: String
+    - contextPath: Expanse.Certificate.Issuer.Unit
+      description: Organizational Unit of the certificate issuer.
+      type: String
+    - contextPath: Expanse.Certificate.Issuer.AltNames
+      description: Alternative names from the certificate issuer.
+      type: String
+    - contextPath: Expanse.Certificate.Issuer.Raw
+      description: Raw issuer details.
+      type: String
+    - contextPath: Expanse.Certificate.Subject.Name
+      description: Name of the subject.
+      type: String
+    - contextPath: Expanse.Certificate.Subject.Email
+      description: Email address of the subject.
+      type: String
+    - contextPath: Expanse.Certificate.Subject.Country
+      description: Country of the subject.
+      type: String
+    - contextPath: Expanse.Certificate.Subject.Org
+      description: Organization of the subject.
+      type: String
+    - contextPath: Expanse.Certificate.Subject.Unit
+      description: Organizational Unit of subject
+      type: String
+    - contextPath: Expanse.Certificate.Subject.AltNames
+      description: Alternative names from the subject.
+      type: String
+    - contextPath: Expanse.Certificate.Subject.Raw
+      description: Raw subject details.
+      type: String
+  - arguments:
+    - default: true
+      description: The IP address to search.
+      isArray: true
+      name: ip
+      required: true
+      secret: false
+    - default: false
+      description: The timestamp denoting the earliest behavior data to fetch, in ISO-8601 UTC format.
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns Risky Flows for the specified IP address. The maximum number of results is 20.
+    execution: false
+    name: expanse-get-behavior
+    outputs:
+    - contextPath: Expanse.Behavior.SearchTerm
+      description: The IP that was searched.
+      type: String
+    - contextPath: Expanse.Behavior.InternalAddress
+      description: The internal IP address.
+      type: String
+    - contextPath: Expanse.Behavior.InternalCountryCode
+      description: The internal IP country geolocation.
+      type: String
+    - contextPath: Expanse.Behavior.BusinessUnit
+      description: The buisness unit of the IP address.
+      type: String
+    - contextPath: Expanse.Behavior.InternalDomains
+      description: Known domains associated with the IP address.
+      type: String
+    - contextPath: Expanse.Behavior.InternalIPRanges
+      description: Known Internal IP ranges containing the IP address.
+      type: String
+    - contextPath: Expanse.Behavior.InternalExposureTypes
+      description: Known exposures for the IP address.
+      type: String
+    - contextPath: Expanse.Behavior.ExternalAddresses
+      description: External IP addresses with known communication to the IP address.
+      type: String
+    - contextPath: Expanse.Behavior.FlowSummaries
+      description: Summaries of most recent risky flows for the IP address.
+      type: String
+    - contextPath: Expanse.Behavior.Flows
+      description: Array of flow objects.
+      type: String
+    - contextPath: Expanse.Behavior.Flows.InternalAddress
+      description: Internal IP address for flow
+      type: String
+    - contextPath: Expanse.Behavior.Flows.InternalPort
+      description: Internal port for the flow.
+      type: Number
+    - contextPath: Expanse.Behavior.Flows.InternalCountryCode
+      description: Internal country code for the flow.
+      type: String
+    - contextPath: Expanse.Behavior.Flows.ExternalAddress
+      description: External IP address for the flow.
+      type: String
+    - contextPath: Expanse.Behavior.Flows.ExternalPort
+      description: External port for the flow.
+      type: Number
+    - contextPath: Expanse.Behavior.Flows.ExternalCountryCode
+      description: External country code for the flow.
+      type: String
+    - contextPath: Expanse.Behavior.Flows.Timestamp
+      description: Timestamp of the flow.
+      type: Date
+    - contextPath: Expanse.Behavior.Flows.Protocol
+      description: Protocol of the flow (UDP, TCP).
+      type: String
+    - contextPath: Expanse.Behavior.Flows.Direction
+      description: Direction of the flow.
+      type: String
+    - contextPath: Expanse.Behavior.Flows.RiskRule
+      description: Risk rule violated by the flow.
       type: String
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
