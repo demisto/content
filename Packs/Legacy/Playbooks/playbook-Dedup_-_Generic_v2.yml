@@ -458,7 +458,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "yes"
+              simple: "true"
     view: |-
       {
         "position": {
