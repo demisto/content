@@ -8,6 +8,7 @@ import collections
 from urllib.parse import urlparse
 from requests.utils import quote  # type: ignore
 import time
+import json as JSON
 
 """ POLLING FUNCTIONS"""
 try:
@@ -47,6 +48,7 @@ def http_request(method, url_suffix, json=None, wait=0, retries=0):
         verify=USE_SSL
     )
     if r.status_code != 200:
+
         if r.status_code == 429:
             if retries <= 0:
                 # Error in API call to URLScan.io [429] - Too Many Requests
@@ -54,6 +56,16 @@ def http_request(method, url_suffix, json=None, wait=0, retries=0):
             else:
                 time.sleep(wait)
                 return http_request(method, url_suffix, json, wait, retries - 1)
+        response_json = r.json()
+        # raise ValueError(f'Response: {response_json}')
+        error_description = response_json.get('description')
+        should_continue_on_blacklisted_urls = demisto.args.get('continue_on_blacklisted_urls')
+        if should_continue_on_blacklisted_urls and error_description == BLACKLISTED_URL_ERROR_MESSAGE:
+            response_json['uuid'] = -1 # TODO : check what happens with that uuid and how that could be breaking
+            requested_url = JSON.loads(json)['url']
+            demisto.results(f'The URL {requested_url} is blacklisted, thus no results will be returned for it.')
+            return response_json
+
         return_error('Error in API call to URLScan.io [%d] - %s' % (r.status_code, r.reason))
 
     return r.json()
@@ -355,6 +367,9 @@ def urlscan_submit_command():
     for url in urls:
         demisto.args()['url'] = url
         uuid = urlscan_submit_url()
+        is_url_blacklisted = (uuid == -1)
+        if is_url_blacklisted:
+            pass
         get_urlscan_submit_results_polling(uuid)
 
 
