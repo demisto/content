@@ -65,7 +65,7 @@ class Client(BaseClient):
                     else:
                         err_msg = f'Check server URL or try using an API key \n{err_msg}'
                 except ValueError:
-                    err_msg = 'Check server URL or API key' + str(res)
+                    err_msg = 'Check server URL or API key -\n' + str(res)
                 raise DemistoException(err_msg)
 
             if res.status_code == 404:
@@ -121,7 +121,7 @@ def test_module(client=None):
         client.http_request('GET', '/ip/8.8.8.8')
         return 'ok'
     except NotFoundError as e:
-        return_error(e.message + ' - Check server URL')
+        return_error('Check server URL - ' + e.message)
     except Exception as e:
         raise e
 
@@ -270,6 +270,9 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         report = client.url_report(url)
         if 'NotFound' in report:
             markdown += f'No results found for {url}'
+            dbot_score = {'Indicator': url, 'Type': 'url', 'Vendor': 'Maltiverse',
+                          'Score': 0}
+            context[DBOT_SCORE_KEY].append(dbot_score)
             break
         positive_detections = len(report.get('blacklist', []))
         blacklist_context = {'Blacklist': report.get('blacklist', [])}
@@ -279,7 +282,7 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
                    'PositiveDetections': positive_detections
                    }
 
-        dbot_score = {'Indicator': report.get('hostname', ''), 'Type': 'url', 'Vendor': 'Maltiverse',
+        dbot_score = {'Indicator': url, 'Type': 'url', 'Vendor': 'Maltiverse',
                       'Score': calculate_score(positive_detections, report.get('classification', ''), threshold)}
 
         maltiverse_url = {string_to_context_key(field): report.get(field, '') for field in
@@ -345,7 +348,7 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any
         outputs['Name'] = report.get('hostname', '')
         outputs['ASName'] = report.get('as_name', '')
 
-        dbot_score = {'Indicator': report.get('hostname', ''), 'Type': 'Domain', 'Vendor': 'Maltiverse',
+        dbot_score = {'Indicator': domain, 'Type': 'Domain', 'Vendor': 'Maltiverse',
                       'Score': calculate_score(positive_detections, report.get('classification', ''), threshold)}
 
         blacklist_context = {'Blacklist': report.get('blacklist', [])}
@@ -409,6 +412,9 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         report = client.file_report(file)
         if 'NotFound' in report:
             markdown += f'No results found for file hash {file}'
+            dbot_score = {'Indicator': file, 'Type': 'file', 'Vendor': 'Maltiverse',
+                          'Score': 0}
+            context[DBOT_SCORE_KEY].append(dbot_score)
             break
         positive_detections = len(report.get('blacklist', []))
 
