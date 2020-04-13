@@ -197,7 +197,7 @@ class Client(BaseClient):
 
         raw_json_data = {
             'autofocus_id': single_sample.get('_id'),
-            'autofocus_region': single_sample_data.get('region', []),
+            'autofocus_region': [single_region.upper() for single_region in single_sample_data.get('region', [])],
             'autofocus_tags': single_sample_data.get('tag', []),
             'autofocus_tags_groups': single_sample_data.get('tag_groups', []),
             'autofocus_num_matching_artifacts': len(artifacts),
@@ -224,6 +224,7 @@ class Client(BaseClient):
         raw_json_data['value'] = full_sample_json.get('sha256')
         raw_json_data['sha256'] = full_sample_json.get('sha256')
         raw_json_data['ssdeep'] = full_sample_json.get('ssdeep')
+        raw_json_data['region'] = [single_region.upper() for single_region in full_sample_json.get('region', [])]
         raw_json_data['imphash'] = full_sample_json.get('imphash')
         raw_json_data['autofocus_filetype'] = full_sample_json.get('filetype')
         raw_json_data['autofocus_malware'] = VERDICTS_TO_TEXT.get(full_sample_json.get('malware'))  # type: ignore
@@ -233,6 +234,7 @@ class Client(BaseClient):
             'tags': full_sample_json.get('tag'),
             'size': full_sample_json.get('size'),
             'sha1': full_sample_json.get('sha1'),
+            'region': raw_json_data.get('region'),
             'sha256': full_sample_json.get('sha256'),
             'ssdeep': full_sample_json.get('ssdeep'),
             'imphash': full_sample_json.get('imphash'),
