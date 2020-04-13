@@ -7,6 +7,7 @@ import csv
 import gzip
 import urllib3
 from typing import Optional, Pattern, Dict, Any, Tuple, Union
+from dateutil.parser import parse
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -199,6 +200,20 @@ def module_test_command(client: Client, args):
     return 'ok', {}, {}
 
 
+def date_format_parsing(date_string):
+    date = parse(date_string).isoformat()
+    if '+' in date:
+        date = date.split('+')[0]
+
+    if '.' in date:
+        date = date.split('.')[0]
+
+    if not date.endswith('Z'):
+        date = date + 'Z'
+
+    return date
+
+
 def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tuple, str]]):
     fields_mapping = {}  # type: dict
 
@@ -218,6 +233,9 @@ def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tup
             field_value = raw_json[field]  # type: ignore
 
         fields_mapping[key] = formatter_string.format(field_value) if formatter_string else field_value
+
+        if key in ['firstseenbyfeed', 'lastseenbyfeed']:
+            fields_mapping[key] = date_format_parsing(fields_mapping[key])
 
     return fields_mapping
 

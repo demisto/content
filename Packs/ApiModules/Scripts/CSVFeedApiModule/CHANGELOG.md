@@ -1,5 +1,6 @@
 ## [Unreleased]
-Added support for mapping by regex extraction and by string formatting.
+- Fixed an issue where *firstseenbyfeed* and *lastseenbyfeed* fields were not formatted correctly.
+- Added support for mapping by regex extraction and by string formatting.
 
 
 ## [20.3.4] - 2020-03-30
