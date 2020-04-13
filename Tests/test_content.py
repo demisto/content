@@ -36,6 +36,8 @@ SERVICE_RESTART_POLLING_INTERVAL = 5
 
 SLACK_MEM_CHANNEL_ID = 'CM55V7J8K'
 
+BOT_USERNAME = 'SOC Bot'
+
 
 def options_handler():
     parser = argparse.ArgumentParser(description='Utility for batch action on incidents')
@@ -431,7 +433,7 @@ def notify_failed_test(slack, circle_ci, playbook_id, build_number, inc_id, serv
         sc.api_call(
             "chat.postMessage",
             channel=user_id,
-            username="Content CircleCI",
+            username=BOT_USERNAME,
             as_user="False",
             text=text
         )
@@ -623,10 +625,10 @@ def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_te
     stdout, stderr = get_docker_memory_data()
     text = 'Memory Usage: {}'.format(stdout) if not stderr else stderr
     if options.nightly and options.memCheck and not tests_settings.is_local_run:
-        send_slack_message(slack, SLACK_MEM_CHANNEL_ID, text, 'Content CircleCI', 'False')
+        send_slack_message(slack, SLACK_MEM_CHANNEL_ID, text, BOT_USERNAME, 'False')
         stdout, stderr = get_docker_processes_data()
         text = stdout if not stderr else stderr
-        send_slack_message(slack, SLACK_MEM_CHANNEL_ID, text, 'Content CircleCI', 'False')
+        send_slack_message(slack, SLACK_MEM_CHANNEL_ID, text, BOT_USERNAME, 'False')
 
     run_test(tests_settings, demisto_api_key, proxy, failed_playbooks, integrations, unmockable_integrations,
              playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci,
@@ -730,7 +732,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
         send_slack_message(slack, SLACK_MEM_CHANNEL_ID,
                            'Build Number: {0}\n Server Address: {1}\nMemory Limit: {2}'.format(build_number, server,
                                                                                                mem_lim),
-                           'Content CircleCI', 'False')
+                           BOT_USERNAME, 'False')
     # first run the mock tests to avoid mockless side effects in container
     if is_ami and mockable_tests:
         proxy.configure_proxy_in_demisto(demisto_api_key, server, proxy.ami.docker_ip + ':' + proxy.PROXY_PORT)

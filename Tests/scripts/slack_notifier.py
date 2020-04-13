@@ -195,7 +195,7 @@ def slack_notifier(build_url, slack_token, env_results_file_name, container):
         slack_client.api_call(
             "chat.postMessage",
             channel="dmst-content-team",
-            username="Content CircleCI",
+            username="SOC Bot",
             as_user="False",
             attachments=content_team_attachments
         )
