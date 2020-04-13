@@ -696,6 +696,7 @@ class Pack(object):
             with open(os.path.join(self._pack_path, 'releaseNotes.json'), 'w',
                       encoding='utf-8') as f:
                 json.dump(changelog_dict, f, ensure_ascii=False, indent=4)
+                print(changelog_dict)
             task_status = True
             print_color(
                 f"Finished creating releaseNotes.json for {self._pack_name}", LOG_COLORS.GREEN)
