@@ -33,8 +33,7 @@ class Client(BaseClient):
             A list of objects, containing the indicators.
         """
         result = []
-        r = self._http_request('GET', url_suffix='', full_url=self._base_url, resp_type='str')
-        r = r.text
+        r = self._http_request('GET', url_suffix='', full_url=self._base_url, resp_type='text')
 
         soup = BeautifulSoup(r, 'html.parser')
 
