@@ -8,6 +8,7 @@ from cStringIO import StringIO
 
 handle_proxy(demisto.params().get('proxy'))
 
+response = ''
 
 # disable python from generating a .pyc file
 sys.dont_write_bytecode = True
@@ -48,7 +49,7 @@ def gather_line(lines, total_column_num, current_line):
             line_values[-1] = line_values[-1][1:]
 
         if line_values[-1].endswith('\"'):
-            line_values = line_values[-1][:-1]
+            line_values[-1] = line_values[-1][:-1]
 
         if len(line_below) == 1:
             continue
@@ -598,10 +599,10 @@ def restore_sout_and_exit(final_result):
 sout = sys.stdout
 sys.stdout = StringIO()
 
+
 try:
     handler = get_handler()
     LOG("successfully logged into Tanium")
-    response = ''
     d_args = demisto.args()
 
     if demisto.command() == 'test-module':
@@ -647,7 +648,7 @@ try:
     if demisto.command() == 'tn-get-action':
         final_result = get_action(handler)
 
-except Exception as ex:
+except Exception:
     sys.stdout = sout
     LOG.print_log()
     raise

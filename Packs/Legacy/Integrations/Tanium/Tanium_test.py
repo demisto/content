@@ -1,5 +1,4 @@
 import demistomock as demisto
-from CommonServerPython import *
 
 CSV_STRING_1 = "header1,header2,header3\r\ncol1,col2,col3\r\ncol1,col2,col3"
 CSV_STRING_2 = "header1,header2,header3\r\ncol1,\"col2_1\r\ncol2_2\",col3\r\ncol1,col2,col3"
