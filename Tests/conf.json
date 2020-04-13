@@ -2620,6 +2620,11 @@
             "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
             "timeout" : 60000,
             "fromversion": "4.5.0"
+        },
+        {
+            "playbookID": "DeepInstinct-Test",
+            "timeout" : 60000,
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {

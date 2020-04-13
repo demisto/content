@@ -1,6 +1,6 @@
-id: Deep_Instinct-Test
+id: DeepInstinct-Test
 version: -1
-name: Deep_Instinct-Test
+name: DeepInstinct-Test
 starttaskid: '0'
 tasks:
   '0':
