@@ -47,7 +47,7 @@ class Client(BaseClient):
         return str(start_time.strftime(cb_time_format))
 
     @staticmethod
-    def delete_unnecessary_fields(response: dict) -> dict:
+    def delete_unnecessary_fields(response: dict):
         """Delete unnecessary fields from the response.
 
         Args:
@@ -161,14 +161,12 @@ class Client(BaseClient):
         job_id = self.search_jobs(payload, query_type, 'v2').get('job_id', {})
         return self.get_job_results(job_id, query_type, '50')
 
-    def cb_get_process_details_request(self, process_guid: str, document_guid: str, query_type: str = 'processes') \
-            -> dict:
+    def cb_get_process_details_request(self, process_guid: str, document_guid: str) -> dict:
         """Get process details
 
         Args:
             process_guid: process ID
             document_guid: document ID
-            query_type: query type
         Returns:
             Response from API.
         """
@@ -190,8 +188,8 @@ class Client(BaseClient):
             }
         }
 
-        query_id = self.search_jobs(payload, query_type, '1').get('query_id', {})
-        response = self.get_job_results(query_id, query_type, '1').get('results', [])
+        query_id = self.search_jobs(payload, 'processes', '1').get('query_id', {})
+        response = self.get_job_results(query_id, 'processes', '1').get('results', [])
         if not response:
             raise Exception(f'No process details where retrieved from Carbon Black Threat Hunter'
                             f' for process:{process_guid}.')
@@ -213,7 +211,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
     raise Exception(f'CarbonBlack ThreatHunter test-module failed with: {dir(result)}')  # TODO find real reason
 
 
-def cb_query(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def cb_query(client: Client, args: dict) -> Tuple[Any, Dict, Dict]:
     """Query Threat Hunter.
 
     Args:
@@ -255,7 +253,7 @@ def cb_get_process_details(client: Client, args: dict) -> Tuple[str, Dict, Dict]
     process_guid = str(args.get('process_guid', ''))
     document_guid = str(args.get('document_guid', ''))
 
-    response = client.cb_get_process_details_request(client, process_guid, document_guid)
+    response = client.cb_get_process_details_request(process_guid, document_guid)
     # TODO - add a prettify for the ec obj
     entry_context = {'CB.ThreatHunter.Process.Details(val["Event ID"] && val["Event ID"] == obj["Event ID"])': response}
 

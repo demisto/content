@@ -88,7 +88,7 @@ script:
     - contextPath: CB.ThreatHunter.Process.Details
       description: Process details.
       type: Unknown
-  dockerimage: demisto/python3:3.8.1.6120
+  dockerimage: demisto/python3:3.8.2.6981
   feed: false
   isfetch: false
   longRunning: false
@@ -99,3 +99,5 @@ script:
   type: python
 beta: True
 fromversion: 5.0.0
+tests:
+- No test
