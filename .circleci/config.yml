@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: devdemisto/content-build:3.0.0.3368  # disable-secrets-detection
+      - image: devdemisto/content-build:3.0.0.7332  # disable-secrets-detection
     resource_class: medium+
     parallelism: 2
     environment:
@@ -12,8 +12,6 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - restore_cache:
-          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
       - run:
           name: Prepare Environment
           when: always
@@ -50,6 +48,7 @@ jobs:
             git config diff.renameLimit 6000
             python --version
             python3 --version
+            demisto-sdk --version
       - save_cache:
           paths:
             - venv
