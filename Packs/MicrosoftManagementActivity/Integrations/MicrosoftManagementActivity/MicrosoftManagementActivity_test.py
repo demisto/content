@@ -375,12 +375,15 @@ def http_return_data(method, url_suffix, full_url, headers, json_data):
 
 
 def create_client():
+    base_url: str, verify: bool,
+    proxy: bool, , refresh_token, ,
+    enc_key, auth_code, tenant_id)
     from MicrosoftManagementActivity import Client
     base_url = 'https://manage.office.com/api/v1.0/'
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
 
-    client = Client(base_url, verify=verify_certificate, proxy=proxy)
+    client = Client(base_url, verify=verify_certificate, proxy=proxy, self_deployed=True, auth_and_token_url="test")
 
     return client
 
