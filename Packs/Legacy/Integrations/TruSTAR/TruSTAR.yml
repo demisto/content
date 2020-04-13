@@ -722,4 +722,3 @@ script:
   dockerimage: demisto/trustar:1.0.0.7265
   runonce: false
   subtype: python3
-sourcemoduleid: TruSTAR
