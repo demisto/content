@@ -77,6 +77,10 @@ script:
     - contextPath: GoogleCloudPubSubTopics.name
       description: Name of the topic
       type: String
+    - contextPath: GoogleCloudPubSub.Topics.nextPageToken
+      description: If not empty, indicates that there may be more topics that match
+        the request.
+      type: String
   - arguments:
     - default: false
       description: ID of the topic e.g. "projects/{project_id}/topics/topic_id".
@@ -206,6 +210,10 @@ script:
     - contextPath: GoogleCloudPubSubSubscriptions.pushConfig.pushEndpoint
       description: A URL locating the endpoint to which messages should be pushed.
       type: String
+    - contextPath: c
+      description: If not empty, indicates that there may be more snapshot that match
+        the request.
+      type: Unknown
   - arguments:
     - default: false
       description: Project ID to pull messages from.
@@ -597,11 +605,13 @@ script:
       type: String
   - arguments:
     - default: false
+      description: ID of the project from which the subscription is receiving messages.
       isArray: false
       name: project_id
       required: true
       secret: false
     - default: false
+      description: ID of the subscription, without project/topic prefix.
       isArray: false
       name: subscription_id
       required: true
@@ -610,7 +620,7 @@ script:
       description: 'A timestamp in RFC3339 UTC "Zulu" format, accurate to nanoseconds.
         Example: "2014-10-02T15:01:23.045123456Z".'
       isArray: false
-      name: time
+      name: time_string
       required: false
       secret: false
     - default: false
@@ -623,6 +633,174 @@ script:
     description: Seeks a subscription to a given point in time or to a given snapshot.
     execution: false
     name: google-cloud-pubsub-topic-messages-seek
+  - arguments:
+    - default: false
+      description: The ID of the project from which this snapshot is retaining messages.
+      isArray: false
+      name: project_id
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the topic from which this snapshot is retaining messages.
+      isArray: false
+      name: topic_id
+      required: false
+      secret: false
+    - default: false
+      description: Max number of results
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: Next page token as returned from the API.
+      isArray: false
+      name: page_token
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a list of snapshots by project ID and topic ID.
+    execution: false
+    name: google-cloud-pubsub-topic-snapshots-list
+    outputs:
+    - contextPath: GoogleCloudPubSubSnapshots.name
+      description: The name of the snapshot.
+      type: String
+    - contextPath: GoogleCloudPubSubSnapshots.topic
+      description: The name of the topic from which this snapshot is retaining messages.
+      type: Unknown
+    - contextPath: GoogleCloudPubSubSnapshots.expireTime
+      description: The snapshot is guaranteed to exist up until this time.
+      type: Date
+    - contextPath: GoogleCloudPubSubSnapshots.labels
+      description: 'Input format: "key=val" pairs sepearated by ",".'
+      type: Unknown
+    - contextPath: GoogleCloudPubSub.Snapshots.nextPageToken
+      description: If not empty, indicates that there may be more snapshot that match
+        the request.
+      type: String
+  - arguments:
+    - default: false
+      description: ID of the project from which the subscription is receiving messages.
+      isArray: false
+      name: project_id
+      required: true
+      secret: false
+    - default: false
+      description: The subscription whose backlog the snapshot retains.
+      isArray: false
+      name: subscription_id
+      required: true
+      secret: false
+    - default: false
+      description: 'Input format: "key=val" pairs sepearated by ",".'
+      isArray: false
+      name: labels
+      required: false
+      secret: false
+    - default: false
+      description: The id of the snapshot.
+      isArray: false
+      name: snapshot_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a snapshot from the requested subscription. Snapshots are
+      used in google-cloud-pubsub-topic-messages-seek command.
+    execution: false
+    name: google-cloud-pubsub-topic-snapshot-create
+    outputs:
+    - contextPath: GoogleCloudPubSubSnapshots.name
+      description: The name of the snapshot.
+      type: String
+    - contextPath: GoogleCloudPubSubSnapshots.topic
+      description: The name of the topic from which this snapshot is retaining messages.
+      type: Unknown
+    - contextPath: GoogleCloudPubSubSnapshots.expireTime
+      description: The snapshot is guaranteed to exist up until this time.
+      type: Date
+    - contextPath: GoogleCloudPubSubSnapshots.labels
+      description: 'An object containing a list of "key": value pairs'
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The ID of the project from which the subscription is receiving
+        messages.
+      isArray: false
+      name: project_id
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        The snapshot is guaranteed to exist up until this time. A newly-created snapshot expires no later than 7 days from the time of its creation.
+
+        A timestamp in RFC3339 UTC "Zulu" format, accurate to nanoseconds. Example: "2020-04-01T08:01:23.045678910Z"
+      isArray: false
+      name: expire_time
+      required: false
+      secret: false
+    - default: false
+      description: 'Input format: "key=val" pairs sepearated by ",".'
+      isArray: false
+      name: labels
+      required: false
+      secret: false
+    - default: false
+      description: The id of the snapshot.
+      isArray: false
+      name: snapshot_id
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        Indicates which fields in the provided snapshot to update.
+        A comma-separated list of fields. Example: "labels,topic,expireTime".
+      isArray: false
+      name: update_mask
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the topic from which this snapshot is retaining messages.
+      isArray: false
+      name: topic_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Updates an existing snapshot. Snapshots are used in google-cloud-pubsub-topic-messages-seek
+      command.
+    execution: false
+    name: google-cloud-pubsub-topic-snapshot-update
+    outputs:
+    - contextPath: GoogleCloudPubSubSnapshots.name
+      description: The name of the snapshot.
+      type: String
+    - contextPath: GoogleCloudPubSubSnapshots.topic
+      description: The name of the topic from which this snapshot is retaining messages.
+      type: Unknown
+    - contextPath: GoogleCloudPubSubSnapshots.expireTime
+      description: The snapshot is guaranteed to exist up until this time.
+      type: Date
+    - contextPath: GoogleCloudPubSubSnapshots.labels
+      description: 'An object containing a list of "key": value pairs'
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The ID of the project from which the subscription is receiving
+        messages.
+      isArray: false
+      name: project_id
+      required: true
+      secret: false
+    - default: false
+      description: The id of the snapshot.
+      isArray: false
+      name: snapshot_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes an existing snapshot.
+    execution: false
+    name: google-cloud-pubsub-topic-snapshot-delete
   dockerimage: demisto/googleapi-python3:1.0.0.6696
   feed: false
   isfetch: true

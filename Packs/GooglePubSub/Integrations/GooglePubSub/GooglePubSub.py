@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 # IMPORTS
-from typing import Tuple
+from typing import Tuple, Optional
 import traceback
 import dateparser
 import httplib2
@@ -32,28 +32,35 @@ class GoogleNameParser:
     FULL_PROJECT_PREFIX = "projects/{}"
     FULL_TOPIC_PREFIX = "/topics/{}"
     FULL_SUBSCRIPTION_PREFIX = "/subscriptions/{}"
+    FULL_SNAPSHOT_PREFIX = "/snapshots/{}"
 
     @staticmethod
-    def get_full_project_name(project_id):
+    def get_project_name(project_id):
         return GoogleNameParser.FULL_PROJECT_PREFIX.format(project_id)
 
     @staticmethod
-    def get_full_topic_name(project_id, topic_id):
-        return GoogleNameParser.get_full_project_name(
+    def get_topic_name(project_id, topic_id):
+        return GoogleNameParser.get_project_name(
             project_id
         ) + GoogleNameParser.FULL_TOPIC_PREFIX.format(topic_id)
 
     @staticmethod
-    def get_full_subscription_project_name(project_id, subscription_id):
-        return GoogleNameParser.get_full_project_name(
+    def get_subscription_project_name(project_id, subscription_id):
+        return GoogleNameParser.get_project_name(
             project_id
         ) + GoogleNameParser.FULL_SUBSCRIPTION_PREFIX.format(subscription_id)
 
     @staticmethod
-    def get_full_subscription_topic_name(project_id, topic_id, subscription_id):
-        return GoogleNameParser.get_full_topic_name(
+    def get_subscription_topic_name(project_id, topic_id, subscription_id):
+        return GoogleNameParser.get_topic_name(
             project_id, topic_id
         ) + GoogleNameParser.FULL_SUBSCRIPTION_PREFIX.format(subscription_id)
+
+    @staticmethod
+    def get_snapshot_project_name(project_id, snapshot_id):
+        return GoogleNameParser.get_project_name(
+            project_id
+        ) + GoogleNameParser.FULL_SNAPSHOT_PREFIX.format(snapshot_id)
 
 
 # disable-secrets-detection-start
@@ -133,7 +140,7 @@ class PubSubClient(BaseGoogleClient):
         if push_endpoint or push_attributes:
             push_config = assign_params(
                 pushEndpoint=push_endpoint,
-                attributes=attribute_pairs_to_dict(push_attributes),
+                attributes=push_attributes,
             )
         else:
             push_config = None
@@ -143,8 +150,17 @@ class PubSubClient(BaseGoogleClient):
             ackDeadlineSeconds=ack_deadline_seconds,
             retainAckedMessages=retain_acked_messages,
             messageRetentionDuration=message_retention_duration,
-            labels=attribute_pairs_to_dict(labels),
+            labels=labels,
             expirationPolicy=assign_params(ttl=expiration_ttl)
+        )
+        return body
+
+    def _create_topic_body(self, allowed_persistence_regions, kms_key_name, labels):
+        message_storage_policy = assign_params(allowedPersistenceRegions=allowed_persistence_regions)
+        body = assign_params(
+            labels=labels,
+            messageStoragePolicy=message_storage_policy,
+            kmsKeyName=kms_key_name
         )
         return body
 
@@ -186,7 +202,7 @@ class PubSubClient(BaseGoogleClient):
             self.service.projects()
                 .topics()
                 .publish(
-                topic=GoogleNameParser.get_full_topic_name(project_id, topic_id),
+                topic=GoogleNameParser.get_topic_name(project_id, topic_id),
                 body=req_body,
             ).execute()
         )
@@ -288,12 +304,7 @@ class PubSubClient(BaseGoogleClient):
         :param kms_key_name: The full name of the Cloud KMS CryptoKey to be used to restrict access on this topic.
         :return: Topic
         """
-        message_storage_policy = assign_params(allowedPersistenceRegions=allowed_persistence_regions)
-        body = assign_params(
-            labels=attribute_pairs_to_dict(labels),
-            messageStoragePolicy=message_storage_policy,
-            kmsKeyName=kms_key_name
-        )
+        body = self._create_topic_body(allowed_persistence_regions, kms_key_name, labels)
         return (
             self.service.projects()
                 .topics()
@@ -324,12 +335,7 @@ class PubSubClient(BaseGoogleClient):
         :param update_mask: Indicates which fields in the provided topic to update.
         :return: Topic
         """
-        message_storage_policy = assign_params(allowedPersistenceRegions=allowed_persistence_regions)
-        topic = assign_params(
-            labels=attribute_pairs_to_dict(labels),
-            messageStoragePolicy=message_storage_policy,
-            kmsKeyName=kms_key_name
-        )
+        topic = self._create_topic_body(allowed_persistence_regions, kms_key_name, labels)
         body = assign_params(
             topic=topic,
             updateMask=update_mask
@@ -338,6 +344,114 @@ class PubSubClient(BaseGoogleClient):
             self.service.projects()
                 .topics()
                 .patch(name=topic_name, body=body)
+                .execute()
+        )
+
+    def subscription_seek_message(self, subscription_name, time_string, snapshot):
+        """
+        Seeks messages in subscription
+        :param subscription_name: Subscription to seek messages for
+        :param time_string: A timestamp in RFC3339 UTC "Zulu" format, accurate to nanoseconds,
+        :param snapshot: The snapshot to seek to.
+        :return: Empty string if successful
+        """
+        body = assign_params(
+            time=time_string,
+            snapshot=snapshot
+        )
+        return (
+            self.service.projects()
+                .subscriptions()
+                .seek(subscription=subscription_name, body=body)
+                .execute()
+        )
+
+    def get_topic_snapshots_list(self, topic_name, page_size, page_token=None):
+        """
+        Get snapshots list
+        :param topic_name: The name of the topic from which this snapshot is retaining messages.
+        :param page_size: Max number of results
+        :param page_token: Next page token as returned from the API.
+        :return:
+        """
+        return (
+            self.service.projects()
+                .topics()
+                .snapshots()
+                .list(topic=topic_name, pageSize=page_size, pageToken=page_token)
+                .execute()
+        )
+
+    def get_project_snapshots_list(self, project_name, page_size, page_token):
+        """
+        Get snapshots list
+        :param project_name: The name of the project from which this snapshot is retaining messages.
+        :param page_size: Max number of results
+        :param page_token: Next page token as returned from the API.
+        :return: Snapshot list
+            """
+        return (
+            self.service.projects()
+                .snapshots()
+                .list(project=project_name, pageSize=page_size, pageToken=page_token)
+                .execute()
+        )
+
+    def create_snapshot(self, subscription_name, snapshot_name, labels):
+        """
+        Create a snapshot
+        :param subscription_name: The subscription whose backlog the snapshot retain
+        :param snapshot_name: The name of the snapshot
+        :param labels: labels dict
+        :return: Snapshot
+        """
+        body = assign_params(
+            subscription=subscription_name,
+            labels=labels
+        )
+        return (
+            self.service.projects()
+                .snapshots()
+                .create(name=snapshot_name, body=body)
+                .execute()
+        )
+
+    def update_snapshot(self, snapshot_name, topic_name, update_mask, expire_time, labels):
+        """
+        :param snapshot_name: The name of the snapshot
+        :param topic_name: The ID of the topic from which this snapshot is retaining messages.
+        :param update_mask: Indicates which fields in the provided snapshot to update.
+        :param expire_time: A timestamp in RFC3339 UTC "Zulu" format
+        :param labels: labels dict
+        :return: Snapshot
+        """
+        snapshot = assign_params(
+            name=snapshot_name,
+            topic=topic_name,
+            expireTime=expire_time,
+            labels=labels
+        )
+        body = assign_params(
+            snapshot=snapshot,
+            updateMask=update_mask
+        )
+        return (
+            self.service.projects()
+                .snapshots()
+                .patch(name=snapshot_name, body=body)
+                .execute()
+        )
+
+    def delete_snapshot(self, snapshot_name):
+        """
+        Delete a snapshot
+        :param snapshot_name: full snapshot name
+        :return: Empty response
+        """
+        return (
+            self.service.projects()
+                .snapshots()
+                .delete(snapshot=snapshot_name)
                 .execute()
         )
 
@@ -398,7 +512,7 @@ def convert_publish_datetime_to_str(publish_time):
         return publish_time.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def attribute_pairs_to_dict(attrs_str: str, delim_char: str = ","):
+def attribute_pairs_to_dict(attrs_str: Optional[str], delim_char: str = ","):
     """
     Transforms a string of multiple inputs to a dictionary list
 
@@ -431,10 +545,10 @@ def test_module(client: PubSubClient, is_fetch: bool):
     :param client: GoogleClient
     :return: 'ok' if test passed, anything else will fail the test.
     """
-    client.get_topic_list(GoogleNameParser.get_full_project_name(client.default_project), page_size=1)
+    client.get_topic_list(GoogleNameParser.get_project_name(client.default_project), page_size=1)
     if is_fetch:
         client.pull_messages(
-            GoogleNameParser.get_full_subscription_project_name(client.default_project, client.default_subscription),
+            GoogleNameParser.get_subscription_project_name(client.default_project, client.default_subscription),
             max_messages=1)
     return "ok"
 
@@ -458,12 +572,16 @@ def topics_list_command(
     :param page_token: page token, as returned from the api
     :return: list of topics
     """
-    full_project_name = GoogleNameParser.get_full_project_name(project_id)
+    full_project_name = GoogleNameParser.get_project_name(project_id)
     res = client.get_topic_list(full_project_name, page_size, page_token)
 
     topics = list(res.get("topics", []))
+    next_page_token = res.get('nextPageToken')
     readable_output = tableToMarkdown(f"Topics for project {project_id}", topics, ['name'])
     outputs = {"GoogleCloudPubSubTopics(val && val.name === obj.name)": topics}
+    if next_page_token:
+        outputs["GoogleCloudPubSub.Topics.nextPageToken"] = next_page_token
+        readable_output += f'**Next Page Token: {next_page_token}**'
     return readable_output, outputs, res
 
 
@@ -548,7 +666,7 @@ def pull_messages_command(
     :param ack: Acknowledge the messages pulled if set to true.
     :return: list of messages
     """
-    full_subscription_name = GoogleNameParser.get_full_subscription_project_name(
+    full_subscription_name = GoogleNameParser.get_subscription_project_name(
         project_id, subscription_id
     )
     raw_msgs = client.pull_messages(full_subscription_name, max_messages)
@@ -613,19 +731,24 @@ def subscriptions_list_command(
     """
     title = f"Subscriptions"
     if topic_id:
-        full_topic_name = GoogleNameParser.get_full_topic_name(project_id, topic_id)
+        full_topic_name = GoogleNameParser.get_topic_name(project_id, topic_id)
         raw_response = client.get_topic_subs(full_topic_name, page_size, page_token)
         subs = [{'name': sub} for sub in raw_response.get("subscriptions", [])]
+        next_page_token = raw_response.get('nextPageToken')
         title += f" for topic {topic_id} in project {project_id}"
         readable_output = tableToMarkdown(title, subs, headers=["name"], headerTransform=pascalToSpace)
     else:
-        full_project_name = GoogleNameParser.get_full_project_name(project_id)
+        full_project_name = GoogleNameParser.get_project_name(project_id)
         raw_response = client.get_project_subs(full_project_name, page_size, page_token)
         subs = raw_response.get("subscriptions", "")
+        next_page_token = raw_response.get('nextPageToken')
         title += f" in project {project_id}"
         readable_output = tableToMarkdown(title, subs, headers=["name", "topic", "ackDeadlineSeconds", "labels"],
                                           headerTransform=pascalToSpace)
     outputs = {f"GoogleCloudPubSubSubscriptions(val && val.name === obj.name)": subs}
+    if next_page_token:
+        outputs["GoogleCloudPubSubSubscriptions.pushConfig.pushEndpoint"] = next_page_token
+        readable_output += f'**Next Page Token: {next_page_token}**'
 
     return readable_output, outputs, raw_response
 
@@ -645,7 +768,7 @@ def get_subscription_command(
     :param project_id: project name
     :return: subscription
     """
-    full_sub_name = GoogleNameParser.get_full_subscription_project_name(
+    full_sub_name = GoogleNameParser.get_subscription_project_name(
         project_id, subscription_id
     )
     subs = client.get_sub(full_sub_name)
@@ -683,8 +806,10 @@ def create_subscription_command(
     :param expiration_ttl: The "time-to-live" duration for the subscription.
     :return: Created subscription
     """
-    full_sub_name = GoogleNameParser.get_full_subscription_project_name(project_id, subscription_id)
-    full_topic_name = GoogleNameParser.get_full_topic_name(project_id, topic_id)
+    full_sub_name = GoogleNameParser.get_subscription_project_name(project_id, subscription_id)
+    full_topic_name = GoogleNameParser.get_topic_name(project_id, topic_id)
+    labels = attribute_pairs_to_dict(labels)
+    push_attributes = attribute_pairs_to_dict(push_attributes)
     raw_sub = client.create_subscription(full_sub_name, full_topic_name, push_endpoint, push_attributes,
                                          ack_deadline_seconds, retain_acked_messages, message_retention_duration,
                                          labels, expiration_ttl)
@@ -726,8 +851,10 @@ def update_subscription_command(
     :param expiration_ttl: The "time-to-live" duration for the subscription.
     :return: Created subscription
     """
-    full_sub_name = GoogleNameParser.get_full_subscription_project_name(project_id, subscription_id)
-    full_topic_name = GoogleNameParser.get_full_topic_name(project_id, topic_id)
+    full_sub_name = GoogleNameParser.get_subscription_project_name(project_id, subscription_id)
+    full_topic_name = GoogleNameParser.get_topic_name(project_id, topic_id)
+    labels = attribute_pairs_to_dict(labels)
+    push_attributes = attribute_pairs_to_dict(push_attributes)
     raw_sub = client.update_subscription(full_sub_name, full_topic_name, update_mask, push_endpoint, push_attributes,
                                          ack_deadline_seconds, retain_acked_messages, message_retention_duration,
                                          labels, expiration_ttl)
@@ -756,8 +883,9 @@ def create_topic_command(
     :param kms_key_name: The full name of the Cloud KMS CryptoKey to be used to restrict access on this topic.
     :return: Created topic
     """
-    topic_name = GoogleNameParser.get_full_topic_name(project_id, topic_id)
+    topic_name = GoogleNameParser.get_topic_name(project_id, topic_id)
     allowed_persistence_regions = argToList(allowed_persistence_regions)
+    labels = attribute_pairs_to_dict(labels)
     raw_topic = client.create_topic(topic_name, labels, allowed_persistence_regions, kms_key_name)
     title = f"Topic **{topic_id}** was created successfully"
     readable_output = tableToMarkdown(title, raw_topic, headerTransform=pascalToSpace)
@@ -777,7 +905,7 @@ def delete_topic_command(
     :param topic_id: topic ID
     :return: Command success/error message
     """
-    topic_name = GoogleNameParser.get_full_topic_name(project_id, topic_id)
+    topic_name = GoogleNameParser.get_topic_name(project_id, topic_id)
     raw_topic = client.delete_topic(topic_name)
     readable_output = f"Topic **{topic_id}** was deleted successfully"
     return readable_output, {}, raw_topic
@@ -798,8 +926,9 @@ def update_topic_command(
     :param update_mask: Indicates which fields in the provided topic to update.
     :return: Created topic
     """
-    topic_name = GoogleNameParser.get_full_topic_name(project_id, topic_id)
+    topic_name = GoogleNameParser.get_topic_name(project_id, topic_id)
     allowed_persistence_regions = argToList(allowed_persistence_regions)
+    labels = attribute_pairs_to_dict(labels)
     raw_topic = client.update_topic(topic_name, labels, allowed_persistence_regions, kms_key_name, update_mask)
     title = f"Topic {topic_id} was updated successfully"
     readable_output = tableToMarkdown(title, raw_topic, headerTransform=pascalToSpace)
@@ -809,6 +938,163 @@ def update_topic_command(
     return readable_output, outputs, raw_topic
 
 
+def seek_message_command(
+        client: PubSubClient,
+        project_id: str,
+        subscription_id: str,
+        time_string: str = None,
+        snapshot: str = None,
+) -> Tuple[str, dict, dict]:
+    """
+    Get topics list by project_id
+    Requires one of the following OAuth scopes:
+
+        https://www.googleapis.com/auth/pubsub
+        https://www.googleapis.com/auth/cloud-platform
+
+    :param client: GoogleClient
+    :param project_id: ID of the subscription, without project/topic prefix.
+    :param subscription_id: ID of the project from which the subscription is receiving messages.
+    :param time_string: A timestamp in RFC3339 UTC "Zulu" format, accurate to nanoseconds,
+    :param snapshot: The snapshot to seek to.
+    :return: list of topics
+    """
+    if not time_string and not snapshot:
+        return_error('Please provide either a time_string or a snapshot')
+    sub_name = GoogleNameParser.get_subscription_project_name(project_id, subscription_id)
+    raw_res = client.subscription_seek_message(sub_name, time_string, snapshot)
+    readable_output = 'Message seek was successful for **' + (
+        f'time: {time_string}' if time_string else f'snapshot:{snapshot}') + '**'
+    return readable_output, {}, raw_res
+
+
+def snapshot_list_command(
+        client: PubSubClient,
+        project_id: str,
+        topic_id: str = None,
+        page_size: str = None,
+        page_token: str = None,
+) -> Tuple[str, dict, dict]:
+    """
+    Get snapshots list by project_id or topic_id
+    Requires one of the following OAuth scopes:
+
+        https://www.googleapis.com/auth/pubsub
+        https://www.googleapis.com/auth/cloud-platform
+
+    :param client: GoogleClient
+    :param project_id: project id
+    :param topic_id:
+    :param page_size: page size
+    :param page_token: page token, as returned from the api
+    :return: list of snapshots
+    """
+    if topic_id:
+        topic_name = GoogleNameParser.get_topic_name(project_id, topic_id)
+        res = client.get_topic_snapshots_list(topic_name, page_size, page_token)
+        title = f"Snapshots for topic {topic_id}"
+    else:
+        project_name = GoogleNameParser.get_project_name(project_id)
+        res = client.get_project_snapshots_list(project_name, page_size, page_token)
+        title = f"Snapshots for project {project_id}"
+    snapshots = list(res.get("snapshots", []))
+    next_page_token = res.get('nextPageToken')
+    readable_output = tableToMarkdown(title, snapshots, ['name'])
+    outputs = {"GoogleCloudPubSubTopics(val && val.name === obj.name)": snapshots}
+    if next_page_token:
+        outputs["GoogleCloudPubSub.Snapshots.nextPageToken"] = next_page_token
+        readable_output += f'**Next Page Token: {next_page_token}**'
+    return readable_output, outputs, res
+
+
+def snapshot_create_command(
+        client: PubSubClient,
+        project_id: str,
+        subscription_id: str,
+        snapshot_id: str,
+        labels: str = None,
+) -> Tuple[str, dict, dict]:
+    """
+    Create a snapshot
+    Requires one of the following OAuth scopes:
+
+        https://www.googleapis.com/auth/pubsub
+        https://www.googleapis.com/auth/cloud-platform
+
+    :param client: GoogleClient
+    :param project_id: project id
+    :param subscription_id: The subscription whose backlog the snapshot retains.
+    :param snapshot_id: The id of the snapshot.
+    :param labels: Input format: "key=val" pairs sepearated by ",".
+    :return: list of topics
+    """
+    subscription_name = GoogleNameParser.get_subscription_project_name(project_id, subscription_id)
+    snapshot_name = GoogleNameParser.get_snapshot_project_name(project_id, snapshot_id)
+    labels = attribute_pairs_to_dict(labels)
+    raw_snapshot = client.create_snapshot(subscription_name, snapshot_name, labels)
+    title = f"Snapshot **{snapshot_id}** was created successfully"
+    readable_output = tableToMarkdown(title, raw_snapshot, headerTransform=pascalToSpace)
+    outputs = {
+        f"GoogleCloudPubSubSnapshots": raw_snapshot
+    }
+    return readable_output, outputs, raw_snapshot
+
+
+def snapshot_update_command(
+        client: PubSubClient,
+        project_id: str,
+        topic_id: str,
+        snapshot_id: str,
+        update_mask: str,
+        expire_time: str = None,
+        labels: str = None
+) -> Tuple[str, dict, dict]:
+    """
+    Updates a snapshot
+    Requires one of the following OAuth scopes:
+
+        https://www.googleapis.com/auth/pubsub
+        https://www.googleapis.com/auth/cloud-platform
+
+    :param client: GoogleClient
+    :param project_id: ID of the project from which the subscription is receiving messages.
+    :param topic_id: The ID of the topic from which this snapshot is retaining messages.
+    :param snapshot_id: The id of the snapshot.
+    :param update_mask: Indicates which fields in the provided snapshot to update.
+    :param expire_time: The snapshot is guaranteed to exist up until this time
+    :param labels: An object containing a list of "key": value pairs
+    :return:
+    """
+    snapshot_name = GoogleNameParser.get_snapshot_project_name(project_id, snapshot_id)
+    topic_name = GoogleNameParser.get_topic_name(project_id, topic_id)
+    labels = attribute_pairs_to_dict(labels)
+    raw_snapshot = client.update_snapshot(snapshot_name, topic_name, update_mask, expire_time, labels)
+    title = f"Snapshot **{snapshot_id}** was updated successfully"
+    readable_output = tableToMarkdown(title, raw_snapshot, headerTransform=pascalToSpace)
+    outputs = {
+        f"GoogleCloudPubSubSnapshots(val && val.name === obj.name)": raw_snapshot
+    }
+    return readable_output, outputs, raw_snapshot
+
+
+def snapshot_delete_command(
+        client: PubSubClient,
+        project_id: str,
+        snapshot_id: str
+) -> Tuple[str, dict, dict]:
+    """
+    Delete a topic
+    :param client: PubSub client instance
+    :param project_id: The ID of the project from which the subscription is receiving messages.
+    :param snapshot_id: The id of the snapshot.
+    :return: Command success/error message
+    """
+    snapshot_name = GoogleNameParser.get_snapshot_project_name(project_id, snapshot_id)
+    raw_res = client.delete_snapshot(snapshot_name)
+    readable_output = f"Snapshot **{snapshot_id}** was deleted successfully"
+    return readable_output, {}, raw_res
+
+
 def fetch_incidents(client: PubSubClient):
     """
     This function will execute each interval (default is 1 minute).
@@ -816,7 +1102,7 @@ def fetch_incidents(client: PubSubClient):
     :return: incidents: Incidents that will be created in Demisto
     """
     incidents = []
-    sub_name = GoogleNameParser.get_full_subscription_project_name(
+    sub_name = GoogleNameParser.get_subscription_project_name(
         client.default_project, client.default_subscription
     )
     raw_msgs = client.pull_messages(sub_name, client.default_max_msgs)
@@ -836,16 +1122,21 @@ def main():
     LOG(f"Command being called is {command}")
     try:
         commands = {
-            "google-cloud-pubsub-topics-list": topics_list_command,
             "google-cloud-pubsub-topic-publish-message": publish_message_command,
             "google-cloud-pubsub-topic-messages-pull": pull_messages_command,
             "google-cloud-pubsub-topic-subscriptions-list": subscriptions_list_command,
             "google-cloud-pubsub-topic-subscription-get-by-name": get_subscription_command,
             "google-cloud-pubsub-topic-subscription-create": create_subscription_command,
             "google-cloud-pubsub-topic-subscription-update": update_subscription_command,
+            "google-cloud-pubsub-topics-list": topics_list_command,
             "google-cloud-pubsub-topic-create": create_topic_command,
             "google-cloud-pubsub-topic-delete": delete_topic_command,
             "google-cloud-pubsub-topic-update": update_topic_command,
+            "google-cloud-pubsub-topic-messages-seek": seek_message_command,
+            "google-cloud-pubsub-topic-snapshots-list": snapshot_list_command,
+            "google-cloud-pubsub-topic-snapshot-create": snapshot_create_command,
+            "google-cloud-pubsub-topic-snapshot-update": snapshot_update_command,
+            "google-cloud-pubsub-topic-snapshot-delete": snapshot_delete_command
         }
         if command == "test-module":
             demisto.results(test_module(client, params.get('isFetch')))

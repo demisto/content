@@ -13,20 +13,20 @@ class TestGoogleNameParser:
 
     def test_get_full_project_name(self):
         expected = f'projects/{self.DFLT_PROJECT_ID}'
-        assert expected == GoogleNameParser.get_full_project_name(self.DFLT_PROJECT_ID)
+        assert expected == GoogleNameParser.get_project_name(self.DFLT_PROJECT_ID)
 
     def test_get_full_topic_name(self):
         expected = f'projects/{self.DFLT_PROJECT_ID}/topics/{self.DFLT_TOPIC_ID}'
-        assert expected == GoogleNameParser.get_full_topic_name(self.DFLT_PROJECT_ID, self.DFLT_TOPIC_ID)
+        assert expected == GoogleNameParser.get_topic_name(self.DFLT_PROJECT_ID, self.DFLT_TOPIC_ID)
 
     def test_get_full_subscription_project_name(self):
         expected = f'projects/{self.DFLT_PROJECT_ID}/subscriptions/{self.DFLT_SUB_ID}'
-        assert expected == GoogleNameParser.get_full_subscription_project_name(self.DFLT_PROJECT_ID, self.DFLT_SUB_ID)
+        assert expected == GoogleNameParser.get_subscription_project_name(self.DFLT_PROJECT_ID, self.DFLT_SUB_ID)
 
     def test_get_full_subscription_topic_name(self):
         expected = f'projects/{self.DFLT_PROJECT_ID}/topics/{self.DFLT_TOPIC_ID}/subscriptions/{self.DFLT_SUB_ID}'
-        assert expected == GoogleNameParser.get_full_subscription_topic_name(self.DFLT_PROJECT_ID, self.DFLT_TOPIC_ID,
-                                                                             self.DFLT_SUB_ID)
+        assert expected == GoogleNameParser.get_subscription_topic_name(self.DFLT_PROJECT_ID, self.DFLT_TOPIC_ID,
+                                                                        self.DFLT_SUB_ID)
 
 
 class TestHelperFunctions:
