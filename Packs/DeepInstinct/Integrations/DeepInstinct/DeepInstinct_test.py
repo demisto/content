@@ -1,12 +1,14 @@
+from unittest import mock
+
 import pytest
 import sys
 
 from Packs.DeepInstinct.Integrations.DeepInstinct import DeepInstinct
-from Tests.demistomock import demistomock as demisto
+import demistomock as demisto
 
 params = {
-    "API_KEY": "key",
-    "BASE_URL": "https://demisto.poc.deepinstinctweb.com",
+    "apikey": "key",
+    "base_url": "https://demisto.poc.deepinstinctweb.com",
     "after_id": 0
 }
 
@@ -39,22 +41,20 @@ mock_device = {
 }
 
 
-def http_request_return():
-    class A:
-        status_code = 200
-        json = lambda: mock_device
-    return A
+class A:
+    status_code = 200
+    json = lambda: mock_device
 
-def test_get_device_command(mocker):
+
+def test_get_device_command(requests_mock, mocker):
     mocker.patch.object(demisto, 'params', return_value=params)
-    mocker.patch.object(demisto, 'args', return_value={'device_id': 1})
-    mocker.patch('DeepInstinct.http_request', side_effect=http_request_return)
+    mocker.patch.object(demisto, 'args', return_value={'device_id': mock_device['id']})
+    requests_mock.get("{0}/api/v1/devices/{1}".format(params['base_url'], mock_device['id']), json=mock_device)
     mocker.patch.object(demisto, 'results')
     DeepInstinct.get_specific_device()
-    result = demisto.results.call_args[0]
-    assert result['id'] == mock_device['id']
-    assert result['hostname'] == mock_device['hostname']
+    result = demisto.results.call_args[0][0]
+    assert result['Contents'] == mock_device
 
 
 def test_fetch_incidents(mocker):
-    pass
+    assert True

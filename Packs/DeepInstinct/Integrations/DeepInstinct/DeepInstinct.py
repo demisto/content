@@ -1,7 +1,9 @@
 import requests
 import json
 from datetime import datetime
-from Tests.demistomock import demistomock as demisto
+import demistomock as demisto
+
+from CommonServerPython import *
 
 requests.packages.urllib3.disable_warnings()
 
@@ -44,7 +46,7 @@ def get_specific_device():
     result = http_request('GET', "/devices/%s" % str(device_id))
     ec = {'DeepInstinct.Devices(val.id && val.id == obj.id)': result}
 
-    demisto.return_outputs(
+    return_outputs(
         readable_output=tableToMarkdown('Device', result),
         outputs=ec,
         raw_response=result
