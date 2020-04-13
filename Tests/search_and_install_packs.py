@@ -3,7 +3,7 @@ from __future__ import print_function
 import os
 import ast
 import demisto_client
-from threading import Thread
+from threading import Thread, Lock
 from demisto_sdk.commands.common.tools import print_error, print_color, LOG_COLORS, is_file_path_in_pack, \
     get_pack_name, run_threads_list
 from Tests.test_content import ParallelPrintsManager
@@ -26,7 +26,7 @@ def search_pack(client, prints_manager, thread_index, pack_id):
     """ Make a pack search request.
 
     Args:
-        client (demisto_client): The configured client to use.
+        client (demisto_client): The configured client to use
         prints_manager (ParallelPrintsManager): Print manager object
         thread_index (int): The thread index
         pack_id (string): The pack ID
@@ -53,11 +53,13 @@ def search_pack(client, prints_manager, thread_index, pack_id):
         if pack_metadata:
             prints_manager.add_print_job('\nFound pack {} in bucket!'.format(pack_id),
                                          print_color, thread_index, LOG_COLORS.GREEN)
+            prints_manager.execute_thread_prints(thread_index)
             return pack_metadata
 
         else:
             prints_manager.add_print_job(f'Did not find pack {pack_id} in bucket.', print_color, thread_index,
                                          LOG_COLORS.YELLOW)
+            prints_manager.execute_thread_prints(thread_index)
             return {}
     else:
         result_object = ast.literal_eval(response_data)
@@ -72,7 +74,7 @@ def install_pack(client, prints_manager, thread_index, pack_id, pack_version):
     """ Make a pack installation request.
 
     Args:
-        client (demisto_client): The configured client to use.
+        client (demisto_client): The configured client to use
         prints_manager (ParallelPrintsManager): Print manager object
         thread_index (int): The thread index
         pack_id (string): The pack ID
@@ -93,9 +95,11 @@ def install_pack(client, prints_manager, thread_index, pack_id, pack_version):
                                                                         method='POST',
                                                                         body=data,
                                                                         accept='application/json')
+
     if 200 <= status_code < 300:
         prints_manager.add_print_job(f'Pack {pack_id} Successfully Installed!', print_color, thread_index,
                                      LOG_COLORS.GREEN)
+        prints_manager.execute_thread_prints(thread_index)
     else:
         result_object = ast.literal_eval(response_data)
         message = result_object.get('message', '')
@@ -105,33 +109,50 @@ def install_pack(client, prints_manager, thread_index, pack_id, pack_version):
         os._exit(1)
 
 
-def search_and_install_pack(client, prints_manager, thread_index, pack_id, installed_packs):
-    pack_metadata = search_pack(client, prints_manager, thread_index, pack_id)
+def is_installation_in_progress(pack_id, packs_in_progress):
+    # we use locks here to validate we don't install a pack twice
+    in_progress = False
 
-    # get dependencies, search & install them as well
-    dependencies = pack_metadata.get('dependencies', {}).keys()
-    threads_list = []
-    threads_prints_manager = ParallelPrintsManager(len(dependencies))
-    for thread_index, pack in enumerate(dependencies):
-        t = Thread(target=search_and_install_pack,
-                   kwargs={'client': client,
-                           'prints_manager': threads_prints_manager,
-                           'thread_index': thread_index,
-                           'pack_id': pack,
-                           'installed_packs': installed_packs})
+    lock = Lock()
+    lock.acquire()
 
-        threads_list.append(t)
+    if pack_id not in packs_in_progress:
+        packs_in_progress.add(pack_id)
+        in_progress = True
+
+    lock.release()
+
+    return in_progress
+
+
+def search_and_install_pack(client, prints_manager, thread_index, pack_id, packs_in_progress):
+    if is_installation_in_progress(pack_id, packs_in_progress):
+        pack_metadata = search_pack(client, prints_manager, thread_index, pack_id)
+
+        # get dependencies, search & install them as well
+        dependencies = pack_metadata.get('dependencies', {}).keys()
+        threads_list = []
+        threads_prints_manager = ParallelPrintsManager(len(dependencies))
+        for idx, pack in enumerate(dependencies):
+            t = Thread(target=search_and_install_pack,
+                       kwargs={'client': client,
+                               'prints_manager': threads_prints_manager,
+                               'thread_index': idx,
+                               'pack_id': pack,
+                               'packs_in_progress': packs_in_progress})
+
+            threads_list.append(t)
 
         run_threads_list(threads_list)
 
-    pack_version = pack_metadata.get('currentVersion', '')
-    install_pack(client, prints_manager, thread_index, pack_id, pack_version)
+        pack_version = pack_metadata.get('currentVersion', '')
+        install_pack(client, prints_manager, thread_index, pack_id, pack_version)
 
 
-def search_and_install_pack_and_its_dependencies(client, prints_manager, thread_index, path):
+def search_and_install_pack_and_its_dependencies(client, prints_manager, thread_index, path, packs_in_progress):
     pack_id = get_pack_id_by_path(path)
     if pack_id and pack_id != 'Legacy':
-        search_and_install_pack(client, prints_manager, thread_index, pack_id, installed_packs=[])
+        search_and_install_pack(client, prints_manager, thread_index, pack_id, packs_in_progress)
     else:
         prints_manager.add_print_job('', print_error, thread_index)
         prints_manager.execute_thread_prints(thread_index)

@@ -689,14 +689,17 @@ def main():
 
         # Test packs search and installation - beginning of infrastructure
         threads_list = []
+        packs_in_progress = set()  # used to avoid double installation
+        threads_prints_manager = ParallelPrintsManager(len(modified_integrations_names))
         for index, int_name in enumerate(modified_integrations_names):
             client = demisto_client.configure(base_url=servers[0], username=username, password=password,
                                               verify_ssl=False)
             thread = Thread(target=search_and_install_pack_and_its_dependencies,
                             kwargs={'client': client,
-                                    'prints_manager': prints_manager,
+                                    'prints_manager': threads_prints_manager,
                                     'thread_index': index,
-                                    'path': name_to_path_dict[int_name]})
+                                    'path': name_to_path_dict[int_name],
+                                    'packs_in_progress': packs_in_progress})
             threads_list.append(thread)
         run_threads_list(threads_list)
 
