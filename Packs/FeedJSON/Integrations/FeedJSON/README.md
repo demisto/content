@@ -75,3 +75,11 @@ Gets the feed indicators.
 ##### Context Output
 
 There is no context output for this command.
+
+## Video Demo
+<video controls>
+    <source src="https://github.com/demisto/content/raw/2ba0e14c66a603961e7326fbf5b3e1e3fce10150/Packs/FeedJSON/Integrations/FeedJSON/demo_video/Json_generic_feed_demo.mp4"
+            type="video/mp4"/>
+    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content/blob/2ba0e14c66a603961e7326fbf5b3e1e3fce10150/Packs/FeedJSON/Integrations/FeedJSON/demo_video/Json_generic_feed_demo.mp4 
+</video>
+
