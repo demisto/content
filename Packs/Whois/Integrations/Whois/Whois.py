@@ -7166,6 +7166,8 @@ def get_whois_raw(domain, server="", previous=None, rfc3490=True, never_cut=Fals
         request_domain = "=%s" % domain  # Avoid partial matches
     else:
         request_domain = domain
+    # The following loop handles errno 104 - "connection reset by peer" by retry whois_request with the same arguments.
+    # If the request fails due to other cause - there will not be another try
     response = ""
     for i in range(0, 3):
         try:
