@@ -28,7 +28,7 @@ For more information click [here](https://docs.paloaltonetworks.com/autofocus/au
 To connect a custom AutoFocus feed you need to provide the Custom Feed URL.
 
 The Custom Feed URL should be in this form:
-https:/<span>/autofocus.paloaltonetworks.com/IOCFeed/{Output_Feed_ID}/{Output_Feed_Name}
+https:/\<span\>/autofocus.paloaltonetworks.com/IOCFeed/{Output_Feed_ID}/{Output_Feed_Name}
 
 
 ## Commands
