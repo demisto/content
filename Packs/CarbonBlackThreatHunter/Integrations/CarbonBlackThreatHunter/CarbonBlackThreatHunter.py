@@ -229,7 +229,7 @@ def cb_query(client: Client, args: dict) -> Tuple[Any, Dict, Dict]:
 
     response = client.cb_query_request(query, query_type, time_window)
     if response.get('results'):
-        result = response.get('results')
+        result = response.get('results', {})
         md_ = tableToMarkdown('Carbon Black Threat Hunter Query Result', result)
     else:
         result = response
