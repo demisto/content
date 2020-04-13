@@ -7175,7 +7175,6 @@ def get_whois_raw(domain, server="", previous=None, rfc3490=True, never_cut=Fals
         except socket.error as err:
             if err.errno == errno.ECONNRESET:
                 continue
-            break
         break
     if never_cut:
         # If the caller has requested to 'never cut' responses, he will get the original response from the server (
