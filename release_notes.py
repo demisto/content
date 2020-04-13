@@ -660,7 +660,7 @@ def main():
         for file_path in removed_files:
             # content entities are only yml/json files. ignore all the rest.
             if file_path.endswith('.yml') or file_path.endswith('.json'):
-            handle_deleted_file(file_path, tag)
+                handle_deleted_file(file_path, tag)
 
         # join all release notes
         res = []
