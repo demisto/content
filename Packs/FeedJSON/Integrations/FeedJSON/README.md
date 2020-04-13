@@ -33,7 +33,7 @@ Use the JSON feed integration to fetch indicators from a JSON feed. This integra
 
 IP address ranges from Amazon AWS will be used as examples. The feed will ingest indicators of the CIDR type. These are the feed instance configuration parameters for our example.
 
-**URL**: https:/<span>/ip-ranges.amazonaws.com/ip-ranges.json
+**URL**: https://ip-ranges.amazonaws.com/ip-ranges.json
 
 **Auto detect indicator type**: Checked.
 
