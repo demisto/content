@@ -47,6 +47,7 @@ jobs:
             npm install .
             # store in bash env so we load our venv in each step
             echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
+            git config diff.renameLimit 6000
             python --version
             python3 --version
       - save_cache:
@@ -106,8 +107,9 @@ jobs:
 
             python3 -m pytest ./Tests/scripts/infrastructure_tests/mock_unit_test.py -v
             python3 -m pytest ./Tests/scripts/infrastructure_tests/release_notes_test.py -v
-            python3 -m pytest ./Tests/scripts/infrastructure_tests/store_packs_test.py -v
             python3 -m pytest ./Tests/scripts/infrastructure_tests/test_configure_tests.py -v
+            python3 -m pytest ./Tests/Marketplace/Tests/marketplace_services_test.py -v
+            python3 -m pytest ./Tests/Marketplace/Tests/upload_packs_test.py -v
       - run:
           name: Validate Files and Yaml
           when: always
@@ -208,7 +210,6 @@ jobs:
                 echo "Skipping - running only in container number 0"
                 exit 0
             fi
-            python copy_beta.py $CIRCLE_ARTIFACTS
             demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS
             # create zip with contents of content_new.zip and content_test.zip for use in updating content on instances
             cp "$CIRCLE_ARTIFACTS/content_new.zip" "$CIRCLE_ARTIFACTS/all_content.zip"
@@ -474,11 +475,6 @@ jobs:
 
           when: always
       - run:
-          name: Validate Docker Images
-          shell: /bin/bash
-          command: ./Tests/scripts/validate_docker_images.sh
-          when: always
-      - run:
           name: Instance Test
           command: |
             if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 1 ] ;
@@ -525,13 +521,18 @@ jobs:
             PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
             GCS_PATH=$(mktemp)
             echo $GCS_MARKET_KEY > $GCS_PATH
-            python3 ./Tests/store_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -s $GCS_PATH -b 'marketplace-dist' -n $CIRCLE_BUILD_NUM -p 'All' -o -k $PACK_SIGNING_KEY
+            python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -s $GCS_PATH -b 'marketplace-dist' -n $CIRCLE_BUILD_NUM -p 'All' -o -k $PACK_SIGNING_KEY
             rm $GCS_PATH
           when: on_success
       - store_artifacts:
           path: artifacts
           destination: artifacts
           when: always
+      - run:
+          name: Store Artifacts to GCS
+          command: ./Tests/scripts/upload_artifacts.sh
+          when: always
+
 workflows:
   version: 2
   commit:
