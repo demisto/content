@@ -1,0 +1,249 @@
+[
+  {
+    "category": "Endpoint",
+    "name": "Malware drop to disk",
+    "priority": 5,
+    "relativeImportance": "Medium",
+    "importancePoints": 91,
+    "ruleId": 9,
+    "actionTemplate": "Update endpoint protection signatures with {{hashCount}} malware samples",
+    "actionBasedTitle": "Prevent malware to be written to disk",
+    "nonBlockedSimulations": 242,
+    "blockedSimulations": 345,
+    "nonBlockedSimulationsPercentage": 41.22657580919932,
+    "maxExecutionTime": "2020-04-01T16:10:45.892Z",
+    "minExecutionTime": "2020-03-23T09:37:36.409Z",
+    "context": {
+      "simulationsCount": 242,
+      "hashCount": 225
+    },
+    "prevalence": 3,
+    "attackTypes": [
+      {
+        "attackType": "Malware Drop",
+        "simulationsCount": 242
+      }
+    ],
+    "siemStatuses": [
+      {
+        "siemStatus": "missed",
+        "simulationsCount": 234
+      },
+      {
+        "siemStatus": "inconsistent",
+        "simulationsCount": 8
+      }
+    ],
+    "threatActors": [
+      "APT28",
+      "APT34",
+      "APT32",
+      "OilRig",
+      "APT37",
+      "Lazarus Group",
+      "menuPass",
+      "APT29",
+      "APT3",
+      "APT30",
+      "APT38",
+      "APT39",
+      "BRONZE BUTLER",
+      "Dark Caracal",
+      "DragonOK",
+      "FIN7",
+      "Leviathan",
+      "N/A",
+      "Naikon",
+      "PittyTiger",
+      "Scarlet Mimic",
+      "Soft Cell",
+      "TA459",
+      "Threat Group-3390",
+      "Turla",
+      "Winnti Group",
+      "admin@338"
+    ],
+    "attackPhases": [
+      5
+    ],
+    "attacks": [
+      2122,
+      1613,
+      2383,
+      2152,
+      1393,
+      2200,
+      1298,
+      1578,
+      1579,
+      1408,
+      1559,
+      1581,
+      1612,
+      2374,
+      1415,
+      2131,
+      1498,
+      2182,
+      1303,
+      1385,
+      1476,
+      1572,
+      1615,
+      1666,
+      2104,
+      2143,
+      2223,
+      2358,
+      2533,
+      2734,
+      3685,
+      3690,
+      814,
+      915,
+      919,
+      921,
+      923,
+      928,
+      935,
+      938,
+      940,
+      957,
+      962,
+      965,
+      966,
+      968,
+      974,
+      978,
+      983,
+      986,
+      990,
+      994,
+      997,
+      1000,
+      1005,
+      1201,
+      1292,
+      1302,
+      1334,
+      1388,
+      1402,
+      1430,
+      1565,
+      1583,
+      1611,
+      1679,
+      1685,
+      1689,
+      2165,
+      2401,
+      2443,
+      2448,
+      2453,
+      2473,
+      2513,
+      2518,
+      2543,
+      2603,
+      2625,
+      2634,
+      2639,
+      2654,
+      2674,
+      2679,
+      2739,
+      2749,
+      2769,
+      2809,
+      2819,
+      2870,
+      2885,
+      2890,
+      2915,
+      2975,
+      2990,
+      3010,
+      3025,
+      3030,
+      3288,
+      3299,
+      3321,
+      3333,
+      3338,
+      3344,
+      3382,
+      3398,
+      3403,
+      3408,
+      3413,
+      3429,
+      3457,
+      3733,
+      3744,
+      3789,
+      3800,
+      3805
+    ],
+    "action": "Prevent malware to be written to disk",
+    "targets": [
+      {
+        "targetNodeId": "0110ff87-b919-41b9-b772-7fbf775b4343",
+        "attackers": [
+          {
+            "attackerNodeId": "0110ff87-b919-41b9-b772-7fbf775b4343"
+          }
+        ],
+        "breakdown": {
+          "name": "Attack",
+          "count": 108
+        }
+      },
+      {
+        "targetNodeId": "372dc152-4b0b-4d92-9966-a51cdd115000",
+        "attackers": [
+          {
+            "attackerNodeId": "372dc152-4b0b-4d92-9966-a51cdd115000"
+          }
+        ],
+        "breakdown": {
+          "name": "Attack",
+          "count": 8
+        }
+      },
+      {
+        "targetNodeId": "8b7d152a-ce20-46af-ba9f-131339b1297f",
+        "attackers": [
+          {
+            "attackerNodeId": "8b7d152a-ce20-46af-ba9f-131339b1297f"
+          }
+        ],
+        "breakdown": {
+          "name": "Attack",
+          "count": 8
+        }
+      }
+    ],
+    "severityScore": 10,
+    "severity": "Medium",
+    "impact": 0.4453353046333106,
+    "riskBreakdown": {
+      "current": {
+        "attackSurfaceFactor": 91.21465409923528,
+        "criticalSegmentFactor": 91.21465409923528,
+        "knownAttacksFactor": 95.21149241819633,
+        "mitreRiskFactor": 92.52852410747148
+      },
+      "goal": {
+        "attackSurfaceFactor": 86.91090165392139,
+        "criticalSegmentFactor": 86.91090165392139,
+        "knownAttacksFactor": 89.46528332003192,
+        "mitreRiskFactor": 89.06882591093117
+      }
+    },
+    "criteria": "result:(not-blocked) AND Attack_Type:(\"Malware Drop\" \"Write Malware to Drop\" \"Write Exploit to Disk\")",
+    "mitigationPoints": {
+      "key": "Attack",
+      "value": 116
+    }
+  }
+]
