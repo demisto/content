@@ -1756,19 +1756,22 @@ def return_error(message, error='', outputs=None):
         :return: Error entry object
         :rtype: ``dict``
     """
-    trace = traceback.format_exc()
-    if 'NoneType: None\n' != trace:  # Checking that an exception occured
-        message = "{}\n\n{}".format(message, trace)
+    is_server_handled = hasattr(demisto, 'command') and demisto.command() in ('fetch-incidents',
+                                                                              'long-running-execution',
+                                                                              'fetch-indicators')
+    log_message = message
+    if not is_server_handled and any(sys.exc_info()):  # Checking that an exception occurred
+        log_message = "{}\n\n{}".format(message, traceback.format_exc())
 
-    LOG(message)
+    LOG(log_message)
     if error:
         LOG(str(error))
+
     LOG.print_log()
     if not isinstance(message, str):
         message = message.encode('utf8') if hasattr(message, 'encode') else str(message)
 
-    if hasattr(demisto, 'command') and demisto.command() in ('fetch-incidents', 'long-running-execution',
-                                                             'fetch-indicators'):
+    if is_server_handled:
         raise Exception(message)
     else:
         demisto.results({
