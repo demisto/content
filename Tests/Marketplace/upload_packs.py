@@ -7,6 +7,7 @@ import shutil
 import uuid
 import prettytable
 import google.auth
+import glob
 from google.cloud import storage
 from datetime import datetime
 from zipfile import ZipFile
@@ -29,11 +30,12 @@ def get_modified_packs(specific_packs=""):
         set: unique collection of modified/new packs names.
 
     """
+
     if specific_packs.lower() == "all":
         if os.path.exists(PACKS_FULL_PATH):
             all_packs = {p for p in os.listdir(PACKS_FULL_PATH) if p not in IGNORED_FILES}
             print(f"Number of selected packs is: {len(all_packs)}")
-            return all_packs
+            packs = all_packs
         else:
             print_error((f"Folder {PACKS_FOLDER} was not found "
                          f"at the following path: {PACKS_FULL_PATH}"))
@@ -42,14 +44,16 @@ def get_modified_packs(specific_packs=""):
     elif specific_packs:
         modified_packs = {p.strip() for p in specific_packs.split(',')}
         print(f"Number of selected packs is: {len(modified_packs)}")
-        return modified_packs
+        packs = modified_packs
     else:
         cmd = "git diff --name-only HEAD..HEAD^ | grep 'Packs/'"
         modified_packs_path = run_command(cmd, use_shell=True).splitlines()
         modified_packs = {p.split('/')[1] for p in modified_packs_path if p not in IGNORED_PATHS}
         print(f"Number of modified packs is: {len(modified_packs)}")
 
-        return modified_packs
+        packs = modified_packs
+
+    return packs
 
 
 def extract_packs_artifacts(packs_artifacts_path, extract_destination_path):
@@ -98,7 +102,6 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
     Args:
         storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where index.zip is stored.
         extract_destination_path (str): the full path of extract folder.
-
     Returns:
         str: extracted index folder full path.
         Blob: google cloud storage object that represents index.zip blob.
@@ -109,6 +112,9 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
 
     index_blob = storage_bucket.blob(index_storage_path)
     index_folder_path = os.path.join(extract_destination_path, GCPConfig.INDEX_NAME)
+
+    if not os.path.exists(extract_destination_path):
+        os.mkdir(extract_destination_path)
 
     if not index_blob.exists():
         os.mkdir(index_folder_path)
@@ -163,7 +169,7 @@ def update_index_folder(index_folder_path, pack_name, pack_path):
         return task_status
 
 
-def upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number):
+def upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs):
     """Upload updated index zip to cloud storage.
 
     Args:
@@ -171,6 +177,7 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
         extract_destination_path (str): extract folder full path.
         index_blob (Blob): google cloud storage object that represents index.zip blob.
         build_number (str): circleCI build number, used as an index revision.
+        private_packs (list): List of private packs and their price.
 
     """
     with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json"), "w+") as index_file:
@@ -186,7 +193,8 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
                     'New',
                     'Getting Started'
                 ]
-            }
+            },
+            'packs': private_packs
         }
         json.dump(index, index_file, indent=4)
 
@@ -201,6 +209,53 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
     index_blob.upload_from_filename(index_zip_path)
     shutil.rmtree(index_folder_path)
     print_color(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.", LOG_COLORS.GREEN)
+
+
+def get_private_packs(private_index_path):
+    """
+    Get the list of ID and price of the private packs.
+    Args:
+        private_index_path: The path for the index of the private packs.
+
+    Returns:
+        private_packs: A list of ID and price of the private packs.
+    """
+    try:
+        metadata_files = glob.glob(f"{private_index_path}/**/metadata.json")
+    except Exception as e:
+        print_warning(f'Could not find metadata files in {private_index_path}: {str(e)}')
+        return []
+
+    if not metadata_files:
+        print_warning(f'No metadata files found in [{private_index_path}]')
+
+    private_packs = []
+    for metadata_file_path in metadata_files:
+        try:
+            with open(metadata_file_path, "r") as metadata_file:
+                metadata = json.load(metadata_file)
+            if metadata:
+                private_packs.append({
+                    'id': metadata.get('id'),
+                    'price': metadata.get('price')
+                })
+        except ValueError as e:
+            print_error(f'Invalid JSON in the metadata file [{metadata_file_path}]: {str(e)}')
+
+    return private_packs
+
+
+def add_private_packs_to_index(index_folder_path, private_index_path):
+    """
+    Add the private packs to the index folder.
+    Args:
+        index_folder_path: The index folder path.
+        private_index_path: The path for the index of the private packs.
+
+    """
+    for d in os.scandir(private_index_path):
+        if os.path.isdir(d.path):
+            update_index_folder(index_folder_path, d.name, d.path)
 
 
 def _build_summary_table(packs_input_list):
@@ -284,6 +339,7 @@ def option_handler():
                         action='store_true', required=False)
     parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
                         required=False)
+    parser.add_argument('-P', '--private_bucket_name', help="Private storage bucket name", required=False)
     # disable-secrets-detection-end
     return parser.parse_args()
 
@@ -293,11 +349,22 @@ def main():
     packs_artifacts_path = option.artifacts_path
     extract_destination_path = option.extract_path
     storage_bucket_name = option.bucket_name
+    private_bucket_name = option.private_bucket_name
     service_account = option.service_account
     specific_packs = option.pack_names
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
     override_pack = option.override_pack
     signature_key = option.key_string
+
+    # google cloud storage client initialized
+    storage_client = init_storage_client(service_account)
+    storage_bucket = storage_client.bucket(storage_bucket_name)
+    private_storage_bucket = storage_client.bucket(private_bucket_name)
+    index_folder_path, index_blob = download_and_extract_index(storage_bucket, extract_destination_path)
+    private_index_path = ''
+    if private_bucket_name:
+        private_index_path, _ = download_and_extract_index(private_storage_bucket,
+                                                           os.path.join(extract_destination_path, 'private'))
 
     # detect new or modified packs
     modified_packs = get_modified_packs(specific_packs)
@@ -305,11 +372,15 @@ def main():
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in modified_packs
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
-    # google cloud storage client initialized
-    storage_client = init_storage_client(service_account)
-    storage_bucket = storage_client.bucket(storage_bucket_name)
-    index_folder_path, index_blob = download_and_extract_index(storage_bucket, extract_destination_path)
-    index_was_updated = False  # indicates whether one or more index folders were updated
+    # Add private packs to the index
+    if private_index_path:
+        try:
+            private_packs = get_private_packs(private_index_path)
+            add_private_packs_to_index(index_folder_path, private_index_path)
+        except Exception as e:
+            print_warning(f'Could not add private packs to the index: {str(e)}')
+        finally:
+            shutil.rmtree(private_index_path, ignore_errors=True)
 
     for pack in packs_list:
         task_status, integration_images = pack.upload_integration_images(storage_bucket)
@@ -383,15 +454,10 @@ def main():
             pack.cleanup()
             continue
 
-        # detected index update
-        index_was_updated = True
         pack.status = PackStatus.SUCCESS.name
 
     # finished iteration over content packs
-    if index_was_updated:
-        upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number)
-    else:
-        print_warning("Skipping uploading index.zip to storage.")
+    upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs)
 
     # summary of packs status
     print_packs_summary(packs_list)
