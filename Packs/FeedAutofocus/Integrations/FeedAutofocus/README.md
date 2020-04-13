@@ -64,10 +64,10 @@ There is no context output for this command.
 ### Indicators from AutoFocus:
 |Value|Type|
 |---|---|
-| demisto<Span>.com | Domain |
+| demisto\<Span\>.com | Domain |
 | {file hash} | File |
 | 8.8.8.8 | IP |
-| demsito<Span>.com/some/aditional/path | URL |
+| demsito\<Span\>.com/some/aditional/path | URL |
 
 To bring the next batch of indicators run:
 `!autofocus-get-indicators limit=4 offset=4`
