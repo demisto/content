@@ -7,8 +7,15 @@ from CommonServerPython import *
 
 # Local imports
 
-# noqa: E402 lgtm [py/polluting-import]
-# noqa: E402 lgtm [py/polluting-import]
+# Gather information regarding CIDR -
+#     1. Broadcast_address
+#     2. CIDR
+#     3. First_address
+#     4. Last address
+#     5. Max prefix len
+#     6. Num addresses
+#     7. Private
+#     8. Version
 
 
 def ip_cidr(cidr: str) -> Dict[str, str]:
@@ -63,7 +70,7 @@ def main():
     try:
         return_outputs(*cidr_command(demisto.args()))
     except Exception as ex:
-        return_error(f'Failed to execute HelloWorldScript. Error: {str(ex)}')
+        return_error(f'Failed to execute IPNetwork script. Error: {str(ex)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

@@ -3,6 +3,8 @@ import ipaddress
 # Local imports
 from CommonServerPython import *
 
+# The following script check if given IPv4 CIDR availble addresses is lower from a given number.
+
 
 def cidr_network_addresses_lower_from_const(ip_cidr: str, max_num_addresses: str) -> bool:
     """ Decide if num_adddresses const is lower than availble addresses in IPv4 or IPv6 cidr
@@ -22,7 +24,7 @@ def cidr_network_addresses_lower_from_const(ip_cidr: str, max_num_addresses: str
 
 def main():
     ip_cidrs = argToList(demisto.args()['left'])
-    max_num_addresses = argToList(demisto.args()['right'])[0]
+    max_num_addresses = demisto.args()['right']
     for cidr in ip_cidrs:
         is_lower = cidr_network_addresses_lower_from_const(ip_cidr=cidr,
                                                            max_num_addresses=max_num_addresses)
