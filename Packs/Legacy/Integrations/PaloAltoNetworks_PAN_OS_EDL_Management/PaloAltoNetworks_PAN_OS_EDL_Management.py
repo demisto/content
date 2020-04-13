@@ -127,7 +127,7 @@ def scp_execute(file_name: str, file_path: str):
 
 
 def parse_url(item: str) -> str:
-    """ Parse url if in url form to valid EDL form - withouth http / https
+    """ Parse url if in url form to valid EDL form - without http / https
 
     Args:
         item(str): Item to parse.
