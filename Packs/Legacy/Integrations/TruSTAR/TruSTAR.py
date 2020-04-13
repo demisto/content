@@ -7,8 +7,6 @@ import requests
 import time
 import trustar
 import collections
-from trustar.models.indicator import Indicator
-from trustar.models.page import Page
 
 handle_proxy()
 
@@ -34,7 +32,7 @@ def translate_indicators(ts_indicators):
     key_context = []
     cve_context = []
     for indicator in ts_indicators:
-        current_indicator = indicator.to_dict(remove_nones=True)
+        current_indicator = indicator if isinstance(indicator, dict) else indicator.to_dict(remove_nones=True)
         indicator_type = current_indicator['indicatorType']
         priority_level = current_indicator.get('priorityLevel')
         value = current_indicator['value']
@@ -331,7 +329,6 @@ def encode_cursor(page_size, page_number):
 def get_related_indicators(indicators, enclave_ids, page_size, page_number):
     # To display priority score
     items_list = []
-    indicators_json = dict()
     related_indicator_response = ts.get_related_indicators_page(indicators, enclave_ids, page_size, page_number)
     for related_indicator in related_indicator_response:
         current_indicator = related_indicator.to_dict(remove_nones=True)
@@ -345,9 +342,7 @@ def get_related_indicators(indicators, enclave_ids, page_size, page_number):
         if not current_indicator.get('priorityLevel'):
             current_indicator['priorityLevel'] = "NOT_FOUND"
         items_list.append(current_indicator)
-    indicators_json.update({'items': items_list})
-    response = Page.from_dict(indicators_json, content_type=Indicator)
-    related_indicators, ec = translate_indicators(response)
+    related_indicators, ec = translate_indicators(items_list)
     if related_indicators:
         title = 'TruSTAR indicators related to ' + indicators
         entry = {
@@ -575,13 +570,12 @@ def get_reports(from_time, to_time, enclave_ids, distribution_type, tags, exclud
 
 def get_correlated_reports(indicators, enclave_ids, distribution_type, page_size, page_number):
     response = ts.get_correlated_reports_page(indicators, enclave_ids, page_number, page_size)
-    correlated_reports = []  # type: List
+    correlated_reports = []
     for report in response:
         current_report = report.to_dict(remove_nones=True)
         current_report['updated'] = normalize_time(current_report['updated'])
         current_report['created'] = normalize_time(current_report['created'])
         current_report['timeBegan'] = normalize_time(current_report['timeBegan'])
-        return current_report
         correlated_reports.append(current_report)
     if correlated_reports:
         title = 'TruSTAR correlated reports'
@@ -642,10 +636,10 @@ def remove_from_whitelist(indicator, indicator_type):
         value=indicator,
         type=indicator_type
     )
-    response = ts.delete_indicator_from_whitelist(ts_indicator)
-    if response:
+    try:
+        ts.delete_indicator_from_whitelist(ts_indicator)
         return 'Removed from the whitelist successfully'
-    else:
+    except Exception:
         return 'Indicator could not be removed from the whitelist.'
 
 
