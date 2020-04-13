@@ -532,8 +532,7 @@ jobs:
       - run:
           name: Store Artifacts to GCS
           command: ./Tests/scripts/upload_artifacts.sh
-          when: alwa
-          ys
+          when: always
 
 workflows:
   version: 2
