@@ -6,7 +6,7 @@ jobs:
     resource_class: medium+
     parallelism: 2
     environment:
-      CONTENT_VERSION: "20.3.4"
+      CONTENT_VERSION: "20.4.0"
       SERVER_VERSION: "5.5.0"
       GIT_SHA1: "4696087457090e6ac597df96870016bdc2e371a0" # guardrails-disable-line disable-secrets-detection
     steps:
@@ -241,7 +241,7 @@ jobs:
               echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
               demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path ./artifacts --json-report ./artifacts
             else
-              demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts --json-report ./artifacts
+              demisto-sdk lint -p 8 -a -v --test-xml ./unit-tests --log-path ./artifacts --json-report ./artifacts
             fi
       - store_test_results:
           path: ./unit-tests
@@ -532,7 +532,8 @@ jobs:
       - run:
           name: Store Artifacts to GCS
           command: ./Tests/scripts/upload_artifacts.sh
-          when: always
+          when: alwa
+          ys
 
 workflows:
   version: 2
