@@ -10,7 +10,7 @@ import shutil
 import os
 import traceback
 from typing import List
-from urllib.parse import urlparse, ParseResult
+from urllib.parse import urlparse, urlunparse
 
 ''' GLOBALS '''
 
@@ -146,8 +146,8 @@ def parse_url(item: str) -> str:
         'not url'
     """
     try:
-        url_obj: ParseResult = urlparse(item)
-        return url_obj.netloc + url_obj.path
+        url_obj = urlparse(item)._replace(scheme='')
+        return urlunparse(url_obj).replace('//', '')
     except ValueError:
         return item
 
