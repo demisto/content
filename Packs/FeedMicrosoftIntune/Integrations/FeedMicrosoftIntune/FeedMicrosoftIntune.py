@@ -44,12 +44,12 @@ class Client(BaseClient):
             return text
 
         try:
-            scraped_urls = sum([subs(cell.text).rstrip().split() for cell in soup.select(
+            scraped_domains = sum([subs(cell.text).rstrip().split() for cell in soup.select(
                 "tbody tr td") if re.findall(r'microsoft\.(com|net)', cell.text)], [])
-            for url in scraped_urls:
+            for domain in scraped_domains:
                 result.append({
-                    "value": url,
-                    'type': 'URL',
+                    "value": domain,
+                    'type': FeedIndicatorType.DomainGlob if '*' in domain else FeedIndicatorType.Domain,
                     "FeedURL": self._base_url
                 })
 
