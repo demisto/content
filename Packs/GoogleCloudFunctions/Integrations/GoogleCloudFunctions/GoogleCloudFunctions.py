@@ -41,18 +41,20 @@ class GoogleClient:
     def get_http_client_with_proxy(proxy, insecure):
         """
         Create an http client with proxy with whom to use when using a proxy.
-        :param proxy: Wether to use a proxy.
-        :param insecure: Wether to disable ssl and use an insecure connection.
+        :param proxy: Whether to use a proxy.
+        :param insecure: Whether to disable ssl and use an insecure connection.
         :return:
         """
         if proxy:
             proxies = handle_proxy()
-            if not proxies or not proxies['https']:
-                raise Exception('https proxy value is empty. Check Demisto server configuration')
-            https_proxy = proxies['https']
-            if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
-                https_proxy = 'https://' + https_proxy
-            parsed_proxy = urllib.parse.urlparse(https_proxy)
+            https_proxy = proxies.get('https')
+            http_proxy = proxies.get('http')
+            if not https_proxy and not http_proxy:
+                raise Exception('https_proxy and http_proxy values are empty. Check Demisto server configuration')
+            proxy_conf = https_proxy if https_proxy else http_proxy
+            if not proxy_conf.startswith('https') and not proxy_conf.startswith('http'):
+                proxy_conf = 'https://' + proxy_conf
+            parsed_proxy = urllib.parse.urlparse(proxy_conf)
             proxy_info = httplib2.ProxyInfo(
                 proxy_type=httplib2.socks.PROXY_TYPE_HTTP,
                 proxy_host=parsed_proxy.hostname,
