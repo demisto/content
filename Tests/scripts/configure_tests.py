@@ -2,10 +2,10 @@
 """
 This script is used to create a filter_file.txt file which will run only the needed the tests for a given change.
 """
-import re
 import os
 import sys
 import json
+import time
 import glob
 import random
 import argparse
@@ -14,14 +14,35 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
 sys.path.append(CONTENT_DIR)
 
-from Tests.scripts.constants import *  # noqa: E402
-from Tests.test_utils import get_yaml, str2bool, get_from_version, get_to_version, \
+from demisto_sdk.commands.common.constants import *  # noqa: E402
+from demisto_sdk.commands.common.tools import get_yaml, str2bool, get_from_version, get_to_version, \
     collect_ids, get_script_or_integration_id, run_command, LOG_COLORS, print_error, print_color, \
-    print_warning  # noqa: E402
+    print_warning, server_version_compare  # noqa: E402
 
 # Search Keyword for the changed file
 NO_TESTS_FORMAT = 'No test( - .*)?'
-
+PACKS_SCRIPT_REGEX = r'{}/([^/]+)/{}/(script-[^\\/]+)\.yml$'.format(PACKS_DIR, SCRIPTS_DIR)
+FILE_IN_INTEGRATIONS_DIR_REGEX = r'{}/(.+)'.format(INTEGRATIONS_DIR)
+FILE_IN_SCRIPTS_DIR_REGEX = r'{}/(.+)'.format(SCRIPTS_DIR)
+FILE_IN_PACKS_INTEGRATIONS_DIR_REGEX = r'{}/([^/]+)/{}/(.+)'.format(
+    PACKS_DIR, INTEGRATIONS_DIR)
+FILE_IN_PACKS_SCRIPTS_DIR_REGEX = r'{}/([^/]+)/{}/(.+)'.format(
+    PACKS_DIR, SCRIPTS_DIR)
+INTEGRATION_REGEXES = [
+    INTEGRATION_REGEX,
+    BETA_INTEGRATION_REGEX,
+    PACKS_INTEGRATION_REGEX
+]
+INCIDENT_FIELD_REGEXES = [
+    INCIDENT_FIELD_REGEX,
+    PACKS_INCIDENT_FIELDS_REGEX
+]
+FILES_IN_SCRIPTS_OR_INTEGRATIONS_DIRS_REGEXES = [
+    FILE_IN_INTEGRATIONS_DIR_REGEX,
+    FILE_IN_SCRIPTS_DIR_REGEX,
+    FILE_IN_PACKS_INTEGRATIONS_DIR_REGEX,
+    FILE_IN_PACKS_SCRIPTS_DIR_REGEX
+]
 CHECKED_TYPES_REGEXES = [
     # Integrations
     INTEGRATION_REGEX,
@@ -41,15 +62,33 @@ CHECKED_TYPES_REGEXES = [
 ]
 
 # File names
-ALL_TESTS = ["scripts/script-CommonIntegration.yml", "scripts/script-CommonIntegrationPython.yml",
-             "Packs/Base/Scripts/script-CommonServer.yml", "scripts/script-CommonServerUserPython.yml",
-             "scripts/script-CommonUserServer.yml", "Packs/Base/Scripts/CommonServerPython/CommonServerPython.yml"]
+COMMON_YML_LIST = ["scripts/script-CommonIntegration.yml", "scripts/script-CommonIntegrationPython.yml",
+                   "Packs/Base/Scripts/script-CommonServer.yml", "scripts/script-CommonServerUserPython.yml",
+                   "scripts/script-CommonUserServer.yml",
+                   "Packs/Base/Scripts/CommonServerPython/CommonServerPython.yml"]
 
 # secrets white list file to be ignored in tests to prevent full tests running each time it is updated
 SECRETS_WHITE_LIST = 'secrets_white_list.json'
 
+# number of random tests to run when there're no runnable tests
+RANDOM_TESTS_NUM = 3
+
 # Global used to indicate if failed during any of the validation states
 _FAILED = False
+
+
+def is_runnable_in_server_version(from_v, server_v, to_v):
+    """
+    Checks whether an obj is runnable in a version
+    Args:
+        from_v (string): string representing Demisto version (fromversion comparable)
+        server_v (string): string representing Demisto version (version to be ran on)
+        to_v (string): string representing Demisto version (toversion comparable)
+
+    Returns:
+        bool. true if obj is runnable
+    """
+    return server_version_compare(from_v, server_v) <= 0 and server_version_compare(server_v, to_v) <= 0
 
 
 def checked_type(file_path, regex_list):
@@ -72,7 +111,7 @@ def get_modified_files(files_string):
     is_indicator_json = False
 
     sample_tests = []
-    all_tests = []
+    changed_common = []
     modified_files_list = []
     modified_tests_list = []
     all_files = files_string.split('\n')
@@ -97,9 +136,8 @@ def get_modified_files(files_string):
                 file_path = glob.glob(dir_path + "/*.yml")[0]
 
             # Common scripts (globally used so must run all tests)
-            if checked_type(file_path, ALL_TESTS):
-                all_tests.append(file_path)
-                modified_files_list.append(file_path)
+            if checked_type(file_path, COMMON_YML_LIST):
+                changed_common.append(file_path)
 
             # integrations, scripts, playbooks, test-scripts
             elif checked_type(file_path, CHECKED_TYPES_REGEXES):
@@ -133,8 +171,8 @@ def get_modified_files(files_string):
                      (SECRETS_WHITE_LIST, PACKS_PACK_META_FILE_NAME, PACKS_WHITELIST_FILE_NAME)):
                 sample_tests.append(file_path)
 
-    return (modified_files_list, modified_tests_list, all_tests, is_conf_json, sample_tests,
-            is_reputations_json, is_indicator_json)
+    return (modified_files_list, modified_tests_list, changed_common, is_conf_json, sample_tests, is_reputations_json,
+            is_indicator_json)
 
 
 def get_name(file_path):
@@ -152,7 +190,8 @@ def get_tests(file_path):
         return data_dictionary.get('tests', [])
 
 
-def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, catched_playbooks, tests_set):
+def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, catched_playbooks, tests_set, id_set,
+                  conf):
     """Collect tests for the affected script_ids,playbook_ids,integration_ids.
 
     :param script_ids: The ids of the affected scripts in your change set.
@@ -161,16 +200,19 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
     :param catched_scripts: The names of the scripts we already identified a test for.
     :param catched_playbooks: The names of the scripts we already v a test for.
     :param tests_set: The names of the tests we alredy identified.
+    :param id_set: The id_set json.
+    :param conf: The conf json.
 
     :return: (test_ids, missing_ids) - All the names of possible tests, the ids we didn't match a test for.
     """
     caught_missing_test = False
     catched_intergrations = set([])
 
-    test_ids, skipped_tests = get_test_ids()
+    test_ids, skipped_tests = get_test_ids(conf=conf)
 
-    with open("./Tests/id_set.json", 'r') as conf_file:
-        id_set = json.load(conf_file)
+    if not id_set:
+        with open("./Tests/id_set.json", 'r') as id_set_file:
+            id_set = json.load(id_set_file)
 
     integration_set = id_set['integrations']
     test_playbooks_set = id_set['TestPlaybooks']
@@ -224,7 +266,7 @@ def update_missing_sets(catched_intergrations, catched_playbooks, catched_script
     return missing_ids
 
 
-def get_test_ids(check_nightly_status=False):
+def get_test_ids(check_nightly_status=False, conf=None):
     """Get the test ids from conf.json
 
     Keyword Arguments:
@@ -234,8 +276,9 @@ def get_test_ids(check_nightly_status=False):
         tuple: (test_ids, skipped_tests)
     """
     test_ids = []
-    with open("./Tests/conf.json", 'r') as conf_file:
-        conf = json.load(conf_file)
+    if not conf:
+        with open("./Tests/conf.json", 'r') as conf_file:
+            conf = json.load(conf_file)
 
     conf_tests = conf['tests']
     for t in conf_tests:
@@ -270,15 +313,16 @@ def get_integration_commands(integration_ids, integration_set):
     return integration_to_command, deprecated_message
 
 
-def find_tests_for_modified_files(modified_files):
+def find_tests_for_modified_files(modified_files, conf, id_set):
     script_names = set([])
     playbook_names = set([])
     integration_ids = set([])
 
     tests_set, catched_scripts, catched_playbooks = collect_changed_ids(integration_ids, playbook_names,
-                                                                        script_names, modified_files)
+                                                                        script_names, modified_files, id_set)
     test_ids, missing_ids, caught_missing_test = collect_tests(script_names, playbook_names, integration_ids,
-                                                               catched_scripts, catched_playbooks, tests_set)
+                                                               catched_scripts, catched_playbooks, tests_set, id_set,
+                                                               conf)
     missing_ids = update_with_tests_sections(missing_ids, modified_files, test_ids, tests_set)
 
     if len(missing_ids) > 0:
@@ -318,7 +362,7 @@ def update_with_tests_sections(missing_ids, modified_files, test_ids, tests):
     return missing_ids
 
 
-def collect_changed_ids(integration_ids, playbook_names, script_names, modified_files):
+def collect_changed_ids(integration_ids, playbook_names, script_names, modified_files, id_set):
     tests_set = set([])
     updated_script_names = set([])
     updated_playbook_names = set([])
@@ -348,8 +392,9 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
             integration_ids.add(_id)
             integration_to_version[_id] = (get_from_version(file_path), get_to_version(file_path))
 
-    with open("./Tests/id_set.json", 'r') as conf_file:
-        id_set = json.load(conf_file)
+    if not id_set:
+        with open("./Tests/id_set.json", 'r') as conf_file:
+            id_set = json.load(conf_file)
 
     script_set = id_set['scripts']
     playbook_set = id_set['playbooks']
@@ -608,7 +653,35 @@ def update_test_set(tests, tests_set):
         tests_set.add(test)
 
 
-def get_test_from_conf(branch_name):
+def get_test_conf_from_conf(test_id, server_version, conf=None):
+    """Gets first occurrence of test conf with matching playbookID value to test_id with a valid from/to version"""
+    if not conf:
+        with open("./Tests/conf.json", 'r') as conf_file:
+            conf = json.load(conf_file)
+    test_conf_lst = conf.get('tests', {})
+    # return None if nothing is found
+    test_conf = next((test_conf for test_conf in test_conf_lst if (
+        test_conf.get('playbookID') == test_id
+        and is_runnable_in_server_version(from_v=test_conf.get('fromversion', '0'),
+                                          server_v=server_version,
+                                          to_v=test_conf.get('toversion', '99.99.99'))
+    )), None)
+    return test_conf
+
+
+def extract_matching_object_from_id_set(obj_id, obj_set, server_version='0'):
+    """Gets first occurrence of object in the object's id_set with matching id and valid from/to version"""
+    # return None if nothing is found
+    test = next((obj_wrpr[obj_id] for obj_wrpr in obj_set if (
+        obj_id in obj_wrpr
+        and is_runnable_in_server_version(from_v=obj_wrpr.get(obj_id).get('fromversion', '0'),
+                                          server_v=server_version,
+                                          to_v=obj_wrpr.get(obj_id).get('toversion', '99.99.99'))
+    )), None)
+    return test
+
+
+def get_test_from_conf(branch_name, conf=None):
     tests = set([])
     changed = set([])
     change_string = run_command("git diff origin/master...{} Tests/conf.json".format(branch_name))
@@ -622,8 +695,9 @@ def get_test_from_conf(branch_name):
         for group in deleted_groups:
             changed.add(group[1])
 
-    with open("./Tests/conf.json", 'r') as conf_file:
-        conf = json.load(conf_file)
+    if not conf:
+        with open("./Tests/conf.json", 'r') as conf_file:
+            conf = json.load(conf_file)
 
     conf_tests = conf['tests']
     for t in conf_tests:
@@ -646,14 +720,115 @@ def get_test_from_conf(branch_name):
     return tests
 
 
-def get_test_list(files_string, branch_name):
+def is_test_runnable(test_id, id_set, conf, server_version):
+    """Checks whether the test is runnable
+    1. Test is not skipped.
+    2. Test playbook / integration is not skipped.
+    3. Test fromversion is earlier or equal to server_version
+    4. Test toversion is greater or equal to server_version
+    4. If test has integrations, then all integrations
+        a. fromversion is earlier or equal to server_version
+        b. toversion is after or equal to server_version
+    5. If test has scripts, then all scripts
+        a. fromversion is earlier or equal to server_version
+        b. toversion is after or equal to server_version
+    """
+    skipped_tests = conf['skipped_tests'].keys()
+    # check if test is skipped
+    if test_id in skipped_tests:
+        return False
+    test_conf = get_test_conf_from_conf(test_id, server_version, conf)
+
+    # check if there's a test to run
+    if not test_conf:
+        return False
+    conf_fromversion = test_conf.get('fromversion', '0')
+    conf_toversion = test_conf.get('toversion', '99.99.99')
+    test_playbooks_set = id_set.get('TestPlaybooks', [])
+    test_playbook_obj = extract_matching_object_from_id_set(test_id, test_playbooks_set, server_version)
+
+    # check whether the test is runnable in id_set
+    if not test_playbook_obj:
+        return False
+
+    return all([
+        is_test_integrations_available(server_version, test_conf, conf, id_set),    # check used integrations available
+        is_test_scripts_available(test_playbook_obj, server_version, id_set),       # check used scripts available
+        is_runnable_in_server_version(conf_fromversion, server_version, conf_toversion)  # check conf from/to
+    ])
+
+
+def is_test_scripts_available(test_playbook_obj, server_version, id_set):
+    """
+    Check if all used scripts are skipped / available
+    """
+    test_scripts_ids = test_playbook_obj.get('implementing_scripts', [])
+    if test_scripts_ids:
+        if not isinstance(test_scripts_ids, list):
+            test_scripts_ids = [test_scripts_ids]
+        scripts = id_set.get('scripts', [])
+        if any(extract_matching_object_from_id_set(script_id, scripts, server_version) is None for script_id in
+               test_scripts_ids):
+            return False
+    return True
+
+
+def is_test_integrations_available(server_version, test_conf, conf, id_set):
+    """
+    Check if all used integrations are skipped / available
+    """
+    test_integration_ids = test_conf.get('integrations')
+    if test_integration_ids:
+        if not isinstance(test_integration_ids, list):
+            test_integration_ids = [test_integration_ids]
+        if not is_test_uses_active_integration(test_integration_ids, conf):
+            return False
+        # check integrations from/toversion is valid with server_version
+        integrations_set = id_set.get('integrations', [])
+        if any(extract_matching_object_from_id_set(integration_id, integrations_set, server_version) is None for integration_id in
+               test_integration_ids):
+            return False
+    return True
+
+
+def is_test_uses_active_integration(integration_ids, conf=None):
+    """Checks whether there's an an integration in test_integration_ids that's not skipped"""
+    if not conf:
+        with open("./Tests/conf.json", 'r') as conf_file:
+            conf = json.load(conf_file)
+    skipped_integrations = conf['skipped_integrations'].keys()
+    # check if all integrations are skipped
+    if all(integration_id in skipped_integrations for integration_id in integration_ids):
+        return False
+    return True
+
+
+def get_random_tests(tests_num, conf=None, id_set=None, server_version='0'):
+    """Gets runnable tests for the server version"""
+    if not id_set:
+        with open("./Tests/id_set.json", 'r') as conf_file:
+            id_set = json.load(conf_file)
+    if not conf:
+        with open("./Tests/conf.json", 'r') as conf_file:
+            conf = json.load(conf_file)
+    tests = set([])
+    test_ids = get_test_ids(conf=conf)[0]
+    rand = random.Random(time.time())
+    while len(tests) < tests_num:
+        test = rand.choice(test_ids)
+        if is_test_runnable(test, id_set, conf, server_version):
+            tests.add(test)
+    return tests
+
+
+def get_test_list(files_string, branch_name, two_before_ga_ver='0', conf=None, id_set=None):
     """Create a test list that should run"""
-    (modified_files, modified_tests_list, all_tests, is_conf_json, sample_tests, is_reputations_json,
+    (modified_files, modified_tests_list, changed_common, is_conf_json, sample_tests, is_reputations_json,
      is_indicator_json) = get_modified_files(files_string)
 
     tests = set([])
     if modified_files:
-        tests = find_tests_for_modified_files(modified_files)
+        tests = find_tests_for_modified_files(modified_files, conf, id_set)
 
     # Adding a unique test for a json file.
     if is_reputations_json:
@@ -670,29 +845,32 @@ def get_test_list(files_string, branch_name):
             tests.add(test)
 
     if is_conf_json:
-        tests = tests.union(get_test_from_conf(branch_name))
-
-    if all_tests:
-        print_warning('Running all tests due to: {}'.format(','.join(all_tests)))
-        tests.add("Run all tests")
+        tests = tests.union(get_test_from_conf(branch_name, conf))
 
     if sample_tests:  # Choosing 3 random tests for infrastructure testing
         print_warning('Collecting sample tests due to: {}'.format(','.join(sample_tests)))
-        test_ids = get_test_ids(check_nightly_status=True)[0]
-        rand = random.Random(files_string + branch_name)
-        while len(tests) < 3:
-            tests.add(rand.choice(test_ids))
+        tests = tests.union(
+            get_random_tests(tests_num=RANDOM_TESTS_NUM, conf=conf, id_set=id_set, server_version=two_before_ga_ver))
 
     if not tests:
-        if modified_files or modified_tests_list or all_tests:
+        if modified_files or modified_tests_list:
             print_error(
                 "There is no test-playbook that checks the changes you've done, please make sure you write one.")
             global _FAILED
             _FAILED = True
+        elif changed_common:
+            print_warning('Adding 3 random tests due to: {}'.format(','.join(changed_common)))
+            tests = tests.union(get_random_tests(tests_num=RANDOM_TESTS_NUM, conf=conf, id_set=id_set,
+                                                 server_version=two_before_ga_ver))
         else:
             print_warning("Running Sanity check only")
+            tests = get_random_tests(tests_num=RANDOM_TESTS_NUM, conf=conf, id_set=id_set,
+                                     server_version=two_before_ga_ver)
             tests.add('DocumentationTest')  # test with integration configured
             tests.add('TestCommonPython')  # test with no integration configured
+
+    if changed_common:
+        tests.add('TestCommonPython')
 
     return tests
 
@@ -714,7 +892,10 @@ def create_test_file(is_nightly, skip_save=False):
             last_commit, second_last_commit = commit_string.split()
             files_string = run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
 
-        tests = get_test_list(files_string, branch_name)
+        with open('./Tests/ami_builds.json', 'r') as ami_builds:
+            # get two_before_ga version to check if tests are runnable on that env
+            two_before_ga = json.load(ami_builds).get('TwoBefore-GA', '0').split('-')[0]
+        tests = get_test_list(files_string, branch_name, two_before_ga)
 
         tests_string = '\n'.join(tests)
         if tests_string:
