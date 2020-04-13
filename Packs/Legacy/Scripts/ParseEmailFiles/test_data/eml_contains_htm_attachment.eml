@@ -1,0 +1,31 @@
+MIME-Version: 1.0
+Date: Mon, 30 Mar 2020 15:47:59 +0300
+Message-ID: <CAF5LCHvBnQgpfWpk5YmJ2fWoSwyOX_mKN0qzWG6A1s2eJP2VT>
+Subject: test email with attachment
+From: user1@test.com
+To: user1@test.com
+Content-Type: multipart/mixed; boundary="000000000000ba7e3f05a211dc87"
+
+--000000000000ba7e3f05a211dc87
+Content-Type: multipart/alternative; boundary="000000000000ba7e3b05a211dc85"
+
+--000000000000ba7e3b05a211dc85
+Content-Type: text/plain; charset="UTF-8"
+
+
+
+--000000000000ba7e3b05a211dc85
+Content-Type: text/html; charset="UTF-8"
+
+<div dir="ltr"><br></div>
+
+--000000000000ba7e3b05a211dc85--
+--000000000000ba7e3f05a211dc87
+Content-Type: text/html; charset="US-ASCII"; name="1.htm"
+Content-Disposition: attachment; filename="1.htm"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_k8egwvyt0
+Content-ID: <f_k8egwvyt0>
+
+PGh0bWw+CjwvaHRtbD4=
+--000000000000ba7e3f05a211dc87--
