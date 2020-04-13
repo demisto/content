@@ -99,7 +99,7 @@ def fetch_indicators(client: Client, limit: int = -1) -> List[Dict]:
         iterator = iterator[:limit]
     for item in iterator:
         value = item.get('value')
-        type_ = item.get('type', 'url')
+        type_ = item.get('type', FeedIndicatorType.Domain)
         raw_data = {
             'value': value,
             'type': type_,
