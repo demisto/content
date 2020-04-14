@@ -76,7 +76,7 @@ Gets the feed indicators.
 
 There is no context output for this command.
 
-## Video Demo
+## Demo Video
 <video controls>
     <source src="https://github.com/demisto/content/raw/b4bf86e4b8a4e5217abca615618b40f587896565/Packs/FeedJSON/Integrations/FeedJSON/demo_video/Json_generic_feed_demo.mp4"
             type="video/mp4"/>
