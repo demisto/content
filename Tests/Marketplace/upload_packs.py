@@ -278,6 +278,7 @@ def update_index_with_priced_packs(private_storage_bucket, extract_destination_p
                                                            os.path.join(extract_destination_path, 'private'))
         private_packs = get_private_packs(private_index_path)
         add_private_packs_to_index(index_folder_path, private_index_path)
+        print("Finished updating index with priced packs")
     except Exception as e:
         print_error(f'Could not add private packs to the index: {str(e)}')
     finally:
@@ -402,7 +403,7 @@ def main():
         private_packs = update_index_with_priced_packs(private_storage_bucket, extract_destination_path,
                                                        index_folder_path)
     else:  # skipping private packs
-        print_warning("Skipping index update of priced packs")
+        print("Skipping index update of priced packs")
         private_packs = []
 
     # starting iteration over packs
