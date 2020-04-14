@@ -5,6 +5,10 @@ from CommonServerUserPython import *
 import re
 import xlrd
 import csv
+import tldextract
+
+# Disable insecure warnings
+requests.packages.urllib3.disable_warnings()
 
 
 def csv_file_to_indicator_list(file_path, col_num, starting_row, auto_detect, default_type, type_col):
@@ -21,14 +25,17 @@ def csv_file_to_indicator_list(file_path, col_num, starting_row, auto_detect, de
 
                 indicator_type = detect_type(indicator)
 
-                if indicator_type is None:
-                    continue
+                if not auto_detect:
+                    indicator_type = default_type
 
-                if type_col:
+                elif type_col:
                     indicator_type = row[int(type_col) - 1]
 
-                elif not auto_detect:
-                    indicator_type = default_type
+                if indicator_type is None:
+                    if default_type is None:
+                        continue
+                    else:
+                        indicator_type = default_type
 
                 indicator_list.append({
                     "type": indicator_type,
@@ -58,14 +65,18 @@ def xls_file_to_indicator_list(file_path, sheet_name, col_num, starting_row, aut
 
             indicator_type = detect_type(indicator)
 
-            if indicator_type is None:
-                continue
-
             if not auto_detect:
                 indicator_type = default_type
 
-            if type_col:
+            elif type_col:
                 indicator_type = xl_sheet.cell(row_index, int(type_col) - 1).value
+
+            # indicator not recognized
+            if indicator_type is None:
+                if default_type is None:
+                    continue
+                else:
+                    indicator_type = default_type
 
             indicator_list.append({
                 'type': indicator_type,
@@ -94,12 +105,15 @@ def txt_file_to_indicator_list(file_path, auto_detect, default_type):
 
             indicator_type = detect_type(indicator)
 
-            # indicator not recognized
-            if indicator_type is None:
-                continue
-
             if not auto_detect:
                 indicator_type = default_type
+
+            # indicator not recognized
+            if indicator_type is None:
+                if default_type is None:
+                    continue
+                else:
+                    indicator_type = default_type
 
             indicator_list.append({
                 'type': indicator_type,
@@ -137,10 +151,15 @@ def detect_type(indicator):
     if re.match(emailRegex, indicator):
         return FeedIndicatorType.Email
 
-    # TODO: add domain regex or identification
+    try:
+        if tldextract.extract(indicator).suffix:
+            if '*' in indicator:
+                return FeedIndicatorType.DomainGlob
+            return FeedIndicatorType.Domain
+    except Exception:
+        pass
 
-    else:
-        return None
+    return None
 
 
 def fetch_indicators_from_file(args):
