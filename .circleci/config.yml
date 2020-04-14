@@ -217,10 +217,12 @@ jobs:
             unzip -q "$CIRCLE_ARTIFACTS/content_test.zip" -d "test_content_dir"
             zip -j "$CIRCLE_ARTIFACTS/all_content.zip" test_content_dir/*
             rm -r test_content_dir
+      - store_artifacts:
+          path: artifacts
+          destination: artifacts
       - run:
           name: Run Unit Testing and Lint
           when: always
-          no_output_timeout: 5h
           command: |
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 1 ] ;
               then
@@ -236,18 +238,12 @@ jobs:
             echo "vulture py2 version: $(python2 -m vulture --version) 2>&1"
             echo "vulture py3 version: $(python3 -m vulture --version) 2>&1"
             SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
-            mkdir ./unit-tests
             if [ -n "$SHOULD_LINT_ALL" ]; then
               echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-              demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path ./artifacts --json-report ./artifacts
+              demisto-sdk lint --run-all-tests --parallel --outfile ./artifacts/failed_unittests.txt -v
             else
-              demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts --json-report ./artifacts
+              demisto-sdk lint --git --parallel --outfile ./artifacts/failed_unittests.txt -v
             fi
-      - store_test_results:
-          path: ./unit-tests
-      - store_artifacts:
-          path: artifacts
-          destination: artifacts
       - run:
           name: Verify Base Branch for Contribution
           when: always
@@ -522,7 +518,7 @@ jobs:
             PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
             GCS_PATH=$(mktemp)
             echo $GCS_MARKET_KEY > $GCS_PATH
-            python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -s $GCS_PATH -b 'marketplace-dist' -n $CIRCLE_BUILD_NUM -p 'All' -o -k $PACK_SIGNING_KEY
+            python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -s $GCS_PATH -b 'marketplace-dist' -n $CIRCLE_BUILD_NUM -p 'All' -o -k $PACK_SIGNING_KEY -P 'marketplace-dist-private'
             rm $GCS_PATH
           when: on_success
       - store_artifacts:
