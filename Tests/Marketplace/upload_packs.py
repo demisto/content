@@ -373,6 +373,7 @@ def main():
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
     # Add private packs to the index
+    private_packs = []
     if private_index_path:
         try:
             private_packs = get_private_packs(private_index_path)
