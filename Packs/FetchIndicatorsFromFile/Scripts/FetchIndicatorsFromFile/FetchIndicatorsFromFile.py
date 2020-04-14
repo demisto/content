@@ -93,7 +93,7 @@ def xls_file_to_indicator_list(file_path, sheet_name, col_num, starting_row, aut
     return indicator_list
 
 
-def txt_file_to_indicator_list(file_path, auto_detect, default_type, limit):
+def txt_file_to_indicator_list(file_path, auto_detect, default_type):
     with open(file_path, "r") as fp:
         file_data = fp.read()
 
@@ -112,23 +112,17 @@ def txt_file_to_indicator_list(file_path, auto_detect, default_type, limit):
 
             indicator_type = detect_type(indicator)
 
+            # indicator not recognized skip the word
+            if indicator_type is None:
+                continue
+
             if not auto_detect:
                 indicator_type = default_type
-
-            # indicator not recognized
-            if indicator_type is None:
-                if default_type is None:
-                    continue
-                else:
-                    indicator_type = default_type
 
             indicator_list.append({
                 'type': indicator_type,
                 'value': indicator
             })
-
-        if limit and len(indicator_list) == int(str(limit)):
-            break
 
     return indicator_list
 
@@ -204,7 +198,7 @@ def fetch_indicators_from_file(args):
                                                     auto_detect, default_type, indicator_type_col_num, limit)
 
     else:
-        indicator_list = txt_file_to_indicator_list(file_path, auto_detect, default_type, limit)
+        indicator_list = txt_file_to_indicator_list(file_path, auto_detect, default_type)
 
     indicator_list_len = len(indicator_list)
 
