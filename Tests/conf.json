@@ -2603,7 +2603,12 @@
             "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
             "timeout" : 60000,
             "fromversion": "4.5.0"
-        }
+        },
+        {
+            "integrations": "Logzio",
+            "playbookID": "Logzio-Test",
+            "fromversion": "5.0.0"
+        },
     ],
     "skipped_tests": {
         "Test-Shodan_v2": "Issue 23370",
