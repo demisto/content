@@ -415,17 +415,24 @@ def build_where_clause(args: dict) -> str:
         'file_sha_256': 'file_sha_256',
         'file_name': 'file_name',
     }
+    non_string_keys = {'dest_port', 'source_port'}
     if 'query' in args:
         # if query arg is supplied than we just need to parse it and only it
         return args['query'].strip()
 
     # We want to add only keys that are part of the query
-    query_fields = {key: value for key, value in args.items() if key in args_dict}
+    string_query_fields = {key: value for key, value in args.items() if key in args_dict and key not in non_string_keys}
     or_statements = []
-    for key, values in query_fields.items():
-        values_list: list = argToList(values)
+    for key, values in string_query_fields.items():
+        string_values_list: list = argToList(values)
         field = args_dict[key]
-        or_statements.append(' OR '.join([f'{field} = "{value}"' for value in values_list]))
+        or_statements.append(' OR '.join([f'{field} = "{value}"' for value in string_values_list]))
+    # ports are digested as ints and cannot be sent as strings
+    non_string_query_fields = {key: value for key, value in args.items() if key in non_string_keys}
+    for key, values in non_string_query_fields.items():
+        non_string_values_list: list = argToList(values)
+        field = args_dict[key]
+        or_statements.append(' OR '.join([f'{field} = {value}' for value in non_string_values_list]))
     where_clause = ' AND '.join([f'({or_statement})' for or_statement in or_statements if or_statement])
     return where_clause
 
