@@ -1,3 +1,11 @@
+"""HelloWorld Integration for Cortex XSOAR - Unit Tests file
+
+This file contains the Unit Tests for the HelloWorld Integration. It's based on pytest.
+
+More information about Unit Tests in Cortex XSOAR: https://xsoar.pan.dev/docs/integrations/unit-testing
+
+"""
+
 import json
 import io
 
