@@ -387,7 +387,8 @@ def main():
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
-    private_storage_bucket = storage_client.bucket(private_bucket_name)
+
+    # download and extract index from public bucket
     index_folder_path, index_blob = download_and_extract_index(storage_bucket, extract_destination_path)
 
     # detect new or modified packs
@@ -397,6 +398,7 @@ def main():
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
     if private_bucket_name:  # Add private packs to the index
+        private_storage_bucket = storage_client.bucket(private_bucket_name)
         private_packs = update_index_with_priced_packs(private_storage_bucket, extract_destination_path,
                                                        index_folder_path)
     else:  # skipping private packs
