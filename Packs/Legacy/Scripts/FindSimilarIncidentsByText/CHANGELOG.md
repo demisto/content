@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.4.0] - 2020-04-14
 -
 Added support for text pre-processing including HTML tag removal and word normalization.
 
