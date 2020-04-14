@@ -3558,6 +3558,16 @@ script:
     description: Reboots the Firewall device.
     execution: false
     name: panorama-device-reboot
+  - arguments:
+    - default: false
+      isArray: false
+      name: target
+      required: false
+      secret: false
+    deprecated: false
+    description: Get pre-defined threats list from the firewall
+    execution: false
+    name: panorama-get-predefined-threats-list
   dockerimage: demisto/python3:3.7.3.221
   feed: false
   isfetch: false

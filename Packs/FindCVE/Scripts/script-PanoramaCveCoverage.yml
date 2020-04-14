@@ -1,0 +1,53 @@
+commonfields:
+  id: Panorama_CVE_Coverage
+  version: -1
+name: Panorama_CVE_Coverage
+script: "import csv\nimport requests\nimport ssl\n\nmy_fields = ['CVE', 'Threat Name',\
+  \ 'Link', 'Severity', 'Threat ID', 'Default Action']\n\ndef main():\n    # Input\
+  \ arguments\n\n    #The CVE we are looking for\n    cve_arg = demisto.args().get('CVE_List')\n\
+  \    queriedCVEs = cve_arg.split()\n\n    # CVE data from the firewall\n    PanOSOutput\
+  \ = demisto.args().get('Result_file')\n    data= json.loads(PanOSOutput)\n\n   \
+  \ findings = {}\n    # Correlating the corresponding CVE list to reference link,\
+  \ severity, threat_id, and default action.\n    for entry in data['threats']['vulnerability']['entry']:\n\
+  \        if 'cve' in entry:\n            cve = entry['cve']['member']\n        \
+  \    if cve in queriedCVEs:\n                link = \"http://cve.circl.lu/api/cve/\"\
+  \ + cve\n                threatName = entry['threatname']\n                severity\
+  \ = entry['severity']\n                threatID = entry['@name']\n             \
+  \   action = entry.get('default-action', 'No Action Defined')\n                outputFields\
+  \ =  {'CVE': cve, 'Threat Name': threatName, 'Link': link, 'Severity': severity,\
+  \ 'Threat ID': threatID, 'Default Action': action}\n                if cve in findings:\n\
+  \                    findings[cve].append(outputFields)\n                else:\n\
+  \                    findings[cve] = [outputFields]\n\n\n    view = demisto.args().get('outputFormat','')\n\
+  \n    # Start of markdown output formatting\n    res = '## CVE Coverage\\n'\n  \
+  \  for queriedCVE in queriedCVEs:\n        if queriedCVE in findings:\n        \
+  \    if view == 'table':\n                section = tableToMarkdown(queriedCVE,\
+  \ findings[queriedCVE], my_fields )\n            else:\n                section\
+  \ = '### %s\\n' % queriedCVE\n                rows = [','.join([entry[fieldName]\
+  \ for fieldName in my_fields]) for entry in findings[queriedCVE]]\n            \
+  \    section += '\\n'.join(rows)\n            res += section\n        else:\n  \
+  \          res += '### %s\\nNo coverage for %s'% (queriedCVE, queriedCVE)\n    \
+  \    res += '\\n'\n    res += '\\n\\n'\n    demisto.results({'ContentsFormat': formats['markdown'],\
+  \ 'Type': entryTypes['note'], 'Contents': res})\n\n\nmain()"
+type: python
+tags: []
+enabled: true
+args:
+- name: CVE_List
+  required: true
+  description: comma-delimited list of CVEs to find
+- name: Result_file
+  required: true
+  description: Entry ID of the output file from the panorama command
+- name: outputFormat
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - table
+  - paragraph
+  defaultValue: table
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.8.1.5734
+runas: DBotWeakRole
+fromversion: 5.0.0

@@ -1,0 +1,30 @@
+[
+	{
+		"id": "Panorama Threat Coverage",
+		"version": -1,
+		"modified": "2020-04-08T03:03:25.978342075Z",
+		"sortValues": null,
+		"vcShouldIgnore": false,
+		"commitMessage": "",
+		"shouldCommit": false,
+		"locked": false,
+		"name": "Panorama Threat Coverage",
+		"prevName": "Panorama Threat Coverage",
+		"color": "#b02c83",
+		"playbookId": "015dcddc-feeb-4498-87e4-ee615e20545f",
+		"hours": 0,
+		"days": 0,
+		"weeks": 0,
+		"hoursR": 0,
+		"daysR": 0,
+		"weeksR": 0,
+		"system": false,
+		"readonly": false,
+		"default": false,
+		"autorun": false,
+		"preProcessingScript": "",
+		"closureScript": "",
+		"disabled": false,
+		"reputationCalc": 0
+	}
+]

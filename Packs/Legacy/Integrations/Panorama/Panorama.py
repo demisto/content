@@ -5163,6 +5163,27 @@ def panorama_device_reboot_command():
     demisto.results(result['response']['result'])
 
 
+@logger
+def panorama_get_predefined_threats_list(target: str):
+    params = {
+        'type': 'op',
+        'cmd': '<show><predefined><xpath>/predefined/threats</xpath></predefined></show>',
+        'target': target,
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+    demisto.results(result['response']['result'])
+
+
+def panorama_get_predefined_threats_list_command():
+    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
+    panorama_get_predefined_threats_list(target)
+
+
 def main():
     LOG(f'Command being called is: {demisto.command()}')
 
@@ -5427,6 +5448,10 @@ def main():
         # Reboot Panorama Device
         elif demisto.command() == 'panorama-device-reboot':
             panorama_device_reboot_command()
+
+        # Get pre-defined threats list from the firewall
+        elif demisto.command() == 'panorama-get-predefined-threats-list':
+            panorama_get_predefined_threats_list_command()
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} was not implemented.')

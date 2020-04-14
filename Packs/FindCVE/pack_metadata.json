@@ -1,0 +1,25 @@
+{
+    "name": "FindCVE",
+    "description": "Parse through the pre-defined signatures, map the CVE to the corresponding circle.lu list, and map out: Severity, default action, and ThreatID.",
+    "support": "demisto",
+    "serverMinVersion": "5.0.0",
+    "currentVersion": "1.0.0",
+    "author": "Etay Nir",
+    "url": "",
+    "email": "enir@paloaltonetworks.com",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [
+        ""
+    ],
+    "created": "2020-04-11T04:23:57Z",
+    "updated": "2020-04-11T04:23:57Z",
+    "beta": false,
+    "deprecated": false,
+    "certification": "certified",
+    "useCases": [],
+    "keywords": [],
+    "price": "",
+    "dependencies": {}
+}
