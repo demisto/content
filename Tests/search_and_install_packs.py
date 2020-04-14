@@ -57,7 +57,7 @@ def search_pack(client, prints_manager, thread_index, pack_id):
             return pack_metadata
 
         else:
-            prints_manager.add_print_job(f'Did not find pack {pack_id} in bucket.', print_color, thread_index,
+            prints_manager.add_print_job('Did not find pack {} in bucket.'.format(pack_id), print_color, thread_index,
                                          LOG_COLORS.YELLOW)
             prints_manager.execute_thread_prints(thread_index)
             return {}
@@ -157,6 +157,3 @@ def search_and_install_pack_and_its_dependencies(client, prints_manager, thread_
         prints_manager.add_print_job('', print_error, thread_index)
         prints_manager.execute_thread_prints(thread_index)
         os._exit(1)
-
-
-

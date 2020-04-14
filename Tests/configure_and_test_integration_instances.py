@@ -655,6 +655,9 @@ def main():
     server_numeric_version = get_server_numeric_version(ami_env, prints_manager)
     prints_manager.execute_thread_prints(0)
 
+    prints_manager.add_print_job("Before load_conf_files", print_warning, 0)
+    prints_manager.execute_thread_prints(0)
+
     conf, secret_conf = load_conf_files(conf_path, secret_conf_path)
     secret_params = secret_conf.get('integrations', []) if secret_conf else []
 
@@ -665,6 +668,9 @@ def main():
     skipped_integrations_conf = conf['skipped_integrations']
     all_module_instances = []
 
+    prints_manager.add_print_job("Before extract_filtered_tests", print_warning, 0)
+    prints_manager.execute_thread_prints(0)
+
     filtered_tests, filter_configured, run_all_tests = extract_filtered_tests(is_nightly=options.is_nightly)
     tests_for_iteration = tests
     if run_all_tests:
@@ -674,6 +680,10 @@ def main():
         tests_for_iteration = []
     elif filter_configured and filtered_tests:
         tests_for_iteration = [test for test in tests if test.get('playbookID', '') in filtered_tests]
+
+    prints_manager.add_print_job("Before filter_tests_with_incompatible_version", print_warning, 0)
+    prints_manager.execute_thread_prints(0)
+
     tests_for_iteration = filter_tests_with_incompatible_version(tests_for_iteration, server_numeric_version,
                                                                  prints_manager)
     prints_manager.execute_thread_prints(0)
