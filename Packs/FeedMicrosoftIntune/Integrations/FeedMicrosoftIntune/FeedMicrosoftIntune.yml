@@ -63,6 +63,11 @@ configuration:
   defaultvalue: https://docs.microsoft.com/en-us/intune/fundamentals/intune-endpoints
   type: 0
   required: true
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   defaultvalue: ""
