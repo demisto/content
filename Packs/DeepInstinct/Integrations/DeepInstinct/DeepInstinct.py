@@ -134,7 +134,7 @@ def fetch_incidents():
     if last_run and last_run.get('last_id') is not None:
         last_id = last_run.get('last_id')
 
-    events = http_request('GET', '/events/?after_id='+str(last_id))
+    events = http_request('GET', '/events/?after_id=' + str(last_id))
     while events and events['events']:
         for event in events['events']:
             incident = {
@@ -145,7 +145,7 @@ def fetch_incidents():
             incidents.append(incident)
 
         demisto.setLastRun({'start_time': str(datetime.now().time()), 'last_id': events['last_id']})
-        events = http_request('GET', '/events/?after_id='+str(events['last_id']))
+        events = http_request('GET', '/events/?after_id=' + str(events['last_id']))
 
     demisto.incidents(incidents)
 
