@@ -212,7 +212,7 @@ def fetch_indicators_from_file(args):
         limit = int(str(limit))
         indicator_list = indicator_list[offset: limit + offset]
 
-    human_readable = tableToMarkdown("Indicators from {}:".format(file_path), indicator_list,
+    human_readable = tableToMarkdown("Indicators from {}:".format(file_name), indicator_list,
                                      headers=['value', 'type'], removeNull=True)
 
     if limit and indicator_list_len > limit:
