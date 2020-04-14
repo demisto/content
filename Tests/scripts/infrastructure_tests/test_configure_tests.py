@@ -57,7 +57,7 @@ class TestUtils(object):
 
     @staticmethod
     def create_test_playbook(name, with_scripts=None, with_integration_commands=None):
-        test_playbook_default = TestUtils.load_yaml(
+        test_playbook_default = demisto_sdk_tools.get_yaml(
             'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml')
 
         test_playbook_default['id'] = name
@@ -231,17 +231,6 @@ class TestChangedIntegration:
 
         assert filterd_tests == {self.TEST_ID}
 
-    def test_changed_unrunnable_test__integration_fromversion(self, mocker):
-        test_id = 'future_test_playbook_2'
-        test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/future_test_playbook_2.yml'
-        file_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_integrations/future_integration_2.yml'
-        get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[file_path],
-                                                               modified_tests_list=[test_path])
-        filterd_tests = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
-
-        assert test_id in filterd_tests
-        assert len(filterd_tests) == 1
-
     def test_changed_unrunnable_test__integration_toversion(self, mocker):
         test_id = 'past_test_playbook_1'
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/past_test_playbook_1.yml'
@@ -275,17 +264,6 @@ class TestChangedScript:
         filterd_tests = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert filterd_tests == {self.TEST_ID}
-
-    def test_changed_unrunnable_test__script_fromversion(self, mocker):
-        test_id = 'future_test_playbook_2'
-        test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/future_test_playbook_2.yml'
-        file_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_integrations/future_integration_2.yml'
-        get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[file_path],
-                                                               modified_tests_list=[test_path])
-        filterd_tests = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
-
-        assert test_id in filterd_tests
-        assert len(filterd_tests) == 1
 
     def test_changed_unrunnable_test__integration_toversion(self, mocker):
         test_id = 'past_test_playbook_2'
@@ -418,7 +396,7 @@ def test_dont_fail_integration_on_no_tests_if_it_has_test_playbook_in_conf(mocke
     Ensure that this integration don't fails on validation.
 
     Given
-    - integration_a
+    - integration_a that fetches incidents
     - test_playbook_a exists that should test FetchFromInstance of integration_a
     - both in conf.json
 

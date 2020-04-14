@@ -292,14 +292,13 @@ class TestConf(object):
     def get_tests(self):
         return self._conf.get('tests', {})
 
-    def get_test_playbook_ids(self, check_nightly_status=False):
+    def get_test_playbook_ids(self):
         conf_tests = self._conf['tests']
         test_ids = []
 
         for t in conf_tests:
-            if not check_nightly_status or not t.get('nightly', False):
-                playbook_id = t['playbookID']
-                test_ids.append(playbook_id)
+            playbook_id = t['playbookID']
+            test_ids.append(playbook_id)
 
         return test_ids
 
@@ -915,7 +914,7 @@ def get_random_tests(tests_num, conf, id_set=None, server_version='0'):
 
     tests = set([])
 
-    test_ids = conf.get_test_playbook_ids(check_nightly_status=True)
+    test_ids = conf.get_test_playbook_ids()
 
     rand = random.Random(time.time())
     while len(tests) < tests_num:
