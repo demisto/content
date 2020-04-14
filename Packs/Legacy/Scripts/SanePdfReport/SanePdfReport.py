@@ -78,6 +78,13 @@ try:
     os.remove(abspath_output_file)
     return_outputs(readable_output='Successfully generated pdf',
                    outputs={}, raw_response={'data': encoded})
+
+except subprocess.CalledProcessError as e:
+    tb = traceback.format_exc()
+    wrap = "=====sane-pdf-reports error====="
+    err = f'{wrap}\n{tb}{wrap}, process error: {e.output}\n'
+    return_error(f'[SanePdfReports Automation Error] - {err}')
+
 except Exception:
     tb = traceback.format_exc()
     wrap = "=====sane-pdf-reports error====="
