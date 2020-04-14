@@ -28,7 +28,7 @@ def csv_file_to_indicator_list(file_path, col_num, starting_row, auto_detect, de
                 if not auto_detect:
                     indicator_type = default_type
 
-                elif type_col:
+                if type_col:
                     indicator_type = row[int(type_col) - 1]
 
                 if indicator_type is None:
@@ -68,7 +68,7 @@ def xls_file_to_indicator_list(file_path, sheet_name, col_num, starting_row, aut
             if not auto_detect:
                 indicator_type = default_type
 
-            elif type_col:
+            if type_col:
                 indicator_type = xl_sheet.cell(row_index, int(type_col) - 1).value
 
             # indicator not recognized
