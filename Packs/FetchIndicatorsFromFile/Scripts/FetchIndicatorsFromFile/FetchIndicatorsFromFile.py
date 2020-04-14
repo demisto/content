@@ -11,7 +11,7 @@ import tldextract
 requests.packages.urllib3.disable_warnings()
 
 
-def csv_file_to_indicator_list(file_path, col_num, starting_row, auto_detect, default_type, type_col):
+def csv_file_to_indicator_list(file_path, col_num, starting_row, auto_detect, default_type, type_col, limit):
     indicator_list = []
 
     # TODO: add run on all columns functionality
@@ -20,7 +20,7 @@ def csv_file_to_indicator_list(file_path, col_num, starting_row, auto_detect, de
     with open(file_path) as csv_file:
         file_reader = csv.reader(csv_file)
         for row in file_reader:
-            if line_index >= starting_row:
+            if line_index >= starting_row and len(row) != 0:
                 indicator = row[col_num]
 
                 indicator_type = detect_type(indicator)
@@ -44,10 +44,14 @@ def csv_file_to_indicator_list(file_path, col_num, starting_row, auto_detect, de
 
             line_index = line_index + 1
 
+            if limit and len(indicator_list) == int(str(limit)):
+                break
+
     return indicator_list
 
 
-def xls_file_to_indicator_list(file_path, sheet_name, col_num, starting_row, auto_detect, default_type, type_col):
+def xls_file_to_indicator_list(file_path, sheet_name, col_num, starting_row, auto_detect, default_type,
+                               type_col, limit):
     indicator_list = []
 
     # TODO: add run on all columns functionality
@@ -83,10 +87,13 @@ def xls_file_to_indicator_list(file_path, sheet_name, col_num, starting_row, aut
                 'value': indicator
             })
 
+        if limit and len(indicator_list) == int(str(limit)):
+            break
+
     return indicator_list
 
 
-def txt_file_to_indicator_list(file_path, auto_detect, default_type):
+def txt_file_to_indicator_list(file_path, auto_detect, default_type, limit):
     with open(file_path, "r") as fp:
         file_data = fp.read()
 
@@ -119,6 +126,9 @@ def txt_file_to_indicator_list(file_path, auto_detect, default_type):
                 'type': indicator_type,
                 'value': indicator
             })
+
+        if limit and len(indicator_list) == int(str(limit)):
+            break
 
     return indicator_list
 
@@ -187,14 +197,14 @@ def fetch_indicators_from_file(args):
     if file_name.endswith('xls') or file_name.endswith('xlsx'):
         indicator_list = xls_file_to_indicator_list(file_path, sheet_name, int(indicator_col_num) - 1,
                                                     int(starting_row) - 1, auto_detect, default_type,
-                                                    indicator_type_col_num)
+                                                    indicator_type_col_num, limit)
 
     elif file_name.endswith('csv'):
         indicator_list = csv_file_to_indicator_list(file_path, int(indicator_col_num) - 1, int(starting_row) - 1,
-                                                    auto_detect, default_type, indicator_type_col_num)
+                                                    auto_detect, default_type, indicator_type_col_num, limit)
 
     else:
-        indicator_list = txt_file_to_indicator_list(file_path, auto_detect, default_type)
+        indicator_list = txt_file_to_indicator_list(file_path, auto_detect, default_type, limit)
 
     indicator_list_len = len(indicator_list)
 
