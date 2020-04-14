@@ -149,6 +149,7 @@ EXPECTED_CREATE_INCIDENT = {
         }
     ]
 }
+EXPECTED_PERFORM_ACTION_ON_INCIDENT = {}
 EXPECTED_LIST_WATCHLISTS = {
     'Securonix.WatchlistsNames':
         [
