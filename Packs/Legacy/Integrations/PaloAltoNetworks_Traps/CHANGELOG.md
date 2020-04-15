@@ -3,7 +3,6 @@
 
 ## [20.4.0] - 2020-04-14
 -
--
 
 ## [20.1.2] - 2020-01-22
 Fixed an issue in which running a scan on an endpoint failed, but the War Room entry displayed a success message.
