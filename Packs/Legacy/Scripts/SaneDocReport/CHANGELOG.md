@@ -3,7 +3,6 @@
 
 ## [20.4.0] - 2020-04-14
 -
--
 
 ## [20.2.4] - 2020-02-25
 - Fixes to the bar chart and header.
