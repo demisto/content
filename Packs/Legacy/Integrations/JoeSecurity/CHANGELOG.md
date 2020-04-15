@@ -4,7 +4,6 @@
 ## [20.4.0] - 2020-04-14
 -
 
-
 ## [19.12.1] - 2019-12-25
 Fixed an issue where after running the ***joe-analysis-submit-sample*** command the system field output returned duplicates.
 
