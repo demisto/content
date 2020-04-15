@@ -1,3 +1,7 @@
+import demistomock as demisto	
+from CommonServerPython import *	
+from CommonServerUserPython import *	
+
 ''' IMPORTS '''
 import requests
 
@@ -62,12 +66,14 @@ def http_request(requests_func, url_suffix, **kwargs):
     params = kwargs.get('params')
     headers = kwargs.get('headers', {})
     data = kwargs.get('data', {})
+
     res = requests_func(BASE_URL + url_suffix,
                         verify=USE_SSL,
                         params=params,
                         headers=headers,
                         data=data
                         )
+
     if res.status_code == 403:
         raise Exception('API Key is incorrect')
 
@@ -156,7 +162,7 @@ def get_full_timeline(detection_id, per_page=100):
                            'per_page': per_page,
         })
 
-        if len(res['data']) == 0 or True:
+        if len(res['data']) == 0:
             done = True
 
         activities.extend(res['data'])
