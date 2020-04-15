@@ -69,6 +69,8 @@ try:
 
     cmd = ['./reportsServer', input_file, output_file, 'dist'] + shlex.split(
         extra_cmd)
+    cmd_string = " ".join(cmd)
+    LOG(f"Sane-pdf cmd: {cmd_string")
     subprocess.check_output(cmd, cwd=WORKING_DIR)
 
     abspath_output_file = WORKING_DIR / output_file
