@@ -1,7 +1,3 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
 ''' IMPORTS '''
 import requests
 
@@ -66,14 +62,12 @@ def http_request(requests_func, url_suffix, **kwargs):
     params = kwargs.get('params')
     headers = kwargs.get('headers', {})
     data = kwargs.get('data', {})
-
     res = requests_func(BASE_URL + url_suffix,
                         verify=USE_SSL,
                         params=params,
                         headers=headers,
                         data=data
                         )
-
     if res.status_code == 403:
         raise Exception('API Key is incorrect')
 
@@ -162,7 +156,7 @@ def get_full_timeline(detection_id, per_page=100):
                            'per_page': per_page,
         })
 
-        if len(res['data']) == 0:
+        if len(res['data']) == 0 or True:
             done = True
 
         activities.extend(res['data'])
@@ -320,7 +314,7 @@ def get_unacknowledged_detections(t, per_page=50):
             attributes = detection.get('attributes', {})
             # If 'last_acknowledged_at' and 'last_acknowledged_by' are in attributes,
             # the detection is acknowledged and should not create a new incident.
-            if attributes.get('last_acknowledged_at') and attributes.get('last_acknowledged_by'):
+            if not(attributes.get('last_acknowledged_at') and attributes.get('last_acknowledged_by')):
                 yield detection
 
         page += 1
@@ -523,21 +517,30 @@ def fetch_incidents():
     last_run = demisto.getLastRun()
     if last_run and 'time' in last_run:
         last_fetch = last_run.get('time')
+        last_id = last_run.get('id', 0)
         last_fetch = datetime.strptime(last_fetch, TIME_FORMAT)
     else:
-        last_fetch = parse_date_range(demisto.params().get('fetch_time', '3 days'), TIME_FORMAT)[0]
-
-    LOG('iterating on detections, looking for more recent than {}'.format(last_fetch))
+        last_fetch = get_time_obj(parse_date_range(demisto.params().get('fetch_time', '3 days'), TIME_FORMAT)[0])
+        last_id = 0
+    LOG('iterating on detections, looking for more recent than {}'.format(str(last_fetch)))
     incidents = []
+    latest_incident_time = last_fetch
+    latest_incident_id = last_id
     for raw_detection in get_unacknowledged_detections(last_fetch, per_page=2):
-        LOG('found detection #{}'.format(raw_detection['id']))
-        incident = detection_to_incident(raw_detection)
+        if raw_detection['id'] > last_id:
+            LOG('found detection #{}'.format(raw_detection['id']))
+            latest_incident_id = max(latest_incident_id, raw_detection['id'])
 
-        incidents.append(incident)
+            incident = detection_to_incident(raw_detection)
+            latest_incident_time = max(latest_incident_time, get_time_obj(incident['occurred']))
+
+            incidents.append(incident)
+        else:
+            LOG('ignoring past detection #{}'.format(raw_detection['id']))
 
     if incidents:
-        last_fetch = max([get_time_obj(incident['occurred']) for incident in incidents])  # noqa:F812
-        demisto.setLastRun({'time': get_time_str(last_fetch + timedelta(seconds=1))})
+        last_fetch = latest_incident_time
+        demisto.setLastRun({'time': get_time_str(last_fetch), 'id': latest_incident_id})
     demisto.incidents(incidents)
 
 
