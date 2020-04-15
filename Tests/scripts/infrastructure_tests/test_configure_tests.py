@@ -372,7 +372,7 @@ def test_skipped_integration_should_not_be_tested():
     # - no tests provided for IntegrationA
     mock_conf_dict = copy.deepcopy(MOCK_CONF)
     mock_conf_dict['skipped_integrations']['IntegrationA'] = 'comment'
-
+    print('before')
     # When
     # - filtering tests to run
     filtered_tests = get_test_list(
@@ -381,6 +381,7 @@ def test_skipped_integration_should_not_be_tested():
         two_before_ga_ver=TWO_BEFORE_GA_VERSION,
         conf=TestConf(mock_conf_dict)
     )
+    print('after')
 
     # Then
     # - ensure IntegrationA is skipped
