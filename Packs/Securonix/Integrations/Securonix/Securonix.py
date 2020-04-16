@@ -1239,7 +1239,7 @@ def main():
             'securonix-add-entity-to-watchlist': add_entity_to_watchlist
         }
         if command == 'fetch-incidents':
-            fetch_time = params.get('fetch_time')
+            fetch_time = params.get('fetch_time', '1 hour')
             incident_status = params.get('incident_status') if 'incident_status' in params else 'open'
             incidents = fetch_incidents(client, fetch_time, incident_status, last_run=demisto.getLastRun())
             demisto.incidents(incidents)
