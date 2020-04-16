@@ -49,19 +49,19 @@ class GoogleClient:
             proxies = handle_proxy()
             https_proxy = proxies.get('https')
             http_proxy = proxies.get('http')
-            if not https_proxy and not http_proxy:
-                raise Exception('https_proxy and http_proxy values are empty. Check Demisto server configuration')
             proxy_conf = https_proxy if https_proxy else http_proxy
-            if not proxy_conf.startswith('https') and not proxy_conf.startswith('http'):
-                proxy_conf = 'https://' + proxy_conf
-            parsed_proxy = urllib.parse.urlparse(proxy_conf)
-            proxy_info = httplib2.ProxyInfo(
-                proxy_type=httplib2.socks.PROXY_TYPE_HTTP,
-                proxy_host=parsed_proxy.hostname,
-                proxy_port=parsed_proxy.port,
-                proxy_user=parsed_proxy.username,
-                proxy_pass=parsed_proxy.password)
-            return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=insecure)
+            # if no proxy_conf - ignore proxy
+            if proxy_conf:
+                if not proxy_conf.startswith('https') and not proxy_conf.startswith('http'):
+                    proxy_conf = 'https://' + proxy_conf
+                parsed_proxy = urllib.parse.urlparse(proxy_conf)
+                proxy_info = httplib2.ProxyInfo(
+                    proxy_type=httplib2.socks.PROXY_TYPE_HTTP,
+                    proxy_host=parsed_proxy.hostname,
+                    proxy_port=parsed_proxy.port,
+                    proxy_user=parsed_proxy.username,
+                    proxy_pass=parsed_proxy.password)
+                return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=insecure)
         return httplib2.Http(disable_ssl_certificate_validation=insecure)
     # disable-secrets-detection-end
 
