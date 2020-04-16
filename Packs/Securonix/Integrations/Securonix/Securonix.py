@@ -322,7 +322,7 @@ class Client(BaseClient):
         Args:
             from_epoch: from time in epoch
             to_epoch: to time in epoch
-            incident_status: incident status e.g:closed, open
+            incident_status: incident status e.g:closed, opened
 
         Returns:
             Response from API.
@@ -1114,7 +1114,7 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: 
     Args:
         client: Client object with request
         fetch_time: From when to fetch if first time, e.g. `3 days`
-        incident_status: Incident statuses to fetch, can be: all, opened, closeded
+        incident_status: Incident statuses to fetch, can be: all, opened, closed, updated
         last_run: Last fetch object.
 
     Returns:
