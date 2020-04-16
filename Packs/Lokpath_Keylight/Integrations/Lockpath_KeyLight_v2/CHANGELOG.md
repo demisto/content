@@ -1,5 +1,5 @@
 ## [Unreleased]
-- Added `kl-get-user` command.
+- Added `kl-get-user-by-id` command.
 
 
 ## [20.3.4] - 2020-03-30
