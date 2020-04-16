@@ -10,6 +10,7 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS '''
 VERBOSE = True
+# raise ValueError(demisto.params())
 SERVER = demisto.params().get('server')
 if not SERVER.endswith('/'):
     SERVER += '/'
@@ -231,10 +232,7 @@ def check_ip_command(ip, days=MAX_AGE, verbose=VERBOSE, threshold=THRESHOLD):
     for current_ip in ip_list:
         params["ipAddress"] = current_ip
         analysis = http_request("GET", url_suffix=CHECK_CMD, params=params).get("data")
-        if analysis == API_QUOTA_REACHED_MESSAGE:
-            pass
-        else:
-            entry_list.append(analysis_to_entry(analysis, verbose=verbose, threshold=threshold))
+        entry_list.append(analysis_to_entry(analysis, verbose=verbose, threshold=threshold))
     return entry_list
 
 
