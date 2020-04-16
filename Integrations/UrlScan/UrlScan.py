@@ -59,7 +59,7 @@ def http_request(method, url_suffix, json=None, wait=0, retries=0):
         response_json = r.json()
         # raise ValueError(f'Response: {response_json}')
         error_description = response_json.get('description')
-        should_continue_on_blacklisted_urls = demisto.args.get('continue_on_blacklisted_urls')
+        should_continue_on_blacklisted_urls = demisto.args().get('continue_on_blacklisted_urls')
         if should_continue_on_blacklisted_urls and error_description == BLACKLISTED_URL_ERROR_MESSAGE:
             response_json['uuid'] = -1 # TODO : check what happens with that uuid and how that could be breaking
             requested_url = JSON.loads(json)['url']
