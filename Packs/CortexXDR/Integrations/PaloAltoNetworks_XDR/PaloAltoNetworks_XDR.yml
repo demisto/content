@@ -656,8 +656,8 @@ script:
     name: xdr-insert-cef-alerts
   - arguments:
     - default: false
-      description: The endpoint ID (string) to isolate. You can retrieve the string from the xdr-get-endpoints
-        command.
+      description: The endpoint ID (string) to isolate. You can retrieve the string
+        from the xdr-get-endpoints command.
       isArray: false
       name: endpoint_id
       required: true
@@ -666,10 +666,14 @@ script:
     description: Isolates the specified endpoint.
     execution: true
     name: xdr-isolate-endpoint
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.Isolation.endpoint_id
+      description: The endpoint ID.
+      type: String
   - arguments:
     - default: false
-      description: The endpoint ID (string) for which to reverse the isolation. You can retrieve it from the xdr-get-endpoints
-        command.
+      description: The endpoint ID (string) for which to reverse the isolation. You
+        can retrieve it from the xdr-get-endpoints command.
       isArray: false
       name: endpoint_id
       required: true
@@ -678,6 +682,10 @@ script:
     description: Reverses the isolation of an endpoint.
     execution: true
     name: xdr-unisolate-endpoint
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.UnIsolation.endpoint_id
+      description: Isolates the specified endpoint.
+      type: String
   - arguments:
     - default: false
       description: A comma-separated list of endpoint IDs.
@@ -686,7 +694,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: "A comma-separated list of distribution package names or installation package names. \nExample: dist_name1,dist_name2"
+      description: "A comma-separated list of distribution package names or installation\
+        \ package names. \nExample: dist_name1,dist_name2"
       isArray: true
       name: dist_name
       required: false
@@ -709,7 +718,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The endpoint platform. Can be "windows", "linux", "macos", or "android". '
+      description: 'The endpoint platform. Can be "windows", "linux", "macos", or
+        "android". '
       isArray: true
       name: platform
       predefined:
@@ -729,8 +739,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: |-
-        "Specifies whether the endpoint was isolated or unisolated. Can be "isolated" or "unisolated".
+      description: '"Specifies whether the endpoint was isolated or unisolated. Can
+        be "isolated" or "unisolated".'
       isArray: false
       name: isolate
       predefined:
@@ -807,7 +817,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specifies whether to sort endpoints by the first time or last time they were seen. Can be "first_seen" or "last_seen".
+      description: Specifies whether to sort endpoints by the first time or last time
+        they were seen. Can be "first_seen" or "last_seen".
       isArray: false
       name: sort_by
       predefined:
@@ -818,8 +829,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: asc
-      description: The order by which to sort results. Can be "asc" (ascending) or "desc" ( descending). Default set to
-        asc.
+      description: The order by which to sort results. Can be "asc" (ascending) or
+        "desc" ( descending). Default set to asc.
       isArray: false
       name: sort_order
       predefined:
@@ -828,10 +839,10 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets a list of endpoints, according to the passed filters. Filtering by multiple fields will
-      be concatenated using AND condition (OR is not supported). Maximum result set
-      size is 100. Offset is the zero-based number of endpoint from the start of the
-      result set (start by counting from 0).
+    description: Gets a list of endpoints, according to the passed filters. Filtering
+      by multiple fields will be concatenated using AND condition (OR is not supported).
+      Maximum result set size is 100. Offset is the zero-based number of endpoint
+      from the start of the result set (start by counting from 0).
     execution: false
     name: xdr-get-endpoints
     outputs:
@@ -842,13 +853,13 @@ script:
       description: The endpoint name.
       type: String
     - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_type
-      description: 'The endpoint type.'
+      description: The endpoint type.
       type: String
     - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_status
       description: The status of the endpoint'
       type: String
     - contextPath: PaloAltoNetworksXDR.Endpoint.os_type
-      description: 'The endpoint OS type.'
+      description: The endpoint OS type.
       type: String
     - contextPath: PaloAltoNetworksXDR.Endpoint.ip
       description: A list of IP addresses.
@@ -884,7 +895,7 @@ script:
       description: Endpoint version.
       type: String
     - contextPath: PaloAltoNetworksXDR.Endpoint.is_isolated
-      description: 'Whether the endpoint is isolated.'
+      description: Whether the endpoint is isolated.
       type: String
     - contextPath: PaloAltoNetworksXDR.Endpoint.group_name
       description: The name of the group to which the endpoint belongs.
@@ -950,10 +961,10 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Creates an installation package. This is an asynchronous call that returns
-      the distribution ID. This does not mean that the creation succeeded. To confirm
-      that the package has been created, check the status of the distribution by running
-      the Get Distribution Status API.
+    description: Creates an installation package. This is an asynchronous call that
+      returns the distribution ID. This does not mean that the creation succeeded.
+      To confirm that the package has been created, check the status of the distribution
+      by running the Get Distribution Status API.
     execution: false
     name: xdr-create-distribution
     outputs:
@@ -1127,8 +1138,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specifies the field by which to sort the results. By default the sort
-        is defined as creation-time and DESC. Can be "type", "sub_type", "result", or "timestamp".
+      description: Specifies the field by which to sort the results. By default the
+        sort is defined as creation-time and DESC. Can be "type", "sub_type", "result",
+        or "timestamp".
       isArray: false
       name: sort_by
       predefined:
@@ -1141,7 +1153,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: desc
-      description: 'The sort order. Can be "asc" (ascending) or "desc" (descending). Default set to "desc". '
+      description: 'The sort order. Can be "asc" (ascending) or "desc" (descending).
+        Default set to "desc". '
       isArray: false
       name: sort_order
       predefined:
@@ -1150,10 +1163,10 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets management logs. You can filter by multiple fields, which will be concatenated
-      using AND condition (OR is not supported). Maximum result set size is 100. Offset
-      is the zero-based number of management logs from the start of the result set
-      (start by counting from 0).
+    description: Gets management logs. You can filter by multiple fields, which will
+      be concatenated using AND condition (OR is not supported). Maximum result set
+      size is 100. Offset is the zero-based number of management logs from the start
+      of the result set (start by counting from 0).
     execution: false
     name: xdr-get-audit-management-logs
     outputs:
@@ -1211,7 +1224,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The report type. Can be "Installation", "Policy", "Action", "Agent Service", "Agent Modules", or "Agent Status".
+      description: The report type. Can be "Installation", "Policy", "Action", "Agent
+        Service", "Agent Modules", or "Agent Status".
       isArray: true
       name: type
       predefined:
@@ -1265,7 +1279,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The result type. Can be "Success" or "Fail". If not passed, returns all event reports.
+      description: The result type. Can be "Success" or "Fail". If not passed, returns
+        all event reports.
       isArray: true
       name: result
       predefined:
@@ -1305,15 +1320,16 @@ script:
       secret: false
     - default: false
       defaultValue: '30'
-      description: The maximum number of reports to return. Default and maximum is 30.
+      description: The maximum number of reports to return. Default and maximum is
+        30.
       isArray: false
       name: limit
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The field by which to sort results. Can be "type", "category", "trapsversion",
-        "timestamp", or "domain").
+      description: The field by which to sort results. Can be "type", "category",
+        "trapsversion", "timestamp", or "domain").
       isArray: false
       name: sort_by
       predefined:
@@ -1327,7 +1343,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: asc
-      description: 'The sort order. Can be "asc" (ascending) or "desc" (descending). Default is "asc". '
+      description: 'The sort order. Can be "asc" (ascending) or "desc" (descending).
+        Default is "asc". '
       isArray: false
       name: sort_order
       predefined:
@@ -1336,10 +1353,10 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets agent event reports. You can filter by multiple fields, which will be concatenated
-      using AND condition (OR is not supported). Maximum result set size is 100. Offset
-      is the zero-based number of reports from the start of the result set (start
-      by counting from 0).
+    description: Gets agent event reports. You can filter by multiple fields, which
+      will be concatenated using AND condition (OR is not supported). Maximum result
+      set size is 100. Offset is the zero-based number of reports from the start of
+      the result set (start by counting from 0).
     execution: false
     name: xdr-get-audit-agent-reports
     outputs:
@@ -1380,6 +1397,7 @@ script:
       description: Agent report description.
       type: String
   dockerimage: demisto/python3:3.7.4.977
+  feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false
