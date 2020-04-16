@@ -141,8 +141,12 @@ def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, An
         bind_variables = generate_bind_vars(bind_variables_names, bind_variables_values)
 
         result, headers = client.sql_query_execute_request(sql_query, bind_variables)
-        table = [dict(row) for row in result]
-        human_readable = tableToMarkdown(name="Query result:", t=table[skip:skip + limit], headers=headers,
+        # converting an sqlalchemy object to a table
+        converted_table = [dict(row) for row in result]
+        # converting b'' and datetime objects to readable ones
+        table = [{str(key): str(value) for key, value in dictionary.items()} for dictionary in converted_table]
+        table = table[skip:skip + limit]
+        human_readable = tableToMarkdown(name="Query result:", t=table, headers=headers,
                                          removeNull=True)
         context = {
             'Result': table,
