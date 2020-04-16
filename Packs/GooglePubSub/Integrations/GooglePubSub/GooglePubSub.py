@@ -100,26 +100,24 @@ class BaseGoogleClient:
             proxies = handle_proxy()
             https_proxy = proxies.get('https')
             http_proxy = proxies.get('http')
-            if not https_proxy and not http_proxy:
-                raise Exception('https_proxy and http_proxy values are empty. Check Demisto server configuration')
             proxy_conf = https_proxy if https_proxy else http_proxy
-            if not proxy_conf.startswith('https') and not proxy_conf.startswith('http'):
-                proxy_conf = 'https://' + proxy_conf
-            parsed_proxy = urllib.parse.urlparse(proxy_conf)
-            proxy_info = httplib2.ProxyInfo(
-                proxy_type=httplib2.socks.PROXY_TYPE_HTTP,
-                proxy_host=parsed_proxy.hostname,
-                proxy_port=parsed_proxy.port,
-                proxy_user=parsed_proxy.username,
-                proxy_pass=parsed_proxy.password)
-            return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=insecure)
+            # if no proxy_conf - ignore proxy
+            if proxy_conf:
+                if not proxy_conf.startswith('https') and not proxy_conf.startswith('http'):
+                    proxy_conf = 'https://' + proxy_conf
+                parsed_proxy = urllib.parse.urlparse(proxy_conf)
+                proxy_info = httplib2.ProxyInfo(
+                    proxy_type=httplib2.socks.PROXY_TYPE_HTTP,
+                    proxy_host=parsed_proxy.hostname,
+                    proxy_port=parsed_proxy.port,
+                    proxy_user=parsed_proxy.username,
+                    proxy_pass=parsed_proxy.password)
+                return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=insecure)
         return httplib2.Http(disable_ssl_certificate_validation=insecure)
-
 
 # disable-secrets-detection-end
 
 
-# TODO: finish docstring
 class PubSubClient(BaseGoogleClient):
     def __init__(self, default_project, default_subscription, default_max_msgs, client_secret, **kwargs):
         super().__init__(client_secret=client_secret, **kwargs)
@@ -130,6 +128,7 @@ class PubSubClient(BaseGoogleClient):
         self.default_max_msgs = default_max_msgs
 
     def _extract_project_from_client_secret(self, client_secret):
+        """Extracts project name from a client secret json"""
         project_id = client_secret.get('project_id')
         if isinstance(project_id, list):
             project_id = project_id[0]
@@ -137,6 +136,7 @@ class PubSubClient(BaseGoogleClient):
 
     def _create_subscription_body(self, ack_deadline_seconds, expiration_ttl, labels, message_retention_duration,
                                   push_attributes, push_endpoint, retain_acked_messages, topic_name):
+        """Create a subscription body"""
         if push_endpoint or push_attributes:
             push_config = assign_params(
                 pushEndpoint=push_endpoint,
@@ -156,6 +156,7 @@ class PubSubClient(BaseGoogleClient):
         return body
 
     def _create_topic_body(self, allowed_persistence_regions, kms_key_name, labels):
+        """Create a topic body"""
         message_storage_policy = assign_params(allowedPersistenceRegions=allowed_persistence_regions)
         body = assign_params(
             labels=labels,
@@ -164,7 +165,8 @@ class PubSubClient(BaseGoogleClient):
         )
         return body
 
-    def get_topic_list(self, project_id, page_size, page_token=None):
+    def list_topic(self, project_id, page_size, page_token=None):
+        """Get topic list from GoogleClient"""
         return (
             self.service.projects()
                 .topics()
@@ -172,7 +174,8 @@ class PubSubClient(BaseGoogleClient):
                 .execute()
         )
 
-    def get_topic_subs(self, topic_id, page_size, page_token=None):
+    def list_topic_subs(self, topic_id, page_size, page_token=None):
+        """Get topic subscriptions from GoogleClient"""
         return (
             self.service.projects()
                 .topics()
@@ -181,7 +184,8 @@ class PubSubClient(BaseGoogleClient):
                 .execute()
         )
 
-    def get_project_subs(self, project_id, page_size, page_token=None):
+    def list_project_subs(self, project_id, page_size, page_token=None):
+        """Get project subscriptions list from GoogleClient"""
         return (
             self.service.projects()
                 .subscriptions()
@@ -190,6 +194,7 @@ class PubSubClient(BaseGoogleClient):
         )
 
     def get_sub(self, sub_name):
+        """Get subscription by name from GoogleClient"""
         return (
             self.service.projects()
                 .subscriptions()
@@ -198,6 +203,7 @@ class PubSubClient(BaseGoogleClient):
         )
 
     def publish_message(self, project_id, topic_id, req_body):
+        """Publish a topic message via GoogleClient"""
         return (
             self.service.projects()
                 .topics()
@@ -467,6 +473,7 @@ def init_google_client(
         insecure,
         **kwargs,
 ) -> PubSubClient:
+    """Initializes google client"""
     try:
         service_account_json = json.loads(service_account_json)
         client = PubSubClient(
@@ -545,7 +552,7 @@ def test_module(client: PubSubClient, is_fetch: bool):
     :param client: GoogleClient
     :return: 'ok' if test passed, anything else will fail the test.
     """
-    client.get_topic_list(GoogleNameParser.get_project_name(client.default_project), page_size=1)
+    client.list_topic(GoogleNameParser.get_project_name(client.default_project), page_size=1)
     if is_fetch:
         client.pull_messages(
             GoogleNameParser.get_subscription_project_name(client.default_project, client.default_subscription),
@@ -573,7 +580,7 @@ def topics_list_command(
     :return: list of topics
     """
     full_project_name = GoogleNameParser.get_project_name(project_id)
-    res = client.get_topic_list(full_project_name, page_size, page_token)
+    res = client.list_topic(full_project_name, page_size, page_token)
 
     topics = list(res.get("topics", []))
     next_page_token = res.get('nextPageToken')
@@ -732,14 +739,14 @@ def subscriptions_list_command(
     title = f"Subscriptions"
     if topic_id:
         full_topic_name = GoogleNameParser.get_topic_name(project_id, topic_id)
-        raw_response = client.get_topic_subs(full_topic_name, page_size, page_token)
+        raw_response = client.list_topic_subs(full_topic_name, page_size, page_token)
         subs = [{'name': sub} for sub in raw_response.get("subscriptions", [])]
         next_page_token = raw_response.get('nextPageToken')
         title += f" for topic {topic_id} in project {project_id}"
         readable_output = tableToMarkdown(title, subs, headers=["name"], headerTransform=pascalToSpace)
     else:
         full_project_name = GoogleNameParser.get_project_name(project_id)
-        raw_response = client.get_project_subs(full_project_name, page_size, page_token)
+        raw_response = client.list_project_subs(full_project_name, page_size, page_token)
         subs = raw_response.get("subscriptions", "")
         next_page_token = raw_response.get('nextPageToken')
         title += f" in project {project_id}"
@@ -1000,7 +1007,7 @@ def snapshot_list_command(
     snapshots = list(res.get("snapshots", []))
     next_page_token = res.get('nextPageToken')
     readable_output = tableToMarkdown(title, snapshots, ['name'])
-    outputs = {"GoogleCloudPubSubTopics(val && val.name === obj.name)": snapshots}
+    outputs = {"GoogleCloudPubSubSnapshots(val && val.name === obj.name)": snapshots}
     if next_page_token:
         outputs["GoogleCloudPubSub.Snapshots.nextPageToken"] = next_page_token
         readable_output += f'**Next Page Token: {next_page_token}**'

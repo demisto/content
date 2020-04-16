@@ -362,6 +362,9 @@ script:
     - contextPath: GoogleCloudPubSubSubscriptions.subscriptionName
       description: Name of the newly created subscription
       type: String
+    - contextPath: GoogleCloudPubSubSubscriptions.labels
+      description: 'An object containing a list of "key": value pairs.'
+      type: String
   - arguments:
     - default: false
       description: ID of the project the topic will belong to.
@@ -589,19 +592,22 @@ script:
       type: String
     - contextPath: GoogleCloudPubSubSubscriptions.messageRetentionDuration
       description: How long to retain unacknowledged messages in the subscription's
-        backlog
+        backlog.
       type: String
     - contextPath: GoogleCloudPubSubSubscriptions.name
-      description: Name of the subscription
+      description: Name of the subscription.
       type: String
     - contextPath: GoogleCloudPubSubSubscriptions.topic
-      description: Name of the topic from which the subscription is receiving messages
+      description: Name of the topic from which the subscription is receiving messages.
       type: String
     - contextPath: GoogleCloudPubSubSubscriptions.projectName
-      description: Name of the project from which the subscription is receiving messages
+      description: Name of the project from which the subscription is receiving messages.
       type: String
     - contextPath: GoogleCloudPubSubSubscriptions.subscriptionName
-      description: Name of the newly created subscription
+      description: Name of the subscription.
+      type: String
+    - contextPath: GoogleCloudPubSubSubscriptions.labels
+      description: 'An object containing a list of "key": value pairs.'
       type: String
   - arguments:
     - default: false
@@ -673,7 +679,7 @@ script:
       description: The snapshot is guaranteed to exist up until this time.
       type: Date
     - contextPath: GoogleCloudPubSubSnapshots.labels
-      description: 'Input format: "key=val" pairs sepearated by ",".'
+      description: 'An object containing a list of "key": value pairs.'
       type: Unknown
     - contextPath: GoogleCloudPubSub.Snapshots.nextPageToken
       description: If not empty, indicates that there may be more snapshot that match
