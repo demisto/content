@@ -57,7 +57,6 @@ class TestMetadata:
         assert parsed_metadata['serverMinVersion'] == '5.5.0'
         assert 'serverLicense' in parsed_metadata
         assert parsed_metadata['currentVersion'] == '2.3.0'
-        assert 'general' in parsed_metadata
         assert parsed_metadata['tags'] == ["tag1", "tag2"]
         assert parsed_metadata['categories'] == ["Messaging"]
         assert parsed_metadata['contentItems'] == {}
