@@ -705,6 +705,12 @@ script:
       - ''
       required: true
       secret: false
+    - default: false
+      description: 'The parameters, if needed, to perform the action. For example, for the ASSIGN TO ANALYST action: assigntouserid={user_id},assignedTo=USER.'
+      isArray: false
+      name: action_parameters
+      required: false
+      secret: false
     deprecated: false
     description: Performs an action on the specified incident.
     execution: false
@@ -844,7 +850,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The entity type. Can be "Users", "Activityaccount", "RGActivityaccount", "Resources", or "Activityip".
+      description: The entity type. Can be "Users", "Activityaccount", "RGActivityaccount",
+        "Resources", or "Activityip".
       isArray: false
       name: entity_type
       predefined:
@@ -863,7 +870,8 @@ script:
       secret: false
     - default: false
       defaultValue: '30'
-      description: The number of days after which the entity will be removed from the watchlist. The default value is "30".
+      description: The number of days after which the entity will be removed from
+        the watchlist. The default value is "30".
       isArray: false
       name: expiry_days
       required: false
@@ -874,7 +882,8 @@ script:
     name: securonix-add-entity-to-watchlist
   - arguments:
     - default: false
-      description: 'The violation name or policy name. For example: "Uploads to personal Websites".'
+      description: 'The violation name or policy name. For example: "Uploads to personal
+        Websites".'
       isArray: false
       name: violation_name
       required: true
@@ -887,7 +896,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The entity type. Can be "Users", "Activityaccount", "RGActivityaccount", "Resources", or "Activityip".
+      description: The entity type. Can be "Users", "Activityaccount", "RGActivityaccount",
+        "Resources", or "Activityip".
       isArray: false
       name: entity_type
       predefined:
@@ -907,7 +917,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The action name. Can be "Mark as concern and create incident", "Non-Concern", or "Mark in progress (still investigating)".
+      description: The action name. Can be "Mark as concern and create incident",
+        "Non-Concern", or "Mark in progress (still investigating)".
       isArray: false
       name: action_name
       predefined:
@@ -924,7 +935,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The incident severity (criticality) for the new incident. Can be "Low", "High", or "Critical".
+      description: The incident severity (criticality) for the new incident. Can be
+        "Low", "High", or "Critical".
       isArray: false
       name: criticality
       predefined:
@@ -941,8 +953,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The workflow name. This argument is optional, but required when the action_name argument is set to "Mark as concern and create
-        incident". Can be "SOCTeamReview", "ActivityOutlierWorkflow", or "AccessCertificationWorkflow".'
+      description: The workflow name. This argument is optional, but required when
+        the action_name argument is set to "Mark as concern and create incident".
+        Can be "SOCTeamReview", "ActivityOutlierWorkflow", or "AccessCertificationWorkflow".
       isArray: false
       name: workflow
       predefined:
@@ -952,8 +965,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Creates an incident. For more information about the required
-      arguments, see the Securonix documentation.
+    description: Creates an incident. For more information about the required arguments,
+      see the Securonix documentation.
     execution: false
     name: securonix-create-incident
     outputs:
@@ -968,10 +981,10 @@ script:
       type: Number
     - contextPath: Securonix.Incidents.Priority
       description: The incident priority.
-      type: String 
+      type: String
     - contextPath: Securonix.Incidents.Reason
-      description: The reason that the incident was created. Usually includes the policy name and/or possible
-        threat name.
+      description: The reason that the incident was created. Usually includes the
+        policy name and/or possible threat name.
       type: String
     - contextPath: Securonix.Incidents.IncidentStatus
       description: The incident status.
