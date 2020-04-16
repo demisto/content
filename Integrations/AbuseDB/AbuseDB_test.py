@@ -41,4 +41,4 @@ def test_ip_command_when_api_quota_reached(mocker):
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     from AbuseDB import check_ip_command, API_QUOTA_REACHED_MESSAGE
     res = check_ip_command(['1.1.1.1'], days=7, verbose=False, threshold=10)
-
+    assert return_error_mock.call_count == 0
