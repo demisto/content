@@ -573,7 +573,7 @@ script:
       description: The user ID.
       isArray: false
       name: user_id
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Get user details by his ID.
