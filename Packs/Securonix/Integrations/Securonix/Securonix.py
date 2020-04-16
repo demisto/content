@@ -1240,7 +1240,7 @@ def main():
         }
         if command == 'fetch-incidents':
             fetch_time = params.get('fetch_time')
-            incident_types = params.get('incident_types') if 'incident_types' in params else 'opened'
+            incident_types = params.get('incident_status') if 'incident_status' in params else 'open'
             incidents = fetch_incidents(client, fetch_time, incident_types, last_run=demisto.getLastRun())
             demisto.incidents(incidents)
         elif command in commands:
