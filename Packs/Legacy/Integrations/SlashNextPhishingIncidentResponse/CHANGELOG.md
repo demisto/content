@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.4.0] - 2020-04-14
 - Added **slashnext-api-quota** command to get information about user's API quota.
 
 ## [19.10.2] - 2019-10-29
