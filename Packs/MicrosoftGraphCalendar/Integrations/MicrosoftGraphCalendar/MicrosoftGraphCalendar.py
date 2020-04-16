@@ -1,9 +1,6 @@
 from CommonServerPython import *
 from typing import List, Dict, Tuple, Union
-from datetime import datetime
-import base64
 import urllib3
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -133,55 +130,11 @@ def process_event_params(body: str = '', start: str = '', end: str = '', time_zo
     return event_params
 
 
-def epoch_seconds() -> int:
-    """
-    Returns the number of seconds for return current date.
-    """
-    return int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds())
-
-
-def get_encrypted(content: str, key: str) -> str:
-    """
-
-    Args:
-        content: content to encrypt. For a request to Demistobot for a new access token, content should be
-            the tenant id
-        key: encryption key from Demistobot
-
-    Returns:
-        encrypted timestamp:content
-    """
-
-    def create_nonce() -> bytes:
-        return os.urandom(12)
-
-    def encrypt(string: str, enc_key: str) -> bytes:
-        """
-        Args:
-        :argument enc_key:
-        :argument string:
-        """
-        # String to bytes
-        enc_key = base64.b64decode(enc_key)
-        # Create key
-        aes_gcm = AESGCM(enc_key)
-        # Create nonce
-        nonce = create_nonce()
-        # Create ciphered data
-        data = string.encode()
-        ct_ = aes_gcm.encrypt(nonce, data, None)
-        return base64.b64encode(nonce + ct_)
-
-    now = epoch_seconds()
-    encrypted = encrypt(f'{now}:{content}', key).decode('utf-8')
-    return encrypted
-
-
 class MsGraphClient:
 
-    def __init__(self, tenant, auth_and_token_url, enc_key, app_name, base_url, verify,
+    def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify,
                  proxy, default_user, self_deployed):
-        self.ms_client = MicrosoftClient(tenant_id=tenant, auth_id=auth_and_token_url,
+        self.ms_client = MicrosoftClient(tenant_id=tenant_id, auth_id=auth_id,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=verify,
                                          proxy=proxy, self_deployed=self_deployed)
         self.default_user = default_user
@@ -577,8 +530,9 @@ def main():
     LOG(f'Command being called is {command}')
 
     try:
-        client: MsGraphClient = MsGraphClient(tenant, auth_and_token_url, enc_key, APP_NAME,
-                                              url, verify, proxy, default_user, self_deployed)
+        client: MsGraphClient = MsGraphClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key,
+                                              app_name=APP_NAME, base_url=url, verify=verify, proxy=proxy,
+                                              default_user=default_user, self_deployed=self_deployed)
         if 'user' not in demisto.args():
             demisto.args()['user'] = client.default_user
         # Run the command
