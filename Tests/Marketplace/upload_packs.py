@@ -141,13 +141,14 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
         sys.exit(1)
 
 
-def update_index_folder(index_folder_path, pack_name, pack_path):
+def update_index_folder(index_folder_path, pack_name, pack_path, pack_version=''):
     """Copies pack folder into index folder.
 
     Args:
         index_folder_path (str): full path to index folder.
         pack_name (str): pack folder name to copy.
         pack_path (str): pack folder full path.
+        pack_version (str): pack latest version.
 
     Returns:
         bool: whether the operation succeeded.
@@ -158,10 +159,28 @@ def update_index_folder(index_folder_path, pack_name, pack_path):
         index_folder_subdirectories = [d for d in os.listdir(index_folder_path) if
                                        os.path.isdir(os.path.join(index_folder_path, d))]
         index_pack_path = os.path.join(index_folder_path, pack_name)
+        metadata_files_in_index = glob.glob(f"{os.path.join(index_folder_path, pack_name)}/**/metadata-*.json")
+        new_metadata_path = ''
 
+        if pack_version:
+            new_metadata_path = os.path.join(index_pack_path, f"metadata-{pack_version}.json")
+
+            # Update the latest metadata
+            if new_metadata_path in metadata_files_in_index:
+                metadata_files_in_index.remove(new_metadata_path)
+
+        # Remove old files but keep metadata files
         if pack_name in index_folder_subdirectories:
-            shutil.rmtree(index_pack_path)
-        shutil.copytree(pack_path, index_pack_path)
+            for d in os.scandir(index_pack_path):
+                if d.path not in metadata_files_in_index:
+                    os.remove(d.path)
+
+        # Copy new files and add metadata for latest version
+        for d in os.scandir(pack_path):
+            shutil.copy(d.path, index_pack_path)
+            if pack_version and Pack.METADATA in d.name:
+                shutil.copy(d.path, new_metadata_path)
+
         task_status = True
     except Exception as e:
         print_error(f"Failed in updating index folder for {pack_name} pack\n. Additional info: {e}")
@@ -473,7 +492,8 @@ def main():
             pack.cleanup()
             continue
 
-        task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path)
+        task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path,
+                                          pack_version=pack.latest_version)
         if not task_status:
             pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name
             pack.cleanup()
