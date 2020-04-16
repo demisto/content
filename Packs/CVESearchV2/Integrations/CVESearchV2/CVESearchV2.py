@@ -21,11 +21,11 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, headers=headers, verify=verify, proxy=proxy)
 
     def cve_latest(self, limit) -> List[Dict[str, Any]]:
-        res = self._http_request(method='GET', url_suffix=f'/last/{limit}')
+        res = self._http_request(method='GET', url_suffix=f'/last/{limit}', timeout=60)
         return res
 
     def cve(self, cve_id) -> Dict[str, Any]:
-        res: Dict[str, Any] = self._http_request(method='GET', url_suffix=f'cve/{cve_id}')
+        res: Dict[str, Any] = self._http_request(method='GET', url_suffix=f'cve/{cve_id}', timeout=60)
         return res or {}
 
 
@@ -80,7 +80,7 @@ def cve_latest_command(client: Client, limit) -> Tuple[
     return human_readable, ec, res
 
 
-def cve_command(client: Client, args: dict) -> Tuple[str, Dict[str, Dict[str, str]], Dict[str, Any]]:
+def cve_command(client: Client, args: dict) -> Tuple[Any, Any, Any]:
     """Search for cve with the given ID and returns the cve data if found.
     Args:
            client: Integration client
@@ -89,14 +89,23 @@ def cve_command(client: Client, args: dict) -> Tuple[str, Dict[str, Dict[str, st
         CVE details containing ID, CVSS, modified date, published date and description.
     """
     cve_id = args.get('cve_id', '')
-    if not valid_cve_id_format(cve_id):
-        raise DemistoException(f'"{cve_id}" is not a valid cve ID')
-    res = client.cve(cve_id)
+    cve_ids = argToList(cve_id)
+    data = []
+    res = []
+
+    for _id in cve_ids:
+        if not valid_cve_id_format(_id):
+            raise DemistoException(f'"{_id}" is not a valid cve ID')
+        response = client.cve(_id)
+        res.append(response)
+        data.append(cve_to_context(response))
+
     if not res:
         return 'No results found.', {}, {}
-    data = cve_to_context(res)
+
     human_readable = tableToMarkdown('CVE Search results', data)
     context = {'CVE(val.ID === obj.ID)': data}
+
     return human_readable, context, res
 
 
