@@ -13,6 +13,12 @@
             "timeout": 1000
         },
         {
+            "integrations": "Cisco Firepower",
+            "playbookID": "Cisco Firepower - Test",
+            "timeout": 1000,
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "JSON Feed",
             "playbookID": "JSON_Feed_Test",
             "fromversion": "5.5.0"
@@ -562,7 +568,7 @@
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama",
             "playbookID": "Panorama Query Logs - Test",
-            "timeout": 1000,
+            "timeout": 1500,
             "nightly": true
         },
         {
@@ -979,7 +985,8 @@
                 "Mail Sender (New)",
                 "Gmail"
             ],
-            "playbookID": "Mail Sender (New) Test"
+            "playbookID": "Mail Sender (New) Test",
+            "instance_names": ["Mail_Sender_(New)_STARTTLS"]
         },
         {
             "playbookID": "buildewsquery_test"
@@ -1021,6 +1028,12 @@
             "integrations": "okta",
             "playbookID": "okta_test_playbook",
             "timeout": 240
+        },
+        {
+            "integrations": "Okta v2",
+            "playbookID": "OktaV2-Test",
+            "nightly": true,
+            "timeout": 300
         },
         {
             "playbookID": "Test filters & transformers scripts"
@@ -1982,7 +1995,7 @@
             "timeout": 1000
         },
         {
-            "playbookID": "PAN-OS EDL Setup Test",
+            "playbookID": "PAN-OS EDL Setup V2 Test",
             "integrations": ["Panorama", "palo_alto_networks_pan_os_edl_management"],
             "instance_names": "palo_alto_panorama",
             "timeout": 1000
@@ -2272,7 +2285,7 @@
         {
             "playbookID": "PAN-OS Query Logs For Indicators Test",
             "fromversion": "4.5.0",
-            "timeout": 600,
+            "timeout": 1500,
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama"
         },
@@ -2458,6 +2471,18 @@
             "playbookID": "illuminate Integration Demonstration - Test"
         },
         {
+            "integrations": "MongoDB Key Value Store",
+            "playbookID": "MongoDB KeyValueStore - Test",
+            "pid_threshold": 12,
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "MongoDB Log",
+            "playbookID": "MongoDBLog - Test",
+            "pid_threshold": 12,
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Google Chronicle Backstory",
             "playbookID": "Google Chronicle Backstory Asset - Test",
             "fromversion": "5.0.0"
@@ -2486,7 +2511,7 @@
             "integrations": "Feodo Tracker Hashes Feed",
             "playbookID": "playbook-feodoteackerhash_test",
             "fromversion": "5.5.0",
-            "memory_threshold": "130",
+            "memory_threshold": 130,
             "timeout": 600
         },
         {
@@ -2557,6 +2582,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "SafeBreach v2",
+            "playbookID": "playbook-SafeBreach-Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "playbookID": "DbotPredictOufOfTheBoxTest",
             "fromversion": "4.5.0",
             "timeout": 1000
@@ -2585,6 +2615,11 @@
         {
             "integrations": "MongoDB",
             "playbookID": "MongoDB - Test"
+        },
+        {
+            "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
+            "timeout" : 60000,
+            "fromversion": "4.5.0"
         }
     ],
     "skipped_tests": {
@@ -2594,7 +2629,6 @@
         "OTRS Test": "Issue 23167",
         "Akamai_WAF_SIEM-Test": "Issue 22225",
         "Cloaken-Test": "Issue 20036",
-        "Test-VulnDB": "Issue 23138",
         "test_MsGraphFiles": "Issue 22853 ",
         "TestCofenseFeed": "Issue 22854",
         "RecordedFutureFeed - Test": "Issue 22855",
@@ -2635,6 +2669,8 @@
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633",
         "TAXII_Feed_Test": "Issue #22423",
+        "PAN-OS Query Logs For Indicators Test": "Issue #23505",
+        "Panorama Query Logs - Test": "Issue #23505",
         "palo_alto_panorama_test_pb": "Issue #22835"
     },
     "skipped_integrations": {
@@ -2722,6 +2758,7 @@
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lockpath KeyLight": "Deprecated. No tests.",
         "SafeBreach": "pending rewrite",
+        "SafeBreach v2": "it is a partner integration, no instance",
         "Cymulate": "Partner didn't provided test playbook",
 
         "_comment": "~~~ QUOTA ISSUES ~~~",
@@ -2796,7 +2833,9 @@
         "Google Chronicle Backstory": "SDK",
         "Google Vision AI": "SDK",
         "Syslog Sender": "syslog",
-        "syslog": "syslog"
+        "syslog": "syslog",
+        "MongoDB Log": "Our instance not using SSL",
+        "MongoDB Key Value Store": "Our instance not using SSL"
     },
     "docker_thresholds": {
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
