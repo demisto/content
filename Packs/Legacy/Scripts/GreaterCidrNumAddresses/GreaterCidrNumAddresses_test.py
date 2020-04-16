@@ -5,7 +5,6 @@ import pytest
 @pytest.mark.parametrize(argnames="cidr, min_num_addresses, expected",
                          argvalues=[('192.168.0.0/24', 257, False),
                                     ('192.168.0.0/24', 255, True),
-                                    ('192.168.0.4/24', 255, True),
                                     ('2002::1234:abcd:ffff:c0a8:101/127', 3, False)])
 def test_cidr_network_addresses_greater_from_const(cidr: str, min_num_addresses: str, expected: bool):
     from GreaterCidrNumAddresses import cidr_network_addresses_greater_from_const
