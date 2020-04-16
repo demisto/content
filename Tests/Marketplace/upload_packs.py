@@ -212,8 +212,8 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
 
 
 def get_private_packs(private_index_path):
-    """
-    Get the list of ID and price of the private packs.
+    """ Get the list of ID and price of the private packs.
+
     Args:
         private_index_path: The path for the index of the private packs.
 
@@ -246,8 +246,8 @@ def get_private_packs(private_index_path):
 
 
 def add_private_packs_to_index(index_folder_path, private_index_path):
-    """
-    Add the private packs to the index folder.
+    """ Add the private packs to the index folder.
+
     Args:
         index_folder_path: The index folder path.
         private_index_path: The path for the index of the private packs.
@@ -256,6 +256,35 @@ def add_private_packs_to_index(index_folder_path, private_index_path):
     for d in os.scandir(private_index_path):
         if os.path.isdir(d.path):
             update_index_folder(index_folder_path, d.name, d.path)
+
+
+def update_index_with_priced_packs(private_storage_bucket, extract_destination_path, index_folder_path):
+    """ Updates index with priced packs and returns list of priced packs data.
+
+    Args:
+        private_storage_bucket (google.cloud.storage.bucket.Bucket): google storage private bucket.
+        extract_destination_path (str): full path to extract directory.
+        index_folder_path (str): downloaded index folder directory path.
+
+    Returns:
+        list: priced packs from private bucket.
+
+    """
+    private_index_path = ""
+    private_packs = []
+
+    try:
+        private_index_path, _ = download_and_extract_index(private_storage_bucket,
+                                                           os.path.join(extract_destination_path, 'private'))
+        private_packs = get_private_packs(private_index_path)
+        add_private_packs_to_index(index_folder_path, private_index_path)
+        print("Finished updating index with priced packs")
+    except Exception as e:
+        print_error(f'Could not add private packs to the index: {str(e)}')
+    finally:
+        if private_index_path:
+            shutil.rmtree(os.path.dirname(private_index_path), ignore_errors=True)
+        return private_packs
 
 
 def _build_summary_table(packs_input_list):
@@ -320,6 +349,7 @@ def option_handler():
     # disable-secrets-detection-start
     parser.add_argument('-a', '--artifacts_path', help="The full path of packs artifacts", required=True)
     parser.add_argument('-e', '--extract_path', help="Full path of folder to extract wanted packs", required=True)
+    parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
     parser.add_argument('-s', '--service_account',
                         help=("Path to gcloud service account, is for circleCI usage. "
                               "For local development use your personal account and "
@@ -332,14 +362,13 @@ def option_handler():
                         help=("Comma separated list of target pack names. "
                               "Define `All` in order to store all available packs."),
                         required=False, default="")
-    parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
     parser.add_argument('-n', '--ci_build_number',
                         help="CircleCi build number (will be used as hash revision at index file)", required=False)
     parser.add_argument('-o', '--override_pack', help="Override existing packs in cloud storage", default=False,
                         action='store_true', required=False)
     parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
                         required=False)
-    parser.add_argument('-P', '--private_bucket_name', help="Private storage bucket name", required=False)
+    parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
     # disable-secrets-detection-end
     return parser.parse_args()
 
@@ -359,12 +388,9 @@ def main():
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
-    private_storage_bucket = storage_client.bucket(private_bucket_name)
+
+    # download and extract index from public bucket
     index_folder_path, index_blob = download_and_extract_index(storage_bucket, extract_destination_path)
-    private_index_path = ''
-    if private_bucket_name:
-        private_index_path, _ = download_and_extract_index(private_storage_bucket,
-                                                           os.path.join(extract_destination_path, 'private'))
 
     # detect new or modified packs
     modified_packs = get_modified_packs(specific_packs)
@@ -372,17 +398,15 @@ def main():
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in modified_packs
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
-    # Add private packs to the index
-    private_packs = []
-    if private_index_path:
-        try:
-            private_packs = get_private_packs(private_index_path)
-            add_private_packs_to_index(index_folder_path, private_index_path)
-        except Exception as e:
-            print_warning(f'Could not add private packs to the index: {str(e)}')
-        finally:
-            shutil.rmtree(private_index_path, ignore_errors=True)
+    if private_bucket_name:  # Add private packs to the index
+        private_storage_bucket = storage_client.bucket(private_bucket_name)
+        private_packs = update_index_with_priced_packs(private_storage_bucket, extract_destination_path,
+                                                       index_folder_path)
+    else:  # skipping private packs
+        print("Skipping index update of priced packs")
+        private_packs = []
 
+    # starting iteration over packs
     for pack in packs_list:
         task_status, integration_images = pack.upload_integration_images(storage_bucket)
         if not task_status:
