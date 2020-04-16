@@ -2412,11 +2412,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "Sixgill",
-            "playbookID": "Sixgill - Darkfeed - Indicators-Test",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "AutoFocus Feed",
             "playbookID": "playbook-FeedAutofocus_test",
             "fromversion": "5.5.0"
