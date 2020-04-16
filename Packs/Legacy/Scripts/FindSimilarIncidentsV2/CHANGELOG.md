@@ -1,5 +1,9 @@
 ## [Unreleased]
-Fixed an issue where list values in context were not compared correctly while using the "similarContextKeys" argument.
+
+
+## [20.4.0] - 2020-04-14
+-
+
 
 ## [20.3.4] - 2020-03-30
 Deprecated arguments: similarCustomFields, similarIncidentKeys. Use ***similarIncidentFields*** instead.
