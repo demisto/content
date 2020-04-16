@@ -13,11 +13,6 @@
             "timeout": 1000
         },
         {
-            "integrations": "Google Cloud Functions",
-            "playbookID": "test playbook - Google Cloud Functions",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "Cisco Firepower",
             "playbookID": "Cisco Firepower - Test",
             "timeout": 1000,
@@ -27,6 +22,11 @@
             "integrations": "JSON Feed",
             "playbookID": "JSON_Feed_Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Google Cloud Functions",
+            "playbookID": "test playbook - Google Cloud Functions",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Plain Text Feed",
@@ -2516,7 +2516,7 @@
             "integrations": "Feodo Tracker Hashes Feed",
             "playbookID": "playbook-feodoteackerhash_test",
             "fromversion": "5.5.0",
-            "memory_threshold": "130",
+            "memory_threshold": 130,
             "timeout": 600
         },
         {
@@ -2628,6 +2628,7 @@
         }
     ],
     "skipped_tests": {
+        "Test-Shodan_v2": "Issue 23370",
         "Send Investigation Summary Reports - Test": "Issue 22299",
         "Symantec Deepsight Test": "Issue 22971",
         "OTRS Test": "Issue 23167",
@@ -2679,6 +2680,7 @@
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
+        "Awake Security": "Issue 23376",
         "RiskSense": "We should get an instance talk to Francesco",
         "Palo Alto Networks Cortex": "Issue 22300",
         "AWS - IAM": "Issue 21401",
