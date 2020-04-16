@@ -200,6 +200,9 @@ RESPONSE_CREATE_INCIDENT = {
         }
     }
 }
+RESPONSE_PERFORM_ACTION_ON_INCIDENT = {
+    'result': 'submitted'
+}
 RESPONSE_LIST_WATCHLISTS = {
     "result": [
         "Domain_Admin", "Privileged_Users", "Privileged_Accounts", "Recent_Hires"
@@ -286,3 +289,70 @@ RESPONSE_ENTITY_IN_WATCHLIST = {
     'result': ['YES']
 }
 RESPONSE_ADD_ENTITY_TO_WATCHLIST = "Add to watchlist successfull..!"
+RESPONSE_FETCH_INCIDENT_ITEM = {
+    "assignedGroup": "SECURITYOPERATIONS",
+    "casecreatetime": 1579500273595,
+    "entity": "Users",
+    "incidentId": "10134",
+    "incidentStatus": "OPEN",
+    "incidentType": "Policy",
+    "isWhitelisted": False,
+    "lastUpdateDate": 1585227067399,
+    "parentCaseId": "",
+    "priority": "low",
+    "reason": [
+        "Resource: BLUECOAT",
+        "Policy: Uploads to personal websites",
+        "Threat: Data egress via network uploads"
+    ],
+    "riskscore": 0,
+    "sandBoxPolicy": False,
+    "statusCompleted": False,
+    "tenantInfo": {
+        "tenantcolor": "#000000",
+        "tenantid": 1,
+        "tenantname": "Securonix",
+        "tenantshortcode": "SE"
+    },
+    "url": "demisto.com",
+    "violatorId": "12",
+    "violatorSubText": "1012",
+    "violatorText": "Secret secret",
+    "watchlisted": False,
+    "workflowName": "SOCTeamReview"
+}
+RESPONSE_FETCH_INCIDENT_ITEM_MULTIPLE_REASONS = {
+    "assignedGroup": "SECURITYOPERATIONS",
+    "casecreatetime": 1579500273595,
+    "entity": "Users",
+    "incidentId": "10135",
+    "incidentStatus": "OPEN",
+    "incidentType": "Policy",
+    "isWhitelisted": False,
+    "lastUpdateDate": 1585227067399,
+    "parentCaseId": "",
+    "priority": "low",
+    "reason": [
+        "Resource: BLUECOAT",
+        "Policy: Uploads to personal websites",
+        "Threat: Data egress via network uploads",
+        "Resource: Email Gateway",
+        "Policy: Emails Sent to Personal Email",
+        "Threat: mock"
+    ],
+    "riskscore": 0,
+    "sandBoxPolicy": False,
+    "statusCompleted": False,
+    "tenantInfo": {
+        "tenantcolor": "#000000",
+        "tenantid": 1,
+        "tenantname": "Securonix",
+        "tenantshortcode": "SE"
+    },
+    "url": "demisto.com",
+    "violatorId": "12",
+    "violatorSubText": "1012",
+    "violatorText": "Secret secret",
+    "watchlisted": False,
+    "workflowName": "SOCTeamReview"
+}

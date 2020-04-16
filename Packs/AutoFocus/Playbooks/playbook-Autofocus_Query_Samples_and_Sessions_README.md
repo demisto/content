@@ -72,4 +72,4 @@ Another example for searching for an IP
 ## Playbook Image
 ---
 
-![Autofocus_Query_Samples__Sessions_and_Tags](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Autofocus_Query_Samples__Sessions_and_Tags.png)
+![Autofocus_Query_Samples__Sessions_and_Tags](https://github.com/demisto/content/raw/cc9fb76a907ec5e86d6cdac7a8820d1828c52e02/Packs/AutoFocus/doc_files/Autofocus_Query_Samples__Sessions_and_Tags.png)
