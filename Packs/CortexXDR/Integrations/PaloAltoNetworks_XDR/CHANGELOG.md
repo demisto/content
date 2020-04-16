@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.4.0] - 2020-04-14
   - Fixed the issue where the ***xdr-isolate-endpoint*** command was failing when:  
     - The endpoint was disconnected.  
     - The isolation was still pending.  

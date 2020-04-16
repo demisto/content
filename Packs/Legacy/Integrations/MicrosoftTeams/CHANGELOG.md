@@ -1,5 +1,7 @@
 ## [Unreleased]
--
+
+
+## [20.4.0] - 2020-04-14
   - Set the listener host to 0.0.0.0 in order to handle IPv6.
   - Fixed an issue where the email address of the message sender was not handled properly.
 

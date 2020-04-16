@@ -413,7 +413,7 @@
             "playbookID": "CVE Search v2 - Test"
         },
         {
-            "integrations": "CVE Search",
+            "integrations": "CVE Search v2",
             "playbookID": "cveReputation Test"
         },
         {
@@ -1026,7 +1026,7 @@
             "playbookID": "decodemimeheader_-_test"
         },
         {
-            "integrations": "CVE Search",
+            "integrations": "CVE Search v2",
             "playbookID": "cve_enrichment_-_generic_-_test"
         },
         {
@@ -2424,11 +2424,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "Sixgill",
-            "playbookID": "Sixgill - Darkfeed - Indicators-Test",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "AutoFocus Feed",
             "playbookID": "playbook-FeedAutofocus_test",
             "fromversion": "5.5.0"
@@ -2594,6 +2589,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "SafeBreach v2",
+            "playbookID": "playbook-SafeBreach-Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "playbookID": "DbotPredictOufOfTheBoxTest",
             "fromversion": "4.5.0",
             "timeout": 1000
@@ -2676,6 +2676,8 @@
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633",
         "TAXII_Feed_Test": "Issue #22423",
+        "PAN-OS Query Logs For Indicators Test": "Issue #23505",
+        "Panorama Query Logs - Test": "Issue #23505",
         "palo_alto_panorama_test_pb": "Issue #22835"
     },
     "skipped_integrations": {
@@ -2762,6 +2764,7 @@
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lockpath KeyLight": "Deprecated. No tests.",
         "SafeBreach": "pending rewrite",
+        "SafeBreach v2": "it is a partner integration, no instance",
         "Cymulate": "Partner didn't provided test playbook",
 
         "_comment": "~~~ QUOTA ISSUES ~~~",
