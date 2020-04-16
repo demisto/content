@@ -258,13 +258,13 @@ class MsGraphClient:
             event = self.ms_client.http_request(
                 method='POST',
                 url_suffix=f'/users/{user}/calendars/{calendar_id}/events',
-                data=json.dumps(kwargs)
+                json_data=kwargs
             )
         else:
             event = self.ms_client.http_request(
                 method='POST',
                 url_suffix=f'users/{user}/calendar/events',
-                data=json.dumps(kwargs)
+                json_data=kwargs
             )
         return event
 
@@ -291,8 +291,7 @@ class MsGraphClient:
         event = self.ms_client.http_request(
             method='PATCH',
             url_suffix=f'users/{user}/calendar/events/{event_id}',
-            data=json.dumps(kwargs)
-        )
+            json_data=kwargs)
         return event
 
     def delete_event(self, user: str, event_id: str):
@@ -307,7 +306,8 @@ class MsGraphClient:
         #  It does not return anything in the response body.
         self.ms_client.http_request(
             method='DELETE',
-            url_suffix=f'users/{user}/calendar/events/{event_id}'
+            url_suffix=f'users/{user}/calendar/events/{event_id}',
+            resp_type='text'
         )
 
 
