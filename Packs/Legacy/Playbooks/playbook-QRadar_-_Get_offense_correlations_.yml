@@ -9,7 +9,7 @@ description: |-
   * Get all logs relevant to the correlations (not done by default, set "GetCorrelationLogs" to "True")
 
   Inputs:
-  * GetCorrelationLogs (default: False)
+  * GetCorrelationLogs ( default: False)
   * MaxLogsCount (default: 20)
 starttaskid: "0"
 tasks:
