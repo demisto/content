@@ -413,7 +413,7 @@
             "playbookID": "CVE Search v2 - Test"
         },
         {
-            "integrations": "CVE Search",
+            "integrations": "CVE Search v2",
             "playbookID": "cveReputation Test"
         },
         {
@@ -1014,7 +1014,7 @@
             "playbookID": "decodemimeheader_-_test"
         },
         {
-            "integrations": "CVE Search",
+            "integrations": "CVE Search v2",
             "playbookID": "cve_enrichment_-_generic_-_test"
         },
         {
