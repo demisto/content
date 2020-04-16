@@ -6,12 +6,15 @@ import re
 import xlrd
 import csv
 import tldextract
+import warnings
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
+warnings.filterwarnings(action="ignore", message='.*certificate verify failed: '
+                                                 'self signed certificate in certificate chain')
 
 
-def csv_file_to_indicator_list(file_path, col_num, starting_row, auto_detect, default_type, type_col, limit):
+def csv_file_to_indicator_list(file_path, col_num, starting_row, auto_detect, default_type, type_col, limit, offset):
     indicator_list = []
 
     # TODO: add run on all columns functionality
@@ -20,7 +23,7 @@ def csv_file_to_indicator_list(file_path, col_num, starting_row, auto_detect, de
     with open(file_path) as csv_file:
         file_reader = csv.reader(csv_file)
         for row in file_reader:
-            if line_index >= starting_row and len(row) != 0:
+            if line_index >= starting_row + offset and len(row) != 0:
                 indicator = row[col_num]
 
                 indicator_type = detect_type(indicator)
@@ -51,7 +54,7 @@ def csv_file_to_indicator_list(file_path, col_num, starting_row, auto_detect, de
 
 
 def xls_file_to_indicator_list(file_path, sheet_name, col_num, starting_row, auto_detect, default_type,
-                               type_col, limit):
+                               type_col, limit, offset):
     indicator_list = []
 
     # TODO: add run on all columns functionality
@@ -64,7 +67,7 @@ def xls_file_to_indicator_list(file_path, sheet_name, col_num, starting_row, aut
         xl_sheet = xl_woorkbook.sheet_by_index(0)
 
     for row_index in range(0, xl_sheet.nrows):
-        if row_index >= starting_row:
+        if row_index >= starting_row + offset:
             indicator = xl_sheet.cell(row_index, col_num).value
 
             indicator_type = detect_type(indicator)
@@ -93,13 +96,14 @@ def xls_file_to_indicator_list(file_path, sheet_name, col_num, starting_row, aut
     return indicator_list
 
 
-def txt_file_to_indicator_list(file_path, auto_detect, default_type):
+def txt_file_to_indicator_list(file_path, auto_detect, default_type, limit, offset):
     with open(file_path, "r") as fp:
         file_data = fp.read()
 
     indicator_list = []
 
     raw_splitted_data = re.split(r"\s|\n|\t|\"|\'|\,|\0", file_data)
+    indicator_index = 0
 
     for indicator in raw_splitted_data:
         # drop punctuation
@@ -116,6 +120,10 @@ def txt_file_to_indicator_list(file_path, auto_detect, default_type):
             if indicator_type is None:
                 continue
 
+            elif indicator_type is not None and indicator_index < offset:
+                indicator_index = indicator_index + 1
+                continue
+
             if not auto_detect:
                 indicator_type = default_type
 
@@ -123,6 +131,9 @@ def txt_file_to_indicator_list(file_path, auto_detect, default_type):
                 'type': indicator_type,
                 'value': indicator
             })
+
+        if limit and len(indicator_list) == int(str(limit)):
+            break
 
     return indicator_list
 
@@ -191,36 +202,17 @@ def fetch_indicators_from_file(args):
     if file_name.endswith('xls') or file_name.endswith('xlsx'):
         indicator_list = xls_file_to_indicator_list(file_path, sheet_name, int(indicator_col_num) - 1,
                                                     int(starting_row) - 1, auto_detect, default_type,
-                                                    indicator_type_col_num, limit)
+                                                    indicator_type_col_num, limit, offset)
 
     elif file_name.endswith('csv'):
         indicator_list = csv_file_to_indicator_list(file_path, int(indicator_col_num) - 1, int(starting_row) - 1,
-                                                    auto_detect, default_type, indicator_type_col_num, limit)
+                                                    auto_detect, default_type, indicator_type_col_num, limit, offset)
 
     else:
-        indicator_list = txt_file_to_indicator_list(file_path, auto_detect, default_type)
-
-    indicator_list_len = len(indicator_list)
-
-    if limit:
-        limit = int(str(limit))
-        indicator_list = indicator_list[offset: limit + offset]
+        indicator_list = txt_file_to_indicator_list(file_path, auto_detect, default_type, limit, offset)
 
     human_readable = tableToMarkdown("Indicators from {}:".format(file_name), indicator_list,
                                      headers=['value', 'type'], removeNull=True)
-
-    if limit and indicator_list_len > limit:
-        human_readable = human_readable + "\nTo bring the next batch of indicators run:\n!FetchIndicatorsFromFile " \
-            "limit={} offset={} entry_id={}".format(limit, int(limit) + int(offset), args.get('entry_id'))
-
-        if sheet_name:
-            human_readable = human_readable + " sheet_name={}".format(sheet_name)
-
-        if int(indicator_col_num) != 1:
-            human_readable = human_readable + " indicator_column_number={}".format(indicator_col_num)
-
-        if indicator_type_col_num:
-            human_readable = human_readable + " indicator_type_column_number={}".format(indicator_type_col_num)
 
     # Create indicators in demisto
     errors = []
