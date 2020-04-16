@@ -2,9 +2,9 @@ commonfields:
   id: Cofense Triage
   version: -1
 name: Cofense Triage
-description: Use the Cofense Triage integration to manage reports and attachments.
 display: Cofense Triage
 category: Data Enrichment & Threat Intelligence
+description: Use the Cofense Triage integration to ingest reported phishing indicators.
 configuration:
   - display: Server URL (e.g., https://192.168.0.1)
     name: host
@@ -35,8 +35,7 @@ configuration:
     defaultvalue: 3 days
     type: 0
     required: false
-  - display: Category ID to fetch - corresponds to the ranking that determines the Cofense
-      Triage prioritization (1-5)
+  - display: 'Category ID to fetch - corresponds to category IDs defined in Triage'
     name: category_id
     defaultvalue: ""
     type: 0
@@ -241,7 +240,35 @@ script:
         - contextPath: Cofense.Report.Sha256
           description: SHA256 hash of the file.
       description: 'Retrieves a report by the report ID number. '
-  dockerimage: demisto/python3:3.7.2.200
+    - name: cofense-get-report-png-by-id
+      arguments:
+        - name: report_id
+          required: true
+          description: Report ID PNG output
+        - name: set_white_bg
+          auto: PREDEFINED
+          predefined:
+            - "True"
+            - "False"
+          description: Change background to white
+          defaultValue: "False"
+      description: 'Retrieves a report by the report ID number and displays as PNG'
+    - name: cofense-get-threat-indicators
+      arguments:
+        - name: type
+          description: indicator type (Domain, URL, MD5, SHA256, Subject, Sender)
+        - name: level
+          description: indicator severity
+        - name: start_date
+          description: designated start date tagged by analyst
+        - name: end_date
+          description: designated end date from assignment
+      outputs:
+        - contextPath: Cofense.Cofense.ThreatIndicators
+          description: Threat Indicator Output
+      description: Threat Indicators that are designated by analysts as malicious, suspicious
+        or benign
+  dockerimage: demisto/chromium:1.0.0.5952
   isfetch: true
   runonce: false
 tests:

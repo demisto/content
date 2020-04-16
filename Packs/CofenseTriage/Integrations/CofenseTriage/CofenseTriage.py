@@ -1,8 +1,10 @@
+import demistomock as demisto
 from CommonServerPython import *
-
 '''IMPORTS'''
 import requests
 from typing import Any, List, Dict
+from PIL import Image
+from io import BytesIO
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -101,25 +103,6 @@ def http_request(url_suffix: str, params=None, body=None, raw_response=False) ->
         return {}
 
 
-def get_fetch_response():
-    start_date, _ = parse_date_range(demisto.getParam('date_range'), date_format=TIME_FORMAT)
-    max_fetch = int(demisto.getParam('max_fetch'))  # type: int
-    params = {
-        'category_id': demisto.getParam('category_id'),
-        'match_priority': demisto.getParam('match_priority'),
-        'tags': demisto.getParam('tags'),
-        'start_date': start_date,
-    }
-
-    # running the API command
-    response = http_request(
-        '/processed_reports',
-        params=params,
-    )
-
-    return response, max_fetch
-
-
 def test_function() -> None:
     try:
         response = requests.get(
@@ -132,18 +115,32 @@ def test_function() -> None:
         if response.ok:
             # test fetching mechanism
             if demisto.params().get('isFetch'):
-                get_fetch_response()
+                fetch_reports()
 
             demisto.results('ok')
 
+        else:
+            return_error(
+                f'API call to Cofense Triage failed. Please check Server URL, or authentication related parameters.Status Code: {response.status_code} Reason: {response.reason}'
+                f' [{response.status_code}] - {response.reason}')
+
     except Exception as ex:
         demisto.debug(str(ex))
-        return_error(f'API call to Cofense Triage failed, please check URL, or integration parameters.')
-
+        return_error(repr(ex))
 
 def fetch_reports() -> None:
     # parameters importing
-    reports, max_fetch = get_fetch_response()
+    start_date, _ = parse_date_range(demisto.getParam('date_range'), date_format=TIME_FORMAT)
+    max_fetch = int(demisto.getParam('max_fetch'))  # type: int
+    params = {
+        'category_id': demisto.getParam('category_id'),
+        'match_priority': demisto.getParam('match_priority'),
+        'tags': demisto.getParam('tags'),
+        'start_date': start_date,
+    }
+
+    # running the API command
+    reports = http_request(url_suffix='/processed_reports', params=params)
 
     # loading last_run
     last_run = json.loads(demisto.getLastRun().get('value', '{}'))
@@ -152,6 +149,13 @@ def fetch_reports() -> None:
     # parsing outputs
     incidents = []
     for report in reports:
+        reporter_id = report.get('reporter_id')
+        if reporter_id:
+            reporter_data = get_reporter_data(reporter_id)
+            for k,v in reporter_data.items():
+                report_key = 'reporter_' + k
+                report[report_key] = v
+
         if report.get('id') not in already_fetched:
             category_id, report_id = report.get('category_id'), report['id']
             report_body = report.pop('report_body')
@@ -273,19 +277,28 @@ def get_reporter_command() -> None:
     reporter_id = demisto.getArg('reporter_id')  # type: str
 
     # running the API command
-    res = get_reporter(reporter_id)
+    reporter_data = get_reporter_data(reporter_id)
 
-    # parsing outputs
-    ec = {'Cofense.Reporter(val.ID && val.ID == obj.ID)': {'ID': reporter_id, 'Email': res}}
-    hr = f'Reporter: {res}' if res else 'Could not find reporter with matching ID'
-    return_outputs(readable_output=hr, outputs=ec)
+    if reporter_data:
+        hr = tableToMarkdown("Reporter Results:", reporter_data, headerTransform=split_snake, removeNull=True)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': reporter_data if reporter_data else "no results were found",
+            'HumanReadable': hr
+        })
+    else:
+        readable_output = "Could not find reporter with matching ID"
+        return_outputs(readable_output=readable_output, outputs=reporter_data)
 
 
-def get_reporter(reporter_id) -> str:
-    res = http_request(url_suffix=f'/reporters/{reporter_id}')
+def get_reporter_data(reporter_id) -> str:
+    """Fetch data for the first matching reporter from Triage"""
+    res = http_request(url_suffix=f"/reporters/{reporter_id}")
     if not isinstance(res, list):
         res = [res]
-    reporter = res[0].get('email')
+    reporter = res[0]
 
     return reporter
 
@@ -334,13 +347,110 @@ def get_report_by_id_command() -> None:
     # get the report body, and create html file if necessary
     if res:
         parse_report_body(res)
-        res['reporter'] = get_reporter(res.get('reporter_id'))  # enrich: id -> email
+    #FIXME    res['reporter'] = get_reporter(res.get('reporter_id'))  # enrich: id -> email
         hr = tableToMarkdown("Report Summary:", res, headerTransform=split_snake, removeNull=True)
         ec = {'Cofense.Report(val.ID && val.ID == obj.ID)': snake_to_camel_keys([res])}
         return_outputs(readable_output=hr, outputs=ec)
 
     else:
         return_error('Could not find report with matching ID')
+
+def get_threat_indicators(indicator_type=None, level=None, start_date=None, end_date=None, page=None, per_page=None) -> list:
+    params = {}
+    params['type'] = indicator_type
+    params['level'] = level
+    params['start_date'] = start_date
+    params['end_date'] = end_date
+    params['page'] = page
+    params['per_page'] = per_page
+    results = http_request(url_suffix='/triage_threat_indicators', params=params)
+
+    if not isinstance(results, list):
+        results = [results]
+
+    return results
+
+
+def get_threat_indicators_command() -> None:
+    demisto.log('testing')
+    # arguments importing
+    indicator_type = demisto.getArg('type')
+    level = demisto.getArg('level')
+    start_date = demisto.getArg('start_date')
+    end_date = demisto.getArg('end_date')
+    page = demisto.getArg('page')
+    per_page = demisto.getArg('per_page')
+
+    results = get_threat_indicators(indicator_type, level, start_date, end_date, page, per_page)
+    demisto.log(str(results))
+
+
+# parsing outputs
+    if results:
+        ec = {'Cofense.ThreatIndicators(val.ID && val.ID == obj.ID)': snake_to_camel_keys(results)}
+        hr = tableToMarkdown("Threat Indicators:", results, headerTransform=split_snake, removeNull=True)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': results if results else "no results were found",
+            'HumanReadable': hr,
+            'EntryContext': ec
+        })
+    else:
+        return_outputs("no results were found.", {})
+
+def get_report_png_by_id_command() -> None:
+    report_id = int(demisto.getArg('report_id'))  # type: int
+    set_white_bg = demisto.args().get('set_white_bg', 'False') == 'True'  # type: bool
+
+    res = get_report_png_by_id(report_id)
+
+    # Convert the background from transparent to white (used for dark theme)
+
+    imgdata = None
+    if set_white_bg:
+        inbuf = BytesIO()
+        inbuf.write(res.content)
+        inbuf.seek(0)
+
+        image = Image.open(inbuf)
+        canvas = Image.new('RGBA', image.size, (255,255,255,255)) # Empty canvas colour (r,g,b,a)
+        canvas.paste(image, mask=image) # Paste the image onto the canvas, using it's alpha channel as mask
+
+        outbuf = BytesIO()
+        canvas.save(outbuf, format="PNG")
+        outbuf.seek(0)
+
+        imgdata = outbuf.getvalue()
+    else:
+        imgdata = res.content
+
+    # parsing outputs
+    context_data = {'ID': report_id}
+    #demisto.results(fileResult('{}.png'.format(report_id), res.content))
+    #demisto.results({
+    #'Type': entryTypes['image'],
+    #'ContentsFormat': '',
+    #'Contents': '',
+    #'HumanReadable': '',
+    #'EntryContext': {'Cofense.Report.PNG(val.ID == obj.ID)': context_data}})
+    cf_file = fileResult('cofense_report_{}.png'.format(report_id), imgdata, entryTypes['image'])
+    demisto.results({
+        'Type': entryTypes['image'],
+        'ContentsFormat': formats['text'],
+        'Contents': 'Cofense: PNG of Report {}'.format(report_id),
+        'File': cf_file.get('File'),
+        'FileID': cf_file.get('FileID')
+    })
+
+
+def get_report_png_by_id(report_id):
+    response = http_request(f'/reports/{report_id}.png', params={'report_id': report_id}, raw_response=True)
+    if not response.ok:
+        return_error(f'Call to Cofense Triage failed [{response.status_code}]')
+    else:
+        return response
 
 
 def parse_report_body(report) -> None:
@@ -380,6 +490,12 @@ try:
 
     elif demisto.command() == 'cofense-get-report-by-id':
         get_report_by_id_command()
+
+    elif demisto.command() == 'cofense-get-report-png-by-id':
+        get_report_png_by_id_command()
+
+    elif demisto.command() == 'cofense-get-threat-indicators':
+        get_threat_indicators_command()
 
 except Exception as e:
     return_error(str(e))
