@@ -17,9 +17,6 @@ SERVER_URL = 'https://api.maltiverse.com'
 DBOT_SCORE_KEY = 'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'
 DEFAULT_THRESHOLD = 5
 
-# todo: add this lines into outputs of IP.
-# 'Malicious': {'Description': [blacklist_context['Blacklist'][i]['Description'] for i in
-#                               range(len(report.get('blacklist', [])))]},
 
 class Error(Exception):
     """Base class for exceptions in this module."""
@@ -32,6 +29,7 @@ class NotFoundError(Error):
     Attributes:
         message -- explanation of the error
     """
+
     def __init__(self, message):
         self.message = message
 
@@ -234,17 +232,20 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
 
         blacklist_context = {'Blacklist': report.get('blacklist', [])}
         blacklist_context['Blacklist'] = create_blacklist_keys(blacklist_context['Blacklist'])
+        blacklist_description = [blacklist_context['Blacklist'][i]['Description'] for i in
+                                 range(len(report.get('blacklist', [])))]
 
         outputs = {
             'Address': report.get('ip_addr', ''),
             'Geo': {'Country': report.get('country_code', '')},
             'PositiveDetections': positive_detections,
+            'Malicious': {'Description': blacklist_description},
             'Tags': create_tags(report.get('tag', '')),
-            'ThreatTypes': [{'ThreatCategory': 'phi',
-                            'ThreatCategoryConfidence': 'test'}]
+            'ThreatTypes': [{'ThreatCategory': blacklist_description}]
         }
 
-        additional_info = {'Tags': create_tags(report.get('tag', '')), 'Classification': report.get('classification', ''),
+        additional_info = {'Tags': create_tags(report.get('tag', '')),
+                           'Classification': report.get('classification', ''),
                            'Address': report.get('ip_addr', '')}
 
         dbot_score = {'Indicator': report.get('ip_addr', ''), 'Type': 'ip', 'Vendor': 'Maltiverse',
@@ -302,7 +303,9 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
 
         outputs = {'Data': report.get('url', ''),
                    'PositiveDetections': positive_detections,
-                   'Tags': create_tags(report.get('tag', ''))
+                   'Tags': create_tags(report.get('tag', '')),
+                   'ThreatTypes': [{'ThreatCategory': [blacklist_context['Blacklist'][i]['Description'] for i in
+                                                       range(len(report.get('blacklist', [])))]}]
                    }
 
         dbot_score = {'Indicator': url, 'Type': 'url', 'Vendor': 'Maltiverse',
@@ -365,18 +368,20 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any
         report = client.domain_report(domain)
         positive_detections = len(report.get('blacklist', []))
 
+        blacklist_context = {'Blacklist': report.get('blacklist', [])}
+        blacklist_context['Blacklist'] = create_blacklist_keys(blacklist_context['Blacklist'])
+
         outputs = {string_to_context_key(field): report.get(field, '') for field in
                    ['creation_time', 'modification_time', 'tld']
                    }
         outputs['Tags'] = create_tags(report.get('tag', ''))
         outputs['Name'] = report.get('hostname', '')
         outputs['ASName'] = report.get('as_name', '')
+        outputs['ThreatTypes'] = [{'ThreatCategory': [blacklist_context['Blacklist'][i]['Description'] for i in
+                                                      range(len(report.get('blacklist', [])))]}]
 
         dbot_score = {'Indicator': domain, 'Type': 'Domain', 'Vendor': 'Maltiverse',
                       'Score': calculate_score(positive_detections, report.get('classification', ''), threshold)}
-
-        blacklist_context = {'Blacklist': report.get('blacklist', [])}
-        blacklist_context['Blacklist'] = create_blacklist_keys(blacklist_context['Blacklist'])
 
         resolvedIP_info = {
             'ResolvedIP':
@@ -438,6 +443,9 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
             break
         positive_detections = len(report.get('blacklist', []))
 
+        blacklist_context = {'Blacklist': report.get('blacklist', [])}
+        blacklist_context['Blacklist'] = create_blacklist_keys(blacklist_context['Blacklist'])
+
         outputs = {string_to_context_key(field): report.get(field, '') for field in
                    ['md5', 'sha1', 'sha256', 'size', 'type']
                    }
@@ -445,12 +453,12 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         outputs['Extension'] = (report['filename'][0]).split('.')[-1]
         outputs['Path'] = report['process_list'][0]['normalizedpath']
         outputs['Tags'] = create_tags(report.get('tag', ''))
+        outputs['ThreatTypes'] = [{'ThreatCategory': [blacklist_context['Blacklist'][i]['Description'] for i in
+                                              range(len(report.get('blacklist', [])))]}]
+
         dbot_score = {'Indicator': report['filename'][0], 'Type': 'File', 'Vendor': 'Maltiverse',
                       'Score': calculate_score(positive_detections, report.get('classification', ''), threshold,
                                                len(report.get('antivirus', [])))}
-
-        blacklist_context = {'Blacklist': report.get('blacklist', [])}
-        blacklist_context['Blacklist'] = create_blacklist_keys(blacklist_context['Blacklist'])
 
         process_list = {
             'ProcessList': {

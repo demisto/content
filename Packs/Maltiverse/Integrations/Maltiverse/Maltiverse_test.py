@@ -5,7 +5,7 @@ from test_data.result_constants import EXPECTED_IP_RESULT, EXPECTED_URL_RESULT, 
 
 
 SERVER_URL = 'https://api.maltiverse.com'
-MOCK_IP = '8.8.8.8'
+MOCK_IP = '1.1.1.0'
 MOCK_URL = 'https://dv-expert.org'
 MOCK_URL_SHA256 = 'a70c027c6d76fb703f0d2e5a14526f219bf3b771557e4a36685365b960b98233'
 MOCK_DOMAIN = 'google.com'

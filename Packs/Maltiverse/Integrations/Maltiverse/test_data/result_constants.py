@@ -2,9 +2,19 @@ EXPECTED_IP_RESULT = {
     'IP(val.Address && val.Address == obj.Address)': [
         {
             'Address': '1.1.1.0',
-            'Geo': {'Country': 'AU'},
+            'Geo': {
+                'Country': 'AU'
+            },
             'PositiveDetections': 1,
-            'Malicious': {'Description': ['Anonymizer']}
+            'Malicious': {
+                'Description': ['Anonymizer']
+            },
+            'Tags': ['anonymizer'],
+            'ThreatTypes': [
+                {
+                    'ThreatCategory': ['Anonymizer']
+                }
+            ]
         }
     ],
     'Maltiverse.IP(val.Address && val.Address == obj.Address)': [
@@ -17,8 +27,8 @@ EXPECTED_IP_RESULT = {
                     'Source': 'Maltiverse'
                 }
             ],
+            'Tags': ['anonymizer'],
             'Classification': 'malicious',
-            'Tag': ['anonymizer'],
             'Address': '1.1.1.0'
         }
     ],
@@ -37,6 +47,12 @@ EXPECTED_URL_RESULT = {
         {
             'Data': 'https://dv-expert.org',
             'PositiveDetections': 1,
+            'Tags': ['phishing'],
+            'ThreatTypes': [
+                {
+                    'ThreatCategory': ['Phishing Aetna Health Plans &amp; Dental Coverage']
+                }
+            ],
             'Malicious': {
                 'Description': ['Phishing Aetna Health Plans &amp; Dental Coverage'],
                 'Vendor': 'Maltiverse'
@@ -45,7 +61,7 @@ EXPECTED_URL_RESULT = {
     ],
     'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': [
         {
-            'Indicator': 'dv-expert.org',
+            'Indicator': 'https://dv-expert.org',
             'Type': 'url',
             'Vendor': 'Maltiverse',
             'Score': 3
@@ -54,13 +70,13 @@ EXPECTED_URL_RESULT = {
     'Maltiverse.URL(val.Data && val.Data == obj.Data)': [
         {
             'Classification': 'malicious',
-            'Tag': ['phishing'],
             'ModificationTime': '2020-03-29 02:54:46',
             'CreationTime': '2020-03-29 02:54:46',
             'Hostname': 'dv-expert.org',
             'Domain': 'dv-expert.org',
             'Tld': 'org',
             'Address': 'https://dv-expert.org',
+            'Tags': ['phishing'],
             'Blacklist': [
                 {
                     'Count': 1,
@@ -80,8 +96,14 @@ EXPECTED_DOMAIN_RESULT = {
             'CreationTime': '2019-03-17 12:57:27',
             'ModificationTime': '2020-04-03 10:41:04',
             'Tld': 'com',
+            'Tags': ['phishing'],
             'Name': 'google.com',
-            'ASName': 'AS15169 Google Inc.'
+            'ASName': 'AS15169 Google Inc.',
+            'ThreatTypes': [
+                {
+                    'ThreatCategory': ['Malicious URL', 'apple phishing', 'Malicious URL']
+                }
+            ]
         }
     ],
     'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': [
@@ -98,7 +120,7 @@ EXPECTED_DOMAIN_RESULT = {
             'ModificationTime': '2020-04-03 10:41:04',
             'Tld': 'com',
             'Classification': 'suspicious',
-            'Tag': ['phishing'],
+            'Tags': ['phishing'],
             'Address': 'google.com',
             'Blacklist': [
                 {
@@ -145,7 +167,13 @@ EXPECTED_FILE_RESULT = {
             'Type': 'sample',
             'Name': 'FileZilla_3.47.2.1_win64_sponsored-setup.exe',
             'Extension': 'exe',
-            'Path': 'C:\\FileZilla_3.47.2.1_win64_sponsored-setup.exe'
+            'Path': 'C:\\FileZilla_3.47.2.1_win64_sponsored-setup.exe',
+            'Tags': [],
+            'ThreatTypes': [
+                {
+                    'ThreatCategory': ['PUA.FusionCore']
+                }
+            ]
         }
     ],
     'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': [
@@ -169,7 +197,7 @@ EXPECTED_FILE_RESULT = {
             'DnsRequest': ['cloud.nitehe-nutete.com', 'isrg.trustid.ocsp.identrust.com', 'offers.filezilla-project.org'],
             'PositiveDetections': 1,
             'Name': 'FileZilla_3.47.2.1_win64_sponsored-setup.exe',
-            'Tag': '',
+            'Tags': [],
             'ProcessList': {
                 'Name': 'FileZilla_3.47.2.1_win64_sponsored-setup.exe',
                 'Normalizedpath': 'C:\\FileZilla_3.47.2.1_win64_sponsored-setup.exe',
