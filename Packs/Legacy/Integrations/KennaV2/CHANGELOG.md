@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.4.0] - 2020-04-14
 -
 - Added the ability to run the commands ***kenna-search-vulnerabilities***, ***kenna-search-assets***, ***kenna-get-asset-vulnerabilities***,  ***kenna-search-fixes***  with a list of the following arguments:
     - ***id*** 
