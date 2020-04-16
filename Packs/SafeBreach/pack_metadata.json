@@ -1,0 +1,26 @@
+{
+  "name": "SafeBreach - Breach and Attack Simulation platform",
+  "description": "SafeBreach automatically executes thousands of breach methods from its\n  extensive and growing Hacker’s Playbook™ to validate security control effectiveness.",
+  "support": "partner",
+  "serverMinVersion": "5.5.0",
+  "currentVersion": "1.0.0",
+  "author": "SafeBreach",
+  "url": "https://www.safebreach.com",
+  "email": "support@safebreach.com",
+  "categories": [
+    "Data Enrichment & Threat Intelligence"
+  ],
+  "tags": [],
+  "created": "2020-03-11T12:59:01Z",
+  "updated": "2020-03-11T12:59:01Z",
+  "beta": false,
+  "deprecated": false,
+  "certification": "certified",
+  "useCases": [],
+  "keywords": [
+    "SafeBreach",
+    "Feed"
+  ],
+  "price": "0",
+  "dependencies": {}
+}
