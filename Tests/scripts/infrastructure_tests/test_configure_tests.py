@@ -437,7 +437,7 @@ def test_integration_has_no_test_playbook_should_fail_on_validation(mocker):
 
         # When
         # - filtering tests to run
-        filtered_tests = get_test_list(
+        get_test_list(
             files_string='',
             branch_name='dummy_branch',
             two_before_ga_ver=TWO_BEFORE_GA_VERSION,
@@ -456,7 +456,6 @@ def test_integration_has_no_test_playbook_should_fail_on_validation(mocker):
 
         # reset _FAILED flag
         configure_tests._FAILED = False
-
 
 
 def test_dont_fail_integration_on_no_tests_if_it_has_test_playbook_in_conf(mocker):
