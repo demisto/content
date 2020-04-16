@@ -1,6 +1,9 @@
 ## [Unreleased]
 Fixed an issue where commands resulting with an empty list would raise an error instead of a warning.
 
+## [20.4.0] - 2020-04-14
+-
+
 ## [20.3.3] - 2020-03-18
 Improved handling in cases where a field value is None.
 
