@@ -1,6 +1,5 @@
 ## [Unreleased]
--
-
+Added the *action_parameters* argument to the ***securonix-perform-action-on-incident*** command.
 
 ## [20.2.3] - 2020-02-18
 Fixed an issue where the integration failed to fetch incidents.

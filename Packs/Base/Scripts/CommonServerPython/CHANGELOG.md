@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.4.0] - 2020-04-14
   - Added the argument *ignore_auto_extract* to the ***return_outputs*** command.
   - Added a default value to the indicator timeline field **Category** when a value is not provided in an entry's timeline data.
   - Improved error message parsing of HTTP response in BaseClient.
