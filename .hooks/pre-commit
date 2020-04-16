@@ -19,7 +19,7 @@ fi
 demisto-sdk validate -g
 RES=$?
 
-demisto-sdk secrets
+demisto-sdk secrets --ignore-entropy
 RES=$(($RES + $?))
 
 echo ""
