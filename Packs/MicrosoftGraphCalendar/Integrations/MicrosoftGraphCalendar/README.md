@@ -37,6 +37,11 @@
 </li>
 <li>Click <strong>Test</strong> to validate the new instance.</li>
 </ol>
+
+## Use a self deployed Azure application
+To use a self configured Azure application, a new Azure App Registration should be added in the Azure Portal. To add such registration, refer to the following Microsoft article:
+https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app
+
 <h2>Commands</h2>
 <p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
