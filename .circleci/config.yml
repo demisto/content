@@ -6,9 +6,9 @@ jobs:
     resource_class: medium+
     parallelism: 2
     environment:
-      CONTENT_VERSION: "20.3.4"
+      CONTENT_VERSION: "20.4.0"
       SERVER_VERSION: "5.5.0"
-      GIT_SHA1: "4696087457090e6ac597df96870016bdc2e371a0" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "8e167aa32b7c7c76ca7d4ac2fa5fdae88be1b64f" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - setup_remote_docker
@@ -518,7 +518,7 @@ jobs:
             PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
             GCS_PATH=$(mktemp)
             echo $GCS_MARKET_KEY > $GCS_PATH
-            python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -s $GCS_PATH -b 'marketplace-dist' -n $CIRCLE_BUILD_NUM -p 'All' -o -k $PACK_SIGNING_KEY
+            python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -p 'All' -pb 'marketplace-dist-private' -o
             rm $GCS_PATH
           when: on_success
       - store_artifacts:
