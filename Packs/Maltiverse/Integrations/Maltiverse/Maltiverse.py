@@ -189,6 +189,24 @@ def create_blacklist_keys(blacklist):
     return new_blacklist
 
 
+def create_tags(tags: list) -> list:
+    """
+    Removes all urls from the tags list
+
+    Args:
+    tags (list): a list of tags as returned by Maltiverse
+
+    Returns:
+    A new list that includes all the tags given by Maltiverse without urls
+    """
+    clean_tags = []
+    if tags:
+        for tag in tags:
+            if not re.match(urlRegex, tag):
+                clean_tags.append(tag)
+    return clean_tags
+
+
 def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     """
     Executes IP enrichment against Maltiverse.
@@ -218,12 +236,14 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
             'Address': report.get('ip_addr', ''),
             'Geo': {'Country': report.get('country_code', '')},
             'PositiveDetections': positive_detections,
+            'Tags': create_tags(report.get('tag', '')),
             'Malicious': {'Description': [blacklist_context['Blacklist'][i]['Description'] for i in
                                           range(len(report.get('blacklist', [])))]},
-            'Tags': report.get('tag', '')
+            'ThreatTypes': [{'ThreatCategory': 'phi',
+                            'ThreatCategoryConfidence': 'test'}]
         }
 
-        additional_info = {'Tags': report.get('tag', ''), 'Classification': report.get('classification', ''),
+        additional_info = {'Tags': create_tags(report.get('tag', '')), 'Classification': report.get('classification', ''),
                            'Address': report.get('ip_addr', '')}
 
         dbot_score = {'Indicator': report.get('ip_addr', ''), 'Type': 'ip', 'Vendor': 'Maltiverse',
@@ -281,7 +301,7 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
 
         outputs = {'Data': report.get('url', ''),
                    'PositiveDetections': positive_detections,
-                   'Tags': report.get('tag', '')
+                   'Tags': create_tags(report.get('tag', ''))
                    }
 
         dbot_score = {'Indicator': url, 'Type': 'url', 'Vendor': 'Maltiverse',
@@ -290,7 +310,7 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         maltiverse_url = {string_to_context_key(field): report.get(field, '') for field in
                           ['classification', 'modification_time', 'creation_time', 'hostname', 'domain', 'tld']}
         maltiverse_url['Address'] = report.get('url', '')
-        maltiverse_url['Tags'] = report.get('tag', '')
+        maltiverse_url['Tags'] = create_tags(report.get('tag', ''))
         maltiverse_url = {**maltiverse_url, **blacklist_context}
 
         markdown = f'## Maltiverse URL reputation for: {report.get("url", "")}\n'
@@ -347,7 +367,7 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any
         outputs = {string_to_context_key(field): report.get(field, '') for field in
                    ['creation_time', 'modification_time', 'tld']
                    }
-        outputs['Tags'] = report.get('tag', '')
+        outputs['Tags'] = create_tags(report.get('tag', ''))
         outputs['Name'] = report.get('hostname', '')
         outputs['ASName'] = report.get('as_name', '')
 
@@ -366,8 +386,9 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any
         }
 
         maltiverse_domain = {string_to_context_key(field): report.get(field, '') for field in
-                             ['creation_time', 'modification_time', 'tld', 'classification', 'tag']
+                             ['creation_time', 'modification_time', 'tld', 'classification']
                              }
+        maltiverse_domain['Tags'] = create_tags(report.get('tag', ''))
         maltiverse_domain['Address'] = report.get('hostname', '')
         maltiverse_domain = {**maltiverse_domain, **blacklist_context}
         maltiverse_domain = {**maltiverse_domain, **resolvedIP_info}
@@ -422,8 +443,7 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         outputs['Name'] = report['filename'][0]
         outputs['Extension'] = (report['filename'][0]).split('.')[-1]
         outputs['Path'] = report['process_list'][0]['normalizedpath']
-        outputs['Tags'] = report.get('tag', '')
-
+        outputs['Tags'] = create_tags(report.get('tag', ''))
         dbot_score = {'Indicator': report['filename'][0], 'Type': 'File', 'Vendor': 'Maltiverse',
                       'Score': calculate_score(positive_detections, report.get('classification', ''), threshold,
                                                len(report.get('antivirus', [])))}
@@ -450,7 +470,8 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
                             'dns_request']}
         maltiverse_file['PositiveDetections'] = positive_detections
         maltiverse_file['Name'] = report['filename'][0]
-        maltiverse_file['Tags'] = report.get('tag', '')
+        maltiverse_file['Tags'] = create_tags(report.get('tag', ''))
+
         maltiverse_file = {**maltiverse_file, **process_list}
         maltiverse_file = {**maltiverse_file, **blacklist_context}
         if positive_detections > 0:

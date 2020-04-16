@@ -226,7 +226,8 @@ Check the reputation of a file
 ```!file file=edb2f88c29844117cd74acf8bb357edf92487a1b142fe6f60b6ac5e15d2d718f```
 
 ##### Human Readable Output
-![image](https://user-images.githubusercontent.com/61732335/79124754-ae907500-7da5-11ea-9dd3-72720bc43665.png)
+![image](https://user-images.githubusercontent.com/61732335/79423383-30abb400-7fc7-11ea-8fd5-4b8d3574d953.png)
+
 
 ## Additional Information
 ---
