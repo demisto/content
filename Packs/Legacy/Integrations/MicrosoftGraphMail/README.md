@@ -13,7 +13,7 @@ Use the Microsoft Graph integration to let your applications get authorized acce
 | tenant_id | The token (received from the admin consent - see the Detailed Instructions (?) section). | True |
 | enc_key | The Key (received from the admin consent - see the Detailed Instructions (?) section). | True |
 | isFetch | The fetched incidents. | False |
-| mailbox_to_fetch | The email address from which to fetch incidents (e.g. "example<span>@demisto.com"). | False |
+| mailbox_to_fetch | The email address from which to fetch incidents (e.g. "example<span\>>@demisto.com"). | False |
 | folder_to_fetch | The name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g. Inbox/Phishing). | False |
 | first_fetch | The first fetched timestamp ((number) (time unit), e.g., 12 hours, 7 days). | False |
 | fetch_limit | The maximum number of emails to pull per fetch. | False |
@@ -120,13 +120,13 @@ Gets the properties of returned emails.
 ##### ### Total of 7 of mails received
 |Subject|From|SendTime|
 |---|---|---|
-| Demo test send mail | Name: demisto dev, Address: dev<span>@demistodev.onmicrosoft.com | 2020-03-29T09:56:37Z |
-| RE: Demo test | Name: demisto dev, Address: dev<span>@demistodev.onmicrosoft.com | 2020-03-29T09:56:18Z |
-| Demo test send mail | Name: demisto dev, Address: dev<span>@demistodev.onmicrosoft.com | 2020-03-29T09:52:59Z |
-| RE: Demo test | Name: demisto dev, Address: dev<span>@demistodev.onmicrosoft.com | 2020-03-29T09:52:41Z |
-| RE: Demo test | Name: demisto dev, Address: dev<span>@demistodev.onmicrosoft.com | 2020-03-29T09:51:06Z |
-| Demo test send mail | Name: demisto dev, Address: dev<span>@demistodev.onmicrosoft.com | 2020-03-29T09:06:54Z |
-| Demo test | Name: demisto dev, Address: dev<span>@demistodev.onmicrosoft.com | 2020-03-26T09:21:14Z |
+| Demo test send mail | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:56:37Z |
+| RE: Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:56:18Z |
+| Demo test send mail | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:52:59Z |
+| RE: Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:52:41Z |
+| RE: Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:51:06Z |
+| Demo test send mail | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:06:54Z |
+| Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-26T09:21:14Z |
 
 
 ### Get the properties of a single email
@@ -144,7 +144,7 @@ Returns the properties of an email.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The user ID or principal ID (usually an email address in the format someuser<span>@example.com). | Required | 
+| user_id | The user ID or principal ID (usually an email address in the format someuser<span\>>@example.com). | Required | 
 | message_id | The message ID. | Required | 
 | folder_id | The folder ID. | Optional | 
 | odata | The OData. | Optional | 
@@ -219,7 +219,7 @@ Returns the properties of an email.
 ##### Results for message ID ""
 |ID|Subject|SendTime|Sender|From|HasAttachments|Body|
 |---|---|---|---|---|---|---|
-| "" | Demo test | 2020-03-26T09:21:14Z | Name: demisto dev, Address: dev<span>@demistodev.onmicrosoft.com | Name: demisto dev, Address: dev<span>@demistodev.onmicrosoft.com | false |  |
+| "" | Demo test | 2020-03-26T09:21:14Z | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | false |  |
 
 ##### Required Permissions
 **The following permissions are required for this command:**
@@ -237,7 +237,7 @@ Deletes an email.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The user ID or principal ID (usually an email address in the format someuser<span>@example.com). | Required | 
+| user_id | The user ID or principal ID (usually an email address in the format someuser<span\>>@example.com). | Required | 
 | message_id | The message ID. | Required | 
 | folder_id | The comma-separated list of folder IDs. For example, "mailFolders,childFolders,childFolders". | Optional | 
 
@@ -258,7 +258,7 @@ There is no context output for this command.
 ##### Message has been deleted successfully
 |Message ID|User ID|
 |---|---|
-| "" | dev<span>@demistodev.onmicrosoft.com |
+| "" | dev<span\>>@demistodev.onmicrosoft.com |
 
 
 ### List attachments of an email
@@ -276,7 +276,7 @@ Lists all of the attachments of a given email.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The user ID or principal ID (usually an email address in the format someuser<span>@example.com). | Required | 
+| user_id | The user ID or principal ID (usually an email address in the format someuser<span\>>@example.com). | Required | 
 | message_id | The message ID. | Required | 
 | folder_id |  The comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box).  | Optional | 
 
@@ -313,7 +313,7 @@ Lists all of the attachments of a given email.
 ```
 
 ##### Human Readable Output
-##### Total of 1 attachments found in message "" from user dev<span>@demistodev.onmicrosoft.com
+##### Total of 1 attachments found in message "" from user dev<span\>>@demistodev.onmicrosoft.com
 |File names|
 |---|
 | test_attachment |
@@ -334,7 +334,7 @@ Gets an attachment from the email.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The user ID or principal ID (usually an email address in the format someuser<span>@example.com). | Required | 
+| user_id | The user ID or principal ID (usually an email address in the format someuser<span\>>@example.com). | Required | 
 | message_id | The message ID. | Required | 
 | folder_id | The comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box). | Optional | 
 | attachment_id | The ID of the attachment. | Required | 
@@ -396,7 +396,7 @@ Returns the mail folder list directly under the root folder.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The user ID or principal ID (usually an email address in the format someuser<span>@example.com). | Required | 
+| user_id | The user ID or principal ID (usually an email address in the format someuser<span\>>@example.com). | Required | 
 | limit | The maximum number of mail folder lists to return. The default is 20. | Optional | 
 
 
@@ -443,7 +443,7 @@ Returns the mail folder list directly under the root folder.
 
 ##### Human Readable Output
 
-##### Mail Folder collection under root folder for user dev<span>@demistodev.onmicrosoft.com
+##### Mail Folder collection under root folder for user dev<span\>>@demistodev.onmicrosoft.com
 
 |ChildFolderCount|DisplayName|ID|ParentFolderID|TotalItemCount|UnreadItemCount|
 |---|---|---|---|---|---|
@@ -467,7 +467,7 @@ Returns the folder list under the specified folder.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The user ID or principal ID (usually an email address in the format someuser<Span>@example.com). | Required | 
+| user_id | The user ID or principal ID (usually an email address in the format someuser<Span\>@example.com). | Required | 
 | parent_folder_id | The ID of the parent folder. | Required | 
 | limit | The maximum number of mail folder lists to return. The default is 20. | Optional | 
 
@@ -514,7 +514,7 @@ Returns the folder list under the specified folder.
 ```
 
 ##### Human Readable Output
-##### Mail Folder collection under inbox folder for user dev<span>@demistodev.onmicrosoft.com
+##### Mail Folder collection under inbox folder for user dev<span\>>@demistodev.onmicrosoft.com
 |ChildFolderCount|DisplayName|ID|ParentFolderID|TotalItemCount|UnreadItemCount|
 |---|---|---|---|---|---|
 | 0 | child_folder | "" | "" | 0 | 0 |
@@ -536,7 +536,7 @@ Creates a new folder under the specified folder (parent).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The user ID or principal ID (usually an email address in the format someuser<span>@example.com). | Required | 
+| user_id | The user ID or principal ID (usually an email address in the format someuser<span\>>@example.com). | Required | 
 | new_folder_name | The display name of the new folder. | Required | 
 | parent_folder_id | The ID of the parent folder under which to create a new folder. | Optional | 
 
@@ -595,7 +595,7 @@ Updates the properties of the specified folder.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The user ID or principal ID (usually an email address in the format someuser<span>@example.com). | Required | 
+| user_id | The user ID or principal ID (usually an email address in the format someuser<span\>>@example.com). | Required | 
 | folder_id | The ID of the folder to update. | Required | 
 | new_display_name | The mail folder display name. | Required | 
 
@@ -653,7 +653,7 @@ Deletes the specified mail folder.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The user ID or principal ID (usually an email address in the format someuser<Span>@example.com). | Required | 
+| user_id | The user ID or principal ID (usually an email address in the format someuser<Span\>@example.com). | Required | 
 | folder_id | The ID of the folder to delete. | Required | 
 
 
@@ -690,7 +690,7 @@ Moves a message to a different folder.
 | --- | --- | --- |
 | message_id | The message ID. | Required | 
 | destination_folder_id | The ID of the destination folder. | Required | 
-| user_id | The user ID or principal ID (usually an email address in the format someuser<span>@example.com). | Required | 
+| user_id | The user ID or principal ID (usually an email address in the format someuser<span\>>@example.com). | Required | 
 
 
 ##### Context Output
@@ -719,7 +719,7 @@ Moves a message to a different folder.
 ##### The email was moved successfully. Updated email data:
 |DestinationFolderID|ID|UserID|
 |---|---|---|
-| inbox | "" | dev<span>@demistodev.onmicrosoft.com |
+| inbox | "" | dev<span\>>@demistodev.onmicrosoft.com |
 
 
 
@@ -738,7 +738,7 @@ Retrieves an email message by message ID and uploads the content as an EML file.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The user ID or principal ID (usually an email address in the format someuser<span>@example.com). | Required | 
+| user_id | The user ID or principal ID (usually an email address in the format someuser<span\>>@example.com). | Required | 
 | message_id | The message ID. | Required | 
 
 
@@ -877,7 +877,7 @@ Creates a draft message in the specified user's mailbox.
 ##### Created draft with id: ""
 |ID|From|Sender|To|Subject|Body|BodyType|Cc|Bcc|Headers|Importance|MessageID|ConversationID|CreatedTime|SentTime|ReceivedTime|ModifiedTime|IsDraft|IsRead|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| "" |  |  | dev<span>@demistodev.onmicrosoft.com | This is a draft | This is a body | text |  |  |  | low | <AM6PR07MB44530DA96C2DF255705F30FD83CA0@AM6PR07MB4453.eurprd07.prod.outlook.<span>com> | "" | 2020-03-29T09:57:38Z | 2020-03-29T09:57:38Z | 2020-03-29T09:57:38Z | 2020-03-29T09:57:38Z | true | true |
+| "" |  |  | dev<span\>>@demistodev.onmicrosoft.com | This is a draft | This is a body | text |  |  |  | low | <AM6PR07MB44530DA96C2DF255705F30FD83CA0@AM6PR07MB4453.eurprd07.prod.outlook.<span\>>com> | "" | 2020-03-29T09:57:38Z | 2020-03-29T09:57:38Z | 2020-03-29T09:57:38Z | 2020-03-29T09:57:38Z | true | true |
 
 
 ### Send an email
@@ -954,7 +954,7 @@ Sends an email using Microsoft Graph.
 ##### Email was sent successfully.
 |body|flag|importance|subject|toRecipients|
 |---|---|---|---|---|
-| content: contentType: text | flagStatus: notFlagged | Low | Demo test send mail | dev<span>@demistodev.onmicrosoft.com |
+| content: contentType: text | flagStatus: notFlagged | Low | Demo test send mail | dev<span\>>@demistodev.onmicrosoft.com |
 
 
 ### Reply to a message
@@ -991,7 +991,7 @@ There is no context output for this command.
 ```
 
 ##### Human Readable Output
-##### Replied to: dev<span>@demistodev.onmicrosoft.com with comment: reply_body
+##### Replied to: dev<span\>>@demistodev.onmicrosoft.com with comment: reply_body
 
 ### Send a draft email
 ***
