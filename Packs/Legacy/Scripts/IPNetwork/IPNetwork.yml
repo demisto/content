@@ -5,7 +5,6 @@ args:
   name: cidr
   required: true
   secret: false
-comment: Gather details on given CIDR
 commonfields:
   id: IPNetwork
   version: -1
