@@ -1,5 +1,7 @@
 ## [Unreleased]
--
+
+
+## [20.4.0] - 2020-04-14
 Removed warnings about deprecated arguments from the logs.
 
 ## [20.1.0] - 2020-01-07
