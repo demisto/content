@@ -381,13 +381,16 @@ def test_skipped_integration_should_not_be_tested(mocker):
     mock_conf_dict = copy.deepcopy(MOCK_CONF)
     mock_conf_dict['skipped_integrations']['integration_a'] = 'comment'
 
+    fake_id_set = TestUtils.create_id_set()
+
     # When
     # - filtering tests to run
     filtered_tests = get_test_list(
         files_string='',
         branch_name='dummy_branch',
         two_before_ga_ver=TWO_BEFORE_GA_VERSION,
-        conf=TestConf(mock_conf_dict)
+        conf=TestConf(mock_conf_dict),
+        id_set=fake_id_set
     )
 
     # Then
@@ -424,7 +427,7 @@ def test_integration_has_no_test_playbook_should_fail_on_validation(mocker):
                                           modified_files_list=[
                                               fake_integration['path']
                                           ])
-        
+
         # - both in conf.json
         fake_conf = TestUtils.create_tests_conf()
 
