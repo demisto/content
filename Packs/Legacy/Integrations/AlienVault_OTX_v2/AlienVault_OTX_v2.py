@@ -82,13 +82,13 @@ def calculate_dbot_score(pulse_info: Union[dict, None]) -> float:
         count = int(pulse_info.get('count', '0'))
         if count and count >= 0:
             if count == 0:
-                return dbotscores['Low']
+                return Common.DBotScore.GOOD
 
             if 0 < count < default_threshold:
-                return dbotscores['Medium']
+                return Common.DBotScore.SUSPICIOUS
 
             if count >= default_threshold:
-                return dbotscores['High']
+                return Common.DBotScore.BAD
     return 0
 
 
