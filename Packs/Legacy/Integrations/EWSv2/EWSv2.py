@@ -879,7 +879,10 @@ def search_mailboxes(protocol, filter, limit=100, mailbox_search_scope=None, ema
         mailbox_ids = map(lambda x: x[MAILBOX_ID], mailboxes)
 
     try:
-        search_results = SearchMailboxes(protocol=protocol).call(filter, mailbox_ids)
+        search_results = []  # type: list
+        for mailbox_ids_batch in batch(mailbox_ids, batch_size=2000):
+            search_results.extend(SearchMailboxes(protocol=protocol).call(filter, mailbox_ids_batch))
+
         search_results = search_results[:limit]
     except TransportError, e:
         if "ItemCount>0<" in str(e):
