@@ -727,7 +727,9 @@ config = {
     'user_api_key': API_KEY,
     'user_api_secret': API_SECRET,
     'api_endpoint': BASE_URL,
-    'verify': INSECURE
+    'verify': INSECURE,
+    'client_type': "Python_SDK",
+    'client_metatag': "TruSTAR Cortex XSOAR (Demisto) Integration"
 }
 ts = trustar.TruStar(config=config)
 
