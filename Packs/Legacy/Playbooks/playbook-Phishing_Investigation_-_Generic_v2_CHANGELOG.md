@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+Fixed an issue where the playbook was not authenticating emails.
 
 
 ## [20.1.2] - 2020-01-22
