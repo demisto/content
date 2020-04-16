@@ -796,7 +796,7 @@ def list_incidents(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     from_epoch = date_to_timestamp(from_, date_format=timestamp_format)
     to_ = args.get('to') if 'to_' in args else datetime.now()
     to_epoch = date_to_timestamp(to_, date_format=timestamp_format)
-    incident_types = str(args.get('incident_types')) if 'incident_types' in args else 'open'
+    incident_types = str(args.get('incident_types')) if 'incident_types' in args else 'opened'
     incidents = client.list_incidents_request(from_epoch, to_epoch, incident_types)
 
     total_incidents = incidents.get('totalIncidents')
