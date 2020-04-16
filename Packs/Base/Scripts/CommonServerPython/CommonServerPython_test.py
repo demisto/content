@@ -8,6 +8,7 @@ import sys
 import requests
 from pytest import raises, mark
 import pytest
+
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
@@ -1168,6 +1169,28 @@ class TestBaseClient:
         requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectionError)
         with raises(DemistoException, match="Verify that the server URL parameter"):
             self.client._http_request('get', 'event', resp_type='response')
+
+    def test_text_exception_parsing(self, requests_mock):
+        from CommonServerPython import DemistoException
+        reason = 'Bad Request'
+        text = 'additional text'
+        requests_mock.get('http://example.com/api/v2/event',
+                          status_code=400,
+                          reason=reason,
+                          text=text)
+        with raises(DemistoException, match='- {}\n{}'.format(reason, text)):
+            self.client._http_request('get', 'event', resp_type='text')
+
+    def test_json_exception_parsing(self, requests_mock):
+        from CommonServerPython import DemistoException
+        reason = 'Bad Request'
+        json_response = {'error': 'additional text'}
+        requests_mock.get('http://example.com/api/v2/event',
+                          status_code=400,
+                          reason=reason,
+                          json=json_response)
+        with raises(DemistoException, match='- {}\n.*{}'.format(reason, json_response["error"])):
+            self.client._http_request('get', 'event', resp_type='text')
 
     def test_is_valid_ok_codes_empty(self):
         from requests import Response

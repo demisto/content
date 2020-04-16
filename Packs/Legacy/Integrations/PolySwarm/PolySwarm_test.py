@@ -1,3 +1,4 @@
+import pytest
 from mock import patch, mock_open
 
 import demistomock as demisto
@@ -50,7 +51,7 @@ MOCK_LOOKUP_JSON_RESPOSE = {'result': {
                     "engine": "T",
                     "mask": True,
                     "metadata": {
-                        "malware_family": "Android.PUA.General",
+                        "malware_family": "",
                         "scanner": {
                             "environment": {
                                 "architecture": "x86_64",
@@ -140,7 +141,7 @@ MOCK_LOOKUP_JSON_RESPOSE = {'result': {
                     "engine": "0",
                     "mask": True,
                     "metadata": {
-                        "malware_family": "infected with Android.Banker.3074",
+                        "malware_family": "",
                         "scanner": {
                             "environment": {
                                 "architecture": "x86_64",
@@ -352,7 +353,7 @@ MOCK_SEARCH_JSON_RESPONSE = {
         {
             "first_seen": "Mon, 16 Sep 2019 21:57:26 GMT",
             "extended_type": "Zip archive data",
-            "sha256": "8c9d28c07e7edeeb85c7ae4390e15cd545532acfdab3369f568d17162513eb47",
+            "sha256": "sha256",
             "artifact_instances": [
                 {
                     "community": "lima",
@@ -386,7 +387,7 @@ MOCK_SEARCH_JSON_RESPONSE = {
                                 ],
                                 "bounty_guid": "c21cba7a-43c8-452d-a1bd-c30ce21f66e9",
                                 "submission_guid": "eda6fbd6-b1c6-4e97-8126-01f936460fe5",
-                                "hash": "8c9d28c07e7edeeb85c7ae4390e15cd545532acfdab3369f568d17162513eb47",
+                                "hash": "hash",
                                 "window_closed": True,
                                 "assertions": [
                                     {
@@ -529,7 +530,7 @@ MOCK_SEARCH_JSON_RESPONSE = {
                                         "bid": 500000000000000000,
                                         "author": "0",
                                         "metadata": {
-                                            "malware_family": "Trojan:Android/Agent.c1ade2d1",
+                                            "malware_family": "",
                                             "type": "zip",
                                             "scanner": {
                                                 "environment": {
@@ -686,13 +687,13 @@ MOCK_SEARCH_JSON_RESPONSE = {
                 },
                 "hash": {
                     "ssdeep": "g",
-                    "tlsh": "58a423cc41ed5bc5e07ff3f1922950649fe641a875b02b27a80a23e46749d933877b8e",
+                    "tlsh": "tlsh",
                     "sha512": "98a8854cfd69ea9a5fc60d5966fba5e7e1b60afe114e4abafeeed4310f8fa661bbbf51c2b19694b181",
                     "sha1": "20983fae703dd0d0b26eef39ac8f222050a8aeec",
                     "md5": "ac92258ff3395137dd590af36ca2d8c9",
                     "sha3_256": "1131836a552a439036ed164590f9c3908c642fb6250e65a5bd3bd34fe6618f32",
-                    "sha3_512": "b12baaf933f264cedd135c7dd0a3616b5cdc9f382891abca8e861476a8776076cb0a95dbe36",
-                    "sha256": "8c9d28c07e7edeeb85c7ae4390e15cd545532acfdab3369f568d17162513eb47"
+                    "sha3_512": "sha3_215",
+                    "sha256": "sha256"
                 }
             }
         }
@@ -930,13 +931,18 @@ def test_get_file(mocker, requests_mock):
     assert results['File'] == TEST_HASH_FILE
 
 
-def test_file(mocker, requests_mock):
+MOCK_PARAMS_TEST_FILE = [
+    ({'hash': TEST_HASH_FILE}),
+    ({'file': TEST_HASH_FILE}),
+]
+
+
+@pytest.mark.parametrize('param', MOCK_PARAMS_TEST_FILE)
+def test_file(mocker, requests_mock, param):
     mocker.patch.object(demisto, 'params',
                         return_value=MOCK_PARAMS)
 
     polyswarm = PolyswarmConnector()
-
-    param = {'hash': TEST_HASH_FILE}
 
     path_search_hash = '/search?hash={hash}&type={hash_type}&with_instances=true'. \
         format(hash=TEST_HASH_FILE, hash_type='sha256')

@@ -8,6 +8,7 @@ import tempfile
 import subprocess
 import shutil
 import os
+import traceback
 
 ''' GLOBALS '''
 
@@ -234,7 +235,11 @@ def edl_update_internal_list(list_name: str, list_items, add, verbose: bool):
             return_error('Cannot remove items from an empty list.')
         if dict_of_lists.get(list_name, None):
             if add:
-                list_items = list(set(dict_of_lists.get(list_name) + list_items))
+                chosen_list = dict_of_lists.get(list_name)
+                if not isinstance(chosen_list, list):
+                    chosen_list = [chosen_list]
+
+                list_items = list(set(chosen_list + list_items))
             else:
                 list_items = [item for item in dict_of_lists.get(list_name) if item not in list_items]
 
@@ -619,7 +624,7 @@ def main():
         if str(ex).find('warning') != -1:
             LOG(str(ex))
         else:
-            return_error(str(ex))
+            return_error(f'Error: {str(ex)}\nTrace:\n{traceback.format_exc()}')
 
     finally:
         shutil.rmtree(CERTIFICATE_FILE.name, ignore_errors=True)
