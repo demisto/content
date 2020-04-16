@@ -139,6 +139,36 @@ args:
   - 'no'
   required: false
   secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: English
+  description: The language of the input text
+  isArray: false
+  name: language
+  predefined:
+  - English
+  - German
+  - French
+  - Spanish
+  - Portuguese
+  - Italian
+  - Dutch
+  - Other
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: tokenizer
+  description: Tokenization method for text. Need to be chosen only in case language
+    set as "Other".
+  isArray: false
+  name: tokenizationMethod
+  predefined:
+  - tokenizer
+  - byWords
+  - byLetters
+  required: false
+  secret: false
 comment: Tokenize the words in a input text.
 commonfields:
   id: WordTokenizerNLP
@@ -149,14 +179,15 @@ outputs:
 - contextPath: WordTokenizeOutput
   description: Output text
   type: Unknown
-script: ''
+script: '-'
+subtype: python3
 system: false
 tags:
 - phishing
 - ml
 timeout: 60µs
 type: python
-dockerimage: demisto/dl:1.2
+dockerimage: demisto/dl:1.7
 runas: DBotWeakRole
 runonce: true
 tests:

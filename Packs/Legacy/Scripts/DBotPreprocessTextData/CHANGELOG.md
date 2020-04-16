@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added option for perprocessing text in more languages
 
 ## [20.4.0] - 2020-04-14
 -

@@ -104,6 +104,36 @@ args:
   - 'false'
   required: false
   secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: English
+  description: The language of the input text
+  isArray: false
+  name: language
+  predefined:
+  - English
+  - German
+  - French
+  - Spanish
+  - Portuguese
+  - Italian
+  - Dutch
+  - Other
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: tokenizer
+  description: Tokenization method for text. Need to be chosen only in case language
+    set as "Other".
+  isArray: false
+  name: tokenizationMethod
+  predefined:
+  - tokenizer
+  - byWords
+  - byLetters
+  required: false
+  secret: false
 comment: Pre-process text data for the machine learning text classifier.
 commonfields:
   id: DBotPreProcessTextData
