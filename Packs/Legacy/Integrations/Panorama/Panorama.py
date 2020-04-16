@@ -573,8 +573,11 @@ def panorama_commit_status_command():
             commit_status_output['Status'] = 'Pending'
 
     # WARNINGS - Job warnings
-    commit_status_output["Warnings"] = result.get("response", {}).get('result', {}).get('job', {}).get('warnings',
-                                                                                                       {}).get('line', "")
+    status_warnings = []
+    if result.get("response", {}).get('result', {}).get('job', {}).get('warnings', {}):
+        status_warnings = result.get("response", {}).get('result', {}).get('job', {}).get('warnings', {}).get('line', [])
+    ignored_error = 'configured with no certificate profile'
+    commit_status_output["Warnings"] = [item for item in status_warnings if item not in ignored_error]
 
     demisto.results({
         'Type': entryTypes['note'],
