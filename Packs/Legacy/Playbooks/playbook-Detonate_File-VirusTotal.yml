@@ -440,4 +440,3 @@ outputs:
 - contextPath: VirusTotal.Status
   description: The status of the queried file. Could be "Queued" or "Ready".
   type: String
-fromversion: 5.0.0
