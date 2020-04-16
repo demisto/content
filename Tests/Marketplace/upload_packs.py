@@ -159,7 +159,7 @@ def update_index_folder(index_folder_path, pack_name, pack_path, pack_version=''
         index_folder_subdirectories = [d for d in os.listdir(index_folder_path) if
                                        os.path.isdir(os.path.join(index_folder_path, d))]
         index_pack_path = os.path.join(index_folder_path, pack_name)
-        metadata_files_in_index = glob.glob(f"{os.path.join(index_folder_path, pack_name)}/**/metadata-*.json")
+        metadata_files_in_index = glob.glob(f"{index_pack_path}/**/metadata-*.json")
         new_metadata_path = ''
 
         if pack_version:
