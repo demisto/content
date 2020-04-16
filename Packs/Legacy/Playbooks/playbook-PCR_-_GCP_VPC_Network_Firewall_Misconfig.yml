@@ -1,0 +1,367 @@
+id: Prisma Cloud Remediation - GCP VPC Network Firewall Misconfiguration
+version: -1
+fromversion: 5.0.0
+name: Prisma Cloud Remediation - GCP VPC Network Firewall Misconfiguration
+description: |-
+  This playbook remediates the following Prisma Cloud GCP VPC Network Firewall alerts.
+
+  Prisma Cloud policies remediated:
+
+   - GCP Firewall rule allows internet traffic to FTP port (21)
+   - GCP Firewall rule allows internet traffic to HTTP port (80)
+   - GCP Firewall rule allows internet traffic to MongoDB port (27017)
+   - GCP Firewall rule allows internet traffic to MySQL DB port (3306)
+   - GCP Firewall rule allows internet traffic to Oracle DB port (1521)
+   - GCP Firewall rule allows internet traffic to PostgreSQL port (5432)
+   - GCP Firewall rule allows internet traffic to RDP port (3389)
+   - GCP Firewall rule allows internet traffic to SSH port (22)
+   - GCP Firewall rule allows internet traffic to Telnet port (23)
+   - GCP Firewall rule allows internet traffic to DNS port (53)
+   - GCP Firewall rule allows internet traffic to Microsoft-DS port (445)
+   - GCP Firewall rule allows internet traffic to NetBIOS-SSN port (139)
+   - GCP Firewall rule allows internet traffic to POP3 port (110)
+   - GCP Firewall rule allows internet traffic to SMTP port (25)
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 61bee172-14d4-4a48-815c-913b49bef800
+    type: start
+    task:
+      id: 61bee172-14d4-4a48-815c-913b49bef800
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 3fc02302-4a03-4255-8734-e7e0ff56a942
+    type: regular
+    task:
+      id: 3fc02302-4a03-4255-8734-e7e0ff56a942
+      version: -1
+      name: Disable the offending FW rule
+      description: Updates the specified firewall rule with the data included in the
+        request.
+      script: Google Cloud Compute|||gcp-compute-patch-firewall
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      allowed: {}
+      denied: {}
+      description: {}
+      destinationRanges: {}
+      direction: {}
+      disabled:
+        simple: "true"
+      logConfigEnable: {}
+      name:
+        complex:
+          root: GoogleCloudCompute
+          accessor: Firewalls.name
+      network: {}
+      priority: {}
+      sourceRanges: {}
+      sourceServiceAccounts: {}
+      sourceTags: {}
+      targetServiceAccounts: {}
+      targetTags: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 1abd9220-e39e-4206-8aa3-dba2695c7f4e
+    type: title
+    task:
+      id: 1abd9220-e39e-4206-8aa3-dba2695c7f4e
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 3aae1540-7ffb-4822-8aa3-5a2efa0acdb7
+    type: regular
+    task:
+      id: 3aae1540-7ffb-4822-8aa3-5a2efa0acdb7
+      version: -1
+      name: Get VPC firewall details
+      description: Returns the specified firewall.
+      script: Google Cloud Compute|||gcp-compute-get-firewall
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      name:
+        complex:
+          root: incident
+          accessor: labels.resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 1c48d12b-f4cf-40ea-8d06-6d3ddbd72848
+    type: condition
+    task:
+      id: 1c48d12b-f4cf-40ea-8d06-6d3ddbd72848
+      version: -1
+      name: Execute remediation
+      description: Execute the appropriate remediation task.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      common:
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: common
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: fab6a8ee-dc82-49f0-8c2c-a2a5c7666539
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 9f6d22f9-873a-4a71-91a8-41a82e4c9314
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: b7ad863b-d54c-4b43-a157-010199a37cac
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 1171a9b9-9648-405a-8e03-83e5025e81d3
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 39f48b70-3f22-481d-be71-13211bc87d98
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: b1a3c396-2e03-4050-b7b4-6cf8a7ab5f9b
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 34175634-0e4a-4e9d-9c77-0c75390b8bdc
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 49a154e8-6049-4317-bbb5-0c90cb078f94
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 024045e3-dfa3-4109-9d68-e7fcf3c6c4d1
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: dc3dd864-cff5-4730-84ac-11e212f2c1ff
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 1aa8f0f0-139f-49a2-9c9d-41c71a3c806f
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 7afdb939-4a9a-45b0-ba3b-f81dec86bc76
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 094b6b65-a37a-4f3b-b08f-5d313a6f5051
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: e35ce679-e427-4e00-a9d2-44d808c694bd
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 6c2eba20-647c-4754-8c42-fddc318c20af
+    type: title
+    task:
+      id: 6c2eba20-647c-4754-8c42-fddc318c20af
+      version: -1
+      name: Common Ports
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "5_3_#default#": 0.31,
+      "5_7_common": 0.53
+    },
+    "paper": {
+      "dimensions": {
+        "height": 905,
+        "width": 790,
+        "x": 220,
+        "y": 0
+      }
+    }
+  }
+inputs:
+- key: policyId
+  value: {}
+  required: true
+  description: Prisma Cloud policy Id.
+outputs: []
+tests:
+- No Test
