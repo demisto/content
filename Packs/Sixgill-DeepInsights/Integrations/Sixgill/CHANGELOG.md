@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.4.0] - 2020-04-14
   - Updated the README.
   - Updated the integration Docker image.
   - Added support to use proxies.
