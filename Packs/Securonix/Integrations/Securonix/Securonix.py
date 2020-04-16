@@ -1114,7 +1114,7 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: 
     Args:
         client: Client object with request
         fetch_time: From when to fetch if first time, e.g. `3 days`
-        incident_status: Incident statuses to fetch, can be: all, open, closed
+        incident_status: Incident statuses to fetch, can be: all, opened, closeded
         last_run: Last fetch object.
 
     Returns:
@@ -1240,7 +1240,7 @@ def main():
         }
         if command == 'fetch-incidents':
             fetch_time = params.get('fetch_time', '1 hour')
-            incident_status = params.get('incident_status') if 'incident_status' in params else 'open'
+            incident_status = params.get('incident_status') if 'incident_status' in params else 'opened'
             incidents = fetch_incidents(client, fetch_time, incident_status, last_run=demisto.getLastRun())
             demisto.incidents(incidents)
         elif command in commands:
