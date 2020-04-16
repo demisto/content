@@ -400,21 +400,29 @@ class Client(BaseClient):
         incident = self.http_request('GET', '/incident/get', headers={'token': self._token}, params=params)
         return incident.get('result')
 
-    def perform_action_on_incident_request(self, incident_id, action: str) -> Dict:
+    def perform_action_on_incident_request(self, incident_id, action: str, action_parameters: str) -> Dict:
         """get incident available actions by sending a GET request.
 
         Args:
             incident_id: incident ID.
-            action: action to perform on the incident
+            action: action to perform on the incident.
+            action_parameters: parameters needed in order to perform the action.
 
         Returns:
             Response from API.
         """
+
         params = {
             'type': 'actionInfo',
             'incidentId': incident_id,
             'actionName': action
         }
+        if action_parameters:
+            action_parameters_dict = {
+                k: v.strip('"') for k, v in [i.split("=", 1) for i in action_parameters.split(',')]
+            }
+            params.update(action_parameters_dict)
+
         possible_action = self.http_request('GET', '/incident/get', headers={'token': self._token}, params=params)
 
         if 'error' in possible_action:
@@ -908,7 +916,8 @@ def perform_action_on_incident(client: Client, args: Dict) -> Tuple[str, Dict, D
     """
     incident_id = str(args.get('incident_id'))
     action = str(args.get('action'))
-    incident_result = client.perform_action_on_incident_request(incident_id, action)
+    action_parameters = str(args.get('action_parameters', ''))
+    incident_result = client.perform_action_on_incident_request(incident_id, action, action_parameters)
     if incident_result != 'submitted':
         raise Exception(f'Failed to perform the action {action} on incident {incident_id}.')
     return f'Action {action} was performed on incident {incident_id}.', {}, incident_result
@@ -1128,12 +1137,16 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_types: s
     if securonix_incidents:
         incidents_items = list(securonix_incidents.get('incidentItems'))  # type: ignore
         last_incident_id = last_run.get('id', '0')
-        demisto_incidents = [{
-            'name': f"Securonix Incident: {incident.get('incidentId')}",
-            'occurred': timestamp_to_datestring(incident.get('lastUpdateDate')),
-            'severity': incident_priority_to_dbot_score(incident.get('priority')),
-            'rawJSON': json.dumps(incident)
-        } for incident in incidents_items if incident.get('incidentId') > last_incident_id]
+        for incident in incidents_items:
+            incident_id = incident.get('incidentId')
+            if incident_id > last_incident_id:
+                incident_name = get_incident_name(incident, incident_id)  # Try to get incident reason as incident name
+                demisto_incidents.append({
+                    'name': incident_name,
+                    'occurred': timestamp_to_datestring(incident.get('lastUpdateDate')),
+                    'severity': incident_priority_to_dbot_score(incident.get('priority')),
+                    'rawJSON': json.dumps(incident)
+                })
         if demisto_incidents:
             last_incident_id = incidents_items[-1].get('incidentId')
             new_last_run.update({'id': last_incident_id})
@@ -1141,6 +1154,34 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_types: s
     new_last_run.update({'time': now})
     demisto.setLastRun(new_last_run)
     return demisto_incidents
+
+
+def get_incident_name(incident: Dict, incident_id: str) -> str:
+    """Get the incident name by concatenating the incident reasons if possible
+
+    Args:
+        incident: incident details
+        incident_id: the incident id
+
+
+    Returns:
+        incident name.
+    """
+    incident_reasons = incident.get('reason', [])
+    try:
+        incident_reason = ''
+        for reason in incident_reasons:
+            if reason.startswith('Policy: '):
+                incident_reason += f"{reason[8:]}, "
+        if incident_reason:
+            # Remove ", " last chars and concatenate with the incident ID
+            incident_name = f"{incident_reason[:-2]}: {incident_id}"
+        else:
+            incident_name = f"Securonix Incident: {incident_id}."
+    except ValueError:
+        incident_name = f"Securonix Incident: {incident_id}."
+
+    return incident_name
 
 
 def main():
