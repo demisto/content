@@ -239,7 +239,7 @@ class Client(BaseClient):
             'ssdeep': full_sample_json.get('ssdeep'),
             'imphash': full_sample_json.get('imphash'),
             'filetype': full_sample_json.get('filetype'),
-            'threattypes': [{'threatcategory': full_sample_json.get('tag_groups')}],
+            'threattypes': [{'threatcategory': threat} for threat in full_sample_json.get('tag_groups', [])],
             'creationdate': raw_json_data.get('autofocus_create_date'),
         }
 
@@ -283,7 +283,7 @@ class Client(BaseClient):
             'firstseenbysource': raw_json_data.get('autofocus_create_date'),
             'region': raw_json_data.get('autofocus_region'),
             'tags': raw_json_data.get('autofocus_tags'),
-            'threattypes': [{'threatcategory': raw_json_data.get('autofocus_tags_groups')}]
+            'threattypes': [{'threatcategory': threat} for threat in raw_json_data.get('autofocus_tags_groups', [])]
         }
 
         return {
