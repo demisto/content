@@ -170,7 +170,7 @@ def urlToSHA256(url: str) -> str:
 
 def create_blacklist_keys(blacklist):
     """
-    Converts the Blacklist keys into conetxt keys format.
+    Converts the Blacklist keys into context keys format.
 
     Args:
     blacklist (list): a list of dictionaries, where each dictionary is a positive detection of the IoC
@@ -219,12 +219,12 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
             'Geo': {'Country': report.get('country_code', '')},
             'PositiveDetections': positive_detections,
             'Malicious': {'Description': [blacklist_context['Blacklist'][i]['Description'] for i in
-                                          range(len(report.get('blacklist', [])))]}
+                                          range(len(report.get('blacklist', [])))]},
+            'Tags': report.get('tag', '')
         }
 
-        additional_info = {string_to_context_key(field): report.get(field, '') for field in
-                           ['classification', 'tag']}
-        additional_info['Address'] = report.get('ip_addr', '')
+        additional_info = {'Tags': report.get('tag', ''), 'Classification': report.get('classification', ''),
+                           'Address': report.get('ip_addr', '')}
 
         dbot_score = {'Indicator': report.get('ip_addr', ''), 'Type': 'ip', 'Vendor': 'Maltiverse',
                       'Score': calculate_score(positive_detections, report.get('classification', ''), threshold)}
@@ -235,14 +235,15 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         context[f'Maltiverse.{outputPaths["ip"]}'].append(maltiverse_ip)
         context[DBOT_SCORE_KEY].append(dbot_score)
 
-        md_outputs = {
-            'IP.Address': report.get('ip_addr', ''),
-            'IP.Geo.Country': report.get('country_code', ''),
-            'IP.PositiveDetections': positive_detections,
-            'IP.Malicious.Description': [blacklist_context['Blacklist'][i]['Description'] for i in
-                                         range(len(report.get('blacklist', [])))]
-        }
-        markdown += tableToMarkdown(f'Maltiverse IP reputation for: {report["ip_addr"]}\n', md_outputs, removeNull=True)
+        markdown = f'## Maltiverse IP reputation for: {report["ip_addr"]}\n'
+        markdown += f'IP Address: **{report.get("ip_addr", "")}**\n'
+        markdown += f'Country: **{report.get("country_code", "")}**\n'
+        markdown += f'Positive Detections: **{positive_detections}**\n'
+        markdown += f'Maltiverse Classification: **{report.get("classification", "")}**\n'
+        if positive_detections:
+            markdown += tableToMarkdown('Blacklist', blacklist_context['Blacklist'], removeNull=True,
+                                        headers=['Source', 'Description', 'FirstSeen', 'LastSeen'])
+
         reports.append(report)
 
     return markdown, context, reports
@@ -279,25 +280,28 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         blacklist_context['Blacklist'] = create_blacklist_keys(blacklist_context['Blacklist'])
 
         outputs = {'Data': report.get('url', ''),
-                   'PositiveDetections': positive_detections
+                   'PositiveDetections': positive_detections,
+                   'Tags': report.get('tag', '')
                    }
 
         dbot_score = {'Indicator': url, 'Type': 'url', 'Vendor': 'Maltiverse',
                       'Score': calculate_score(positive_detections, report.get('classification', ''), threshold)}
 
         maltiverse_url = {string_to_context_key(field): report.get(field, '') for field in
-                          ['classification', 'tag', 'modification_time', 'creation_time', 'hostname', 'domain', 'tld']}
+                          ['classification', 'modification_time', 'creation_time', 'hostname', 'domain', 'tld']}
         maltiverse_url['Address'] = report.get('url', '')
+        maltiverse_url['Tags'] = report.get('tag', '')
         maltiverse_url = {**maltiverse_url, **blacklist_context}
 
-        md_info = {
-            'URL.Data': report.get('url', ''),
-            'URL.PositiveDetections': positive_detections,
-            'Maltiverse.URL.Domain': report.get('domain', ''),
-            'Maltiverse.URL.ModificationTime': report.get('modification_time', ''),
-            'Maltiverse.URL.CreationTime': report.get('creation_time', '')
-        }
-        if positive_detections > 0:
+        markdown = f'## Maltiverse URL reputation for: {report.get("url", "")}\n'
+        markdown += f'URL: {report.get("url", "")}\n'
+        markdown += f'URL Domain: **{report.get("domain", "")}**\n'
+        markdown += f'URL Creation Time: **{report.get("creation_time", "")}**\n'
+        markdown += f'URL Modification Time: **{report.get("modification_time", "")}**\n'
+        markdown += f'Positive Detections: **{positive_detections}**\n'
+        markdown += f'Maltiverse Classification: **{report.get("classification", "")}**\n'
+
+        if positive_detections:
             malicious_info = {
                 'Malicious': {
                     'Description': [blacklist_context['Blacklist'][i]['Description'] for i in
@@ -306,16 +310,14 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
                 }
             }
             outputs = {**outputs, **malicious_info}
-            md_info['URL.Malicious.Description'] = [blacklist_context['Blacklist'][i]['Description'] for i in
-                                                    range(len(report.get('blacklist', [])))],
-            md_info['URL.Malicious.Vendor'] = 'Maltiverse'
+            markdown += 'URL Malicious Vendor: **Maltiverse**\n'
+            markdown += tableToMarkdown('Blacklist', blacklist_context['Blacklist'], removeNull=True,
+                                        headers=['Source', 'Description', 'FirstSeen', 'LastSeen'])
 
         context[outputPaths['url']].append(outputs)
         context[DBOT_SCORE_KEY].append(dbot_score)
         context[f'Maltiverse.{outputPaths["url"]}'].append(maltiverse_url)
 
-        markdown += tableToMarkdown(f'Maltiverse URL Reputation for: {report["url"]}\n',
-                                    md_info, removeNull=True)
         reports.append(report)
 
     return markdown, context, reports
@@ -345,6 +347,7 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any
         outputs = {string_to_context_key(field): report.get(field, '') for field in
                    ['creation_time', 'modification_time', 'tld']
                    }
+        outputs['Tags'] = report.get('tag', '')
         outputs['Name'] = report.get('hostname', '')
         outputs['ASName'] = report.get('as_name', '')
 
@@ -373,18 +376,13 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any
         context[DBOT_SCORE_KEY].append(dbot_score)
         context[f'Maltiverse.{outputPaths["domain"]}'].append(maltiverse_domain)
 
-        md_info = {
-            'Domain.Name': report.get('hostname', ''),
-            'Domain.CreationDate': report.get('creation_time', ''),
-            'Domain.ModificationDate': report.get('modification_time', ''),
-            'Maltiverse.Domain.ModificationTime': report.get('modification_time', ''),
-            'Maltiverse.Domain.CreationTime': report.get('creation_time', ''),
-            'Maltiverse.Domain.ResolvedIP.IP': [report['resolved_ip'][i]['ip_addr'] for i in
-                                                range(len(report['resolved_ip']))]
-        }
+        markdown = f'## Maltiverse Domain reputation for: {report.get("hostname", "")}\n'
+        markdown += f'Domain Name: {report.get("hostname", "")}\n'
+        markdown += f'Domain Creation Time: **{report.get("creation_time", "")}**\n'
+        markdown += f'Domain Modification Time: **{report.get("modification_time", "")}**\n'
+        markdown += f'Maltiverse Classification: **{report.get("classification", "")}**\n'
+        markdown += f'Doamin Resolved IP: {[report["resolved_ip"][i]["ip_addr"] for i in range(len(report["resolved_ip"]))]}'
 
-        markdown += tableToMarkdown(f'Maltiverse Domain Reputation for: {report["hostname"]}\n',
-                                    md_info, removeNull=True)
         reports.append(report)
 
     return markdown, context, reports
@@ -424,6 +422,7 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         outputs['Name'] = report['filename'][0]
         outputs['Extension'] = (report['filename'][0]).split('.')[-1]
         outputs['Path'] = report['process_list'][0]['normalizedpath']
+        outputs['Tags'] = report.get('tag', '')
 
         dbot_score = {'Indicator': report['filename'][0], 'Type': 'File', 'Vendor': 'Maltiverse',
                       'Score': calculate_score(positive_detections, report.get('classification', ''), threshold,
@@ -451,7 +450,7 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
                             'dns_request']}
         maltiverse_file['PositiveDetections'] = positive_detections
         maltiverse_file['Name'] = report['filename'][0]
-        maltiverse_file['Tag'] = report.get('tag', '')
+        maltiverse_file['Tags'] = report.get('tag', '')
         maltiverse_file = {**maltiverse_file, **process_list}
         maltiverse_file = {**maltiverse_file, **blacklist_context}
         if positive_detections > 0:
@@ -461,16 +460,13 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         context[DBOT_SCORE_KEY].append(dbot_score)
         context[f'Maltiverse.{outputPaths["file"]}'].append(maltiverse_file)
 
-        md_info = {
-            'File.Name': report['filename'][0],
-            'File.MD5': report.get('md5', ''),
-            'File.Type': report.get('type', ''),
-            'Maltiverse.File.PositiveDetections': positive_detections,
-            'Maltiverse.File.Classification': report.get('classification', '')
-        }
+        markdown = f'## Maltiverse File reputation for: {report["filename"][0]}\n'
+        markdown += f'File Name: {report["filename"][0]}\n'
+        markdown += f'File SHA256: **{report.get("sha256", "")}**\n'
+        markdown += f'File Type: **{report.get("type", "")}**\n'
+        markdown += f'Positive Detections: **{positive_detections}**\n'
+        markdown += f'Maltiverse Classification: **{report.get("classification", "")}**\n'
 
-        markdown += tableToMarkdown(f'Maltiverse File Reputation for: {report["filename"][0]}\n',
-                                    md_info, removeNull=True)
         reports.append(report)
 
     return markdown, context, reports
