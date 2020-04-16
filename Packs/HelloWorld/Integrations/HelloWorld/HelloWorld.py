@@ -134,6 +134,48 @@ integration, plus ``test-module``, ``fetch-incidents`` and ``fetch-indicators``
 (if the latter two are supported by your integration). Each command function
 should invoke one specific function of the Client class.
 
+Command functions, when invoked through an XSOAR command usually invoke the
+``return_outputs()`` function (defined in ``CommonServerPython.py``) to return
+the data to XSOAR. ``return_outputs()`` actually wraps ``demisto.results()``.
+You need ``demisto.results()`` only in specific conditions (i.e. check the
+``scan_results_command`` function here that has the option to return a file).
+
+When you use ``return_outputs()`` you usually return up to 3 types of data:
+
+- Human Readable: usually in Markdown format. This is what is presented to the
+analyst in the War Room. You can use ``tableToMarkdown()``, defined in
+``CommonServerPython.py`` to convert lists and dicts in Markdown.
+
+- Context Output: this is the machine readable data, JSON based, that XSOAR can
+parse and manage in the Playbooks or Incident's War Room. The Context Output
+fields should be defined in your integration YML file and is important during
+the design phase. Make sure you define the format and follow best practices.
+You can use ``demisto-sdk json-to-outputs`` to autogenerate the YML file
+outputs section.
+More information on Context Outputs, Standards, DBotScore and demisto-sdk:
+https://xsoar.pan.dev/docs/integrations/code-conventions#outputs
+https://xsoar.pan.dev/docs/integrations/context-and-outputs
+https://xsoar.pan.dev/docs/integrations/context-standards
+https://xsoar.pan.dev/docs/integrations/dbot
+https://github.com/demisto/demisto-sdk/blob/master/demisto_sdk/commands/json_to_outputs/README.md
+
+Also, when you write data in the Context, you want to make sure that if you
+return updated information for an entity, to update it and not append to
+the list of entities (i.e. in HelloWorld you want to update the status of an
+existing ``HelloWorld.Alert`` in the context when you retrieve it, rather than
+adding a new one if you already retrieved it). To update data in the Context,
+you can use a DT transform that uses the following format (using the example):
+``HelloWorld.Alert(val.alert_id == obj.alert_id): alert_data``. This makes sure
+that you are using the ``alert_id`` key to determine whether adding a new entry
+in the context or updating an existing one that has the same ID. You can look
+at the examples to understand how it works.
+More information here:
+https://xsoar.pan.dev/docs/integrations/code-conventions#outputs
+https://xsoar.pan.dev/docs/integrations/dt
+
+- Raw Output: this is usually the raw result from your API and is used for
+troubleshooting purposes or for invoking your command from Automation Scripts.
+
 
 Main Function
 -------------
@@ -163,7 +205,7 @@ import json
 import requests
 import dateparser
 import traceback
-from typing import Any, Dict, Tuple, List, Optional, cast
+from typing import Any, Dict, Tuple, List, Optional, Set, cast
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -292,7 +334,7 @@ class Client(BaseClient):
             }
         )
 
-    def update_alert_status(self, alert_id: str, alert_status: str) -> None:
+    def update_alert_status(self, alert_id: str, alert_status: str) -> Dict[str, Any]:
         """Changes the status of a specific HelloWorld alert
 
         :type alert_id: ``str``
@@ -301,10 +343,11 @@ class Client(BaseClient):
         :type alert_status: ``str``
         :param alert_status: new alert status. Options are: 'ACTIVE' or 'CLOSED'
 
-        :return:
-        :rtype:
+        :return: dict containing the alert as returned from the API
+        :rtype: ``Dict[str, Any]``
         """
-        self._http_request(
+
+        return self._http_request(
             method='GET',
             url_suffix='/change_alert_status',
             params={
@@ -793,9 +836,9 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
     # where threshold is an actual argument of the command.
     threshold = int(args.get('threshold', default_threshold))
 
-    dbot_score_list: List[dict] = []
-    ip_standard_list: List[dict] = []
-    ip_data_list: List[dict] = []
+    dbot_score_list: List[Dict[str, Any]] = []
+    ip_standard_list: List[Dict[str, Any]] = []
+    ip_data_list: List[Dict[str, Any]] = []
 
     for ip in ips:
         ip_data = client.get_ip_reputation(ip)
@@ -844,7 +887,24 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
 
         ip_standard_list.append(ip_standard_context)
         dbot_score_list.append(dbot_score)
-        ip_data_list.append(ip_data)
+
+        # INTEGRATION DEVELOPER TIP
+        # In the integration specific Context output (HelloWorld.IP) in this
+        # example you want to provide a lot of information as it can be used
+        # programmatically from within Cortex XSOAR in playbooks and commands.
+        # On the other hand, this API is way to verbose, so we want to select
+        # only certain keys to be returned in order not to clog the context
+        # with useless information. What to actually return in the context and
+        # to define as a command output is subject to design considerations.
+
+        # INTEGRATION DEVELOPER TIP
+        # To generate the Context Outputs on the YML use ``demisto-sdk``'s
+        # ``json-to-outputs`` option.
+
+        # define which fields we want to exclude from the context output as
+        # they are too verbose.
+        ip_context_excluded_fields = ['objects', 'nir']
+        ip_data_list.append({k: ip_data[k] for k in ip_data if k not in ip_context_excluded_fields})
 
     # INTEGRATION DEVELOPER TIP
     # The ``val.Vandor == obj.Vendor && val.Indicator == obj.Indicator`` syntax
@@ -909,9 +969,9 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], default_thre
 
     threshold = int(args.get('threshold', default_threshold))
 
-    dbot_score_list: List[dict] = []
-    domain_standard_list: List[dict] = []
-    domain_data_list: List[dict] = []
+    dbot_score_list: List[Dict[str, Any]] = []
+    domain_standard_list: List[Dict[str, Any]] = []
+    domain_data_list: List[Dict[str, Any]] = []
 
     for domain in domains:
         domain_data = client.get_domain_reputation(domain)
@@ -1018,7 +1078,7 @@ def search_alerts_command(client: Client, args: Dict[str, Any]) -> Tuple[str, di
         arg_name='start_time',
         required=False
     )
-
+    demisto.log(f'ARGSGET {args.get("max_results")}')
     # Convert the argument to an int using helper function
     max_results = arg_to_int(
         arg=args.get('max_results'),
@@ -1074,6 +1134,56 @@ def get_alert_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict, 
         raise ValueError('alert_id not specified')
 
     alert = client.get_alert(alert_id=alert_id)
+
+    # tabletoMarkdown() is defined is CommonServerPython.py and is used very
+    # often to convert lists and dicts into a human readable format in markdown
+    readable_output = tableToMarkdown(f'HelloWorld Alert {alert_id}', alert)
+    outputs = {
+        'HelloWorld.Alert(val.alert_id == obj.alert_id)': alert
+    }
+
+    return (
+        readable_output,
+        outputs,
+        alert
+    )
+
+
+def update_alert_status_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict, dict]:
+    """helloworld-update-alert-status command: Changes the status of an alert
+
+    Changes the status of a HelloWorld alert and returns the updated alert info
+
+    :type client: ``Client``
+    :param Client: HelloWorld client to use
+
+    :type args: ``Dict[str, Any]``
+    :param args:
+        all command arguments, usually passed from ``demisto.args()``.
+        ``args['alert_id']`` alert ID to update
+        ``args['alert_status']`` new status, either ACTIVE or CLOSED
+
+    :return:
+        A tuple containing three elements that is then passed to ``return_outputs``:
+            readable_output (``str``): This will be presented in the war room
+                    should be in markdown syntax - human readable
+            outputs (``dict``): Dictionary/JSON - saved in the incident context in order
+                    to be used as inputs for other tasks in the playbook
+            raw_response (``dict``): Used for debugging/troubleshooting purposes
+                    will be shown only if the command executed with ``raw-response=true``
+
+    :rtype: ``Tuple[str, dict, dict]``
+    """
+
+    alert_id = args.get('alert_id', None)
+    if not alert_id:
+        raise ValueError('alert_id not specified')
+
+    alert_status = args.get('alert_status', None)
+    if alert_status not in ('ACTIVE', 'CLOSED'):
+        raise ValueError('alert_status must be either ACTIVE or CLOSED')
+
+    alert = client.update_alert_status(alert_id, alert_status)
 
     # tabletoMarkdown() is defined is CommonServerPython.py and is used very
     # often to convert lists and dicts into a human readable format in markdown
@@ -1215,11 +1325,21 @@ def scan_results_command(client: Client, args: Dict[str, Any]) -> None:
             )
         )
     elif scan_format == 'json':
-        markdown = tableToMarkdown(f'Scan {scan_id} results', results.get('data'))
+        # This scan returns CVE information. CVE is also part of the XSOAR
+        # context standard, so we must extract CVE IDs and return them also.
+        # See: https://xsoar.pan.dev/docs/integrations/context-standards#cve
+        cves : Set[str] = set([])
+        entities: List[Dict[str, Any]] = results.get('entities')
+        for e in entities:
+            if 'vulns' in e.keys() and isinstance(e['vulns'], list):
+                cves.update(e['vulns'])
+
+        markdown = tableToMarkdown(f'Scan {scan_id} results', entities)
         return_outputs(
             readable_output=markdown,
             outputs={
-                'HelloWorld.Scan(val.scan_id == obj.scan_id)': results
+                'HelloWorld.Scan(val.scan_id == obj.scan_id)': results,
+                'CVE(val.ID == obj.ID)': cves
             },
             raw_response=results
         )
