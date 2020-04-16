@@ -322,7 +322,7 @@ class Client(BaseClient):
         Args:
             from_epoch: from time in epoch
             to_epoch: to time in epoch
-            incident_status: incident types
+            incident_status: incident status e.g:closed, open
 
         Returns:
             Response from API.
