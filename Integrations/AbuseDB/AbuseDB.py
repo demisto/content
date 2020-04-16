@@ -231,8 +231,11 @@ def check_ip_command(ip, days=MAX_AGE, verbose=VERBOSE, threshold=THRESHOLD):
     entry_list = []
     for current_ip in ip_list:
         params["ipAddress"] = current_ip
-        analysis = http_request("GET", url_suffix=CHECK_CMD, params=params).get("data")
-        entry_list.append(analysis_to_entry(analysis, verbose=verbose, threshold=threshold))
+        analysis = http_request("GET", url_suffix=CHECK_CMD, params=params)
+        if analysis == API_QUOTA_REACHED_MESSAGE:
+            continue
+        analysis_data = analysis.get("data")
+        entry_list.append(analysis_to_entry(analysis_data, verbose=verbose, threshold=threshold))
     return entry_list
 
 
