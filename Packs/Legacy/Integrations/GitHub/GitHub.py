@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import json
+import jwt
 import requests
 from typing import Union, Any
 from datetime import datetime
@@ -16,6 +17,9 @@ requests.packages.urllib3.disable_warnings()
 
 USER = demisto.params().get('user')
 TOKEN = demisto.params().get('token', '')
+PRIVATE_KEY = demisto.params().get('credentials', {}).get('credentials', {}).get('sshkey', '')
+INTEGRATION_ID = demisto.params().get('integration_id')
+INSTALLATION_ID = demisto.params().get('installation_id')
 BASE_URL = 'https://api.github.com'
 REPOSITORY = demisto.params().get('repository')
 USE_SSL = not demisto.params().get('insecure', False)
@@ -31,12 +35,49 @@ ISSUE_HEADERS = ['ID', 'Repository', 'Title', 'State', 'Body', 'Created_at', 'Up
                  'Assignees', 'Labels']
 
 # Headers to be sent in requests
-HEADERS = {
-    'Authorization': "Bearer " + TOKEN
-}
-
+MEDIA_TYPE_INTEGRATION_PREVIEW = "application/vnd.github.machine-man-preview+json"
 
 ''' HELPER FUNCTIONS '''
+
+
+def create_jwt(private_key: bytes, integration_id: str):
+    """
+    Create a JWT token used for getting access token. It's needed for github bots.
+    POSTs https://api.github.com/app/installations/<installation_id>/access_tokens
+    :param private_key: bytes: github's private key
+    :param integration_id: str: ID of the github integration (bot)
+    """
+    now = int(time.time())
+    expiration = 60
+    payload = {"iat": now, "exp": now + expiration, "iss": integration_id}
+    jwt_token = jwt.encode(payload, private_key, algorithm='RS256')
+    return jwt_token.decode()
+
+
+def get_installation_access_token(installation_id: str, jwt_token: str):
+    """
+    Get an access token for the given installation id.
+    POSTs https://api.github.com/app/installations/<installation_id>/access_tokens
+    :param installation_id: str: the id of the installation (where the bot was installed)
+    :param jwt_token: str token needed in the request for retrieving the access token
+    """
+    response = requests.post(
+        "{}/app/installations/{}/access_tokens".format(
+            BASE_URL, installation_id
+        ),
+        headers={
+            "Authorization": "Bearer {}".format(jwt_token),
+            "Accept": MEDIA_TYPE_INTEGRATION_PREVIEW,
+        },
+    )
+    if response.status_code == 201:
+        return response.json()['token']
+    elif response.status_code == 403:
+        return_error('403 Forbidden - The credentials are incorrect')
+    elif response.status_code == 404:
+        return_error('404 Not found - Installation wasn\'t found')
+    else:
+        return_error(f'Encountered an error: {response.text}')
 
 
 def safe_get(obj_to_fetch_from: dict, what_to_fetch: str, default_val: Union[dict, list, str]) -> Any:
@@ -1151,8 +1192,15 @@ COMMANDS = {
     'GitHub-create-pull-request': create_pull_request_command
 }
 
-
 '''EXECUTION'''
+
+if TOKEN == '' and PRIVATE_KEY != '':
+    generated_jwt_token = create_jwt(PRIVATE_KEY, INTEGRATION_ID)
+    TOKEN = get_installation_access_token(INSTALLATION_ID, generated_jwt_token)
+
+HEADERS = {
+    'Authorization': "Bearer " + TOKEN
+}
 
 
 def main():

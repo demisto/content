@@ -1,6 +1,5 @@
 ## [Unreleased]
--
-
+- Added support for github bots
 
 ## [20.4.0] - 2020-04-14
 -
