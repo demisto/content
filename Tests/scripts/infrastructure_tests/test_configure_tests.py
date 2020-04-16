@@ -351,7 +351,7 @@ def get_mock_test_list(two_before_ga=TWO_BEFORE_GA_VERSION, get_modified_files_r
     return tests
 
 
-def test_skipped_integration_should_not_be_tested():
+def test_skipped_integration_should_not_be_tested(mocker):
     """
     Given
     - conf.json file with IntegrationA is skipped
@@ -370,9 +370,17 @@ def test_skipped_integration_should_not_be_tested():
     # Given
     # - conf.json file with IntegrationA is skipped
     # - no tests provided for IntegrationA
+    fake_integration = TestUtils.create_integration(name='integration_a', with_commands=['a-command'])
+
+    # mark as modified
+    TestUtils.mock_get_modified_files(mocker,
+                                      modified_files_list=[
+                                          fake_integration['path']
+                                      ])
+
     mock_conf_dict = copy.deepcopy(MOCK_CONF)
-    mock_conf_dict['skipped_integrations']['IntegrationA'] = 'comment'
-    print('before')
+    mock_conf_dict['skipped_integrations']['integration_a'] = 'comment'
+
     # When
     # - filtering tests to run
     filtered_tests = get_test_list(
@@ -381,14 +389,71 @@ def test_skipped_integration_should_not_be_tested():
         two_before_ga_ver=TWO_BEFORE_GA_VERSION,
         conf=TestConf(mock_conf_dict)
     )
-    print('after')
 
     # Then
     # - ensure IntegrationA is skipped
-    assert 'IntegrationA' not in filtered_tests
+    assert 'integration_a' not in filtered_tests
 
     # - ensure the validation not failing
     assert not configure_tests._FAILED
+
+
+def test_integration_has_no_test_playbook_should_fail_on_validation(mocker):
+    """
+    Given
+    - integration_a was modified
+    - no tests provided for integration_a
+
+    When
+    - filtering tests to run
+
+    Then
+    - ensure the validation not failing
+    """
+    from Tests.scripts import configure_tests
+    configure_tests._FAILED = False  # reset the FAILED flag
+
+    try:
+        # Given
+        # - integration_a was modified
+        # - no tests provided for integration_a
+        fake_integration = TestUtils.create_integration(name='integration_a', with_commands=['a-command'])
+
+        # mark as modified
+        TestUtils.mock_get_modified_files(mocker,
+                                          modified_files_list=[
+                                              fake_integration['path']
+                                          ])
+        
+        # - both in conf.json
+        fake_conf = TestUtils.create_tests_conf()
+
+        fake_id_set = TestUtils.create_id_set(
+            with_integration=fake_integration['id_set']
+        )
+
+        # When
+        # - filtering tests to run
+        filtered_tests = get_test_list(
+            files_string='',
+            branch_name='dummy_branch',
+            two_before_ga_ver=TWO_BEFORE_GA_VERSION,
+            conf=fake_conf,
+            id_set=fake_id_set
+        )
+
+        # Then
+        # - ensure the validation not failing
+        assert configure_tests._FAILED
+    finally:
+        # delete the mocked files
+        TestUtils.delete_files([
+            fake_integration['path']
+        ])
+
+        # reset _FAILED flag
+        configure_tests._FAILED = False
+
 
 
 def test_dont_fail_integration_on_no_tests_if_it_has_test_playbook_in_conf(mocker):

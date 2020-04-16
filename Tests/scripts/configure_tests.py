@@ -956,12 +956,7 @@ def get_test_list(files_string, branch_name, two_before_ga_ver='0', conf=None, i
             get_random_tests(tests_num=RANDOM_TESTS_NUM, conf=conf, id_set=id_set, server_version=two_before_ga_ver))
 
     if not tests:
-        if modified_files or modified_tests_list:
-            print_error(
-                "There is no test-playbook that checks the changes you've done, please make sure you write one.")
-            global _FAILED
-            _FAILED = True
-        elif changed_common:
+        if changed_common:
             print_warning('Adding 3 random tests due to: {}'.format(','.join(changed_common)))
             tests = tests.union(get_random_tests(tests_num=RANDOM_TESTS_NUM, conf=conf, id_set=id_set,
                                                  server_version=two_before_ga_ver))
