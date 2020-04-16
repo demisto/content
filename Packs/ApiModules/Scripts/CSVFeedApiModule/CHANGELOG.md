@@ -1,5 +1,5 @@
 ## [Unreleased]
-- Fixed an issue where *firstseenbyfeed* and *lastseenbyfeed* fields were not formatted correctly.
+- Fixed an issue where *firstseenbysource* and *lastseenbysource* fields were not formatted correctly.
 - Added support for mapping by regex extraction and by string formatting.
 
 
