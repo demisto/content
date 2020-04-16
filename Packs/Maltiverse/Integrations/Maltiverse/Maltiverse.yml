@@ -102,6 +102,9 @@ script:
     - contextPath: Maltiverse.IP.Tags
       description: The type of indicator
       type: String
+    - contextPath: IP.ThreatTypes
+      description: A list with the description of the elements in the blacklist
+      type: Unknown
   - arguments:
     - default: true
       description: Domain address to check

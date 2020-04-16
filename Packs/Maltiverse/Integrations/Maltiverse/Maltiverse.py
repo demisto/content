@@ -17,6 +17,9 @@ SERVER_URL = 'https://api.maltiverse.com'
 DBOT_SCORE_KEY = 'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'
 DEFAULT_THRESHOLD = 5
 
+# todo: add this lines into outputs of IP.
+# 'Malicious': {'Description': [blacklist_context['Blacklist'][i]['Description'] for i in
+#                               range(len(report.get('blacklist', [])))]},
 
 class Error(Exception):
     """Base class for exceptions in this module."""
@@ -237,8 +240,6 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
             'Geo': {'Country': report.get('country_code', '')},
             'PositiveDetections': positive_detections,
             'Tags': create_tags(report.get('tag', '')),
-            'Malicious': {'Description': [blacklist_context['Blacklist'][i]['Description'] for i in
-                                          range(len(report.get('blacklist', [])))]},
             'ThreatTypes': [{'ThreatCategory': 'phi',
                             'ThreatCategoryConfidence': 'test'}]
         }
