@@ -258,13 +258,13 @@ class MsGraphClient:
             event = self.ms_client.http_request(
                 method='POST',
                 url_suffix=f'/users/{user}/calendars/{calendar_id}/events',
-                json_data=json.dumps(kwargs)
+                data=json.dumps(kwargs)
             )
         else:
             event = self.ms_client.http_request(
                 method='POST',
                 url_suffix=f'users/{user}/calendar/events',
-                json_data=json.dumps(kwargs)
+                data=json.dumps(kwargs)
             )
         return event
 
@@ -291,7 +291,7 @@ class MsGraphClient:
         event = self.ms_client.http_request(
             method='PATCH',
             url_suffix=f'users/{user}/calendar/events/{event_id}',
-            json_data=json.dumps(kwargs)
+            data=json.dumps(kwargs)
         )
         return event
 
