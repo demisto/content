@@ -40,9 +40,19 @@ except Exception:
 
 def gather_line(lines, total_column_num, current_line):
     line_values = lines[current_line].split(',')
+
+    # edge case - empty starting line
+    if len(line_values) == 0 or (len(line_values) == 1 and len(line_values[0]) == 0):
+        current_line += 1
+        return [], current_line
+
     while len(line_values) < total_column_num:
         current_line += 1
         line_below = lines[current_line].split(',')
+
+        if len(line_below) == 0 or (len(line_below) == 1 and len(line_below[0]) == 0):
+            continue
+
         # combine the split value from the line below to the current line.
         line_values[-1] = line_values[-1] + " " + line_below[0]
 
@@ -67,11 +77,12 @@ def gather_line(lines, total_column_num, current_line):
 
 def csvstr_to_list(text_content):
     lines = text_content.splitlines()
-    headers = lines[0].split(',')
-    total_column_num = len(headers)
-    if len(lines) == 1:
+
+    if len(lines) < 2:
         return []
 
+    headers = lines[0].split(',')
+    total_column_num = len(headers)
     lines = lines[1:]
     total_lines_num = len(lines)
     result = []
@@ -79,6 +90,9 @@ def csvstr_to_list(text_content):
     while current_line < total_lines_num:
         line_dict = {}
         line_values, current_line = gather_line(lines, total_column_num, current_line)
+
+        if len(line_values) == 0:
+            continue
 
         for index in range(total_column_num):
             line_dict[headers[index]] = line_values[index]
