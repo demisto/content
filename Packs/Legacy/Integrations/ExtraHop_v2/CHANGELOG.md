@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.4.0] - 2020-04-14
 Updated the names of alert rule commands to clarify that these commands only manage alert rules, they do not fetch alert events.
 
 ## [20.3.3] - 2020-03-18
