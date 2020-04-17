@@ -1,0 +1,634 @@
+id: Endace Search Archive and Download Example
+version: -1
+name: Endace Search Archive and Download Example
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 576f7737-36a8-4e9e-85c9-42e035e8cbd5
+    type: start
+    task:
+      id: 576f7737-36a8-4e9e-85c9-42e035e8cbd5
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '34'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '7':
+    id: '7'
+    taskid: e6eec0e9-cf75-4496-848b-915d4bcd8fa7
+    type: title
+    task:
+      id: e6eec0e9-cf75-4496-848b-915d4bcd8fa7
+      version: -1
+      name: Done
+      tags:
+      - Success
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 70,\n    \"y\": 2645\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '9':
+    id: '9'
+    taskid: 22e5157c-30e4-4adb-89e1-77282c7a3476
+    type: condition
+    task:
+      id: 22e5157c-30e4-4adb-89e1-77282c7a3476
+      version: -1
+      name: Is search progress = 100%?
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      no:
+      - '7'
+      yes:
+      - '26'
+    scriptarguments:
+      left:
+        simple: ${Endace.Search.Response.JobProgress}
+      right:
+        simple: '100'
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '14':
+    id: '14'
+    taskid: c707b976-b255-4cad-8873-0283b43f990b
+    type: condition
+    task:
+      id: c707b976-b255-4cad-8873-0283b43f990b
+      version: -1
+      name: Is PCAP FileSize < 50MB?
+      description: "Checks if one number(float) as bigger than the other(float)\n\
+        Returns yes: if first > second\nReturns no: if first <= second\nReturns exception\
+        \ if one of the inputs is not a number"
+      scriptName: IsGreaterThan
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      no:
+      - '7'
+      yes:
+      - '35'
+    scriptarguments:
+      first:
+        simple: '50000'
+      second:
+        simple: ${Endace.Archive.Response.FileSize}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 387.5,\n    \"y\": 2120\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '21':
+    id: '21'
+    taskid: 693fd6f6-9e43-44c1-8bcb-f64d760a21b8
+    type: playbook
+    task:
+      id: 693fd6f6-9e43-44c1-8bcb-f64d760a21b8
+      version: -1
+      name: GenericPolling
+      description: "Use this playbook as a sub-playbook to block execution of the\
+        \ master playbook until a remote action is complete.\nThis playbook implements\
+        \ polling by continuously running the command in Step \\#2 until the operation\
+        \ completes.\nThe remote action should have the following structure:\n\n1.\
+        \ Initiate the operation.\n2. Poll to check if the operation completed.\n\
+        3. (optional) Get the results of the operation."
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '32'
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${Endace.Archive.Task.FileName}
+      Interval:
+        simple: '1'
+      PollingCommandArgName:
+        simple: archive_filename
+      PollingCommandName:
+        simple: endace-get-archive-status
+      Timeout:
+        simple: '5'
+      dt:
+        simple: Endace.Archive.Response(val.Status != 'Finished').FileName
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 0
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 1595\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '24':
+    id: '24'
+    taskid: 3e7509c8-2eb5-4bb1-8604-ef5e05ee650e
+    type: regular
+    task:
+      id: 3e7509c8-2eb5-4bb1-8604-ef5e05ee650e
+      version: -1
+      name: AddEvidence
+      description: "Adds provided entries to the incident Evidence Board. In playbook,\
+        \ can be positioned after a task to add the previous task's entries to Evidence\
+        \ Board automatically (with no need to provide arguments)\n"
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments:
+      desc:
+        simple: ${Endace.Archive.Task.P2Vurl}
+      description:
+        simple: Endace PivotToVision URL to Archived File ${Endace.Archive.Task.P2Vurl}
+      entryIDs: {}
+      occurred: {}
+      tags: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 420,\n    \"y\": 1420\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '25':
+    id: '25'
+    taskid: 9631fffb-1315-414f-8c8c-4d392a889ecf
+    type: regular
+    task:
+      id: 9631fffb-1315-414f-8c8c-4d392a889ecf
+      version: -1
+      name: AddEvidence
+      description: "Adds provided entries to the incident Evidence Board. In playbook,\
+        \ can be positioned after a task to add the previous task's entries to Evidence\
+        \ Board automatically (with no need to provide arguments)\n"
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      desc:
+        simple: PCAP = ${Endace.Archive.Response.FileName}  & Size = ${Endace.Archive.Response.FileSize}
+      description:
+        simple: PCAP FIleName and Size
+      entryIDs: {}
+      occurred: {}
+      tags: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 500,\n    \"y\": 2470\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '26':
+    id: '26'
+    taskid: b95d8ee4-dcc3-431e-8139-141434c60158
+    type: condition
+    task:
+      id: b95d8ee4-dcc3-431e-8139-141434c60158
+      version: -1
+      name: Is Bytes Count > 0?
+      description: "Checks if one number(float) as bigger than the other(float)\n\
+        Returns yes: if first > second\nReturns no: if first <= second\nReturns exception\
+        \ if one of the inputs is not a number"
+      scriptName: IsGreaterThan
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      no:
+      - '7'
+      yes:
+      - '36'
+    scriptarguments:
+      first:
+        complex:
+          root: Endace
+          filters:
+          - - operator: greaterThan
+              left:
+                value:
+                  simple: Endace.Search.Response.TotalBytes
+                iscontext: true
+              right:
+                value:
+                  simple: '0'
+          accessor: Search.Response.TotalBytes
+      second:
+        simple: '0'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 1090\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '27':
+    id: '27'
+    taskid: 9e7cdb36-606a-4a4e-8c8c-e0e8474d9d23
+    type: condition
+    task:
+      id: 9e7cdb36-606a-4a4e-8c8c-e0e8474d9d23
+      version: -1
+      name: Is Archived Finished ?
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      no:
+      - '7'
+      yes:
+      - '14'
+    scriptarguments:
+      left:
+        simple: ${Endace.Archive.Response.Status}
+      right:
+        simple: Finished
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 1945\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '28':
+    id: '28'
+    taskid: 39cc0e39-8f4d-4d16-8f82-8c9062905d42
+    type: regular
+    task:
+      id: 39cc0e39-8f4d-4d16-8f82-8c9062905d42
+      version: -1
+      name: endace-create-search
+      description: Create a Search Job on EndaceProbe. Search is issued against active
+        and archived datasources on all EndaceProbes
+      script: Endace|||endace-create-search
+      type: regular
+      iscommand: true
+      brand: Endace
+    nexttasks:
+      '#none#':
+      - '29'
+    scriptarguments:
+      dest_host_list: {}
+      dest_port_list: {}
+      end: {}
+      protocol: {}
+      src_host_list:
+        simple: ${inputs.src_host_list}
+      src_port_list: {}
+      start: {}
+      timeframe:
+        simple: ${inputs.timeframe}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '29':
+    id: '29'
+    taskid: cae9c84d-613c-439b-887f-2563948cacdf
+    type: regular
+    task:
+      id: cae9c84d-613c-439b-887f-2563948cacdf
+      version: -1
+      name: endace-get-search-status
+      description: Get search status from EndaceProbe. This function can be polled
+        in a loop untill response is received or polling timer is over
+      script: Endace|||endace-get-search-status
+      type: regular
+      iscommand: true
+      brand: Endace
+    nexttasks:
+      '#none#':
+      - '30'
+    scriptarguments:
+      jobid:
+        simple: ${Endace.Search.Task.JobID}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '30':
+    id: '30'
+    taskid: e73f6332-3e73-4c50-8816-0266a7c44833
+    type: regular
+    task:
+      id: e73f6332-3e73-4c50-8816-0266a7c44833
+      version: -1
+      name: endace-delete-search-task
+      description: Delete search job
+      script: Endace|||endace-delete-search-task
+      type: regular
+      iscommand: true
+      brand: Endace
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      jobid:
+        simple: ${Endace.Search.Task.JobID}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '32':
+    id: '32'
+    taskid: a770bc9a-e034-4022-8e17-f6112af06a5d
+    type: regular
+    task:
+      id: a770bc9a-e034-4022-8e17-f6112af06a5d
+      version: -1
+      name: endace-get-archive-status
+      description: get status of archived task
+      script: Endace|||endace-get-archive-status
+      type: regular
+      iscommand: true
+      brand: Endace
+    nexttasks:
+      '#none#':
+      - '27'
+    scriptarguments:
+      archive_filename:
+        simple: ${Endace.Archive.Task.FileName}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 1770\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '34':
+    id: '34'
+    taskid: b2086f35-ccc5-4262-8dd3-aa2db1d52962
+    type: regular
+    task:
+      id: b2086f35-ccc5-4262-8dd3-aa2db1d52962
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '28'
+    scriptarguments:
+      all:
+        simple: yes
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '35':
+    id: '35'
+    taskid: cd7ad793-ebf2-4723-8cf1-bac83e7fbd53
+    type: regular
+    task:
+      id: cd7ad793-ebf2-4723-8cf1-bac83e7fbd53
+      version: -1
+      name: endace-download-pcap
+      description: Download a copy of the PCAP file from EndaceProbe if PCAP file
+        size is within the threshold value defined by filesizelimit.
+      script: Endace|||endace-download-pcap
+      type: regular
+      iscommand: true
+      brand: Endace
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments:
+      filename:
+        simple: ${Endace.Archive.Task.FileName}
+      filesizelimit: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 500,\n    \"y\": 2295\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '36':
+    id: '36'
+    taskid: 1d385be2-44e2-435f-8d0c-d03cd1cad3bd
+    type: regular
+    task:
+      id: 1d385be2-44e2-435f-8d0c-d03cd1cad3bd
+      version: -1
+      name: endace-create-archive
+      description: Create an archive task to archive packets of interest on EndaceProbe.
+        Archived packets can later be downloaded from EndaceProbe as a PCAP file.
+        Archived Files never expire. Allowed chars are text, numbers, dash and underscore.
+      script: Endace|||endace-create-archive
+      type: regular
+      iscommand: true
+      brand: Endace
+    nexttasks:
+      '#none#':
+      - '24'
+    scriptarguments:
+      archive_filename:
+        simple: pcaparchive
+      dest_host_list:
+        simple: ${inputs.dest_host_list}
+      dest_port_list:
+        simple: ${inputs.dest_port_list}
+      end:
+        simple: ${inputs.end}
+      protocol:
+        simple: ${inputs.protocol}
+      src_host_list:
+        simple: ${inputs.src_host_list}
+      src_port_list:
+        simple: ${inputs.src_port_list}
+      start:
+        simple: ${inputs.start}
+      timeframe:
+        simple: ${inputs.timeframe}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 420,\n    \"y\": 1270\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: "{\n  \"linkLabelsPosition\": {\n    \"14_7_no\": 0.24,\n    \"26_7_no\": 0.1,\n\
+  \    \"27_7_no\": 0.25,\n    \"9_26_yes\": 0.67,\n    \"9_7_no\": 0.1\n  },\n  \"\
+  paper\": {\n    \"dimensions\": {\n      \"height\": 2660,\n      \"width\": 830,\n\
+  \      \"x\": 50,\n      \"y\": 50\n    }\n  }\n}"
+inputs:
+- key: start
+  value: {}
+  required: false
+  description: Event Start Time in ISO 8601 format
+  playbookInputQuery:
+- key: end
+  value: {}
+  required: false
+  description: Event End Time in ISO 8601 format
+  playbookInputQuery:
+- key: src_host_list
+  value:
+    simple: 10.16.13.188
+  required: false
+  description: List of Source IP addresses to search
+  playbookInputQuery:
+- key: dest_host_list
+  value: {}
+  required: false
+  description: List of Destination IP addresses to search
+  playbookInputQuery:
+- key: src_port_list
+  value: {}
+  required: false
+  description: List of Source Port addresses to search
+  playbookInputQuery:
+- key: dest_port_list
+  value: {}
+  required: false
+  description: List of Destination Port addresses to search
+  playbookInputQuery:
+- key: protocol
+  value:
+    simple: TCP
+  required: false
+  description: TCP or UDP Protocol
+  playbookInputQuery:
+- key: timeframe
+  value:
+    simple: '3600'
+  required: false
+  description: Event timeframe to search - in seconds.  Timeframe works as search
+    for last "n" seconds if start and end time is not provided. For example, by specifying
+    3600 seconds as the timeframe, analyst can schedule a search for last 1 hour.
+    If both start and end time is provided, timeframe value is ignored. If either
+    start or end time is provided along with timeframe, the respective start or end
+    time is calculated accordingly.
+  playbookInputQuery:
+outputs:
+- contextPath: Endace.Search.Query.JobID
+  description: Search Job ID
+  type: string
+- contextPath: Endace.Search.Response.JobID
+  description: This is the job ID of search query which we polled to get search status
+  type: string
+- contextPath: Endace.Search.Response.Status
+  description: 'job status '
+  type: string
+- contextPath: Endace.Search.Response.JobProgress
+  description: 'Progress of this search Job '
+  type: string
+- contextPath: Endace.Search.Response.TotalBytes
+  description: Total data matching this search across all datasources
+  type: string
+- contextPath: Endace.Search.Delete.JobID
+  description: JobID of the task that needs to be deleted
+  type: string
+- contextPath: Endace.Search.Delete.Error
+  description: 'Error message '
+  type: string
+- contextPath: Endace.Search.Delete.Status
+  description: 'delete status, queryNotFound indicates that the search query has already
+    expired before this operation, which is expected as EndaceProbes purges inactive
+    tasks after their timer expires. queryDeleted indicates an active search query
+    is now deleted. '
+  type: string
+- contextPath: Endace.Archive.Query.JobID
+  description: JobID of the Archive Task
+  type: string
+- contextPath: Endace.Archive.Query.FileName
+  description: Name of the archived File
+  type: string
+- contextPath: Endace.Archive.Query.P2Vurl
+  description: Endace Pivot to Vision URL that links to an Investigation Dashboard
+    on EndaceProbe. This enables user to further drill down on packets of interests
+    on EndaceProbe without even downloading a pcap
+  type: string
+- contextPath: Endace.Download.FileName
+  description: Name of the File to download from EndaceProbe
+  type: string
+- contextPath: Endace.Download.FileSize
+  description: File size in MegaBytes
+  type: string
+- contextPath: Endace.Download.FileType
+  description: The file downloaded from EndaceProbes is either a rotationfile or archivefile.
+  type: string
+- contextPath: Endace.Download.FileURL
+  description: 'URL to PCAP file on EndaceProbe. '
+  type: string
+- contextPath: Endace.Download.FileUser
+  description: Username of the person associated with the Endace instance who downloads
+    this PCAP
+  type: string
+- contextPath: Endace.Download.Status
+  description: 'Download status of the file. '
+  type: string
+- contextPath: Endace.Download.Error
+  description: error occured during downloading of this file
+  type: string
+fromversion: 5.0.0
+description: ''
