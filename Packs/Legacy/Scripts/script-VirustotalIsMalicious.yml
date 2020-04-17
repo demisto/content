@@ -52,6 +52,7 @@ script: |-
           res.append('No results.')
       demisto.results(res)
 type: python
+subtype: python2
 tags:
 - virustotal
 comment: Query Virustotal with a file hash

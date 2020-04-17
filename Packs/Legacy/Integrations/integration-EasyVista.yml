@@ -166,6 +166,7 @@ script:
         raise
 
   type: python
+  subtype: python2
   commands:
   - name: easy-vista-search
     arguments:

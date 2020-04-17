@@ -7,6 +7,7 @@ script: |
   demisto.setContext('repo', epoInstance)
   demisto.results('Using repository: ' + epoInstance)
 type: python
+subtype: python2
 tags:
 - epo
 comment: Holds the logic to choose the ePO repositories to operate on when executing

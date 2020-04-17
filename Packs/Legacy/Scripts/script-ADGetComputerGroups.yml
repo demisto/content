@@ -26,6 +26,7 @@ script: |-
   else:
       demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Computer not found.' } )
 type: python
+subtype: python2
 tags:
 - active directory
 comment: Use Active Directory to retrieve the groups in which the specified computer

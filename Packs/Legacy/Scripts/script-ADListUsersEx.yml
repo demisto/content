@@ -9,6 +9,7 @@ script: |-
       attrs += "," + demisto.args()['attributes']
   demisto.results( demisto.executeCommand( 'AdSearch', { 'filter' : "(objectClass=User)", 'attributes' : attrs } ) )
 type: python
+subtype: python2
 tags:
 - active directory
 comment: Retrieve the list of User objects stored in Active Directory and include

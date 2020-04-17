@@ -23,6 +23,7 @@ system: false
 tags: [Utility]
 timeout: '0'
 type: python
+subtype: python3
 runonce: false
 dockerimage: demisto/iputils:1.0.0.308
 tests: [Ping Test Playbook]

@@ -370,6 +370,7 @@ script:
 
     # Params are of the type given in the integration page creation.
   type: python
+  subtype: python2
   commands:
   - name: tq-search-by-name
     arguments:

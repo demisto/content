@@ -31,6 +31,7 @@ script: |
                   "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resSearch)})
   demisto.results(res)
 type: python
+subtype: python2
 tags:
 - protectwise
 comment: List the available ProtectWise sensors or retrieve information for a specific

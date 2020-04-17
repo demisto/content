@@ -9,6 +9,7 @@ script: |-
           dArgs[argName] = demisto.args()[argName]
   demisto.results( demisto.executeCommand( 'slack-send', dArgs )  )
 type: python
+subtype: python2
 tags:
 - slack
 comment: Send messages to Slack teams

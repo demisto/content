@@ -80,6 +80,7 @@ script: |
       res.append({"Type": entryTypes["note"], "ContentsFormat": formats["text"], "Contents": answer})
   demisto.results(res)
 type: python
+subtype: python2
 tags:
 - epo
 comment: Check a list of ePO servers to see if they are up to date.

@@ -318,6 +318,7 @@ script:
 
     demisto.results(entry)
   type: python
+  subtype: python2
   commands:
   - name: malwr-submit
     arguments:

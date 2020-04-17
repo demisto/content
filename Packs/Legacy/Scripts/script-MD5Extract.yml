@@ -16,6 +16,7 @@ script: |-
   appendContext('md5s', hashes, dedup = True)  
   demisto.results(res)
 type: python
+subtype: python2
 tags:
 - hash
 - infra

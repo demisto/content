@@ -141,6 +141,7 @@ script: |-
               "Contents" : "EntryID {0} path could not be found".format(entry_id)
                })
 type: python
+subtype: python2
 tags:
 - Utility
 - ingestion

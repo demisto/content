@@ -33,6 +33,7 @@ script: |-
   else:
       demisto.results('No details were found for the incident')
 type: python
+subtype: python2
 tags:
 - confer
 comment: Set incident severity according to indicators found in an confer alert

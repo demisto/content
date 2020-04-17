@@ -16,6 +16,7 @@ script: |-
   else:
       demisto.results(entry)
 type: python
+subtype: python2
 tags:
 - server
 - analytics

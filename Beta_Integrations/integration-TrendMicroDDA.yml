@@ -798,6 +798,7 @@ script:
     finally:
         unregister()
   type: python
+  subtype: python2
   commands:
   - name: trendmicro-dda-get-sample
     arguments:

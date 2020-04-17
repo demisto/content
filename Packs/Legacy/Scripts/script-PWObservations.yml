@@ -41,6 +41,7 @@ script: |
                       "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resSearch)})
   demisto.results(res)
 type: python
+subtype: python2
 tags:
 - protectwise
 comment: Query for ProtectWise observations. Supports a comma-separated list of sensor

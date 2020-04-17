@@ -37,6 +37,7 @@ script: |-
           else:
               demisto.results(resSSH)
 type: python
+subtype: python2
 tags:
 - forcepoint
 - triton

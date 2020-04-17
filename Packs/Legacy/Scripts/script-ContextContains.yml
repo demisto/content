@@ -33,6 +33,7 @@ script: |
 
   demisto.results(results[search(demisto.context(), path.split('.'), value)])
 type: python
+subtype: python2
 tags: []
 comment: "This script searches for a value in a context path."
 enabled: true

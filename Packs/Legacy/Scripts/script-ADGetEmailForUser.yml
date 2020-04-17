@@ -39,6 +39,7 @@ script: |-
   else:
       demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'User not found.' } )
 type: python
+subtype: python2
 tags:
 - active directory
 comment: Use Active Directory to retrieve the email address associated with the specified

@@ -62,6 +62,7 @@ script: |-
       empRequest = demisto.incidents()[0]['details']
   demisto.results(demisto.executeCommand('send-mail', {'to': managerEmail, 'subject': subject, 'body': textwrap.dedent(actualBody.safe_substitute(managerName=managerName, empName=empName)) + '\n----------' + empRequest}))
 type: python
+subtype: python2
 tags:
 - communication
 comment: Send an approval email to the manager of the employee with the given email

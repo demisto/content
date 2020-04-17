@@ -36,6 +36,7 @@ script: |
                   "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmd)})
   demisto.results(res)
 type: python
+subtype: python2
 tags:
 - protectwise
 comment: Retrieve details for a specific event from ProtectWise

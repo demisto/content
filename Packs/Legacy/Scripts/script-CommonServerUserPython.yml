@@ -4,6 +4,7 @@ commonfields:
 name: CommonServerUserPython
 script: ""
 type: python
+subtype: python2
 tags:
 - infra
 - server

@@ -23,6 +23,7 @@ script: |-
       res += '\n- Total: ' + str(int(demisto.get(entry, 'Contents.total')))
   demisto.results({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': res})
 type: python
+subtype: python2
 tags:
 - server
 - analytics

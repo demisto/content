@@ -24,6 +24,7 @@ script: |-
               demisto.setContext('ADDistinguishedName', dn)
   demisto.results(resp)
 type: python
+subtype: python2
 tags:
 - active directory
 comment: Use Active Directory to retrieve the user associated with the specified email

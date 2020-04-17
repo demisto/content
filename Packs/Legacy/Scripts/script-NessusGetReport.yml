@@ -39,6 +39,7 @@ script: |
                   "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmd)})
   demisto.results(res)
 type: python
+subtype: python2
 tags:
 - nessus
 comment: Get report for a scan. Triggers an export in the requested file format, waits

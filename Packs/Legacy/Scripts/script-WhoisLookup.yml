@@ -18,6 +18,7 @@ script: |-
 
   demisto.results(res)
 type: python
+subtype: python2
 tags:
 - whois
 comment: Do WHOIS lookup on multiple domains

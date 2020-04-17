@@ -39,6 +39,7 @@ script: |+
       else:
           demisto.results("No results.")
 type: python
+subtype: python2
 tags:
 - enhancement
 comment: Run a query through Splunk and format the results as a markdown with raw

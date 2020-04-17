@@ -5,6 +5,7 @@ name: CommonIntegrationPython
 script: |-
   entryTypes = {'note': 1, 'downloadAgent': 2, 'file': 3, 'error': 4, 'pinned': 5, 'userManagement': 6, 'image': 7, 'plagroundError': 8, 'entryInfoFile': 9, 'map': 15}
 type: python
+subtype: python2
 tags:
 - infra
 - server
