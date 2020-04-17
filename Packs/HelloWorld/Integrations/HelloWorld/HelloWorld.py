@@ -126,21 +126,26 @@ Command Functions
 -----------------
 
 Command functions perform the mapping between XSOAR inputs and outputs to the
-Client class functions inputs and outputs. They contain the XSOAR specific code
-(i.e. calls to ``demisto.args()``, ``demisto.results()``, ``return_outputs``),
-as well as argument and error checking. Usually you will have one command
-function for every specific XSOAR command you want to implement in your
-integration, plus ``test-module``, ``fetch-incidents`` and ``fetch-indicators``
-(if the latter two are supported by your integration). Each command function
-should invoke one specific function of the Client class.
+Client class functions inputs and outputs. As a best practice, they shouldn't
+contain calls to ``demisto.args()``, ``demisto.results()``, ``return_outputs``,
+``return_error`` and ``demisto.command()`` as they should be handled through
+the ``main()`` function.
+However it's possible to use some ``demisto`` or ``CommonServerPython.py``.
+Usually you will have one command function for every specific XSOAR command
+you want to implement in your integration, plus ``test-module``,
+``fetch-incidents`` and ``fetch-indicators``(if the latter two are supported
+by your integration). Each command function should invoke one specific function
+of the Client class.
 
-Command functions, when invoked through an XSOAR command usually invoke the
-``return_outputs()`` function (defined in ``CommonServerPython.py``) to return
+Command functions, when invoked through an XSOAR command usually return data
+that is then passed to ``return_outputs()`` in the ``main()`` function.
+``return_outputs()`` is defined in ``CommonServerPython.py``) to return
 the data to XSOAR. ``return_outputs()`` actually wraps ``demisto.results()``.
-You need ``demisto.results()`` only in specific conditions (i.e. check the
+You will use ``demisto.results()`` only in specific conditions (i.e. check the
 ``scan_results_command`` function here that has the option to return a file).
 
-When you use ``return_outputs()`` you usually return up to 3 types of data:
+When you use return in command functions, you usually return up to 3 types of
+data:
 
 - Human Readable: usually in Markdown format. This is what is presented to the
 analyst in the War Room. You can use ``tableToMarkdown()``, defined in
@@ -183,8 +188,9 @@ Main Function
 The ``main()`` function takes care of reading the integration parameters via
 the ``demisto.params()`` function, initializes the Client class and checks the
 different options provided to ``demisto.commands()``, to invoke the correct
-command function. It also catches exceptions and returns an error message via
-``return_error()``.
+command function passing to it ``demisto.args()`` and returning the data to
+``return_outputs()``. ``main()`` also catches exceptions and returns an error
+message via ``return_error()``.
 
 
 Entry Point
@@ -205,7 +211,7 @@ import json
 import requests
 import dateparser
 import traceback
-from typing import Any, Dict, Tuple, List, Optional, Set, cast
+from typing import Any, Dict, Tuple, List, Optional, cast
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -1161,7 +1167,7 @@ def update_alert_status_command(client: Client, args: Dict[str, Any]) -> Tuple[s
     :param args:
         all command arguments, usually passed from ``demisto.args()``.
         ``args['alert_id']`` alert ID to update
-        ``args['alert_status']`` new status, either ACTIVE or CLOSED
+        ``args['status']`` new status, either ACTIVE or CLOSED
 
     :return:
         A tuple containing three elements that is then passed to ``return_outputs``:
@@ -1179,11 +1185,11 @@ def update_alert_status_command(client: Client, args: Dict[str, Any]) -> Tuple[s
     if not alert_id:
         raise ValueError('alert_id not specified')
 
-    alert_status = args.get('alert_status', None)
-    if alert_status not in ('ACTIVE', 'CLOSED'):
-        raise ValueError('alert_status must be either ACTIVE or CLOSED')
+    status = args.get('status', None)
+    if status not in ('ACTIVE', 'CLOSED'):
+        raise ValueError('status must be either ACTIVE or CLOSED')
 
-    alert = client.update_alert_status(alert_id, alert_status)
+    alert = client.update_alert_status(alert_id, status)
 
     # tabletoMarkdown() is defined is CommonServerPython.py and is used very
     # often to convert lists and dicts into a human readable format in markdown
@@ -1328,18 +1334,18 @@ def scan_results_command(client: Client, args: Dict[str, Any]) -> None:
         # This scan returns CVE information. CVE is also part of the XSOAR
         # context standard, so we must extract CVE IDs and return them also.
         # See: https://xsoar.pan.dev/docs/integrations/context-standards#cve
-        cves : Set[str] = set([])
-        entities: List[Dict[str, Any]] = results.get('entities')
+        cves: List[str] = []
+        entities = results.get('entities', [])
         for e in entities:
             if 'vulns' in e.keys() and isinstance(e['vulns'], list):
-                cves.update(e['vulns'])
+                cves.extend(e['vulns'])
 
         markdown = tableToMarkdown(f'Scan {scan_id} results', entities)
         return_outputs(
             readable_output=markdown,
             outputs={
                 'HelloWorld.Scan(val.scan_id == obj.scan_id)': results,
-                'CVE(val.ID == obj.ID)': cves
+                'CVE(val.ID == obj.ID)': list(set(cves))  # make the output unique
             },
             raw_response=results
         )
@@ -1437,6 +1443,9 @@ def main() -> None:
 
         elif demisto.command() == 'helloworld-get-alert':
             return_outputs(*get_alert_command(client, demisto.args()))
+
+        elif demisto.command() == 'helloworld-update-alert-status':
+            return_outputs(*update_alert_status_command(client, demisto.args()))
 
         elif demisto.command() == 'helloworld-scan-start':
             return_outputs(*scan_start_command(client, demisto.args()))

@@ -78,17 +78,17 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Hello command - prints hello to anyone
+    description: Hello command - prints hello to anyone.
     execution: false
     name: helloworld-say-hello
     outputs:
     - contextPath: hello
-      description: Should be Hello **something** here
+      description: Should be Hello **something** here.
       type: String
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Filter by alert severity
+      description: Filter by alert severity.
       isArray: false
       name: severity
       predefined:
@@ -100,7 +100,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Filter by alert status
+      description: Filter by alert status.
       isArray: false
       name: status
       predefined:
@@ -115,7 +115,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Maximum results to return
+      description: Maximum results to return.
       isArray: false
       name: max_results
       required: false
@@ -128,7 +128,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieve alerts
+    description: Search HelloWorld Alerts.
     execution: false
     name: helloworld-search-alerts
     outputs:
@@ -152,42 +152,73 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: alert id
+      description: Alert ID.
       isArray: false
       name: alert_id
       required: true
       secret: false
     deprecated: false
-    description: Retrieve alert by id
+    description: Retrieve alert extra data by ID.
     execution: false
     name: helloworld-get-alert
     outputs:
     - contextPath: HelloWorld.Alert.alert_id
-      description: Alert ID
+      description: Alert ID.
       type: String
     - contextPath: HelloWorld.Alert.created
-      description: Alert created time
+      description: Alert created time.
       type: Number
     - contextPath: HelloWorld.Alert.description
-      description: Alert description
+      description: Alert description.
       type: String
     - contextPath: HelloWorld.Alert.device_id
-      description: ID of the device involved in the alert
+      description: ID of the device involved in the alert.
       type: String
     - contextPath: HelloWorld.Alert.device_ip
-      description: IP Address of the device involved in the alert
+      description: IP Address of the device involved in the alert.
       type: String
     - contextPath: HelloWorld.Alert.location
-      description: Location of the device involved in the alert
+      description: Location of the device involved in the alert.
       type: String
     - contextPath: HelloWorld.Alert.user
-      description: User involved in the alert
+      description: User involved in the alert.
+      type: String
+  - arguments:
+    - default: false
+      description: Alert ID to update.
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: New status of the alert.
+      isArray: false
+      name: status
+      predefined:
+      - ACTIVE
+      - CLOSED
+      required: true
+      secret: false
+    deprecated: false
+    description: Update the status for an alert.
+    execution: false
+    name: helloworld-update-alert-status
+    outputs:
+    - contextPath: HelloWorld.Alert.alert_id
+      description: Alert ID.
+      type: String
+    - contextPath: HelloWorld.Alert.update
+      description: Alert update time.
+      type: Number
+    - contextPath: HelloWorld.Alert.alert_status
+      description: Alert status.
       type: String
   - name: ip
     arguments:
     - name: ip
       default: true
-      description: List of IPs
+      description: List of IPs.
       isArray: true
     - name: threshold
       description: If the IP has reputation above the threshold then the IP defined as malicious.
@@ -307,7 +338,7 @@ script:
     arguments:
     - name: domain
       default: true
-      description: List of Domains
+      description: List of Domains.
       isArray: true
     - name: threshold
       description: If the domain has reputation above the threshold then the domain defined as malicious.
@@ -431,7 +462,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: file
-      description: Results format.
+      description: Results format (file or JSON).
       isArray: false
       name: format
       predefined:
@@ -446,12 +477,12 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieve scan status in Context or as a File (defailt) for a Scan.
+    description: Retrieve scan status in Context or as a File (default) for a Scan.
     execution: false
     name: helloworld-scan-results
     outputs:
     - contextPath: HelloWorld.Scan.entity.entity-id
-      description: Scanned entity ID
+      description: Scanned entity ID.
       type: String
     - contextPath: HelloWorld.Scan.entity.ip_address
       description: Scanned entity IP address.

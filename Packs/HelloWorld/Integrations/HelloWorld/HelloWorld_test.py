@@ -1,8 +1,50 @@
 """HelloWorld Integration for Cortex XSOAR - Unit Tests file
 
-This file contains the Unit Tests for the HelloWorld Integration. It's based on pytest.
+This file contains the Unit Tests for the HelloWorld Integration based
+on pytest. Cortex XSOAR contribution requirements mandate that every
+integration should have a proper set of unit tests to automatically
+verify that the integration is behaving as expected during CI/CD pipeline.
 
-More information about Unit Tests in Cortex XSOAR: https://xsoar.pan.dev/docs/integrations/unit-testing
+Test Execution
+--------------
+
+Unit tests can be checked in 3 ways:
+- Using the command `lint` of demisto-sdk. The command will build a dedicated
+  docker instance for your integration locally and use the docker instance to
+  execute your tests.
+  tests in a dedicated docker instance.
+- From the command line using `pytest -v`
+- From PyCharm
+
+Example with demisto-sdk (from the content root directory):
+demisto-sdk lint -d Packs/HelloWorld/Integrations/HelloWorld
+
+Coverage
+--------
+
+There should be at least one unit test per command function. In each unit
+test, the target command function is executed with specific parameters and the
+output of the command function is checked against an expected output.
+
+Unit tests should be self contained and should not interact with external
+resources like (API, devices, ...). To isolate the code from external resources
+you need to mock the API of the external resource using pytest-mock:
+https://github.com/pytest-dev/pytest-mock/
+
+In the following code we configure requests-mock (a mock of Python requests)
+before each test to simulate the API calls to the HelloWorld API. This way we
+can have full control of the API behavior and focus only on testing the logic
+inside the integration code.
+
+NOTE: we do not have to import or build a requests-mock instance explicitly.
+requests-mock library uses a pytest specific mechanism to provide a
+requests_mock instance to any function with an argument named requests_mock.
+
+More Details
+------------
+
+More information about Unit Tests in Cortex XSOAR:
+https://xsoar.pan.dev/docs/integrations/unit-testing
 
 """
 
@@ -16,6 +58,13 @@ def util_load_json(path):
 
 
 def test_say_hello():
+    """Tests helloworld-say-hello command function.
+
+    Checks the output of the command function with the expected output.
+
+    No mock is needed here because the say_hello_command does not call
+    any external API.
+    """
     from HelloWorld import Client, say_hello_command
 
     client = Client(base_url='https://test.com/api/v1', verify=False, auth=('test', 'test'))
@@ -28,6 +77,12 @@ def test_say_hello():
 
 
 def test_start_scan(requests_mock):
+    """Tests helloworld-scan-start command function.
+
+    Configures requests_mock instance to generate the appropriate start_scan
+    API response when the correct start_scan API request is performed. Checks
+    the output of the command function with the expected output.
+    """
     from HelloWorld import Client, scan_start_command
 
     mock_response = {
@@ -59,6 +114,13 @@ def test_start_scan(requests_mock):
 
 
 def test_status_scan(requests_mock):
+    """Tests helloworld-scan-status command function.
+
+    Configures requests_mock instance to generate the appropriate check_scan
+    API responses based on the scan ID provided. For scan_id 100, 300 status
+    should be COMPLETE while for scan ID 200 is RUNNING. Checks the output of
+    the command function with the expected output.
+    """
     from HelloWorld import Client, scan_status_command
 
     mock_response = {
@@ -112,6 +174,12 @@ def test_status_scan(requests_mock):
 
 
 def test_scan_results(mocker, requests_mock):
+    """Tests helloworld-scan-results command function.
+
+    Configures requests_mock instance to generate the appropriate
+    get_scan_results API response, loaded from a local JSON file. Checks
+    the output of the command function with the expected output.
+    """
     from HelloWorld import Client, scan_results_command
     import demistomock as demisto
     mock_response = util_load_json('test_data/scan_results.json')
@@ -139,12 +207,16 @@ def test_scan_results(mocker, requests_mock):
     assert demisto.results.call_count == 1
 
     outputs = demisto.results.call_args[0][0]['EntryContext']
-    assert outputs == {
-        'HelloWorld.Scan(val.scan_id == obj.scan_id)': mock_response
-    }
+    assert outputs['HelloWorld.Scan(val.scan_id == obj.scan_id)'] == mock_response
 
 
 def test_search_alerts(requests_mock):
+    """Tests helloworld-search-alerts command function.
+
+    Configures requests_mock instance to generate the appropriate
+    get_alerts API response, loaded from a local JSON file. Checks
+    the output of the command function with the expected output.
+    """
     from HelloWorld import Client, search_alerts_command
 
     mock_response = util_load_json('test_data/search_alerts.json')
@@ -173,7 +245,79 @@ def test_search_alerts(requests_mock):
     }
 
 
+def test_get_alert(requests_mock):
+    """Tests helloworld-get-alert command function.
+
+    Configures requests_mock instance to generate the appropriate
+    get_alerts API response, loaded from a local JSON file. Checks
+    the output of the command function with the expected output.
+    """
+    from HelloWorld import Client, get_alert_command
+
+    mock_response = util_load_json('test_data/get_alert.json')
+    requests_mock.get('https://test.com/api/v1/get_alert_details?alert_id=695b3238-05d6-4934-86f5-9fff3201aeb0',
+                      json=mock_response)
+
+    client = Client(
+        base_url='https://test.com/api/v1',
+        verify=False,
+        headers={
+            'Authentication': 'Bearer some_api_key'
+        }
+    )
+
+    args = {
+        'alert_id': '695b3238-05d6-4934-86f5-9fff3201aeb0',
+    }
+
+    _, outputs, _ = get_alert_command(client, args)
+
+    assert outputs == {
+        'HelloWorld.Alert(val.alert_id == obj.alert_id)': mock_response
+    }
+
+
+def test_update_alert_status(requests_mock):
+    """Tests helloworld-update-alert-status command function.
+
+    Configures requests_mock instance to generate the appropriate
+    get_alerts API response, loaded from a local JSON file. Checks
+    the output of the command function with the expected output.
+    """
+    from HelloWorld import Client, update_alert_status_command
+
+    mock_response = util_load_json('test_data/update_alert_status.json')
+    requests_mock.get(
+        'https://test.com/api/v1/change_alert_status?alert_id=695b3238-05d6-4934-86f5-9fff3201aeb0&alert_status=CLOSED',
+        json=mock_response)
+
+    client = Client(
+        base_url='https://test.com/api/v1',
+        verify=False,
+        headers={
+            'Authentication': 'Bearer some_api_key'
+        }
+    )
+
+    args = {
+        'alert_id': '695b3238-05d6-4934-86f5-9fff3201aeb0',
+        'status': 'CLOSED'
+    }
+
+    _, outputs, _ = update_alert_status_command(client, args)
+
+    assert outputs == {
+        'HelloWorld.Alert(val.alert_id == obj.alert_id)': mock_response
+    }
+
+
 def test_ip(requests_mock):
+    """Tests the ip reputation command function.
+
+    Configures requests_mock instance to generate the appropriate
+    ip reputation API response, loaded from a local JSON file. Checks
+    the output of the command function with the expected output.
+    """
     from HelloWorld import Client, ip_reputation_command
 
     mock_response = util_load_json('test_data/ip_reputation.json')
@@ -201,6 +345,12 @@ def test_ip(requests_mock):
 
 
 def test_domain(requests_mock):
+    """Tests the domain reputation command function.
+
+    Configures requests_mock instance to generate the appropriate
+    domain reputation API response, loaded from a local JSON file. Checks
+    the output of the command function with the expected output.
+    """
     from HelloWorld import Client, domain_reputation_command
 
     mock_response = util_load_json('test_data/domain_reputation.json')
@@ -228,6 +378,12 @@ def test_domain(requests_mock):
 
 
 def test_fetch_incidents(requests_mock):
+    """Tests the fetch-incidents command function.
+
+    Configures requests_mock instance to generate the appropriate
+    get_alert API response, loaded from a local JSON file. Checks
+    the output of the command function with the expected output.
+    """
     from HelloWorld import Client, fetch_incidents
 
     mock_response = util_load_json('test_data/search_alerts.json')
@@ -246,7 +402,7 @@ def test_fetch_incidents(requests_mock):
         'last_fetch': 1582584487  # Mon Feb 24 2020
     }
 
-    next_run, new_incidents = fetch_incidents(
+    _, new_incidents = fetch_incidents(
         client=client,
         last_run=last_run,
         alert_status='ACTIVE',
