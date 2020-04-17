@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed an issue with the test button.
 
 ## [20.4.0] - 2020-04-14
 -
