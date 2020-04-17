@@ -225,16 +225,16 @@ script:
         If threshold not set, then threshold from instance configuration is used.
       defaultValue: 65
     outputs:
-    - contextPath: HelloWorld.DBotScore.Indicator
+    - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
-    - contextPath: HelloWorld.DBotScore.Score
+    - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-    - contextPath: HelloWorld.DBotScore.Type
+    - contextPath: DBotScore.Type
       description: The indicator type.
       type: String
-    - contextPath: HelloWorld.DBotScore.Vendor
+    - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: String
     - contextPath: HelloWorld.IP.asn
