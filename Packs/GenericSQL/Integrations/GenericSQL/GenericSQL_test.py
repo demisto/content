@@ -24,7 +24,7 @@ raw2 = [{'Host': '%', 'User': 'admin', 'Select_priv': 'Y', 'Insert_priv': 'Y', '
           'Event_priv': 'Y', 'Trigger_priv': 'Y', 'Create_tablespace_priv': 'N', 'ssl_type': '', 'ssl_cipher': b'',
           'x509_issuer': b'', 'x509_subject': b'', 'max_questions': 0, 'max_updates': 0, 'max_connections': 0,
           'max_user_connections': 0, 'plugin': 'mysql_native_password',
-          'authentication_string': '*10F812495985141A0E48A51252C25C130D53825F', 'password_expired': 'N',
+          'authentication_string': 'test', 'password_expired': 'N',
           'password_last_changed': '2020-02-17 08:49:45', 'password_lifetime': None,
           'account_locked': 'N', 'Create_role_priv': 'N', 'Drop_role_priv': 'N', 'Password_reuse_history': None,
           'Password_reuse_time': None, 'Password_require_current': None, 'User_attributes': None}]
@@ -50,7 +50,7 @@ expected_output2 = {'GenericSQL(val.Query && val.Query === obj.Query)': {'Generi
                       'Trigger_priv': 'Y', 'Create_tablespace_priv': 'N', 'ssl_type': '', 'ssl_cipher': "b''",
                       'x509_issuer': "b''", 'x509_subject': "b''", 'max_questions': '0', 'max_updates': '0',
                       'max_connections': '0', 'max_user_connections': '0', 'plugin': 'mysql_native_password',
-                      'authentication_string': '*10F812495985141A0E48A51252C25C130D53825F', 'password_expired': 'N',
+                      'authentication_string': 'test', 'password_expired': 'N',
                       'password_last_changed': '2020-02-17 08:49:45', 'password_lifetime': 'None',
                       'account_locked': 'N', 'Create_role_priv': 'N', 'Drop_role_priv': 'N',
                       'Password_reuse_history': 'None', 'Password_reuse_time': 'None',
