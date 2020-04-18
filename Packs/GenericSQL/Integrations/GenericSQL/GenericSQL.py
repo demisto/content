@@ -57,7 +57,10 @@ class Client:
             db_preferences = f'{module}://{self.username}:{self.password}@{self.host}:{self.port}/{self.dbname}'
             if self.dialect == "Microsoft SQL Server":
                 db_preferences += "?driver=FreeTDS"
-            if self.connect_parameters:
+            if self.connect_parameters and self.dialect == "Microsoft SQL Server":
+                db_preferences += f'&{self.connect_parameters}'
+            elif self.connect_parameters and self.dialect != "Microsoft SQL Server":
+                # a "?" was already added when the driver was defined
                 db_preferences += f'?{self.connect_parameters}'
             return sqlalchemy.create_engine(db_preferences).connect()
         except Exception as err:
