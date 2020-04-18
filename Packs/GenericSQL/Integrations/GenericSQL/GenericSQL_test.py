@@ -54,8 +54,8 @@ expected_output2 = {'GenericSQL(val.Query && val.Query === obj.Query)': {'Generi
                       'password_last_changed': '2020-02-17 08:49:45', 'password_lifetime': 'None',
                       'account_locked': 'N', 'Create_role_priv': 'N', 'Drop_role_priv': 'N',
                       'Password_reuse_history': 'None', 'Password_reuse_time': 'None',
-                      'Password_require_current': 'None', 'User_attributes': 'None'}],
-                        'Query': 'select * from mysql.user', 'InstanceName': 'sql_dialect_database'}}}
+                      'Password_require_current': 'None', 'User_attributes': 'None'}], 'Query':
+                      'select * from mysql.user', 'InstanceName': 'sql_dialect_database'}}}
 
 header1 = ['Name']
 
