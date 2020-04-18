@@ -32,4 +32,4 @@ This playbook does not use any sub-playbooks.
 | OrganizationExternalIP | IP addresses that are found in the  organization&\#x27;s external IP list. | string |
 | NotOrganizationExternalIP | IP addresses that are not found in the organization&\#x27;s external IP list. | string |
 
-<!-- Playbook PNG image comes here -->
+![TIM - Process Indicators Against Organizations External IP List](https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/TIM_-_Process_Indicators_Against_Organizations_External_IP_List.png)

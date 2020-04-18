@@ -29,4 +29,4 @@ This playbook does not use any scripts.
 ---
 There are no outputs for this playbook.
 
-<!-- Playbook PNG image comes here -->
+![TIM - Review Indicators Manually](https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/TIM_-_Review_Indicators_Manually.png)

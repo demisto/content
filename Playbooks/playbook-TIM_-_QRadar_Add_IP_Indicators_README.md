@@ -30,4 +30,4 @@ This playbook does not use any scripts.
 ---
 There are no outputs for this playbook.
 
-<!-- Playbook PNG image comes here -->
+![TIM - QRadar Add IP Indicators](https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/TIM_-_QRadar_Add_IP_Indicators.png)

@@ -31,4 +31,4 @@ This playbook does not use any commands.
 ---
 There are no outputs for this playbook.
 
-<!-- Playbook PNG image comes here -->
+![TIM_-_Add_All_Indicator_Types_To_SIEM](https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/TIM_-_Add_All_Indicator_Types_To_SIEM.png)

@@ -32,4 +32,4 @@ This playbook does not use any sub-playbooks.
 | BusinessPartnerIP | IP addresses that are found in the business partner ip list. | string |
 | NotBusinessPartnerIP | IP addresses that are not found in the business partner ip list. | string |
 
-<!-- Playbook PNG image comes here -->
+![TIM - Process Indicators Against Business Partners IP List](https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/TIM_-_Process_Indicators_Against_Business_Partners_IP_List.png)

@@ -34,4 +34,4 @@ This playbook does not use any commands.
 ---
 There are no outputs for this playbook.
 
-<!-- Playbook PNG image comes here -->
+![TIM - Run Enrichment For All Indicator Types](https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/TIM_-_Run_Enrichment_For_All_Indicator_Types.png)

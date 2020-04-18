@@ -31,4 +31,4 @@ There are no inputs for this playbook.
 | --- | --- | --- |
 | ProcessedIndicators | The outputs of this playbook are tagged for manual review in the parent playbook or tagged using approved black, approved white etc. | string |
 
-<!-- Playbook PNG image comes here -->
+![TIM - Indicator Auto Processing](https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/TIM_-_Indicator_Auto_Processing.png)
