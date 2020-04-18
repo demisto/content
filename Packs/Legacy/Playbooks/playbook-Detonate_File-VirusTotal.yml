@@ -1,25 +1,8 @@
-id: 781f7e97-db7b-4824-8917-ecd91a79e566
-version: 6
-name: VirusTotal - Detonate File
+id: Detonate File - VirusTotal
+version: -1
+name: Detonate File - VirusTotal
 description: |-
-  Detonates a File using the McAfee Advanced Threat Defense sandbox.
-  Advanced Threat Defense supports the following File Types:
-  32-bit Portable Executables (PE)files; 64-bit PE+files
-  exe, sys, dll, com, scr, cpl, ocx, cgi
-  Microsoft Office Suite documents
-  doc,dotm, docx, dotx, xls, ppam, xlsx, pps, xlsb, ppsx, xlsm, ppsm, ppt, ppt, pptx, pptm, rtf, shs, xltm, sldm, xltx, sldx, xlam, thmx, docm, xar
-  Just Systems Ichitaro documents
-  jtd, jtdc
-  Adobe
-  pdf, swf
-  Compressed files
-  gz, 7z, tgz, msi, zip, lzh, cab, lzma, rar
-  Android application package
-  apk, Java, JAR, CLASS, Java Script, Java bin files
-  Image files
-  jpeg, png, gif
-  Other file types
-  cmd, ace, bat, arj, vbs, chm, xml, lnk, url, mof, htm, ocx, html, potm, eml, potx, msg, ps1, vb, reg, vba, wsc, vbe, wsf, vbs, wsh
+  Detonate one or more files using the VirusTotal integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
 starttaskid: "0"
 tasks:
   "0":
@@ -59,7 +42,6 @@ tasks:
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
         The remote action should have the following structure:
-
         1. Initiate the operation.
         2. Poll to check if the operation completed.
         3. (optional) Get the results of the operation.
@@ -130,7 +112,7 @@ tasks:
       version: -1
       name: Is VirusTotal enabled?
       description: |
-        Verify that there is a valid instance of McAfee ATD enabled.
+        Verify that there is a valid instance of Virus Total enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -184,7 +166,7 @@ tasks:
     task:
       id: d8e19b0c-3dfa-41f8-86fa-2d12ff711340
       version: -1
-      name: Is File type supported?
+      name: Is file type supported?
       description: Check if file type is supported.
       type: condition
       iscommand: false
@@ -285,8 +267,8 @@ tasks:
     task:
       id: 9b8022fc-dfd0-4806-8ead-65f53804065f
       version: -1
-      name: Is there a File to Detonate?
-      description: Checks that there is a file in the playbook’s input.
+      name: Is there a file to detonate?
+      description: Checks that there is a file in the playbook inputs.
       type: condition
       iscommand: false
       brand: ""
@@ -365,7 +347,7 @@ inputs:
     complex:
       root: File
   required: false
-  description: The file to detonate. File is taken from the context.
+  description: The file to detonate. The file is taken from the context.
 - key: Interval
   value:
     simple: "1"
@@ -377,100 +359,85 @@ inputs:
   required: false
   description: How much time to wait before a timeout occurs (minutes)
 outputs:
-- contextPath: ATD.Task.taskId
-  description: The task ID of the sample uploaded
-  type: string
-- contextPath: ATD.Task.jobId
-  description: The job ID of the sample uploaded
-  type: string
-- contextPath: ATD.Task.messageId
-  description: The message Id relevant to the sample uploaded
-  type: string
-- contextPath: ATD.Task.srcIp
-  description: Source IPv4 address
-  type: string
-- contextPath: ATD.Task.destIp
-  description: Destination IPv4 address
-  type: string
-- contextPath: ATD.Task.MD5
-  description: MD5 of the sample uploaded
-  type: string
-- contextPath: ATD.Task.SHA1
-  description: SHA1 of the sample uploaded
-  type: string
-- contextPath: ATD.Task.SHA256
-  description: SHA256 of the sample uploaded
-  type: string
-- contextPath: File.Name
-  description: Filename (only in case of report type=json)
-  type: string
-- contextPath: File.Type
-  description: File type e.g. "PE" (only in case of report type=json)
-  type: string
-- contextPath: File.Size
-  description: File size (only in case of report type=json)
-  type: number
 - contextPath: File.MD5
-  description: MD5 hash of the file (only in case of report type=json)
+  description: File's MD5
   type: string
 - contextPath: File.SHA1
-  description: SHA1 hash of the file (only in case of report type=json)
+  description: File's SHA1
   type: string
 - contextPath: File.SHA256
-  description: SHA256 hash of the file (only in case of report type=json)
-  type: string
-- contextPath: File.EntryID
-  description: The Entry ID of the sample
+  description: File's SHA256
   type: string
 - contextPath: File.Malicious.Vendor
-  description: For malicious files, the vendor that made the decision
+  description: For malicious files, the vendor that determined the file is malicious.
   type: string
-- contextPath: File.Malicious.Description
-  description: For malicious files, the reason for the vendor to make the decision
-  type: string
+- contextPath: File.Malicious.Detections
+  description: For malicious files, the total number of detections.
+  type: number
+- contextPath: File.Malicious.TotalEngines
+  description: For malicious files, the total number of engines.
+  type: number
 - contextPath: DBotScore.Indicator
-  description: The indicator we tested (only in case of report type=json)
+  description: The indicator we tested.
   type: string
 - contextPath: DBotScore.Type
-  description: The type of the indicator (only in case of report type=json)
+  description: The type of the indicator.
   type: string
 - contextPath: DBotScore.Vendor
-  description: Vendor used to calculate the score (only in case of report type=json)
+  description: Vendor used to calculate the score.
   type: string
 - contextPath: DBotScore.Score
-  description: The actual score (only in case of report type=json)
+  description: The actual score.
   type: number
-- contextPath: IP.Address
-  description: IP's relevant to the sample
+- contextPath: File.VirusTotal.Scans.Source
+  description: The vendor used to scan this hash.
   type: string
-- contextPath: InfoFile.EntryID
-  description: The EntryID of the report file
+- contextPath: File.VirusTotal.Scans.Detected
+  description: Scan detection for this hash (True,False).
+  type: boolean
+- contextPath: File.VirusTotal.Scans.Result
+  description: Scan result for this hash - signature, etc.
   type: string
-- contextPath: InfoFile.Extension
-  description: The extension of the report file
+- contextPath: File.SSDeep
+  description: The ssdeep value for the file.
   type: string
-- contextPath: InfoFile.Name
-  description: The name of the report file
+- contextPath: File.Type
+  description: File type as determined by Virus Total.
   type: string
-- contextPath: InfoFile.Info
-  description: The info of the report file
-  type: string
-- contextPath: InfoFile.Size
-  description: The size of the report file
+- contextPath: File.Size
+  description: File size, in bytes.
   type: number
-- contextPath: InfoFile.Type
-  description: The type of the report file
+- contextPath: File.VirusTotal.Tags
+  description: Virus Total file tags.
   type: string
-- contextPath: File
-  description: File object
-  type: unknown
-- contextPath: File.Malicious
-  description: File Malicious object
-  type: unknown
-- contextPath: DBotScore
-  description: DBotScore object
-  type: unknown
-- contextPath: InfoFile
-  description: Report file object
-  type: unknown
-sourceplaybookid: ATD - Detonate File
+- contextPath: File.Tags
+  description: File tags.
+  type: string
+- contextPath: File.VirusTotal.MagicLiteral
+  description: File magic literals.
+  type: string
+- contextPath: File.VirusTotal.FirstSeen
+  description: Time where the file was first seen.
+  type: string
+- contextPath: File.VirusTotal.CommunityReputation
+  description: Community reputation of the file.
+  type: number
+- contextPath: File.VirusTotal.CommunityComments
+  description: Community comments about the file.
+  type: string
+- contextPath: File.VirusTotal.AuthentiHash
+  description: AuthentiHash of the file.
+  type: string
+- contextPath: File.Authentihash
+  description: AuthentiHash of the file.
+  type: string
+- contextPath: File.VirusTotal.ImpHash
+  description: ImpHash of the file.
+  type: string
+- contextPath: VirusTotal.ID
+  description: The ID of the file uploaded to VirusTotal. (The file hash)
+  type: String
+- contextPath: VirusTotal.Status
+  description: The status of the queried file. Could be "Queued" or "Ready".
+  type: String
+fromversion: 4.0.0
