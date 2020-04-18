@@ -1,11 +1,10 @@
 import base64
 import pytest
-from GooglePubSub import GoogleNameParser, PubSubClient, \
-    convert_publish_datetime_to_str, message_to_incident, attribute_pairs_to_dict, get_publish_body, \
-    extract_acks_and_msgs, publish_message_command, pull_messages_command, subscriptions_list_command, \
-    get_subscription_command, create_subscription_command, update_subscription_command, topics_list_command, \
-    create_topic_command, delete_topic_command, update_topic_command, seek_message_command, snapshot_list_command, \
-    snapshot_create_command, snapshot_update_command, snapshot_delete_command
+from GooglePubSub import GoogleNameParser, convert_publish_datetime_to_str, message_to_incident, \
+    attribute_pairs_to_dict, get_publish_body, extract_acks_and_msgs, publish_message_command, pull_messages_command, \
+    subscriptions_list_command, get_subscription_command, create_subscription_command, update_subscription_command, \
+    topics_list_command, create_topic_command, delete_topic_command, update_topic_command, seek_message_command, \
+    snapshot_list_command, snapshot_create_command, snapshot_update_command, snapshot_delete_command
 import dateparser
 import json
 
@@ -308,55 +307,81 @@ class TestHelperFunctions:
             assert expected == extract_acks_and_msgs(raw_msgs)
 
 
-# class TestCommands:
-#     TEST_COMMANDS_LIST = [
-#         # google-cloud-pubsub-topic-publish-message
-#         (publish_message_command, {}, 'publish_message', '', ''),
-#         # google-cloud-pubsub-topic-messages-pull
-#         (pull_messages_command, {}, 'pull_messages', '', ''),
-#         # google-cloud-pubsub-topic-subscriptions-list
-#         (subscriptions_list_command, {}, 'list_topic_subs', '', ''),
-#         # google-cloud-pubsub-topic-subscription-get-by-name
-#         (get_subscription_command, {'project_id': '1', 'subscription_id': '1'}, 'get_sub', '', ''),
-#         # google-cloud-pubsub-topic-subscription-create
-#         (create_subscription_command, {'project_id': '1', 'subscription_id': '1', 'topic_id': '1'}, 'create_subscription', '', ''),
-#         # google-cloud-pubsub-topic-subscription-update
-#         (update_subscription_command,),
-#         # google-cloud-pubsub-topics-list
-#         (topics_list_command,),
-#         # google-cloud-pubsub-topic-create
-#         (create_topic_command,),
-#         # google-cloud-pubsub-topic-delete
-#         (delete_topic_command,),
-#         # google-cloud-pubsub-topic-update
-#         (update_topic_command,),
-#         # google-cloud-pubsub-topic-messages-seek
-#         (seek_message_command,),
-#         # google-cloud-pubsub-topic-snapshots-list
-#         (snapshot_list_command,),
-#         # google-cloud-pubsub-topic-snapshot-create
-#         (snapshot_create_command,),
-#         # google-cloud-pubsub-topic-snapshot-update
-#         (snapshot_update_command,),
-#         # google-cloud-pubsub-topic-snapshot-delete
-#         (snapshot_delete_command,)
-#     ]
-#
-#     @pytest.mark.parametrize('command,args,client_func,func_result,expected_result', TEST_COMMANDS_LIST)
-#     def test_commands(self, command, args, client_func, func_result, expected_result, mocker):
-#         """
-#         Given:
-#             - command function
-#             - args
-#             - client function name to mock
-#             - expected client function result
-#             - expected command result
-#         When:
-#             - we want project_name
-#         Then:
-#             - GoogleNameParser should parse it in the expected format
-#         """
-#         client = Client(base_url='', verify=False, proxy=True, headers=headers)
-#         mocker.patch.object(client, '_http_request', return_value=response)
-#         res = command(client, args)
-#         assert expected_result == res[1]
+class TestCommands:
+    class MockClient:
+        def publish_message(self, **kwargs): return ''
+        def pull_messages(self, **kwargs): return ''
+        def list_project_subs(self, a, b, c): return ''
+        def get_sub(self, **kwargs): return ''
+        def create_subscription(self, **kwargs): return ''
+        def update_subscription(self, **kwargs): return ''
+        def delete_subscription(self, **kwargs): return ''
+        def list_topic(self, **kwargs): return ''
+        def create_topic(self, **kwargs): return ''
+        def delete_topic(self, a): return ''
+        def update_topic(self, **kwargs): return ''
+        def subscription_seek_message(self, **kwargs): return ''
+        def get_project_snapshots_list(self, **kwargs): return ''
+        def create_snapshot(self, **kwargs): return ''
+        def update_snapshot(self, **kwargs): return ''
+        def delete_snapshot(self, **kwargs): return ''
+        def ack_messages(self, a, b): return ''
+
+    with open('test_data/commands_outputs.json', 'r') as f:
+        COMMAND_OUTPUTS = json.load(f)
+    with open('test_data/raw_responses.json', 'r') as f:
+        RAW_RESPONSES = json.load(f)
+
+    TEST_COMMANDS_LIST = [
+        ('google-cloud-pubsub-topic-publish-message',
+         publish_message_command, 'publish_message', {'data': "42", 'project_id': 'dmst-doc-prjct', 'topic_id': 'dmst-test-topic'}),
+        ('google-cloud-pubsub-topic-messages-pull',
+         pull_messages_command, 'pull_messages', {'ack': 'true', 'max_messages': '1', 'project_id': 'dmst-doc-prjct', 'subscription_id': 'test_sub_2'}),
+        ('google-cloud-pubsub-topic-subscriptions-list',
+         subscriptions_list_command, 'list_project_subs', {'project_id': 'dmst-doc-prjct'}),
+        ('google-cloud-pubsub-topic-subscription-get-by-name',
+         get_subscription_command, 'get_sub', {'subscription_id': 'test_sub_2', 'project_id': 'dmst-doc-prjct'}),
+        ('google-cloud-pubsub-topic-subscription-create',
+         create_subscription_command, 'create_subscription', {'expiration_ttl': '86400s', 'project_id': 'dmst-doc-prjct', 'topic_id': 'dmst-test-topic', 'subscription_id': 'doc_sub_11'}),
+        ('google-cloud-pubsub-topic-subscription-update',
+         update_subscription_command, 'update_subscription', {'labels': "doc=true", 'project_id': 'dmst-doc-prjct', 'subscription_id': 'doc_sub_11', 'topic_id': 'dmst-test-topic', 'update_mask': 'labels'}),
+        ('google-cloud-pubsub-topics-list',
+         topics_list_command, 'list_topic', {'project_id': 'dmst-doc-prjct'}),
+        ('google-cloud-pubsub-topic-create',
+         create_topic_command, 'create_topic', {'project_id': 'dmst-doc-prjct', 'topic_id': 'dmst-doc-topic11'}),
+        ('google-cloud-pubsub-topic-delete',
+         delete_topic_command, 'delete_subscription', {'project_id': 'dmst-doc-prjct', 'topic_id': 'dmst-doc-topic11'}),
+        ('google-cloud-pubsub-topic-update',
+         update_topic_command, 'update_topic', {'project_id': 'dmst-doc-prjct', 'topic_id': 'dmst-doc-topic11', 'labels': "doc=true", 'update_mask': 'labels'}),
+        ('google-cloud-pubsub-topic-messages-seek',
+         seek_message_command, 'subscription_seek_message', {'project_id': 'dmst-doc-prjct', 'subscription_id': 'dean-sub1', 'time_string': '2020-04-10T00:00:00.123456Z'}),
+        ('google-cloud-pubsub-topic-snapshots-list',
+         snapshot_list_command, 'get_project_snapshots_list', {'project_id': 'dmst-doc-prjct'}),
+        ('google-cloud-pubsub-topic-snapshot-create',
+         snapshot_create_command, 'create_snapshot', {'project_id': 'dmst-doc-prjct', 'subscription_id': 'test_sub_2', 'snapshot_id': 'doc_snapshot'}),
+        ('google-cloud-pubsub-topic-snapshot-update',
+         snapshot_update_command, 'update_snapshot', {'project_id': 'dmst-doc-prjct', 'snapshot_id': 'doc_snapshot', 'labels': "doc=true", 'update_mask': 'labels', 'topic_id': 'dmst-test-topic'}),
+        ('google-cloud-pubsub-topic-snapshot-delete',
+         snapshot_delete_command, 'delete_snapshot', {'project_id': 'dmst-doc-prjct', 'snapshot_id': 'doc_snapshot'})
+    ]
+
+    @pytest.mark.parametrize('command_name,command_func,client_func,args, ', TEST_COMMANDS_LIST)
+    def test_commands(self, command_name, command_func, client_func, args, mocker):
+        """
+        Given:
+            - command function
+            - args
+            - client function name to mock
+            - expected client function result
+            - expected command result
+        When:
+            - we want to execute command function with args
+        Then:
+            - the expected result will be the same as actual
+        """
+        raw_response = self.RAW_RESPONSES[command_name]
+        expected = self.COMMAND_OUTPUTS[command_name]
+        client = self.MockClient()
+        mocker.patch.object(client, client_func, return_value=raw_response)
+        res = command_func(client, **args)
+        assert expected == res[1]
