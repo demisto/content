@@ -1,2 +1,2 @@
 ## [Unreleased]
-This script has been deprecated.
+Deprecated. There is no replacement script.
