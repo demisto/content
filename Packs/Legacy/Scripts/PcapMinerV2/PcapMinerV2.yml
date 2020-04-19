@@ -17,6 +17,13 @@ args:
   - LLMNR
   - SYSLOG
   - SMTP
+  - NETBIOS
+  - ICMP
+  - KEREBROS
+  - TELNET
+  - SSH
+  - IRC
+  - FTP
   required: false
   secret: false
 - auto: PREDEFINED

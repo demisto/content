@@ -173,54 +173,54 @@ def main():
     # file_path = "/Users/olichter/Downloads/wpa-Induction.pcap"               #wpa - Password is Induction
     # file_path = "/Users/olichter/Downloads/iseries.cap"
     #file_path = "/Users/olichter/Downloads/2019-12-03-traffic-analysis-exercise (1).pcap"
-    file_path = "/Users/olichter/Downloads/smb-on-windows-10.pcapng"
+    # file_path = "/Users/olichter/Downloads/smb-on-windows-10.pcapng"
 
 
     # PC Script
-    entry_id = ''
-
-    decrypt_key = "Induction"  # "/Users/olichter/Downloads/rsasnakeoil2.key"
-    conversation_number_to_display = 15
-    is_flows = True
-    is_reg_extract = True
-    is_syslog = False
-    extracted_protocols = ['SMTP', 'DNS', 'HTTP', 'SMB2', 'NETBIOS']
-
-    pcap_filter = ''
-    pcap_filter_new_file_name = ''  # '/Users/olichter/Downloads/try.pcap'
-    homemade_regex = ''  # 'Layer (.+):'
-    pcap_filter_new_file_path = ''
+    # entry_id = ''
+    #
+    # decrypt_key = "Induction"  # "/Users/olichter/Downloads/rsasnakeoil2.key"
+    # conversation_number_to_display = 15
+    # is_flows = True
+    # is_reg_extract = True
+    # is_syslog = False
+    # extracted_protocols = ['SMTP', 'DNS', 'HTTP', 'SMB2', 'NETBIOS', 'ICMP']
+    #
+    # pcap_filter = ''
+    # pcap_filter_new_file_name = ''  # '/Users/olichter/Downloads/try.pcap'
+    # homemade_regex = ''  # 'Layer (.+):'
+    # pcap_filter_new_file_path = ''
 
     # Demisto Script
-    # entry_id = demisto.args().get('entry_id', '')
-    # file_path = demisto.executeCommand('getFilePath', {'id': entry_id})
-    # if is_error(file_path):
-    #     return_error(get_error(file_path))
-    #
-    # file_path = file_path[0]["Contents"]["path"]
-    #
-    # decrypt_key = demisto.args().get('wpa_password', '')
-    #
-    # decrypt_key_entry_id = demisto.args().get('decrypt_key_entry_id', '')
-    # if decrypt_key_entry_id and not decrypt_key:
-    #     decrypt_key_file_path = demisto.executeCommand('getFilePath', {'id': decrypt_key_entry_id})
-    #     if is_error(decrypt_key_file_path):
-    #         return_error(get_error(decrypt_key_file_path))
-    #     decrypt_key = file_path = decrypt_key_file_path[0]["Contents"]["path"]
-    #
-    # conversation_number_to_display = int(demisto.args().get('convs_to_display', '15'))
-    # extracted_protocols = argToList(demisto.args().get('context_output', ''))
-    # is_flows = True
-    # is_reg_extract = demisto.args().get('extract_strings', 'False') == 'True'
-    # is_syslog = 'SYSLOG' in extracted_protocols  #TODO: delete this
-    # pcap_filter = demisto.args().get('pcap_filter', '')
-    # homemade_regex = demisto.args().get('custom_regex', '')  # 'Layer (.+):'
-    # pcap_filter_new_file_path = ''
-    # pcap_filter_new_file_name = demisto.args().get('filtered_file_name', '')
-    #
-    # if pcap_filter_new_file_name:
-    #     temp = demisto.uniqueFile()
-    #     pcap_filter_new_file_path = demisto.investigation()['id'] + '_' + temp
+    entry_id = demisto.args().get('entry_id', '')
+    file_path = demisto.executeCommand('getFilePath', {'id': entry_id})
+    if is_error(file_path):
+        return_error(get_error(file_path))
+
+    file_path = file_path[0]["Contents"]["path"]
+
+    decrypt_key = demisto.args().get('wpa_password', '')
+
+    decrypt_key_entry_id = demisto.args().get('decrypt_key_entry_id', '')
+    if decrypt_key_entry_id and not decrypt_key:
+        decrypt_key_file_path = demisto.executeCommand('getFilePath', {'id': decrypt_key_entry_id})
+        if is_error(decrypt_key_file_path):
+            return_error(get_error(decrypt_key_file_path))
+        decrypt_key = file_path = decrypt_key_file_path[0]["Contents"]["path"]
+
+    conversation_number_to_display = int(demisto.args().get('convs_to_display', '15'))
+    extracted_protocols = argToList(demisto.args().get('context_output', ''))
+    is_flows = True
+    is_reg_extract = demisto.args().get('extract_strings', 'False') == 'True'
+    is_syslog = 'SYSLOG' in extracted_protocols  #TODO: delete this
+    pcap_filter = demisto.args().get('pcap_filter', '')
+    homemade_regex = demisto.args().get('custom_regex', '')  # 'Layer (.+):'
+    pcap_filter_new_file_path = ''
+    pcap_filter_new_file_name = demisto.args().get('filtered_file_name', '')
+
+    if pcap_filter_new_file_name:
+        temp = demisto.uniqueFile()
+        pcap_filter_new_file_path = demisto.investigation()['id'] + '_' + temp
 
     # Variables for the script
     hierarchy = {}  # type: Dict[str, int]
@@ -258,7 +258,9 @@ def main():
     if 'HTTP' in extracted_protocols:
         reg_pragma = re.compile(PRAGMA_REGEX)
 
-    if 'DNS' or 'NETBIOS' in extracted_protocols:
+    if 'ICMP' in extracted_protocols:
+        icmp_data = set()
+    if 'DNS' in extracted_protocols or 'NETBIOS' in extracted_protocols or 'ICMP' in extracted_protocols:
         reg_type = re.compile(TYPE_REGEX)
     if 'NETBIOS' in extracted_protocols:
         reg_class = re.compile(CLASS_REGEX)
@@ -431,6 +433,13 @@ def main():
                     }
                     add_to_data(protocol_data['NETBIOS'], netbios_data)
 
+            if 'ICMP' in extracted_protocols:
+                icmp_layer = packet.get_multiple_layers('icmp')
+                if icmp_layer:
+                    type_results = reg_type.findall(str(icmp_layer[0]))
+                    if type_results:
+                        icmp_data.add(type_results[0])
+
             if is_reg_extract:
                 for i in reg_ip.finditer(str(packet)):
                     ips_extracted.add(i[0])
@@ -472,6 +481,8 @@ def main():
         }
         for protocol in extracted_protocols:
             general_context[protocol] = list(protocol_data[protocol].values())
+        if 'ICMP' in extracted_protocols:
+            general_context['ICMP'] = list(icmp_data)
         if is_flows:
             general_context['Flow'] = flows_to_ec(flows)
         if is_reg_extract:
