@@ -113,7 +113,7 @@ class Pack(object):
     USER_METADATA = "pack_metadata.json"
     METADATA = "metadata.json"
     AUTHOR_IMAGE_NAME = "Author_image.png"
-    EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS]
+    EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS.value]
 
     def __init__(self, pack_name, pack_path):
         self._pack_name = pack_name
@@ -292,8 +292,6 @@ class Pack(object):
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion', '')
         pack_metadata['serverLicense'] = user_metadata.get('serverLicense', '')
         pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
-        # todo check if this field is necessary
-        pack_metadata['general'] = input_to_list(user_metadata.get('general'))
         pack_metadata['tags'] = input_to_list(user_metadata.get('tags'))
         pack_metadata['categories'] = input_to_list(user_metadata.get('categories'))
         pack_metadata['contentItems'] = pack_content_items
