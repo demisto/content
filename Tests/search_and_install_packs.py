@@ -7,7 +7,6 @@ from time import sleep
 from threading import Thread, Lock
 from demisto_sdk.commands.common.tools import print_error, print_color, LOG_COLORS, is_file_path_in_pack, \
     get_pack_name, run_threads_list
-from Tests.test_content import ParallelPrintsManager
 
 
 def get_pack_id_by_path(path):
@@ -102,13 +101,13 @@ def install_pack(client, prints_manager, pack_id, pack_version):
                                                                         accept='application/json')
 
     if 200 <= status_code < 300:
-        prints_manager.add_print_job(f'Pack {pack_id} Successfully Installed!', print_color, 0,
+        prints_manager.add_print_job('Pack {} Successfully Installed!'.format(pack_id), print_color, 0,
                                      LOG_COLORS.GREEN)
         prints_manager.execute_thread_prints(0)
     else:
         result_object = ast.literal_eval(response_data)
         message = result_object.get('message', '')
-        err_msg = f'Failed to install pack {pack_id} - with status code {status_code}\n' + message
+        err_msg = 'Failed to install pack {} - with status code {}\n{}'.format(pack_id, status_code, message)
         prints_manager.add_print_job(err_msg, print_error, 0)
         prints_manager.execute_thread_prints(0)
 

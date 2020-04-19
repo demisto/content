@@ -679,7 +679,7 @@ def main():
     server = servers[0]
 
     if new_integrations_files:
-        if server_version_compare(server, '6.0.0') >= 0:
+        if server_version_compare(server_numeric_version, '6.0.0') >= 0:
             # Test packs search and installation - beginning of infrastructure
             client = demisto_client.configure(base_url=server, username=username, password=password,
                                               verify_ssl=False)
@@ -691,7 +691,7 @@ def main():
         prints_manager.add_print_job(new_integrations_names_message, print_warning, 0)
 
     if modified_integrations_files:
-        if server_version_compare(server, '6.0.0') >= 0:
+        if server_version_compare(server_numeric_version, '6.0.0') >= 0:
             # Test packs search and installation - beginning of infrastructure
             client = demisto_client.configure(base_url=server, username=username, password=password,
                                               verify_ssl=False)
