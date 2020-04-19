@@ -67,4 +67,8 @@ There is no context output for this command.
 | demisto.com | Domain |
 
 ## Video Demo
-[![Video Demo](https://raw.githubusercontent.com/demisto/content/cc6c30b4b29a56c0f93bcc55d565f01637b457ff/Packs/FeedAlienVault/Integrations/FeedAlienVaultOTXTaxii/doc_files/video_thumbnail.png)](https://raw.githubusercontent.com/demisto/content/cc6c30b4b29a56c0f93bcc55d565f01637b457ff/Packs/FeedAlienVault/Integrations/FeedAlienVaultOTXTaxii/doc_files/AlienVault_OTX_Feed_Demo.mp4)
+<video controls>
+    <source src="https://raw.githubusercontent.com/demisto/content/raw/cc6c30b4b29a56c0f93bcc55d565f01637b457ff/Packs/FeedAlienVault/Integrations/FeedAlienVaultOTXTaxii/doc_files/AlienVault_OTX_Feed_Demo.mp4"
+            type="video/mp4"/>
+    Sorry, your browser doesn't support embedded videos. You can download the video at: https://raw.githubusercontent.com/demisto/content/raw/cc6c30b4b29a56c0f93bcc55d565f01637b457ff/Packs/FeedAlienVault/Integrations/FeedAlienVaultOTXTaxii/doc_files/AlienVault_OTX_Feed_Demo.mp4
+</video>
