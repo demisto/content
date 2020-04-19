@@ -631,7 +631,7 @@ def get_ticket_command(client: Client, args: dict):
     get_attachments = args.get('get_attachments', 'false')
     custom_fields = split_fields(str(args.get('custom_fields', '')))
 
-    result = client.get(ticket_type, ticket_id, custom_fields, number)
+    result = client.get(ticket_type, ticket_id, generate_body({}, custom_fields), number)
     if not result or 'result' not in result:
         return 'Ticket was not found.', {}, {}
 
@@ -1395,6 +1395,8 @@ def fetch_incidents(client: Client):
     if query:
         query_params['sysparm_query'] = query
     query_params['sysparm_limit'] = str(client.sys_param_limit)
+
+    demisto.info(f'Fetching ServiceNow incidents. with the query params: {str(query_params)}')
     res = client.send_request(f'table/{client.ticket_type}', 'GET', params=query_params)
 
     count = 0
