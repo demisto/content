@@ -94,7 +94,7 @@ class TestUtils(object):
 
     @staticmethod
     def mock_run_command(mocker, on_command, return_value):
-        def on_run_command(*args, **kwargs):
+        def on_run_command(*args):
             command = args[0]
             if command == on_command:
                 return return_value
@@ -104,7 +104,6 @@ class TestUtils(object):
         mock = mocker.patch('demisto_sdk.commands.common.tools.run_command')
         mock.side_effect = on_run_command
         return mock
-
 
     @staticmethod
     def create_tests_conf(with_test_configuration=None):

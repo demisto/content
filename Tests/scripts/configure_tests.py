@@ -9,6 +9,7 @@ import time
 import glob
 import random
 import argparse
+import demisto_sdk.commands.common.tools as tools
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
@@ -16,9 +17,9 @@ sys.path.append(CONTENT_DIR)
 
 from demisto_sdk.commands.common.constants import *  # noqa: E402
 from demisto_sdk.commands.common.tools import get_yaml, str2bool, get_from_version, get_to_version, \
-    collect_ids, get_script_or_integration_id, run_command, LOG_COLORS, print_error, print_color, \
+    collect_ids, get_script_or_integration_id, LOG_COLORS, print_error, print_color, \
     print_warning, server_version_compare  # noqa: E402
-import demisto_sdk.commands.common.tools as tools
+
 
 # Search Keyword for the changed file
 NO_TESTS_FORMAT = 'No test( - .*)?'
