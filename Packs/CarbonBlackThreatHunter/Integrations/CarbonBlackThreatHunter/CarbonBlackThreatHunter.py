@@ -409,7 +409,7 @@ def cb_check_query_process_status(client: Client, args: dict) -> Tuple[str, Dict
     return md_, entry_context, response
 
 
-def cb_get_query_process_results(client: Client, args: dict) -> Tuple[Dict[Any, Any], Dict[Any, Any]]:
+def cb_get_query_process_results(client: Client, args: dict) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
     """Get process query results.
 
     Args:
