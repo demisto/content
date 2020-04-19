@@ -279,6 +279,7 @@ class MITMProxy:
                 command += options
             command += ' -r {} -w {}{}'.format(mock_file_path, cleaned_mock_filepath, debug_opt)
             command = "source .bash_profile && {}".format(command)
+            print(f'command to clean mockfile:\n\t{command}')
             split_command = command.split()
             print('Let\'s try and clean the mockfile from timestamp data!')
             if not call(self.ami.add_ssh_prefix(split_command, '-t')):
@@ -290,7 +291,6 @@ class MITMProxy:
             self.ami.call(rm_cmd.split())
             mv_cmd = 'mv {} {}'.format(cleaned_mock_filepath, mock_file_path)
             self.ami.call(mv_cmd.split())
-
 
     def start(self, playbook_id, path=None, record=False, thread_index=0, prints_manager=None):
         """Start the proxy process and direct traffic through it.

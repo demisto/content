@@ -114,6 +114,7 @@ class ParallelPrintsManager:
         thread_last_update = self.threads_last_update_times[thread_index]
         return current_time - thread_last_update > 300
 
+
 class ParallelPrintsManager:
 
     def __init__(self, number_of_threads):
@@ -681,6 +682,7 @@ def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_te
              playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci,
              build_number, server, build_name, prints_manager, is_ami, thread_index=thread_index)
 
+
 def get_and_print_server_numeric_version(tests_settings):
     if tests_settings.is_local_run:
         # TODO: verify this logic, it's a workaround because the test_image file does not exist on local run
@@ -864,6 +866,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     #     with open(file_path, "w") as is_build_passed_file:
     #         is_build_passed_file.write('Build passed')
 
+
 def get_unmockable_tests(tests_settings):
     conf, secret_conf = load_conf_files(tests_settings.conf_path, tests_settings.secret_conf_path)
     unmockable_integrations = conf['unmockable_integrations']
@@ -884,6 +887,7 @@ def get_unmockable_tests(tests_settings):
 #     is_ami = options.isAMI
 #     server_version = options.serverVersion
 #     server_numeric_version = '0.0.0'
+
 
 def get_all_tests(tests_settings):
     conf, secret_conf = load_conf_files(tests_settings.conf_path, tests_settings.secret_conf_path)
