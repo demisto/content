@@ -1,5 +1,5 @@
 ## [Unreleased]
-Fixed the handling of API quota limit errors.
+Fixed an issue with the error handling of the API quota limit.
 
 ## [20.3.1] - 2020-03-04
 Improved parsing of ***ip*** command 
