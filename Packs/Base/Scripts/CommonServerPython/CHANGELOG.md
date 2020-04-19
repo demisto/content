@@ -1,5 +1,30 @@
 ## [Unreleased]
+  - Deprecated the following enums: 
+    - **entryTypes**
+    - **formats**
+    - **dbotscores**
+  - Added new enums: 
+    - **DBotScoreType** (replaces *dbotscores*)
+    - **EntryFormat** (replaces *formats*)
+    - **EntryType** (replaces *entryTypes*)
+  - Added new classes to represent reputation outputs:
+    - **DBotScore**
+    - **IP**
+    - **URL**
+    - **CVE**
+    - **File**
+    - **Domain**
+    - **WHOIS**
+    - **CommandResults** (returns results to the War Room)
 
+## [20.4.0] - 2020-04-14
+  - Added the argument *ignore_auto_extract* to the ***return_outputs*** command.
+  - Added a default value to the indicator timeline field **Category** when a value is not provided in an entry's timeline data.
+  - Improved error message parsing of HTTP response in BaseClient.
+
+
+## [20.3.4] - 2020-03-30
+- Added support for successful empty responses (status code 204) in the base client.
 
 ## [20.3.3] - 2020-03-18
 Added ***remove_empty_elements*** command.

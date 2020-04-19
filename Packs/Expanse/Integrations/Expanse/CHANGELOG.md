@@ -1,4 +1,12 @@
 ## [Unreleased]
+
+
+## [20.4.0] - 2020-04-14
+  - Added support for pulling behavior data to create new incidents.
+  - Added support for the ***expanse-get-behavior*** command.
+  - Added support for the ***expanse-get-certificate*** command.
+
+## [20.3.4] - 2020-03-30
   - Shortened the period of time that tokens are considered valid, to avoid authorization errors.
   - Fixed an issue related to the ***ip*** command where an error is generated if the API returns a partial response.
   - Added friendly values for various empty fields returned by the ***domain*** command.

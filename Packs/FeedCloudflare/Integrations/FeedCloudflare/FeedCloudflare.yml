@@ -3,18 +3,18 @@ commonfields:
   id: Cloudflare Feed
   version: -1
 configuration:
-- display: Sub-Feeds
+- display: Services
   name: url
   options:
   - https://www.cloudflare.com/ips-v4
   - https://www.cloudflare.com/ips-v6
   required: true
   type: 16
-- display: Fetch indicators
+- defaultvalue: 'true'
+  display: Fetch indicators
   name: feed
   required: false
   type: 8
-  defaultvalue: true
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
   defaultvalue: Good
@@ -27,7 +27,8 @@ configuration:
   - Bad
   required: false
   type: 18
-- defaultvalue: A - Completely reliable
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: A - Completely reliable
   display: Source Reliability
   name: feedReliability
   options:
@@ -37,24 +38,23 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
+  required: true
   type: 15
-  additionalinfo: Reliability of the source providing the intelligence data
-- display: ""
+- defaultvalue: indicatorType
+  display: ''
   name: feedExpirationPolicy
-  defaultvalue: indicatorType
-  type: 17
-  required: false
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
-- display: ""
-  name: feedExpirationInterval
-  defaultvalue: "20160"
-  type: 1
   required: false
+  type: 17
+- defaultvalue: '20160'
+  display: ''
+  name: feedExpirationInterval
+  required: false
+  type: 1
 - defaultvalue: '5'
   display: Feed Fetch Interval
   name: feedFetchInterval
@@ -67,11 +67,15 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
-  defaultvalue: ""
 - additionalinfo: Timeout of the polling request in seconds.
   defaultvalue: '20'
   display: Request Timeout
   name: polling_timeout
+  required: false
+  type: 0
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
   required: false
   type: 0
 - display: Trust any certificate (not secure)
@@ -95,10 +99,11 @@ script:
       name: limit
       required: false
       secret: false
-    execution: false
+    deprecated: false
     description: Gets the feed indicators.
+    execution: false
     name: cloudflare-get-indicators
-  dockerimage: demisto/python3:3.8.1.6120
+  dockerimage: demisto/python3:3.8.2.6981
   feed: true
   isfetch: false
   longRunning: false

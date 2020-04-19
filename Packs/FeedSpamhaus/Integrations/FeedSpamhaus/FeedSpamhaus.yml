@@ -4,20 +4,20 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://www.spamhaus.org/drop/drop.txt
-  display: Sub-Feeds
+  display: Services
   name: url
   options:
   - https://www.spamhaus.org/drop/edrop.txt
   - https://www.spamhaus.org/drop/drop.txt
   required: false
   type: 16
-- display: Fetch indicators
+- defaultvalue: 'true'
+  display: Fetch indicators
   name: feed
   required: false
-  defaultvalue: true
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
-    reputation.
+    reputation
   defaultvalue: Bad
   display: Indicator Reputation
   name: feedReputation
@@ -28,7 +28,8 @@ configuration:
   - Bad
   required: false
   type: 18
-- defaultvalue: B - Usually reliable
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: B - Usually reliable
   display: Source Reliability
   name: feedReliability
   options:
@@ -41,19 +42,19 @@ configuration:
   required: true
   type: 15
 - defaultvalue: indicatorType
-  display: ""
+  display: ''
   name: feedExpirationPolicy
-  required: false
-  type: 17
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
-- display: ""
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  display: ''
   name: feedExpirationInterval
   required: false
-  defaultvalue: "20160"
   type: 1
 - defaultvalue: '60'
   display: Feed Fetch Interval
@@ -66,8 +67,12 @@ configuration:
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
-  defaultvalue: ""
   type: 8
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -105,7 +110,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: spamhaus-get-indicators
-  dockerimage: demisto/python3:3.8.1.6120
+  dockerimage: demisto/python3:3.8.2.6981
   feed: true
   isfetch: false
   longRunning: false

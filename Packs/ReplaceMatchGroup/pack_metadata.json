@@ -1,0 +1,25 @@
+{
+    "displayName": "ReplaceMatchGroup",
+    "name": "",
+    "price": 0,
+    "description": "A transformer that returns a string with all matches of a regex pattern groups replaced by a replacement",
+    "support": "demisto",
+    "serverMinVersion": "",
+    "currentVersion": "1.0.0",
+    "author": "",
+    "url": "",
+    "email": "",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "created": "2020-02-18T08:09:34Z",
+    "updated": "2020-02-18T08:09:34Z",
+    "beta": false,
+    "deprecated": false,
+    "certification": "",
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {},
+    "displayedImages": []
+}

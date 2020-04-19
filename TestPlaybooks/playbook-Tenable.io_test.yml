@@ -1,3 +1,4 @@
+elasticcommonfields: {}
 id: Tenable.io test
 version: -1
 name: Tenable.io test
@@ -5,10 +6,11 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8b0849f7-b8bd-4520-86ac-b379aa9a9d65
+    taskid: 62e769aa-1e67-45a6-8486-5639a888ccc5
     type: start
     task:
-      id: 8b0849f7-b8bd-4520-86ac-b379aa9a9d65
+      elasticcommonfields: {}
+      id: 62e769aa-1e67-45a6-8486-5639a888ccc5
       version: -1
       name: ""
       iscommand: false
@@ -25,12 +27,17 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: fd92b5cb-d7b2-4528-8fb2-b84eadffd3e2
+    taskid: d5184e1e-2ad8-4800-8aa3-53d52d6f514f
     type: regular
     task:
-      id: fd92b5cb-d7b2-4528-8fb2-b84eadffd3e2
+      elasticcommonfields: {}
+      id: d5184e1e-2ad8-4800-8aa3-53d52d6f514f
       version: -1
       name: tenable-io-list-scans
       description: Retrive scans from the Tenable platform.
@@ -50,12 +57,17 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 87f54f14-f8e1-4d4b-8130-a8cd84ac34cb
+    taskid: 9634a316-8a3b-4465-81fe-57ffad58de35
     type: regular
     task:
-      id: 87f54f14-f8e1-4d4b-8130-a8cd84ac34cb
+      elasticcommonfields: {}
+      id: 9634a316-8a3b-4465-81fe-57ffad58de35
       version: -1
       name: tenable-io-get-scan-status
       description: 'Check the status of a specific scan using its ID. The status can
@@ -76,12 +88,17 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: 8aaab108-a1dd-422e-8df5-7a7d90c3df87
+    taskid: a35b2c05-a636-44a5-81f1-78ca8515d361
     type: regular
     task:
-      id: 8aaab108-a1dd-422e-8df5-7a7d90c3df87
+      elasticcommonfields: {}
+      id: a35b2c05-a636-44a5-81f1-78ca8515d361
       version: -1
       name: tenable-io-get-scan-report
       description: Retrive scan-report for the given scan.
@@ -91,7 +108,6 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
       - "6"
     scriptarguments:
       detailed:
@@ -99,7 +115,7 @@ tasks:
       info:
         simple: "yes"
       scanId:
-        simple: "10"
+        simple: "25"
     separatecontext: false
     view: |-
       {
@@ -109,12 +125,17 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: b137b649-6541-4d77-804f-c26fdf86c5d5
+    taskid: 24ff10a9-0083-4901-8445-8e30269ce776
     type: regular
     task:
-      id: b137b649-6541-4d77-804f-c26fdf86c5d5
+      elasticcommonfields: {}
+      id: 24ff10a9-0083-4901-8445-8e30269ce776
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -143,12 +164,17 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: 8fd35fbd-2815-47f3-8d50-610833d3934e
+    taskid: ade32dca-adc8-4d9e-8b64-4d69592c9392
     type: regular
     task:
-      id: 8fd35fbd-2815-47f3-8d50-610833d3934e
+      elasticcommonfields: {}
+      id: ade32dca-adc8-4d9e-8b64-4d69592c9392
       version: -1
       name: tenable-io-get-vulnerability-details
       description: Retrieve details for the given vulnerability.
@@ -166,17 +192,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 545
+          "x": 910,
+          "y": 720
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: e3f89e43-fdc7-40ba-8dfd-ed93eb0148ac
+    taskid: ba50515f-f1cb-4bf9-85ee-78917ce6d9c3
     type: regular
     task:
-      id: e3f89e43-fdc7-40ba-8dfd-ed93eb0148ac
+      elasticcommonfields: {}
+      id: ba50515f-f1cb-4bf9-85ee-78917ce6d9c3
       version: -1
       name: tenable-io-get-vulnerabilities-by-asset
       description: Get a list of up to 5000 of the vulnerabilities recorded for a
@@ -185,6 +216,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
     scriptarguments:
       assetId: {}
       dateRange: {}
@@ -195,18 +229,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 910,
           "y": 545
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 590,
-        "width": 1455,
+        "height": 765,
+        "width": 1240,
         "x": 50,
         "y": 50
       }

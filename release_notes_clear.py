@@ -4,10 +4,11 @@ import argparse
 from datetime import datetime
 import yaml
 
-from Tests.scripts.constants import UNRELEASE_HEADER, INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR,\
-    DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR, LAYOUTS_DIR, CLASSIFIERS_DIR, MISC_DIR
-from Tests.test_utils import server_version_compare, run_command, get_release_notes_file_path, print_warning
-from Tests.scripts.validate_files import FilesValidator
+from demisto_sdk.commands.common.constants import UNRELEASE_HEADER, INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, \
+    REPORTS_DIR, DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR, LAYOUTS_DIR, CLASSIFIERS_DIR, MISC_DIR
+from demisto_sdk.commands.common.tools import server_version_compare, run_command, get_release_notes_file_path, \
+    print_warning
+from demisto_sdk.commands.validate.file_validator import FilesValidator
 from release_notes import LAYOUT_TYPE_TO_NAME
 
 
@@ -28,7 +29,7 @@ def get_changed_content_entities(modified_files, added_files):
 def get_file_data(file_path):
     extension = os.path.splitext(file_path)[1]
     if extension not in FILE_TYPE_DICT:
-        return False
+        return {}
 
     load_function = FILE_TYPE_DICT[extension]
     with open(file_path, 'r') as file_obj:
@@ -44,6 +45,8 @@ def should_clear(file_path, current_server_version="0.0.0"):
     :param current_server_version: current server version
     """
     data = get_file_data(file_path)
+    if not data:
+        return False
 
     version = data.get('fromversion') or data.get('fromVersion')
     if version and server_version_compare(current_server_version, str(version)) < 0:
