@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Replaced the deprecated cve-search command with the cve command.
 
 ## [19.11.0] - 2019-11-12
 -
