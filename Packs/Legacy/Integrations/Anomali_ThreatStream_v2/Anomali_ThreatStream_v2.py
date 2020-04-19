@@ -5,7 +5,6 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import json
-import emoji
 import requests
 from requests.exceptions import MissingSchema, ConnectionError
 
@@ -764,6 +763,9 @@ def get_submission_status(report_id, output=True):
 
 def file_name_to_valid_string(file_name):
     try:
+        # In case the user uses Demisto version < 5.0 and the new docker image will not be automatically changed
+        import emoji
+
         if emoji.emoji_count(file_name):  # type: ignore
             return emoji.demojize(file_name)  # type: ignore
     except Exception:
