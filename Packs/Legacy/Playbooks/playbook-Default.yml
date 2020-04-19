@@ -95,6 +95,9 @@ tasks:
       assignBy:
         simple: random
       email: {}
+      onCall:
+        complex:
+          root: inputs.OnCall
       roles: {}
       username: {}
     separatecontext: false
@@ -334,6 +337,11 @@ inputs:
     simple: 'True'
   required: false
   description: Determines whether to enrich all indicators in the incident.
+- key: OnCall
+  value:
+    simple: false
+  required: false
+  description: Set to true to assign only user that is currently on shift. Requires Cortex XSOAR v5.5 or later.
 outputs: []
 tests:
   - Default - Test
