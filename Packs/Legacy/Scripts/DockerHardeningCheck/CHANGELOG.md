@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.4.0] - 2020-04-14
 Added the *memory_check* argument to specify how to test memory limitations.
 
 ## [20.3.3] - 2020-03-18
