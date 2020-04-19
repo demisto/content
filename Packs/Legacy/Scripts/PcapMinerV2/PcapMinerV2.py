@@ -138,13 +138,13 @@ def remove_nones(d: dict) -> dict:
 
 def add_to_data(d: dict, data: dict) -> None:
     """
-
+    updates dictionary d to include/update the data. Also removes None values.
     Args:
         d: a Dictionary of ID: data to which we want to update the data according to ID
         data: the data to update. data must have an "ID" field.
 
     Returns:
-        updates dictionard d to include/update the data.
+        updates dictionary d to include/update the data. Also removes None values.
     """
     data_id = data.get('ID')
     if not data_id:
@@ -167,63 +167,59 @@ def main():
     # file_path = "/Users/olichter/Downloads/tftp_rrq.pcap"                 # tftp
     # file_path = "/Users/olichter/Downloads/rsasnakeoil2.cap"              # encrypted SSL
     # file_path = "/Users/olichter/Downloads/smb-legacy-implementation.pcapng"  # llmnr/netbios/smb
-    # file_path = "/Users/olichter/Downloads/smtp.pcap"                      # SMTP
+    #file_path = "/Users/olichter/Downloads/smtp.pcap"                      # SMTP
     # file_path = "/Users/olichter/Downloads/nb6-hotspot.pcap"                #syslog
     # file_path = "/Users/olichter/Downloads/wpa-Induction.pcap"               #wpa - Password is Induction
     # file_path = "/Users/olichter/Downloads/iseries.cap"
     #file_path = "/Users/olichter/Downloads/2019-12-03-traffic-analysis-exercise (1).pcap"
+    file_path = "/Users/olichter/Downloads/smb-on-windows-10.pcapng"
 
 
     # PC Script
-    # entry_id = ''
-    # file_path = "/Users/olichter/Downloads/http-site.pcap"                 # HTTP
-    #
-    # decrypt_key = "Induction"  # "/Users/olichter/Downloads/rsasnakeoil2.key"
-    # conversation_number_to_display = 15
-    # is_flows = True
-    # is_dns = True
-    # is_http = True
-    # is_reg_extract = True
-    # is_llmnr = False
-    # is_syslog = False
-    # pcap_filter = ''
-    # pcap_filter_new_file_name = ''  # '/Users/olichter/Downloads/try.pcap'
-    # homemade_regex = ''  # 'Layer (.+):'
-    # pcap_filter_new_file_path = ''
+    entry_id = ''
+
+    decrypt_key = "Induction"  # "/Users/olichter/Downloads/rsasnakeoil2.key"
+    conversation_number_to_display = 15
+    is_flows = True
+    is_reg_extract = True
+    is_syslog = False
+    extracted_protocols = ['SMTP', 'DNS', 'HTTP', 'SMB2']
+
+    pcap_filter = ''
+    pcap_filter_new_file_name = ''  # '/Users/olichter/Downloads/try.pcap'
+    homemade_regex = ''  # 'Layer (.+):'
+    pcap_filter_new_file_path = ''
 
     # Demisto Script
-    entry_id = demisto.args().get('entry_id', '')
-    file_path = demisto.executeCommand('getFilePath', {'id': entry_id})
-    if is_error(file_path):
-        return_error(get_error(file_path))
-
-    file_path = file_path[0]["Contents"]["path"]
-
-    decrypt_key = demisto.args().get('wpa_password', '')
-
-    decrypt_key_entry_id = demisto.args().get('decrypt_key_entry_id', '')
-    if decrypt_key_entry_id and not decrypt_key:
-        decrypt_key_file_path = demisto.executeCommand('getFilePath', {'id': decrypt_key_entry_id})
-        if is_error(decrypt_key_file_path):
-            return_error(get_error(decrypt_key_file_path))
-        decrypt_key = file_path = decrypt_key_file_path[0]["Contents"]["path"]
-
-    conversation_number_to_display = int(demisto.args().get('convs_to_display', '15'))
-    context_outputs = argToList(demisto.args().get('context_output', ''))
-    is_flows = True
-    is_dns = 'DNS' in context_outputs
-    is_http = 'HTTP' in context_outputs
-    is_reg_extract = demisto.args().get('extract_strings', 'False') == 'True'
-    is_llmnr = 'LLMNR' in context_outputs
-    is_syslog = 'SYSLOG' in context_outputs
-    pcap_filter = demisto.args().get('pcap_filter', '')
-    homemade_regex = demisto.args().get('custom_regex', '')  # 'Layer (.+):'
-    pcap_filter_new_file_path = ''
-    pcap_filter_new_file_name = demisto.args().get('filtered_file_name', '')
-
-    if pcap_filter_new_file_name:
-        temp = demisto.uniqueFile()
-        pcap_filter_new_file_path = demisto.investigation()['id'] + '_' + temp
+    # entry_id = demisto.args().get('entry_id', '')
+    # file_path = demisto.executeCommand('getFilePath', {'id': entry_id})
+    # if is_error(file_path):
+    #     return_error(get_error(file_path))
+    #
+    # file_path = file_path[0]["Contents"]["path"]
+    #
+    # decrypt_key = demisto.args().get('wpa_password', '')
+    #
+    # decrypt_key_entry_id = demisto.args().get('decrypt_key_entry_id', '')
+    # if decrypt_key_entry_id and not decrypt_key:
+    #     decrypt_key_file_path = demisto.executeCommand('getFilePath', {'id': decrypt_key_entry_id})
+    #     if is_error(decrypt_key_file_path):
+    #         return_error(get_error(decrypt_key_file_path))
+    #     decrypt_key = file_path = decrypt_key_file_path[0]["Contents"]["path"]
+    #
+    # conversation_number_to_display = int(demisto.args().get('convs_to_display', '15'))
+    # extracted_protocols = argToList(demisto.args().get('context_output', ''))
+    # is_flows = True
+    # is_reg_extract = demisto.args().get('extract_strings', 'False') == 'True'
+    # is_syslog = 'SYSLOG' in extracted_protocols  #TODO: delete this
+    # pcap_filter = demisto.args().get('pcap_filter', '')
+    # homemade_regex = demisto.args().get('custom_regex', '')  # 'Layer (.+):'
+    # pcap_filter_new_file_path = ''
+    # pcap_filter_new_file_name = demisto.args().get('filtered_file_name', '')
+    #
+    # if pcap_filter_new_file_name:
+    #     temp = demisto.uniqueFile()
+    #     pcap_filter_new_file_path = demisto.investigation()['id'] + '_' + temp
 
     # Variables for the script
     hierarchy = {}  # type: Dict[str, int]
@@ -237,17 +233,18 @@ def main():
     flows = {}  # type: Dict[str, Any]
     unique_source_ip = set([])
     unique_dest_ip = set([])
-    dns_data = {}  # type: Dict[str, Any]
-    http_data = {}  # type: Dict[str, Any]
     ips_extracted = set([])
     urls_extracted = set([])
     emails_extracted = set([])
     homemade_extracted = set([])
     last_layer = set([])
     syslogs = []
+    protocol_data = dict()
+    for protocol in extracted_protocols:
+        protocol_data[protocol] = dict()
 
     # Regex compilation
-    if is_llmnr:
+    if 'LLMNR' in extracted_protocols:
         llmnr_type = re.compile('Type: (.*)\n')
         llmnr_class = re.compile('Class: (.*)\n')
         llmnr_dict = {}
@@ -257,10 +254,10 @@ def main():
         reg_email = re.compile(EMAIL_REGEX)
         reg_url = re.compile(URL_REGEX)
 
-    if is_http:
+    if 'HTTP' in extracted_protocols:
         reg_pragma = re.compile(PRAGMA_REGEX)
 
-    if is_dns:
+    if 'DNS' in extracted_protocols:
         reg_type = re.compile(TYPE_REGEX)
     if homemade_regex:
         reg_homemad = re.compile(homemade_regex)
@@ -269,7 +266,9 @@ def main():
 
         cap = pyshark.FileCapture(file_path, display_filter=pcap_filter, output_file=pcap_filter_new_file_path,
                                   decryption_key=decrypt_key, encryption_type='WPA-PWD')
+        j = 0  #TODO delete this
         for packet in cap:
+            j += 1  #TODO delete this
 
             last_layer.add(packet.layers[-1].layer_name)
 
@@ -306,7 +305,7 @@ def main():
                 dest_port = int(udp[0].get('dstport', 0))
 
             # extract DNS layer
-            if is_dns:
+            if 'DNS' in extracted_protocols:
                 dns_layer = packet.get_multiple_layers('dns')
                 if dns_layer:
                     temp_dns = {
@@ -315,7 +314,7 @@ def main():
                         'Response': dns_layer[0].get('a'),
                         'Type': reg_type.findall(str(dns_layer[0]))[0] if reg_type.findall(str(dns_layer[0])) else None
                     }
-                    add_to_data(dns_data, temp_dns)
+                    add_to_data(protocol_data['DNS'], temp_dns)
 
             # add conversations
             ip_layer = packet.get_multiple_layers('ip')
@@ -340,7 +339,7 @@ def main():
                     flows[flow] = flow_data
 
                 # gather http data
-                if is_http:
+                if 'HTTP' in extracted_protocols:
                     http_layer = packet.get_multiple_layers('http')
                     if http_layer:
                         all_fields = http_layer[0]._all_fields
@@ -369,14 +368,14 @@ def main():
                                 'ResponseContentType': http_layer[0].get('content_type'),
                                 'ResponseDate': formatEpochDate(packet_epoch_time)
                             })
-                        add_to_data(http_data, temp_http)
+                        add_to_data(protocol_data['HTTP'], temp_http)
 
                 if str([b, a]) in conversations.keys():
                     a, b = b, a
                 hosts = str([a, b])
                 conversations[hosts] = conversations.get(hosts, 0) + 1
 
-            if is_llmnr:
+            if 'LLMNR' in extracted_protocols:
                 llmnr_layer = packet.get_multiple_layers('llmnr')
                 if llmnr_layer:
                     llmnr_layer_string = str(llmnr_layer[0])
@@ -389,12 +388,33 @@ def main():
                         'QueryName': str(llmnr_layer[0].get('dns_qry_name')),
                         'Questions': int(llmnr_layer[0].get('dns_count_queries'))
                     }
-                    llmnr_dict[llmnr_data['ID']] = llmnr_data
+                    add_to_data(protocol_data['LLMNR'], llmnr_data)
 
             if is_syslog:
                 syslog_layer = packet.get_multiple_layers('syslog')
                 if syslog_layer:
                     syslogs.append(syslog_layer[0].get('msg'))
+
+            if 'SMTP' in extracted_protocols:
+                imf_layer = packet.get_multiple_layers('imf')
+                if imf_layer:
+                    imf_data = {
+                        'ID': imf_layer[0].get('Message-ID', -1),
+                        'To': imf_layer[0].get('to'),
+                        'From': imf_layer[0].get('from'),
+                        'Subject': imf_layer[0].get('subject'),
+                        'MimeVersion': imf_layer[0].get('mime-version')
+                    }
+                    add_to_data(protocol_data['SMTP'], imf_data)
+
+            if 'SMB2' in extracted_protocols:
+                smb_layer = packet.get_multiple_layers('smb2')
+                if smb_layer:
+                    print(smb_layer[0])
+                    smb_data = {
+                        'ID': smb_layer[0].get('sesid', -1)
+                    }
+                #TODO: cant find it
 
             if is_reg_extract:
                 for i in reg_ip.finditer(str(packet)):
@@ -435,14 +455,10 @@ def main():
             'EndTime': formatEpochDate(max_time),
             'Protocols': list(last_layer)
         }
+        for protocol in extracted_protocols:
+            general_context[protocol] = list(protocol_data[protocol].values())
         if is_flows:
             general_context['Flow'] = flows_to_ec(flows)
-        if is_dns:
-            general_context['DNS'] = list(dns_data.values())
-        if is_llmnr:
-            general_context['LLMNR'] = list(llmnr_dict.values())
-        if is_http:
-            general_context['HTTP'] = list(http_data.values())
         if is_reg_extract:
             general_context['IP'] = list(ips_extracted)
             general_context['URL'] = list(urls_extracted)
@@ -465,3 +481,5 @@ def main():
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
     # print(timeit.timeit(main, number=3)/3)
+
+#TODO: fix todos

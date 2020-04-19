@@ -15,7 +15,8 @@ args:
   - HTTP
   - DNS
   - LLMNR
-  - ' SYSLOG'
+  - SYSLOG
+  - SMTP
   required: false
   secret: false
 - auto: PREDEFINED
