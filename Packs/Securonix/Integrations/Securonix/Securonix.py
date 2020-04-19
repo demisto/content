@@ -316,13 +316,13 @@ class Client(BaseClient):
                                            params=params)
         return violation_data
 
-    def list_incidents_request(self, from_epoch: str, to_epoch: str, incident_types: str) -> Dict:
+    def list_incidents_request(self, from_epoch: str, to_epoch: str, incident_status: str) -> Dict:
         """List all incidents by sending a GET request.
 
         Args:
             from_epoch: from time in epoch
             to_epoch: to time in epoch
-            incident_types: incident types
+            incident_status: incident status e.g:closed, opened
 
         Returns:
             Response from API.
@@ -331,7 +331,7 @@ class Client(BaseClient):
             'type': 'list',
             'from': from_epoch,
             'to': to_epoch,
-            'rangeType': incident_types
+            'rangeType': incident_status
         }
         incidents = self.http_request('GET', '/incident/get', headers={'token': self._token}, params=params)
         return incidents.get('result').get('data')
@@ -1107,14 +1107,14 @@ def add_entity_to_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
     return human_readable, {}, response
 
 
-def fetch_incidents(client: Client, fetch_time: Optional[str], incident_types: str, last_run: Dict) -> list:
+def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: str, last_run: Dict) -> list:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
 
     Args:
         client: Client object with request
         fetch_time: From when to fetch if first time, e.g. `3 days`
-        incident_types: Incident statuses to fetch, can be: all, open, closed
+        incident_status: Incident statuses to fetch, can be: all, opened, closed, updated
         last_run: Last fetch object.
 
     Returns:
@@ -1132,7 +1132,7 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_types: s
     to_epoch = date_to_timestamp(datetime.now(), date_format=timestamp_format)
     # Get incidents from Securonix
     demisto.info(f'Fetching Securonix incidents. From: {from_epoch}. To: {to_epoch}')
-    securonix_incidents = client.list_incidents_request(from_epoch, to_epoch, incident_types)
+    securonix_incidents = client.list_incidents_request(from_epoch, to_epoch, incident_status)
 
     if securonix_incidents:
         incidents_items = list(securonix_incidents.get('incidentItems'))  # type: ignore
@@ -1239,9 +1239,9 @@ def main():
             'securonix-add-entity-to-watchlist': add_entity_to_watchlist
         }
         if command == 'fetch-incidents':
-            fetch_time = params.get('fetch_time')
-            incident_types = params.get('incident_types') if 'incident_types' in params else 'opened'
-            incidents = fetch_incidents(client, fetch_time, incident_types, last_run=demisto.getLastRun())
+            fetch_time = params.get('fetch_time', '1 hour')
+            incident_status = params.get('incident_status') if 'incident_status' in params else 'opened'
+            incidents = fetch_incidents(client, fetch_time, incident_status, last_run=demisto.getLastRun())
             demisto.incidents(incidents)
         elif command in commands:
             return_outputs(*commands[command](client, demisto.args()))

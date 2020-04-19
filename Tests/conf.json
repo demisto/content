@@ -2412,11 +2412,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "Sixgill",
-            "playbookID": "Sixgill - Darkfeed - Indicators-Test",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "AutoFocus Feed",
             "playbookID": "playbook-FeedAutofocus_test",
             "fromversion": "5.5.0"
@@ -2675,6 +2670,7 @@
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
+        "Trend Micro Apex": "Issue 23632",
         "Awake Security": "Issue 23376",
         "RiskSense": "We should get an instance talk to Francesco",
         "Palo Alto Networks Cortex": "Issue 22300",
