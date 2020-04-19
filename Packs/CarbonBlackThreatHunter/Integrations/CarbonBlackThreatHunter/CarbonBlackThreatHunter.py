@@ -1,4 +1,4 @@
-from typing import Dict, Callable, Tuple, Any, Optional
+from typing import Dict, Callable, Tuple, Any
 
 import urllib3
 
@@ -136,8 +136,7 @@ class Client(BaseClient):
             }]
         }
 
-        job_id = self.post_query_job(payload, query_type, 'v2').get('job_id', {})
-        return job_id
+        return self.post_query_job(payload, query_type, 'v2')
 
     def cb_query_status_request(self, job_id: str, query_type: str, max_rows: str = '50') -> dict:
         """Check query status.
@@ -254,13 +253,14 @@ def cb_query(client: Client, args: dict) -> Tuple[Any, Dict, Dict]:
     except ValueError:
         raise Exception('time_window argument must receive an integer, e.g: 4.')
 
-    job_id = client.cb_query_request(query, query_type, time_window)
+    response = client.cb_query_request(query, query_type, time_window)
 
+    job_id = response.get('job_id', {})
     md_ = f'Query for: {query_type} with Job ID: {job_id} was submitted to Carbon Black Threat Hunter successfully.'
     ec_ = {'JobID': job_id, 'Status': 'Pending'}
     entry_context = {'CB.ThreatHunter.Query(val.JobID == obj.JobID)': ec_}
 
-    return md_, entry_context, job_id
+    return md_, entry_context, response
 
 
 def cb_check_query_status(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
@@ -290,7 +290,7 @@ def cb_check_query_status(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
     ec_ = {'JobID': job_id, 'Status': status}
     entry_context = {'CB.ThreatHunter.Query(val.JobID == obj.JobID)': ec_}
 
-    return md_, entry_context, job_id
+    return md_, entry_context, response
 
 
 def cb_get_query_results(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
@@ -345,14 +345,15 @@ def cb_query_process_details(client: Client, args: dict) -> Tuple[str, Dict[Any,
     process_guid = str(args.get('process_guid', ''))
     document_guid = str(args.get('document_guid', ''))
 
-    query_id = client.cb_query_process_details_request(process_guid, document_guid)
+    response = client.cb_query_process_details_request(process_guid, document_guid)
 
+    query_id = response.get('query_id', '')
     md_ = f'Query for process details with Query ID: {query_id} ' \
           f'was submitted to Carbon Black Threat Hunter successfully.'
     ec_ = {'QueryID': query_id, 'Status': 'Pending'}
     entry_context = {'CB.ThreatHunter.Process(val.QueryID == obj.QueryID)': ec_}
 
-    return md_, entry_context, query_id
+    return md_, entry_context, response
 
 
 def cb_query_process_analysis(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
@@ -367,14 +368,15 @@ def cb_query_process_analysis(client: Client, args: dict) -> Tuple[str, Dict, Di
     """
     process_guid = str(args.get('process_guid', ''))
 
-    query_id = client.cb_query_process_analysis_request(process_guid)
+    response = client.cb_query_process_analysis_request(process_guid)
 
+    query_id = response.get('query_id', '')
     md_ = f'Query for process analysis with Query ID: {query_id} ' \
           f'was submitted to Carbon Black Threat Hunter successfully.'
     ec_ = {'QueryID': query_id, 'Status': 'Pending'}
     entry_context = {'CB.ThreatHunter.Process(val.QueryID == obj.QueryID)': ec_}
 
-    return md_, entry_context, query_id
+    return md_, entry_context, response
 
 
 def cb_check_query_process_status(client: Client, args: dict) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
@@ -404,7 +406,7 @@ def cb_check_query_process_status(client: Client, args: dict) -> Tuple[str, Dict
     ec_ = {'QueryID': query_id, 'Status': status}
     entry_context = {'CB.ThreatHunter.Process(val.QueryID == obj.QueryID)': ec_}
 
-    return md_, entry_context, query_id
+    return md_, entry_context, response
 
 
 def cb_get_query_process_results(client: Client, args: dict) -> Tuple[Dict[Any, Any], Dict[Any, Any]]:
