@@ -139,7 +139,7 @@ args:
   predefined:
   - "true"
   - "false"
-  description: Set to true to assign only user that is currently on shift.
+  description: Set to true to assign only user that is currently on shift. Requires Cortex XSOAR v5.5 or later.
   defaultValue: "false"
 scripttarget: 0
 runonce: false

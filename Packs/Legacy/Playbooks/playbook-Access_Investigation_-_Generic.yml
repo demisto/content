@@ -925,7 +925,7 @@ inputs:
   value:
     simple: false
   required: false
-  description: Set to true to assign only the users that are currently on shift.
+  description: Set to true to assign only the users that are currently on shift. Requires Cortex XSOAR v5.5 or later.
 outputs:
 - contextPath: Account.Email.Address
   description: The email address object associated with the Account

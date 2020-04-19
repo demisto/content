@@ -2212,7 +2212,7 @@ inputs:
   value:
     simple: false
   required: false
-  description: Set to true to assign only user that is currently on shift.
+  description: Set to true to assign only user that is currently on shift. Requires Cortex XSOAR v5.5 or later.
 outputs: []
 tests:
   - Phishing v2 Test - Attachment
