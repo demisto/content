@@ -14,7 +14,7 @@ ESCAPE_CHARACTERS = r'[/\<>"|?*]'
 def escape_illegal_characters_in_file_name(file_name):
     if file_name:
         file_name = re.sub(ESCAPE_CHARACTERS, '-', file_name)
-        file_name = re.sub('-+', '-', file_name)
+        file_name = re.sub(r'-+', '-', file_name)  # prevent more than one consecutive dash in the file name
 
     return file_name
 
@@ -38,23 +38,13 @@ def main():
         password = demisto.args().get('password')
 
     if not fileEntryID:
-        demisto.results({
-            'Type': entryTypes['error'],
-            'ContentsFormat': formats['text'],
-            'Contents': 'You must set an entryID when using the zip script'
-        })
-        sys.exit(0)
+        return_error('You must set an entryID when using the zip script')
 
     res = demisto.executeCommand('getFilePath', {'id': fileEntryID})
 
     if res[0]['Type'] == entryTypes['error']:
-        demisto.results({
-            'Type': entryTypes['error'],
-            'ContentsFormat': formats['text'],
-            'Contents': 'Failed to get the file path for entry: ' + fileEntryID + ' the error message was '
-                        + res[0]['Contents']
-        })
-        sys.exit(0)
+        return_error(
+            'Failed to get the file path for entry: ' + fileEntryID + ' the error message was ' + res[0]["Contents"])
 
     filePath = res[0]['Contents']['path']
     fileCurrentName = escape_illegal_characters_in_file_name(res[0]['Contents']['name'])
@@ -63,12 +53,7 @@ def main():
         zipName = fileCurrentName + '.zip'
 
     if not isfile(filePath):  # in case that the user will send a directory
-        demisto.results({
-            'Type': entryTypes['error'],
-            'ContentsFormat': formats['text'],
-            'Contents': fileEntryID + 'is not a file. Please recheck your input.'
-        })
-        sys.exit(0)
+        return_error(fileEntryID + ' is not a file. Please recheck your input.')
 
     # copying the file to current location
     shutil.copy(filePath, fileCurrentName)
@@ -83,12 +68,7 @@ def main():
             # testing for file integrity
             ret = zf.testzip()
             if ret is not None:
-                demisto.results({
-                    'Type': entryTypes['error'],
-                    'ContentsFormat': formats['text'],
-                    'Contents': 'There was a problem with the zipping, file: ' + ret + 'is corrupted'
-                })
-                sys.exit(0)
+                return_error('There was a problem with the zipping, file: ' + ret + ' is corrupted')
 
         finally:
             zf.close()
@@ -108,7 +88,8 @@ def main():
                 'File(val.EntryID=="' + fileEntryID + '").zipped': True
             },
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Zipped Files', [{'original name': fileCurrentName, 'zipped file': zipName}])
+            'HumanReadable': tableToMarkdown('Zipped Files',
+                                             [{'original name': fileCurrentName, 'zipped file': zipName}])
         }]
 
     demisto.results(results)
