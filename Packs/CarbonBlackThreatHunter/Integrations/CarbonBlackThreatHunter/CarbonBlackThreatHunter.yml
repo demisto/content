@@ -201,6 +201,10 @@ script:
     description: Return all watchlists reports available.
     execution: false
     name: cb-get-watchlists-reports
+    outputs:
+    - contextPath: CB.ThreatHunter.Watchlists
+      description: Watchlists reports.
+      type: Unknown
   dockerimage: demisto/python3:3.8.2.6981
   feed: false
   isfetch: false
