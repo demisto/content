@@ -67,4 +67,4 @@ There is no context output for this command.
 | demisto.com | Domain |
 
 ## Video Demo
-![image](doc_files/AlienVault_OTX_Feed_Demo.mp4)
+![image](https://raw.githubusercontent.com/demisto/content/blob/cc6c30b4b29a56c0f93bcc55d565f01637b457ff/Packs/FeedAlienVault/Integrations/FeedAlienVaultOTXTaxii/doc_files/AlienVault_OTX_Feed_Demo.mp4)
