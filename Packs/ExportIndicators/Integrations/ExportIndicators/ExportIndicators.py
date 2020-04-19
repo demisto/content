@@ -81,7 +81,7 @@ class RequestArguments:
     def __init__(self, query: str, out_format: str = FORMAT_TEXT, limit: int = 10000, offset: int = 0,
                  mwg_type: str = 'string', strip_port: bool = False, drop_invalids: bool = False,
                  category_default: str = 'bc_category', category_attribute: str = '',
-                 collapse_ips: str = DONT_COLLAPSE):
+                 collapse_ips: str = DONT_COLLAPSE, csv_text: bool = False):
 
         self.query = query
         self.out_format = out_format
@@ -93,6 +93,7 @@ class RequestArguments:
         self.category_default = category_default
         self.category_attribute = []  # type:List
         self.collapse_ips = collapse_ips
+        self.csv_text = csv_text
 
         if category_attribute is not None:
             category_attribute_list = category_attribute.split(',')
@@ -126,6 +127,9 @@ class RequestArguments:
             return True
 
         elif self.collapse_ips != last_update_data.get('collapse_ips'):
+            return True
+
+        elif self.csv_text != last_update_data.get('csv_text'):
             return True
 
         return False
@@ -205,7 +209,11 @@ def refresh_outbound_context(request_args: RequestArguments) -> str:
         out_dict[CTX_MIMETYPE_KEY] = MIMETYPE_JSON
 
     elif request_args.out_format in [FORMAT_CSV, FORMAT_XSOAR_CSV]:
-        out_dict[CTX_MIMETYPE_KEY] = MIMETYPE_CSV
+        if request_args.csv_text:
+            out_dict[CTX_MIMETYPE_KEY] = MIMETYPE_TEXT
+
+        else:
+            out_dict[CTX_MIMETYPE_KEY] = MIMETYPE_CSV
 
     elif request_args.out_format in [FORMAT_JSON_SEQ, FORMAT_XSOAR_JSON_SEQ]:
         out_dict[CTX_MIMETYPE_KEY] = MIMETYPE_JSON_SEQ
@@ -226,7 +234,8 @@ def refresh_outbound_context(request_args: RequestArguments) -> str:
         'strip_port': request_args.strip_port,
         'category_default': request_args.category_default,
         'category_attribute': request_args.category_attribute,
-        'collapse_ips': request_args.collapse_ips
+        'collapse_ips': request_args.collapse_ips,
+        'csv_text': request_args.csv_text
     })
     return out_dict[CTX_VALUES_KEY]
 
@@ -582,7 +591,7 @@ def create_values_for_returned_dict(iocs: list, request_args: RequestArguments) 
 
 def get_outbound_mimetype() -> str:
     """Returns the mimetype of the export_iocs"""
-    ctx = demisto.getIntegrationContext().get('last_output')
+    ctx = demisto.getIntegrationContext().get('last_output', {})
     return ctx.get(CTX_MIMETYPE_KEY, 'text/plain')
 
 
@@ -685,6 +694,7 @@ def get_request_args(params):
     category_default = request.args.get('cd', params.get('category_default', 'bc_category'))
     category_attribute = request.args.get('ca', params.get('category_attribute', ''))
     collapse_ips = request.args.get('tr', params.get('collapse_ips', DONT_COLLAPSE))
+    csv_text = request.args.get('tx', params.get('csv_text', False))
 
     # handle flags
     if strip_port is not None and strip_port == '':
@@ -692,6 +702,9 @@ def get_request_args(params):
 
     if drop_invalids is not None and drop_invalids == '':
         drop_invalids = True
+
+    if csv_text is not None and csv_text == '':
+        csv_text = True
 
     if collapse_ips is not None and collapse_ips not in [DONT_COLLAPSE, COLLAPSE_TO_CIDR, COLLAPSE_TO_RANGES]:
         collapse_ips = try_parse_integer(collapse_ips, CTX_COLLAPSE_ERR_MSG)
@@ -740,7 +753,7 @@ def get_request_args(params):
             raise DemistoException(CTX_MWG_TYPE_ERR_MSG)
 
     return RequestArguments(query, out_format, limit, offset, mwg_type, strip_port, drop_invalids, category_default,
-                            category_attribute, collapse_ips)
+                            category_attribute, collapse_ips, csv_text)
 
 
 @APP.route('/', methods=['GET'])
@@ -769,6 +782,13 @@ def route_list_values() -> Response:
             cache_refresh_rate=params.get('cache_refresh_rate'),
             request_args=request_args
         )
+
+        if not demisto.getIntegrationContext() and params.get('on_demand'):
+            values = 'You are running in On-Demand mode - please run !eis-update command to initialize the ' \
+                     'export process'
+
+        elif not values:
+            values = "No Results Found For the Query"
 
         mimetype = get_outbound_mimetype()
         return Response(values, status=200, mimetype=mimetype)
@@ -879,7 +899,12 @@ def update_outbound_command(args, params):
             '"Update exported IOCs On Demand" is off. If you want to update manually please toggle it on.')
     limit = try_parse_integer(args.get('list_size', params.get('list_size')), CTX_LIMIT_ERR_MSG)
     print_indicators = args.get('print_indicators')
+
     query = args.get('query')
+    # in case no query is entered take the query in the integration params
+    if len(query) == 0:
+        query = params.get('indicators_query')
+
     out_format = args.get('format')
     offset = try_parse_integer(args.get('offset', 0), CTX_OFFSET_ERR_MSG)
     mwg_type = args.get('mwg_type')
@@ -888,13 +913,19 @@ def update_outbound_command(args, params):
     category_attribute = args.get('category_attribute')
     category_default = args.get('category_default')
     collapse_ips = args.get('collapse_ips')
+    csv_text = args.get('csv_text') == 'True'
 
     request_args = RequestArguments(query, out_format, limit, offset, mwg_type, strip_port, drop_invalids,
-                                    category_default, category_attribute, collapse_ips)
+                                    category_default, category_attribute, collapse_ips, csv_text)
 
     indicators = refresh_outbound_context(request_args)
-    hr = tableToMarkdown('List was updated successfully with the following values', indicators,
-                         ['Indicators']) if print_indicators == 'true' else 'List was updated successfully'
+    if indicators:
+        hr = tableToMarkdown('List was updated successfully with the following values', indicators,
+                             ['Indicators']) if print_indicators == 'true' else 'List was updated successfully'
+
+    else:
+        hr = "No Results Found For the Query"
+
     return hr, {}, indicators
 
 
