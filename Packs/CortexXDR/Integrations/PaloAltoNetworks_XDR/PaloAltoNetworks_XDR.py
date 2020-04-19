@@ -238,13 +238,14 @@ class Client(BaseClient):
                       isolate=None,
                       hostname=None,
                       page_number=0,
-                      limit=20,
+                      limit=30,
                       first_seen_gte=None,
                       first_seen_lte=None,
                       last_seen_gte=None,
                       last_seen_lte=None,
                       sort_by_first_seen=None,
-                      sort_by_last_seen=None
+                      sort_by_last_seen=None,
+                      no_filter=False
                       ):
 
         search_from = page_number * limit
@@ -255,117 +256,126 @@ class Client(BaseClient):
             'search_to': search_to
         }
 
-        filters = []
-        if endpoint_id_list:
-            filters.append({
-                'field': 'endpoint_id_list',
-                'operator': 'in',
-                'value': endpoint_id_list
-            })
+        if no_filter:
+            reply = self._http_request(
+                method='POST',
+                url_suffix='/endpoints/get_endpoints/',
+                json_data={}
+            )
+            endpoints = reply.get('reply')[search_from:search_to]
 
-        if dist_name:
-            filters.append({
-                'field': 'dist_name',
-                'operator': 'in',
-                'value': dist_name
-            })
+        else:
+            filters = []
+            if endpoint_id_list:
+                filters.append({
+                    'field': 'endpoint_id_list',
+                    'operator': 'in',
+                    'value': endpoint_id_list
+                })
 
-        if ip_list:
-            filters.append({
-                'field': 'ip_list',
-                'operator': 'in',
-                'value': ip_list
-            })
+            if dist_name:
+                filters.append({
+                    'field': 'dist_name',
+                    'operator': 'in',
+                    'value': dist_name
+                })
 
-        if group_name:
-            filters.append({
-                'field': 'group_name',
-                'operator': 'in',
-                'value': group_name
-            })
+            if ip_list:
+                filters.append({
+                    'field': 'ip_list',
+                    'operator': 'in',
+                    'value': ip_list
+                })
 
-        if platform:
-            filters.append({
-                'field': 'platform',
-                'operator': 'in',
-                'value': platform
-            })
+            if group_name:
+                filters.append({
+                    'field': 'group_name',
+                    'operator': 'in',
+                    'value': group_name
+                })
 
-        if alias_name:
-            filters.append({
-                'field': 'alias_name',
-                'operator': 'in',
-                'value': alias_name
-            })
+            if platform:
+                filters.append({
+                    'field': 'platform',
+                    'operator': 'in',
+                    'value': platform
+                })
 
-        if isolate:
-            filters.append({
-                'field': 'isolate',
-                'operator': 'in',
-                'value': [isolate]
-            })
+            if alias_name:
+                filters.append({
+                    'field': 'alias_name',
+                    'operator': 'in',
+                    'value': alias_name
+                })
 
-        if hostname:
-            filters.append({
-                'field': 'hostname',
-                'operator': 'in',
-                'value': hostname
-            })
+            if isolate:
+                filters.append({
+                    'field': 'isolate',
+                    'operator': 'in',
+                    'value': [isolate]
+                })
 
-        if first_seen_gte:
-            filters.append({
-                'field': 'first_seen',
-                'operator': 'gte',
-                'value': first_seen_gte
-            })
+            if hostname:
+                filters.append({
+                    'field': 'hostname',
+                    'operator': 'in',
+                    'value': hostname
+                })
 
-        if first_seen_lte:
-            filters.append({
-                'field': 'first_seen',
-                'operator': 'lte',
-                'value': first_seen_lte
-            })
+            if first_seen_gte:
+                filters.append({
+                    'field': 'first_seen',
+                    'operator': 'gte',
+                    'value': first_seen_gte
+                })
 
-        if last_seen_gte:
-            filters.append({
-                'field': 'last_seen',
-                'operator': 'gte',
-                'value': last_seen_gte
-            })
+            if first_seen_lte:
+                filters.append({
+                    'field': 'first_seen',
+                    'operator': 'lte',
+                    'value': first_seen_lte
+                })
 
-        if last_seen_lte:
-            filters.append({
-                'field': 'last_seen',
-                'operator': 'lte',
-                'value': last_seen_lte
-            })
+            if last_seen_gte:
+                filters.append({
+                    'field': 'last_seen',
+                    'operator': 'gte',
+                    'value': last_seen_gte
+                })
 
-        if search_from:
-            request_data['search_from'] = search_from
+            if last_seen_lte:
+                filters.append({
+                    'field': 'last_seen',
+                    'operator': 'lte',
+                    'value': last_seen_lte
+                })
 
-        if search_to:
-            request_data['search_to'] = search_to
+            if search_from:
+                request_data['search_from'] = search_from
 
-        if sort_by_first_seen:
-            request_data['sort'] = {
-                'field': 'first_seen',
-                'keyword': sort_by_first_seen
-            }
-        elif sort_by_last_seen:
-            request_data['sort'] = {
-                'field': 'last_seen',
-                'keyword': sort_by_last_seen
-            }
+            if search_to:
+                request_data['search_to'] = search_to
 
-        request_data['filters'] = filters
+            if sort_by_first_seen:
+                request_data['sort'] = {
+                    'field': 'first_seen',
+                    'keyword': sort_by_first_seen
+                }
+            elif sort_by_last_seen:
+                request_data['sort'] = {
+                    'field': 'last_seen',
+                    'keyword': sort_by_last_seen
+                }
 
-        reply = self._http_request(
-            method='POST',
-            url_suffix='/endpoints/get_endpoint/',
-            json_data={'request_data': request_data}
-        )
+            request_data['filters'] = filters
 
-        endpoints = reply.get('reply').get('endpoints', [])
+            reply = self._http_request(
+                method='POST',
+                url_suffix='/endpoints/get_endpoint/',
+                json_data={'request_data': request_data}
+            )
+
+            endpoints = reply.get('reply').get('endpoints', [])
         return endpoints
 
     def isolate_endpoint(self, endpoint_id):
@@ -765,35 +775,6 @@ def arg_to_int(arg, arg_name: str, required: bool = False):
 
 
 def get_endpoints_command(client, args):
-    endpoint_id_list = argToList(args.get('endpoint_id_list'))
-    dist_name = argToList(args.get('dist_name'))
-    ip_list = argToList(args.get('ip_list'))
-    group_name = argToList(args.get('group_name'))
-    platform = argToList(args.get('platform'))
-    alias_name = argToList(args.get('alias_name'))
-    isolate = args.get('isolate')
-    hostname = argToList(args.get('hostname'))
-
-    first_seen_gte = arg_to_timestamp(
-        arg=args.get('first_seen_gte'),
-        arg_name='first_seen_gte'
-    )
-
-    first_seen_lte = arg_to_timestamp(
-        arg=args.get('first_seen_lte'),
-        arg_name='first_seen_lte'
-    )
-
-    last_seen_gte = arg_to_timestamp(
-        arg=args.get('last_seen_gte'),
-        arg_name='last_seen_gte'
-    )
-
-    last_seen_lte = arg_to_timestamp(
-        arg=args.get('last_seen_lte'),
-        arg_name='last_seen_lte'
-    )
-
     page_number = arg_to_int(
         arg=args.get('page'),
         arg_name='Failed to parse "page". Must be a number.',
@@ -806,27 +787,59 @@ def get_endpoints_command(client, args):
         required=True
     )
 
-    sort_by_first_seen = args.get('sort_by_first_seen')
-    sort_by_last_seen = args.get('sort_by_last_seen')
+    if list(args.keys()) == ['limit', 'page', 'sort_order']:
+        endpoints = client.get_endpoints(page_number=page_number, limit=limit, no_filter=True)
+    else:
+        endpoint_id_list = argToList(args.get('endpoint_id_list'))
+        dist_name = argToList(args.get('dist_name'))
+        ip_list = argToList(args.get('ip_list'))
+        group_name = argToList(args.get('group_name'))
+        platform = argToList(args.get('platform'))
+        alias_name = argToList(args.get('alias_name'))
+        isolate = args.get('isolate')
+        hostname = argToList(args.get('hostname'))
 
-    endpoints = client.get_endpoints(
-        endpoint_id_list=endpoint_id_list,
-        dist_name=dist_name,
-        ip_list=ip_list,
-        group_name=group_name,
-        platform=platform,
-        alias_name=alias_name,
-        isolate=isolate,
-        hostname=hostname,
-        page_number=page_number,
-        limit=limit,
-        first_seen_gte=first_seen_gte,
-        first_seen_lte=first_seen_lte,
-        last_seen_gte=last_seen_gte,
-        last_seen_lte=last_seen_lte,
-        sort_by_first_seen=sort_by_first_seen,
-        sort_by_last_seen=sort_by_last_seen
-    )
+        first_seen_gte = arg_to_timestamp(
+            arg=args.get('first_seen_gte'),
+            arg_name='first_seen_gte'
+        )
+
+        first_seen_lte = arg_to_timestamp(
+            arg=args.get('first_seen_lte'),
+            arg_name='first_seen_lte'
+        )
+
+        last_seen_gte = arg_to_timestamp(
+            arg=args.get('last_seen_gte'),
+            arg_name='last_seen_gte'
+        )
+
+        last_seen_lte = arg_to_timestamp(
+            arg=args.get('last_seen_lte'),
+            arg_name='last_seen_lte'
+        )
+
+        sort_by_first_seen = args.get('sort_by_first_seen')
+        sort_by_last_seen = args.get('sort_by_last_seen')
+
+        endpoints = client.get_endpoints(
+            endpoint_id_list=endpoint_id_list,
+            dist_name=dist_name,
+            ip_list=ip_list,
+            group_name=group_name,
+            platform=platform,
+            alias_name=alias_name,
+            isolate=isolate,
+            hostname=hostname,
+            page_number=page_number,
+            limit=limit,
+            first_seen_gte=first_seen_gte,
+            first_seen_lte=first_seen_lte,
+            last_seen_gte=last_seen_gte,
+            last_seen_lte=last_seen_lte,
+            sort_by_first_seen=sort_by_first_seen,
+            sort_by_last_seen=sort_by_last_seen
+        )
 
     return (
         tableToMarkdown('Endpoints', endpoints),
