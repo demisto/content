@@ -139,7 +139,7 @@ class Client(BaseClient):
         job_id = self.post_query_job(payload, query_type, 'v2').get('job_id', {})
         return job_id
 
-    def cb_query_status_request(self, job_id: str, query_type: str, max_rows: Optional[str] = '50') -> dict:
+    def cb_query_status_request(self, job_id: str, query_type: str, max_rows: str = '50') -> dict:
         """Check query status.
 
         Args:
@@ -529,7 +529,7 @@ def main():
 
     try:
         client = Client(server_url=server_url, org_key=org_key, auth_token=auth_token, verify=verify, proxy=proxy)
-        commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
+        commands: Dict[str, Callable[[Client, Dict[Any, Any]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
             'test-module': test_module,
             'cb-query': cb_query,
             'cb-check-query-status': cb_check_query_status,
@@ -538,7 +538,7 @@ def main():
             'cb-query-process-analysis': cb_query_process_analysis,
             'cb-check-query-process-status': cb_check_query_process_status,
             'cb-get-query-process-results': cb_get_query_process_results,
-            'cb-get-watchlist-reports': cb_get_watchlist_reports,
+            'cb-get-watchlist-reports': cb_get_watchlist_reports
         }
         if command in commands:
             return_outputs(*commands[command](client, demisto.args()))
