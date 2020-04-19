@@ -14,6 +14,7 @@ URL_REGEX = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0
 PRAGMA_REGEX = r'Pragma: ([^\\]+)'
 TYPE_REGEX = r'Type: (.+)'
 CLASS_REGEX = r'Class: (.+)'
+COMMAND_REGEX = r'Command: (.+)'
 '''HELPER FUNCTIONS'''
 
 
@@ -172,55 +173,55 @@ def main():
     # file_path = "/Users/olichter/Downloads/nb6-hotspot.pcap"                #syslog
     # file_path = "/Users/olichter/Downloads/wpa-Induction.pcap"               #wpa - Password is Induction
     # file_path = "/Users/olichter/Downloads/iseries.cap"
-    #file_path = "/Users/olichter/Downloads/2019-12-03-traffic-analysis-exercise (1).pcap"
+    file_path = "/Users/olichter/Downloads/2019-12-03-traffic-analysis-exercise (1).pcap"
     # file_path = "/Users/olichter/Downloads/smb-on-windows-10.pcapng"
 
 
     # PC Script
-    # entry_id = ''
-    #
-    # decrypt_key = "Induction"  # "/Users/olichter/Downloads/rsasnakeoil2.key"
-    # conversation_number_to_display = 15
-    # is_flows = True
-    # is_reg_extract = True
-    # is_syslog = False
-    # extracted_protocols = ['SMTP', 'DNS', 'HTTP', 'SMB2', 'NETBIOS', 'ICMP']
-    #
-    # pcap_filter = ''
-    # pcap_filter_new_file_name = ''  # '/Users/olichter/Downloads/try.pcap'
-    # homemade_regex = ''  # 'Layer (.+):'
-    # pcap_filter_new_file_path = ''
+    entry_id = ''
+
+    decrypt_key = "Induction"  # "/Users/olichter/Downloads/rsasnakeoil2.key"
+    conversation_number_to_display = 15
+    is_flows = True
+    is_reg_extract = True
+    is_syslog = False
+    extracted_protocols = ['SMTP', 'DNS', 'HTTP', 'SMB2', 'NETBIOS', 'ICMP']
+
+    pcap_filter = ''
+    pcap_filter_new_file_name = ''  # '/Users/olichter/Downloads/try.pcap'
+    homemade_regex = ''  # 'Layer (.+):'
+    pcap_filter_new_file_path = ''
 
     # Demisto Script
-    entry_id = demisto.args().get('entry_id', '')
-    file_path = demisto.executeCommand('getFilePath', {'id': entry_id})
-    if is_error(file_path):
-        return_error(get_error(file_path))
-
-    file_path = file_path[0]["Contents"]["path"]
-
-    decrypt_key = demisto.args().get('wpa_password', '')
-
-    decrypt_key_entry_id = demisto.args().get('decrypt_key_entry_id', '')
-    if decrypt_key_entry_id and not decrypt_key:
-        decrypt_key_file_path = demisto.executeCommand('getFilePath', {'id': decrypt_key_entry_id})
-        if is_error(decrypt_key_file_path):
-            return_error(get_error(decrypt_key_file_path))
-        decrypt_key = file_path = decrypt_key_file_path[0]["Contents"]["path"]
-
-    conversation_number_to_display = int(demisto.args().get('convs_to_display', '15'))
-    extracted_protocols = argToList(demisto.args().get('context_output', ''))
-    is_flows = True
-    is_reg_extract = demisto.args().get('extract_strings', 'False') == 'True'
-    is_syslog = 'SYSLOG' in extracted_protocols  #TODO: delete this
-    pcap_filter = demisto.args().get('pcap_filter', '')
-    homemade_regex = demisto.args().get('custom_regex', '')  # 'Layer (.+):'
-    pcap_filter_new_file_path = ''
-    pcap_filter_new_file_name = demisto.args().get('filtered_file_name', '')
-
-    if pcap_filter_new_file_name:
-        temp = demisto.uniqueFile()
-        pcap_filter_new_file_path = demisto.investigation()['id'] + '_' + temp
+    # entry_id = demisto.args().get('entry_id', '')
+    # file_path = demisto.executeCommand('getFilePath', {'id': entry_id})
+    # if is_error(file_path):
+    #     return_error(get_error(file_path))
+    #
+    # file_path = file_path[0]["Contents"]["path"]
+    #
+    # decrypt_key = demisto.args().get('wpa_password', '')
+    #
+    # decrypt_key_entry_id = demisto.args().get('decrypt_key_entry_id', '')
+    # if decrypt_key_entry_id and not decrypt_key:
+    #     decrypt_key_file_path = demisto.executeCommand('getFilePath', {'id': decrypt_key_entry_id})
+    #     if is_error(decrypt_key_file_path):
+    #         return_error(get_error(decrypt_key_file_path))
+    #     decrypt_key = file_path = decrypt_key_file_path[0]["Contents"]["path"]
+    #
+    # conversation_number_to_display = int(demisto.args().get('convs_to_display', '15'))
+    # extracted_protocols = argToList(demisto.args().get('context_output', ''))
+    # is_flows = True
+    # is_reg_extract = demisto.args().get('extract_strings', 'False') == 'True'
+    # is_syslog = 'SYSLOG' in extracted_protocols  #TODO: delete this
+    # pcap_filter = demisto.args().get('pcap_filter', '')
+    # homemade_regex = demisto.args().get('custom_regex', '')  # 'Layer (.+):'
+    # pcap_filter_new_file_path = ''
+    # pcap_filter_new_file_name = demisto.args().get('filtered_file_name', '')
+    #
+    # if pcap_filter_new_file_name:
+    #     temp = demisto.uniqueFile()
+    #     pcap_filter_new_file_path = demisto.investigation()['id'] + '_' + temp
 
     # Variables for the script
     hierarchy = {}  # type: Dict[str, int]
@@ -264,6 +265,8 @@ def main():
         reg_type = re.compile(TYPE_REGEX)
     if 'NETBIOS' in extracted_protocols:
         reg_class = re.compile(CLASS_REGEX)
+    if 'SMB2' in extracted_protocols:
+        reg_cmd = re.compile(COMMAND_REGEX)
     if homemade_regex:
         reg_homemad = re.compile(homemade_regex)
 
@@ -273,6 +276,9 @@ def main():
                                   decryption_key=decrypt_key, encryption_type='WPA-PWD')
         j = 0  #TODO delete this
         for packet in cap:
+            if (j%100==0):
+                print(j)
+
             j += 1  #TODO delete this
 
             last_layer.add(packet.layers[-1].layer_name)
@@ -415,10 +421,17 @@ def main():
             if 'SMB2' in extracted_protocols:
                 smb_layer = packet.get_multiple_layers('smb2')
                 if smb_layer:
+                    command_results = reg_cmd.findall(str(smb_layer))
                     smb_data = {
-                        'ID': smb_layer[0].get('sesid', -1)
+                        'ID': smb_layer[0].get('sesid', -1),
+                        'UserName': smb_layer[0].get('ntlmssp_auth_username'),
+                        'Domain': smb_layer[0].get('ntlmssp_auth_domain'),
+                        'HostName': smb_layer[0].get('ntlmssp_auth_hostname'),
+                        'Command': command_results[0] if command_results else None,
+                        'FileName': smb_layer[0].get('smb2.filename'),
+                        'Tree': smb_layer[0].get('tree')
                     }
-                #TODO: cant find it
+                    add_to_data(protocol_data['SMB2'], smb_data)
 
             if 'NETBIOS' in extracted_protocols:
                 netbios_layer = packet.get_multiple_layers('nbns')
