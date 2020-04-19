@@ -1,4 +1,5 @@
 ## [Unreleased]
+Added support for files with Windows illegal characters in the name.
 
 
 ## [20.4.0] - 2020-04-14

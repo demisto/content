@@ -7,6 +7,8 @@ from os.path import isfile
 import pyminizip
 import shutil
 
+ESCAPE_CHARACTERS = ['/', '\\', '<', '>', '"', '|', '?', '*']
+
 try:  # in order to support compression of the file
     compression = zipfile.ZIP_DEFLATED
 
@@ -56,6 +58,9 @@ if not isfile(filePath):  # in case that the user will send a directory
         'Contents': fileEntryID + 'is not a file. Please recheck your input.'
     })
     sys.exit(0)
+
+for char in ESCAPE_CHARACTERS:
+    filePath = filePath.replace(char, '_')
 
 # copying the file to current location
 shutil.copy(filePath, fileCurrentName)
