@@ -18,7 +18,7 @@ requests.packages.urllib3.disable_warnings()
 
 TEST_QUERY = ('SELECT name FROM `bigquery-public-data.usa_names.usa_1910_2013` '
               'WHERE state = "TX" '
-              'LIMIT 100')
+              'LIMIT 10')
 
 
 ''' HELPER FUNCTIONS '''
