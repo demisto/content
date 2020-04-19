@@ -324,8 +324,9 @@ class MITMProxy:
         # if recording
         # record with detect_timestamps and then rewrite mock file
         if record:
-            actions = '-s {} --set detect_timestamps=true --set keys_filepath={} --save-stream-file'.format(
-                remote_script_path, current_problem_keys_filepath
+            actions = '--set stream_large_bodies=1 -s {} '.format(remote_script_path)
+            actions += '--set detect_timestamps=true --set keys_filepath={} --save-stream-file'.format(
+                current_problem_keys_filepath
             )
         else:
             # key_file_exists = ["[", "-f", repo_problem_keys_filepath, "]"]
@@ -338,9 +339,10 @@ class MITMProxy:
             # else:
             #     problem_keys = json.loads(self.ami.check_output(['cat', repo_problem_keys_filepath]))
             # options = ' '.join(['--set {}="{}"'.format(key, val) for key, val in problem_keys.items() if val])
-            actions = '-s {} --set keys_filepath={} --server-replay-kill-extra --server-replay'.format(
+            actions = '--set stream_large_bodies=1 -s {} '.format(remote_script_path)
+            actions += '--set keys_filepath={} --server-replay-kill-extra --server-replay'.format(
                 # remote_script_path, options.strip()
-                remote_script_path, repo_problem_keys_filepath
+                repo_problem_keys_filepath
             )
 
         log_file = os.path.join(path, get_log_file_path(playbook_id, record))
