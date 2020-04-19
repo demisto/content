@@ -68,8 +68,8 @@ tasks:
     task:
       id: b14e0317-542f-4d40-81aa-164aaa05119a
       version: -1
-      name: google-cloud-pubsub-topics-list
-      script: '|||google-cloud-pubsub-topics-list'
+      name: gcp-pubsub-topics-list
+      script: '|||gcp-pubsub-topics-list'
       type: regular
       iscommand: true
       brand: ""
@@ -79,8 +79,7 @@ tasks:
     scriptarguments:
       page_size: {}
       page_token: {}
-      project_id:
-        simple: gcp-integrations
+      project_id: {}
     separatecontext: false
     view: |-
       {
@@ -136,8 +135,8 @@ tasks:
     task:
       id: 4dad61ac-283d-4353-8549-2cfa97fabf15
       version: -1
-      name: google-cloud-pubsub-topic-publish-message
-      script: '|||google-cloud-pubsub-topic-publish-message'
+      name: gcp-pubsub-topic-publish-message
+      script: '|||gcp-pubsub-topic-publish-message'
       type: regular
       iscommand: true
       brand: ""
@@ -148,8 +147,7 @@ tasks:
       attributes: {}
       data:
         simple: 'The time is: ${TimeNow}'
-      project_id:
-        simple: gcp-integrations
+      project_id: {}
       topic_id:
         simple: dmst-test-topic
     separatecontext: false
@@ -212,8 +210,8 @@ tasks:
     task:
       id: c0ae5739-515b-47c1-81bb-16d51148171f
       version: -1
-      name: google-cloud-pubsub-topic-subscription-get-by-name
-      script: '|||google-cloud-pubsub-topic-subscription-get-by-name'
+      name: gcp-pubsub-topic-subscription-get-by-name
+      script: '|||gcp-pubsub-topic-subscription-get-by-name'
       type: regular
       iscommand: true
       brand: ""
@@ -221,8 +219,7 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      project_id:
-        simple: gcp-integrations
+      project_id: {}
       subscription_id:
         simple: test_sub_2
     separatecontext: false
@@ -300,8 +297,8 @@ tasks:
     task:
       id: 17e85e86-55ae-4a69-84fb-1cb52513c395
       version: -1
-      name: google-cloud-pubsub-topic-subscriptions-list
-      script: '|||google-cloud-pubsub-topic-subscriptions-list'
+      name: gcp-pubsub-topic-subscriptions-list
+      script: '|||gcp-pubsub-topic-subscriptions-list'
       type: regular
       iscommand: true
       brand: ""
@@ -311,8 +308,7 @@ tasks:
     scriptarguments:
       page_size: {}
       page_token: {}
-      project_id:
-        simple: gcp-integrations
+      project_id: {}
       topic_id: {}
     separatecontext: false
     view: |-
@@ -394,8 +390,8 @@ tasks:
     task:
       id: 38d019c8-19e0-4452-8bed-35d9b328431f
       version: -1
-      name: google-cloud-pubsub-topic-messages-pull
-      script: '|||google-cloud-pubsub-topic-messages-pull'
+      name: gcp-pubsub-topic-messages-pull
+      script: '|||gcp-pubsub-topic-messages-pull'
       type: regular
       iscommand: true
       brand: ""
@@ -407,8 +403,7 @@ tasks:
         simple: "true"
       max_messages:
         simple: "1"
-      project_id:
-        simple: gcp-integrations
+      project_id: {}
       subscription_id:
         simple: test_sub_2
     separatecontext: false
@@ -476,8 +471,8 @@ tasks:
     task:
       id: 3728cadb-7b5d-483d-8bb2-23d520ae812c
       version: -1
-      name: google-cloud-pubsub-topic-subscription-create
-      script: '|||google-cloud-pubsub-topic-subscription-create'
+      name: gcp-pubsub-topic-subscription-create
+      script: '|||gcp-pubsub-topic-subscription-create'
       type: regular
       iscommand: true
       brand: ""
@@ -490,8 +485,7 @@ tasks:
         simple: 86400s
       labels: {}
       message_retention_duration: {}
-      project_id:
-        simple: gcp-integrations
+      project_id: {}
       push_attributes: {}
       push_endpoint: {}
       retain_acked_messages: {}
@@ -582,7 +576,7 @@ tasks:
       id: f20ff05d-9d04-47bc-890f-fecb325f657f
       version: -1
       name: Clean test_sub_2 Queue
-      script: '|||google-cloud-pubsub-topic-messages-pull'
+      script: '|||gcp-pubsub-topic-messages-pull'
       type: regular
       iscommand: true
       brand: ""
@@ -594,8 +588,7 @@ tasks:
         simple: "true"
       max_messages:
         simple: "100"
-      project_id:
-        simple: gcp-integrations
+      project_id: {}
       subscription_id:
         simple: test_sub_2
     separatecontext: false
@@ -653,9 +646,9 @@ tasks:
     task:
       id: 13c61b09-0850-4c5e-8e71-cbff60c0793e
       version: -1
-      name: google-cloud-pubsub-topic-subscription-update
+      name: gcp-pubsub-topic-subscription-update
       description: Update a subscription.
-      script: '|||google-cloud-pubsub-topic-subscription-update'
+      script: '|||gcp-pubsub-topic-subscription-update'
       type: regular
       iscommand: true
       brand: ""
@@ -668,8 +661,7 @@ tasks:
       labels:
         simple: test=true
       message_retention_duration: {}
-      project_id:
-        simple: gcp-integrations
+      project_id: {}
       push_attributes: {}
       push_endpoint: {}
       retain_acked_messages: {}
@@ -737,9 +729,9 @@ tasks:
     task:
       id: bb55d7ee-4210-4516-8b54-8a07ed29f000
       version: -1
-      name: google-cloud-pubsub-topic-create
+      name: gcp-pubsub-topic-create
       description: Create a topic.
-      script: '|||google-cloud-pubsub-topic-create'
+      script: '|||gcp-pubsub-topic-create'
       type: regular
       iscommand: true
       brand: ""
@@ -750,8 +742,7 @@ tasks:
       allowed_persistence_regions: {}
       kms_key_name: {}
       labels: {}
-      project_id:
-        simple: gcp-integrations
+      project_id: {}
       topic_id:
         simple: test_topic_${TimeNowUnix}
     separatecontext: false
@@ -774,9 +765,9 @@ tasks:
     task:
       id: 8eb16746-20db-400a-875e-ac5ac953ed14
       version: -1
-      name: google-cloud-pubsub-topic-update
+      name: gcp-pubsub-topic-update
       description: Updates a topic.
-      script: '|||google-cloud-pubsub-topic-update'
+      script: '|||gcp-pubsub-topic-update'
       type: regular
       iscommand: true
       brand: ""
@@ -788,8 +779,7 @@ tasks:
       kms_key_name: {}
       labels:
         simple: test=true
-      project_id:
-        simple: gcp-integrations
+      project_id: {}
       topic_id:
         simple: test_topic_${TimeNowUnix}
       update_mask:
@@ -853,9 +843,9 @@ tasks:
     task:
       id: b08de031-7f70-417c-8dd5-20b911233d0e
       version: -1
-      name: google-cloud-pubsub-topic-delete
+      name: gcp-pubsub-topic-delete
       description: Delete a topic.
-      script: '|||google-cloud-pubsub-topic-delete'
+      script: '|||gcp-pubsub-topic-delete'
       type: regular
       iscommand: true
       brand: ""
@@ -863,8 +853,7 @@ tasks:
       '#none#':
       - "24"
     scriptarguments:
-      project_id:
-        simple: gcp-integrations
+      project_id: {}
       topic_id:
         simple: test_topic_${TimeNowUnix}
     separatecontext: false
@@ -887,9 +876,9 @@ tasks:
     task:
       id: 6d0739f5-f280-4d19-8d85-d17a2b835237
       version: -1
-      name: google-cloud-pubsub-topic-messages-seek
+      name: gcp-pubsub-topic-messages-seek
       description: Seeks a subscription to a given point in time or to a given snapshot.
-      script: '|||google-cloud-pubsub-topic-messages-seek'
+      script: '|||gcp-pubsub-topic-messages-seek'
       type: regular
       iscommand: true
       brand: ""
@@ -897,8 +886,7 @@ tasks:
       '#none#':
       - "26"
     scriptarguments:
-      project_id:
-        simple: gcp-integrations
+      project_id: {}
       snapshot: {}
       subscription_id:
         simple: test_sub_2
@@ -969,8 +957,8 @@ tasks:
     task:
       id: 37a1bf1a-8919-4c0e-8d7f-0d1e9625ba58
       version: -1
-      name: google-cloud-pubsub-topic-messages-pull
-      script: '|||google-cloud-pubsub-topic-messages-pull'
+      name: gcp-pubsub-topic-messages-pull
+      script: '|||gcp-pubsub-topic-messages-pull'
       type: regular
       iscommand: true
       brand: ""
@@ -982,8 +970,7 @@ tasks:
         simple: "true"
       max_messages:
         simple: "1"
-      project_id:
-        simple: gcp-integrations
+      project_id: {}
       subscription_id:
         simple: test_sub_2
     separatecontext: false
@@ -1006,10 +993,10 @@ tasks:
     task:
       id: 12f16cf8-fa79-425a-8232-05fa01139139
       version: -1
-      name: google-cloud-pubsub-topic-snapshot-create
+      name: gcp-pubsub-topic-snapshot-create
       description: Creates a snapshot from the requested subscription. Snapshots are
-        used in google-cloud-pubsub-topic-messages-seek command.
-      script: '|||google-cloud-pubsub-topic-snapshot-create'
+        used in gcp-pubsub-topic-messages-seek command.
+      script: '|||gcp-pubsub-topic-snapshot-create'
       type: regular
       iscommand: true
       brand: ""
@@ -1018,8 +1005,7 @@ tasks:
       - "28"
     scriptarguments:
       labels: {}
-      project_id:
-        simple: gcp-integrations
+      project_id: {}
       snapshot_id:
         simple: test_snapshot_${TimeNowUnix}
       subscription_id:
@@ -1084,10 +1070,10 @@ tasks:
     task:
       id: b2afd66c-2479-47e0-875a-39b3c6c733e0
       version: -1
-      name: google-cloud-pubsub-topic-snapshot-update
-      description: Updates an existing snapshot. Snapshots are used in google-cloud-pubsub-topic-messages-seek
+      name: gcp-pubsub-topic-snapshot-update
+      description: Updates an existing snapshot. Snapshots are used in gcp-pubsub-topic-messages-seek
         command.
-      script: '|||google-cloud-pubsub-topic-snapshot-update'
+      script: '|||gcp-pubsub-topic-snapshot-update'
       type: regular
       iscommand: true
       brand: ""
@@ -1098,8 +1084,7 @@ tasks:
       expire_time: {}
       labels:
         simple: test=true
-      project_id:
-        simple: gcp-integrations
+      project_id: {}
       snapshot_id:
         simple: test_snapshot_${TimeNowUnix}
       topic_id:
@@ -1174,9 +1159,9 @@ tasks:
     task:
       id: f4778268-33e9-4e3a-8722-8deedd1ae089
       version: -1
-      name: google-cloud-pubsub-topic-snapshot-delete
+      name: gcp-pubsub-topic-snapshot-delete
       description: Removes an existing snapshot.
-      script: '|||google-cloud-pubsub-topic-snapshot-delete'
+      script: '|||gcp-pubsub-topic-snapshot-delete'
       type: regular
       iscommand: true
       brand: ""
@@ -1184,8 +1169,7 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
-      project_id:
-        simple: gcp-integrations
+      project_id: {}
       snapshot_id:
         complex:
           root: GoogleCloudPubSubSnapshots
@@ -1268,9 +1252,9 @@ tasks:
     task:
       id: 1a079293-da63-41f8-81a6-01d57ea86975
       version: -1
-      name: google-cloud-pubsub-topic-snapshots-list
+      name: gcp-pubsub-topic-snapshots-list
       description: Get a list of snapshots by project ID and topic ID.
-      script: '|||google-cloud-pubsub-topic-snapshots-list'
+      script: '|||gcp-pubsub-topic-snapshots-list'
       type: regular
       iscommand: true
       brand: ""
@@ -1280,8 +1264,7 @@ tasks:
     scriptarguments:
       page_size: {}
       page_token: {}
-      project_id:
-        simple: gcp-integrations
+      project_id: {}
       topic_id: {}
     separatecontext: false
     view: |-

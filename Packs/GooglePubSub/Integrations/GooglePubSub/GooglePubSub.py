@@ -21,6 +21,7 @@ requests.packages.urllib3.disable_warnings()
 SERVICE_NAME = "pubsub"
 SERVICE_VERSION = "v1"
 SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
+ISO_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 """ HELPER CLASSES """
 
@@ -74,7 +75,7 @@ class BaseGoogleClient:
         """
         :param service_name: The name of the service. You can find this and the service  here
          https://github.com/googleapis/google-api-python-client/blob/master/docs/dyn/index.md
-        :param service_version:The version of the API.
+        :param service_version: The version of the API.
         :param client_secret: A string of the generated credentials.json
         :param scopes: The scope needed for the project. (i.e. ['https://www.googleapis.com/auth/cloud-platform'])
         :param proxy: Proxy flag
@@ -114,7 +115,6 @@ class BaseGoogleClient:
                     proxy_pass=parsed_proxy.password)
                 return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=insecure)
         return httplib2.Http(disable_ssl_certificate_validation=insecure)
-
 # disable-secrets-detection-end
 
 
@@ -353,7 +353,7 @@ class PubSubClient(BaseGoogleClient):
                 .execute()
         )
 
-    def subscription_seek_message(self, subscription_name, time_string, snapshot):
+    def subscription_seek_message(self, subscription_name, time_string, snapshot=None):
         """
         Seeks messages in subscription
         :param subscription_name: Subscription to seek messages for
@@ -473,7 +473,16 @@ def init_google_client(
         insecure,
         **kwargs,
 ) -> PubSubClient:
-    """Initializes google client"""
+    """
+    Initializes google client
+    :param service_account_json: A string of the generated credentials.json
+    :param default_subscription: Default subscription to use
+    :param default_project: Default project to use
+    :param default_max_msgs: Max messages to pull per fetch
+    :param insecure: Flag - do not validate https certs
+    :param kwargs:
+    :return:
+    """
     try:
         service_account_json = json.loads(service_account_json)
         client = PubSubClient(
@@ -502,19 +511,19 @@ def message_to_incident(message):
     incident = {
         "name": f'Google PubSub Message {message.get("messageId")}',
         "rawJSON": json.dumps(message),
-        "occurred": convert_publish_datetime_to_str(dateparser.parse(message.get("publishTime")))
+        "occurred": convert_datetime_to_iso_str(dateparser.parse(message.get("publishTime")))
     }
     return incident
 
 
-def convert_publish_datetime_to_str(publish_time):
+def convert_datetime_to_iso_str(publish_time):
     """
     Converts datetime to str in "%Y-%m-%dT%H:%M:%S.%fZ" format
     :param publish_time: Datetime
     :return: date str in "%Y-%m-%dT%H:%M:%S.%fZ" format
     """
     try:
-        return publish_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+        return publish_time.strftime(ISO_DATE_FORMAT)
     except ValueError:
         return publish_time.strftime("%Y-%m-%dT%H:%M:%SZ")
 
@@ -594,8 +603,8 @@ def topics_list_command(
 
 def publish_message_command(
         client: PubSubClient,
-        project_id: str,
         topic_id: str,
+        project_id: str,
         data: str = None,
         attributes: str = None,
 ) -> Tuple[str, dict, dict]:
@@ -654,8 +663,8 @@ def get_publish_body(message_attributes, message_data):
 
 def pull_messages_command(
         client: PubSubClient,
-        project_id: str,
         subscription_id: str,
+        project_id: str,
         max_messages: str = None,
         ack: str = None,
 ) -> Tuple[str, dict, list]:
@@ -690,9 +699,39 @@ def pull_messages_command(
         return "No new messages found", {}, raw_msgs
 
 
-def extract_acks_and_msgs(raw_msgs):
+def ack_messages_command(
+        client: PubSubClient,
+        ack_ids: str,
+        subscription_id: str,
+        project_id: str,
+) -> Tuple[str, dict, list]:
+    """
+    ACKs previously pulled messages using ack Ids
+    Requires one of the following OAuth scopes:
+
+        https://www.googleapis.com/auth/pubsub
+        https://www.googleapis.com/auth/cloud-platform
+
+    :param client: GoogleClient
+    :param ack_ids: csv str with ack ids
+    :param project_id: project name
+    :param subscription_id: Subscription name to pull messages from
+    :return: Success message
+    """
+    sub_name = GoogleNameParser.get_subscription_project_name(project_id, subscription_id)
+    ack_ids = argToList(ack_ids)
+    raw_res = client.ack_messages(sub_name, ack_ids)
+    title = f'Subscription {subscription_id} had the following ids acknowledged'
+    readable_output = tableToMarkdown(title, ack_ids, headers=['ACK ID'])
+    return readable_output, {}, raw_res
+
+
+def extract_acks_and_msgs(raw_msgs, add_ack_to_msg=True):
     """
     Extracts acknowledges and message data from raw_msgs
+    :param raw_msgs: Raw messages object
+    :param add_ack_to_msg: Boolean flag - if true, will add ack to message under "ackId"
+    :return:
     """
     msg_list = []
     acknowledges = []
@@ -708,10 +747,12 @@ def extract_acks_and_msgs(raw_msgs):
                 pass
 
             msg["data"] = decoded_data
-            msg_list.append(msg)
             ack_id = raw_msg.get("ackId")
             if ack_id:
                 acknowledges.append(ack_id)
+                if add_ack_to_msg:
+                    msg["ackId"] = ack_id
+            msg_list.append(msg)
     return acknowledges, msg_list
 
 
@@ -750,18 +791,20 @@ def subscriptions_list_command(
         subs = raw_response.get("subscriptions", "")
         next_page_token = raw_response.get('nextPageToken')
         title += f" in project {project_id}"
+        for sub in subs:
+            sub['deliveryType'] = 'Push' if sub.get('pushConfig') else 'Pull'
         readable_output = tableToMarkdown(title, subs, headers=["name", "topic", "ackDeadlineSeconds", "labels"],
                                           headerTransform=pascalToSpace)
     outputs = {f"GoogleCloudPubSubSubscriptions(val && val.name === obj.name)": subs}
     if next_page_token:
-        outputs["GoogleCloudPubSubSubscriptions.pushConfig.pushEndpoint"] = next_page_token
+        outputs["GoogleCloudPubSubSubscriptions.nextPageToken"] = next_page_token
         readable_output += f'**Next Page Token: {next_page_token}**'
 
     return readable_output, outputs, raw_response
 
 
 def get_subscription_command(
-        client: PubSubClient, project_id: str, subscription_id: str
+        client: PubSubClient, subscription_id: str, project_id: str
 ) -> Tuple[str, dict, dict]:
     """
     Get subscription list by project_id or by topic_id
@@ -778,18 +821,18 @@ def get_subscription_command(
     full_sub_name = GoogleNameParser.get_subscription_project_name(
         project_id, subscription_id
     )
-    subs = client.get_sub(full_sub_name)
-
+    sub = client.get_sub(full_sub_name)
+    sub['deliveryType'] = 'Push' if sub.get('pushConfig') else 'Pull'
     title = f"Subscription {subscription_id}"
-    readable_output = tableToMarkdown(title, subs)
+    readable_output = tableToMarkdown(title, sub, headerTransform=pascalToSpace)
     outputs = {
-        f"GoogleCloudPubSubSubscriptions(val && val.name === obj.name)": subs
+        f"GoogleCloudPubSubSubscriptions(val && val.name === obj.name)": sub
     }
-    return readable_output, outputs, subs
+    return readable_output, outputs, sub
 
 
 def create_subscription_command(
-        client: PubSubClient, project_id: str, subscription_id: str, topic_id: str, push_endpoint: str = '',
+        client: PubSubClient, subscription_id: str, topic_id: str, project_id: str, push_endpoint: str = '',
         push_attributes: str = '', ack_deadline_seconds: str = '', retain_acked_messages: str = '',
         message_retention_duration: str = '', labels: str = '', expiration_ttl: str = ''
 ) -> Tuple[str, dict, dict]:
@@ -825,6 +868,7 @@ def create_subscription_command(
     readable_output = tableToMarkdown(title, sub)
     sub['projectName'] = project_id
     sub['subscriptionName'] = subscription_id
+    sub['deliveryType'] = 'Push' if sub.get('pushConfig') else 'Pull'
     outputs = {
         f"GoogleCloudPubSubSubscriptions": sub
     }
@@ -832,7 +876,7 @@ def create_subscription_command(
 
 
 def update_subscription_command(
-        client: PubSubClient, project_id: str, subscription_id: str, topic_id: str, update_mask: str,
+        client: PubSubClient, subscription_id: str, topic_id: str, update_mask: str, project_id: str,
         push_endpoint: str = '', push_attributes: str = '', ack_deadline_seconds: str = '',
         retain_acked_messages: str = '', message_retention_duration: str = '', labels: str = '',
         expiration_ttl: str = ''
@@ -870,6 +914,7 @@ def update_subscription_command(
     readable_output = tableToMarkdown(title, sub)
     sub['projectName'] = project_id
     sub['subscriptionName'] = subscription_id
+    sub['deliveryType'] = 'Push' if sub.get('pushConfig') else 'Pull'
     outputs = {
         f"GoogleCloudPubSubSubscriptions(val && val.name === obj.name)": sub
     }
@@ -877,8 +922,8 @@ def update_subscription_command(
 
 
 def create_topic_command(
-        client: PubSubClient, project_id: str, topic_id: str,
-        allowed_persistence_regions: str = '', kms_key_name: str = None, labels: str = None
+        client: PubSubClient, topic_id: str, project_id: str, allowed_persistence_regions: str = '',
+        kms_key_name: str = None, labels: str = None
 ) -> Tuple[str, dict, dict]:
     """
     Creates a topic
@@ -1102,24 +1147,34 @@ def snapshot_delete_command(
     return readable_output, {}, raw_res
 
 
-def fetch_incidents(client: PubSubClient):
+def fetch_incidents(client: PubSubClient, last_run: dict, first_fetch_time: str, ack_incidents: bool):
     """
     This function will execute each interval (default is 1 minute).
-    :param client: GoogleClient initiallized with default_project, default_subscription and default_max_msgs
+    :param client: GoogleClient initialized with default_project, default_subscription and default_max_msgs
+    :param last_run: last run dict containing last run data
+    :param first_fetch_time: how long ago should the subscription seek in first fetch
+    :param ack_incidents: Boolean flag - when set to True will ack back the fetched messages
     :return: incidents: Incidents that will be created in Demisto
     """
     incidents = []
     sub_name = GoogleNameParser.get_subscription_project_name(
         client.default_project, client.default_subscription
     )
+
+    # Handle first time fetch
+    if not last_run:
+        first_fetch_time, _ = parse_date_range(first_fetch_time, ISO_DATE_FORMAT)
+        # Seek previous message state
+        client.subscription_seek_message(sub_name, first_fetch_time)
+
     raw_msgs = client.pull_messages(sub_name, client.default_max_msgs)
     if "receivedMessages" in raw_msgs:
         acknowledges, msgs = extract_acks_and_msgs(raw_msgs)
-
         for msg in msgs:
             incidents.append(message_to_incident(msg))
-        client.ack_messages(sub_name, acknowledges)
-    return incidents
+        if ack_incidents:
+            client.ack_messages(sub_name, acknowledges)
+    return incidents, 'No more seek'
 
 
 def main():
@@ -1129,29 +1184,37 @@ def main():
     LOG(f"Command being called is {command}")
     try:
         commands = {
-            "google-cloud-pubsub-topic-publish-message": publish_message_command,
-            "google-cloud-pubsub-topic-messages-pull": pull_messages_command,
-            "google-cloud-pubsub-topic-subscriptions-list": subscriptions_list_command,
-            "google-cloud-pubsub-topic-subscription-get-by-name": get_subscription_command,
-            "google-cloud-pubsub-topic-subscription-create": create_subscription_command,
-            "google-cloud-pubsub-topic-subscription-update": update_subscription_command,
-            "google-cloud-pubsub-topics-list": topics_list_command,
-            "google-cloud-pubsub-topic-create": create_topic_command,
-            "google-cloud-pubsub-topic-delete": delete_topic_command,
-            "google-cloud-pubsub-topic-update": update_topic_command,
-            "google-cloud-pubsub-topic-messages-seek": seek_message_command,
-            "google-cloud-pubsub-topic-snapshots-list": snapshot_list_command,
-            "google-cloud-pubsub-topic-snapshot-create": snapshot_create_command,
-            "google-cloud-pubsub-topic-snapshot-update": snapshot_update_command,
-            "google-cloud-pubsub-topic-snapshot-delete": snapshot_delete_command
+            "gcp-pubsub-topic-publish-message": publish_message_command,
+            "gcp-pubsub-topic-messages-pull": pull_messages_command,
+            "gcp-pubsub-topic-ack-messages": ack_messages_command,
+            "gcp-pubsub-topic-subscriptions-list": subscriptions_list_command,
+            "gcp-pubsub-topic-subscription-get-by-name": get_subscription_command,
+            "gcp-pubsub-topic-subscription-create": create_subscription_command,
+            "gcp-pubsub-topic-subscription-update": update_subscription_command,
+            "gcp-pubsub-topics-list": topics_list_command,
+            "gcp-pubsub-topic-create": create_topic_command,
+            "gcp-pubsub-topic-delete": delete_topic_command,
+            "gcp-pubsub-topic-update": update_topic_command,
+            "gcp-pubsub-topic-messages-seek": seek_message_command,
+            "gcp-pubsub-topic-snapshots-list": snapshot_list_command,
+            "gcp-pubsub-topic-snapshot-create": snapshot_create_command,
+            "gcp-pubsub-topic-snapshot-update": snapshot_update_command,
+            "gcp-pubsub-topic-snapshot-delete": snapshot_delete_command
         }
         if command == "test-module":
             demisto.results(test_module(client, params.get('isFetch')))
-
         elif command == "fetch-incidents":
-            demisto.incidents(fetch_incidents(client=client))
+            ack_incidents = params.get('ack_incidents')
+            first_fetch_time = params.get('first_fetch_time').rstrip()
+            last_run = demisto.getLastRun()
+            incidents, last_run = fetch_incidents(client, last_run, first_fetch_time, ack_incidents)
+            demisto.incidents(incidents)
+            demisto.setLastRun(last_run)
         else:
             args = demisto.args()
+            # project_id is expected to be in all commands. If not provided defaults on client.default_project
+            if 'project_id' not in args:
+                args['project_id'] = client.default_project
             return_outputs(*commands[command](client, **args))  # type: ignore[operator]
 
     # Log exceptions

@@ -1,6 +1,6 @@
 import base64
 import pytest
-from GooglePubSub import GoogleNameParser, convert_publish_datetime_to_str, message_to_incident, \
+from GooglePubSub import GoogleNameParser, convert_datetime_to_iso_str, message_to_incident, \
     attribute_pairs_to_dict, get_publish_body, extract_acks_and_msgs, publish_message_command, pull_messages_command, \
     subscriptions_list_command, get_subscription_command, create_subscription_command, update_subscription_command, \
     topics_list_command, create_topic_command, delete_topic_command, update_topic_command, seek_message_command, \
@@ -92,7 +92,7 @@ class TestHelperFunctions:
         'publishTime': DATE_WITH_MS
     }
 
-    def test_convert_publish_datetime_to_str(self):
+    def test_convert_datetime_to_iso_str(self):
         """
         Given:
             - date with ms
@@ -100,13 +100,13 @@ class TestHelperFunctions:
         When:
             - we want the publish_time in str
         Then:
-            - convert_publish_datetime_to_str should convert the dates to the same string
+            - convert_datetime_to_iso_str should convert the dates to the same string
         """
         datetime_no_ms = dateparser.parse(self.DATE_NO_MS)
-        assert f'{self.DATE_NO_MS[:-1]}.000000Z' == convert_publish_datetime_to_str(datetime_no_ms)
+        assert f'{self.DATE_NO_MS[:-1]}.000000Z' == convert_datetime_to_iso_str(datetime_no_ms)
 
         datetime_with_ms = dateparser.parse(self.DATE_WITH_MS)
-        assert self.DATE_WITH_MS == convert_publish_datetime_to_str(datetime_with_ms)
+        assert self.DATE_WITH_MS == convert_datetime_to_iso_str(datetime_with_ms)
 
     def test_message_to_incident(self):
         """
@@ -287,7 +287,7 @@ class TestHelperFunctions:
             """
             raw_msgs = {
                 'receivedMessages': [{'ackId': 1, 'message': {'data': TestHelperFunctions.ENCODED_B64_MESSAGE}}]}
-            expected = ([1], [{'data': 'decoded message'}])
+            expected = ([1], [{'data': 'decoded message', 'ackId': 1}])
             assert expected == extract_acks_and_msgs(raw_msgs)
 
         def test_extract_acks_and_msgs__multi(self):
@@ -303,7 +303,7 @@ class TestHelperFunctions:
                 {'ackId': 1, 'message': {'data': TestHelperFunctions.ENCODED_B64_MESSAGE}},
                 {'ackId': 2, 'message': {'attributes': {'q': 'a'}}}
             ]}
-            expected = ([1, 2], [{'data': 'decoded message'}, {'data': '', 'attributes': {'q': 'a'}}])
+            expected = ([1, 2], [{'data': 'decoded message', 'ackId': 1}, {'data': '', 'attributes': {'q': 'a'}, 'ackId': 2}])
             assert expected == extract_acks_and_msgs(raw_msgs)
 
 
@@ -333,35 +333,35 @@ class TestCommands:
         RAW_RESPONSES = json.load(f)
 
     TEST_COMMANDS_LIST = [
-        ('google-cloud-pubsub-topic-publish-message',
+        ('gcp-pubsub-topic-publish-message',
          publish_message_command, 'publish_message', {'data': "42", 'project_id': 'dmst-doc-prjct', 'topic_id': 'dmst-test-topic'}),
-        ('google-cloud-pubsub-topic-messages-pull',
+        ('gcp-pubsub-topic-messages-pull',
          pull_messages_command, 'pull_messages', {'ack': 'true', 'max_messages': '1', 'project_id': 'dmst-doc-prjct', 'subscription_id': 'test_sub_2'}),
-        ('google-cloud-pubsub-topic-subscriptions-list',
+        ('gcp-pubsub-topic-subscriptions-list',
          subscriptions_list_command, 'list_project_subs', {'project_id': 'dmst-doc-prjct'}),
-        ('google-cloud-pubsub-topic-subscription-get-by-name',
+        ('gcp-pubsub-topic-subscription-get-by-name',
          get_subscription_command, 'get_sub', {'subscription_id': 'test_sub_2', 'project_id': 'dmst-doc-prjct'}),
-        ('google-cloud-pubsub-topic-subscription-create',
+        ('gcp-pubsub-topic-subscription-create',
          create_subscription_command, 'create_subscription', {'expiration_ttl': '86400s', 'project_id': 'dmst-doc-prjct', 'topic_id': 'dmst-test-topic', 'subscription_id': 'doc_sub_11'}),
-        ('google-cloud-pubsub-topic-subscription-update',
+        ('gcp-pubsub-topic-subscription-update',
          update_subscription_command, 'update_subscription', {'labels': "doc=true", 'project_id': 'dmst-doc-prjct', 'subscription_id': 'doc_sub_11', 'topic_id': 'dmst-test-topic', 'update_mask': 'labels'}),
-        ('google-cloud-pubsub-topics-list',
+        ('gcp-pubsub-topics-list',
          topics_list_command, 'list_topic', {'project_id': 'dmst-doc-prjct'}),
-        ('google-cloud-pubsub-topic-create',
+        ('gcp-pubsub-topic-create',
          create_topic_command, 'create_topic', {'project_id': 'dmst-doc-prjct', 'topic_id': 'dmst-doc-topic11'}),
-        ('google-cloud-pubsub-topic-delete',
+        ('gcp-pubsub-topic-delete',
          delete_topic_command, 'delete_subscription', {'project_id': 'dmst-doc-prjct', 'topic_id': 'dmst-doc-topic11'}),
-        ('google-cloud-pubsub-topic-update',
+        ('gcp-pubsub-topic-update',
          update_topic_command, 'update_topic', {'project_id': 'dmst-doc-prjct', 'topic_id': 'dmst-doc-topic11', 'labels': "doc=true", 'update_mask': 'labels'}),
-        ('google-cloud-pubsub-topic-messages-seek',
+        ('gcp-pubsub-topic-messages-seek',
          seek_message_command, 'subscription_seek_message', {'project_id': 'dmst-doc-prjct', 'subscription_id': 'dean-sub1', 'time_string': '2020-04-10T00:00:00.123456Z'}),
-        ('google-cloud-pubsub-topic-snapshots-list',
+        ('gcp-pubsub-topic-snapshots-list',
          snapshot_list_command, 'get_project_snapshots_list', {'project_id': 'dmst-doc-prjct'}),
-        ('google-cloud-pubsub-topic-snapshot-create',
+        ('gcp-pubsub-topic-snapshot-create',
          snapshot_create_command, 'create_snapshot', {'project_id': 'dmst-doc-prjct', 'subscription_id': 'test_sub_2', 'snapshot_id': 'doc_snapshot'}),
-        ('google-cloud-pubsub-topic-snapshot-update',
+        ('gcp-pubsub-topic-snapshot-update',
          snapshot_update_command, 'update_snapshot', {'project_id': 'dmst-doc-prjct', 'snapshot_id': 'doc_snapshot', 'labels': "doc=true", 'update_mask': 'labels', 'topic_id': 'dmst-test-topic'}),
-        ('google-cloud-pubsub-topic-snapshot-delete',
+        ('gcp-pubsub-topic-snapshot-delete',
          snapshot_delete_command, 'delete_snapshot', {'project_id': 'dmst-doc-prjct', 'snapshot_id': 'doc_snapshot'})
     ]
 
@@ -384,4 +384,6 @@ class TestCommands:
         client = self.MockClient()
         mocker.patch.object(client, client_func, return_value=raw_response)
         res = command_func(client, **args)
+        with open('/Users/darbel/dev/demisto/content/Packs/GooglePubSub/Integrations/GooglePubSub/commands.json', 'w') as f:
+            json.dump(res[1], f)
         assert expected == res[1]

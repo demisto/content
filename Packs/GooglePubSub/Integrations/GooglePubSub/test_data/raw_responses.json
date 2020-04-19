@@ -1,18 +1,18 @@
 {
-  "google-cloud-pubsub-topic-messages-seek": {},
-  "google-cloud-pubsub-topics-list": {
+  "gcp-pubsub-topic-messages-seek": {},
+  "gcp-pubsub-topics-list": {
     "topics": [
       {
         "name": "projects/dmst-doc-prjct/topics/dmst-test-topic"
       }
     ]
   },
-  "google-cloud-pubsub-topic-publish-message": {
+  "gcp-pubsub-topic-publish-message": {
     "messageIds": [
       "123"
     ]
   },
-  "google-cloud-pubsub-topic-messages-pull": {
+  "gcp-pubsub-topic-messages-pull": {
     "receivedMessages": [
       {
         "ackId": "",
@@ -24,7 +24,7 @@
       }
     ]
   },
-  "google-cloud-pubsub-topic-subscription-get-by-name": {
+  "gcp-pubsub-topic-subscription-get-by-name": {
     "name": "projects/dmst-doc-prjct/subscriptions/test_sub_2",
     "topic": "projects/dmst-doc-prjct/topics/dmst-test-topic",
     "pushConfig": {},
@@ -34,7 +34,7 @@
       "ttl": "9999999999s"
     }
   },
-  "google-cloud-pubsub-topic-subscriptions-list": {
+  "gcp-pubsub-topic-subscriptions-list": {
     "subscriptions": [
       {
         "name": "projects/dmst-doc-prjct/subscriptions/dean-sub1",
@@ -101,7 +101,7 @@
       }
     ]
   },
-  "google-cloud-pubsub-topic-subscription-create": {
+  "gcp-pubsub-topic-subscription-create": {
     "name": "projects/dmst-doc-prjct/subscriptions/doc_sub_11",
     "topic": "projects/dmst-doc-prjct/topics/dmst-test-topic",
     "pushConfig": {},
@@ -111,7 +111,7 @@
       "ttl": "86400s"
     }
   },
-  "google-cloud-pubsub-topic-subscription-update": {
+  "gcp-pubsub-topic-subscription-update": {
     "name": "projects/dmst-doc-prjct/subscriptions/doc_sub_11",
     "topic": "projects/dmst-doc-prjct/topics/dmst-test-topic",
     "pushConfig": {
@@ -128,22 +128,22 @@
       "ttl": "86400s"
     }
   },
-  "google-cloud-pubsub-topic-create": {
+  "gcp-pubsub-topic-create": {
     "name": "projects/dmst-doc-prjct/topics/dmst-doc-topic11"
   },
-  "google-cloud-pubsub-topic-update": {
+  "gcp-pubsub-topic-update": {
     "name": "projects/dmst-doc-prjct/topics/dmst-doc-topic11",
     "labels": {
       "doc": "true"
     }
   },
-  "google-cloud-pubsub-topic-delete": {},
-  "google-cloud-pubsub-topic-snapshot-create": {
+  "gcp-pubsub-topic-delete": {},
+  "gcp-pubsub-topic-snapshot-create": {
     "name": "projects/dmst-doc-prjct/snapshots/doc_snapshot",
     "topic": "projects/dmst-doc-prjct/topics/dmst-test-topic",
     "expireTime": "2020-04-25T08:36:30.242Z"
   },
-  "google-cloud-pubsub-topic-snapshot-update": {
+  "gcp-pubsub-topic-snapshot-update": {
     "name": "projects/dmst-doc-prjct/snapshots/doc_snapshot",
     "topic": "projects/dmst-doc-prjct/topics/dmst-test-topic",
     "expireTime": "2020-04-25T08:36:30.242Z",
@@ -151,7 +151,7 @@
       "doc": "true"
     }
   },
-  "google-cloud-pubsub-topic-snapshots-list": {
+  "gcp-pubsub-topic-snapshots-list": {
     "snapshots": [
       {
         "name": "projects/dmst-doc-prjct/snapshots/doc_snapshot",
@@ -163,5 +163,5 @@
       }
     ]
   },
-  "google-cloud-pubsub-topic-snapshot-delete": {}
+  "gcp-pubsub-topic-snapshot-delete": {}
 }
