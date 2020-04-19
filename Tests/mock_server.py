@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import json
 import signal
@@ -92,9 +93,11 @@ class AMIConnection:
         Returns:
             string. The IP of the AMI on the docker bridge.
         """
-        out = self.check_output(['/usr/sbin/ip', 'addr', 'show', 'docker0']).split('\n')
+        # out = self.check_output(['/usr/sbin/ip', 'addr', 'show', 'docker0']).split('\n')
+        out = self.check_output(['/usr/sbin/ip', 'addr', 'show', 'docker0']).decode().split('\n')
         lines_of_words = map(lambda y: y.strip().split(' '), out)  # Split output to lines[words[]]
-        address_lines = filter(lambda x: x[0] == 'inet', lines_of_words)  # Take only lines with ipv4 addresses
+        # address_lines = filter(lambda x: x[0] == 'inet', lines_of_words)  # Take only lines with ipv4 addresses
+        address_lines = list(filter(lambda x: x[0] == 'inet', lines_of_words))  # Take only lines with ipv4 addresses
         if len(address_lines) != 1:
             raise Exception("docker bridge interface has {} ipv4 addresses, should only have one."
                             .format(len(address_lines)))
@@ -228,20 +231,22 @@ class MITMProxy:
         """Set the temp folder as the current folder (the one used to store mock and log files)."""
         self.current_folder = self.tmp_folder
 
-    def move_mock_file_to_repo(self, playbook_id):
+    def move_mock_file_to_repo(self, playbook_id, thread_index=0, prints_manager=None):
         """Move the mock and log files of a (successful) test playbook run from the temp folder to the repo folder
 
         Args:
             playbook_id (string): ID of the test playbook of which the files should be moved.
+            thread_index (int): Index of the relevant thread, to make printing readable.
+            prints_manager (ParallelPrintsManager): Prints manager to synchronize parallel prints.
         """
         src_filepath = os.path.join(self.tmp_folder, get_mock_file_path(playbook_id))
         src_files = os.path.join(self.tmp_folder, get_folder_path(playbook_id) + '*')
         dst_folder = os.path.join(self.repo_folder, get_folder_path(playbook_id))
 
         if not self.has_mock_file(playbook_id):
-            print('Mock file not created!')
+            prints_manager.add_print_job('Mock file not created!', print, thread_index)
         elif self.get_mock_file_size(src_filepath) == '0':
-            print('Mock file is empty, ignoring.')
+            prints_manager.add_print_job('Mock file is empty, ignoring.', print, thread_index)
             self.empty_files.append(playbook_id)
         else:
             # Move to repo folder
@@ -286,13 +291,16 @@ class MITMProxy:
             mv_cmd = 'mv {} {}'.format(cleaned_mock_filepath, mock_file_path)
             self.ami.call(mv_cmd.split())
 
-    def start(self, playbook_id, path=None, record=False):
+
+    def start(self, playbook_id, path=None, record=False, thread_index=0, prints_manager=None):
         """Start the proxy process and direct traffic through it.
 
         Args:
             playbook_id (string): ID of the test playbook to run.
             path (string): path override for the mock/log files.
             record (bool): Select proxy mode (record/playback)
+            thread_index (int): Index of the relevant thread, to make printing readable.
+            prints_manager (ParallelPrintsManager): Prints manager to synchronize parallel prints.
         """
         if self.process:
             raise Exception("Cannot start proxy - already running.")
@@ -364,7 +372,8 @@ class MITMProxy:
         if not log_file_exists:
             self.stop()
             raise Exception("Proxy process took to long to go up.")
-        print('Proxy process up and running. Took {} seconds'.format(seconds_since_init))
+        proxy_up_message = 'Proxy process up and running. Took {} seconds'.format(seconds_since_init)
+        prints_manager.add_print_job(proxy_up_message, print, thread_index)
 
     def stop(self):
         if not self.process:
