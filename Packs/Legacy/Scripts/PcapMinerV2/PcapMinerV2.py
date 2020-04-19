@@ -13,6 +13,7 @@ IP_REGEX = r'\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.)' \
 URL_REGEX = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
 PRAGMA_REGEX = r'Pragma: ([^\\]+)'
 TYPE_REGEX = r'Type: (.+)'
+CLASS_REGEX = r'Class: (.+)'
 '''HELPER FUNCTIONS'''
 
 
@@ -183,7 +184,7 @@ def main():
     is_flows = True
     is_reg_extract = True
     is_syslog = False
-    extracted_protocols = ['SMTP', 'DNS', 'HTTP', 'SMB2']
+    extracted_protocols = ['SMTP', 'DNS', 'HTTP', 'SMB2', 'NETBIOS']
 
     pcap_filter = ''
     pcap_filter_new_file_name = ''  # '/Users/olichter/Downloads/try.pcap'
@@ -257,8 +258,10 @@ def main():
     if 'HTTP' in extracted_protocols:
         reg_pragma = re.compile(PRAGMA_REGEX)
 
-    if 'DNS' in extracted_protocols:
+    if 'DNS' or 'NETBIOS' in extracted_protocols:
         reg_type = re.compile(TYPE_REGEX)
+    if 'NETBIOS' in extracted_protocols:
+        reg_class = re.compile(CLASS_REGEX)
     if homemade_regex:
         reg_homemad = re.compile(homemade_regex)
 
@@ -410,11 +413,23 @@ def main():
             if 'SMB2' in extracted_protocols:
                 smb_layer = packet.get_multiple_layers('smb2')
                 if smb_layer:
-                    print(smb_layer[0])
                     smb_data = {
                         'ID': smb_layer[0].get('sesid', -1)
                     }
                 #TODO: cant find it
+
+            if 'NETBIOS' in extracted_protocols:
+                netbios_layer = packet.get_multiple_layers('nbns')
+                if netbios_layer:
+                    type_results = reg_type.findall(str(netbios_layer[0]))
+                    class_results = reg_class.findall(str(netbios_layer[0]))
+                    netbios_data = {
+                        'ID': netbios_layer[0].get('id', -1),
+                        'Name': netbios_layer[0].get('name'),
+                        'Type': type_results[0] if type_results else None,
+                        'Class': class_results[0] if class_results else None
+                    }
+                    add_to_data(protocol_data['NETBIOS'], netbios_data)
 
             if is_reg_extract:
                 for i in reg_ip.finditer(str(packet)):
