@@ -391,12 +391,13 @@ def convert_to_str(obj):
         return obj
 
 
-def map_category_item(raw_response):
+def get_item_human_readable(raw_response):
     return {
         'ID': raw_response.get('sys_id'),
         'Name': raw_response.get('name'),
-        'Type': raw_response.get('type'),
-        'Description': raw_response.get('short_description')
+        'Description': raw_response.get('short_description'),
+        'Price': raw_response.get('price'),
+        'Order': raw_response.get('order')
     }
 
 
@@ -1390,23 +1391,14 @@ def query_items():
     args = unicode_to_str_recur(demisto.args())
     table_name = 'sc_cat_item'
     category = args.get('item-category')
-    item_type = args.get('item-type')
-    text = args.get('text')
     offset = args.get('offset', DEFAULTS['offset'])
     limit = args.get('limit', DEFAULTS['limit'])
 
     items_query = ''
+
     if category:
         items_query = 'category.title=' + category
-    if item_type:
-        items_query += '&type=' + item_type
 
-    #items_query = 'name=User Facade^active=false'
-    #items_query = 'active=false'
-    #items_query = 'Keywords=User Facade'
-    #items_query = 'category.title=' + category
-    #items_query = 'sysparm_query=GOTO123TEXTQUERY321=ipad'
-    print(items_query)
     res = query(table_name, limit, offset, items_query)
 
     if not res or 'result' not in res:
@@ -1419,21 +1411,19 @@ def query_items():
     if len(items) == 0:
         return 'No items found'
 
-    headers = ['ID', 'Name', 'Type', 'Description']
-
     mapped_items = []
     for item in items:
-        mapped_items.append(map_category_item(item))
+        mapped_items.append(get_item_human_readable(item))
 
     entry = {
         'Type': entryTypes['note'],
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow Category Items', mapped_items, headers=headers,
+        'HumanReadable': tableToMarkdown('ServiceNow Catalog Items', mapped_items,
                                          removeNull=True, headerTransform=pascalToSpace),
         'EntryContext': {
-            'ServiceNow.CategoryItem(val.ID===obj.ID)': createContext(mapped_items, removeNull=True),
+            'ServiceNow.CatalogItem(val.ID===obj.ID)': createContext(mapped_items, removeNull=True),
         }
     }
     return entry
@@ -1443,23 +1433,25 @@ def get_item_command():
     args = unicode_to_str_recur(demisto.args())
     sys_id = args.get('sys-id')
     res = send_request('/sn_sc/servicecatalog/items/' + sys_id, 'get')
-    headers = ['ID', 'Name', 'Type', 'Description']
+
+    if not res or 'result' not in res:
+        return 'Item not found'
+
     res = res['result']
 
-    mapped_item = map_category_item(res)
+    mapped_item = get_item_human_readable(res)
 
     entry = {
         'Type': entryTypes['note'],
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ServiceNow Category Item', mapped_item, headers=headers,
+        'HumanReadable': tableToMarkdown('ServiceNow Catalog Item', mapped_item,
                                          removeNull=True, headerTransform=pascalToSpace),
         'EntryContext': {
-            'ServiceNow.CategoryItem(val.ID===obj.ID)': createContext(mapped_item, removeNull=True),
+            'ServiceNow.CatalogItem(val.ID===obj.ID)': createContext(mapped_item, removeNull=True),
         }
     }
-
     return entry
 
 
@@ -1478,9 +1470,53 @@ def order_item_command():
 
     params = {'sysparm_quantity': quantity, 'variables': variables_dict}
 
-    print(params)
     res = send_request('/sn_sc/servicecatalog/items/' + sys_id + '/order_now', 'post', body=params)
-    headers = ['ID', 'Name']
+
+    if not res or 'result' not in res:
+        return 'Could not order item'
+
+    res = res['result']
+
+    mapped_item = {
+        'ID': res.get('sys_id'),
+        'RequestNumber': res.get('request_number')
+    }
+
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': res,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('ServiceNow Order Request', mapped_item,
+                                         removeNull=True, headerTransform=pascalToSpace),
+        'EntryContext': {
+            'ServiceNow.OrderRequest(val.ID===obj.ID)': createContext(mapped_item, removeNull=True),
+        }
+    }
+    return entry
+
+
+def add_tag_command():
+    args = unicode_to_str_recur(demisto.args())
+    incident_id = args.get('incident-id')
+    tag_id = args.get('tag-id')
+    title = args.get('title')
+
+    body = {'label': tag_id, 'table': 'incident', 'table_key': incident_id, 'title': title}
+    res = send_request('/now/table/label_entry', 'post', body=body)
+
+    if not res or 'result' not in res:
+        return 'Could not add tag'
+
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': res,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['text'],
+        'HumanReadable': 'Tag successfully added.'
+    }
+    return entry
+
 
 def fetch_incidents():
     query_params = {}
@@ -1647,6 +1683,8 @@ try:
         demisto.results(get_item_command())
     if demisto.command() == 'servicenow-item-order-create':
         demisto.results(order_item_command())
+    if demisto.command() == 'servicenow-incident-add-tag':
+        demisto.results(add_tag_command())
 except Exception as e:
     LOG(e)
     LOG.print_log()
