@@ -78,7 +78,6 @@ try:
     os.remove(abspath_output_file)
     return_outputs(readable_output='Successfully generated pdf',
                    outputs={}, raw_response={'data': encoded})
-
 except Exception:
     tb = traceback.format_exc()
     wrap = "=====sane-pdf-reports error====="
