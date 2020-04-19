@@ -196,7 +196,7 @@ def main():
             raise NotImplementedError(f'{command} is not an existing Generic SQL command')
         client.connection.close()
     except Exception as err:
-        return_error(f'{err} \nquery: {demisto.args().get("query")}')
+        return_error(f'Unexpected error: {str(err)} \nquery: {demisto.args().get("query")} \n{traceback.format_exc()}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
