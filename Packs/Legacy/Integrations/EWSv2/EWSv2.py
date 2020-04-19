@@ -880,8 +880,10 @@ def search_mailboxes(protocol, filter, limit=100, mailbox_search_scope=None, ema
 
     try:
         search_results = []  # type: list
-        for mailbox_ids_batch in batch(mailbox_ids, batch_size=2000):
+        for mailbox_ids_batch in batch(mailbox_ids, batch_size=500):
             search_results.extend(SearchMailboxes(protocol=protocol).call(filter, mailbox_ids_batch))
+            if len(search_results) >= limit:
+                break
 
         search_results = search_results[:limit]
     except TransportError, e:
