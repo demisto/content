@@ -2670,6 +2670,7 @@
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
+        "Trend Micro Apex": "Issue 23632",
         "Awake Security": "Issue 23376",
         "RiskSense": "We should get an instance talk to Francesco",
         "Palo Alto Networks Cortex": "Issue 22300",
