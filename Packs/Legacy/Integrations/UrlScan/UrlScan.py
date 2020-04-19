@@ -272,8 +272,9 @@ def format_results(uuid):
             dbot_score['Score'] = 0
             dbot_score['Type'] = 'url'
             human_readable['Malicious'] = 'Benign'
-    if len(scan_meta['processors']['download']['data']) > 0:
-        meta_data = scan_meta['processors']['download']['data'][0]
+    processors_data = scan_meta['processors']
+    if 'download' in processors_data and len(scan_meta['processors']['download']['data']) > 0:
+        meta_data = processors_data['download']['data'][0]
         sha256 = meta_data['sha256']
         filename = meta_data['filename']
         filesize = meta_data['filesize']
