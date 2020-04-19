@@ -1,5 +1,5 @@
 {
-    "name": "MicrosoftGraphUser",
+    "name": "Microsoft Graph User",
     "description": "Use the Microsoft Graph integration to connect to and interact with user objects on Microsoft Platforms.",
     "support": "Cortex XSOAR",
     "serverMinVersion": "4.1.0",
