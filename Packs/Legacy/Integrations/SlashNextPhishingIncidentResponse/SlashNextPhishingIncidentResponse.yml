@@ -4,7 +4,7 @@ commonfields:
 name: SlashNext Phishing Incident Response
 display: SlashNext Phishing Incident Response
 category: Data Enrichment & Threat Intelligence
-description: "SlashNext Phishing Incident Response integration allows Demisto users
+description: "SlashNext Phishing Incident Response integration allows Cortex XSOAR users
   to fully automate analysis of suspicious URLs. For example, IR teams responsible
   for abuse inbox management can extract links or domains out of suspicious emails
   and automatically analyze them with the SlashNext SEER threat detection cloud to
@@ -18,7 +18,7 @@ configuration:
   defaultvalue: https://oti.slashnext.cloud/api
   type: 0
   required: true
-- display: API Key
+- display: SlashNext API Key
   name: apikey
   defaultvalue: ""
   type: 4
@@ -500,7 +500,7 @@ script:
     - contextPath: SlashNext.URL.Landing.LastSeen
       description: Time when the landing IoC was last observed.
       type: date
-    description: Performs a real-time URL reputation scan with SlashNext cloud-based
+    description: Performs a real-time URL scan with SlashNext cloud-based
       SEER Engine. If the specified URL already exists in the cloud database, scan
       results will be returned immediately. If not, this command will submit a URL
       scan request and return with the message "check back later" and include a unique
@@ -726,4 +726,7 @@ script:
       required: true
       description:  Scan ID. Can be retrieved from the "slashnext-url-scan" command or the "slashnext-url-scan-sync" command.
     description: Downloads the text of a web page against a previous URL scan request.
+  - name: slashnext-api-quota
+    arguments: []
+    description: Queries the SlashNext cloud database and retrieves the details of API quota.
   runonce: false
