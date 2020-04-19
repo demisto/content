@@ -2,12 +2,23 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-import zipfile
-from os.path import isfile
-import pyminizip
+import re
 import shutil
+import zipfile
+import pyminizip
+from os.path import isfile
 
-ESCAPE_CHARACTERS = ['/', '\\', '<', '>', '"', '|', '?', '*']
+ESCAPE_CHARACTERS = r'[/\<>"|?*]'
+
+
+def escape_illegal_characters_in_file_name(file_name):
+    if not file_name:
+        return file_name
+
+    file_name = re.sub(ESCAPE_CHARACTERS, '-', file_name)
+    file_name = re.sub('-+', '-', file_name)
+    return file_name
+
 
 try:  # in order to support compression of the file
     compression = zipfile.ZIP_DEFLATED
@@ -15,13 +26,13 @@ try:  # in order to support compression of the file
 except Exception:
     compression = zipfile.ZIP_STORED
 
-filePath = None
-fileEntryID = ''
 zipName = None
+filePath = None
 password = None
 fileEntryID = demisto.args().get('entryID')
+
 if 'zipName' in demisto.args().keys():
-    zipName = demisto.args().get('zipName') + '.zip'
+    zipName = escape_illegal_characters_in_file_name(demisto.args().get('zipName')) + '.zip'
 
 if 'password' in demisto.args().keys():
     password = demisto.args().get('password')
@@ -46,7 +57,7 @@ if res[0]['Type'] == entryTypes['error']:
     sys.exit(0)
 
 filePath = res[0]['Contents']['path']
-fileCurrentName = res[0]['Contents']['name']
+fileCurrentName = escape_illegal_characters_in_file_name(res[0]['Contents']['name'])
 
 if not zipName:
     zipName = fileCurrentName + '.zip'
@@ -58,9 +69,6 @@ if not isfile(filePath):  # in case that the user will send a directory
         'Contents': fileEntryID + 'is not a file. Please recheck your input.'
     })
     sys.exit(0)
-
-for char in ESCAPE_CHARACTERS:
-    filePath = filePath.replace(char, '_')
 
 # copying the file to current location
 shutil.copy(filePath, fileCurrentName)
