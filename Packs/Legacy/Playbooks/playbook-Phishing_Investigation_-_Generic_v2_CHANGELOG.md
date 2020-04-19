@@ -1,6 +1,5 @@
 ## [Unreleased]
--
-
+Added the *OnCall* input to assign only users that are on shift.
 
 ## [20.1.2] - 2020-01-22
 Added tasks that predict the phishing incident verdict when a phishing ML model exists. The verdict refers to the phishing category.

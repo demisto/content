@@ -1,7 +1,7 @@
 id: past_test_playbook_1
 version: -1
 name: past_test_playbook_1
-toversion: 0
+toversion: 0.0.0
 starttaskid: "0"
 tasks:
   "0":
