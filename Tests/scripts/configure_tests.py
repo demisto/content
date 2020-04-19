@@ -18,6 +18,7 @@ from demisto_sdk.commands.common.constants import *  # noqa: E402
 from demisto_sdk.commands.common.tools import get_yaml, str2bool, get_from_version, get_to_version, \
     collect_ids, get_script_or_integration_id, run_command, LOG_COLORS, print_error, print_color, \
     print_warning, server_version_compare  # noqa: E402
+import demisto_sdk.commands.common.tools as tools
 
 # Search Keyword for the changed file
 NO_TESTS_FORMAT = 'No test( - .*)?'
@@ -786,7 +787,7 @@ def extract_matching_object_from_id_set(obj_id, obj_set, server_version='0'):
 def get_test_from_conf(branch_name, conf=None):
     tests = set([])
     changed = set([])
-    change_string = run_command("git diff origin/master...{} Tests/conf.json".format(branch_name))
+    change_string = tools.run_command("git diff origin/master...{} Tests/conf.json".format(branch_name))
     added_groups = re.findall(r'(\+[ ]+")(.*)(":)', change_string)
     if added_groups:
         for group in added_groups:
@@ -978,18 +979,18 @@ def create_test_file(is_nightly, skip_save=False):
     """Create a file containing all the tests we need to run for the CI"""
     tests_string = ''
     if not is_nightly:
-        branches = run_command("git branch")
+        branches = tools.run_command("git branch")
         branch_name_reg = re.search(r"\* (.*)", branches)
         branch_name = branch_name_reg.group(1)
 
         print("Getting changed files from the branch: {0}".format(branch_name))
         if branch_name != 'master':
-            files_string = run_command("git diff --name-status origin/master...{0}".format(branch_name))
+            files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
         else:
-            commit_string = run_command("git log -n 2 --pretty='%H'")
+            commit_string = tools.run_command("git log -n 2 --pretty='%H'")
             commit_string = commit_string.replace("'", "")
             last_commit, second_last_commit = commit_string.split()
-            files_string = run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
+            files_string = tools.run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
 
         with open('./Tests/ami_builds.json', 'r') as ami_builds:
             # get two_before_ga version to check if tests are runnable on that env
