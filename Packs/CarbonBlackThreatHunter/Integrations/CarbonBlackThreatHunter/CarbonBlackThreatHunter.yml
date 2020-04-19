@@ -50,44 +50,157 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: processes
-      description: Either Processes or Enriched-Events
+      description: Query type. Either Processes or Enriched-Events.
       isArray: false
       name: type
       predefined:
       - processes
       - enriched_events
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Query CB Investigation
     execution: false
     name: cb-query
     outputs:
-    - contextPath: CB.ThreatHunter.Query.Result
+    - contextPath: CB.ThreatHunter.Query.JobID
       description: Output of CB Query
-      type: Unknown
+      type: String
+    - contextPath: CB.ThreatHunter.Query.Status
+      description: Query status.
+      type: String
   - arguments:
     - default: false
-      description: Process Id
+      description: Process ID.
       isArray: false
       name: process_guid
       required: true
       secret: false
     - default: false
-      description: Document Id available in process result
+      description: Document ID available in process result.
       isArray: false
       name: document_guid
       required: false
       secret: false
     deprecated: false
-    description: Query CB Hunter to get the parent process given process_guid and
-      document_guid
+    description: Query CB Hunter to get the parent process.
     execution: false
-    name: cb-get-process-details
+    name: cb-query-process-details
     outputs:
-    - contextPath: CB.ThreatHunter.Process.Details
-      description: Process details.
+    - contextPath: CB.ThreatHunter.Process.QueryID
+      description: Query ID.
+      type: String
+    - contextPath: CB.ThreatHunter.Process.Status
+      description: Query status.
+      type: String
+  - arguments:
+    - default: false
+      description: Process ID.
+      isArray: false
+      name: process_guid
+      required: true
+      secret: false
+    deprecated: false
+    description: Query CB Hunter to get the process analysis.
+    execution: false
+    name: cb-query-process-analysis
+    outputs:
+    - contextPath: CB.ThreatHunter.Process.QueryID
+      description: Query ID.
+      type: String
+    - contextPath: CB.ThreatHunter.Process.Status
+      description: Query status.
+      type: String
+  - arguments:
+    - default: false
+      description: Job ID.
+      isArray: false
+      name: job_id
+      predefined:
+      - ''
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: processes
+      description: Query type. Either Processes or Enriched-Events.
+      isArray: false
+      name: type
+      predefined:
+      - processes
+      - enriched_events
+      required: true
+      secret: false
+    deprecated: false
+    description: Check query status.
+    execution: false
+    name: cb-check-query-status
+    outputs:
+    - contextPath: CB.ThreatHunter.Query.JobID
+      description: Job ID.
+      type: String
+    - contextPath: CB.ThreatHunter.Query.Status
+      description: Query status.
+      type: String
+  - arguments:
+    - default: false
+      description: Job ID.
+      isArray: false
+      name: job_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: processes
+      description: Query type. Either Processes or Enriched-Events.
+      isArray: false
+      name: type
+      predefined:
+      - processes
+      - enriched_events
+      required: true
+      secret: false
+    deprecated: false
+    description: Get query results.
+    execution: false
+    name: cb-get-query-results
+    outputs:
+    - contextPath: CB.ThreatHunter.Query
+      description: Query results.
       type: Unknown
+  - arguments:
+    - default: false
+      description: Query ID.
+      isArray: false
+      name: query_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Check process query status.
+    execution: false
+    name: cb-check-query-process-status
+    outputs:
+    - contextPath: CB.ThreatHunter.Process.QueryID
+      description: Query ID.
+      type: String
+    - contextPath: CB.ThreatHunter.Process.Status
+      description: Query Status.
+      type: String
+  - arguments:
+    - default: false
+      description: Query ID.
+      isArray: false
+      name: query_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get process query results.
+    execution: false
+    name: cb-get-query-process-results
+  - deprecated: false
+    description: Return all watchlists reports available.
+    execution: false
+    name: cb-get-watchlists-reports
   dockerimage: demisto/python3:3.8.2.6981
   feed: false
   isfetch: false
@@ -97,7 +210,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-beta: True
-fromversion: 5.0.0
 tests:
 - No test
+fromversion: 5.0.0
+beta: true
