@@ -10,7 +10,7 @@ urllib3.disable_warnings()
 
 class Client(BaseClient):
     """
-    Client to use in the Securonix integration. Overrides BaseClient
+    Client to use in the Carbon Black Threat Hunter integration. Overrides BaseClient
     """
     def __init__(self, server_url: str, org_key: str, auth_token: str, verify: bool, proxy: bool):
         """
@@ -72,7 +72,7 @@ class Client(BaseClient):
 
     def http_request(self, method: str, url_suffix: str, version: str, params: str = None, data: dict = None):
         """
-        Generic request to CarbonBlack ThreatHunter
+        Generic request to Carbon Black Threat Hunter
         """
         url = f'{self._base_url}{version}{url_suffix}'
         try:
