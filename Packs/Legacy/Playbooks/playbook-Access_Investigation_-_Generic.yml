@@ -838,6 +838,9 @@ tasks:
     scriptarguments:
       assignBy: {}
       email: {}
+      onCall:
+        complex:
+          root: inputs.OnCall
       roles:
         complex:
           root: inputs.Role
@@ -918,6 +921,11 @@ inputs:
     simple: Administrator
   required: true
   description: The default role to assign the incident to.
+- key: OnCall
+  value:
+    simple: false
+  required: false
+  description: Set to true to assign only the users that are currently on shift. Requires Cortex XSOAR v5.5 or later.
 outputs:
 - contextPath: Account.Email.Address
   description: The email address object associated with the Account
