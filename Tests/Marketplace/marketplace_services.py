@@ -54,7 +54,7 @@ class PackFolders(enum.Enum):
         return [
             PackFolders.SCRIPTS.value, PackFolders.DASHBOARDS.value, PackFolders.INCIDENT_FIELDS.value,
             PackFolders.INCIDENT_TYPES.value, PackFolders.INTEGRATIONS.value, PackFolders.PLAYBOOKS.value,
-            PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value
+            PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value, PackFolders.MISC.value
         ]
 
     @classmethod
@@ -494,7 +494,8 @@ class Pack(object):
                 PackFolders.INCIDENT_TYPES.value: "incidenttype",
                 PackFolders.DASHBOARDS.value: "dashboard",
                 PackFolders.INDICATOR_FIELDS.value: "indicatorfield",
-                PackFolders.REPORTS.value: "reports"
+                PackFolders.REPORTS.value: "reports",
+                PackFolders.MISC.value: "reputation"
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
@@ -573,6 +574,12 @@ class Pack(object):
                             'toDate': dash_board_section.get('toDate', ""),
                             'period': dash_board_section.get('period', {}),
                             'fromDateLicense': dash_board_section.get('fromDateLicense', "")
+                        })
+                    elif current_directory == PackFolders.MISC.value:
+                        folder_collected_items.append({
+                            'details': content_item.get('details', ""),
+                            'reputationScriptName': content_item.get('reputationScriptName', ""),
+                            'enhancementScriptNames': content_item.get('enhancementScriptNames', [])
                         })
 
                 content_item_key = content_item_name_mapping[current_directory]
