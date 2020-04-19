@@ -847,23 +847,23 @@ script:
     execution: false
     name: xdr-get-endpoints
     outputs:
-      - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_id
-        description: The endpoint ID.
-        type: String
-      - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_name
-        description: The endpoint name.
-        type: String
-      - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_type
-        description: The endpoint type.
-        type: String
-      - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_status
-        description: The status of the endpoint'
-        type: String
-      - contextPath: PaloAltoNetworksXDR.Endpoint.os_type
-        description: The endpoint OS type.
-        type: String
-      - contextPath: PaloAltoNetworksXDR.Endpoint.ip
-        description: A list of IP addresses.
+    - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_id
+      description: The endpoint ID.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_name
+      description: The endpoint name.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_type
+      description: The endpoint type.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_status
+      description: The status of the endpoint'
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Endpoint.os_type
+      description: The endpoint OS type.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Endpoint.ip
+      description: A list of IP addresses.
       type: Unknown
     - contextPath: PaloAltoNetworksXDR.Endpoint.users
       description: A list of users.
