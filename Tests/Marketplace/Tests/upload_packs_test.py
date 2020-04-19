@@ -24,6 +24,9 @@ class TestModifiedPacks:
         assert modified_packs == {"Pack1", "Pack2"}
 # disable-secrets-detection-end
 
+class TestUpdateIndex:
+    def test_update_index_folder(self, mocker):
+
 
 class TestPrivatePacks:
     class FakeDirEntry:
