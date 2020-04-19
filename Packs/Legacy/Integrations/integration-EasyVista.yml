@@ -272,3 +272,5 @@ script:
       type: string
     description: This method allows a list of incidents / requests (service, change,
       investment) to be obtained.
+tests:
+  - No tests

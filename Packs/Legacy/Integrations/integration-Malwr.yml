@@ -389,4 +389,6 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-  dockerimage: demisto/bs4
+  dockerimage: demisto/bs4:latest
+tests:
+  - No tests

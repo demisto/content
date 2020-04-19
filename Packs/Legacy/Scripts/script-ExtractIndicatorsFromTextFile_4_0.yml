@@ -91,4 +91,4 @@ outputs:
 scripttarget: 0
 runonce: false
 tests:
-  - Extract Indicators From File - test
+  - No test

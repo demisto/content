@@ -182,5 +182,5 @@ runonce: false
 dockerimage: demisto/pdfx
 runas: DBotWeakRole
 tests:
-- Extract Indicators From File - test
+- No tests
 deprecated: true
