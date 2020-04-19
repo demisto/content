@@ -123,7 +123,7 @@ def test_get_endpoints(requests_mock):
     assert expected_output == outputs
 
 
-def test_get_all_endpoints(requests_mock):
+def test_get_all_endpoints_using_limit(requests_mock):
     from PaloAltoNetworks_XDR import get_endpoints_command, Client
 
     get_endpoints_response = load_test_data('./test_data/get_all_endpoints.json')
