@@ -237,7 +237,6 @@ def get_indicators(indicator_value=None, indicator_type=None, owners=None, ratin
                     else:
                         _filter.add_indicator(indicator_value)
 
-
     if indicator_type is None:
         if indicator_value is not None:
             _filter.add_indicator(indicator_value)
@@ -266,10 +265,8 @@ def get_indicators(indicator_value=None, indicator_type=None, owners=None, ratin
                 indicators = [item]
                 indicators[0]["summary"] = indicator_value
 
-    groupIndicators = []
     associatedIndicators = []
     indicator_observations = []
-    indicator_tags = []
 
     if associated_groups:
         indicators[0]['group_associations'] = tc_associated_groups(tc, owners, indicator_value, indicators[0]['type'])
@@ -284,7 +281,7 @@ def get_indicators(indicator_value=None, indicator_type=None, owners=None, ratin
                     indicator_observations.append(
                         {"count": observation.count, "date_observed": observation.date_observed})
             indicators[0]['indicator_observations'] = indicator_observations
-        except Exception as e:
+        except Exception:
             indicators[0]['indicator_observations'] = indicator_observations
             pass
 
@@ -299,7 +296,7 @@ def get_indicators(indicator_value=None, indicator_type=None, owners=None, ratin
                          "confidence": associated_indicator.confidence, "date_added": associated_indicator.date_added,
                          "last_modified": associated_indicator.last_modified, "weblink": associated_indicator.weblink})
             indicators[0]['indicator_associations'] = associatedIndicators
-        except Exception as e:
+        except Exception:
             indicators[0]['indicator_associations'] = associatedIndicators
             pass
 
@@ -520,7 +517,7 @@ def tc_associated_groups(tc, owners, indicator_value, indicator_type):
                             break
                     else:
                         group_associations = []
-        except Exception as e:
+        except Exception:
             pass
 
     return group_associations
@@ -562,7 +559,7 @@ def tc_indicator_get_tags(tc, owners, indicator_value, indicator_type):
                             break
                     else:
                         tags = []
-        except Exception as e:
+        except Exception:
             pass
 
     return tags
@@ -683,9 +680,9 @@ def tc_get_indicator_command():
     else:
         indicator_type = None
 
-    ec, indicators, raw_indicators, indicators_associations, indicator_groups, indicator_observations, indicator_tags = tc_get_indicator(
-        indicator, owners, rating_threshold, confidence_threshold, associated_groups, associated_indicators,
-        include_observations, include_tags, indicator_type)
+    ec, indicators, raw_indicators, indicators_associations, indicator_groups, indicator_observations, indicator_tags \
+        = tc_get_indicator(indicator, owners, rating_threshold, confidence_threshold, associated_groups,
+                           associated_indicators, include_observations, include_tags, indicator_type)
     # remove extra items from the indicator markdown
 
     indicators = copy.deepcopy(ec)
@@ -2127,13 +2124,12 @@ COMMANDS = {
     'tc-get-indicator-owners': tc_get_indicator_owners
 }
 
-# try:
-command_func = demisto.command()
-LOG('command is %s' % (demisto.command(),))
-if command_func in COMMANDS.keys():
-    COMMANDS[command_func]()
+try:
+    command_func = demisto.command()
+    LOG('command is %s' % (demisto.command(),))
+    if command_func in COMMANDS.keys():
+        COMMANDS[command_func]()
 
 
-# except Exception as e:
-#     var = traceback.format_exc()
-#     return_error('error has occurred: {}'.format(str(var), ))
+except Exception as e:
+    return_error('error has occurred: {}'.format(str(e), ))
