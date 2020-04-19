@@ -117,7 +117,7 @@ class TestHelperFunctions:
         Then:
             - message_to_incident should convert it correctly
         """
-        incident = message_to_incident(self.MOCK_MESSAGE)
+        incident, _ = message_to_incident(self.MOCK_MESSAGE)
         assert self.DATE_WITH_MS == incident.get('occurred')
         assert f'Google PubSub Message {self.MOCK_MESSAGE.get("messageId")}' == incident.get('name')
         assert json.dumps(self.MOCK_MESSAGE) == incident.get('rawJSON')

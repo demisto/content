@@ -508,12 +508,13 @@ def message_to_incident(message):
     """
     Create incident from a message
     """
+    published_time_dt = dateparser.parse(message.get("publishTime"))
     incident = {
         "name": f'Google PubSub Message {message.get("messageId")}',
         "rawJSON": json.dumps(message),
-        "occurred": convert_datetime_to_iso_str(dateparser.parse(message.get("publishTime")))
+        "occurred": convert_datetime_to_iso_str(published_time_dt)
     }
-    return incident
+    return incident, published_time_dt
 
 
 def convert_datetime_to_iso_str(publish_time):
@@ -1156,25 +1157,36 @@ def fetch_incidents(client: PubSubClient, last_run: dict, first_fetch_time: str,
     :param ack_incidents: Boolean flag - when set to True will ack back the fetched messages
     :return: incidents: Incidents that will be created in Demisto
     """
+    last_run_key = 'fetch_time'
     incidents = []
     sub_name = GoogleNameParser.get_subscription_project_name(
         client.default_project, client.default_subscription
     )
 
     # Handle first time fetch
-    if not last_run:
-        first_fetch_time, _ = parse_date_range(first_fetch_time, ISO_DATE_FORMAT)
-        # Seek previous message state
-        client.subscription_seek_message(sub_name, first_fetch_time)
+    if not last_run or last_run_key not in last_run:
+        last_run_time, _ = parse_date_range(first_fetch_time, ISO_DATE_FORMAT)
+    else:
+        last_run_time = last_run.get(last_run_key)
+    # Seek previous message state
+    client.subscription_seek_message(sub_name, last_run_time)
 
     raw_msgs = client.pull_messages(sub_name, client.default_max_msgs)
     if "receivedMessages" in raw_msgs:
         acknowledges, msgs = extract_acks_and_msgs(raw_msgs)
+        # max_publish_time for setLastRun
+        max_publish_time = dateparser.parse(last_run_time)
+
         for msg in msgs:
-            incidents.append(message_to_incident(msg))
+            incident, publish_time = message_to_incident(msg)
+            incidents.append(incident)
+            max_publish_time = max(max_publish_time, publish_time)
         if ack_incidents:
             client.ack_messages(sub_name, acknowledges)
-    return incidents, 'No more seek'
+        last_run_time = convert_datetime_to_iso_str(max_publish_time + timedelta(microseconds=1))
+    last_run = {last_run_key: last_run_time}
+
+    return incidents, last_run
 
 
 def main():
