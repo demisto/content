@@ -758,7 +758,8 @@ def get_test_conf_from_conf(test_id, server_version, conf=None):
     """Gets first occurrence of test conf with matching playbookID value to test_id with a valid from/to version"""
     if not conf:
         with open("./Tests/conf.json", 'r') as conf_file:
-            conf = json.load(conf_file)
+            conf = TestConf(json.load(conf_file))
+
     test_conf_lst = conf.get_tests()
     # return None if nothing is found
     test_conf = next((test_conf for test_conf in test_conf_lst if (
@@ -798,9 +799,9 @@ def get_test_from_conf(branch_name, conf=None):
 
     if not conf:
         with open("./Tests/conf.json", 'r') as conf_file:
-            conf = json.load(conf_file)
+            conf = TestConf(json.load(conf_file))
 
-    conf_tests = conf['tests']
+    conf_tests = conf.get_tests()
     for t in conf_tests:
         playbook_id = t['playbookID']
         integrations_conf = t.get('integrations', [])
