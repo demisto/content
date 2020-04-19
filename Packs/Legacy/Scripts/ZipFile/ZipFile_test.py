@@ -1,10 +1,13 @@
+import demistomock as demisto
+from CommonServerPython import *
+
 import pytest
 from ZipFile import escape_illegal_characters_in_file_name
 
 ESCAPE_CHARACTERS_PACK = [
     ('/Users/user/Downloads/b/a/testingfile.txt', '-Users-user-Downloads-b-a-testingfile.txt'),
     ('/Users/user/Downloads/?///testingfile.txt', '-Users-user-Downloads-testingfile.txt'),
-    ('/Users/user/Downloads/b/a/testingfile*.txt', '-Users-user-Downloads-b-a-testingfile*.txt'),
+    ('/Users/user/Downloads/b/a/testingfile*.txt', '-Users-user-Downloads-b-a-testingfile-.txt'),
     ('abcde', 'abcde')
 ]
 
