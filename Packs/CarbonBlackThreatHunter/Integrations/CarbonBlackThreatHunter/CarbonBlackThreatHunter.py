@@ -139,7 +139,7 @@ class Client(BaseClient):
         job_id = self.post_query_job(payload, query_type, 'v2').get('job_id', {})
         return job_id
 
-    def cb_query_status_request(self, job_id: str, query_type: str, max_rows: Optional[str] = '50') -> str:
+    def cb_query_status_request(self, job_id: str, query_type: str, max_rows: Optional[str] = '50') -> dict:
         """Check query status.
 
         Args:
@@ -218,11 +218,13 @@ class Client(BaseClient):
     def cb_get_watchlist_report_by_id(self, report_id: str) -> dict:
         """Get watchlists reports.
 
+        Args:
+            report_id: report ID
         Returns:
             Response from API.
         """
         self._base_url.replace('investigate', 'watchlistmgr')
-        return self.http_request('GET', url_suffix='/report', version='v1')
+        return self.http_request('GET', url_suffix=f'/report/{report_id}', version='v1')
 
 
 def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
@@ -261,7 +263,7 @@ def cb_query(client: Client, args: dict) -> Tuple[Any, Dict, Dict]:
     return md_, entry_context, job_id
 
 
-def cb_check_query_status(client: Client, args: dict) -> Tuple[Any, Dict, Dict]:
+def cb_check_query_status(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
     """Check query status.
 
     Args:
@@ -291,7 +293,7 @@ def cb_check_query_status(client: Client, args: dict) -> Tuple[Any, Dict, Dict]:
     return md_, entry_context, job_id
 
 
-def cb_get_query_results(client: Client, args: dict) -> Tuple[Any, Dict, Dict]:
+def cb_get_query_results(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
     """Get query results.
 
     Args:
@@ -330,7 +332,7 @@ def cb_get_query_results(client: Client, args: dict) -> Tuple[Any, Dict, Dict]:
     return md_, entry_context, response
 
 
-def cb_query_process_details(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def cb_query_process_details(client: Client, args: dict) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
     """Get process details.
 
     Args:
@@ -375,7 +377,7 @@ def cb_query_process_analysis(client: Client, args: dict) -> Tuple[str, Dict, Di
     return md_, entry_context, query_id
 
 
-def cb_check_query_process_status(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def cb_check_query_process_status(client: Client, args: dict) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
     """Check process query status.
 
     Args:
@@ -405,7 +407,7 @@ def cb_check_query_process_status(client: Client, args: dict) -> Tuple[str, Dict
     return md_, entry_context, query_id
 
 
-def cb_get_query_process_results(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def cb_get_query_process_results(client: Client, args: dict) -> Tuple[Dict[Any, Any], Dict[Any, Any]]:
     """Get process query results.
 
     Args:
@@ -433,11 +435,10 @@ def cb_get_query_process_results(client: Client, args: dict) -> Tuple[str, Dict,
         ec_ = {'QueryID': query_id, 'Status': status}
         entry_context = {'CB.ThreatHunter.Query(val.QueryID == obj.QueryID)': ec_}
     else:
-        if response.get('results'):
-            if isinstance(response.get('results'), list):
-                results = response.get('results', [])[0]
-            else:
-                results = response.get('results')
+        results = response.get('results')
+        if results:
+            if isinstance(results, list):
+                results = results[0]
             delete_unnecessary_fields(results)  # Remove all unnecessary fields from result
             md_ = tableToMarkdown('Carbon Black Threat Hunter Process Query Results:', t=results)
             # TODO - add a prettify for the ec obj
