@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 from typing import Any, Tuple, Dict, List, Callable
 import sqlalchemy
 import pymysql
+import traceback
 from sqlalchemy.sql import text
 
 # In order to use and convert from pymysql to MySQL this line is necessary
@@ -195,7 +196,7 @@ def main():
             raise NotImplementedError(f'{command} is not an existing Generic SQL command')
         client.connection.close()
     except Exception as err:
-        return_error(err)
+        return_error(f'{err} \nquery: {demisto.args().get("query")}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
