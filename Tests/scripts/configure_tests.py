@@ -320,9 +320,34 @@ def find_tests_for_modified_files(modified_files, conf, id_set):
 
     tests_set, catched_scripts, catched_playbooks = collect_changed_ids(integration_ids, playbook_names,
                                                                         script_names, modified_files, id_set)
+
+    packs_to_install = set()
+    id_set_playbooks = id_set.get('playbooks', [])
+    for playbook in id_set_playbooks.values():
+        if playbook.get('name') in catched_playbooks:
+            print('Found playbook {0} in pack {1}'.format(playbook.get('name'), playbook.get('pack')))
+            packs_to_install.add(playbook.get('pack'))
+
+    id_set_script = id_set.get('scripts', [])
+    for script_id, script_object in id_set_script.items():
+        if script_id in catched_scripts:
+            print('Found script {0} in pack {1}'.format(script_id, script_object.get('pack')))
+            packs_to_install.add(script_object.get('pack'))
+
     test_ids, missing_ids, caught_missing_test = collect_tests(script_names, playbook_names, integration_ids,
                                                                catched_scripts, catched_playbooks, tests_set, id_set,
                                                                conf)
+
+    id_set_test_playbooks = id_set.get('TestPlaybooks', [])
+    for test_playbook in id_set_test_playbooks.values():
+        if test_playbook.get('name') in test_ids:
+            print('Found test playbook {0} in pack {1}'.format(test_playbook.get('name'), test_playbook.get('pack')))
+            packs_to_install.add(test_playbook.get('pack'))
+
+    print('========== Packs to install ==========')
+    print(packs_to_install)
+    print('======================================')
+
     missing_ids = update_with_tests_sections(missing_ids, modified_files, test_ids, tests_set)
 
     if len(missing_ids) > 0:
