@@ -115,6 +115,8 @@ class BaseGoogleClient:
                     proxy_pass=parsed_proxy.password)
                 return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=insecure)
         return httplib2.Http(disable_ssl_certificate_validation=insecure)
+
+
 # disable-secrets-detection-end
 
 
@@ -514,7 +516,27 @@ def message_to_incident(message):
         "rawJSON": json.dumps(message),
         "occurred": convert_datetime_to_iso_str(published_time_dt)
     }
-    return incident, published_time_dt
+    return incident
+
+
+def get_messages_ids_and_max_publish_time(msgs):
+    """
+    Get message IDs and max publish time from given pulled messages
+    """
+    msg_ids = set()
+    max_publish_time = None
+    for msg in msgs:
+        msg_ids.add(msg.get("messageId"))
+        publish_time = msg.get("publishTime")
+        if publish_time:
+            publish_time = dateparser.parse(msg.get("publishTime"))
+        if not max_publish_time:
+            max_publish_time = publish_time
+        else:
+            max_publish_time = max(max_publish_time, publish_time)
+    if max_publish_time:
+        max_publish_time = convert_datetime_to_iso_str(max_publish_time)
+    return msg_ids, max_publish_time
 
 
 def convert_datetime_to_iso_str(publish_time):
@@ -1148,6 +1170,47 @@ def snapshot_delete_command(
     return readable_output, {}, raw_res
 
 
+def try_pull_unique_messages(client, sub_name, previous_msg_ids, retry_times=0):
+    """
+    Tries to pull unique messages for the subscription
+    :param client: PubSub client
+    :param sub_name: Subscription name
+    :param previous_msg_ids: Previous message ids set
+    :param retry_times: How many times to retry pulling
+    :return:
+        1. Unique list of messages
+        2. Unique  set of message ids
+        3. Messages acks
+        4. max_publish_time
+    """
+    res_msgs = None
+    res_msg_ids = None
+    res_acks = None
+    res_max_publish_time = None
+    raw_msgs = client.pull_messages(sub_name, client.default_max_msgs)
+    if "receivedMessages" in raw_msgs:
+        res_acks, msgs = extract_acks_and_msgs(raw_msgs)
+        # continue only if messages were extracted successfully
+        if msgs:
+            msg_ids, max_publish_time = get_messages_ids_and_max_publish_time(msgs)
+            new_msg_ids = msg_ids.difference(previous_msg_ids)
+            # all messages are unique - return as is
+            if len(new_msg_ids) == len(msg_ids):
+                return msgs, msg_ids, res_acks, max_publish_time
+            # no new messages - retry -1
+            elif len(new_msg_ids) == 0 and retry_times > 0:
+                demisto.debug(f'GCP_PUBSUB_MSG Duplicates with max_publish_time: {max_publish_time}')
+                return try_pull_unique_messages(client, sub_name, previous_msg_ids, retry_times - 1)
+            # clean non-unique ids from raw_msgs
+            else:
+                filtered_raw_msgs = list(
+                    filter(lambda msg: msg['message'].get("messageId") not in previous_msg_ids,
+                           raw_msgs['receivedMessages']))
+                res_msgs, res_acks = extract_acks_and_msgs(filtered_raw_msgs)
+                res_msg_ids, res_max_publish_time = get_messages_ids_and_max_publish_time(res_msgs)
+    return res_msgs, res_msg_ids, res_acks, res_max_publish_time
+
+
 def fetch_incidents(client: PubSubClient, last_run: dict, first_fetch_time: str, ack_incidents: bool):
     """
     This function will execute each interval (default is 1 minute).
@@ -1157,34 +1220,46 @@ def fetch_incidents(client: PubSubClient, last_run: dict, first_fetch_time: str,
     :param ack_incidents: Boolean flag - when set to True will ack back the fetched messages
     :return: incidents: Incidents that will be created in Demisto
     """
-    last_run_key = 'fetch_time'
+    last_run_time_key = 'fetch_time'
+    last_run_fetched_key = 'fetched_ids'
     incidents = []
+    last_run_fetched_ids = set()
     sub_name = GoogleNameParser.get_subscription_project_name(
         client.default_project, client.default_subscription
     )
 
     # Handle first time fetch
-    if not last_run or last_run_key not in last_run:
+    if not last_run or last_run_time_key not in last_run:
         last_run_time, _ = parse_date_range(first_fetch_time, ISO_DATE_FORMAT)
+        # Seek previous message state
+        client.subscription_seek_message(sub_name, last_run_time)
     else:
-        last_run_time = last_run.get(last_run_key)
-    # Seek previous message state
-    client.subscription_seek_message(sub_name, last_run_time)
+        last_run_time = last_run.get(last_run_time_key)
+        last_run_fetched_val = last_run.get(last_run_fetched_key)
+        if last_run_fetched_val:
+            last_run_fetched_ids = set(last_run_fetched_val)
+        if not ack_incidents:
+            # Seek previous message state
+            client.subscription_seek_message(sub_name, last_run_time)
 
-    raw_msgs = client.pull_messages(sub_name, client.default_max_msgs)
-    if "receivedMessages" in raw_msgs:
-        acknowledges, msgs = extract_acks_and_msgs(raw_msgs)
-        # max_publish_time for setLastRun
-        max_publish_time = dateparser.parse(last_run_time)
-
-        for msg in msgs:
-            incident, publish_time = message_to_incident(msg)
-            incidents.append(incident)
-            max_publish_time = max(max_publish_time, publish_time)
-        if ack_incidents:
-            client.ack_messages(sub_name, acknowledges)
-        last_run_time = convert_datetime_to_iso_str(max_publish_time + timedelta(microseconds=1))
-    last_run = {last_run_key: last_run_time}
+    # Pull unique messages if available
+    msgs, msg_ids, acknowledges, max_publish_time = try_pull_unique_messages(client, sub_name, last_run_fetched_ids,
+                                                                             retry_times=1)
+    if msg_ids and max_publish_time:
+        last_run_time_dt = dateparser.parse(last_run_time)
+        max_publish_time_dt = dateparser.parse(max_publish_time)
+        if last_run_time_dt <= max_publish_time_dt:
+            for msg in msgs:
+                incident = message_to_incident(msg)
+                incidents.append(incident)
+            if ack_incidents:
+                client.ack_messages(sub_name, acknowledges)
+            last_run = {last_run_time_key: max_publish_time, last_run_fetched_key: list(msg_ids)}
+    # We didn't manage to pull any unique messages, so we're trying to increment micro seconds - not relevant for ack
+    elif not ack_incidents:
+        last_run_time_dt = dateparser.parse(max_publish_time if max_publish_time else last_run_time)
+        last_run_time = convert_datetime_to_iso_str(last_run_time_dt + timedelta(microseconds=1))
+        last_run[last_run_time_key] = last_run_time
 
     return incidents, last_run
 
