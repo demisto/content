@@ -23,13 +23,13 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- defaultvalue: open
+- defaultvalue: opened
   display: Incidents to fetch
   name: incident_status
   options:
   - All
-  - open
-  - completed
+  - opened
+  - closed
   required: false
   type: 15
 - display: Incident type
@@ -706,7 +706,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The parameters, if needed, to perform the action. For example, for the ASSIGN TO ANALYST action: assigntouserid={user_id},assignedTo=USER.'
+      description: 'The parameters, if needed, to perform the action. For example,
+        for the ASSIGN TO ANALYST action: assigntouserid={user_id},assignedTo=USER.'
       isArray: false
       name: action_parameters
       required: false
