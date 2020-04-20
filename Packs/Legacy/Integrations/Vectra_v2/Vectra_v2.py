@@ -132,11 +132,9 @@ class Client:
         :param last_run: Integration's last run
         """
         last_timestamp: str = last_run.get('last_timestamp', self.first_fetch)  # type: ignore
-        if last_timestamp[-1] == 'Z':
-            last_timestamp = last_timestamp[:-4].replace(':', "")
         query_string = f'detection.threat:>={self.t_score_gte}'
         query_string += f' and detection.certainty:>={self.c_score_gte}'
-        query_string += f' and detection.last_timestamp:>{last_timestamp}'
+        query_string += f' and detection.last_timestamp:>{last_timestamp}' #  format: "%Y-%m-%dT%H%M"
         query_string += f' and detection.state:{self.state}' if self.state != 'all' else ''
         demisto.info(f'±±±±±±±±±±±±±±±±\n\nQuery String:\n\n{query_string}\n\n±±±±±±±±±±±±±±±±±±±±±')
         params = {
@@ -155,11 +153,12 @@ class Client:
             try:
                 for detection in detections:
                     incidents.append(create_incident_from_detection(detection))  # type: ignore
-                    last_timestamp = max_timestamp(last_timestamp, detection.get('last_timestamp'))  # type: ignore
+                    # format from response: %Y-%m-%dT%H:%M:%SZ
+                    response_last_timestamp = datetime.datetime.strptime(detection.get('last_timestamp'),
+                                                                         "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%dT%H%M")
+                    last_timestamp = max_timestamp(last_timestamp, response_last_timestamp)  # type: ignore
 
                 if incidents:
-                    if last_timestamp[-1] == 'Z':
-                        last_timestamp = last_timestamp[:-4].replace(':', "")
                     last_run = {'last_timestamp': last_timestamp}
 
             except ValueError:
