@@ -321,7 +321,18 @@ def find_tests_for_modified_files(modified_files, conf, id_set):
     tests_set, catched_scripts, catched_playbooks = collect_changed_ids(integration_ids, playbook_names,
                                                                         script_names, modified_files, id_set)
 
+    if not id_set:
+        with open("./Tests/id_set.json", 'r') as conf_file:
+            id_set = json.load(conf_file)
+
     packs_to_install = set()
+
+    id_set_integrations = id_set.get('integration', [])
+    for integration_id, integration_object in id_set_integrations.items():
+        if integration_id in integration_ids:
+            print('Found integration {0} in pack {1}'.format(integration_id, integration_object.get('pack')))
+            packs_to_install.add(integration_object.get('pack'))
+
     id_set_playbooks = id_set.get('playbooks', [])
     for playbook in id_set_playbooks.values():
         if playbook.get('name') in catched_playbooks:
