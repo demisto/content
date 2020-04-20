@@ -1,5 +1,5 @@
 ## [Unreleased]
-Fixed an issue with the *ews-search-mailboxes* command, which caused a timeout from the server.
+Fixed an issue where the *ews-search-mailboxes* command caused a timeout error.
 
 ## [20.4.0] - 2020-04-14
 -
