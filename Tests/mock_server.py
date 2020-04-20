@@ -293,7 +293,7 @@ class MITMProxy:
             # if not call(self.ami.add_ssh_prefix(split_command, '-t')):
             try:
                 clean_cmd_output = check_output(self.ami.add_ssh_prefix(split_command, ssh_options='-t'))
-                print(f'{clean_cmd_output=}')
+                print(f'clean_cmd_output="{clean_cmd_output}"')
             except CalledProcessError as e:
                 print('There may have been a problem when filtering timestamp data from the mock file.')
                 err_msg = 'command `{}` exited with return code [{}]'.format(command, e.returncode)
@@ -307,7 +307,7 @@ class MITMProxy:
             diff_cmd = 'diff -s {} {}'.format(cleaned_mock_filepath, mock_file_path)
             try:
                 diff_cmd_output = self.ami.check_output(diff_cmd.split())
-                print(f'{diff_cmd_output=}')
+                print(f'diff_cmd_output="{diff_cmd_output}"')
                 if diff_cmd_output.endswith('are identical'):
                     print('cleaned mock file and original mock file are identical... '
                           'uh oh looks like cleaning didn\'t work properly')
@@ -363,19 +363,8 @@ class MITMProxy:
                 current_problem_keys_filepath
             )
         else:
-            # key_file_exists = ["[", "-f", repo_problem_keys_filepath, "]"]
-            # if not self.ami.call(key_file_exists) == 0:
-            #     problem_keys = {
-            #         "keys_to_replace": "",
-            #         "server_replay_ignore_payload_params": "",
-            #         "server_replay_ignore_params": ""
-            #     }
-            # else:
-            #     problem_keys = json.loads(self.ami.check_output(['cat', repo_problem_keys_filepath]))
-            # options = ' '.join(['--set {}="{}"'.format(key, val) for key, val in problem_keys.items() if val])
             actions = '--set stream_large_bodies=1 -s {} '.format(remote_script_path)
             actions += '--set keys_filepath={} --server-replay-kill-extra --server-replay'.format(
-                # remote_script_path, options.strip()
                 repo_problem_keys_filepath
             )
 
@@ -416,31 +405,6 @@ class MITMProxy:
             raise Exception("Cannot stop proxy - not running.")
 
         print('proxy.stop() was called')
-
-        poll_time = 0
-        poll_interval = 1
-        poll_time_limit = 10
-
-        show_running_mitmdump_processes = ['ps', '-aux', '|', 'grep', '"mitmdump"', '|', 'grep', '-v', '"grep"']
-        try:
-            print(self.ami.check_output(show_running_mitmdump_processes))
-        except CalledProcessError as e:
-            err_msg = 'command `{}` exited with return code [{}]'.format(' '.join(show_running_mitmdump_processes),
-                                                                         e.returncode)
-            err_msg = '{} and the output of "{}"'.format(err_msg, e.output) if e.output else err_msg
-            print(err_msg)
-        mitmdump_still_running = self.ami.call(show_running_mitmdump_processes) == 0
-
-        kill_cmd = 'ps -aux | grep "mitmdump.*timestamp_replacer.py" | grep -v "mitmdump\.\*timestamp_replacer\.py"' \
-                   ' | cut -d\' \' -f2 | xargs kill -2'
-        while mitmdump_still_running and poll_time < poll_time_limit:
-            self.ami.call(kill_cmd.split())
-            try:
-                mitmdump_still_running = silence_output(self.ami.call, show_running_mitmdump_processes, stdout='null') == 0
-            except CalledProcessError as e:
-                mitmdump_still_running = e.returncode == 0
-            time.sleep(poll_interval)
-            poll_time += poll_interval
 
         self.process.send_signal(signal.SIGINT)  # Terminate proxy process
         self.ami.call(["rm", "-rf", "/tmp/_MEI*"])  # Clean up temp files
