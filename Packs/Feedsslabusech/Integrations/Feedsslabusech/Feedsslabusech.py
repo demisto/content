@@ -4,18 +4,18 @@ from CommonServerPython import *
 def main():
     feed_url_to_config = {
         'https://sslbl.abuse.ch/blacklist/sslipblacklist.csv': {
-            'fieldnames': ['creationdate', 'value', 'port'],
+            'fieldnames': ['firstseenbysource', 'value', 'port'],
             'indicator_type': FeedIndicatorType.IP,
             'mapping': {
-                'creationdate': 'creationdate',
+                'firstseenbysource': 'firstseenbysource',
                 'port': 'port'
             }
         },
         'https://sslbl.abuse.ch/blacklist/sslipblacklist_aggressive.csv': {
-            'fieldnames': ['creationdate', 'value', 'port'],
+            'fieldnames': ['firstseenbysource', 'value', 'port'],
             'indicator_type': FeedIndicatorType.IP,
             'mapping': {
-                'creationdate': 'creationdate',
+                'firstseenbysource': 'firstseenbysource',
                 'port': 'port'
             }
         }
