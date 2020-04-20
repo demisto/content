@@ -349,6 +349,7 @@ def mock_run(tests_settings, c, proxy, failed_playbooks, integrations, playbook_
         # run test
         status, inc_id = test_integration(c, server_url, integrations, playbook_id, prints_manager, test_options,
                                           is_mock_run=True, thread_index=thread_index)
+        prints_manager.execute_thread_prints(thread_index)
         # use results
         proxy.stop()
         if status == PB_Status.COMPLETED:
