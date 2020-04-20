@@ -1,3 +1,4 @@
+import tempfile
 from typing import Dict
 
 import demistomock as demisto
@@ -470,7 +471,7 @@ class Taxii11(object):
 class TAXIIClient(object):
     def __init__(self, insecure: bool = True, polling_timeout: int = 20, initial_interval: str = '1 day',
                  discovery_service: str = '', poll_service: str = None, collection: str = None,
-                 credentials: dict = None, **kwargs):
+                 credentials: dict = None, cert_text: str = None, key_text: str = None, **kwargs):
         """
         TAXII Client
         :param insecure: Set to true to ignore https certificate
@@ -480,6 +481,8 @@ class TAXIIClient(object):
         :param poll_service: TAXII poll service
         :param collection: TAXII collection
         :param credentials: Username and password dict for basic auth
+        :param cert_text: Certificate File as Text
+        :param cert_Key: Key File as Text
         :param kwargs:
         """
         self.discovered_poll_service = None
@@ -507,6 +510,7 @@ class TAXIIClient(object):
         self.api_header = None
         self.username = None
         self.password = None
+        self.crt = None
 
         # authentication
         if credentials:
@@ -516,6 +520,14 @@ class TAXIIClient(object):
             else:
                 self.username = credentials.get('identifier', None)
                 self.password = credentials.get('password', None)
+        if cert_text and key_text:
+            cf = tempfile.NamedTemporaryFile()
+            cf.write(cert_text.encode())
+            cf.flush()
+            kf = tempfile.NamedTemporaryFile()
+            kf.write(key_text.encode())
+            kf.flush()
+            self.crt = (cf.name, kf.name)
 
         if collection is None or collection == '':
             all_collections = self.get_all_collections()
@@ -560,6 +572,7 @@ class TAXIIClient(object):
             verify=self.verify_cert,
             timeout=self.polling_timeout,
             headers=headers,
+            cert=self.crt,
             data=data
         )
 
