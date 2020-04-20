@@ -1,0 +1,41 @@
+args:
+- default: false
+  description: 'Grid headers in the form of comma-separated values: Target Email Address,
+    Email Subject.'
+  isArray: false
+  name: headers
+  required: false
+  secret: false
+- default: false
+  description: Context paths comma separated e.g. a.b.c,a.d.e
+  isArray: false
+  name: context_paths
+  required: true
+  secret: false
+- default: false
+  defaultValue: 'false'
+  description: True if the context paths is line correlated
+  isArray: false
+  name: row_correlated
+  required: false
+  secret: false
+- default: false
+  description: Context path to sort by, only availble when the value is literal (sortable)
+  isArray: false
+  name: sort
+  required: false
+  secret: false
+comment: Create Grid Table
+commonfields:
+  id: SetGridField
+  version: -1
+enabled: false
+name: SetGridField
+script: '-'
+subtype: python3
+system: false
+tags:
+- ''
+timeout: '0'
+type: python
+dockerimage: devtesting/grid:1.0.0.1587361829
