@@ -458,7 +458,8 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
                    'Path': report['process_list'][0]['normalizedpath'],
                    'Tags': create_tags(report.get('tag', '')),
                    'ThreatTypes': {'threatcategory': [blacklist_context['Blacklist'][i]['Description'] for i in
-                                                      range(len(report.get('blacklist', [])))]}}
+                                                      range(len(report.get('blacklist', [])))]}
+                   }
 
         dbot_score = {'Indicator': report['filename'][0], 'Type': 'File', 'Vendor': 'Maltiverse',
                       'Score': calculate_score(positive_detections, report.get('classification', ''), threshold,
