@@ -29,6 +29,8 @@ class GCPConfig(object):
     GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
     BASE_PACK = "Base"  # base pack name
     INDEX_NAME = "index"  # main index folder name
+    CORE_PACK_FILE_NAME = "corepacks.zip"  # core packs file name
+    CORE_PACKS_LIST = [BASE_PACK]  # cores packs list
 
 
 class PackFolders(enum.Enum):
@@ -123,7 +125,7 @@ class Pack(object):
         self._pack_path = pack_path
         self._pack_repo_path = os.path.join(PACKS_FULL_PATH, pack_name)
         self._status = None
-        self._relative_storage_path = ""
+        self._public_storage_path = ""
         self._remove_files_list = []  # tracking temporary files, in order to delete in later step
         self._support_type = None  # initialized in load_user_metadata function
         self._current_version = None  # initialized in load_user_metadata function
@@ -160,16 +162,16 @@ class Pack(object):
         self._status = status_value
 
     @property
-    def relative_storage_path(self):
-        """ str: relative gcs path of uploaded pack.
+    def public_storage_path(self):
+        """ str: public gcs path of uploaded pack.
         """
-        return self._relative_storage_path
+        return self._public_storage_path
 
-    @relative_storage_path.setter
-    def relative_storage_path(self, path_value):
-        """ setter of relative gcs path of uploaded pack.
+    @public_storage_path.setter
+    def public_storage_path(self, path_value):
+        """ setter of public gcs path of uploaded pack.
         """
-        self._relative_storage_path = path_value
+        self._public_storage_path = path_value
 
     @property
     def support_type(self):
@@ -502,7 +504,7 @@ class Pack(object):
             with open(zip_pack_path, "rb") as pack_zip:
                 blob.upload_from_file(pack_zip)
 
-            self.relative_storage_path = blob.name
+            self.public_storage_path = blob.public_url
             print_color(f"Uploaded {self._pack_name} pack to {pack_full_path} path.", LOG_COLORS.GREEN)
 
             return task_status, False
