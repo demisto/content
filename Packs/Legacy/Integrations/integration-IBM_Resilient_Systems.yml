@@ -52,8 +52,11 @@ script:
     import requests
     import time
     import json
+    logging.basicConfig()
+
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
+    resilient.co3.LOG.disable(logging.ERROR)
 
     if not demisto.params()['proxy']:
         del os.environ['HTTP_PROXY']
@@ -1403,3 +1406,5 @@ script:
   dockerimage: demisto/resilient
   isfetch: true
   runonce: false
+  tests:
+    - IBM Resilient Systems Test
