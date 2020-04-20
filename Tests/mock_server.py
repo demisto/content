@@ -266,7 +266,15 @@ class MITMProxy:
             return
         problem_keys = json.loads(self.ami.check_output(['cat', problem_keys_filepath]))
         print('problem_keys: \n{}'.format(json.dumps(problem_keys, indent=4)))
-        if problem_keys:
+
+        # is there data in problematic_keys.json that needs whitewashing?
+        print('checking if there is data to whitewash')
+        needs_whitewashing = False
+        for _, val in problem_keys.items():
+            if val:
+                needs_whitewashing = True
+
+        if problem_keys and needs_whitewashing:
             mock_file_path = os.path.join(path, get_mock_file_path(playbook_id))
             cleaned_mock_filepath = mock_file_path.strip('.mock') + '_cleaned.mock'
             # rewrite mock file with problematic keys in request bodies replaced
@@ -282,15 +290,41 @@ class MITMProxy:
             print(f'command to clean mockfile:\n\t{command}')
             split_command = command.split()
             print('Let\'s try and clean the mockfile from timestamp data!')
-            if not call(self.ami.add_ssh_prefix(split_command, '-t')):
+            # if not call(self.ami.add_ssh_prefix(split_command, '-t')):
+            try:
+                clean_cmd_output = check_output(self.ami.add_ssh_prefix(split_command, ssh_options='-t'))
+                print(f'{clean_cmd_output=}')
+            except CalledProcessError as e:
                 print('There may have been a problem when filtering timestamp data from the mock file.')
+                err_msg = 'command `{}` exited with return code [{}]'.format(command, e.returncode)
+                err_msg = '{} and the output of "{}"'.format(err_msg, e.output) if e.output else err_msg
+                print(err_msg)
             else:
                 print('Success!')
+
+            # verify cleaned mock is different than original
+            print('verifying cleaned mock file is different than the original mock file')
+            diff_cmd = 'diff -s {} {}'.format(cleaned_mock_filepath, mock_file_path)
+            try:
+                diff_cmd_output = self.ami.check_output(diff_cmd.split())
+                print(f'{diff_cmd_output=}')
+                if diff_cmd_output.endswith('are identical'):
+                    print('cleaned mock file and original mock file are identical... '
+                          'uh oh looks like cleaning didn\'t work properly')
+                else:
+                    print('looks like the cleaning process did something!')
+            except CalledProcessError as e:
+                err_msg = 'command `{}` exited with return code [{}]'.format(diff_cmd, e.returncode)
+                err_msg = '{} and the output of "{}"'.format(err_msg, e.output) if e.output else err_msg
+                print(err_msg)
+
             print('Replace old mock with cleaned one.')
             rm_cmd = 'rm {}'.format(mock_file_path)
             self.ami.call(rm_cmd.split())
             mv_cmd = 'mv {} {}'.format(cleaned_mock_filepath, mock_file_path)
             self.ami.call(mv_cmd.split())
+        else:
+            print('"problematic_keys.json" dictionary values were empty - no data to whitewash from the mock file.')
 
     def start(self, playbook_id, path=None, record=False, thread_index=0, prints_manager=None):
         """Start the proxy process and direct traffic through it.
