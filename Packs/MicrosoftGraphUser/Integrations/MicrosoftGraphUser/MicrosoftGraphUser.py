@@ -1,12 +1,29 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import Dict
+
+'''IMPORTS'''
+import requests
+from datetime import datetime
+import base64
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+''' GLOBAL VARS '''
+BASE_URL = demisto.getParam('host').rstrip('/') + '/v1.0/'
+TENANT = demisto.getParam('tenant_id')
+AUTH_AND_TOKEN_URL = demisto.getParam('auth_id').split('@')
+AUTH_ID = AUTH_AND_TOKEN_URL[0]
+ENC_KEY = demisto.getParam('enc_key')
+USE_SSL = not demisto.params().get('insecure', False)
+
 ''' CONSTANTS '''
+if len(AUTH_AND_TOKEN_URL) != 2:
+    TOKEN_RETRIEVAL_URL = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
+else:
+    TOKEN_RETRIEVAL_URL = AUTH_AND_TOKEN_URL[1]
 BLOCK_ACCOUNT_JSON = '{"accountEnabled": false}'
 UNBLOCK_ACCOUNT_JSON = '{"accountEnabled": true}'
 NO_OUTPUTS: dict = {}
@@ -46,168 +63,301 @@ def parse_outputs(users_data):
         return user_readable, user_outputs
 
 
-class MsGraphClient:
+def epoch_seconds():
     """
-    Microsoft Graph Mail Client enables authorized access to a user's Office 365 mail data in a personal account.
+    Return the number of seconds for return current date.
+    """
+    return int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds())
+
+
+def get_encrypted(content: str, key: str) -> str:
     """
 
-    def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed):
-        self.ms_client = MicrosoftClient(tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
-                                         base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed)
+    Args:
+        content (str): content to encrypt. For a request to Demistobot for a new access token, content should be
+            the tenant id
+        key (str): encryption key from Demistobot
 
-    def terminate_user_session(self, user):
-        self.ms_client.http_request(
-            method='PATCH',
-            url_suffix=f'users/{user}',
-            data=BLOCK_ACCOUNT_JSON)
-
-    def unblock_user(self, user):
-        self.ms_client.http_request(
-            method='PATCH',
-            url_suffix=f'users/{user}',
-            data=UNBLOCK_ACCOUNT_JSON)
-
-    def delete_user(self, user):
-        self.ms_client.http_request(
-            method='DELETE',
-            url_suffix=f'users/{user}')
-
-    def create_user(self, properties):
-        self.ms_client.http_request(
-            method='POST',
-            url_suffix='users',
-            json_data=properties)
-
-    def update_user(self, user, updated_fields):
-        body = {}
-        for key_value in updated_fields.split(','):
-            field, value = key_value.split('=', 2)
-            body[field] = value
-        self.ms_client.http_request(
-            method='PATCH',
-            url_suffix=f'users/{user}',
-            json_data=body)
-
-    def get_delta(self, properties):
-        users = self.ms_client.http_request(
-            method='GET',
-            url_suffix='users/delta',
-            params={'$select': properties})
-        return users.get('value', '')
-
-    def get_user(self, user, properties):
-        user_data = self.ms_client.http_request(
-            method='GET ',
-            url_suffix=f'users/{user}',
-            params={'$select': properties})
-        return user_data.pop('@odata.context', None)
-
-    def list_users(self, properties, page_url):
-        if page_url:
-            response = self.ms_client.http_request(method='GET', full_url=page_url)
-        else:
-            response = self.ms_client.http_request(method='GET', url_suffix='users', params={'$select': properties})
-        next_page_url = response.get('@odata.nextLink')
-        users = response.get('value')
-        return users, next_page_url
-
-
-def test_function(client, _):
+    Returns:
+        encrypted timestamp:content
     """
-       Performs basic GET request to check if the API is reachable and authentication is successful.
-       Returns ok if successful.
-       """
-    client.ms_client.http_request(method='GET', url_suffix='users/')
-    return 'ok', None, None
+    def create_nonce() -> bytes:
+        return os.urandom(12)
+
+    def encrypt(string: str, enc_key: str) -> bytes:
+        """
+
+        Args:
+            enc_key (str):
+            string (str):
+
+        Returns:
+            bytes:
+        """
+        # String to bytes
+        enc_key = base64.b64decode(enc_key)
+        # Create key
+        aes_gcm = AESGCM(enc_key)
+        # Create nonce
+        nonce = create_nonce()
+        # Create ciphered data
+        data = string.encode()
+        ct = aes_gcm.encrypt(nonce, data, None)
+        return base64.b64encode(nonce + ct)
+    now = epoch_seconds()
+    encrypted = encrypt(f'{now}:{content}', key).decode('utf-8')
+    return encrypted
 
 
-def terminate_user_session_command(client: MsGraphClient, args: Dict):
-    user = args.get('user')
-    client.terminate_user_session(user)
-    human_readable = f'user: "{user}" session has been terminated successfully'
-    return human_readable, None, None
+def get_access_token():
+    integration_context = demisto.getIntegrationContext()
+    access_token = integration_context.get('access_token')
+    valid_until = integration_context.get('valid_until')
+    calling_context = demisto.callingContext.get('context', {})  # type: ignore[attr-defined]
+    brand_name = calling_context.get('IntegrationBrand', '')
+    instance_name = calling_context.get('IntegrationInstance', '')
+    if access_token and valid_until:
+        if epoch_seconds() < valid_until:
+            return access_token
+    headers = {'Accept': 'application/json'}
+    headers['X-Content-Version'] = CONTENT_RELEASE_VERSION
+    headers['X-Branch-Name'] = CONTENT_BRANCH_NAME
+    headers['X-Content-Name'] = brand_name or instance_name or 'Name not found'
+
+    dbot_response = requests.post(
+        TOKEN_RETRIEVAL_URL,
+        headers=headers,
+        data=json.dumps({
+            'app_name': APP_NAME,
+            'registration_id': AUTH_ID,
+            'encrypted_token': get_encrypted(TENANT, ENC_KEY)
+        }),
+        verify=USE_SSL
+    )
+    if dbot_response.status_code not in {200, 201}:
+        msg = 'Error in authentication. Try checking the credentials you entered.'
+        try:
+            demisto.info('Authentication failure from server: {} {} {}'.format(
+                dbot_response.status_code, dbot_response.reason, dbot_response.text))
+            err_response = dbot_response.json()
+            server_msg = err_response.get('message')
+            if not server_msg:
+                title = err_response.get('title')
+                detail = err_response.get('detail')
+                if title:
+                    server_msg = f'{title}. {detail}'
+            if server_msg:
+                msg += ' Server message: {}'.format(server_msg)
+        except Exception as ex:
+            demisto.error('Failed parsing error response - Exception: {}'.format(ex))
+        raise Exception(msg)
+    try:
+        gcloud_function_exec_id = dbot_response.headers.get('Function-Execution-Id')
+        demisto.info(f'Google Cloud Function Execution ID: {gcloud_function_exec_id}')
+        parsed_response = dbot_response.json()
+    except ValueError:
+        raise Exception(
+            'There was a problem in retrieving an updated access token.\n'
+            'The response from the Demistobot server did not contain the expected content.'
+        )
+    access_token = parsed_response.get('access_token')
+    expires_in = parsed_response.get('expires_in', 3595)
+    time_now = epoch_seconds()
+    time_buffer = 5  # seconds by which to shorten the validity period
+    if expires_in - time_buffer > 0:
+        # err on the side of caution with a slightly shorter access token validity period
+        expires_in = expires_in - time_buffer
+
+    demisto.setIntegrationContext({
+        'access_token': access_token,
+        'valid_until': time_now + expires_in
+    })
+    return access_token
 
 
-def unblock_user_command(client: MsGraphClient, args: Dict):
-    user = args.get('user')
-    client.unblock_user(user)
-    human_readable = f'"{user}" unblocked. It might take several minutes for the changes to take affect across all ' \
-                     f'applications. '
-    return human_readable, None, None
+def http_request(method, url_suffix, params=None, body=None):
+    """
+    Generic request to Microsoft Graph
+    """
+    token = get_access_token()
+    response = requests.request(
+        method,
+        BASE_URL + url_suffix,
+        headers={
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        params=params,
+        data=body,
+        verify=USE_SSL,
+    )
+    try:
+        data = response.json() if response.text else {}
+        if not response.ok:
+            return_error(f'API call to MS Graph failed [{response.status_code}] - {demisto.get(data, "error.message")}')
+        elif response.status_code == 206:  # 206 indicates Partial Content, reason will be in the warning header
+            demisto.debug(str(response.headers))
+
+        return data
+
+    except TypeError as ex:
+        demisto.debug(str(ex))
+        return_error(f'Error in API call to Microsoft Graph, could not parse result [{response.status_code}]')
 
 
-def delete_user_command(client: MsGraphClient, args: Dict):
-    user = args.get('user')
-    client.delete_user(user)
-    human_readable = f'user: "{user}" was deleted successfully'
-    return human_readable, None, None
+def test_function():
+    token = get_access_token()
+    response = requests.get(
+        BASE_URL + 'users',
+        headers={
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        params={'$select': 'displayName'},
+        verify=USE_SSL
+    )
+    try:
+        data = response.json() if response.text else {}
+        if not response.ok:
+            return_error(f'API call to MS Graph failed. Please check authentication related parameters.'
+                         f' [{response.status_code}] - {demisto.get(data, "error.message")}')
+
+        demisto.results('ok')
+
+    except TypeError as ex:
+        demisto.debug(str(ex))
+        return_error(f'API call to MS Graph failed, could not parse result. '
+                     f'Please check authentication related parameters. [{response.status_code}]')
 
 
-def create_user_command(client: MsGraphClient, args: Dict):
+def terminate_user_session_command():
+    user = demisto.getArg('user')
+    terminate_user_session(user)
+
+    return_outputs(readable_output=f'user: "{user}" session has been terminated successfully', outputs=NO_OUTPUTS)
+
+
+def terminate_user_session(user):
+    http_request('PATCH', f'users/{user}', body=BLOCK_ACCOUNT_JSON)
+
+
+def unblock_user_command():
+    user = demisto.getArg('user')
+    unblock_user(user)
+
+    return_outputs(
+        readable_output=f'"{user}" unblocked. It might take several minutes for the changes to take affect across '
+        'all applications.',
+        outputs=NO_OUTPUTS
+    )
+
+
+def unblock_user(user):
+    http_request('PATCH', f'users/{user}', body=UNBLOCK_ACCOUNT_JSON)
+
+
+def delete_user_command():
+    user = demisto.getArg('user')
+    delete_user(user)
+
+    return_outputs(readable_output=f'user: "{user}" was deleted successfully', outputs=NO_OUTPUTS)
+
+
+def delete_user(user):
+    http_request('DELETE ', f'users/{user}')
+
+
+def create_user_command():
     required_properties = {
-        'accountEnabled': args.get('account_enabled'),
-        'displayName': args.get('display_name'),
-        'onPremisesImmutableId': args.get('on_premises_immutable_id'),
-        'mailNickname': args.get('mail_nickname'),
+        'accountEnabled': demisto.getArg('account_enabled'),
+        'displayName': demisto.getArg('display_name'),
+        'onPremisesImmutableId': demisto.getArg('on_premises_immutable_id'),
+        'mailNickname': demisto.getArg('mail_nickname'),
         'passwordProfile': {
             "forceChangePasswordNextSignIn": 'true',
-            "password": args.get('password')
+            "password": demisto.getArg('password')
         },
-        'userPrincipalName': args.get('user_principal_name')
+        'userPrincipalName': demisto.getArg('user_principal_name')
     }
     other_properties = {}
-    if args.get('other_properties'):
-        for key_value in args.get('other_properties', '').split(','):
+    if demisto.getArg('other_properties'):
+        for key_value in demisto.getArg('other_properties').split(','):
             key, value = key_value.split('=', 2)
             other_properties[key] = value
         required_properties.update(other_properties)
 
     # create the user
-    client.create_user(required_properties)
+    create_user(required_properties)
 
     # display the new user and it's properties
     user = required_properties.get('userPrincipalName')
-    user_data = client.get_user(user, '*')
+    user_data = get_user(user, '*')
     user_readable, user_outputs = parse_outputs(user_data)
     human_readable = tableToMarkdown(name=f"{user} was created successfully:", t=user_readable, removeNull=True)
     outputs = {'MSGraphUser(val.ID == obj.ID)': user_outputs}
-    return human_readable, outputs, user_data
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=user_data)
 
 
-def update_user_command(client: MsGraphClient, args: Dict):
-    user = args.get('user')
-    updated_fields = args.get('updated_fields')
-
-    client.update_user(user, updated_fields)
-    get_user_command(client, args)
+def create_user(properties):
+    http_request('POST', 'users', body=json.dumps(properties))
 
 
-def get_delta_command(client: MsGraphClient, args: Dict):
-    properties = args.get('properties', '') + ',userPrincipalName'
-    users_data = client.get_delta(properties)
+def update_user_command():
+    user = demisto.getArg('user')
+    updated_fields = demisto.getArg('updated_fields')
+
+    update_user(user, updated_fields)
+    get_user_command()
+
+
+def update_user(user, updated_fields):
+    body = {}
+    for key_value in updated_fields.split(','):
+        field, value = key_value.split('=', 2)
+        body[field] = value
+    http_request('PATCH', f'users/{user}', body=json.dumps(body))
+
+
+def get_delta_command():
+    properties = demisto.getArg('properties') + ',userPrincipalName'
+    users_data = get_delta(properties)
     headers = list(set([camel_case_to_readable(p) for p in argToList(properties)] + ['ID', 'User Principal Name']))
 
     users_readable, users_outputs = parse_outputs(users_data)
-    human_readable = tableToMarkdown(name='All Graph Users', headers=headers, t=users_readable, removeNull=True)
+    hr = tableToMarkdown(name='All Graph Users', headers=headers, t=users_readable, removeNull=True)
     outputs = {'MSGraphUser(val.ID == obj.ID)': users_outputs}
-    return human_readable, outputs, users_data
+    return_outputs(readable_output=hr, outputs=outputs, raw_response=users_data)
 
 
-def get_user_command(client: MsGraphClient, args: Dict):
-    user = args.get('user')
-    properties = args.get('properties', '*')
-    user_data = client.get_user(user, properties)
+def get_delta(properties):
+    users = http_request('GET', 'users/delta', params={'$select': properties}).get('value')
+    return users
+
+
+def get_user_command():
+    user = demisto.getArg('user')
+    properties = demisto.args().get('properties', '*')
+    user_data = get_user(user, properties)
 
     user_readable, user_outputs = parse_outputs(user_data)
     human_readable = tableToMarkdown(name=f"{user} data", t=user_readable, removeNull=True)
     outputs = {'MSGraphUser(val.ID == obj.ID)': user_outputs}
-    return human_readable, outputs, user_data
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=user_data)
 
 
-def list_users_command(client: MsGraphClient, args: Dict):
-    properties = args.get('properties', 'id,displayName,jobTitle,mobilePhone,mail')
-    next_page = args.get('next_page', None)
-    users_data, result_next_page = client.list_users(properties, next_page)
+def get_user(user, properties):
+    user_data = http_request('GET ', f'users/{user}', params={'$select': properties})
+    user_data.pop('@odata.context', None)
+
+    return user_data
+
+
+def list_users_command():
+    properties = demisto.args().get('properties', 'id,displayName,jobTitle,mobilePhone,mail')
+    next_page = demisto.args().get('next_page', None)
+    users_data, result_next_page = list_users(properties, next_page)
     users_readable, users_outputs = parse_outputs(users_data)
     metadata = None
     outputs = {'MSGraphUser(val.ID == obj.ID)': users_outputs}
@@ -220,48 +370,53 @@ def list_users_command(client: MsGraphClient, args: Dict):
 
     human_readable = tableToMarkdown(name='All Graph Users', t=users_readable, removeNull=True, metadata=metadata)
 
-    return human_readable, outputs, users_data
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=users_data)
 
 
-def main():
-    params: dict = demisto.params()
-    url = params.get('url', '').rstrip('/') + '/v1.0/'
-    tenant = params.get('tenant_id')
-    auth_and_token_url = params.get('auth_id', '')
-    enc_key = params.get('enc_key')
-    verify = not params.get('insecure', False)
-    self_deployed: bool = params.get('self_deployed', False)
-    # TODO: check it does the same as handle proxy
-    proxy = params.get('proxy', False)
+def list_users(properties, page_url):
+    if page_url:
+        suffix = page_url.replace(BASE_URL, '')
+        response = http_request('GET', suffix)
 
-    commands = {
-        'test-module': test_function,
-        'msgraph-user-unblock': unblock_user_command,
-        'msgraph-user-terminate-session': terminate_user_session_command,
-        'msgraph-user-update': update_user_command,
-        'msgraph-user-delete': delete_user_command,
-        'msgraph-user-create': create_user_command,
-        'msgraph-user-get-delta': get_delta_command,
-        'msgraph-user-get': get_user_command,
-        'msgraph-user-list': list_users_command
-    }
-    command = demisto.command()
-    LOG(f'Command being called is {command}')
+    else:
+        response = http_request('GET', 'users', params={'$select': properties})
 
-    try:
-        # TODO: Check handle_proxy() function and see if it exists in MsApiModule
-        client: MsGraphClient = MsGraphClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key,
-                                              app_name=APP_NAME, base_url=url, verify=verify, proxy=proxy,
-                                              self_deployed=self_deployed)
-
-        human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
-        return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
-
-    except Exception as err:
-        return_error(str(err))
+    next_page_url = response.get('@odata.nextLink')
+    users = response.get('value')
+    return users, next_page_url
 
 
-from MicrosoftApiModule import *  # noqa: E402
+try:
+    handle_proxy()
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
-    main()
+    # COMMANDS
+    if demisto.command() == 'test-module':
+        test_function()
+
+    elif demisto.command() == 'msgraph-user-terminate-session':
+        terminate_user_session_command()
+
+    elif demisto.command() == 'msgraph-user-unblock':
+        unblock_user_command()
+
+    elif demisto.command() == 'msgraph-user-update':
+        update_user_command()
+
+    elif demisto.command() == 'msgraph-user-delete':
+        delete_user_command()
+
+    elif demisto.command() == 'msgraph-user-create':
+        create_user_command()
+
+    elif demisto.command() == 'msgraph-user-get-delta':
+        get_delta_command()
+
+    elif demisto.command() == 'msgraph-user-get':
+        get_user_command()
+
+    elif demisto.command() == 'msgraph-user-list':
+        list_users_command()
+
+
+except Exception as ex:
+    return_error(str(ex))
