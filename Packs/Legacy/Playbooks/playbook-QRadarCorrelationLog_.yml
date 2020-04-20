@@ -14,7 +14,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "3"
@@ -23,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
+          "x": 50,
           "y": 50
         }
       }
@@ -48,7 +47,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "6"
     scriptarguments:
       headers: {}
       interval:
@@ -76,7 +75,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 370
         }
       }
@@ -96,13 +95,12 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 545
+          "x": 50,
+          "y": 1595
         }
       }
     note: false
@@ -121,10 +119,9 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
-      - "2"
+      - "4"
       "yes":
       - "1"
     separatecontext: false
@@ -162,7 +159,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "2"
@@ -183,8 +179,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 195
+          "x": 50,
+          "y": 895
         }
       }
     note: false
@@ -208,7 +204,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "8"
     scriptarguments:
       headers: {}
       interval:
@@ -236,8 +232,166 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 705,
-          "y": 370
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: f23ca8df-eecc-453d-80e1-95e5b3e33679
+    type: regular
+    task:
+      id: f23ca8df-eecc-453d-80e1-95e5b3e33679
+      version: -1
+      name: Change context
+      description: 'Enables changing context in two ways. The first is to capitalize
+        the first letter of each key in following level of the context key entered.
+        The second is to change context keys to new values. '
+      scriptName: ChangeContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      capitalize:
+        simple: "True"
+      inplace:
+        simple: "False"
+      input:
+        simple: ${QRadar.Search.Result.events}
+      output_key:
+        simple: QRadar.Log
+      replace_dict:
+        simple: '{"sourceip": "SourceIP", "qid":"QID", "destinationip": "DestinationIP",
+          "category": "CategoryID", "starttime": "StartTime"}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 70c2c86d-926c-446b-8429-94deae557da0
+    type: regular
+    task:
+      id: 70c2c86d-926c-446b-8429-94deae557da0
+      version: -1
+      name: Delete Search context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: QRadar.Search
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: d29dbf04-1842-4958-856b-56392b74ffb4
+    type: regular
+    task:
+      id: d29dbf04-1842-4958-856b-56392b74ffb4
+      version: -1
+      name: Change context
+      description: 'Enables changing context in two ways. The first is to capitalize
+        the first letter of each key in following level of the context key entered.
+        The second is to change context keys to new values. '
+      scriptName: ChangeContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      capitalize:
+        simple: "True"
+      inplace:
+        simple: "False"
+      input:
+        simple: ${QRadar.Search.Result.events}
+      output_key:
+        simple: QRadar.Log
+      replace_dict:
+        simple: '{"sourceip": "SourceIP", "qid":"QID", "destinationip": "DestinationIP",
+          "category": "CategoryID", "starttime": "StartTime"}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 228f6641-94bb-4342-870c-7e00d48fb593
+    type: regular
+    task:
+      id: 228f6641-94bb-4342-870c-7e00d48fb593
+      version: -1
+      name: Delete Search context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: QRadar.Search
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
         }
       }
     note: false
@@ -250,8 +404,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 560,
-        "width": 1035,
+        "height": 1610,
+        "width": 605,
         "x": 50,
         "y": 50
       }
@@ -293,4 +447,3 @@ inputs:
   description: 'Maximum number of log entires to query from QRadar (default: 20)'
   playbookInputQuery: null
 outputs: []
-fromversion: 3.5.0

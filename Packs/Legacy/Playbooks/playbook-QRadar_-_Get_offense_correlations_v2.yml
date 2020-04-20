@@ -29,7 +29,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 152.5,
           "y": 50
         }
       }
@@ -86,7 +86,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 152.5,
           "y": 195
         }
       }
@@ -110,8 +110,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -50,
-          "y": 2270
+          "x": 50,
+          "y": 2965
         }
       }
     note: false
@@ -137,7 +137,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 367.5,
+          "x": 265,
           "y": 370
         }
       }
@@ -179,8 +179,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 285,
-          "y": 1565
+          "x": 265,
+          "y": 2265
         }
       }
     note: false
@@ -204,7 +204,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "25"
     scriptarguments:
       headers: {}
       interval:
@@ -231,7 +231,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 130,
+          "x": 152.5,
           "y": 1040
         }
       }
@@ -275,8 +275,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 285,
-          "y": 1215
+          "x": 452.5,
+          "y": 1925
         }
       }
     note: false
@@ -296,9 +296,10 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "12"
       "yes":
       - "7"
-      - "10"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -315,7 +316,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 142.5,
+          "x": 265,
           "y": 865
         }
       }
@@ -337,7 +338,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "10"
+      - "6"
       "yes":
       - "13"
     separatecontext: false
@@ -355,8 +356,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 572.5,
-          "y": 865
+          "x": 265,
+          "y": 1565
         }
       }
     note: false
@@ -407,8 +408,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 685,
-          "y": 1040
+          "x": 452.5,
+          "y": 1750
         }
       }
     note: false
@@ -443,8 +444,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 397.5,
-          "y": 2090
+          "x": 377.5,
+          "y": 2790
         }
       }
     note: false
@@ -500,8 +501,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 397.5,
-          "y": 1740
+          "x": 377.5,
+          "y": 2440
         }
       }
     note: false
@@ -536,8 +537,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 285,
-          "y": 1390
+          "x": 452.5,
+          "y": 2100
         }
       }
     note: false
@@ -580,8 +581,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 397.5,
-          "y": 1915
+          "x": 377.5,
+          "y": 2615
         }
       }
     note: false
@@ -605,7 +606,6 @@ tasks:
     nexttasks:
       '#none#':
       - "11"
-      - "12"
     scriptarguments:
       append: {}
       key:
@@ -636,7 +636,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 152.5,
           "y": 690
         }
       }
@@ -658,7 +658,6 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "12"
       - "11"
       "yes":
       - "23"
@@ -674,8 +673,88 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 367.5,
+          "x": 265,
           "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 87e4bfc7-7ade-4f7a-8b17-293dbda8d3ef
+    type: regular
+    task:
+      id: 87e4bfc7-7ade-4f7a-8b17-293dbda8d3ef
+      version: -1
+      name: Change Context
+      scriptName: ChangeContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      capitalize:
+        simple: "True"
+      inplace:
+        simple: "False"
+      input:
+        simple: ${QRadar.Search.Result.events}
+      input_key:
+        simple: ${QRadar.Search.Result}
+      key:
+        simple: ${QRadar.Search.Results}
+      output_key:
+        simple: QRadar.Correlation
+      replace_dict:
+        simple: '{"sourceip": "SourceIP", "qid":"QID", "destinationip": "DestinationIP",
+          "category": "CategoryID", "starttime": "StartTime"}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: a751c18e-7000-4768-8515-8585800a1d7f
+    type: regular
+    task:
+      id: a751c18e-7000-4768-8515-8585800a1d7f
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: QRadar.Search
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 1390
         }
       }
     note: false
@@ -690,9 +769,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2285,
-        "width": 1115,
-        "x": -50,
+        "height": 2980,
+        "width": 782.5,
+        "x": 50,
         "y": 50
       }
     }
