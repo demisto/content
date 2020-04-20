@@ -81,7 +81,8 @@ def output_model_evaluation(y_test, y_pred, res, context_field, human_readable_t
     demisto.results(result_entry)
     return confusion_matrix
 
-def return_file_result_with_predictions_on_test_set(data, y_true, y_pred, y_pred_prob ,additional_fields):
+
+def return_file_result_with_predictions_on_test_set(data, y_true, y_pred, y_pred_prob, additional_fields):
     predictions_data = {}
     for field in additional_fields:
         predictions_data[field] = [i.get(field, '') for i in data]
@@ -90,9 +91,8 @@ def return_file_result_with_predictions_on_test_set(data, y_true, y_pred, y_pred
     predictions_data['y_pred_prob'] = y_pred_prob
     df = pd.DataFrame(predictions_data)
     non_empty_columns = [field for field in additional_fields if df[field].astype(bool).any()]
-    csv_df = df.to_csv(columns=['y_true', 'y_pred', 'y_pred_prob'] + non_empty_columns ,encoding='utf-8')
+    csv_df = df.to_csv(columns=['y_true', 'y_pred', 'y_pred_prob'] + non_empty_columns, encoding='utf-8')
     demisto.results(fileResult(PREDICTIONS_OUT_FILE_NAME, csv_df))
-
 
 
 def main(incident_types, incident_query, y_true_field, y_pred_field, y_pred_prob_field, model_target_accuracy,
@@ -121,8 +121,6 @@ def main(incident_types, incident_query, y_true_field, y_pred_field, y_pred_prob
     y_pred = [y_pred[i] for i in relevant_indices]
     y_pred_prob = [y_pred_prob[i] for i in relevant_indices]
     incidents = [incidents[i] for i in relevant_indices]
-
-
     y_pred_prob_is_given = incidents_with_missing_pred_prob == 0
     if y_pred_prob_is_given:
         y_pred_dict = [{label: prob} for label, prob in zip(y_pred, y_pred_prob)]
@@ -133,7 +131,7 @@ def main(incident_types, incident_query, y_true_field, y_pred_field, y_pred_prob
                                                 detailed=True)
         # show results for the threshold found - last result so it will appear first
         output_model_evaluation(y_test=y_true, y_pred=y_pred_dict, res=res_threshold,
-                                                   context_field='EvaluateMLModllAtProduction')
+                                context_field='EvaluateMLModllAtProduction')
     # show results if no threshold (threhsold=0) was used. Following code is reached only if a legal thresh was found:
     if not y_pred_prob_is_given or not np.isclose(float(res_threshold[0]['Contents']['threshold']), 0):
         res = get_ml_model_evaluation(y_true, y_pred_dict, target_accuracy=0, target_recall=0)
@@ -146,9 +144,6 @@ def main(incident_types, incident_query, y_true_field, y_pred_field, y_pred_prob
 
 
 model_target_accuracy = demisto.args().get('modelTargetAccuracy', 0)
-
-
-
 incident_types = demisto.args()['incidentTypes']
 incident_query = demisto.args().get('incidentsQuery', None)
 y_true_field = demisto.args()['emailTagKey']
@@ -160,4 +155,4 @@ additional_fields = demisto.args().get('additionalFields', '')
 additional_fields = additional_fields.split(',')
 additional_fields = [x.strip() for x in additional_fields]
 main(incident_types, incident_query, y_true_field, y_pred_field, y_pred_prob_field, model_target_accuracy,
-         labels_mapping, additional_fields)
+     labels_mapping, additional_fields)
