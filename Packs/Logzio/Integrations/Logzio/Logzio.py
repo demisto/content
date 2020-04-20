@@ -214,6 +214,7 @@ def get_rule_logs_by_id_command(client, args):
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown("Logs", resp),
         'EntryContext': {
+            'Logzio.Logs.Count': len(resp),
             'Logzio.Logs.Results': resp
         }
     }
