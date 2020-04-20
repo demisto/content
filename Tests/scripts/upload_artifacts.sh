@@ -14,6 +14,11 @@ if [[ ! -d "$ARTIFACTS_DIR" ]]; then
     exit 0
 fi
 
+if [[ -z "$(ls -A ${ARTIFACTS_DIR})" ]]; then
+    echo "Directory [$ARTIFACTS_DIR] is empty. Nothing to upload. Skipping!"
+    exit 0
+fi
+
 if [[ -z "$CIRCLE_BUILD_NUM" ]]; then
     echo "CIRCLE_BUILD_NUM not set aborting!"
     exit 1
