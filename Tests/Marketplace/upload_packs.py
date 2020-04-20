@@ -238,7 +238,7 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
 
 
 def upload_core_packs_config(storage_bucket, packs_list):
-    """Uploads corepacks.json file configuration to bucket. corepacks.json includes core packs for server installation.
+    """Uploads corepacks.json file configuration to bucket. corepacks file includes core packs for server installation.
 
      Args:
         storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is uploaded.
