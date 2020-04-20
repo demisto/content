@@ -96,3 +96,11 @@ There is no context output for this command.
 
 To bring the next batch of indicators run:
 `!autofocus-get-indicators limit=4 offset=4`
+
+
+## Demo Video
+<video controls>
+    <source src="https://github.com/demisto/content/raw/3e9401284a518efa66d9b66bb5c1b5e0e61dbdb5/Packs/FeedAutofocus/Integrations/FeedAutofocus/demo_video/AutoFocus_Feed_demo.mp4"
+            type="video/mp4"/>
+    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content/raw/3e9401284a518efa66d9b66bb5c1b5e0e61dbdb5/Packs/FeedAutofocus/Integrations/FeedAutofocus/demo_video/AutoFocus_Feed_demo.mp4 
+</video>
