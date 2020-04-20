@@ -64,8 +64,8 @@ There is no context output for this command.
 |value|type|
 |---|---|
 | 1.2.3.4 | IP |
-| https:/<span>/demisto.com | URL |
-| demisto<span>.com | Domain |
+| https:/\<span\>/demisto.com | URL |
+| demisto\<span\>.com | Domain |
 
 ## Video Demo
 <video controls>
