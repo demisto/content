@@ -66,7 +66,11 @@ class TimestampReplacer:
         if ctx.options.detect_timestamps:
             self.handle_url_query(flow)
         if req.method == 'POST':
-            content = req.raw_content.decode()
+            raw_content = req.raw_content
+            if raw_content is not None:
+                content = req.raw_content.decode()
+            else:
+                content = ''
             json_data = content.startswith('{')
             if json_data:
                 content = json.loads(content)
@@ -260,12 +264,15 @@ class TimestampReplacer:
         self.write_out_problematic_keys(existing_problem_keys)
 
     def read_in_problematic_keys(self):
-        '''Load problematic keys dictionary from the keys_filepath argument filepath if it exists. Otherwise,
-        return the dictionary with empty values.
+        '''Load problematic keys dictionary from the keys_filepath argument filepath in content-test-data repo
+        if it exists. Otherwise, return the dictionary with empty values.
         '''
         ctx.log.info('executing "read_in_problematic_keys" method')
-        if path.exists(self.bad_keys_filepath):
-            problem_keys = json.load(self.bad_keys_filepath)
+        repo_bad_keys_filepath = self.bad_keys_filepath.replace('/tmp/Mocks', 'content-test-data')
+        ctx.log.info('reading in problematic keys data from "{}"'.format(repo_bad_keys_filepath))
+        if path.exists(repo_bad_keys_filepath):
+            with open(repo_bad_keys_filepath, 'r') as fp:
+                problem_keys = json.load(fp)
         else:
             problem_keys = {
                 'keys_to_replace': '',
