@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+  - Added bug fix for incident polling missing behavior data in some situations.
 
 ## [20.4.0] - 2020-04-14
   - Added support for pulling behavior data to create new incidents.
