@@ -417,42 +417,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "18":
-    id: "18"
-    taskid: 20d90bf9-e011-4560-8d59-9a1cb6ec82c3
-    type: regular
-    task:
-      id: 20d90bf9-e011-4560-8d59-9a1cb6ec82c3
-      version: -1
-      name: Delete Search Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      all: {}
-      index: {}
-      key:
-        simple: QRadar.Search
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 377.5,
-          "y": 2790
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "19":
     id: "19"
     taskid: da6557e9-5e0a-45b4-861c-f5605997a4b9
@@ -468,7 +432,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "2"
     scriptarguments:
       GetOnlyCREEvents:
         simple: ${inputs.GetOnlyCREEvents}
@@ -539,50 +503,6 @@ tasks:
         "position": {
           "x": 452.5,
           "y": 2100
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "22":
-    id: "22"
-    taskid: 8d6696ce-7634-4251-8720-43ac39d5d8b0
-    type: regular
-    task:
-      id: 8d6696ce-7634-4251-8720-43ac39d5d8b0
-      version: -1
-      name: Change Context
-      scriptName: ChangeContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      capitalize:
-        simple: "True"
-      inplace:
-        simple: "False"
-      input:
-        simple: ${QRadar.Search.Result.events}
-      input_key:
-        simple: ${QRadar.Search.Result}
-      key:
-        simple: ${QRadar.Search.Results}
-      output_key:
-        simple: QRadar.Log
-      replace_dict:
-        simple: '{"sourceip": "SourceIP", "qid":"QID", "destinationip": "DestinationIP",
-          "category": "CategoryID", "starttime": "StartTime"}'
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 377.5,
-          "y": 2615
         }
       }
     note: false
