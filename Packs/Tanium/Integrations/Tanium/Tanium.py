@@ -612,7 +612,7 @@ try:
     if demisto.command() == 'tn-get-action':
         final_result = get_action(handler)
 
-except Exception as ex:
+except Exception:
     sys.stdout = sout
     LOG.print_log()
     raise
