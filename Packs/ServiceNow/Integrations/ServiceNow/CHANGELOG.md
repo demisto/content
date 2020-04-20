@@ -1,6 +1,10 @@
 ## [Unreleased]
--
-
+- Added 4 commands.
+    - ***servicenow-items-query***
+    - ***servicenow-item-details-get***
+    - ***servicenow-incident-add-tag***
+    - ***servicenow-item-order-create***
+    
 ## [20.3.3] - 2020-03-18
 -
 
