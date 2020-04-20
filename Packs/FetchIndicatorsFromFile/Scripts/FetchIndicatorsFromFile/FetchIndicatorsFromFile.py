@@ -26,19 +26,8 @@ def csv_file_to_indicator_list(file_path, col_num, starting_row, auto_detect, de
             if line_index >= starting_row + offset and len(row) != 0:
                 indicator = row[col_num]
 
-                indicator_type = detect_type(indicator)
-
-                if not auto_detect:
-                    indicator_type = default_type
-
-                if type_col:
-                    indicator_type = row[int(type_col) - 1]
-
-                if indicator_type is None:
-                    if default_type is None:
-                        continue
-                    else:
-                        indicator_type = default_type
+                indicator_type = get_indicator_type(indicator, auto_detect, default_type, file_type='csv',
+                                                    type_col=type_col, csv_row=row)
 
                 indicator_list.append({
                     "type": indicator_type,
@@ -70,20 +59,8 @@ def xls_file_to_indicator_list(file_path, sheet_name, col_num, starting_row, aut
         if row_index >= starting_row + offset:
             indicator = xl_sheet.cell(row_index, col_num).value
 
-            indicator_type = detect_type(indicator)
-
-            if not auto_detect:
-                indicator_type = default_type
-
-            if type_col:
-                indicator_type = xl_sheet.cell(row_index, int(type_col) - 1).value
-
-            # indicator not recognized
-            if indicator_type is None:
-                if default_type is None:
-                    continue
-                else:
-                    indicator_type = default_type
+            indicator_type = get_indicator_type(indicator, auto_detect, default_type, file_type='xls',
+                                                type_col=type_col, xl_sheet=xl_sheet, xl_row_index=row_index)
 
             indicator_list.append({
                 'type': indicator_type,
@@ -114,18 +91,15 @@ def txt_file_to_indicator_list(file_path, auto_detect, default_type, limit, offs
             while indicator[0] in ".,({[\n\t\"" and len(indicator) > 1:
                 indicator = indicator[1:]
 
-            indicator_type = detect_type(indicator)
+            indicator_type = get_indicator_type(indicator, auto_detect, default_type, file_type='text')
 
             # indicator not recognized skip the word
             if indicator_type is None:
                 continue
 
-            elif indicator_type is not None and indicator_index < offset:
+            if indicator_type is not None and indicator_index < offset:
                 indicator_index = indicator_index + 1
                 continue
-
-            if not auto_detect:
-                indicator_type = default_type
 
             indicator_list.append({
                 'type': indicator_type,
@@ -136,6 +110,53 @@ def txt_file_to_indicator_list(file_path, auto_detect, default_type, limit, offs
             break
 
     return indicator_list
+
+
+def get_indicator_type(indicator_value, auto_detect, default_type, file_type, type_col=None, xl_sheet=None,
+                       xl_row_index=0, csv_row=None):
+    """Returns the indicator type for the given file type.
+
+    Args:
+        indicator_value (str): the indicator value
+        auto_detect (bool): whether or not to auto_detect the type
+        default_type (Any): the default type of the indicator (could be None or str)
+        file_type (str): 'text', 'xls' or 'csv'
+        type_col (Any): the column from which to fetch the indicator type in xls or csv files (could be None or int)
+        xl_sheet (Any): the xls sheet from which to fetch the indicator type (could be None or ~xlrd.sheet.Sheet)
+        xl_row_index (Any): the row number in the xls sheet from which to fetch the indicator type (could be None or int)
+        csv_row (Any): the csv row from which to fetch the indicator type (could be None or list)
+
+    Returns:
+        Any. returns None if indicator is not recognized in text file
+        or the indicator is not recognized and no default type given.
+        Otherwise will return a string indicating the indicator type
+    """
+    indicator_type = detect_type(indicator_value)
+
+    # indicator not recognized skip the word in text file
+    if indicator_type is None and file_type == 'text':
+        return None
+
+    if not auto_detect:
+        indicator_type = default_type
+
+    if file_type != 'text':
+        if type_col is not None and file_type == 'xls':
+            indicator_type = xl_sheet.cell(xl_row_index, int(type_col) - 1).value
+
+        elif type_col is not None and file_type == 'csv':
+            indicator_type = csv_row[int(type_col) - 1]
+
+        # indicator not recognized in non text file
+        if indicator_type is None:
+            # no default value given
+            if default_type is None:
+                return None
+            else:
+                # default value given
+                indicator_type = default_type
+
+    return indicator_type
 
 
 def detect_type(indicator):
