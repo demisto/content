@@ -10,19 +10,19 @@ This integration can only fetch indicators from **active** collections - collect
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| feed | Fetch indicators | False |
-| feedReputation | Indicator Reputation | False |
-| feedReliability | Source Reliability | True |
-| feedExpirationPolicy |  | False |
-| feedExpirationInterval |  | False |
-| feedFetchInterval | Feed Fetch Interval | False |
-| feedBypassExclusionList | Bypass exclusion list | False |
-| api_key | API Key | True |
-| all_collections | Get All Active Collections - if selected the integration will run on all **active** collections regaurdless of the 
+| feed | The fetch indicators. | False |
+| feedReputation | The indicator reputation. | False |
+| feedReliability | The source's reliability. | True |
+| feedExpirationPolicy | The feed's expiration policy. | False |
+| feedExpirationInterval | The interval after which the feed expires. | False |
+| feedFetchInterval | The feed fetch interval. | False |
+| feedBypassExclusionList | Whether to bypass exclusion list. | False |
+| api_key | The AlienVault OTX API key. | True |
+| all_collections | Whether to get all active collections - if selected the integration will run on all **active** collections regaurdless of the 
 collections supplied in the Collections parameter. Inactive collections will not return indicators. | False |
-| collections | Collections to Fetch From | False |
-| insecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings | False |
+| collections | The collections to fetch from. | False |
+| insecure | Whether to trust any certificate \(not secure\). | False |
+| proxy | Whether to use the system proxy settings. | False |
 
 
 If you do not know which collections are available - do not set the Collections and All Collections parameters -  The resulting error message will list all the accessible collections.
