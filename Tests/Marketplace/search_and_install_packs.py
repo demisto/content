@@ -177,5 +177,3 @@ def search_and_install_packs_and_their_dependencies(integrations_files, client, 
     run_threads_list(threads_list)
 
     return packs_installed
-
-
