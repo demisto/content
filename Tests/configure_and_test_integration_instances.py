@@ -676,13 +676,12 @@ def main():
     # after updating content
     new_integrations_files, modified_integrations_files = get_new_and_modified_integration_files(git_sha1)
     new_integrations_names, modified_integrations_names = [], []
-    server = servers[0]
 
     if new_integrations_files:
         # TODO: uncomment when we start testing packs
         # if server_version_compare(server_numeric_version, '6.0') >= 0:
         #    # Test packs search and installation - beginning of infrastructure
-        #    client = demisto_client.configure(base_url=server, username=username, password=password,
+        #    client = demisto_client.configure(base_url=servers[0], username=username, password=password,
         #                                      verify_ssl=False)
         #    search_and_install_packs_and_their_dependencies(new_integrations_files, client, prints_manager)
 
@@ -695,7 +694,7 @@ def main():
         # TODO: uncomment when we start testing packs
         # if server_version_compare(server_numeric_version, '6.0') >= 0:
         #     # Test packs search and installation - beginning of infrastructure
-        #     client = demisto_client.configure(base_url=server, username=username, password=password,
+        #     client = demisto_client.configure(base_url=servers[0], username=username, password=password,
         #                                       verify_ssl=False)
         #     search_and_install_packs_and_their_dependencies(modified_integrations_files, client, prints_manager)
 
