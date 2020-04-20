@@ -2268,3 +2268,4 @@ script:
   runonce: false
 tests:
   - ThreatGridTest
+fromversion: 3.1.1
