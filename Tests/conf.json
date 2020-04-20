@@ -234,8 +234,7 @@
             "integrations": "SlackV2",
             "playbookID": "Slack Test Playbook",
             "timeout" : 2400,
-            "fromversion": "5.0.0",
-            "pid_threshold": 30
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Cortex XDR - IR",
