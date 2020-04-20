@@ -414,7 +414,4 @@ class TestCommands:
         client = self.MockClient()
         mocker.patch.object(client, client_func, return_value=raw_response)
         res = command_func(client, **args)
-        with open('/Users/darbel/dev/demisto/content/Packs/GooglePubSub/Integrations/GooglePubSub/commands.json',
-                  'w') as f:
-            json.dump(res[1], f)
         assert expected == res[1]
