@@ -56,17 +56,16 @@ def xls_file_to_indicator_list(file_path, sheet_name, col_num, starting_row, aut
     else:
         xl_sheet = xl_woorkbook.sheet_by_index(0)
 
-    for row_index in range(0, xl_sheet.nrows):
-        if row_index >= starting_row + offset:
-            indicator = xl_sheet.cell(row_index, col_num).value
+    for row_index in range(starting_row + offset, xl_sheet.nrows):
+        indicator = xl_sheet.cell(row_index, col_num).value
 
-            indicator_type = get_indicator_type(indicator, auto_detect, default_type, file_type='xls',
-                                                type_col=type_col, xl_sheet=xl_sheet, xl_row_index=row_index)
+        indicator_type = get_indicator_type(indicator, auto_detect, default_type, file_type='xls',
+                                            type_col=type_col, xl_sheet=xl_sheet, xl_row_index=row_index)
 
-            indicator_list.append({
-                'type': indicator_type,
-                'value': indicator
-            })
+        indicator_list.append({
+            'type': indicator_type,
+            'value': indicator
+        })
 
         if limit and len(indicator_list) == int(str(limit)):
             break
@@ -233,7 +232,7 @@ def fetch_indicators_from_file(args):
     else:
         indicator_list = txt_file_to_indicator_list(file_path, auto_detect, default_type, limit, offset)
 
-    human_readable = tableToMarkdown("Indicators from {}:".format(file_name), indicator_list,
+    human_readable = tableToMarkdown(f"Indicators from {file_name}:", indicator_list,
                                      headers=['value', 'type'], removeNull=True)
 
     # Create indicators in demisto
