@@ -1407,4 +1407,4 @@ script:
   isfetch: true
   runonce: false
   tests:
-    - No test
+    - IBM Resilient Systems Test
