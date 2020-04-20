@@ -537,3 +537,46 @@ def test_eml_contains_htm_attachment(mocker):
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
     assert results[0]['EntryContext']['Email'][u'Attachments'] == '1.htm'
+
+
+def test_eml_base64_header_comment_although_string(mocker):
+    def executeCommand(name, args=None):
+        if name == 'getFilePath':
+            return [
+                {
+                    'Type': entryTypes['note'],
+                    'Contents': {
+                        'path': 'test_data/DONT_OPEN-MALICIOUS_base64_headers.eml',
+                        'name': 'DONT_OPEN-MALICIOUS_base64_headers.eml'
+                    }
+                }
+            ]
+        elif name == 'getEntry':
+            return [
+                {
+                    'Type': entryTypes['file'],
+                    'FileMetadata': {
+                        'info': 'UTF-8 Unicode text, with very long lines, with CRLF line terminators'
+                    }
+                }
+            ]
+        else:
+            raise ValueError('Unimplemented command called: {}'.format(name))
+
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+    main()
+    assert demisto.results.call_count == 3
+    # call_args is tuple (args list, kwargs). we only need the first one
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert results[0]['EntryContext']['Email'][0]['Subject'] == 'DONT OPEN - MALICIOS'
+    assert results[0]['EntryContext']['Email'][0]['Depth'] == 0
+
+    assert 'Attacker+email+.msg' in results[0]['EntryContext']['Email'][0]['Attachments']
+    assert results[0]['EntryContext']['Email'][1]["Subject"] == 'Attacker email'
+    assert results[0]['EntryContext']['Email'][1]['Depth'] == 1

@@ -3501,10 +3501,13 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                             attachment_name = part.get_payload()[0].get('Subject', "no_name_mail_attachment")
                             attachment_file_name = convert_to_unicode(attachment_name) + '.eml'
 
+                        file_content = part.get_payload()[0].as_string()
                         if base64_encoded:
-                            file_content = b64decode(part.get_payload()[0].as_string())
-                        else:
-                            file_content = part.get_payload()[0].as_string()
+                            try:
+                                file_content = b64decode(file_content)
+
+                            except TypeError:
+                                pass  # In case the file is a string, decode=True for get_payload is not working
 
                     elif isinstance(part.get_payload(), basestring) and base64_encoded:
                         file_content = part.get_payload(decode=True)
@@ -3720,7 +3723,7 @@ def main():
 
     except Exception as ex:
         demisto.error(str(ex) + "\n\nTrace:\n" + traceback.format_exc())
-        return_error(ex.message)
+        return_error(str(ex) + "\n\nTrace:\n" + traceback.format_exc())
 
 
 if __name__ in ('__builtin__', '__main__'):
