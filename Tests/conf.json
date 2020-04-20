@@ -413,7 +413,7 @@
             "playbookID": "CVE Search v2 - Test"
         },
         {
-            "integrations": "CVE Search",
+            "integrations": "CVE Search v2",
             "playbookID": "cveReputation Test"
         },
         {
@@ -1014,7 +1014,7 @@
             "playbookID": "decodemimeheader_-_test"
         },
         {
-            "integrations": "CVE Search",
+            "integrations": "CVE Search v2",
             "playbookID": "cve_enrichment_-_generic_-_test"
         },
         {
@@ -2412,11 +2412,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "Sixgill",
-            "playbookID": "Sixgill - Darkfeed - Indicators-Test",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "AutoFocus Feed",
             "playbookID": "playbook-FeedAutofocus_test",
             "fromversion": "5.5.0"
@@ -2675,6 +2670,7 @@
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
+        "Trend Micro Apex": "Issue 23632",
         "Awake Security": "Issue 23376",
         "RiskSense": "We should get an instance talk to Francesco",
         "Palo Alto Networks Cortex": "Issue 22300",
@@ -2778,6 +2774,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "sss": "aaa",
         "MongoDB": "Our instance not using SSL",
         "Cortex Data Lake": "Integration requires SSL",
         "Google Key Management Service": "The API requires an SSL secure connection to work.",
