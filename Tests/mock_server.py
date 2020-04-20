@@ -304,7 +304,7 @@ class MITMProxy:
 
             # verify cleaned mock is different than original
             print('verifying cleaned mock file is different than the original mock file')
-            diff_cmd = 'diff -s {} {}'.format(cleaned_mock_filepath, mock_file_path)
+            diff_cmd = 'diff -sq {} {}'.format(cleaned_mock_filepath, mock_file_path)
             try:
                 diff_cmd_output = self.ami.check_output(diff_cmd.split()).decode().strip()
                 print(f'diff_cmd_output="{diff_cmd_output}"')
