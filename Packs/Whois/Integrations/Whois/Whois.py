@@ -8257,6 +8257,7 @@ def get_whois(domain, normalized=None):
 def get_domain_from_query(query):
     # checks for largest matching suffix inside tlds dictionary
     suffix_len = max([len(suffix) for suffix in tlds if query.endswith('.{}'.format(suffix))] or [0])
+    # if suffix(TLD) was found increase the length by one in order to add the dot before it. --> .com instead of com
     if suffix_len != 0:
         suffix_len += 1
     suffixless_query = query[:-suffix_len]
