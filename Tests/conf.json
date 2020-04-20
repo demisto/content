@@ -2674,6 +2674,7 @@
         "_comment": "~~~ NO INSTANCE ~~~",
         "Trend Micro Apex": "Issue 23632",
         "Awake Security": "Issue 23376",
+        "ExtraHop": "No license, issue 23731",
         "RiskSense": "We should get an instance talk to Francesco",
         "Palo Alto Networks Cortex": "Issue 22300",
         "AWS - IAM": "Issue 21401",
