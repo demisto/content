@@ -641,6 +641,9 @@ tasks:
     scriptarguments:
       assignBy: {}
       email: {}
+      onCall:
+        complex:
+          root: inputs.OnCall
       roles:
         simple: ExtraHop
       username: {}
@@ -730,7 +733,12 @@ view: |-
       }
     }
   }
-inputs: []
+inputs:
+- key: OnCall
+  value:
+    simple: false
+  required: false
+  description: Set to true to assign only user that is currently on shift. Requires Cortex XSOAR v5.5 or later.
 outputs: []
 tests:
 - ExtraHop_v2-Test
