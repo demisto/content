@@ -380,6 +380,8 @@ jobs:
             if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/run_tests.sh "Demisto GA"
+                echo "failing step purposely"
+                exit 1
 
               else
                 ./Tests/lastest_server_build_scripts/run_tests.sh
@@ -408,6 +410,8 @@ jobs:
             if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/run_tests.sh "Demisto one before GA"
+                echo "failing step purposely"
+                exit 1
 
               else
                 echo "Not AMI run, can't run on this version"
@@ -436,6 +440,8 @@ jobs:
             if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/run_tests.sh "Demisto two before GA"
+                echo "failing step purposely"
+                exit 1
 
               else
                 echo "Not AMI run, can't run on this version"
@@ -464,6 +470,8 @@ jobs:
             if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/run_tests.sh "Server Master"
+                echo "failing step purposely"
+                exit 1
 
             else
                 echo "Not AMI run, can't run on this version"
@@ -495,6 +503,8 @@ jobs:
                 export RETVAL=$?
                 cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
                 exit $RETVAL
+                echo "failing step purposely"
+                exit 1
 
             else
                 echo "Not AMI run, can't run on this version"
