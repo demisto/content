@@ -66,6 +66,7 @@ def get_user_name(user_id):
 
     return '{} {}'.format(user[0]['first_name'], user[0]['last_name'])
 
+
 """
 These record fields(columns) are mapped from their names in ServiceNow
 to your choice of field names to be in the output.
