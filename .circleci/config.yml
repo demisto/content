@@ -356,6 +356,7 @@ jobs:
                 # python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path) -v $CONTENT_VERSION --non-ami
             fi
             python3 ./Tests/scripts/wait_until_server_ready.py
+            mkdir ./artifacts/tests_outputs
       - run:
           name: Run Tests - Latest GA
           shell: /bin/bash
@@ -379,7 +380,7 @@ jobs:
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
-                ./Tests/scripts/run_tests.sh "Demisto GA"
+                ./Tests/scripts/run_tests.sh "Demisto GA" | tee ./artifacts/tests_outputs/demisto_ga.log
                 echo "failing step purposely"
                 exit 1
 
@@ -409,7 +410,7 @@ jobs:
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
-                ./Tests/scripts/run_tests.sh "Demisto one before GA"
+                ./Tests/scripts/run_tests.sh "Demisto one before GA" | tee ./artifacts/tests_outputs/one_before_ga.log
                 echo "failing step purposely"
                 exit 1
 
@@ -439,7 +440,7 @@ jobs:
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
-                ./Tests/scripts/run_tests.sh "Demisto two before GA"
+                ./Tests/scripts/run_tests.sh "Demisto two before GA" | tee ./artifacts/tests_outputs/two_before_ga.log
                 echo "failing step purposely"
                 exit 1
 
@@ -469,7 +470,7 @@ jobs:
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
-                ./Tests/scripts/run_tests.sh "Server Master"
+                ./Tests/scripts/run_tests.sh "Server Master" | tee ./artifacts/tests_outputs/server_master.log
                 echo "failing step purposely"
                 exit 1
 
@@ -499,7 +500,7 @@ jobs:
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
-                ./Tests/scripts/run_tests.sh "Demisto PreGA"
+                ./Tests/scripts/run_tests.sh "Demisto PreGA" | tee ./artifacts/tests_outputs/demisto_prega.log
                 export RETVAL=$?
                 cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
                 exit $RETVAL
