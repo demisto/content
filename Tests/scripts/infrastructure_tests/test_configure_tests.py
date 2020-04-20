@@ -85,9 +85,25 @@ class TestUtils(object):
         return test_playbook
 
     @staticmethod
-    def mock_get_modified_files(mocker, modified_files_list):
+    def mock_get_modified_files(mocker, modified_files_list, is_conf_json=False):
         return mocker.patch('Tests.scripts.configure_tests.get_modified_files',
-                            return_value=create_get_modified_files_ret(modified_files_list=modified_files_list))
+                            return_value=create_get_modified_files_ret(
+                                modified_files_list=modified_files_list,
+                                is_conf_json=is_conf_json
+                            ))
+
+    @staticmethod
+    def mock_run_command(mocker, on_command, return_value):
+        def on_run_command(*args):
+            command = args[0]
+            if command == on_command:
+                return return_value
+
+            return ''
+
+        mock = mocker.patch('demisto_sdk.commands.common.tools.run_command')
+        mock.side_effect = on_run_command
+        return mock
 
     @staticmethod
     def create_tests_conf(with_test_configuration=None):
@@ -323,7 +339,7 @@ class TestNoChange:
         assert len(filterd_tests) >= RANDOM_TESTS_NUM
 
 
-def create_get_modified_files_ret(modified_files_list=[], modified_tests_list=[], changed_common=[], is_conf_json=[],
+def create_get_modified_files_ret(modified_files_list=[], modified_tests_list=[], changed_common=[], is_conf_json=False,
                                   sample_tests=[], is_reputations_json=[], is_indicator_json=[]):
     """
     Returns return value for get_modified_files() to be used with a mocker patch
@@ -411,7 +427,7 @@ def test_integration_has_no_test_playbook_should_fail_on_validation(mocker):
     - filtering tests to run
 
     Then
-    - ensure the validation not failing
+    - ensure the validation is failing
     """
     from Tests.scripts import configure_tests
     configure_tests._FAILED = False  # reset the FAILED flag
@@ -446,7 +462,7 @@ def test_integration_has_no_test_playbook_should_fail_on_validation(mocker):
         )
 
         # Then
-        # - ensure the validation not failing
+        # - ensure the validation is failing
         assert configure_tests._FAILED
     finally:
         # delete the mocked files
@@ -454,6 +470,55 @@ def test_integration_has_no_test_playbook_should_fail_on_validation(mocker):
             fake_integration['path']
         ])
 
+        # reset _FAILED flag
+        configure_tests._FAILED = False
+
+
+def test_conf_has_modified(mocker):
+    """
+    Given
+    - Tests/conf.json has been modified
+
+    When
+    - filtering tests to run
+
+    Then
+    - ensure the validation not failing
+    """
+    from Tests.scripts import configure_tests
+    configure_tests._FAILED = False  # reset the FAILED flag
+
+    try:
+        # Given
+        # - Tests/conf.json has been modified
+        TestUtils.mock_get_modified_files(mocker,
+                                          modified_files_list=[],
+                                          is_conf_json=True)
+
+        TestUtils.mock_run_command(
+            mocker,
+            on_command='git diff origin/master...dummy_branch Tests/conf.json',
+            return_value='something'
+        )
+        # - both in conf.json
+        fake_conf = TestUtils.create_tests_conf()
+
+        fake_id_set = TestUtils.create_id_set()
+
+        # When
+        # - filtering tests to run
+        get_test_list(
+            files_string='',
+            branch_name='dummy_branch',
+            two_before_ga_ver=TWO_BEFORE_GA_VERSION,
+            conf=fake_conf,
+            id_set=fake_id_set
+        )
+
+        # Then
+        # - ensure the validation not failing
+        assert not configure_tests._FAILED
+    finally:
         # reset _FAILED flag
         configure_tests._FAILED = False
 
