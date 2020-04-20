@@ -756,7 +756,7 @@ def delete_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
 
     result = client.delete(ticket_type, ticket_id)
 
-    return f'Ticket with ID {ticket_id} was successfully deleted.', {}, result,  True
+    return f'Ticket with ID {ticket_id} was successfully deleted.', {}, result, True
 
 
 def query_tickets_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bool]:
@@ -778,7 +778,7 @@ def query_tickets_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
     result = client.query(ticket_type, sys_param_limit, sys_param_offset, sys_param_query)
 
     if not result or 'result' not in result or len(result['result']) == 0:
-        return 'No ServiceNow tickets matched the query.', {}, {}
+        return 'No ServiceNow tickets matched the query.', {}, {}, True
     tickets = result.get('result', {})
     hr_ = get_ticket_human_readable(tickets, ticket_type)
     context = get_ticket_context(tickets)
@@ -1309,7 +1309,7 @@ def query_users_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any]
                                      headerTransform=pascalToSpace)
     entry_context = {'ServiceNow.User(val.ID===obj.ID)': createContext(mapped_users, removeNull=True)}
 
-    return human_readable, entry_context, result
+    return human_readable, entry_context, result, False
 
 
 def list_table_fields_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any], bool]:
