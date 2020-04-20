@@ -104,6 +104,7 @@ class Pack(object):
         USER_METADATA (str); user metadata file name, the one that located in content repo.
         EXCLUDE_DIRECTORIES (list): list of directories to excluded before uploading pack zip to storage.
         AUTHOR_IMAGE_NAME (str): author image file name.
+        XSOAR_SUPPORT (str): support type of cortex xsoar packs.
 
     """
     PACK_INITIAL_VERSION = "1.0.0"
@@ -324,12 +325,7 @@ class Pack(object):
         is_deprecated = user_metadata.get('deprecated', False)
         pack_metadata['deprecated'] = bool(strtobool(is_beta)) if isinstance(is_deprecated, str) else is_deprecated
         pack_metadata['certification'] = user_metadata.get('certification', '')
-        try:
-            pack_metadata['price'] = int(user_metadata.get('price'))
-        except Exception as e:
-            print_warning(f"{pack_id} pack price is not valid. The price was set to 0. Additional "
-                          f"details {e}")
-            pack_metadata['price'] = 0
+        pack_metadata['price'] = convert_price(pack_id=pack_id, price_value_input=user_metadata.get('price'))
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion', '')
         pack_metadata['serverLicense'] = user_metadata.get('serverLicense', '')
         pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
@@ -633,7 +629,10 @@ class Pack(object):
             return task_status, content_items_result
 
     def load_user_metadata(self):
-        """
+        """ Loads user defined metadata and stores part of it's data in defined properties fields.
+
+        Returns:
+            dict: user metadata of pack defined in content repo pack (pack_metadata.json)
 
         """
         task_status = False
@@ -964,6 +963,8 @@ class Pack(object):
             print(f"Cleanup {self._pack_name} pack from: {self._pack_path}")
 
 
+# HELPER FUNCTIONS
+
 def input_to_list(input_data):
     """ Helper function for handling input list or str from the user.
 
@@ -976,3 +977,25 @@ def input_to_list(input_data):
     """
     input_data = input_data if input_data else []
     return input_data if isinstance(input_data, list) else [s for s in input_data.split(',') if s]
+
+
+def convert_price(pack_id, price_value_input=None):
+    """ Converts to integer value price input. In case no price input provided, return zero as price.
+
+    Args:
+        pack_id (str): pack unique identifier.
+        price_value_input (str): price string to convert.
+
+    Returns:
+        int: converted to int pack price.
+    """
+
+    try:
+        if not price_value_input:
+            return 0  # in case no price was supported, return 0
+        else:
+            return int(price_value_input)  # otherwise convert to int and return result
+    except Exception as e:
+        print_warning(f"{pack_id} pack price is not valid. The price was set to 0. Additional "
+                      f"details {e}")
+        return 0

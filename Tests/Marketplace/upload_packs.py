@@ -141,7 +141,7 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
         sys.exit(1)
 
 
-def update_index_folder(index_folder_path, pack_name, pack_path, pack_version=''):
+def update_index_folder(index_folder_path, pack_name, pack_path, pack_version='', hidden_pack=False):
     """Copies pack folder into index folder.
 
     Args:
@@ -149,6 +149,7 @@ def update_index_folder(index_folder_path, pack_name, pack_path, pack_version=''
         pack_name (str): pack folder name to copy.
         pack_path (str): pack folder full path.
         pack_version (str): pack latest version.
+        hidden_pack (bool): whether pack is hidden/internal or regular pack.
 
     Returns:
         bool: whether the operation succeeded.
@@ -172,6 +173,14 @@ def update_index_folder(index_folder_path, pack_name, pack_path, pack_version=''
             for d in os.scandir(index_pack_path):
                 if d.path not in metadata_files_in_index:
                     os.remove(d.path)
+
+        # skipping index update in case hidden is set to True
+        if hidden_pack:
+            if os.path.exists(index_pack_path):
+                shutil.rmtree(index_pack_path)  # remove pack folder inside index in case that it exists
+            print_warning(f"Skipping updating {pack_name} pack files to index")
+            task_status = True
+            return
 
         # Copy new files and add metadata for latest version
         for d in os.scandir(pack_path):
@@ -498,7 +507,7 @@ def main():
             continue
 
         task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path,
-                                          pack_version=pack.latest_version)
+                                          pack_version=pack.latest_version, hidden_pack=pack.hidden)
         if not task_status:
             pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name
             pack.cleanup()
