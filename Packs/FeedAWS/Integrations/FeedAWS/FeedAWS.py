@@ -35,7 +35,8 @@ def get_feed_config(services: list, regions: list):
             'indicator_type': FeedIndicatorType.CIDR,
             'fields': ['region', 'service'],
             'mapping': {
-                'region': 'region'
+                'region': 'region',
+                'service': 'service'
             }
         }
 
