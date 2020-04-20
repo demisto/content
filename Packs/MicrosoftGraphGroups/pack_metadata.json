@@ -1,5 +1,5 @@
 {
-    "name": "Microsoft Graph Group",
+    "name": "Microsoft Graph Groups",
     "description": "Microsoft Graph Groups enables you to create and manage different types of groups and group functionality according to your requirements.",
     "support": "Cortex XSOAR",
     "serverMinVersion": "4.1.0",
