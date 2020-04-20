@@ -345,31 +345,31 @@ def main():
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
-    #try:
-    client = Client(url, proxies, verify_certificate, includeAPT)
-    client.initialise()
-    commands = {
-        'mitre-get-indicators': get_indicators_command,
-        'mitre-show-feeds': show_feeds_command,
-        'mitre-search-indicators': search_command,
-        'mitre-reputation': reputation_command,
-    }
+    try:
+        client = Client(url, proxies, verify_certificate, includeAPT)
+        client.initialise()
+        commands = {
+            'mitre-get-indicators': get_indicators_command,
+            'mitre-show-feeds': show_feeds_command,
+            'mitre-search-indicators': search_command,
+            'mitre-reputation': reputation_command,
+        }
 
-    if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration Test button.
-        test_module(client)
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration Test button.
+            test_module(client)
 
-    elif demisto.command() == 'fetch-indicators':
-        indicators = fetch_indicators(client)
-        for iter_ in batch(indicators, batch_size=2000):
-                demisto.createIndicators(iter_)
+        elif demisto.command() == 'fetch-indicators':
+            indicators = fetch_indicators(client)
+            for iter_ in batch(indicators, batch_size=2000):
+                    demisto.createIndicators(iter_)
 
-    else:
-        commands[command](client, args)
+        else:
+            commands[command](client, args)
 
     # Log exceptions
-    #except Exception as e:
-    #    return_error(e)
+    except Exception as e:
+        return_error(e)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
