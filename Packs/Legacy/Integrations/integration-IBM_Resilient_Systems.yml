@@ -1406,3 +1406,5 @@ script:
   dockerimage: demisto/resilient
   isfetch: true
   runonce: false
+  tests:
+    - No test
