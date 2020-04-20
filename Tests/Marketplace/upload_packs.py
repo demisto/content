@@ -425,6 +425,12 @@ def main():
 
     # starting iteration over packs
     for pack in packs_list:
+        task_status, user_metadata = pack.load_user_metadata()
+        if not task_status:
+            pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value
+            pack.cleanup()
+            continue
+
         task_status, integration_images = pack.upload_integration_images(storage_bucket)
         if not task_status:
             pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
@@ -443,8 +449,9 @@ def main():
             pack.cleanup()
             continue
 
-        task_status = pack.format_metadata(pack_content_items, integration_images, author_image,
-                                           index_folder_path)
+        task_status = pack.format_metadata(user_metadata=user_metadata, pack_content_items=pack_content_items,
+                                           integration_images=integration_images, author_image=author_image,
+                                           index_folder_path=index_folder_path)
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack.cleanup()

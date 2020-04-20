@@ -73,6 +73,7 @@ class PackStatus(enum.Enum):
 
     """
     SUCCESS = "Successfully uploaded pack data to gcs"
+    FAILED_LOADING_USER_METADATA = "Failed in loading user defined metadata"
     FAILED_IMAGES_UPLOAD = "Failed to upload pack integration images to gcs"
     FAILED_AUTHOR_IMAGE_UPLOAD = "Failed to upload pack author image to gcs"
     FAILED_METADATA_PARSING = "Failed to parse and create metadata.json"
@@ -114,6 +115,7 @@ class Pack(object):
     METADATA = "metadata.json"
     AUTHOR_IMAGE_NAME = "Author_image.png"
     EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS.value]
+    XSOAR_SUPPORT = "xsoar"
 
     def __init__(self, pack_name, pack_path):
         self._pack_name = pack_name
@@ -122,6 +124,9 @@ class Pack(object):
         self._status = None
         self._relative_storage_path = ""
         self._remove_files_list = []  # tracking temporary files, in order to delete in later step
+        self._support_type = None  # initialized in load_user_metadata function
+        self._current_version = None  # initialized in load_user_metadata function
+        self._hidden = False  # initialized in load_user_metadata function
 
     @property
     def name(self):
@@ -164,6 +169,42 @@ class Pack(object):
         """ setter of relative gcs path of uploaded pack.
         """
         self._relative_storage_path = path_value
+
+    @property
+    def support_type(self):
+        """ str: support type of the pack.
+        """
+        return self._support_type
+
+    @support_type.setter
+    def support_type(self, support_value):
+        """ setter of support type of the pack.
+        """
+        self._support_type = support_value
+
+    @property
+    def current_version(self):
+        """ str: current version of the pack (different from latest_version).
+        """
+        return self._current_version
+
+    @current_version.setter
+    def current_version(self, current_version_value):
+        """ setter of current version of the pack.
+        """
+        self._current_version = current_version_value
+
+    @property
+    def hidden(self):
+        """ bool: internal content field for preventing pack from being displayed.
+        """
+        return self._hidden
+
+    @hidden.setter
+    def hidden(self, hidden_value):
+        """ setter of hidden property of the pack.
+        """
+        self._hidden = hidden_value
 
     def _get_latest_version(self):
         """ Return latest semantic version of the pack.
@@ -591,15 +632,40 @@ class Pack(object):
         finally:
             return task_status, content_items_result
 
-    def format_metadata(self, pack_content_items, integration_images, author_image, index_folder_path):
+    def load_user_metadata(self):
+        """
+
+        """
+        task_status = False
+
+        try:
+            user_metadata_path = os.path.join(self._pack_path, Pack.USER_METADATA)  # user metadata path before parsing
+
+            if not os.path.exists(user_metadata_path):
+                print_error(f"{self._pack_name} pack is missing {Pack.USER_METADATA} file.")
+                return task_status
+
+            with open(user_metadata_path, "r") as user_metadata_file:
+                user_metadata = json.load(user_metadata_file)  # loading user metadata
+
+            # store important user metadata fields
+            self.support_type = user_metadata.get('support', '').lower()
+            self.current_version = user_metadata.get('currentVersion', '')
+            self.hidden = user_metadata.get('hidden', False)
+
+            task_status = True
+        except Exception as e:
+            print_error(f"Failed in loading {self._pack_name} user metadata. Additional info:\n{e}")
+        finally:
+            return task_status, user_metadata
+
+    def format_metadata(self, user_metadata, pack_content_items, integration_images, author_image, index_folder_path):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
         Args:
-            pack_content_items (dict): content items that are located inside specific pack. Possible keys of the dict:
-            Classifiers, Dashboards, IncidentFields, IncidentTypes, IndicatorFields, Integrations, Layouts, Playbooks,
-            Reports, Scripts and Widgets. Each key is mapped to list of items with name and description. Several items
-            have no description.
+            user_metadata (dict): user defined pack_metadata, prior the parsing process.
+            pack_content_items (dict): content items that are located inside specific pack.
             integration_images (list): list of uploaded integration images with integration display name and image gcs
             public url.
             author_image (str): uploaded public gcs path to author image.
@@ -612,15 +678,7 @@ class Pack(object):
         task_status = False
 
         try:
-            user_metadata_path = os.path.join(self._pack_path, Pack.USER_METADATA)  # user metadata path before parsing
             metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
-
-            if not os.path.exists(user_metadata_path):
-                print_error(f"{self._pack_name} pack is missing {Pack.USER_METADATA} file.")
-                return task_status
-
-            with open(user_metadata_path, "r") as user_metadata_file:
-                user_metadata = json.load(user_metadata_file)  # loading user metadata
 
             dependencies_data = self._load_pack_dependencies(index_folder_path,
                                                              user_metadata.get('dependencies', {}),
@@ -875,7 +933,7 @@ class Pack(object):
                     else pack_author_image_blob.public_url
 
                 print_color(f"Uploaded successfully {self._pack_name} pack author image", LOG_COLORS.GREEN)
-            else:  # use default Base pack image
+            elif self.support_type == Pack.XSOAR_SUPPORT:  # use default Base pack image for xsoar supported packs
                 author_image_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, GCPConfig.BASE_PACK,
                                                          Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
 
@@ -886,6 +944,9 @@ class Pack(object):
                     # disable-secrets-detection-end
                 print_color((f"Skipping uploading of {self._pack_name} pack author image "
                              f"and use default {GCPConfig.BASE_PACK} pack image"), LOG_COLORS.GREEN)
+            else:
+                print(f"Skipping uploading of {self._pack_name} pack. "
+                      f"The pack is defined as {self.support_type} support type")
 
         except Exception as e:
             print_error(f"Failed uploading {self._pack_name} pack author image. Additional info:\n {e}")
