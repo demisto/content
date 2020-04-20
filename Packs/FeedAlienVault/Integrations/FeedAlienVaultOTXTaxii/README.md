@@ -1,6 +1,6 @@
-This integration fetches indicators from AlienVault OTX using a TAXII client.
+Use the AlienVault OTX integration to fetch indicators using a TAXII client.
 
-This integration can only fetch indicators from **active** collections - collections which contain at least a single indicator.
+This integration can only fetch indicators from **active** collections. Active collections are those which contain at least one indicator.
 
 ## Configure AlienVault OTX TAXII Feed on Demisto
 
@@ -18,15 +18,15 @@ This integration can only fetch indicators from **active** collections - collect
 | feedFetchInterval | The feed fetch interval. | False |
 | feedBypassExclusionList | Whether to bypass exclusion list. | False |
 | api_key | The AlienVault OTX API key. | True |
-| all_collections | Whether to get all active collections - if selected the integration will run on all **active** collections regaurdless of the 
-collections supplied in the Collections parameter. Inactive collections will not return indicators. | False |
+| all_collections | Whether to get all active collections - if selected the integration will run on all **active** collections regardless of the collections supplied in the collections parameter. Inactive collections will not return indicators. | False |
 | collections | The collections to fetch from. | False |
-| insecure | Whether to trust any certificate \(not secure\). | False |
+| insecure | Whether to trust any certificate (not secure). | False |
 | proxy | Whether to use the system proxy settings. | False |
 
 
-If you do not know which collections are available - do not set the Collections and All Collections parameters -  The resulting error message will list all the accessible collections.
-*Note*: not all listed collections are **active**.
+If you do not know which collections are available - do not set the `Collections` and `All Collections` parameters. The resulting error message will list all the accessible collections.
+
+**Note**: not all listed collections are **active**.
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -35,7 +35,8 @@ If you do not know which collections are available - do not set the Collections 
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### alienvaultotx-get-indicators
+
+### Get indicators
 ***
 Gets the indicators from AlienVault OTX.
 
@@ -63,8 +64,8 @@ There is no context output for this command.
 |value|type|
 |---|---|
 | 1.2.3.4 | IP |
-| https://demisto.com | URL |
-| demisto.com | Domain |
+| https:/<span>/demisto.com | URL |
+| demisto<span>.com | Domain |
 
 ## Video Demo
 <video controls>
