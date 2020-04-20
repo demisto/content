@@ -7,6 +7,7 @@ import xlrd
 import csv
 import tldextract
 import warnings
+import traceback
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -252,7 +253,8 @@ def main():
     try:
         return_outputs(*fetch_indicators_from_file(demisto.args()))
     except Exception as ex:
-        return_error('Failed to execute Fetch Indicators From File. Error: {}'.format(str(ex)))
+        return_error('Failed to execute Fetch Indicators From File. Error: {}'.format(str(ex)),
+                     error=traceback.format_exc())
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
