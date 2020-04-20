@@ -2736,6 +2736,7 @@
         "Code42": "Instance not set up yet",
         "LogRhythm": "Issue 21672",
         "SecBI": "Issue 22545",
+        "IBM Resilient Systems": "Issue 23722",
 
         "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
