@@ -614,6 +614,7 @@ def main():
         if demisto.command() == 'test-module':
             # cannot use test module due to the lack of ability to set refresh token to integration context
             raise Exception("Please use !azure-sentinel-test instead")
+
         elif demisto.command() == 'azure-sentinel-test':
             test_connection(client, params)
 

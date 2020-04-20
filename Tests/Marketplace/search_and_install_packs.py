@@ -165,14 +165,17 @@ def search_and_install_packs_and_their_dependencies(integrations_files, client, 
     prints_manager.add_print_job(message, print, 0)
 
     for pack_id in packs:
-        thread = Thread(target=search_and_install_pack,
-                        kwargs={'client': client,
-                                'prints_manager': prints_manager,
-                                'pack_id': pack_id,
-                                'packs_in_progress': packs_in_progress,
-                                'packs_installed': packs_installed,
-                                'lock': lock})
-        threads_list.append(thread)
+        if pack_id:
+            thread = Thread(target=search_and_install_pack,
+                            kwargs={'client': client,
+                                    'prints_manager': prints_manager,
+                                    'pack_id': pack_id,
+                                    'packs_in_progress': packs_in_progress,
+                                    'packs_installed': packs_installed,
+                                    'lock': lock})
+            threads_list.append(thread)
     run_threads_list(threads_list)
 
     return packs_installed
+
+

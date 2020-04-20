@@ -576,6 +576,7 @@ def main():
 
         elif demisto.command() == 'helloworld-scan-status':
             return_outputs(*scan_status_command(client, demisto.args()))
+
         elif demisto.command() == 'helloworld-scan-results':
             scan_results_command(client, demisto.args())
 
