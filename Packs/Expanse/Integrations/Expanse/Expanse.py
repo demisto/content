@@ -69,7 +69,7 @@ def make_headers(endpoint, token):
     headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'User-Agent': 'Expanse_Demisto/1.1.0'
+        'User-Agent': 'Expanse_Demisto/1.1.1'
     }
     if endpoint == "IdToken":
         headers['Authorization'] = 'Bearer ' + token
@@ -638,6 +638,7 @@ def fetch_incidents_command():
 
     if last_run.get('complete_for_today') is True and last_run.get('start_time') == yesterday:
         # wait until tomorrow to try again
+        demisto.incidents([])
         return
 
     # Refresh JWT
