@@ -1081,22 +1081,26 @@ if __name__ == "__main__":
     #         'Symantec Messaging Gateway Test\ntest_Qradar\nFireEye HX Test\nRSA NetWitness Test\n' \
     #         'Calculate Severity - Standard - Test\nLogRhythm REST test\nQRadar Indicator Hunting Test'
     tests = [
-        'Intezer Testing v2',
-        'get_file_sample_by_hash_-_cylance_protect_-_test',
-        'Test - CrowdStrike Falcon',
-        'Detonate File - SNDBOX - Test',
-        'Test Playbook McAfee ATD',
-        'CuckooTest'
+        # 'Intezer Testing v2',
+        # 'get_file_sample_by_hash_-_cylance_protect_-_test',
+        # 'Test - CrowdStrike Falcon',
+        # 'Detonate File - SNDBOX - Test',
+        # 'Test Playbook McAfee ATD',
+        # 'CuckooTest',
+        #
+        'Microsoft Defender Advanced Threat Protection - Test',
+        'Test XDR Playbook',
+        'Cherwell - test',
+        'RSA NetWitness Test'
+        #
         # 'TestHelloWorld',
         # 'Cherwell Example Scripts - test',
         # 'Splunk-Test',
         # 'Microsoft Graph Calendar - Test',
         # 'cisco-ise-test-playbook',
         # 'hashicorp_test',
-        # 'Microsoft Defender Advanced Threat Protection - Test',
         # 'AWS-Lambda-Test (Read-Only)',
         # 'minemeld_test',
-        # 'Test XDR Playbook',
         # 'QRadar Indicator Hunting Test',
         # 'Azure SecurityCenter - Test',
         # 'Claroty - Test',
@@ -1126,8 +1130,6 @@ if __name__ == "__main__":
         # 'Trend Micro Apex - Test',
         # 'Endpoint Malware Investigation - Generic - Test',
         # 'TestHelloWorldPlaybook',
-        # 'Cherwell - test',
-        # 'RSA NetWitness Test',
         # 'EWS Public Folders Test'
     ]
     # disable-secrets-detection-end
