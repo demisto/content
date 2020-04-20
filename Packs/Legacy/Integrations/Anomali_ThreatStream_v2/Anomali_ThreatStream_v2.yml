@@ -1580,7 +1580,6 @@ script:
       description: The indicator severity ("very-high", "high", "medium", or "low").
       type: String
   dockerimage: demisto/emoji:1.0.0.7445
-  dockerimage45: demisto/python3:3.7.3.221
   feed: false
   isfetch: false
   longRunning: false
