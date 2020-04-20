@@ -83,6 +83,9 @@ class TimestampReplacer:
                         self.json_keys.add(problem_key)
             elif json_data:
                 self.modify_json_body(flow, content)
+        if ctx.options.detect_timestamps:
+            ctx.log.info('updating problem_keys file at "{}"'.format(self.bad_keys_filepath))
+            self.update_problem_keys_file()
 
     def modify_json_body(self, flow: flow.Flow, json_body: dict) -> None:
         '''Modify the json body of a request by replacing any timestamp data with the number of the current request.
@@ -243,6 +246,43 @@ class TimestampReplacer:
         bad_keys = travel_dict(content)
         return bad_keys
 
+    def update_problem_keys_file(self):
+        '''Update the problem keys dictionary at the keys_filepath with new problematic keys
+        '''
+        existing_problem_keys = self.read_in_problematic_keys()
+        for key, val in existing_problem_keys.items():
+            if key == 'keys_to_replace':
+                existing_problem_keys[key] = ' '.join(set(val.split()).union(self.json_keys))
+            elif key == 'server_replay_ignore_payload_params':
+                existing_problem_keys[key] = ' '.join(set(val.split()).union(self.form_keys))
+            elif key == 'server_replay_ignore_params':
+                existing_problem_keys[key] = ' '.join(set(val.split()).union(self.query_keys))
+        self.write_out_problematic_keys(existing_problem_keys)
+
+    def read_in_problematic_keys(self):
+        '''Load problematic keys dictionary from the keys_filepath argument filepath if it exists. Otherwise,
+        return the dictionary with empty values.
+        '''
+        ctx.log.info('executing "read_in_problematic_keys" method')
+        if path.exists(self.bad_keys_filepath):
+            problem_keys = json.load(self.bad_keys_filepath)
+        else:
+            problem_keys = {
+                'keys_to_replace': '',
+                'server_replay_ignore_params': '',
+                'server_replay_ignore_payload_params': ''
+            }
+        return problem_keys
+
+    def write_out_problematic_keys(self, problem_keys: dict):
+        '''Write updated problematic keys dictionary back to the file at the keys_filepath argument
+
+        Args:
+            problem_keys (dict): Updated dictionary of problematic keys
+        '''
+        with open(self.bad_keys_filepath, 'w') as bad_keys_file:
+            bad_keys_file.write(json.dumps(problem_keys, indent=4))
+
     def load_problematic_keys(self):
         '''Load problematic keys from the keys_filepath argument filepath if it exists. Only necessary when running
         mitmdump in playback mode. Resets command line options with the key value pairs from the loaded dictionary.
@@ -281,18 +321,18 @@ class TimestampReplacer:
         else:
             ctx.log.info('"{}" path doesn\'t exist - no bad keys to set'.format(self.bad_keys_filepath))
 
-    def done(self):
-        print('timestamp_replacer.py "done()" called')
-        # print('ctx.options: \n{}'.format(json.dumps(ctx.options, indent=4)))
-        if self.detect_timestamps:
-            # bad_keys_filepath = ctx.options.keys_filepath
-            all_keys = {
-                'keys_to_replace': ' '.join(self.json_keys),
-                'server_replay_ignore_payload_params': ' '.join(self.form_keys),
-                'server_replay_ignore_params': ' '.join(self.query_keys)
-            }
-            with open(self.bad_keys_filepath, 'w') as bad_keys_file:
-                bad_keys_file.write(json.dumps(all_keys))
+    # def done(self):
+    #     print('timestamp_replacer.py "done()" called')
+    #     # print('ctx.options: \n{}'.format(json.dumps(ctx.options, indent=4)))
+    #     if self.detect_timestamps:
+    #         # bad_keys_filepath = ctx.options.keys_filepath
+    #         all_keys = {
+    #             'keys_to_replace': ' '.join(self.json_keys),
+    #             'server_replay_ignore_payload_params': ' '.join(self.form_keys),
+    #             'server_replay_ignore_params': ' '.join(self.query_keys)
+    #         }
+    #         with open(self.bad_keys_filepath, 'w') as bad_keys_file:
+    #             bad_keys_file.write(json.dumps(all_keys))
 
 
 addons = [TimestampReplacer()]
