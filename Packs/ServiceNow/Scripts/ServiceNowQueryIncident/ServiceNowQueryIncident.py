@@ -75,7 +75,7 @@ command_args = {
 }
 
 """
-These record fields(columns) are mapped from their names in ServiceNow 
+These record fields(columns) are mapped from their names in ServiceNow
 to your choice of field names to be in the output.
 To view all fields for a given table, use the servicenow-list-fields command.
 The ID field must be included to manage unique context entries.

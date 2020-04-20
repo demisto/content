@@ -129,7 +129,7 @@ if group_name:
     group_id = get_group_id(group_name)
 
 """
-Every field that was provided needs to be formatted to the following syntax: 'field1=a;field2=b;...' 
+Every field that was provided needs to be formatted to the following syntax: 'field1=a;field2=b;...'
 to create the incident according to the arguments and execute the command.
 In order to do that, to each field you need to concatenate the field'scorresponding name in the ServiceNow API
 along with an '=' and the value. In the end each of those fields are joined by a ';'.
