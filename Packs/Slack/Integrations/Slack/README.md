@@ -748,7 +748,23 @@ mirror incident-id
 <h3>Blocks and interactve components</h3>
 <span>The integration supports sending "blocks" to Slack. Blocks are a series of components that can be combined to create visually rich and compellingly interactive messages. In the integration, they can be sent as an array of JSON. More infortmation about that <a href="https://api.slack.com/reference/block-kit/blocks">here.</a> You can experiment with and build your own blocks <a href="https://api.slack.com/tools/block-kit-builder">here.</a>
 The integration also allows some level of interactivity. When a user interacts with an element in a Slack message, Slack sends a request with the relevant information. 
-This request is processed and stored by a dedicated endpoint outside of Demisto in the address: <code>https://oproxy.demisto.ninja</code>. What the integration currently allows is polling this endpoint for user interactions that contain entitlement strings(these are used to perform actions in Demisto by outside users, see the <code>SlackAsk</code> script for an example). What that means is that in order to enable interactivity using the integration, connection to this endpoint has to be enabled.</span>
+This request is processed and stored by a dedicated endpoint outside of Demisto in the address: <code>https://oproxy.demisto.ninja</code>.
+What the integration currently allows is polling this endpoint for user interactions that contain entitlement strings(these are used to perform actions in Demisto by external users, see the <code>SlackAsk</code> script for an example).
+What that means is that in order to enable interactivity using the integration, connection to this endpoint has to be enabled.</span>
+The following information is sent to the dedicated endpoint in the request:
+<h5>Headers</h5>
+<ul>
+<li>Current Demisto content version</li>
+<li>Current Demisto server version</li>
+<li>The name of the integration</li>
+<li>Team name in Slack - for identification</li>
+<li>Team ID in Slack - for identification</li>
+<li>Demisto license ID - for identification</li>
+</ul>
+<h5>Body</h5>
+<ul>
+<li>Entitlement - the unique entitlement string to allow interaction with Demisto.</li>
+</ul>
 <h4>Important! The interactions work only with the Demisto Integration bot - the only application that's allowed to send requests to the dedicated endpoint(for security reasons). They will not work with another application.</h4>
 <h2>Known Limitations</h2>
 <ul>
