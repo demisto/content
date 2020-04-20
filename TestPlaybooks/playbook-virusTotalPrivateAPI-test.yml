@@ -1,8 +1,8 @@
-id: virusTotal-test-playbook
+id: virusTotalPrivateAPI-test-playbook
 version: -1
 contentitemfields:
   propagationLabels: []
-name: virusTotal-test-playbook
+name: virusTotalPrivateAPI-test-playbook
 description: |
   Test playbook for vt.
 
