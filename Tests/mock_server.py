@@ -306,7 +306,7 @@ class MITMProxy:
             print('verifying cleaned mock file is different than the original mock file')
             diff_cmd = 'diff -s {} {}'.format(cleaned_mock_filepath, mock_file_path)
             try:
-                diff_cmd_output = self.ami.check_output(diff_cmd.split())
+                diff_cmd_output = self.ami.check_output(diff_cmd.split()).decode().strip()
                 print(f'diff_cmd_output="{diff_cmd_output}"')
                 if diff_cmd_output.endswith('are identical'):
                     print('cleaned mock file and original mock file are identical... '
@@ -319,7 +319,9 @@ class MITMProxy:
                 print(err_msg)
 
             print('Replace old mock with cleaned one.')
-            rm_cmd = 'rm {}'.format(mock_file_path)
+            # keep the old mock file for debugging purposes
+            old_mock_file_path = mock_file_path.replace('.mock', '_old.mock')
+            rm_cmd = 'mv {} {}'.format(mock_file_path, old_mock_file_path)
             self.ami.call(rm_cmd.split())
             mv_cmd = 'mv {} {}'.format(cleaned_mock_filepath, mock_file_path)
             self.ami.call(mv_cmd.split())
@@ -358,12 +360,14 @@ class MITMProxy:
         # if recording
         # record with detect_timestamps and then rewrite mock file
         if record:
-            actions = '--set stream_large_bodies=1 -s {} '.format(remote_script_path)
+            # actions = '--set stream_large_bodies=1 -s {} '.format(remote_script_path)
+            actions = '-s {} '.format(remote_script_path)
             actions += '--set detect_timestamps=true --set keys_filepath={} --save-stream-file'.format(
                 current_problem_keys_filepath
             )
         else:
-            actions = '--set stream_large_bodies=1 -s {} '.format(remote_script_path)
+            # actions = '--set stream_large_bodies=1 -s {} '.format(remote_script_path)
+            actions = '-s {} '.format(remote_script_path)
             actions += '--set keys_filepath={} --server-replay-kill-extra --server-replay'.format(
                 repo_problem_keys_filepath
             )
