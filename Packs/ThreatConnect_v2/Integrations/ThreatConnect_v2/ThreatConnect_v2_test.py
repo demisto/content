@@ -15,5 +15,3 @@ def test_calculate_freshness_time(freshness, time_out):
     time_out = f'{time_out}T00:00:00Z'
     output = calculate_freshness_time(freshness)
     assert output == time_out, f'calculate_freshness_time({freshness})\n\treturns: {output}\n\tinstead: {time_out}'
-
-
