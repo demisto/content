@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 from typing import Dict
-from Packs.ApiModules.Scripts.MicrosoftApiModule.MicrosoftApiModule import *
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -262,7 +261,7 @@ def main():
         return_error(str(err))
 
 
-# from MicrosoftApiModule import *  # noqa: E402
+from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
