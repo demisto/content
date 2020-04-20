@@ -66,14 +66,6 @@ def get_user_name(user_id):
 
     return '{} {}'.format(user[0]['first_name'], user[0]['last_name'])
 
-
-"""
-The table name is required by the API. To acquire the table name, use the servicenow-get-table-name command.
-"""
-command_args = {
-    'table_name': 'incident'
-}
-
 """
 These record fields(columns) are mapped from their names in ServiceNow
 to your choice of field names to be in the output.
@@ -88,7 +80,14 @@ fields_to_map = {
     'short_description': 'Description'
 }
 
-command_args['fields'] = list(fields_to_map.keys())  # mypy: ignore
+"""
+The table name is required by the API. To acquire the table name, use the servicenow-get-table-name command.
+"""
+command_args = {
+    'table_name': 'incident',
+    'fields': list(fields_to_map.keys())
+}
+
 
 """
 For each field in the arguments, you need to check if it was provided and apply
