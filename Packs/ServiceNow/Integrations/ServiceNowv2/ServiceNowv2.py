@@ -664,13 +664,14 @@ def get_ticket_command(client: Client, args: dict):
         'EntryContext': {
             'Ticket(val.ID===obj.ID)': context,
             'ServiceNow.Ticket(val.ID===obj.ID)': context
-        }
+        },
+        'IgnoreAutoExtract': True
     }
     entries.append(entry)
     return entries
 
 
-def update_ticket_command(client: Client, args: dict) -> Tuple[Any, Dict, Dict]:
+def update_ticket_command(client: Client, args: dict) -> Tuple[Any, Dict, Dict, bool]:
     """Update a ticket.
 
     Args:
@@ -696,10 +697,10 @@ def update_ticket_command(client: Client, args: dict) -> Tuple[Any, Dict, Dict]:
                                      t=hr_, removeNull=True)
     entry_context = {'ServiceNow.Ticket(val.ID===obj.ID)': get_ticket_context(ticket)}
 
-    return human_readable, entry_context, result
+    return human_readable, entry_context, result, True
 
 
-def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bool]:
     """Create a ticket.
 
     Args:
@@ -737,10 +738,10 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
         'ServiceNow.Ticket(val.ID===obj.ID)': created_ticket_context
     }
 
-    return human_readable, entry_context, result
+    return human_readable, entry_context, result, True
 
 
-def delete_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def delete_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bool]:
     """Delete a ticket.
 
     Args:
@@ -755,10 +756,10 @@ def delete_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
 
     result = client.delete(ticket_type, ticket_id)
 
-    return f'Ticket with ID {ticket_id} was successfully deleted.', {}, result
+    return f'Ticket with ID {ticket_id} was successfully deleted.', {}, result, True
 
 
-def query_tickets_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def query_tickets_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bool]:
     """Query tickets.
 
     Args:
@@ -777,7 +778,7 @@ def query_tickets_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     result = client.query(ticket_type, sys_param_limit, sys_param_offset, sys_param_query)
 
     if not result or 'result' not in result or len(result['result']) == 0:
-        return 'No ServiceNow tickets matched the query.', {}, {}
+        return 'No ServiceNow tickets matched the query.', {}, {}, True
     tickets = result.get('result', {})
     hr_ = get_ticket_human_readable(tickets, ticket_type)
     context = get_ticket_context(tickets)
@@ -793,10 +794,10 @@ def query_tickets_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
         'ServiceNow.Ticket(val.ID===obj.ID)': context
     }
 
-    return human_readable, entry_context, result
+    return human_readable, entry_context, result, True
 
 
-def add_link_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def add_link_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bool]:
     """Add a link.
 
     Args:
@@ -825,10 +826,10 @@ def add_link_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     human_readable = tableToMarkdown('Link successfully added to ServiceNow ticket', t=hr_,
                                      headers=headers, removeNull=True)
 
-    return human_readable, {}, result
+    return human_readable, {}, result, True
 
 
-def add_comment_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def add_comment_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bool]:
     """Add a comment.
 
     Args:
@@ -856,10 +857,10 @@ def add_comment_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     human_readable = tableToMarkdown('Comment successfully added to ServiceNow ticket', t=hr_,
                                      headers=headers, removeNull=True)
 
-    return human_readable, {}, result
+    return human_readable, {}, result, True
 
 
-def upload_file_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def upload_file_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bool]:
     """Upload a file.
 
     Args:
@@ -905,10 +906,10 @@ def upload_file_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
         'Ticket(val.ID===obj.ID)': context
     }
 
-    return human_readable, entry_context, result
+    return human_readable, entry_context, result, True
 
 
-def get_ticket_notes_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def get_ticket_notes_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bool]:
     """Get the ticket's note.
 
     Args:
@@ -927,7 +928,7 @@ def get_ticket_notes_command(client: Client, args: dict) -> Tuple[str, Dict, Dic
     result = client.query('sys_journal_field', sys_param_limit, sys_param_offset, sys_param_query)
 
     if not result or 'result' not in result:
-        return f'No comment found on ticket {ticket_id}.', {}, {}
+        return f'No comment found on ticket {ticket_id}.', {}, {}, True
 
     headers = ['Value', 'CreatedOn', 'CreatedBy', 'Type']
 
@@ -939,7 +940,7 @@ def get_ticket_notes_command(client: Client, args: dict) -> Tuple[str, Dict, Dic
     } for note in result['result']]
 
     if not mapped_notes:
-        return f'No comment found on ticket {ticket_id}.', {}, {}
+        return f'No comment found on ticket {ticket_id}.', {}, {}, True
 
     ticket = {
         'ID': ticket_id,
@@ -950,10 +951,10 @@ def get_ticket_notes_command(client: Client, args: dict) -> Tuple[str, Dict, Dic
                                      headerTransform=pascalToSpace, removeNull=True)
     entry_context = {'ServiceNow.Ticket(val.ID===obj.ID)': createContext(ticket, removeNull=True)}
 
-    return human_readable, entry_context, result
+    return human_readable, entry_context, result, True
 
 
-def get_record_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def get_record_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bool]:
     """Get a record.
 
     Args:
@@ -970,11 +971,11 @@ def get_record_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     result = client.get(table_name, record_id)
 
     if not result or 'result' not in result:
-        return f'ServiceNow record with ID {record_id} was not found.', {}, {}
+        return f'ServiceNow record with ID {record_id} was not found.', {}, {}, True
 
     if isinstance(result['result'], list):
         if len(result['result']) == 0:
-            return f'ServiceNow record with ID {record_id} was not found.', {}, result
+            return f'ServiceNow record with ID {record_id} was not found.', {}, result, True
         record = result['result'][0]
     else:
         record = result['result']
@@ -998,10 +999,10 @@ def get_record_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
         human_readable = tableToMarkdown(f'ServiceNow record {record_id}', mapped_record, removeNull=True)
         entry_context = {'ServiceNow.Record(val.ID===obj.ID)': createContext(mapped_record)}
 
-    return human_readable, entry_context, result
+    return human_readable, entry_context, result, True
 
 
-def create_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Any]:
+def create_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Any, bool]:
     """Create a record.
 
     Args:
@@ -1025,7 +1026,7 @@ def create_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
     result = client.create(table_name, fields, custom_fields)
 
     if not result or 'result' not in result:
-        return 'Could not create record.', {}, {}
+        return 'Could not create record.', {}, {}, True
 
     record = result.get('result', {})
     mapped_record = {DEFAULT_RECORD_FIELDS[k]: record[k] for k in DEFAULT_RECORD_FIELDS if k in record}
@@ -1033,10 +1034,10 @@ def create_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
     human_readable = tableToMarkdown('ServiceNow record created successfully', mapped_record, removeNull=True)
     entry_context = {'ServiceNow.Record(val.ID===obj.ID)': createContext(mapped_record)}
 
-    return human_readable, entry_context, result
+    return human_readable, entry_context, result, True
 
 
-def update_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
+def update_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any], bool]:
     """Update a record.
 
     Args:
@@ -1061,7 +1062,7 @@ def update_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
     result = client.update(table_name, record_id, fields, custom_fields)
 
     if not result or 'result' not in result:
-        return 'Could not retrieve record.', {}, {}
+        return 'Could not retrieve record.', {}, {}, True
 
     record = result.get('result', {})
     mapped_record = {DEFAULT_RECORD_FIELDS[k]: record[k] for k in DEFAULT_RECORD_FIELDS if k in record}
@@ -1069,10 +1070,10 @@ def update_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
                                      t=mapped_record, removeNull=True)
     entry_context = {'ServiceNow.Record(val.ID===obj.ID)': createContext(mapped_record)}
 
-    return human_readable, entry_context, result
+    return human_readable, entry_context, result, True
 
 
-def delete_record_command(client: Client, args: dict) -> Tuple[str, Dict[Any, Any], Dict]:
+def delete_record_command(client: Client, args: dict) -> Tuple[str, Dict[Any, Any], Dict, bool]:
     """Delete a record.
 
     Args:
@@ -1087,10 +1088,10 @@ def delete_record_command(client: Client, args: dict) -> Tuple[str, Dict[Any, An
 
     result = client.delete(table_name, record_id)
 
-    return f'ServiceNow record with ID {record_id} was successfully deleted.', {}, result
+    return f'ServiceNow record with ID {record_id} was successfully deleted.', {}, result, True
 
 
-def query_table_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def query_table_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bool]:
     """Query a table.
 
     Args:
@@ -1108,7 +1109,7 @@ def query_table_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
 
     result = client.query(table_name, sys_param_limit, sys_param_offset, sys_param_query)
     if not result or 'result' not in result or len(result['result']) == 0:
-        return 'No results found', {}, {}
+        return 'No results found', {}, {}, False
     table_entries = result.get('result', {})
 
     if fields:
@@ -1132,10 +1133,10 @@ def query_table_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
         human_readable = tableToMarkdown('ServiceNow records', mapped_records, removeNull=True)
         entry_context = {'ServiceNow.Record(val.ID===obj.ID)': createContext(mapped_records)}
 
-    return human_readable, entry_context, result
+    return human_readable, entry_context, result, False
 
 
-def query_computers_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
+def query_computers_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any], bool]:
     """Query computers.
 
     Args:
@@ -1164,14 +1165,14 @@ def query_computers_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, 
         result = client.query(table_name, limit, offset, computer_query)
 
     if not result or 'result' not in result:
-        return 'No computers found.', {}, {}
+        return 'No computers found.', {}, {}, False
 
     computers = result.get('result', {})
     if not isinstance(computers, list):
         computers = [computers]
 
     if len(computers) == 0:
-        return 'No computers found.', {}, {}
+        return 'No computers found.', {}, {}, False
 
     computer_statuses = {
         '1': 'In use',
@@ -1204,10 +1205,10 @@ def query_computers_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, 
                                      removeNull=True, headerTransform=pascalToSpace)
     entry_context = {'ServiceNow.Computer(val.ID===obj.ID)': createContext(mapped_computers, removeNull=True)}
 
-    return human_readable, entry_context, result
+    return human_readable, entry_context, result, False
 
 
-def query_groups_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
+def query_groups_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any], bool]:
     """Query groups.
 
     Args:
@@ -1232,14 +1233,14 @@ def query_groups_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any
         result = client.query(table_name, limit, offset, group_query)
 
     if not result or 'result' not in result:
-        return 'No groups found.', {}, {}
+        return 'No groups found.', {}, {}, False
 
     groups = result.get('result', {})
     if not isinstance(groups, list):
         groups = [groups]
 
     if len(groups) == 0:
-        return 'No groups found.', {}, {}
+        return 'No groups found.', {}, {}, False
 
     headers = ['ID', 'Description', 'Name', 'Active', 'Manager', 'Updated']
 
@@ -1257,10 +1258,10 @@ def query_groups_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any
                                      removeNull=True, headerTransform=pascalToSpace)
     entry_context = {'ServiceNow.Group(val.ID===obj.ID)': createContext(mapped_groups, removeNull=True)}
 
-    return human_readable, entry_context, result
+    return human_readable, entry_context, result, False
 
 
-def query_users_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
+def query_users_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any], bool]:
     """Query users.
 
     Args:
@@ -1285,14 +1286,14 @@ def query_users_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any]
         result = client.query(table_name, limit, offset, user_query)
 
     if not result or 'result' not in result:
-        return 'No users found.', {}, {}
+        return 'No users found.', {}, {}, False
 
     users = result.get('result', {})
     if not isinstance(users, list):
         users = [users]
 
     if len(users) == 0:
-        return 'No users found.', {}, {}
+        return 'No users found.', {}, {}, False
 
     mapped_users = [{
         'ID': user.get('sys_id'),
@@ -1308,10 +1309,10 @@ def query_users_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any]
                                      headerTransform=pascalToSpace)
     entry_context = {'ServiceNow.User(val.ID===obj.ID)': createContext(mapped_users, removeNull=True)}
 
-    return human_readable, entry_context, result
+    return human_readable, entry_context, result, False
 
 
-def list_table_fields_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
+def list_table_fields_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any], bool]:
     """List table fields.
 
     Args:
@@ -1326,20 +1327,20 @@ def list_table_fields_command(client: Client, args: dict) -> Tuple[Any, Dict[Any
     result = client.get_table_fields(table_name)
 
     if not result or 'result' not in result:
-        return 'Table was not found.', {}, {}
+        return 'Table was not found.', {}, {}, False
 
     if len(result['result']) == 0:
-        return 'Table contains no records.', {}, {}
+        return 'Table contains no records.', {}, {}, False
 
     fields = [{'Name': k} for k, v in result['result'][0].items()]
 
     human_readable = tableToMarkdown(f'ServiceNow Table fields - {table_name}', fields)
     entry_context = {'ServiceNow.Field': createContext(fields)}
 
-    return human_readable, entry_context, result
+    return human_readable, entry_context, result, False
 
 
-def get_table_name_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
+def get_table_name_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any], bool]:
     """List table fields.
 
     Args:
@@ -1357,10 +1358,10 @@ def get_table_name_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, A
     result = client.query('sys_db_object', limit, offset, table_query)
 
     if not result or 'result' not in result:
-        return 'Table was not found.', {}, {}
+        return 'Table was not found.', {}, {}, False
     tables = result.get('result', {})
     if len(tables) == 0:
-        return 'Table was not found.', {}, {}
+        return 'Table was not found.', {}, {}, False
 
     headers = ['ID', 'Name', 'SystemName']
 
@@ -1374,7 +1375,7 @@ def get_table_name_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, A
                                      headers=headers, headerTransform=pascalToSpace)
     entry_context = {'ServiceNow.Table(val.ID===obj.ID)': createContext(mapped_tables)}
 
-    return human_readable, entry_context, result
+    return human_readable, entry_context, result, False
 
 
 def fetch_incidents(client: Client):
@@ -1510,7 +1511,7 @@ def main():
     try:
         client = Client(server_url, username, password, verify, proxy, fetch_time, sysparm_query, sysparm_limit,
                         timestamp_field, ticket_type, get_attachments)
-        commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
+        commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]]] = {
             'test-module': test_module,
             'servicenow-update-ticket': update_ticket_command,
             'servicenow-create-ticket': create_ticket_command,
@@ -1538,8 +1539,8 @@ def main():
         elif command == 'servicenow-get-ticket':
             demisto.results(get_ticket_command(client, args))
         elif command in commands:
-            md_, ec_, raw_response = commands[command](client, args)
-            return_outputs(md_, ec_, raw_response)
+            md_, ec_, raw_response, ignore_auto_extract = commands[command](client, args)
+            return_outputs(md_, ec_, raw_response, ignore_auto_extract=ignore_auto_extract)
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
     except Exception as err:
