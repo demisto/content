@@ -88,7 +88,7 @@ fields_to_map = {
     'short_description': 'Description'
 }
 
-command_args['fields'] = list(fields_to_map.keys())
+command_args['fields'] : list = list(fields_to_map.keys())
 
 """
 For each field in the arguments, you need to check if it was provided and apply
