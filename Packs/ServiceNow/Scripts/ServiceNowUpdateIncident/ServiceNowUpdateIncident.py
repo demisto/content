@@ -137,7 +137,8 @@ command_args = {
 }
 
 """
-For each field in the arguments, you need to check if it was provided and apply any operations required (e.g, get a user id from a user name) to send them to the API.
+For each field in the arguments, you need to check if it was provided and apply
+any operations required (e.g, get a user id from a user name) to send them to the API.
 """
 
 incident_id = demisto.args().get('id')
@@ -157,8 +158,10 @@ if group_name:
     group_id = get_group_id(group_name)
 
 """
-Every field that was provided needs to be formatted to the following syntax: 'field1=a;field2=b;...' to update the incident according to the arguments and execute the command.
-In order to do that, to each field you need to concatenate the field's corresponding name in the ServiceNow API along with an '=' and the value. In the end each of those fields are joined by a ';'.
+Every field that was provided needs to be formatted to the following syntax: 'field1=a;field2=b;...'
+to update the incident according to the arguments and execute the command.
+In order to do that, to each field you need to concatenate the field's corresponding name in the ServiceNow API
+along with an '=' and the value. In the end each of those fields are joined by a ';'.
 To view all the API fields for a record use the servicenow-list-fields-command.
 """
 fields = []

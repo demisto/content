@@ -75,7 +75,8 @@ command_args = {
 }
 
 """
-These record fields(columns) are mapped from their names in ServiceNow to your choice of field names to be in the output.
+These record fields(columns) are mapped from their names in ServiceNow 
+to your choice of field names to be in the output.
 To view all fields for a given table, use the servicenow-list-fields command.
 The ID field must be included to manage unique context entries.
 """
@@ -90,7 +91,8 @@ fields_to_map = {
 command_args['fields'] = list(fields_to_map.keys())
 
 """
-For each field in the arguments, you need to check if it was provided and apply any operations required (e.g, get a user id from a user name) to send them to the API.
+For each field in the arguments, you need to check if it was provided and apply
+any operations required (e.g, get a user id from a user name) to send them to the API.
 """
 incident_id = demisto.args().get('id')
 incident_number = demisto.args().get('number')
