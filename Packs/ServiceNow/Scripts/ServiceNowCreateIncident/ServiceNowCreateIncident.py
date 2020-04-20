@@ -1,6 +1,5 @@
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
+
 """
 This script is used to wrap the generic create-record command in ServiceNow.
 You can add fields that you want to create the record with as script arguments or in the
@@ -16,15 +15,16 @@ stating that a required field is missing.
 Mapping of severity display names to their corresponding values in the API
 """
 TICKET_SEVERITY = {
-    '1 - High': '1' ,
+    '1 - High': '1',
     '2 - Medium': '2',
     '3 - Low': '3'
 }
 
-
 """
 Function to use the query command to retrieve records from the users table.
 """
+
+
 def get_user(query):
     user_args = {
         'table_name': 'sys_user',
@@ -47,6 +47,7 @@ def get_user(query):
 
     return user
 
+
 def get_user_id(user_name):
     user_name = user_name.split(' ')
     query = 'first_name={}^last_name={}'.format(user_name[0], user_name[1])
@@ -59,6 +60,8 @@ def get_user_id(user_name):
 """
 Function to use the query command to retrieve records from the groups table.
 """
+
+
 def get_group(query):
     group_args = {
         'table_name': 'sys_user_group',
@@ -80,6 +83,7 @@ def get_group(query):
         sys.exit(0)
 
     return group
+
 
 def get_group_id(group_name):
     query = 'name=' + group_name
@@ -106,7 +110,6 @@ fields_to_map = {
     'number': 'Number'
 }
 
-
 """
 For each field in the arguments, you need to check if it was provided and apply any operations required (e.g, get a user id from a user name) to send them to the API.
 """
@@ -123,7 +126,6 @@ if user_name:
 if group_name:
     # Query the group table to get the system ID of the assigned group
     group_id = get_group_id(group_name)
-
 
 """
 Every field that was provided needs to be formatted to the following syntax: 'field1=a;field2=b;...' to create the incident according to the arguments and execute the command.
@@ -160,9 +162,10 @@ try:
             # Get the actual record
             record = record_data['result']
             # Map fields according to fields_to_map that were defined earlier
-            mapped_record = dict((fields_to_map[key], value) for (key, value) in list(filter(lambda (k,v): k in list(fields_to_map.keys()), record.items())))
+            mapped_record = dict((fields_to_map[key], value) for (key, value) in
+                                 list(filter(lambda (k, v): k in list(fields_to_map.keys()), record.items())))
 
-            display_headers = ['ID','Number']
+            display_headers = ['ID', 'Number']
 
             # Output entry
             result = {
@@ -170,9 +173,10 @@ try:
                 'Contents': record_data,
                 'ContentsFormat': formats['json'],
                 'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tableToMarkdown('Incident successfully created', mapped_record, headers=display_headers, removeNull=True),
+                'HumanReadable': tableToMarkdown('Incident successfully created', mapped_record,
+                                                 headers=display_headers, removeNull=True),
                 'EntryContext': {
-                      'ServiceNow.Incident(val.ID===obj.ID)': createContext(mapped_record)
+                    'ServiceNow.Incident(val.ID===obj.ID)': createContext(mapped_record)
                 }
             }
 

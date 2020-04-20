@@ -1,6 +1,5 @@
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
+
 """
 This script is used to wrap the generic update-record command in ServiceNow.
 You can add fields that you want to update the record with as script arguments or in the
@@ -16,7 +15,7 @@ stating that a required field is missing.
 Mapping of severity display names to their corresponding values in the API
 """
 TICKET_SEVERITY = {
-    '1 - High': '1' ,
+    '1 - High': '1',
     '2 - Medium': '2',
     '3 - Low': '3'
 }
@@ -24,6 +23,8 @@ TICKET_SEVERITY = {
 """
 Function to use the query command to retrieve an incident by a query.
 """
+
+
 def get_incident(query):
     incident_args = {
         'table_name': 'incident',
@@ -46,6 +47,7 @@ def get_incident(query):
 
     return incident
 
+
 def get_incident_id(incident_number):
     query = 'number=' + incident_number
 
@@ -53,9 +55,12 @@ def get_incident_id(incident_number):
 
     return incident[0]['sys_id']
 
+
 """
 Function to use the query command to retrieve records from the users table.
 """
+
+
 def get_user(query):
     user_args = {
         'table_name': 'sys_user',
@@ -78,6 +83,7 @@ def get_user(query):
 
     return user
 
+
 def get_user_id(user_name):
     user_name = user_name.split(' ')
     query = 'first_name={}^last_name={}'.format(user_name[0], user_name[1])
@@ -90,6 +96,8 @@ def get_user_id(user_name):
 """
 Function to use the query command to retrieve records from the groups table.
 """
+
+
 def get_group(query):
     group_args = {
         'table_name': 'sys_user_group',
@@ -112,6 +120,7 @@ def get_group(query):
 
     return group
 
+
 def get_group_id(group_name):
     query = 'name=' + group_name
 
@@ -126,7 +135,6 @@ The table name is required by the API. To acquire the table name, use the servic
 command_args = {
     'table_name': 'incident'
 }
-
 
 """
 For each field in the arguments, you need to check if it was provided and apply any operations required (e.g, get a user id from a user name) to send them to the API.
@@ -147,7 +155,6 @@ if user_name:
 if group_name:
     # Query the group table to get the system ID of the assigned group
     group_id = get_group_id(group_name)
-
 
 """
 Every field that was provided needs to be formatted to the following syntax: 'field1=a;field2=b;...' to update the incident according to the arguments and execute the command.
@@ -201,7 +208,7 @@ try:
                 'ReadableContentsFormat': formats['markdown'],
                 'HumanReadable': 'Incident with ID ' + mapped_record['ID'] + ' successfully updated',
                 'EntryContext': {
-                      'ServiceNow.Incident(val.ID===obj.ID)': createContext(mapped_record)
+                    'ServiceNow.Incident(val.ID===obj.ID)': createContext(mapped_record)
                 }
             }
 

@@ -1,6 +1,5 @@
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
+
 """
 This script is used to wrap the generic query-table command in ServiceNow.
 You can add fields that you want to use as inputs and outputs from the record as script arguments or in the
@@ -11,7 +10,6 @@ Mandatory fields in your ServiceNow table settings should be changed to be manda
 You can identify such fields by trying to get a record and receiving a response
 stating that a required field is missing.
 """
-
 
 """
 Mapping of priority values to their corresponding display in the UI
@@ -27,6 +25,8 @@ INCIDENT_PRIORITY = {
 """
 Function to use the query command to retrieve records from the users table.
 """
+
+
 def get_user(query):
     user_args = {
         'table_name': 'sys_user',
@@ -49,6 +49,7 @@ def get_user(query):
 
     return user
 
+
 def get_user_id(user_name):
     user_name = user_name.split(' ')
     query = 'first_name={}^last_name={}'.format(user_name[0], user_name[1])
@@ -57,12 +58,14 @@ def get_user_id(user_name):
 
     return user[0]['sys_id']
 
+
 def get_user_name(user_id):
     query = 'id=' + user_id
 
     user = get_user(query)
 
     return '{} {}'.format(user[0]['first_name'], user[0]['last_name'])
+
 
 """
 The table name is required by the API. To acquire the table name, use the servicenow-get-table-name command.
@@ -98,7 +101,6 @@ if user_name:
     # Query the user table to get the system ID of the assignee
     user_id = get_user_id(user_name)
 
-
 """
 Set up the query according to the arguments and execute the command
 """
@@ -128,13 +130,15 @@ try:
             # Get the actual records
             records = record_data['result']
             # Map fields according to fields_to_map that were defined earlier
-            mapped_records = [dict((fields_to_map[key], value) for (key, value) in list(filter(lambda (k,v): k in list(fields_to_map.keys()), r.items()))) for r in records]
+            mapped_records = [dict((fields_to_map[key], value) for (key, value) in
+                                   list(filter(lambda (k, v): k in list(fields_to_map.keys()), r.items()))) for r in
+                              records]
             for mr in mapped_records:
                 # Query the user table to get the name of the caller
                 mr['Caller'] = get_user_name(mr['Caller'].get('value'))
                 # Map the priority
                 mr['Priority'] = INCIDENT_PRIORITY.get(mr['Priority'], mr['Priority'])
-            display_headers = ['ID','Number','Priority', 'Description', 'Caller']
+            display_headers = ['ID', 'Number', 'Priority', 'Description', 'Caller']
 
             # Output entry
             result = {
@@ -142,9 +146,10 @@ try:
                 'Contents': record_data,
                 'ContentsFormat': formats['json'],
                 'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tableToMarkdown('ServiceNow Incidents', mapped_records, headers=display_headers, removeNull=True),
+                'HumanReadable': tableToMarkdown('ServiceNow Incidents', mapped_records, headers=display_headers,
+                                                 removeNull=True),
                 'EntryContext': {
-                      'ServiceNow.Incident(val.ID===obj.ID)': createContext(mapped_records)
+                    'ServiceNow.Incident(val.ID===obj.ID)': createContext(mapped_records)
                 }
             }
 
