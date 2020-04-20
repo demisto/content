@@ -4173,8 +4173,6 @@ script:
     - contextPath: ServiceNow.CatalogItem.Description
       description: Catalog item description
       type: String
-    - contextPath: ServiceNow.CatalogItem.Order
-      type: Number
     - contextPath: ServiceNow.CatalogItem.Price
       description: Catalog item price
       type: Number
@@ -4199,8 +4197,6 @@ script:
     - contextPath: ServiceNow.CatalogItem.Description
       description: Catalog item description
       type: String
-    - contextPath: ServiceNow.CatalogItem.Order
-      type: Number
     - contextPath: ServiceNow.CatalogItem.Price
       description: Catalog item price
       type: Number

@@ -396,8 +396,7 @@ def get_item_human_readable(raw_response):
         'ID': raw_response.get('sys_id'),
         'Name': raw_response.get('name'),
         'Description': raw_response.get('short_description'),
-        'Price': raw_response.get('price'),
-        'Order': raw_response.get('order')
+        'Price': raw_response.get('price')
     }
 
 
