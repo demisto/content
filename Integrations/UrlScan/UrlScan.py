@@ -57,11 +57,10 @@ def http_request(method, url_suffix, json=None, wait=0, retries=0):
                 time.sleep(wait)
                 return http_request(method, url_suffix, json, wait, retries - 1)
         response_json = r.json()
-        # raise ValueError(f'Response: {response_json}')
         error_description = response_json.get('description')
         should_continue_on_blacklisted_urls = demisto.args().get('continue_on_blacklisted_urls')
         if should_continue_on_blacklisted_urls and error_description == BLACKLISTED_URL_ERROR_MESSAGE:
-            response_json['uuid'] = -1 # TODO : check what happens with that uuid and how that could be breaking
+            response_json['url_is_blacklisted'] = True
             requested_url = JSON.loads(json)['url']
             demisto.results(f'The URL {requested_url} is blacklisted, thus no results will be returned for it.')
             return response_json
@@ -171,8 +170,9 @@ def urlscan_submit_url():
     wait = int(demisto.args().get('wait', 5))
     retries = int(demisto.args().get('retries', 0))
     r = http_request('POST', 'scan/', sub_json, wait, retries)
-    uuid = r['uuid']
-    return uuid
+    return r
+    #uuid = r['uuid']
+    #return uuid
 
 
 def format_results(uuid):
@@ -366,10 +366,10 @@ def urlscan_submit_command():
     urls = argToList(demisto.args().get('url'))
     for url in urls:
         demisto.args()['url'] = url
-        uuid = urlscan_submit_url()
-        is_url_blacklisted = (uuid == -1)
-        if is_url_blacklisted:
+        response = urlscan_submit_url()
+        if response.get('url_is_blacklisted'):
             pass
+        uuid = response.get('uuid')
         get_urlscan_submit_results_polling(uuid)
 
 
@@ -565,7 +565,7 @@ try:
     if demisto.command() == 'urlscan-search':
         urlscan_search_command()
     if demisto.command() == 'urlscan-submit-url-command':
-        demisto.results(urlscan_submit_url())
+        demisto.results(urlscan_submit_url().get('uuid'))
     if demisto.command() == 'urlscan-get-http-transaction-list':
         format_http_transaction_list()
     if demisto.command() == 'urlscan-get-result-page':

@@ -3,8 +3,6 @@ import demistomock as demisto
 import json
 
 RETURN_ERROR_TARGET = 'UrlScan.return_error'
-# test that if the new argument is False an error is thrown
-# test that if the new argument is True an error is not thrown
 SCAN_URL = 'https://urlscan.io/api/v1/scan/'
 
 @pytest.mark.parametrize('continue_on_blacklisted_urls', [(True), (False)])
