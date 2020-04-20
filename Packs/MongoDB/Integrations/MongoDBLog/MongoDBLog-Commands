@@ -1,0 +1,3 @@
+!mongodb-write-log action=create message="This is a test message"
+!mongodb-read-log limit=5
+!mongodb-logs-number
