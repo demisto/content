@@ -53,7 +53,9 @@ Checks the reputation of an IP address
 | IP.Address | String | The checked IP address | 
 | IP.Geo.Country | String | The country code of the IP address | 
 | IP.Malicious.Description | Unknown | Describes the reason for the IP to  be in the blacklist | 
-| IP.PositiveDetections | Number | The number of sources that positively reported the indicator as blacklist | 
+| IP.PositiveDetections | Number | The number of sources that positively reported the indicator as blacklist |
+| IP.Tags | String | The type of indicator |  
+| IP.ThreatTypes | Unknown | A list with the description of the elements in the blacklist |  
 | DBotScore.Score | Number | The DBot score | 
 | DBotScore.Type | String | The type of indicator | 
 | DBotScore.Vendor | String | The vendor used to calculate the score | 
@@ -95,8 +97,10 @@ Checks the reputation of a Domain
 | Domain.Name | String | The domain name | 
 | Domain.CreationDate | Date | Date when a IoC has been inserted for the first time | 
 | Domain.ModificationDate | Date | Date when a IoC has been updated for the last time | 
-| Domain.Tld | Number | Top Level Domain of the hostname | 
-| Domain.ASName | String | Autonumous system name of the domain | 
+| Domain.TLD | Number | Top Level Domain of the hostname | 
+| Domain.ASName | String | Autonumous system name of the domain |
+| Domain.Tags | String | Attribute to label an IoC |  
+| Domain.ThreatTypes | Unknown | A list with the description of the elements in the blacklist |   
 | DBotScore.Score | Number | The DBot score | 
 | DBotScore.Type | String | The type of indicator | 
 | DBotScore.Vendor | String | The vendor used to calculate the score | 
@@ -107,7 +111,7 @@ Checks the reputation of a Domain
 | Maltiverse.Domain.Blacklist.LastSeen | Date | Last time that the IoC was seen | 
 | Maltiverse.Domain.Blacklist.Description | Unknown | Describes the reason for the domain to be in the blacklist | 
 | Maltiverse.Domain.Blacklist.Source | String | The name of sources that reported the indicator | 
-| Maltiverse.Domain.Tag | String | Attribute to label an IoC | 
+| Maltiverse.Domain.Tags | String | Attribute to label an IoC | 
 | Maltiverse.Domain.ModificationTime | Date | Date when the IoC was updated for the last time | 
 | Maltiverse.Domain.CreationTime | Date | Date when a IoC was inserted for the first time | 
 | Maltiverse.Domain.TLD | String | Top level domain of the hostname | 
@@ -146,6 +150,8 @@ Checks the reputation of an URL
 | URL.Malicious.Description | String | Describes the reason for the URL to be in the blacklist | 
 | URL.Malicious.Vendor | String | The vendor that sends the indicator for reputation check. | 
 | URL.PositiveDetections | Number | The number of sources that positively reported the indicator as blacklist | 
+| URL.Tags | String | Attribute to label an IoC |  
+| URL.ThreatTypes | Unknown | A list with the description of the elements in the blacklist |
 | DBotScore.Score | Number | The DBot score | 
 | DBotScore.Type | String | The type of indicato | 
 | DBotScore.Vendor | String | The vendor used to calculate the score | 
@@ -156,12 +162,12 @@ Checks the reputation of an URL
 | Maltiverse.URL.Blacklist.LastSeen | Date | Last time that the IoC was seen | 
 | Maltiverse.URL.Blacklist.Description | Date | Describes the reason for the URL to be in the blacklist | 
 | Maltiverse.URL.Blacklist.Source | String | The name of sources that reported the indicator. | 
-| Maltiverse.URL.Tag | String | Attribute to label an IOC | 
+| Maltiverse.URL.Tags | String | Attribute to label an IoC | 
 | Maltiverse.URL.ModificationTime | Date | Date when the IOC has been updated for the last time. | 
 | Maltiverse.URL.CreationTime | Date | Date when a IOC has been inserted for the first time | 
 | Maltiverse.URL.Hostname | String | Stores the hostname to which the url belongs | 
 | Maltiverse.URL.Domain | String | Stores the domain to which the hostname belongs. Hostame and domain can match on level 2 hostnames | 
-| Maltiverse.URL.Tld | String | Top level domain of the hostname | 
+| Maltiverse.URL.TLD | String | Top level domain of the hostname | 
 
 
 ##### Command Example
@@ -198,7 +204,9 @@ Check the reputation of a file
 | File.Size | Number | The size of the file in bytes | 
 | File.Extension | String | The extension of the file | 
 | File.Type | String | Description of the file type based on its magic numbers | 
-| File.Path | String | The path of the file | 
+| File.Path | String | The path of the file |
+| File.Tags | String | Attribute to label an IoC |  
+| File.ThreatTypes | Unknown | A list with the description of the elements in the blacklist |    
 | DBotScore.Score | Number | The DBot score | 
 | DBotScore.Type | String | The type of indicator | 
 | DBotScore.Vendor | String | The vendor used to calculate the score | 

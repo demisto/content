@@ -105,6 +105,9 @@ script:
     - contextPath: IP.ThreatTypes
       description: A list with the description of the elements in the blacklist
       type: Unknown
+    - contextPath: IP.Tags
+      description: The type of indicator
+      type: String
   - arguments:
     - default: true
       description: Domain address to check
@@ -143,7 +146,7 @@ script:
     - contextPath: Domain.ModificationDate
       description: Date when a IoC has been updated for the last time
       type: Date
-    - contextPath: Domain.Tld
+    - contextPath: Domain.TLD
       description: Top Level Domain of the hostname
       type: Number
     - contextPath: Domain.ASName
@@ -180,7 +183,7 @@ script:
     - contextPath: Maltiverse.Domain.Blacklist.Source
       description: The name of sources that reported the indicator
       type: String
-    - contextPath: Maltiverse.Domain.Tag
+    - contextPath: Maltiverse.Domain.Tags
       description: Attribute to label an IoC
       type: String
     - contextPath: Maltiverse.Domain.ModificationTime
@@ -199,6 +202,12 @@ script:
       description: Stores an timestamp when an IP address has been resolved by the
         domain
       type: Date
+    - contextPath: Domain.ThreatTypes
+      description: A list with the description of the elements in the blacklist
+      type: Unknown
+    - contextPath: Domain.Tags
+      description: Attribute to label an IoC
+      type: String
   - arguments:
     - default: true
       description: URL address to check
@@ -272,8 +281,8 @@ script:
     - contextPath: Maltiverse.URL.Blacklist.Source
       description: The name of sources that reported the indicator.
       type: String
-    - contextPath: Maltiverse.URL.Tag
-      description: Attribute to label an IOC
+    - contextPath: Maltiverse.URL.Tags
+      description: Attribute to label an IoC
       type: String
     - contextPath: Maltiverse.URL.ModificationTime
       description: Date when the IOC has been updated for the last time.
@@ -288,8 +297,14 @@ script:
       description: Stores the domain to which the hostname belongs. Hostame and domain
         can match on level 2 hostnames
       type: String
-    - contextPath: Maltiverse.URL.Tld
+    - contextPath: Maltiverse.URL.TLD
       description: Top level domain of the hostname
+      type: String
+    - contextPath: URL.ThreatTypes
+      description: A list with the description of the elements in the blacklist
+      type: Unknown
+    - contextPath: URL.Tags
+      description: Attribute to label an IoC
       type: String
   - arguments:
     - default: true
@@ -410,6 +425,12 @@ script:
       type: String
     - contextPath: Maltiverse.File.DNSRequest
       description: List of hostnames resolved by the sample in runtime
+      type: String
+    - contextPath: File.ThreatTypes
+      description: A list with the description of the elements in the blacklist
+      type: Unknown
+    - contextPath: File.Tags
+      description: Attribute to label an IoC
       type: String
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
