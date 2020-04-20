@@ -33,7 +33,7 @@ FETCH_IMPERSONATIONS = demisto.params().get('fetchImpersonations')
 # Used to refresh token / discover available auth types / login
 EMAIL_ADDRESS = demisto.params().get('email')
 PASSWORD = demisto.params().get('password')
-FETCH_DELTA = (demisto.params().get('fetchDelta', 24))
+FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
 
 LOG("command is {}".format(demisto.command()))
 
