@@ -89,7 +89,6 @@ command_args = {
     'fields': list(fields_to_map.keys())
 }
 
-
 """
 For each field in the arguments, you need to check if it was provided and apply
 any operations required (e.g, get a user id from a user name) to send them to the API.
