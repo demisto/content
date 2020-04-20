@@ -1170,12 +1170,13 @@ def snapshot_delete_command(
     return readable_output, {}, raw_res
 
 
-def try_pull_unique_messages(client, sub_name, previous_msg_ids, retry_times=0):
+def try_pull_unique_messages(client, sub_name, previous_msg_ids, last_run_time, retry_times=0):
     """
     Tries to pull unique messages for the subscription
     :param client: PubSub client
     :param sub_name: Subscription name
     :param previous_msg_ids: Previous message ids set
+    :param last_run_time: previous run time
     :param retry_times: How many times to retry pulling
     :return:
         1. Unique list of messages
@@ -1204,7 +1205,8 @@ def try_pull_unique_messages(client, sub_name, previous_msg_ids, retry_times=0):
             # clean non-unique ids from raw_msgs
             else:
                 filtered_raw_msgs = list(
-                    filter(lambda msg: msg['message'].get("messageId") not in previous_msg_ids,
+                    filter(lambda msg: msg['message'].get("messageId") not in previous_msg_ids and msg['message'].get(
+                        'publishTime') > last_run_time,
                            raw_msgs['receivedMessages']))
                 res_msgs, res_acks = extract_acks_and_msgs(filtered_raw_msgs)
                 res_msg_ids, res_max_publish_time = get_messages_ids_and_max_publish_time(res_msgs)
@@ -1244,11 +1246,9 @@ def fetch_incidents(client: PubSubClient, last_run: dict, first_fetch_time: str,
 
     # Pull unique messages if available
     msgs, msg_ids, acknowledges, max_publish_time = try_pull_unique_messages(client, sub_name, last_run_fetched_ids,
-                                                                             retry_times=1)
+                                                                             last_run_time, retry_times=1)
     if msg_ids and max_publish_time:
-        last_run_time_dt = dateparser.parse(last_run_time)
-        max_publish_time_dt = dateparser.parse(max_publish_time)
-        if last_run_time_dt <= max_publish_time_dt:
+        if last_run_time <= max_publish_time:
             for msg in msgs:
                 incident = message_to_incident(msg)
                 incidents.append(incident)
