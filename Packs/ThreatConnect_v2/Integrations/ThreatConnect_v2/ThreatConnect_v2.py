@@ -2124,12 +2124,12 @@ COMMANDS = {
     'tc-get-indicator-owners': tc_get_indicator_owners
 }
 
-try:
-    command_func = demisto.command()
-    LOG('command is %s' % (demisto.command(),))
-    if command_func in COMMANDS.keys():
-        COMMANDS[command_func]()
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    try:
+        command_func = demisto.command()
+        LOG('command is %s' % (demisto.command(),))
+        if command_func in COMMANDS.keys():
+            COMMANDS[command_func]()
 
-
-except Exception as e:
-    return_error('error has occurred: {}'.format(str(e), ))
+    except Exception as e:
+        return_error('error has occurred: {}'.format(str(e), ))

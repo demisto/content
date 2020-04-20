@@ -1,2 +1,3 @@
 ## [Unreleased]
-#### New integration.
+#### New integration
+Use ThreatConnect to work with indicators.
