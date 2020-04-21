@@ -1,7 +1,7 @@
 {
     "name": "Pwned v2",
     "description": "Integration for have I been Pwned v2",
-    "support": "Cortex XSOAR",
+    "support": "xsoar",
     "serverMinVersion": "1.0.0",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
