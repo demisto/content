@@ -328,19 +328,32 @@ def find_tests_for_modified_files(modified_files, conf, id_set):
     packs_to_install = set()
 
     id_set_integrations = id_set.get('integration', [])
-    for integration_id, integration_object in id_set_integrations.items():
+    print('========== ID Set integrations ==========')
+    print(id_set_integrations)
+    print('======================================')
+    for integration in id_set_integrations:
+        integration_id = integration.keys()[0]
+        integration_object = integration[integration_id]
         if integration_id in integration_ids:
             print('Found integration {0} in pack {1}'.format(integration_id, integration_object.get('pack')))
             packs_to_install.add(integration_object.get('pack'))
 
     id_set_playbooks = id_set.get('playbooks', [])
-    for playbook in id_set_playbooks.values():
+    print('========== ID Set playbooks ==========')
+    print(id_set_playbooks)
+    print('======================================')
+    for playbook in id_set_playbooks:
         if playbook.get('name') in catched_playbooks:
             print('Found playbook {0} in pack {1}'.format(playbook.get('name'), playbook.get('pack')))
             packs_to_install.add(playbook.get('pack'))
 
     id_set_script = id_set.get('scripts', [])
-    for script_id, script_object in id_set_script.items():
+    print('========== ID Set scripts ==========')
+    print(id_set_script)
+    print('======================================')
+    for script in id_set_script:
+        script_id = script.keys()[0]
+        script_object = script[script_id]
         if script_id in catched_scripts:
             print('Found script {0} in pack {1}'.format(script_id, script_object.get('pack')))
             packs_to_install.add(script_object.get('pack'))
