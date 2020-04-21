@@ -264,7 +264,7 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
         test_playbook_object = test_playbook[test_playbook_id]
         if test_playbook_id in test_ids:
             print('Found test playbook {0} in pack {1}'.format(test_playbook_object.get('name'), test_playbook_object.get('pack')))
-            packs_to_install.add(test_playbook.get('pack'))
+            packs_to_install.add(test_playbook_object.get('pack'))
 
     print('========== Packs to install for test playbooks ==========')
     print(packs_to_install)
