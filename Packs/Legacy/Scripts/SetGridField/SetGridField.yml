@@ -32,7 +32,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: true if remove old-data, false to append data
+  description: true if row represents an object, false otherwise.
   isArray: false
   name: overwrite
   predefined:
@@ -41,8 +41,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: Columns names as shown in the grid, If data allready exists the automation
-    will detect it automatically.
+  description: Columns names as shown in the grid.
   isArray: true
   name: columns
   required: true
@@ -60,4 +59,4 @@ tags:
 - ''
 timeout: '0'
 type: python
-dockerimage: devtesting/grid:1.0.0.1587383120
+dockerimage: devdemisto/grid:1.0.0.7488

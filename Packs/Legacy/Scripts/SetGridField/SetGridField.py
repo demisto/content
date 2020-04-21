@@ -1,5 +1,5 @@
 # STD Libaries
-from typing import Optional, NoReturn, Union, List, Dict, Tuple
+from typing import Optional, Union, List, Dict, Tuple, Any
 # 3-rd party libaries
 import numpy as np
 import pandas as pd
@@ -11,8 +11,8 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 
-def get_current_table(grid_id: str, sort_by: Optional[str], columns: str) -> \
-        Tuple[List[Dict[str, str]], List[str]]:
+def get_current_table(grid_id: str, sort_by: Optional[str], columns: Optional[str]) -> \
+        Tuple[List[Dict[Any, Any]], Any]:
     """ Get current grid data
 
     Date retreived:
@@ -37,7 +37,7 @@ def get_current_table(grid_id: str, sort_by: Optional[str], columns: str) -> \
         list: Table columns name.
      """
     # Get current Grid data
-    current_table: Optional[dict] = demisto.incidents()[0].get("CustomFields", {}).get(grid_id)
+    current_table: Optional[List[dict]] = demisto.incidents()[0].get("CustomFields", {}).get(grid_id)
     if not current_table:
         raise ValueError(f"The grid id isn't valid : {grid_id}")
     # Validate columns number the same as context paths - If no data initiated skip validation, but check if columns specified
@@ -150,8 +150,8 @@ def get_data_from_entry_context(context_paths: str, row_correlation: bool) -> Un
         return numpy_fillna(np.array(data))
 
 
-def build_table(data: Union[List[Dict[str, str]], np.ndarray], columns: List[str], sort_by: Optional[str], overwrite: bool,
-                current_table: List[Dict[str, str]]) -> List[Dict[str, str]]:
+def build_table(data: Union[List[Dict[Any, Any]], Any], columns: List[str], sort_by: Optional[str],
+                overwrite: bool, current_table: List[Dict[Any, Any]]) -> List[Dict[Any, Any]]:
     """ Build updated table
 
     Args:
@@ -170,7 +170,7 @@ def build_table(data: Union[List[Dict[str, str]], np.ndarray], columns: List[str
         table = pd.DataFrame.from_dict(data=data)
         table.columns = columns
     elif isinstance(data[0], np.ndarray):
-        table = pd.DataFrame(data=data.T,
+        table = pd.DataFrame(data=data.T,  # type: ignore
                              columns=columns)
     else:
         raise ValueError('No valid values')
@@ -228,7 +228,7 @@ def build_grid_command(grid_id: str, context_paths: str, sort_by: Optional[str],
     return table
 
 
-def main() -> Union[NoReturn, str]:
+def main():
     try:
         # Normalize grid id from any form to connected lower words, e.g. my_word/myWord -> myword
         grid_id = phrases_case.camel(demisto.getArg('grid_id')).replace("'", "").lower()
