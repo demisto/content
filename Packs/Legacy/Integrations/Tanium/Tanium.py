@@ -38,7 +38,58 @@ except Exception:
     raise
 
 
-def gather_line(lines, total_column_num, current_line):
+def remove_apostrophes(cell):
+    """Drops the leading and trailing " in a multi-lined cell value
+
+    Args:
+        cell (str): the value of the multi-lined single cell in the table
+
+    Returns:
+        str. The value of the multi-lined cell without the "
+    """
+    return cell[1:-1]
+
+
+def get_full_cell(lines, current_line, current_cell):
+    """Gathers all the values in a multi-lined single cell in a csv table
+
+    Args:
+        lines (list): a list of all lines in the csv
+        current_line (int): the current line being gathered
+        current_cell: the value of the multi-lined single cell in the table
+
+    Returns:
+        Tuple(str, list). The full value of the single multi-lined cell and the rest of the values in it's line if exist
+    """
+    current_line = current_line + 1
+    line_below = lines[current_line].split(',')
+
+    # removing enter empty lines
+    if line_below[0] != '':
+        current_cell = current_cell + "\n" + line_below[0]
+
+    if line_below[0].endswith("\""):
+        # case1: no additional info on that line
+        if len(line_below) == 1:
+            return remove_apostrophes(current_cell), [], current_line
+
+        # case2: additional info on that line
+        else:
+            return remove_apostrophes(current_cell), line_below[1:], current_line
+
+    return get_full_cell(lines, current_line, current_cell)
+
+
+def gather_line(lines, current_line):
+    """gather the values of a single line in the answered csv
+
+    Args:
+        lines (list): a list of all lines in the csv
+        current_line (int): the current line being gathered
+
+    Returns:
+        Tuple(list, int). A list containing all the values of a single line, the number of the last line checked
+    """
     line_values = lines[current_line].split(',')
 
     # edge case - empty starting line
@@ -46,38 +97,26 @@ def gather_line(lines, total_column_num, current_line):
         current_line += 1
         return [], current_line
 
-    while len(line_values) < total_column_num:
-        current_line += 1
-        line_below = lines[current_line].split(',')
-
-        if len(line_below) == 0 or (len(line_below) == 1 and len(line_below[0]) == 0):
-            continue
-
-        # combine the split value from the line below to the current line.
-        line_values[-1] = line_values[-1] + " " + line_below[0]
-
-        if line_values[-1].startswith('\"'):
-            line_values[-1] = line_values[-1][1:]
-
-        if line_values[-1].endswith('\"'):
-            line_values[-1] = line_values[-1][:-1]
-
-        # in case the line below includes just a single value - we added it above
-        if len(line_below) == 1:
-            continue
-
-        # in case more than a single value exists in the line
-        # add the rest of the line to the current value list.
-        else:
-            line_below = line_below[1:]
-            line_values.extend(line_below)
+    # multi lined cells start with " and end with "
+    while line_values[-1].startswith("\"") and not line_values[-1].endswith("\""):
+        current_cell = line_values[-1]
+        current_cell, rest_of_line, current_line = get_full_cell(lines, current_line, current_cell)
+        line_values[-1] = current_cell
+        line_values.extend(rest_of_line)
 
     return line_values, current_line
 
 
 def csvstr_to_list(text_content):
-    lines = text_content.splitlines()
+    """Gets a csv string representing a table of an answer given from Tanium and formats it as a list of dictionaries
 
+    Args:
+        text_content (str): a csv string containing the tabled answer for the question asked in Tanium
+
+    Returns:
+        list. The formatted answer as a list where each element is a dict representing a line of the tabled answer
+    """
+    lines = text_content.splitlines()
     if len(lines) < 2:
         return []
 
@@ -89,7 +128,7 @@ def csvstr_to_list(text_content):
     current_line = 0
     while current_line < total_lines_num:
         line_dict = {}
-        line_values, current_line = gather_line(lines, total_column_num, current_line)
+        line_values, current_line = gather_line(lines, current_line)
 
         if len(line_values) == 0:
             continue
@@ -457,6 +496,27 @@ def approveSavedAction(handler, action_id, saved_action_id):
     return final_result
 
 
+def format_context(res):
+    """Reformat the response's multi-lined cells to look better in the context
+
+    Args:
+        res (list): a list of dictionaries formatted from the Tanium answer
+
+    Returns:
+        list. A list of dictionaries where multi-lined cells have spaces instead of line drops.
+    """
+    context = []
+    for element in res:
+        element_context = {}
+
+        for key in element.keys():
+            element_context[key] = element[key].replace("\n", " ")
+
+        context.append(element_context)
+
+    return context
+
+
 def askQuestion(handler, kwargs):
     response = handler.ask(**kwargs)
 
@@ -473,7 +533,7 @@ def askQuestion(handler, kwargs):
 
         result = csvstr_to_list(out)
 
-        ec = {'Tanium.QuestionResults': result}
+        ec = {'Tanium.QuestionResults': format_context(result)}
         return create_entry(
             'Result for parsed query - %s' % (query_text,),
             result,
