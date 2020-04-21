@@ -17,7 +17,6 @@ The required scope is Event streams.
     * __Cloud Base URL (e.g. https://api.crowdstrike.com)__
     * __Client ID__
     * __Client Secret__
-    * __Long running instance__
     * __Event type to fetch__
     * __Offset to fetch events from__
     * __Incident type__
@@ -26,7 +25,6 @@ The required scope is Event streams.
 4. Click __Test__ to validate the URLs, token, and connection.
 
 #### Important Notes
- - The checkbox __Long running instance__ must be ticked in order for the integration to fetch events as incidents.
  - If you're using Falcon's commercial cloud, use the default value of the Cloud base URL.
    If you use another CrowdStrike cloud environment, use one of the following:
      - GovCloud: https://api.laggar.gcw.crowdstrike.com

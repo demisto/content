@@ -60,6 +60,7 @@ configuration:
   name: longRunning
   required: false
   type: 8
+  hidden: true
 - additionalinfo: Make sure to use different ports for each Export Indicators Service
     instance.
   defaultvalue: '7000'

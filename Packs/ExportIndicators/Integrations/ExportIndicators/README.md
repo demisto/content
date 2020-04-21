@@ -21,7 +21,6 @@ Use the Export Indicators Service integration to provide an endpoint with a list
     months, 1 year)
     * __Collapse IPs__: Whether to collapse IPs and if so - to ranges or CIDRs.
     * __Show CSV Formats as Text__: If checked, csv and XSOAR-csv formats will create a textual web page instead of downloading a csv file.
-    * __Long Running Instance__: Must be set to true, otherwise the service will be available.
     * __Listen Port__: Will run the *Export Indicators Service* on this port from within Demisto
     * __Certificate (Required for HTTPS)__: HTTPS Certificate provided by pasting its values into this field.
     * __Private Key (Required for HTTPS)__: HTTPS private key provided by pasting its valuies into this field.
