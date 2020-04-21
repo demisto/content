@@ -203,12 +203,12 @@ def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
+    handle_proxy()
     panorama_server = demisto.params().get('server')
     panorama_port = demisto.params().get('port', None)
     panorama_api_key = demisto.params().get('key')
     bpa_token = demisto.params().get('token')
     verify = not demisto.params().get('insecure', False)
-    handle_proxy()
 
     try:
         client = Client(bpa_token, verify)
