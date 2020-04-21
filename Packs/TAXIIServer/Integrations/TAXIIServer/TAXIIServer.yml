@@ -9,7 +9,6 @@ configuration:
   required: false
   type: 8
 - additionalinfo: Will run the TAXII server on this port from within Demisto
-  defaultvalue: '7000'
   display: Listen Port
   name: longRunningPort
   required: true

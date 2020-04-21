@@ -35,7 +35,6 @@ configuration:
   required: false
   type: 8
 - additionalinfo: Will run the EDL service on this port from within Demisto
-  defaultvalue: '7000'
   display: Listen Port
   name: longRunningPort
   required: true

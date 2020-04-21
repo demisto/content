@@ -62,7 +62,6 @@ configuration:
   type: 8
 - additionalinfo: Make sure to use different ports for each Export Indicators Service
     instance.
-  defaultvalue: '7000'
   display: Listen Port
   name: longRunningPort
   required: true
