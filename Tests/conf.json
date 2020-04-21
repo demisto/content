@@ -234,6 +234,7 @@
             "integrations": "SlackV2",
             "playbookID": "Slack Test Playbook",
             "timeout" : 2400,
+            "pid_threshold": 5,
             "fromversion": "5.0.0"
         },
         {
