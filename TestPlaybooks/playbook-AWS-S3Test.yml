@@ -1,5 +1,5 @@
 id: 97393cfc-2fc4-4dfe-8b6e-af64067fc436
-version: 10
+version: -1
 name: AWS - S3 Test Playbook
 starttaskid: "0"
 tasks:
