@@ -418,7 +418,7 @@ script:
       type: String
     - contextPath: AutoFocus.SessionsResults.Seen
       description: Session seen.
-      type: Unknown
+      type: Date
   - arguments:
     - default: false
       description: The session ID.
