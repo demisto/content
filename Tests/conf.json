@@ -2631,6 +2631,7 @@
         "TestCofenseFeed": "Issue 22854",
         "Cybereason Test": "Issue 22683",
         "AbuseIPDB Test": "Issue 22658",
+        "ExtraHop-Test": "Issue 23731",
         "Bluecat Address Manager test": "Issue 22616",
         "Office365_Feed_Test": "Issue 22517",
         "Send Investigation Summary Reports": "Issue 22299",
