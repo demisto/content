@@ -1,0 +1,31 @@
+{
+  "name": "Test Pack Name",
+  "description": "Description of test pack",
+  "support": "demisto",
+  "serverMinVersion": "5.5.0",
+  "currentVersion": "2.3.0",
+  "author": "Dev",
+  "url": "https://test.com",
+  "email": "test@test.com",
+  "categories": [
+    "Messaging"
+  ],
+  "tags": [
+    "tag1",
+    "tag2"
+  ],
+  "created": "2020-03-07T12:35:55Z",
+  "updated": "2020-03-07T12:35:55Z",
+  "beta": false,
+  "deprecated": false,
+  "certification": "certified",
+  "useCases": [
+    "usecase1"
+  ],
+  "keywords": [
+    "keyword1",
+    "keyword2"
+  ],
+  "price": "120",
+  "dependencies": {}
+}

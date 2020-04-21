@@ -35,6 +35,8 @@ USER_PACK_METADATA = {
 }
 
 
+# disable-secrets-detection-end
+
 class TestMetadata:
     def test_validate_fields_of_parsed_metadata(self):
         parsed_metadata = Pack._parse_pack_metadata(user_metadata=USER_PACK_METADATA, pack_content_items={},
@@ -86,4 +88,3 @@ class TestVersionSorting:
         mocker.patch("os.path.exists", return_value=False)
         latest_version = dummy_pack.latest_version
         assert latest_version == "1.0.0"
-# disable-secrets-detection-end
