@@ -392,12 +392,21 @@ def convert_to_str(obj):
 
 
 def get_item_human_readable(raw_response):
-    return {
+    item = {
         'ID': raw_response.get('sys_id'),
         'Name': raw_response.get('name'),
         'Description': raw_response.get('short_description'),
-        'Price': raw_response.get('price')
+        'Price': raw_response.get('price'),
+        'Variables': []
     }
+
+    if raw_response.get('variables'):
+        for var in raw_response['variables']:
+            item['Variables'].append({'Question': var.get('label'),
+                                      'Type': var.get('display_type'),
+                                      'Name': var.get('name'),
+                                      'Mandatory': var.get('mandatory')})
+    return item
 
 
 ''' FUNCTIONS '''
@@ -1439,6 +1448,15 @@ def get_item_command():
     res = res['result']
 
     mapped_item = get_item_human_readable(res)
+
+    hr_item = tableToMarkdown('ServiceNow Catalog Item', mapped_item,
+                              removeNull=True, headerTransform=pascalToSpace,
+                              headers=['ID', 'Name', 'Description'])
+
+    if mapped_item.get('Variables'):
+        hr_item += tableToMarkdown('Item Variables', mapped_item['Variables'],
+                                   removeNull=True, headerTransform=pascalToSpace,
+                                   headers=['Question', 'Type', 'Name', 'Mandatory'])
 
     entry = {
         'Type': entryTypes['note'],

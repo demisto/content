@@ -4200,6 +4200,18 @@ script:
     - contextPath: ServiceNow.CatalogItem.Price
       description: Catalog item price
       type: Number
+    - contextPath: ServiceNow.CatalogItem.Variables.Mandatory
+      description: Is the variable mandatory as part of the ordering process
+      type: Boolean
+    - contextPath: ServiceNow.CatalogItem.Variables.Name
+      description: A name to identify the question
+      type: String
+    - contextPath: ServiceNow.CatalogItem.Variables.Question
+      description: Question to ask users ordering the catalog item
+      type: String
+    - contextPath: ServiceNow.CatalogItem.Variables.Type
+      description: The variable type
+      type: String
   - arguments:
     - default: false
       description: Catalog item sys_id
