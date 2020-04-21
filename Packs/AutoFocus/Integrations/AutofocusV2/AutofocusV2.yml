@@ -135,7 +135,6 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
       defaultValue: 'true'
       description: 'Whether to return artifacts of samples.'
       isArray: false
