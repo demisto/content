@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed an issue where proxy settings were not handled properly.
 
 ## [20.4.0] - 2020-04-14
 -

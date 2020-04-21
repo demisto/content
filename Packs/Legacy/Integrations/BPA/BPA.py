@@ -19,11 +19,11 @@ class LightPanoramaClient(BaseClient):
     This is a client for Panorama API, used by integration commands to issue requests to Panorama API,
      not the BPA service.
     '''
-    def __init__(self, server, port, api_key, verify, proxy):
+    def __init__(self, server, port, api_key, verify):
         if port is None:
-            super().__init__(server + '/', verify, proxy)
+            super().__init__(server + '/', verify)
         else:
-            super().__init__(server.rstrip('/:') + ':' + port + '/', verify, proxy)
+            super().__init__(server.rstrip('/:') + ':' + port + '/', verify)
         self.api_key = api_key
 
     def simple_op_request(self, cmd):
@@ -77,9 +77,9 @@ class Client(BaseClient):
     Client to use in the BPA integration. This client issues requests to the BPA service, and not Panorama.
     """
 
-    def __init__(self, bpa_token: str, verify: bool, proxy: bool):
+    def __init__(self, bpa_token: str, verify: bool):
         headers = {'Authorization': f'Token {bpa_token}'}
-        super().__init__(base_url=BPA_URL, verify=verify, proxy=proxy, headers=headers)
+        super().__init__(base_url=BPA_URL, verify=verify, headers=headers)
         self.token = bpa_token
 
     def get_documentation_request(self):
@@ -208,11 +208,11 @@ def main():
     panorama_api_key = demisto.params().get('key')
     bpa_token = demisto.params().get('token')
     verify = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy')
+    handle_proxy()
 
     try:
-        client = Client(bpa_token, verify, proxy)
-        panorama = LightPanoramaClient(panorama_server, panorama_port, panorama_api_key, verify, proxy)
+        client = Client(bpa_token, verify)
+        panorama = LightPanoramaClient(panorama_server, panorama_port, panorama_api_key, verify)
         command = demisto.command()
         LOG(f'Command being called is {command}.')
         if command == 'pan-os-bpa-submit-job':
