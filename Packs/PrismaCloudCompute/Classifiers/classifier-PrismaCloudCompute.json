@@ -1,6 +1,6 @@
 {
 	"brandName": "PaloAltoNetworks_PrismaCloudCompute",
-	"custom": true,
+	"custom": false,
 	"defaultIncidentType": "",
 	"id": "caffbfd5-29d8-488b-8f6a-488c0755524e",
 	"incidentSamples": [],

@@ -7,7 +7,7 @@
 		"kind": "details",
 		"modified": "2020-01-24T00:03:43.068795094+02:00",
 		"name": "",
-		"system": false,
+		"system": true,
 		"tabs": [
 			{
 				"id": "summary",
