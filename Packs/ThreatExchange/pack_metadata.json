@@ -1,0 +1,21 @@
+{
+    "name": "ThreatExchange",
+    "description": "Receive threat intelligence about applications, IP addresses, URLs and hashes, a service by Facebook",
+    "support": "demisto",
+    "serverMinVersion": "2.5.0",
+    "currentVersion": "1.0.0",
+    "author": "demisto",
+    "url": "https://www.demisto.com",
+    "email": "",
+    "categories": [],
+    "tags": [],
+    "created": "2020-04-21T10:48:09Z",
+    "updated": "2020-04-21T10:48:09Z",
+    "beta": false,
+    "deprecated": false,
+    "certification": "certified",
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {},
+    "price": 0
+}
