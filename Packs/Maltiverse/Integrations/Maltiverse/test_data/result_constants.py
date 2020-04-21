@@ -10,11 +10,9 @@ EXPECTED_IP_RESULT = {
                 'Description': ['Anonymizer']
             },
             'Tags': ['anonymizer'],
-            'ThreatTypes': [
-                {
-                    'ThreatCategory': ['Anonymizer']
-                }
-            ]
+            'ThreatTypes': {
+                    'threatcategory': ['Anonymizer']
+            }
         }
     ],
     'Maltiverse.IP(val.Address && val.Address == obj.Address)': [
@@ -48,11 +46,9 @@ EXPECTED_URL_RESULT = {
             'Data': 'https://dv-expert.org',
             'PositiveDetections': 1,
             'Tags': ['phishing'],
-            'ThreatTypes': [
-                {
-                    'ThreatCategory': ['Phishing Aetna Health Plans &amp; Dental Coverage']
-                }
-            ],
+            'ThreatTypes':{
+                    'threatcategory': ['Phishing Aetna Health Plans &amp; Dental Coverage']
+            },
             'Malicious': {
                 'Description': ['Phishing Aetna Health Plans &amp; Dental Coverage'],
                 'Vendor': 'Maltiverse'
@@ -62,7 +58,7 @@ EXPECTED_URL_RESULT = {
     'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': [
         {
             'Indicator': 'https://dv-expert.org',
-            'Type': 'url',
+            'Type': 'Url',
             'Vendor': 'Maltiverse',
             'Score': 3
         }
@@ -95,15 +91,13 @@ EXPECTED_DOMAIN_RESULT = {
         {
             'CreationTime': '2019-03-17 12:57:27',
             'ModificationTime': '2020-04-03 10:41:04',
-            'Tld': 'com',
+            'TLD': 'com',
             'Tags': ['phishing'],
             'Name': 'google.com',
             'ASName': 'AS15169 Google Inc.',
-            'ThreatTypes': [
-                {
-                    'ThreatCategory': ['Malicious URL', 'apple phishing', 'Malicious URL']
-                }
-            ]
+            'ThreatTypes': {
+                    'threatcategory': ['Malicious URL', 'apple phishing', 'Malicious URL']
+            }
         }
     ],
     'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': [
@@ -118,7 +112,7 @@ EXPECTED_DOMAIN_RESULT = {
         {
             'CreationTime': '2019-03-17 12:57:27',
             'ModificationTime': '2020-04-03 10:41:04',
-            'Tld': 'com',
+            'TLD': 'com',
             'Classification': 'suspicious',
             'Tags': ['phishing'],
             'Address': 'google.com',
@@ -160,25 +154,23 @@ EXPECTED_FILE_RESULT = {
     '|| val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == '
     'obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)': [
         {
-            'Md5': 'f13b929e6bf9c07a90d7da493b2825e3',
-            'Sha1': 'a17ddc7c691cc66f0e76233172051ab4cd69dd45',
-            'Sha256': 'edb2f88c29844117cd74acf8bb357edf92487a1b142fe6f60b6ac5e15d2d718f',
+            'Name': 'FileZilla_3.47.2.1_win64_sponsored-setup.exe',
+            'MD5': 'f13b929e6bf9c07a90d7da493b2825e3',
+            'SHA1': 'a17ddc7c691cc66f0e76233172051ab4cd69dd45',
+            'SHA256': 'edb2f88c29844117cd74acf8bb357edf92487a1b142fe6f60b6ac5e15d2d718f',
             'Size': 10032728,
             'Type': 'sample',
-            'Name': 'FileZilla_3.47.2.1_win64_sponsored-setup.exe',
             'Extension': 'exe',
             'Path': 'C:\\FileZilla_3.47.2.1_win64_sponsored-setup.exe',
             'Tags': [],
-            'ThreatTypes': [
-                {
-                    'ThreatCategory': ['PUA.FusionCore']
-                }
-            ]
+            'ThreatTypes': {
+                'threatcategory': ['PUA.FusionCore']
+            }
         }
     ],
     'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': [
         {
-            'Indicator': 'FileZilla_3.47.2.1_win64_sponsored-setup.exe',
+            'Indicator': 'edb2f88c29844117cd74acf8bb357edf92487a1b142fe6f60b6ac5e15d2d718f',
             'Type': 'File',
             'Vendor': 'Maltiverse',
             'Score': 3
