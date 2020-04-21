@@ -139,7 +139,7 @@ class MsGraphClient:
         """
         #  If successful, this method returns 204 No Content response code.
         #  It does not return anything in the response body.
-        self.ms_client.http_request(method='DELETE ', url_suffix=f'groups/{group_id}')
+        self.ms_client.http_request(method='DELETE ', url_suffix=f'groups/{group_id}', resp_type="text")
 
     def list_members(self, group_id: str, next_link: str = None, top: int = None, filter_: str = None) -> Dict:
         """List all group members by sending a GET request.
@@ -177,7 +177,8 @@ class MsGraphClient:
         self.ms_client.http_request(
             method='POST',
             url_suffix=f'groups/{group_id}/members/$ref',
-            json_data=properties)
+            json_data=properties,
+            resp_type="text")
 
     def remove_member(self, group_id: str, user_id: str):
         """Remove a single member to a group by sending a DELETE request.
@@ -189,7 +190,7 @@ class MsGraphClient:
         #  It does not return anything in the response body.
         self.ms_client.http_request(
             method='DELETE',
-            url_suffix=f'groups/{group_id}/members/{user_id}/$ref')
+            url_suffix=f'groups/{group_id}/members/{user_id}/$ref', resp_type="text")
 
 
 def test_function_command(client: MsGraphClient, args: Dict):
