@@ -283,7 +283,6 @@ def get_indicators(indicator_value=None, indicator_type=None, owners=None, ratin
             indicators[0]['indicator_observations'] = indicator_observations
         except Exception:
             indicators[0]['indicator_observations'] = indicator_observations
-            pass
 
     if associated_indicators:
         try:
@@ -298,7 +297,6 @@ def get_indicators(indicator_value=None, indicator_type=None, owners=None, ratin
             indicators[0]['indicator_associations'] = associatedIndicators
         except Exception:
             indicators[0]['indicator_associations'] = associatedIndicators
-            pass
 
     return indicators
 
