@@ -1,7 +1,7 @@
 {
   "name": "Test Pack Name",
   "description": "Description of test pack",
-  "support": "demisto",
+  "support": "xsoar",
   "serverMinVersion": "5.5.0",
   "currentVersion": "2.3.0",
   "author": "Dev",

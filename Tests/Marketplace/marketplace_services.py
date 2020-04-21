@@ -33,6 +33,17 @@ class GCPConfig(object):
     CORE_PACKS_LIST = [BASE_PACK]  # cores packs list
 
 
+class Metadata(object):
+    """ Metadata constants and default values that are used in metadata parsing.
+    """
+    DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+    XSOAR_SUPPORT = "xsoar"
+    XSOAR_SUPPORT_URL = "https://www.paloaltonetworks.com/cortex"  # disable-secrets-detection
+    XSOAR_AUTHOR = "Cortex XSOAR"
+    SERVER_DEFAULT_MIN_VERSION = "6.0.0"
+    CERTIFIED = "certified"
+
+
 class PackFolders(enum.Enum):
     """ Pack known folders. Should be replaced by constants from demisto-sdk in later step.
 
@@ -98,7 +109,6 @@ class Pack(object):
 
     Attributes:
         PACK_INITIAL_VERSION (str): pack initial version that will be used as default.
-        DATE_FORMAT (str): date format of.
         CHANGELOG_JSON (str): changelog json full name, may be changed in the future.
         CHANGELOG_MD (str): changelog md full name.
         README (str): pack's readme file name.
@@ -106,11 +116,9 @@ class Pack(object):
         USER_METADATA (str); user metadata file name, the one that located in content repo.
         EXCLUDE_DIRECTORIES (list): list of directories to excluded before uploading pack zip to storage.
         AUTHOR_IMAGE_NAME (str): author image file name.
-        XSOAR_SUPPORT (str): support type of cortex xsoar packs.
 
     """
     PACK_INITIAL_VERSION = "1.0.0"
-    DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
     CHANGELOG_JSON = "changelog.json"
     CHANGELOG_MD = "changelog.md"
     README = "README.md"
@@ -118,7 +126,6 @@ class Pack(object):
     METADATA = "metadata.json"
     AUTHOR_IMAGE_NAME = "Author_image.png"
     EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS.value]
-    XSOAR_SUPPORT = "xsoar"
 
     def __init__(self, pack_name, pack_path):
         self._pack_name = pack_name
@@ -127,6 +134,7 @@ class Pack(object):
         self._status = None
         self._public_storage_path = ""
         self._remove_files_list = []  # tracking temporary files, in order to delete in later step
+        self._sever_min_version = "1.0.0"  # initialized min version
         self._support_type = None  # initialized in load_user_metadata function
         self._current_version = None  # initialized in load_user_metadata function
         self._hidden = False  # initialized in load_user_metadata function
@@ -209,6 +217,15 @@ class Pack(object):
         """
         self._hidden = hidden_value
 
+    @property
+    def server_min_version(self):
+        """ str: server min version according to collected items.
+        """
+        if self._sever_min_version == "1.0.0":
+            return Metadata.SERVER_DEFAULT_MIN_VERSION
+        else:
+            return self._sever_min_version
+
     def _get_latest_version(self):
         """ Return latest semantic version of the pack.
 
@@ -286,8 +303,50 @@ class Pack(object):
         return parsed_result
 
     @staticmethod
+    def _create_support_section(support_type, support_url=None, support_email=None):
+        """ Creates support dictionary that is part of metadata.
+
+        In case of support type xsoar, adds default support url. If support is xsoar and support url is defined and
+        doesn't match xsoar default url, warning is raised.
+
+        Args:
+            support_type (str): support type of pack, optional values are: partner, developer, xsoar and nonsupported
+            support_url (str): support full url
+            support_email (str): support email address.
+
+        Returns:
+            dict: supported data dictionary.
+        """
+        support_details = {}
+
+        if support_url:  # set support url from user input
+            support_details['url'] = support_url
+        elif support_type == Metadata.XSOAR_SUPPORT:  # in case support type is xsoar, set default xsoar support url
+            support_details['url'] = Metadata.XSOAR_SUPPORT_URL
+        # add support email if defined
+        if support_email:
+            support_details['email'] = support_email
+
+        return support_details
+
+    @staticmethod
+    def _get_author(support_type, author=None):
+        """ Returns pack author. In case support type is xsoar, more additional validation are applied.
+
+        Returns:
+            str: returns author from the input.
+        """
+        if support_type == Metadata.XSOAR_SUPPORT and not author:
+            return Metadata.XSOAR_AUTHOR  # returned xsoar default author
+        elif support_type == Metadata.XSOAR_SUPPORT and author != Metadata.XSOAR_AUTHOR:
+            print_warning(f"{author} author doest not match {Metadata.XSOAR_AUTHOR} default value")
+            return author
+        else:
+            return author
+
+    @staticmethod
     def _parse_pack_metadata(user_metadata, pack_content_items, pack_id, integration_images, author_image,
-                             dependencies_data):
+                             dependencies_data, server_min_version):
         """ Parses pack metadata according to issue #19786 and #20091. Part of field may change over the time.
 
         Args:
@@ -297,47 +356,42 @@ class Pack(object):
             integration_images (list): list of gcs uploaded integration images.
             author_image (str): gcs uploaded author image
             dependencies_data (dict): mapping of pack dependencies data, of all levels.
+            server_min_version (str): server minimum version found during the iteration over content items.
 
         Returns:
             dict: parsed pack metadata.
 
         """
-        pack_metadata = {}
-        # part of old packs are initialized with empty list
-        user_metadata = {} if isinstance(user_metadata, list) else user_metadata
-        pack_metadata['name'] = user_metadata.get('name') if user_metadata.get('name') else pack_id
-        pack_metadata['id'] = pack_id
-        pack_metadata['description'] = user_metadata.get('description') if user_metadata.get('description') else pack_id
-        pack_metadata['created'] = user_metadata.get('created', datetime.utcnow().strftime(Pack.DATE_FORMAT))
-        pack_metadata['updated'] = datetime.utcnow().strftime(Pack.DATE_FORMAT)
-        pack_metadata['legacy'] = user_metadata.get('legacy', True)
-        pack_metadata['support'] = user_metadata.get('support', '')
-        pack_metadata['supportDetails'] = {}
-        support_url = user_metadata.get('url')
-        if support_url:
-            pack_metadata['supportDetails']['url'] = support_url
 
-        support_email = user_metadata.get('email')
-        if support_email:
-            pack_metadata['supportDetails']['email'] = support_email
-        pack_metadata['author'] = user_metadata.get('author', '')
+        # part of old packs are initialized with empty list
+        pack_metadata = {}
+        pack_metadata['name'] = user_metadata.get('name') or pack_id
+        pack_metadata['id'] = pack_id
+        pack_metadata['description'] = user_metadata.get('description') or pack_id
+        pack_metadata['created'] = user_metadata.get('created', datetime.utcnow().strftime(Metadata.DATE_FORMAT))
+        pack_metadata['updated'] = datetime.utcnow().strftime(Metadata.DATE_FORMAT)
+        pack_metadata['legacy'] = user_metadata.get('legacy', True)
+        pack_metadata['support'] = user_metadata.get('support') or Metadata.XSOAR_SUPPORT
+        pack_metadata['supportDetails'] = Pack._create_support_section(support_type=pack_metadata['support'],
+                                                                       support_url=user_metadata.get('url'),
+                                                                       support_email=user_metadata.get('email'))
+        pack_metadata['author'] = Pack._get_author(support_type=pack_metadata['support'],
+                                                   author=user_metadata.get('author', ''))
         pack_metadata['authorImage'] = author_image
-        is_beta = user_metadata.get('beta', False)
-        pack_metadata['beta'] = bool(strtobool(is_beta)) if isinstance(is_beta, str) else is_beta
-        is_deprecated = user_metadata.get('deprecated', False)
-        pack_metadata['deprecated'] = bool(strtobool(is_beta)) if isinstance(is_deprecated, str) else is_deprecated
-        pack_metadata['certification'] = user_metadata.get('certification', '')
+        pack_metadata['beta'] = get_valid_bool(user_metadata.get('beta', False))
+        pack_metadata['deprecated'] = get_valid_bool(user_metadata.get('deprecated', False))
+        pack_metadata['certification'] = user_metadata.get('certification', Metadata.CERTIFIED)
         pack_metadata['price'] = convert_price(pack_id=pack_id, price_value_input=user_metadata.get('price'))
-        pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion', '')
+        pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion') or server_min_version
         pack_metadata['serverLicense'] = user_metadata.get('serverLicense', '')
         pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
-        pack_metadata['tags'] = input_to_list(user_metadata.get('tags'))
-        pack_metadata['categories'] = input_to_list(user_metadata.get('categories'))
+        pack_metadata['tags'] = input_to_list(input_data=user_metadata.get('tags'), capitalize_input=True)
+        pack_metadata['categories'] = input_to_list(input_data=user_metadata.get('categories'), capitalize_input=True)
         pack_metadata['contentItems'] = pack_content_items
         pack_metadata['integrations'] = Pack._get_all_pack_images(integration_images,
                                                                   user_metadata.get('displayedImages', []),
                                                                   dependencies_data)
-        pack_metadata['useCases'] = input_to_list(user_metadata.get('useCases'))
+        pack_metadata['useCases'] = input_to_list(input_data=user_metadata.get('useCases'), capitalize_input=True)
         pack_metadata['keywords'] = input_to_list(user_metadata.get('keywords'))
         pack_metadata['dependencies'] = Pack._parse_pack_dependencies(user_metadata.get('dependencies', {}),
                                                                       dependencies_data)
@@ -557,6 +611,11 @@ class Pack(object):
                         elif current_directory in PackFolders.json_supported_folders():
                             content_item = json.load(pack_file)
 
+                    print(f"Iterating over {pack_file_path} file and collecting items of {self._pack_name} pack")
+                    # updated min server version from current content item
+                    self._sever_min_version = get_higher_server_version(self._sever_min_version, content_item,
+                                                                        self._pack_name)
+
                     if current_directory == PackFolders.SCRIPTS.value:
                         folder_collected_items.append({
                             'name': content_item.get('name', ""),
@@ -624,6 +683,7 @@ class Pack(object):
                 content_item_key = content_item_name_mapping[current_directory]
                 content_items_result[content_item_key] = folder_collected_items
 
+            print_color(f"Finished collecting content items for {self._pack_name} pack", LOG_COLORS.GREEN)
             task_status = True
         except Exception as e:
             print_error(f"Failed collecting content items in {self._pack_name} pack. Additional info:\n {e}")
@@ -648,9 +708,11 @@ class Pack(object):
 
             with open(user_metadata_path, "r") as user_metadata_file:
                 user_metadata = json.load(user_metadata_file)  # loading user metadata
+                # part of old packs are initialized with empty list
+                user_metadata = {} if isinstance(user_metadata, list) else user_metadata
 
             # store important user metadata fields
-            self.support_type = user_metadata.get('support', '').lower()
+            self.support_type = user_metadata.get('support', Metadata.XSOAR_SUPPORT)
             self.current_version = user_metadata.get('currentVersion', '')
             self.hidden = user_metadata.get('hidden', False)
 
@@ -689,7 +751,8 @@ class Pack(object):
                                                            pack_id=self._pack_name,
                                                            integration_images=integration_images,
                                                            author_image=author_image,
-                                                           dependencies_data=dependencies_data)
+                                                           dependencies_data=dependencies_data,
+                                                           server_min_version=self.server_min_version)
 
             with open(metadata_path, "w") as metadata_file:
                 json.dump(formatted_metadata, metadata_file, indent=4)  # writing back parsed metadata
@@ -934,7 +997,7 @@ class Pack(object):
                     else pack_author_image_blob.public_url
 
                 print_color(f"Uploaded successfully {self._pack_name} pack author image", LOG_COLORS.GREEN)
-            elif self.support_type == Pack.XSOAR_SUPPORT:  # use default Base pack image for xsoar supported packs
+            elif self.support_type == Metadata.XSOAR_SUPPORT:  # use default Base pack image for xsoar supported packs
                 author_image_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, GCPConfig.BASE_PACK,
                                                          Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
 
@@ -967,18 +1030,33 @@ class Pack(object):
 
 # HELPER FUNCTIONS
 
-def input_to_list(input_data):
+def input_to_list(input_data, capitalize_input=False):
     """ Helper function for handling input list or str from the user.
 
     Args:
         input_data (list or str): input from the user to handle.
+        capitalize_input (boo): whether to capitalize the input list data or not.
 
     Returns:
         list: returns the original list or list that was split by comma.
 
     """
     input_data = input_data if input_data else []
-    return input_data if isinstance(input_data, list) else [s for s in input_data.split(',') if s]
+    input_data = input_data if isinstance(input_data, list) else [s for s in input_data.split(',') if s]
+
+    if capitalize_input:
+        return [i.title() for i in input_data]
+    else:
+        return input_data
+
+
+def get_valid_bool(bool_input):
+    """ Converts and returns valid bool.
+
+    Returns:
+        bool: converted bool input.
+    """
+    return bool(strtobool(bool_input)) if isinstance(bool_input, str) else bool_input
 
 
 def convert_price(pack_id, price_value_input=None):
@@ -1001,3 +1079,33 @@ def convert_price(pack_id, price_value_input=None):
         print_warning(f"{pack_id} pack price is not valid. The price was set to 0. Additional "
                       f"details {e}")
         return 0
+
+
+def get_higher_server_version(current_string_version, compared_content_item, pack_name):
+    """ Compares two semantic server versions and returns the higher version between them.
+
+    Args:
+         current_string_version (str): current string version.
+         compared_content_item (dict): compared content item entity.
+         pack_name (str): the pack name (id).
+
+    Returns:
+        str: latest version between compared versions.
+    """
+    higher_version_result = current_string_version
+
+    try:
+
+        compared_string_version = compared_content_item.get('fromversion') or compared_content_item.get(
+            'fromVersion') or "1.0.0"
+        current_version, compared_version = LooseVersion(current_string_version), LooseVersion(compared_string_version)
+
+        if current_version < compared_version:
+            higher_version_result = compared_string_version
+    except Exception as e:
+        content_item_name = compared_content_item.get('name') or compared_content_item.get(
+            'display') or compared_content_item.get('id') or compared_content_item('details', '')
+        print_error(f"{pack_name} failed in version comparison of content item {content_item_name}. "
+                    f"Additional info:\n {e}")
+    finally:
+        return higher_version_result

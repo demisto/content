@@ -12,7 +12,7 @@ from google.cloud import storage
 from datetime import datetime
 from zipfile import ZipFile
 from Tests.Marketplace.marketplace_services import Pack, PackStatus, GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, \
-    PACKS_FOLDER, IGNORED_PATHS
+    PACKS_FOLDER, IGNORED_PATHS, Metadata
 from demisto_sdk.commands.common.tools import run_command, print_error, print_warning, print_color, LOG_COLORS
 
 
@@ -211,7 +211,7 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
             'description': 'Master index for Demisto Content Packages',
             'baseUrl': 'https://marketplace.demisto.ninja/content/packs',  # disable-secrets-detection
             'revision': build_number,
-            'modified': datetime.utcnow().strftime(Pack.DATE_FORMAT),
+            'modified': datetime.utcnow().strftime(Metadata.DATE_FORMAT),
             'landingPage': {
                 'sections': [
                     'Trending',
