@@ -26,4 +26,12 @@ echo "Copying master files at: $SOURCE_PATH to target path: $TARGET_PATH ..."
 gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$GCS_MARKET_BUCKET/$TARGET_PATH"
 echo "Finished copying successfully."
 
+echo "Updating modified content packs in the bucket ..."
+CONTENT_PACKS_TO_INSTALL="./Tests/content_packs_to_install.txt"
+while IFS= read -r line
+do
+  echo "$line"
+done < "CONTENT_PACKS_TO_INSTALL"
+echo "Finished updating content packs successfully."
+
 echo "Finished preparing content packs for testing successfully."
