@@ -1,5 +1,5 @@
 id: GsuiteTest
-version: 4
+version: -1
 name: test-Gsuite
 starttaskid: "0"
 tasks:
