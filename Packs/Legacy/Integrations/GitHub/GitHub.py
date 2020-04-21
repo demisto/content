@@ -8,6 +8,8 @@ import json
 import requests
 from typing import Union, Any
 from datetime import datetime
+from gql import gql, Client
+from gql.transport.requests import RequestsHTTPTransport
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -1120,6 +1122,43 @@ def fetch_incidents_command():
     demisto.incidents(incidents)
 
 
+def get_graphql_client():
+    sample_transport = RequestsHTTPTransport(
+        url=BASE_URL + '/graphql',
+        use_json=True,
+        headers={
+            'Authorization': f"Bearer {TOKEN}"
+        },
+        verify=False
+    )
+    return Client(
+        retries=3,
+        transport=sample_transport,
+        fetch_schema_from_transport=True,
+    )
+
+
+def execute_graphql_query(query, variable_values=None):
+    gql_query = gql(query)
+    client = get_graphql_client()
+    if variable_values:
+        variable_values = json.loads(variable_values)
+
+    response = client.execute(gql_query, variable_values=variable_values)
+    return_outputs(
+        "Executed the query successfully",
+        {
+            "GitHub.GraphQL": {
+                "Query": query,
+                "Variables": variable_values,
+                "Result": response
+            }
+        }
+    )
+    return response
+
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 COMMANDS = {
@@ -1148,7 +1187,8 @@ COMMANDS = {
     'GitHub-list-pr-review-comments': list_pr_review_comments_command,
     'GitHub-update-pull-request': update_pull_request_command,
     'GitHub-is-pr-merged': is_pr_merged_command,
-    'GitHub-create-pull-request': create_pull_request_command
+    'GitHub-create-pull-request': create_pull_request_command,
+    'GitHub-graphql-query': execute_graphql_query
 }
 
 
