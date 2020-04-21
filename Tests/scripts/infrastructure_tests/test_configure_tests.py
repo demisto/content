@@ -2,7 +2,7 @@ import json
 import copy
 import os
 from ruamel.yaml import YAML
-from Tests.scripts.configure_tests import get_test_list, get_modified_files, RANDOM_TESTS_NUM, TestConf, \
+from Tests.scripts.configure_tests import get_test_list_and_content_packs_to_install, get_modified_files, RANDOM_TESTS_NUM, TestConf, \
     create_filter_envs_file
 import demisto_sdk.commands.common.tools as demisto_sdk_tools
 
@@ -458,7 +458,7 @@ def get_mock_test_list(two_before_ga=TWO_BEFORE_GA_VERSION, get_modified_files_r
     if get_modified_files_ret is not None:
         mocker.patch('Tests.scripts.configure_tests.get_modified_files', return_value=get_modified_files_ret)
 
-    tests = get_test_list(git_diff_ret, branch_name, two_before_ga, id_set=MOCK_ID_SET, conf=TestConf(MOCK_CONF))
+    tests = get_test_list_and_content_packs_to_install(git_diff_ret, branch_name, two_before_ga, id_set=MOCK_ID_SET, conf=TestConf(MOCK_CONF))
     return tests
 
 
