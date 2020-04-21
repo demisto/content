@@ -4,6 +4,7 @@ from CommonServerUserPython import *
 from typing import Dict
 
 # disable insecure warnings
+
 requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
@@ -183,7 +184,7 @@ def update_user_command(client: MsGraphClient, args: Dict):
     updated_fields = args.get('updated_fields')
 
     client.update_user(user, updated_fields)
-    get_user_command(client, args)
+    return get_user_command(client, args)
 
 
 def get_delta_command(client: MsGraphClient, args: Dict):
