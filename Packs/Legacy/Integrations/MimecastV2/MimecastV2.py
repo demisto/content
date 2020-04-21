@@ -2227,11 +2227,11 @@ def search_file_hash_api_response_to_context(api_response):
 def main():
     ''' COMMANDS MANAGER / SWITCH PANEL '''
     # Check if token needs to be refresh, if it does and relevant params are set, refresh.
-    if ACCESS_KEY:
-        auto_refresh_token()
     try:
         handle_proxy()
         determine_ssl_usage()
+        if ACCESS_KEY:
+            auto_refresh_token()
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
             test_module()

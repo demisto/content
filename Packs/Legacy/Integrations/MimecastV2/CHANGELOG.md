@@ -1,12 +1,5 @@
 ## [Unreleased]
-
-
-## [20.4.0] - 2020-04-14
--
-
-
-## [20.3.3] - 2020-03-18
--
+Fixed an issue where SSL error accrued in insecure mode.
 
 ## [20.2.0] - 2020-02-04
 Added the ***mimecast-update-policy*** command.
@@ -23,7 +16,3 @@ Added the ***mimecast-update-policy*** command.
   - ***mimecast-get-remediation-incident***
   - ***mimecast-search-file-hash***
 - Fixed an issue with instance SSL configuration.
-
-
-## [19.9.0] - 2019-09-04
--
