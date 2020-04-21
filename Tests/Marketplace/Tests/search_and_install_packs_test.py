@@ -1,6 +1,7 @@
 import unittest
 import demisto_client
 from unittest import mock
+from demisto_client import login
 from Tests.test_content import ParallelPrintsManager
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies
 
@@ -74,7 +75,7 @@ def mocked_request(*args, **kwargs):
 
 class TestSearchAndInstallPacks(unittest.TestCase):
     @mock.patch('demisto_client.generic_request_func', side_effect=mocked_request)
-    def test_search_and_install_packs_and_their_dependencies(self, generic_request_func):
+    def test_search_and_install_packs_and_their_dependencies(self, mocker):
         good_integrations_files = [
             'Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.yml',
             'Packs/AzureSentinel/Integrations/AzureSentinel/AzureSentinel.yml'
@@ -82,6 +83,7 @@ class TestSearchAndInstallPacks(unittest.TestCase):
 
         bad_integrations_files = ['malformed_integration_file']
 
+        mocker.patch.object('demisto_client', login, return_value=None)
         client = demisto_client.configure(base_url=BASE_URL, api_key=API_KEY)
         prints_manager = ParallelPrintsManager(1)
 
