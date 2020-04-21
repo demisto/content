@@ -46,6 +46,10 @@ TICKET_STATES = {
         '1': '1 - Approved',
         '3': '3 - Closed',
         '4': '4 - Rejected'
+    },
+    'sc_req_item': {
+        'fulfillment': 'Fulfillment',
+        'waiting_for_approval': 'Waiting for approval',
     }
 }
 
@@ -212,7 +216,11 @@ def get_ticket_human_readable(tickets, ticket_type: str) -> list:
         priority = ticket.get('priority', '')
         if priority:
             hr['Priority'] = TICKET_PRIORITY.get(priority, priority)
-        state = ticket.get('state', '')
+
+        if ticket_type == 'sc_req_item':
+            state = ticket.get('stage', '')
+        else:
+            state = ticket.get('state', '')
         if state:
             mapped_state = state
             if ticket_type in TICKET_STATES:
