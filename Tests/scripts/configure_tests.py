@@ -259,7 +259,7 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
     print('========== ID Set TestPlaybooks ==========')
     print(id_set_test_playbooks)
     print('======================================')
-    for test_playbook in id_set_test_playbooks.values():
+    for test_playbook in id_set_test_playbooks:
         test_playbook_id = list(test_playbook.keys())[0]
         test_playbook_object = test_playbook[test_playbook_id]
         if test_playbook_object.get('name') in test_ids:
