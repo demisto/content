@@ -1,29 +1,51 @@
 args:
 - default: false
-  description: 'Grid headers in the form of comma-separated values: Target Email Address,
-    Email Subject.'
-  isArray: false
-  name: headers
-  required: false
-  secret: false
-- default: false
-  description: Context paths comma separated e.g. a.b.c,a.d.e
-  isArray: false
+  description: Context paths comma separated (same number of availble columns in grid)
+    e.g. a.b.c,a.d.e (with 2 columns)
+  isArray: true
   name: context_paths
   required: true
   secret: false
 - default: false
-  defaultValue: 'false'
-  description: True if the context paths is line correlated
+  description: Column name to sort by - e.g col1
   isArray: false
-  name: row_correlated
+  name: sort_by
   required: false
   secret: false
 - default: false
-  description: Context path to sort by, only availble when the value is literal (sortable)
+  description: Grid ID - Could be gather from Context Data -> Incident
   isArray: false
-  name: sort
+  name: grid_id
+  required: true
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'true'
+  description: true if row represent object, false otherwise
+  isArray: false
+  name: row_correlation
+  predefined:
+  - 'true'
+  - 'false'
   required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: true if remove old-data, false to append data
+  isArray: false
+  name: overwrite
+  predefined:
+  - 'false'
+  - 'true'
+  required: false
+  secret: false
+- default: false
+  description: Columns names as shown in the grid, If data allready exists the automation
+    will detect it automatically.
+  isArray: true
+  name: columns
+  required: true
   secret: false
 comment: Create Grid Table
 commonfields:
@@ -38,4 +60,4 @@ tags:
 - ''
 timeout: '0'
 type: python
-dockerimage: devtesting/grid:1.0.0.1587361829
+dockerimage: devtesting/grid:1.0.0.1587383120
