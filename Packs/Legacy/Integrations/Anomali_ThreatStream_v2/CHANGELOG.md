@@ -1,8 +1,5 @@
 ## [Unreleased]
-
-
-## [20.4.0] - 2020-04-14
--
+Added support for emojis in file names, when uploading a file to the sandbox.
 
 
 ## [20.3.3] - 2020-03-18
