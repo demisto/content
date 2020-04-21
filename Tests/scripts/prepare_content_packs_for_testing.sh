@@ -28,9 +28,11 @@ echo "Finished copying successfully."
 
 echo "Updating modified content packs in the bucket ..."
 CONTENT_PACKS_TO_INSTALL="./Tests/content_packs_to_install.txt"
-while IFS= read -r line
+while IFS= read -r PACK_NAME
 do
-  echo "$line" # search and install pack
+  echo "Updating $PACK_NAME ..."
+  gsutil -m cp -r "./Packs/$PACK_NAME" "gs://$GCS_MARKET_BUCKET/$TARGET_PATH"
+  echo "Updated $PACK_NAME successfully."
 done < "$CONTENT_PACKS_TO_INSTALL"
 echo "Finished updating content packs successfully."
 
