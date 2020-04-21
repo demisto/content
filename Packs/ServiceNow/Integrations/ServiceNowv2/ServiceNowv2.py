@@ -225,7 +225,8 @@ def get_ticket_human_readable(tickets, ticket_type: str) -> list:
             mapped_approval = approval
             if ticket_type in TICKET_APPROVAL:
                 mapped_approval = TICKET_APPROVAL[ticket_type].get(ticket.get('approval'), mapped_approval)
-            hr['Approval'] = mapped_approval
+                # Approval will be added to the markdown only in the necessary ticket types
+                hr['Approval'] = mapped_approval
         result.append(hr)
     return result
 
