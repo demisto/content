@@ -382,6 +382,6 @@ script:
       description: 'Number of results returned per page. The default page_size is 50, max. is 5000.'
     description: "Runs an advanced search on hosts and detections."
   isfetch: true
-  dockerimage: demisto/python3:3.7.4.2245
+  dockerimage: demisto/python3:3.8.2.6981
 tests:
   - No test 
