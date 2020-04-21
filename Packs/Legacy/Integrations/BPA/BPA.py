@@ -19,12 +19,17 @@ class LightPanoramaClient(BaseClient):
     This is a client for Panorama API, used by integration commands to issue requests to Panorama API,
      not the BPA service.
     '''
-    def __init__(self, server, port, api_key, verify):
+    def __init__(self, server, port, api_key, verify, proxy):
         if port is None:
             super().__init__(server + '/', verify)
         else:
             super().__init__(server.rstrip('/:') + ':' + port + '/', verify)
         self.api_key = api_key
+        if proxy:
+            self.proxies = handle_proxy()
+
+        else:
+            self.proxies = {}
 
     def simple_op_request(self, cmd):
         params = {
@@ -37,7 +42,8 @@ class LightPanoramaClient(BaseClient):
             'POST',
             'api',
             params=params,
-            resp_type='text'
+            resp_type='text',
+            proxies=self.proxies
         )
 
         return result
@@ -66,7 +72,8 @@ class LightPanoramaClient(BaseClient):
             'POST',
             'api',
             params=params,
-            resp_type='text'
+            resp_type='text',
+            proxies=self.proxies
         )
 
         return result
@@ -77,13 +84,18 @@ class Client(BaseClient):
     Client to use in the BPA integration. This client issues requests to the BPA service, and not Panorama.
     """
 
-    def __init__(self, bpa_token: str, verify: bool):
+    def __init__(self, bpa_token: str, verify: bool, proxy: bool):
         headers = {'Authorization': f'Token {bpa_token}'}
         super().__init__(base_url=BPA_URL, verify=verify, headers=headers)
         self.token = bpa_token
+        if proxy:
+            self.proxies = handle_proxy()
+
+        else:
+            self.proxies = {}
 
     def get_documentation_request(self):
-        response = self._http_request('GET', 'documentation/')
+        response = self._http_request('GET', 'documentation/', proxies=self.proxies)
         return response
 
     def submit_task_request(self, running_config, system_info, license_info, system_time) -> Dict:
@@ -94,11 +106,11 @@ class Client(BaseClient):
             'system_time': system_time
         }
 
-        response = self._http_request('POST', 'create/', data=data)
+        response = self._http_request('POST', 'create/', data=data, proxies=self.proxies)
         return response
 
     def get_results_request(self, task_id: str):
-        response = self._http_request('GET', f'results/{task_id}/')
+        response = self._http_request('GET', f'results/{task_id}/', proxies=self.proxies)
         return response
 
 
@@ -203,16 +215,16 @@ def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    handle_proxy()
     panorama_server = demisto.params().get('server')
     panorama_port = demisto.params().get('port', None)
     panorama_api_key = demisto.params().get('key')
     bpa_token = demisto.params().get('token')
     verify = not demisto.params().get('insecure', False)
+    proxy = demisto.params().get('proxy')
 
     try:
-        client = Client(bpa_token, verify)
-        panorama = LightPanoramaClient(panorama_server, panorama_port, panorama_api_key, verify)
+        client = Client(bpa_token, verify, proxy)
+        panorama = LightPanoramaClient(panorama_server, panorama_port, panorama_api_key, verify, proxy)
         command = demisto.command()
         LOG(f'Command being called is {command}.')
         if command == 'pan-os-bpa-submit-job':
