@@ -1,7 +1,7 @@
 {
     "name": "Office 365 Feed",
     "description": "Use the Office 365 feed integration to get indicators from the feed.",
-    "support": "Cortex XSOAR",
+    "support": "xsoar",
     "serverMinVersion": "5.0.0",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
