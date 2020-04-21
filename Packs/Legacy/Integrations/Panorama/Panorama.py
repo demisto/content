@@ -687,9 +687,9 @@ def panorama_push_status_command():
     devices = result.get("response", {}).get('result', {}).get('job', {}).get('devices', {}).get('entry', {})
     if devices:
         for device in devices:
-            device_info = device.get('details', {}).get('msg', {})
+            device_info = device.get('details', {}).get('msg', {}).get('warnings', [])
             if device_info:
-                status_warnings.extend(device_info.get('warnings', []).get('line'))
+                status_warnings.extend(device_info.get('line'))
     push_status_output["Warnings"] = status_warnings
 
     demisto.results({

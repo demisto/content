@@ -2223,6 +2223,9 @@ script:
     - contextPath: Panorama.Push.Details
       description: Job ID details.
       type: string
+    - contextPath: Panorama.Push.Warnings
+      description: Job ID warnings
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
