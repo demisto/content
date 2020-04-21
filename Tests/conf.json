@@ -2781,7 +2781,6 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
-        "sss": "aaa",
         "MongoDB": "Our instance not using SSL",
         "Cortex Data Lake": "Integration requires SSL",
         "Google Key Management Service": "The API requires an SSL secure connection to work.",
