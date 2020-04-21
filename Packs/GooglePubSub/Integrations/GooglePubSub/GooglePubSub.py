@@ -713,7 +713,7 @@ def publish_message_command(
     published_messages = client.publish_message(project_id, topic_id, body)
 
     output = []
-    for msg_id in published_messages["messageIds"]:
+    for msg_id in published_messages.get("messageIds"):
         output.append(
             {
                 "topic": topic_id,
