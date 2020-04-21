@@ -523,14 +523,14 @@ inputs:
       fromdate: 0001-01-01T00:00:00Z
       todate: 0001-01-01T00:00:00Z
       period:
-        by: ""
-        byto: ""
-        byfrom: ""
+        by: ''
+        byto: ''
+        byfrom: ''
         tovalue: null
         fromvalue: null
-        field: ""
+        field: ''
       fromdatelicenseval: 0001-01-01T00:00:00Z
-      runFromLastJobTime: true
+    runFromLastJobTime: true
 outputs: []
 quiet: true
 fromversion: 5.5.0
