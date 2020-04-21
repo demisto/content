@@ -314,19 +314,19 @@ ALERT_RELATED_DOMAINS_API_RESPONSE = {
 }
 
 ALERT_RELATED_USER_API_RESPONSE = {
-            "id": "test/user1",
-            "accountName": "user1",
-            "accountDomain": "test",
-            "accountSid": "12345678",
-            "firstSeen": "2019-12-08T06:33:39Z",
-            "lastSeen": "2020-01-05T06:58:34Z",
-            "mostPrevalentMachineId": "1234",
-            "leastPrevalentMachineId": "5678",
-            "logonTypes": "Network",
-            "logOnMachinesCount": 1,
-            "isDomainAdmin": "false",
-            "isOnlyNetworkUser": "false"
-        }
+    "id": "test/user1",
+    "accountName": "user1",
+    "accountDomain": "test",
+    "accountSid": "12345678",
+    "firstSeen": "2019-12-08T06:33:39Z",
+    "lastSeen": "2020-01-05T06:58:34Z",
+    "mostPrevalentMachineId": "1234",
+    "leastPrevalentMachineId": "5678",
+    "logonTypes": "Network",
+    "logOnMachinesCount": 1,
+    "isDomainAdmin": "false",
+    "isOnlyNetworkUser": "false"
+}
 
 USER_DATA = {
     'ID': "test/user1",
