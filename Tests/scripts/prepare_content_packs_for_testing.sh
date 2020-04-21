@@ -30,7 +30,7 @@ echo "Updating modified content packs in the bucket ..."
 CONTENT_PACKS_TO_INSTALL="./Tests/content_packs_to_install.txt"
 while IFS= read -r line
 do
-  echo "$line"
+  echo "$line" # search and install pack
 done < "$CONTENT_PACKS_TO_INSTALL"
 echo "Finished updating content packs successfully."
 
