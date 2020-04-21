@@ -314,7 +314,7 @@ ALERT_RELATED_DOMAINS_API_RESPONSE = {
 }
 
 ALERT_RELATED_USER_API_RESPONSE = {
-            "id": "test\\user1",
+            "id": "test/user1",
             "accountName": "user1",
             "accountDomain": "test",
             "accountSid": "12345678",
@@ -327,8 +327,9 @@ ALERT_RELATED_USER_API_RESPONSE = {
             "isDomainAdmin": "false",
             "isOnlyNetworkUser": "false"
         }
+
 USER_DATA = {
-    'ID': "test\\user1",
+    'ID': "test/user1",
     'AccountName': "user1",
     'AccountDomain': "test",
     'AccountSID': "12345678",
