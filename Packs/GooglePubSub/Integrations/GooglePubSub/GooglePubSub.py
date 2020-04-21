@@ -1403,22 +1403,50 @@ def try_pull_unique_messages(
                 )
             # clean non-unique ids from raw_msgs
             else:
-                filtered_raw_msgs = list(
-                    filter(
-                        lambda msg: msg["message"].get("messageId")
-                        not in previous_msg_ids
-                        and msg["message"].get("publishTime") > last_run_time,
-                        raw_msgs["receivedMessages"],
-                    )
+                filtered_raw_msgs = filter_non_unique_messages(
+                    raw_msgs, previous_msg_ids, last_run_time
                 )
-                res_acks, res_msgs = extract_acks_and_msgs(
-                    {"receivedMessages": filtered_raw_msgs}
-                )
+                res_acks, res_msgs = extract_acks_and_msgs(filtered_raw_msgs)
                 (
                     res_msg_ids,
                     res_max_publish_time,
                 ) = get_messages_ids_and_max_publish_time(res_msgs)
     return res_msgs, res_msg_ids, res_acks, res_max_publish_time
+
+
+def is_unique_msg(msg, previous_msg_ids, previous_run_time):
+    """
+    Determines if message is unique given previous message ids, and that it's greater than previous run time
+    :param msg: raw Message object
+    :param previous_msg_ids: set of previously fetched message ids
+    :param previous_run_time: previous run time string
+    :return: True if message is unique
+    """
+    message_dict = msg.get("message", {})
+    if message_dict:
+        msg_id = message_dict.get("messageId")
+        msg_pub_time = message_dict.get("publishTime", "")
+        return msg_id not in previous_msg_ids and msg_pub_time > previous_run_time
+    return False
+
+
+def filter_non_unique_messages(raw_msgs, previous_msg_ids, previous_run_time):
+    """
+    Filters messages that appear in previous_msg_ids or are older than the previous_run_time
+    :param raw_msgs: Raw message object
+    :param previous_msg_ids:
+    :param previous_run_time:
+    :return:
+    """
+    raw_msgs = raw_msgs.get("receivedMessages", [])
+    # filter messages using `previous_msg_ids` and `previous_run_time`
+    filtered_raw_msgs = list(
+        filter(
+            lambda msg: is_unique_msg(msg, previous_msg_ids, previous_run_time),
+            raw_msgs,
+        )
+    )
+    return {"receivedMessages": filtered_raw_msgs}
 
 
 def handle_fetch_results(
