@@ -1,10 +1,6 @@
-import base64
-
-import requests
 import urllib3
 from pyotrs import Article, Attachment, Client, DynamicField, Ticket
 
-import demistomock as demisto
 from CommonServerPython import *
 
 ''' IMPORTS '''
@@ -210,7 +206,8 @@ def get_ticket_command():
             articles_list.append(current_article)
 
         human_readable += tableToMarkdown('Articles', human_readable_articles,
-                                          headers=['ID', 'From', 'Subject', 'Body', 'CreateTime', 'ContentType', 'Attachment'], removeNull=True)
+                                          headers=['ID', 'From', 'Subject', 'Body', 'CreateTime',
+                                                   'ContentType', 'Attachment'], removeNull=True)
         output['Article'] = articles_list
 
     ec = {
@@ -407,7 +404,8 @@ def update_ticket_command():
     dynamic_fields = demisto.args().get('dynamic_fields')
     attachment = demisto.args().get('attachment')
 
-    if all(v is None for v in [title, queue, state, priority, article_subject, article_body, ticket_type, dynamic_fields, attachment]):
+    if all(v is None for v in [title, queue, state, priority, article_subject,
+                               article_body, ticket_type, dynamic_fields, attachment]):
         return_error('No fields to update were given')
 
     if (article_subject and article_body is None) or (article_subject is None and article_body):
@@ -507,7 +505,8 @@ def close_ticket_command():
     })
 
 
-def update_ticket(ticket_id, title=None, queue=None, state=None, priority=None, article=None, ticket_type=None, df=None, attachments=None):
+def update_ticket(ticket_id, title=None, queue=None, state=None, priority=None,
+                  article=None, ticket_type=None, df=None, attachments=None):
 
     kwargs = {'Type': ticket_type}
 
