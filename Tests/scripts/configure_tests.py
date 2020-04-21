@@ -256,21 +256,19 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
 
     packs_to_install = set()
     id_set_test_playbooks = id_set.get('TestPlaybooks', [])
-    print('========== tests_set ==========')
-    print(tests_set)
-    print('======================================')
     for test_playbook in id_set_test_playbooks:
         test_playbook_id = list(test_playbook.keys())[0]
         test_playbook_object = test_playbook[test_playbook_id]
         if test_playbook_id in tests_set:
-            print('Found test playbook {0} in pack {1}'.format(test_playbook_object.get('name'), test_playbook_object.get('pack')))
-            packs_to_install.add(test_playbook_object.get('pack'))
+            test_playbook_pack = test_playbook_object.get('pack')
+            if test_playbook_pack:
+                print('Found test playbook {0} in pack {1} - adding to packs to install'.format(
+                    test_playbook_id, test_playbook_pack))
+                packs_to_install.add(test_playbook_pack)
+            else:
+                print('Found test playbook {0} without pack - not adding to packs to install'.format(test_playbook_id))
 
-    print('========== Packs to install for test playbooks ==========')
-    print(packs_to_install)
-    print('======================================')
-
-    return test_ids, missing_ids, caught_missing_test
+    return test_ids, missing_ids, caught_missing_test, packs_to_install
 
 
 def update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts, integration_ids, playbook_ids,
@@ -334,22 +332,13 @@ def find_tests_and_packs_for_modified_files(modified_files, conf, id_set):
     playbook_names = set([])
     integration_ids = set([])
 
-    tests_set, catched_scripts, catched_playbooks = collect_changed_ids(integration_ids, playbook_names,
-                                                                        script_names, modified_files, id_set)
+    tests_set, catched_scripts, catched_playbooks, packs_to_install = collect_changed_ids(
+        integration_ids, playbook_names, script_names, modified_files, id_set)
 
-    test_ids, missing_ids, caught_missing_test = collect_tests(script_names, playbook_names, integration_ids,
-                                                               catched_scripts, catched_playbooks, tests_set, id_set,
-                                                               conf)
+    test_ids, missing_ids, caught_missing_test, test_packs_to_install = collect_tests(
+        script_names, playbook_names, integration_ids, catched_scripts, catched_playbooks, tests_set, id_set, conf)
 
-    # id_set_test_playbooks = id_set.get('TestPlaybooks', [])
-    # for test_playbook in id_set_test_playbooks.values():
-    #     if test_playbook.get('name') in test_ids:
-    #         print('Found test playbook {0} in pack {1}'.format(test_playbook.get('name'), test_playbook.get('pack')))
-    #         packs_to_install.add(test_playbook.get('pack'))
-    #
-    # print('========== Packs to install ==========')
-    # print(packs_to_install)
-    # print('======================================')
+    packs_to_install.update(test_packs_to_install)
 
     missing_ids = update_with_tests_sections(missing_ids, modified_files, test_ids, tests_set)
 
@@ -362,7 +351,7 @@ def find_tests_and_packs_for_modified_files(modified_files, conf, id_set):
         global _FAILED
         _FAILED = True
 
-    return tests_set
+    return tests_set, packs_to_install
 
 
 def update_with_tests_sections(missing_ids, modified_files, test_ids, tests):
@@ -476,42 +465,44 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     packs_to_install = set()
 
     id_set_integrations = id_set.get('integrations', [])
-    print('========== ID Set integrations ==========')
-    print(id_set_integrations)
-    print('======================================')
     for integration in id_set_integrations:
         integration_id = list(integration.keys())[0]
         integration_object = integration[integration_id]
         if integration_id in integration_ids:
-            print('Found integration {0} in pack {1}'.format(integration_id, integration_object.get('pack')))
-            packs_to_install.add(integration_object.get('pack'))
+            integration_pack = integration_object.get('pack')
+            if integration_pack:
+                print('Found integration {0} in pack {1} - adding to packs to install'.format(
+                    integration_id, integration_pack))
+                packs_to_install.add(integration_object.get('pack'))
+            else:
+                print('Found integration {0} without pack - not adding to packs to install'.format(integration_id))
 
     id_set_playbooks = id_set.get('playbooks', [])
-    print('========== ID Set playbooks ==========')
-    print(id_set_playbooks)
-    print('======================================')
     for playbook in id_set_playbooks:
         playbook_object = list(playbook.values())[0]
-        if playbook_object.get('name') in playbook_names:
-            print('Found playbook {0} in pack {1}'.format(playbook_object.get('name'), playbook_object.get('pack')))
-            packs_to_install.add(playbook_object.get('pack'))
+        playbook_name = playbook_object.get('name')
+        if playbook_name in playbook_names:
+            playbook_pack = playbook_object.get('pack')
+            if playbook_pack:
+                print('Found playbook {0} in pack {1} - adding to packs to install'.format(
+                    playbook_name, playbook_pack))
+                packs_to_install.add(playbook_pack)
+            else:
+                print('Found playbook {0} without pack - not adding to packs to install'.format(playbook_name))
 
     id_set_script = id_set.get('scripts', [])
-    print('========== ID Set scripts ==========')
-    print(id_set_script)
-    print('======================================')
     for script in id_set_script:
         script_id = list(script.keys())[0]
         script_object = script[script_id]
         if script_id in script_names:
-            print('Found script {0} in pack {1}'.format(script_id, script_object.get('pack')))
-            packs_to_install.add(script_object.get('pack'))
+            script_pack = script_object.get('pack')
+            if script_pack:
+                print('Found script {0} in pack {1} - adding to packs to install'.format(script_id, script_pack))
+                packs_to_install.add(script_object.get('pack'))
+            else:
+                print('Found script {0} without pack - not adding to packs to install'.format(script_id))
 
-    print('========== Packs to install ==========')
-    print(packs_to_install)
-    print('======================================')
-
-    return tests_set, catched_scripts, catched_playbooks
+    return tests_set, catched_scripts, catched_playbooks, packs_to_install
 
 
 def exclude_deprecated_entities(script_set, script_names,
@@ -887,14 +878,15 @@ def get_random_tests(tests_num, conf=None, id_set=None, server_version='0'):
     return tests
 
 
-def get_test_list(files_string, branch_name, two_before_ga_ver='0', conf=None, id_set=None):
+def get_test_list_and_content_packs_to_install(files_string, branch_name, two_before_ga_ver='0', conf=None, id_set=None):
     """Create a test list that should run"""
     (modified_files, modified_tests_list, changed_common, is_conf_json, sample_tests, is_reputations_json,
      is_indicator_json) = get_modified_files(files_string)
 
     tests = set([])
+    packs_to_install = set([])
     if modified_files:
-        tests = find_tests_and_packs_for_modified_files(modified_files, conf, id_set)
+        tests, packs_to_install = find_tests_and_packs_for_modified_files(modified_files, conf, id_set)
 
     # Adding a unique test for a json file.
     if is_reputations_json:
@@ -938,7 +930,7 @@ def get_test_list(files_string, branch_name, two_before_ga_ver='0', conf=None, i
     if changed_common:
         tests.add('TestCommonPython')
 
-    return tests
+    return tests, packs_to_install
 
 
 def create_test_file(is_nightly, skip_save=False):
@@ -961,7 +953,7 @@ def create_test_file(is_nightly, skip_save=False):
         with open('./Tests/ami_builds.json', 'r') as ami_builds:
             # get two_before_ga version to check if tests are runnable on that env
             two_before_ga = json.load(ami_builds).get('TwoBefore-GA', '0').split('-')[0]
-        tests = get_test_list(files_string, branch_name, two_before_ga)
+        tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name, two_before_ga)
 
         tests_string = '\n'.join(tests)
         if tests_string:
@@ -969,10 +961,19 @@ def create_test_file(is_nightly, skip_save=False):
         else:
             print('No filter configured, running all tests')
 
+        packs_to_install_string = '\n'.join(packs_to_install)
+        if packs_to_install_string:
+            print('Collected the following content packs to install:\n{0}\n'.format(packs_to_install_string))
+        else:
+            print('Did not find content packs to install')
+
     if not skip_save:
         print("Creating filter_file.txt")
         with open("./Tests/filter_file.txt", "w") as filter_file:
             filter_file.write(tests_string)
+        print("Creating content_packs_to_install.txt")
+        with open("./Tests/content_packs_to_install.txt", "w") as content_packs_to_install:
+            content_packs_to_install.write(packs_to_install_string)
 
 
 if __name__ == "__main__":
