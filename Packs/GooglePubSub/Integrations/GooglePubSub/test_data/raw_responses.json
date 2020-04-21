@@ -24,6 +24,50 @@
       }
     ]
   },
+  "try_pull_unique_messages_1": {
+    "receivedMessages": [
+      {
+        "ackId": "321",
+        "message": {
+          "data": "42",
+          "messageId": "123",
+          "publishTime": "2020-04-18T08:36:30.541Z"
+        }
+      }
+    ]
+  },
+  "try_pull_unique_messages_2": {
+    "receivedMessages": [
+      {
+        "ackId": "654",
+        "message": {
+          "data": "43",
+          "messageId": "456",
+          "publishTime": "2020-04-19T08:36:30.541Z"
+        }
+      }
+    ]
+  },
+  "try_pull_unique_messages_3": {
+    "receivedMessages": [
+      {
+        "ackId": "321",
+        "message": {
+          "data": "42",
+          "messageId": "123",
+          "publishTime": "2020-04-19T08:36:30.541Z"
+        }
+      },
+      {
+        "ackId": "654",
+        "message": {
+          "data": "43",
+          "messageId": "456",
+          "publishTime": "2020-04-19T08:36:30.541Z"
+        }
+      }
+    ]
+  },
   "gcp-pubsub-topic-subscription-get-by-name": {
     "name": "projects/dmst-doc-prjct/subscriptions/test_sub_2",
     "topic": "projects/dmst-doc-prjct/topics/dmst-test-topic",

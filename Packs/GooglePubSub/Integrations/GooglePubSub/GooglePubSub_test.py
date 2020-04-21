@@ -1,3 +1,4 @@
+import demistomock as demisto
 import base64
 import pytest
 from GooglePubSub import (
@@ -7,6 +8,7 @@ from GooglePubSub import (
     attribute_pairs_to_dict,
     get_publish_body,
     extract_acks_and_msgs,
+    try_pull_unique_messages,
     publish_message_command,
     pull_messages_command,
     subscriptions_list_command,
@@ -359,6 +361,9 @@ class TestHelperFunctions:
 
 class TestCommands:
     class MockClient:
+        def __init__(self):
+            self.default_max_msgs = "1"
+
         def publish_message(self, **kwargs):
             return ""
 
@@ -569,3 +574,197 @@ class TestCommands:
         mocker.patch.object(client, client_func, return_value=raw_response)
         res = command_func(client, **args)
         assert expected == res[1]
+
+    def test_try_pull_unique_messages__empty_1(self, mocker):
+        """
+        Test try_pull_unique_messages with empty result
+        Given:
+            - previous_msg_ids = set()
+            - last_run_time = "2020-04-25T08:36:30.242Z"
+            - there are no messages in queue
+        When:
+            - trying  to pull unique messages
+        Then:
+            - try_pull_unique_messages should be called once (verified by demisto.debug)
+            - function should return an empty result
+        """
+        client = self.MockClient()
+        sub_name = "test_sub_2"
+        previous_msg_ids = set()
+        last_run_time = "2020-04-25T08:36:30.242Z"
+        mocker.patch.object(client, "pull_messages", return_value={})
+        debug_mock = mocker.patch.object(demisto, "debug")
+        (
+            res_msgs,
+            res_msg_ids,
+            res_acks,
+            res_max_publish_time,
+        ) = try_pull_unique_messages(
+            client, sub_name, previous_msg_ids, last_run_time, retry_times=1
+        )
+        assert debug_mock.call_count == 0
+        assert res_msgs is None
+        assert res_msg_ids is None
+        assert res_acks is None
+        assert res_max_publish_time is None
+
+    def test_try_pull_unique_messages__empty_2(self, mocker):
+        """
+        Test try_pull_unique_messages with empty result - receivedMessages is empty
+        Given:
+            - previous_msg_ids = set()
+            - last_run_time = "2020-04-25T08:36:30.242Z"
+            - there are no messages in queue
+        When:
+            - trying  to pull unique messages
+        Then:
+            - try_pull_unique_messages should be called once (verified by demisto.debug)
+            - function should return an empty result
+        """
+        client = self.MockClient()
+        sub_name = "test_sub_2"
+        previous_msg_ids = set()
+        last_run_time = "2020-04-25T08:36:30.242Z"
+        mocker.patch.object(
+            client, "pull_messages", return_value={"receivedMessages": []}
+        )
+        debug_mock = mocker.patch.object(demisto, "debug")
+        (
+            res_msgs,
+            res_msg_ids,
+            res_acks,
+            res_max_publish_time,
+        ) = try_pull_unique_messages(
+            client, sub_name, previous_msg_ids, last_run_time, retry_times=1
+        )
+        assert debug_mock.call_count == 0
+        assert res_msgs is None
+        assert res_msg_ids is None
+        assert res_acks == []
+        assert res_max_publish_time is None
+
+    def test_try_pull_unique_messages__unique_first_try(self, mocker):
+        """
+        Test try_pull_unique_messages with a unique result on first try
+        Given:
+            - previous_msg_ids = set()
+            - last_run_time = "2020-04-25T08:36:30.242Z"
+            - there are messages in queue
+        When:
+            - trying to pull unique messages
+        Then:
+            - try_pull_unique_messages should be called once (verified by demisto.debug)
+            - function should return a result with the pulled message
+        """
+        client = self.MockClient()
+        sub_name = "test_sub_2"
+        previous_msg_ids = set()
+        last_run_time = "2020-04-25T08:36:30.242Z"
+        unique_messages = self.RAW_RESPONSES["try_pull_unique_messages_1"]
+        mocker.patch.object(client, "pull_messages", return_value=unique_messages)
+        debug_mock = mocker.patch.object(demisto, "debug")
+        (
+            res_msgs,
+            res_msg_ids,
+            res_acks,
+            res_max_publish_time,
+        ) = try_pull_unique_messages(
+            client, sub_name, previous_msg_ids, last_run_time, retry_times=1
+        )
+        assert debug_mock.call_count == 0
+        assert res_msgs == [
+            {
+                "ackId": "321",
+                "data": "42",
+                "messageId": "123",
+                "publishTime": "2020-04-18T08:36:30.541Z",
+            }
+        ]
+        assert res_msg_ids == {"123"}
+        assert res_acks == ["321"]
+        assert res_max_publish_time == "2020-04-18T08:36:30.541000Z"
+
+    def test_try_pull_unique_messages__unique_second_try(self, mocker):
+        """
+        Test try_pull_unique_messages with a non-unique result on first try and unique result second time
+        Given:
+            - previous_msg_ids = {'123'}
+            - last_run_time = "2020-04-25T08:36:30.242Z"
+            - there are messages in queue
+        When:
+            - trying to pull unique messages
+        Then:
+            - try_pull_unique_messages should be called twice (verified by demisto.debug)
+            - function should return a result with the unique pulled message
+        """
+        client = self.MockClient()
+        sub_name = "test_sub_2"
+        previous_msg_ids = {"123"}
+        last_run_time = "2020-04-25T08:36:30.242Z"
+        unique_messages_list = [
+            self.RAW_RESPONSES["try_pull_unique_messages_1"],
+            self.RAW_RESPONSES["try_pull_unique_messages_2"],
+        ]
+        mocker.patch.object(client, "pull_messages", side_effect=unique_messages_list)
+        debug_mock = mocker.patch.object(demisto, "debug")
+        (
+            res_msgs,
+            res_msg_ids,
+            res_acks,
+            res_max_publish_time,
+        ) = try_pull_unique_messages(
+            client, sub_name, previous_msg_ids, last_run_time, retry_times=1
+        )
+        assert debug_mock.call_count == 1
+        assert res_msgs == [
+            {
+                "ackId": "654",
+                "data": "43",
+                "messageId": "456",
+                "publishTime": "2020-04-19T08:36:30.541Z",
+            }
+        ]
+        assert res_msg_ids == {"456"}
+        assert res_acks == ["654"]
+        assert res_max_publish_time == "2020-04-19T08:36:30.541000Z"
+
+    def test_try_pull_unique_messages__partially_unique_first_try(self, mocker):
+        """
+        Test try_pull_unique_messages with a partially unique result on first try
+        Given:
+            - previous_msg_ids = set()
+            - last_run_time = "2020-04-09T08:36:30.242Z"
+            - there are messages in queue
+        When:
+            - trying to pull unique messages
+        Then:
+            - try_pull_unique_messages should be called twice (verified by demisto.debug)
+            - function should return a result with the unique pulled message
+        """
+        client = self.MockClient()
+        sub_name = "test_sub_2"
+        previous_msg_ids = {"123"}
+        last_run_time = "2020-04-09T08:36:30.242Z"
+        unique_messages_list = [self.RAW_RESPONSES["try_pull_unique_messages_3"]]
+        mocker.patch.object(client, "pull_messages", side_effect=unique_messages_list)
+        debug_mock = mocker.patch.object(demisto, "debug")
+        (
+            res_msgs,
+            res_msg_ids,
+            res_acks,
+            res_max_publish_time,
+        ) = try_pull_unique_messages(
+            client, sub_name, previous_msg_ids, last_run_time, retry_times=1
+        )
+        assert debug_mock.call_count == 0
+        assert res_msgs == [
+            {
+                "ackId": "654",
+                "data": "43",
+                "messageId": "456",
+                "publishTime": "2020-04-19T08:36:30.541Z",
+            }
+        ]
+        assert res_msg_ids == {"456"}
+        assert res_acks == ["654"]
+        assert res_max_publish_time == "2020-04-19T08:36:30.541000Z"
