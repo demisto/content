@@ -684,13 +684,12 @@ def panorama_push_status_command():
 
     # WARNINGS - Job warnings
     status_warnings = []
-    devices_warnings = []
     devices = result.get("response", {}).get('result', {}).get('job', {}).get('devices', {}).get('entry', {})
     if devices:
         for device in devices:
             device_info = device.get('details', {}).get('msg', {})
             if device_info:
-                devices_warnings.extend(device_info.get('warnings', []).get('line'))
+                status_warnings.extend(device_info.get('warnings', []).get('line'))
     push_status_output["Warnings"] = status_warnings
 
     demisto.results({
@@ -699,7 +698,7 @@ def panorama_push_status_command():
         'Contents': result,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Push to Device Group status:', push_status_output,
-                                         ['JobID', 'Status', 'Details'], removeNull=True),
+                                         ['JobID', 'Status', 'Details', 'Warnings'], removeNull=True),
         'EntryContext': {"Panorama.Push(val.JobID == obj.JobID)": push_status_output}
     })
 
