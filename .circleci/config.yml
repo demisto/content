@@ -479,6 +479,7 @@ jobs:
             fi
       - run:
           name: Run Tests - Demisto PreGA
+          no_output_timeout: 60m
           shell: /bin/bash
           when: always
           command: |
