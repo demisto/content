@@ -682,6 +682,13 @@ def panorama_push_status_command():
     if job.get('status') == 'PEND':
         push_status_output['Status'] = 'Pending'
 
+    # WARNINGS - Job warnings
+    status_warnings = []
+    if result.get("response", {}).get('result', {}).get('job', {}).get('warnings', {}):
+        status_warnings = result.get("response", {}).get('result', {}).get('job', {}).get('warnings', {}).get('line', [])
+    ignored_error = 'configured with no certificate profile'
+    push_status_output["Warnings"] = [item for item in status_warnings if item not in ignored_error]
+
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
