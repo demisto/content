@@ -1072,69 +1072,6 @@ if __name__ == "__main__":
 
     # Create test file based only on committed files
     create_test_file(options.nightly, options.skip_save)
-    # disable-secrets-detection-start
-    print("Rewrite filter_file.txt to use tests that rerecorded in recent nightly build")
-    # tests = 'ThreatX-test\nrsa_packets_and_logs_test\nACM-Test\nCanaryTools Test\nhashicorp_test\nWildfire Test' \
-    #         '\nDetonate URL - WildFire-v2 - Test\nAlexa Test Playbook\nSNDBOX_Test\nTenable.io test\nRTIR Test\n' \
-    #         'devo_test_playbook\nBigFixTest\nTest Playbook McAfee ATD\nSplunk-Test\nSplunkPySearch_Test\n' \
-    #         'urlscan_malicious_Test\nCylance Protect v2 Test\nCybereason Test\nvirusTotalPrivateAPI-test-playbook\n' \
-    #         'Symantec Messaging Gateway Test\ntest_Qradar\nFireEye HX Test\nRSA NetWitness Test\n' \
-    #         'Calculate Severity - Standard - Test\nLogRhythm REST test\nQRadar Indicator Hunting Test'
-    tests = [
-        # 'Intezer Testing v2',
-        # 'get_file_sample_by_hash_-_cylance_protect_-_test',
-        # 'Test - CrowdStrike Falcon',
-        # 'Detonate File - SNDBOX - Test',
-        # 'Test Playbook McAfee ATD',
-        # 'CuckooTest',
-        # #
-        # 'Microsoft Defender Advanced Threat Protection - Test',
-        # 'Test XDR Playbook',
-        # 'Cherwell - test',
-        # 'RSA NetWitness Test',
-        #
-        # 'TestHelloWorld',
-        # 'Cherwell Example Scripts - test',
-        # 'Splunk-Test',
-        # 'Microsoft Graph Calendar - Test',
-        # 'cisco-ise-test-playbook',
-        # 'hashicorp_test',
-        # 'AWS-Lambda-Test (Read-Only)',
-        # 'minemeld_test',
-        # 'QRadar Indicator Hunting Test',
-        # 'Azure SecurityCenter - Test',
-        # 'Claroty - Test',
-        # 'CloudShark - Test Playbook',
-        # 'pyEWS_Test',
-        # 'CarbonBlackLiveResponseTest',
-        # 'SplunkPy-Test-V2',
-        # 'test-Expanse-Playbook',
-        # 'Test-BPA',
-        # 'Azure Compute - Test',
-        # 'Calculate Severity - Standard - Test',
-        # 'CVE Search v2 - Test',
-        # 'Symantec Messaging Gateway Test',
-        # 'Tanium Test Playbook',
-        # 'MISP V2 Test',
-        # 'Jira-v2-Test',
-        # 'Palo Alto Networks - Malware Remediation Test',
-        # 'SymantecEndpointProtection_Test',
-        # 'Cylance Protect v2 Test',
-        # 'ACM-Test',
-        # 'AWS_DynamoDB-Test',
-        # 'test_Qradar',
-        'playbook-feodotrackeripblock_test',
-        'PhishlabsIOC_EIR-Test',
-        'SplunkPySearch_Test',
-        'rsa_packets_and_logs_test',
-        'Trend Micro Apex - Test',
-        'Endpoint Malware Investigation - Generic - Test',
-        'TestHelloWorldPlaybook',
-        'EWS Public Folders Test'
-    ]
-    # disable-secrets-detection-end
-    with open("./Tests/filter_file.txt", "w") as filter_file:
-        filter_file.write('\n'.join(tests))
 
     if not _FAILED:
         print_color("Finished test configuration", LOG_COLORS.GREEN)
