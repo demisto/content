@@ -146,7 +146,7 @@ tags:
 - incidents
 timeout: 300ns
 type: python
-dockerimage: demisto/dateutil:latest
+dockerimage: demisto/python:2.7.17.6981
 runonce: false
 tests:
 - dedup_-_generic_-_test
