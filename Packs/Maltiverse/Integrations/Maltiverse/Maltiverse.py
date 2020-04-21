@@ -439,7 +439,7 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         report = client.file_report(file)
         if 'NotFound' in report:
             markdown += f'No results found for file hash {file}'
-            dbot_score = {'Indicator': file, 'Type': 'file', 'Vendor': 'Maltiverse',
+            dbot_score = {'Indicator': file, 'Type': 'File', 'Vendor': 'Maltiverse',
                           'Score': 0}
             context[DBOT_SCORE_KEY].append(dbot_score)
             break
