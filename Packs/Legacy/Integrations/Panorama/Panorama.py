@@ -684,10 +684,14 @@ def panorama_push_status_command():
 
     # WARNINGS - Job warnings
     status_warnings = []
-    if result.get("response", {}).get('result', {}).get('job', {}).get('warnings', {}):
-        status_warnings = result.get("response", {}).get('result', {}).get('job', {}).get('warnings', {}).get('line', [])
-    ignored_error = 'configured with no certificate profile'
-    push_status_output["Warnings"] = [item for item in status_warnings if item not in ignored_error]
+    devices_warnings = []
+    devices = result.get("response", {}).get('result', {}).get('job', {}).get('devices', {}).get('entry', {})
+    if devices:
+        for device in devices:
+            device_info = device.get('details', {}).get('msg', {})
+            if device_info:
+                devices_warnings.extend(device_info.get('warnings', []).get('line'))
+    push_status_output["Warnings"] = status_warnings
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -5454,3 +5458,4 @@ def main():
 
 if __name__ in ["__builtin__", "builtins"]:
     main()
+main()
