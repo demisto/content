@@ -22,6 +22,8 @@ SERVICE_NAME = "pubsub"
 SERVICE_VERSION = "v1"
 SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
 ISO_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+LAST_RUN_TIME_KEY = "fetch_time"
+LAST_RUN_FETCHED_KEY = "fetched_ids"
 
 """ HELPER CLASSES """
 
@@ -1293,6 +1295,74 @@ def snapshot_delete_command(
     return readable_output, {}, raw_res
 
 
+def fetch_incidents(
+    client: PubSubClient, last_run: dict, first_fetch_time: str, ack_incidents: bool
+):
+    """
+    This function will execute each interval (default is 1 minute).
+    :param client: GoogleClient initialized with default_project, default_subscription and default_max_msgs
+    :param last_run: last run dict containing last run data
+    :param first_fetch_time: how long ago should the subscription seek in first fetch
+    :param ack_incidents: Boolean flag - when set to True will ack back the fetched messages
+    :return: incidents: Incidents that will be created in Demisto
+    """
+    sub_name = GoogleNameParser.get_subscription_project_name(
+        client.default_project, client.default_subscription
+    )
+
+    # Setup subscription for fetch
+    last_run_fetched_ids, last_run_time = setup_subscription_last_run(
+        client, first_fetch_time, last_run, sub_name, ack_incidents
+    )
+
+    # Pull unique messages if available
+    msgs, msg_ids, acknowledges, max_publish_time = try_pull_unique_messages(
+        client, sub_name, last_run_fetched_ids, last_run_time, retry_times=1
+    )
+
+    # Handle fetch results
+    return handle_fetch_results(
+        client,
+        sub_name,
+        last_run,
+        acknowledges,
+        last_run_time,
+        max_publish_time,
+        msg_ids,
+        msgs,
+        ack_incidents,
+    )
+
+
+def setup_subscription_last_run(
+    client, first_fetch_time, last_run, sub_name, ack_incidents
+):
+    """
+    Setups the subscription last run data, and seeks the subscription to a previous time if relevant
+    :param client: PubSub client
+    :param first_fetch_time: First fetch time provided by the user
+    :param last_run: Last run dict
+    :param sub_name: Name of the subscription
+    :param ack_incidents: ACK flag - if true, will not use seek except for first time fetch
+    :return:
+    """
+    last_run_fetched_ids = set()
+    # Handle first time fetch
+    if not last_run or LAST_RUN_TIME_KEY not in last_run:
+        last_run_time, _ = parse_date_range(first_fetch_time, ISO_DATE_FORMAT)
+        # Seek previous message state
+        client.subscription_seek_message(sub_name, last_run_time)
+    else:
+        last_run_time = last_run.get(LAST_RUN_TIME_KEY)
+        last_run_fetched_val = last_run.get(LAST_RUN_FETCHED_KEY)
+        if last_run_fetched_val:
+            last_run_fetched_ids = set(last_run_fetched_val)
+        if not ack_incidents:
+            # Seek previous message state
+            client.subscription_seek_message(sub_name, last_run_time)
+    return last_run_fetched_ids, last_run_time
+
+
 def try_pull_unique_messages(
     client, sub_name, previous_msg_ids, last_run_time, retry_times=0
 ):
@@ -1351,53 +1421,44 @@ def try_pull_unique_messages(
     return res_msgs, res_msg_ids, res_acks, res_max_publish_time
 
 
-def fetch_incidents(
-    client: PubSubClient, last_run: dict, first_fetch_time: str, ack_incidents: bool
+def handle_fetch_results(
+    client,
+    sub_name,
+    last_run,
+    acknowledges,
+    last_run_time,
+    max_publish_time,
+    pulled_msg_ids,
+    pulled_msgs,
+    ack_incidents,
 ):
     """
-    This function will execute each interval (default is 1 minute).
-    :param client: GoogleClient initialized with default_project, default_subscription and default_max_msgs
-    :param last_run: last run dict containing last run data
-    :param first_fetch_time: how long ago should the subscription seek in first fetch
-    :param ack_incidents: Boolean flag - when set to True will ack back the fetched messages
-    :return: incidents: Incidents that will be created in Demisto
+    Handle the fetch results
+    :param client: PubSub Client
+    :param sub_name: Subscription name
+    :param last_run: last run dict
+    :param acknowledges: acknowledges to make given ack_incidents is True
+    :param last_run_time: last run time
+    :param max_publish_time: max publish time of pulled messages
+    :param pulled_msg_ids: pulled message ids
+    :param pulled_msgs: pulled messages
+    :param ack_incidents: ack incidents flag
+    :return: incidents and last run
     """
-    last_run_time_key = "fetch_time"
-    last_run_fetched_key = "fetched_ids"
     incidents = []
-    last_run_fetched_ids = set()
-    sub_name = GoogleNameParser.get_subscription_project_name(
-        client.default_project, client.default_subscription
-    )
-
-    # Handle first time fetch
-    if not last_run or last_run_time_key not in last_run:
-        last_run_time, _ = parse_date_range(first_fetch_time, ISO_DATE_FORMAT)
-        # Seek previous message state
-        client.subscription_seek_message(sub_name, last_run_time)
-    else:
-        last_run_time = last_run.get(last_run_time_key)
-        last_run_fetched_val = last_run.get(last_run_fetched_key)
-        if last_run_fetched_val:
-            last_run_fetched_ids = set(last_run_fetched_val)
-        if not ack_incidents:
-            # Seek previous message state
-            client.subscription_seek_message(sub_name, last_run_time)
-
-    # Pull unique messages if available
-    msgs, msg_ids, acknowledges, max_publish_time = try_pull_unique_messages(
-        client, sub_name, last_run_fetched_ids, last_run_time, retry_times=1
-    )
-    if msg_ids and max_publish_time:
+    if pulled_msg_ids and max_publish_time:
         if last_run_time <= max_publish_time:
-            for msg in msgs:
+            # Create incidents
+            for msg in pulled_msgs:
                 incident = message_to_incident(msg)
                 incidents.append(incident)
+            # ACK messages if relevant
             if ack_incidents:
                 client.ack_messages(sub_name, acknowledges)
+            # Recreate last run to return with new values
             last_run = {
-                last_run_time_key: max_publish_time,
-                last_run_fetched_key: list(msg_ids),
+                LAST_RUN_TIME_KEY: max_publish_time,
+                LAST_RUN_FETCHED_KEY: list(pulled_msg_ids),
             }
     # We didn't manage to pull any unique messages, so we're trying to increment micro seconds - not relevant for ack
     elif not ack_incidents:
@@ -1407,8 +1468,8 @@ def fetch_incidents(
         last_run_time = convert_datetime_to_iso_str(
             last_run_time_dt + timedelta(microseconds=1)
         )
-        last_run[last_run_time_key] = last_run_time
-
+        # Update last run time
+        last_run[LAST_RUN_TIME_KEY] = last_run_time
     return incidents, last_run
 
 

@@ -9,6 +9,7 @@ from GooglePubSub import (
     get_publish_body,
     extract_acks_and_msgs,
     try_pull_unique_messages,
+    setup_subscription_last_run,
     publish_message_command,
     pull_messages_command,
     subscriptions_list_command,
@@ -24,6 +25,8 @@ from GooglePubSub import (
     snapshot_create_command,
     snapshot_update_command,
     snapshot_delete_command,
+    LAST_RUN_FETCHED_KEY,
+    LAST_RUN_TIME_KEY,
 )
 import dateparser
 import json
@@ -768,3 +771,81 @@ class TestCommands:
         assert res_msg_ids == {"456"}
         assert res_acks == ["654"]
         assert res_max_publish_time == "2020-04-19T08:36:30.541000Z"
+
+    def test_setup_subscription_last_run__first_run(self, mocker):
+        """
+        Test setup_subscription_last_run first_run
+        Given:
+            - first_fetch_time = valid date str
+            - last_run = empty
+        When:
+            - setting up a subscription for fetch-incidents for the first time
+        Then:
+            - subscription should seek previous state
+        """
+        client = self.MockClient()
+        first_fetch_time = "3 days"
+        last_run = {}
+        sub_name = "test_sub_2"
+        ack_incidents = False
+        sub_seek_mock = mocker.patch.object(client, "subscription_seek_message")
+        last_run_fetched_ids, last_run_time = setup_subscription_last_run(
+            client, first_fetch_time, last_run, sub_name, ack_incidents
+        )
+        assert sub_seek_mock.call_count == 1
+        assert last_run_fetched_ids == set()
+        assert last_run_time is not None
+
+    def test_setup_subscription_last_run__not_first_run__with_acks(self, mocker):
+        """
+        Test setup_subscription_last_run non-first_run
+        Given:
+            - last_run = previous run data
+            - ack = True
+        When:
+            - setting up a subscription for fetch-incidents not for the first time
+        Then:
+            - subscription should not seek previous state
+        """
+        client = self.MockClient()
+        first_fetch_time = ""
+        last_run = {
+            LAST_RUN_TIME_KEY: "2020-04-09T08:36:30.242Z",
+            LAST_RUN_FETCHED_KEY: ["123"],
+        }
+        sub_name = "test_sub_2"
+        ack_incidents = True
+        sub_seek_mock = mocker.patch.object(client, "subscription_seek_message")
+        last_run_fetched_ids, last_run_time = setup_subscription_last_run(
+            client, first_fetch_time, last_run, sub_name, ack_incidents
+        )
+        assert sub_seek_mock.call_count == 0
+        assert last_run_fetched_ids == {"123"}
+        assert last_run_time is not None
+
+    def test_setup_subscription_last_run__not_first_run__no_acks(self, mocker):
+        """
+        Test setup_subscription_last_run non-first_run
+        Given:
+            - last_run = previous run data
+            - ack = False
+        When:
+            - setting up a subscription for fetch-incidents not for the first time
+        Then:
+            - subscription should seek previous state
+        """
+        client = self.MockClient()
+        first_fetch_time = ""
+        last_run = {
+            LAST_RUN_TIME_KEY: "2020-04-09T08:36:30.242Z",
+            LAST_RUN_FETCHED_KEY: ["123"],
+        }
+        sub_name = "test_sub_2"
+        ack_incidents = False
+        sub_seek_mock = mocker.patch.object(client, "subscription_seek_message")
+        last_run_fetched_ids, last_run_time = setup_subscription_last_run(
+            client, first_fetch_time, last_run, sub_name, ack_incidents
+        )
+        assert sub_seek_mock.call_count == 1
+        assert last_run_fetched_ids == {"123"}
+        assert last_run_time is not None
