@@ -38,8 +38,9 @@ def test_parse_outputs():
      RESPONSE_CREATE_GROUP, EXPECTED_CREATE_GROUP),
 ])  # noqa: E124
 def test_commands(command, args, response, expected_result, mocker):
-    client = MsGraphClient(base_url='https://graph.microsoft.com/v1.0', tenant_id='tenant-id', auth_id='auth_and_token_url', enc_key='enc_key',
-                           app_name='ms-graph-groups', verify='use_ssl', proxy='proxies', self_deployed='self_deployed')
+    client = MsGraphClient(base_url='https://graph.microsoft.com/v1.0', tenant_id='tenant-id',
+                           auth_id='auth_and_token_url', enc_key='enc_key', app_name='ms-graph-groups',
+                           verify='use_ssl', proxy='proxies', self_deployed='self_deployed')
     mocker.patch.object(client.ms_client, 'http_request', return_value=response)
     result = command(client, args)
     assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
