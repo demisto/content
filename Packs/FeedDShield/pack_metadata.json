@@ -1,7 +1,7 @@
 {
     "name": "DShield Feed",
     "description": "Indicators feed from DShield",
-    "support": "Cortex XSOAR",
+    "support": "xsoar",
     "serverMinVersion": "5.5.0",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
