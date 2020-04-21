@@ -1,5 +1,5 @@
 id: 2cddaacb-4e4c-407e-8ef5-d924867b810c
-version: 11
+version: -1
 name: AWS - CloudWatchLogs Test Playbook_copy
 starttaskid: "0"
 tasks:

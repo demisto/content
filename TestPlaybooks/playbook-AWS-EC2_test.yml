@@ -1,5 +1,5 @@
 id: 2142f8de-29d5-4288-8426-0db39abe988b
-version: 13
+version: -1
 name: 'AWS - EC2 Test Playbook '
 starttaskid: "0"
 tasks:
