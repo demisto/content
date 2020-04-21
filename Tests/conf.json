@@ -1816,7 +1816,8 @@
             "integrations": "Google Cloud Storage",
             "playbookID": "GCS - Test",
             "timeout": 500,
-            "nightly": true
+            "nightly": true,
+            "memory_threshold": 80
         },
         {
             "playbookID": "Calculate Severity - Generic v2 - Test",
