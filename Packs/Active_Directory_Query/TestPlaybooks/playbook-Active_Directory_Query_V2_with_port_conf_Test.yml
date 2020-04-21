@@ -1,5 +1,5 @@
 id: Active Directory Query V2 configuration with port
-version: 3
+version: -1
 name: Active Directory Query V2 configuration with port
 starttaskid: "0"
 tasks:
