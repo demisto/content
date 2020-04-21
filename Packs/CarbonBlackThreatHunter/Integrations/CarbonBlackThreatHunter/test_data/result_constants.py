@@ -1,0 +1,1 @@
+QUERY_RESULT = {'CB.ThreatHunter.Query(val.JobID == obj.JobID)': {'JobID': 1, 'Status': 'Pending'}}
