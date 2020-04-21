@@ -256,13 +256,13 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
 
     packs_to_install = set()
     id_set_test_playbooks = id_set.get('TestPlaybooks', [])
-    print('========== ID Set TestPlaybooks ==========')
-    print(id_set_test_playbooks)
+    print('========== tests_set ==========')
+    print(tests_set)
     print('======================================')
     for test_playbook in id_set_test_playbooks:
         test_playbook_id = list(test_playbook.keys())[0]
         test_playbook_object = test_playbook[test_playbook_id]
-        if test_playbook_id in test_ids:
+        if test_playbook_id in tests_set:
             print('Found test playbook {0} in pack {1}'.format(test_playbook_object.get('name'), test_playbook_object.get('pack')))
             packs_to_install.add(test_playbook_object.get('pack'))
 
