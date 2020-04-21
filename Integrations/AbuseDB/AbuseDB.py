@@ -10,7 +10,6 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS '''
 VERBOSE = True
-# raise ValueError(demisto.params())
 SERVER = demisto.params().get('server')
 if not SERVER.endswith('/'):
     SERVER += '/'
