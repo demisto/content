@@ -1198,6 +1198,9 @@ if TOKEN == '' and PRIVATE_KEY != '':
     generated_jwt_token = create_jwt(PRIVATE_KEY, INTEGRATION_ID)
     TOKEN = get_installation_access_token(INSTALLATION_ID, generated_jwt_token)
 
+if TOKEN == '' and PRIVATE_KEY == '':
+    return_error("Insert api token or private key")
+
 HEADERS = {
     'Authorization': "Bearer " + TOKEN
 }

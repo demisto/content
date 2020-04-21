@@ -42,11 +42,11 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: Integration id
+- display: Github app integration id
   name: integration_id
   required: false
   type: 0
-- display: Installation id
+- display: Github app installation id
   name: installation_id
   required: false
   type: 0
