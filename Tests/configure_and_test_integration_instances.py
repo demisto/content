@@ -34,6 +34,8 @@ def options_handler():
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
     parser.add_argument('-n', '--is-nightly', type=str2bool, help='Is nightly build')
+    parser.add_argument('--branch', help='GitHub branch name', required=True)
+    parser.add_argument('--build-number', help='CI build number', required=True)
 
     options = parser.parse_args()
 
@@ -635,6 +637,46 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
     return testing_status
 
 
+def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number):
+    """Sets custom marketplace GCP bucket based on branch name and build number
+
+    Args:
+        client (demisto_client): The configured client to use.
+        prints_manager (ParallelPrintsManager): Print manager object
+        branch_name (str): GitHub branch name
+        ci_build_number (str): CI build number
+
+    Returns:
+        None
+    """
+    host = client.api_client.configuration.host
+    installed_content_message = \
+        '\nMaking "POST" request to server - "{}" to set GCP bucket server configuration.'.format(host)
+    prints_manager.add_print_job(installed_content_message, print_color, 0, LOG_COLORS.GREEN)
+
+    # make request to installed content details
+    data = {
+        'data': {
+            'marketplace.gcp.bucket': 'marketplace-dist-dev',
+            'marketplace.gcp.path': 'content/builds/{}/{}'.format(branch_name, ci_build_number)
+        },
+        'version': -1
+    }
+    response_data, status_code, _ = demisto_client.generic_request_func(self=client, path='/system/config',
+                                                                        method='POST', body=data)
+
+    try:
+        result_object = ast.literal_eval(response_data)
+    except ValueError as err:
+        print_error('failed to parse response from demisto. response is {}.\nError:\n{}'.format(response_data, err))
+        return '', 0
+
+    if status_code >= 300 or status_code < 200:
+        message = result_object.get('message', '')
+        msg = "Failed to set GCP bucket server config - with status code " + str(status_code) + '\n' + message
+        print_error(msg)
+
+
 def main():
     options = options_handler()
     username = options.user
@@ -644,6 +686,8 @@ def main():
     servers = determine_servers_urls(ami_env)
     conf_path = options.conf
     secret_conf_path = options.secret
+    branch_name = options.branch
+    ci_build_number = options.build_number
 
     prints_manager = ParallelPrintsManager(1)
     server_numeric_version = get_server_numeric_version(ami_env, prints_manager)
@@ -693,9 +737,10 @@ def main():
     # [conf.json](../conf.json) for examples
     brand_new_integrations = []
     testing_server = servers[0]  # test integration instances only on a single server
+    testing_client = demisto_client.configure(base_url=testing_server, username=username, password=password,
+                                              verify_ssl=False)
+    set_marketplace_gcp_bucket_for_build(testing_client, prints_manager, branch_name, ci_build_number)
     for test in tests_for_iteration:
-        testing_client = demisto_client.configure(base_url=testing_server, username=username, password=password,
-                                                  verify_ssl=False)
         integrations = get_integrations_for_test(test, skipped_integrations_conf)
         instance_names_conf = test.get('instance_names', [])
         if not isinstance(instance_names_conf, list):
