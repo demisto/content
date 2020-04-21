@@ -10,15 +10,24 @@ CSV_STRING_2 = "header1,header2,header3\r\n" \
 CSV_STRING_3 = "header1,header2,header3"
 
 CSV_STRING_4 = "header1,header2,header3\r\n" \
-               "col1,\"col2_1\r\ncol2_2\r\ncol2_3\",col3\r\n" \
+               "col1,\"col2_1\r\n" \
+               "col2_2\r\n" \
+               "col2_3\",col3\r\n" \
                "col1,col2,col3"
 
 CSV_STRING_5 = "header1,header2,header3\r\n" \
-               "\r\ncol1,\"col2_1\r\ncol2_2\r\ncol2_3\",col3\r\n" \
+               "\r\n" \
+               "col1,\"col2_1\r\n" \
+               "col2_2\r\n" \
+               "col2_3\",col3\r\n" \
                "col1,col2,col3"
 
 CSV_STRING_6 = "header1,header2,header3\r\n" \
-               "\r\ncol1,\"col2_1\r\ncol2_2\r\n\r\ncol2_3\",col3\r\n" \
+               "\r\n" \
+               "col1,\"col2_1\r\n" \
+               "col2_2\r\n" \
+               "\r\n" \
+               "col2_3\",col3\r\n" \
                "col1,col2,col3"
 
 CSV_STRING_7 = "col_1,col_2,col_3,col_4,col_5,col_6,col_7,col_8,col_9,col_10,col_11,col_12\r\n" \
