@@ -31,7 +31,7 @@ CONTENT_PACKS_TO_INSTALL="./Tests/content_packs_to_install.txt"
 while IFS= read -r line
 do
   echo "$line"
-done < "CONTENT_PACKS_TO_INSTALL"
+done < "$CONTENT_PACKS_TO_INSTALL"
 echo "Finished updating content packs successfully."
 
 echo "Finished preparing content packs for testing successfully."

@@ -146,7 +146,7 @@ jobs:
 
             demisto-sdk secrets --post-commit --ignore-entropy
       - run:
-          name: Configure Test Filter
+          name: Configure Test Filter And Content Packs
           when: always
           command: |
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
@@ -157,6 +157,16 @@ jobs:
 
             [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
             python3 ./Tests/scripts/configure_tests.py -n $IS_NIGHTLY
+      - run:
+          name: Prepare Content Packs For Testing
+          when: always
+          command: |
+            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo 'Skipping - running only in container number 0.'
+                exit 0;
+            fi
+            ./Tests/scripts/prepare_content_packs_for_testing.sh
       - run:
           name: Spell Checks
           command: |
@@ -273,16 +283,7 @@ jobs:
                 ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
                 cp demistoserver.sh ./Tests/scripts/awsinstancetool/ansibleinstall/demistoserver.sh
             fi
-      - run:
-          name: Prepare content packs for testing
-          when: always
-          command: |
-            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
-              then
-                echo 'Skipping - running only in container number 0.'
-                exit 0;
-            fi
-            ./Tests/scripts/prepare_content_packs_for_testing.sh
+
       - run:
           name: Download Configuration
           when: always
