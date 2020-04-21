@@ -1,5 +1,5 @@
 id: ReadFile test
-version: 11
+version: -1
 name: ReadFile test
 starttaskid: "0"
 tasks:
