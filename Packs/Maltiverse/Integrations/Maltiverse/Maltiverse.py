@@ -12,7 +12,6 @@ import hashlib
 requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 SERVER_URL = 'https://api.maltiverse.com'
 DBOT_SCORE_KEY = 'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'
 DEFAULT_THRESHOLD = 5
@@ -461,7 +460,7 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
                                                       range(len(report.get('blacklist', [])))]}
                    }
 
-        dbot_score = {'Indicator': report['filename'][0], 'Type': 'File', 'Vendor': 'Maltiverse',
+        dbot_score = {'Indicator': file, 'Type': 'File', 'Vendor': 'Maltiverse',
                       'Score': calculate_score(positive_detections, report.get('classification', ''), threshold,
                                                len(report.get('antivirus', [])))}
 
@@ -497,7 +496,6 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
 
         markdown = f'## Maltiverse File reputation for: {report["filename"][0]}\n'
         markdown += f'File Name: {report["filename"][0]}\n'
-        markdown += f'File MD5: **{report.get("md5", "")}**\n'
         markdown += f'File SHA256: **{report.get("sha256", "")}**\n'
         markdown += f'File Type: **{report.get("type", "")}**\n'
         markdown += f'Positive Detections: **{positive_detections}**\n'
