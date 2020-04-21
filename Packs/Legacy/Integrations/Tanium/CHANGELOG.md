@@ -1,5 +1,7 @@
 ## [Unreleased]
 Fixed an issue where the output of some answers was malformed.
+
+## [20.4.0] - 2020-04-14
 Fixed an issue in the ***tn-deploy-package*** command. 
 
 
