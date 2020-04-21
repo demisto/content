@@ -243,9 +243,11 @@ For additional information please visit: https://whatis.maltiverse.com/
 
 ## Known Limitations
 ---
-When not creating an Maltiverse account there is a limit of 20 API calls per day.
-A free account grants 100 API calls per day.
-Please see https://maltiverse.com/plans for more information about the different plans. 
+- When not creating an Maltiverse account there is a limit of 20 API calls per day.
+  A free account grants 100 API calls per day.
+  Please see https://maltiverse.com/plans for more information about the different plans.
+- URL command: When running the !url command, an URL may be followed by a '/' at the end. Maltiverse requires this 
+  '/' but it might cause the indicator to not show in the war room. 
 
 ## Troubleshooting
 ---

@@ -292,7 +292,7 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         report = client.url_report(url)
         if 'NotFound' in report:
             markdown += f'No results found for {url}'
-            dbot_score = {'Indicator': url, 'Type': 'url', 'Vendor': 'Maltiverse',
+            dbot_score = {'Indicator': url, 'Type': 'Url', 'Vendor': 'Maltiverse',
                           'Score': 0}
             context[DBOT_SCORE_KEY].append(dbot_score)
             break
@@ -307,7 +307,7 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
                                                       range(len(report.get('blacklist', [])))]}
                    }
 
-        dbot_score = {'Indicator': url, 'Type': 'url', 'Vendor': 'Maltiverse',
+        dbot_score = {'Indicator': url, 'Type': 'Url', 'Vendor': 'Maltiverse',
                       'Score': calculate_score(positive_detections, report.get('classification', ''), threshold)}
 
         maltiverse_url = {string_to_context_key(field): report.get(field, '') for field in
@@ -316,8 +316,8 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         maltiverse_url['Tags'] = create_tags(report.get('tag', ''))
         maltiverse_url = {**maltiverse_url, **blacklist_context}
 
-        markdown = f'## Maltiverse URL reputation for: {report.get("url", "")}\n'
-        markdown += f'URL: {report.get("url", "")}\n'
+        markdown = f'## Maltiverse URL reputation for: {url}\n'
+        markdown += f'URL: {url}\n'
         markdown += f'URL Domain: **{report.get("domain", "")}**\n'
         markdown += f'URL Creation Time: **{report.get("creation_time", "")}**\n'
         markdown += f'URL Modification Time: **{report.get("modification_time", "")}**\n'
