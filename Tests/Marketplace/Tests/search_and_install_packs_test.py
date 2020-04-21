@@ -1,7 +1,6 @@
 import unittest
 import demisto_client
 from unittest import mock
-from demisto_client import login
 from Tests.test_content import ParallelPrintsManager
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies
 
@@ -83,7 +82,7 @@ class TestSearchAndInstallPacks(unittest.TestCase):
 
         bad_integrations_files = ['malformed_integration_file']
 
-        mocker.patch.object('demisto_client', login, return_value=None)
+        mocker.patch.object(demisto_client, 'login', return_value=None)
         client = demisto_client.configure(base_url=BASE_URL, api_key=API_KEY)
         prints_manager = ParallelPrintsManager(1)
 
