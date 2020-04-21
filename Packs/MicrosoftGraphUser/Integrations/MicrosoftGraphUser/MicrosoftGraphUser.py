@@ -70,7 +70,9 @@ class MsGraphClient:
     def delete_user(self, user):
         self.ms_client.http_request(
             method='DELETE',
-            url_suffix=f'users/{user}')
+            url_suffix=f'users/{user}',
+            resp_type="text"
+        )
 
     def create_user(self, properties):
         self.ms_client.http_request(
@@ -100,7 +102,8 @@ class MsGraphClient:
             method='GET ',
             url_suffix=f'users/{user}',
             params={'$select': properties})
-        return user_data.pop('@odata.context', None)
+        user_data.pop('@odata.context', None)
+        return user_data
 
     def list_users(self, properties, page_url):
         if page_url:
@@ -249,7 +252,6 @@ def main():
     LOG(f'Command being called is {command}')
 
     try:
-        # TODO: Check handle_proxy() function and see if it exists in MsApiModule
         client: MsGraphClient = MsGraphClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key,
                                               app_name=APP_NAME, base_url=url, verify=verify, proxy=proxy,
                                               self_deployed=self_deployed)
