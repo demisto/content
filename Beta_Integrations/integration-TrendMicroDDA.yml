@@ -408,7 +408,7 @@ script:
         hr = {}
         hr_headers = {
             'Risk Level': reports['OVERALL_RISK_LEVEL'],
-            'Image Type': reports['IMAGE_TYPE']['TYPE']['#text'],
+            'Image Type': reports.get('IMAGE_TYPE', {}).get('TYPE', {}).get('#text', 'Unknown'),
             'Sum of Files Analyzed': (len(reports['FILE_ANALYZE_REPORT'])) if reports_type_is_list  else '1',
         }
 
@@ -625,10 +625,11 @@ script:
                 'Status': 'Analyzing',
                 'SHA1': sha1
             }
+
             demisto.results({
                 'Type': entryTypes['note'],
                 'ContentsFormat': formats['text'],
-                'Content': res,
+                'Contents': {"value": res.text},
                 'HumanReadable': 'Submission analyzation was not finished yet.',
                 'EntryContext': {
                     'TrendMicroDDA.Submission(val.SHA1 && val.SHA1==obj.SHA1)': ec
