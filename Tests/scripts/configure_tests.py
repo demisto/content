@@ -271,6 +271,22 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
     # remove skipped integrations from the list
     missing_ids = missing_ids - set(skipped_integrations)
 
+    packs_to_install = set()
+    id_set_test_playbooks = id_set.get('TestPlaybooks', [])
+    print('========== ID Set TestPlaybooks ==========')
+    print(id_set_test_playbooks)
+    print('======================================')
+    for test_playbook in id_set_test_playbooks.values():
+        test_playbook_id = list(test_playbook.keys())[0]
+        test_playbook_object = test_playbook[test_playbook_id]
+        if test_playbook_object.get('name') in test_ids:
+            print('Found test playbook {0} in pack {1}'.format(test_playbook.get('name'), test_playbook.get('pack')))
+            packs_to_install.add(test_playbook.get('pack'))
+
+    print('========== Packs to install for test playbooks ==========')
+    print(packs_to_install)
+    print('======================================')
+
     return test_ids, missing_ids, caught_missing_test
 
 
@@ -420,7 +436,7 @@ def check_if_fetch_incidents_is_tested(missing_ids, integration_ids, id_set, con
     return missing_ids, tests_set
 
 
-def find_tests_for_modified_files(modified_files, conf, id_set):
+def find_tests_and_packs_for_modified_files(modified_files, conf, id_set):
     script_names = set([])
     playbook_names = set([])
     integration_ids = set([])
@@ -1005,7 +1021,7 @@ def get_test_list(files_string, branch_name, two_before_ga_ver='0', conf=None, i
 
     tests = set([])
     if modified_files:
-        tests = find_tests_for_modified_files(modified_files, conf, id_set)
+        tests = find_tests_and_packs_for_modified_files(modified_files, conf, id_set)
 
     # Adding a unique test for a json file.
     if is_reputations_json:
