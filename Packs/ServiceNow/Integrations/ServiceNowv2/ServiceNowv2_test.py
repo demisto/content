@@ -98,7 +98,7 @@ def test_commands(command, args, response, expected_result, expected_auto_extrac
      EXPECTED_ADD_LINK_HR, True),
     (add_comment_command, {'id': "1234", 'comment': "Nice work!"}, RESPONSE_ADD_COMMENT, EXPECTED_ADD_COMMENT_HR, True),
     (delete_record_command, {'table_name': "alm_asset", 'id': '1234'}, {},
-     'ServiceNow record with ID 1234 was successfully deleted.', True),
+     'ServiceNow record with ID 1234 was successfully deleted.', True)
 ])  # noqa: E124
 def test_no_ec_commands(command, args, response, expected_hr, expected_auto_extract, mocker):
     """Unit test
