@@ -1228,3 +1228,20 @@ data_test_b64_encode = [
 def test_b64_encode(_input, expected_output):
     output = b64_encode(_input)
     assert output == expected_output, 'b64_encode({}) returns: {} instead: {}'.format(_input, output, expected_output)
+
+
+def test_traceback_in_return_error(mocker):
+    mocker.patch.object(demisto, 'command', return_value="test-command")
+    mocker.spy(demisto, 'results')
+    mocker.patch('CommonServerPython.is_debug_mode', return_value=True)
+    from CommonServerPython import return_error
+
+    try:
+        raise Exception("This is a test string")
+    except Exception:
+        with pytest.raises(SystemExit):
+            return_error("some text")
+
+    assert "This is a test string" in str(demisto.results.call_args)
+    assert "Traceback" in str(demisto.results.call_args)
+    assert "some text" in str(demisto.results.call_args)
