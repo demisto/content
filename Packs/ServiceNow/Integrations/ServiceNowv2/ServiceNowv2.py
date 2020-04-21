@@ -218,6 +218,7 @@ def get_ticket_human_readable(tickets, ticket_type: str) -> list:
             hr['Priority'] = TICKET_PRIORITY.get(priority, priority)
 
         if ticket_type == 'sc_req_item':
+            # the state of sc_req_item tickets is always 1 and does not reflect the state
             state = ticket.get('stage', '')
         else:
             state = ticket.get('state', '')
