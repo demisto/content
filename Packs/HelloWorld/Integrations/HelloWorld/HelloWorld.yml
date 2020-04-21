@@ -57,7 +57,7 @@ configuration:
   type: 8
 description: This is the Hello World integration for getting started.
 display: HelloWorld
-name: HelloWorld
+name: Hello World
 script:
   commands:
   - arguments:

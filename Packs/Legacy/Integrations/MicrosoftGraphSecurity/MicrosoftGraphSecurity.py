@@ -224,6 +224,8 @@ def search_alerts_command(args):
         'HumanReadable': tableToMarkdown('Microsoft Security Graph Alerts', outputs, table_headers, removeNull=True),
         'EntryContext': ec
     }
+    setLastRun()
+    demisto.incidents(outputs)
     demisto.results(entry)
 
 

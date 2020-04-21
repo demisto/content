@@ -10,7 +10,7 @@ commonfields:
   id: HelloWorldScript
   version: -1
 enabled: false
-name: HelloWorldScript
+name: Hello World Script
 outputs:
 - contextPath: HelloWorld.hello
   description: The result of hello
