@@ -60,8 +60,8 @@ configuration:
   name: longRunning
   required: false
   type: 8
-- additionalinfo: Make sure to use different ports for each Export Indicators Service
-    instance.
+- additionalinfo: Requires a unique port for each long-running integration instance.
+    Do not use the same port for multiple instances.
   display: Listen Port
   name: longRunningPort
   required: true
