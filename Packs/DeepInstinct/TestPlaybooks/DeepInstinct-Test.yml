@@ -57,9 +57,9 @@ tasks:
     task:
       id: b258f791-0af4-4d9f-8c96-bebdbecf5867
       version: -1
-      name: di-get-device
+      name: deepinstinct-get-device
       description: get specific device by id
-      script: '|||di-get-device'
+      script: '|||deepinstinct-get-device'
       type: regular
       iscommand: true
       brand: ''
@@ -81,9 +81,9 @@ tasks:
     task:
       id: c7923567-5441-4d6e-8a75-1b0dd4f1d0ca
       version: -1
-      name: di-hash-to-wl
+      name: deepinstinct-hash-to-whitelist
       description: add file hash to whitelist
-      script: '|||di-hash-to-wl'
+      script: '|||deepinstinct-hash-to-whitelist'
       type: regular
       iscommand: true
       brand: ''
@@ -107,9 +107,9 @@ tasks:
     task:
       id: bdfc3257-fcc5-4190-8b44-7b6259e7bdf8
       version: -1
-      name: di-hash-to-bl
+      name: deepinstinct-hash-to-blacklist
       description: add file hash to blacklist
-      script: Deep Instinct|||di-hash-to-bl
+      script: Deep Instinct|||deepinstinct-hash-to-blacklist
       type: regular
       iscommand: true
       brand: Deep Instinct
@@ -133,9 +133,9 @@ tasks:
     task:
       id: f218c749-eb9d-4888-8f32-9e6d61907809
       version: -1
-      name: di-add-device-to-group
+      name: deepinstinct-add-device-to-group
       description: add multiple devices to group
-      script: '|||di-add-devices-to-group'
+      script: '|||deepinstinct-add-devices-to-group'
       type: regular
       iscommand: true
       brand: ''
@@ -159,9 +159,9 @@ tasks:
     task:
       id: 11afeeed-648a-4ef2-8bbb-783a400a6e43
       version: -1
-      name: di-remove-device-from-group
+      name: deepinstinct-remove-device-from-group
       description: remove list of devices from group
-      script: '|||di-remove-devices-from-group'
+      script: '|||deepinstinct-remove-devices-from-group'
       type: regular
       iscommand: true
       brand: ''
@@ -300,9 +300,9 @@ tasks:
     task:
       id: 678570b3-5e93-4abc-8115-f9216f29dd59
       version: -1
-      name: di-get-device after adding group
+      name: deepinstinct-get-device after adding group
       description: get specific device by id
-      script: '|||di-get-device'
+      script: '|||deepinstinct-get-device'
       type: regular
       iscommand: true
       brand: ''
@@ -324,9 +324,9 @@ tasks:
     task:
       id: c897db69-e2ff-4556-8a5a-7081f991c95e
       version: -1
-      name: di-get-device after removing group
+      name: deepinstinct-get-device after removing group
       description: get specific device by id
-      script: '|||di-get-device'
+      script: '|||deepinstinct-get-device'
       type: regular
       iscommand: true
       brand: ''
@@ -379,9 +379,9 @@ tasks:
     task:
       id: 52fa932c-9cb8-4719-8a7e-b1e9e4e0d68e
       version: -1
-      name: di-delete-files-remotely
+      name: deepinstinct-delete-files-remotely
       description: delete multiple files remotely
-      script: '|||di-delete-files-remotely'
+      script: '|||deepinstinct-delete-files-remotely'
       type: regular
       iscommand: true
       brand: ''
@@ -403,9 +403,9 @@ tasks:
     task:
       id: 1626cb92-3ab1-42ef-845f-019e5228770f
       version: -1
-      name: di-terminate-process
+      name: deepinstinct-terminate-process
       description: terminate list of processes
-      script: '|||di-terminate-processes'
+      script: '|||deepinstinct-terminate-processes'
       type: regular
       iscommand: true
       brand: ''
@@ -427,9 +427,9 @@ tasks:
     task:
       id: bed144d7-cf29-4f69-864c-264ce82eddd3
       version: -1
-      name: di-close-events
+      name: deepinstinct-close-events
       description: close list of events
-      script: '|||di-close-events'
+      script: '|||deepinstinct-close-events'
       type: regular
       iscommand: true
       brand: ''

@@ -53,7 +53,7 @@ def get_specific_device():
     )
 
 
-def add_hash_to_bl():
+def add_hash_to_blacklist():
     """
     Add hash to blacklist
     """
@@ -63,7 +63,7 @@ def add_hash_to_bl():
     demisto.results('ok')
 
 
-def add_hash_to_wl():
+def add_hash_to_whitelist():
     """
     Add hash to whitelist
     """
@@ -163,49 +163,49 @@ def main():
         """
         test_module()
 
-    if demisto.command() == 'di-get-device':
+    if demisto.command() == 'deepinstinct-get-device':
         """
         Get device by id
         """
         get_specific_device()
 
-    if demisto.command() == 'di-hash-to-bl':
+    if demisto.command() == 'deepinstinct-hash-to-blacklist':
         """
         Add hash to blacklist
         """
-        add_hash_to_bl()
+        add_hash_to_blacklist()
 
-    if demisto.command() == 'di-hash-to-wl':
+    if demisto.command() == 'deepinstinct-hash-to-whitelist':
         """
         Add hash to whitelist
         """
-        add_hash_to_wl()
+        add_hash_to_whitelist()
 
-    if demisto.command() == 'di-add-devices-to-group':
+    if demisto.command() == 'deepinstinct-add-devices-to-group':
         """
         Add devices to groups
         """
         add_devices_to_group()
 
-    if demisto.command() == 'di-remove-devices-from-group':
+    if demisto.command() == 'deepinstinct-remove-devices-from-group':
         """
         Remove devices from group
         """
         remove_devices_from_group()
 
-    if demisto.command() == 'di-delete-files-remotely':
+    if demisto.command() == 'deepinstinct-delete-files-remotely':
         """
         Delete files remotely by event ids
         """
         delete_files_remotely()
 
-    if demisto.command() == 'di-terminate-processes':
+    if demisto.command() == 'deepinstinct-terminate-processes':
         """
         Terminate processes by event ids
         """
         terminate_remote_processes()
 
-    if demisto.command() == 'di-close-events':
+    if demisto.command() == 'deepinstinct-close-events':
         """
         Close events by event ids
         """

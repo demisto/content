@@ -16,8 +16,8 @@ This integration was integrated and tested with version xx of Deep Instinct
 2. Search for Deep Instinct.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
-    * __base server url__
-    * __api key__
+    * __Base server URL__
+    * __API Key__
     * __Fetch incidents__
     * __Incident type__
     * __first event id to fetch from__
@@ -29,22 +29,22 @@ This integration was integrated and tested with version xx of Deep Instinct
 ---
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-1. di-get-device
-2. di-hash-to-bl
-3. di-hash-to-wl
-4. di-add-devices-to-group
-5. di-remove-devices-from-group
-6. di-delete-files-remotely
-7. di-terminate-processes
-8. di-close-events
-### 1. di-get-device
+1. deepinstinct-get-device
+2. deepinstinct-hash-to-blacklist
+3. deepinstinct-hash-to-whitelist
+4. deepinstinct-add-devices-to-group
+5. deepinstinct-remove-devices-from-group
+6. deepinstinct-delete-files-remotely
+7. deepinstinct-terminate-processes
+8. deepinstinct-close-events
+### 1. deepinstinct-get-device
 ---
 get specific device by id
 ##### Required Permissions
 **FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
-`di-get-device`
+`deepinstinct-get-device`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -84,7 +84,7 @@ get specific device by id
 
 
 ##### Command Example
-```!di-get-device device_id=1```
+```!deepinstinct-get-device device_id=1```
 
 ##### Context Example
 ```
@@ -126,14 +126,14 @@ get specific device by id
 | 2.3.1.12 | 115wt | OFFLINE | REGISTERED | OU=Organizations & Sites,DC=bancshares,DC=mib |  | 3 | Windows Default Group | Mock_2020-04-09 17:49:39.408405_1 | 1 | 192.168.88.80 | 2020-04-09T14:49:39.711487Z | 2020-04-09T14:49:39.722292Z | NA | 00:00:00:00:00:00 | 1 | MSP 1 | WINDOWS | Windows | 3 | Windows Default Policy | 0 |  | 1 | Tenant 1 |
 
 
-### 2. di-hash-to-bl
+### 2. deepinstinct-hash-to-blacklist
 ---
 add file hash to blacklist
 ##### Required Permissions
 **FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
-`di-hash-to-bl`
+`deepinstinct-hash-to-blacklist`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -147,19 +147,19 @@ add file hash to blacklist
 There is no context output for this command.
 
 ##### Command Example
-```!di-hash-to-bl file_hash=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb policy_id=6```
+```!deepinstinct-hash-to-blacklist file_hash=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb policy_id=6```
 
 ##### Human Readable Output
 ok
 
-### 3. di-hash-to-wl
+### 3. deepinstinct-hash-to-whitelist
 ---
 add file hash to whitelist
 ##### Required Permissions
 **FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
-`di-hash-to-wl`
+`deepinstinct-hash-to-whitelist`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -173,19 +173,19 @@ add file hash to whitelist
 There is no context output for this command.
 
 ##### Command Example
-```!di-hash-to-wl file_hash=wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww policy_id=6```
+```!deepinstinct-hash-to-whitelist file_hash=wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww policy_id=6```
 
 ##### Human Readable Output
 ok
 
-### 4. di-add-devices-to-group
+### 4. deepinstinct-add-devices-to-group
 ---
 add multiple devices to group
 ##### Required Permissions
 **FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
-`di-add-devices-to-group`
+`deepinstinct-add-devices-to-group`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -199,19 +199,19 @@ add multiple devices to group
 There is no context output for this command.
 
 ##### Command Example
-```!di-add-devices-to-group device_ids=1 group_id=6```
+```!deepinstinct-add-devices-to-group device_ids=1 group_id=6```
 
 ##### Human Readable Output
 ok
 
-### 5. di-remove-devices-from-group
+### 5. deepinstinct-remove-devices-from-group
 ---
 remove list of devices from group
 ##### Required Permissions
 **FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
-`di-remove-devices-from-group`
+`deepinstinct-remove-devices-from-group`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -225,19 +225,19 @@ remove list of devices from group
 There is no context output for this command.
 
 ##### Command Example
-```!di-remove-devices-from-group device_ids=1 group_id=6```
+```!deepinstinct-remove-devices-from-group device_ids=1 group_id=6```
 
 ##### Human Readable Output
 ok
 
-### 6. di-delete-files-remotely
+### 6. deepinstinct-delete-files-remotely
 ---
 delete multiple files remotely
 ##### Required Permissions
 **FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
-`di-delete-files-remotely`
+`deepinstinct-delete-files-remotely`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -250,19 +250,19 @@ delete multiple files remotely
 There is no context output for this command.
 
 ##### Command Example
-```!di-delete-files-remotely event_ids=1```
+```!deepinstinct-delete-files-remotely event_ids=1```
 
 ##### Human Readable Output
 ok
 
-### 7. di-terminate-processes
+### 7. deepinstinct-terminate-processes
 ---
 terminate list of processes
 ##### Required Permissions
 **FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
-`di-terminate-processes`
+`deepinstinct-terminate-processes`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -275,19 +275,19 @@ terminate list of processes
 There is no context output for this command.
 
 ##### Command Example
-```!di-terminate-processes event_ids=1,2```
+```!deepinstinct-terminate-processes event_ids=1,2```
 
 ##### Human Readable Output
 ok
 
-### 8. di-close-events
+### 8. deepinstinct-close-events
 ---
 close list of events
 ##### Required Permissions
 **FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
-`di-close-events`
+`deepinstinct-close-events`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -300,7 +300,7 @@ close list of events
 There is no context output for this command.
 
 ##### Command Example
-```!di-close-events event_ids=1```
+```!deepinstinct-close-events event_ids=1```
 
 ##### Human Readable Output
 ok

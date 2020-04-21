@@ -6,12 +6,12 @@ display: Deep Instinct
 category: Network Security
 description: Deep Instinct
 configuration:
-- display: base server url
+- display: Base server URL
   name: base_url
   defaultvalue: ""
   type: 0
   required: true
-- display: api key
+- display: API Key
   name: apikey
   defaultvalue: ""
   type: 4
@@ -31,7 +31,7 @@ configuration:
   required: false
 script:
   commands:
-  - name: di-get-device
+  - name: deepinstinct-get-device
     arguments:
     - name: device_id
       required: true
@@ -113,7 +113,7 @@ script:
       description: Device tenant id
       type: number
     description: get specific device by id
-  - name: di-hash-to-bl
+  - name: deepinstinct-hash-to-blacklist
     arguments:
     - name: policy_id
       required: true
@@ -122,7 +122,7 @@ script:
       required: true
       description: file hash
     description: add file hash to blacklist
-  - name: di-hash-to-wl
+  - name: deepinstinct-hash-to-whitelist
     arguments:
     - name: policy_id
       required: true
@@ -131,7 +131,7 @@ script:
       required: true
       description: file hash
     description: add file hash to whitelist
-  - name: di-add-devices-to-group
+  - name: deepinstinct-add-devices-to-group
     arguments:
     - name: group_id
       required: true
@@ -140,7 +140,7 @@ script:
       required: true
       description: comma separeted devices ids
     description: add multiple devices to group
-  - name: di-remove-devices-from-group
+  - name: deepinstinct-remove-devices-from-group
     arguments:
     - name: group_id
       required: true
@@ -150,21 +150,21 @@ script:
       description: comma separeted list of device ids to remove
       isArray: true
     description: remove list of devices from group
-  - name: di-delete-files-remotely
+  - name: deepinstinct-delete-files-remotely
     arguments:
     - name: event_ids
       required: true
       description: comma separeted list of event ids
       isArray: true
     description: delete multiple files remotely
-  - name: di-terminate-processes
+  - name: deepinstinct-terminate-processes
     arguments:
     - name: event_ids
       required: true
       description: comma separeted list of event ids
       isArray: true
     description: terminate list of processes
-  - name: di-close-events
+  - name: deepinstinct-close-events
     arguments:
     - name: event_ids
       required: true
