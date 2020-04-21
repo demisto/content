@@ -88,7 +88,8 @@ class MsGraphClient:
         self.ms_client.http_request(
             method='PATCH',
             url_suffix=f'users/{user}',
-            json_data=body)
+            json_data=body,
+            resp_type="text")
 
     def get_delta(self, properties):
         users = self.ms_client.http_request(
