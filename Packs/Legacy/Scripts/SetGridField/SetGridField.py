@@ -44,7 +44,7 @@ def get_current_table(grid_id: str, sort_by: Optional[str], columns: Optional[st
     if not columns:
         raise ValueError("Columns not specified - Its a mandatory arg when grid is empty.")
     # Get columns
-    columns = argToList(columns)
+    columns = argToList(columns.lower())
     # Validate sort is valide col
     if sort_by and sort_by not in columns:
         raise ValueError(f'sort_by: {sort_by} is not columns: {columns}')
@@ -182,7 +182,6 @@ def build_table(data: Union[List[Dict[Any, Any]], Any], columns: List[str], sort
     table = table.to_dict('records')
     # Overwrite data if specified
     if not overwrite:
-        demisto.results('here')
         table.append(current_table)
 
     return table
