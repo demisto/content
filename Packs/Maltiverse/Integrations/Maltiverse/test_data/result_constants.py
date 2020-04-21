@@ -11,7 +11,7 @@ EXPECTED_IP_RESULT = {
             },
             'Tags': ['anonymizer'],
             'ThreatTypes': {
-                    'threatcategory': ['Anonymizer']
+                'threatcategory': ['Anonymizer']
             }
         }
     ],
@@ -47,7 +47,7 @@ EXPECTED_URL_RESULT = {
             'PositiveDetections': 1,
             'Tags': ['phishing'],
             'ThreatTypes':{
-                    'threatcategory': ['Phishing Aetna Health Plans &amp; Dental Coverage']
+                'threatcategory': ['Phishing Aetna Health Plans &amp; Dental Coverage']
             },
             'Malicious': {
                 'Description': ['Phishing Aetna Health Plans &amp; Dental Coverage'],
@@ -96,7 +96,7 @@ EXPECTED_DOMAIN_RESULT = {
             'Name': 'google.com',
             'ASName': 'AS15169 Google Inc.',
             'ThreatTypes': {
-                    'threatcategory': ['Malicious URL', 'apple phishing', 'Malicious URL']
+                'threatcategory': ['Malicious URL', 'apple phishing', 'Malicious URL']
             }
         }
     ],
