@@ -299,8 +299,8 @@ def http_request(url_suffix, method='POST', data={}, err_operation=None):
     return parse_response(res, err_operation)
 
 
-def validate_sort_and_order_and_artifact(sort: Optional[str], order: Optional[str], artifact_source: Optional[str])\
-        -> bool:
+def validate_sort_and_order_and_artifact(sort: Optional[str] = None, order: Optional[str] = None,
+                                         artifact_source: Optional[str] = None) -> bool:
     """
     Function that validates the arguments combination.
     sort and order arguments must be defined together.
@@ -373,8 +373,6 @@ def run_search(search_object: str, query: str, scope: Optional[str] = None, size
         artifact_source: Whether artifacts are wanted or not.
     Returns:
         dict of response for result commands.
-
-
     """
     result = do_search(search_object, query=json.loads(query), scope=scope, size=size, sort=sort, order=order,
                        artifact_source=artifact_source, err_operation='Search operation failed')
@@ -1222,8 +1220,8 @@ def samples_search_results_command():
 
 def samples_search_result_hr(result: dict, status: str) -> str:
     """
-    Function which created a human readable for a specific entry which contains two tables, one for the result's
-    values and another for the artifacts that are related to it.
+    Creates human readable output for a specific entry which contains two tables, one for the result's
+    and another for the artifacts that are related to it.
     Args:
         result: one result of the search sample command.
         status: status of result command.
@@ -1237,8 +1235,7 @@ def samples_search_result_hr(result: dict, status: str) -> str:
         if 'Mutex' not in indicator.get('indicator_type') and 'User Agent' not in indicator.get('indicator_type'):
             updated_artifact.append(indicator)
     rest = result
-    hr = ''
-    hr += tableToMarkdown(f'Search Samples Result is {status}', rest)
+    hr = tableToMarkdown(f'Search Samples Result is {status}', rest)
     hr += '\n\n'
     hr += tableToMarkdown(f'Artifacts for Sample: ', updated_artifact, headers=["b", "g", "m", "indicator_type",
                                                                                 "confidence", "indicator"])
