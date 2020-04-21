@@ -1,5 +1,5 @@
 ## [Unreleased]
-Fixed an issue where SSL error accrued in insecure mode.
+Fixed an issue where an SSL error occurred while in insecure mode.
 
 ## [20.2.0] - 2020-02-04
 Added the ***mimecast-update-policy*** command.
