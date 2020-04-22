@@ -294,13 +294,6 @@ def create_events_human_readable(events_context, content_type):
     return human_readable
 
 
-def are_start_and_end_times_valid(args):
-    start_time = args.get('start_time')
-    end_time = args.get('end_time')
-    if (start_time and not end_time) or (end_time and not start_time):
-        return_error('Error: Start time and end time must both be specified (or both omitted).')
-
-
 def get_filter_accepted_values_list(filtered_field, filter_data):
     filter_accepted_values_string = filter_data.get(filtered_field)
     if filter_accepted_values_string:
