@@ -9,7 +9,7 @@ from Tests.Marketplace.marketplace_services import Pack, Metadata, input_to_list
 def dummy_pack_metadata():
     dummy_pack_metadata_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_data",
                                             "user_pack_metadata.json")
-    with open("./test_data/user_pack_metadata.json", 'r') as dummy_metadata_file:
+    with open(dummy_pack_metadata_path, 'r') as dummy_metadata_file:
         pack_metadata = json.load(dummy_metadata_file)
 
     return pack_metadata
