@@ -1,5 +1,5 @@
 ## [Unreleased]
-Fixed an issue that caused all incidents to be classified into the 'Prisma Cloud'
+Fixed an issue that caused all incidents to be classified as the 'Prisma Cloud'
 generic incident type.
 
 ## [20.4.0] - 2020-04-14
