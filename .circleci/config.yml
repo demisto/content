@@ -362,7 +362,7 @@ jobs:
                 exit 0
             fi
             export TEMP=$(cat /Users/darbel/dev/demisto/content/Tests/ami_builds.json | jq '."Demisto GA"')
-            if [[ "$TEMP" == "null" ]]; then
+            if [[ "$TEMP" == "null" ]];
               then
                 echo "Skipping - instance was not setup"
                 exit 0
@@ -389,7 +389,7 @@ jobs:
                 exit 0
             fi
             export TEMP=$(cat /Users/darbel/dev/demisto/content/Tests/ami_builds.json | jq '."Demisto one before GA"')
-            if [[ "$TEMP" == "null" ]]; then
+            if [[ "$TEMP" == "null" ]];
               then
                 echo "Skipping - instance was not setup"
                 exit 0
@@ -416,7 +416,7 @@ jobs:
                 exit 0
             fi
             export TEMP=$(cat /Users/darbel/dev/demisto/content/Tests/ami_builds.json | jq '."Demisto two before GA"')
-            if [[ "$TEMP" == "null" ]]; then
+            if [[ "$TEMP" == "null" ]];
               then
                 echo "Skipping - instance was not setup"
                 exit 0
@@ -443,7 +443,7 @@ jobs:
                 exit 0
             fi
             export TEMP=$(cat /Users/darbel/dev/demisto/content/Tests/ami_builds.json | jq '."Server Master"')
-            if [[ "$TEMP" == "null" ]]; then
+            if [[ "$TEMP" == "null" ]];
               then
                 echo "Skipping - instance was not setup"
                 exit 0
@@ -470,7 +470,7 @@ jobs:
                 exit 0
             fi
             export TEMP=$(cat /Users/darbel/dev/demisto/content/Tests/ami_builds.json | jq '."Demisto PreGA"')
-            if [[ "$TEMP" == "null" ]]; then
+            if [[ "$TEMP" == "null" ]];
               then
                 echo "Skipping - instance was not setup"
                 exit 0
