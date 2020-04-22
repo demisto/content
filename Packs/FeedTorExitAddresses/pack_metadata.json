@@ -1,7 +1,7 @@
 {
     "name": "Tor Exit Addresses Feed",
     "description": "Tor is free software and an open network that helps you defend against\n  traffic analysis, a form of network surveillance that threatens personal freedom\n  and privacy, confidential business activities and relationships, and state security.",
-    "support": "Cortex XSOAR",
+    "support": "xsoar",
     "serverMinVersion": "5.0.0",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
