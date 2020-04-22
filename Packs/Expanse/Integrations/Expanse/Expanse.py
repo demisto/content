@@ -69,7 +69,7 @@ def make_headers(endpoint, token):
     headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'User-Agent': 'Expanse_Demisto/1.1.0'
+        'User-Agent': 'Expanse_Demisto/1.1.1'
     }
     if endpoint == "IdToken":
         headers['Authorization'] = 'Bearer ' + token
@@ -627,7 +627,6 @@ def fetch_incidents_command():
 
     # Check if it's been run
     now = datetime.today()
-    today = datetime.strftime(now, "%Y-%m-%d")
     yesterday = datetime.strftime(now - timedelta(days=1), "%Y-%m-%d")
     last_run = demisto.getLastRun()
     start_date = yesterday
@@ -637,8 +636,9 @@ def fetch_incidents_command():
         # first time integration is running
         start_date = datetime.strftime(now - timedelta(days=FIRST_RUN), "%Y-%m-%d")
 
-    if last_run.get('complete_for_today') is True and last_run.get('start_time') == today:
+    if last_run.get('complete_for_today') is True and last_run.get('start_time') == yesterday:
         # wait until tomorrow to try again
+        demisto.incidents([])
         return
 
     # Refresh JWT
@@ -647,12 +647,13 @@ def fetch_incidents_command():
     # Fetch Events
     more_events = True
     page_token = None
+    incidents = []
 
     while more_events:
         event_incidents, page_token = fetch_events_incidents_command(start_date, end_date, token, page_token)
         for incident in event_incidents:
             demisto.debug("Adding event incident name={name}, type={type}, severity={severity}".format(**incident))
-        demisto.incidents(event_incidents)
+        incidents += event_incidents
         if page_token is None:
             more_events = False
 
@@ -665,9 +666,12 @@ def fetch_incidents_command():
             behavior_incidents, next_offset = fetch_behavior_incidents_command(start_date, token, next_offset)
             for incident in behavior_incidents:
                 demisto.debug("Adding behavior incident name={name}, type={type}, severity={severity}".format(**incident))
-            demisto.incidents(behavior_incidents)
+            incidents += behavior_incidents
             if next_offset is None:
                 more_behavior = False
+
+    # Send all Incidents
+    demisto.incidents(incidents)
 
     # Save last_run
     demisto.setLastRun({
