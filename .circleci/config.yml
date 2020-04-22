@@ -362,8 +362,8 @@ jobs:
                 exit 0
             fi
             export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto GA"')
-            echo $TEMP
-            if [[ "$TEMP" == "null" ]];
+            echo "Demisto GA filter=$TEMP"
+            if [[ "$TEMP" == "false" ]];
               then
                 echo "Skipping - instance was not setup"
                 exit 0
@@ -390,8 +390,8 @@ jobs:
                 exit 0
             fi
             export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto one before GA"')
-            echo $TEMP
-            if [[ "$TEMP" == "null" ]];
+            echo "Demisto one before GA filter=$TEMP"
+            if [[ "$TEMP" == "false" ]];
               then
                 echo "Skipping - instance was not setup"
                 exit 0
@@ -418,8 +418,8 @@ jobs:
                 exit 0
             fi
             export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto two before GA"')
-            echo $TEMP
-            if [[ "$TEMP" == "null" ]];
+            echo "Demisto two before GA filter=$TEMP"
+            if [[ "$TEMP" == "false" ]];
               then
                 echo "Skipping - instance was not setup"
                 exit 0
@@ -446,8 +446,8 @@ jobs:
                 exit 0
             fi
             export TEMP=$(cat ./Tests/filter_envs.json | jq '."Server Master"')
-            echo $TEMP
-            if [[ "$TEMP" == "null" ]];
+            echo "Server Master filter=$TEMP"
+            if [[ "$TEMP" == "false" ]];
               then
                 echo "Skipping - instance was not setup"
                 exit 0
@@ -474,8 +474,8 @@ jobs:
                 exit 0
             fi
             export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto PreGA"')
-            echo $TEMP
-            if [[ "$TEMP" == "null" ]];
+            echo "Demisto PreGA filter=$TEMP"
+            if [[ "$TEMP" == "false" ]];
               then
                 echo "Skipping - instance was not setup"
                 exit 0

@@ -990,16 +990,16 @@ def get_test_list(files_string, branch_name, two_before_ga_ver='0', conf=None, i
     return tests
 
 
-def create_filter_envs_file(tests, two_before_ga, one_before_ga, ga, conf):
+def create_filter_envs_file(tests, two_before_ga, one_before_ga, ga, conf, id_set):
     """Create a file containing all the envs we need to run for the CI"""
     # always run master and PreGA
-    envs_to_test = {'Server Master': True, 'Demisto PreGA': True}
-    if is_any_test_runnable(test_ids=tests, server_version=two_before_ga, conf=conf):
-        envs_to_test['Demisto two before GA'] = True
-    if is_any_test_runnable(test_ids=tests, server_version=one_before_ga, conf=conf):
-        envs_to_test['Demisto one before GA'] = True
-    if is_any_test_runnable(test_ids=tests, server_version=ga, conf=conf):
-        envs_to_test['Demisto GA'] = True
+    envs_to_test = {
+        'Server Master': True,
+        'Demisto PreGA': True,
+        'Demisto two before GA': is_any_test_runnable(test_ids=tests, server_version=two_before_ga, conf=conf, id_set=id_set),
+        'Demisto one before GA': is_any_test_runnable(test_ids=tests, server_version=one_before_ga, conf=conf, id_set=id_set),
+        'Demisto GA': is_any_test_runnable(test_ids=tests, server_version=ga, conf=conf, id_set=id_set),
+    }
     print("Creating filter_envs.json with the following envs: {}".format(envs_to_test))
     with open("./Tests/filter_envs.json", "w") as filter_envs_file:
         json.dump(envs_to_test, filter_envs_file)
@@ -1030,8 +1030,10 @@ def create_test_file(is_nightly, skip_save=False):
             ga = ami_builds.get('GA', '0').split('-')[0]
 
         conf = load_tests_conf()
-        tests = get_test_list(files_string, branch_name, two_before_ga, conf)
-        create_filter_envs_file(tests, two_before_ga, one_before_ga, ga, conf)
+        with open("./Tests/id_set.json", 'r') as conf_file:
+            id_set = json.load(conf_file)
+        tests = get_test_list(files_string, branch_name, two_before_ga, conf, id_set)
+        create_filter_envs_file(tests, two_before_ga, one_before_ga, ga, conf, id_set)
 
         tests_string = '\n'.join(tests)
         if tests_string:
