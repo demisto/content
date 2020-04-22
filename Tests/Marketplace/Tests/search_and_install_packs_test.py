@@ -62,10 +62,10 @@ MOCK_PACKS_INSTALLATION_RESULT = """[
 ]"""
 
 
-def mocked_generic_request_func(self, path, method, body=None, **kwargs):
-    if path == '/contentpacks/marketplace/search':
+def mocked_generic_request_func(**kwargs):
+    if kwargs['path'] == '/contentpacks/marketplace/search':
         return MOCK_PACKS_SEARCH_RESULTS, 200, None
-    elif path == '/contentpacks/marketplace/install':
+    elif kwargs['path'] == '/contentpacks/marketplace/install':
         return MOCK_PACKS_INSTALLATION_RESULT, 200, None
     return None, None, None
 
