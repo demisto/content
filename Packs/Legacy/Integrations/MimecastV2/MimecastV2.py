@@ -2041,6 +2041,14 @@ def create_mimecast_incident_request():
     search_by = demisto.args().get('search_by', 'hash').encode('utf-8')
     hash_or_message_id = demisto.args().get('hash_message_id', '').encode('utf-8')
 
+    if search_by == 'hash':
+        get_hash_type(hash_or_message_id)
+    else:
+        if not hash_or_message_id.startswith('<'):
+            hash_or_message_id = '<{}'.format(hash_or_message_id)
+        if not hash_or_message_id.endswith('>'):
+            hash_or_message_id = '{}>'.format(hash_or_message_id)
+
     data = {
         'reason': reason,
         'hashOrMessageId': hash_or_message_id,
