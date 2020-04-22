@@ -1,24 +1,24 @@
 from __future__ import print_function
+import os
 import re
 import sys
 import json
 import time
-import urllib3
 import argparse
-import requests
 import threading
 import subprocess
-import os
 from time import sleep
 from datetime import datetime
 
+import urllib3
+import requests
 import demisto_client.demisto_api
 from slackclient import SlackClient
 
 from Tests.mock_server import MITMProxy, AMIConnection
 from Tests.test_integration import Docker, test_integration, disable_all_integrations
-from demisto_sdk.commands.common.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF, PB_Status
 from Tests.test_dependencies import get_used_integrations, get_tests_allocation_for_threads
+from demisto_sdk.commands.common.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF, PB_Status
 from demisto_sdk.commands.common.tools import print_color, print_error, print_warning, \
     LOG_COLORS, str2bool, server_version_compare
 
@@ -111,8 +111,11 @@ class ParallelPrintsManager:
         thread_last_update = self.threads_last_update_times[thread_index]
         return current_time - thread_last_update > 300
 
-    def add_print_job(self, message_to_print, print_function_to_execute, thread_index, message_color=None):
-        message_to_print = f'[{datetime.now()}] {message_to_print}'
+    def add_print_job(self, message_to_print, print_function_to_execute, thread_index, message_color=None,
+                      include_timestamp=True):
+        if include_timestamp:
+            message_to_print = f'[{datetime.now()}] {message_to_print}'
+
         print_job = PrintJob(message_to_print, print_function_to_execute, message_color=message_color)
         self.threads_print_jobs[thread_index].append(print_job)
         if self.should_update_thread_status(thread_index):
@@ -336,29 +339,27 @@ def mock_run(tests_settings, c, proxy, failed_playbooks, integrations, playbook_
             succeed_playbooks.append(playbook_id)
             end_mock_message = '------ Test {} end ------\n'.format(test_message)
             prints_manager.add_print_job(end_mock_message, print, thread_index)
-
             return
 
-        elif status == PB_Status.NOT_SUPPORTED_VERSION:
+        if status == PB_Status.NOT_SUPPORTED_VERSION:
             not_supported_version_message = 'PASS: {} skipped - not supported version'.format(test_message)
             prints_manager.add_print_job(not_supported_version_message, print, thread_index)
             succeed_playbooks.append(playbook_id)
             end_mock_message = '------ Test {} end ------\n'.format(test_message)
             prints_manager.add_print_job(end_mock_message, print, thread_index)
-
             return
-        elif status == PB_Status.FAILED_DOCKER_TEST:
+
+        if status == PB_Status.FAILED_DOCKER_TEST:
             error_message = 'Failed: {} failed'.format(test_message)
             prints_manager.add_print_job(error_message, print_error, thread_index)
             failed_playbooks.append(playbook_id)
             end_mock_message = '------ Test {} end ------\n'.format(test_message)
             prints_manager.add_print_job(end_mock_message, print, thread_index)
-
             return
-        else:
-            mock_failed_message = "Test failed with mock, recording new mock file. (Mock: Recording)"
-            prints_manager.add_print_job(mock_failed_message, print, thread_index)
-            rerecord = True
+
+        mock_failed_message = "Test failed with mock, recording new mock file. (Mock: Recording)"
+        prints_manager.add_print_job(mock_failed_message, print, thread_index)
+        rerecord = True
     else:
         mock_recording_message = start_message + ' (Mock: Recording)'
         prints_manager.add_print_job(mock_recording_message, print, thread_index)
@@ -832,14 +833,10 @@ def manage_tests(tests_settings):
         execute_testing(tests_settings, server_ip, mockable_tests, unmockable_tests, tests_data_keeper, prints_manager,
                         thread_index=0, is_ami=False)
     elif tests_settings.isAMI:
-        """
-        Running tests in AMI configuration.
-        This is the way we run most tests, including running Circle for PRs and nightly.
-        """
+        # Running tests in AMI configuration.
+        # This is the way we run most tests, including running Circle for PRs and nightly.
         if is_nightly:
-            """
-            If the build is a nightly build, run tests in parallel.
-            """
+            # If the build is a nightly build, run tests in parallel.
             test_allocation = get_tests_allocation_for_threads(number_of_instances, tests_settings.conf_path)
             current_thread_index = 0
             all_unmockable_tests_list = get_unmockable_tests(tests_settings)
@@ -889,11 +886,9 @@ def manage_tests(tests_settings):
 
     else:
         # TODO: understand better when this occurs and what will be the settings
-        """
-        This case is rare, and usually occurs on two cases:
-        1. When someone from Server wants to trigger a content build on their branch.
-        2. When someone from content wants to run tests on a specific build.
-        """
+        # This case is rare, and usually occurs on two cases:
+        # 1. When someone from Server wants to trigger a content build on their branch.
+        # 2. When someone from content wants to run tests on a specific build.
         server_numeric_version = '99.99.98'  # assume latest
         print("Using server version: {} (assuming latest for non-ami)".format(server_numeric_version))
         instance_ip = instances_ips[0][1]
@@ -904,7 +899,7 @@ def manage_tests(tests_settings):
     print_test_summary(tests_data_keeper, tests_settings.isAMI)
     create_result_files(tests_data_keeper)
 
-    if len(tests_data_keeper.failed_playbooks):
+    if tests_data_keeper.failed_playbooks:
         tests_failed_msg = "Some tests have failed. Not destroying instances."
         print(tests_failed_msg)
         sys.exit(1)
