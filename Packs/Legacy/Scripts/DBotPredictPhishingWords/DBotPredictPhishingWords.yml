@@ -72,7 +72,7 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  defaultValue: 'true'
+  defaultValue: 'false'
   description: Whether to return an error when there is no prediction.
   isArray: false
   name: returnError
