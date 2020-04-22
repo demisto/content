@@ -4,6 +4,7 @@ from CommonServerUserPython import *
 from typing import Dict
 
 # disable insecure warnings
+from Packs.ApiModules.Scripts.MicrosoftApiModule.MicrosoftApiModule import MicrosoftClient
 
 requests.packages.urllib3.disable_warnings()
 
@@ -56,18 +57,27 @@ class MsGraphClient:
         self.ms_client = MicrosoftClient(tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
                                          base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed)
 
+    #  If successful, this method returns 204 No Content response code.
+    #  Using resp_type=text to avoid parsing error.
     def terminate_user_session(self, user):
         self.ms_client.http_request(
             method='PATCH',
             url_suffix=f'users/{user}',
-            data=BLOCK_ACCOUNT_JSON)
+            data=BLOCK_ACCOUNT_JSON,
+            resp_type="text"
+        )
 
+    #  Using resp_type=text to avoid parsing error.
     def unblock_user(self, user):
         self.ms_client.http_request(
             method='PATCH',
             url_suffix=f'users/{user}',
-            data=UNBLOCK_ACCOUNT_JSON)
+            data=UNBLOCK_ACCOUNT_JSON,
+            resp_type="text"
+        )
 
+    #  If successful, this method returns 204 No Content response code.
+    #  Using resp_type=text to avoid parsing error.
     def delete_user(self, user):
         self.ms_client.http_request(
             method='DELETE',
@@ -81,6 +91,8 @@ class MsGraphClient:
             url_suffix='users',
             json_data=properties)
 
+    #  If successful, this method returns 204 No Content response code.
+    #  Using resp_type=text to avoid parsing error.
     def update_user(self, user, updated_fields):
         body = {}
         for key_value in updated_fields.split(','):
@@ -265,7 +277,7 @@ def main():
         return_error(str(err))
 
 
-from MicrosoftApiModule import *  # noqa: E402
+# from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
