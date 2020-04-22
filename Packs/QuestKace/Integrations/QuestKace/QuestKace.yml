@@ -29,9 +29,9 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-- defaultvalue: hd_ticket all,submitter limited,owner limited, asset limited,machine
+- defaultvalue: ״hd_ticket all,submitter limited,owner limited, asset limited,machine
     limited, priority limited,category limited, impact limited,status limited, related_tickets
-    limited
+    limited״
   display: Shaping for query of the tickets.
   name: fetch_shaping
   required: false
@@ -47,7 +47,7 @@ configuration:
   type: 0
 - display: Incident type
   name: incidentType
-  required: False
+  required: false
   type: 13
 description: This is the Hello World integration for getting started.
 display: Quest KACE Systems Management Appliance

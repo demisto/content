@@ -77,6 +77,8 @@ class Client(BaseClient):
             Returns:
                 token , cookie for the connection.
         """
+        token = ''
+        cookie = ''
         data = {
             "userName": self._username,
             "password": self._password
@@ -86,11 +88,17 @@ class Client(BaseClient):
         headers = {'Content-Type': 'application/json'}
         response = self.token_request("Post", login_url, headers=headers, data=body)
         # Extracting Token
-        response_cookies = response.get('cookies', {}).get('_cookies', '')
-        cookie_key = list(response_cookies.keys())[0]
-        ret_cookie = response_cookies.get(cookie_key).get("/")
-        cookie = self.get_cookie(ret_cookie)
-        token = ret_cookie.get("KACE_CSRF_TOKEN").__dict__.get('value')
+        response_cookies = response.get('cookies').__dict__.get('_cookies')
+        if response_cookies:
+            cookie_key = list(response_cookies.keys())[0]
+            if cookie_key:
+                ret_cookie = response_cookies.get(cookie_key).get("/")
+                cookie = self.get_cookie(ret_cookie)
+                token = ret_cookie.get("KACE_CSRF_TOKEN").__dict__.get('value')
+        if not token:
+            raise DemistoException("Could not get token")
+        if not cookie:
+            raise DemistoException("Could not get cookie")
         return token, cookie
 
     def get_cookie(self, res_cookie: dict) -> str:
