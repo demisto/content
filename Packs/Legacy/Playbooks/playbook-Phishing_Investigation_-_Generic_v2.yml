@@ -53,6 +53,9 @@ tasks:
     scriptarguments:
       assignBy: {}
       email: {}
+      onCall:
+        complex:
+          root: inputs.OnCall
       roles:
         complex:
           root: inputs.Role
@@ -1747,48 +1750,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '86':
-    id: '86'
-    taskid: b88d67de-5b86-49e0-8e3d-14a93ca89b8b
-    type: playbook
-    task:
-      id: b88d67de-5b86-49e0-8e3d-14a93ca89b8b
-      version: -1
-      name: URL Enrichment - Generic v2
-      playbookName: URL Enrichment - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ''
-      description: ''
-    nexttasks:
-      '#none#':
-      - '56'
-    scriptarguments:
-      Rasterize:
-        simple: 'True'
-      URL:
-        complex:
-          root: URL
-          accessor: Data
-          transformers:
-          - operator: uniq
-      VerifyURL:
-        simple: 'False'
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ''
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": -52.5,
-          "y": 1020
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   '87':
     id: '87'
     taskid: bf7ea13b-64cd-46fb-8563-825432a1c808
@@ -2247,6 +2208,11 @@ inputs:
   required: false
   description: Whether the authenticity of the email should be verified, using SPF,
     DKIM and DMARC.
+- key: OnCall
+  value:
+    simple: false
+  required: false
+  description: Set to true to assign only user that is currently on shift. Requires Cortex XSOAR v5.5 or later.
 outputs: []
 tests:
   - Phishing v2 Test - Attachment

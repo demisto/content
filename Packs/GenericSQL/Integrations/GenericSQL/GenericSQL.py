@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 from typing import Any, Tuple, Dict, List, Callable
 import sqlalchemy
 import pymysql
+import traceback
 from sqlalchemy.sql import text
 
 # In order to use and convert from pymysql to MySQL this line is necessary
@@ -57,7 +58,10 @@ class Client:
             db_preferences = f'{module}://{self.username}:{self.password}@{self.host}:{self.port}/{self.dbname}'
             if self.dialect == "Microsoft SQL Server":
                 db_preferences += "?driver=FreeTDS"
-            if self.connect_parameters:
+            if self.connect_parameters and self.dialect == "Microsoft SQL Server":
+                db_preferences += f'&{self.connect_parameters}'
+            elif self.connect_parameters and self.dialect != "Microsoft SQL Server":
+                # a "?" was already added when the driver was defined
                 db_preferences += f'?{self.connect_parameters}'
             return sqlalchemy.create_engine(db_preferences).connect()
         except Exception as err:
@@ -141,8 +145,12 @@ def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, An
         bind_variables = generate_bind_vars(bind_variables_names, bind_variables_values)
 
         result, headers = client.sql_query_execute_request(sql_query, bind_variables)
-        table = [dict(row) for row in result]
-        human_readable = tableToMarkdown(name="Query result:", t=table[skip:skip + limit], headers=headers,
+        # converting an sqlalchemy object to a table
+        converted_table = [dict(row) for row in result]
+        # converting b'' and datetime objects to readable ones
+        table = [{str(key): str(value) for key, value in dictionary.items()} for dictionary in converted_table]
+        table = table[skip:skip + limit]
+        human_readable = tableToMarkdown(name="Query result:", t=table, headers=headers,
                                          removeNull=True)
         context = {
             'Result': table,
@@ -188,7 +196,7 @@ def main():
             raise NotImplementedError(f'{command} is not an existing Generic SQL command')
         client.connection.close()
     except Exception as err:
-        return_error(err)
+        return_error(f'Unexpected error: {str(err)} \nquery: {demisto.args().get("query")} \n{traceback.format_exc()}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
