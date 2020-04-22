@@ -12,32 +12,34 @@ def http_request(method, url_suffix, json=None):
     """
     Helper function to perform http request
     """
-    base_url = demisto.params().get('base_url')
-    if base_url.endwith("/"):  # remove slash in the end
-        base_url = base_url[:-1]
-    api_key = demisto.params().get('apikey')
-    api_suffix = "/api/v1"
-
-    headers = {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': str(api_key)
-    }
-    r = requests.request(
-        method,
-        base_url + api_suffix + url_suffix,
-        json=json,
-        headers=headers,
-        verify=False
-    )
-
-    if r.status_code not in (200, 204):
-        s = 'Error in API call [%d] - %s ' % (r.status_code, r.reason)
-        return_error(message=s)
     try:
-        return r.json()
-    except ValueError:
-        return None
+        api_suffix = "/api/v1"
+        base_url = demisto.params().get('base_url')
+        if base_url.endswith("/"):  # remove slash in the end
+            base_url = base_url[:-1]
+        api_key = demisto.params().get('apikey')
+
+        headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': str(api_key)
+        }
+        r = requests.request(
+            method,
+            base_url + api_suffix + url_suffix,
+            json=json,
+            headers=headers,
+            verify=False
+        )
+
+        if r.status_code not in (200, 204):
+            return_error(message='The following API call response is not 200 [%d] - %s ' % (r.status_code, r.reason))
+        try:
+            return r.json()
+        except ValueError:
+            return None
+    except Exception as e:
+        return_error(message='Error occurred on API call: %s. Error is: %s' % (base_url + api_suffix + url_suffix, str(e)))
 
 
 def get_specific_device():
