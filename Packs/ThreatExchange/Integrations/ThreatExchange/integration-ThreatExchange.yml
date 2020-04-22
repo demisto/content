@@ -48,7 +48,7 @@ script:
     }
 
     var defaultLimit = 20;
-    
+
     var doReq = function(method, path, parameters) {
         if (!parameters) {
             parameters = {};
@@ -96,11 +96,7 @@ script:
         var ec = {};
         ec.DBotScore = [];
         if (data.length === 0) {
-            ec.DBotScore.push({
-                Indicator: hash,
-                Type: 'hash',
-                Vendor: 'ThreatExchange', Score: 0
-            });
+            ec.DBotScore.push(dbotTypeHashList(hash, 0));
 
             return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
                 HumanReadable: 'ThreatExchange does not have details about ' + hash + '\n',
@@ -121,12 +117,7 @@ script:
             } else if (data[i].status == 'NON_MALICIOUS'){
                 dbotScore = 1;
             }
-            ec.DBotScore.push({
-                Indicator: hash,
-                Type: 'hash',
-                Vendor: 'ThreatExchange',
-                Score: dbotScore
-            });
+            ec.DBotScore.push(dbotTypeHashList(hash, dbotScore));
         }
         return {
             Type: entryTypes.note,
@@ -136,6 +127,23 @@ script:
             EntryContext: ec
         };
     };
+
+    var dbotTypeHashList = function(hash, score)
+    {
+        return [{
+                Indicator: hash,
+                Type: 'hash',
+                Vendor: 'ThreatExchange',
+                Score: score
+            },
+            {
+                Indicator: hash,
+                Type: 'file',
+                Vendor: 'ThreatExchange',
+                Score: score
+            }
+            ]
+    }
 
     var doIP = function(ip) {
         if (!isValidIP(ip)) {
@@ -443,13 +451,13 @@ script:
     - contextPath: File.SHA256
       description: Bad hash SHA256
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision
     - contextPath: File.Malicious.Description
@@ -474,13 +482,13 @@ script:
     - contextPath: IP.Malicious.Description
       description: For malicious IPs, the reason for the vendor to make the decision
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
     - contextPath: IP.Malicious.Score
       description: For malicious IPs, the score from the vendor
     description: Check IP Reputation
@@ -503,13 +511,13 @@ script:
     - contextPath: URL.Data
       description: Bad URLs found
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
     - contextPath: URL.Malicious.Vendor
       description: For malicious URLs, the vendor that made the decision
     - contextPath: URL.Malicious.Description
@@ -537,13 +545,13 @@ script:
     - contextPath: Domain.Name
       description: Bad domain found
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
     - contextPath: Domain.Malicious.Vendor
       description: For malicious domains, the vendor that made the decision
     - contextPath: Domain.Malicious.Description

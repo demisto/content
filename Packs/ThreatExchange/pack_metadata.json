@@ -1,7 +1,7 @@
 {
     "name": "ThreatExchange",
     "description": "Receive threat intelligence about applications, IP addresses, URLs and hashes, a service by Facebook",
-    "support": "demisto",
+    "support": "xsoar",
     "serverMinVersion": "2.5.0",
     "currentVersion": "1.0.0",
     "author": "demisto",
