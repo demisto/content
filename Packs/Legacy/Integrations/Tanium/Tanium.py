@@ -507,12 +507,7 @@ def format_context(res):
     """
     context = []
     for element in res:
-        element_context = {}
-
-        for key in element.keys():
-            element_context[key] = element[key].replace("\n", " ")
-
-        context.append(element_context)
+        context.append({key: value.replace("\n", " ") for (key, value) in element.items()})
 
     return context
 
