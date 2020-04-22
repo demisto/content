@@ -54,7 +54,7 @@ mock_groups = [
         "is_default_group": True,
         "msp_name": "MSP 1",
         "msp_id": 1
-  }
+    }
 ]
 
 mock_policies = [
@@ -65,15 +65,15 @@ mock_policies = [
         "is_default_policy": True,
         "msp_name": "MSP 1",
         "msp_id": 1
-  },
-  {
+    },
+    {
         "id": 3,
         "os": "WINDOWS",
         "name": "Windows Default Policy",
         "is_default_policy": True,
         "msp_name": "MSP 1",
         "msp_id": 1
-  }
+    }
 ]
 
 
