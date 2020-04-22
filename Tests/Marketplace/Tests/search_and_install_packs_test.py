@@ -62,10 +62,10 @@ MOCK_PACKS_INSTALLATION_RESULT = """[
 ]"""
 
 
-def mocked_request(*args, **kwargs):
-    if kwargs['path'] == '/contentpacks/marketplace/search':
+def mocked_generic_request_func(self, path, method, body=None, **kwargs):
+    if path == '/contentpacks/marketplace/search':
         return MOCK_PACKS_SEARCH_RESULTS, 200, None
-    elif kwargs['path'] == '/contentpacks/marketplace/install':
+    elif path == '/contentpacks/marketplace/install':
         return MOCK_PACKS_INSTALLATION_RESULT, 200, None
     return None, None, None
 
@@ -95,7 +95,7 @@ def test_search_and_install_packs_and_their_dependencies(mocker):
 
     client = MockClient()
 
-    mocker.patch.object(demisto_client, 'generic_request_func', side_effect=mocked_request)
+    mocker.patch.object(demisto_client, 'generic_request_func', side_effect=mocked_generic_request_func)
     prints_manager = ParallelPrintsManager(1)
 
     installed_packs = search_and_install_packs_and_their_dependencies(good_integrations_files,
