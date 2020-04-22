@@ -1,5 +1,8 @@
 ## [Unreleased]
--
+Fixed an issue that caused all incidents to be classified into 'Prisma Cloud'
+generic incident type.
+
+## [20.4.0] - 2020-04-14
 Added classification to 'GCP Compute Engine Misconfiguration' incident type.
 
 
