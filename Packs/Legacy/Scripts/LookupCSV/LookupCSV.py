@@ -47,7 +47,7 @@ def main():
     header_row = d_args['header_row'] if 'header_row' in d_args else None
     search_column = d_args['column'] if 'column' in d_args else None
 
-    search_value = d_args['value'] if 'value' in d_args else None
+    search_value: str = d_args['value'] if 'value' in d_args else None
 
     add_row = d_args['add_header_row'] if 'add_header_row' in d_args else None
 
