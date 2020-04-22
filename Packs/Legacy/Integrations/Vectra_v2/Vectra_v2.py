@@ -136,14 +136,14 @@ class Client:
         query_string += f' and detection.certainty:>={self.c_score_gte}'
         query_string += f' and detection.last_timestamp:>{last_timestamp}'  # format: "%Y-%m-%dT%H%M"
         query_string += f' and detection.state:{self.state}' if self.state != 'all' else ''
-        demisto.info(f'±±±±±±±±±±±±±±±±\n\nQuery String:\n\n{query_string}\n\n±±±±±±±±±±±±±±±±±±±±±')
+        demisto.info(f'\n\nQuery String:\n{query_string}\n\n')
         params = {
             'query_string': query_string,
             'page_size': self.fetch_size,
             'page': 1,
         }
         raw_response = self.http_request(params=params, url_suffix='search/detections')  # type: ignore
-        demisto.info("\n\n-=-=-=-=-=-=-=-=-=-= Queried Successfully -=-=-=-=-=-=-=-=-=-=-=\n\n")
+        demisto.info("\n\n Queried Successfully\n\n")
         # Detections -> Incidents, if exists
         incidents = []
         if 'results' in raw_response:
@@ -163,7 +163,7 @@ class Client:
 
             except ValueError:
                 raise
-        demisto.info(f"-=-=-=-=-=-=-=-=-=-= Last run is {last_run} -=-=-=-=-=-=-=-=-=-=-=")
+        demisto.info(f"Last run is:\n {last_run}")
         return last_run, incidents
 
 
