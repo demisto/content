@@ -33,6 +33,7 @@ NONE_DATE: str = '0001-01-01T00:00:00Z'
 FETCH_TIME: str = demisto.params().get('fetch_time', '').strip()
 FETCH_LIMIT: str = demisto.params().get('fetch_limit', '10')
 RAISE_EXCEPTION_ON_ERROR: bool = False
+SEC_IN_DAY: int = 86400
 
 
 ''' HELPER FUNCTIONS '''
@@ -587,6 +588,23 @@ def get_feed_request(since: str = None, limit: str = None, indicator: list = Non
     return response
 
 
+def get_min_time_delta(last_fetch_time):
+    # try in UTC first
+    fetch_delta = datetime.utcnow() - last_fetch_time
+    fetch_delta_in_min = fetch_delta.seconds
+
+    # if negative then try in current time
+    if fetch_delta_in_min < 0:
+        fetch_delta = datetime.now() - last_fetch_time
+        fetch_delta_in_min = fetch_delta.seconds
+
+    # if negative default to 1 day
+    if fetch_delta_in_min < 0:
+        fetch_delta_in_min = SEC_IN_DAY
+
+    return str(fetch_delta_in_min) + "s"
+
+
 def fetch_incidents():
     """
     Fetches incidents from the PhishLabs user feed.
@@ -594,21 +612,23 @@ def fetch_incidents():
     """
     last_run: dict = demisto.getLastRun()
     last_fetch: str = last_run.get('time', '') if last_run else ''
-    last_offset: str = last_run.get('offset', '0') if last_run else '0'
+    last_fetch_time: datetime = (datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ') if last_fetch
+                                 else datetime.strptime(NONE_DATE, '%Y-%m-%dT%H:%M:%SZ'))
 
     incidents: list = []
     count: int = 1
     limit = int(FETCH_LIMIT)
-    feed: dict = get_feed_request(since=FETCH_TIME)
-    last_fetch_time: datetime = (datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ') if last_fetch
-                                 else datetime.strptime(NONE_DATE, '%Y-%m-%dT%H:%M:%SZ'))
+    if not last_fetch:
+        feed: dict = get_feed_request(since=FETCH_TIME)
+
+    else:
+        feed = get_feed_request(since=get_min_time_delta(last_fetch_time))
+
     max_time: datetime = last_fetch_time
-    offset = int(last_offset)
     results: list = feed.get('data', []) if feed else []
 
     if results:
         results = sorted(results, key=lambda r: datetime.strptime(r.get('createdAt', NONE_DATE), '%Y-%m-%dT%H:%M:%SZ'))
-        results = results[offset:]
         if not isinstance(results, list):
             results = [results]
 
@@ -629,9 +649,7 @@ def fetch_incidents():
                 max_time = incident_time
             count += 1
 
-        offset += count - 1
-
-    demisto.setLastRun({'time': datetime.strftime(max_time, '%Y-%m-%dT%H:%M:%SZ'), 'offset': str(offset)})
+    demisto.setLastRun({'time': datetime.strftime(max_time, '%Y-%m-%dT%H:%M:%SZ')})
     demisto.incidents(incidents)
 
 
