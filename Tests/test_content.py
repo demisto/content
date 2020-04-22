@@ -603,7 +603,7 @@ def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_te
     # Skip version mismatch test
     test_from_version = t.get('fromversion', '0.0.0')
     test_to_version = t.get('toversion', '99.99.99')
-    if not (LooseVersion(test_from_version) <= LooseVersion(server_numeric_version) < LooseVersion(test_to_version)):
+    if not (LooseVersion(test_from_version) <= LooseVersion(server_numeric_version) <= LooseVersion(test_to_version)):
         prints_manager.add_print_job('\n------ Test {} start ------'.format(test_message), print, thread_index)
         warning_message = 'Test {} ignored due to version mismatch (test versions: {}-{})'.format(test_message,
                                                                                                   test_from_version,
