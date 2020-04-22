@@ -437,10 +437,10 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_shaping: str, last_ru
     This function will execute each interval (default is 1 minute).
     Args:
         client (Client): Quest Kace Client
-        fetch_time:
-        fetch_shaping:
-        fetch_filter:
-        fetch_limit
+        fetch_time: time interval for fetch incidents.
+        fetch_shaping: shaping for the request.
+        fetch_filter: custom filters for the request.
+        fetch_limit: limit for number of fetch incidents per fetch.
         last_run (dateparser.time): The greatest incident created_time we fetched from last fetch
     Returns:
         next_run: This will be last_run in the next fetch-incidents
