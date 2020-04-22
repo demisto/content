@@ -125,7 +125,7 @@ EXPECTED_UPDATE_TICKET_ADDITIONAL = {
     'ServiceNow.Ticket(val.ID===obj.ID)': {
         'ID': '1234', 'Summary': 'Trouble getting to Oregon mail server', 'Number': 'INC0000039',
         'CreatedOn': '2019-09-05 00:42:29', 'Active': 'true', 'OpenedAt': '2019-09-05 00:41:01',
-        'approval': 'rejected', 'category': 'network', 'OpenedBy': 'admin', 'Creator': 'admin',
+        'approval': 'rejected', 'OpenedBy': 'admin', 'Creator': 'admin',
         'Priority': '5 - Planning', 'State': '1'
     }
 }
