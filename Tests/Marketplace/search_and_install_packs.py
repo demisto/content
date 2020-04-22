@@ -45,7 +45,7 @@ def search_pack(client, prints_manager, pack_id):  # todo: maybe change to pack_
     prints_manager.add_print_job(print_msg, print, 0)
 
     # make the search request
-    response_data, status_code, _ = demisto_client.generic_request_func(self=client,
+    response_data, status_code, _ = demisto_client.generic_request_func(client,
                                                                         path='/contentpacks/marketplace/search',
                                                                         method='POST',
                                                                         body={"packsQuery": pack_id},
@@ -94,7 +94,7 @@ def install_pack(client, prints_manager, pack_id, pack_version):
     }]
 
     # make the pack installation request
-    response_data, status_code, _ = demisto_client.generic_request_func(self=client,
+    response_data, status_code, _ = demisto_client.generic_request_func(client,
                                                                         path='/contentpacks/marketplace/install',
                                                                         method='POST',
                                                                         body=data,
