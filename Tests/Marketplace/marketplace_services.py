@@ -948,6 +948,7 @@ class Pack(object):
                 image_name = os.path.basename(image_local_path)
                 image_storage_path = os.path.join(pack_storage_root_path, image_name)
                 pack_image_blob = storage_bucket.blob(image_storage_path)
+                print(f"Uploading {self._pack_name} pack integration image: {image_name}")
 
                 with open(image_local_path, "rb") as image_file:
                     pack_image_blob.upload_from_file(image_file)
