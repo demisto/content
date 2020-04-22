@@ -72,6 +72,21 @@ def mocked_request(*args, **kwargs):
     return None, None, None
 
 
+class MockConfiguration:
+    def __init__(self):
+        self.host = None
+
+
+class MockApiClient:
+    def __init__(self):
+        self.configuration = MockConfiguration()
+
+
+class MockClient:
+    def __init__(self):
+        self.api_client = MockApiClient()
+
+
 class TestSearchAndInstallPacks(unittest.TestCase):
     @mock.patch('demisto_client.generic_request_func', side_effect=mocked_request)
     def test_search_and_install_packs_and_their_dependencies(self, mocker):
@@ -82,7 +97,7 @@ class TestSearchAndInstallPacks(unittest.TestCase):
 
         bad_integrations_files = ['malformed_integration_file']
 
-        mocker.patch.object(demisto_client, 'login', return_value=None)
+        mocker.patch.object(demisto_client, 'configure', return_value=MockClient())
         client = demisto_client.configure(base_url=BASE_URL, api_key=API_KEY)
         prints_manager = ParallelPrintsManager(1)
 
