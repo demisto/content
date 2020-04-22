@@ -1,5 +1,5 @@
 ## [Unreleased]
-Fixed an issue that caused all incidents to be classified into 'Prisma Cloud'
+Fixed an issue that caused all incidents to be classified into the 'Prisma Cloud'
 generic incident type.
 
 
