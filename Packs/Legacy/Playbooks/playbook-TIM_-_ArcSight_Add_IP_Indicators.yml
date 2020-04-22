@@ -168,7 +168,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.ArcsightBlackIPValueFieldName
+              simple: inputs.ArcsightWhiteListIPValueFieldName
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -331,7 +331,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.ArcsightWhiteIPValueFieldName
+              simple: inputs.ArcsightWhiteListIPValueFieldName
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -633,7 +633,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.ArcsightWatchIPValueFieldName
+              simple: inputs.ArcsightWatchListIPValueFieldName
             iscontext: true
       - - operator: isNotEmpty
           left:
