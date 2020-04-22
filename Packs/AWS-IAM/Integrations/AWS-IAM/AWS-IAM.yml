@@ -1379,7 +1379,7 @@ script:
       predefined:
         - ""
       description: Specifies the number of previous passwords that IAM users are prevented
-        from reusing. 
+        from reusing.
     - name: hardExpiry
       auto: PREDEFINED
       predefined:
@@ -1389,7 +1389,7 @@ script:
         has expired. Can be "True" or "False".
     description: Create/update password policy
     execution: true
-  dockerimage: demisto/boto3
+  dockerimage: demisto/boto3:1.9.55
   runonce: false
   subtype: python2
 tests:
