@@ -4,7 +4,8 @@
     "tests": [
         {
             "integrations": "Smokescreen IllusionBLACK",
-            "playbookID": "Smokescreen IllusionBLACK-Test"
+            "playbookID": "Smokescreen IllusionBLACK-Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Tanium Threat Response",
