@@ -1,11 +1,14 @@
 import pytest
 import json
+import os
 from Tests.Marketplace.marketplace_services import Pack, Metadata, input_to_list, get_valid_bool, convert_price, \
     get_higher_server_version
 
 
 @pytest.fixture(scope="module")
 def dummy_pack_metadata():
+    dummy_pack_metadata_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_data",
+                                            "user_pack_metadata.json")
     with open("./test_data/user_pack_metadata.json", 'r') as dummy_metadata_file:
         pack_metadata = json.load(dummy_metadata_file)
 
