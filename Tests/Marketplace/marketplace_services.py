@@ -660,7 +660,7 @@ class Pack(object):
                     elif current_directory == PackFolders.INDICATOR_FIELDS.value:
                         folder_collected_items.append({
                             'name': content_item.get('name', ""),
-                            'type': content_item.get('description', ""),
+                            'type': content_item.get('type', ""),
                             'description': content_item.get('description', "")
                         })
                     elif current_directory == PackFolders.REPORTS.value:
