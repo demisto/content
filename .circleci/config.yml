@@ -361,7 +361,7 @@ jobs:
                 echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
                 exit 0
             fi
-            export TEMP=$(cat /Users/darbel/dev/demisto/content/Tests/ami_builds.json | jq '."Demisto GA"')
+            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto GA"')
             echo $TEMP
             if [[ "$TEMP" == "null" ]];
               then
@@ -389,7 +389,7 @@ jobs:
                 echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
                 exit 0
             fi
-            export TEMP=$(cat /Users/darbel/dev/demisto/content/Tests/ami_builds.json | jq '."Demisto one before GA"')
+            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto one before GA"')
             echo $TEMP
             if [[ "$TEMP" == "null" ]];
               then
@@ -417,7 +417,7 @@ jobs:
                 echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
                 exit 0
             fi
-            export TEMP=$(cat /Users/darbel/dev/demisto/content/Tests/ami_builds.json | jq '."Demisto two before GA"')
+            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto two before GA"')
             echo $TEMP
             if [[ "$TEMP" == "null" ]];
               then
@@ -445,7 +445,7 @@ jobs:
                 echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
                 exit 0
             fi
-            export TEMP=$(cat /Users/darbel/dev/demisto/content/Tests/ami_builds.json | jq '."Server Master"')
+            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Server Master"')
             echo $TEMP
             if [[ "$TEMP" == "null" ]];
               then
@@ -473,7 +473,7 @@ jobs:
                 echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
                 exit 0
             fi
-            export TEMP=$(cat /Users/darbel/dev/demisto/content/Tests/ami_builds.json | jq '."Demisto PreGA"')
+            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto PreGA"')
             echo $TEMP
             if [[ "$TEMP" == "null" ]];
               then
