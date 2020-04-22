@@ -1,0 +1,1 @@
+Allow integration with Zabbix api
