@@ -2622,8 +2622,9 @@
             "fromversion": "4.5.0"
         },
         {
+            "integrations": "Deep Instinct"
             "playbookID": "DeepInstinct-Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
