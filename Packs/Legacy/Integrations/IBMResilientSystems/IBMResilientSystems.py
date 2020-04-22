@@ -86,6 +86,13 @@ RESOLUTION_DICT = {
     56: 'Resolved'
 }
 
+RESOLUTION_TO_ID_DICT = {
+    'Unresolved': 53,
+    'Duplicate': 54,
+    'Not an Issue': 55,
+    'Resolved': 56
+}
+
 EXP_TYPE_ID_DICT = {
     1: 'Unknown',
     2: 'ExternalParty',
@@ -383,7 +390,7 @@ def update_incident_command(args):
         })
     if 'nist' in args:
         old_value = incident['nist_attack_vectors']
-        nist_id = nist_to_id(args['nist'])
+        nist_id = NIST_DICT[args['nist']]
         new_value_list = old_value[:]
         new_value_list.append(nist_id)
         changes.append({
@@ -397,7 +404,7 @@ def update_incident_command(args):
         })
     if 'resolution' in args:
         old_value = incident['resolution_id']
-        new_value = resolution_to_id(args['resolution'])
+        new_value = RESOLUTION_TO_ID_DICT[args['resolution']]
         changes.append({
             'field': 'resolution_id',
             'old_value': {
@@ -956,8 +963,8 @@ client = resilient.get_client({
 })
 
 # Disable SDK logging warning messages
-logger = logging.getLogger('resilient')
-logger.propagate = False
+integration_logger = logging.getLogger('resilient')  # type: logging.Logger
+integration_logger.propagate = False
 
 LOG('command is %s' % (demisto.command(),))
 try:
