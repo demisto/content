@@ -88,6 +88,7 @@ script:
       - change_request
       - sc_request
       - sc_task
+      - sc_req_item
       required: false
       secret: false
     - default: false
@@ -200,6 +201,7 @@ script:
       - change_request
       - sc_request
       - sc_task
+      - sc_req_item
       required: false
       secret: false
     - auto: PREDEFINED
@@ -664,6 +666,12 @@ script:
       name: caller
       required: false
       secret: false
+    - default: false
+      description: Ticket approval
+      isArray: false
+      name: approval
+      required: false
+      secret: false
     deprecated: false
     description: Create new ServiceNow ticket
     execution: false
@@ -727,6 +735,7 @@ script:
       - change_request
       - sc_request
       - sc_task
+      - sc_req_item
       required: false
       secret: false
     - auto: PREDEFINED
@@ -1185,6 +1194,12 @@ script:
       name: caller
       required: false
       secret: false
+    - default: false
+      description: Ticket approval
+      isArray: false
+      name: approval
+      required: false
+      secret: false
     deprecated: false
     description: Update specific ticket
     execution: false
@@ -1207,6 +1222,7 @@ script:
       - change_request
       - sc_request
       - sc_task
+      - sc_req_item
       required: false
       secret: false
     deprecated: false
@@ -1923,6 +1939,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.0.0
 tests:
 - No test
+fromversion: 5.0.0
