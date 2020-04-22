@@ -66,7 +66,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: This is the Hello World integration for getting started.
+description: Use the Google Cloud Platform whitelist integration to get indicators
+  from the feed.
 display: GCP Whitelist
 name: GCP Whitelist
 script:
@@ -84,7 +85,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Hello command - prints hello to anyone
+    description: Gets indicators from the feed.
     execution: false
     name: gcp-whitelist-get-indicators
     outputs:
