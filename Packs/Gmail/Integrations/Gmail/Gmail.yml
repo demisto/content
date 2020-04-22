@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - display: Email of user with admin privileges (the Password refers to the Service
-    Account private key))
+    Account private key)
   name: adminEmail
   required: true
   type: 9

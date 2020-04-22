@@ -299,7 +299,6 @@ jobs:
               else
                 ./Tests/lastest_server_build_scripts/download_demisto_conf.sh
             fi
-
       - run:
           name: Download Artifacts
           when: always

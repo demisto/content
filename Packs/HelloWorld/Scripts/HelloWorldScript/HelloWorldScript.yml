@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: 'Hello command - prints hello to anyone. '
+  description: 'Hello command - prints hello to anyone.'
   isArray: false
   name: name
   required: false
