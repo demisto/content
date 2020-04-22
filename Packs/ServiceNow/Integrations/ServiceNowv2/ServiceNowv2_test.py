@@ -48,8 +48,8 @@ def test_split_fields():
 
     try:
         split_fields('a')
-    except ValueError as exception:
-        assert "must contain a '=' to specify the keys and values" in str(exception)
+    except Exception as err:
+        assert "must contain a '=' to specify the keys and values" in str(err)
         return
     assert False
 
