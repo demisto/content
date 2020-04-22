@@ -1,29 +1,34 @@
-id: DeepInstinct-Test
-version: -1
-name: DeepInstinct-Test
-starttaskid: '0'
+id: b816a31d-5ac8-491f-8997-819839c05d68
+version: 32
+name: Deep_Instinct-Test
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 7bf3ee81-ce47-4e0c-8e45-3419c37a8a35
     type: start
     task:
       id: 7bf3ee81-ce47-4e0c-8e45-3419c37a8a35
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 90
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '1':
-    id: '1'
+  "1":
+    id: "1"
     taskid: 6bd51705-545a-48e8-8cea-453e91a6374b
     type: regular
     task:
@@ -34,152 +39,190 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     scriptarguments:
       all:
-        simple: yes
+        simple: "yes"
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 230
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '2':
-    id: '2'
-    taskid: b258f791-0af4-4d9f-8c96-bebdbecf5867
+  "2":
+    id: "2"
+    taskid: 9a7f6d09-e099-4cc2-87bf-c470afed3ca6
     type: regular
     task:
-      id: b258f791-0af4-4d9f-8c96-bebdbecf5867
+      id: 9a7f6d09-e099-4cc2-87bf-c470afed3ca6
       version: -1
       name: deepinstinct-get-device
-      description: get specific device by id
+      description: get specific device by ID
       script: '|||deepinstinct-get-device'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     scriptarguments:
       device_id:
-        simple: '1'
+        simple: "1"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 380\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 390
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '3':
-    id: '3'
-    taskid: c7923567-5441-4d6e-8a75-1b0dd4f1d0ca
+  "3":
+    id: "3"
+    taskid: 7076bcd6-6a50-4074-869c-341e0515dd9a
     type: regular
     task:
-      id: c7923567-5441-4d6e-8a75-1b0dd4f1d0ca
+      id: 7076bcd6-6a50-4074-869c-341e0515dd9a
       version: -1
-      name: deepinstinct-add-hash-to-whitelist
+      name: add hash to whitelist
       description: add file hash to whitelist
       script: '|||deepinstinct-add-hash-to-whitelist'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '4'
+      - "17"
     scriptarguments:
+      comment: {}
       file_hash:
-        simple: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+        simple: wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww0000
       policy_id:
-        simple: '6'
+        simple: "6"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 591\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 611
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '4':
-    id: '4'
-    taskid: bdfc3257-fcc5-4190-8b44-7b6259e7bdf8
+  "4":
+    id: "4"
+    taskid: 0b41eddc-f319-456e-85b3-53b05349c3f9
     type: regular
     task:
-      id: bdfc3257-fcc5-4190-8b44-7b6259e7bdf8
+      id: 0b41eddc-f319-456e-85b3-53b05349c3f9
       version: -1
-      name: deepinstinct-add-hash-to-blacklist
+      name: add hash to blacklist
       description: add file hash to blacklist
-      script: Deep Instinct|||deepinstinct-add-hash-to-blacklist
+      script: '|||deepinstinct-add-hash-to-blacklist'
       type: regular
       iscommand: true
-      brand: Deep Instinct
+      brand: ""
     nexttasks:
       '#none#':
-      - '5'
+      - "18"
     scriptarguments:
+      comment: {}
       file_hash:
-        simple: wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+        simple: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb0000
       policy_id:
-        simple: '6'
+        simple: "6"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 771\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 961
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '5':
-    id: '5'
-    taskid: f218c749-eb9d-4888-8f32-9e6d61907809
+  "5":
+    id: "5"
+    taskid: 30d212bc-07be-4ccb-8537-e38a318807db
     type: regular
     task:
-      id: f218c749-eb9d-4888-8f32-9e6d61907809
+      id: 30d212bc-07be-4ccb-8537-e38a318807db
       version: -1
-      name: deepinstinct-add-device-to-group
+      name: add device to group
       description: add multiple devices to group
       script: '|||deepinstinct-add-devices-to-group'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '11'
+      - "11"
     scriptarguments:
       device_ids:
-        simple: '1'
+        simple: "1"
       group_id:
-        simple: '6'
+        simple: "6"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 961\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 1351
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '6':
-    id: '6'
-    taskid: 11afeeed-648a-4ef2-8bbb-783a400a6e43
+  "6":
+    id: "6"
+    taskid: 3715d7af-16f3-4a4d-87f5-9448547f1fec
     type: regular
     task:
-      id: 11afeeed-648a-4ef2-8bbb-783a400a6e43
+      id: 3715d7af-16f3-4a4d-87f5-9448547f1fec
       version: -1
-      name: deepinstinct-remove-device-from-group
+      name: remove device from group
       description: remove list of devices from group
       script: '|||deepinstinct-remove-devices-from-group'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '12'
+      - "12"
     scriptarguments:
       device_ids:
-        simple: '1'
+        simple: "1"
       group_id:
-        simple: '6'
+        simple: "6"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 1246\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1920
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '8':
-    id: '8'
+  "8":
+    id: "8"
     taskid: b4824a87-6e45-4987-8fc5-b197766e98f5
     type: regular
     task:
@@ -201,12 +244,18 @@ tasks:
         simple: ${incident.id}
       phishingsubtype: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 420,\n    \"y\": 2200\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2840
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '9':
-    id: '9'
+  "9":
+    id: "9"
     taskid: 64b88a26-611d-4b99-8785-cae43709f63a
     type: condition
     task:
@@ -215,14 +264,13 @@ tasks:
       name: Verify output device
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '3'
+      "yes":
+      - "3"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -231,7 +279,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '1'
+              simple: "1"
       - - operator: isEqualString
           left:
             value:
@@ -257,29 +305,34 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '3'
-    view: "{\n  \"position\": {\n    \"x\": -10,\n    \"y\": 475\n  }\n}"
+              simple: "3"
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 500
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '10':
-    id: '10'
-    taskid: d717b9f7-5246-4e02-83a1-b7c7dd593f87
+  "10":
+    id: "10"
+    taskid: ca4af3ba-521d-4500-826d-9ec3182c398d
     type: condition
     task:
-      id: d717b9f7-5246-4e02-83a1-b7c7dd593f87
+      id: ca4af3ba-521d-4500-826d-9ec3182c398d
       version: -1
       name: Verify device in group
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '6'
+      "yes":
+      - "6"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -288,61 +341,79 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '6'
-    view: "{\n  \"position\": {\n    \"x\": -50,\n    \"y\": 1151\n  }\n}"
+              simple: "6"
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 1720
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '11':
-    id: '11'
-    taskid: 678570b3-5e93-4abc-8115-f9216f29dd59
+  "11":
+    id: "11"
+    taskid: 38876ef2-6f25-44a6-8d02-d49e3518dcf5
     type: regular
     task:
-      id: 678570b3-5e93-4abc-8115-f9216f29dd59
+      id: 38876ef2-6f25-44a6-8d02-d49e3518dcf5
       version: -1
-      name: deepinstinct-get-device after adding group
-      description: get specific device by id
+      name: get device after adding group
+      description: get specific device by ID
       script: '|||deepinstinct-get-device'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '10'
+      - "10"
     scriptarguments:
       device_id:
-        simple: '1'
+        simple: "1"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -50,\n    \"y\": 980\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -60,
+          "y": 1580
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '12':
-    id: '12'
-    taskid: c897db69-e2ff-4556-8a5a-7081f991c95e
+  "12":
+    id: "12"
+    taskid: b02ca518-5290-436a-8636-11721768b372
     type: regular
     task:
-      id: c897db69-e2ff-4556-8a5a-7081f991c95e
+      id: b02ca518-5290-436a-8636-11721768b372
       version: -1
-      name: deepinstinct-get-device after removing group
-      description: get specific device by id
+      name: get device after removing group
+      description: get specific device by ID
       script: '|||deepinstinct-get-device'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '13'
+      - "13"
     scriptarguments:
       device_id:
-        simple: '1'
+        simple: "1"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -60,\n    \"y\": 1350\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 2050
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '13':
-    id: '13'
+  "13":
+    id: "13"
     taskid: 8190e7cf-8131-476b-8d84-42b464e13d5f
     type: condition
     task:
@@ -351,14 +422,13 @@ tasks:
       name: Verify device not in group
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '14'
+      "yes":
+      - "14"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -367,87 +437,182 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '3'
-    view: "{\n  \"position\": {\n    \"x\": -60,\n    \"y\": 1540\n  }\n}"
+              simple: "3"
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 2195
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '14':
-    id: '14'
-    taskid: 52fa932c-9cb8-4719-8a7e-b1e9e4e0d68e
+  "14":
+    id: "14"
+    taskid: dd8e6e55-0777-4a29-8529-21098d7156e9
     type: regular
     task:
-      id: 52fa932c-9cb8-4719-8a7e-b1e9e4e0d68e
+      id: dd8e6e55-0777-4a29-8529-21098d7156e9
       version: -1
-      name: deepinstinct-delete-files-remotely
+      name: delete files remotely
       description: delete multiple files remotely
       script: '|||deepinstinct-delete-files-remotely'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '15'
+      - "15"
     scriptarguments:
       event_ids:
-        simple: '1'
+        simple: "1"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 420,\n    \"y\": 1670\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2290
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '15':
-    id: '15'
-    taskid: 1626cb92-3ab1-42ef-845f-019e5228770f
+  "15":
+    id: "15"
+    taskid: eb78410b-b756-4ba2-819f-914d8944517e
     type: regular
     task:
-      id: 1626cb92-3ab1-42ef-845f-019e5228770f
+      id: eb78410b-b756-4ba2-819f-914d8944517e
       version: -1
-      name: deepinstinct-terminate-process
+      name: terminate process
       description: terminate list of processes
       script: '|||deepinstinct-terminate-processes'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '16'
+      - "16"
     scriptarguments:
       event_ids:
-        simple: '1'
+        simple: "1"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 420,\n    \"y\": 1850\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2470
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '16':
-    id: '16'
-    taskid: bed144d7-cf29-4f69-864c-264ce82eddd3
+  "16":
+    id: "16"
+    taskid: c68d892f-59d3-4b85-8d5d-b1938b130a3a
     type: regular
     task:
-      id: bed144d7-cf29-4f69-864c-264ce82eddd3
+      id: c68d892f-59d3-4b85-8d5d-b1938b130a3a
       version: -1
-      name: deepinstinct-close-events
+      name: close events
       description: close list of events
       script: '|||deepinstinct-close-events'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '8'
+      - "8"
     scriptarguments:
       event_ids:
-        simple: '1'
+        simple: "1"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 420,\n    \"y\": 2010\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2670
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 2245,\n      \"width\": 890,\n      \"x\": -60,\n      \"y\":\
-  \ 50\n    }\n  }\n}"
+  "17":
+    id: "17"
+    taskid: 97fd0dbe-72bd-44ff-84d6-88e797a8885b
+    type: regular
+    task:
+      id: 97fd0dbe-72bd-44ff-84d6-88e797a8885b
+      version: -1
+      name: Remove hash from whitelist
+      description: remove file hash from whitelist
+      script: '|||deepinstinct-remove-hash-from-whitelist'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      file_hash:
+        simple: wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww0000
+      policy_id:
+        simple: "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 85cce36e-fb20-4fec-8064-20e53be704fe
+    type: regular
+    task:
+      id: 85cce36e-fb20-4fec-8064-20e53be704fe
+      version: -1
+      name: Remove hash from blacklist
+      description: remove file hash from blacklist
+      script: '|||deepinstinct-remove-hash-from-blacklist'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      file_hash:
+        simple: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb0000
+      policy_id:
+        simple: "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2845,
+        "width": 920,
+        "x": -70,
+        "y": 90
+      }
+    }
+  }
 inputs: []
 outputs: []
-fromversion: 5.0.0
-description: ''

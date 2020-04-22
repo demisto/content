@@ -33,7 +33,7 @@ def http_request(method, url_suffix, json=None):
         )
 
         if r.status_code not in (200, 204):
-            return_error(message='The following API call response is not 200 [%d] - %s ' % (r.status_code, r.reason))
+            return_error(message='The following API call response status code is [%d] - %s ' % (r.status_code, r.reason))
         try:
             return r.json()
         except ValueError:
@@ -110,7 +110,7 @@ def add_hash_to_blacklist():
     """
     policy_id = demisto.args().get('policy_id')
     file_hash = demisto.args().get('file_hash')
-    comment = demisto.args().get('comment')
+    comment = demisto.args().get('comment') or ""
     http_request('POST', '/policies/%s/blacklist/hashes/%s' % (str(policy_id), file_hash), json={"comment": comment})
     demisto.results('ok')
 
@@ -121,7 +121,7 @@ def add_hash_to_whitelist():
     """
     policy_id = demisto.args().get('policy_id')
     file_hash = demisto.args().get('file_hash')
-    comment = demisto.args().get('comment')
+    comment = demisto.args().get('comment') or ""
     http_request('POST', '/policies/%s/whitelist/hashes/%s' % (str(policy_id), file_hash), json={"comment": comment})
     demisto.results('ok')
 
@@ -277,7 +277,7 @@ def main():
         """
         remove_hash_from_blacklist()
 
-    if demisto.command() == 'deepinstinct-add-remove-hash-from-whitelist':
+    if demisto.command() == 'deepinstinct-remove-hash-from-whitelist':
         """
         Remove hash from whitelist
         """
