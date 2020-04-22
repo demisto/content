@@ -50,19 +50,19 @@ def remove_apostrophes(cell):
     return cell[1:-1]
 
 
-def get_full_cell(lines, current_line, current_cell):
+def get_full_cell(lines, current_line_index, current_cell):
     """Gathers all the values in a multi-lined single cell in a csv table
 
     Args:
         lines (list): a list of all lines in the csv
-        current_line (int): the current line being gathered
+        current_line_index (int): the current line index being gathered
         current_cell: the value of the multi-lined single cell in the table
 
     Returns:
         Tuple(str, list). The full value of the single multi-lined cell and the rest of the values in it's line if exist
     """
-    current_line = current_line + 1
-    line_below = lines[current_line].split(',')
+    current_line_index += 1
+    line_below = lines[current_line_index].split(',')
 
     # removing enter empty lines
     if line_below[0] != '':
@@ -71,40 +71,40 @@ def get_full_cell(lines, current_line, current_cell):
     if line_below[0].endswith("\""):
         # case1: no additional info on that line
         if len(line_below) == 1:
-            return remove_apostrophes(current_cell), [], current_line
+            return remove_apostrophes(current_cell), [], current_line_index
 
         # case2: additional info on that line
         else:
-            return remove_apostrophes(current_cell), line_below[1:], current_line
+            return remove_apostrophes(current_cell), line_below[1:], current_line_index
 
-    return get_full_cell(lines, current_line, current_cell)
+    return get_full_cell(lines, current_line_index, current_cell)
 
 
-def gather_line(lines, current_line):
+def gather_line(lines, current_line_index):
     """gather the values of a single line in the answered csv
 
     Args:
         lines (list): a list of all lines in the csv
-        current_line (int): the current line being gathered
+        current_line_index (int): the current line index being gathered
 
     Returns:
         Tuple(list, int). A list containing all the values of a single line, the number of the last line checked
     """
-    line_values = lines[current_line].split(',')
+    line_cells_content = lines[current_line_index].split(',')
 
     # edge case - empty starting line
-    if len(line_values) == 0 or (len(line_values) == 1 and len(line_values[0]) == 0):
-        current_line += 1
-        return [], current_line
+    if len(line_cells_content) == 0 or (len(line_cells_content) == 1 and len(line_cells_content[0]) == 0):
+        current_line_index += 1
+        return [], current_line_index
 
     # multi lined cells start with " and end with "
-    while line_values[-1].startswith("\"") and not line_values[-1].endswith("\""):
-        current_cell = line_values[-1]
-        current_cell, rest_of_line, current_line = get_full_cell(lines, current_line, current_cell)
-        line_values[-1] = current_cell
-        line_values.extend(rest_of_line)
+    while line_cells_content[-1].startswith("\"") and not line_cells_content[-1].endswith("\""):
+        current_cell = line_cells_content[-1]
+        current_cell, rest_of_line, current_line_index = get_full_cell(lines, current_line_index, current_cell)
+        line_cells_content[-1] = current_cell
+        line_cells_content.extend(rest_of_line)
 
-    return line_values, current_line
+    return line_cells_content, current_line_index
 
 
 def csvstr_to_list(text_content):
@@ -122,13 +122,13 @@ def csvstr_to_list(text_content):
 
     headers = lines[0].split(',')
     total_column_num = len(headers)
-    lines = lines[1:]
+    lines = lines[1:]  # The first line is the headers
     total_lines_num = len(lines)
     result = []
-    current_line = 0
-    while current_line < total_lines_num:
+    current_line_index = 0
+    while current_line_index < total_lines_num:
         line_dict = {}
-        line_values, current_line = gather_line(lines, current_line)
+        line_values, current_line_index = gather_line(lines, current_line_index)
 
         if len(line_values) == 0:
             continue
@@ -136,7 +136,7 @@ def csvstr_to_list(text_content):
         for index in range(total_column_num):
             line_dict[headers[index]] = line_values[index]
 
-        current_line += 1
+        current_line_index += 1
 
         result.append(line_dict)
 
