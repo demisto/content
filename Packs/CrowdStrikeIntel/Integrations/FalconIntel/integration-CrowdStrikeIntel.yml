@@ -321,12 +321,17 @@ script:
                     if (!ec.DBotScore) {
                         ec.DBotScore = [];
                     }
+                    if (dbotType === 'hash'){
+                        ec.DBotScore.push(dbotTypeHashList(res.obj[i].indicator, dbotScore));
+                    }
+                    else {
                     ec.DBotScore.push({
                         Indicator: res.obj[i].indicator,
                         Type: dbotType,
                         Vendor: 'FalconIntel',
                         Score: dbotScore
                     });
+                    }
                 }
                 found = true;
             }
@@ -387,22 +392,33 @@ script:
                 } else {
                     dbotScore = 1;
                 }
-                ec.DBotScore = {
+                if (type === 'hash') {
+                    ec.DBotScore = dbotTypeHashList(ind, dbotScore)
+                }
+                else {
+                    ec.DBotScore = {
                     Indicator: ind,
                     Type: type,
                     Vendor: 'FalconIntel',
                     Score: dbotScore
-                }; // ok to override, we expect only one
+                    }
+                }
+
                 found = true;
             }
         }
         if (!found) {
             md += 'No result found';
+            if (type === 'hash') {
+                ec.DBotScore = dbotTypeHashList(ind, 0)
+            }
+            else {
             ec.DBotScore = {
                 Indicator: ind,
                 Type: type,
                 Vendor: 'FalconIntel',
                 Score: 0};
+            }
         }
         return {
             Type: entryTypes.note,
@@ -414,6 +430,21 @@ script:
         };
     }
 
+    function dbotTypeHashList(ind, score){
+        return [{
+                    Indicator: ind,
+                    Type: 'hash',
+                    Vendor: 'FalconIntel',
+                    Score: score
+                },
+                {
+                    Indicator: ind,
+                    Type: 'file',
+                    Vendor: 'FalconIntel',
+                    Score: score
+                }
+                ]
+    }
     function doFile(hash) {
         return doIndicator(hash, 'hash', 'Falcon Intel file reputation for', function(ec) {
             var malFile = {Malicious: {Vendor: 'FalconIntel', Description: 'High confidence'}};
