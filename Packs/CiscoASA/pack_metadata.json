@@ -1,7 +1,7 @@
 {
     "name": "Cisco ASA",
     "description": "Cisco Adaptive Security Appliance Software is the core operating system for the Cisco ASA Family. It delivers enterprise-class firewall capabilities for ASA devices.",
-    "support": "Cortex XSOAR",
+    "support": "xsoar",
     "serverMinVersion": "5.5.0",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -11,7 +11,7 @@
         "Network Security"
     ],
     "tags": [
-        "Recommended by Demisto"
+        "Recommended by Cortex XSOAR"
     ],
     "created": "2020-03-22T10:10:08Z",
     "updated": "2020-03-22T10:10:08Z",
