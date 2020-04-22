@@ -32,14 +32,20 @@ def http_request(method, url_suffix, json=None):
             verify=False
         )
 
+        if r.status_code == 422:
+            return_error(message='Authentication parameters are invalid, '
+                                 'Please check your URL address and your API token')
+
         if r.status_code not in (200, 204):
-            return_error(message='The following API call response status code is [%d] - %s ' % (r.status_code, r.reason))
+            return_error(message='The following API call response status code is [%d] - %s '
+                                 % (r.status_code, r.reason))
         try:
             return r.json()
         except ValueError:
             return None
     except Exception as e:
-        return_error(message='Error occurred on API call: %s. Error is: %s' % (base_url + api_suffix + url_suffix, str(e)))
+        return_error(message='Error occurred on API call: %s. Error is: %s'
+                             % (base_url + api_suffix + url_suffix, str(e)))
 
 
 def get_specific_device():
