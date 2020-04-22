@@ -1,31 +1,31 @@
 MACHINES_LIST_COMMAND_EXPECTED = {
-        'QuestKace.Machines(val.ID === obj.ID)': [
-            {'ID': '1',
-             'Modified': '2020-03-11 08:21:38',
-             'Created': '2020-03-11 08:21:38',
-             'User': '',
-             'Name': 'Macbook Pro',
-             'Ip': '1.2.3.4',
-             'OsName': '',
-             'OsNumber': '',
-             'LastInventory': '0000-00-00 00:00:00',
-             'LastSync': '0000-00-00 00:00:00',
-             'Ram total': '0 Bytes',
-             'RamUsed': '0',
-             'RamMax': '',
-             'BiosIdentificationCode': '',
-             'SoundDevices': '',
-             'CdromDevices': '',
-             'VideoControllers': '',
-             'Monitor': '',
-             'RegistrySize': '',
-             'RegistryMaxSize': '',
-             'PagefileSize': 'empty',
-             'PagefileMaxSize': 'empty',
-             'ManualEntry': '1'
-             }
-        ]
-    }
+    'QuestKace.Machines(val.ID === obj.ID)': [
+        {'ID': '1',
+         'Modified': '2020-03-11 08:21:38',
+         'Created': '2020-03-11 08:21:38',
+         'User': '',
+         'Name': 'Macbook Pro',
+         'Ip': '1.2.3.4',
+         'OsName': '',
+         'OsNumber': '',
+         'LastInventory': '0000-00-00 00:00:00',
+         'LastSync': '0000-00-00 00:00:00',
+         'Ram total': '0 Bytes',
+         'RamUsed': '0',
+         'RamMax': '',
+         'BiosIdentificationCode': '',
+         'SoundDevices': '',
+         'CdromDevices': '',
+         'VideoControllers': '',
+         'Monitor': '',
+         'RegistrySize': '',
+         'RegistryMaxSize': '',
+         'PagefileSize': 'empty',
+         'PagefileMaxSize': 'empty',
+         'ManualEntry': '1'
+         }
+    ]
+}
 
 ASSETS_LIST_COMMAND_EXPECTED = {
     'QuestKace.Assets(val.ID === obj.ID)': [
@@ -117,7 +117,7 @@ TICKETS_LIST_COMMAND_EXPECTED = {
     ]
 }
 
-LIST_EXPECTED_AFTER_PARSE =[
+LIST_EXPECTED_AFTER_PARSE = [
     {'ID': 1,
      'Title': 'Corona Alert',
      'Summary': 'blah blah',

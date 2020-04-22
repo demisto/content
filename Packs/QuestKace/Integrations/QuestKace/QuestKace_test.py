@@ -1,13 +1,13 @@
 import pytest
-from Packs.QuestKace.Integrations.QuestKace.QuestKace import Client, get_machines_list_command, \
+from QuestKace import Client, get_machines_list_command, \
     get_assets_list_command, get_queues_list_command, get_queues_fields_list_command, get_tickets_list_command, \
-    create_ticket_command, update_ticket_command, delete_ticket_command, parse_response
+    parse_response
 
-from Packs.QuestKace.Integrations.QuestKace.test_module.RawData import MACHINES_LIST_COMMAND_RESPONSE, \
+from test_module.RawData import MACHINES_LIST_COMMAND_RESPONSE, \
     ASSETS_LIST_COMMAND_RESPONSE, QUEUES_LIST_COMMAND_RESPONSE, QUEUES_FIELDS_LIST_COMMAND_RESPONSE, \
     TICKETS_LIST_COMMAND_RESPONSE, LIST_BEFORE_PARSE
 
-from Packs.QuestKace.Integrations.QuestKace.test_module.ExpectedResult import MACHINES_LIST_COMMAND_EXPECTED, \
+from test_module.ExpectedResult import MACHINES_LIST_COMMAND_EXPECTED, \
     ASSETS_LIST_COMMAND_EXPECTED, QUEUES_LIST_COMMAND_EXPECTED, QUEUES_FIELDS_LIST_COMMAND_EXPECTED, \
     TICKETS_LIST_COMMAND_EXPECTED, LIST_EXPECTED_AFTER_PARSE
 
