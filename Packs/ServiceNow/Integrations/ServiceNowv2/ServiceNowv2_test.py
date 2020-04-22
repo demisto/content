@@ -1,4 +1,5 @@
 import pytest
+import unittest
 from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_readable, \
     generate_body, split_fields, Client, update_ticket_command, create_ticket_command, delete_ticket_command, \
     query_tickets_command, add_link_command, add_comment_command, upload_file_command, get_ticket_notes_command, \
@@ -44,7 +45,14 @@ def test_generate_body():
 
 def test_split_fields():
     expected_dict_fields = {'a': 'b', 'c': 'd'}
-    expected_dict_fields == split_fields('a=b;c=d')
+    assert expected_dict_fields == split_fields('a=b;c=d')
+
+    try:
+        split_fields('a')
+    except ValueError as exception:
+        assert "must contain a '=' to specify the keys and values" in str(exception)
+        return
+    assert False
 
 
 @pytest.mark.parametrize('command, args, response, expected_result, expected_auto_extract', [

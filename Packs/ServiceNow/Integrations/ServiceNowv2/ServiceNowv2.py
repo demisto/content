@@ -320,6 +320,9 @@ def split_fields(fields: str = '') -> dict:
     Returns:
         dic_fields object for SNOW requests.
     """
+    if '=' not in fields:
+        raise Exception(f"The argument: {fields}.\nmust contain a '=' to specify the keys and values. e.g: key=val.")
+
     dic_fields = {}
 
     if fields:
