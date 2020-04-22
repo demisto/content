@@ -46,6 +46,16 @@ TICKET_STATES = {
         '1': '1 - Approved',
         '3': '3 - Closed',
         '4': '4 - Rejected'
+    },
+}
+
+TICKET_APPROVAL = {
+    'sc_req_item': {
+        'waiting_for_approval': 'Waiting for approval',
+        'approved': 'Approved',
+        'requested': 'Requested',
+        'rejected': 'Rejected',
+        'not requested': 'Not Yet Requested'
     }
 }
 
@@ -58,18 +68,16 @@ TICKET_PRIORITY = {
 }
 
 SNOW_ARGS = ['active', 'activity_due', 'opened_at', 'short_description', 'additional_assignee_list', 'approval_history',
-             'approval_set', 'assigned_to', 'assignment_group',
-             'business_duration', 'business_service', 'business_stc', 'calendar_duration', 'calendar_stc', 'caller_id',
-             'caused_by', 'close_code', 'close_notes',
+             'approval', 'approval_set', 'assigned_to', 'assignment_group',
+             'business_duration', 'business_service', 'business_stc', 'change_type', 'category', 'caller',
+             'calendar_duration', 'calendar_stc', 'caller_id', 'caused_by', 'close_code', 'close_notes',
              'closed_at', 'closed_by', 'cmdb_ci', 'comments', 'comments_and_work_notes', 'company', 'contact_type',
-             'correlation_display', 'correlation_id',
-             'delivery_plan', 'delivery_task', 'description', 'due_date', 'expected_start', 'follow_up', 'group_list',
-             'hold_reason', 'impact', 'incident_state',
+             'correlation_display', 'correlation_id', 'delivery_plan', 'delivery_task', 'description', 'due_date',
+             'expected_start', 'follow_up', 'group_list', 'hold_reason', 'impact', 'incident_state',
              'knowledge', 'location', 'made_sla', 'notify', 'order', 'parent', 'parent_incident', 'priority',
              'problem_id', 'resolved_at', 'resolved_by', 'rfc',
-             'severity', 'sla_due', 'state', 'subcategory', 'sys_tags', 'time_worked', 'urgency', 'user_input',
-             'watch_list', 'work_end', 'work_notes', 'work_notes_list',
-             'work_start', 'impact', 'incident_state', 'title', 'type', 'change_type', 'category', 'state', 'caller']
+             'severity', 'sla_due', 'state', 'subcategory', 'sys_tags', 'time_worked', 'title', 'type', 'urgency',
+             'user_input', 'watch_list', 'work_end', 'work_notes', 'work_notes_list', 'work_start']
 
 # Every table in ServiceNow should have those fields
 DEFAULT_RECORD_FIELDS = {
@@ -205,12 +213,20 @@ def get_ticket_human_readable(tickets, ticket_type: str) -> list:
         priority = ticket.get('priority', '')
         if priority:
             hr['Priority'] = TICKET_PRIORITY.get(priority, priority)
+
         state = ticket.get('state', '')
         if state:
             mapped_state = state
             if ticket_type in TICKET_STATES:
                 mapped_state = TICKET_STATES[ticket_type].get(state, mapped_state)
             hr['State'] = mapped_state
+        approval = ticket.get('approval', '')
+        if approval:
+            mapped_approval = approval
+            if ticket_type in TICKET_APPROVAL:
+                mapped_approval = TICKET_APPROVAL[ticket_type].get(ticket.get('approval'), mapped_approval)
+                # Approval will be added to the markdown only in the necessary ticket types
+                hr['Approval'] = mapped_approval
         result.append(hr)
     return result
 
@@ -237,6 +253,8 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '
     inv_priority = {v: k for k, v in TICKET_PRIORITY.items()}
     states = TICKET_STATES.get(ticket_type)
     inv_states = {v: k for k, v in states.items()} if states else {}
+    approval = TICKET_APPROVAL.get(ticket_type)
+    inv_approval = {v: k for k, v in approval.items()} if approval else {}
 
     ticket_fields = {}
     for arg in SNOW_ARGS:
@@ -248,6 +266,8 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '
                 ticket_fields[arg] = inv_priority.get(input_arg, input_arg)
             elif arg == 'state':
                 ticket_fields[arg] = inv_states.get(input_arg, input_arg)
+            elif arg == 'approval':
+                ticket_fields[arg] = inv_approval.get(input_arg, input_arg)
             else:
                 ticket_fields[arg] = input_arg
         elif template_name and arg in template_name:
@@ -650,10 +670,9 @@ def get_ticket_command(client: Client, args: dict):
     hr = get_ticket_human_readable(ticket, ticket_type)
     context = get_ticket_context(ticket)
 
-    headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
-               'Active', 'Close Notes', 'Close Code',
-               'Description', 'Opened At', 'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description',
-               'Additional Comments']
+    headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Approval',
+               'Created On', 'Created By', 'Active', 'Close Notes', 'Close Code', 'Description', 'Opened At',
+               'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description', 'Additional Comments']
 
     entry = {
         'Type': entryTypes['note'],
@@ -725,11 +744,9 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
     ticket = result['result']
 
     hr_ = get_ticket_human_readable(ticket, ticket_type)
-    headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On',
-               'Created By',
-               'Active', 'Close Notes', 'Close Code',
-               'Description', 'Opened At', 'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description',
-               'Additional Comments']
+    headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Approval',
+               'Created On', 'Created By', 'Active', 'Close Notes', 'Close Code', 'Description', 'Opened At',
+               'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description', 'Additional Comments']
     human_readable = tableToMarkdown('ServiceNow ticket was created successfully.', t=hr_,
                                      headers=headers, removeNull=True)
     created_ticket_context = get_ticket_context(ticket)
@@ -784,9 +801,8 @@ def query_tickets_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
     context = get_ticket_context(tickets)
 
     headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
-               'Active', 'Close Notes', 'Close Code',
-               'Description', 'Opened At', 'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description',
-               'Additional Comments']
+               'Active', 'Close Notes', 'Close Code', 'Description', 'Opened At', 'Due Date', 'Resolved By',
+               'Resolved At', 'SLA Due', 'Short Description', 'Additional Comments']
 
     human_readable = tableToMarkdown('ServiceNow tickets', t=hr_, headers=headers, removeNull=True)
     entry_context = {

@@ -520,19 +520,18 @@ inputs:
     queryEntity: indicators
     results:
     daterange:
-      fromdate: 0001-01-01 00:00:00+00:00
-      todate: 0001-01-01 00:00:00+00:00
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
       period:
         by: ''
         byto: ''
         byfrom: ''
-        tovalue:
-        fromvalue:
+        tovalue: null
+        fromvalue: null
         field: ''
-      fromdatelicenseval: 0001-01-01 00:00:00+00:00
+      fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: true
 outputs: []
-sourceplaybookid: 7eb8eab5-143d-4375-8707-417aac60f0ea
 quiet: true
 fromversion: 5.5.0
 tests:

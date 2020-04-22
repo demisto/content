@@ -200,6 +200,102 @@ RESPONSE_CREATE_TICKET = {
         "work_start": ""
     }
 }
+RESPONSE_UPDATE_TICKET_SC_REQ = {
+    "result": {
+        "active": "true",
+        "activity_due": "",
+        "additional_assignee_list": "",
+        "approval": "requested",
+        "approval_history": "",
+        "approval_set": "",
+        "assigned_to": "",
+        "assignment_group": "",
+        "backordered": "false",
+        "billable": "false",
+        "business_duration": "",
+        "business_service": "",
+        "calendar_duration": "",
+        "cat_item": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "close_notes": "",
+        "closed_at": "",
+        "closed_by": "",
+        "cmdb_ci": "",
+        "comments": "",
+        "comments_and_work_notes": "",
+        "company": "",
+        "configuration_item": "",
+        "contact_type": "",
+        "context": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "correlation_display": "",
+        "correlation_id": "",
+        "delivery_plan": "",
+        "delivery_task": "",
+        "description": "",
+        "due_date": "2020-04-18 15:33:00",
+        "escalation": "0",
+        "estimated_delivery": "",
+        "expected_start": "",
+        "follow_up": "",
+        "group_list": "",
+        "impact": "3",
+        "knowledge": "false",
+        "location": "",
+        "made_sla": "true",
+        "number": "RITM0010028",
+        "opened_at": "2020-04-16 15:33:00",
+        "opened_by": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "order": "",
+        "order_guide": "",
+        "parent": "",
+        "price": "139.99",
+        "priority": "4",
+        "quantity": "1",
+        "reassignment_count": "0",
+        "recurring_frequency": "",
+        "recurring_price": "0",
+        "request": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "sc_catalog": "",
+        "short_description": "Microsoft Access",
+        "sla_due": "",
+        "stage": "fulfillment",
+        "state": "1",
+        "sys_class_name": "sc_req_item",
+        "sys_created_by": "admin",
+        "sys_created_on": "2020-04-16 15:33:00",
+        "sys_domain": {
+            "link": "demisto.com",
+            "value": "global"
+        },
+        "sys_domain_path": "/",
+        "sys_id": "1234",
+        "sys_mod_count": "2",
+        "sys_tags": "",
+        "sys_updated_by": "admin",
+        "sys_updated_on": "2020-04-21 07:35:26",
+        "time_worked": "",
+        "upon_approval": "proceed",
+        "upon_reject": "cancel",
+        "urgency": "3",
+        "user_input": "",
+        "watch_list": "",
+        "work_end": "",
+        "work_notes": "",
+        "work_notes_list": "",
+        "work_start": ""
+    }
+}
 RESPONSE_QUERY_TICKETS = {
     "result": [
         {
