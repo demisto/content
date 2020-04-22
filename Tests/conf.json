@@ -2674,6 +2674,7 @@
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
+        "Infoblox": "Issue 23770",
         "Trend Micro Apex": "Issue 23632",
         "Awake Security": "Issue 23376",
         "RiskSense": "We should get an instance talk to Francesco",
@@ -2748,6 +2749,8 @@
         "VirusTotal - Private API": "Issue 22638",
 
         "_comment": "~~~ OTHER ~~~",
+        "Cortex Data Lake": "Issue 23718",
+        "Microsoft Defender Advanced Threat Protection": "Issue 23704",
         "Pentera": "authentication method will not work with testing",
         "EclecticIQ Platform": "Issue 8821",
         "BitDam": "Issue #17247",
@@ -2779,7 +2782,6 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
-        "sss": "aaa",
         "MongoDB": "Our instance not using SSL",
         "Cortex Data Lake": "Integration requires SSL",
         "Google Key Management Service": "The API requires an SSL secure connection to work.",
