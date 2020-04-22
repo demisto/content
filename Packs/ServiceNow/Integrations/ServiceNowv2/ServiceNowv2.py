@@ -716,6 +716,7 @@ def update_ticket_command(client: Client, args: dict) -> Tuple[Any, Dict, Dict, 
     ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
     ticket_id = str(args.get('id', ''))
     additional_fields = split_fields(str(args.get('additional_fields', '')))
+    additional_fields_keys = list(additional_fields.keys())
 
     fields = get_ticket_fields(args, ticket_type=ticket_type)
     fields.update(additional_fields)
@@ -725,10 +726,10 @@ def update_ticket_command(client: Client, args: dict) -> Tuple[Any, Dict, Dict, 
         raise Exception('Unable to retrieve response.')
     ticket = result['result']
 
-    hr_ = get_ticket_human_readable(ticket, ticket_type, additional_fields.keys())
+    hr_ = get_ticket_human_readable(ticket, ticket_type, additional_fields_keys)
     human_readable = tableToMarkdown(f'ServiceNow ticket updated successfully\nTicket type: {ticket_type}',
                                      t=hr_, removeNull=True)
-    entry_context = {'ServiceNow.Ticket(val.ID===obj.ID)': get_ticket_context(ticket, additional_fields.keys())}
+    entry_context = {'ServiceNow.Ticket(val.ID===obj.ID)': get_ticket_context(ticket, additional_fields_keys)}
 
     return human_readable, entry_context, result, True
 
@@ -747,6 +748,7 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
     template = args.get('template')
     ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
     additional_fields = split_fields(str(args.get('additional_fields', '')))
+    additional_fields_keys = list(additional_fields.keys())
 
     if template:
         template = client.get_template(template)
@@ -760,16 +762,16 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
         raise Exception('Unable to retrieve response.')
     ticket = result['result']
 
-    hr_ = get_ticket_human_readable(ticket, ticket_type, additional_fields.keys())
+    hr_ = get_ticket_human_readable(ticket, ticket_type, additional_fields_keys)
     headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Approval',
                'Created On', 'Created By', 'Active', 'Close Notes', 'Close Code', 'Description', 'Opened At',
                'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description', 'Additional Comments']
     if additional_fields:
-        headers.extend(additional_fields.keys())
+        headers.extend(additional_fields_keys)
     human_readable = tableToMarkdown('ServiceNow ticket was created successfully.', t=hr_,
                                      headers=headers, removeNull=True)
 
-    created_ticket_context = get_ticket_context(ticket, additional_fields.keys())
+    created_ticket_context = get_ticket_context(ticket, additional_fields_keys)
     entry_context = {
         'Ticket(val.ID===obj.ID)': created_ticket_context,
         'ServiceNow.Ticket(val.ID===obj.ID)': created_ticket_context
