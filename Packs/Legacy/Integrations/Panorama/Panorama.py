@@ -656,6 +656,7 @@ def panorama_push_status():
 
 
 def safeget(dct, keys):
+    # Safe get from dictionary
     for key in keys:
         try:
             if isinstance(dct, dict):
