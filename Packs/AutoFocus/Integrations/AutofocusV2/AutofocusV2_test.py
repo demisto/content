@@ -119,19 +119,3 @@ def test_calculate_dbot_score_file():
     raw_indicator = IP_RES_JSON['indicator']
     score = calculate_dbot_score(raw_indicator, 'File')
     assert score == 3
-
-
-def test_get_indicator_outputs(mocker):
-    from AutofocusV2 import get_indicator_outputs
-    return_outputs_mock = mocker.patch('AutofocusV2.return_outputs')
-    indicator = [{'raw_response': IP_RES_JSON, 'value': IP_ADDRESS, 'score': 3, 'response': INDICATOR_RES}]
-    get_indicator_outputs('IP', indicator, 'Address')
-    outputs = return_outputs_mock.call_args[1]['outputs']
-
-    assert return_outputs_mock.call_count == 1
-    assert outputs['DBotScore'][0]['Indicator'] == IP_ADDRESS
-    assert outputs['DBotScore'][0]['Score'] == 3
-    assert outputs['IP(val.Address && val.Address == obj.Address)'][0]['Address'] == IP_ADDRESS
-    assert outputs['IP(val.Address && val.Address == obj.Address)'][0]['Malicious']['Vendor'] == 'AutoFocus V2'
-    assert outputs['AutoFocus.IP(val.IndicatorValue === obj.IndicatorValue)'][0]['IndicatorValue'] == IP_ADDRESS
-    assert outputs['AutoFocus.IP(val.IndicatorValue === obj.IndicatorValue)'][0]['Tags'][0]['TagName'] == 'Upatre'
