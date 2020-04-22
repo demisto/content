@@ -70,35 +70,6 @@ class MsGraphClient:
         self.ms_client = MicrosoftClient(tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
                                          base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed)
 
-    def _http_request(self, command_resp_type='json', *args, **kwargs):
-        """
-        Wraps MicrosoftApiModule.http_request calls in order to handle special case of HTTP 206:
-        206 indicates Partial Content, reason will be in the warning header.
-        In that case, logs with the warning header will be written.
-
-        Args:
-            command_resp_type:
-            *args:
-            **kwargs:
-
-        Returns: requests.Response: The http response
-
-        """
-        response = self.ms_client.http_request(resp_type='response', *args, **kwargs)
-        if response.status_code == 206:
-            demisto.debug(str(response.headers))
-
-        if command_resp_type == 'json':
-            return response.json()
-        if command_resp_type == 'text':
-            return response.text
-        if command_resp_type == 'content':
-            return response.content
-        if command_resp_type == 'xml':
-            ET.parse(response.text)
-        return response
-
-
     def test_function(self):
         """Performs basic GET request to check if the API is reachable and authentication is successful.
 
@@ -128,15 +99,10 @@ class MsGraphClient:
             params['$orderby'] = order_by
         if filter_:
             params['$filter'] = filter_
-        # return self.ms_client.http_request(
-        #     method='GET',
-        #     url_suffix='groups',
-        #     params=params)
-        return self._http_request(
+        return self.ms_client.http_request(
             method='GET',
             url_suffix='groups',
             params=params)
-
 
     def get_group(self, group_id: str) -> Dict:
         """Returns a single group by sending a GET request.
