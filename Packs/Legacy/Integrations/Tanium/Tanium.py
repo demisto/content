@@ -50,19 +50,19 @@ def remove_apostrophes(cell):
     return cell[1:-1]
 
 
-def get_full_cell(lines, current_line_index, current_cell):
+def get_full_cell(string_lines, current_string_line_index, current_cell):
     """Gathers all the values in a multi-lined single cell in a csv table
 
     Args:
-        lines (list): a list of all lines in the csv
-        current_line_index (int): the current line index being gathered
+        string_lines (list): a list of all lines in the csv
+        current_string_line_index (int): the current line index being gathered
         current_cell: the value of the multi-lined single cell in the table
 
     Returns:
         Tuple(str, list). The full value of the single multi-lined cell and the rest of the values in it's line if exist
     """
-    current_line_index += 1
-    line_below = lines[current_line_index].split(',')
+    current_string_line_index += 1
+    line_below = string_lines[current_string_line_index].split(',')
 
     # removing enter empty lines
     if line_below[0] != '':
@@ -71,40 +71,39 @@ def get_full_cell(lines, current_line_index, current_cell):
     if line_below[0].endswith("\""):
         # case1: no additional info on that line
         if len(line_below) == 1:
-            return remove_apostrophes(current_cell), [], current_line_index
+            return remove_apostrophes(current_cell), [], current_string_line_index
 
         # case2: additional info on that line
         else:
-            return remove_apostrophes(current_cell), line_below[1:], current_line_index
+            return remove_apostrophes(current_cell), line_below[1:], current_string_line_index
 
-    return get_full_cell(lines, current_line_index, current_cell)
+    return get_full_cell(string_lines, current_string_line_index, current_cell)
 
 
-def gather_line(lines, current_line_index):
+def gather_line(string_lines, current_string_line_index):
     """gather the values of a single line in the answered csv
 
     Args:
-        lines (list): a list of all lines in the csv
-        current_line_index (int): the current line index being gathered
+        string_lines (list): a list of all lines in the csv
+        current_string_line_index (int): the current line index being gathered
 
     Returns:
         Tuple(list, int). A list containing all the values of a single line, the number of the last line checked
     """
-    line_cells_content = lines[current_line_index].split(',')
+    line_cells_content = string_lines[current_string_line_index].split(',')
 
     # edge case - empty starting line
     if len(line_cells_content) == 0 or (len(line_cells_content) == 1 and len(line_cells_content[0]) == 0):
-        current_line_index += 1
-        return [], current_line_index
+        return [], current_string_line_index
 
     # multi lined cells start with " and end with "
     while line_cells_content[-1].startswith("\"") and not line_cells_content[-1].endswith("\""):
         current_cell = line_cells_content[-1]
-        current_cell, rest_of_line, current_line_index = get_full_cell(lines, current_line_index, current_cell)
+        current_cell, rest_of_line, current_line_index = get_full_cell(string_lines, current_string_line_index, current_cell)
         line_cells_content[-1] = current_cell
         line_cells_content.extend(rest_of_line)
 
-    return line_cells_content, current_line_index
+    return line_cells_content, current_string_line_index
 
 
 def csvstr_to_list(text_content):
@@ -116,27 +115,37 @@ def csvstr_to_list(text_content):
     Returns:
         list. The formatted answer as a list where each element is a dict representing a line of the tabled answer
     """
-    lines = text_content.splitlines()
-    if len(lines) < 2:
+    # string_lines is an array of split lines that together create the full CSV
+    # the first element will always be the headers but the next elements do not necessarily correlate to the csv lines
+    # for expmple:
+    # ['header1,header2,header3', 'col1,"col2_1', 'col2_2",col3']
+    # this represents a table with 3 headers and a *single line* below it -
+    # col1 relates to header1, col3 relates to header3 and col2_1
+    # and col2_2 relate to header2 as marked by the leading and trailing apostrophes (")
+    # for more examples of this look at Tanium_test.py
+    string_lines = text_content.splitlines()
+    if len(string_lines) < 2:
         return []
 
-    headers = lines[0].split(',')
+    headers = string_lines[0].split(',')
     total_column_num = len(headers)
-    lines = lines[1:]  # The first line is the headers
-    total_lines_num = len(lines)
+
+    string_lines = string_lines[1:]  # The first line is the headers
+    total_lines_num = len(string_lines)
     result = []
-    current_line_index = 0
-    while current_line_index < total_lines_num:
+    current_string_line_index = 0
+    while current_string_line_index < total_lines_num:
         line_dict = {}
-        line_values, current_line_index = gather_line(lines, current_line_index)
+        line_values, current_string_line_index = gather_line(string_lines, current_string_line_index)
 
         if len(line_values) == 0:
+            current_string_line_index += 1
             continue
 
         for index in range(total_column_num):
             line_dict[headers[index]] = line_values[index]
 
-        current_line_index += 1
+        current_string_line_index += 1
 
         result.append(line_dict)
 
