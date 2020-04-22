@@ -86,6 +86,15 @@ class MockClient:
 
 
 def test_search_and_install_packs_and_their_dependencies(mocker):
+    """
+    Given
+    - Valid and invalid integrations paths.
+    When
+    - Running integrations configuration tests.
+    Then
+    - Ensure packs & their depenencies' search requests are valid.
+    - Ensure packs & their depenencies' installation requests are valid.
+    """
     good_integrations_files = [
         'Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.yml',
         'Packs/AzureSentinel/Integrations/AzureSentinel/AzureSentinel.yml'
