@@ -1,6 +1,6 @@
 ## [Unreleased]
 - Fixed an issue where an SSL error occurred while in insecure mode.
-- Adding an auto correct for ***mimecast-create-remediation-incident*** command when using message id.
+- Adding support for auto correct in ***mimecast-create-remediation-incident*** command when using message id.
 
 ## [20.2.0] - 2020-02-04
 Added the ***mimecast-update-policy*** command.
