@@ -2,9 +2,9 @@ from typing import Dict, Tuple, Optional, Any
 import demistomock as demisto
 import urllib3
 from CommonServerPython import *
-# from Packs.ApiModules.Scripts.MicrosoftApiModule.MicrosoftApiModule import MicrosoftClient
 
 # Disable insecure warnings
+
 urllib3.disable_warnings()
 
 INTEGRATION_CONTEXT_NAME = 'MSGraphGroups'
@@ -70,6 +70,35 @@ class MsGraphClient:
         self.ms_client = MicrosoftClient(tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
                                          base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed)
 
+    def _http_request(self, command_resp_type='json', *args, **kwargs):
+        """
+        Wraps MicrosoftApiModule.http_request calls in order to handle special case of HTTP 206:
+        206 indicates Partial Content, reason will be in the warning header.
+        In that case, logs with the warning header will be written.
+
+        Args:
+            command_resp_type:
+            *args:
+            **kwargs:
+
+        Returns: requests.Response: The http response
+
+        """
+        response = self.ms_client.http_request(resp_type='response', *args, **kwargs)
+        if response.status_code == 206:
+            demisto.debug(str(response.headers))
+
+        if command_resp_type == 'json':
+            return response.json()
+        if command_resp_type == 'text':
+            return response.text
+        if command_resp_type == 'content':
+            return response.content
+        if command_resp_type == 'xml':
+            ET.parse(response.text)
+        return response
+
+
     def test_function(self):
         """Performs basic GET request to check if the API is reachable and authentication is successful.
 
@@ -79,7 +108,7 @@ class MsGraphClient:
         self.ms_client.http_request(method='GET', url_suffix='groups', params={'$orderby': 'displayName'})
         demisto.results('ok')
 
-    def list_groups(self, order_by: str = None, next_link: str = None, top: int = None, filter_: str = None) -> Dict:
+    def list_groups(self, order_by: str = None, next_link: str = None, top: int = None, filter_: str = None):
         """Returns all groups by sending a GET request.
 
         Args:
@@ -91,21 +120,23 @@ class MsGraphClient:
         Returns:
             Response from API.
         """
-        params = {'$orderby': order_by} if order_by else {}
         if next_link:  # pagination
-            groups = self.ms_client.http_request(method='GET', full_url=next_link)
-        elif filter_:
-            groups = self.ms_client.http_request(
-                method='GET',
-                url_suffix=f'groups?$filter={filter_}&$top={top}',
-                params=params)
-        else:
-            groups = self.ms_client.http_request(
-                method='GET',
-                url_suffix=f'groups?$top={top}',
-                params=params)
+            return self.ms_client.http_request(method='GET', full_url=next_link)
+        # default value = 100
+        params = {'$top': top}
+        if order_by:
+            params['$orderby'] = order_by
+        if filter_:
+            params['$filter'] = filter_
+        # return self.ms_client.http_request(
+        #     method='GET',
+        #     url_suffix='groups',
+        #     params=params)
+        return self._http_request(
+            method='GET',
+            url_suffix='groups',
+            params=params)
 
-        return groups
 
     def get_group(self, group_id: str) -> Dict:
         """Returns a single group by sending a GET request.
@@ -139,9 +170,10 @@ class MsGraphClient:
         """
         #  If successful, this method returns 204 No Content response code.
         #  It does not return anything in the response body.
+        #  Using resp_type="text" to avoid parsing error in the calling method.
         self.ms_client.http_request(method='DELETE ', url_suffix=f'groups/{group_id}', resp_type="text")
 
-    def list_members(self, group_id: str, next_link: str = None, top: int = None, filter_: str = None) -> Dict:
+    def list_members(self, group_id: str, next_link: str = None, top: int = None, filter_: str = None):
         """List all group members by sending a GET request.
 
         Args:
@@ -154,17 +186,15 @@ class MsGraphClient:
             Response from API.
         """
         if next_link:  # pagination
-            members = self.ms_client.http_request(method='GET', full_url=next_link)
-        elif filter_:
-            members = self.ms_client.http_request(
-                method='GET',
-                url_suffix=f'groups/{group_id}/members?$filter={filter_}&$top={top}')
-        else:
-            members = self.ms_client.http_request(
-                method='GET',
-                url_suffix=f'groups/{group_id}/members?$top={top}')
+            return self.ms_client.http_request(method='GET', full_url=next_link)
+        params = {'$top': top}
+        if filter_:
+            params['$filter'] = filter_
 
-        return members
+        return self.ms_client.http_request(
+            method='GET',
+            url_suffix=f'groups/{group_id}/members',
+            params=params)
 
     def add_member(self, group_id: str, properties: Dict[str, str]):
         """Add a single member to a group by sending a POST request.
@@ -174,6 +204,7 @@ class MsGraphClient:
         """
         #  If successful, this method returns 204 No Content response code.
         #  It does not return anything in the response body.
+        #  Using resp_type="text" to avoid parsing error in the calling method.
         self.ms_client.http_request(
             method='POST',
             url_suffix=f'groups/{group_id}/members/$ref',
@@ -188,6 +219,7 @@ class MsGraphClient:
         """
         #  If successful, this method returns 204 No Content response code.
         #  It does not return anything in the response body.
+        #  Using resp_type="text" to avoid parsing error in the calling method.
         self.ms_client.http_request(
             method='DELETE',
             url_suffix=f'groups/{group_id}/members/{user_id}/$ref', resp_type="text")
@@ -413,7 +445,7 @@ def main():
     auth_and_token_url = params.get('auth_id')
     enc_key = params.get('enc_key')
     verify = not params.get('insecure', False)
-    proxy = params.get('proxy') == 'true'
+    proxy = params.get('proxy')
     self_deployed: bool = params.get('self_deployed', False)
 
     commands = {
