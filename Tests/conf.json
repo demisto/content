@@ -234,8 +234,8 @@
             "integrations": "SlackV2",
             "playbookID": "Slack Test Playbook",
             "timeout" : 2400,
-            "fromversion": "5.0.0",
-            "pid_threshold": 30
+            "pid_threshold": 5,
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Cortex XDR - IR",
@@ -2429,7 +2429,7 @@
             "playbookID": "RecordedFutureFeed - Test",
             "timeout": 1000,
             "fromversion": "5.5.0",
-            "memory_threshold": 80
+            "memory_threshold": 86
         },
         {
             "integrations": "Expanse",
@@ -2615,6 +2615,10 @@
             "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
             "timeout" : 60000,
             "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "IBM Resilient Systems",
+            "playbookID": "IBM Resilient Systems Test"
         }
     ],
     "skipped_tests": {
@@ -2626,9 +2630,9 @@
         "Cloaken-Test": "Issue 20036",
         "test_MsGraphFiles": "Issue 22853 ",
         "TestCofenseFeed": "Issue 22854",
-        "RecordedFutureFeed - Test": "Issue 22855",
         "Cybereason Test": "Issue 22683",
         "AbuseIPDB Test": "Issue 22658",
+        "ExtraHop-Test": "Issue 23731",
         "Bluecat Address Manager test": "Issue 22616",
         "Office365_Feed_Test": "Issue 22517",
         "Send Investigation Summary Reports": "Issue 22299",
@@ -2670,6 +2674,7 @@
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
+        "Trend Micro Apex": "Issue 23632",
         "Awake Security": "Issue 23376",
         "RiskSense": "We should get an instance talk to Francesco",
         "Palo Alto Networks Cortex": "Issue 22300",
@@ -2735,6 +2740,7 @@
         "Code42": "Instance not set up yet",
         "LogRhythm": "Issue 21672",
         "SecBI": "Issue 22545",
+        "IBM Resilient Systems": "Issue 23722",
 
         "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -2773,6 +2779,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "sss": "aaa",
         "MongoDB": "Our instance not using SSL",
         "Cortex Data Lake": "Integration requires SSL",
         "Google Key Management Service": "The API requires an SSL secure connection to work.",
