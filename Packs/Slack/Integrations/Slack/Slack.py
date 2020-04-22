@@ -19,7 +19,6 @@ import os
 # disable unsecure warnings
 requests.packages.urllib3.disable_warnings()
 
-
 ''' CONSTANTS '''
 
 SEVERITY_DICT = {
