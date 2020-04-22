@@ -655,6 +655,18 @@ def panorama_push_status():
     return result
 
 
+def safeget(dct, keys):
+    for key in keys:
+        try:
+            if isinstance(dct, dict):
+                dct = dct[key]
+            else:
+                return None
+        except KeyError:
+            return None
+    return dct
+
+
 def panorama_push_status_command():
     """
     Check jobID of push status
@@ -684,12 +696,11 @@ def panorama_push_status_command():
 
     # WARNINGS - Job warnings
     status_warnings = []
-    devices = result.get("response", {}).get('result', {}).get('job', {}).get('devices', {}).get('entry', {})
+    devices = safeget(result, ["response", "result", "job", "devices", "entry"])
     if devices:
         for device in devices:
-            device_info = device.get('details', {}).get('msg', {}).get('warnings', [])
-            if device_info:
-                status_warnings.extend(device_info.get('line'))
+            device_warnings = safeget(device, ["details", "msg", "warnings", "line"])
+            status_warnings.extend([] if not device_warnings else device_warnings)
     push_status_output["Warnings"] = status_warnings
 
     demisto.results({
@@ -5457,4 +5468,3 @@ def main():
 
 if __name__ in ["__builtin__", "builtins"]:
     main()
-main()
