@@ -2369,7 +2369,7 @@ script:
     - contextPath: TC.Group.AssociatedGroup.GroupType
       description: The type of the group to associate to.
       type: String
-  dockerimage: demisto/threatconnect-sdk
+  dockerimage45: demisto/threatconnect-sdk
   isfetch: false
   runonce: false
   script: '-'
