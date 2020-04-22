@@ -29,7 +29,7 @@ class GCPConfig(object):
     GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
     BASE_PACK = "Base"  # base pack name
     INDEX_NAME = "index"  # main index folder name
-    CORE_PACK_FILE_NAME = "corepacks.zip"  # core packs file name
+    CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
     CORE_PACKS_LIST = [BASE_PACK]  # cores packs list
 
 
