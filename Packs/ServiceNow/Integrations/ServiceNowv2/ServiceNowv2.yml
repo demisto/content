@@ -1214,7 +1214,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Fields in the format: fieldname1=value;fieldname2=value;'
+      description: 'Additional fields in the format: fieldname1=value;fieldname2=value;'
       isArray: false
       name: additional_fields
       required: false
