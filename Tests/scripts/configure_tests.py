@@ -3,6 +3,7 @@
 This script is used to create a filter_file.txt file which will run only the needed the tests for a given change.
 """
 import os
+import re
 import sys
 import json
 import time
@@ -992,23 +993,14 @@ def get_test_list(files_string, branch_name, two_before_ga_ver='0', conf=None, i
 def create_filter_envs_file(tests, two_before_ga, one_before_ga, ga, conf):
     """Create a file containing all the envs we need to run for the CI"""
     # always run master and PreGA
-    envs_to_test = ['Server Master', 'Demisto PreGA']
-    os_env_dict = {
-        'MASTER_SETUP': 'true',
-        'PREGA_SETUP':  'true'
-    }
+    envs_to_test = {'Server Master': True, 'Demisto PreGA': True}
     if is_any_test_runnable(test_ids=tests, server_version=two_before_ga, conf=conf):
-        envs_to_test.append('Demisto two before GA')
-        os_env_dict['TWO_BEFORE_GA_SETUP'] = 'true'
+        envs_to_test['Demisto two before GA'] = True
     if is_any_test_runnable(test_ids=tests, server_version=one_before_ga, conf=conf):
-        envs_to_test.append('Demisto one before GA')
-        os_env_dict['ONE_BEFORE_GA_SETUP'] = 'true'
+        envs_to_test['Demisto one before GA'] = True
     if is_any_test_runnable(test_ids=tests, server_version=ga, conf=conf):
-        envs_to_test.append('Demisto GA')
-        os_env_dict['GA_SETUP'] = 'true'
-    print("Adding os setup envs globals")
-    os.environ.update(os_env_dict)
-    print("Creating filter_envs.json")
+        envs_to_test['Demisto GA'] = True
+    print("Creating filter_envs.json with the following envs: {}".format(envs_to_test))
     with open("./Tests/filter_envs.json", "w") as filter_envs_file:
         json.dump(envs_to_test, filter_envs_file)
 

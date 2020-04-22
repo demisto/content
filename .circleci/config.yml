@@ -361,7 +361,8 @@ jobs:
                 echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
                 exit 0
             fi
-            if [ "$GA_SETUP" = true ] ;
+            export TEMP=$(cat /Users/darbel/dev/demisto/content/Tests/ami_builds.json | jq '."Demisto GA"')
+            if [[ "$TEMP" == "null" ]]; then
               then
                 echo "Skipping - instance was not setup"
                 exit 0
@@ -387,7 +388,8 @@ jobs:
                 echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
                 exit 0
             fi
-            if [ "ONE_BEFORE_GA_SETUP" = true ] ;
+            export TEMP=$(cat /Users/darbel/dev/demisto/content/Tests/ami_builds.json | jq '."Demisto one before GA"')
+            if [[ "$TEMP" == "null" ]]; then
               then
                 echo "Skipping - instance was not setup"
                 exit 0
@@ -413,7 +415,8 @@ jobs:
                 echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
                 exit 0
             fi
-            if [ "TWO_BEFORE_GA_SETUP" = true ] ;
+            export TEMP=$(cat /Users/darbel/dev/demisto/content/Tests/ami_builds.json | jq '."Demisto two before GA"')
+            if [[ "$TEMP" == "null" ]]; then
               then
                 echo "Skipping - instance was not setup"
                 exit 0
@@ -439,7 +442,8 @@ jobs:
                 echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
                 exit 0
             fi
-            if [ "MASTER_SETUP" = true ] ;
+            export TEMP=$(cat /Users/darbel/dev/demisto/content/Tests/ami_builds.json | jq '."Server Master"')
+            if [[ "$TEMP" == "null" ]]; then
               then
                 echo "Skipping - instance was not setup"
                 exit 0
@@ -465,7 +469,8 @@ jobs:
                 echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
                 exit 0
             fi
-            if [ "PREGA_SETUP" = true ] ;
+            export TEMP=$(cat /Users/darbel/dev/demisto/content/Tests/ami_builds.json | jq '."Demisto PreGA"')
+            if [[ "$TEMP" == "null" ]]; then
               then
                 echo "Skipping - instance was not setup"
                 exit 0
