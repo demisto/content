@@ -301,7 +301,7 @@ RESPONSE_UPDATE_TICKET_ADDITIONAL = {
         "active": "true",
         "activity_due": "",
         "additional_assignee_list": "",
-        "approval": "not requested",
+        "approval": "rejected",
         "approval_history": "",
         "approval_set": "",
         "assigned_to": "",

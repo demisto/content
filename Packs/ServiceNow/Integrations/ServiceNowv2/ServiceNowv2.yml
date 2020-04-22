@@ -680,9 +680,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Additional fields to present in the war room entry and incident
-        context.
-      isArray: true
+      description: 'Fields in the format: fieldname1=value;fieldname2=value;'
+      isArray: false
       name: additional_fields
       required: false
       secret: false
@@ -1215,9 +1214,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Additional fields to present in the war room entry and incident
-        context.
-      isArray: true
+      description: 'Fields in the format: fieldname1=value;fieldname2=value;'
+      isArray: false
       name: additional_fields
       required: false
       secret: false

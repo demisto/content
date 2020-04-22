@@ -714,19 +714,20 @@ def update_ticket_command(client: Client, args: dict) -> Tuple[Any, Dict, Dict, 
     custom_fields = split_fields(str(args.get('custom_fields', '')))
     ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
     ticket_id = str(args.get('id', ''))
-    additional_fields = argToList(str(args.get('additional_fields')))
+    additional_fields = split_fields(str(args.get('additional_fields')))
 
     fields = get_ticket_fields(args, ticket_type=ticket_type)
+    fields.update(additional_fields)
 
     result = client.update(ticket_type, ticket_id, fields, custom_fields)
     if not result or 'result' not in result:
         raise Exception('Unable to retrieve response.')
     ticket = result['result']
 
-    hr_ = get_ticket_human_readable(ticket, ticket_type, additional_fields)
+    hr_ = get_ticket_human_readable(ticket, ticket_type, additional_fields.keys())
     human_readable = tableToMarkdown(f'ServiceNow ticket updated successfully\nTicket type: {ticket_type}',
                                      t=hr_, removeNull=True)
-    entry_context = {'ServiceNow.Ticket(val.ID===obj.ID)': get_ticket_context(ticket, additional_fields)}
+    entry_context = {'ServiceNow.Ticket(val.ID===obj.ID)': get_ticket_context(ticket, additional_fields.keys())}
 
     return human_readable, entry_context, result, True
 
@@ -744,11 +745,13 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
     custom_fields = split_fields(str(args.get('custom_fields', '')))
     template = args.get('template')
     ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
-    additional_fields = argToList(str(args.get('additional_fields')))
+    additional_fields = split_fields(str(args.get('additional_fields')))
 
     if template:
         template = client.get_template(template)
     fields = get_ticket_fields(args, template, ticket_type)
+    if additional_fields:
+        fields.update(additional_fields)
 
     result = client.create(ticket_type, fields, custom_fields)
 
@@ -756,16 +759,16 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
         raise Exception('Unable to retrieve response.')
     ticket = result['result']
 
-    hr_ = get_ticket_human_readable(ticket, ticket_type, additional_fields)
+    hr_ = get_ticket_human_readable(ticket, ticket_type, additional_fields.keys())
     headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Approval',
                'Created On', 'Created By', 'Active', 'Close Notes', 'Close Code', 'Description', 'Opened At',
                'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description', 'Additional Comments']
     if additional_fields:
-        headers.extend(additional_fields)
+        headers.extend(additional_fields.keys())
     human_readable = tableToMarkdown('ServiceNow ticket was created successfully.', t=hr_,
                                      headers=headers, removeNull=True)
 
-    created_ticket_context = get_ticket_context(ticket, additional_fields)
+    created_ticket_context = get_ticket_context(ticket, additional_fields.keys())
     entry_context = {
         'Ticket(val.ID===obj.ID)': created_ticket_context,
         'ServiceNow.Ticket(val.ID===obj.ID)': created_ticket_context
