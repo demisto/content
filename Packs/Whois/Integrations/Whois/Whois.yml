@@ -395,6 +395,7 @@ script:
       description: The result of the command ("Success" or "Failed").
       type: string
   dockerimage: demisto/ippysocks:1.0.0.7353
+  dockerimage45: demisto/ippysocks
   isfetch: false
   runonce: false
   script: ''

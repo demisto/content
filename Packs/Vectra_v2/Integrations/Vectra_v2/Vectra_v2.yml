@@ -381,5 +381,6 @@ script:
     description: "Runs an advanced search on hosts and detections."
   isfetch: true
   dockerimage: demisto/python3:3.8.2.6981
+  dockerimage45: demisto/python3:3.7.4.2245
 tests:
   - No test 

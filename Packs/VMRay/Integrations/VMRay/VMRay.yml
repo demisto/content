@@ -522,6 +522,7 @@ script:
   isfetch: false
   runonce: false
   script: ''
+  dockerimage45: demisto/python
   type: python
   subtype: python2
 fromversion: 4.0.0
