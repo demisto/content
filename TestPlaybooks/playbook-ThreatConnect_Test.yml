@@ -1140,9 +1140,9 @@ tasks:
       brand: ""
     scriptarguments:
       group_id:
-        simple: "4114024"
+        simple: "5087947"
       group_type:
-        simple: events
+        simple: campaigns
     separatecontext: false
     view: |-
       {
