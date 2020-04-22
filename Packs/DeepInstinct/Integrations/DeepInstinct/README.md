@@ -2,7 +2,7 @@
 ---
 
 Deep Instinct
-This integration was integrated and tested with version xx of Deep Instinct
+This integration was integrated and tested with version 2.3.1.17 of Deep Instinct
 ## Deep Instinct Playbook
 ---
 
@@ -40,8 +40,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### 1. deepinstinct-get-device
 ---
 get specific device by id
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `deepinstinct-get-device`
@@ -129,8 +127,6 @@ get specific device by id
 ### 2. deepinstinct-hash-to-blacklist
 ---
 add file hash to blacklist
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `deepinstinct-hash-to-blacklist`
@@ -155,8 +151,6 @@ ok
 ### 3. deepinstinct-hash-to-whitelist
 ---
 add file hash to whitelist
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `deepinstinct-hash-to-whitelist`
@@ -181,8 +175,6 @@ ok
 ### 4. deepinstinct-add-devices-to-group
 ---
 add multiple devices to group
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `deepinstinct-add-devices-to-group`
@@ -207,8 +199,6 @@ ok
 ### 5. deepinstinct-remove-devices-from-group
 ---
 remove list of devices from group
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `deepinstinct-remove-devices-from-group`
@@ -233,8 +223,6 @@ ok
 ### 6. deepinstinct-delete-files-remotely
 ---
 delete multiple files remotely
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `deepinstinct-delete-files-remotely`
@@ -258,8 +246,6 @@ ok
 ### 7. deepinstinct-terminate-processes
 ---
 terminate list of processes
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `deepinstinct-terminate-processes`
@@ -283,8 +269,6 @@ ok
 ### 8. deepinstinct-close-events
 ---
 close list of events
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `deepinstinct-close-events`
@@ -313,7 +297,3 @@ ok
 
 ## Troubleshooting
 ---
-
-
-## Possible Errors (DO NOT PUBLISH ON ZENDESK):
-* message=s

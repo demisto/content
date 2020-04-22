@@ -8,7 +8,7 @@ description: Deep Instinct
 configuration:
 - display: Base server URL
   name: base_url
-  defaultvalue: ""
+  defaultvalue: "https://my-deep-instinct-path.deepinstinctweb.com"
   type: 0
   required: true
 - display: API Key
@@ -24,7 +24,7 @@ configuration:
   name: incidentType
   type: 13
   required: false
-- display: first event id to fetch from
+- display: first event ID to fetch from
   name: first_fetch_id
   defaultvalue: "0"
   type: 0
@@ -35,116 +35,123 @@ script:
     arguments:
     - name: device_id
       required: true
-      description: The device id
+      description: The device ID
     outputs:
-    - contextPath: DeepInstinct.id
-      description: Device id
+    - contextPath: DeepInstinct.devices.ID
+      description: Device ID
       type: number
-    - contextPath: DeepInstinct.os
+    - contextPath: DeepInstinct.devices.os
       description: Device OS
       type: string
-    - contextPath: DeepInstinct.osv
+    - contextPath: DeepInstinct.devices.osv
       description: Device OS version
       type: string
-    - contextPath: DeepInstinct.ip_address
+    - contextPath: DeepInstinct.devices.ip_address
       description: Device IP address
       type: string
-    - contextPath: DeepInstinct.mac_address
+    - contextPath: DeepInstinct.devices.mac_address
       description: Device mac address
       type: string
-    - contextPath: DeepInstinct.hostname
+    - contextPath: DeepInstinct.devices.hostname
       description: Device hostname
       type: string
-    - contextPath: DeepInstinct.domain
+    - contextPath: DeepInstinct.devices.domain
       description: Device domain
       type: string
-    - contextPath: DeepInstinct.scanned_files
+    - contextPath: DeepInstinct.devices.scanned_files
       description: Num of device scanned files
       type: number
-    - contextPath: DeepInstinct.tag
+    - contextPath: DeepInstinct.devices.tag
       description: Device tag
       type: string
-    - contextPath: DeepInstinct.connectivity_status
+    - contextPath: DeepInstinct.devices.connectivity_status
       description: Device connectivity status
       type: string
-    - contextPath: DeepInstinct.deployment_status
+    - contextPath: DeepInstinct.devices.deployment_status
       description: Device deployment status
       type: string
-    - contextPath: DeepInstinct.last_registration
+    - contextPath: DeepInstinct.devices.last_registration
       description: Device last registration datetime
       type: string
-    - contextPath: DeepInstinct.last_contact
+    - contextPath: DeepInstinct.devices.last_contact
       description: Device last contact datetime
       type: string
-    - contextPath: DeepInstinct.distinguished_name
+    - contextPath: DeepInstinct.devices.distinguished_name
       description: Device distinguished name
       type: string
-    - contextPath: DeepInstinct.group_name
+    - contextPath: DeepInstinct.devices.group_name
       description: Device group name
       type: string
-    - contextPath: DeepInstinct.group_id
-      description: Device group id
+    - contextPath: DeepInstinct.devices.group_id
+      description: Device group ID
       type: number
-    - contextPath: DeepInstinct.policy_name
+    - contextPath: DeepInstinct.devices.policy_name
       description: Device policy name
       type: string
-    - contextPath: DeepInstinct.policy_id
-      description: Device policy id
+    - contextPath: DeepInstinct.devices.policy_id
+      description: Device policy ID
       type: number
-    - contextPath: DeepInstinct.log_status
+    - contextPath: DeepInstinct.devices.log_status
       description: Device log status
       type: string
-    - contextPath: DeepInstinct.agent_version
+    - contextPath: DeepInstinct.devices.agent_version
       description: Device agent version
       type: string
-    - contextPath: DeepInstinct.brain_version
+    - contextPath: DeepInstinct.devices.brain_version
       description: Device brain version
       type: string
-    - contextPath: DeepInstinct.msp_name
+    - contextPath: DeepInstinct.devices.msp_name
       description: Device msp name
       type: string
-    - contextPath: DeepInstinct.msp_id
-      description: Device msp id
+    - contextPath: DeepInstinct.devices.msp_id
+      description: Device msp ID
       type: number
-    - contextPath: DeepInstinct.tenant_name
+    - contextPath: DeepInstinct.devices.tenant_name
       description: Device tenant name
       type: string
-    - contextPath: DeepInstinct.tenant_id
-      description: Device tenant id
+    - contextPath: DeepInstinct.devices.tenant_id
+      description: Device tenant ID
       type: number
-    description: get specific device by id
+    description: get specific device by ID
   - name: deepinstinct-hash-to-blacklist
     arguments:
     - name: policy_id
       required: true
-      description: policy id
+      description: policy ID
     - name: file_hash
       required: true
       description: file hash
+    - name: comment
+      description: Optional, add comment to hash field
+      defaultValue: ''
     description: add file hash to blacklist
   - name: deepinstinct-hash-to-whitelist
     arguments:
     - name: policy_id
       required: true
-      description: policy id
+      description: policy ID
     - name: file_hash
       required: true
       description: file hash
+    - name: comment
+      description: Optional, add comment to hash field
+      defaultValue: ''
     description: add file hash to whitelist
   - name: deepinstinct-add-devices-to-group
     arguments:
     - name: group_id
       required: true
-      description: group id
+      description: group ID
     - name: device_ids
       required: true
-      description: comma separeted devices ids
+      description: comma separated devices ids
+      isArray: true
     description: add multiple devices to group
   - name: deepinstinct-remove-devices-from-group
     arguments:
     - name: group_id
       required: true
-      description: group id to remove from
+      description: group ID to remove from
     - name: device_ids
       required: true
       description: comma separeted list of device ids to remove

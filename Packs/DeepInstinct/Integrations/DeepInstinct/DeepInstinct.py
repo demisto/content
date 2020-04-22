@@ -13,6 +13,8 @@ def http_request(method, url_suffix, json=None):
     Helper function to perform http request
     """
     base_url = demisto.params().get('base_url')
+    if base_url.endwith("/"):  # remove slash in the end
+        base_url = base_url[:-1]
     api_key = demisto.params().get('apikey')
     api_suffix = "/api/v1"
 
@@ -59,7 +61,8 @@ def add_hash_to_blacklist():
     """
     policy_id = demisto.args().get('policy_id')
     file_hash = demisto.args().get('file_hash')
-    http_request('POST', '/policies/%s/blacklist/hashes/%s' % (str(policy_id), file_hash), json={"comment": ""})
+    comment = demisto.args().get('comment')
+    http_request('POST', '/policies/%s/blacklist/hashes/%s' % (str(policy_id), file_hash), json={"comment": comment})
     demisto.results('ok')
 
 
@@ -69,7 +72,8 @@ def add_hash_to_whitelist():
     """
     policy_id = demisto.args().get('policy_id')
     file_hash = demisto.args().get('file_hash')
-    http_request('POST', '/policies/%s/whitelist/hashes/%s' % (str(policy_id), file_hash), json={"comment": ""})
+    comment = demisto.args().get('comment')
+    http_request('POST', '/policies/%s/whitelist/hashes/%s' % (str(policy_id), file_hash), json={"comment": comment})
     demisto.results('ok')
 
 
@@ -138,13 +142,13 @@ def fetch_incidents():
     while events and events['events']:
         for event in events['events']:
             incident = {
-                'name': str(event['id']),  # name is required field, must be set
+                'name': "DeepInstinct_" + str(event['id']),  # name is required field, must be set
                 'occurred': event['insertion_timestamp'],
                 'rawJSON': json.dumps(event)
             }
             incidents.append(incident)
 
-        demisto.setLastRun({'start_time': str(datetime.now().time()), 'last_id': events['last_id']})
+        demisto.setLastRun({'last_id': events['last_id']})
         events = http_request('GET', '/events/?after_id=' + str(events['last_id']))
 
     demisto.incidents(incidents)

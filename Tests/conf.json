@@ -2623,7 +2623,6 @@
         },
         {
             "playbookID": "DeepInstinct-Test",
-            "timeout" : 60000,
             "fromversion": "5.5.0"
         }
     ],
