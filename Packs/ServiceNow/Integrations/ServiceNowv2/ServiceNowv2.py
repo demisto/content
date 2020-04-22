@@ -683,7 +683,7 @@ def get_ticket_command(client: Client, args: dict):
                'Created On', 'Created By', 'Active', 'Close Notes', 'Close Code', 'Description', 'Opened At',
                'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description', 'Additional Comments']
     if additional_fields:
-        headers += additional_fields
+        headers.extend(additional_fields)
 
     entry = {
         'Type': entryTypes['note'],
@@ -761,7 +761,7 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
                'Created On', 'Created By', 'Active', 'Close Notes', 'Close Code', 'Description', 'Opened At',
                'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description', 'Additional Comments']
     if additional_fields:
-        headers += additional_fields
+        headers.extend(additional_fields)
     human_readable = tableToMarkdown('ServiceNow ticket was created successfully.', t=hr_,
                                      headers=headers, removeNull=True)
 
@@ -821,7 +821,7 @@ def query_tickets_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
                'Active', 'Close Notes', 'Close Code', 'Description', 'Opened At', 'Due Date', 'Resolved By',
                'Resolved At', 'SLA Due', 'Short Description', 'Additional Comments']
     if additional_fields:
-        headers += additional_fields
+        headers.extend(additional_fields)
     human_readable = tableToMarkdown('ServiceNow tickets', t=hr_, headers=headers, removeNull=True)
     entry_context = {
         'Ticket(val.ID===obj.ID)': context,
