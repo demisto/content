@@ -1,6 +1,5 @@
 id: Active Directory - Get User Manager Details
 version: -1
-fromversion: 4.5.0
 name: Active Directory - Get User Manager Details
 description: Takes an email address or a username of a user account in Active Directory,
   and returns the email address of the user's manager.
@@ -33,10 +32,10 @@ tasks:
     ignoreworker: false
   '1':
     id: '1'
-    taskid: 1a606311-7b08-4a4b-86b8-748ee9568c6f
+    taskid: 9c6dd8f5-91bb-406f-86c3-add4019fba2c
     type: condition
     task:
-      id: 1a606311-7b08-4a4b-86b8-748ee9568c6f
+      id: 9c6dd8f5-91bb-406f-86c3-add4019fba2c
       version: -1
       name: Is Active Directory enabled?
       description: Checks if the Active Directory Query v2 integration is enabled.
@@ -87,10 +86,10 @@ tasks:
     ignoreworker: false
   '2':
     id: '2'
-    taskid: c995aa78-63ce-4e24-803a-52b6dae5995f
+    taskid: c1c98615-ba19-44ef-8aa0-1d50a1ee1c3c
     type: condition
     task:
-      id: c995aa78-63ce-4e24-803a-52b6dae5995f
+      id: c1c98615-ba19-44ef-8aa0-1d50a1ee1c3c
       version: -1
       name: By which attribute should the user be searched?
       description: Retrieves detailed information about a user account. The user can
@@ -100,6 +99,8 @@ tasks:
       iscommand: false
       brand: Active Directory Query v2
     nexttasks:
+      '#default#':
+      - '13'
       Email:
       - '5'
       Username:
@@ -108,7 +109,7 @@ tasks:
     conditions:
     - label: Email
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
@@ -118,7 +119,7 @@ tasks:
             iscontext: true
     - label: Username
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
@@ -172,8 +173,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 590
+          "x": 20,
+          "y": 640
         }
       }
     note: false
@@ -181,10 +182,10 @@ tasks:
     ignoreworker: false
   '5':
     id: '5'
-    taskid: 9361739f-d4a8-4be6-8b25-df7549fa65c6
+    taskid: 1e68e108-228b-4f26-835b-663eaca70ad2
     type: regular
     task:
-      id: 9361739f-d4a8-4be6-8b25-df7549fa65c6
+      id: 1e68e108-228b-4f26-835b-663eaca70ad2
       version: -1
       name: Get user details by email
       description: Retrieves detailed information about a user account based on their
@@ -213,8 +214,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 790,
-          "y": 600
+          "x": 450,
+          "y": 640
         }
       }
     note: false
@@ -222,10 +223,10 @@ tasks:
     ignoreworker: false
   '6':
     id: '6'
-    taskid: 30809343-6474-43b7-8f4e-2fc30a3ee496
+    taskid: da7d26a1-d686-4030-80a8-0500e919ec09
     type: condition
     task:
-      id: 30809343-6474-43b7-8f4e-2fc30a3ee496
+      id: da7d26a1-d686-4030-80a8-0500e919ec09
       version: -1
       name: Was a manager found?
       description: Checks whether a manager name was found for the user account.
@@ -241,7 +242,7 @@ tasks:
     conditions:
     - label: 'yes'
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
@@ -327,10 +328,10 @@ tasks:
     ignoreworker: false
   '9':
     id: '9'
-    taskid: 37fd0c79-5294-4e2e-8524-31f09859e8ec
+    taskid: 9bea84a7-84e7-4928-8138-ad0e7264a790
     type: condition
     task:
-      id: 37fd0c79-5294-4e2e-8524-31f09859e8ec
+      id: 9bea84a7-84e7-4928-8138-ad0e7264a790
       version: -1
       name: Was a manager found by email or username?
       description: Checks whether an email was retrieved for the user's manager.
@@ -348,7 +349,7 @@ tasks:
     conditions:
     - label: Email
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
@@ -369,7 +370,7 @@ tasks:
             iscontext: true
     - label: Username
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
@@ -549,10 +550,10 @@ tasks:
     ignoreworker: false
   '15':
     id: '15'
-    taskid: e67a330b-f25f-470d-881d-6dc98f436631
+    taskid: 18942e65-9d7b-4924-8f88-13517c1fe378
     type: condition
     task:
-      id: e67a330b-f25f-470d-881d-6dc98f436631
+      id: 18942e65-9d7b-4924-8f88-13517c1fe378
       version: -1
       name: Was a manager display name found?
       description: Checks whether an email was retrieved for the user's manager.
@@ -587,16 +588,15 @@ tasks:
     ignoreworker: false
   '16':
     id: '16'
-    taskid: 53f0e4a9-72fd-4e7d-8cef-5383bc64e539
+    taskid: bdbd9a09-17a8-4393-80b0-c188cc65f777
     type: regular
     task:
-      id: 53f0e4a9-72fd-4e7d-8cef-5383bc64e539
+      id: bdbd9a09-17a8-4393-80b0-c188cc65f777
       version: -1
       name: Set manager display name to outputs
-      description: Sets the email of the manager to the output context key of the
-        playbook. It finds the manager by looking in the context for a user who's
-        username is not the same as the playbook input username.
-      scriptName: Set
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set in context.
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ''
@@ -607,6 +607,7 @@ tasks:
       append: {}
       key:
         simple: UserManagerDisplayName
+      stringify: {}
       value:
         complex:
           root: Account
@@ -647,8 +648,9 @@ view: |-
       "15_16_Yes": 0.56,
       "1_13_#default#": 0.22,
       "1_2_yes": 0.58,
-      "2_4_Username": 0.47,
-      "2_5_Email": 0.55,
+      "2_13_#default#": 0.35,
+      "2_4_Username": 0.78,
+      "2_5_Email": 0.7,
       "6_13_#default#": 0.35,
       "6_7_yes": 0.47,
       "9_13_#default#": 0.5,
@@ -683,5 +685,6 @@ outputs:
 - contextPath: UserManagerDisplayName
   description: The display name of the user's manager.
   type: unknown
+fromversion: 4.5.0
 tests:
   - Active Directory - Get User Manager Details - Test

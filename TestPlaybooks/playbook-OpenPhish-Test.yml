@@ -1,5 +1,5 @@
 id: OpenPhish Test Playbook
-version: 7
+version: -1
 name: OpenPhish Test Playbook
 description: Checking OpenPhish integration by running it on both known phishing and
   a safe URL and checking the results
