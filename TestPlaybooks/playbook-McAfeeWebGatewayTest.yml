@@ -1,5 +1,5 @@
 id: McAfeeWebGatewayTest
-version: 38
+version: -1
 name: McAfeeWebGatewayTest
 starttaskid: "0"
 tasks:
