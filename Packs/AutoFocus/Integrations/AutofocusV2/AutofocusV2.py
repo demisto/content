@@ -1683,5 +1683,5 @@ def main():
         return_error(f'Unexpected error: {e}')
 
 
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
