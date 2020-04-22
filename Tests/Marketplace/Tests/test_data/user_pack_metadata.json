@@ -2,30 +2,27 @@
   "name": "Test Pack Name",
   "description": "Description of test pack",
   "support": "xsoar",
-  "serverMinVersion": "5.5.0",
   "currentVersion": "2.3.0",
-  "author": "Dev",
+  "author": "Cortex XSOAR",
   "url": "https://test.com",
   "email": "test@test.com",
   "categories": [
     "Messaging"
   ],
   "tags": [
-    "tag1",
-    "tag2"
+    "tag number one",
+    "Tag number two"
   ],
   "created": "2020-03-07T12:35:55Z",
   "updated": "2020-03-07T12:35:55Z",
   "beta": false,
   "deprecated": false,
-  "certification": "certified",
   "useCases": [
-    "usecase1"
+    "some use case"
   ],
   "keywords": [
-    "keyword1",
-    "keyword2"
+    "dummy keyword",
+    "Additional dummy keyword"
   ],
-  "price": "120",
   "dependencies": {}
 }
