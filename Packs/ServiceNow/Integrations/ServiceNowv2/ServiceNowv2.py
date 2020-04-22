@@ -320,14 +320,12 @@ def split_fields(fields: str = '') -> dict:
     Returns:
         dic_fields object for SNOW requests.
     """
-    if '=' not in fields:
-        raise Exception(f"The argument: {fields}.\nmust contain a '=' to specify the keys and values. e.g: key=val.")
-
     dic_fields = {}
 
     if fields:
+        if '=' not in fields:
+            raise Exception(f"The argument: {fields}.\nmust contain a '=' to specify the keys and values. e.g: key=val.")
         arr_fields = fields.split(';')
-
         for f in arr_fields:
             field = f.split('=')
             if len(field) > 1:
@@ -661,7 +659,7 @@ def get_ticket_command(client: Client, args: dict):
     number = str(args.get('number', ''))
     get_attachments = args.get('get_attachments', 'false')
     custom_fields = split_fields(str(args.get('custom_fields', '')))
-    additional_fields = argToList(str(args.get('additional_fields')))
+    additional_fields = argToList(str(args.get('additional_fields', '')))
 
     result = client.get(ticket_type, ticket_id, generate_body({}, custom_fields), number)
     if not result or 'result' not in result:
@@ -717,7 +715,7 @@ def update_ticket_command(client: Client, args: dict) -> Tuple[Any, Dict, Dict, 
     custom_fields = split_fields(str(args.get('custom_fields', '')))
     ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
     ticket_id = str(args.get('id', ''))
-    additional_fields = split_fields(str(args.get('additional_fields')))
+    additional_fields = split_fields(str(args.get('additional_fields', '')))
 
     fields = get_ticket_fields(args, ticket_type=ticket_type)
     fields.update(additional_fields)
@@ -748,7 +746,7 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
     custom_fields = split_fields(str(args.get('custom_fields', '')))
     template = args.get('template')
     ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
-    additional_fields = split_fields(str(args.get('additional_fields')))
+    additional_fields = split_fields(str(args.get('additional_fields', '')))
 
     if template:
         template = client.get_template(template)
