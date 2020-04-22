@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed an issue with the error handling of the API quota limit.
 
 ## [20.4.0] - 2020-04-14
 -
