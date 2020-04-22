@@ -1,0 +1,24 @@
+{
+    "name": "FortiGate Firewall",
+    "description": "An Integration with FortiGate Firewall",
+    "support": "demisto",
+    "serverMinVersion": "5.0",
+    "currentVersion": "1.0.0",
+    "author": "",
+    "url": "",
+    "email": "",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [
+        "Recomended by Demisto"
+    ],
+    "created": "2020-04-22T06:57:26Z",
+    "updated": "2020-04-22T06:57:26Z",
+    "beta": false,
+    "deprecated": false,
+    "certification": "certified",
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {}
+}
