@@ -37,7 +37,7 @@ mock_device = {
 }
 
 mock_groups = [
-      {
+    {
         "name": "Android Default Group",
         "os": "ANDROID",
         "policy_id": 1,
@@ -45,8 +45,8 @@ mock_groups = [
         "is_default_group": True,
         "msp_name": "MSP 1",
         "msp_id": 1
-      },
-      {
+    },
+    {
         "name": "iOS Default Group",
         "os": "IOS",
         "policy_id": 2,
@@ -54,26 +54,26 @@ mock_groups = [
         "is_default_group": True,
         "msp_name": "MSP 1",
         "msp_id": 1
-      }
+  }
 ]
 
 mock_policies = [
-      {
+    {
         "id": 2,
         "os": "IOS",
         "name": "iOS Default Policy",
         "is_default_policy": True,
         "msp_name": "MSP 1",
         "msp_id": 1
-      },
-      {
+  },
+  {
         "id": 3,
         "os": "WINDOWS",
         "name": "Windows Default Policy",
         "is_default_policy": True,
         "msp_name": "MSP 1",
         "msp_id": 1
-      }
+  }
 ]
 
 
