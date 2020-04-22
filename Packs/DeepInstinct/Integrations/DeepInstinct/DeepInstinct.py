@@ -61,7 +61,6 @@ def get_events():
     """
     Get events
     """
-    demisto.info("-0-")
     first_event_id = demisto.args().get('first_event_id')
     result = http_request('GET', '/events/?after_id=' + str(first_event_id))
     events = {}

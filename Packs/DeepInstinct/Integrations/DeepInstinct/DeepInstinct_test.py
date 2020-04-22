@@ -36,6 +36,47 @@ mock_device = {
     "tenant_id": 1
 }
 
+mock_groups = [
+      {
+        "name": "Android Default Group",
+        "os": "ANDROID",
+        "policy_id": 1,
+        "id": 1,
+        "is_default_group": True,
+        "msp_name": "MSP 1",
+        "msp_id": 1
+      },
+      {
+        "name": "iOS Default Group",
+        "os": "IOS",
+        "policy_id": 2,
+        "id": 2,
+        "is_default_group": True,
+        "msp_name": "MSP 1",
+        "msp_id": 1
+      }
+]
+
+mock_policies = [
+      {
+        "id": 2,
+        "os": "IOS",
+        "name": "iOS Default Policy",
+        "is_default_policy": True,
+        "msp_name": "MSP 1",
+        "msp_id": 1
+      },
+      {
+        "id": 3,
+        "os": "WINDOWS",
+        "name": "Windows Default Policy",
+        "is_default_policy": True,
+        "msp_name": "MSP 1",
+        "msp_id": 1
+      }
+]
+
+
 mock_events = {
     "last_id": 2,
     "events":
@@ -134,6 +175,34 @@ def test_get_device_command(requests_mock, mocker):
     DeepInstinct.get_specific_device()
     result = demisto.results.call_args[0][0]
     assert result['Contents'] == mock_device
+
+
+def test_get_all_groups(requests_mock, mocker):
+    mocker.patch.object(demisto, 'params', return_value=params)
+    requests_mock.get("{0}/api/v1/groups".format(params['base_url'], json=mock_groups))
+    mocker.patch.object(demisto, 'results')
+    DeepInstinct.get_all_groups()
+    result = demisto.results.call_args[0][0]
+    assert result['Contents'] == mock_groups
+
+
+def test_get_all_policies(requests_mock, mocker):
+    mocker.patch.object(demisto, 'params', return_value=params)
+    requests_mock.get("{0}/api/v1/policies".format(params['base_url'], json=mock_policies))
+    mocker.patch.object(demisto, 'results')
+    DeepInstinct.get_all_policies()
+    result = demisto.results.call_args[0][0]
+    assert result['Contents'] == mock_policies
+
+
+def test_get_events(requests_mock, mocker):
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'args', return_value={'first_event_id': 0})
+    requests_mock.get("{0}/api/v1/events/?after_id=0".format(params['base_url']), json=mock_events['events'])
+    mocker.patch.object(demisto, 'results')
+    DeepInstinct.get_events()
+    result = demisto.results.call_args[0][0]
+    assert result['Contents'] == mock_events['events']
 
 
 def test_fetch_incidents(requests_mock, mocker):
