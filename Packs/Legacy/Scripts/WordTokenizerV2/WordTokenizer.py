@@ -1,10 +1,14 @@
+import spacy
 import string
 from HTMLParser import HTMLParser
 from re import compile as _Re
 
-import spacy
-
 from CommonServerPython import *
+
+NUMBER_PATTERN = "NUMBER_PATTERN"
+URL_PATTERN = "URL_PATTERN"
+EMAIL_PATTERN = "EMAIL_PATTERN"
+reserved_tokens = set([NUMBER_PATTERN, URL_PATTERN, EMAIL_PATTERN])
 
 CLEAN_HTML = (demisto.args()['cleanHtml'] == 'yes')
 REMOVE_LINE_BREAKS = (demisto.args()['removeLineBreaks'] == 'yes')
@@ -92,18 +96,27 @@ def tokenize_text(text):
 
 
 def tokenize_text_other(unicode_text):
+    _ , preprocessed_tokens_list = tokenize_text_spacy(unicode_text, language='English')
     tokenization_method = demisto.args()['tokenizationMethod']
-    unicode_text = unicode_text.decode('utf-8', 'ignore').encode("utf-8")
     if tokenization_method == 'byWords':
-        tokens = unicode_text.split()
         tokens_list = []
         original_words_to_tokens = {}
-        for t in tokens:
-            token_without_punct = ''.join([c for c in t if c not in string.punctuation])
-            tokens_list.append(token_without_punct)
-            original_words_to_tokens[token_without_punct] = tokens_list
+        for t in preprocessed_tokens_list:
+            if t in reserved_tokens:
+                tokens_list.append(t)
+                original_words_to_tokens[token_without_punct] = t
+            else:
+                token_without_punct = ''.join([c for c in t if c not in string.punctuation])
+                if len(token_without_punct) > 0:
+                    tokens_list.append(token_without_punct)
+                    original_words_to_tokens[token_without_punct] = t
     elif tokenization_method == 'byLetters':
-        tokens_list = [chr for chr in _unicode_chr_splitter(unicode_text) if chr]
+        tokens_list = []
+        for t in preprocessed_tokens_list:
+            if t in reserved_tokens:
+                tokens_list.append(t)
+            else:
+                tokens_list += [chr for chr in _unicode_chr_splitter(t) if chr]
         original_words_to_tokens = {c: c for c in tokens_list}
     else:
         return_error('Unsupported tokenization method: when language is "Other" ({})'.format(tokenization_method))
@@ -124,11 +137,11 @@ def tokenize_text_spacy(unicode_text, language):
         elif REMOVE_PUNCT and word.is_punct:
             continue
         elif REPLACE_EMAIL and '@' in word.text:
-            tokens_list.append("EMAIL_PATTERN")
+            tokens_list.append(EMAIL_PATTERN)
         elif REPLACE_URLS and word.like_url:
-            tokens_list.append("URL_PATTERN")
+            tokens_list.append(URL_PATTERN)
         elif REPLACE_NUMBERS and (word.like_num or word.pos_ == 'NUM'):
-            tokens_list.append("NUMBER_PATTERN")
+            tokens_list.append(NUMBER_PATTERN)
         elif REMOVE_NON_ALPHA and not word.is_alpha:
             continue
         elif FILTER_ENGLISH_WORDS and word.text not in nlp.vocab:
