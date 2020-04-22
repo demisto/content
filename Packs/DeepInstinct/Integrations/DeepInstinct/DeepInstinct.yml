@@ -113,7 +113,54 @@ script:
       description: Device tenant ID
       type: number
     description: get specific device by ID
-  - name: deepinstinct-hash-to-blacklist
+  - name: deepinstinct-get-all-groups
+    arguments: []
+    outputs:
+    - contextPath: DeepInstinct.Groups.ID
+      description: group id
+      type: number
+    - contextPath: DeepInstinct.Groups.os
+      description: group operation system
+      type: string
+    - contextPath: DeepInstinct.Groups.name
+      description: group name
+      type: string
+    - contextPath: DeepInstinct.Groups.policy_id
+      description: group policy ID
+      type: number
+    - contextPath: DeepInstinct.Groups.is_default_group
+      description: True if group is a default group, false otherwise
+      type: boolean
+    - contextPath: DeepInstinct.Groups.msp_name
+      description: msp name
+      type: string
+    - contextPath: DeepInstinct.Groups.msp_id
+      description: msp ID
+      type: number
+    description: get all groups
+  - name: deepinstinct-get-all-policies
+    arguments: []
+    outputs:
+    - contextPath: DeepInstinct.Policies.ID
+      description: policy ID
+      type: number
+    - contextPath: DeepInstinct.Policies.name
+      description: policy name
+      type: string
+    - contextPath: DeepInstinct.Policies.os
+      description: policy operating system
+      type: string
+    - contextPath: DeepInstinct.Policies.is_default_policy
+      description: True if policy is a default policy, False otherwise
+      type: boolean
+    - contextPath: DeepInstinct.Policies.msp_id
+      description: msp ID
+      type: number
+    - contextPath: DeepInstinct.Policies.msp_name
+      description: msp name
+      type: string
+    description: get all policies
+  - name: deepinstinct-add-hash-to-blacklist
     arguments:
     - name: policy_id
       required: true
@@ -125,7 +172,7 @@ script:
       description: Optional, add comment to hash field
       defaultValue: ''
     description: add file hash to blacklist
-  - name: deepinstinct-hash-to-whitelist
+  - name: deepinstinct-add-hash-to-whitelist
     arguments:
     - name: policy_id
       required: true
@@ -137,6 +184,24 @@ script:
       description: Optional, add comment to hash field
       defaultValue: ''
     description: add file hash to whitelist
+  - name: deepinstinct-remove-hash-from-blacklist
+    arguments:
+      - name: policy_id
+        required: true
+        description: policy ID
+      - name: file_hash
+        required: true
+        description: file hash
+    description: remove file hash from blacklist
+  - name: deepinstinct-remove-hash-from-whitelist
+    arguments:
+      - name: policy_id
+        required: true
+        description: policy ID
+      - name: file_hash
+        required: true
+        description: file hash
+    description: remove file hash from whitelist
   - name: deepinstinct-add-devices-to-group
     arguments:
     - name: group_id

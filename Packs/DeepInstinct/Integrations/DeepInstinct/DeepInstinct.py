@@ -57,6 +57,36 @@ def get_specific_device():
     )
 
 
+def get_all_groups():
+    """
+    Get all groups
+
+    """
+    result = http_request('GET', "/groups")
+    ec = {'DeepInstinct.Groups(val.id && val.id == obj.id)': result}
+
+    return_outputs(
+        readable_output=tableToMarkdown('Groups', result),
+        outputs=ec,
+        raw_response=result
+    )
+
+
+def get_all_policies():
+    """
+    Get all policies
+
+    """
+    result = http_request('GET', "/policies")
+    ec = {'DeepInstinct.Policies(val.id && val.id == obj.id)': result}
+
+    return_outputs(
+        readable_output=tableToMarkdown('Policies', result),
+        outputs=ec,
+        raw_response=result
+    )
+
+
 def add_hash_to_blacklist():
     """
     Add hash to blacklist
@@ -76,6 +106,26 @@ def add_hash_to_whitelist():
     file_hash = demisto.args().get('file_hash')
     comment = demisto.args().get('comment')
     http_request('POST', '/policies/%s/whitelist/hashes/%s' % (str(policy_id), file_hash), json={"comment": comment})
+    demisto.results('ok')
+
+
+def remove_hash_from_blacklist():
+    """
+    Remove hash from blacklist
+    """
+    policy_id = demisto.args().get('policy_id')
+    file_hash = demisto.args().get('file_hash')
+    http_request('DELETE', '/policies/%s/blacklist/hashes/%s' % (str(policy_id), file_hash))
+    demisto.results('ok')
+
+
+def remove_hash_from_whitelist():
+    """
+    Remove hash from whitelist
+    """
+    policy_id = demisto.args().get('policy_id')
+    file_hash = demisto.args().get('file_hash')
+    http_request('DELETE', '/policies/%s/whitelist/hashes/%s' % (str(policy_id), file_hash))
     demisto.results('ok')
 
 
@@ -175,17 +225,40 @@ def main():
         """
         get_specific_device()
 
-    if demisto.command() == 'deepinstinct-hash-to-blacklist':
+    if demisto.command() == 'deepinstinct-get-all-groups':
+        """
+        Get all groups
+        """
+        get_all_groups()
+    if demisto.command() == 'deepinstinct-get-all-policies':
+        """
+        Get all policies
+        """
+        get_all_policies()
+
+    if demisto.command() == 'deepinstinct-add-hash-to-blacklist':
         """
         Add hash to blacklist
         """
         add_hash_to_blacklist()
 
-    if demisto.command() == 'deepinstinct-hash-to-whitelist':
+    if demisto.command() == 'deepinstinct-add-hash-to-whitelist':
         """
         Add hash to whitelist
         """
         add_hash_to_whitelist()
+
+    if demisto.command() == 'deepinstinct-remove-hash-from-blacklist':
+        """
+        Remove hash from blacklist
+        """
+        remove_hash_from_blacklist()
+
+    if demisto.command() == 'deepinstinct-add-remove-hash-from-whitelist':
+        """
+        Remove hash from whitelist
+        """
+        remove_hash_from_whitelist()
 
     if demisto.command() == 'deepinstinct-add-devices-to-group':
         """

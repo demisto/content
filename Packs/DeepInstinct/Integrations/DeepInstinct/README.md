@@ -30,8 +30,8 @@ This integration was integrated and tested with version 2.3.1.17 of Deep Instinc
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. deepinstinct-get-device
-2. deepinstinct-hash-to-blacklist
-3. deepinstinct-hash-to-whitelist
+2. deepinstinct-add-hash-to-blacklist
+3. deepinstinct-add-hash-to-whitelist
 4. deepinstinct-add-devices-to-group
 5. deepinstinct-remove-devices-from-group
 6. deepinstinct-delete-files-remotely
@@ -124,12 +124,12 @@ get specific device by id
 | 2.3.1.12 | 115wt | OFFLINE | REGISTERED | OU=Organizations & Sites,DC=bancshares,DC=mib |  | 3 | Windows Default Group | Mock_2020-04-09 17:49:39.408405_1 | 1 | 192.168.88.80 | 2020-04-09T14:49:39.711487Z | 2020-04-09T14:49:39.722292Z | NA | 00:00:00:00:00:00 | 1 | MSP 1 | WINDOWS | Windows | 3 | Windows Default Policy | 0 |  | 1 | Tenant 1 |
 
 
-### 2. deepinstinct-hash-to-blacklist
+### 2. deepinstinct-add-hash-to-blacklist
 ---
 add file hash to blacklist
 ##### Base Command
 
-`deepinstinct-hash-to-blacklist`
+`deepinstinct-add-hash-to-blacklist`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -143,17 +143,17 @@ add file hash to blacklist
 There is no context output for this command.
 
 ##### Command Example
-```!deepinstinct-hash-to-blacklist file_hash=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb policy_id=6```
+```!deepinstinct-add-hash-to-blacklist file_hash=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb policy_id=6```
 
 ##### Human Readable Output
 ok
 
-### 3. deepinstinct-hash-to-whitelist
+### 3. deepinstinct-add-hash-to-whitelist
 ---
 add file hash to whitelist
 ##### Base Command
 
-`deepinstinct-hash-to-whitelist`
+`deepinstinct-add-hash-to-whitelist`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -167,7 +167,7 @@ add file hash to whitelist
 There is no context output for this command.
 
 ##### Command Example
-```!deepinstinct-hash-to-whitelist file_hash=wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww policy_id=6```
+```!deepinstinct-add-hash-to-whitelist file_hash=wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww policy_id=6```
 
 ##### Human Readable Output
 ok

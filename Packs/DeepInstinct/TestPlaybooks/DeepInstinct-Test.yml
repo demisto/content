@@ -81,9 +81,9 @@ tasks:
     task:
       id: c7923567-5441-4d6e-8a75-1b0dd4f1d0ca
       version: -1
-      name: deepinstinct-hash-to-whitelist
+      name: deepinstinct-add-hash-to-whitelist
       description: add file hash to whitelist
-      script: '|||deepinstinct-hash-to-whitelist'
+      script: '|||deepinstinct-add-hash-to-whitelist'
       type: regular
       iscommand: true
       brand: ''
@@ -107,9 +107,9 @@ tasks:
     task:
       id: bdfc3257-fcc5-4190-8b44-7b6259e7bdf8
       version: -1
-      name: deepinstinct-hash-to-blacklist
+      name: deepinstinct-add-hash-to-blacklist
       description: add file hash to blacklist
-      script: Deep Instinct|||deepinstinct-hash-to-blacklist
+      script: Deep Instinct|||deepinstinct-add-hash-to-blacklist
       type: regular
       iscommand: true
       brand: Deep Instinct
