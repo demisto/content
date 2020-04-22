@@ -140,7 +140,7 @@ def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1)
     Returns:
         Indicators.
     """
-    iterator = client.build_iterator()
+        iterator = client.build_iterator()
     # filter indicator_type specific entries
     if not indicator_type_lower == 'both':
         iterator = [i for i in iterator if indicator_type_lower in i]

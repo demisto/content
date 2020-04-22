@@ -10,6 +10,25 @@ requests.packages.urllib3.disable_warnings()
 # CONSTANTS
 INTEGRATION_NAME = 'GCP Whitelist'
 
+def fetch_cidr(dnsAddress):
+    cidr_arr = []
+    regex_dns = r"(include:.*? )"
+    regex_cidr = r"(ip4:.*? )"
+
+    query_response_str = str(list(dns.resolver.query(dnsAddress, "TXT"))[0])
+    dns_matches = re.finditer(regex_dns, query_response_str)
+    for match in dns_matches:
+        m = match.group()
+        address = m[8:len(m)-1]
+        cidr_arr += fetch_cidr(address)
+    cidr_matches = re.finditer(regex_cidr, query_response_str)
+    for match in cidr_matches:
+        m = match.group()
+        address = m[4:len(m)-1]
+        cidr_arr.append(address)
+    return cidr_arr
+
+
 class Client(BaseClient):
     """
     Client will implement the service API, and should not contain any Demisto logic.
@@ -20,8 +39,10 @@ class Client(BaseClient):
         return 'Hello'
 
     def build_iterator(self):
-        # demisto.log("build iterator exec")
-        return "true"
+        demisto.log("build iterator - start")
+        cidr_arr = fetch_cidr(self._base_url)
+        demisto.log(str(cidr_arr))
+        return "Build Iterator Temp"
 
 def test_module(client):
     """Builds the iterator to check that the feed is accessible.
@@ -72,11 +93,6 @@ def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-
-    demisto.log("about to execute")
-    dns.resolver.query('_cloud-netblocks.googleusercontent.com', "TXT")
-    demisto.log("executed")
-
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
 
