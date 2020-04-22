@@ -4,7 +4,6 @@ from CommonServerUserPython import *
 from typing import Dict
 
 # disable insecure warnings
-from Packs.ApiModules.Scripts.MicrosoftApiModule.MicrosoftApiModule import MicrosoftClient
 
 requests.packages.urllib3.disable_warnings()
 
@@ -277,7 +276,7 @@ def main():
         return_error(str(err))
 
 
-# from MicrosoftApiModule import *  # noqa: E402
+from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
