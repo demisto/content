@@ -1,0 +1,605 @@
+id: IP Whitelist - GCP Firewall
+version: -1
+name: IP Whitelist - GCP Firewall
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: dd86f393-aa0d-4afd-83bf-4a3e6ab0f2c4
+    type: start
+    task:
+      id: dd86f393-aa0d-4afd-83bf-4a3e6ab0f2c4
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '3':
+    id: '3'
+    taskid: 5e4dd508-ad40-479e-858b-609f04e875e5
+    type: title
+    task:
+      id: 5e4dd508-ad40-479e-858b-609f04e875e5
+      version: -1
+      name: Whitelist IPs on GCP (Firewall)
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '29'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 195\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '8':
+    id: '8'
+    taskid: 61d4af4d-0a63-4641-847c-989863413102
+    type: regular
+    task:
+      id: 61d4af4d-0a63-4641-847c-989863413102
+      version: -1
+      name: Add whitelisted Tag
+      description: commands.local.cmd.set.indicator
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      a: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      alexcustom: {}
+      asn: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      companysize: {}
+      creationdate: {}
+      custom: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      entryid: {}
+      expiration: {}
+      expirationdate: {}
+      feedthreattype: {}
+      fileextension: {}
+      filetype: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      id: {}
+      indicatorcategory: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      lastseenbysource: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      recordedfutureevidencedetails: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      reportedby: {}
+      reputation: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      subdomains: {}
+      tags:
+        simple: ${inputs.IndicatorTagName}
+      threattypes: {}
+      trafficlightprotocol: {}
+      trafficlightprotocoltlp: {}
+      type: {}
+      updateddate: {}
+      username: {}
+      value:
+        complex:
+          root: ${ListCompare
+          accessor: LeftOnly}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": -30,\n    \"y\": 1505\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '13':
+    id: '13'
+    taskid: 73c91fb6-4baf-4043-8c30-2a0793cd2369
+    type: regular
+    task:
+      id: 73c91fb6-4baf-4043-8c30-2a0793cd2369
+      version: -1
+      name: Close Incident
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '34'
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id:
+        complex:
+          root: incident
+          accessor: id
+      phishingsubtype: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": -30,\n    \"y\": 1680\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '22':
+    id: '22'
+    taskid: 14ca603d-6921-4c55-8978-8ae2175a52e9
+    type: regular
+    task:
+      id: 14ca603d-6921-4c55-8978-8ae2175a52e9
+      version: -1
+      name: Get GCP Firewall
+      description: Returns the specified firewall.
+      script: '|||gcp-compute-get-firewall'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '35'
+    scriptarguments:
+      name:
+        simple: ${inputs.GCPFirewallName}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": -30,\n    \"y\": 535\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '24':
+    id: '24'
+    taskid: ebbf6728-d87f-4654-84da-152d61495e24
+    type: regular
+    task:
+      id: ebbf6728-d87f-4654-84da-152d61495e24
+      version: -1
+      name: Add IPs to GCP Security Firewall
+      description: Updates the specified firewall rule with the data included in the
+        request.
+      script: '|||gcp-compute-patch-firewall'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '41'
+      - '42'
+    scriptarguments:
+      allowed: {}
+      denied: {}
+      description: {}
+      destinationRanges: {}
+      direction: {}
+      disabled: {}
+      logConfigEnable: {}
+      name:
+        simple: ${inputs.GCPFirewallName}
+      network: {}
+      priority: {}
+      sourceRanges:
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      sourceServiceAccounts: {}
+      sourceTags: {}
+      targetServiceAccounts: {}
+      targetTags: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": -30,\n    \"y\": 1090\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '29':
+    id: '29'
+    taskid: 73902ccb-e21c-4d29-89d0-731a88387836
+    type: condition
+    task:
+      id: 73902ccb-e21c-4d29-89d0-731a88387836
+      version: -1
+      name: Is Google Compute integration enabled?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '34'
+      yes:
+      - '22'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Google Cloud Compute
+                accessor: brand
+            iscontext: true
+          right:
+            value:
+              simple: Google Cloud Compute
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 340\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '34':
+    id: '34'
+    taskid: f63990fb-840d-4180-8a37-13d8c195e8c8
+    type: title
+    task:
+      id: f63990fb-840d-4180-8a37-13d8c195e8c8
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 350,\n    \"y\": 1870\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '35':
+    id: '35'
+    taskid: 231f2ea0-6a23-4ec4-8030-703fd78673bf
+    type: condition
+    task:
+      id: 231f2ea0-6a23-4ec4-8030-703fd78673bf
+      version: -1
+      name: GCP Firewall found?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '37'
+      yes:
+      - '36'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GoogleCloudCompute.Firewalls.name
+            iscontext: true
+          right:
+            value:
+              simple: inputs.GCPFirewallName
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": -30,\n    \"y\": 700\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '36':
+    id: '36'
+    taskid: b82093a3-8698-48db-8940-fbd28886b83c
+    type: regular
+    task:
+      id: b82093a3-8698-48db-8940-fbd28886b83c
+      version: -1
+      name: Compare IPs with current list
+      scriptName: CompareLists
+      type: regular
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '24'
+    scriptarguments:
+      left:
+        simple: ${inputs.IP}
+      right:
+        simple: ${GoogleCloudCompute.Firewalls.sourceRanges}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": -30,\n    \"y\": 915\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '37':
+    id: '37'
+    taskid: 54be5d96-e0b1-4693-85be-4b55a397815a
+    type: title
+    task:
+      id: 54be5d96-e0b1-4693-85be-4b55a397815a
+      version: -1
+      name: GCP Firewall Name Not Founnd
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '38'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": -650,\n    \"y\": 870\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '38':
+    id: '38'
+    taskid: a1587288-ee7f-413a-885c-22a8bd80b9df
+    type: regular
+    task:
+      id: a1587288-ee7f-413a-885c-22a8bd80b9df
+      version: -1
+      name: Engineer - Fix Firewall Name and rerun
+      type: regular
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": -650,\n    \"y\": 1010\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '40':
+    id: '40'
+    taskid: 090b1e44-d84d-4be4-8a53-34bec13e3439
+    type: regular
+    task:
+      id: 090b1e44-d84d-4be4-8a53-34bec13e3439
+      version: -1
+      name: Remove whitelisted Tag
+      description: commands.local.cmd.remove.values.to.indicator.multi.select.field
+      script: Builtin|||removeIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: ${inputs.IndicatorTagName}
+      indicatorsValues:
+        complex:
+          root: ListCompare
+          accessor: RightOnly
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": -460,\n    \"y\": 1505\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '41':
+    id: '41'
+    taskid: 9126a7fb-d5ce-4299-83c2-926b11d04b7d
+    type: condition
+    task:
+      id: 9126a7fb-d5ce-4299-83c2-926b11d04b7d
+      version: -1
+      name: Any IPs in GCP whitelist that should be removed?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '34'
+      yes:
+      - '40'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ListCompare.RightOnly
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": -460,\n    \"y\": 1270\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '42':
+    id: '42'
+    taskid: f1aa25d0-3fa7-4e1b-8bcc-3d8ab5f79425
+    type: condition
+    task:
+      id: f1aa25d0-3fa7-4e1b-8bcc-3d8ab5f79425
+      version: -1
+      name: Any IPs to whitelist that are not already in GCP?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '34'
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ListCompare.LeftOnly
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": -30,\n    \"y\": 1260\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: "{\n  \"linkLabelsPosition\": {\n    \"29_22_yes\": 0.3,\n    \"29_34_#default#\"\
+  : 0.49,\n    \"35_37_#default#\": 0.36\n  },\n  \"paper\": {\n    \"dimensions\"\
+  : {\n      \"height\": 1885,\n      \"width\": 1380,\n      \"x\": -650,\n     \
+  \ \"y\": 50\n    }\n  }\n}"
+inputs:
+- key: ''
+  value: {}
+  required: false
+  description: ''
+  playbookInputQuery:
+    query: ''
+    queryEntity: indicators
+    results:
+    daterange:
+      fromdate: 0001-01-01 00:00:00+00:00
+      todate: 0001-01-01 00:00:00+00:00
+      period:
+        by: ''
+        byto: ''
+        byfrom: ''
+        tovalue:
+        fromvalue:
+        field: ''
+      fromdatelicenseval: 0001-01-01 00:00:00+00:00
+    runFromLastJobTime: true
+- key: IP
+  value: {}
+  required: true
+  description: IP addresses to whitelist in GCP Firewall
+  playbookInputQuery:
+- key: GCPFirewallName
+  value: {}
+  required: true
+  description: Name of the GCP Firewall where the playbook should set the IPs
+  playbookInputQuery:
+- key: IndicatorTagName
+  value:
+    simple: GCP_IP_Whitelist
+  required: true
+  description: Name of the Indicator Tag to apply to any IPs whitelisted by this playbook.
+  playbookInputQuery:
+outputs: []
+sourceplaybookid: 6b4415d2-cf8e-4a22-8bb0-012e4b692b60
+quiet: true
+fromversion: 5.0.0
+description: ''

@@ -1,0 +1,27 @@
+commonfields:
+  id: CompareLists
+  version: -1
+name: CompareLists
+script: ''
+type: python
+tags: []
+enabled: true
+args:
+- name: left
+  required: true
+  description: Left list
+  isArray: true
+- name: right
+  required: true
+  description: Right list
+  isArray: true
+outputs:
+- contextPath: ListCompare.LeftOnly
+- contextPath: ListCompare.RightOnly
+- contextPath: ListCompare.Both
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.8.2.6981
+runas: DBotWeakRole
+fromversion: 5.0.0
