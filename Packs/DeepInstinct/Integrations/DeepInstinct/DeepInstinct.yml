@@ -171,10 +171,10 @@ script:
       type: number
     - contextPath: DeepInstinct.Events.events.status
       description: event status
+      type: string
     - contextPath: DeepInstinct.Events.events.close_trigger
       description: event close trigger
-    - contextPath: DeepInstinct.Events.events.recorded_device_info
-      description: event device info
+      type: string
     - contextPath: DeepInstinct.Events.events.reoccurrence_count
       description: event reoccurrence_count
       type: number
