@@ -91,8 +91,7 @@ Specify the Static Address Group name for IP handling. |  |  | Optional |
 There are no outputs for this playbook.
 
 ### Extra Information
-Through the playbook remediation process, it checks whether one of the attempted logins was successful. If so, it will raise the incident severity, and will also affect the decision whether to isolate the destination endpoint. 
-This check is done through the 'Successful Login' incident field which is associated to the 'Brute Force' incident type. As a part of the mapping process, users should map this field value to be 'True' if a successful login in fact happened, and to 'False' if it hasn't,
-for the playbook to complete this logic.
+Through the remediation process, the playbook checks whether one of the attempted logins was successful. If so, it raises the incident severity, which also affects the decision whether to isolate the destination endpoint. 
+This check is done through the 'Successful Login' incident field which is associated to the 'Brute Force' incident type. As part of the mapping process and for the playbook to complete the logic, users should map this field value to be 'True' if a successful login occurred, and to 'False' if it hasn't.
 
 <!-- Playbook PNG image comes here -->
