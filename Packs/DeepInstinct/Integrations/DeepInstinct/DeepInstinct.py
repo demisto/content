@@ -57,6 +57,24 @@ def get_specific_device():
     )
 
 
+def get_events():
+    """
+    Get events
+    """
+    demisto.info("-0-")
+    first_event_id = demisto.args().get('first_event_id')
+    result = http_request('GET', '/events/?after_id=' + str(first_event_id))
+    events = {}
+    if 'events' in result:
+        events = result['events']
+    ec = {'DeepInstinct.Events(val.id && val.id == obj.id)': events}
+
+    return_outputs(
+        readable_output=tableToMarkdown('Events', events),
+        outputs=ec,
+        raw_response=events
+    )
+
 def get_all_groups():
     """
     Get all groups
@@ -224,6 +242,12 @@ def main():
         Get device by id
         """
         get_specific_device()
+
+    if demisto.command() == 'deepinstinct-get-events':
+        """
+        Get events
+        """
+        get_events()
 
     if demisto.command() == 'deepinstinct-get-all-groups':
         """

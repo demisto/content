@@ -113,6 +113,73 @@ script:
       description: Device tenant ID
       type: number
     description: get specific device by ID
+  - name: deepinstinct-get-events
+    arguments:
+    - name: first_event_id
+      description: First event id to get as max events in response can be 50
+      defaultValue: "0"
+    outputs:
+    - contextPath: DeepInstinct.Events.events.ID
+      description: event ID
+      type: number
+    - contextPath: DeepInstinct.Events.events.device_id
+      description: event device ID
+      type: number
+    - contextPath: DeepInstinct.Events.events.file_hash
+      description: event file hash
+      type: string
+    - contextPath: DeepInstinct.Events.events.file_type
+      description: event file type
+      type: string
+    - contextPath: DeepInstinct.Events.events.file_archive_hash
+      description: event file archive hash
+      type: string
+    - contextPath: DeepInstinct.Events.events.path
+      description: event file path
+    - contextPath: DeepInstinct.Events.events.file_size
+      description: event file size
+      type: number
+    - contextPath: DeepInstinct.Events.events.threat_severity
+      description: event threat severity
+      type: string
+    - contextPath: DeepInstinct.Events.events.deep_classification
+      description: Deep Instinct classification
+      type: string
+    - contextPath: DeepInstinct.Events.events.file_status
+      description: event file status
+      type: string
+    - contextPath: sandbox_statusDeepInstinct.Events.events.
+      description: event sandbox status
+      type: string
+    - contextPath: DeepInstinct.Events.events.model
+      description: event model
+      type: string
+    - contextPath: DeepInstinct.Events.events.type
+      description: event type
+      type: string
+    - contextPath: DeepInstinct.Events.events.trigger
+      description: event trigger
+      type: string
+    - contextPath: DeepInstinct.Events.events.action
+      description: event action
+      type: string
+    - contextPath: DeepInstinct.Events.events.tenant_id
+      description: event tenant id
+      type: number
+    - contextPath: DeepInstinct.Events.events.msp_id
+      description: event msp id
+      type: number
+    - contextPath: DeepInstinct.Events.events.status
+      description: event status
+    - contextPath: DeepInstinct.Events.events.close_trigger
+      description: event close trigger
+    - contextPath: DeepInstinct.Events.events.recorded_device_info
+      description: event device info
+    - contextPath: DeepInstinct.Events.events.reoccurrence_count
+      description: event reoccurrence_count
+      type: number
+    description: Get all events. Max events in response can be 50, use first_event_id
+      parameter to define first event id to get
   - name: deepinstinct-get-all-groups
     arguments: []
     outputs:
