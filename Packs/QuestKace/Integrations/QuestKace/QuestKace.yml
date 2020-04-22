@@ -1,0 +1,484 @@
+category: Case Management
+commonfields:
+  id: QuestKace
+  version: -1
+configuration:
+- defaultvalue: https://example.net
+  display: QuestKace URL, in the format https://company.works.com/
+  name: url
+  required: true
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: 1 hour
+  display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
+  name: fetch_time
+  required: false
+  type: 0
+- defaultvalue: hd_ticket all,submitter limited,owner limited, asset limited,machine
+    limited, priority limited,category limited, impact limited,status limited, related_tickets
+    limited
+  display: Shaping for query of the tickets.
+  name: fetch_shaping
+  required: false
+  type: 0
+- display: Filter for the tickets.
+  name: fetch_filter
+  required: false
+  type: 0
+- defaultvalue: '10'
+  display: Fetch limit per query.
+  name: fetch_limit
+  required: false
+  type: 0
+- display: Incident type
+  name: incidentType
+  required: False
+  type: 13
+description: This is the Hello World integration for getting started.
+display: Quest KACE Systems Management Appliance
+name: QuestKace
+script:
+  commands:
+  - deprecated: false
+    description: All machines that are in system.
+    execution: false
+    name: kace-machines-list
+    outputs:
+    - contextPath: QuestKace.Machines.ID
+      description: ID of machine
+      type: String
+    - contextPath: QuestKace.Machines.Modified
+      description: Modified date of Machine.
+      type: String
+    - contextPath: QuestKace.Machines.Created
+      description: Created date of machine in kace system.
+      type: String
+    - contextPath: QuestKace.Machines.User
+      description: User of the machine.
+      type: String
+    - contextPath: QuestKace.Machines.Name
+      description: Name of machine.
+      type: String
+    - contextPath: QuestKace.Machines.Ip
+      description: IP of machine.
+      type: String
+    - contextPath: QuestKace.Machines.OsName
+      description: Name of Operating System of the machine.
+      type: String
+    - contextPath: QuestKace.Machines.OsNumber
+      description: Number of Operating System of the machine.
+      type: String
+    - contextPath: QuestKace.Machines.LastInventory
+      description: Last inventory date of the machine.
+      type: String
+    - contextPath: QuestKace.Machines.LastSync
+      description: Last sync date of the machine.
+      type: String
+    - contextPath: QuestKace.Machines.RamTotal
+      description: Total Ram memory of the machine in bytes.
+      type: String
+    - contextPath: QuestKace.Machines.RamUsed
+      description: Used Ram memory of the machine.
+      type: String
+    - contextPath: QuestKace.Machines.RamMax
+      description: Max Ram memory of the machine.
+      type: String
+    - contextPath: QuestKace.Machines.BiosIdentificationCode
+      description: Bios identification code of the machine.
+      type: String
+    - contextPath: QuestKace.Machines.SoundDevices
+      description: Connected Sound Devices of the machine.
+      type: String
+    - contextPath: QuestKace.Machines.CdromDevices
+      description: Connected CDRom devices to the machine.
+      type: String
+    - contextPath: QuestKace.Machines.VideoControllers
+      description: Video controlleres of the machine.
+      type: String
+    - contextPath: QuestKace.Machines.Monitor
+      description: Monitor of the machine.
+      type: String
+    - contextPath: QuestKace.Machines.RegistrySize
+      description: Size of Registory of the machine.
+      type: String
+    - contextPath: QuestKace.Machines.RegistryMaxSize
+      description: Max Size of registry of the machine.
+      type: String
+    - contextPath: QuestKace.Machines.PagefileSize
+      description: Size of pagefile of the machine.
+      type: String
+    - contextPath: QuestKace.Machines.PagefileMaxSize
+      description: Max size of pagefile of the machine.
+      type: String
+    - contextPath: QuestKace.Machines.ManualEntry
+      description: Number of Manual entry to the machine.
+      type: String
+  - deprecated: false
+    description: All assets of QuestKace system.
+    execution: false
+    name: kace-assets-list
+    outputs:
+    - contextPath: QuestKace.Assets.ID
+      description: ID of the asset.
+      type: Number
+    - contextPath: QuestKace.Assets.AssetTypeId
+      description: Type ID of the asset.
+      type: Number
+    - contextPath: QuestKace.Assets.Name
+      description: Name of the asset.
+      type: String
+    - contextPath: QuestKace.Assets.AssetDataId
+      description: Data ID of the asset.
+      type: Number
+    - contextPath: QuestKace.Assets.OwnerId
+      description: Owner ID of the asset.
+      type: Number
+    - contextPath: QuestKace.Assets.Modified
+      description: Modified date of the asset.
+      type: String
+    - contextPath: QuestKace.Assets.Created
+      description: Created date of the asset.
+      type: String
+    - contextPath: QuestKace.Assets.MappedId
+      description: Mapped ID of the asset.
+      type: Number
+    - contextPath: QuestKace.Assets.AssetClassId
+      description: Class ID of the asset.
+      type: Number
+    - contextPath: QuestKace.Assets.Archieve
+      description: Archive of the asset.
+      type: String
+    - contextPath: QuestKace.Assets.AssetStatusId
+      description: Status ID of the asset.
+      type: Number
+    - contextPath: QuestKace.Assets.AssetTypeName
+      description: Type name of the asset.
+      type: String
+  - deprecated: false
+    description: List of all queues that are in QuestKace system.
+    execution: false
+    name: kace-queues-list
+    outputs:
+    - contextPath: QuestKace.Queues.ID
+      description: ID of the queue
+      type: Number
+    - contextPath: QuestKace.Queues.Name
+      description: Name of the queue
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: '"hd_ticket all,submitter limited,owner limited, asset limited,machine
+        limited,priority limited,category limited, impact limited,status limited,
+        related_tickets limited"'
+      description: Custom fields for shaping tickets list
+      isArray: false
+      name: custom_fields
+      required: false
+      secret: false
+    deprecated: false
+    description: List of all tickets in the system.
+    execution: false
+    name: kace-tickets-list
+    outputs:
+    - contextPath: QuestKace.Tickets.Submitter.ID
+      description: Submitter id of the ticket.
+      type: Number
+    - contextPath: QuestKace.Tickets.Submitter.UserName
+      description: Submitter user name of the ticket.
+      type: String
+    - contextPath: QuestKace.Tickets.Submitter.Email
+      description: Email submitter's email.
+      type: String
+    - contextPath: QuestKace.Tickets.Submitter.FullName
+      description: Full name of submitter's of the ticket.
+      type: String
+    - contextPath: QuestKace.Tickets.Asset.ID
+      description: ID of the asset of the ticket.
+      type: Number
+    - contextPath: QuestKace.Tickets.Asset.AssetTypeId
+      description: Asset type id of the ticket.
+      type: Number
+    - contextPath: QuestKace.Tickets.Asset.Name
+      description: Name of the asset of the ticket.
+      type: String
+    - contextPath: QuestKace.Tickets.Asset.OwnerId
+      description: Owner ID of the asset of the ticket.
+      type: Number
+    - contextPath: QuestKace.Tickets.Asset.AssetClassId
+      description: Asset class id of the ticket
+      type: Number
+    - contextPath: QuestKace.Tickets.Machine.ID
+      description: ID of the machine of the ticket
+      type: Number
+    - contextPath: QuestKace.Tickets.Machine.Name
+      description: Name of the machine of the ticket.
+      type: String
+    - contextPath: QuestKace.Tickets.Priority.ID
+      description: Priority id of the ticket.
+      type: Number
+    - contextPath: QuestKace.Tickets.Priority.Name
+      description: Priority name of the ticket.
+      type: String
+    - contextPath: QuestKace.Tickets.Priority.Ordinal
+      description: Priority ordinal of the ticket.
+      type: Number
+    - contextPath: QuestKace.Tickets.Priority.Color
+      description: Priority color of the ticket.
+      type: String
+    - contextPath: QuestKace.Tickets.Priority.IsSlaEnable
+      description: Is Sla enabled on the priority of the ticket.
+      type: Number
+    - contextPath: QuestKace.Tickets.Category.ID
+      description: Category ID of the ticket
+      type: Number
+    - contextPath: QuestKace.Tickets.Category.Name
+      description: Category name of the ticket.
+      type: String
+    - contextPath: QuestKace.Tickets.Impact.ID
+      description: ID of the impact of the ticket
+      type: Number
+    - contextPath: QuestKace.Tickets.Impact.Ordinal
+      description: Ordinal of the impact of the ticket.
+      type: Number
+    - contextPath: QuestKace.Tickets.Impact.Name
+      description: Name of the impact of the ticket.
+      type: String
+    - contextPath: QuestKace.Tickets.Status.ID
+      description: ID of the status of the ticket.
+      type: Number
+    - contextPath: QuestKace.Tickets.Status.Name
+      description: Name of the status of the tickets.
+      type: String
+    - contextPath: QuestKace.Tickets.Status.Ordinal
+      description: Ordinal of the status of the ticket.
+      type: Number
+    - contextPath: QuestKace.Tickets.Status.State
+      description: State of the status of the ticket.
+      type: String
+    - contextPath: QuestKace.Tickets.RelatedTickets
+      description: List of related tickets of the ticket.
+      type: String
+    - contextPath: QuestKace.Tickets.ID
+      description: ID of the ticket
+      type: Number
+    - contextPath: QuestKace.Tickets.Title
+      description: Title of the ticket.
+      type: String
+    - contextPath: QuestKace.Tickets.Summary
+      description: Summary of the ticket.
+      type: String
+    - contextPath: QuestKace.Tickets.Modified
+      description: Modified date of the ticket.
+      type: String
+    - contextPath: QuestKace.Tickets.Created
+      description: Created date of the ticket.
+      type: String
+    - contextPath: QuestKace.Tickets.HdQueueId
+      description: Queue number that the ticket is related to.
+      type: Number
+    - contextPath: QuestKace.Tickets.CcList
+      description: Cc list of the ticket.
+      type: String
+    - contextPath: QuestKace.Tickets.IsManualDueDate
+      description: 'Is manual due date '
+      type: Number
+    - contextPath: QuestKace.Tickets.Resolution
+      description: Resolution of the ticket.
+      type: String
+    - contextPath: QuestKace.Tickets.DueDate
+      description: Dua date of the ticket
+      type: String
+  - arguments:
+    - default: false
+      description: Title of the new ticket.
+      isArray: false
+      name: title
+      required: false
+      secret: false
+    - default: false
+      description: summary of the new ticket.
+      isArray: false
+      name: summary
+      required: false
+      secret: false
+    - default: false
+      description: name of the impact of the new ticket.
+      isArray: false
+      name: impact
+      required: false
+      secret: false
+    - default: false
+      description: category name of the new ticket.
+      isArray: false
+      name: category
+      required: false
+      secret: false
+    - default: false
+      description: status name fo the new ticket.
+      isArray: false
+      name: status
+      required: false
+      secret: false
+    - default: false
+      description: priority name of the new ticket.
+      isArray: false
+      name: priority
+      required: false
+      secret: false
+    - default: false
+      description: name of machine of the new ticket.
+      isArray: false
+      name: machine
+      required: false
+      secret: false
+    - default: false
+      description: name of the asset of the new ticket.
+      isArray: false
+      name: asset
+      required: false
+      secret: false
+    - default: false
+      description: Can enter custom fields for the new ticket.
+      isArray: false
+      name: custom_fields
+      required: false
+      secret: false
+    - default: false
+      description: Queue in which the new ticket should be related to.
+      isArray: false
+      name: queue_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a new ticket to the system.
+    execution: false
+    name: kace-ticket-create
+  - arguments:
+    - default: false
+      description: 'Queue number '
+      isArray: false
+      name: queue_number
+      required: true
+      secret: false
+    deprecated: false
+    description: List fo fileds of queue
+    execution: false
+    name: kace-queues-fields-list
+    outputs:
+    - contextPath: QuestKace.Queue.Fields.jsonKey
+      description: Json Key of the field.
+      type: String
+    - contextPath: QuestKace.Queue.Fields.Label
+      description: Label of field.
+      type: String
+    - contextPath: QuestKace.Queue.Fields.Column
+      description: Column of field.
+      type: String
+    - contextPath: QuestKace.Queue.Fields.Type
+      description: Type of field.
+      type: String
+    - contextPath: QuestKace.Queue.Fields.Visible
+      description: Visibility of field.
+      type: String
+    - contextPath: QuestKace.Queue.Fields.Required
+      description: 'Requiered type of field, e.g. all, '
+      type: Unknown
+  - arguments:
+    - default: false
+      description: updated title of the ticket.
+      isArray: false
+      name: title
+      required: false
+      secret: false
+    - default: false
+      description: updated summary for the ticket.
+      isArray: false
+      name: summary
+      required: false
+      secret: false
+    - default: false
+      description: updated impact of the ticket.
+      isArray: false
+      name: impact
+      required: false
+      secret: false
+    - default: false
+      description: updated category of the ticket.
+      isArray: false
+      name: category
+      required: false
+      secret: false
+    - default: false
+      description: updated status of the ticket.
+      isArray: false
+      name: status
+      required: false
+      secret: false
+    - default: false
+      description: updated priority of the ticket.
+      isArray: false
+      name: priority
+      required: false
+      secret: false
+    - default: false
+      description: updated machine of the ticket.
+      isArray: false
+      name: machine
+      required: false
+      secret: false
+    - default: false
+      description: updated asset of the ticket.
+      isArray: false
+      name: asset
+      required: false
+      secret: false
+    - default: false
+      description: custom fields for update of ticket.
+      isArray: false
+      name: custom_fields
+      required: false
+      secret: false
+    - default: false
+      description: id of the ticket to be updated.
+      isArray: false
+      name: ticket_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Update a ticket in the system.
+    execution: false
+    name: kace-ticket-update
+  - arguments:
+    - default: false
+      description: Ticket id of the ticket that shoudl be deleted.
+      isArray: false
+      name: ticket_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete specific ticket by id.
+    execution: false
+    name: kace-ticket-delete
+  dockerimage: demisto/python3:3.7.4.2245
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
