@@ -587,7 +587,7 @@ class Pack(object):
                 PackFolders.INCIDENT_TYPES.value: "incidenttype",
                 PackFolders.DASHBOARDS.value: "dashboard",
                 PackFolders.INDICATOR_FIELDS.value: "indicatorfield",
-                PackFolders.REPORTS.value: "reports",
+                PackFolders.REPORTS.value: "report",
                 PackFolders.MISC.value: "reputation"
             }
 
