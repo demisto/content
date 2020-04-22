@@ -262,7 +262,7 @@ def return_host_standard_context(host):
     return host_standard_context
 
 
-def return_results(title, content, human_readable, context, headers):
+def return_entry_results(title, content, human_readable, context, headers):
     """
     Generic function that receives a result json, and turns it into an entryObject
     @param $title the table title
@@ -327,7 +327,7 @@ def list_dsns_command():
         )
     context = createContext(new_dsns, removeNull=True)
 
-    return_results(
+    return_entry_results(
         "Deception Support Node",
         res["data"],
         new_dsns,
@@ -353,7 +353,7 @@ def list_providers_command():
         )
     context = createContext(new_providers, removeNull=True)
 
-    return_results(
+    return_entry_results(
         "Providers",
         res["data"],
         new_providers,
@@ -386,7 +386,7 @@ def list_campaigns_command():
         )
     context = createContext(new_campaigns, removeNull=True)
 
-    return_results(
+    return_entry_results(
         "Campaigns",
         res["data"],
         new_campaigns,
@@ -421,7 +421,7 @@ def list_hosts_command():
     context = createContext(new_hosts, removeNull=True)
     contextHosts = createContext([return_host_standard_context(x) for x in res["data"]], removeNull=True)
 
-    return_results(
+    return_entry_results(
         "Hosts",
         res["data"],
         new_hosts,
@@ -454,7 +454,7 @@ def list_services_command():
         )
     context = createContext(new_services, removeNull=True)
 
-    return_results(
+    return_entry_results(
         "Services",
         res["data"],
         new_services,
@@ -487,7 +487,7 @@ def list_breadcrumbs_command():
         )
     context = createContext(new_breadcrumbs, removeNull=True)
 
-    return_results(
+    return_entry_results(
         "Breadcrumbs",
         res["data"],
         new_breadcrumbs,
@@ -520,7 +520,7 @@ def list_incidents_command():
         )
     context = createContext(new_incidents, removeNull=True)
 
-    return_results(
+    return_entry_results(
         "Incidents",
         res["data"],
         new_incidents,
@@ -557,7 +557,7 @@ def get_object_command():
         )
     context = createContext(new_objects, removeNull=True)
 
-    return_results(
+    return_entry_results(
         "Objects",
         res["data"],
         new_objects,
@@ -606,7 +606,7 @@ def get_events_command():
         )
     context = createContext(new_events, removeNull=True)
 
-    return_results(
+    return_entry_results(
         "Events",
         res["data"],
         new_events,
@@ -661,7 +661,7 @@ def create_campaign_command():
 
     context = createContext(campaign, removeNull=True)
 
-    return_results(
+    return_entry_results(
         "Campaign",
         res,
         campaign,
@@ -685,7 +685,7 @@ def manage_campaign_command():
 
     context = createContext(message, removeNull=True)
 
-    return_results(
+    return_entry_results(
         "Campaign Management",
         res,
         message,
@@ -741,7 +741,7 @@ def create_host_machine_command():
 
     context = createContext(host, removeNull=True)
 
-    return_results(
+    return_entry_results(
         "Hosts",
         res,
         host,
@@ -765,7 +765,7 @@ def manage_host_command():
 
     context = createContext(message, removeNull=True)
 
-    return_results(
+    return_entry_results(
         "Host Management",
         res,
         message,
@@ -789,7 +789,7 @@ def manage_service_command():
 
     context = createContext(message, removeNull=True)
 
-    return_results(
+    return_entry_results(
         "Service Management",
         res,
         message,
@@ -813,7 +813,7 @@ def manage_breadcrumb_command():
 
     context = createContext(message, removeNull=True)
 
-    return_results(
+    return_entry_results(
         "Breadcrumb Management",
         res,
         message,

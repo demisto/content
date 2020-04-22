@@ -9,6 +9,16 @@ CIRCLE_BRANCH=${CIRCLE_BRANCH:-unknown}
 ARTIFACTS_DIR=${ARTIFACTS_DIR:-artifacts}
 CIRCLE_NODE_INDEX=${CIRCLE_NODE_INDEX:-0}
 
+if [[ ! -d "$ARTIFACTS_DIR" ]]; then
+    echo "Directory [$ARTIFACTS_DIR] not found. Nothing to upload. Skipping!"
+    exit 0
+fi
+
+if [[ -z "$(ls -A ${ARTIFACTS_DIR})" ]]; then
+    echo "Directory [$ARTIFACTS_DIR] is empty. Nothing to upload. Skipping!"
+    exit 0
+fi
+
 if [[ -z "$CIRCLE_BUILD_NUM" ]]; then
     echo "CIRCLE_BUILD_NUM not set aborting!"
     exit 1
