@@ -75,7 +75,7 @@ class MicrosoftClient(BaseClient):
         self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
         self.verify = verify
 
-    def http_request(self, *args, **kwargs):
+    def http_request(self, resp_type='json', *args, **kwargs):
         """
         Overrides Base client request function, retrieves and adds to headers access token before sending the request.
 
@@ -88,7 +88,23 @@ class MicrosoftClient(BaseClient):
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         }
-        return super()._http_request(*args, headers=headers, **kwargs)  # type: ignore[misc]
+        # 206 indicates Partial Content, reason will be in the warning header.
+        # In that case, logs with the warning header will be written.
+        response = super()._http_request(*args, resp_type="response", headers=headers, **kwargs)  # type: ignore[misc]
+        if response.status_code == 206:
+            demisto.debug(str(response.headers))
+        try:
+            if resp_type == 'json':
+                return response.json()
+            if resp_type == 'text':
+                return response.text
+            if resp_type == 'content':
+                return response.content
+            if resp_type == 'xml':
+                ET.parse(response.text)
+            return response
+        except ValueError as exception:
+            raise DemistoException('Failed to parse json object from response: {}'.format(response.content), exception)
 
     def get_access_token(self):
         """
