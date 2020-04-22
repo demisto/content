@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: 'Say hello to: '
+  description: 'Say hello to:'
   isArray: false
   name: name
   required: false

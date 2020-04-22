@@ -283,7 +283,6 @@ jobs:
                 ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
                 cp demistoserver.sh ./Tests/scripts/awsinstancetool/ansibleinstall/demistoserver.sh
             fi
-
       - run:
           name: Download Configuration
           when: always

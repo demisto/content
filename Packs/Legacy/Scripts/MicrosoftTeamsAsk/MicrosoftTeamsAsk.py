@@ -6,7 +6,7 @@ from CommonServerUserPython import *
 def main():
     script_arguments: dict = demisto.args()
 
-    team_member: str = script_arguments.get('team_member', 'o')
+    team_member: str = script_arguments.get('team_member', '')
     channel: str = script_arguments.get('channel', '')
 
     if not (team_member or channel):
