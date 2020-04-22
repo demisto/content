@@ -97,7 +97,7 @@ EXP_TYPE_ID_DICT = {
 
 def normalize_timestamp(timestamp):
     ''' Converts epoch timestamp to human readable timestamp '''
-    return datetime.datetime.fromtimestamp(timestamp / 1000.0).strftime('%Y-%m-%dT%H:%M:%SZ')
+    return datetime.fromtimestamp(timestamp / 1000.0).strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
 def prettify_incidents(incidents):
@@ -631,7 +631,6 @@ def get_tasks_command(incident_id):
         return entry
     else:
         return 'No tasks found for this incident.'
-
 
 
 def get_tasks(incident_id):
