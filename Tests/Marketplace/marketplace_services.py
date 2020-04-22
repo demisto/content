@@ -1095,7 +1095,6 @@ def get_higher_server_version(current_string_version, compared_content_item, pac
     higher_version_result = current_string_version
 
     try:
-
         compared_string_version = compared_content_item.get('fromversion') or compared_content_item.get(
             'fromVersion') or "1.0.0"
         current_version, compared_version = LooseVersion(current_string_version), LooseVersion(compared_string_version)
@@ -1104,7 +1103,7 @@ def get_higher_server_version(current_string_version, compared_content_item, pac
             higher_version_result = compared_string_version
     except Exception as e:
         content_item_name = compared_content_item.get('name') or compared_content_item.get(
-            'display') or compared_content_item.get('id') or compared_content_item('details', '')
+            'display') or compared_content_item.get('id') or compared_content_item.get('details', '')
         print_error(f"{pack_name} failed in version comparison of content item {content_item_name}. "
                     f"Additional info:\n {e}")
     finally:
