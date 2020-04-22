@@ -35,14 +35,8 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def say_hello(self, name):
-        return 'Hello'
-
     def build_iterator(self):
-        demisto.log("build iterator - start")
-        cidr_arr = fetch_cidr(self._base_url)
-        demisto.log(str(cidr_arr))
-        return "Build Iterator Temp"
+        return fetch_cidr(self._base_url)
 
 def test_module(client):
     """Builds the iterator to check that the feed is accessible.
@@ -54,40 +48,6 @@ def test_module(client):
     """
     client.build_iterator()
     return 'ok', {}, {}
-
-
-def say_hello_command(client, args):
-    """
-    Returns Hello {somename}
-
-    Args:
-        client (Client): HelloWorld client.
-        args (dict): all command arguments.
-
-    Returns:
-        Hello {someone}
-
-        readable_output (str): This will be presented in the war room - should be in markdown syntax - human readable
-        outputs (dict): Dictionary/JSON - saved in the incident context in order to be used as inputs
-                        for other tasks in the playbook
-        raw_response (dict): Used for debugging/troubleshooting purposes -
-                            will be shown only if the command executed with raw-response=true
-    """
-    name = args.get('name')
-
-    result = client.say_hello(name)
-
-    # readable output will be in markdown format - https://www.markdownguide.org/basic-syntax/
-    readable_output = f'## {result}'
-    outputs = {
-        'hello': result
-    }
-
-    return (
-        readable_output,
-        outputs,
-        result  # raw response - the original response
-    )
 
 def main():
     """
@@ -104,9 +64,7 @@ def main():
             proxy=proxy)
 
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            demisto.results(result)
+            return_outputs(*test_module(client))
 
         elif demisto.command() == 'gcp-whitelist-get-indicators':
             return_outputs(client.build_iterator())
