@@ -1,6 +1,4 @@
-import unittest
 import demisto_client
-from unittest import mock
 from Tests.test_content import ParallelPrintsManager
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies
 
@@ -87,29 +85,29 @@ class MockClient:
         self.api_client = MockApiClient()
 
 
-class TestSearchAndInstallPacks(unittest.TestCase):
-    @mock.patch('demisto_client.generic_request_func', side_effect=mocked_request)
-    def test_search_and_install_packs_and_their_dependencies(self, mocker):
-        good_integrations_files = [
-            'Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.yml',
-            'Packs/AzureSentinel/Integrations/AzureSentinel/AzureSentinel.yml'
-        ]
+def test_search_and_install_packs_and_their_dependencies(mocker):
+    good_integrations_files = [
+        'Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.yml',
+        'Packs/AzureSentinel/Integrations/AzureSentinel/AzureSentinel.yml'
+    ]
 
-        bad_integrations_files = ['malformed_integration_file']
+    bad_integrations_files = ['malformed_integration_file']
 
-        client = MockClient()
-        prints_manager = ParallelPrintsManager(1)
+    client = MockClient()
 
-        installed_packs = search_and_install_packs_and_their_dependencies(good_integrations_files,
-                                                                          client,
-                                                                          prints_manager)
-        assert 'HelloWorld' in installed_packs
-        assert 'AzureSentinel' in installed_packs
-        assert 'TestPack' in installed_packs
-        assert 'Base' in installed_packs
-        assert len(installed_packs) == 4
+    mocker.patch.object(demisto_client, 'generic_request_func', side_effect=mocked_request)
+    prints_manager = ParallelPrintsManager(1)
 
-        installed_packs = search_and_install_packs_and_their_dependencies(bad_integrations_files,
-                                                                          client,
-                                                                          prints_manager)
-        assert len(installed_packs) == 0
+    installed_packs = search_and_install_packs_and_their_dependencies(good_integrations_files,
+                                                                      client,
+                                                                      prints_manager)
+    assert 'HelloWorld' in installed_packs
+    assert 'AzureSentinel' in installed_packs
+    assert 'TestPack' in installed_packs
+    assert 'Base' in installed_packs
+    assert len(installed_packs) == 4
+
+    installed_packs = search_and_install_packs_and_their_dependencies(bad_integrations_files,
+                                                                      client,
+                                                                      prints_manager)
+    assert len(installed_packs) == 0
