@@ -654,7 +654,7 @@ def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci
         '\nMaking "POST" request to server - "{}" to set GCP bucket server configuration.'.format(host)
     prints_manager.add_print_job(installed_content_message, print_color, 0, LOG_COLORS.GREEN)
 
-    # make request to installed content details
+    # make request to update server configs
     data = {
         'data': {
             'marketplace.gcp.bucket': 'marketplace-dist-dev',
