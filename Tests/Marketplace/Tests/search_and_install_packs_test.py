@@ -97,8 +97,7 @@ class TestSearchAndInstallPacks(unittest.TestCase):
 
         bad_integrations_files = ['malformed_integration_file']
 
-        mocker.patch.object(demisto_client, 'configure', return_value=MockClient())
-        client = demisto_client.configure(base_url=BASE_URL, api_key=API_KEY)
+        client = MockClient()
         prints_manager = ParallelPrintsManager(1)
 
         installed_packs = search_and_install_packs_and_their_dependencies(good_integrations_files,
