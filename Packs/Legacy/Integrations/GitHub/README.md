@@ -22,6 +22,12 @@
 <li>Click<span> </span><strong>Test</strong><span> </span>to validate the URLs, token, and connection.</li>
 </ol>
 *Use API token to authenticate as a user and credentials to authenticate as a bot.
+<h2>Authenticating</h2>
+The integration provides 2 methods of authentication: API token and private key. The API token method is used
+to authenticate as a Github user, and take actions on behalf of a certain Github user. On the other hand, the second 
+method uses private key to generate a JWT token to create the API token. This method is required when authenticating as
+a bot, a.k.a. Github apps.
+
 <h2>Commands</h2>
 <p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
