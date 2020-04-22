@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.4.0] - 2020-04-14
 -
 - Improved error handlingfor HTML error replies.
 - You can now supply a comma-separated list for the *value* argument in the ***qradar-update-reference-set-value*** command.
