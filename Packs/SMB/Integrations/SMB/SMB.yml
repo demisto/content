@@ -113,7 +113,8 @@ script:
     description: Uploads a file to the SMB server.
     execution: false
     name: smb-upload
-  dockerimage: demisto/pysmb
+  dockerimage45: demisto/pysmb
+  dockerimage: devdemisto/smb:1.0.0.7681
   isfetch: false
   runonce: false
   script: '-'
