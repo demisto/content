@@ -35,3 +35,12 @@ def test_change_context_path_inplace(mocker):
                                                       'value': [{'newKey': 'val', 'Key2': 'val2'},
                                                                 {'List2Key1': 1, 'newListKey': 2}]
                                                       }
+
+def test_replace_dict_not_inplace(mocker):
+    context = [{'key': 'val', 'key2': 'val2'},
+               {'list2key1': 1, 'list2key2': 2}]
+    args = {'input': context, 'output_key': 'Demisto.Test', 'capitalize': 'False', 'inplace': 'False',
+            'replace_dict': json.dumps({'key': 'newKey', 'list2key2': 'newListKey'})}
+    _, ec, _ = replace_context(args)
+
+    assert ec == {'Demisto.Test': [{'newKey': 'val', 'key2': 'val2'}, {'list2key1': 1, 'newListKey': 2}]}
