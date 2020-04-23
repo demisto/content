@@ -172,25 +172,21 @@ def create_dbot_score_from_verdict(pretty_verdict):
         raise Exception('Hash is missing in WildFire verdict.')
     if pretty_verdict["Verdict"] not in VERDICTS_TO_DBOTSCORE:
         raise Exception('This hash verdict is not mapped to a DBotScore. Contact Demisto support for more information.')
-    dbot_score = dbot_type_hash_list(pretty_verdict["SHA256"] if 'SHA256' in pretty_verdict else pretty_verdict["MD5"],
-                                     VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]])
+    dbot_score = [{
+        'Indicator': pretty_verdict["SHA256"] if 'SHA256' in pretty_verdict else pretty_verdict["MD5"],
+        'Type': 'hash',
+        'Vendor': 'WildFire',
+        'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]]
+    },
+        {
+        'Indicator': pretty_verdict["SHA256"] if 'SHA256' in pretty_verdict else pretty_verdict["MD5"],
+        'Type': 'file',
+        'Vendor': 'WildFire',
+        'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]]
+    }
+
+    ]
     return dbot_score
-
-
-def dbot_type_hash_list(file_hash, score):
-    return [{
-              'Indicator': file_hash,
-              'Type': 'hash',
-              'Vendor': 'WildFire',
-              'Score': score
-            },
-            {
-              'Indicator': file_hash,
-              'Type': 'file',
-              'Vendor': 'WildFire',
-              'Score': score
-            }
-            ]
 
 
 def prettify_verdicts(verdicts_data):
@@ -222,9 +218,20 @@ def create_dbot_score_from_verdicts(pretty_verdicts):
             raise Exception(
                 'This hash verdict is not mapped to a DBotScore. Contact Demisto support for more information.')
 
-        dbot_score = dbot_type_hash_list(pretty_verdict["SHA256"] if "SHA256" in pretty_verdict else pretty_verdict["MD5"],
-                                         VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]])
-        dbot_score_arr.append(dbot_score)
+        dbot_score_type_hash = {
+            'Indicator': pretty_verdict["SHA256"] if "SHA256" in pretty_verdict else pretty_verdict["MD5"],
+            'Type': 'hash',
+            'Vendor': 'WildFire',
+            'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]]
+        }
+        dbot_score_type_file = {
+            'Indicator': pretty_verdict["SHA256"] if "SHA256" in pretty_verdict else pretty_verdict["MD5"],
+            'Type': 'file',
+            'Vendor': 'WildFire',
+            'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]]
+        }
+        dbot_score_arr.append(dbot_score_type_hash)
+        dbot_score_arr.append(dbot_score_type_file)
 
     return dbot_score_arr
 
@@ -409,10 +416,13 @@ def wildfire_get_verdict_command():
         pretty_verdict = prettify_verdict(verdict_data)
         human_readable = tableToMarkdown('WildFire Verdict', pretty_verdict, removeNull=True)
 
-        dbot_score = create_dbot_score_from_verdict(pretty_verdict)
+        dbot_score_list = create_dbot_score_from_verdict(pretty_verdict)
         entry_context = {
-            "WildFire.Verdicts(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5)": pretty_verdict,
-            "DBotScore": dbot_score
+            {"WildFire.Verdicts(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5)": pretty_verdict},
+            {"DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && "
+             "val.Type == obj.Type)": {dbot_score_list[0]}},
+            {"DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && "
+             "val.Type == obj.Type)": {dbot_score_list[1]}}
         }
 
         demisto.results({
@@ -464,10 +474,14 @@ def wildfire_get_verdicts_command():
         pretty_verdicts = prettify_verdicts(verdicts_data)
         human_readable = tableToMarkdown('WildFire Verdicts', pretty_verdicts, removeNull=True)
 
-        dbot_score = create_dbot_score_from_verdicts(pretty_verdicts)
+        dbot_score_list = create_dbot_score_from_verdicts(pretty_verdicts)
+
         entry_context = {
-            "WildFire.Verdicts(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5)": pretty_verdicts,
-            "DBotScore": dbot_score
+            {"WildFire.Verdicts(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5)": pretty_verdicts},
+            {"DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && "
+             "val.Type == obj.Type)": {dbot_score_list[0]}},
+            {"DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && "
+             "val.Type == obj.Type)": {dbot_score_list[1]}}
         }
 
         demisto.results({
@@ -559,7 +573,12 @@ def create_report(file_hash, reports, file_info, format_='xml', verbose=False):
             outputs["Evidence"]["Text"] = evidence_text
 
     entry_context = {}
-    entry_context["DBotScore"] = dbot_type_hash_list(file_hash, 0)
+    entry_context["DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && "
+                  "val.Type == obj.Type)"] = {'Indicator': file_hash, 'Type': 'hash', 'Vendor': 'WildFire', 'Score': 0}
+
+    entry_context["DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && "
+                  "val.Type == obj.Type)"] = {'Indicator': file_hash, 'Type': 'file', 'Vendor': 'WildFire', 'Score': 0}
+
     entry_context["WildFire.Report(val.SHA256 === obj.SHA256)"] = outputs
 
     if file_info:
