@@ -33,16 +33,16 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- defaultvalue: suddenDeath
+- display: ""
   name: feedExpirationPolicy
-  display: ""
+  defaultvalue: indicatorType
+  type: 17
+  required: false
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
-  required: false
-  type: 17
 - defaultvalue: '20160'
   name: feedExpirationInterval
   required: false

@@ -57,6 +57,10 @@ def fetch_indicators(client):
         indicators.append({
             'value': indicator,
             'type': FeedIndicatorType.CIDR,
+            'rawJSON': {
+                'value': indicator,
+                'type': FeedIndicatorType.CIDR,
+            },
         })
 
     return indicators
