@@ -1,0 +1,23 @@
+{
+  "name": "Sixgill DarkFeed Threat Intelligence",
+  "description": "Sixgill's premium underground intelligence collection capabilities, real-time collection and advanced warning about IOCs to help you keep your edge against unknown threats.",
+  "support": "partner",
+  "beta": false,
+  "deprecated": false,
+  "serverMinVersion": "5.5.0",
+  "currentVersion": "1.0.0",
+  "author": "Sixgill - Ben Sterenson",
+  "url": "https://github.com/BenSterenson",
+  "email": "support@cybersixgill.com, dev@cybersixgill.com",
+  "categories": [
+    "Data Enrichment & Threat Intelligence"
+  ],
+  "tags": [],
+  "created": "2020-03-10T08:37:18Z",
+  "updated": "2020-03-10T08:37:18Z",
+  "certification": "certified",
+  "useCases": [],
+  "keywords": [],
+  "price": 0,
+  "dependencies": {}
+}
