@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "3"
@@ -33,10 +34,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 348b8d88-5937-485d-8b83-467be5b462b3
+    taskid: ba750359-b6e4-49cb-89c2-e9fc67fa5a00
     type: playbook
     task:
-      id: 348b8d88-5937-485d-8b83-467be5b462b3
+      id: ba750359-b6e4-49cb-89c2-e9fc67fa5a00
       version: -1
       name: Run Correlation Log Search
       description: This playbook runs a QRadar query and return its results to the
@@ -71,7 +72,6 @@ tasks:
       exitCondition: ""
       wait: 1
       max: 100
-      forEach: true
     view: |-
       {
         "position": {
@@ -95,6 +95,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ""
     separatecontext: false
     view: |-
       {
@@ -119,6 +120,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "4"
@@ -159,6 +161,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "2"
@@ -190,10 +193,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 20bf5108-3e20-4ad1-8f44-2d7bfad0e07a
+    taskid: ff2dabeb-8f58-42f5-8f6f-b3deffdb18c9
     type: playbook
     task:
-      id: 20bf5108-3e20-4ad1-8f44-2d7bfad0e07a
+      id: ff2dabeb-8f58-42f5-8f6f-b3deffdb18c9
       version: -1
       name: Run Correlation Log Search
       description: This playbook runs a QRadar query and return its results to the
@@ -228,7 +231,6 @@ tasks:
       exitCondition: ""
       wait: 1
       max: 100
-      forEach: true
     view: |-
       {
         "position": {
@@ -447,3 +449,4 @@ inputs:
   description: 'Maximum number of log entires to query from QRadar (default: 20)'
   playbookInputQuery: null
 outputs: []
+fromversion: 5.0.0

@@ -56,6 +56,7 @@ type: python
 dockerimage: demisto/python3:3.8.2.6981
 runas: DBotWeakRole
 runonce: false
-pswd: ''
 subtype: python3
 fromversion: 4.5.0
+tags:
+- Utility
