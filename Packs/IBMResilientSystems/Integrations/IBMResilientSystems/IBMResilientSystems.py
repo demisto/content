@@ -655,30 +655,31 @@ def set_member_command(incident_id, members):
     }
     response = set_member(incident_id, data)
     users = get_users()
-    response = []
-    for user in users:
-        if user['id'] in members:
-            response.append({
-                'FirstName': user['fname'],
-                'LastName': user['lname'],
-                'ID': user['id'],
-                'Email': user['email']
-            })
-    ec = {
-        'Resilient.Incidents(val.Id && val.Id === obj.Id)': {
-            'Id': incident_id,
-            'Members': response
+    entry = {}
+    if response:
+        for user in users:
+            if user['id'] in members:
+                response.append({
+                    'FirstName': user['fname'],
+                    'LastName': user['lname'],
+                    'ID': user['id'],
+                    'Email': user['email']
+                })
+        ec = {
+            'Resilient.Incidents(val.Id && val.Id === obj.Id)': {
+                'Id': incident_id,
+                'Members': response
+            }
         }
-    }
-    title = 'Members of incident ' + incident_id
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, response),
-        'EntryContext': ec
-    }
+        title = 'Members of incident ' + incident_id
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, response),
+            'EntryContext': ec
+        }
     return entry
 
 
