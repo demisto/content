@@ -327,7 +327,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.ArcsightWhiteDomainValueFieldName
+              simple: inputs.ArcsightWhiteListDomainValueFieldName
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -629,7 +629,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.ArcsightWatchDomainValueFieldName
+              simple: inputs.ArcsightWatchListDomainValueFieldName
             iscontext: true
       - - operator: isNotEmpty
           left:
