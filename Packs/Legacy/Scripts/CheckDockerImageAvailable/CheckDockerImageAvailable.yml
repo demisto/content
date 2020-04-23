@@ -4,6 +4,7 @@ commonfields:
 name: CheckDockerImageAvailable
 script: ''
 type: python
+subtype: python2
 tags: []
 comment: Check if a docker image is available for performing docker pull. Script simulates
   the docker pull flow but doesn't actually pull the image. Returns an entry with

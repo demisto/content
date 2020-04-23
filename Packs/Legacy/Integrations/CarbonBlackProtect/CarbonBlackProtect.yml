@@ -26,7 +26,7 @@ configuration:
   name: fetch_query
   required: false
   type: 0
-- display: Fetch incidents query
+- display: Fetch incidents
   name: isFetch
   required: false
   type: 8
@@ -38,14 +38,14 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: Use system proxy
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
 description: Carbon Black Enterprise Protection is a next-generation endpoint threat
   prevention solution to deliver a portfolio of protection policies, real-time visibility
   across environments, and comprehensive compliance rule sets in a single platform.
-display: Carbon Black Enterprise Protection V2
+display: Carbon Black Enterprise Protection v2
 name: CarbonBlackProtectionV2
 script:
   commands:
