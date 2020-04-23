@@ -22,7 +22,7 @@ class TestMetadataParsing:
     """
 
     def test_validate_all_fields_of_parsed_metadata(self, dummy_pack_metadata):
-        """ Test function for existence of all fields in metadata. Important to maintain it according to #19786 issue
+        """ Test function for existence of all fields in metadata. Important to maintain it according to #19786 issue.
 
         """
         parsed_metadata = Pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
