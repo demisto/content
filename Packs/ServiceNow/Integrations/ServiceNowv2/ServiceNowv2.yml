@@ -1455,6 +1455,12 @@ script:
       name: file_name
       required: false
       secret: false
+    - default: false
+      description: The file type to be uploaded.
+      isArray: false
+      name: file_type
+      required: false
+      secret: false
     deprecated: false
     description: Upload a file to a specific ticket
     execution: false

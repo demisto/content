@@ -980,6 +980,7 @@ def upload_file_command():
     args = unicode_to_str_recur(demisto.args())
     ticket_type = get_table_name(args.get('ticket_type'))
     ticket_id = args['id']
+    content_type = str(args.get('file_type', ''))
     file_id = args['file_id']
     file_name = args.get('file_name', demisto.dt(demisto.context(), "File(val.EntryID=='" + file_id + "').Name"))
 
@@ -992,7 +993,7 @@ def upload_file_command():
 
     file_name = file_name[0] if isinstance(file_name, list) else file_name
 
-    res = upload_file(ticket_id, file_id, file_name, ticket_type)
+    res = upload_file(ticket_id, file_id, file_name, ticket_type, conetnt_type)
 
     if not res or 'result' not in res or not res['result']:
         return_error('Unable to retrieve response')
@@ -1026,7 +1027,7 @@ def upload_file_command():
     return entry
 
 
-def upload_file(ticket_id, file_id, file_name, ticket_type):
+def upload_file(ticket_id, file_id, file_name, ticket_type, content_type):
     headers = {
         'Accept': 'application/json'
     }
@@ -1036,6 +1037,8 @@ def upload_file(ticket_id, file_id, file_name, ticket_type):
         'table_sys_id': ticket_id,
         'file_name': file_name
     }
+    if content_type:
+        body['Content-Type'] = content_type
 
     path = 'attachment/upload'
 

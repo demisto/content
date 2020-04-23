@@ -1008,6 +1008,30 @@ RESPONSE_UPLOAD_FILE = {
         "table_sys_id": "system_id"
     }
 }
+RESPONSE_UPLOAD_FILE_TYPE = {
+    "result": {
+        "average_image_color": "",
+        "chunk_size_bytes": "734003",
+        "compressed": "true",
+        "content_type": "text/plain",
+        "download_link": "test_link",
+        "file_name": "XML_API_Training.pdf",
+        "image_height": "",
+        "image_width": "",
+        "size_bytes": "1121957",
+        "size_compressed": "765737",
+        "state": "pending",
+        "sys_created_by": "admin",
+        "sys_created_on": "2020-04-23 09:42:20",
+        "sys_id": "1234",
+        "sys_mod_count": "0",
+        "sys_tags": "",
+        "sys_updated_by": "admin",
+        "sys_updated_on": "2020-04-23 09:42:20",
+        "table_name": "incident",
+        "table_sys_id": "1234"
+    }
+}
 RESPONSE_GET_TICKET_NOTES = {
     "result": [
         {

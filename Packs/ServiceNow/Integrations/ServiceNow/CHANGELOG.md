@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+Added the *file_type* argument to the ***servicenow-upload-file*** command.
 
 ## [20.3.3] - 2020-03-18
 -

@@ -11,8 +11,7 @@ configuration:
   name: credentials
   required: false
   type: 9
-- defaultvalue: ''
-  display: Use system proxy settings
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
@@ -3546,6 +3545,12 @@ script:
       name: file_name
       required: false
       secret: false
+    - default: false
+      description: The file type to be uploaded.
+      isArray: false
+      name: file_type
+      required: false
+      secret: false
     deprecated: false
     description: Upload a file to a specific ticket
     execution: false
@@ -4138,10 +4143,13 @@ script:
     - contextPath: ServiceNow.Ticket.Note.Type
       description: Ticket note type
       type: string
+  feed: false
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python2
+  type: python
 tests:
 - No test - Hibernating instance

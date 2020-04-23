@@ -596,7 +596,7 @@ class Client(BaseClient):
         """
         return self.send_request(f'table/{ticket_type}/{ticket_id}', 'PATCH', body={key: text})
 
-    def upload_file(self, ticket_id: str, file_id: str, file_name: str, ticket_type: str) -> dict:
+    def upload_file(self, ticket_id: str, file_id: str, file_name: str, ticket_type: str, content_type: str) -> dict:
         """Adds a file to a ticket by sending a POST request.
 
         Args:
@@ -604,6 +604,7 @@ class Client(BaseClient):
         file_id: file ID
         file_name: file name
         ticket_type: ticket type
+        content_type: content type of the file
 
         Returns:
             Response from API.
@@ -613,6 +614,8 @@ class Client(BaseClient):
             'table_sys_id': ticket_id,
             'file_name': file_name
         }
+        if content_type:
+            body['Content-Type'] = content_type
 
         return self.send_request('attachment/upload', 'POST', headers={'Accept': 'application/json'},
                                  body=body, file={'id': file_id, 'name': file_name})
@@ -915,6 +918,7 @@ def upload_file_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bo
     ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
     ticket_id = str(args.get('id', ''))
     file_id = str(args.get('file_id', ''))
+    content_type = str(args.get('file_type', ''))
 
     file_name = args.get('file_name', demisto.dt(demisto.context(), "File(val.EntryID=='" + file_id + "').Name"))
     if not file_name:  # in case of info file
@@ -923,7 +927,7 @@ def upload_file_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bo
         raise Exception('Could not find the file. Please add a file to the incident.')
     file_name = file_name[0] if isinstance(file_name, list) else file_name
 
-    result = client.upload_file(ticket_id, file_id, file_name, ticket_type)
+    result = client.upload_file(ticket_id, file_id, file_name, ticket_type, content_type)
 
     if not result or 'result' not in result or not result['result']:
         raise Exception('Unable to upload file.')

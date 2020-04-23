@@ -1,4 +1,5 @@
 ## [Unreleased]
+  - Added the *file_type* argument to the ***servicenow-upload-file*** command.
   - Added the *additional_fields* argument to the following commands:
     - ***servicenow-get-ticket***
     - ***servicenow-update-ticket***

@@ -186,6 +186,14 @@ EXPECTED_UPLOAD_FILE = {
         'ID': 'sys_id', 'File': {'Filename': 'test_file', 'Link': 'test_link', 'SystemID': 'system_id'}
     }
 }
+EXPECTED_UPLOAD_FILE_TYPE = {
+    'ServiceNow.Ticket(val.ID===obj.ID)': {
+        'ID': '1234', 'File': {'Filename': 'XML_API_Training.pdf', 'Link': 'test_link', 'SystemID': '1234'}
+    },
+    'Ticket(val.ID===obj.ID)': {
+        'ID': '1234', 'File': {'Filename': 'XML_API_Training.pdf', 'Link': 'test_link', 'SystemID': '1234'}
+    }
+}
 EXPECTED_GET_TICKET_NOTES = {
     'ServiceNow.Ticket(val.ID===obj.ID)': {
         'ID': 'sys_id', 'Note': [
