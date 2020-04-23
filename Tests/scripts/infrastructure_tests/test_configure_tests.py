@@ -406,8 +406,6 @@ def create_get_modified_files_ret(modified_files_list=[], modified_tests_list=[]
 
 
 TWO_BEFORE_GA_VERSION = '4.5.0'
-ONE_BEFORE_GA_VERSION = '4.6.0'
-GA_VERSION = '5.0.0'
 
 
 def get_mock_test_list(two_before_ga=TWO_BEFORE_GA_VERSION, get_modified_files_ret=None, mocker=None, git_diff_ret=''):
