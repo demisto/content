@@ -14,7 +14,7 @@
 <li><strong>Password</strong></li>
 <li><strong>Customer name</strong></li>
 <li><strong>Use system proxy settings</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Fetch only incidents matching this rule name</strong></li>
 <li><strong>Fetch only incidents with this severity</strong></li>
 <li><strong>Fetch Incidents</strong></li>
