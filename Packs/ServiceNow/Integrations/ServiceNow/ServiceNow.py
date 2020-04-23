@@ -993,7 +993,7 @@ def upload_file_command():
 
     file_name = file_name[0] if isinstance(file_name, list) else file_name
 
-    res = upload_file(ticket_id, file_id, file_name, ticket_type, conetnt_type)
+    res = upload_file(ticket_id, file_id, file_name, ticket_type, content_type)
 
     if not res or 'result' not in res or not res['result']:
         return_error('Unable to retrieve response')
