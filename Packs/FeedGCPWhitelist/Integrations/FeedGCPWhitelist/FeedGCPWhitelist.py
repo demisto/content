@@ -7,9 +7,6 @@ import re
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-# CONSTANTS
-INTEGRATION_NAME = 'GCP Whitelist'
-
 
 def fetch_cidr(dnsAddress):
     cidr_arr = []
