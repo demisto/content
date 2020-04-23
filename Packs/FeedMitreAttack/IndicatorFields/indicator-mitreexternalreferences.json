@@ -1,17 +1,17 @@
 {
-			"id": "indicator_mitrekillchainphases",
-			"version": 1,
-			"modified": "2020-04-02T15:08:02.492997385Z",
+			"id": "indicator_mitreexternalreferences",
+			"version": -1,
+			"modified": "2020-04-02T15:08:30.420979614Z",
 			"sortValues": null,
 			"vcShouldIgnore": false,
 			"commitMessage": "",
 			"shouldCommit": false,
-			"name": "MITRE Kill Chain Phases",
-			"prevName": "MITRE Kill Chain Phases",
+			"name": "MITRE External References",
+			"prevName": "MITRE External References",
 			"ownerOnly": false,
 			"placeholder": "",
 			"description": "",
-			"cliName": "mitrekillchainphases",
+			"cliName": "mitreexternalreferences",
 			"type": "grid",
 			"closeForm": false,
 			"editForm": true,
@@ -20,7 +20,7 @@
 			"fieldCalcScript": "",
 			"neverSetAsRequired": false,
 			"isReadOnly": false,
-			"selectValues": null,
+			"selectValues": [],
 			"validationRegex": "",
 			"useAsKpi": false,
 			"locked": false,
@@ -29,18 +29,16 @@
 			"group": 2,
 			"mergeStrategy": "",
 			"hidden": false,
-			"associatedTypes": [
-				"MITRE ATT\u0026CK"
-			],
+			"associatedTypes": [],
 			"systemAssociatedTypes": null,
-			"associatedToAll": false,
+			"associatedToAll": true,
 			"unmapped": false,
 			"unsearchable": false,
 			"caseInsensitive": true,
 			"columns": [
 				{
-					"key": "kill_chain_name",
-					"displayName": "kill_chain_name",
+					"key": "source_name",
+					"displayName": "source_name",
 					"type": "shortText",
 					"required": false,
 					"script": "",
@@ -51,8 +49,20 @@
 					"selectValues": null
 				},
 				{
-					"key": "phase_name",
-					"displayName": "phase_name",
+					"key": "url",
+					"displayName": "url",
+					"type": "shortText",
+					"required": false,
+					"script": "",
+					"width": 150,
+					"isDefault": true,
+					"fieldCalcScript": "",
+					"isReadOnly": false,
+					"selectValues": null
+				},
+				{
+					"key": "external_id",
+					"displayName": "external_id",
 					"type": "shortText",
 					"required": false,
 					"script": "",
@@ -64,6 +74,7 @@
 				}
 			],
 			"defaultRows": [
+				{},
 				{},
 				{}
 			],
