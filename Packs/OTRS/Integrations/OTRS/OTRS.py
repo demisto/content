@@ -33,8 +33,6 @@ FETCH_TIME = FETCH_TIME if FETCH_TIME and FETCH_TIME.strip() else FETCH_TIME_DEF
 
 def ticket_to_incident(ticket):
 
-    incident = {}
-
     attachments_list = []
     articles = ticket.get('Article')
     if articles:
@@ -49,10 +47,12 @@ def ticket_to_incident(ticket):
                         'name': file_name
                     })
 
-    incident['attachment'] = attachments_list
-    incident['name'] = 'OTRS ticket {}'.format(ticket['TicketID'])
-    incident['rawJSON'] = json.dumps(ticket)
-
+    incident = {
+        'attachment': attachments_list,
+        'name': 'OTRS ticket {}'.format(ticket['TicketID'],
+        'rawJSON': json.dumps(ticket)
+    }
+    
     return incident
 
 
@@ -538,10 +538,9 @@ def fetch_incidents():
     else:
         queue = queue_list
 
+    priority = None
     if FETCH_PRIORITY:
         priority = [translate_priority(p) for p in FETCH_PRIORITY]
-    else:
-        priority = None
 
     tickets = search_ticket(created_after=last_run, queue=queue, priority=priority)
     incidents = []
