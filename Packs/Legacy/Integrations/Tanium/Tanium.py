@@ -674,7 +674,8 @@ def restore_sout_and_exit(final_result):
     sys.stdout = sout
     LOG.print_log()
     demisto.results(final_result)
-    sys.exit(0)
+    # kill this thread and any additional thread in existence in the docker
+    os._exit(0)
 
 
 # Dealing with Broken Pipe issues raised by some commands
