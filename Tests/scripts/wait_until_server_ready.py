@@ -81,6 +81,7 @@ def main():
             sleep(1)
 
     if failure:
+        print_error('One or more instance were dropped by amazon, if raised often - report to team leader.')
         sys.exit(1)
 
 
