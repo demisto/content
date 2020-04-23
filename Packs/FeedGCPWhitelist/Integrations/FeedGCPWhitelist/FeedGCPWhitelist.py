@@ -10,6 +10,7 @@ requests.packages.urllib3.disable_warnings()
 # CONSTANTS
 INTEGRATION_NAME = 'GCP Whitelist'
 
+
 def fetch_cidr(dnsAddress):
     cidr_arr = []
     regex_dns = r"(include:.*? )"
@@ -19,12 +20,12 @@ def fetch_cidr(dnsAddress):
     dns_matches = re.finditer(regex_dns, query_response_str)
     for match in dns_matches:
         m = match.group()
-        address = m[8:len(m)-1]
+        address = m[8:len(m) - 1]
         cidr_arr += fetch_cidr(address)
     cidr_matches = re.finditer(regex_cidr, query_response_str)
     for match in cidr_matches:
         m = match.group()
-        address = m[4:len(m)-1]
+        address = m[4:len(m) - 1]
         cidr_arr.append(address)
     return cidr_arr
 
@@ -38,6 +39,7 @@ class Client(BaseClient):
     def build_iterator(self):
         return fetch_cidr(self._base_url)
 
+
 def test_module(client):
     """Builds the iterator to check that the feed is accessible.
     Args:
@@ -48,6 +50,20 @@ def test_module(client):
     """
     client.build_iterator()
     return 'ok', {}, {}
+
+
+# add variables as feedTags: list, limit
+def fetch_indicators(client):
+    iterator = client.build_iterator()
+    indicators = []
+    for indicator in iterator:
+        indicators.append({
+            'value': indicator,
+            'type': FeedIndicatorType.CIDR,
+        })
+
+    return indicators
+
 
 def main():
     """
@@ -67,7 +83,8 @@ def main():
             return_outputs(*test_module(client))
 
         elif demisto.command() == 'gcp-whitelist-get-indicators':
-            return_outputs(client.build_iterator())
+            demisto.createIndicators(fetch_indicators(client))
+            return_outputs(str(fetch_indicators(client)))
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
