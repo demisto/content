@@ -731,4 +731,4 @@ outputs:
   description: Push  warnings
 sourceplaybookid: PAN-OS EDL Setup v2
 tests:
-PAN-OS EDL Setup Test v3
+- PAN-OS EDL Setup Test v3
