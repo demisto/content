@@ -5,6 +5,7 @@ name: Extract Indicators From File - Generic v2
 description: |-
   Extracts indicators from a file.
   Supported file types:
+  - CSV
   - PDF
   - TXT
   - HTM, HTML
@@ -172,10 +173,10 @@ tasks:
     ignoreworker: false
   '5':
     id: '5'
-    taskid: 1bb80350-a076-43ed-8d0a-af4d4cdc7b16
+    taskid: f8c66e0d-b4a9-45d7-810a-020bc5f921f8
     type: condition
     task:
-      id: 1bb80350-a076-43ed-8d0a-af4d4cdc7b16
+      id: f8c66e0d-b4a9-45d7-810a-020bc5f921f8
       version: -1
       name: Is there a text-based file?
       description: Checks if there is a text-based file in context. Skips MSG and
@@ -1177,7 +1178,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1520,
+          "x": 1540,
           "y": 700
         }
       }
@@ -1186,10 +1187,10 @@ tasks:
     ignoreworker: false
   '16':
     id: '16'
-    taskid: 8e1253c5-d43e-46fc-833c-733839e10dd4
+    taskid: 152dad0a-3204-4907-8bf3-a81f8f6af520
     type: regular
     task:
-      id: 8e1253c5-d43e-46fc-833c-733839e10dd4
+      id: 152dad0a-3204-4907-8bf3-a81f8f6af520
       version: -1
       name: Convert document to PDF
       description: |-
@@ -1206,7 +1207,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '17'
+      - '8'
     scriptarguments:
       all_files:
         simple: 'yes'
@@ -1304,92 +1305,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1600,
-          "y": 1015
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '17':
-    id: '17'
-    taskid: 630c86cc-1ab5-4512-82e6-1326fe94beeb
-    type: regular
-    task:
-      id: 630c86cc-1ab5-4512-82e6-1326fe94beeb
-      version: -1
-      name: Extract indicators from document converted to PDF
-      description: |-
-        Extracts indicators from all other supported documents that have been converted to PDF beforehand. The formats are:
-        - PPT
-        - PPTX
-        - RTF
-        - XLS
-        - XLSX
-        - XML
-      scriptName: ReadPDFFileV2
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '3'
-    scriptarguments:
-      entryID:
-        complex:
-          root: File
-          filters:
-          - - operator: notIn
-              left:
-                value:
-                  simple: EntryID
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.File.EntryID
-                iscontext: true
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: File.Type
-                iscontext: true
-              right:
-                value:
-                  simple: application/pdf
-              ignorecase: true
-            - operator: containsGeneral
-              left:
-                value:
-                  simple: File.Type
-                iscontext: true
-              right:
-                value:
-                  simple: PDF document
-              ignorecase: true
-            - operator: containsGeneral
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: application/pdf
-          transformers:
-          - operator: uniq
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: EntryID
-      maxImages: {}
-      userPassword: {}
-    reputationcalc: 2
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1810,
-          "y": 1240
+          "x": 1540,
+          "y": 970
         }
       }
     note: false
@@ -1451,19 +1368,19 @@ outputs:
 - contextPath: File.xap
   description: The xap of the PDF file.
 - contextPath: File.Author
-  description: The author of the PDF file.
+  description: The author of the file.
 - contextPath: File.dc
-  description: The dc of the PDF file.
+  description: The dc of the file.
 - contextPath: File.xapmm
-  description: The xapmm of the PDF file.
+  description: The xapmm of the file.
 - contextPath: File.ModDate
-  description: The ModDate of the PDF file.
+  description: The ModDate of the file.
 - contextPath: File.CreationDate
-  description: The CreationDate of the PDF file.
+  description: The CreationDate of the file.
 - contextPath: File.Pages
-  description: Number of pages in PDF file.
+  description: Number of pages in file.
 - contextPath: URL.Data
-  description: List of URLs that were extracted from the PDF file.
+  description: List of URLs that were extracted from the file.
   type: unknown
 tests:
   - Extract Indicators From File - Generic v2 - Test
