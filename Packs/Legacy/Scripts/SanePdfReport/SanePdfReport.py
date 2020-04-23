@@ -44,6 +44,7 @@ try:
     if DISABLE_LOGOS:
         headerRightImage = ''
         headerLeftImage = ''
+        disableHeaders = ''
     else:
         if headerLeftImage != '':
             fix_base64(headerLeftImage, "left.png")
@@ -69,9 +70,22 @@ try:
 
     cmd = ['./reportsServer', input_file, output_file, 'dist'] + shlex.split(
         extra_cmd)
+
+    # Logging things for debugging
+    params = f'[orientation="{orientation}",' \
+        f' resourceTimeout="{resourceTimeout}",' \
+        f' reportType="{reportType}", headerLeftImage="{headerLeftImage}",' \
+        f' headerRightImage="{headerRightImage}", pageSize="{pageSize}",' \
+        f' disableHeaders="{disableHeaders}" '
+    LOG(f"Sane-pdf parameters: {params}]")
     cmd_string = " ".join(cmd)
     LOG(f"Sane-pdf cmd: {cmd_string}")
-    subprocess.check_output(cmd, cwd=WORKING_DIR)
+    LOG.print_logs()
+
+    # Execute the report creation
+    out = subprocess.check_output(cmd, cwd=WORKING_DIR,
+                                  stderr=subprocess.STDOUT)
+    LOG(f"Sane-pdf output: {out}")
 
     abspath_output_file = WORKING_DIR / output_file
     with open(abspath_output_file, 'rb') as f:
