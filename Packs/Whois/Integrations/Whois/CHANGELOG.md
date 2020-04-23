@@ -1,8 +1,8 @@
 ## [Unreleased]
- - Removed duplicate fields from ***domain*** and ***whois*** commands output.
- - Added the *Domain.Whois.QueryValue* context output to ***whois*** command.
- - Added ability to query Whois with subdomains.  
- - Fixed an issue where Whois fails for too many requests.
+ - Fixed an issue where duplicate fields were created by the ***domain*** and ***whois*** commands outputs.
+ - Added support for the *Domain.Whois.QueryValue* context output in ***whois*** command.
+ - You can now query Whois with subdomains.  
+ - Fixed an issue where Whois fails when too many requests are used.
  
 ## [20.4.0] - 2020-04-14
 -
