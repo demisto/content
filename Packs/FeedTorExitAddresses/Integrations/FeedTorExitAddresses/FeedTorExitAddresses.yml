@@ -92,7 +92,7 @@ script:
     execution: false
     name: tor-get-indicators
   dockerimage: demisto/python3:3.8.2.6981
-  feed: false
+  feed: true
   isfetch: false
   longRunning: false
   longRunningPort: false
