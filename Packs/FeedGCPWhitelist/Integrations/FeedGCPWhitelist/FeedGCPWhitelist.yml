@@ -75,14 +75,9 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The name of whom you want to say hello to.
-      isArray: false
-      name: name
-      required: false
-      secret: false
-    - default: false
       isArray: false
       name: limit
+      description: The maximum number of results to return.  Default value is Unlimited.
       required: false
       secret: false
     deprecated: false
