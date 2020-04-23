@@ -631,6 +631,11 @@ script:
     - name: to_time
       description: End of time window (defaults to current time) (YYYY-MM-DD HH:MM:SS)
     - name: status
+      auto: PREDEFINED
+      predefined:
+      - UNRESOLVED
+      - CONFIRMED
+      - IGNORED
       description: A list of triage statuses for submissions (UNRESOLVED,CONFIRMED,IGNORED);
         only email submissions marked with at least one of these statuses will be
         returned
@@ -685,6 +690,11 @@ script:
     - name: to_time
       description: End of time window (defaults to current time) (YYYY-MM-DD HH:MM:SS)
     - name: status
+      auto: PREDEFINED
+      predefined:
+      - UNRESOLVED
+      - CONFIRMED
+      - IGNORED
       description: A list of triage statuses for submissions; only email submissions
         marked with at least one of these statuses will be returned. Options are 'UNRESOLVED',
         'CONFIRMED', 'IGNORED'
@@ -721,4 +731,5 @@ script:
     description: Get phishing indicators that match the given criteria.
   dockerimage: demisto/trustar:1.0.0.7265
   runonce: false
-  subtype: python3
+  subtype: python2
+sourcemoduleid: TruSTAR

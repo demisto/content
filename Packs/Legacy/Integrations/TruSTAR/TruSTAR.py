@@ -1,12 +1,14 @@
+import base64
+import collections
+import time
+
+import requests
+
 import demistomock as demisto
+import trustar
 from CommonServerPython import *
 
 ''' IMPORTS '''
-import base64
-import requests
-import time
-import trustar
-import collections
 
 handle_proxy()
 
