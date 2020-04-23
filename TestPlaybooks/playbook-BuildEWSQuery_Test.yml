@@ -1,5 +1,5 @@
 id: buildewsquery_test
-version: 6
+version: -1
 name: BuildEWSQuery Test
 starttaskid: "0"
 tasks:

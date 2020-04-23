@@ -29,7 +29,7 @@
 <li><strong>Server URL (e.g. <a href="https://192.168.0.1/" rel="nofollow">https://192.168.0.1</a>)</strong></li>
 <li><strong>Username</strong></li>
 <li><strong>Password</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 </ul>
 </li>
