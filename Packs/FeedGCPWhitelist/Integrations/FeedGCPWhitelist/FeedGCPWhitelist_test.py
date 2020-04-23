@@ -1,4 +1,4 @@
-from FeedGCPWhitelist import Client, google_base_dns, fetch_cidr
+from FeedGCPWhitelist import Client, google_base_dns
 
 
 def test_build_iterator():
