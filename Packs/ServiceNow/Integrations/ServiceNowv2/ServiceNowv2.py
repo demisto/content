@@ -614,11 +614,12 @@ class Client(BaseClient):
             'table_sys_id': ticket_id,
             'file_name': file_name
         }
+        file = {'id': file_id, 'name': file_name}
         if content_type:
-            body['Content-Type'] = content_type
+            file['Content-Type'] = content_type
 
         return self.send_request('attachment/upload', 'POST', headers={'Accept': 'application/json'},
-                                 body=body, file={'id': file_id, 'name': file_name})
+                                 body=body, file=file)
 
     def query(self, table_name: str, sys_param_limit: str, sys_param_offset: str, sys_param_query: str) -> dict:
         """Query tickets by sending a PATCH request.

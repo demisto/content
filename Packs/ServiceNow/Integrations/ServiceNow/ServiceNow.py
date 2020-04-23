@@ -1037,8 +1037,9 @@ def upload_file(ticket_id, file_id, file_name, ticket_type, content_type):
         'table_sys_id': ticket_id,
         'file_name': file_name
     }
+    file = {'id': file_id, 'name': file_name}
     if content_type:
-        body['Content-Type'] = content_type
+        file['Content-Type'] = content_type
 
     path = 'attachment/upload'
 
