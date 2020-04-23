@@ -10,11 +10,6 @@ This integration was integrated and tested with version 1.0 of Microsoft Graph G
 <ul>
 <li>To allow access to Microsoft Graph Groups, an administrator has to approve the Demisto app using an admin consent flow, by clicking on the following [link](https://oproxy.demisto.ninja/ms-graph-groups).</li>
 <li>After authorizing the Demisto app, you will get an ID, Token, and Key, which needs to be added to the integration instance configuration's corresponding fields.</li>
-<li></li>
-<li>Required Permissions in the MS Graph Groups App:</li>
-<li>Directory.ReadWrite.All - Delegated</li>
-<li>Directory.ReadWrite.All - Application</li>
-<li>Group.ReadWrite.All - Application</li>
 </ul>
 
 <ol>
@@ -48,6 +43,10 @@ To configure the integration in Demisto to use the application, place those para
 Token - Tenant ID<br>
 Key - Client Secret</p></p>
 
+<h2>Required Permissions in the MS Graph Groups App:</h2>
+<li>Directory.ReadWrite.All - Delegated</li>
+<li>Directory.ReadWrite.All - Application</li>
+<li>Group.ReadWrite.All - Application</li>
 
 <h2>Commands</h2>
 <p>
