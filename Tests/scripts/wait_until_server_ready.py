@@ -46,7 +46,7 @@ def main():
     instance_ips_to_poll = [ami_instance_ip for ami_instance_name, ami_instance_ip in instance_ips]
 
     print(f'[{datetime.datetime.now()}] Starting wait loop')
-    while len(instance_ips_to_poll) > 0:
+    while instance_ips_to_poll:
         current_time = time.time()
         exit_if_timed_out(loop_start_time, current_time)
 
@@ -57,7 +57,7 @@ def main():
                 method = 'GET'
                 try:
                     res = requests.request(method=method, url=(host + path), verify=False)
-                except (urllib3.exceptions.HTTPError, requests.exceptions.HTTPError) as exp:
+                except (requests.exceptions.RequestException, requests.exceptions.HTTPError) as exp:
                     print_error(f'{ami_instance_name} encountered an error: {str(exp)}\n'
                                 f'Spot instance was dropped by amazon, if raised often - report to team leader.')
                     instance_ips_to_poll.remove(ami_instance_ip)
