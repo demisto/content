@@ -62,7 +62,7 @@ script:
                 Body: method == 'POST' ? encodeToURLQuery(parameters).substring(1) : ''
             },
             params.insecure,
-            params.useproxy
+            params.useproxyf
         );
         if (result.StatusCode < 200 || result.StatusCode > 299) {
             throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode + ' with Body: '+ result.Body;
@@ -96,7 +96,18 @@ script:
         var ec = {};
         ec.DBotScore = [];
         if (data.length === 0) {
-            ec.DBotScore.push(dbotTypeHashList(hash, 0));
+            ec.DBotScore.push({
+                Indicator: hash,
+                Type: 'hash',
+                Vendor: 'ThreatExchange',
+                Score: 0
+            });
+            ec.DBotScore.push({
+                Indicator: hash,
+                Type: 'file',
+                Vendor: 'ThreatExchange',
+                Score: 0
+            })
 
             return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
                 HumanReadable: 'ThreatExchange does not have details about ' + hash + '\n',
@@ -117,7 +128,18 @@ script:
             } else if (data[i].status == 'NON_MALICIOUS'){
                 dbotScore = 1;
             }
-            ec.DBotScore.push(dbotTypeHashList(hash, dbotScore));
+            ec.DBotScore.push({
+                Indicator: hash,
+                Type: 'hash',
+                Vendor: 'ThreatExchange',
+                Score: dbotScore
+            });
+            ec.DBotScore.push({
+                Indicator: hash,
+                Type: 'file',
+                Vendor: 'ThreatExchange',
+                Score: dbotScore
+            })
         }
         return {
             Type: entryTypes.note,
