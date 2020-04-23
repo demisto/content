@@ -36,6 +36,7 @@ def test_change_context_path_inplace(mocker):
                                                                 {'List2Key1': 1, 'newListKey': 2}]
                                                       }
 
+
 def test_replace_dict_not_inplace(mocker):
     context = [{'key': 'val', 'key2': 'val2'},
                {'list2key1': 1, 'list2key2': 2}]
