@@ -588,21 +588,21 @@ def get_feed_request(since: str = None, limit: str = None, indicator: list = Non
     return response
 
 
-def get_min_time_delta(last_fetch_time):
+def get_sec_time_delta(last_fetch_time):
     # try in UTC first
     fetch_delta = datetime.utcnow() - last_fetch_time
-    fetch_delta_in_min = fetch_delta.seconds
+    fetch_delta_in_sec = fetch_delta.seconds
 
     # if negative then try in current time
-    if fetch_delta_in_min < 0:
+    if fetch_delta_in_sec < 0:
         fetch_delta = datetime.now() - last_fetch_time
-        fetch_delta_in_min = fetch_delta.seconds
+        fetch_delta_in_sec = fetch_delta.seconds
 
     # if negative default to 1 day
-    if fetch_delta_in_min < 0:
-        fetch_delta_in_min = SEC_IN_DAY
+    if fetch_delta_in_sec < 0:
+        fetch_delta_in_sec = SEC_IN_DAY
 
-    return str(fetch_delta_in_min) + "s"
+    return str(fetch_delta_in_sec) + "s"
 
 
 def fetch_incidents():
@@ -622,7 +622,7 @@ def fetch_incidents():
         feed: dict = get_feed_request(since=FETCH_TIME)
 
     else:
-        feed = get_feed_request(since=get_min_time_delta(last_fetch_time))
+        feed = get_feed_request(since=get_sec_time_delta(last_fetch_time))
 
     max_time: datetime = last_fetch_time
     results: list = feed.get('data', []) if feed else []
