@@ -20,7 +20,7 @@ configuration:
   defaultvalue: ""
   type: 4
   required: false
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "true"
   type: 8
@@ -169,8 +169,7 @@ script:
             } else {
                 dbotScore = 1;
             }
-            ec.DBotScore = [{Indicator: args.hash, Type: 'hash', Vendor: 'OPSWAT', Score: dbotScore},
-                            {Indicator: args.hash, Type: 'file', Vendor: 'OPSWAT', Score: dbotScore}];
+            ec.DBotScore = {Indicator: args.hash, Type: 'hash', Vendor: 'OPSWAT', Score: dbotScore};
 
 
             return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
@@ -269,8 +268,7 @@ script:
             } else {
                 dbotScore = 1;
             }
-            ec.DBotScore = [{Indicator: res.file_info.md5, Type: 'hash', Vendor: 'OPSWAT', Score: dbotScore},
-                            {Indicator: res.file_info.md5, Type: 'file', Vendor: 'OPSWAT', Score: dbotScore}];
+            ec.DBotScore = {Indicator: res.file_info.md5, Type: 'hash', Vendor: 'OPSWAT', Score: dbotScore};
 
 
             return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
