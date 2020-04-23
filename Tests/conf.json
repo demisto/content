@@ -4,7 +4,8 @@
     "tests": [
         {
             "integrations": "URLhaus",
-            "playbookID": "Test-URLhaus"
+            "playbookID": "Test-URLhaus",
+            "timeout": 1000
         },
         {
             "integrations": "Tanium Threat Response",
