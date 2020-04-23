@@ -1023,13 +1023,13 @@ RESPONSE_UPLOAD_FILE_TYPE = {
         "state": "pending",
         "sys_created_by": "admin",
         "sys_created_on": "2020-04-23 09:42:20",
-        "sys_id": "1234",
+        "sys_id": "system_id",
         "sys_mod_count": "0",
         "sys_tags": "",
         "sys_updated_by": "admin",
         "sys_updated_on": "2020-04-23 09:42:20",
         "table_name": "incident",
-        "table_sys_id": "1234"
+        "table_sys_id": "system_id"
     }
 }
 RESPONSE_GET_TICKET_NOTES = {
