@@ -19,7 +19,7 @@
 <li><strong>Service Account Private Key file contents (JSON)</strong></li>
 <li>Optional: <strong>Use system proxy settings</strong>
 </li>
-<li>Optional: <strong>Trust any certificate (unsecure)</strong>
+<li>Optional: <strong>Trust any certificate (not secure)</strong>
 </li>
 </ul>
 </li>
