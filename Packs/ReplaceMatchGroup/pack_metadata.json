@@ -1,9 +1,7 @@
 {
-    "displayName": "ReplaceMatchGroup",
-    "name": "",
-    "price": 0,
+    "name": "ReplaceMatchGroup",
     "description": "A transformer that returns a string with all matches of a regex pattern groups replaced by a replacement",
-    "support": "demisto",
+    "support": "xsoar",
     "serverMinVersion": "",
     "currentVersion": "1.0.0",
     "author": "",
@@ -20,6 +18,7 @@
     "certification": "",
     "useCases": [],
     "keywords": [],
+    "price": 0,
     "dependencies": {},
     "displayedImages": []
 }
