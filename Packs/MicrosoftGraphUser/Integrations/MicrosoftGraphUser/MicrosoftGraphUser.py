@@ -247,7 +247,6 @@ def main():
     enc_key = params.get('enc_key')
     verify = not params.get('insecure', False)
     self_deployed: bool = params.get('self_deployed', False)
-    # TODO: check it does the same as handle proxy
     proxy = params.get('proxy', False)
 
     commands = {
