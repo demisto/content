@@ -3,7 +3,7 @@ commonfields:
   id: Cymon
   version: -1
 configuration:
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: unsecure
   required: false
   type: 8
