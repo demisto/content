@@ -36,12 +36,12 @@ configuration:
   defaultvalue: ""
   type: 4
   required: false
-- display: Trust any cert (Not Secure)
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
   type: 8
   required: false
-- display: Use system proxy
+- display: Use system proxy settings
   name: proxy
   defaultvalue: ""
   type: 8
