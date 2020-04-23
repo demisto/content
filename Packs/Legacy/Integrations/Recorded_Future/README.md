@@ -928,7 +928,7 @@
 <li><strong>Domain Threshold. Minimum risk score from Recorded Future to consider the domain malicious.</strong></li>
 <li><strong>URL Threshold. Minimum risk score from Recorded Future to consider the URL malicious.</strong></li>
 <li><strong>Vulnerability Threshold. Minimum risk score from Recorded Future to consider the vulnerability critical.</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 <li><strong>Fetch incidents</strong></li>
 <li><strong>Rule names to fetch alerts by, separated by semicolon. If empty, all alerts will be fetched</strong></li>
