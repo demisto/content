@@ -79,6 +79,7 @@ def get_events():
         raw_response=events
     )
 
+
 def get_all_groups():
     """
     Get all groups
