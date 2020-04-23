@@ -146,7 +146,7 @@ jobs:
 
             demisto-sdk secrets --post-commit --ignore-entropy
       - run:
-          name: Configure Test Filter And Content Packs
+          name: Collect Test List And Content Packs
           when: always
           command: |
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
