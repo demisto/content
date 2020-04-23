@@ -607,6 +607,7 @@ def url_lookup_command(client, url):
 
         url_context = {
             'Name': url,
+            'Data': url,
             'Malicious': {
                 'Vendor': 'Flashpoint',
                 'Description': 'Found in malicious indicators dataset'

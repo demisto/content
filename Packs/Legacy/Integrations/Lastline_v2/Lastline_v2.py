@@ -159,7 +159,10 @@ def report_generator(result: Dict, threshold=None):
     score = result['data'].get('score')
     uuid = result['data'].get('task_uuid')
     submission_time = result['data'].get('submission')
-    indicator = context_entry.get('DBotScore', {}).get('Indicator', 'None')
+    if key == 'File':
+        indicator = context_entry.get('DBotScore', [{}])[0].get('Indicator', 'None')
+    else:
+        indicator = context_entry.get('DBotScore', {}).get('Indicator', 'None')
     if score is not None:
         meta_data = f'**Score: {score}**\n\nTask UUID: {uuid}\nSubmission Time: {submission_time}'
     else:
@@ -175,7 +178,7 @@ def get_report_context(result: Dict, threshold=None) -> Dict:
     context_entry: Dict = {}
     if 'data' in result:
         data: Dict = {}
-        dbotscore: Dict = {
+        dbotscore = {
             'Vendor': 'Lastline',
             'Score': 0
         }
@@ -224,15 +227,18 @@ def get_report_context(result: Dict, threshold=None) -> Dict:
                 data['Data'] = analysis_subject.get('url')
             else:
                 dbotscore['Indicator'] = analysis_subject.get('md5')
-                dbotscore['Type'] = 'hash'
                 data['MD5'] = analysis_subject.get('md5')
                 data['SHA1'] = analysis_subject.get('sha1')
                 data['SHA256'] = analysis_subject.get('sha256')
                 data['Type'] = analysis_subject.get('mime_type')
             dbotscore['Type'] = key
+            if key == 'File':
+                dbotscore_copy = dbotscore.copy()
+                dbotscore_copy['Type'] = 'file'
+                dbotscore = [dbotscore, dbotscore_copy]
             context_entry['Lastline'] = lastline
             context_entry[key] = data
-        if dbotscore['Score'] != 0:
+        if (key == 'URL' and dbotscore['Score'] != 0) or (key == 'File' and dbotscore[0]['Score'] != 0):
             context_entry['DBotScore'] = dbotscore
     return context_entry
 
@@ -246,6 +252,10 @@ def file_hash(path: str) -> str:
             file_hasher.update(buf)
             buf = file_obj.read(block_size)
     return file_hasher.hexdigest()
+
+
+def return_error(err_msg, error):
+    raise error
 
 
 def main():

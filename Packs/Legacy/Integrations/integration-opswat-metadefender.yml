@@ -169,7 +169,8 @@ script:
             } else {
                 dbotScore = 1;
             }
-            ec.DBotScore = {Indicator: args.hash, Type: 'hash', Vendor: 'OPSWAT', Score: dbotScore};
+            ec.DBotScore = [{Indicator: args.hash, Type: 'hash', Vendor: 'OPSWAT', Score: dbotScore},
+                            {Indicator: args.hash, Type: 'file', Vendor: 'OPSWAT', Score: dbotScore}];
 
 
             return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
@@ -268,7 +269,8 @@ script:
             } else {
                 dbotScore = 1;
             }
-            ec.DBotScore = {Indicator: res.file_info.md5, Type: 'hash', Vendor: 'OPSWAT', Score: dbotScore};
+            ec.DBotScore = [{Indicator: res.file_info.md5, Type: 'hash', Vendor: 'OPSWAT', Score: dbotScore},
+                            {Indicator: res.file_info.md5, Type: 'file', Vendor: 'OPSWAT', Score: dbotScore}];
 
 
             return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};

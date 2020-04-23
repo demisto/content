@@ -161,8 +161,7 @@ def create_file_output(file_hash, threshold, vt_response, short_format):
     else:
         dbotScore = 1
 
-    ec['DBotScore'].append(  # type:ignore
-        {'Indicator': file_hash, 'Type': 'hash', 'Vendor': 'VirusTotal - Private API', 'Score': dbotScore})
+    ec['DBotScore'] = dbot_type_hash_list(file_hash, dbotScore)  # type:ignore
     md += 'MD5: **' + vt_response.get('md5') + '**\n'
     md += 'SHA1: **' + vt_response.get('sha1') + '**\n'
     md += 'SHA256: **' + vt_response.get('sha256') + '**\n'
@@ -218,6 +217,22 @@ def create_file_output(file_hash, threshold, vt_response, short_format):
     return entry
 
 
+def dbot_type_hash_list(file_hash, score):
+    return [{
+              'Indicator': file_hash,
+              'Type': 'hash',
+              'Vendor': 'VirusTotal - Private API',
+              'Score': score
+            },
+            {
+              'Indicator': file_hash,
+              'Type': 'file',
+              'Vendor': 'VirusTotal - Private API',
+              'Score': score
+            }
+            ]
+
+
 ''' COMMANDS FUNCTIONS '''
 
 
@@ -256,12 +271,7 @@ def check_file_behaviour_command():
             'Contents': response,
             'ContentsFormat': formats['json'],
             'EntryContext': {
-                "DBotScore": {
-                    'Indicator': file_hash,
-                    'Type': 'hash',
-                    'Vendor': 'VirusTotal - Private API',
-                    'Score': 0
-                }
+                "DBotScore": dbot_type_hash_list(file_hash, 0)
             },
             'HumanReadable': "A report wasn't found for file "
                              + file_hash + ". Virus Total returned the following response: " + json.dumps(
@@ -1007,12 +1017,7 @@ def hash_communication_command():
             'Contents': response,
             'ContentsFormat': formats['json'],
             'EntryContext': {
-                "DBotScore": {
-                    'Indicator': file_hash,
-                    'Type': 'hash',
-                    'Vendor': 'VirusTotal - Private API',
-                    'Score': 0
-                }
+                "DBotScore": dbot_type_hash_list(file_hash, 0)
             },
             'HumanReadable': "A report wasn't found for file " + file_hash + ". Virus Total returned the following "
                                                                              "response: " + json.dumps(
