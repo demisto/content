@@ -160,12 +160,12 @@ def create_file_output(file_hash, threshold, vt_response, short_format):
         dbotScore = 2
     else:
         dbotScore = 1
-    ec['DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor &&' \
-       ' val.Type === obj.Type)'].append({'Indicator': file_hash, 'Type': 'hash',
-                                          'Vendor': 'VirusTotal - Private API', 'Score': dbotScore})
-    ec['DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor &&' \
-       ' val.Type === obj.Type)'].append({'Indicator': file_hash, 'Type': 'file',
-                                          'Vendor': 'VirusTotal - Private API', 'Score': dbotScore})
+    ec['DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === '
+       'obj.Type)'].append({'Indicator': file_hash, 'Type': 'hash',
+                            'Vendor': 'VirusTotal - Private API', 'Score': dbotScore})
+    ec['DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === ' 
+       'obj.Type)'].append({'Indicator': file_hash, 'Type': 'file',
+                            'Vendor': 'VirusTotal - Private API', 'Score': dbotScore})
 
     md += 'MD5: **' + vt_response.get('md5') + '**\n'
     md += 'SHA1: **' + vt_response.get('sha1') + '**\n'
@@ -253,10 +253,8 @@ def check_file_behaviour_command():
     md = 'We found the following data about hash ' + file_hash + ':\n'
     # VT response
     response = check_file_behaviour(file_hash)
-    ec = {'VirusTotal(val.ID == obj.ID)': {'ID': file_hash,
-                                           'Status': 'Queued'}}
-    if (response.get('response_code', None) == 0):
 
+    if (response.get('response_code', None) == 0):
         return {
             'Type': entryTypes['note'],
             'Contents': response,
@@ -268,10 +266,9 @@ def check_file_behaviour_command():
                 {'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor &&'
                  ' val.Type == obj.Type)': {'Indicator': file_hash, 'Type': 'file',
                                             'Vendor': 'VirusTotal - Private API', 'Score': 0}}
-              },
-            'HumanReadable': "A report wasn't found for file "
-                             + file_hash + ". Virus Total returned the following response: " + json.dumps(
-                response.get('verbose_msg'))
+            },
+            'HumanReadable': "A report wasn't found for file " + file_hash +
+                             ". Virus Total returned the following response: " + json.dumps(response.get('verbose_msg'))
         }
 
     # data processing
@@ -552,7 +549,7 @@ def get_file_report_command():
         }
 
     if response.get('response_code', None) == 0:
-        return"A report wasn't found. Virus Total returned the following response: " + json.dumps(
+        return "A report wasn't found. Virus Total returned the following response: " + json.dumps(
             response.get('verbose_msg'))
 
     del response['response_code']
@@ -1019,11 +1016,10 @@ def hash_communication_command():
                 {'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor &&'
                  ' val.Type == obj.Type)': {'Indicator': file_hash, 'Type': 'file',
                                             'Vendor': 'VirusTotal - Private API', 'Score': 0}}
-              }
+            }
             ,
-            'HumanReadable': "A report wasn't found for file " + file_hash + ". Virus Total returned the following "
-                                                                             "response: " + json.dumps(
-                response.get('verbose_msg'))
+            'HumanReadable': "A report wasn't found for file " + file_hash +
+                             ". Virus Total returned the following response: " + json.dumps(response.get('verbose_msg'))
         }
 
     # network data contains all the communication data

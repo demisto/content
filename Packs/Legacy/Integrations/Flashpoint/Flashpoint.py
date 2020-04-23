@@ -727,13 +727,13 @@ def file_lookup_command(client, file):
                 }
             },
             {
-                    indicator_type: 'file',
-                    'Malicious': {
-                        'Vendor': 'Flashpoint',
-                        'Description': 'Found in malicious indicators dataset'
-                    }
+                indicator_type: 'file',
+                'Malicious': {
+                    'Vendor': 'Flashpoint',
+                    'Description': 'Found in malicious indicators dataset'
                 }
-            ]
+            }
+        ]
 
         ec = {
             'DBotScore': dbot_context,
