@@ -224,7 +224,7 @@ tasks:
       - '2'
     scriptarguments:
       capitalize:
-        simple: 'True'
+        simple: 'False'
       inplace:
         simple: 'False'
       input:
@@ -283,3 +283,5 @@ outputs:
   description: Logs of QRadar correlations
   type: unknown
 fromversion: 5.0.0
+tests:
+  - test playbook - QRadarCorreltaions

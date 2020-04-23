@@ -588,3 +588,5 @@ outputs:
   description: The log's protocol name
 sourceplaybookid: 'QRadar - Get offense correlations '
 fromversion: 5.0.0
+tests:
+  - test playbook - QRadarCorreltaions

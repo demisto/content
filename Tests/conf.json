@@ -505,6 +505,10 @@
             "playbookID": "WordTokenizeTest"
         },
         {
+            "integration": "QRadar",
+            "playbookID" :  "test playbook - QRadarCorreltaions"
+        },
+        {
             "integrations": "Awake Security",
             "playbookID": "awake_security_test_pb"
         },
