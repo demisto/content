@@ -1,9 +1,8 @@
-import urllib3
-from pyotrs import Article, Attachment, Client, DynamicField, Ticket
-
-from CommonServerPython import *
-
 ''' IMPORTS '''
+
+import urllib3
+from CommonServerPython import *
+from pyotrs import Article, Attachment, Client, DynamicField, Ticket
 
 
 if not demisto.params()['proxy']:
@@ -130,7 +129,7 @@ def get_ticket_command():
     elif (ticket_id is None and ticket_number):
         ticket = get_ticket_by_number(ticket_number)
     else:
-        return_error('Exactly one ticket identifier is required in order to retrieve a ticket, ticket_id xor ticket_number!')
+        return_error('Exactly one ticket identifier is required in order to retrieve a ticket, ticket_id or ticket_number!')
 
     output = {
         'ID': str(ticket['TicketID']),
@@ -235,7 +234,7 @@ def get_ticket(ticket_id):
 def get_ticket_by_number(ticket_number):
 
     response = client.ticket_get_by_number(ticket_number, articles=True, attachments=True, dynamic_fields=True)
-    raw_ticket = response.to_dct()['Ticket']
+    raw_ticket = response.to_dct().get('Ticket')
     return raw_ticket
 
 
