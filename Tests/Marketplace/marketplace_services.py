@@ -584,7 +584,7 @@ class Pack(object):
                 PackFolders.INCIDENT_TYPES.value: "incidenttype",
                 PackFolders.DASHBOARDS.value: "dashboard",
                 PackFolders.INDICATOR_FIELDS.value: "indicatorfield",
-                PackFolders.REPORTS.value: "report",
+                PackFolders.REPORTS.value: "reports",
                 PackFolders.MISC.value: "reputation"
             }
 
@@ -676,7 +676,7 @@ class Pack(object):
                             'type': content_item.get('type', ""),
                             'description': content_item.get('description', "")
                         })
-                    elif current_directory == PackFolders.REPORTS.value:
+                    elif current_directory == PackFolders.REPORTS.value:  # todo finalize this part with server side
                         dash_board_section = content_item.get('dashboard', {})
 
                         folder_collected_items.append({
