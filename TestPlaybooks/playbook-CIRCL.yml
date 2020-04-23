@@ -1,5 +1,5 @@
 id: CirclIntegrationTest
-version: 12
+version: -1
 name: CIRCL Test
 starttaskid: "0"
 tasks:

@@ -1,7 +1,7 @@
 {
     "name": "Spamhaus Feed",
     "description": "Use the Spamhaus feed integration to fetch indicators from the feed.",
-    "support": "Cortex XSOAR",
+    "support": "xsoar",
     "serverMinVersion": "5.0.0",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

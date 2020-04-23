@@ -61,7 +61,6 @@ configuration:
   required: false
 - display: Fetch incidents
   name: isFetch
-  defaultvalue: ""
   type: 8
   required: false
 - display: Rule names to fetch alerts by, separated by semicolon. If empty, all alerts
@@ -78,7 +77,6 @@ configuration:
   required: false
 - display: Incident type
   name: incidentType
-  defaultvalue: ""
   type: 13
   required: false
 script:
@@ -102,17 +100,17 @@ script:
       defaultValue: "false"
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
-      type: string
+      description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
-      description: Indicator type
-      type: string
+      description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
-      type: string
+      description: The vendor used to calculate the score.
+      type: String
     - contextPath: DBotScore.Score
-      description: The actual score
-      type: number
+      description: The actual score.
+      type: Number
     - contextPath: Domain.Name
       description: Domain name
       type: string
@@ -143,17 +141,17 @@ script:
       defaultValue: "false"
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
-      type: string
+      description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
-      description: Indicator type
-      type: string
+      description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
-      type: string
+      description: The vendor used to calculate the score.
+      type: String
     - contextPath: DBotScore.Score
-      description: The actual score
-      type: number
+      description: The actual score.
+      type: Number
     - contextPath: IP.Malicious.Vendor
       description: For malicious IP addresses, the vendor that made the decision
       type: string
@@ -216,17 +214,17 @@ script:
       description: For malicious files, the reason that the vendor made the decision
       type: string
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
-      type: string
+      description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
-      description: Indicator type
-      type: string
+      description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
-      type: string
+      description: The vendor used to calculate the score.
+      type: String
     - contextPath: DBotScore.Score
-      description: The actual score
-      type: number
+      description: The actual score.
+      type: Number
     - contextPath: File.Criticality
       description: Risk criticality label
       type: string
@@ -529,17 +527,17 @@ script:
       defaultValue: "false"
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
-      type: string
+      description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
-      description: Indicator type
-      type: string
+      description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
-      type: string
+      description: The vendor used to calculate the score.
+      type: String
     - contextPath: DBotScore.Score
-      description: The actual score
-      type: number
+      description: The actual score.
+      type: Number
     - contextPath: URL.Data
       description: URL name
       type: string
@@ -615,17 +613,17 @@ script:
       description: For malicious files, the reason that the vendor made the decision
       type: string
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
-      type: string
+      description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
-      description: Indicator type
-      type: string
+      description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
-      type: string
+      description: The vendor used to calculate the score.
+      type: String
     - contextPath: DBotScore.Score
-      description: The actual score
-      type: number
+      description: The actual score.
+      type: Number
     - contextPath: File.RecordedFuture.Criticality
       description: Risk criticality label
       type: string
@@ -678,17 +676,17 @@ script:
       description: Sort direction
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
-      type: string
+      description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
-      description: Indicator type
-      type: string
+      description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
-      type: string
+      description: The vendor used to calculate the score.
+      type: String
     - contextPath: DBotScore.Score
-      description: The actual score
-      type: number
+      description: The actual score.
+      type: Number
     - contextPath: IP.Malicious.Vendor
       description: For malicious IP addresses, the vendor that made the decision
       type: string
@@ -751,17 +749,17 @@ script:
       description: Sort direction
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
-      type: string
+      description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
-      description: Indicator type
-      type: string
+      description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
-      type: string
+      description: The vendor used to calculate the score.
+      type: String
     - contextPath: DBotScore.Score
-      description: The actual score
-      type: number
+      description: The actual score.
+      type: Number
     - contextPath: URL.Data
       description: URL name
       type: string
@@ -817,17 +815,17 @@ script:
       description: Sort direction
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
-      type: string
+      description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
-      description: Indicator type
-      type: string
+      description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
-      type: string
+      description: The vendor used to calculate the score.
+      type: String
     - contextPath: DBotScore.Score
-      description: The actual score
-      type: number
+      description: The actual score.
+      type: Number
     - contextPath: Domain.Name
       description: Domain name
       type: string

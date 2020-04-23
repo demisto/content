@@ -13,7 +13,7 @@
 <li><strong>MISP server URL (e.g.,<span> </span><a href="https://192.168.0.1/" rel="nofollow">https://192.168.0.1</a>)</strong></li>
 <li><strong>API Key</strong></li>
 <li><strong>Use system proxy settings</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 </ul>
 </li>
 <li>Click<span> </span><strong>Test</strong><span> </span>to validate the URLs, token, and connection.</li>

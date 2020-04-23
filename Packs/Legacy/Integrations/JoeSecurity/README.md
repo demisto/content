@@ -41,7 +41,7 @@
 <li>
 <strong>Joe Security URL</strong>: URL of the Joe Security server</li>
 <li><strong>API Key</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Do not use by default</strong></li>
 <li><strong>Demisto engine</strong></li>
 </ul>
