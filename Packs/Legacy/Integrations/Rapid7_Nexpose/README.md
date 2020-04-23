@@ -34,7 +34,7 @@
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li><strong>Server URL (e.g. <a href="https://192.168.0.1:8080/" rel="nofollow">https://192.168.0.1:8080</a>)</strong></li>
 <li><strong>Username</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 <li><strong>2FA token</strong></li>
 </ul>
