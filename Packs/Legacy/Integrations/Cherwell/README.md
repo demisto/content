@@ -16,7 +16,7 @@
 <li><strong>URL (example: <a href="https://my.domain.com/">https://my.domain.com</a>)</strong></li>
 <li><strong>Username</strong></li>
 <li><strong>Client id</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy</strong></li>
 <li><strong>First fetch timestamp ( <time>, e.g., 12 hours, 7 days)</time></strong></li>
 <li><strong>CSV list of objects to fetch. The default is incident, for example: incident,problem,service)</strong></li>
