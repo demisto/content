@@ -1,0 +1,45 @@
+args:
+- name: severity
+  auto: PREDEFINED
+  predefined:
+  - 1 - High
+  - 2 - Medium
+  - 3 - Low
+  description: Incident severity
+- name: assignee
+  description: Incident assigne name (e.g John Smith)
+- name: description
+  required: true
+  description: Incident description
+- name: assigned_group
+  description: Incident assigned group name (e.g Incident Management Group)
+commonfields:
+  id: ServiceNowCreateIncident
+  version: -1
+name: ServiceNowCreateIncident
+comment: |-
+  This script is used to wrap the generic create-record command in ServiceNow.
+  You can add fields that you want to create the record with as script arguments or in the
+  code and work with the records easily.
+outputs:
+- contextPath: ServiceNow.Incident.ID
+  description: Incident ID
+  type: string
+- contextPath: ServiceNow.Incident.Number
+  description: Incident number
+  type: string
+enabled: true
+script: '-'
+scripttarget: 0
+tags:
+- servicenow
+- servicenow v2
+type: python
+subtype: python2
+dependson:
+  must:
+  - servicenow-create-record
+  - servicenow-query-table
+runonce: false
+tests:
+  - No test - Hibernating instance

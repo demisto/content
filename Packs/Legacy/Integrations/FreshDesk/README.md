@@ -25,7 +25,7 @@
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li><strong>Server URL (e.g., <a href="https://demistohelp.freshdesk.com/">https://demistohelp.freshdesk.com</a>)</strong></li>
 <li><strong>API Token. (You must enter either the API token or your Freshdesk credentials)</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy</strong></li>
 <li><strong>First fetch timestamp ( <time>, e.g., 12 hours, 7 days)</time></strong></li>
 <li><strong>Username</strong></li>
