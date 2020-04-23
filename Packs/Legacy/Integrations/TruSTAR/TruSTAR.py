@@ -319,7 +319,7 @@ def create_domain_ec(indicators, url, threshold):
 
 
 def encode_cursor(page_size, page_number):
-    cursor = '{' + f'"pageSize":{page_size},"pageNumber":{page_number}' + '}'
+    cursor = '{' + '"pageSize":{},"pageNumber":{}'.format(page_size, page_number) + '}'
     return base64.b64encode(cursor.encode()).decode()
 
 
@@ -674,7 +674,7 @@ def get_all_phishing_indicators(normalized_triage_score,
     response = ts.get_phishing_indicators_page(**args)
     indicators, ec = translate_indicators(response.items)
     if indicators:
-        title = f'TruSTAR phishing indicators'
+        title = 'TruSTAR phishing indicators'
         entry = {
             'Type': entryTypes['note'],
             'Contents': indicators,
@@ -701,7 +701,7 @@ def get_phishing_submissions(normalized_triage_score,
     if not response.items:
         return 'No phishing submissions were found.'
     submissions, ec = translate_triage_submission(response.items)
-    title = f'TruSTAR phishing triage submissions'
+    title = 'TruSTAR phishing triage submissions'
     entry = {
         'Type': entryTypes['note'],
         'Contents': submissions,
@@ -717,7 +717,7 @@ def set_triage_status(submission_id, status):
     try:
         response = ts.mark_triage_status(submission_id, status)
         response.raise_for_status()
-        return f"Submission ID {submission_id} is {status}"
+        return "Submission ID {} is {}".format(submission_id, status)
     except requests.exceptions.HTTPError as err:
         return str(err)
 
