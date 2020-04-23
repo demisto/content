@@ -3,6 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import json
 import os
+import re
 import sys
 
 from cStringIO import StringIO

@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import DemistoException
 import re
+import time
 
 
 def main(args):
