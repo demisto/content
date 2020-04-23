@@ -7,7 +7,7 @@ import re
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-#CONSTANTS
+# CONSTANTS
 google_base_dns = "_cloud-netblocks.googleusercontent.com"
 
 

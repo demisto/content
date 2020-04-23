@@ -1,7 +1,7 @@
 from FeedGCPWhitelist import Client, google_base_dns, fetch_cidr
 
 
-def test_fetch_cidr():
+def test_build_iterator():
     client = Client(google_base_dns, False, False)
-    cidr_arr = fetch_cidr(client)
+    cidr_arr = client.build_iterator()
     assert len(cidr_arr) > 0
