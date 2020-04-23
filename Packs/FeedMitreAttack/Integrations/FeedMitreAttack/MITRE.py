@@ -50,7 +50,6 @@ class Client:
         mitreIDList = set()
         indicatorValuesList = set()
         externalRefs = set()
-        limit = limit
         counter = 0
 
         # For each collection
@@ -206,7 +205,6 @@ def fetch_indicators(client):
 
 def get_indicators_command(client, args):
 
-    indicators = list()
     limit = int(args.get('limit', 10))
     raw = True if args.get('raw') == "True" else False
 
