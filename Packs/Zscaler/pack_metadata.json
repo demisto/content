@@ -1,11 +1,11 @@
 {
     "name": "Zscaler",
     "description": "Zscaler is a cloud security solution built for performance and flexible scalability.",
-    "support": "Cortex XSOAR",
+    "support": "xsoar",
     "serverMinVersion": "5.0.0",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
-    "url": "https://www.demisto.com",
+    "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
         "Network Security"

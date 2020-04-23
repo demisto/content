@@ -28,7 +28,7 @@
 <li><strong>Fetching interval in minutes (default is 15, minimum is 15 )</strong></li>
 <li><strong>The specific security event to look for. Default is all events</strong></li>
 <li><strong>Security event severity threshold, between 0-100</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 </ul>
 <ol start="4">
