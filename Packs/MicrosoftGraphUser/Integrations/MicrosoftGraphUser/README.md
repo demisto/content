@@ -54,6 +54,12 @@ To configure the integration in Demisto to use the application, place those para
 Token - Tenant ID<br>
 Key - Client Secret</p></p>
 
+<h2>Required Permissions in the MS Graph User App:</h2>
+<li>Directory.Read.All - Delegated</li>
+<li>User.ReadWrite.All - Application</li>
+<li>User.Read - Delegated</li>
+
+
 <div class="cl-preview-section">
 <h2 id="commands">Commands</h2>
 </div>
