@@ -130,7 +130,6 @@ class Pack(object):
     def __init__(self, pack_name, pack_path):
         self._pack_name = pack_name
         self._pack_path = pack_path
-        self._pack_repo_path = os.path.join(PACKS_FULL_PATH, pack_name)
         self._status = None
         self._public_storage_path = ""
         self._remove_files_list = []  # tracking temporary files, in order to delete in later step
@@ -850,86 +849,65 @@ class Pack(object):
 
         return image_data
 
-    def _get_not_spitted_yml_image_data(self, root, target_folder_files):
+    def _get_image_data_from_yml(self, pack_file_path):
         """ Creates temporary image file and retrieves integration display name.
 
         Args:
-            root (str): full path to the target folder to search integration image.
-            target_folder_files (list): list of files inside the targeted folder.
+            pack_file_path (str): full path to the target yml_path integration yml to search integration image.
 
         Returns:
-            list: collection of paths to temporary integration images and display names of the integrations.
+            dict: path to temporary integration image and display name of the integrations.
 
         """
-        images_data_collection = []
+        image_data = {}
 
-        for pack_file in target_folder_files:
-            image_data = {}
+        if pack_file_path.endswith('.yml'):
+            with open(pack_file_path, 'r') as integration_file:
+                integration_yml = yaml.safe_load(integration_file)
 
-            if pack_file.endswith('.yml'):
-                with open(os.path.join(root, pack_file), 'r') as integration_file:
-                    integration_yml = yaml.safe_load(integration_file)
+            image_data['display_name'] = integration_yml.get('display', '')
+            # create temporary file of base64 decoded data
+            integration_name = integration_yml.get('name', '')
+            base64_image = integration_yml['image'].split(',')[1] if integration_yml.get('image') else None
 
-                image_data['display_name'] = integration_yml.get('display', '')
-                # create temporary file of base64 decoded data
-                integration_name = integration_yml.get('name', '')
-                base64_image = integration_yml['image'].split(',')[1] if integration_yml.get('image') else None
+            if not base64_image:
+                print_warning(f"{integration_name} integration image was not found in {self._pack_name} pack")
+                return {}
 
-                if not base64_image:
-                    print_warning(f"{integration_name} integration image was not found in {self._pack_name} pack")
-                    continue  # no image found current integration
+            temp_image_name = f'{integration_name.replace(" ", "_")}_image.png'
+            temp_image_path = os.path.join(self._pack_path, temp_image_name)
 
-                temp_image_name = f'{integration_name.replace(" ", "_")}_image.png'
-                temp_image_path = os.path.join(self._pack_path, temp_image_name)
+            with open(temp_image_path, 'wb') as image_file:
+                image_file.write(base64.b64decode(base64_image))
 
-                with open(temp_image_path, 'wb') as image_file:
-                    image_file.write(base64.b64decode(base64_image))
+            self._remove_files_list.append(temp_image_name)  # add temporary file to tracking list
+            image_data['image_path'] = temp_image_path
 
-                self._remove_files_list.append(temp_image_name)  # add temporary file to tracking list
-                image_data['repo_image_path'] = temp_image_path
+            print(f"Created temporary integration {image_data['display_name']} image for {self._pack_name} pack")
 
-                if image_data:
-                    images_data_collection.append(image_data)
+        return image_data
 
-        return images_data_collection
-
-    def _search_for_images(self, target_folder, folder_depth=2):
+    def _search_for_images(self, target_folder):
         """ Searches for png files in targeted folder.
 
         Args:
             target_folder (str): full path to directory to search.
-            folder_depth (int): depth of traversal inside target folder.
 
         Returns:
             list: list of dictionaries that include image path and display name of integration, example:
-            [{'repo_image_path': image_path, 'display_name': integration_display_name},...]
+            [{'image_path': image_path, 'display_name': integration_display_name},...]
         """
-        target_folder_path = os.path.join(self._pack_repo_path, target_folder)
-        local_repo_images = []
+        target_folder_path = os.path.join(self._pack_path, target_folder)
+        images_list = []
 
         if os.path.exists(target_folder_path):
-            for (root, _, target_folder_files) in os.walk(target_folder_path, topdown=True):
-                image_data = {}
+            for pack_item in os.scandir(target_folder_path):
+                image_data = self._get_image_data_from_yml(pack_item.path)
 
-                if root[len(target_folder_path):].count(os.sep) < folder_depth:
-                    if any(f.endswith('_image.png') for f in target_folder_files) \
-                            and any(f.endswith('.yml') for f in target_folder_files) \
-                            and any(f.endswith('.py') for f in target_folder_files):
-                        # detected spitted integration yml file
-                        image_data = Pack._get_spitted_yml_image_data(root, target_folder_files)
+                if image_data and image_data not in images_list:
+                    images_list.append(image_data)
 
-                        if image_data:
-                            local_repo_images.append(image_data)
-
-                    elif any(f.endswith('.yml') for f in target_folder_files) \
-                            and not any(f.endswith('_image.png') for f in target_folder_files):
-                        # detected not spitted integration file
-                        images_data_collection = self._get_not_spitted_yml_image_data(root, target_folder_files)
-
-                        if images_data_collection:
-                            local_repo_images.extend(images_data_collection)
-
-        return local_repo_images
+        return images_list
 
     def upload_integration_images(self, storage_bucket):
         """ Uploads pack integrations images to gcs.
@@ -956,16 +934,16 @@ class Pack(object):
             pack_storage_root_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name)
 
             for image_data in pack_local_images:
-                image_local_path = image_data.get('repo_image_path')
-                if not image_local_path:
+                image_path = image_data.get('image_path')
+                if not image_path:
                     raise Exception(f"{self._pack_name} pack integration image was not found")
 
-                image_name = os.path.basename(image_local_path)
+                image_name = os.path.basename(image_path)
                 image_storage_path = os.path.join(pack_storage_root_path, image_name)
                 pack_image_blob = storage_bucket.blob(image_storage_path)
                 print(f"Uploading {self._pack_name} pack integration image: {image_name}")
 
-                with open(image_local_path, "rb") as image_file:
+                with open(image_path, "rb") as image_file:
                     pack_image_blob.upload_from_file(image_file)
                     uploaded_integration_images.append({
                         'name': image_data.get('display_name', ''),
@@ -998,15 +976,14 @@ class Pack(object):
         author_image_storage_path = ""
 
         try:
-            repo_author_image_path = os.path.join(self._pack_repo_path,  # disable-secrets-detection
-                                                  Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
+            author_image_path = os.path.join(self._pack_name, Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
 
-            if os.path.exists(repo_author_image_path):
+            if os.path.exists(author_image_path):
                 image_to_upload_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name,
                                                             Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
                 pack_author_image_blob = storage_bucket.blob(image_to_upload_storage_path)
 
-                with open(repo_author_image_path, "rb") as author_image_file:
+                with open(author_image_path, "rb") as author_image_file:
                     pack_author_image_blob.upload_from_file(author_image_file)
 
                 author_image_storage_path = pack_author_image_blob.name if GCPConfig.USE_GCS_RELATIVE_PATH \
