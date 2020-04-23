@@ -220,7 +220,7 @@ class Pack(object):
     def server_min_version(self):
         """ str: server min version according to collected items.
         """
-        if self._sever_min_version == "1.0.0":
+        if not self._sever_min_version or self._sever_min_version == "1.0.0":
             return Metadata.SERVER_DEFAULT_MIN_VERSION
         else:
             return self._sever_min_version
