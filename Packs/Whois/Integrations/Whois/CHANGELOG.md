@@ -3,6 +3,7 @@
  - Added support for the *Domain.Whois.QueryValue* context output in ***whois*** command.
  - You can now query Whois with subdomains.  
  - Fixed an issue where Whois fails when too many requests are used.
+ - Fixed an issue where Whois overridden other vendors' DBotScore.
  
 ## [20.4.0] - 2020-04-14
 -
