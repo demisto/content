@@ -17,14 +17,6 @@ OUTPUT_FILE_PATH = 'out{id}.pdf'
 DISABLE_LOGOS = True  # Bugfix before sane-reports can work with image files.
 
 
-def fix_base64(base64str, filename):
-    """ Some of the base64 strings are too big for the shell, so let's write
-    them to disk """
-    with open(WORKING_DIR / filename, "wb") as fh:
-        base64str = base64str[base64str.index(";base64,") + 8:]
-        fh.write(base64.b64decode(base64str))
-
-
 def random_string(size=10):
     return ''.join(
         random.choices(string.ascii_uppercase + string.digits, k=size))
@@ -41,21 +33,10 @@ try:
     pageSize = demisto.args().get('paperSize', 'letter')
     disableHeaders = demisto.args().get('disableHeaders', '')
 
-    if DISABLE_LOGOS:
-        headerRightImage = ''
-        headerLeftImage = ''
-        disableHeaders = ''
-    else:
-        if headerLeftImage != '':
-            fix_base64(headerLeftImage, "left.png")
-            headerLeftImage = "left.png"
-        if headerRightImage != '':
-            fix_base64(headerRightImage, "right.png")
-            headerRightImage = "right.png"
-
+    # Note: After headerRightImage the empty one is for legacy argv in server.js
     extra_cmd = f"{orientation} {resourceTimeout} {reportType} " + \
-                f"{headerLeftImage} {headerRightImage} {pageSize} " + \
-                f"{disableHeaders}"
+                f'"{headerLeftImage}" "{headerRightImage}" "" ' \
+                    f'"{pageSize}" "{disableHeaders}"'
 
     # Generate a random input file so we won't override on concurrent usage
     input_id = random_string()
@@ -80,7 +61,7 @@ try:
     LOG(f"Sane-pdf parameters: {params}]")
     cmd_string = " ".join(cmd)
     LOG(f"Sane-pdf cmd: {cmd_string}")
-    LOG.print_logs()
+    LOG.print_log()
 
     # Execute the report creation
     out = subprocess.check_output(cmd, cwd=WORKING_DIR,
