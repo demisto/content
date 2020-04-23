@@ -1,11 +1,6 @@
 from MicrosoftGraphCalendar import *
 
 
-def test_epoch_seconds():
-    integer = epoch_seconds()
-    assert isinstance(integer, int)
-
-
 def test_snakecase_to_camelcase():
     assert snakecase_to_camelcase('snake_case_snake_case') == 'SnakeCaseSnakeCase'
 
