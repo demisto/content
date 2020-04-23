@@ -85,6 +85,7 @@ tags:
 - Utility
 timeout: '0'
 type: python
+subtype: python2
 runas: DBotWeakRole
 runonce: false
 tests:

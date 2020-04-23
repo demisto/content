@@ -1,7 +1,7 @@
 {
     "name": "Proofpoint Feed",
     "description": "Detailed feed of domains and ips classified in different categories. You need a valid authorization code from Proofpoint ET to access this feed",
-    "support": "Cortex XSOAR",
+    "support": "xsoar",
     "serverMinVersion": "5.0.0",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
