@@ -38,7 +38,7 @@
 <li><strong>Server URL (e.g.,<span> </span>https://192.168.0.1/publicapi)</strong></li>
 <li><strong>API Key</strong></li>
 <li><strong>Return warning entry for unsupported file types</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 </ul>
 </li>

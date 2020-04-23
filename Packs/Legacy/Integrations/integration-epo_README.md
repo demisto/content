@@ -18,7 +18,7 @@
 </li>
 <li><strong>Username</strong></li>
 <li>
-<strong>Trust any certificate (unsecure)</strong> Mark to trust Certificate Authority.</li>
+<strong>Trust any certificate (not secure)</strong> Mark to trust Certificate Authority.</li>
 <li><strong>Use system proxy settings</strong></li>
 </ul>
 </li>
