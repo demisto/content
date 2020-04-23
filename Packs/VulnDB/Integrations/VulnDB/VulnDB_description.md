@@ -19,7 +19,7 @@ This integration was integrated and tested with version xx of VulnDB
     * __Hostname, IP address, or server URL__
     * __client_id__
     * __client_secret__
-    * __Trust any certificate (unsecure)__
+    * __Trust any certificate (not secure)__
     * __Use system proxy settings__
 4. Click __Test__ to validate the URLs, token, and connection.
 ## Fetched Incidents Data

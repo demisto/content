@@ -7,7 +7,7 @@ configuration:
   name: APIKey
   required: true
   type: 4
-- display: Use system proxy
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
@@ -125,5 +125,6 @@ script:
   runonce: false
   script: '-'
   type: python
+  subtype: python3
 tests:
   - Intezer Testing v2

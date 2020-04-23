@@ -14,7 +14,7 @@
 <li><strong>The access ID - can be created under "Settings"</strong></li>
 <li><strong>The access key - can be created under "Settings"</strong></li>
 <li><strong>Use system proxy settings</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Seconds to sleep between checking for results</strong></li>
 <li><strong>Default limit for the number of records to retrieve</strong></li>
 <li><strong>Fetch incidents</strong></li>
