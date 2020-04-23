@@ -1,5 +1,5 @@
 {
-    "name": "CVE Search v2",
+    "name": "CVE Search",
     "description": "Searches for CVE information using circl.lu.",
     "support": "xsoar",
     "serverMinVersion": "1.0.0",
