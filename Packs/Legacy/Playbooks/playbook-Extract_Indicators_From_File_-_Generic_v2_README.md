@@ -5,6 +5,8 @@ Supported file types:
 - TXT
 - HTM, HTML
 - DOC, DOCX
+- CSV
+- And more
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -20,6 +22,7 @@ This playbook does not use any integrations.
 * ExtractIndicatorsFromTextFile
 * ExtractIndicatorsFromWordFile
 * ReadPDFFileV2
+* ConvertFile
 
 ### Commands
 * image-ocr-extract-text
