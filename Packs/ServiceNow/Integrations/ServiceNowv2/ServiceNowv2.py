@@ -96,7 +96,7 @@ def get_server_url(server_url: str) -> str:
     return url
 
 
-def create_ticket_context(data: dict, additional_fields: list = []) -> Any:
+def create_ticket_context(data: dict, additional_fields: list = None) -> Any:
     """Create ticket context.
 
     Args:
@@ -116,10 +116,11 @@ def create_ticket_context(data: dict, additional_fields: list = []) -> Any:
         'CloseCode': data.get('close_code'),
         'OpenedAt': data.get('opened_at')
     }
-    for additional_field in additional_fields:
-        context[additional_field] = data.get(additional_field)
-    # These fields refer to records in the database, the value is their system ID.
+    if additional_fields:
+        for additional_field in additional_fields:
+            context[additional_field] = data.get(additional_field)
 
+    # These fields refer to records in the database, the value is their system ID.
     closed_by = data.get('closed_by')
     if closed_by:
         context['ResolvedBy'] = closed_by.get('value', '')
@@ -142,7 +143,7 @@ def create_ticket_context(data: dict, additional_fields: list = []) -> Any:
     return createContext(context, removeNull=True)
 
 
-def get_ticket_context(data: Any, additional_fields: list = []) -> Any:
+def get_ticket_context(data: Any, additional_fields: list = None) -> Any:
     """Manager of ticket context creation.
 
     Args:
@@ -161,7 +162,7 @@ def get_ticket_context(data: Any, additional_fields: list = []) -> Any:
     return tickets
 
 
-def get_ticket_human_readable(tickets, ticket_type: str, additional_fields: list = []) -> list:
+def get_ticket_human_readable(tickets, ticket_type: str, additional_fields: list = None) -> list:
     """Get ticket human readable.
 
     Args:
@@ -232,8 +233,9 @@ def get_ticket_human_readable(tickets, ticket_type: str, additional_fields: list
                 # Approval will be added to the markdown only in the necessary ticket types
                 hr['Approval'] = mapped_approval
 
-        for additional_field in additional_fields:
-            hr[additional_field] = ticket.get(additional_field)
+        if additional_fields:
+            for additional_field in additional_fields:
+                hr[additional_field] = ticket.get(additional_field)
         result.append(hr)
 
     return result
