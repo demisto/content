@@ -9,6 +9,7 @@ import time
 import glob
 import random
 import argparse
+from typing import Dict
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
@@ -380,6 +381,59 @@ def update_with_tests_sections(missing_ids, modified_files, test_ids, tests):
     return missing_ids
 
 
+def collect_packs_to_install(id_set: Dict, integration_ids: set, playbook_names: set, script_names: set) -> set:
+    """Iterates all content entities in the ID set and extract the pack names for the modified ones.
+
+    Args:
+        id_set (Dict): Structure which holds all content entities to extract pack names from.
+        integration_ids (set): Set of integration IDs to get pack names for.
+        playbook_names (set): Set of playbook names to get pack names for.
+        script_names (set): Set of script names to get pack names for.
+
+    Returns:
+        set. Pack names to install.
+    """
+    packs_to_install = set()
+
+    id_set_integrations = id_set.get('integrations', [])
+    for integration in id_set_integrations:
+        integration_id = list(integration.keys())[0]
+        integration_object = integration[integration_id]
+        if integration_id in integration_ids:
+            integration_pack = integration_object.get('pack')
+            if integration_pack:
+                print(f'Found integration {integration_id} in pack {integration_pack} - adding to packs to install')
+                packs_to_install.add(integration_object.get('pack'))
+            else:
+                print_warning(f'Found integration {integration_id} without pack - not adding to packs to install')
+
+    id_set_playbooks = id_set.get('playbooks', [])
+    for playbook in id_set_playbooks:
+        playbook_object = list(playbook.values())[0]
+        playbook_name = playbook_object.get('name')
+        if playbook_name in playbook_names:
+            playbook_pack = playbook_object.get('pack')
+            if playbook_pack:
+                print(f'Found playbook {playbook_name} in pack {playbook_pack} - adding to packs to install')
+                packs_to_install.add(playbook_pack)
+            else:
+                print_warning(f'Found playbook {playbook_name} without pack - not adding to packs to install')
+
+    id_set_script = id_set.get('scripts', [])
+    for script in id_set_script:
+        script_id = list(script.keys())[0]
+        script_object = script[script_id]
+        if script_id in script_names:
+            script_pack = script_object.get('pack')
+            if script_pack:
+                print(f'Found script {script_id} in pack {script_pack} - adding to packs to install')
+                packs_to_install.add(script_object.get('pack'))
+            else:
+                print_warning(f'Found script {script_id} without pack - not adding to packs to install')
+
+    return packs_to_install
+
+
 def collect_changed_ids(integration_ids, playbook_names, script_names, modified_files, id_set):
     tests_set = set([])
     updated_script_names = set([])
@@ -463,43 +517,7 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     if deprecated_commands_message:
         print_color(deprecated_commands_message, LOG_COLORS.YELLOW)
 
-    packs_to_install = set()
-
-    id_set_integrations = id_set.get('integrations', [])
-    for integration in id_set_integrations:
-        integration_id = list(integration.keys())[0]
-        integration_object = integration[integration_id]
-        if integration_id in integration_ids:
-            integration_pack = integration_object.get('pack')
-            if integration_pack:
-                print(f'Found integration {integration_id} in pack {integration_pack} - adding to packs to install')
-                packs_to_install.add(integration_object.get('pack'))
-            else:
-                print_warning(f'Found integration {integration_id} without pack - not adding to packs to install')
-
-    id_set_playbooks = id_set.get('playbooks', [])
-    for playbook in id_set_playbooks:
-        playbook_object = list(playbook.values())[0]
-        playbook_name = playbook_object.get('name')
-        if playbook_name in playbook_names:
-            playbook_pack = playbook_object.get('pack')
-            if playbook_pack:
-                print(f'Found playbook {playbook_name} in pack {playbook_pack} - adding to packs to install')
-                packs_to_install.add(playbook_pack)
-            else:
-                print_warning(f'Found playbook {playbook_name} without pack - not adding to packs to install')
-
-    id_set_script = id_set.get('scripts', [])
-    for script in id_set_script:
-        script_id = list(script.keys())[0]
-        script_object = script[script_id]
-        if script_id in script_names:
-            script_pack = script_object.get('pack')
-            if script_pack:
-                print(f'Found script {script_id} in pack {script_pack} - adding to packs to install')
-                packs_to_install.add(script_object.get('pack'))
-            else:
-                print_warning(f'Found script {script_id} without pack - not adding to packs to install')
+    packs_to_install = collect_packs_to_install(id_set, integration_ids, playbook_names, script_names)
 
     return tests_set, catched_scripts, catched_playbooks, packs_to_install
 
