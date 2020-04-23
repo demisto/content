@@ -3,7 +3,7 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": "URLHaus",
+            "integrations": "URLhaus",
             "playbookID": "Test-URLhaus"
         },
         {
