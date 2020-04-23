@@ -114,6 +114,13 @@ script:
       name: custom_fields
       required: false
       secret: false
+    - default: false
+      description: Additional fields to present in the war room entry and incident
+        context.
+      isArray: true
+      name: additional_fields
+      required: false
+      secret: false
     deprecated: false
     description: Retrieve ticket information by specific ticket ID
     execution: false
@@ -672,6 +679,12 @@ script:
       name: approval
       required: false
       secret: false
+    - default: false
+      description: 'Additional fields in the format: fieldname1=value;fieldname2=value;'
+      isArray: false
+      name: additional_fields
+      required: false
+      secret: false
     deprecated: false
     description: Create new ServiceNow ticket
     execution: false
@@ -1200,6 +1213,12 @@ script:
       name: approval
       required: false
       secret: false
+    - default: false
+      description: 'Additional fields in the format: fieldname1=value;fieldname2=value;'
+      isArray: false
+      name: additional_fields
+      required: false
+      secret: false
     deprecated: false
     description: Update specific ticket
     execution: false
@@ -1262,6 +1281,13 @@ script:
       description: Starting record index to begin retrieving records from
       isArray: false
       name: offset
+      required: false
+      secret: false
+    - default: false
+      description: Additional fields to present in the war room entry and incident
+        context.
+      isArray: true
+      name: additional_fields
       required: false
       secret: false
     deprecated: false
