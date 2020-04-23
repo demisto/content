@@ -45,6 +45,7 @@ class Client:
         Returns:
             A list of objects, containing the indicators.
         """
+        # TODO: Check sub-feeds mid-year
 
         indicators = list()
         mitreIDList = set()
