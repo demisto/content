@@ -7,6 +7,9 @@ import re
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+#CONSTANTS
+google_base_dns = "_cloud-netblocks.googleusercontent.com"
+
 
 def fetch_cidr(dnsAddress):
     cidr_arr = []
@@ -49,7 +52,6 @@ def test_module(client):
     return 'ok', {}, {}
 
 
-# add variables as feedTags: list, limit
 def fetch_indicators(client):
     iterator = client.build_iterator()
     indicators = []
@@ -76,7 +78,7 @@ def main():
     LOG(f'Command being called is {demisto.command()}')
     try:
         client = Client(
-            base_url="_cloud-netblocks.googleusercontent.com",
+            base_url=google_base_dns,
             verify=verify_certificate,
             proxy=proxy)
 
