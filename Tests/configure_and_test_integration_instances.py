@@ -737,10 +737,12 @@ def main():
     # [conf.json](../conf.json) for examples
     brand_new_integrations = []
     testing_server = servers[0]  # test integration instances only on a single server
-    testing_client = demisto_client.configure(base_url=testing_server, username=username, password=password,
+    client = demisto_client.configure(base_url=testing_server, username=username, password=password,
                                               verify_ssl=False)
-    set_marketplace_gcp_bucket_for_build(testing_client, prints_manager, branch_name, ci_build_number)
+    set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number)
     for test in tests_for_iteration:
+        testing_client = demisto_client.configure(base_url=testing_server, username=username, password=password,
+                                                  verify_ssl=False)
         integrations = get_integrations_for_test(test, skipped_integrations_conf)
         instance_names_conf = test.get('instance_names', [])
         if not isinstance(instance_names_conf, list):
