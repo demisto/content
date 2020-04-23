@@ -11,7 +11,7 @@
 <li><strong>Server URL (e.g. <a href="https://192.168.0.1/" rel="nofollow">https://192.168.0.1</a>)</strong></li>
 <li><strong>Port</strong></li>
 <li><strong>AppID as configured in AIM</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 <li><strong>Folder to search in safe</strong></li>
 <li><strong>Safe to search in</strong></li>

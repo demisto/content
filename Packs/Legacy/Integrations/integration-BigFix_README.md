@@ -14,7 +14,7 @@
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li><strong>Server url (e.g <a href="https://192.168.10.1:52311/" rel="nofollow">https://192.168.10.1:52311</a>)</strong></li>
 <li><strong>Username</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy</strong></li>
 </ul>
 </li>

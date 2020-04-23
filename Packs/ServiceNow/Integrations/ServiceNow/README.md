@@ -24,7 +24,7 @@
 <li><strong>ServiceNow URL, in the format <a href="https://company.service-now.com/" rel="nofollow">https://company.service-now.com/</a></strong></li>
 <li><strong>Username</strong></li>
 <li><strong>Use system proxy settings</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Default ticket type for running ticket commands and fetching incidents. Can be incident, sc_request, problem or change_reuquest. Commands also take ticket_type argument</strong></li>
 <li><strong>ServiceNow API Version (e.g. 'v1')</strong></li>
 <li>
