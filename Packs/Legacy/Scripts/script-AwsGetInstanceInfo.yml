@@ -2,6 +2,7 @@ commonfields:
   id: AwsGetInstanceInfo
   version: -1
 name: AwsGetInstanceInfo
+deprecated: true
 script: |-
   function markdownTableHeader(columnNames) {
       var header="|";
@@ -120,3 +121,5 @@ dependson:
   - get-sg-info
   - get-ebs-volume-info
 timeout: 0s
+tests:
+  - No tests
