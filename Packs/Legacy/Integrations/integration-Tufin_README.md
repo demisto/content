@@ -28,7 +28,7 @@
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li><strong>SecureTrack IP or FQDN</strong></li>
 <li><strong>SecureTrack User Credentials</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 <li><strong>Maximum number of rules returned for a device during a policy search</strong></li>
 </ul>

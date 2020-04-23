@@ -1,5 +1,5 @@
 id: Test Playbook McAfee ATD Upload File
-version: 10
+version: -1
 name: Test Playbook McAfee ATD Upload File
 description: This is a test to check that URL parsing is done correctly (issue - https://github.com/demisto/etc/issues/15551)
 starttaskid: "0"
