@@ -61,7 +61,7 @@
 <li><strong>DOMAIN\USERNAME (e.g. DEMISTO.INT\admin)</strong></li>
 <li><strong>Exchange Server Version (On-Premise only. Supported versions: 2007, 2010, 2010_SP2, 2013, and 2016)</strong></li>
 <li>
-<strong>Trust any certificate (unsecure)</strong><br> ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉<br> ‎ Advanced Mode<br> Override Authentication Type (NTLM, Basic, or Digest)._</li>
+<strong>Trust any certificate (not secure)</strong><br> ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉<br> ‎ Advanced Mode<br> Override Authentication Type (NTLM, Basic, or Digest)._</li>
 <li><strong>Timeout (in seconds) for HTTP requests to Exchange Server</strong></li>
 </ul>
 </li>

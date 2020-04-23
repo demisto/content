@@ -46,7 +46,7 @@
 <strong>Use single engine</strong>: engine to run the integration on</li>
 <li>
 <strong>Note</strong>: the integration requires engine and there is no option to use it without engine.</li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 </ul>
 </li>
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
