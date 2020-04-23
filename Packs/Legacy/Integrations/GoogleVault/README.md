@@ -25,7 +25,7 @@
 <li><strong>Username</strong></li>
 <li>
 <strong>Authentication file contents</strong>: Service Account Authentication json contents.</li>
-<li><strong>Trust any certificate (Unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 </ul>
 </li>
