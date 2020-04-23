@@ -328,8 +328,8 @@ def run_and_record(tests_settings, c, proxy, failed_playbooks, integrations, pla
     succeed = run_test_logic(tests_settings, c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message,
                              test_options, slack, circle_ci, build_number, server_url, build_name,
                              prints_manager, thread_index=thread_index, is_mock_run=True)
-    proxy.stop()
-    proxy.clean_mock_file(playbook_id)
+    proxy.stop(thread_index=thread_index, prints_manager=prints_manager)
+    proxy.clean_mock_file(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
     if succeed:
         proxy.move_mock_file_to_repo(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
 
