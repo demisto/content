@@ -36,7 +36,7 @@ This integration was integrated and tested with Azure Compute API Version: 2017-
    <li><strong>Key (received from the admin consent - see Detailed Instructions (?)</strong></li>
    <li><strong>Default Subscription ID</strong></li>
    <li><strong>Use system proxy</strong></li>
-   <li><strong>Trust any certificate (unsecure)</strong></li>
+   <li><strong>Trust any certificate (not secure)</strong></li>
     </ul>
   </li>
   <li>

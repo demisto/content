@@ -38,7 +38,7 @@
 <strong>Consumer Key</strong>: The Consumer Key set for this integration with Demisto, as explained in 'Setting Salesforce'</li>
 <li>
 <strong>Consumer Secret</strong>: The Consumer Secret set for this integration with Demisto, as explained in 'Setting Salesforce' above.</li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Fetch type: cases/comments (Only fetch comments when using the SalesforceAskUser automation)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 <li><strong>Fetch incidents</strong></li>

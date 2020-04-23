@@ -1,7 +1,7 @@
 {
     "name": "HelloWorld",
     "description": "This is the Hello World integration for getting started.",
-    "support": "Cortex XSOAR",
+    "support": "xsoar",
     "serverMinVersion": "5.0.0",
     "currentVersion": "2.0.0",
     "author": "Cortex XSOAR",

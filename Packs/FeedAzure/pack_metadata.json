@@ -1,7 +1,7 @@
 {
     "name": "Azure Feed",
     "description": "Indicators feed from Azure",
-    "support": "Cortex XSOAR",
+    "support": "xsoar",
     "serverMinVersion": "5.5.0",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
