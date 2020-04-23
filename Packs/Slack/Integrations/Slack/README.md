@@ -749,8 +749,8 @@ mirror incident-id
 <span>The integration supports sending "blocks" to Slack. Blocks are a series of components that can be combined to create visually rich and compellingly interactive messages. In the integration, they can be sent as an array of JSON. More infortmation about that <a href="https://api.slack.com/reference/block-kit/blocks">here.</a> You can experiment with and build your own blocks <a href="https://api.slack.com/tools/block-kit-builder">here.</a>
 The integration also allows some level of interactivity. When a user interacts with an element in a Slack message, Slack sends a request with the relevant information. 
 This request is processed and stored by a dedicated endpoint outside of Cortex XSOAR in the address: <code>https://oproxy.demisto.ninja</code>
-What the integration currently allows is polling this endpoint for user interactions that contain entitlement strings(these are used to perform actions in Cortex XSOAR by external users, see the <a href="https://github.com/demisto/content/tree/master/Packs/Slack/Scripts/SlackAsk">SlackAsk</a> script for an example).
-What that means is that in order to enable interactivity using the integration, connection to this endpoint has to be enabled.</span>
+The integration allows polling this endpoint for user interactions that contain entitlement strings, which are used to perform actions in Cortex XSOAR by external users. See the <a href="https://github.com/demisto/content/tree/master/Packs/Slack/Scripts/SlackAsk">SlackAsk</a> script for an example.
+This means that in order to enable interactivity using the integration, connection to this endpoint has to be enabled.</span>
 The following information is sent to the dedicated endpoint in the request:
 <h5>Headers</h5>
 <ul>
