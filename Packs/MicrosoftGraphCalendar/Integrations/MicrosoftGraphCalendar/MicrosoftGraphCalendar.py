@@ -1,10 +1,6 @@
 from CommonServerPython import *
-from typing import List, Dict, Tuple, Optional, Union
-from datetime import datetime
-import base64
+from typing import List, Dict, Tuple, Union
 import urllib3
-import requests
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -134,178 +130,14 @@ def process_event_params(body: str = '', start: str = '', end: str = '', time_zo
     return event_params
 
 
-def epoch_seconds() -> int:
-    """
-    Returns the number of seconds for return current date.
-    """
-    return int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds())
+class MsGraphClient:
 
-
-def get_encrypted(content: str, key: str) -> str:
-    """
-
-    Args:
-        content: content to encrypt. For a request to Demistobot for a new access token, content should be
-            the tenant id
-        key: encryption key from Demistobot
-
-    Returns:
-        encrypted timestamp:content
-    """
-
-    def create_nonce() -> bytes:
-        return os.urandom(12)
-
-    def encrypt(string: str, enc_key: str) -> bytes:
-        """
-        Args:
-        :argument enc_key:
-        :argument string:
-        """
-        # String to bytes
-        enc_key = base64.b64decode(enc_key)
-        # Create key
-        aes_gcm = AESGCM(enc_key)
-        # Create nonce
-        nonce = create_nonce()
-        # Create ciphered data
-        data = string.encode()
-        ct_ = aes_gcm.encrypt(nonce, data, None)
-        return base64.b64encode(nonce + ct_)
-
-    now = epoch_seconds()
-    encrypted = encrypt(f'{now}:{content}', key).decode('utf-8')
-    return encrypted
-
-
-class Client(BaseClient):
-    """
-    Client to use in the MS Graph Groups integration. Overrides BaseClient
-    """
-
-    def __init__(self, base_url: str, tenant: str, auth_and_token_url: str, auth_id: str, token_retrieval_url: str,
-                 enc_key: str, verify: bool, proxy: bool, default_user: str):
-        super().__init__(base_url, verify, proxy)
-        self.tenant = tenant
-        self.auth_and_token_url = auth_and_token_url
-        self.auth_id = auth_id
-        self.token_retrieval_url = token_retrieval_url
-        self.enc_key = enc_key
+    def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify,
+                 proxy, default_user, self_deployed):
+        self.ms_client = MicrosoftClient(tenant_id=tenant_id, auth_id=auth_id,
+                                         enc_key=enc_key, app_name=app_name, base_url=base_url, verify=verify,
+                                         proxy=proxy, self_deployed=self_deployed)
         self.default_user = default_user
-
-    def get_access_token(self):
-        """
-        Get the Microsoft Graph Access token from the instance token or generates a new one if needed.
-        """
-        integration_context = demisto.getIntegrationContext()
-        access_token = integration_context.get('access_token')
-        valid_until = integration_context.get('valid_until')
-        if access_token and valid_until:
-            if epoch_seconds() < valid_until:
-                return access_token
-        try:
-            dbot_response = requests.post(
-                self.token_retrieval_url,
-                headers={'Accept': 'application/json'},
-                data=json.dumps({
-                    'app_name': APP_NAME,
-                    'registration_id': self.auth_id,
-                    'encrypted_token': get_encrypted(self.tenant, self.enc_key)
-                }),
-                verify=self._verify
-            )
-        except requests.exceptions.SSLError as err:
-            demisto.debug(str(err))
-            raise Exception(f'Connection error in the API call to Microsoft Graph.\n'
-                            f'Check your not secure parameter.\n\n{err}')
-        except requests.ConnectionError as err:
-            demisto.debug(str(err))
-            raise Exception(f'Connection error in the API call to Microsoft Graph.\n'
-                            f'Check your Server URL parameter.\n\n{err}')
-        if not dbot_response.ok:
-            msg = 'Error in authentication. Try checking the credentials you entered.'
-            try:
-                demisto.info(f'Authentication failure from server: {dbot_response.status_code}'
-                             f' {dbot_response.reason} {dbot_response.text}')
-                err_response = dbot_response.json()
-                server_msg = err_response.get('message')
-                if not server_msg:
-                    title = err_response.get('title')
-                    detail = err_response.get('detail')
-                    if title:
-                        server_msg = f'{title}. {detail}'
-                if server_msg:
-                    msg += f' Server message: {server_msg}'
-            except Exception as err:
-                demisto.error(f'Failed parsing error response - Exception: {err}')
-            raise Exception(msg)
-        try:
-            gcloud_function_exec_id = dbot_response.headers.get('Function-Execution-Id')
-            demisto.info(f'Google Cloud Function Execution ID: {gcloud_function_exec_id}')
-            parsed_response = dbot_response.json()
-        except ValueError:
-            raise Exception(
-                'There was a problem in retrieving an updated access token.\n'
-                'The response from the Demistobot server did not contain the expected content.'
-            )
-        access_token = parsed_response.get('access_token')
-        expires_in = parsed_response.get('expires_in', 3595)
-        time_buffer = 5  # seconds by which to shorten the validity period
-        if expires_in - time_buffer > 0:
-            # err on the side of caution with a slightly shorter access token validity period
-            expires_in = expires_in - time_buffer
-
-        demisto.setIntegrationContext({
-            'access_token': access_token,
-            'valid_until': epoch_seconds() + expires_in
-        })
-        return access_token
-
-    def http_request(self, method: str = 'GET', url_suffix: str = None, params: Dict = None, body: Optional[str] = None,
-                     next_link: str = None):
-        """
-        Generic request to Microsoft Graph
-        """
-        token = self.get_access_token()
-        if next_link:
-            url = next_link
-        else:
-            url = f'{self._base_url}{url_suffix}'
-
-        try:
-            response = requests.request(
-                method,
-                url,
-                headers={
-                    'Authorization': 'Bearer ' + token,
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                params=params,
-                data=body,
-                verify=self._verify,
-            )
-        except requests.exceptions.SSLError as err:
-            demisto.debug(str(err))
-            raise Exception(f'Connection error in the API call to Microsoft Graph.\n'
-                            f'Check your not secure parameter.\n\n{err}')
-        except requests.ConnectionError as err:
-            demisto.debug(str(err))
-            raise Exception(f'Connection error in the API call to Microsoft Graph.\n'
-                            f'Check your Server URL parameter.\n\n{err}')
-        try:
-            data = response.json() if response.text else {}
-            if not response.ok:
-                raise Exception(f'API call to MS Graph failed [{response.status_code}]'
-                                f' - {demisto.get(data, "error.message")}')
-            elif response.status_code == 206:  # 206 indicates Partial Content, reason will be in the warning header
-                demisto.debug(str(response.headers))
-
-            return data
-
-        except TypeError as exc:
-            demisto.debug(str(exc))
-            raise Exception(f'Error in API call to Microsoft Graph, could not parse result [{response.status_code}]')
 
     def test_function(self):
         """
@@ -313,7 +145,7 @@ class Client(BaseClient):
 
         Returns ok if successful.
         """
-        self.http_request('GET', 'users/')
+        self.ms_client.http_request(method='GET', url_suffix='users/')
         return 'ok', NO_OUTPUTS, NO_OUTPUTS
 
     def get_calendar(self, user: str, calendar_id: str = None) -> Dict:
@@ -326,7 +158,7 @@ class Client(BaseClient):
         if not user and not self.default_user:
             return_error('No user was provided. Please make sure to enter the use either in the instance setting,'
                          ' or in the command parameter.')
-        calendar_raw = self.http_request(
+        calendar_raw = self.ms_client.http_request(
             method='GET',
             url_suffix=f'users/{user}/calendar' + f's/{calendar_id}' if calendar_id else '')
 
@@ -347,17 +179,16 @@ class Client(BaseClient):
         """
         params = {'$orderby': order_by} if order_by else {}
         if next_link:  # pagination
-            calendars = self.http_request(
-                url_suffix=f'users/{user}/calendars',
-                next_link=next_link
-            )
+            calendars = self.ms_client.http_request(method='GET', full_url=next_link)
         elif filter_by:
-            calendars = self.http_request(
+            calendars = self.ms_client.http_request(
+                method='GET',
                 url_suffix=f'users/{user}/calendars?$filter={filter_by}&$top={top}',
                 params=params
             )
         else:
-            calendars = self.http_request(
+            calendars = self.ms_client.http_request(
+                method='GET',
                 url_suffix=f'users/{user}/calendars?$top={top}',
                 params=params
             )
@@ -380,12 +211,16 @@ class Client(BaseClient):
         calendar_url = f'{user}/calendars/{calendar_id}' if calendar_id else user
         params = {'$orderby': order_by} if order_by else {}
         if next_link:  # pagination
-            events = self.http_request(url_suffix=f'users/{calendar_url}/events', next_link=next_link)
+            events = self.ms_client.http_request(method='GET', full_url=next_link)
         elif filter_by:
-            events = self.http_request(url_suffix=f'users/{calendar_url}/events?$filter={filter_by}&$top={top}',
-                                       params=params)
+            events = self.ms_client.http_request(
+                method='GET',
+                url_suffix=f'users/{calendar_url}/events?$filter={filter_by}&$top={top}', params=params)
         else:
-            events = self.http_request(url_suffix=f'users/{calendar_url}/events?$top={top}', params=params)
+            events = self.ms_client.http_request(
+                method='GET',
+                url_suffix=f'users/{calendar_url}/events?$top={top}',
+                params=params)
         return events
 
     def get_event(self, user: str, event_id: str) -> Dict:
@@ -396,7 +231,7 @@ class Client(BaseClient):
         :argument user: the user id | userPrincipalName
         :argument event_id: the event id
         """
-        event = self.http_request('GET', url_suffix=f'users/{user}/calendar/events/{event_id}')
+        event = self.ms_client.http_request(method='GET', url_suffix=f'users/{user}/calendar/events/{event_id}')
 
         return event
 
@@ -420,16 +255,16 @@ class Client(BaseClient):
         :keyword originalStartTimeZone: The start time zone that was set when the event was created.
         """
         if calendar_id:
-            event = self.http_request(
+            event = self.ms_client.http_request(
                 method='POST',
                 url_suffix=f'/users/{user}/calendars/{calendar_id}/events',
-                body=json.dumps(kwargs)
+                json_data=kwargs
             )
         else:
-            event = self.http_request(
+            event = self.ms_client.http_request(
                 method='POST',
                 url_suffix=f'users/{user}/calendar/events',
-                body=json.dumps(kwargs)
+                json_data=kwargs
             )
         return event
 
@@ -453,11 +288,10 @@ class Client(BaseClient):
          For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z'
         :keyword originalStartTimeZone: The start time zone that was set when the event was created.
         """
-        event = self.http_request(
+        event = self.ms_client.http_request(
             method='PATCH',
             url_suffix=f'users/{user}/calendar/events/{event_id}',
-            body=json.dumps(kwargs)
-        )
+            json_data=kwargs)
         return event
 
     def delete_event(self, user: str, event_id: str):
@@ -470,13 +304,14 @@ class Client(BaseClient):
         """
         #  If successful, this method returns 204 No Content response code.
         #  It does not return anything in the response body.
-        self.http_request(
+        self.ms_client.http_request(
             method='DELETE',
-            url_suffix=f'users/{user}/calendar/events/{event_id}'
+            url_suffix=f'users/{user}/calendar/events/{event_id}',
+            resp_type='text'
         )
 
 
-def list_events_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def list_events_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     Lists all events and return outputs in Demisto's format.
 
@@ -510,7 +345,7 @@ def list_events_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, events
 
 
-def get_event_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_event_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     Retrieves an event by event id and return outputs in Demisto's format
 
@@ -532,7 +367,7 @@ def get_event_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, event
 
 
-def create_event_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_event_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     Creates an event by event id and return outputs in Demisto's format
 
@@ -558,7 +393,7 @@ def create_event_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, event
 
 
-def update_event_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def update_event_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     Get a event by event id and return outputs in Demisto's format.
 
@@ -585,7 +420,7 @@ def update_event_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, event
 
 
-def delete_event_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def delete_event_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     Delete an event by event id and return outputs in Demisto's format
 
@@ -609,7 +444,7 @@ def delete_event_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, NO_OUTPUTS
 
 
-def list_calendars_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def list_calendars_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     Get all the user's calendars (/calendars navigation property)
 
@@ -634,7 +469,7 @@ def list_calendars_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]
     return human_readable, entry_context, calendar
 
 
-def get_calendar_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_calendar_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     Get the properties and relationships of a calendar object.
     The calendar can be one for a user, or the default calendar of an Office 365 group.
@@ -660,7 +495,7 @@ def get_calendar_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, calendar
 
 
-def module_test_function_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def module_test_function_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     Performs a basic GET request to check if the API is reachable and authentication is successful.
 
@@ -671,19 +506,15 @@ def module_test_function_command(client: Client, args: Dict) -> Tuple[str, Dict,
 
 
 def main():
-    url = demisto.params().get('url').rstrip('/') + '/v1.0/'
-    tenant = demisto.params().get('tenant_id')
-    auth_and_token_url = demisto.params().get('auth_id').split('@')
-    auth_id = auth_and_token_url[0]
-    enc_key = demisto.params().get('enc_key')
-    verify = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
-    default_user = demisto.params().get('default_user')
-
-    if len(auth_and_token_url) != 2:
-        token_retrieval = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
-    else:
-        token_retrieval = auth_and_token_url[1]
+    params: dict = demisto.params()
+    url = params.get('url', '').rstrip('/') + '/v1.0/'
+    tenant = params.get('tenant_id')
+    auth_and_token_url = params.get('auth_id', '')
+    enc_key = params.get('enc_key')
+    verify = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
+    default_user = params.get('default_user')
+    self_deployed: bool = params.get('self_deployed', False)
 
     commands = {
         'test-module': module_test_function_command,
@@ -699,7 +530,9 @@ def main():
     LOG(f'Command being called is {command}')
 
     try:
-        client = Client(url, tenant, auth_and_token_url, auth_id, token_retrieval, enc_key, verify, proxy, default_user)
+        client: MsGraphClient = MsGraphClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key,
+                                              app_name=APP_NAME, base_url=url, verify=verify, proxy=proxy,
+                                              default_user=default_user, self_deployed=self_deployed)
         if 'user' not in demisto.args():
             demisto.args()['user'] = client.default_user
         # Run the command
@@ -710,6 +543,8 @@ def main():
     except Exception as err:
         return_error(str(err))
 
+
+from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
