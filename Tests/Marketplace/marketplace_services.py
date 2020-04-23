@@ -730,6 +730,7 @@ class Pack(object):
             self.current_version = user_metadata.get('currentVersion', '')
             self.hidden = user_metadata.get('hidden', False)
 
+            print(f"Finished loading {self._pack_name} pack user metadata")
             task_status = True
         except Exception as e:
             print_error(f"Failed in loading {self._pack_name} user metadata. Additional info:\n{e}")

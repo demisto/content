@@ -473,6 +473,12 @@ def main():
             pack.cleanup()
             continue
 
+        task_status, pack_content_items = pack.collect_content_items()
+        if not task_status:
+            pack.status = PackStatus.FAILED_COLLECT_ITEMS.name
+            pack.cleanup()
+            continue
+
         task_status, integration_images = pack.upload_integration_images(storage_bucket)
         if not task_status:
             pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
@@ -482,12 +488,6 @@ def main():
         task_status, author_image = pack.upload_author_image(storage_bucket)
         if not task_status:
             pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
-            pack.cleanup()
-            continue
-
-        task_status, pack_content_items = pack.collect_content_items()
-        if not task_status:
-            pack.status = PackStatus.FAILED_COLLECT_ITEMS.name
             pack.cleanup()
             continue
 
