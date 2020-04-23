@@ -173,7 +173,6 @@ def main():
     credentials_json = json.loads(demisto.params().get('credentials_json', {}))
     project = demisto.params().get('project_id', '')
     region = demisto.params().get('region')
-    # proxy and insecure not yet implemented
     proxy = demisto.params().get('proxy', False)
     insecure = demisto.params().get('insecure', False)
     scopes = ['https://www.googleapis.com/auth/cloud-platform']
