@@ -429,8 +429,11 @@ class Pack(object):
 
         return dependencies_data_result
 
-    def remove_unwanted_files(self):
+    def remove_unwanted_files(self, delete_test_playbooks=True):
         """ Iterates over pack folder and removes hidden files and unwanted folders.
+
+        Args:
+            delete_test_playbooks (bool): whether to delete test playbooks folder.
 
         Returns:
             bool: whether the operation succeeded.
@@ -451,16 +454,11 @@ class Pack(object):
 
                     current_directory = root.split(os.path.sep)[-1]
 
-                    if current_directory in Pack.EXCLUDE_DIRECTORIES and os.path.isdir(root):
+                    if current_directory in Pack.EXCLUDE_DIRECTORIES and os.path.isdir(root) and delete_test_playbooks:
                         shutil.rmtree(root)
                         print(f"Deleted pack {current_directory} directory for {self._pack_name} pack")
                         continue
 
-                    if current_directory == PackFolders.MISC.value and not fnmatch.fnmatch(pack_file,
-                                                                                           'reputation-*.json'):
-                        # reputation in old format aren't supported in 6.0.0 server version
-                        os.remove(full_file_path)
-                        print(f"Deleted pack {pack_file} file for {self._pack_name} pack")
         except Exception as e:
             task_status = False
             print_error(f"Failed to delete ignored files for pack {self._pack_name} - {str(e)}")
@@ -605,11 +603,27 @@ class Pack(object):
 
                     pack_file_path = os.path.join(root, pack_file_name)
 
+                    # reputation in old format aren't supported in 6.0.0 server version
+                    if current_directory == PackFolders.MISC.value and not fnmatch.fnmatch(pack_file_name,
+                                                                                           'reputation-*.json'):
+                        os.remove(pack_file_path)
+                        print(f"Deleted pack {pack_file_name} reputation file for {self._pack_name} pack")
+                        continue
+
                     with open(pack_file_path, 'r') as pack_file:
                         if current_directory in PackFolders.yml_supported_folders():
                             content_item = yaml.safe_load(pack_file)
                         elif current_directory in PackFolders.json_supported_folders():
                             content_item = json.load(pack_file)
+
+                    # check if content item has to version
+                    to_version = content_item.get('toversion') or content_item.get('toVersion')
+
+                    if to_version and LooseVersion(to_version) < LooseVersion(Metadata.SERVER_DEFAULT_MIN_VERSION):
+                        os.remove(pack_file_path)
+                        print(f"{self._pack_name} pack content item {pack_file_name} has to version: {to_version}. "
+                              f"{pack_file_name} file was deleted.")
+                        continue
 
                     print(f"Iterating over {pack_file_path} file and collecting items of {self._pack_name} pack")
                     # updated min server version from current content item
