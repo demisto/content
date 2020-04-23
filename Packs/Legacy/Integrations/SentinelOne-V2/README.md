@@ -12,7 +12,7 @@
 <li class="has-line-data" data-line-start="11" data-line-end="12"><strong>Server URL (e.g., <a href="https://usea1.sentinelone.net">https://usea1.sentinelone.net</a>)</strong></li>
 <li class="has-line-data" data-line-start="12" data-line-end="13"><strong>Username</strong></li>
 <li class="has-line-data" data-line-start="13" data-line-end="14"><strong>API Token</strong></li>
-<li class="has-line-data" data-line-start="14" data-line-end="15"><strong>Trust any certificate (unsecure)</strong></li>
+<li class="has-line-data" data-line-start="14" data-line-end="15"><strong>Trust any certificate (not secure)</strong></li>
 <li class="has-line-data" data-line-start="15" data-line-end="16"><strong>Use system proxy</strong></li>
 <li class="has-line-data" data-line-start="16" data-line-end="17"><strong>Fetch incidents</strong></li>
 <li class="has-line-data" data-line-start="16" data-line-end="17"><strong>Fetch limit</strong></li>
