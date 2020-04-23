@@ -175,10 +175,10 @@ class TestChangedPlaybook:
     GIT_DIFF_RET = "M Packs/Legacy/Playbooks/playbook-Calculate_Severity_By_Highest_DBotScore.yml"
 
     def test_changed_runnable_test__unmocked_get_modified_files(self):
-        filterd_tests = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
+        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
-        assert filterd_tests[0] == {self.TEST_ID}
-        assert filterd_tests[1] == set()
+        assert filterd_tests == {self.TEST_ID}
+        assert content_packs == set()
 
 
 class TestChangedTestPlaybook:
@@ -187,10 +187,10 @@ class TestChangedTestPlaybook:
     GIT_DIFF_RET = "M Packs/EWS/TestPlaybooks/playbook-EWSv2_empty_attachment_test.yml"
 
     def test_changed_runnable_test__unmocked_get_modified_files(self):
-        filterd_tests = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
+        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
-        assert filterd_tests[0] == {self.TEST_ID}
-        assert filterd_tests[1] == set()
+        assert filterd_tests == {self.TEST_ID}
+        assert content_packs == set()
 
     def test_changed_runnable_test__mocked_get_modified_files(self, mocker):
         # fake_test_playbook is fromversion 4.1.0 in playbook file
@@ -198,10 +198,11 @@ class TestChangedTestPlaybook:
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[test_path],
                                                                modified_tests_list=[test_path])
-        filterd_tests = get_mock_test_list('4.1.0', get_modified_files_ret, mocker)
+        filterd_tests, content_packs = get_mock_test_list('4.1.0', get_modified_files_ret, mocker)
 
-        assert test_id in filterd_tests[0]
-        assert len(filterd_tests) == 2
+        assert test_id in filterd_tests
+        assert len(filterd_tests) == 1
+        assert content_packs == set()
 
     def test_changed_unrunnable_test__integration_fromversion(self, mocker):
         """
@@ -225,9 +226,10 @@ class TestChangedTestPlaybook:
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[test_path],
                                                                modified_tests_list=[test_path])
-        filterd_tests = get_mock_test_list(two_before_ga, get_modified_files_ret, mocker)
-        assert test_id in filterd_tests[0]
-        assert len(filterd_tests) == 2
+        filterd_tests, content_packs = get_mock_test_list(two_before_ga, get_modified_files_ret, mocker)
+        assert test_id in filterd_tests
+        assert len(filterd_tests) == 1
+        assert content_packs == set()
 
         create_filter_envs_file(filterd_tests, two_before_ga, one_before_ga, ga, TestConf(MOCK_CONF), MOCK_ID_SET)
         with open("./Tests/filter_envs.json", "r") as filter_envs_file:
@@ -260,10 +262,11 @@ class TestChangedTestPlaybook:
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[test_path],
                                                                modified_tests_list=[test_path])
-        filterd_tests = get_mock_test_list(two_before_ga, get_modified_files_ret, mocker)
+        filterd_tests, content_packs = get_mock_test_list(two_before_ga, get_modified_files_ret, mocker)
 
-        assert test_id in filterd_tests[0]
-        assert len(filterd_tests) == 2
+        assert test_id in filterd_tests
+        assert len(filterd_tests) == 1
+        assert content_packs == set()
 
         create_filter_envs_file(filterd_tests, two_before_ga, one_before_ga, ga, TestConf(MOCK_CONF), MOCK_ID_SET)
         with open("./Tests/filter_envs.json", "r") as filter_envs_file:
@@ -280,10 +283,11 @@ class TestChangedTestPlaybook:
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/future_test_playbook_1.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[test_path],
                                                                modified_tests_list=[test_path])
-        filterd_tests = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
+        filterd_tests, content_packs = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
 
-        assert test_id in filterd_tests[0]
-        assert len(filterd_tests) == 2
+        assert test_id in filterd_tests
+        assert len(filterd_tests) == 1
+        assert content_packs == set()
 
     def test_changed_runnable_test__playbook_fromversion(self, mocker):
         # future_playbook_1 is toversion 99.99.99 in conf file
@@ -291,30 +295,33 @@ class TestChangedTestPlaybook:
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/future_test_playbook_1.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[test_path],
                                                                modified_tests_list=[test_path])
-        filterd_tests = get_mock_test_list('99.99.99', get_modified_files_ret, mocker)
+        filterd_tests, content_packs = get_mock_test_list('99.99.99', get_modified_files_ret, mocker)
 
-        assert test_id in filterd_tests[0]
-        assert len(filterd_tests) == 2
+        assert test_id in filterd_tests
+        assert len(filterd_tests) == 1
+        assert content_packs == set()
 
     def test_changed_unrunnable_test__skipped_test(self, mocker):
         test_id = 'skipped_integration_test_playbook_1'
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/skipped_integration_test_playbook_1.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[test_path],
                                                                modified_tests_list=[test_path])
-        filterd_tests = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
+        filterd_tests, content_packs = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
 
-        assert test_id in filterd_tests[0]
-        assert len(filterd_tests) == 2
+        assert test_id in filterd_tests
+        assert len(filterd_tests) == 1
+        assert content_packs == set()
 
     def test_changed_unrunnable_test__skipped_integration(self, mocker):
         test_id = 'skipped_test_playbook_1'
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/skipped_test_playbook_1.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[test_path],
                                                                modified_tests_list=[test_path])
-        filterd_tests = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
+        filterd_tests, content_packs = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
 
-        assert test_id in filterd_tests[0]
-        assert len(filterd_tests) == 2
+        assert test_id in filterd_tests
+        assert len(filterd_tests) == 1
+        assert content_packs == set()
 
 
 class TestChangedIntegration:
@@ -323,9 +330,10 @@ class TestChangedIntegration:
     GIT_DIFF_RET = "M Packs/PagerDuty/Integrations/PagerDuty/PagerDuty.yml"
 
     def test_changed_runnable_test__unmocked_get_modified_files(self):
-        filterd_tests = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
+        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
-        assert filterd_tests[0] == {self.TEST_ID}
+        assert filterd_tests == {self.TEST_ID}
+        assert content_packs == set()
 
     def test_changed_unrunnable_test__integration_toversion(self, mocker):
         test_id = 'past_test_playbook_1'
@@ -333,10 +341,11 @@ class TestChangedIntegration:
         file_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_integrations/past_integration_1.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[file_path],
                                                                modified_tests_list=[test_path])
-        filterd_tests = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
+        filterd_tests, content_packs = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
 
-        assert test_id in filterd_tests[0]
-        assert len(filterd_tests) == 2
+        assert test_id in filterd_tests
+        assert len(filterd_tests) == 1
+        assert content_packs == set()
 
 
 class TestChangedIntegrationAndPlaybook:
@@ -346,9 +355,10 @@ class TestChangedIntegrationAndPlaybook:
                    "M Packs/Legacy/Playbooks/playbook-Calculate_Severity_By_Highest_DBotScore.yml"
 
     def test_changed_runnable_test__unmocked_get_modified_files(self):
-        filterd_tests = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
+        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
-        assert filterd_tests[0] == set(self.TEST_ID.split('\n'))
+        assert filterd_tests == set(self.TEST_ID.split('\n'))
+        assert content_packs == set()
 
 
 class TestChangedScript:
@@ -357,9 +367,10 @@ class TestChangedScript:
     GIT_DIFF_RET = "M Packs/CommonScripts/Scripts/ExtractIndicatorsFromTextFile/ExtractIndicatorsFromTextFile.yml"
 
     def test_changed_runnable_test__unmocked_get_modified_files(self):
-        filterd_tests = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
+        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
-        assert filterd_tests[0] == {self.TEST_ID}
+        assert filterd_tests == {self.TEST_ID}
+        assert content_packs == set()
 
     def test_changed_unrunnable_test__integration_toversion(self, mocker):
         test_id = 'past_test_playbook_2'
@@ -367,10 +378,11 @@ class TestChangedScript:
         file_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_scripts/past_script_1.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[file_path],
                                                                modified_tests_list=[test_path])
-        filterd_tests = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
+        filterd_tests, content_packs = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
 
-        assert test_id in filterd_tests[0]
-        assert len(filterd_tests) == 2
+        assert test_id in filterd_tests
+        assert len(filterd_tests) == 1
+        assert content_packs == set()
 
 
 class TestSampleTesting:
@@ -378,9 +390,10 @@ class TestSampleTesting:
     GIT_DIFF_RET = "M Tests/scripts/integration-test.yml"
 
     def test_sample_tests(self):
-        filterd_tests = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
+        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
-        assert len(filterd_tests[0]) == RANDOM_TESTS_NUM
+        assert len(filterd_tests) == RANDOM_TESTS_NUM
+        assert content_packs == set()
 
     def test_sample_tests__with_test(self, mocker):
         """
@@ -406,9 +419,10 @@ class TestChangedCommonTesting:
     GIT_DIFF_RET = "M Packs/Base/Scripts/CommonServerPython/CommonServerPython.yml"
 
     def test_all_tests(self):
-        filterd_tests = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
+        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
-        assert len(filterd_tests[0]) >= RANDOM_TESTS_NUM
+        assert len(filterd_tests) >= RANDOM_TESTS_NUM
+        assert content_packs == set()
 
 
 class TestPackageFilesModified:
@@ -431,9 +445,10 @@ class TestNoChange:
     def test_no_change(self, mocker):
         # fake_test_playbook is fromversion 4.1.0 in playbook file
         get_modified_files_ret = create_get_modified_files_ret()
-        filterd_tests = get_mock_test_list('4.1.0', get_modified_files_ret, mocker)
+        filterd_tests, content_packs = get_mock_test_list('4.1.0', get_modified_files_ret, mocker)
 
-        assert len(filterd_tests[0]) >= RANDOM_TESTS_NUM
+        assert len(filterd_tests) >= RANDOM_TESTS_NUM
+        assert content_packs == set()
 
 
 def create_get_modified_files_ret(modified_files_list=[], modified_tests_list=[], changed_common=[], is_conf_json=False,
