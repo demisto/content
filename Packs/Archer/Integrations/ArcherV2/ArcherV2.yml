@@ -52,6 +52,114 @@ script:
     deprecated: false
     execution: false
     name: archer-search-applications
+  - arguments:
+    - default: false
+      isArray: false
+      name: application-id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: archer-get-application-fields
+  - arguments:
+    - default: false
+      isArray: false
+      name: field-id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: archer-get-field
+  - arguments:
+    - default: false
+      isArray: false
+      name: level
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: archer-get-mapping-by-level
+  - arguments:
+    - default: false
+      isArray: false
+      name: record-id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: archer-get-record
+  - arguments:
+    - default: false
+      isArray: false
+      name: application-id
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: fields-to-values
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: archer-create-record
+  - arguments:
+    - default: false
+      isArray: false
+      name: record-id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: archer-delete-record
+  - arguments:
+    - default: false
+      isArray: false
+      name: application-id
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: fields-to-values
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: record-id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: archer-update-record
+  - arguments:
+    - default: false
+      isArray: false
+      name: report-guid
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '100'
+      isArray: false
+      name: max-results
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: archer-execute-statistic-search-by-report
+  - deprecated: false
+    execution: false
+    name: archer-get-reports
+  - arguments:
+    - default: false
+      isArray: false
+      name: report-guid
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: archer-get-search-options-by-guid
+  - deprecated: false
+    execution: false
+    name: archer-reset-cache
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: true
