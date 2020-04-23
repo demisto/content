@@ -647,6 +647,11 @@
             "fromversion": "4.0.0"
         },
         {
+            "playbookID": "PAN-OS Block IP/URL EDL V2 Test",
+            "integrations": "palo_alto_networks_pan_os_edl_management",
+            "fromversion": "5.0.0"
+        },
+        {
             "playbookID": "Test_EDL",
             "integrations": "EDL",
             "fromversion": "5.5.0"
