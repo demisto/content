@@ -614,12 +614,11 @@ class Client(BaseClient):
             'table_sys_id': ticket_id,
             'file_name': file_name
         }
-        file = {'id': file_id, 'name': file_name}
         if content_type:
-            file['Content-Type'] = content_type
+            body['Content-Type'] = content_type
 
         return self.send_request('attachment/upload', 'POST', headers={'Accept': 'application/json'},
-                                 body=body, file=file)
+                                 body=body, file={'id': file_id, 'name': file_name})
 
     def query(self, table_name: str, sys_param_limit: str, sys_param_offset: str, sys_param_query: str) -> dict:
         """Query tickets by sending a PATCH request.
@@ -919,7 +918,7 @@ def upload_file_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bo
     ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
     ticket_id = str(args.get('id', ''))
     file_id = str(args.get('file_id', ''))
-    content_type = str(args.get('file_type', ''))
+    content_type = str(args.get('content_type', ''))
 
     file_name = args.get('file_name', demisto.dt(demisto.context(), "File(val.EntryID=='" + file_id + "').Name"))
     if not file_name:  # in case of info file
