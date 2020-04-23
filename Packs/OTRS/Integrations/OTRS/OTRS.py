@@ -49,10 +49,9 @@ def ticket_to_incident(ticket):
 
     incident = {
         'attachment': attachments_list,
-        'name': 'OTRS ticket {}'.format(ticket['TicketID'],
-        'rawJSON': json.dumps(ticket)
+        'rawJSON': json.dumps(ticket),
+        'name': 'OTRS ticket {}'.format(ticket['TicketID'])
     }
-    
     return incident
 
 
