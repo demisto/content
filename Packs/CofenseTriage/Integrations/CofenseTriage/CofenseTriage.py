@@ -9,7 +9,7 @@ from CommonServerPython import *
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-BASE_URL = demisto.getParam('host').rstrip('/') + '/api/public/v1'  # type: str
+TRIAGE_HOST = demisto.getParam('host').rstrip('/')
 TOKEN = demisto.getParam('token')  # type: str
 USER = demisto.getParam('user')  # type: str
 USE_SSL = not demisto.params().get('insecure', False)  # type: bool
@@ -70,40 +70,47 @@ def split_snake(string: str) -> str:
     return string.replace("_", " ").title()
 
 
-def http_request(url_suffix: str, params=None, body=None, raw_response=False) -> Any:
+def triage_request(endpoint, params=None, body=None, raw_response=False) -> Any:
     """
-    Generic request to Cofense Triage. Client applications can make 25 requests to Cofense Triage
-    within a five-minute interval using the Cofense Triage API.
+    Make a request to the configured Triage instance and return the result.
     """
     response = requests.get(
-        BASE_URL + url_suffix,
+        triage_api_url(endpoint),
         headers=HEADERS,
         params=params,
         data=body,
         verify=USE_SSL,
     )
+
+    if not response.ok:
+        return return_error(
+            f"Call to Cofense Triage failed ({response.status_code}): {response.text}"
+        )
+
+    if response.status_code == 206:
+        # 206 indicates Partial Content. The reason will be in the warning header.
+        demisto.debug(str(response.headers))
+
+    if raw_response:
+        # TODO refactor to get rid of this?
+        return response
+
+    if not response.text or response.text == "[]":
+        return {}
+
     try:
-        if not response.ok:
-            return_error(f'Call to Cofense Triage failed [{response.status_code}] - [{response.text}]')
-
-        elif response.status_code == 206:  # 206 indicates Partial Content, reason will be in the warning header
-            demisto.debug(str(response.headers))
-
-        if raw_response:
-            return response
-        data = response.json() if response.text and response.text != '[]' else {}  # type: Any
-        return data
-
+        return response.json()
     except TypeError as ex:
         demisto.debug(str(ex))
-        return_error(f'Error in API call to Cofense Triage, could not parse result [{response.status_code}]')
-        return {}
+        return return_error(
+            f"Could not parse result from Cofense Triage ({response.status_code})"
+        )
 
 
 def test_function() -> None:
     try:
         response = requests.get(
-            BASE_URL + '/processed_reports',
+            triage_api_url("processed_reports"),
             headers=HEADERS,
             params="",
             verify=USE_SSL,
@@ -139,8 +146,7 @@ def fetch_reports() -> None:
         'start_date': start_date,
     }
 
-    # running the API command
-    reports = http_request(url_suffix='/processed_reports', params=params)
+    reports = triage_request("processed_reports", params=params)
 
     # loading last_run
     last_run = json.loads(demisto.getLastRun().get('value', '{}'))
@@ -229,7 +235,7 @@ def search_reports_command() -> None:
 def search_reports(subject=None, url=None, file_hash=None, reported_at=None, created_at=None, reporter=None,
                    verbose=False, max_matches=30) -> list:
     params = {'start_date': datetime.strftime(reported_at, TIME_FORMAT)}
-    reports = http_request(url_suffix='/processed_reports', params=params)
+    reports = triage_request("processed_reports", params=params)
 
     if not isinstance(reports, list):
         reports = [reports]
@@ -264,7 +270,7 @@ def search_reports(subject=None, url=None, file_hash=None, reported_at=None, cre
 
 
 def get_all_reporters(time_frame) -> list:
-    res = http_request(f'/reporters', params={'start_date': time_frame})
+    res = triage_request("reporters", params={'start_date': time_frame})
     if not isinstance(res, list):
         res = [res]
     reporters = [reporter.get('email') for reporter in res]
@@ -295,7 +301,7 @@ def get_reporter_command() -> None:
 
 def get_reporter_data(reporter_id) -> dict:
     """Fetch data for the first matching reporter from Triage"""
-    res = http_request(url_suffix=f"/reporters/{reporter_id}")
+    res = triage_request(f"reporters/{reporter_id}")
     if not isinstance(res, list):
         res = [res]
     reporter = res[0]
@@ -324,7 +330,7 @@ def get_attachment_command() -> None:
 
 
 def get_attachment(attachment_id):
-    response = http_request(f'/attachment/{attachment_id}', params={'attachment_id': attachment_id}, raw_response=True)
+    response = triage_request(f'attachment/{attachment_id}', params={'attachment_id': attachment_id}, raw_response=True)
     if not response.ok:
         return_error(f'Call to Cofense Triage failed [{response.status_code}]')
     else:
@@ -364,7 +370,7 @@ def get_threat_indicators(indicator_type=None, level=None, start_date=None, end_
     params['end_date'] = end_date
     params['page'] = page
     params['per_page'] = per_page
-    results = http_request(url_suffix='/triage_threat_indicators', params=params)
+    results = triage_request("triage_threat_indicators", params=params)
 
     if not isinstance(results, list):
         results = [results]
@@ -447,8 +453,8 @@ def get_report_png_by_id_command() -> None:
 
 
 def get_report_png_by_id(report_id):
-    response = http_request(
-        f'/reports/{report_id}.png', params={'report_id': report_id}, raw_response=True
+    response = triage_request(
+        f'reports/{report_id}.png', params={'report_id': report_id}, raw_response=True
     )
     if not response.ok:
         return_error(f'Call to Cofense Triage failed [{response.status_code}]')
@@ -471,7 +477,13 @@ def parse_report_body(report) -> None:
 
 def get_report_by_id(report_id):
     """Fetch a report from Triage by report_id"""
-    return http_request(url_suffix=f'/reports/{report_id}', params={'report_id': report_id})
+    return triage_request(f"reports/{report_id}", params={'report_id': report_id})
+
+
+def triage_api_url(endpoint):
+    """Return a full URL for the configured Triage host and the specified endpoint"""
+    endpoint = endpoint.ltrip("/")
+    return f"{TRIAGE_HOST}/api/public/v1/{endpoint}"
 
 
 try:
