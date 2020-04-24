@@ -647,6 +647,12 @@
             "fromversion": "4.0.0"
         },
         {
+            "playbookID": "PAN-OS - Block IP and URL - External Dynamic List Test v2",
+            "integrations": "palo_alto_networks_pan_os_edl_management",
+            "instance_names": "palo_alto_firewall_9.0",
+            "fromversion": "4.0.0"
+        },
+        {
             "playbookID": "Test_EDL",
             "integrations": "EDL",
             "fromversion": "5.5.0"
@@ -2001,6 +2007,12 @@
             "timeout": 1000
         },
         {
+            "playbookID": "PAN-OS EDL Setup Test v3",
+            "integrations": ["Panorama", "palo_alto_networks_pan_os_edl_management"],
+            "instance_names": "palo_alto_firewall_9.0",
+            "timeout": 1000
+        },
+        {
             "integrations": "Snowflake",
             "playbookID": "Snowflake-Test"
         },
@@ -2622,6 +2634,8 @@
         }
     ],
     "skipped_tests": {
+        "PAN-OS EDL Setup V2 Test": "Issue 23854"
+        "PAN-OS - Block IP and URL - External Dynamic List Test": "Issue 23854"
         "Test-Shodan_v2": "Issue 23370",
         "Send Investigation Summary Reports - Test": "Issue 22299",
         "Symantec Deepsight Test": "Issue 22971",
