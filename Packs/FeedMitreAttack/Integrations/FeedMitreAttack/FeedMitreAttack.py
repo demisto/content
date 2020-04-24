@@ -1,4 +1,7 @@
-''' IMPORTS '''
+import demistomock as demisto
+from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
+from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
+
 from typing import List
 import json
 import requests
