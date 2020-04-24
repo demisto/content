@@ -1,6 +1,5 @@
 ## [Unreleased]
--
-
+Fixed an issue where the **fetch-incidents** command caused a timeout from EWS.
 
 ## [20.4.0] - 2020-04-14
 -
