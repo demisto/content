@@ -11,9 +11,8 @@ Test Execution
 Unit tests can be checked in 3 ways:
 - Using the command `lint` of demisto-sdk. The command will build a dedicated
   docker instance for your integration locally and use the docker instance to
-  execute your tests.
-  tests in a dedicated docker instance.
-- From the command line using `pytest -v`
+  execute your tests in a dedicated docker instance.
+- From the command line using `pytest -v` or `pytest -vv`
 - From PyCharm
 
 Example with demisto-sdk (from the content root directory):
@@ -35,6 +34,11 @@ In the following code we configure requests-mock (a mock of Python requests)
 before each test to simulate the API calls to the HelloWorld API. This way we
 can have full control of the API behavior and focus only on testing the logic
 inside the integration code.
+
+We recommend to use outputs from the API calls and use them to compare the
+results when possible. See the ``test_data`` directory that contains the data
+we use for comparison, in order to reduce the complexity of the unit tests and
+avoding to manually mock all the fields.
 
 NOTE: we do not have to import or build a requests-mock instance explicitly.
 requests-mock library uses a pytest specific mechanism to provide a
@@ -108,7 +112,8 @@ def test_start_scan(requests_mock):
     assert outputs == {
         'HelloWorld.Scan(val.scan_id == obj.scan_id)': {
             "scan_id": "7a161a3f-8d53-42de-80cd-92fb017c5a12",
-            "status": "RUNNING"
+            "status": "RUNNING",
+            "hostname": "example.com"
         }
     }
 
@@ -220,7 +225,7 @@ def test_search_alerts(requests_mock):
     from HelloWorld import Client, search_alerts_command
 
     mock_response = util_load_json('test_data/search_alerts.json')
-    requests_mock.get('https://test.com/api/v1/get_alerts?alert_status=ACTIVE&severity=3&max_results=2&start_time=1581982463',
+    requests_mock.get('https://test.com/api/v1/get_alerts?alert_status=ACTIVE&severity=Critical&max_results=2&start_time=1581982463',
                       json=mock_response)
 
     client = Client(
@@ -232,7 +237,7 @@ def test_search_alerts(requests_mock):
     )
 
     args = {
-        'severity': 3,
+        'severity': 'Critical',
         'start_time': 1581982463,
         'max_results': 2,
         'status': 'ACTIVE'
@@ -387,8 +392,10 @@ def test_fetch_incidents(requests_mock):
     from HelloWorld import Client, fetch_incidents
 
     mock_response = util_load_json('test_data/search_alerts.json')
-    requests_mock.get('https://test.com/api/v1/get_alerts?alert_status=ACTIVE&max_results=50&start_time=1582584487',
-                      json=mock_response['alerts'])
+    requests_mock.get(
+        'https://test.com/api/v1/get_alerts?alert_status=ACTIVE'
+        '&severity=Low%2CMedium%2CHigh%2CCritical&max_results=2'
+        '&start_time=1582584487', json=mock_response['alerts'])
 
     client = Client(
         base_url='https://test.com/api/v1',
@@ -404,9 +411,10 @@ def test_fetch_incidents(requests_mock):
 
     _, new_incidents = fetch_incidents(
         client=client,
+        max_results=2,
         last_run=last_run,
         alert_status='ACTIVE',
-        severity=None,
+        min_severity='Low',
         alert_type=None,
         first_fetch_time='3 days',
     )
@@ -416,12 +424,12 @@ def test_fetch_incidents(requests_mock):
             'name': 'Hello World Alert 100',
             'occurred': '2020-02-17T23:34:23.000Z',
             'rawJSON': json.dumps(mock_response['alerts'][0]),
-            'severity': 4,  # critical
+            'severity': 4,  # critical, this is XSOAR severity (already converted)
         },
         {
             'name': 'Hello World Alert 200',
             'occurred': '2020-02-17T23:34:23.000Z',
             'rawJSON': json.dumps(mock_response['alerts'][1]),
-            'severity': 1,  # critical
+            'severity': 2,  # medium, this is XSOAR severity (already converted)
         }
     ]

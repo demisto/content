@@ -16,6 +16,11 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- defaultvalue: '10'
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0  
 - display: API Key
   name: apikey
   required: true
@@ -42,15 +47,15 @@ configuration:
   name: alert_type
   required: false
   type: 0
-- defaultvalue: 0
-  display: Fetch alert with severity
-  name: severity
+- defaultvalue: 'Low'
+  display: Minimum severity of alerts to fetch
+  name: min_severity
   options:
   - Low
   - Medium
   - High
   - Critical
-  required: false
+  required: true
   type: 15
 - defaultvalue: 3 days
   display: First fetch time
@@ -86,16 +91,10 @@ script:
       description: Should be Hello **something** here.
       type: String
   - arguments:
-    - auto: PREDEFINED
-      default: false
-      description: Filter by alert severity.
+    - default: false
+      description: Filter by alert severity. Comma-separated value (Low,Medium,High,Critical)
       isArray: false
       name: severity
-      predefined:
-        - Low
-        - Medium
-        - High
-        - Critical
       required: false
       secret: false
     - auto: PREDEFINED
@@ -148,8 +147,8 @@ script:
       description: Alert name.
       type: String
     - contextPath: HelloWorld.Alert.severity
-      description: Alert severity. (0-low,1-med,2-high,3-critical).
-      type: Number
+      description: Alert severity.
+      type: String
   - arguments:
     - default: false
       description: Alert ID.
@@ -208,7 +207,7 @@ script:
     - contextPath: HelloWorld.Alert.alert_id
       description: Alert ID.
       type: String
-    - contextPath: HelloWorld.Alert.update
+    - contextPath: HelloWorld.Alert.updated
       description: Alert update time.
       type: Number
     - contextPath: HelloWorld.Alert.alert_status
@@ -440,6 +439,9 @@ script:
     - contextPath: HelloWorld.Scan.status
       description: Status of the scan ('RUNNING' or 'COMPLETE').
       type: string
+    - contextPath: HelloWorld.Scan.hostname
+      description: The hostname the scan is run against.
+      type: string
   - arguments:
     - default: false
       description: List of Scan IDs. helloworld-scan-start returns "scan_id".
@@ -481,19 +483,19 @@ script:
     execution: false
     name: helloworld-scan-results
     outputs:
-    - contextPath: HelloWorld.Scan.entity.entity-id
+    - contextPath: HelloWorld.Scan.entities.entity-id
       description: Scanned entity ID.
       type: String
-    - contextPath: HelloWorld.Scan.entity.ip_address
+    - contextPath: HelloWorld.Scan.entities.ip_address
       description: Scanned entity IP address.
       type: String
-    - contextPath: HelloWorld.Scan.entity.type
+    - contextPath: HelloWorld.Scan.entities.type
       description: Scanned entity type.
       type: String
-    - contextPath: HelloWorld.Scan.entity.vulnerability_status
+    - contextPath: HelloWorld.Scan.entities.vulnerability_status
       description: Scanned entity vulnerability status.
       type: String
-    - contextPath: HelloWorld.Scan.entity.vulns
+    - contextPath: HelloWorld.Scan.entities.vulns
       description: Scanned entity CVE.
       type: String
     - contextPath: HelloWorld.Scan.scan_id
@@ -523,7 +525,7 @@ script:
     - contextPath: CVE.ID
       description: The ID of the CVE.
       type: string      
-  dockerimage: demisto/python3:3.7.4.2245
+  dockerimage: demisto/python3:3.8.2.6981
   isfetch: true
   longRunning: false
   longRunningPort: false

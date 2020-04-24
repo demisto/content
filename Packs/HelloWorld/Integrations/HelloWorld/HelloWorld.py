@@ -30,8 +30,9 @@ a number of parameters, such as state (ACTIVE or CLOSED), type, timestamp. It
 can also return a single alert by ID. This is used to create new Incidents in
 XSOAR by using the ``fetch-incidents`` command, which is by default invoked
 every minute.
-The alert endpoint also used in Playbooks to retrieve a specific alert by id,
-as well as changing the alert status to "CLOSED" once resolved.
+There is also an endpoint that allows to retrieve additional details about a
+specific alert by ID, and one to change the alert status to "CLOSED" once
+it has been resolved.
 
 - Reputation (ip and domain): these endpoints return, for an IP and
 domain respectively, a WHOIS lookup of the entity as well as a reputation score
@@ -40,7 +41,10 @@ endpoint is called by XSOAR reputation commands ``ip`` and ``domain`` that
 are run automatically every time an indicator is extracted in XSOAR. As a best
 practice of design, it is important to map and document the mapping between
 a score in the original API format (0 to 100 in this case) to a score in XSOAR
-format (0 to 3). More information: https://xsoar.pan.dev/docs/integrations/dbot
+format (0 to 3). This score is called ``DBotScore``, and is returned in the
+context to allow automated handling of indicators based on their reputation.
+More information: https://xsoar.pan.dev/docs/integrations/dbot
+
 
 - Scan: to demonstrate how to run commands that are not returning instant data,
 the API provides a scan endpoint that simulates scanning a host and generating
@@ -80,6 +84,19 @@ Here you can import Python module you need for your integration. If you need
 a module that is not part of the default XSOAR Docker images, you can add
 a custom one. More details: https://xsoar.pan.dev/docs/integrations/docker
 
+There are also internal imports that are used by XSOAR:
+- demistomock (imported as demisto): allows your code to work offline for
+testing. The actual ``demisto`` module is provided at runtime when the
+code runs in XSOAR.
+- CommonServerPython.py: contains a set of helper functions, base classes
+and other useful components that will make your integration code easier
+to maintain.
+- CommonServerUserPython.py: includes a set of user defined commands that
+are specific to an XSOAR installation. Do not use it for integrations that
+are meant to be shared externally.
+
+These imports are automatically loaded at runtime within the XSOAR script
+runner, so you shouldn't modify them
 
 Constants
 ---------
@@ -189,17 +206,18 @@ The ``main()`` function takes care of reading the integration parameters via
 the ``demisto.params()`` function, initializes the Client class and checks the
 different options provided to ``demisto.commands()``, to invoke the correct
 command function passing to it ``demisto.args()`` and returning the data to
-``return_outputs()``. ``main()`` also catches exceptions and returns an error
-message via ``return_error()``.
+``return_outputs()``. If implemented, ``main()`` also invokes the function
+``fetch_incidents()``with the right parameters and passes the outputs to the
+``demisto.incidents()`` function. ``main()`` also catches exceptions and
+returns an error message via ``return_error()``.
 
 
 Entry Point
 -----------
 
 This is the integration code entry point. It checks whether the ``__name__``
-variable is `__main__` , `__builtin__` or __builtins__ and then calls the
-``main()`` function. Just keep this convention.
-
+variable is `__main__` , `__builtin__` (for Python 2) or `builtins` (for
+Python 3) and then calls the ``main()`` function. Just keep this convention.
 
 """
 
@@ -222,7 +240,7 @@ requests.packages.urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 MAX_INCIDENTS_TO_FETCH = 50
-
+HELLOWORLD_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
 
 ''' CLIENT CLASS '''
 
@@ -273,7 +291,7 @@ class Client(BaseClient):
             }
         )
 
-    def search_alerts(self, alert_status: Optional[str], severity: Optional[int],
+    def search_alerts(self, alert_status: Optional[str], severity: Optional[str],
                       alert_type: Optional[str], max_results: Optional[int],
                       start_time: Optional[int]) -> List[Dict[str, Any]]:
         """Searches for HelloWorld alerts using the '/get_alerts' API endpoint
@@ -283,8 +301,10 @@ class Client(BaseClient):
         :type alert_status: ``Optional[str]``
         :param alert_status: status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'
 
-        :type severity: ``Optional[int]``
-        :param severity: severity of the alert to search for. Values are from 0 to 3
+        :type severity: ``Optional[str]``
+        :param severity:
+            severity of the alert to search for. Comma-separated values.
+            Options are: "Low", "Medium", "High", "Critical"
 
         :type alert_type: ``Optional[str]``
         :param alert_type: type of alerts to search for. There is no list of predefined types
@@ -417,7 +437,7 @@ class Client(BaseClient):
         )
 
     def say_hello(self, name: str) -> str:
-        """Says 'Hello {name}'
+        """Returns 'Hello {name}'
 
         :type name: ``str``
         :param name: name to append to the 'Hello' string
@@ -432,14 +452,15 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def convert_to_demisto_severity(severity: int) -> int:
+def convert_to_demisto_severity(severity: str) -> int:
     """Maps HelloWorld severity to Cortex XSOAR severity
 
-    Converts the HelloWorld alert severity level (0 to 3) to Cortex XSOAR
-    incident severity (1 to 4) for mapping.
+    Converts the HelloWorld alert severity level ('Low', 'Medium',
+    'High', 'Critical') to Cortex XSOAR incident severity (1 to 4)
+    for mapping.
 
-    :type severity: ``int``
-    :param severity: severity as returned from the HelloWorld API (0 to 3)
+    :type severity: ``str``
+    :param severity: severity as returned from the HelloWorld API (str)
 
     :return: Cortex XSOAR Severity (1 to 4)
     :rtype: ``int``
@@ -449,42 +470,11 @@ def convert_to_demisto_severity(severity: int) -> int:
     # might be required in your integration, so a dedicated function is
     # recommended. This mapping should also be documented.
     return {
-        '0': 1,  # low severity
-        '1': 2,  # medium severity
-        '2': 3,  # high severity
-        '3': 4   # critical severity
-    }[str(severity)]
-
-
-def convert_to_helloworld_severity(severity: Optional[str]) -> Optional[int]:
-    """Maps Cortex XSOAR severity to HelloWorld severity
-
-    Converts the search input parameter in XSOAR (a string) into a HelloWorld
-    API severity (0 to 3) for search.
-
-    :type severity: ``Optional[str]``
-    :param severity: severity in XSOAR format ('Low,'Medium','High','Critical)
-
-    :return: HelloWorld severity (0 to 3) or None if not specified
-    :rtype: ``Optional[int]``
-    """
-
-    # In this case the mapping is straightforward, but more complex mappings
-    # might be required in your integration, so a dedicated function is
-    # recommended.
-    # Note: the input here is provided as a string because it comes from the
-    # "severity" parameter defined in the YML file as a string, as it's easier
-    # to provide it to the user in a string format (Low to Critical) rather
-    # than a number.
-    if not severity:
-        return None
-
-    return {
-        'Low': 0,  # low severity
-        'High': 1,  # medium severity
-        'Medium': 2,  # high severity
-        'Critical': 3   # critical severity
-    }[str(severity)]
+        'Low': 1,  # low severity
+        'Medium': 2,  # medium severity
+        'High': 3,  # high severity
+        'Critical': 4   # critical severity
+    }[severity]
 
 
 def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
@@ -670,9 +660,10 @@ def say_hello_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict, 
     )
 
 
-def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: Optional[int],
-                    alert_status: Optional[str], severity: Optional[str],
-                    alert_type: Optional[str]) -> Tuple[Dict[str, int], List[dict]]:
+def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
+                    first_fetch_time: Optional[int], alert_status: Optional[str],
+                    min_severity: str, alert_type: Optional[str]
+                    ) -> Tuple[Dict[str, int], List[dict]]:
     """This function retrieves new alerts every interval (default is 1 minute).
 
     This function has to implement the logic of making sure that incidents are
@@ -684,6 +675,9 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
 
     :type client: ``Client``
     :param Client: HelloWorld client to use
+
+    :type max_results: ``int``
+    :param max_results: Maximum numbers of incidents per fetch
 
     :type last_run: ``Optional[Dict[str, int]]``
     :param last_run:
@@ -700,8 +694,10 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
         status of the alert to search for. Options are: 'ACTIVE'
         or 'CLOSED'
 
-    :type severity: ``Optional[int]``
-    :param severity: severity of the alert to search for. Values are from 0 to 3
+    :type min_severity: ``str``
+    :param min_severity:
+        minimum severity of the alert to search for.
+        Options are: "Low", "Medium", "High", "Critical"
 
     :type alert_type: ``Optional[str]``
     :param alert_type:
@@ -734,15 +730,15 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
     # Each incident is a dict with a string as a key
     incidents: List[Dict[str, Any]] = []
 
-    # Run an alert search using the Client on the API providing all the search
-    # parameters. Severity is converted to HelloWorld API using the helper
-    # function convert_to_helloworld_severity()
+    # Get the CSV list of severities from min_severity
+    severity = ','.join(HELLOWORLD_SEVERITIES[HELLOWORLD_SEVERITIES.index(min_severity):])
+
     alerts = client.search_alerts(
         alert_type=alert_type,
         alert_status=alert_status,
-        max_results=MAX_INCIDENTS_TO_FETCH,
+        max_results=max_results,
         start_time=last_fetch,
-        severity=convert_to_helloworld_severity(severity)
+        severity=severity
     )
 
     for alert in alerts:
@@ -764,7 +760,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
         # and is included in rawJSON. It will be used later for classification
         # and mapping inside XSOAR.
         # severity: it's not mandatory, but is recommended. It must be
-        # converted to XSOAR specific severity (int 0 to 4)
+        # converted to XSOAR specific severity (int 1 to 4)
         # Note that there are other fields commented out here. You can do some
         # mapping of fields (either out of the box fields, like "details" and
         # "type") or custom fields (like "helloworldid") directly here in the
@@ -777,7 +773,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
             'occurred': timestamp_to_datestring(incident_created_time_ms),
             'rawJSON': json.dumps(alert),
             # 'type': 'Hello World Alert',
-            'severity': convert_to_demisto_severity(alert.get('severity', 0)),
+            'severity': convert_to_demisto_severity(alert.get('severity', 'Low')),
             # 'CustomFields': {
             #     'helloworldid': alert.get('alert_id'),
             #     'helloworldstatus': alert.get('alert_status'),
@@ -1058,7 +1054,7 @@ def search_alerts_command(client: Client, args: Dict[str, Any]) -> Tuple[str, di
     :param args:
         all command arguments, usually passed from ``demisto.args()``.
         ``args['status']`` alert status. Options are 'ACTIVE' or 'CLOSED'
-        ``args['severity']`` alert severity (0 to 3)
+        ``args['severity']`` alert severity CSV
         ``args['alert_type']`` alert type
         ``args['start_time']``  start time as ISO8601 date or seconds since epoch
         ``args['max_results']`` maximum number of results to return
@@ -1076,15 +1072,26 @@ def search_alerts_command(client: Client, args: Dict[str, Any]) -> Tuple[str, di
     """
 
     status = args.get('status')
-    severity = args.get('severity')
+
+    # Check if severity contains allowed values, use all if default
+    severities: List[str] = HELLOWORLD_SEVERITIES
+    severity = args.get('severity', None)
+    if severity:
+        severities = severity.split(',')
+        if not all(s in HELLOWORLD_SEVERITIES for s in severities):
+            raise ValueError(
+                f'severity must be a comma-separated value '
+                f'with the following options: {",".join(HELLOWORLD_SEVERITIES)}')
+
     alert_type = args.get('alert_type')
+
     # Convert the argument to a timestamp using helper function
     start_time = arg_to_timestamp(
         arg=args.get('start_time'),
         arg_name='start_time',
         required=False
     )
-    demisto.log(f'ARGSGET {args.get("max_results")}')
+
     # Convert the argument to an int using helper function
     max_results = arg_to_int(
         arg=args.get('max_results'),
@@ -1092,8 +1099,9 @@ def search_alerts_command(client: Client, args: Dict[str, Any]) -> Tuple[str, di
         required=False
     )
 
+    # Severity is passed to the API as a CSV
     alerts = client.search_alerts(
-        severity=severity,
+        severity=','.join(severities),
         alert_status=status,
         alert_type=alert_type,
         start_time=start_time,
@@ -1233,6 +1241,14 @@ def scan_start_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict,
         raise ValueError('hostname not specified')
 
     scan = client.scan_start(hostname=hostname)
+
+    # INTEGRATION DEVELOPER TIP
+    # The API doesn't return the hostname of the scan it was called against,
+    # which is the input. It could be useful to have that information in the
+    # XSOAR context, so we are adding it manually here, based on the command
+    # input argument.
+    scan['hostname'] = hostname
+
     scan_id = scan.get('scan_id')
 
     readable_output = f'Started scan {scan_id}'
@@ -1345,7 +1361,7 @@ def scan_results_command(client: Client, args: Dict[str, Any]) -> None:
             readable_output=markdown,
             outputs={
                 'HelloWorld.Scan(val.scan_id == obj.scan_id)': results,
-                'CVE(val.ID == obj.ID)': list(set(cves))  # make the output unique
+                'CVE(val.ID == obj.ID).ID': list(set(cves))  # make the output unique
             },
             raw_response=results
         )
@@ -1410,14 +1426,24 @@ def main() -> None:
             # Set and define the fetch incidents command to run after activated via integration settings.
             alert_status = demisto.params().get('alert_status', None)
             alert_type = demisto.params().get('alert_type', None)
-            severity = demisto.params().get('severity', None)
+            min_severity = demisto.params().get('min_severity', None)
+
+            # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
+            max_results = arg_to_int(
+                arg=demisto.params().get('max_fetch'),
+                arg_name='max_fetch',
+                required=False
+            )
+            if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
+                max_results = MAX_INCIDENTS_TO_FETCH
 
             next_run, incidents = fetch_incidents(
                 client=client,
+                max_results=max_results,
                 last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
                 first_fetch_time=first_fetch_time,
                 alert_status=alert_status,
-                severity=severity,
+                min_severity=min_severity,
                 alert_type=alert_type
             )
 
