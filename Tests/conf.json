@@ -2627,6 +2627,7 @@
         }
     ],
     "skipped_tests": {
+        "Test-URLhaus": "Issue 23857",
         "Test-Shodan_v2": "Issue 23370",
         "Send Investigation Summary Reports - Test": "Issue 22299",
         "Symantec Deepsight Test": "Issue 22971",
