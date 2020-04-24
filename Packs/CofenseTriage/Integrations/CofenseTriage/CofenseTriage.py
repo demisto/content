@@ -57,7 +57,6 @@ TERSE_FIELDS = [
 ]
 
 
-# HELPER FUNCTIONS #
 def snake_to_camel_keys(snake_list: List[Dict]) -> List[Dict]:
     def snake_to_camel(snake_str) -> str:
         if snake_str == 'id':
@@ -72,7 +71,6 @@ def split_snake(string: str) -> str:
     return string.replace("_", " ").title()
 
 
-# MAIN FUNCTIONS #
 def http_request(url_suffix: str, params=None, body=None, raw_response=False) -> Any:
     """
     Generic request to Cofense Triage. Client applications can make 25 requests to Cofense Triage
@@ -121,12 +119,15 @@ def test_function() -> None:
 
         else:
             return_error(
-                f'API call to Cofense Triage failed. Please check Server URL, or authentication related parameters.Status Code: {response.status_code} Reason: {response.reason}'
-                f' [{response.status_code}] - {response.reason}')
+                "API call to Cofense Triage failed. Please check Server URL, or authentication "
+                "related parameters.Status Code: {response.status_code} Reason: {response.reason}"
+                f" [{response.status_code}] - {response.reason}"
+            )
 
     except Exception as ex:
         demisto.debug(str(ex))
         return_error(repr(ex))
+
 
 def fetch_reports() -> None:
     # parameters importing
@@ -152,7 +153,7 @@ def fetch_reports() -> None:
         reporter_id = report.get('reporter_id')
         if reporter_id:
             reporter_data = get_reporter_data(reporter_id)
-            for k,v in reporter_data.items():
+            for k, v in reporter_data.items():
                 report_key = 'reporter_' + k
                 report[report_key] = v
 
@@ -293,7 +294,7 @@ def get_reporter_command() -> None:
         return_outputs(readable_output=readable_output, outputs=reporter_data)
 
 
-def get_reporter_data(reporter_id) -> str:
+def get_reporter_data(reporter_id) -> dict:
     """Fetch data for the first matching reporter from Triage"""
     res = http_request(url_suffix=f"/reporters/{reporter_id}")
     if not isinstance(res, list):
@@ -355,6 +356,7 @@ def get_report_by_id_command() -> None:
     else:
         return_error('Could not find report with matching ID')
 
+
 def get_threat_indicators(indicator_type=None, level=None, start_date=None, end_date=None, page=None, per_page=None) -> list:
     params = {}
     params['type'] = indicator_type
@@ -381,14 +383,18 @@ def get_threat_indicators_command() -> None:
     page = demisto.getArg('page')
     per_page = demisto.getArg('per_page')
 
-    results = get_threat_indicators(indicator_type, level, start_date, end_date, page, per_page)
+    results = get_threat_indicators(
+        indicator_type, level, start_date, end_date, page, per_page
+    )
     demisto.log(str(results))
 
 
 # parsing outputs
     if results:
         ec = {'Cofense.ThreatIndicators(val.ID && val.ID == obj.ID)': snake_to_camel_keys(results)}
-        hr = tableToMarkdown("Threat Indicators:", results, headerTransform=split_snake, removeNull=True)
+        hr = tableToMarkdown(
+            "Threat Indicators:", results, headerTransform=split_snake, removeNull=True
+        )
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -399,6 +405,7 @@ def get_threat_indicators_command() -> None:
         })
     else:
         return_outputs("no results were found.", {})
+
 
 def get_report_png_by_id_command() -> None:
     report_id = int(demisto.getArg('report_id'))  # type: int
@@ -415,8 +422,12 @@ def get_report_png_by_id_command() -> None:
         inbuf.seek(0)
 
         image = Image.open(inbuf)
-        canvas = Image.new('RGBA', image.size, (255,255,255,255)) # Empty canvas colour (r,g,b,a)
-        canvas.paste(image, mask=image) # Paste the image onto the canvas, using it's alpha channel as mask
+        canvas = Image.new(
+            'RGBA', image.size, (255, 255, 255, 255)
+        )  # Empty canvas colour (r,g,b,a)
+        canvas.paste(
+            image, mask=image
+        )  # Paste the image onto the canvas, using it's alpha channel as mask
 
         outbuf = BytesIO()
         canvas.save(outbuf, format="PNG")
@@ -426,15 +437,6 @@ def get_report_png_by_id_command() -> None:
     else:
         imgdata = res.content
 
-    # parsing outputs
-    context_data = {'ID': report_id}
-    #demisto.results(fileResult('{}.png'.format(report_id), res.content))
-    #demisto.results({
-    #'Type': entryTypes['image'],
-    #'ContentsFormat': '',
-    #'Contents': '',
-    #'HumanReadable': '',
-    #'EntryContext': {'Cofense.Report.PNG(val.ID == obj.ID)': context_data}})
     cf_file = fileResult('cofense_report_{}.png'.format(report_id), imgdata, entryTypes['image'])
     demisto.results({
         'Type': entryTypes['image'],
@@ -446,7 +448,9 @@ def get_report_png_by_id_command() -> None:
 
 
 def get_report_png_by_id(report_id):
-    response = http_request(f'/reports/{report_id}.png', params={'report_id': report_id}, raw_response=True)
+    response = http_request(
+        f'/reports/{report_id}.png', params={'report_id': report_id}, raw_response=True
+    )
     if not response.ok:
         return_error(f'Call to Cofense Triage failed [{response.status_code}]')
     else:
@@ -459,7 +463,9 @@ def parse_report_body(report) -> None:
             filename=f'{report.get("id")}-report.html',
             data=report.get('report_body').encode(),
         )
-        attachment['HumanReadable'] = '### Cofense HTML Report:\nHTML report download request has been completed'
+        attachment[
+            'HumanReadable'
+        ] = '### Cofense HTML Report:\nHTML report download request has been completed'
         demisto.results(attachment)
         del report['report_body']
 
