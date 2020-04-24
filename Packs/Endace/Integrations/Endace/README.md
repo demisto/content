@@ -10,9 +10,10 @@ This integration was integrated and tested with version 6.5.7 of Endace
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| applianceurl | Server URL \(e.g. https://example.net\) | True |
+| applianceurl | EndaceProbe URL \(e.g. https://endaceprobe.com\) | True |
 | credentials | Username | True |
 | insecure | Trust any certificate \(not secure\) | False |
+| proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -36,7 +37,7 @@ Create a search task on EndaceProbe. Search is issued against all Rotation Files
 | dest_host_list | List of Destination IP addresses to search with a maximum of 10 IP addresses per search. For valid search either a Src Host or a Dest Host value is required. | Optional | 
 | src_port_list | List of Source Port addresses to search with a maximum of 10 Port addresses per search. | Optional | 
 | dest_port_list | List of Destination Port addresses to search with a maximum of 10 Port addresses per search. | Optional | 
-| protocol | TCP or UDP Protocol | Optional | 
+| protocol | TCP or UDP | Optional | 
 | timeframe | Event timeframe to search - in seconds.  Timeframe works as search for last &quot;n&quot; seconds if start and end time is not provided. For example, by specifying 3600 seconds as the timeframe, analyst can schedule a search for last 1 hour. If both start and end time is provided, timeframe value is ignored. If either start or end time is provided along with timeframe, the respective start or end time is calculated accordingly. | Optional | 
 
 
@@ -201,7 +202,7 @@ Create an archive task to archive packets of interest on EndaceProbe. Archived p
 | dest_host_list | List of Destination IP addresses to search with a maximum of 10 IP addresses per search. For valid search either a Src Host or a Dest Host value is required.| Optional | 
 | src_port_list | List of Source Port addresses to search with a maximum of 10 Port addresses per search. | Optional | 
 | dest_port_list | List of Destination Port addresses to search with a maximum of 10 Port addresses per search. | Optional | 
-| protocol | TCP or UDP Protocol.  | Optional | 
+| protocol | TCP or UDP  | Optional | 
 | archive_filename | Name of the archive file. For example, archive_filename could be an event ID. To keep archive filename unique, value of epoch seconds at the time of execution of the command is appended to this filename argument. For example: if the event id is &#x27;123456789&#x27;, then archive_filename is 123456789-&lt;epoch time&gt;. | Required | 
 
 

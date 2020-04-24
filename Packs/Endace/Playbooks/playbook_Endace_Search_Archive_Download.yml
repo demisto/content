@@ -1,14 +1,17 @@
-id: Endace Search Archive and Download Example
+id: Endace Search Archive and Download
 version: -1
-name: Endace Search Archive and Download Example
+name: Endace Search Archive and Download
+description: This playbook uses Endace APIs to search, archive and download PCAP file
+  from either a single EndaceProbe or many via the InvestigationManager and enables
+  integration of full historical packet capture into security automation workflows.
 starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: 576f7737-36a8-4e9e-85c9-42e035e8cbd5
+    taskid: 16458520-3127-435e-8eb4-894b42cee07d
     type: start
     task:
-      id: 576f7737-36a8-4e9e-85c9-42e035e8cbd5
+      id: 16458520-3127-435e-8eb4-894b42cee07d
       version: -1
       name: ''
       iscommand: false
@@ -16,7 +19,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '34'
+      - '28'
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
     note: false
@@ -26,10 +29,10 @@ tasks:
     quietmode: 0
   '7':
     id: '7'
-    taskid: e6eec0e9-cf75-4496-848b-915d4bcd8fa7
+    taskid: a286a4dd-e0f0-48d3-84cf-da04fea39679
     type: title
     task:
-      id: e6eec0e9-cf75-4496-848b-915d4bcd8fa7
+      id: a286a4dd-e0f0-48d3-84cf-da04fea39679
       version: -1
       name: Done
       tags:
@@ -39,7 +42,7 @@ tasks:
       brand: ''
       description: ''
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 70,\n    \"y\": 2645\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 70,\n    \"y\": 2470\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -47,10 +50,10 @@ tasks:
     quietmode: 0
   '9':
     id: '9'
-    taskid: 22e5157c-30e4-4adb-89e1-77282c7a3476
+    taskid: 6fd5a63a-fb21-4236-8fd3-609be563ab95
     type: condition
     task:
-      id: 22e5157c-30e4-4adb-89e1-77282c7a3476
+      id: 6fd5a63a-fb21-4236-8fd3-609be563ab95
       version: -1
       name: Is search progress = 100%?
       description: Check whether the values provided in arguments are equal. If either
@@ -72,7 +75,7 @@ tasks:
     results:
     - AreValuesEqual
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -80,10 +83,10 @@ tasks:
     quietmode: 0
   '14':
     id: '14'
-    taskid: c707b976-b255-4cad-8873-0283b43f990b
+    taskid: dcdaa108-a3eb-4472-8dc2-e0572f59de60
     type: condition
     task:
-      id: c707b976-b255-4cad-8873-0283b43f990b
+      id: dcdaa108-a3eb-4472-8dc2-e0572f59de60
       version: -1
       name: Is PCAP FileSize < 50MB?
       description: "Checks if one number(float) as bigger than the other(float)\n\
@@ -104,7 +107,7 @@ tasks:
       second:
         simple: ${Endace.Archive.Response.FileSize}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 387.5,\n    \"y\": 2120\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 387.5,\n    \"y\": 1945\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -112,10 +115,10 @@ tasks:
     quietmode: 0
   '21':
     id: '21'
-    taskid: 693fd6f6-9e43-44c1-8bcb-f64d760a21b8
+    taskid: 56514538-4ace-431a-857e-a3ac762422a4
     type: playbook
     task:
-      id: 693fd6f6-9e43-44c1-8bcb-f64d760a21b8
+      id: 56514538-4ace-431a-857e-a3ac762422a4
       version: -1
       name: GenericPolling
       description: "Use this playbook as a sub-playbook to block execution of the\
@@ -152,7 +155,7 @@ tasks:
       exitCondition: ''
       wait: 1
       max: 0
-    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 1595\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 1420\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -160,10 +163,10 @@ tasks:
     quietmode: 0
   '24':
     id: '24'
-    taskid: 3e7509c8-2eb5-4bb1-8604-ef5e05ee650e
+    taskid: 7666d6c0-f0a4-46ca-862f-6cb223ab9e05
     type: regular
     task:
-      id: 3e7509c8-2eb5-4bb1-8604-ef5e05ee650e
+      id: 7666d6c0-f0a4-46ca-862f-6cb223ab9e05
       version: -1
       name: AddEvidence
       description: "Adds provided entries to the incident Evidence Board. In playbook,\
@@ -185,7 +188,7 @@ tasks:
       occurred: {}
       tags: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 420,\n    \"y\": 1420\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 1245\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -193,10 +196,10 @@ tasks:
     quietmode: 0
   '25':
     id: '25'
-    taskid: 9631fffb-1315-414f-8c8c-4d392a889ecf
+    taskid: d86b5f0c-946a-410a-8cb4-5e42c5491e3f
     type: regular
     task:
-      id: 9631fffb-1315-414f-8c8c-4d392a889ecf
+      id: d86b5f0c-946a-410a-8cb4-5e42c5491e3f
       version: -1
       name: AddEvidence
       description: "Adds provided entries to the incident Evidence Board. In playbook,\
@@ -218,7 +221,7 @@ tasks:
       occurred: {}
       tags: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 500,\n    \"y\": 2470\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 655,\n    \"y\": 2285\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -226,10 +229,10 @@ tasks:
     quietmode: 0
   '26':
     id: '26'
-    taskid: b95d8ee4-dcc3-431e-8139-141434c60158
+    taskid: bc5bf4db-a94d-4409-832f-545670da5b8e
     type: condition
     task:
-      id: b95d8ee4-dcc3-431e-8139-141434c60158
+      id: bc5bf4db-a94d-4409-832f-545670da5b8e
       version: -1
       name: Is Bytes Count > 0?
       description: "Checks if one number(float) as bigger than the other(float)\n\
@@ -261,7 +264,7 @@ tasks:
       second:
         simple: '0'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 1090\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 270,\n    \"y\": 890\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -269,10 +272,10 @@ tasks:
     quietmode: 0
   '27':
     id: '27'
-    taskid: 9e7cdb36-606a-4a4e-8c8c-e0e8474d9d23
+    taskid: ea63c7a0-3fe2-4d44-8775-46212d2199a5
     type: condition
     task:
-      id: 9e7cdb36-606a-4a4e-8c8c-e0e8474d9d23
+      id: ea63c7a0-3fe2-4d44-8775-46212d2199a5
       version: -1
       name: Is Archived Finished ?
       description: Check whether the values provided in arguments are equal. If either
@@ -294,7 +297,7 @@ tasks:
     results:
     - AreValuesEqual
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 1945\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 1770\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -302,10 +305,10 @@ tasks:
     quietmode: 0
   '28':
     id: '28'
-    taskid: 39cc0e39-8f4d-4d16-8f82-8c9062905d42
+    taskid: a07ae568-53dc-455f-839e-a4f9ffae4d5b
     type: regular
     task:
-      id: 39cc0e39-8f4d-4d16-8f82-8c9062905d42
+      id: a07ae568-53dc-455f-839e-a4f9ffae4d5b
       version: -1
       name: endace-create-search
       description: Create a Search Job on EndaceProbe. Search is issued against active
@@ -329,7 +332,7 @@ tasks:
       timeframe:
         simple: ${inputs.timeframe}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -337,10 +340,10 @@ tasks:
     quietmode: 0
   '29':
     id: '29'
-    taskid: cae9c84d-613c-439b-887f-2563948cacdf
+    taskid: 5be38f51-fd46-4659-8297-4613e7dcd3f8
     type: regular
     task:
-      id: cae9c84d-613c-439b-887f-2563948cacdf
+      id: 5be38f51-fd46-4659-8297-4613e7dcd3f8
       version: -1
       name: endace-get-search-status
       description: Get search status from EndaceProbe. This function can be polled
@@ -356,7 +359,7 @@ tasks:
       jobid:
         simple: ${Endace.Search.Task.JobID}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -364,10 +367,10 @@ tasks:
     quietmode: 0
   '30':
     id: '30'
-    taskid: e73f6332-3e73-4c50-8816-0266a7c44833
+    taskid: e5a4c970-711b-4aac-8ec3-b6564c94a059
     type: regular
     task:
-      id: e73f6332-3e73-4c50-8816-0266a7c44833
+      id: e5a4c970-711b-4aac-8ec3-b6564c94a059
       version: -1
       name: endace-delete-search-task
       description: Delete search job
@@ -382,7 +385,7 @@ tasks:
       jobid:
         simple: ${Endace.Search.Task.JobID}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -390,10 +393,10 @@ tasks:
     quietmode: 0
   '32':
     id: '32'
-    taskid: a770bc9a-e034-4022-8e17-f6112af06a5d
+    taskid: 07006077-9df1-454f-8893-4cdb3809ea2b
     type: regular
     task:
-      id: a770bc9a-e034-4022-8e17-f6112af06a5d
+      id: 07006077-9df1-454f-8893-4cdb3809ea2b
       version: -1
       name: endace-get-archive-status
       description: get status of archived task
@@ -408,37 +411,7 @@ tasks:
       archive_filename:
         simple: ${Endace.Archive.Task.FileName}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 1770\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '34':
-    id: '34'
-    taskid: b2086f35-ccc5-4262-8dd3-aa2db1d52962
-    type: regular
-    task:
-      id: b2086f35-ccc5-4262-8dd3-aa2db1d52962
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '28'
-    scriptarguments:
-      all:
-        simple: yes
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 1595\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -446,10 +419,10 @@ tasks:
     quietmode: 0
   '35':
     id: '35'
-    taskid: cd7ad793-ebf2-4723-8cf1-bac83e7fbd53
+    taskid: 1753b4b1-95f3-40ee-86b3-f1deee0109bf
     type: regular
     task:
-      id: cd7ad793-ebf2-4723-8cf1-bac83e7fbd53
+      id: 1753b4b1-95f3-40ee-86b3-f1deee0109bf
       version: -1
       name: endace-download-pcap
       description: Download a copy of the PCAP file from EndaceProbe if PCAP file
@@ -466,7 +439,7 @@ tasks:
         simple: ${Endace.Archive.Task.FileName}
       filesizelimit: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 500,\n    \"y\": 2295\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 655,\n    \"y\": 2120\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -474,10 +447,10 @@ tasks:
     quietmode: 0
   '36':
     id: '36'
-    taskid: 1d385be2-44e2-435f-8d0c-d03cd1cad3bd
+    taskid: ae66399d-5356-4576-81d4-bababf3f564d
     type: regular
     task:
-      id: 1d385be2-44e2-435f-8d0c-d03cd1cad3bd
+      id: ae66399d-5356-4576-81d4-bababf3f564d
       version: -1
       name: endace-create-archive
       description: Create an archive task to archive packets of interest on EndaceProbe.
@@ -510,15 +483,15 @@ tasks:
       timeframe:
         simple: ${inputs.timeframe}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 420,\n    \"y\": 1270\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 1070\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-view: "{\n  \"linkLabelsPosition\": {\n    \"14_7_no\": 0.24,\n    \"26_7_no\": 0.1,\n\
+view: "{\n  \"linkLabelsPosition\": {\n    \"14_7_no\": 0.32,\n    \"26_7_no\": 0.1,\n\
   \    \"27_7_no\": 0.25,\n    \"9_26_yes\": 0.67,\n    \"9_7_no\": 0.1\n  },\n  \"\
-  paper\": {\n    \"dimensions\": {\n      \"height\": 2660,\n      \"width\": 830,\n\
+  paper\": {\n    \"dimensions\": {\n      \"height\": 2485,\n      \"width\": 985,\n\
   \      \"x\": 50,\n      \"y\": 50\n    }\n  }\n}"
 inputs:
 - key: start
@@ -532,8 +505,7 @@ inputs:
   description: Event End Time in ISO 8601 format
   playbookInputQuery:
 - key: src_host_list
-  value:
-    simple: 10.16.13.188
+  value: {}
   required: false
   description: List of Source IP addresses to search
   playbookInputQuery:
@@ -556,11 +528,10 @@ inputs:
   value:
     simple: TCP
   required: false
-  description: TCP or UDP Protocol
+  description: TCP or UDP
   playbookInputQuery:
 - key: timeframe
-  value:
-    simple: '3600'
+  value: {}
   required: false
   description: Event timeframe to search - in seconds.  Timeframe works as search
     for last "n" seconds if start and end time is not provided. For example, by specifying
@@ -631,4 +602,3 @@ outputs:
   description: error occured during downloading of this file
   type: string
 fromversion: 5.0.0
-description: ''

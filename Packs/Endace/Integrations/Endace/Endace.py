@@ -1,20 +1,29 @@
-#   LEGAL NOTICE
-#   This source code:
-#   a) is a proprietary trade secret of Endace Technology Limited, a New Zealand
-#      company, and its suppliers and licensors ("Endace"). You must keep it
-#      strictly confidential, and you must not copy, modify, disclose or
-#      distribute any part of it to anyone else, without the prior written
-#      authorisation of Endace Technology Limited;
-#   b) may also be part of inventions that are protected by patents and patent
-#      applications;
-#   c) is copyright (c) to Endace, 2020 to 2020. All rights reserved.
+# --------------------------------------------------------------------------------------------------------------------
+# Copyright 2020 Endace Technology Limited
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+# documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
+# to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+# Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+# WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+#
+# --------------------------------------------------------------------------------------------------------------------
 
 from CommonServerPython import *
-#  from CommonServerUserPython import *
+from CommonServerUserPython import *
 import time
 import requests
 import urllib3
 import calendar
+import json
 
 
 class EndaceVisionAPIAdapter(object):
@@ -27,8 +36,6 @@ class EndaceVisionAPIAdapter(object):
     Ensures CSRF tokens are sent correctly in requests.
     """
 
-    #  logging.info("Endace Vision API Adaptor")
-
     API_BASE = "/vision2/data"
 
     def __init__(self, endace_session):
@@ -36,10 +43,8 @@ class EndaceVisionAPIAdapter(object):
 
     def request(self, method, path, **kwargs):
         headers = {}
-        #   Add CSRF cookie to header
         if method == "POST":
             csrf_cookie = self.endace_session.requests.cookies.get("vision2_csrf_cookie")
-            #   print(csrf_cookie)
             if csrf_cookie:
                 headers = {
                     'XSRF-csrf-token': str(csrf_cookie)
@@ -54,11 +59,9 @@ class EndaceVisionAPIAdapter(object):
             return r
 
     def get(self, path, **kwargs):
-        #   print(path)
         return self.request("GET", path, **kwargs)
 
     def post(self, path, **kwargs):
-        #   print(path)
         return self.request("POST", path, **kwargs)
 
     def put(self, path, **kwargs):
@@ -105,7 +108,6 @@ class EndaceWebSession(object):
             csrf_token = EndaceWebSession.find_csrf_token_login(r.content)
             if csrf_token is None:
                 raise Exception("Could not find CSRF token")
-            #   Submit login form
             login_result = sess.post(self.page(self.LOGIN_ACTION),
                                      data={
                                          "_csrf": csrf_token,
@@ -131,7 +133,6 @@ class EndaceWebSession(object):
 
     @staticmethod
     def fetch_csrf_token(input_text, pattern):
-        #  import re
         """
         Fetch CSRF Token from the given input html tag by applying the pattern passed
         :param input_text:
@@ -328,25 +329,20 @@ class EndaceVisionData(object):
 
 
 class EndaceApp(object):
-    #  common class variable
     delta_time = 50
     wait_time = 5
 
     def __init__(self, *args):
         self.args = dict()
 
-        #  params
         self.applianceurl = args[0]
         self.username = args[1]
         self.password = args[2]
         self.cert_verify = args[3]
 
-    #  common helper functions
-
     @staticmethod
     def endace_get_input_arguments(args=None):
         function_args = dict()
-        #   time
         function_args['start'] = args.get("start")
         if args.get("start"):
             #   converting ISO time to epoch time
@@ -434,37 +430,39 @@ class EndaceApp(object):
             rd = api.get("files")
             if rd.status_code == 200:
                 path = "queries/"
-                #   Initiate a HTTP POST Query to Endace Probe with given search parameters and arguments. Return data
-                #   dict back to Demisto
-                #   if No, return job progress status and no data
-                #   initiate EndaceVisionData class
                 evid = EndaceVisionData(input_args_dict)
                 rp = api.post(path, json=evid.build_search_data())
                 if rp.status_code == 200:
-                    response = rp.json()
-                    meta = response.get("meta")
-                    payload = response.get("payload")
-                    if meta is not None:
-                        meta_error = meta.get("error")
-                        if meta_error is not None:
-                            if meta_error is not False:
-                                result['Status'] = "Failed"
-                                result['Error'] = str(str(meta_error))
-                            else:
-                                if payload is not None:
-                                    result['JobID'] = payload
-                                else:
-                                    result['Status'] = "Failed"
-                                    result['Error'] = "ServerError"
-                        else:
-                            result['Status'] = "Failed"
-                            result['Error'] = str(meta['error_data'])
-                    else:
+                    try:
+                        response = rp.json()
+                    except json.decoder.JSONDecodeError:
                         result['Status'] = "Failed"
                         result['Error'] = "ServerError"
+                        return result
+                    else:
+                        meta = response.get("meta", {})
+                        payload = response.get("payload")
+                        if meta:
+                            meta_error = meta.get("error")
+                            if meta_error is not None:
+                                if meta_error is not False:
+                                    result['Status'] = "Failed"
+                                    result['Error'] = str(meta_error)
+                                else:
+                                    if payload is not None:
+                                        result['JobID'] = payload
+                                    else:
+                                        result['Status'] = "Failed"
+                                        result['Error'] = "ServerError"
+                            else:
+                                result['Status'] = "Failed"
+                                result['Error'] = str(meta.get('error_data'))
+                        else:
+                            result['Status'] = "Failed"
+                            result['Error'] = "ServerError"
                 else:
                     result['Status'] = rp.status_code
-                    result['Error'] = "httpError /%s" % path
+                    result['Error'] = f"httpError /{path}"
             else:
                 result['Status'] = rd.status_code
                 result['Error'] = "httpError /files"
@@ -478,13 +476,9 @@ class EndaceApp(object):
            Returns:
                Dictionary context data in response to the command execution
         """
-        #  input variable is Search Job ID
-        # self.args = args
-
         result = {'Task': "GetSearchStatus", "Status": "Complete", "Error": "NoError", "JobProgress": '0',
                   "DataSources": [], "TotalBytes": 0, "JobID": args}
 
-        #  local variable
         matching_data = 0
         keys = []
         values = []
@@ -513,62 +507,67 @@ class EndaceApp(object):
                         rj = api.get(path)
                         if rj.status_code == 200:
                             #  Check metadata for no error.
-                            response = rj.json()
-                            meta = response.get("meta")
-                            payload = response.get("payload")
-                            if meta is not None:
-                                meta_error = meta.get("error")
-                                if meta_error is not None:
-                                    if meta_error is not False:
-                                        progress_status = False
-                                        result['Status'] = "Failed"
-                                        result['Error'] = str(str(meta_error))
-                                    else:
-                                        #  check payload for no error
-                                        #   progress = 0
-                                        if payload is not None:
-                                            progress = payload.get("progress")
-                                            if progress is not None:
-                                                result['JobProgress'] = str(progress)
-                                                #  check if the Search Job has finished. if so, return a data dict back
-                                                #   to Demisto
-                                                #  if No, Wait and loop in to run another status check,
-                                                #   until "self.delta_time" has elapsed
-                                                payload_data = payload.get("data")
-                                                if payload_data is not None:
-                                                    if int(progress) == 100:
-                                                        progress_status = False
-                                                        for data_map_dict in payload_data:
-                                                            id_to_key_dict[data_map_dict['id']] = data_map_dict['name']
-
-                                                        for top_key in payload["top_keys"]:
-                                                            keys.append(id_to_key_dict[top_key])
-
-                                                        #   Calculate Total matching MBytes
-                                                        for top_value in payload["top_values"]:
-                                                            matching_data = matching_data + int(top_value)
-                                                            values.append(str(top_value))
-
-                                                        result['TotalBytes'] = int(matching_data)
-
-                                                        for index in range(len(keys)):
-                                                            app_dict[keys[index]] = values[index] + ' Bytes'
-
-                                                        result['Status'] = str(payload['state'])
-                                                        result['DataSources'] = keys
-                                        else:
-                                            result['Status'] = "Failed"
-                                            result['Error'] = "ServerError"
-                                else:
-                                    result['Status'] = "Failed"
-                                    result['Error'] = str(meta['error_data'])
-                            else:
+                            try:
+                                response = rj.json()
+                            except json.decoder.JSONDecodeError:
+                                progress_status = False
                                 result['Status'] = "Failed"
                                 result['Error'] = "ServerError"
+                            else:
+                                meta = response.get("meta", {})
+                                payload = response.get("payload")
+                                if meta:
+                                    meta_error = meta.get("error")
+                                    if meta_error is not None:
+                                        if meta_error is not False:
+                                            progress_status = False
+                                            result['Status'] = "Failed"
+                                            result['Error'] = str(meta_error)
+                                        else:
+                                            #  check payload for no error
+                                            if payload is not None:
+                                                progress = payload.get("progress")
+                                                if progress is not None:
+                                                    result['JobProgress'] = str(progress)
+                                                    #  check if the Search Job has finished. if so, return a data dict back
+                                                    #   to Demisto
+                                                    #  if No, Wait and loop in to run another status check,
+                                                    #   until "self.delta_time" has elapsed
+                                                    payload_data = payload.get("data")
+                                                    if payload_data is not None:
+                                                        if int(progress) == 100:
+                                                            progress_status = False
+                                                            for data_map_dict in payload_data:
+                                                                id_to_key_dict[data_map_dict['id']] = data_map_dict['name']
+
+                                                            for top_key in payload["top_keys"]:
+                                                                keys.append(id_to_key_dict[top_key])
+
+                                                            #   Calculate Total matching MBytes
+                                                            for top_value in payload["top_values"]:
+                                                                matching_data = matching_data + int(top_value)
+                                                                values.append(str(top_value))
+
+                                                            result['TotalBytes'] = int(matching_data)
+
+                                                            for index in range(len(keys)):
+                                                                app_dict[keys[index]] = values[index] + ' Bytes'
+
+                                                            result['Status'] = str(payload['state'])
+                                                            result['DataSources'] = keys
+                                            else:
+                                                result['Status'] = "Failed"
+                                                result['Error'] = "ServerError"
+                                    else:
+                                        result['Status'] = "Failed"
+                                        result['Error'] = str(meta.get('error_data'))
+                                else:
+                                    result['Status'] = "Failed"
+                                    result['Error'] = "ServerError"
                         else:
                             progress_status = False
                             result['Status'] = rj.status_code
-                            result['Error'] = ("HTTP GET Request Failed to %s" % path)
+                            result['Error'] = f"HTTP GET Request Failed to {path}"
                     #   wait time before next run
                     time.sleep(self.wait_time)
             else:
@@ -593,13 +592,27 @@ class EndaceApp(object):
                 path = "queries/" + args
                 dr = api.delete(path)
                 if dr.status_code == 200:
-                    if dr.json()['meta']['error'] is not False:
-                        try:
-                            str(dr.json()['meta']['error']).split(".")[1]
-                        except ValueError:
-                            result['Status'] = str(dr.json()['meta']['error'])
+                    try:
+                        response = dr.json()
+                    except json.decoder.JSONDecodeError:
+                        result['Status'] = "Failed"
+                        result['Error'] = "ServerError"
+                        return result
+                    else:
+                        meta = response.get('meta', {})
+                        if meta:
+                            meta_error = meta.get("error")
+                            if meta_error is not None:
+                                if meta_error is not False:
+                                    result['Status'] = "Failed"
+                                    result['Error'] = str(meta_error)
+                            else:
+                                result['Status'] = "Failed"
+                                result['Error'] = str(meta.get('error_data'))
                         else:
-                            result['Status'] = str(dr.json()['meta']['error']).split(".")[1]
+                            result['Status'] = "Failed"
+                            result['Error'] = "ServerError"
+
             else:
                 result['Error'] = rd.status_code
                 result['Status'] = "HTTP DELETE Request Failed while deleting search task"
@@ -674,7 +687,6 @@ class EndaceApp(object):
         if input_args_dict['protocol']:
             input_args_dict['filterby'].append(5)
 
-        #   initiate EndaceVisionData class
         evid = EndaceVisionData(input_args_dict)
         with EndaceWebSession(app_url=self.applianceurl, username=self.username, password=self.password,
                               cert_verify=self.cert_verify) as sess:
@@ -683,47 +695,56 @@ class EndaceApp(object):
 
             #  Extract list of rotationfiles datasources and exclude previously archived files
             rotfile_ids = []
-            for rotfile in rd.json()["payload"]:
-                if rotfile["type"] == "rotation_file_v2":
-                    rotfile_ids.append(rotfile["id"])
+            try:
+                response = rd.json()
+            except json.decoder.JSONDecodeError:
+                result['Status'] = "Failed"
+                result['Error'] = "ServerError"
+                return result
+            else:
+                if rd.status_code == 200:
+                    for rotfile in rd.json()["payload"]:
+                        if rotfile["type"] == "rotation_file_v2":
+                            rotfile_ids.append(rotfile["id"])
 
-            input_args_dict['ids'] = rotfile_ids
-            if rd.status_code == 200:
-                path = "archive/"
-                #   Initiate a HTTP POST Query to Endace Probe with given archive parameters and arguments. Return data
-                #   dict back to Demisto
-                #   if No, return job progress status and no data
-
-                rp = api.post(path, json=evid.build_archive_data())
-                if rp.status_code == 200:
-                    response = rp.json()
-                    meta = response.get("meta")
-                    payload = response.get("payload")
-                    if meta is not None:
-                        meta_error = meta.get("error")
-                        if meta_error is not None:
-                            if meta_error is not False:
-                                result['Status'] = "Failed"
-                                result['Error'] = str(str(meta_error))
-                            else:
-                                if payload is not None:
-                                    result['JobID'] = payload
-                                    result['P2Vurl'] = f'[Endace PivotToVision URL]({p2v_url})'
+                    input_args_dict['ids'] = rotfile_ids
+                    path = "archive/"
+                    rp = api.post(path, json=evid.build_archive_data())
+                    if rp.status_code == 200:
+                        try:
+                            response = rp.json()
+                        except json.decoder.JSONDecodeError:
+                            result['Status'] = "Failed"
+                            result['Error'] = "ServerError"
+                            return result
+                        else:
+                            meta = response.get("meta", {})
+                            payload = response.get("payload")
+                            if meta:
+                                meta_error = meta.get("error")
+                                if meta_error is not None:
+                                    if meta_error is not False:
+                                        result['Status'] = "Failed"
+                                        result['Error'] = str(meta_error)
+                                    else:
+                                        if payload is not None:
+                                            result['JobID'] = payload
+                                            result['P2Vurl'] = f'[Endace PivotToVision URL]({p2v_url})'
+                                        else:
+                                            result['Status'] = "Failed"
+                                            result['Error'] = "ServerError"
                                 else:
                                     result['Status'] = "Failed"
                                     result['Error'] = "ServerError"
-                        else:
-                            result['Status'] = "Failed"
-                            result['Error'] = "ServerError"
+                            else:
+                                result['Status'] = "Failed"
+                                result['Error'] = "ServerError"
                     else:
                         result['Status'] = "Failed"
                         result['Error'] = "ServerError"
                 else:
-                    result['Status'] = "Failed"
-                    result['Error'] = "ServerError"
-            else:
-                result['Status'] = rd.status_code
-                result['Error'] = "httpError /archive"
+                    result['Status'] = rd.status_code
+                    result['Error'] = "httpError /archive"
 
         return result
 
@@ -734,9 +755,6 @@ class EndaceApp(object):
            Returns:
                Dictionary context data in response to the command execution
         """
-        #   input variable is archived filename
-        # self.args = args
-
         result = {"Task": "GetArchiveStatus", "Error": "NoError", "Status": "ArchiveNotFound",
                   "FileName": args["archive_filename"], "FileSize": 0}
 
@@ -756,44 +774,50 @@ class EndaceApp(object):
 
                 rf = api.get(path)
                 if rf.status_code == 200:
-                    response = rf.json()
-                    meta = response.get("meta")
-                    payload = response.get("payload")
-                    if meta is not None:
-                        meta_error = meta["error"]
-                        if meta_error is not None:
-                            if meta_error is not False:
+                    try:
+                        response = rf.json()
+                    except json.decoder.JSONDecodeError:
+                        progress_status = False
+                        result['Status'] = "Failed"
+                        result['Error'] = "ServerError"
+                    else:
+                        meta = response.get("meta", {})
+                        payload = response.get("payload")
+                        if meta:
+                            meta_error = meta["error"]
+                            if meta_error is not None:
+                                if meta_error is not False:
+                                    progress_status = False
+                                    result['Status'] = "Failed"
+                                    result['Error'] = str(meta_error)
+                                else:
+                                    #   progress loop
+                                    #   exit at timeout or archive finished
+                                    #  archive_payload = payload
+
+                                    for file in payload:
+                                        if args['archive_filename'] == file['name']:
+                                            result['FileName'] = file['name']
+                                            if not file['status']['inUse']:
+                                                #  archive finished
+                                                progress_status = False
+                                                result['FileSize'] = file['usage']
+                                                result['Status'] = "Finished"
+                                            else:
+                                                result['Status'] = "InProgress"
+                                            break
+                            else:
                                 progress_status = False
                                 result['Status'] = "Failed"
-                                result['Error'] = str(str(meta_error))
-                            else:
-                                #   progress loop
-                                #   exit at timeout or archive finished
-                                #  archive_payload = payload
-
-                                for file in payload:
-                                    if args['archive_filename'] == file['name']:
-                                        result['FileName'] = file['name']
-                                        if not file['status']['inUse']:
-                                            #  archive finished
-                                            progress_status = False
-                                            result['FileSize'] = file['usage']
-                                            result['Status'] = "Finished"
-                                        else:
-                                            result['Status'] = "InProgress"
-                                        break
+                                result['Error'] = "ServerError"
                         else:
                             progress_status = False
                             result['Status'] = "Failed"
                             result['Error'] = "ServerError"
-                    else:
-                        progress_status = False
-                        result['Status'] = "Failed"
-                        result['Error'] = "ServerError"
                 else:
                     progress_status = False
                     result['Status'] = rf.status_code
-                    result['Error'] = ("HTTP GET Request Failed to %s" % path)
+                    result['Error'] = f"HTTP GET Request Failed to {path}"
 
         return result
 
@@ -813,16 +837,29 @@ class EndaceApp(object):
             if rd.status_code == 200:
                 dr = api.delete(path)
                 if dr.status_code == 200:
-                    if dr.json()['meta']['error'] is not False:
-                        try:
-                            str(dr.json()['meta']['error']).split(".")[1]
-                        except ValueError:
-                            result['Status'] = str(dr.json()['meta']['error'])
+                    try:
+                        response = dr.json()
+                    except json.decoder.JSONDecodeError:
+                        result['Status'] = "Failed"
+                        result['Error'] = "ServerError"
+                        return result
+                    else:
+                        meta = response.get('meta', {})
+                        if meta:
+                            meta_error = meta.get("error")
+                            if meta_error is not None:
+                                if meta_error is not False:
+                                    result['Status'] = "Failed"
+                                    result['Error'] = str(meta_error)
+                            else:
+                                result['Status'] = "Failed"
+                                result['Error'] = str(meta.get('error_data'))
                         else:
-                            result['Status'] = str(dr.json()['meta']['error']).split(".")[1]
+                            result['Status'] = "Failed"
+                            result['Error'] = "ServerError"
             else:
                 result['Error'] = rd.status_code
-                result['Status'] = ("HTTP Error %s" % path)
+                result['Status'] = "HTTP Error {path}"
 
         return result
 
@@ -833,9 +870,6 @@ class EndaceApp(object):
            Returns:
                Dictionary context data in response to the command execution
         """
-        #   input variable is archived filename
-        # self.args = args
-
         result = {"Task": "DeleteArchivedFile", "Error": "NoError", "Status": "NotFound",
                   "FileName": args['archived_filename']}
 
@@ -846,40 +880,52 @@ class EndaceApp(object):
 
             rf = api.get(path)
             if rf.status_code == 200:
-                response = rf.json()
-                meta = response.get("meta")
-                payload = response.get("payload")
-                if meta is not None:
-                    meta_error = meta["error"]
-                    if meta_error is not None:
-                        if meta_error is not False:
-                            result['Status'] = "Failed"
-                            result['Error'] = str(str(meta_error))
-                        else:
-                            #   Delete archived File
-                            for file in payload:
-                                if result['FileName'] == file['name'] and len(file["id"]):
-                                    #   File available to delete
-                                    if file['type'] == 'archive_file':
-                                        archived_file_path = f'files?_={str(calendar.timegm(time.gmtime()))}000'\
-                                                             f'&files={file["id"]}'
-                                        df = api.delete(archived_file_path)
-                                        response = df.json()
-                                        meta = response.get("meta")
-                                        if df.status_code == 200:
-                                            if meta["error"] is None:
-                                                result['Status'] = meta['error']
-                                                result['Error'] = meta["error_data"]
-                                            else:
-                                                result['Status'] = "FileDeleted"
-                                        else:
-                                            result['Status'] = "ServerError"
-                    else:
-                        result['Status'] = "Failed"
-                        result['Error'] = "ServerError"
-                else:
+                try:
+                    response = rf.json()
+                except json.decoder.JSONDecodeError:
                     result['Status'] = "Failed"
                     result['Error'] = "ServerError"
+                    return result
+                else:
+                    meta = response.get("meta", {})
+                    payload = response.get("payload")
+                    if meta:
+                        meta_error = meta["error"]
+                        if meta_error is not None:
+                            if meta_error is not False:
+                                result['Status'] = "Failed"
+                                result['Error'] = str(meta_error)
+                            else:
+                                #   Delete archived File
+                                for file in payload:
+                                    if result['FileName'] == file['name'] and len(file["id"]):
+                                        #   File available to delete
+                                        if file['type'] == 'archive_file':
+                                            archived_file_path = f'files?_={str(calendar.timegm(time.gmtime()))}000'\
+                                                                 f'&files={file["id"]}'
+                                            df = api.delete(archived_file_path)
+                                            try:
+                                                response = df.json()
+                                            except json.decoder.JSONDecodeError:
+                                                result['Status'] = "Failed"
+                                                result['Error'] = "ServerError"
+                                                return result
+                                            else:
+                                                meta = response.get("meta", {})
+                                                if df.status_code == 200:
+                                                    if meta["error"] is None:
+                                                        result['Status'] = meta['error']
+                                                        result['Error'] = meta["error_data"]
+                                                    else:
+                                                        result['Status'] = "FileDeleted"
+                                                else:
+                                                    result['Status'] = "ServerError"
+                        else:
+                            result['Status'] = "Failed"
+                            result['Error'] = "ServerError"
+            else:
+                result['Status'] = "Failed"
+                result['Error'] = "ServerError"
         return result
 
     #  download
@@ -890,7 +936,6 @@ class EndaceApp(object):
             Returns:
                 Dictionary context data in response to the command execution
         """
-        # self.args = args
         result = {"Task": "DownloadPCAP", "Error": "NoError", "Status": "FileNotFound", "FileName": args['filename'],
                   "FileSize": 0, "FileType": "", "FileURL": '', "FileUser": ''}
         with EndaceWebSession(app_url=self.applianceurl, username=self.username, password=self.password,
@@ -900,63 +945,69 @@ class EndaceApp(object):
 
             rf = api.get(path)
             if rf.status_code == 200:
-                response = rf.json()
-                meta = response.get("meta")
-                payload = response.get("payload")
-                if meta is not None:
-                    meta_error = meta["error"]
-                    if meta_error is not None:
-                        if meta_error is not False:
-                            result['Status'] = "Failed"
-                            result['Error'] = str(str(meta_error))
-                        else:
-                            #   Download PCAP File
-                            for file in payload:
-                                if result['FileName'] == file['name'] and len(file["id"]):
-                                    file_numerical_part = float(re.findall(r'[\d+]', file['size'])[0])
-                                    filesize = float(0)
-                                    if 'KB' in file['size']:
-                                        filesize = file_numerical_part * 0.001
-                                    elif 'GB' in file['size']:
-                                        filesize = file_numerical_part * 1000
-                                    elif 'TB' in file['size']:
-                                        filesize = file_numerical_part * 1000000
-                                    else:
-                                        filesize = file_numerical_part * 1
+                try:
+                    response = rf.json()
+                except json.decoder.JSONDecodeError:
+                    result['Status'] = "Failed"
+                    result['Error'] = "ServerError"
+                    return result
+                else:
+                    meta = response.get("meta", {})
+                    payload = response.get("payload")
+                    if meta:
+                        meta_error = meta["error"]
+                        if meta_error is not None:
+                            if meta_error is not False:
+                                result['Status'] = "Failed"
+                                result['Error'] = str(meta_error)
+                            else:
+                                #   Download PCAP File
+                                for file in payload:
+                                    if result['FileName'] == file['name'] and len(file["id"]):
+                                        file_numerical_part = float(re.findall(r'[\d\.]+', file['usage'])[0])
 
-                                    if filesize <= int(args['filesizelimit']):
-                                        result['FileName'] = file['name'] + ".pcap"
-                                        if not file['status']['inUse']:
-                                            #   File available to download
-                                            pcapfile_url_path = ("files/%s/stream?format=pcap" % file["id"])
-                                            d = api.get(pcapfile_url_path)
-                                            if d.status_code == 200:
-                                                demisto.results(fileResult(f'{result["FileName"]}', d.content,
-                                                                           file_type=entryTypes['entryInfoFile']))
-
-                                                result['FileURL'] = f'[Endace PCAP URL]'\
-                                                                    f'({self.applianceurl}/vision2/data/'\
-                                                                    f'{pcapfile_url_path})'
-
-                                                result['FileSize'] = file['usage']
-                                                result['Status'] = "DownloadFinished"
-                                                result['FileType'] = file['type']
-                                                result['FileUser'] = file['user']
-
-                                            else:
-                                                result['Status'] = "Failed"
-                                                result['Error'] = d.status_code
+                                        if 'KB' in file['usage']:
+                                            filesize = file_numerical_part * 0.001
+                                        elif 'GB' in file['usage']:
+                                            filesize = file_numerical_part * 1000
+                                        elif 'TB' in file['usage']:
+                                            filesize = file_numerical_part * 1000000
                                         else:
-                                            result['Status'] = "FileInUse"
+                                            filesize = file_numerical_part * 1
 
-                                    else:
-                                        result['Status'] = "FileExceedsSizeLimit"
+                                        if filesize <= int(args['filesizelimit']):
+                                            result['FileName'] = file['name'] + ".pcap"
+                                            if not file['status']['inUse']:
+                                                #   File available to download
+                                                pcapfile_url_path = ("files/%s/stream?format=pcap" % file["id"])
+                                                d = api.get(pcapfile_url_path)
+                                                if d.status_code == 200:
+                                                    demisto.results(fileResult(f'{result["FileName"]}', d.content,
+                                                                               file_type=entryTypes['entryInfoFile']))
+
+                                                    result['FileURL'] = f'[Endace PCAP URL]'\
+                                                                        f'({self.applianceurl}/vision2/data/'\
+                                                                        f'{pcapfile_url_path})'
+
+                                                    result['FileSize'] = file['usage']
+                                                    result['Status'] = "DownloadFinished"
+                                                    result['FileType'] = file['type']
+                                                    result['FileUser'] = file['user']
+
+                                                else:
+                                                    result['Status'] = "Failed"
+                                                    result['Error'] = d.status_code
+                                            else:
+                                                result['Status'] = "FileInUse"
+
+                                        else:
+                                            result['Status'] = "FileExceedsSizeLimit"
+                        else:
+                            result['Status'] = "Failed"
+                            result['Error'] = "ServerError"
                     else:
                         result['Status'] = "Failed"
                         result['Error'] = "ServerError"
-                else:
-                    result['Status'] = "Failed"
-                    result['Error'] = "ServerError"
         return result
 
 
@@ -996,6 +1047,8 @@ def endace_create_search_command(app, args):
         raw_response = result
 
         return readable_output, output, raw_response
+    else:
+        raise ValueError("Incorrect arguments provided")
 
 
 def endace_delete_search_task_command(app, args):
@@ -1093,6 +1146,8 @@ def endace_create_archive_command(app, args):
         readable_output = tableToMarkdown('EndaceResult', [result], headers=table_header, removeNull=False)
         raw_response = result
         return readable_output, output, raw_response
+    else:
+        raise ValueError("Incorrect arguments provided")
 
 
 def endace_delete_archive_task_command(app, args):
@@ -1110,7 +1165,7 @@ def endace_delete_archive_task_command(app, args):
     jobid = args.get("jobid")
     if not re.fullmatch(r'[0-9a-zA-Z\-]+', jobid) is None:
 
-        #   calling search status function of app instance
+        #   calling delete archive task function of app instance
         result = app.delete_archive_task(jobid)
 
         #   create entry context to return to Demisto
@@ -1166,7 +1221,6 @@ def endace_delete_archived_file_command(app, args):
         #   archive file name
         function_arg['archived_filename'] = args.get("archived_filename")
 
-        #   time
         if re.fullmatch(r'[\w0-9_-]+', args.get("archived_filename")) is None:
             raise ValueError("Wrong value of archive_filename")
 
@@ -1238,66 +1292,42 @@ def main():
     applianceurl = demisto.params().get('applianceurl')
     username = demisto.params().get('credentials').get('identifier')
     password = demisto.params().get('credentials').get('password')
-    insecure = demisto.params().get('insecure', True)
+    insecure = not demisto.params().get('insecure', False)
 
     LOG(f'Command being called is {demisto.command()}')
 
-    if command == 'test-module':
-        """
-           Returning 'ok' indicates that the the user can login to EndaceProbe successfully with his credentials.
-           Returns:
-               'ok' if test passed, anything else will fail the test
-        """
-        demisto.results(endace_test_command(applianceurl, username, password, insecure))
-    else:
-        """ Command Modules """
-
-        if command is None:
-            raise NotImplementedError(f'Command "{command}" is not implemented.')
+    try:
+        handle_proxy()
+        if command == 'test-module':
+            """
+               Returning 'ok' indicates that the the user can login to EndaceProbe successfully with his credentials.
+               Returns:
+                   'ok' if test passed, anything else will fail the test
+            """
+            demisto.results(endace_test_command(applianceurl, username, password, insecure))
         else:
             app = EndaceApp(applianceurl, username, password, insecure)
+            """ Command Modules """
             if command == "endace-create-search":
-                if demisto.args():
-                    return_outputs(*endace_create_search_command(app, demisto.args()))
-                else:
-                    raise ValueError('No function arguments')
+                return_outputs(*endace_create_search_command(app, demisto.args()))
             elif command == "endace-get-search-status":
-                if demisto.args():
-                    return_outputs(*endace_get_search_status_command(app, demisto.args()))
-                else:
-                    raise ValueError('No function arguments')
+                return_outputs(*endace_get_search_status_command(app, demisto.args()))
             elif command == "endace-delete-search-task":
-                if demisto.args():
-                    return_outputs(*endace_delete_search_task_command(app, demisto.args()))
-                else:
-                    raise ValueError('No function arguments')
+                return_outputs(*endace_delete_search_task_command(app, demisto.args()))
             elif command == "endace-create-archive":
-                if demisto.args():
-                    return_outputs(*endace_create_archive_command(app, demisto.args()))
-                else:
-                    raise ValueError('No function arguments')
+                return_outputs(*endace_create_archive_command(app, demisto.args()))
             elif command == "endace-get-archive-status":
-                if demisto.args():
-                    return_outputs(*endace_get_archive_status_command(app, demisto.args()))
-                else:
-                    raise ValueError('No function arguments')
+                return_outputs(*endace_get_archive_status_command(app, demisto.args()))
             elif command == "endace-delete-archive-task":
-                if demisto.args():
-                    return_outputs(*endace_delete_archive_task_command(app, demisto.args()))
-                else:
-                    raise ValueError('No function arguments')
+                return_outputs(*endace_delete_archive_task_command(app, demisto.args()))
             elif command == "endace-delete-archived-file":
-                if demisto.args():
-                    return_outputs(*endace_delete_archived_file_command(app, demisto.args()))
-                else:
-                    raise ValueError('No function arguments')
+                return_outputs(*endace_delete_archived_file_command(app, demisto.args()))
             elif command == "endace-download-pcap":
-                if demisto.args():
-                    return_outputs(*endace_download_pcap_command(app, demisto.args()))
-                else:
-                    raise ValueError('No function arguments')
-            else:
-                return_error(f'Command {demisto.command()} does not exist')
+                return_outputs(*endace_download_pcap_command(app, demisto.args()))
+
+    except Exception as err:
+        err_msg = f'Error in Integration [{err}]'
+        return_error(err_msg, error=err)
 
 
 #   python2 uses __builtin__ python3 uses builtins
