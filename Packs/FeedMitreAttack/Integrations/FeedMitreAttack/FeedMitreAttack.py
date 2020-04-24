@@ -347,27 +347,22 @@ def search_command(client, args):
 
 
 def reputation_command(client, args):
-    indicator = args.get('indicator')
+    inputIndicator = args.get('indicator')
     allIndicators = list()
     page = 0
     size = 1000
-    rawData = demisto.searchIndicators(query=f'type:"{client.indicatorType}" value:{indicator}', page=page, size=size)
+    rawData = demisto.searchIndicators(query=f'type:"{client.indicatorType}" value:{inputIndicator}', page=page, size=size)
     while(len(rawData.get('iocs', [])) > 0):
         allIndicators.extend(rawData.get('iocs', []))
         page += 1
-        rawData = demisto.searchIndicators(query=f'type:"{client.indicatorType}" value:{indicator}', page=page, size=size)
+        rawData = demisto.searchIndicators(query=f'type:"{client.indicatorType}" value:{inputIndicator}', page=page, size=size)
     for indicator in allIndicators:
         customFields = indicator.get('CustomFields')
 
-        # Build the markdown for the user
-        md = customFields.get('mitredescriptionmarkdown')
-        if customFields.get('mitreurls', None):
-            md += "\n_____\n## MITRE URLs\n" + customFields.get('mitreurls')
-        if customFields.get('mitrekillchainphases', None):
-            md += "\n_____\n## Kill Chain Phases\n" + customFields.get('mitrekillchainphases')
         score = indicator.get('score')
         value = indicator.get('value')
         indicatorID = indicator.get('id')
+        md = f"## {value}:\n {customFields.get('mitredescription', '')}"
         ec = {
             "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor && val.Vendor == obj.Vendor)": {
                 "Indicator": value,
