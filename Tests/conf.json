@@ -2007,7 +2007,7 @@
             "timeout": 1000
         },
         {
-            "playbookID": "PAN-OS EDL Setup Test v3",
+            "playbookID": "PAN-OS EDL Setup v3 Test",
             "integrations": ["Panorama", "palo_alto_networks_pan_os_edl_management"],
             "instance_names": "palo_alto_firewall_9.0",
             "timeout": 1000
