@@ -2,11 +2,11 @@ import base64
 import collections
 import time
 
-import requests
-
 import demistomock as demisto
-import trustar
+import requests
 from CommonServerPython import *
+
+import trustar
 
 ''' IMPORTS '''
 
@@ -36,7 +36,6 @@ def translate_indicators(ts_indicators):
     for indicator in ts_indicators:
         current_indicator = indicator if isinstance(indicator, dict) else indicator.to_dict(remove_nones=True)
         indicator_type = current_indicator['indicatorType']
-        priority_level = current_indicator.get('priorityLevel')
         value = current_indicator['value']
         if indicator_type == 'SOFTWARE':
             # Extracts the filename out of file path
@@ -46,38 +45,24 @@ def translate_indicators(ts_indicators):
                 file_name = value.split('/')[-1]  # Handles file path with slash
             current_indicator['value'] = file_name
             context_dict = {'Name': file_name}
-            if priority_level:
-                context_dict.update({'priorityLevel': priority_level})
             file_context.append(context_dict)
         elif indicator_type in {'SHA256', 'SHA1', 'MD5'}:
             context_dict = {indicator_type: value}
-            if priority_level:
-                context_dict.update({'priorityLevel': priority_level})
             file_context.append(context_dict)
         elif indicator_type == 'URL':
             context_dict = {'Address': value}
-            if priority_level:
-                context_dict.update({'priorityLevel': priority_level})
             url_context.append(context_dict)
         elif indicator_type == 'IP':
             context_dict = {'Address': value}
-            if priority_level:
-                context_dict.update({'priorityLevel': priority_level})
             ip_context.append(context_dict)
         elif indicator_type == 'EMAIL_ADDRESS':
             context_dict = {'Address': value}
-            if priority_level:
-                context_dict.update({'priorityLevel': priority_level})
             email_context.append(context_dict)
         elif indicator_type == 'REGISTRY_KEY':
             context_dict = {'Path': value}
-            if priority_level:
-                context_dict.update({'priorityLevel': priority_level})
             key_context.append(context_dict)
         elif indicator_type == 'CVE':
             context_dict = {'ID': value}
-            if priority_level:
-                context_dict.update({'priorityLevel': priority_level})
             cve_context.append(context_dict)
         indicators.append(current_indicator)
     # Build Entry Context
@@ -102,7 +87,7 @@ def translate_triage_submission(submissions):
     for submission in submission_dicts:
         indicators = [c.to_dict(remove_nones=True) for c in submission.get('context')]
         submission['context'] = indicators
-    ec = {'TruSTAR.Submission(val.submissionId == obj.submissionId)': submission_dicts}
+    ec = {'TruSTAR.Phishing(val.submissionId == obj.submissionId)': submission_dicts}
     return submission_dicts, ec
 
 
@@ -111,13 +96,11 @@ def translate_specific_indicators(ts_indicators, specific_types):
     for indicator in ts_indicators:
         current_indicator = indicator.to_dict(remove_nones=True)
         indicator_type = current_indicator['indicatorType']
-        priority_level = current_indicator.get('priorityLevel')
         value = current_indicator['value']
         whitelisted = current_indicator.get('whitelisted')
         if indicator_type in specific_types:
             res.append({
                 'value': value,
-                'priorityLevel': priority_level,
                 'whitelisted': whitelisted,
                 'indicatorType': indicator_type
             })
@@ -149,6 +132,9 @@ def date_to_unix(timestamp):
 
 
 def create_file_ec(indicators, file, threshold):
+    '''DEPRECATED this function relies on priorityLevel score which TruSTAR no longer supports.
+    This function will be removed in a future release
+    '''
     if not indicators:
         return {
             'DBotScore': {
@@ -192,6 +178,9 @@ def create_file_ec(indicators, file, threshold):
 
 
 def create_ip_ec(indicators, ip, threshold):
+    '''DEPRECATED this function relies on priorityLevel score which TruSTAR no longer supports.
+    This function will be removed in a future release
+    '''
     if not indicators:
         return {
             'DBotScore': {
@@ -235,6 +224,9 @@ def create_ip_ec(indicators, ip, threshold):
 
 
 def create_url_ec(indicators, url, threshold):
+    '''DEPRECATED this function relies on priorityLevel score which TruSTAR no longer supports.
+    This function will be removed in a future release
+    '''
     if not indicators:
         return {
             'DBotScore': {
@@ -278,6 +270,9 @@ def create_url_ec(indicators, url, threshold):
 
 
 def create_domain_ec(indicators, url, threshold):
+    '''DEPRECATED this function relies on priorityLevel score which TruSTAR no longer supports.
+    This function will be removed in a future release
+    '''
     if not indicators:
         return {
             'DBotScore': {
@@ -339,10 +334,7 @@ def get_related_indicators(indicators, enclave_ids, page_size, page_number):
         for found_indicator in search_indicator_response:
             current_found_indicator = found_indicator.to_dict(remove_nones=True)
             if current_indicator['value'] == current_found_indicator['value']:
-                current_indicator['priorityLevel'] = current_found_indicator['priorityLevel']
                 break
-        if not current_indicator.get('priorityLevel'):
-            current_indicator['priorityLevel'] = "NOT_FOUND"
         items_list.append(current_indicator)
     related_indicators, ec = translate_indicators(items_list)
     if related_indicators:
@@ -802,21 +794,9 @@ try:
     elif demisto.command() == 'trustar-get-enclaves':
         demisto.results(get_enclaves())
 
-    elif demisto.command() == 'file':
-        demisto.results(generic_search_indicator(demisto.args().get('file'), demisto.params().get(
-            'file_threshold'), ('File', 'MD5', 'SHA1', 'SHA256'), create_file_ec))
-
-    elif demisto.command() == 'ip':
-        demisto.results(generic_search_indicator(demisto.args().get('ip'),
-                                                 demisto.params().get('ip_threshold'), ('IP',), create_ip_ec))
-
-    elif demisto.command() == 'url':
-        demisto.results(generic_search_indicator(demisto.args().get('url'),
-                                                 demisto.params().get('url_threshold'), ('URL',), create_url_ec))
-
-    elif demisto.command() == 'domain':
-        demisto.results(generic_search_indicator(demisto.args().get('domain'), demisto.params().get('domain_threshold'),
-                                                 ('Domain', 'URL',), create_domain_ec))
+    elif demisto.command() in ('file', 'ip', 'url', 'domain'):
+        deprecation_notice = "DEPRECATED - This command is no longer supported and will be removed in a future release."
+        demisto.results(deprecation_notice)
 
     elif demisto.command() == 'trustar-get-phishing-indicators':
         nts = argToList(demisto.args().get('normalized_triage_score'))
