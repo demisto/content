@@ -41,7 +41,7 @@ requests.packages.urllib3.disable_warnings()
 
 class Client:
 
-    def __init__(self, url, proxies, verify, includeAPT):
+    def __init__(self, url, proxies, verify, includeAPT, reputation):
         self.base_url = url
         self.proxies = proxies
         self.verify = verify
@@ -49,6 +49,12 @@ class Client:
         self.includeAPT = includeAPT
         self.indicatorType = "MITRE ATT&CK"
         self.reputation = 0
+        if reputation == 'Good':
+            self.reputation = 0
+        elif reputation == 'Suspicious':
+            self.reputation = 2
+        elif reputation == 'Malicious':
+            self.reputation = 3
         self.api_root = None
         self.collections = None
 
@@ -386,6 +392,7 @@ def main():
     args = demisto.args()
     url = 'https://cti-taxii.mitre.org'
     includeAPT = params.get('includeAPT')
+    reputation = params.get('feedReputation', 'None')
     proxies = handle_proxy()
     verify_certificate = not params.get('insecure', False)
 
@@ -393,7 +400,7 @@ def main():
     demisto.info(f'Command being called is {command}')
 
     try:
-        client = Client(url, proxies, verify_certificate, includeAPT)
+        client = Client(url, proxies, verify_certificate, includeAPT, reputation)
         client.initialise()
         commands = {
             'mitre-get-indicators': get_indicators_command,

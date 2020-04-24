@@ -10,6 +10,7 @@ For more information click [here](https://www.mitre.org/capabilities/cybersecuri
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | includeAPT | This option will also create indicators using APT / actor name references if they are part of a MITRE Intrusion Set | False |
+| feedReputation | The indicator reputation (defaults to 'None'). | False |
 | feedReliability | The source's reliability. | True |
 | feedExpirationPolicy | The feed's expiration policy. | False |
 | feedExpirationInterval | The interval after which the feed expires. | False |

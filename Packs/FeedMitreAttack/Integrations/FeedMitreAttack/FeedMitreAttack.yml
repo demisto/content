@@ -22,6 +22,16 @@ configuration:
   defaultvalue: ''
   type: 8
   required: false
+- display: Indicator Reputation
+  name: feedReputation
+  defaultvalue: None
+  options:
+    - None
+    - Good
+    - Suspicious
+    - Bad
+  required: false
+  type: 18
 - display: Source Reliability
   name: feedReliability
   defaultvalue: A - Completely reliable
