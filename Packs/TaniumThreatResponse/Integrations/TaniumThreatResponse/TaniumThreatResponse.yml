@@ -44,7 +44,7 @@ configuration:
   - suppressed
   required: false
   type: 16
-description: Tanium Threat Response
+description: Use the Tanium Threat Response integration to manage endpoints processes, evidence, alerts, files, snapshots, and connections.
 display: Tanium Threat Response
 name: Tanium Threat Response
 script:
