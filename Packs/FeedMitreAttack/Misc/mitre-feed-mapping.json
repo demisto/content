@@ -1,494 +1,107 @@
 {
-	"brandName": "MITRE ATT\u0026CK",
-	"custom": true,
-	"defaultIncidentType": "",
-	"feed": true,
-	"id": "4dd9e51f-287f-491b-81a4-ecce4da02df9",
-	"incidentSamples": [],
-	"indicatorSamples": [
-		{
-			"ExpirationSource": null,
-			"bypassExclusionList": false,
-			"classifierVersion": 0,
-			"expirationInterval": 0,
-			"expirationPolicy": "",
-			"feedConfig": null,
-			"fetchTime": "0001-01-01T00:00:00Z",
-			"fields": null,
-			"isEnrichment": false,
-			"modifiedTime": "0001-01-01T00:00:00Z",
-			"moduleId": "",
-			"rawJSON": {
-				"created": "2019-10-09T18:48:31.906Z",
-				"created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
-				"description": "Adversaries may interrupt availability of system and network resources by inhibiting access to accounts utilized by legitimate users. Accounts may be deleted, locked, or manipulated (ex: changed credentials) to remove access to accounts.\n\nAdversaries may also subsequently log off and/or reboot boxes to set malicious changes into place.(Citation: CarbonBlack LockerGoga 2019)(Citation: Unit42 LockerGoga 2019)",
-				"external_references": [
-					{
-						"external_id": "T1531",
-						"source_name": "mitre-attack",
-						"url": "https://attack.mitre.org/techniques/T1531"
-					},
-					{
-						"description": "CarbonBlack Threat Analysis Unit. (2019, March 22). TAU Threat Intelligence Notification – LockerGoga Ransomware. Retrieved April 16, 2019.",
-						"source_name": "CarbonBlack LockerGoga 2019",
-						"url": "https://www.carbonblack.com/2019/03/22/tau-threat-intelligence-notification-lockergoga-ransomware/"
-					},
-					{
-						"description": "Harbison, M.. (2019, March 26). Born This Way? Origins of LockerGoga. Retrieved April 16, 2019.",
-						"source_name": "Unit42 LockerGoga 2019",
-						"url": "https://unit42.paloaltonetworks.com/born-this-way-origins-of-lockergoga/"
-					}
-				],
-				"id": "attack-pattern--b24e2a20-3b3d-4bf0-823b-1ed765398fb0",
-				"kill_chain_phases": [
-					{
-						"kill_chain_name": "mitre-attack",
-						"phase_name": "impact"
-					}
-				],
-				"modified": "2019-10-14T23:29:24.908Z",
-				"name": "Account Access Removal",
-				"object_marking_refs": [
-					"marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"
-				],
-				"type": "attack-pattern",
-				"x_mitre_data_sources": [
-					"Windows event logs",
-					"Process command-line parameters",
-					"Process monitoring"
-				],
-				"x_mitre_detection": "Use process monitoring to monitor the execution and command line parameters of binaries involved in deleting accounts or changing passwords, such as use of [Net](https://attack.mitre.org/software/S0039). Windows event logs may also designate activity associated with an adversary's attempt to remove access to an account:\n\n* Event ID 4723 - An attempt was made to change an account's password\n* Event ID 4724 - An attempt was made to reset an account's password\n* Event ID 4726 - A user account was deleted\n* Event ID 4740 - A user account was locked out\n\nAlerting on [Net](https://attack.mitre.org/software/S0039) and these Event IDs may generate a high degree of false positives, so compare against baseline knowledge for how systems are typically used and correlate modification events with other indications of malicious activity where possible.",
-				"x_mitre_impact_type": [
-					"Availability"
-				],
-				"x_mitre_permissions_required": [
-					"User",
-					"Administrator",
-					"root",
-					"SYSTEM"
-				],
-				"x_mitre_platforms": [
-					"Linux",
-					"macOS",
-					"Windows"
-				],
-				"x_mitre_version": "1.0"
-			},
-			"reliability": "",
-			"score": 0,
-			"sourceBrand": "",
-			"sourceInstance": "",
-			"timestamp": "0001-01-01T00:00:00Z"
-		},
-		{
-			"ExpirationSource": null,
-			"bypassExclusionList": false,
-			"classifierVersion": 0,
-			"expirationInterval": 0,
-			"expirationPolicy": "",
-			"feedConfig": null,
-			"fetchTime": "0001-01-01T00:00:00Z",
-			"fields": null,
-			"isEnrichment": false,
-			"modifiedTime": "0001-01-01T00:00:00Z",
-			"moduleId": "",
-			"rawJSON": {
-				"created": "2019-07-19T14:58:42.715Z",
-				"created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
-				"description": "This category is to associate techniques that mitigation might increase risk of compromise and therefore mitigation is not recommended.",
-				"external_references": [
-					{
-						"external_id": "M1055",
-						"source_name": "mitre-attack",
-						"url": "https://attack.mitre.org/mitigations/M1055"
-					}
-				],
-				"id": "course-of-action--787fb64d-c87b-4ee5-a341-0ef17ec4c15c",
-				"modified": "2019-07-23T14:44:24.727Z",
-				"name": "Do Not Mitigate",
-				"object_marking_refs": [
-					"marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"
-				],
-				"type": "course-of-action",
-				"x_mitre_version": "1.0"
-			},
-			"reliability": "",
-			"score": 0,
-			"sourceBrand": "",
-			"sourceInstance": "",
-			"timestamp": "0001-01-01T00:00:00Z"
-		},
-		{
-			"ExpirationSource": null,
-			"bypassExclusionList": false,
-			"classifierVersion": 0,
-			"expirationInterval": 0,
-			"expirationPolicy": "",
-			"feedConfig": null,
-			"fetchTime": "0001-01-01T00:00:00Z",
-			"fields": null,
-			"isEnrichment": false,
-			"modifiedTime": "0001-01-01T00:00:00Z",
-			"moduleId": "",
-			"rawJSON": {
-				"created": "2019-10-05T02:34:01.189Z",
-				"created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
-				"description": "MailSniper is a penetration testing tool for searching through email in a Microsoft Exchange environment for specific terms (passwords, insider intel, network architecture information, etc.). It can be used by a non-administrative user to search their own email, or by an Exchange administrator to search the mailboxes of every user in a domain.(Citation: GitHub MailSniper)",
-				"external_references": [
-					{
-						"external_id": "S0413",
-						"source_name": "mitre-attack",
-						"url": "https://attack.mitre.org/software/S0413"
-					},
-					{
-						"description": "Bullock, B., . (2018, November 20). MailSniper. Retrieved October 4, 2019.",
-						"source_name": "GitHub MailSniper",
-						"url": "https://github.com/dafthack/MailSniper"
-					}
-				],
-				"id": "tool--999c4e6e-b8dc-4b4f-8d6e-1b829f29997e",
-				"labels": [
-					"tool"
-				],
-				"modified": "2019-10-15T18:27:30.488Z",
-				"name": "MailSniper",
-				"object_marking_refs": [
-					"marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"
-				],
-				"type": "tool",
-				"x_mitre_aliases": [
-					"MailSniper"
-				],
-				"x_mitre_platforms": [
-					"Office 365",
-					"Windows",
-					"Azure AD"
-				],
-				"x_mitre_version": "1.0"
-			},
-			"reliability": "",
-			"score": 0,
-			"sourceBrand": "",
-			"sourceInstance": "",
-			"timestamp": "0001-01-01T00:00:00Z"
-		},
-		{
-			"ExpirationSource": null,
-			"bypassExclusionList": false,
-			"classifierVersion": 0,
-			"expirationInterval": 0,
-			"expirationPolicy": "",
-			"feedConfig": null,
-			"fetchTime": "0001-01-01T00:00:00Z",
-			"fields": null,
-			"isEnrichment": false,
-			"modifiedTime": "0001-01-01T00:00:00Z",
-			"moduleId": "",
-			"rawJSON": {
-				"created": "2019-09-23T13:36:07.816Z",
-				"created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
-				"description": "[Rotexy](https://attack.mitre.org/software/S0411) is an Android banking malware that has evolved over several years. It was originally an SMS spyware Trojan first spotted in October 2014, and since then has evolved to contain more features, including ransomware functionality.(Citation: securelist rotexy 2018)",
-				"external_references": [
-					{
-						"external_id": "S0411",
-						"source_name": "mitre-attack",
-						"url": "https://attack.mitre.org/software/S0411"
-					},
-					{
-						"description": "T. Shishkova, L. Pikman. (2018, November 22).  The Rotexy mobile Trojan – banker and ransomware. Retrieved September 23, 2019.",
-						"source_name": "securelist rotexy 2018",
-						"url": "https://securelist.com/the-rotexy-mobile-trojan-banker-and-ransomware/88893/"
-					}
-				],
-				"id": "malware--0626c181-93cb-4860-9cb0-dff3b1c13063",
-				"labels": [
-					"malware"
-				],
-				"modified": "2019-10-15T19:56:50.492Z",
-				"name": "Rotexy",
-				"object_marking_refs": [
-					"marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"
-				],
-				"type": "malware",
-				"x_mitre_aliases": [
-					"Rotexy"
-				],
-				"x_mitre_platforms": [
-					"Android"
-				],
-				"x_mitre_version": "1.0"
-			},
-			"reliability": "",
-			"score": 0,
-			"sourceBrand": "",
-			"sourceInstance": "",
-			"timestamp": "0001-01-01T00:00:00Z"
-		},
-		{
-			"ExpirationSource": null,
-			"bypassExclusionList": false,
-			"classifierVersion": 0,
-			"expirationInterval": 0,
-			"expirationPolicy": "",
-			"feedConfig": null,
-			"fetchTime": "0001-01-01T00:00:00Z",
-			"fields": null,
-			"isEnrichment": false,
-			"modifiedTime": "0001-01-01T00:00:00Z",
-			"moduleId": "",
-			"rawJSON": {
-				"aliases": [
-					"APT41"
-				],
-				"created": "2019-09-23T13:43:36.945Z",
-				"created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
-				"description": "[APT41](https://attack.mitre.org/groups/G0096) is a group that carries out Chinese state-sponsored espionage activity in addition to financially motivated activity. [APT41](https://attack.mitre.org/groups/G0096) has been active since as early as 2012. The group has been observed targeting healthcare, telecom, technology, and video game industries in 14 countries.(Citation: FireEye APT41 Aug 2019)",
-				"external_references": [
-					{
-						"external_id": "G0096",
-						"source_name": "mitre-attack",
-						"url": "https://attack.mitre.org/groups/G0096"
-					},
-					{
-						"description": "(Citation: FireEye APT41 2019)",
-						"source_name": "APT41"
-					},
-					{
-						"description": "Fraser, N., et al. (2019, August 7). Double DragonAPT41, a dual espionage and cyber crime operation APT41. Retrieved September 23, 2019.",
-						"source_name": "FireEye APT41 Aug 2019",
-						"url": "https://content.fireeye.com/apt-41/rpt-apt41"
-					}
-				],
-				"id": "intrusion-set--18854f55-ac7c-4634-bd9a-352dd07613b7",
-				"modified": "2019-10-14T21:52:59.301Z",
-				"name": "APT41",
-				"object_marking_refs": [
-					"marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"
-				],
-				"type": "intrusion-set",
-				"x_mitre_version": "1.0"
-			},
-			"reliability": "",
-			"score": 0,
-			"sourceBrand": "",
-			"sourceInstance": "",
-			"timestamp": "0001-01-01T00:00:00Z"
-		},
-		{
-			"ExpirationSource": null,
-			"bypassExclusionList": false,
-			"classifierVersion": 0,
-			"expirationInterval": 0,
-			"expirationPolicy": "",
-			"feedConfig": null,
-			"fetchTime": "0001-01-01T00:00:00Z",
-			"fields": null,
-			"isEnrichment": false,
-			"modifiedTime": "0001-01-01T00:00:00Z",
-			"moduleId": "",
-			"rawJSON": {
-				"created": "2019-04-25T20:53:07.719Z\n2019-04-25T20:53:07.814Z",
-				"created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
-				"description": "Adversaries may attempt to make payloads difficult to discover and analyze by delivering files to victims as uncompiled code. Similar to [Obfuscated Files or Information](https://attack.mitre.org/techniques/T1027), text-based source code files may subvert analysis and scrutiny from protections targeting executables/binaries. These payloads will need to be compiled before execution; typically via native utilities such as csc.exe or GCC/MinGW.(Citation: ClearSky MuddyWater Nov 2018)\n\nSource code payloads may also be encrypted, encoded, and/or embedded within other files, such as those delivered as a [Spearphishing Attachment](https://attack.mitre.org/techniques/T1193). Payloads may also be delivered in formats unrecognizable and inherently benign to the native OS (ex: EXEs on macOS/Linux) before later being (re)compiled into a proper executable binary with a bundled compiler and execution framework.(Citation: TrendMicro WindowsAppMac)\n\n\nThis type of technique cannot be easily mitigated with preventive controls or patched since it is based on the abuse of operating system design features. For example, blocking all file compilation may have unintended side effects, such as preventing legitimate OS frameworks and code development mechanisms from operating properly. Consider removing compilers if not needed, otherwise efforts should be focused on preventing adversary tools from running earlier in the chain of activity and on identifying subsequent malicious behavior.\n\nIdentify unnecessary system utilities or potentially malicious software that may be used to decrypt, deobfuscate, decode, and compile files or information, and audit and/or block them by using whitelisting (Citation: Beechey 2010) tools, like AppLocker, (Citation: Windows Commands JPCERT) (Citation: NSA MS AppLocker) or Software Restriction Policies (Citation: Corio 2008) where appropriate. (Citation: TechNet Applocker vs SRP)",
-				"external_references": [
-					{
-						"external_id": "T1500",
-						"source_name": "mitre-attack",
-						"url": "https://attack.mitre.org/techniques/T1500"
-					},
-					{
-						"description": "ClearSky Cyber Security. (2018, November). MuddyWater Operations in Lebanon and Oman: Using an Israeli compromised domain for a two-stage campaign. Retrieved November 29, 2018.",
-						"source_name": "ClearSky MuddyWater Nov 2018",
-						"url": "https://www.clearskysec.com/wp-content/uploads/2018/11/MuddyWater-Operations-in-Lebanon-and-Oman.pdf"
-					},
-					{
-						"description": "Trend Micro. (2019, February 11). Windows App Runs on Mac, Downloads Info Stealer and Adware. Retrieved April 25, 2019.",
-						"source_name": "TrendMicro WindowsAppMac",
-						"url": "https://blog.trendmicro.com/trendlabs-security-intelligence/windows-app-runs-on-mac-downloads-info-stealer-and-adware/"
-					},
-					{
-						"external_id": "T1500",
-						"source_name": "mitre-attack",
-						"url": "https://attack.mitre.org/mitigations/T1500"
-					},
-					{
-						"description": "Beechey, J. (2010, December). Application Whitelisting: Panacea or Propaganda?. Retrieved November 18, 2014.",
-						"source_name": "Beechey 2010",
-						"url": "http://www.sans.org/reading-room/whitepapers/application/application-whitelisting-panacea-propaganda-33599"
-					},
-					{
-						"description": "Tomonaga, S. (2016, January 26). Windows Commands Abused by Attackers. Retrieved February 2, 2016.",
-						"source_name": "Windows Commands JPCERT",
-						"url": "http://blog.jpcert.or.jp/2016/01/windows-commands-abused-by-attackers.html"
-					},
-					{
-						"description": "NSA Information Assurance Directorate. (2014, August). Application Whitelisting Using Microsoft AppLocker. Retrieved March 31, 2016.",
-						"source_name": "NSA MS AppLocker",
-						"url": "https://www.iad.gov/iad/library/ia-guidance/tech-briefs/application-whitelisting-using-microsoft-applocker.cfm"
-					},
-					{
-						"description": "Corio, C., \u0026 Sayana, D. P. (2008, June). Application Lockdown with Software Restriction Policies. Retrieved November 18, 2014.",
-						"source_name": "Corio 2008",
-						"url": "http://technet.microsoft.com/en-us/magazine/2008.06.srp.aspx"
-					},
-					{
-						"description": "Microsoft. (2012, June 27). Using Software Restriction Policies and AppLocker Policies. Retrieved April 7, 2016.",
-						"source_name": "TechNet Applocker vs SRP",
-						"url": "https://technet.microsoft.com/en-us/library/ee791851.aspx"
-					}
-				],
-				"id": "attack-pattern--cf7b3a06-8b42-4c33-bbe9-012120027925",
-				"kill_chain_phases": [
-					{
-						"kill_chain_name": "mitre-attack",
-						"phase_name": "defense-evasion"
-					}
-				],
-				"modified": "2019-04-29T21:13:49.686Z\n2019-07-24T14:18:49.192Z",
-				"name": "Compile After Delivery",
-				"object_marking_refs": [
-					"marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"
-				],
-				"type": "attack-pattern",
-				"x_mitre_contributors": [
-					"Ye Yint Min Thu Htut, Offensive Security Team, DBS Bank",
-					"Praetorian"
-				],
-				"x_mitre_data_sources": [
-					"Process command-line parameters",
-					"Process monitoring",
-					"File monitoring"
-				],
-				"x_mitre_defense_bypassed": [
-					"Static File Analysis",
-					"Binary Analysis",
-					"Anti-virus",
-					"Host intrusion prevention systems",
-					"Signature-based detection"
-				],
-				"x_mitre_detection": "Monitor the execution file paths and command-line arguments for common compilers, such as csc.exe and GCC/MinGW, and correlate with other suspicious behavior to reduce false positives from normal user and administrator behavior. The compilation of payloads may also generate file creation and/or file write events. Look for non-native binary formats and cross-platform compiler and execution frameworks like Mono and determine if they have a legitimate purpose on the system.(Citation: TrendMicro WindowsAppMac) Typically these should only be used in specific and limited cases, like for software development.",
-				"x_mitre_permissions_required": [
-					"User"
-				],
-				"x_mitre_platforms": [
-					"Linux",
-					"macOS",
-					"Windows"
-				],
-				"x_mitre_system_requirements": [
-					"Compiler software (either native to the system or delivered by the adversary)"
-				],
-				"x_mitre_version": "1.0"
-			},
-			"reliability": "",
-			"score": 0,
-			"sourceBrand": "",
-			"sourceInstance": "",
-			"timestamp": "0001-01-01T00:00:00Z"
-		}
-	],
-	"instanceId": "4d97db15-0545-4ea0-866d-09f860edcc89",
-	"instanceName": "MITRE ATT\u0026CK",
-	"isDefault": false,
-	"keyTypeMap": {
-		"attack-pattern": "4d4aeb5d-ce83-4e44-8e27-1f5e5b48d9ba",
-		"course-of-action": "4d4aeb5d-ce83-4e44-8e27-1f5e5b48d9ba",
-		"intrusion-set": "4d4aeb5d-ce83-4e44-8e27-1f5e5b48d9ba",
-		"malware": "4d4aeb5d-ce83-4e44-8e27-1f5e5b48d9ba",
-		"tool": "4d4aeb5d-ce83-4e44-8e27-1f5e5b48d9ba"
-	},
-	"mapping": {
-		"4d4aeb5d-ce83-4e44-8e27-1f5e5b48d9ba": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"Associations": {
-					"complex": null,
-					"simple": "aliases"
-				},
-				"First Seen By Source": {
-					"complex": null,
-					"simple": "created"
-				},
-				"Last Seen By Source": {
-					"complex": null,
-					"simple": "modified"
-				},
-				"MITRE Aliases": {
-					"complex": null,
-					"simple": "aliases"
-				},
-				"MITRE Contributors": {
-					"complex": null,
-					"simple": "x_mitre_contributors"
-				},
-				"MITRE Data Sources": {
-					"complex": null,
-					"simple": "x_mitre_data_sources"
-				},
-				"MITRE Defense Bypassed": {
-					"complex": null,
-					"simple": "x_mitre_defense_bypassed"
-				},
-				"MITRE Description": {
-					"complex": null,
-					"simple": "description"
-				},
-				"MITRE Detection": {
-					"complex": null,
-					"simple": "x_mitre_detection"
-				},
-				"MITRE Extended Aliases": {
-					"complex": null,
-					"simple": "x_mitre_aliases"
-				},
-				"MITRE External References": {
-					"complex": null,
-					"simple": "external_references"
-				},
-				"MITRE ID": {
-					"complex": null,
-					"simple": "id"
-				},
-				"MITRE Impact Type": {
-					"complex": null,
-					"simple": "x_mitre_impact_type"
-				},
-				"MITRE Kill Chain Phases": {
-					"complex": null,
-					"simple": "kill_chain_phases"
-				},
-				"MITRE Labels": {
-					"complex": null,
-					"simple": "labels"
-				},
-				"MITRE Name": {
-					"complex": null,
-					"simple": "name"
-				},
-				"MITRE Permissions Required": {
-					"complex": null,
-					"simple": "x_mitre_permissions_required"
-				},
-				"MITRE Platforms": {
-					"complex": null,
-					"simple": "x_mitre_platforms"
-				},
-				"MITRE System Requirements": {
-					"complex": null,
-					"simple": "x_mitre_system_requirements"
-				},
-				"MITRE Version": {
-					"complex": null,
-					"simple": "x_mitre_version"
-				}
-			}
-		}
-	},
-	"sortValues": null,
-	"transformer": {
-		"complex": null,
-		"simple": "type"
-	},
-	"unclassifiedCases": {},
-	"version": -1
+    "brandName": "MITRE ATT&CK",
+    "custom": true,
+    "defaultIncidentType": "",
+    "id": "4dd9e51f-287f-491b-81a4-ecce4da02df9",
+    "keyTypeMap": {
+        "attack-pattern": "4d4aeb5d-ce83-4e44-8e27-1f5e5b48d9ba",
+        "course-of-action": "4d4aeb5d-ce83-4e44-8e27-1f5e5b48d9ba",
+        "intrusion-set": "4d4aeb5d-ce83-4e44-8e27-1f5e5b48d9ba",
+        "malware": "4d4aeb5d-ce83-4e44-8e27-1f5e5b48d9ba",
+        "tool": "4d4aeb5d-ce83-4e44-8e27-1f5e5b48d9ba"
+    },
+    "mapping": {
+        "4d4aeb5d-ce83-4e44-8e27-1f5e5b48d9ba": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Associations": {
+                    "complex": null,
+                    "simple": "aliases"
+                },
+                "First Seen By Source": {
+                    "complex": null,
+                    "simple": "created"
+                },
+                "Last Seen By Source": {
+                    "complex": null,
+                    "simple": "modified"
+                },
+                "MITRE Aliases": {
+                    "complex": null,
+                    "simple": "aliases"
+                },
+                "MITRE Contributors": {
+                    "complex": null,
+                    "simple": "x_mitre_contributors"
+                },
+                "MITRE Data Sources": {
+                    "complex": null,
+                    "simple": "x_mitre_data_sources"
+                },
+                "MITRE Defense Bypassed": {
+                    "complex": null,
+                    "simple": "x_mitre_defense_bypassed"
+                },
+                "MITRE Description": {
+                    "complex": null,
+                    "simple": "description"
+                },
+                "MITRE Detection": {
+                    "complex": null,
+                    "simple": "x_mitre_detection"
+                },
+                "MITRE Extended Aliases": {
+                    "complex": null,
+                    "simple": "x_mitre_aliases"
+                },
+                "MITRE External References": {
+                    "complex": null,
+                    "simple": "external_references"
+                },
+                "MITRE ID": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "MITRE Impact Type": {
+                    "complex": null,
+                    "simple": "x_mitre_impact_type"
+                },
+                "MITRE Kill Chain Phases": {
+                    "complex": null,
+                    "simple": "kill_chain_phases"
+                },
+                "MITRE Labels": {
+                    "complex": null,
+                    "simple": "labels"
+                },
+                "MITRE Name": {
+                    "complex": null,
+                    "simple": "name"
+                },
+                "MITRE Permissions Required": {
+                    "complex": null,
+                    "simple": "x_mitre_permissions_required"
+                },
+                "MITRE Platforms": {
+                    "complex": null,
+                    "simple": "x_mitre_platforms"
+                },
+                "MITRE System Requirements": {
+                    "complex": null,
+                    "simple": "x_mitre_system_requirements"
+                },
+                "MITRE Version": {
+                    "complex": null,
+                    "simple": "x_mitre_version"
+                }
+            }
+        }
+    },
+    "transformer": {
+        "complex": null,
+        "simple": "type"
+    },
+    "unclassifiedCases": {},
+    "version": -1,
+    "fromVersion": "5.5.0"
 }
