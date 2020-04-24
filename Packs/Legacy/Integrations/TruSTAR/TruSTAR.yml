@@ -437,10 +437,11 @@ script:
     description: Returns the list of all enclaves that the user has access to, as
       well as whether they can read, create, and update reports in that enclave.
   - name: file
+    deprecated: true
     arguments:
     - name: file
       required: true
-      description: DEPRECATED - File hash - MD5, SHA1 or SHA256
+      description: File hash - MD5, SHA1 or SHA256
     - name: threshold
       auto: PREDEFINED
       predefined:
@@ -487,10 +488,11 @@ script:
       description: For malicious files, the reason for the vendor to make the decision
     description: Check file reputation on TruSTAR
   - name: ip
+    deprecated: true
     arguments:
     - name: ip
       required: true
-      description: DEPRECATED - IP address (e.g. 8.8.8.8) or a CIDR (e.g. 1.1.1.0/18)
+      description: IP address (e.g. 8.8.8.8) or a CIDR (e.g. 1.1.1.0/18)
     - name: threshold
       auto: PREDEFINED
       predefined:
@@ -531,10 +533,11 @@ script:
       description: Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH
     description: Check IP Reputation on TruSTAR
   - name: url
+    deprecated: true
     arguments:
     - name: url
       required: true
-      description: DEPRECATED - Enter a URL to search
+      description: Enter a URL to search
     - name: threshold
       auto: PREDEFINED
       predefined:
@@ -576,10 +579,11 @@ script:
       type: string
     description: Check URL reputation on TruSTAR
   - name: domain
+    deprecated: true
     arguments:
     - name: domain
       required: true
-      description: DEPRECATED - Enter domain name to search
+      description: Enter domain name to search
     - name: threshold
       auto: PREDEFINED
       predefined:
