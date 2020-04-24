@@ -1790,7 +1790,8 @@ class Common(object):
         SUSPICIOUS = 2
         BAD = 3
 
-        CONTEXT_PATH = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'
+        CONTEXT_PATH = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor ' \
+            '&& val.Type == obj.Type)'
 
         CONTEXT_PATH_PRIOR_V5_5 = 'DBotScore'
 

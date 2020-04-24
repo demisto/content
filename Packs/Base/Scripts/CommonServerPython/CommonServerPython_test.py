@@ -878,7 +878,7 @@ class TestCommandResults:
                     'ASN': 'some asn',
                     'Hostname': 'test.com'
                 },
-                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': {
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)': {
                     'Indicator': '8.8.8.8',
                     'Vendor': 'Virus Total',
                     'Score': 1,
@@ -910,7 +910,7 @@ class TestCommandResults:
             'Contents': None,
             'HumanReadable': None,
             'EntryContext': {
-                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': {
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)': {
                     'Indicator': '8.8.8.8',
                     'Vendor': 'Virus Total',
                     'Score': 1,
@@ -1079,7 +1079,7 @@ class TestCommandResults:
                         }
                     }
                 },
-                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': {
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)': {
                     'Indicator': 'somedomain.com',
                     'Vendor': 'Virus Total',
                     'Score': 1,
