@@ -184,6 +184,10 @@ def update_index_folder(index_folder_path, pack_name, pack_path, pack_version=''
 
         # Copy new files and add metadata for latest version
         for d in os.scandir(pack_path):
+            if not os.path.exists(index_pack_path):
+                os.mkdir(index_pack_path)
+                print(f"Created {pack_name} pack folder in {GCPConfig.INDEX_NAME}")
+
             shutil.copy(d.path, index_pack_path)
             if pack_version and Pack.METADATA == d.name:
                 shutil.copy(d.path, new_metadata_path)
