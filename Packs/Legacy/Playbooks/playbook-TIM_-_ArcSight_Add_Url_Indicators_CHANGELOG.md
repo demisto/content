@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+Fixed conditional task test.
 
 
 ## [20.3.4] - 2020-03-30
