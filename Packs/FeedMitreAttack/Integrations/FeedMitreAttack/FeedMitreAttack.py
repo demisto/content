@@ -354,6 +354,8 @@ def search_command(client, args):
 
 def reputation_command(client, args):
     inputIndicator = args.get('indicator')
+    demistoURLs = demisto.demistoUrls()
+    indicatorURL = demistoURLs.get('server') + "/#/indicator/"
     allIndicators = list()
     page = 0
     size = 1000
@@ -368,7 +370,8 @@ def reputation_command(client, args):
         score = indicator.get('score')
         value = indicator.get('value')
         indicatorID = indicator.get('id')
-        md = f"## {value}:\n {customFields.get('mitredescription', '')}"
+        url = indicatorURL + indicatorID
+        md = f"## {[value]}({url}):\n {customFields.get('mitredescription', '')}"
         ec = {
             "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor && val.Vendor == obj.Vendor)": {
                 "Indicator": value,
