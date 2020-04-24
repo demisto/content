@@ -8,6 +8,32 @@ import requests
 from stix2 import TAXIICollectionSource, Filter
 from taxii2client import Server, Collection
 
+''' CONSTANT VARIABLES '''
+
+# The field mapping here will determine how the fields
+# are mapped into the indicator. Generally, fields of type
+# "list" will be joined with a "\n". Types of "dict" and
+# "str" will be mapped as is.
+mitreFieldMapping = {
+    "mitrealiases": {"name": "aliases", "type": "list"},
+    "mitrecontributors": {"name": "x_mitre_contributors", "type": "list"},
+    "mitredatasources": {"name": "x_mitre_data_sources", "type": "str"},
+    "mitredefensebypassed": {"name": "x_mitre_defense_bypassed", "type": "list"},
+    "mitredescription": {"name": "description", "type": "str"},
+    "mitredetection": {"name": "x_mitre_detection", "type": "str"},
+    "mitreextendedaliases": {"name": "x_mitre_aliases", "type": "list"},
+    "mitreexternalreferences": {"name": "external_references", "type": "dict"},
+    "mitreid": {"name": "id", "type": "str"},
+    "mitreimpacttype": {"name": "x_mitre_impact_type", "type": "list"},
+    "mitrekillchainphases": {"name": "kill_chain_phases", "type": "dict"},
+    "mitrelabels": {"name": "labels", "type": "list"},
+    "mitrename": {"name": "name", "type": "str"},
+    "mitrepermissionsrequired": {"name": "x_mitre_permissions_required", "type": "list"},
+    "mitreplatforms": {"name": "x_mitre_platforms", "type": "dict"},
+    "mitresystemrequirements": {"name": "x_mitre_system_requirements", "type": "list"},
+    "mitreversion": {"name": "x_mitre_version", "type": "str"},
+}
+
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -48,7 +74,6 @@ class Client:
         Returns:
             A list of objects, containing the indicators.
         """
-        # TODO: Check sub-feeds mid-year
 
         indicators = list()
         mitreIDList = set()
@@ -116,6 +141,8 @@ class Client:
 
                     if mitreItemJSON.get('id') not in mitreIDList:
 
+                        # If the indicator already exists, then append the new data
+                        # to the existing indicator.
                         if value in indicatorValuesList:
 
                             # Append data to the original item
@@ -191,6 +218,26 @@ class Client:
                                         "rawJSON": mitreItemJSON,
                                     })
                                     externalRefs.add(x)
+
+        # Finally, map all the fields from the indicator
+        # rawjson to the fields in the indicator
+        for indicator in indicators:
+            indicator['fields'] = dict()
+            for field, value in mitreFieldMapping.items():
+                try:
+                    # Try and map the field
+                    valueType = value['type']
+                    valueName = value['name']
+                    if valueType == "list":
+                        indicator['fields'][field] = "\n".join(indicator['rawJSON'][valueName])
+                    else:
+                        indicator['fields'][field] = indicator['rawJSON'][valueName]
+                except KeyError as err:
+                    # If the field does not exist in the indicator
+                    # then move on
+                    pass
+                except Exception as err:
+                    demisto.error(f"Error when mapping Mitre Fields - {err}")
         return(indicators)
 
 
@@ -346,7 +393,7 @@ def main():
     includeAPT = params.get('includeAPT')
     proxies = handle_proxy()
     verify_certificate = not params.get('insecure', False)
-    
+
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
