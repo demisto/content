@@ -10,11 +10,6 @@ description: MITRE ATT&CK® is a globally-accessible knowledge base of adversary
   in the private sector, in government, and in the cybersecurity product and service
   community.
 configuration:
-- display: Incident type
-  name: incidentType
-  defaultvalue: ''
-  type: 13
-  required: false
 - display: Include external actor references as indicators
   name: includeAPT
   defaultvalue: 'false'
