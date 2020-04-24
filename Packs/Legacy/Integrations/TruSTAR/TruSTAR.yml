@@ -1,8 +1,8 @@
 commonfields:
-  id: TruSTARv2
+  id: TruSTAR
   version: -1
-name: TruSTARv2
-display: TruSTARv2
+name: TruSTAR
+display: TruSTAR
 category: Data Enrichment & Threat Intelligence
 description: TruSTAR's threat intelligence platform enriches every stage of the security
   operations workflow from the trusted and relevant data sources.
