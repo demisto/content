@@ -25,7 +25,9 @@ INSECURE = demisto.params()['insecure']
 ''' HELPER FUNCTIONS '''
 
 
-def translate_indicators(ts_indicators):
+def translate_indicators(ts_indicators, context_path=''):
+    if context_path and context_path[-1] != '.':
+        context_path += '.'
     indicators = []
     file_context = []
     url_context = []
@@ -68,17 +70,17 @@ def translate_indicators(ts_indicators):
     # Build Entry Context
     ec = {}
     if file_context:
-        ec['File(val.Name && val.Name === obj.Name)'] = file_context
+        ec['{}File(val.Name && val.Name === obj.Name)'.format(context_path)] = file_context
     if url_context:
-        ec['URL(val.Address && val.Address === obj.Address)'] = url_context
+        ec['{}URL(val.Address && val.Address === obj.Address)'.format(context_path)] = url_context
     if ip_context:
-        ec['IP(val.Address && val.Address === obj.Address)'] = ip_context
+        ec['{}IP(val.Address && val.Address === obj.Address)'.format(context_path)] = ip_context
     if email_context:
-        ec['Account.Email(val.Address && val.Address === obj.Address)'] = email_context
+        ec['{}Account.Email(val.Address && val.Address === obj.Address)'.format(context_path)] = email_context
     if key_context:
-        ec['RegistryKey(val.Path && val.Path === obj.Path)'] = key_context
+        ec['{}RegistryKey(val.Path && val.Path === obj.Path)'.format(context_path)] = key_context
     if cve_context:
-        ec['CVE(val.ID && val.ID === obj.ID)'] = cve_context
+        ec['{}CVE(val.ID && val.ID === obj.ID)'.format(context_path)] = cve_context
     return indicators, ec
 
 
@@ -87,7 +89,7 @@ def translate_triage_submission(submissions):
     for submission in submission_dicts:
         indicators = [c.to_dict(remove_nones=True) for c in submission.get('context')]
         submission['context'] = indicators
-    ec = {'TruSTAR.Phishing(val.submissionId == obj.submissionId)': submission_dicts}
+    ec = {'TruSTAR.PhishingSubmission(val.submissionId == obj.submissionId)': submission_dicts}
     return submission_dicts, ec
 
 
@@ -666,7 +668,7 @@ def get_all_phishing_indicators(normalized_triage_score,
             'from_time': date_to_unix(from_time) if from_time else None,
             'to_time': date_to_unix(to_time) if to_time else None}
     response = ts.get_phishing_indicators_page(**args)
-    indicators, ec = translate_indicators(response.items)
+    indicators, ec = translate_indicators(response.items, 'TruSTAR.PhishingIndicator')
     if indicators:
         title = 'TruSTAR phishing indicators'
         entry = {

@@ -1,8 +1,8 @@
 commonfields:
-  id: TruSTAR
+  id: TruSTARv2
   version: -1
-name: TruSTAR
-display: TruSTAR
+name: TruSTARv2
+display: TruSTARv2
 category: Data Enrichment & Threat Intelligence
 description: TruSTAR's threat intelligence platform enriches every stage of the security
   operations workflow from the trusted and relevant data sources.
@@ -440,7 +440,7 @@ script:
     arguments:
     - name: file
       required: true
-      description: File hash - MD5, SHA1 or SHA256
+      description: DEPRECATED - File hash - MD5, SHA1 or SHA256
     - name: threshold
       auto: PREDEFINED
       predefined:
@@ -490,7 +490,7 @@ script:
     arguments:
     - name: ip
       required: true
-      description: IP address (e.g. 8.8.8.8) or a CIDR (e.g. 1.1.1.0/18)
+      description: DEPRECATED - IP address (e.g. 8.8.8.8) or a CIDR (e.g. 1.1.1.0/18)
     - name: threshold
       auto: PREDEFINED
       predefined:
@@ -534,7 +534,7 @@ script:
     arguments:
     - name: url
       required: true
-      description: Enter a URL to search
+      description: DEPRECATED - Enter a URL to search
     - name: threshold
       auto: PREDEFINED
       predefined:
@@ -579,7 +579,7 @@ script:
     arguments:
     - name: domain
       required: true
-      description: Enter domain name to search
+      description: DEPRECATED - Enter domain name to search
     - name: threshold
       auto: PREDEFINED
       predefined:
@@ -642,22 +642,22 @@ script:
       isArray: true
       defaultValue: UNRESOLVED
     outputs:
-    - contextPath: TruSTAR.Phishing.submissionId
+    - contextPath: TruSTAR.PhishingSubmission.submissionId
       description: The submission ID
       type: string
-    - contextPath: TruSTAR.Phishing.title
+    - contextPath: TruSTAR.PhishingSubmission.title
       description: Submission title
       type: string
-    - contextPath: TruSTAR.Phishing.normalizedTriageScore
+    - contextPath: TruSTAR.PhishingSubmission.normalizedTriageScore
       description: Submission triage score
       type: number
-    - contextPath: TruSTAR.Phishing.context.indicatorType
+    - contextPath: TruSTAR.PhishingSubmission.context.indicatorType
       description: Indicator type
       type: string
-    - contextPath: TruSTAR.Phishing.context.sourceKey
+    - contextPath: TruSTAR.PhishingSubmission.context.sourceKey
       description: Indicator source
       type: string
-    - contextPath: TruSTAR.Phishing.context.normalizedSourceScore
+    - contextPath: TruSTAR.PhishingSubmission.context.normalizedSourceScore
       description: Indicator score
       type: number
     description: Fetches all phishing submissions that fit the given criteria
@@ -701,31 +701,31 @@ script:
       isArray: true
       defaultValue: UNRESOLVED,CONFIRMED,IGNORED
     outputs:
-    - contextPath: File.Name
+    - contextPath: TruSTAR.PhishingIndicator.File.Name
       description: File name
       type: string
-    - contextPath: File.MD5
+    - contextPath: TruSTAR.PhishingIndicator.File.MD5
       description: File MD5
       type: string
-    - contextPath: File.SHA1
+    - contextPath: TruSTAR.PhishingIndicator.File.SHA1
       description: File SHA1
       type: string
-    - contextPath: File.SHA256
+    - contextPath: TruSTAR.PhishingIndicator.File.SHA256
       description: File SHA256
       type: string
-    - contextPath: URL.Address
+    - contextPath: TruSTAR.PhishingIndicator.URL.Address
       description: URL address
       type: string
-    - contextPath: IP.Address
+    - contextPath: TruSTAR.PhishingIndicator.IP.Address
       description: IP address
       type: string
-    - contextPath: Account.Email.Address
+    - contextPath: TruSTAR.PhishingIndicator.Account.Email.Address
       description: Email address
       type: string
-    - contextPath: RegistryKey.Path
+    - contextPath: TruSTAR.PhishingIndicator.RegistryKey.Path
       description: Registry key path
       type: string
-    - contextPath: CVE.ID
+    - contextPath: TruSTAR.PhishingIndicator.CVE.ID
       description: CVE ID
       type: string
     description: Get phishing indicators that match the given criteria.
