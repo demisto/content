@@ -5,7 +5,7 @@
     "description": "A transformer that returns a string with all matches of a regex pattern groups replaced by a replacement",
     "support": "demisto",
     "serverMinVersion": "",
-    "currentVersion": "1.6.0",
+    "currentVersion": "1.0.0",
     "author": "",
     "url": "",
     "email": "",
