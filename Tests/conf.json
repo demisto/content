@@ -2620,7 +2620,7 @@
             "integrations": "Endace",
             "playbookID": "Endace-Test",
             "fromversion": "5.0.0"
-        },   
+        } 
     ],
     "skipped_tests": {
         "Test-Shodan_v2": "Issue 23370",
