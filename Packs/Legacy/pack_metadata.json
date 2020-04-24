@@ -3,7 +3,7 @@
     "description": "Old format content items",
     "support": "xsoar",
     "serverMinVersion": "5.5.0",
-    "currentVersion": "1.35.0",
+    "currentVersion": "1.36.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
