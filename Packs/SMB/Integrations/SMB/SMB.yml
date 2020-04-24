@@ -114,7 +114,7 @@ script:
     execution: false
     name: smb-upload
   dockerimage45: demisto/pysmb
-  dockerimage: devdemisto/smb:1.0.0.7681
+  dockerimage: demisto/smb:1.0.0.7685
   isfetch: false
   runonce: false
   script: '-'
