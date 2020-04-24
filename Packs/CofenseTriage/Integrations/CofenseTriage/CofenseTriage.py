@@ -1,15 +1,14 @@
+from typing import Any, List, Dict
+from io import BytesIO
+import requests
+from PIL import Image
+
 import demistomock as demisto
 from CommonServerPython import *
-'''IMPORTS'''
-import requests
-from typing import Any, List, Dict
-from PIL import Image
-from io import BytesIO
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-''' GLOBALS '''
 BASE_URL = demisto.getParam('host').rstrip('/') + '/api/public/v1'  # type: str
 TOKEN = demisto.getParam('token')  # type: str
 USER = demisto.getParam('user')  # type: str
@@ -471,8 +470,8 @@ def parse_report_body(report) -> None:
 
 
 def get_report_by_id(report_id):
-    response = http_request(url_suffix=f'/reports/{report_id}', params={'report_id': report_id})
-    return response
+    """Fetch a report from Triage by report_id"""
+    return http_request(url_suffix=f'/reports/{report_id}', params={'report_id': report_id})
 
 
 try:
