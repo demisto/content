@@ -232,7 +232,7 @@ class Client:
                         indicator['fields'][field] = "\n".join(indicator['rawJSON'][valueName])
                     else:
                         indicator['fields'][field] = indicator['rawJSON'][valueName]
-                except KeyError as err:
+                except KeyError:
                     # If the field does not exist in the indicator
                     # then move on
                     pass
