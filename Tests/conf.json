@@ -2634,8 +2634,8 @@
         }
     ],
     "skipped_tests": {
-        "PAN-OS EDL Setup V2 Test": "Issue 23854"
-        "PAN-OS - Block IP and URL - External Dynamic List Test": "Issue 23854"
+        "PAN-OS EDL Setup V2 Test": "Issue 23854",
+        "PAN-OS - Block IP and URL - External Dynamic List Test": "Issue 23854",
         "Test-Shodan_v2": "Issue 23370",
         "Send Investigation Summary Reports - Test": "Issue 22299",
         "Symantec Deepsight Test": "Issue 22971",
