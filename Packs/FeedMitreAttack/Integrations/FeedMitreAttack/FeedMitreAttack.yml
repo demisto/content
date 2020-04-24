@@ -24,7 +24,6 @@ configuration:
   required: false
 - display: Indicator Reputation
   name: feedReputation
-  defaultvalue: None
   options:
     - None
     - Good
@@ -32,6 +31,7 @@ configuration:
     - Bad
   required: false
   type: 18
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
 - display: Source Reliability
   name: feedReliability
   defaultvalue: A - Completely reliable
