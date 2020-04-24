@@ -6,6 +6,8 @@ from PIL import Image
 import demistomock as demisto
 from CommonServerPython import *
 
+from .triage_report import TriageReport  # TODO absolute import
+
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -125,8 +127,7 @@ def fetch_reports() -> None:
     )
     max_fetch = int(demisto.getParam('max_fetch'))
 
-    # TODO report should be an class
-    reports = triage_request(
+    triage_response = triage_request(
         "processed_reports",
         params={
             "category_id": demisto.getParam("category_id"),
@@ -138,45 +139,31 @@ def fetch_reports() -> None:
 
     already_fetched = set(demisto.getLastRun().get('reports_fetched', '[]'))
 
+    triage_reports = [
+        TriageReport(report)
+        for report in triage_response
+        if report["id"] not in already_fetched
+    ]
+
     incidents = []
-    for report in reports:
-        if "reporter_id" not in report:
-            # TODO is this expected? debug output?
-            continue
-
-        if report["id"] in already_fetched:
-            continue
-
-        reporter_data = get_reporter_data(report["reporter_id"])
-        for k, v in reporter_data.items():
-            report_key = 'reporter_' + k
-            report[report_key] = v
-
-        report_id = report['id']
-        report_body = report.pop('report_body')
+    for report in triage_reports:
         incident = {
-            'name': f"cofense triage report {report_id}: {triage_report_category_name(report)}",
-            'occurred': report.get('created_at'),
-            'rawJSON': json.dumps(report),
-            'severity': triage_report_severity(report)
+            'name': f"cofense triage report {report.id}: {report.category_name}",
+            'occurred': report.date,
+            'rawJSON': report.to_json(),
+            'severity': report.severity,
         }
 
-        # load HTML attachment into the incident
-        attachment = load_attachment(report_body, report_id)
-        if attachment:
-            incident['attachment'] = attachment
-        else:
-            # attachment is not HTML file, keep it as plain text
-            report['report_body'] = report_body
-            incident['rawJSON'] = json.dumps(report)
+        if report.attachment:
+            incident['attachment'] = report.attachment
 
         incidents.append(incident)
-        already_fetched.add(report_id)
+        already_fetched.add(report.id)
         if len(incidents) >= max_fetch:
             break
 
     demisto.incidents(incidents)
-    demisto.setLastRun({'reports_fetched': already_fetched})  # TODO does this have to be JSON?
+    demisto.setLastRun({'reports_fetched': already_fetched})  # TODO JSON?
 
 
 def load_attachment(report_body: Any, report_id: int) -> list:
@@ -474,33 +461,6 @@ def triage_api_url(endpoint):
 
     endpoint = endpoint.ltrip("/")
     return f"{TRIAGE_HOST}/api/public/v1/{endpoint}"
-
-
-def triage_report_category_name(report):
-    """Return the human-readable name of the category the given report belongs to"""
-
-    category_id = report.get("category_id")
-    return {
-        1: "Non-Malicious",
-        2: "Spam",
-        3: "Crimeware",
-        4: "Advanced Threats",
-        6: "Phishing Simulation",
-    }.get(category_id, "Unknown")
-
-
-def triage_report_severity(report):
-    """Return the human-readable name of the severity. Severity is a function of category."""
-
-    category_id = report.get("category_id")
-    # Demisto's severity levels are 4 - Critical, 3 - High, 2 - Medium, 1 - Low, 0 - Unknown
-    return {
-        1: 1,  # non malicious -> low
-        2: 0,  # spam -> unknown
-        3: 2,  # crimeware -> medium
-        4: 2,  # advanced threats -> medium
-        5: 1,  # phishing simulation -> low
-    }.get(category_id, 0)
 
 
 try:
