@@ -3,7 +3,7 @@
     "kind": "indicatorsDetails",
     "layout": {
         "TypeName": "",
-        "id": "cfcdaf77-4a32-4f3e-8ecf-128e3763fd6c",
+        "id": "MITRE ATT&CK",
         "kind": "indicatorsDetails",
         "modified": "2020-04-02T16:18:06.623740865Z",
         "name": "",
@@ -528,10 +528,10 @@
                 "type": "custom"
             }
         ],
-        "typeId": "cfcdaf77-4a32-4f3e-8ecf-128e3763fd6c",
+        "typeId": "MITRE ATT&CK",
         "version": -1
     },
-    "typeId": "cfcdaf77-4a32-4f3e-8ecf-128e3763fd6c",
+    "typeId": "MITRE ATT&CK",
     "version": -1,
     "fromVersion": "5.5.0"
 }
