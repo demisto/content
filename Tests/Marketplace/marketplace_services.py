@@ -394,10 +394,11 @@ class Pack(object):
         task_status = False
 
         try:
+            signature_string = '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'
             if signature_string:
                 with open("keyfile", "wb") as keyfile:
                     keyfile.write(signature_string.encode())
-                arg = f'./signDirectory {self._pack_path} /keyfile base64'
+                arg = f'./signDirectory {self._pack_path} keyfile base64'
                 signing_process = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 output, err = signing_process.communicate()
 
@@ -663,6 +664,8 @@ class Pack(object):
                     with open(rn_path, 'r') as changelog_md:
                         changelog_lines = changelog_md.read()
                         # Attempt to grab a DisplayName from the release notes
+                        # TODO Use version display name from metadata for most recent change, others come from bucket
+                        # TODO Load old changelog.json
                         if display_name_pattern.search(changelog_lines):
                             display_dict = display_name_pattern.search(changelog_lines).groupdict()
                             display_name = display_dict.get('disp_name')
