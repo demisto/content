@@ -21,23 +21,6 @@ HEADERS = {
 DEFAULT_TIME_RANGE = '7 days'  # type: str
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'  # type: str
 
-CATEGORIES = {
-    1: 'Non-Malicious',
-    2: 'Spam',
-    3: 'Crimeware',
-    4: 'Advanced Threats',
-    5: 'Phishing Simulation'
-}
-
-# Severity levels are 4 - Critical, 3 - High, 2 - Medium, 1 - Low, 0 - Unknown
-CATEGORIES_SEVERITY = {
-    1: 1,  # non malicious -> low
-    2: 0,  # spam -> unknown
-    3: 2,  # crimeware -> medium
-    4: 2,  # advanced threats -> medium
-    5: 1  # phishing simulation -> low
-}
-
 TERSE_FIELDS = [
     'id',
     'cluster_id',
@@ -136,59 +119,64 @@ def test_function() -> None:
 
 
 def fetch_reports() -> None:
-    # parameters importing
-    start_date, _ = parse_date_range(demisto.getParam('date_range'), date_format=TIME_FORMAT)
-    max_fetch = int(demisto.getParam('max_fetch'))  # type: int
-    params = {
-        'category_id': demisto.getParam('category_id'),
-        'match_priority': demisto.getParam('match_priority'),
-        'tags': demisto.getParam('tags'),
-        'start_date': start_date,
-    }
+    """Fetch up to `max_reports` reports since the last time the command was run. TODO date_range"""
+    start_date, _ = parse_date_range(
+        demisto.getParam('date_range'), date_format=TIME_FORMAT
+    )
+    max_fetch = int(demisto.getParam('max_fetch'))
 
-    reports = triage_request("processed_reports", params=params)
+    # TODO report should be an class
+    reports = triage_request(
+        "processed_reports",
+        params={
+            "category_id": demisto.getParam("category_id"),
+            "match_priority": demisto.getParam("match_priority"),
+            "tags": demisto.getParam("tags"),
+            "start_date": start_date,
+        },
+    )
 
-    # loading last_run
-    last_run = json.loads(demisto.getLastRun().get('value', '{}'))
-    already_fetched = last_run.get('already_fetched', [])
+    already_fetched = set(demisto.getLastRun().get('reports_fetched', '[]'))
 
-    # parsing outputs
     incidents = []
     for report in reports:
-        reporter_id = report.get('reporter_id')
-        if reporter_id:
-            reporter_data = get_reporter_data(reporter_id)
-            for k, v in reporter_data.items():
-                report_key = 'reporter_' + k
-                report[report_key] = v
+        if "reporter_id" not in report:
+            # TODO is this expected? debug output?
+            continue
 
-        if report.get('id') not in already_fetched:
-            category_id, report_id = report.get('category_id'), report['id']
-            report_body = report.pop('report_body')
-            incident = {
-                'name': f"cofense triage report {report_id}: {CATEGORIES.get(category_id, 'Unknown')}",
-                'occurred': report.get('created_at'),
-                'rawJSON': json.dumps(report),
-                'severity': CATEGORIES_SEVERITY.get(category_id, 0)
-            }
+        if report["id"] in already_fetched:
+            continue
 
-            # load HTML attachment into the incident
-            attachment = load_attachment(report_body, report_id)
-            if attachment:
-                incident['attachment'] = attachment
-            else:
-                # attachment is not HTML file, keep it as plain text
-                report['report_body'] = report_body
-                incident['rawJSON'] = json.dumps(report)
+        reporter_data = get_reporter_data(report["reporter_id"])
+        for k, v in reporter_data.items():
+            report_key = 'reporter_' + k
+            report[report_key] = v
 
-            incidents.append(incident)
-            already_fetched.append(report_id)
-            if len(incidents) >= max_fetch:
-                break
+        report_id = report['id']
+        report_body = report.pop('report_body')
+        incident = {
+            'name': f"cofense triage report {report_id}: {triage_report_category_name(report)}",
+            'occurred': report.get('created_at'),
+            'rawJSON': json.dumps(report),
+            'severity': triage_report_severity(report)
+        }
+
+        # load HTML attachment into the incident
+        attachment = load_attachment(report_body, report_id)
+        if attachment:
+            incident['attachment'] = attachment
+        else:
+            # attachment is not HTML file, keep it as plain text
+            report['report_body'] = report_body
+            incident['rawJSON'] = json.dumps(report)
+
+        incidents.append(incident)
+        already_fetched.add(report_id)
+        if len(incidents) >= max_fetch:
+            break
 
     demisto.incidents(incidents)
-    last_run = {'already_fetched': already_fetched}
-    demisto.setLastRun({'value': json.dumps(last_run)})
+    demisto.setLastRun({'reports_fetched': already_fetched})  # TODO does this have to be JSON?
 
 
 def load_attachment(report_body: Any, report_id: int) -> list:
@@ -477,13 +465,42 @@ def parse_report_body(report) -> None:
 
 def get_report_by_id(report_id):
     """Fetch a report from Triage by report_id"""
+
     return triage_request(f"reports/{report_id}", params={'report_id': report_id})
 
 
 def triage_api_url(endpoint):
     """Return a full URL for the configured Triage host and the specified endpoint"""
+
     endpoint = endpoint.ltrip("/")
     return f"{TRIAGE_HOST}/api/public/v1/{endpoint}"
+
+
+def triage_report_category_name(report):
+    """Return the human-readable name of the category the given report belongs to"""
+
+    category_id = report.get("category_id")
+    return {
+        1: "Non-Malicious",
+        2: "Spam",
+        3: "Crimeware",
+        4: "Advanced Threats",
+        6: "Phishing Simulation",
+    }.get(category_id, "Unknown")
+
+
+def triage_report_severity(report):
+    """Return the human-readable name of the severity. Severity is a function of category."""
+
+    category_id = report.get("category_id")
+    # Demisto's severity levels are 4 - Critical, 3 - High, 2 - Medium, 1 - Low, 0 - Unknown
+    return {
+        1: 1,  # non malicious -> low
+        2: 0,  # spam -> unknown
+        3: 2,  # crimeware -> medium
+        4: 2,  # advanced threats -> medium
+        5: 1,  # phishing simulation -> low
+    }.get(category_id, 0)
 
 
 try:
