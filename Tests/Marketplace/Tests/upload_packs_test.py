@@ -70,6 +70,7 @@ class TestUpdateIndex:
         mocker.patch('os.path.isdir', return_value=True)
         mocker.patch('os.remove')
         mocker.patch('shutil.copy')
+        mocker.patch('os.path.exists')
         pack_dirs = scan_dir([('HelloWorld/metadata.json', 'metadata.json'),
                               ('HelloWorld/changelog.json', 'changelog.json'),
                               ('HelloWorld/README.md', 'README.md')])
@@ -125,6 +126,7 @@ class TestUpdateIndex:
         mocker.patch('os.listdir', return_value=[])
         mocker.patch('os.remove')
         mocker.patch('shutil.copy')
+        mocker.patch('os.path.exists')
         pack_dirs = scan_dir([('HelloWorld/metadata.json', 'metadata.json'),
                               ('HelloWorld/changelog.json', 'changelog.json'),
                               ('HelloWorld/README.md', 'README.md')])
@@ -177,6 +179,7 @@ class TestUpdateIndex:
         mocker.patch('os.path.isdir', return_value=True)
         mocker.patch('os.remove')
         mocker.patch('shutil.copy')
+        mocker.patch('os.path.exists')
         pack_dirs = scan_dir([('HelloWorld/metadata.json', 'metadata.json'),
                               ('HelloWorld/changelog.json', 'changelog.json'),
                               ('HelloWorld/README.md', 'README.md')])
@@ -236,6 +239,7 @@ class TestUpdateIndex:
         mocker.patch('os.path.isdir', return_value=True)
         mocker.patch('os.remove')
         mocker.patch('shutil.copy')
+        mocker.patch('os.path.exists')
         pack_dirs = scan_dir([('HelloWorld/metadata.json', 'metadata.json'),
                               ('HelloWorld/changelog.json', 'changelog.json'),
                               ('HelloWorld/README.md', 'README.md')])
@@ -292,6 +296,7 @@ class TestUpdateIndex:
         mocker.patch('os.path.isdir', return_value=True)
         mocker.patch('os.remove')
         mocker.patch('shutil.copy')
+        mocker.patch('os.path.exists')
         pack_dirs = scan_dir([('HelloWorld/metadata.json', 'metadata.json'),
                               ('HelloWorld/changelog.json', 'changelog.json'),
                               ('HelloWorld/README.md', 'README.md')])
@@ -348,6 +353,7 @@ class TestUpdateIndex:
         mocker.patch('os.path.isdir', return_value=True)
         mocker.patch('os.remove')
         mocker.patch('shutil.copy')
+        mocker.patch('os.path.exists')
         pack_dirs = scan_dir([('HelloWorld/metadata.json', 'metadata.json'),
                               ('HelloWorld/changelog.json', 'changelog.json'),
                               ('HelloWorld/README.md', 'README.md')])
