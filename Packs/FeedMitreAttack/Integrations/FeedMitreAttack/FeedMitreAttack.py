@@ -6,7 +6,7 @@ from typing import List, Dict, Set
 import json
 import requests
 from stix2 import TAXIICollectionSource, Filter
-from taxii2client import Server, Collection
+from taxii2client import Server, Collection, ApiRoot
 
 ''' CONSTANT VARIABLES '''
 
@@ -39,13 +39,12 @@ requests.packages.urllib3.disable_warnings()
 
 
 class Client:
-    api_roots: List
 
     def __init__(self, url, proxies, verify, include_apt, reputation):
         self.base_url = url
         self.proxies = proxies
         self.verify = verify
-        self.server = None
+        self.server: Server
         self.include_apt = include_apt
         self.indicatorType = "MITRE ATT&CK"
         self.reputation = 0
@@ -55,23 +54,24 @@ class Client:
             self.reputation = 2
         elif reputation == 'Malicious':
             self.reputation = 3
-        self.api_root = None
-        self.collections = None
+        self.server: Server
+        self.api_root: List[ApiRoot]
+        self.collections: List[Collection]
 
-    def getServer(self):
-        serverURL = urljoin(self.base_url, '/taxii/')
-        self.server = Server(serverURL, verify=self.verify, proxies=self.proxies)
+    def get_server(self):
+        server_url = urljoin(self.base_url, '/taxii/')
+        self.server: Server = Server(server_url, verify=self.verify, proxies=self.proxies)
 
-    def getRoots(self):
+    def get_roots(self):
         self.api_root = self.server.api_roots[0]
 
-    def getCollections(self):
+    def get_collections(self):
         self.collections = [x for x in self.api_root.collections]
 
     def initialise(self):
-        self.getServer()
-        self.getRoots()
-        self.getCollections()
+        self.get_server()
+        self.get_roots()
+        self.get_collections()
 
     def build_iterator(self, limit: int = -1) -> List:
 
@@ -172,9 +172,11 @@ class Client:
                                 try:
                                     if not original_item['rawJSON'].get('description').startswith("###"):
                                         original_item['rawJSON']['description'] = \
-                                            f"### {original_item['rawJSON'].get('type')}\n{original_item['rawJSON']['description']}"
+                                            f"### {original_item['rawJSON'].get('type')}\n" \
+                                            f"{original_item['rawJSON']['description']}"
                                     original_item['rawJSON']['description'] += \
-                                        f"\n\n_____\n\n### {mitre_item_json.get('type')}\n{mitre_item_json.get('description', '')}"
+                                        f"\n\n_____\n\n### {mitre_item_json.get('type')}\n" \
+                                        f"{mitre_item_json.get('description', '')}"
                                 except Exception:
                                     pass
                             if original_item['rawJSON'].get('external_references', None):
@@ -303,7 +305,7 @@ def search_command(client, args):
     demisto_urls = demisto.demistoUrls()
     indicator_url = demisto_urls.get('server') + "/#/indicator/"
     sensitive = True if args.get('casesensitive') == 'True' else False
-    return_list_md = list()
+    return_list_md: List[Dict] = list()
     entries = list()
     all_indicators = list()
     page = 0
@@ -358,12 +360,12 @@ def reputation_command(client, args):
     page = 0
     size = 1000
     raw_data = demisto.searchIndicators(query=f'type:"{client.indicatorType}" value:{input_indicator}', page=page,
-                                       size=size)
+                                        size=size)
     while len(raw_data.get('iocs', [])) > 0:
         all_indicators.extend(raw_data.get('iocs', []))
         page += 1
         raw_data = demisto.searchIndicators(query=f'type:"{client.indicatorType}" value:{input_indicator}', page=page,
-                                           size=size)
+                                            size=size)
     for indicator in all_indicators:
         custom_fields = indicator.get('CustomFields')
 
