@@ -327,7 +327,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.ArcsightWhiteUrlValueFieldName
+              simple: inputs.ArcsightWhiteListUrlValueFieldName
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -629,7 +629,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.ArcsightWatchUrlValueFieldName
+              simple: inputs.ArcsightWatchListUrlValueFieldName
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -869,4 +869,4 @@ inputs:
 outputs: []
 quiet: true
 tests:
-- No test
+  - No test
