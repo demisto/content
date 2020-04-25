@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
-from typing import List
+from typing import List, Dict, Set
 import json
 import requests
 from stix2 import TAXIICollectionSource, Filter
@@ -14,7 +14,7 @@ from taxii2client import Server, Collection
 # are mapped into the indicator. Generally, fields of type
 # "list" will be joined with a "\n". Types of "dict" and
 # "str" will be mapped as is.
-mitreFieldMapping = {
+mitre_field_mapping = {
     "mitrealiases": {"name": "aliases", "type": "list"},
     "mitrecontributors": {"name": "x_mitre_contributors", "type": "list"},
     "mitredatasources": {"name": "x_mitre_data_sources", "type": "str"},
@@ -34,19 +34,19 @@ mitreFieldMapping = {
     "mitreversion": {"name": "x_mitre_version", "type": "str"},
 }
 
-
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 
 class Client:
+    api_roots: List
 
-    def __init__(self, url, proxies, verify, includeAPT, reputation):
+    def __init__(self, url, proxies, verify, include_apt, reputation):
         self.base_url = url
         self.proxies = proxies
         self.verify = verify
         self.server = None
-        self.includeAPT = includeAPT
+        self.include_apt = include_apt
         self.indicatorType = "MITRE ATT&CK"
         self.reputation = 0
         if reputation == 'Good':
@@ -81,25 +81,25 @@ class Client:
             A list of objects, containing the indicators.
         """
 
-        indicators = list()
-        mitreIDList = set()
-        indicatorValuesList = set()
-        externalRefs = set()
+        indicators: List[Dict] = list()
+        mitre_id_list: Set[str] = set()
+        indicator_values_list: Set[str] = set()
+        external_refs: Set[str] = set()
         counter = 0
 
         # For each collection
         for collection in self.collections:
 
             # Stop when we have reached the limit defined
-            if limit > 0 and counter >= limit:
+            if 0 < limit <= counter:
                 break
 
             # Establish TAXII2 Collection instance
-            collectionURL = urljoin(self.base_url, f'stix/collections/{collection.id}/')
-            collectionData = Collection(collectionURL)
+            collection_url = urljoin(self.base_url, f'stix/collections/{collection.id}/')
+            collection_data = Collection(collection_url)
 
             # Supply the collection to TAXIICollection
-            tc_source = TAXIICollectionSource(collectionData)
+            tc_source = TAXIICollectionSource(collection_data)
 
             # Create filters to retrieve content
             filter_objs = {
@@ -114,87 +114,87 @@ class Client:
             for concept in filter_objs:
 
                 # Stop when we have reached the limit defined
-                if limit > 0 and counter >= limit:
+                if 0 < limit <= counter:
                     break
 
-                inputFilter = filter_objs[concept]['filter']
+                input_filter = filter_objs[concept]['filter']
                 try:
-                    mitreData = tc_source.query(inputFilter)
+                    mitre_data = tc_source.query(input_filter)
                 except Exception:
                     continue
 
                 # For each item in the MITRE list, add an indicator to the indicators list
-                for mitreItem in mitreData:
+                for mitreItem in mitre_data:
 
                     # Stop when we have reached the limit defined
-                    if limit > 0 and counter >= limit:
+                    if 0 < limit <= counter:
                         break
 
-                    mitreItemJSON = json.loads(str(mitreItem))
+                    mitre_item_json = json.loads(str(mitreItem))
                     value = None
 
                     # Try and map a friendly name to the value before the real ID
                     try:
-                        externals = [x['external_id'] for x in mitreItemJSON.get('external_references', []) if
+                        externals = [x['external_id'] for x in mitre_item_json.get('external_references', []) if
                                      x['source_name'] == 'mitre-attack' and x['external_id']]
                         value = externals[0]
                     except Exception:
                         value = None
                     if not value:
-                        value = mitreItemJSON.get('x_mitre_old_attack_id', None)
+                        value = mitre_item_json.get('x_mitre_old_attack_id', None)
                     if not value:
-                        value = mitreItemJSON.get('id')
+                        value = mitre_item_json.get('id')
 
-                    if mitreItemJSON.get('id') not in mitreIDList:
+                    if mitre_item_json.get('id') not in mitre_id_list:
 
                         # If the indicator already exists, then append the new data
                         # to the existing indicator.
-                        if value in indicatorValuesList:
+                        if value in indicator_values_list:
 
                             # Append data to the original item
-                            originalItem = [x for x in indicators if x.get('value') == value][0]
-                            if originalItem['rawJSON'].get('id', None):
+                            original_item = [x for x in indicators if x.get('value') == value][0]
+                            if original_item['rawJSON'].get('id', None):
                                 try:
-                                    originalItem['rawJSON']['id'] += f"\n{mitreItemJSON.get('id', '')}"
+                                    original_item['rawJSON']['id'] += f"\n{mitre_item_json.get('id', '')}"
                                 except Exception:
                                     pass
-                            if originalItem['rawJSON'].get('created', None):
+                            if original_item['rawJSON'].get('created', None):
                                 try:
-                                    originalItem['rawJSON']['created'] += f"\n{mitreItemJSON.get('created', '')}"
+                                    original_item['rawJSON']['created'] += f"\n{mitre_item_json.get('created', '')}"
                                 except Exception:
                                     pass
-                            if originalItem['rawJSON'].get('modified', None):
+                            if original_item['rawJSON'].get('modified', None):
                                 try:
-                                    originalItem['rawJSON']['modified'] += f"\n{mitreItemJSON.get('modified', '')}"
+                                    original_item['rawJSON']['modified'] += f"\n{mitre_item_json.get('modified', '')}"
                                 except Exception:
                                     pass
-                            if originalItem['rawJSON'].get('description', None):
+                            if original_item['rawJSON'].get('description', None):
                                 try:
-                                    if not originalItem['rawJSON'].get('description').startswith("###"):
-                                        originalItem['rawJSON']['description'] =\
-                                            f"### {originalItem['rawJSON'].get('type')}\n{originalItem['rawJSON']['description']}"
-                                    originalItem['rawJSON']['description'] +=\
-                                        f"\n\n_____\n\n### {mitreItemJSON.get('type')}\n{mitreItemJSON.get('description', '')}"
+                                    if not original_item['rawJSON'].get('description').startswith("###"):
+                                        original_item['rawJSON']['description'] = \
+                                            f"### {original_item['rawJSON'].get('type')}\n{original_item['rawJSON']['description']}"
+                                    original_item['rawJSON']['description'] += \
+                                        f"\n\n_____\n\n### {mitre_item_json.get('type')}\n{mitre_item_json.get('description', '')}"
                                 except Exception:
                                     pass
-                            if originalItem['rawJSON'].get('external_references', None):
+                            if original_item['rawJSON'].get('external_references', None):
                                 try:
-                                    originalItem['rawJSON']['external_references'].extend(
-                                        mitreItemJSON.get('external_references', [])
+                                    original_item['rawJSON']['external_references'].extend(
+                                        mitre_item_json.get('external_references', [])
                                     )
                                 except Exception:
                                     pass
-                            if originalItem['rawJSON'].get('kill_chain_phases', None):
+                            if original_item['rawJSON'].get('kill_chain_phases', None):
                                 try:
-                                    originalItem['rawJSON']['kill_chain_phases'].extend(
-                                        mitreItemJSON.get('kill_chain_phases', [])
+                                    original_item['rawJSON']['kill_chain_phases'].extend(
+                                        mitre_item_json.get('kill_chain_phases', [])
                                     )
                                 except Exception:
                                     pass
-                            if originalItem['rawJSON'].get('aliases', None):
+                            if original_item['rawJSON'].get('aliases', None):
                                 try:
-                                    originalItem['rawJSON']['aliases'].extend(
-                                        mitreItemJSON.get('aliases', [])
+                                    original_item['rawJSON']['aliases'].extend(
+                                        mitre_item_json.get('aliases', [])
                                     )
                                 except Exception:
                                     pass
@@ -204,47 +204,47 @@ class Client:
                                 "value": value,
                                 "score": self.reputation,
                                 "type": "MITRE ATT&CK",
-                                "rawJSON": mitreItemJSON,
+                                "rawJSON": mitre_item_json,
                             })
-                            indicatorValuesList.add(value)
+                            indicator_values_list.add(value)
                             counter += 1
-                        mitreIDList.add(mitreItemJSON.get('id'))
+                        mitre_id_list.add(mitre_item_json.get('id'))
 
                         # Create a duplicate indicator using the "external_id" from the
                         # original indicator, if the user has selected "includeAPT" as True
-                        if self.includeAPT:
-                            extRefs = [x.get('external_id') for x in mitreItemJSON.get('external_references')
-                                       if x.get('external_id') and x.get('source_name') != "mitre-attack"]
-                            for x in extRefs:
-                                if x not in externalRefs:
+                        if self.include_apt:
+                            ext_refs = [x.get('external_id') for x in mitre_item_json.get('external_references')
+                                        if x.get('external_id') and x.get('source_name') != "mitre-attack"]
+                            for x in ext_refs:
+                                if x not in external_refs:
                                     indicators.append({
                                         "value": x,
                                         "score": self.reputation,
                                         "type": "MITRE ATT&CK",
-                                        "rawJSON": mitreItemJSON,
+                                        "rawJSON": mitre_item_json,
                                     })
-                                    externalRefs.add(x)
+                                    external_refs.add(x)
 
         # Finally, map all the fields from the indicator
         # rawjson to the fields in the indicator
         for indicator in indicators:
             indicator['fields'] = dict()
-            for field, value in mitreFieldMapping.items():
+            for field, value in mitre_field_mapping.items():
                 try:
                     # Try and map the field
-                    valueType = value['type']
-                    valueName = value['name']
-                    if valueType == "list":
-                        indicator['fields'][field] = "\n".join(indicator['rawJSON'][valueName])
+                    value_type = value['type']
+                    value_name = value['name']
+                    if value_type == "list":
+                        indicator['fields'][field] = "\n".join(indicator['rawJSON'][value_name])
                     else:
-                        indicator['fields'][field] = indicator['rawJSON'][valueName]
+                        indicator['fields'][field] = indicator['rawJSON'][value_name]
                 except KeyError:
                     # If the field does not exist in the indicator
                     # then move on
                     pass
                 except Exception as err:
                     demisto.error(f"Error when mapping Mitre Fields - {err}")
-        return(indicators)
+        return indicators
 
 
 def test_module(client):
@@ -255,13 +255,11 @@ def test_module(client):
 
 
 def fetch_indicators(client):
-
     indicators = client.build_iterator()
     return indicators
 
 
 def get_indicators_command(client, args):
-
     limit = int(args.get('limit', 10))
     raw = True if args.get('raw') == "True" else False
 
@@ -302,30 +300,30 @@ def show_feeds_command(client, args):
 
 def search_command(client, args):
     search = args.get('search')
-    demistoURLs = demisto.demistoUrls()
-    indicatorURL = demistoURLs.get('server') + "/#/indicator/"
+    demisto_urls = demisto.demistoUrls()
+    indicator_url = demisto_urls.get('server') + "/#/indicator/"
     sensitive = True if args.get('casesensitive') == 'True' else False
-    returnListMD = list()
+    return_list_md = list()
     entries = list()
-    allIndicators = list()
+    all_indicators = list()
     page = 0
     size = 1000
-    rawData = demisto.searchIndicators(query=f'type:"{client.indicatorType}"', page=page, size=size)
-    while(len(rawData.get('iocs', [])) > 0):
-        allIndicators.extend(rawData.get('iocs', []))
+    raw_data = demisto.searchIndicators(query=f'type:"{client.indicatorType}"', page=page, size=size)
+    while len(raw_data.get('iocs', [])) > 0:
+        all_indicators.extend(raw_data.get('iocs', []))
         page += 1
-        rawData = demisto.searchIndicators(query=f'type:"{client.indicatorType}"', page=page, size=size)
+        raw_data = demisto.searchIndicators(query=f'type:"{client.indicatorType}"', page=page, size=size)
 
-    for indicator in allIndicators:
-        customFields = indicator.get('CustomFields', {})
-        for k, v in customFields.items():
+    for indicator in all_indicators:
+        custom_fields = indicator.get('CustomFields', {})
+        for v in custom_fields.values():
             if type(v) != str:
                 continue
             if sensitive:
-                if search in v and customFields.get('mitrename') not in [x.get('mitrename') for x in returnListMD]:
-                    returnListMD.append({
-                        'mitrename': customFields.get('mitrename'),
-                        'Name': f"[{customFields.get('mitrename', '')}]({urljoin(indicatorURL, indicator.get('id'))})",
+                if search in v and custom_fields.get('mitrename') not in [x.get('mitrename') for x in return_list_md]:
+                    return_list_md.append({
+                        'mitrename': custom_fields.get('mitrename'),
+                        'Name': f"[{custom_fields.get('mitrename', '')}]({urljoin(indicator_url, indicator.get('id'))})",
                     })
                     entries.append({
                         "id": f"{indicator.get('id')}",
@@ -333,45 +331,47 @@ def search_command(client, args):
                     })
                     break
             else:
-                if search.lower() in v.lower()\
-                   and customFields.get('mitrename') not in [x.get('mitrename') for x in returnListMD]:
-                    returnListMD.append({
-                        'mitrename': customFields.get('mitrename'),
-                        'Name': f"[{customFields.get('mitrename', '')}]({urljoin(indicatorURL, indicator.get('id'))})",
+                if search.lower() in v.lower() \
+                        and custom_fields.get('mitrename') not in [x.get('mitrename') for x in return_list_md]:
+                    return_list_md.append({
+                        'mitrename': custom_fields.get('mitrename'),
+                        'Name': f"[{custom_fields.get('mitrename', '')}]({urljoin(indicator_url, indicator.get('id'))})",
                     })
                     entries.append({
                         "id": f"{indicator.get('id')}",
                         "value": f"{indicator.get('value')}"
                     })
                     break
-    returnListMD = sorted(returnListMD, key=lambda name: name['mitrename'])
-    returnListMD = [{"Name": x.get('Name')} for x in returnListMD]
+    return_list_md = sorted(return_list_md, key=lambda name: name['mitrename'])
+    return_list_md = [{"Name": x.get('Name')} for x in return_list_md]
 
-    md = tableToMarkdown(f'MITRE Indicator search:', returnListMD)
+    md = tableToMarkdown(f'MITRE Indicator search:', return_list_md)
     ec = {'indicators(val.id && val.id == obj.id)': entries}
-    return_outputs(md, ec, returnListMD)
+    return_outputs(md, ec, return_list_md)
 
 
 def reputation_command(client, args):
-    inputIndicator = args.get('indicator')
-    demistoURLs = demisto.demistoUrls()
-    indicatorURL = demistoURLs.get('server') + "/#/indicator/"
-    allIndicators = list()
+    input_indicator = args.get('indicator')
+    demisto_urls = demisto.demistoUrls()
+    indicator_url = demisto_urls.get('server') + "/#/indicator/"
+    all_indicators = list()
     page = 0
     size = 1000
-    rawData = demisto.searchIndicators(query=f'type:"{client.indicatorType}" value:{inputIndicator}', page=page, size=size)
-    while(len(rawData.get('iocs', [])) > 0):
-        allIndicators.extend(rawData.get('iocs', []))
+    raw_data = demisto.searchIndicators(query=f'type:"{client.indicatorType}" value:{input_indicator}', page=page,
+                                       size=size)
+    while len(raw_data.get('iocs', [])) > 0:
+        all_indicators.extend(raw_data.get('iocs', []))
         page += 1
-        rawData = demisto.searchIndicators(query=f'type:"{client.indicatorType}" value:{inputIndicator}', page=page, size=size)
-    for indicator in allIndicators:
-        customFields = indicator.get('CustomFields')
+        raw_data = demisto.searchIndicators(query=f'type:"{client.indicatorType}" value:{input_indicator}', page=page,
+                                           size=size)
+    for indicator in all_indicators:
+        custom_fields = indicator.get('CustomFields')
 
         score = indicator.get('score')
         value = indicator.get('value')
-        indicatorID = indicator.get('id')
-        url = indicatorURL + indicatorID
-        md = f"## {[value]}({url}):\n {customFields.get('mitredescription', '')}"
+        indicator_id = indicator.get('id')
+        url = indicator_url + indicator_id
+        md = f"## {[value]}({url}):\n {custom_fields.get('mitredescription', '')}"
         ec = {
             "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor && val.Vendor == obj.Vendor)": {
                 "Indicator": value,
@@ -381,8 +381,8 @@ def reputation_command(client, args):
             },
             "MITRE.ATT&CK(val.value && val.value = obj.value)": {
                 'value': value,
-                'indicatorid': indicatorID,
-                'customFields': customFields
+                'indicatorid': indicator_id,
+                'customFields': custom_fields
             }
         }
 
@@ -390,11 +390,10 @@ def reputation_command(client, args):
 
 
 def main():
-
     params = demisto.params()
     args = demisto.args()
     url = 'https://cti-taxii.mitre.org'
-    includeAPT = params.get('includeAPT')
+    include_apt = params.get('includeAPT')
     reputation = params.get('feedReputation', 'None')
     proxies = handle_proxy()
     verify_certificate = not params.get('insecure', False)
@@ -403,7 +402,7 @@ def main():
     demisto.info(f'Command being called is {command}')
 
     try:
-        client = Client(url, proxies, verify_certificate, includeAPT, reputation)
+        client = Client(url, proxies, verify_certificate, include_apt, reputation)
         client.initialise()
         commands = {
             'mitre-get-indicators': get_indicators_command,
