@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "MITRE ATT&CK",
+            "playbookID": "Mitre Attack List 10 Indicators Feed Test"
+        },
+        {
             "integrations": "Tanium Threat Response",
             "playbookID": "Tanium Threat Response Test"
         },
