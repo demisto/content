@@ -20,7 +20,7 @@ import exchangelib
 from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, RateLimitError, \
     ErrorInvalidIdMalformed, \
     ErrorFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress, \
-    AutoDiscoverFailed, ErrorNameResolutionNoResults, ErrorInvalidPropertyRequest
+    AutoDiscoverFailed, ErrorNameResolutionNoResults, ErrorInvalidPropertyRequest, ErrorIrresolvableConflict
 from exchangelib.items import Item, Message, Contact
 from exchangelib.services import EWSService, EWSAccountService
 from exchangelib.util import create_element, add_xml_child
@@ -1172,7 +1172,11 @@ def parse_incident_from_item(item, is_fetch):
 
     if MARK_AS_READ and is_fetch:
         item.is_read = True
-        item.save()
+        try:
+            item.save()
+        except ErrorIrresolvableConflict:
+            time.sleep(0.5)
+            item.save()
 
     incident['labels'] = labels
     incident['rawJSON'] = json.dumps(parse_item_as_dict(item, None), ensure_ascii=False)
