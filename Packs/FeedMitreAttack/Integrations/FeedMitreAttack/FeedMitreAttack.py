@@ -44,7 +44,6 @@ class Client:
         self.base_url = url
         self.proxies = proxies
         self.verify = verify
-        self.server: Server
         self.include_apt = include_apt
         self.indicatorType = "MITRE ATT&CK"
         self.reputation = 0
@@ -60,7 +59,7 @@ class Client:
 
     def get_server(self):
         server_url = urljoin(self.base_url, '/taxii/')
-        self.server: Server = Server(server_url, verify=self.verify, proxies=self.proxies)
+        self.server = Server(server_url, verify=self.verify, proxies=self.proxies)
 
     def get_roots(self):
         self.api_root = self.server.api_roots[0]
