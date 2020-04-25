@@ -837,4 +837,4 @@ inputs:
 outputs: []
 sourceplaybookid: PAN-OS - Block IP and URL - External Dynamic List
 tests:
-- PAN-OS - Block IP and URL - External Dynamic List Test v2
+- PAN-OS - Block IP and URL - External Dynamic List v2 Test

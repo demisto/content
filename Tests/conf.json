@@ -647,7 +647,7 @@
             "fromversion": "4.0.0"
         },
         {
-            "playbookID": "PAN-OS - Block IP and URL - External Dynamic List Test v2",
+            "playbookID": "PAN-OS - Block IP and URL - External Dynamic List v2 Test",
             "integrations": "palo_alto_networks_pan_os_edl_management",
             "instance_names": "palo_alto_firewall_9.0",
             "fromversion": "4.0.0"
