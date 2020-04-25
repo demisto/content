@@ -1,7 +1,7 @@
 id: HelloWorld Scan
 version: -1
 name: HelloWorld Scan
-description: "This Playbook simulates a vulerability scan using the \"HelloWorld\"\
+description: "This Playbook simulates a vulnerability scan using the \"HelloWorld\"\
   \ sample integration. It's used to demonstrate how to use the GenericPolling mechanism\
   \ to run jobs that take several seconds or minutes to complete. It is designed to\
   \ be used as a subplaybook, but you can also use it as a standalone playbook, by\

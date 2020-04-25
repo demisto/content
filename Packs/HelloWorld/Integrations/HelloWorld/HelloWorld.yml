@@ -138,16 +138,16 @@ script:
       description: Alert status. Can be 'ACTIVE' or 'CLOSED'.
       type: String
     - contextPath: HelloWorld.Alert.alert_type
-      description: Alert type.
+      description: Alert type. For example 'Bug' or 'Vulnerability'.
       type: String
     - contextPath: HelloWorld.Alert.created
-      description: Alert created time.
+      description: Alert created time. Format is timestamp in seconds from epoch (i.e. 1587835844).
       type: Number
     - contextPath: HelloWorld.Alert.name
       description: Alert name.
       type: String
     - contextPath: HelloWorld.Alert.severity
-      description: Alert severity.
+      description: Alert severity. Can be 'Low', 'Medium', 'High' or 'Critical'.
       type: String
   - arguments:
     - default: false
@@ -165,7 +165,7 @@ script:
       description: Alert ID.
       type: String
     - contextPath: HelloWorld.Alert.created
-      description: Alert created time.
+      description: Alert created time. Format is timestamp in seconds from epoch (i.e. 1587835844).
       type: Number
     - contextPath: HelloWorld.Alert.description
       description: Alert description.
@@ -208,10 +208,10 @@ script:
       description: Alert ID.
       type: String
     - contextPath: HelloWorld.Alert.updated
-      description: Alert update time.
+      description: Alert update time. Format is timestamp in seconds from epoch (i.e. 1587835844).
       type: Number
     - contextPath: HelloWorld.Alert.alert_status
-      description: Alert status.
+      description: Alert status. Can be 'ACTIVE' or 'CLOSED'.
       type: String
   - name: ip
     arguments:

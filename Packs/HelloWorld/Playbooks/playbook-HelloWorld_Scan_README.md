@@ -1,4 +1,4 @@
-This Playbook simulates a vulerability scan using the "HelloWorld" sample integration. It's used to demonstrate how to use the GenericPolling mechanism to run jobs that take several seconds or minutes to complete. It is designed to be used as a subplaybook, but you can also use it as a standalone playbook, by providing the ${Endpoint.Hostname} input in the Context.
+This Playbook simulates a vulnerability scan using the "HelloWorld" sample integration. It's used to demonstrate how to use the GenericPolling mechanism to run jobs that take several seconds or minutes to complete. It is designed to be used as a subplaybook, but you can also use it as a standalone playbook, by providing the ${Endpoint.Hostname} input in the Context.
 
 Other inputs include the report output format (JSON context or File attached), and the Interval/Timeouts to use for polling the scan status until it's complete.
 
@@ -9,7 +9,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * GenericPolling
 
 ### Integrations
-This playbook does not use any integrations.
+* HelloWorld
 
 ### Scripts
 * PrintErrorEntry
@@ -17,6 +17,7 @@ This playbook does not use any integrations.
 ### Commands
 * helloworld-scan-start
 * helloworld-scan-results
+* helloworld-scan-status
 
 ## Playbook Inputs
 ---

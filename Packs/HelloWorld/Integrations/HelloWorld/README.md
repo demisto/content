@@ -31,7 +31,7 @@ The API key can be provided to you by the XSOAR team if needed.
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### helloworld-say-hello
 ***
@@ -93,10 +93,10 @@ Search HelloWorld Alerts.
 | --- | --- | --- |
 | HelloWorld.Alert.alert_id | String | Alert ID. | 
 | HelloWorld.Alert.alert_status | String | Alert status. Can be &\#x27;ACTIVE&\#x27; or &\#x27;CLOSED&\#x27;. | 
-| HelloWorld.Alert.alert_type | String | Alert type. | 
-| HelloWorld.Alert.created | Number | Alert created time. | 
+| HelloWorld.Alert.alert_type | String | Alert type. For example &\#x27;Bug&\#x27; or &\#x27;Vulnerability&\#x27;. | 
+| HelloWorld.Alert.created | Number | Alert created time. Format is timestamp in seconds from epoch \(i.e. 1587835844\). | 
 | HelloWorld.Alert.name | String | Alert name. | 
-| HelloWorld.Alert.severity | String | Alert severity. | 
+| HelloWorld.Alert.severity | String | Alert severity. Can be &\#x27;Low&\#x27;, &\#x27;Medium&\#x27;, &\#x27;High&\#x27; or &\#x27;Critical&\#x27;. | 
 
 
 ##### Command Example
@@ -108,18 +108,18 @@ Search HelloWorld Alerts.
     "HelloWorld": {
         "Alert": [
             {
-                "alert_id": "2a881675-471b-4c46-a18c-339e8ab0e703",
+                "alert_id": "44cb338e-2d6a-4e2d-9299-23508e210731",
                 "alert_status": "ACTIVE",
                 "alert_type": "Feature",
-                "created": 1587630036,
+                "created": 1587831337,
                 "name": "Hello World Alert of type Feature",
                 "severity": "Critical"
             },
             {
-                "alert_id": "900e356b-42c3-4d0a-b265-684f6c5f380d",
+                "alert_id": "fdaacbf6-4efd-4474-a230-ee13439c164e",
                 "alert_status": "ACTIVE",
                 "alert_type": "Bug",
-                "created": 1587583651,
+                "created": 1587628001,
                 "name": "Hello World Alert of type Bug",
                 "severity": "Critical"
             }
@@ -132,8 +132,8 @@ Search HelloWorld Alerts.
 ### HelloWorld Alerts
 |alert_id|alert_status|alert_type|created|name|severity|
 |---|---|---|---|---|---|
-| 2a881675-471b-4c46-a18c-339e8ab0e703 | ACTIVE | Feature | 1587630036 | Hello World Alert of type Feature | Critical |
-| 900e356b-42c3-4d0a-b265-684f6c5f380d | ACTIVE | Bug | 1587583651 | Hello World Alert of type Bug | Critical |
+| 44cb338e-2d6a-4e2d-9299-23508e210731 | ACTIVE | Feature | 1587831337 | Hello World Alert of type Feature | Critical |
+| fdaacbf6-4efd-4474-a230-ee13439c164e | ACTIVE | Bug | 1587628001 | Hello World Alert of type Bug | Critical |
 
 
 ### helloworld-get-alert
@@ -156,7 +156,7 @@ Retrieve alert extra data by ID.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | HelloWorld.Alert.alert_id | String | Alert ID. | 
-| HelloWorld.Alert.created | Number | Alert created time. | 
+| HelloWorld.Alert.created | Number | Alert created time. Format is timestamp in seconds from epoch \(i.e. 1587835844\). | 
 | HelloWorld.Alert.description | String | Alert description. | 
 | HelloWorld.Alert.device_id | String | ID of the device involved in the alert. | 
 | HelloWorld.Alert.device_ip | String | IP Address of the device involved in the alert. | 
@@ -173,12 +173,12 @@ Retrieve alert extra data by ID.
     "HelloWorld": {
         "Alert": {
             "alert_id": "695b3238-05d6-4934-86f5-9fff3201aeb0",
-            "created": 1587732394,
-            "description": "Bad user karma.",
-            "device_id": "8ccf72a3-4738-4fb3-9b2b-368dc35f3cdf",
-            "device_ip": "237.90.157.230",
-            "location": "Rome",
-            "user": "John Jameson"
+            "created": 1587836463,
+            "description": "Me no internet, only janitor, me just wax floors.",
+            "device_id": "58eff32d-48b8-44aa-a039-a004b9e15264",
+            "device_ip": "107.156.233.48",
+            "location": "Your House",
+            "user": "Otto Octavius"
         }
     }
 }
@@ -188,7 +188,7 @@ Retrieve alert extra data by ID.
 ### HelloWorld Alert 695b3238-05d6-4934-86f5-9fff3201aeb0
 |alert_id|created|description|device_id|device_ip|location|user|
 |---|---|---|---|---|---|---|
-| 695b3238-05d6-4934-86f5-9fff3201aeb0 | 1587732394 | Bad user karma. | 8ccf72a3-4738-4fb3-9b2b-368dc35f3cdf | 237.90.157.230 | Rome | John Jameson |
+| 695b3238-05d6-4934-86f5-9fff3201aeb0 | 1587836463 | Me no internet, only janitor, me just wax floors. | 58eff32d-48b8-44aa-a039-a004b9e15264 | 107.156.233.48 | Your House | Otto Octavius |
 
 
 ### helloworld-update-alert-status
@@ -212,8 +212,8 @@ Update the status for an alert.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | HelloWorld.Alert.alert_id | String | Alert ID. | 
-| HelloWorld.Alert.updated | Number | Alert update time. | 
-| HelloWorld.Alert.alert_status | String | Alert status. | 
+| HelloWorld.Alert.updated | Number | Alert update time. Format is timestamp in seconds from epoch \(i.e. 1587835844\). | 
+| HelloWorld.Alert.alert_status | String | Alert status. Can be &\#x27;ACTIVE&\#x27; or &\#x27;CLOSED&\#x27;. | 
 
 
 ##### Command Example
@@ -226,7 +226,7 @@ Update the status for an alert.
         "Alert": {
             "alert_id": "695b3238-05d6-4934-86f5-9fff3201aeb0",
             "alert_status": "CLOSED",
-            "updated": 1587732399
+            "updated": 1587836469
         }
     }
 }
@@ -236,7 +236,7 @@ Update the status for an alert.
 ### HelloWorld Alert 695b3238-05d6-4934-86f5-9fff3201aeb0
 |alert_id|alert_status|updated|
 |---|---|---|
-| 695b3238-05d6-4934-86f5-9fff3201aeb0 | CLOSED | 1587732399 |
+| 695b3238-05d6-4934-86f5-9fff3201aeb0 | CLOSED | 1587836469 |
 
 
 ### ip
@@ -305,7 +305,7 @@ Return IP information and reputation
 {
     "DBotScore": {
         "Indicator": "8.8.8.8",
-        "Score": 3,
+        "Score": 2,
         "Type": "ip",
         "Vendor": "HelloWorld"
     },
@@ -377,25 +377,21 @@ Return IP information and reputation
             },
             "query": "8.8.8.8",
             "raw": null,
-            "score": 75
+            "score": 58
         }
     },
     "IP": {
         "ASN": "15169",
-        "Address": "8.8.8.8",
-        "Malicious": {
-            "Description": "Hello World returned reputation 75",
-            "Vendor": "HelloWorld"
-        }
+        "Address": "8.8.8.8"
     }
 }
 ```
 
 ##### Human Readable Output
 ### IP List
-|ASN|Address|Malicious|
-|---|---|---|
-| 15169 | 8.8.8.8 | Vendor: HelloWorld<br/>Description: Hello World returned reputation 75 |
+|ASN|Address|
+|---|---|
+| 15169 | 8.8.8.8 |
 
 
 ### domain
@@ -453,7 +449,7 @@ Returns Domain information and reputation.
 {
     "DBotScore": {
         "Indicator": "google.com",
-        "Score": 1,
+        "Score": 2,
         "Type": "domain",
         "Vendor": "HelloWorld"
     },
@@ -489,15 +485,15 @@ Returns Domain information and reputation.
                 "NS2.GOOGLE.COM",
                 "NS3.GOOGLE.COM",
                 "NS4.GOOGLE.COM",
-                "ns3.google.com",
-                "ns2.google.com",
                 "ns1.google.com",
-                "ns4.google.com"
+                "ns4.google.com",
+                "ns3.google.com",
+                "ns2.google.com"
             ],
             "org": "Google LLC",
             "referral_url": null,
             "registrar": "MarkMonitor, Inc.",
-            "score": 19,
+            "score": 36,
             "state": "CA",
             "status": [
                 "clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited",
@@ -564,7 +560,7 @@ Start scan on an asset.
     "HelloWorld": {
         "Scan": {
             "hostname": "example.com",
-            "scan_id": "bf8b1a3a-1efe-4c1d-baf9-0fa820454d18",
+            "scan_id": "b56b332f-1f75-4669-84c3-24fd3fb5a571",
             "status": "RUNNING"
         }
     }
@@ -572,7 +568,7 @@ Start scan on an asset.
 ```
 
 ##### Human Readable Output
-Started scan bf8b1a3a-1efe-4c1d-baf9-0fa820454d18
+Started scan b56b332f-1f75-4669-84c3-24fd3fb5a571
 
 ### helloworld-scan-status
 ***
@@ -606,7 +602,7 @@ Retrieve scan status for one or more scan IDs.
     "HelloWorld": {
         "Scan": {
             "scan_id": "100",
-            "status": "RUNNING"
+            "status": "COMPLETE"
         }
     }
 }
@@ -616,7 +612,7 @@ Retrieve scan status for one or more scan IDs.
 ### Scan status
 |scan_id|status|
 |---|---|
-| 100 | RUNNING |
+| 100 | COMPLETE |
 
 
 ### helloworld-scan-results
@@ -663,132 +659,132 @@ Retrieve scan status in Context or as a File (default) for a Scan.
 {
     "CVE": {
         "ID": [
-            "CVE-2019-0667",
-            "CVE-2019-9624",
-            "CVE-2019-10492",
-            "CVE-2019-5450",
-            "CVE-2019-10481",
-            "CVE-2019-11331",
-            "CVE-2019-0240",
-            "CVE-2019-15233",
-            "CVE-2019-4038",
-            "CVE-2019-0819",
-            "CVE-2019-10956",
             "CVE-2019-9580",
-            "CVE-2019-11632",
+            "CVE-2019-0667",
+            "CVE-2019-12611",
+            "CVE-2019-16320",
+            "CVE-2019-4139",
             "CVE-2019-10311",
-            "CVE-2019-7711",
-            "CVE-2019-13524",
-            "CVE-2019-6457",
-            "CVE-2019-20424",
+            "CVE-2019-19817",
             "CVE-2019-17426",
-            "CVE-2019-1716",
-            "CVE-2019-1787",
-            "CVE-2019-2658",
-            "CVE-2019-16237",
-            "CVE-2019-4860",
-            "CVE-2019-0734",
-            "CVE-2019-11163",
-            "CVE-2019-10763",
+            "CVE-2019-13524",
+            "CVE-2019-7081",
+            "CVE-2019-11971",
+            "CVE-2019-3420",
+            "CVE-2019-0186",
             "CVE-2019-20091",
-            "CVE-2019-5252",
-            "CVE-2019-19592",
-            "CVE-2019-11213",
-            "CVE-2019-9578",
-            "CVE-2019-9147",
-            "CVE-2019-12978",
-            "CVE-2019-10490",
+            "CVE-2019-16177",
+            "CVE-2019-7974",
+            "CVE-2019-17342",
+            "CVE-2019-1728",
+            "CVE-2019-2257",
+            "CVE-2019-7940",
             "CVE-2019-15497",
             "CVE-2019-5989",
-            "CVE-2019-5084",
-            "CVE-2019-9368",
-            "CVE-2019-15593",
-            "CVE-2019-1728",
-            "CVE-2019-1959",
-            "CVE-2019-7169",
-            "CVE-2019-12611",
-            "CVE-2019-7081",
-            "CVE-2019-15485",
-            "CVE-2019-17399",
-            "CVE-2019-10479",
-            "CVE-2019-14805",
-            "CVE-2019-13339",
-            "CVE-2019-9025",
-            "CVE-2019-8994",
-            "CVE-2019-11971",
-            "CVE-2019-7974",
+            "CVE-2019-16534",
             "CVE-2019-5579",
-            "CVE-2019-5114",
-            "CVE-2019-2128",
-            "CVE-2019-2889",
-            "CVE-2019-2923",
-            "CVE-2019-6579",
-            "CVE-2019-6335",
-            "CVE-2019-0887",
-            "CVE-2019-9114",
-            "CVE-2019-19817",
-            "CVE-2019-2610",
-            "CVE-2019-15064",
-            "CVE-2019-10401",
-            "CVE-2019-1732",
-            "CVE-2019-16177",
-            "CVE-2019-0200",
-            "CVE-2019-5095",
-            "CVE-2019-2257",
-            "CVE-2019-5763",
             "CVE-2019-0746",
-            "CVE-2019-2239",
-            "CVE-2019-9974",
-            "CVE-2019-7940",
-            "CVE-2019-6273",
-            "CVE-2019-4811",
-            "CVE-2019-19532",
-            "CVE-2019-18241",
-            "CVE-2019-0186",
-            "CVE-2019-5789",
-            "CVE-2019-14357",
-            "CVE-2019-4856",
-            "CVE-2019-1003074",
+            "CVE-2019-1732",
+            "CVE-2019-8029",
             "CVE-2019-12762",
             "CVE-2019-5880",
-            "CVE-2019-18824",
-            "CVE-2019-16320",
-            "CVE-2019-8748",
-            "CVE-2019-15472",
-            "CVE-2019-0757",
-            "CVE-2019-17269",
-            "CVE-2019-8926",
-            "CVE-2019-20443",
-            "CVE-2019-12162",
-            "CVE-2019-18671",
-            "CVE-2019-18769",
-            "CVE-2019-8654",
-            "CVE-2019-0335",
-            "CVE-2019-8029",
-            "CVE-2019-8139",
-            "CVE-2019-6291",
-            "CVE-2019-9322",
-            "CVE-2019-9792",
-            "CVE-2019-4139",
-            "CVE-2019-19767",
-            "CVE-2019-13100",
-            "CVE-2019-18250",
-            "CVE-2019-9375",
-            "CVE-2019-1512",
-            "CVE-2019-13507",
-            "CVE-2019-16205",
-            "CVE-2019-16534",
-            "CVE-2019-3420",
-            "CVE-2019-5250",
-            "CVE-2019-13301",
+            "CVE-2019-17399",
+            "CVE-2019-5450",
+            "CVE-2019-2889",
             "CVE-2019-5632",
-            "CVE-2019-7390",
-            "CVE-2019-16792",
-            "CVE-2019-2946",
-            "CVE-2019-5279",
-            "CVE-2019-17342",
+            "CVE-2019-13339",
+            "CVE-2019-1959",
+            "CVE-2019-15472",
+            "CVE-2019-0819",
+            "CVE-2019-7711",
+            "CVE-2019-1512",
+            "CVE-2019-2239",
+            "CVE-2019-5084",
+            "CVE-2019-10956",
+            "CVE-2019-11163",
+            "CVE-2019-6579",
+            "CVE-2019-13301",
+            "CVE-2019-18769",
+            "CVE-2019-18250",
+            "CVE-2019-6273",
+            "CVE-2019-2923",
+            "CVE-2019-15485",
+            "CVE-2019-13507",
+            "CVE-2019-2610",
+            "CVE-2019-11213",
+            "CVE-2019-19767",
+            "CVE-2019-4860",
+            "CVE-2019-9147",
+            "CVE-2019-8654",
+            "CVE-2019-10401",
+            "CVE-2019-17269",
+            "CVE-2019-0887",
             "CVE-2019-3735",
-            "CVE-2019-10528"
+            "CVE-2019-9624",
+            "CVE-2019-6291",
+            "CVE-2019-9114",
+            "CVE-2019-5763",
+            "CVE-2019-4856",
+            "CVE-2019-5279",
+            "CVE-2019-7169",
+            "CVE-2019-14805",
+            "CVE-2019-5252",
+            "CVE-2019-8139",
+            "CVE-2019-10481",
+            "CVE-2019-1716",
+            "CVE-2019-19532",
+            "CVE-2019-7390",
+            "CVE-2019-15064",
+            "CVE-2019-16237",
+            "CVE-2019-4811",
+            "CVE-2019-19592",
+            "CVE-2019-9368",
+            "CVE-2019-18671",
+            "CVE-2019-12978",
+            "CVE-2019-10490",
+            "CVE-2019-8994",
+            "CVE-2019-18824",
+            "CVE-2019-16205",
+            "CVE-2019-9578",
+            "CVE-2019-20443",
+            "CVE-2019-15593",
+            "CVE-2019-0757",
+            "CVE-2019-9792",
+            "CVE-2019-5095",
+            "CVE-2019-9025",
+            "CVE-2019-0200",
+            "CVE-2019-20424",
+            "CVE-2019-1787",
+            "CVE-2019-5114",
+            "CVE-2019-11331",
+            "CVE-2019-2946",
+            "CVE-2019-2128",
+            "CVE-2019-10763",
+            "CVE-2019-5789",
+            "CVE-2019-14357",
+            "CVE-2019-10492",
+            "CVE-2019-6457",
+            "CVE-2019-9375",
+            "CVE-2019-11632",
+            "CVE-2019-6335",
+            "CVE-2019-12162",
+            "CVE-2019-1003074",
+            "CVE-2019-15233",
+            "CVE-2019-16792",
+            "CVE-2019-4038",
+            "CVE-2019-9322",
+            "CVE-2019-10479",
+            "CVE-2019-0734",
+            "CVE-2019-2658",
+            "CVE-2019-8926",
+            "CVE-2019-5250",
+            "CVE-2019-13100",
+            "CVE-2019-18241",
+            "CVE-2019-8748",
+            "CVE-2019-9974",
+            "CVE-2019-0240",
+            "CVE-2019-10528",
+            "CVE-2019-0335"
         ]
     },
     "HelloWorld": {

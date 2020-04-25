@@ -6,7 +6,7 @@ Hello World Script
 | --- | --- |
 | Script Type | python3 |
 | Tags | helloworld |
-| Demisto Version | 0.0.0 |
+| Demisto Version | 5.0.0 |
 
 ## Inputs
 ---
@@ -24,16 +24,16 @@ Hello World Script
 
 
 ## Script Example
-```!HelloWorldScript hello=DBot```
+```!HelloWorldScript name=DBot```
 
 ## Context Example
 ```
 {
     "HelloWorld": {
-        "hello": "Hello None"
+        "hello": "Hello DBot"
     }
 }
 ```
 
 ## Human Readable Output
-## Hello None
+## Hello DBot

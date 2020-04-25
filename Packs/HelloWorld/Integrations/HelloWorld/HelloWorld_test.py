@@ -225,8 +225,9 @@ def test_search_alerts(requests_mock):
     from HelloWorld import Client, search_alerts_command
 
     mock_response = util_load_json('test_data/search_alerts.json')
-    requests_mock.get('https://test.com/api/v1/get_alerts?alert_status=ACTIVE&severity=Critical&max_results=2&start_time=1581982463',
-                      json=mock_response)
+    requests_mock.get(
+        'https://test.com/api/v1/get_alerts?alert_status=ACTIVE&severity=Critical&max_results=2&start_time=1581982463',
+        json=mock_response)
 
     client = Client(
         base_url='https://test.com/api/v1',
