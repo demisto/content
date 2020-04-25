@@ -65,7 +65,7 @@ class Client:
         self.api_root = self.server.api_roots[0]
 
     def get_collections(self):
-        self.collections = [x for x in self.api_root.collections]
+        self.collections = [x for x in self.api_root.collections]  # type: ignore[attr-defined]
 
     def initialise(self):
         self.get_server()
