@@ -1,0 +1,24 @@
+commonfields:
+  id: eb769ccc-ca00-4150-85e5-436c0cbe41f9
+  version: 3
+name: BetweenDates
+script: ''
+type: python
+tags:
+- transformer
+- date
+enabled: true
+args:
+- name: value
+  required: true
+  description: Value to check
+- name: beginDate
+  required: true
+- name: endDate
+  required: true
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.8.2.6981
+runas: DBotWeakRole
