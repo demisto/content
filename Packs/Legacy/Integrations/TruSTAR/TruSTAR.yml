@@ -733,7 +733,7 @@ script:
       description: CVE ID
       type: string
     description: Get phishing indicators that match the given criteria.
-  dockerimage: demisto/trustar:1.0.0.7265
+  dockerimage: demisto/trustar:latest
   runonce: false
   subtype: python2
 sourcemoduleid: TruSTAR
