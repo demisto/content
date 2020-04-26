@@ -67,7 +67,8 @@ def panos_ssh(cmd: str, net_connect: Netmiko = None):
                 net_connect.disconnect()
         return result_cmd
     else:
-        return_error('You must configure the SSH integration parameters to use this command.')
+        raise Exception('You must configure the SSH integration parameters to use this command.')
+
 
 
 def prisma_access_cli_command():
@@ -86,7 +87,7 @@ def prisma_access_cli_command():
             'EntryContext': ec
         })
     else:
-        return_error('You must configure the SSH integration parameters to use this command.')
+        raise Exception('You must configure the SSH integration parameters to use this command.')
 
 
 def prisma_access_query():
@@ -216,9 +217,7 @@ PAN_OS_ERROR_DICT = {
 
 class PAN_OS_Not_Found(Exception):
     """ PAN-OS Error. """
-
-    def __init__(self, *args, **kwargs):  # real signature unknown
-        pass
+    pass
 
 
 def http_request(uri: str, method: str, headers: Dict = {},
@@ -407,7 +406,7 @@ def prisma_access_logout_user(computer: str, domain: str, user: str) -> Dict[str
         result = http_request(URL, 'GET', params=params)
         return result
     else:
-        return_error('You must configure the PAN-OS API Key and Port parameters to use this command.')
+        raise Exception('You must configure the PAN-OS API Key and Port parameters to use this command.')
 
 
 def prisma_access_logout_user_command():
