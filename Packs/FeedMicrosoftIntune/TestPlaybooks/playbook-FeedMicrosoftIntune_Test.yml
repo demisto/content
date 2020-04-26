@@ -1,5 +1,5 @@
-id: playbook-FeedMicrosoftIntune_Test
-name: playbook-FeedMicrosoftIntune_Test
+id: FeedMicrosoftIntune_Test
+name: FeedMicrosoftIntune_Test
 version: -1
 fromversion: 5.5.0
 starttaskid: "0"
