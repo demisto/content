@@ -11,11 +11,14 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 
-def get_current_table(grid_id: str, sort_by: Optional[str], columns: Optional[str]) -> \
+def normalized_string(phrase: str) -> str:
+    return phrases_case.camel(phrase).replace("'", "").lower()
+
+def get_current_table(grid_id: str, sort_by: Optional[str], columns: Optional[str], context_paths: str) -> \
         Tuple[List[Dict[Any, Any]], Any]:
     """ Get current grid data
 
-    Date retreived:
+    Data retreived:
         1. Column names.
         2. Current grid data.
     Validate:
@@ -30,6 +33,9 @@ def get_current_table(grid_id: str, sort_by: Optional[str], columns: Optional[st
         sort_by(str): The static name of the column to sort the table rows by.
         columns(str): Comma separated list of columns names, Should be defined if grid is empty otherwise the automation
                       detect it automatically.
+        context_paths(str): Context path to build the Table from, If the Table is row correlated, The path until the last
+                            key should be the same for all paths, In addition the number of the given paths should be the
+                            same as the columns number in the original grid, because the grid column is immutable.
 
      Returns:
         list: Current grid as dict in following structure - [{'col1': 'val1'},{'col2': 'val2'},{'col3': 'val3'},
@@ -39,12 +45,11 @@ def get_current_table(grid_id: str, sort_by: Optional[str], columns: Optional[st
     # Get current Grid data
     current_table: Optional[List[dict]] = demisto.incidents()[0].get("CustomFields", {}).get(grid_id)
     if not current_table:
-        raise ValueError(f"The grid id isn't valid : {grid_id}")
+        raise ValueError(f"The grid id isn't valid: {grid_id}")
     # Validate columns number the same as context paths - If no data initiated skip validation, but check if columns specified
-    if not columns:
-        raise ValueError("Columns not specified - Its a mandatory arg when grid is empty.")
-    # Get columns
-    columns = argToList(columns.lower())
+    columns_list = [normalized_string(phrase) for phrase in argToList(columns)]
+    if len(columns_list) == len(argToList(context_paths)):
+        raise ValueError("Columns not specified correctly!")
     # Validate sort is valide col
     if sort_by and sort_by not in columns:
         raise ValueError(f'sort_by: {sort_by} is not columns: {columns}')
@@ -192,7 +197,7 @@ def build_grid_command(grid_id: str, context_paths: str, sort_by: Optional[str],
     """ Build Table as dictionary for populate grid in incident layout.
 
     The required table structure to populate in the incident is as follow:
-    [{'col1': 'val1'},{'col2': 'val2'},{'col3': 'val3'},{'col4': 'val4'}] which represent:
+    [{'col1': 'val1', 'col2': 'val2'}, {'col1': 'val3', 'col2': 'val4'}] which represent:
     | col1 | col2 |
     | ---- | ---- |
     | val1 | val2 |
@@ -215,7 +220,8 @@ def build_grid_command(grid_id: str, context_paths: str, sort_by: Optional[str],
     """
     current_table, columns = get_current_table(grid_id=grid_id,
                                                sort_by=sort_by,
-                                               columns=columns)
+                                               columns=columns,
+                                               context_paths=context_paths)
     data = get_data_from_entry_context(context_paths=context_paths,
                                        row_correlation=row_correlation)
     table = build_table(data=data,
@@ -230,7 +236,7 @@ def build_grid_command(grid_id: str, context_paths: str, sort_by: Optional[str],
 def main():
     try:
         # Normalize grid id from any form to connected lower words, e.g. my_word/myWord -> myword
-        grid_id = phrases_case.camel(demisto.getArg('grid_id')).replace("'", "").lower()
+        grid_id = normalized_string(demisto.getArg('grid_id'))
         # Build updated table
         table = build_grid_command(grid_id=grid_id,
                                    context_paths=demisto.getArg('context_paths'),
