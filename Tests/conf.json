@@ -3,6 +3,16 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Microsoft Intune Feed",
+            "playbookID": "FeedMicrosoftIntune_Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Smokescreen IllusionBLACK",
+            "playbookID": "Smokescreen IllusionBLACK-Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Tanium Threat Response",
             "playbookID": "Tanium Threat Response Test"
         },
@@ -2640,7 +2650,6 @@
         "TestCofenseFeed": "Issue 22854",
         "Cybereason Test": "Issue 22683",
         "AbuseIPDB Test": "Issue 22658",
-        "ExtraHop-Test": "Issue 23731",
         "Bluecat Address Manager test": "Issue 22616",
         "Office365_Feed_Test": "Issue 22517",
         "Send Investigation Summary Reports": "Issue 22299",
@@ -2689,6 +2698,7 @@
         "Infoblox": "Issue 23770",
         "Trend Micro Apex": "Issue 23632",
         "Awake Security": "Issue 23376",
+        "ExtraHop": "No license, issue 23731",
         "RiskSense": "We should get an instance talk to Francesco",
         "Palo Alto Networks Cortex": "Issue 22300",
         "AWS - IAM": "Issue 21401",

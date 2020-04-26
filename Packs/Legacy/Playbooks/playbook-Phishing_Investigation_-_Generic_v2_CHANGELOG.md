@@ -1,5 +1,7 @@
 ## [Unreleased]
-Added the *OnCall* input to assign only users that are on shift.
+- Added the *OnCall* input to assign only users that are on shift.
+- Fixed an issue where the playbook was not authenticating emails.
+
 
 ## [20.1.2] - 2020-01-22
 Added tasks that predict the phishing incident verdict when a phishing ML model exists. The verdict refers to the phishing category.
