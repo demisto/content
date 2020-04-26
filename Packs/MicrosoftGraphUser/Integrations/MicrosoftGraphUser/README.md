@@ -44,6 +44,22 @@
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
 </ol>
 </div>
+
+<h2>Use a Self-Deployed Azure Application</h2>
+<p>To use a self-configured Azure application, a need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following Microsoft article:
+<a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app">https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app</a></p>
+<p>The Tenant ID, Client ID, and Client secret are required for the integration.
+To configure the integration in Demisto to use the application, place those parameters in the following manner (instead of how you received them from the admin consent in the current doc):
+<p>ID - Client ID<br>
+Token - Tenant ID<br>
+Key - Client Secret</p></p>
+
+<h2>Required Permissions in the MS Graph User App:</h2>
+<li>Directory.Read.All - Delegated</li>
+<li>User.ReadWrite.All - Application</li>
+<li>User.Read - Delegated</li>
+
+
 <div class="cl-preview-section">
 <h2 id="commands">Commands</h2>
 </div>
