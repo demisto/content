@@ -602,3 +602,5 @@ outputs: []
 quiet: true
 fromversion: 5.5.0
 description: 'Set a list of IP addresses in GCP firewall.'
+tests:
+- No tests

@@ -783,3 +783,5 @@ sourceplaybookid: 6b4415d2-cf8e-4a22-8bb0-012e4b692b60
 quiet: true
 fromversion: 5.5.0
 description: 'Sync a list of IP addresses to an AWS Security Group.'
+tests:
+- No tests

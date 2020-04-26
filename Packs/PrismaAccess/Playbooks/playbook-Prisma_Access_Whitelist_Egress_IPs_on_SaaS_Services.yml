@@ -266,3 +266,5 @@ inputs:
 outputs: []
 quiet: true
 fromversion: 5.5.0
+tests:
+- No tests
