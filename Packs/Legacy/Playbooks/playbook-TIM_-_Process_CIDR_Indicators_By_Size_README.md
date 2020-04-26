@@ -21,7 +21,7 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Source** | **Required** |
 | --- | --- | --- | --- | --- |
 |  |  |  |  | Optional |
-| MaximumCIDRSizeToApprovce | The maximum number of hosts that a CIDR can contain for auto approval. If the number of hosts is greater than approved the CIDR will be tagged for manual review. | 256 |  | Optional |
+| MaximumCIDRSizeToApprove | The maximum number of hosts that a CIDR can contain for auto approval. If the number of hosts is greater than approved the CIDR will be tagged for manual review. | 256 |  | Optional |
 
 ## Playbook Outputs
 ---
