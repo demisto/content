@@ -1,6 +1,8 @@
 id: Prisma Access Whitelist Egress IPs on SaaS Services
 version: -1
 name: Prisma Access Whitelist Egress IPs on SaaS Services
+description: Retrieve Prisma Access Egress IP for specific geographic Zones and populate
+  in security groups within cloud services.
 starttaskid: "0"
 tasks:
   "0":
@@ -259,4 +261,3 @@ inputs:
 outputs: []
 quiet: true
 fromversion: 5.5.0
-description: ''

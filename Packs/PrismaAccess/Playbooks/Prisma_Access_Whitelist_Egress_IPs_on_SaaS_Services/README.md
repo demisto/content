@@ -1,4 +1,4 @@
-
+Retrieve Prisma Access Egress IP for specific geographic Zones and populate in security groups within cloud services.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
