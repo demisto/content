@@ -613,8 +613,6 @@ class Pack(object):
                         elif current_directory in PackFolders.json_supported_folders():
                             content_item = json.load(pack_file)
                         else:
-                            print_warning(f"{self._pack_name} pack {current_directory} folder is not listed "
-                                          f"as supported supported folder. Skipping to next content item.")
                             continue
 
                     # check if content item has to version
@@ -693,8 +691,9 @@ class Pack(object):
                             'enhancementScriptNames': content_item.get('enhancementScriptNames', [])
                         })
 
-                content_item_key = content_item_name_mapping[current_directory]
-                content_items_result[content_item_key] = folder_collected_items
+                if current_directory in PackFolders.pack_displayed_items():
+                    content_item_key = content_item_name_mapping[current_directory]
+                    content_items_result[content_item_key] = folder_collected_items
 
             print_color(f"Finished collecting content items for {self._pack_name} pack", LOG_COLORS.GREEN)
             task_status = True
