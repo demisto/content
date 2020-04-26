@@ -59,7 +59,6 @@ configuration:
 script:
   script: ''
   type: python
-  subtype: python2
   commands:
   - name: trustar-related-indicators
     arguments:
@@ -438,6 +437,7 @@ script:
     description: Returns the list of all enclaves that the user has access to, as
       well as whether they can read, create, and update reports in that enclave.
   - name: file
+    deprecated: true
     arguments:
     - name: file
       required: true
@@ -482,12 +482,13 @@ script:
       description: Is the indicator whitelisted
       type: boolean
     - contextPath: TruSTAR.File.Priority
-      description: "Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH"
+      description: Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH
       type: string
     - contextPath: File.Malicious.Description
       description: For malicious files, the reason for the vendor to make the decision
     description: Check file reputation on TruSTAR
   - name: ip
+    deprecated: true
     arguments:
     - name: ip
       required: true
@@ -529,9 +530,10 @@ script:
       description: Is the indicator whitelisted
       type: boolean
     - contextPath: TruSTAR.IP.Priority
-      description: "Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH"
+      description: Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH
     description: Check IP Reputation on TruSTAR
   - name: url
+    deprecated: true
     arguments:
     - name: url
       required: true
@@ -573,10 +575,11 @@ script:
       description: Is the indicator whitelisted
       type: boolean
     - contextPath: TruSTAR.URL.Priority
-      description: "Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH"
+      description: Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH
       type: string
     description: Check URL reputation on TruSTAR
   - name: domain
+    deprecated: true
     arguments:
     - name: domain
       required: true
@@ -618,7 +621,119 @@ script:
       description: Is the indicator whitelisted
       type: boolean
     - contextPath: TruSTAR.Domain.Priority
-      description: "Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH"
+      description: Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH
       type: string
     description: Check Domain reputation on TruStar
+  - name: trustar-get-phishing-submissions
+    arguments:
+    - name: normalized_triage_score
+      description: Score of email submission
+      isArray: true
+      defaultValue: 0,1,2,3
+    - name: from_time
+      description: Start of time window (defaults to 7 days ago) (YYYY-MM-DD HH:MM:SS)
+    - name: to_time
+      description: End of time window (defaults to current time) (YYYY-MM-DD HH:MM:SS)
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - UNRESOLVED
+      - CONFIRMED
+      - IGNORED
+      description: A list of triage statuses for submissions (UNRESOLVED,CONFIRMED,IGNORED);
+        only email submissions marked with at least one of these statuses will be
+        returned
+      isArray: true
+      defaultValue: UNRESOLVED
+    outputs:
+    - contextPath: TruSTAR.PhishingSubmission.submissionId
+      description: The submission ID
+      type: string
+    - contextPath: TruSTAR.PhishingSubmission.title
+      description: Submission title
+      type: string
+    - contextPath: TruSTAR.PhishingSubmission.normalizedTriageScore
+      description: Submission triage score
+      type: number
+    - contextPath: TruSTAR.PhishingSubmission.context.indicatorType
+      description: Indicator type
+      type: string
+    - contextPath: TruSTAR.PhishingSubmission.context.sourceKey
+      description: Indicator source
+      type: string
+    - contextPath: TruSTAR.PhishingSubmission.context.normalizedSourceScore
+      description: Indicator score
+      type: number
+    description: Fetches all phishing submissions that fit the given criteria
+  - name: trustar-set-triage-status
+    arguments:
+    - name: submission_id
+      required: true
+      description: ID of the email submission
+    - name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - CONFIRMED
+      - IGNORED
+      description: Submission status
+    description: Marks a phishing email submission with one of the phishing namespace
+      tags
+  - name: trustar-get-phishing-indicators
+    arguments:
+    - name: normalized_source_score
+      description: Intel score of the indicator
+      isArray: true
+      defaultValue: 0,1,2,3
+    - name: normalized_triage_score
+      description: Score of email submission
+      isArray: true
+      defaultValue: 0,1,2,3
+    - name: from_time
+      description: Start of time window (defaults to 7 days ago) (YYYY-MM-DD HH:MM:SS)
+    - name: to_time
+      description: End of time window (defaults to current time) (YYYY-MM-DD HH:MM:SS)
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - UNRESOLVED
+      - CONFIRMED
+      - IGNORED
+      description: A list of triage statuses for submissions; only email submissions
+        marked with at least one of these statuses will be returned. Options are 'UNRESOLVED',
+        'CONFIRMED', 'IGNORED'
+      isArray: true
+      defaultValue: UNRESOLVED,CONFIRMED,IGNORED
+    outputs:
+    - contextPath: TruSTAR.PhishingIndicator.File.Name
+      description: File name
+      type: string
+    - contextPath: TruSTAR.PhishingIndicator.File.MD5
+      description: File MD5
+      type: string
+    - contextPath: TruSTAR.PhishingIndicator.File.SHA1
+      description: File SHA1
+      type: string
+    - contextPath: TruSTAR.PhishingIndicator.File.SHA256
+      description: File SHA256
+      type: string
+    - contextPath: TruSTAR.PhishingIndicator.URL.Address
+      description: URL address
+      type: string
+    - contextPath: TruSTAR.PhishingIndicator.IP.Address
+      description: IP address
+      type: string
+    - contextPath: TruSTAR.PhishingIndicator.Account.Email.Address
+      description: Email address
+      type: string
+    - contextPath: TruSTAR.PhishingIndicator.RegistryKey.Path
+      description: Registry key path
+      type: string
+    - contextPath: TruSTAR.PhishingIndicator.CVE.ID
+      description: CVE ID
+      type: string
+    description: Get phishing indicators that match the given criteria.
   dockerimage: demisto/trustar:latest
+  runonce: false
+  subtype: python2
+sourcemoduleid: TruSTAR
