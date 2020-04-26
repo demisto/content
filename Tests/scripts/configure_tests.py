@@ -998,7 +998,9 @@ def create_test_file(is_nightly, skip_save=False):
             two_before_ga = json.load(ami_builds).get('TwoBefore-GA', '0').split('-')[0]
 
         conf = load_tests_conf()
-        tests = get_test_list(files_string, branch_name, two_before_ga, conf)
+        with open("./Tests/id_set.json", 'r') as conf_file:
+            id_set = json.load(conf_file)
+        tests = get_test_list(files_string, branch_name, two_before_ga, conf, id_set)
 
         tests_string = '\n'.join(tests)
         if tests_string:

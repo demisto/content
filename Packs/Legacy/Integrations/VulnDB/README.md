@@ -12,7 +12,7 @@
 <li><strong>Hostname, IP address, or server URL</strong></li>
 <li><strong>client_id</strong></li>
 <li><strong>client_secret</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 </ul>
 </li>

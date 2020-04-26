@@ -11,7 +11,7 @@
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li><strong>Credentials</strong></li>
 <li><strong>Awake Security server address</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Fetch incidents</strong></li>
 <li><strong>Incident type</strong></li>
 <li><strong>Use system proxy settings</strong></li>
