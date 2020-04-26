@@ -2,7 +2,8 @@ import json
 import copy
 import os
 from ruamel.yaml import YAML
-from Tests.scripts.configure_tests import get_test_list, get_modified_files, RANDOM_TESTS_NUM, TestConf
+from Tests.scripts.configure_tests import get_test_list, get_modified_files, RANDOM_TESTS_NUM, TestConf, \
+    create_filter_envs_file
 import demisto_sdk.commands.common.tools as demisto_sdk_tools
 
 with open('Tests/scripts/infrastructure_tests/tests_data/mock_id_set.json', 'r') as mock_id_set_f:
@@ -173,29 +174,78 @@ class TestChangedTestPlaybook:
         assert len(filterd_tests) == 1
 
     def test_changed_unrunnable_test__integration_fromversion(self, mocker):
-        # fake_test_playbook is fromversion 4.1.0 in integration file
+        """
+        Given:
+            - fake_test_playbook integration is fromversion 4.1.0 in integration file
+            - two_before_ga is '4.0.0'
+            - one_before_ga is '4.1.0'
+            - ga is '4.5.0'
+        When:
+            - running get_test_list
+            - running create_filter_envs_file
+        Then:
+            - Create test list with fake_test_playbook
+            - Create filter_envs.json file with Demisto two before GA False
+
+        """
+        two_before_ga = '4.0.0'
+        one_before_ga = '4.1.0'
+        ga = '4.5.0'
         test_id = 'fake_test_playbook'
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[test_path],
                                                                modified_tests_list=[test_path])
-        filterd_tests = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
-
+        filterd_tests = get_mock_test_list(two_before_ga, get_modified_files_ret, mocker)
         assert test_id in filterd_tests
         assert len(filterd_tests) == 1
 
-    def test_changed_unrunnable_test__playbook_fromversion(self, mocker):
-        # fake_test_playbook is fromversion 4.1.0 in playbook file
+        create_filter_envs_file(filterd_tests, two_before_ga, one_before_ga, ga, TestConf(MOCK_CONF), MOCK_ID_SET)
+        with open("./Tests/filter_envs.json", "r") as filter_envs_file:
+            filter_envs = json.load(filter_envs_file)
+        assert filter_envs.get('Server Master') is True
+        assert filter_envs.get('Demisto PreGA') is True
+        assert filter_envs.get('Demisto two before GA') is False
+        assert filter_envs.get('Demisto one before GA') is True
+        assert filter_envs.get('Demisto GA') is True
+
+    def test_changed_unrunnable_test__playbook_fromversion_1(self, mocker):
+        """
+        Given:
+            - fake_test_playbook is fromversion 4.1.0 in integration file
+            - two_before_ga is '4.0.0'
+            - one_before_ga is '4.0.1'
+            - ga is '4.1.0'
+        When:
+            - running get_test_list
+            - running create_filter_envs_file
+        Then:
+            - Create test list with fake_test_playbook
+            - Create filter_envs.json file with Demisto two before GA False and Demisto one before GA False
+
+        """
+        two_before_ga = '4.0.0'
+        one_before_ga = '4.0.1'
+        ga = '4.1.0'
         test_id = 'fake_test_playbook'
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[test_path],
                                                                modified_tests_list=[test_path])
-        filterd_tests = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
+        filterd_tests = get_mock_test_list(two_before_ga, get_modified_files_ret, mocker)
 
         assert test_id in filterd_tests
         assert len(filterd_tests) == 1
 
-    def test_changed_unrunnable_test__playbook_toversion(self, mocker):
-        # future_playbook_1 is toversion 99.99.99 in conf file
+        create_filter_envs_file(filterd_tests, two_before_ga, one_before_ga, ga, TestConf(MOCK_CONF), MOCK_ID_SET)
+        with open("./Tests/filter_envs.json", "r") as filter_envs_file:
+            filter_envs = json.load(filter_envs_file)
+        assert filter_envs.get('Server Master') is True
+        assert filter_envs.get('Demisto PreGA') is True
+        assert filter_envs.get('Demisto two before GA') is False
+        assert filter_envs.get('Demisto one before GA') is False
+        assert filter_envs.get('Demisto GA') is True
+
+    def test_changed_unrunnable_test__playbook_fromvesion_2(self, mocker):
+        # future_playbook_1 is fromversion 99.99.99 in conf file
         test_id = 'future_test_playbook_1'
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/future_test_playbook_1.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[test_path],
@@ -205,7 +255,7 @@ class TestChangedTestPlaybook:
         assert test_id in filterd_tests
         assert len(filterd_tests) == 1
 
-    def test_changed_runnable_test__playbook_toversion(self, mocker):
+    def test_changed_runnable_test__playbook_fromversion(self, mocker):
         # future_playbook_1 is toversion 99.99.99 in conf file
         test_id = 'future_test_playbook_1'
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/future_test_playbook_1.yml'
