@@ -1,7 +1,35 @@
+## Prisma Access Integration
 Integrate with Prisma Access to monitor the status of the Service, alert and take actions.
+The integration uses both the Panorama XML API and SSH into the PAN-OS CLI.
+
+### Common parameters
+The **Server Host or IP** parameter is required by both.
+
+### SSH connection
+
+The following commands require the SSH access to be configured:
+ - prisma-access-active-users
+ - prisma-access-cli-command
+ - prisma-access-query
+
+The SSH connection requires the **SSH Credentials for CLI**, **Password** and **SSH Port**  are provided.
+
+SSH credentials should be your username and password for the PAN-OS CLI - they can be tested using a standalone SSH client to verify that you are able to connect to the CLI on the SSH port.
 
 
-This integration was integrated and tested with version xx of Prisma Access
+###  API connection
+
+The following commands require the API access to be configured:
+ - prisma-access-logout-user
+
+The API connection requires the **API Port** and **API Key** parameters as well as a **Device Group** or **Vsys**.
+
+
+
+
+
+This integration was integrated and tested with version 9.0.7 of Prisma Access
+
 ## Configure Prisma Access on Demisto
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
