@@ -1,21 +1,82 @@
-jobs:
-  create_test_id_set:
-    executor: python/default
+commands:
+  content-setup:
+    description: "Content enviorment setup"
     steps:
       - checkout
-      - python/load-cache
-      - python/install-deps
-      - python/save-cache
+      - setup_remote_docker
+      - restore_cache:
+          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
+      - run:
+          name: Prepare Environment
+          when: always
+          command: |
+            if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo "Skipping - instance tests tasks are running only in container number 0"
+                exit 0
+            fi
+            echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
+            echo 'export PATH="/home/circleci/.local/bin:${PWD}/node_modules/.bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
+            echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
+            echo 'export DEMISTO_README_VALIDATION=true' >> $BASH_ENV
+            echo "=== sourcing $BASH_ENV ==="
+            source $BASH_ENV
+            sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
+            chmod +x ./Tests/scripts/*
+            chmod +x ./Tests/lastest_server_build_scripts/*
+            echo "Parameters: NIGHTLY: $NIGHTLY, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME, INSTANCE_TESTS: $INSTANCE_TESTS"
+            if [ ! -e "venv" ]; then
+              echo "installing venv"
+              NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap
+              source ./venv/bin/activate
+              pip install -r .circleci/build-requirements.txt
+              pip3 install -r .circleci/build-requirements.txt
+            else
+              echo "venv exists (from cache). activating"
+              source ./venv/bin/activate
+            fi
+            # Install node packages
+            npm install .
+            # store in bash env so we load our venv in each step
+            echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
+            git config diff.renameLimit 6000
+            python --version
+            python3 --version
+            demisto-sdk --version
+      - save_cache:
+          paths:
+            - venv
+            - node_modules
+          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
+      - add_ssh_keys:
+          fingerprints:
+            - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
+            - "f5:25:6a:e5:ac:4b:84:fb:60:54:14:82:f1:e9:6c:f9" # disable-secrets-detection
+
+
+executors:
+  content-executor:
+    docker:
+      - image: devdemisto/content-build:3.0.0.7332
+    resource_class: medium+
+    environment:
+      CONTENT_VERSION: "20.4.0"
+      SERVER_VERSION: "5.5.0"
+      GIT_SHA1: "8e167aa32b7c7c76ca7d4ac2fa5fdae88be1b64f"
+
+
+jobs:
+  create_test_id_set:
+    executor: content-executor
+    steps:
+      - content-setup
       - run:
           command: demisto-sdk create-id-set -o ./Tests/id_set.json
 
   infrastructure_testing:
-    executor: python/default
+    executor: content-executor
     steps:
-      - checkout
-      - python/load-cache
-      - python/install-deps
-      - python/save-cache
+      - content-setup
       - run:
           command: |
             if [ -n "${INSTANCE_TESTS}" ];
@@ -32,12 +93,9 @@ jobs:
             python3 -m pytest ./Tests/Marketplace/Tests/search_and_install_packs_test.py -v
 
     validate_files_and_yaml:
-      executor: python/default
+      executor: content-executor
       steps:
-        - checkout
-        - python/load-cache
-        - python/install-deps
-        - python/save-cache
+        - content-setup
         - run:
             command: |
               if [ -n "${INSTANCE_TESTS}" ];
@@ -61,12 +119,9 @@ jobs:
               fi
 
     secrets:
-      executor: python/default
+      executor: content-executor
       steps:
-        - checkout
-        - python/load-cache
-        - python/install-deps
-        - python/save-cache
+        - content-setup
         - run: |
             if [ -n "${INSTANCE_TESTS}" ];
               then
@@ -77,12 +132,9 @@ jobs:
             demisto-sdk secrets --post-commit --ignore-entropy
 
     spell_checks:
-      executor: python/default
+      executor: content-executor
       steps:
-        - checkout
-        - python/load-cache
-        - python/install-deps
-        - python/save-cache
+        - content-setup
         - run: |
               if [ -n "${INSTANCE_TESTS}" ];
                 then
@@ -92,12 +144,9 @@ jobs:
               python3 ./Tests/scripts/circleci_spell_checker.py $CIRCLE_BRANCH
 
     build_content_descriptor:
-      executor: python/default
+      executor: content-executor
       steps:
-        - checkout
-        - python/load-cache
-        - python/install-deps
-        - python/save-cache
+        - content-setup
         - run: |
             if [ -n "${GITHUB_TOKEN}" ] ;
               then
@@ -108,31 +157,22 @@ jobs:
             fi
 
     common_server_documentation:
-      executor: python/default
+      executor: content-executor
       steps:
-        - checkout
-        - python/load-cache
-        - python/install-deps
-        - python/save-cache
+        - content-setup
         - run: ./Documentation/commonServerDocs.sh
 
 
     content_docs_site:
-      executor: python/default
+      executor: content-executor
       steps:
-        - checkout
-        - python/load-cache
-        - python/install-deps
-        - python/save-cache
+        - content-setup
         - run: ./Documentation/docs_site_update.sh
 
     create_content_artifacts:
-      executor: python/default
+      executor: content-executor
       steps:
-        - checkout
-        - python/load-cache
-        - python/install-deps
-        - python/save-cache
+        - content-setup
         - run: |
             demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS
             # create zip with contents of content_new.zip and content_test.zip for use in updating content on instances
@@ -145,12 +185,9 @@ jobs:
             destination: artifacts
 
     run_unit_test_and_lint:
-      executor: python/default
+      executor: content-executor
       steps:
-        - checkout
-        - python/load-cache
-        - python/install-deps
-        - python/save-cache
+        - content-setup
         - run: |
             echo "demisto-sdk version: $(demisto-sdk --version)"
             echo "mypy version: $(mypy --version)"
@@ -176,12 +213,9 @@ jobs:
             destination: artifacts
 
     verify_base_branch_for_contribution:
-      executor: python/default
+      executor: content-executor
       steps:
-        - checkout
-        - python/load-cache
-        - python/install-deps
-        - python/save-cache
+        - content-setup
         - run: |
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]] ;
               then
@@ -189,12 +223,9 @@ jobs:
             fi
 
     configure_test_filter:
-      executor: python/default
+      executor: content-executor
       steps:
-        - checkout
-        - python/load-cache
-        - python/install-deps
-        - python/save-cache
+        - content-setup
         - run: |
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
@@ -205,9 +236,6 @@ jobs:
             [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
             python3 ./Tests/scripts/configure_tests.py -n $IS_NIGHTLY
 
-
-orbs:
-  python: circleci/python@0.1
 workflows:
   version: 2
   verify_and_test:
