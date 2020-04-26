@@ -2824,6 +2824,7 @@
         "Microsoft Graph User": "Test direct access to oproxy",
         "Microsoft_Graph_Files": "Test direct access to oproxy",
         "Microsoft Graph Groups": "Test direct access to oproxy",
+        "Microsoft Defender Advanced Threat Protection": "Test direct access to oproxy",
         "SafeBreach": "SSL Issues",
         "AWS - CloudWatchLogs": "Issue 20958",
         "Gmail Single User" : "googleclient sdk has time based challenge exchange",
