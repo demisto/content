@@ -34,6 +34,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "Google Cloud Functions",
+            "playbookID": "test playbook - Google Cloud Functions",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Plain Text Feed",
             "playbookID": "PlainText Feed - Test",
             "fromversion": "5.5.0"
