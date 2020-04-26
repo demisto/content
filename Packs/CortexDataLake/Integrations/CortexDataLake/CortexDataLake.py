@@ -108,7 +108,11 @@ class Client(BaseClient):
 
         if not response.ok:
             status_code = response.status_code
-            error_message = ''.join([message.get('message') for message in query_result])
+            # For some error responses the messages are in 'query_result['errors'] and for some they are simply
+            # in 'query_result
+            errors = query_result.get('errors', query_result)
+            error_message = ''.join([message.get('message') for message in errors])
+
             raise DemistoException(f'Error in query to Cortex Data Lake [{status_code}] - {error_message}')
 
         try:
