@@ -1,0 +1,126 @@
+id: HelloWorld_Scan-Test
+version: -1
+name: HelloWorld_Scan-Test
+description: Test Playbook for HelloWorld Scan
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 8954c84a-7bb7-4d06-8c4b-58ef786bb202
+    type: start
+    task:
+      id: 8954c84a-7bb7-4d06-8c4b-58ef786bb202
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '1':
+    id: '1'
+    taskid: a7ba2ce7-6c05-49b1-82b7-cc45449665bd
+    type: regular
+    task:
+      id: a7ba2ce7-6c05-49b1-82b7-cc45449665bd
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 190\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '2':
+    id: '2'
+    taskid: b30f4cfd-3679-4faf-8436-96c07540e899
+    type: playbook
+    task:
+      id: b30f4cfd-3679-4faf-8436-96c07540e899
+      version: -1
+      name: HelloWorld Scan
+      description: "This Playbook simulates a vulerability scan using the \"HelloWorld\"\
+        \ sample integration. It's used to demonstrate how to use the GenericPolling\
+        \ mechanism to run jobs that take several seconds or minutes to complete.\
+        \ It is designed to be used as a subplaybook, but you can also use it as a\
+        \ standalone playbook, by providing the ${Endpoint.Hostname} input in the\
+        \ Context.\n\nOther inputs include the report output format (JSON context\
+        \ or File attached), and the Interval/Timeouts to use for polling the scan\
+        \ status until it's complete."
+      playbookName: HelloWorld Scan
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      Hostname:
+        simple: test123.local
+      Interval:
+        simple: '1'
+      Report Format:
+        simple: json
+      Timeout:
+        simple: '8'
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 100
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 360\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '3':
+    id: '3'
+    taskid: d425febd-8dee-4477-86af-b619ec2a5aa7
+    type: title
+    task:
+      id: d425febd-8dee-4477-86af-b619ec2a5aa7
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 530\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 545,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n\
+  \    }\n  }\n}"
+inputs: []
+outputs: []
+fromversion: 5.0.0

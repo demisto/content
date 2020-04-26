@@ -1,0 +1,2 @@
+## [Unreleased]
+Improved documentation
