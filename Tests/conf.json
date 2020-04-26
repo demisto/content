@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Microsoft Intune Feed",
+            "playbookID": "FeedMicrosoftIntune_Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Smokescreen IllusionBLACK",
             "playbookID": "Smokescreen IllusionBLACK-Test",
             "fromversion": "5.0.0"
