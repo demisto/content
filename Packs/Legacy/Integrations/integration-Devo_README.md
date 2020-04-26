@@ -18,7 +18,7 @@
 <li><strong>Server URL (e.g <a href="https://api-us.logtrust.com/" rel="nofollow">https://api-us.logtrust.com/</a>)</strong></li>
 <li><strong>API key</strong></li>
 <li><strong>API secret</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 </ul>
 </li>
