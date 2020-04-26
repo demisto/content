@@ -2620,6 +2620,18 @@
         {
             "integrations": "IBM Resilient Systems",
             "playbookID": "IBM Resilient Systems Test"
+        },
+        {
+            "playbookID": "Prisma_Access_Egress_IP_Feed-Test",
+            "timeout" : 60000,
+            "fromversion": "5.5.0",
+            "nightly": true
+        },
+        {
+            "playbookID": "Prisma_Access-Test",
+            "timeout" : 60000,
+            "fromversion": "5.5.0",
+            "nightly": true
         }
     ],
     "skipped_tests": {
@@ -2670,7 +2682,11 @@
         "TAXII_Feed_Test": "Issue #22423",
         "PAN-OS Query Logs For Indicators Test": "Issue #23505",
         "Panorama Query Logs - Test": "Issue #23505",
-        "palo_alto_panorama_test_pb": "Issue #22835"
+        "palo_alto_panorama_test_pb": "Issue #22835",
+        "IP Whitelist - AWS Security Group": "TBD",
+        "Prisma Access -  Logout User": "TBD",
+        "Prisma Access Whitelist Egress IPs on SaaS Services": "TBD",
+        "IP Whitelist - GCP Firewall": "TBD"
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
