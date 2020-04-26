@@ -207,7 +207,6 @@ script:
             return_error('Download of recording failed: [%d] - %s' % (res.status_code, res.text))
     else:
         return_error('Unrecognized command: ' + demisto.command())
-  type: python
   commands:
   - name: zoom-create-user
     arguments:
@@ -402,4 +401,9 @@ script:
     description: Delete a user from Zoom
     execution: true
   dockerimage: demisto/pyjwt:1.0
+  isfetch: true
+  subtype: python3
+  type: python
+  longRunning: false
+  longRunningPort: false
   runonce: false

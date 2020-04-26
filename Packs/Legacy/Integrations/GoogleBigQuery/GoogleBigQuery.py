@@ -7,6 +7,7 @@ import os
 import json
 import requests
 from google.cloud import bigquery
+from datetime import date
 
 
 # Disable insecure warnings
@@ -17,7 +18,7 @@ requests.packages.urllib3.disable_warnings()
 
 TEST_QUERY = ('SELECT name FROM `bigquery-public-data.usa_names.usa_1910_2013` '
               'WHERE state = "TX" '
-              'LIMIT 100')
+              'LIMIT 10')
 
 
 ''' HELPER FUNCTIONS '''
@@ -100,6 +101,8 @@ def build_query_job_config(allow_large_results, default_dataset_string, destinat
 def convert_to_string_if_datetime(object_that_may_be_datetime):
     if isinstance(object_that_may_be_datetime, datetime):
         return object_that_may_be_datetime.strftime("%m/%d/%Y %H:%M:%S")
+    if isinstance(object_that_may_be_datetime, date):
+        return object_that_may_be_datetime.strftime("%m/%d/%Y")
     else:
         return object_that_may_be_datetime
 

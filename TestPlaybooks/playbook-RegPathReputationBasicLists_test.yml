@@ -1,5 +1,5 @@
 id: RegPathReputationBasicLists_test
-version: 17
+version: -1
 name: RegPathReputationBasicLists_test
 description: Test the script - RegPathReputationBasicLists
 starttaskid: "0"

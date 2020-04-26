@@ -2,6 +2,7 @@ id: search_endpoints_by_hash_-_generic
 version: -1
 name: Search Endpoints By Hash - Generic
 fromversion: 3.5.0
+toversion: 4.4.9
 system: true
 description: Hunt using available tools
 starttaskid: "0"

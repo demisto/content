@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+Fixed an issue where ***!file*** only accepted a lower case hash.
 
 ## [20.4.0] - 2020-04-14
 -
