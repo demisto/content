@@ -26,6 +26,7 @@ tasks:
       - "5"
       - "15"
       - "17"
+      - "19"
     separatecontext: false
     view: |-
       {
@@ -479,6 +480,94 @@ tasks:
       {
         "position": {
           "x": -1600,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 875ea175-3aea-4bbc-8563-a2030b41f2f4
+    type: condition
+    task:
+      id: 875ea175-3aea-4bbc-8563-a2030b41f2f4
+      version: -1
+      name: Are there CIDR results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: playbookQuery.indicator_type
+            iscontext: true
+          right:
+            value:
+              simple: CIDR
+        - operator: isEqualString
+          left:
+            value:
+              simple: playbookQuery.indicator_type
+            iscontext: true
+          right:
+            value:
+              simple: IPv6CIDR
+    view: |-
+      {
+        "position": {
+          "x": 2370,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 452333f7-b14e-4c40-8268-96f9b057bf9c
+    type: playbook
+    task:
+      id: 452333f7-b14e-4c40-8268-96f9b057bf9c
+      version: -1
+      name: TIM - Process CIDR Indicators By Size
+      description: This playbook processes CIDR indicators of both IPV4 and IPV6.
+        By specifying in the inputs the maximum number of hosts allowed per CIDR the
+        playbook will tag any CIDR that exceeds the number as pending_review. If the
+        maximum CIDR size is not specified in inputs the playbook wont run.
+      playbookName: TIM - Process CIDR Indicators By Size
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      MaximumCIDRSizeToApprovce: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1840,
           "y": 440
         }
       }
