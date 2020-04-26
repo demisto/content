@@ -565,7 +565,7 @@ inputs:
 - key: ''
   value: {}
   required: false
-  description: ''
+  description: 'Indicators to trigger the playbook'
   playbookInputQuery:
     query: ''
     queryEntity: indicators
@@ -601,4 +601,4 @@ inputs:
 outputs: []
 quiet: true
 fromversion: 5.5.0
-description: ''
+description: 'Set a list of IP addresses in GCP firewall.'
