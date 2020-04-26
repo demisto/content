@@ -572,12 +572,19 @@ def panorama_commit_status_command():
         if result['response']['result']['job']['result'] == 'PEND':
             commit_status_output['Status'] = 'Pending'
 
+    # WARNINGS - Job warnings
+    status_warnings = []
+    if result.get("response", {}).get('result', {}).get('job', {}).get('warnings', {}):
+        status_warnings = result.get("response", {}).get('result', {}).get('job', {}).get('warnings', {}).get('line', [])
+    ignored_error = 'configured with no certificate profile'
+    commit_status_output["Warnings"] = [item for item in status_warnings if item not in ignored_error]
+
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': result,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Commit status:', commit_status_output, ['JobID', 'Status', 'Details'],
+        'HumanReadable': tableToMarkdown('Commit status:', commit_status_output, ['JobID', 'Status', 'Details', 'Warnings'],
                                          removeNull=True),
         'EntryContext': {"Panorama.Commit(val.JobID == obj.JobID)": commit_status_output}
     })
@@ -648,6 +655,19 @@ def panorama_push_status():
     return result
 
 
+def safeget(dct, keys):
+    # Safe get from dictionary
+    for key in keys:
+        try:
+            if isinstance(dct, dict):
+                dct = dct[key]
+            else:
+                return None
+        except KeyError:
+            return None
+    return dct
+
+
 def panorama_push_status_command():
     """
     Check jobID of push status
@@ -675,13 +695,22 @@ def panorama_push_status_command():
     if job.get('status') == 'PEND':
         push_status_output['Status'] = 'Pending'
 
+    # WARNINGS - Job warnings
+    status_warnings = []
+    devices = safeget(result, ["response", "result", "job", "devices", "entry"])
+    if devices:
+        for device in devices:
+            device_warnings = safeget(device, ["details", "msg", "warnings", "line"])
+            status_warnings.extend([] if not device_warnings else device_warnings)
+    push_status_output["Warnings"] = status_warnings
+
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': result,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Push to Device Group status:', push_status_output,
-                                         ['JobID', 'Status', 'Details'], removeNull=True),
+                                         ['JobID', 'Status', 'Details', 'Warnings'], removeNull=True),
         'EntryContext': {"Panorama.Push(val.JobID == obj.JobID)": push_status_output}
     })
 
