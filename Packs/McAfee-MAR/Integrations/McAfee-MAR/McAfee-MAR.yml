@@ -515,4 +515,5 @@ script:
       description: Host operation system
     description: Gets host information from McAfee Active Response
   dockerimage: demisto/dxl:1.0.0.4989
+  dockerimage45: demisto/dxl
   runonce: false
