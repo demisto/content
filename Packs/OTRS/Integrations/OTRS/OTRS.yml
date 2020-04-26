@@ -1,6 +1,6 @@
 category: Case Management
 commonfields:
-  id: OTRS copy
+  id: OTRS
   version: -1
 configuration:
 - display: OTRS Server URL (e.g. http://example.com)
@@ -53,8 +53,8 @@ configuration:
 description: Service management suite that comprises ticketing, workflow automation,
   and notification.
 fromversion: 4.1.0
-display: OTRS copy
-name: OTRS copy
+display: OTRS
+name: OTRS
 script:
   commands:
   - arguments:
