@@ -1,3 +1,10 @@
+import json
+import logging
+import time
+
+import requests
+
+import demistomock as demisto
 import resilient
 from CommonServerPython import *
 
@@ -918,47 +925,33 @@ def related_incidents(incident_id):
 
 
 def fetch_incidents():
+    now = int(time.time())
     last_run = demisto.getLastRun() and demisto.getLastRun().get('time')
     if not last_run:
-        args = {'date-created-after': FETCH_TIME}
-    else:
-        args = {'date-created-after': normalize_timestamp(last_run)}
-
+        now -= 600  # In the first run, fetch incidents from the last 10 minutes
+        last_run = now
+    args = {'date-created-after': normalize_timestamp(last_run * 1000)}
     resilient_incidents = search_incidents(args)
     incidents = []
+    for incident in resilient_incidents:
+        artifacts = incident_artifacts(str(incident['id']))
+        if artifacts:
+            incident['artifacts'] = artifacts
+        attachments = incident_attachments(str(incident['id']))
+        if attachments:
+            incident['attachments'] = attachments
+        demisto_incident = {}
+        if isinstance(incident['description'], unicode):
+            incident['description'] = incident['description'].replace('<div>', '').replace('</div>', '')
+        incident['discovered_date'] = normalize_timestamp(incident['discovered_date'])
+        incident['create_date'] = normalize_timestamp(incident['create_date'])
+        demisto_incident['name'] = 'IBM Resilient Systems incident ID ' + str(incident['id'])
+        demisto_incident['occurred'] = incident['create_date']
+        demisto_incident['rawJSON'] = json.dumps(incident)
+        incidents.append(demisto_incident)
 
-    if resilient_incidents:
-        last_incident_creation_time = resilient_incidents[0].get('create_date')  # the first incident's creation time
-
-        for incident in resilient_incidents:
-            artifacts = incident_artifacts(str(incident['id']))
-            if artifacts:
-                incident['artifacts'] = artifacts
-            attachments = incident_attachments(str(incident['id']))
-            if attachments:
-                incident['attachments'] = attachments
-            if isinstance(incident['description'], unicode):
-                incident['description'] = incident['description'].replace('<div>', '').replace('</div>', '')
-
-            incident_creation_time = incident['create_date']
-
-            incident['discovered_date'] = normalize_timestamp(incident['discovered_date'])
-            incident['create_date'] = normalize_timestamp(incident_creation_time)
-
-            demisto_incident = dict()  # type: dict
-
-            demisto_incident['name'] = 'IBM Resilient Systems incident ID ' + str(incident['id'])
-            demisto_incident['occurred'] = incident['create_date']
-            demisto_incident['rawJSON'] = json.dumps(incident)
-
-            # updating last creation time if needed
-            if incident_creation_time > last_incident_creation_time:
-                last_incident_creation_time = incident_creation_time
-
-            incidents.append(demisto_incident)
-
-        demisto.setLastRun({'time': last_incident_creation_time})
     demisto.incidents(incidents)
+    demisto.setLastRun({'time': now})
 
 
 ''' EXECUTION CODE '''
