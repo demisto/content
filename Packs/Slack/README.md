@@ -1,21 +1,20 @@
-<h1>Slack v2</h1>
 <p>
   Send messages and notifications to your Slack Team.
-  This integration was integrated and tested with version 4.0.1 of Slack, and is available from Demisto 5.0.
+  This integration was integrated and tested with version 4.0.1 of Slack, and is available from Cortex XSOAR version 5.0.
 </p>
 <h2>Use Cases</h2>
 <ul>
-<li>Mirror Demisto investigations War Room to Slack channels and vice-versa.</li>
-<li>Send notifications, message and files from Demisto to Slack.</li>
-<li>Get notifications in Slack about events in Demisto.</li>
-<li>Manage Demisto incidents via direct messages to the Demisto bot.</li>
+<li>Mirror Cortex XSOAR investigations War Room to Slack channels and vice-versa.</li>
+<li>Send notifications, message and files from Cortex XSOAR to Slack.</li>
+<li>Get notifications in Slack about events in Cortex XSOAR.</li>
+<li>Manage Cortex XSOAR incidents via direct messages to the Cortex XSOAR bot.</li>
 <li>Manage Slack channels (create, edit, invite, kick, close).</li>
 </ul><h2>Detailed Description</h2>
 <ul>
-<li>To allow us access to Slack, the Demisto app has to be added to the relevant workspace. Do so by clicking on the following [link](https://oproxy.demisto.ninja/slack).</li>
-<li> After adding the Demisto app, you will get an Access Token and Bot Token, which should be inserted in the integration instance configuration's corresponding fields.</li>
+<li>To allow us access to Slack, the Cortex XSOAR app has to be added to the relevant workspace. Do so by clicking on the following [link](https://oproxy.demisto.ninja/slack).</li>
+<li> After adding the Cortex XSOAR app, you will get an Access Token and Bot Token, which should be inserted in the integration instance configuration's corresponding fields.</li>
 </ul>
-<h2>Configure SlackV2 on Demisto</h2>
+<h2>Configure SlackV2 on Cortex XSOAR</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
   &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
@@ -34,8 +33,8 @@
       <li><strong>Use system proxy settings</strong></li>
       <li><strong>Trust any certificate (not secure)</strong></li>
       <li><strong>Long running instance. Required for investigation mirroring and direct messages.</strong></li>
-      <li><strong>Bot display name in Slack (Demisto Integration by default)</strong></li>
-      <li><strong>Bot icon in Slack - Image URL (Demisto icon by default)</strong></li>
+      <li><strong>Bot display name in Slack (Cortex XSOAR Integration by default)</strong></li>
+      <li><strong>Bot icon in Slack - Image URL (Cortex XSOAR icon by default)</strong></li>
       <li><strong>Maximum time to wait for a rate limited call in seconds - 60 by default</strong></li>
       <li><strong>Number of objects to return in each paginated call - 200 by default</strong></li>
       <li><strong>Proxy URL to use in Slack API calls</strong></li>
@@ -49,7 +48,7 @@
 </ol>
 <h2>Commands</h2>
 <p>
-  You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+  You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>
@@ -66,7 +65,7 @@
 </ol>
 <h3>1. mirror-investigation</h3>
 <!-- <hr> -->
-<p>Mirrors the investigation between Slack and the Demisto War Room.</p>
+<p>Mirrors the investigation between Slack and the Cortex XSOAR War Room.</p>
 <h5>Base Command</h5>
 <p>
   <code>mirror-investigation</code>
@@ -184,7 +183,7 @@ Investigation mirrored successfully, channel: my-mirror
     </tr>
     <tr>
       <td>ignoreAddURL</td>
-      <td>Whether to include a URL to the relevant component in Demisto. Can be "true" or "false". Default value is "false".</td>
+      <td>Whether to include a URL to the relevant component in Cortex XSOAR. Can be "true" or "false". Default value is "false".</td>
       <td>Optional</td>
     </tr>
     <tr>
@@ -228,7 +227,7 @@ Investigation mirrored successfully, channel: my-mirror
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!send-notification channel=general message="I love Demisto"</code>
+  <code>!send-notification channel=general message="I love Cortex XSOAR"</code>
 </p>
 <h5>Context Example</h5>
 <pre>
@@ -403,7 +402,7 @@ There are no context output for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!slack-set-channel-topic channel=general topic="Demisto rocks"</code>
+  <code>!slack-set-channel-topic channel=general topic="Cortex XSOAR rocks"</code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -735,7 +734,7 @@ Channel renamed successfully.
 </p>
 <h2>Additional Information</h2>
 <h3>Direct messages</h3>
-<p>You may send direct messages to the Demisto app on Slack using the following commands:</p>
+<p>You may send direct messages to the Cortex XSOAR app on Slack using the following commands:</p>
 <pre>
 list incidents [page x]
 list my incidents [page x]
@@ -745,12 +744,28 @@ new incident [details]
 mirror incident-id
 </pre>
 <h3>Notifications</h3>
-<p>The integration sends notifications according to the configured notification settings found in the user preferences page in Demisto, and additionally to the pre determined channel dedicated for incident notifications (according to the integration configuration).</p>
+<p>The integration sends notifications according to the configured notification settings found in the user preferences page in Cortex XSOAR, and additionally to the pre determined channel dedicated for incident notifications (according to the integration configuration).</p>
 <h3>Blocks and interactve components</h3>
 <span>The integration supports sending "blocks" to Slack. Blocks are a series of components that can be combined to create visually rich and compellingly interactive messages. In the integration, they can be sent as an array of JSON. More infortmation about that <a href="https://api.slack.com/reference/block-kit/blocks">here.</a> You can experiment with and build your own blocks <a href="https://api.slack.com/tools/block-kit-builder">here.</a>
 The integration also allows some level of interactivity. When a user interacts with an element in a Slack message, Slack sends a request with the relevant information. 
-This request is processed and stored by a dedicated endpoint outside of Demisto in the address: <code>https://oproxy.demisto.ninja</code>. What the integration currently allows is polling this endpoint for user interactions that contain entitlement strings(these are used to perform actions in Demisto by outside users, see the <code>SlackAsk</code> script for an example). What that means is that in order to enable interactivity using the integration, connection to this endpoint has to be enabled.</span>
-<h4>Important! The interactions work only with the Demisto Integration bot - the only application that's allowed to send requests to the dedicated endpoint(for security reasons). They will not work with another application.</h4>
+This request is processed and stored by a dedicated endpoint outside of Cortex XSOAR in the address: <code>https://oproxy.demisto.ninja</code>
+The integration allows polling this endpoint for user interactions that contain entitlement strings, which are used to perform actions in Cortex XSOAR by external users. See the <a href="https://github.com/demisto/content/tree/master/Packs/Slack/Scripts/SlackAsk">SlackAsk</a> script for an example.
+This means that in order to enable interactivity using the integration, connection to this endpoint has to be enabled.</span>
+The following information is sent to the dedicated endpoint in the request:
+<h5>Headers</h5>
+<ul>
+<li>Current Cortex XSOAR content version</li>
+<li>Current Cortex XSOAR server version</li>
+<li>The name of the integration</li>
+<li>Team name in Slack - for identification</li>
+<li>Team ID in Slack - for identification</li>
+<li>Cortex XSOAR license ID - for identification</li>
+</ul>
+<h5>Body</h5>
+<ul>
+<li>Entitlement - the unique entitlement string to allow interaction with Cortex XSOAR.</li>
+</ul>
+<h4>Important! The interactions work only with the Cortex XSOAR Integration bot - the only application that's allowed to send requests to the dedicated endpoint(for security reasons). They will not work with another application.</h4>
 <h2>Known Limitations</h2>
 <ul>
   <li>Due to limitations of the `aiohttp` library, only http proxies are supported.</li>
@@ -759,7 +774,7 @@ This request is processed and stored by a dedicated endpoint outside of Demisto 
   <li>Currently, the integration does not support working without verifying SSL certificates. The parameter applies only to the endpoint for interactive responses.</li>
 </ul>
 <h2>Troubleshooting</h2>
-<p>If messages are not mirrored in Demisto, or direct messages are not handled properly, check the integration status on the integration page:</p>
+<p>If messages are not mirrored in Cortex XSOAR, or direct messages are not handled properly, check the integration status on the integration page:</p>
 <img alt="" src="https://user-images.githubusercontent.com/35098543/66030151-6dbbc780-e509-11e9-9c21-c5c7ceb1f039.png"/>
 <br>
 <span>If you're having further issues, contact us at <a href="mailto:support@demisto.com">support@demisto.com</a> and attach the server logs.</span>
