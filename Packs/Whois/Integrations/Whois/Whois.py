@@ -8366,7 +8366,8 @@ def domain_command():
         'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
         'EntryContext': {
             'Domain(val.Name && val.Name == obj.Name)': standard_ec,
-            'DBotScore(val.Indicator && val.Indicator == obj.Indicator)': dbot_score
+            'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor && val.Vendor == obj.Vendor)':
+                dbot_score
         }
     })
 
@@ -8383,7 +8384,8 @@ def whois_command():
         'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
         'EntryContext': {
             'Domain(val.Name && val.Name == obj.Name)': standard_ec,
-            'DBotScore(val.Indicator && val.Indicator == obj.Indicator)': dbot_score
+            'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor && val.Vendor == obj.Vendor)':
+                dbot_score
         }
     })
 
