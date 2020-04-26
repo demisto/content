@@ -567,21 +567,21 @@ inputs:
   required: false
   description: 'Indicators to trigger the playbook'
   playbookInputQuery:
-    query: ''
+    query: ""
     queryEntity: indicators
-    results:
+    results: null
     daterange:
-      fromdate: 0001-01-01 00:00:00+00:00
-      todate: 0001-01-01 00:00:00+00:00
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
       period:
-        by: ''
-        byto: ''
-        byfrom: ''
-        tovalue:
-        fromvalue:
-        field: ''
-      fromdatelicenseval: 0001-01-01 00:00:00+00:00
-    runFromLastJobTime: true
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue: null
+        fromvalue: null
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: false
 - key: IP
   value: {}
   required: true
