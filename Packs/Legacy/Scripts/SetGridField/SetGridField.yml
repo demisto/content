@@ -1,38 +1,21 @@
 args:
 - default: false
-  description: Context paths comma separated (same number of availble columns in grid)
-    e.g. a.b.c,a.d.e (with 2 columns)
-  isArray: true
-  name: context_paths
+  description: Context path to list of items with similar properties or key value
+    pairs.
+  isArray: false
+  name: context_path
   required: true
   secret: false
 - default: false
-  description: Column name to sort by - e.g col1
-  isArray: false
-  name: sort_by
-  required: false
-  secret: false
-- default: false
-  description: Grid ID - Could be gather from Context Data -> Incident
+  description: Grid ID to modify.
   isArray: false
   name: grid_id
   required: true
   secret: false
 - auto: PREDEFINED
   default: false
-  defaultValue: 'true'
-  description: true if row represent object, false otherwise
-  isArray: false
-  name: row_correlation
-  predefined:
-  - 'true'
-  - 'false'
-  required: false
-  secret: false
-- auto: PREDEFINED
-  default: false
   defaultValue: 'false'
-  description: true if row represents an object, false otherwise.
+  description: True if to overwrite Grid Data, False otherwise.
   isArray: false
   name: overwrite
   predefined:
@@ -41,12 +24,25 @@ args:
   required: false
   secret: false
 - default: false
-  description: Columns names as shown in the grid.
+  description: Grid columns - comma sperated (col1,col2,..,coln)
   isArray: true
   name: columns
   required: true
   secret: false
-comment: Create Grid Table
+- default: false
+  description: Keys to retrieve from items or "*" for max keys (limited when item
+    list to columns amount) - Key will not be columns correlated.
+  isArray: true
+  name: keys
+  required: true
+  secret: false
+- default: false
+  description: Column name to sort the rows by.
+  isArray: false
+  name: sort_by
+  required: false
+  secret: false
+comment: Create Grid Table from items or key value pairs.
 commonfields:
   id: SetGridField
   version: -1
