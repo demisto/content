@@ -90,7 +90,7 @@ class Client(BaseClient):
         try:
             return response.json()["hits"]["hits"]
         except Exception as e:
-            return_error('Could not parse response to json: %s' % response.text, e)
+            return_error('Could not parse response to json: {}'.format(response.text), e)
 
     def get_rule_logs(self, id, size, page_size=MAX_LOGZIO_DOCS):
         payload = {
@@ -113,7 +113,7 @@ class Client(BaseClient):
                     results += response.json()["results"]
             return results
         except Exception as e:
-            return_error('Could not parse response to json: %s' % response.text, e)
+            return_error('Could not parse response to json: {}'.format(response.text), e)
 
     def get_triggered_rules_api(self):
         return self.get_api_url(TRIGGERED_RULES_API_SUFFIX)
@@ -146,7 +146,7 @@ def execute_api(url, payload, api_token):
     }
     response = requests.request("POST", url, headers=headers, data=json.dumps(payload))
     if response.status_code != 200:
-        return_error('Error in API call [%d] - %r: %r' % (response.status_code, response.reason, response.content))
+        return_error('Error in API call [{}] - {}: {}'.format(response.status_code, response.reason, response.content))
     return response
 
 
@@ -165,41 +165,12 @@ def search_logs_command(client, args):
     to_time = args.get('to_time')
     resp = client.search_logs(query, size, from_time, to_time)
     content = [res["_source"] for res in resp]
-    return {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': content,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown("Logs", content),
-        'EntryContext': {
-            'Logzio.Logs.Count': len(content),
-            'Logzio.Logs.Results': content
-        }
+    context = {
+        'Logzio.Logs.Count': len(content),
+        'Logzio.Logs.Results': content
     }
+    return_outputs(tableToMarkdown("Logs", content), context, content)
 
-
-def search_logs_by_fields_command(client, args):
-    size = args.get('size', MAX_LOGZIO_DOCS)
-    from_time = args.get('from_time', "")
-    to_time = args.get('to_time', "")
-    params = {}
-    for i in range(1, 3):
-        params[args.get('key%s' % i)] = args.get('value%s' % i)
-    remove_nulls_from_dictionary(params)
-    query = " AND ".join(["{}:\"{}\"".format(key, params[key]) for key in params])
-    resp = client.search_logs(query, size, from_time, to_time)
-    content = [res["_source"] for res in resp]
-    return {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': content,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown("Logs", content),
-        'EntryContext': {
-            'Logzio.Logs.Count': len(content),
-            'Logzio.Logs.Results': content
-        }
-    }
 
 
 def get_rule_logs_by_id_command(client, args):
@@ -207,18 +178,11 @@ def get_rule_logs_by_id_command(client, args):
     size = args.get("size", 100)
     page_size = args.get("page_size", MAX_LOGZIO_DOCS)
     resp = client.get_rule_logs(id, size, page_size)
-    return {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': resp,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown("Logs", resp),
-        'EntryContext': {
+    context = {
             'Logzio.Logs.Count': len(resp),
             'Logzio.Logs.Results': resp
-        }
     }
-
+    return_outputs(tableToMarkdown("Logs", resp), context, resp)
 
 def fetch_incidents(client, last_run, search, severities, first_fetch_time):
     incidents = []
@@ -273,15 +237,14 @@ def main():
         command = demisto.command()
         # Run the commands
         if command == 'logzio-search-logs':
-            demisto.results(search_logs_command(client, demisto.args()))
-        elif command == 'logzio-search-logs-by-fields':
-            demisto.results(search_logs_by_fields_command(client, demisto.args()))
+            search_logs_command(client, demisto.args())
+            # demisto.results(search_logs_command(client, demisto.args()))
+            # return_outputs(results['HumanReadable'], results['EntryContext'], results['Contents'])
         elif command == 'logzio-get-logs-by-rule-id':
-            demisto.results(get_rule_logs_by_id_command(client, demisto.args()))
+            get_rule_logs_by_id_command(client, demisto.args())
         elif demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            demisto.results(result)
+            return_outputs(test_module(client))
         elif demisto.command() == 'fetch-incidents':
             incidents, next_run = fetch_incidents(
                 client=client,
