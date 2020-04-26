@@ -1,4 +1,4 @@
-This playbook processes CIDR indicators of both IPV4 and IPV6. By specifying in the inputs the maximum number of hosts allowed per CIDR the playbook will tag any CIDR that exceeds the number as pending_review. If the maximum CIDR size is not specified in inputs the playbook wont run.
+This playbook processes CIDR indicators of both IPV4 and IPV6. By specifying in the inputs the maximum number of hosts allowed per CIDR, the playbook tags any CIDR that exceeds the number as pending_review. If the maximum CIDR size is not specified in the inputs, the playbook does not run.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -21,7 +21,7 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Source** | **Required** |
 | --- | --- | --- | --- | --- |
 |  |  |  |  | Optional |
-| MaximumCIDRSizeToApprove | The maximum number of hosts that a CIDR can contain for auto approval. If the number of hosts is greater than approved the CIDR will be tagged for manual review. | 256 |  | Optional |
+| MaximumHostSizePermitted | The maximum number of hosts that a CIDR can contain for auto approval. If the number of hosts is greater than approved, the CIDR is tagged for manual review. |  |  | Optional |
 
 ## Playbook Outputs
 ---
