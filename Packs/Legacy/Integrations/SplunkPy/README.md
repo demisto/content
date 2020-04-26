@@ -34,7 +34,7 @@ This integration was integrated and tested with Splunk v6.5.
 | latest_fetch_time_fieldname | The latest time to fetch (the name of the Splunk field whose value defines the query's latest time to fetch). | False |
 | app | The context of the application's namespace. | False |
 | hec_token | The HEC token (HTTP Event Collector). | False |
-| hec_url | The HEC URL. For example, https:/</span>/localhost:8088. | False |
+| hec_url | The HEC URL. For example, https://localhost:8088. | False |
 | fetch_time | The first timestamp to fetch in \<number>\<time unit> format. For example, "12 hours", "7 days", "3 months", "1 year". | False |
 
 The (!) `Earliest time to fetch` and `Latest time to fetch` are search parameters options. The search uses `All Time` as the default time range when you run a search from the CLI. Time ranges can be specified using one of the CLI search parameters, such as `earliest_time`, `index_earliest`, or `latest_time`.
