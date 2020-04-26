@@ -19,7 +19,7 @@ from Tests.test_content import load_conf_files, extract_filtered_tests, Parallel
 from demisto_sdk.commands.validate.file_validator import FilesValidator
 from demisto_sdk.commands.common.constants import YML_INTEGRATION_REGEXES, INTEGRATION_REGEX, PACKS_INTEGRATION_REGEX, \
     BETA_INTEGRATION_REGEX, RUN_ALL_TESTS_FORMAT
-from Tests.test_content import server_version_compare
+from demisto_sdk.commands.common.tools import server_version_compare
 from Tests.update_content_data import update_content
 # from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies
 
