@@ -5,7 +5,6 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import json
-import jwt
 import requests
 from typing import Union, Any
 from datetime import datetime
@@ -1195,6 +1194,11 @@ COMMANDS = {
 '''EXECUTION'''
 
 if TOKEN == '' and PRIVATE_KEY != '':
+    try:
+        import jwt
+    except Exception:
+        return_error("You need to update the docket image so that the jwt package could be used")
+
     generated_jwt_token = create_jwt(PRIVATE_KEY, INTEGRATION_ID)
     TOKEN = get_installation_access_token(INSTALLATION_ID, generated_jwt_token)
 
