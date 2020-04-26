@@ -35,8 +35,8 @@ try:
 
     # Note: After headerRightImage the empty one is for legacy argv in server.js
     extra_cmd = f"{orientation} {resourceTimeout} {reportType} " + \
-                f'"{headerLeftImage}" "{headerRightImage}" "" ' \
-                    f'"{pageSize}" "{disableHeaders}"'
+                f'"{headerLeftImage}" "{headerRightImage}" "" ' + \
+                f'"{pageSize}" "{disableHeaders}"'
 
     # Generate a random input file so we won't override on concurrent usage
     input_id = random_string()
@@ -66,7 +66,7 @@ try:
     # Execute the report creation
     out = subprocess.check_output(cmd, cwd=WORKING_DIR,
                                   stderr=subprocess.STDOUT)
-    LOG(f"Sane-pdf output: {out}")
+    LOG(f"Sane-pdf output: {str(out)}")
 
     abspath_output_file = WORKING_DIR / output_file
     with open(abspath_output_file, 'rb') as f:
