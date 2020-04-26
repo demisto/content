@@ -3,6 +3,7 @@
 This script is used to create a filter_file.txt file which will run only the needed the tests for a given change.
 """
 import os
+import re
 import sys
 import json
 import time
@@ -909,7 +910,19 @@ def is_test_uses_active_integration(integration_ids, conf=None):
     return True
 
 
-def get_random_tests(tests_num, conf, id_set=None, server_version='0'):
+def is_any_test_runnable(test_ids, conf, id_set=None, server_version='0'):
+    """Checks whether there's a runnable test in tests"""
+    if test_ids and isinstance(test_ids, set):
+        if not id_set:
+            with open("./Tests/id_set.json", 'r') as conf_file:
+                id_set = json.load(conf_file)
+        for test_id in test_ids:
+            if is_test_runnable(test_id, id_set, conf, server_version):
+                return True
+    return False
+
+
+def get_random_tests(tests_num, conf=None, id_set=None, server_version='0'):
     """Gets runnable tests for the server version"""
     if not id_set:
         with open("./Tests/id_set.json", 'r') as conf_file:
@@ -976,6 +989,21 @@ def get_test_list(files_string, branch_name, two_before_ga_ver='0', conf=None, i
     return tests
 
 
+def create_filter_envs_file(tests, two_before_ga, one_before_ga, ga, conf, id_set):
+    """Create a file containing all the envs we need to run for the CI"""
+    # always run master and PreGA
+    envs_to_test = {
+        'Server Master': True,
+        'Demisto PreGA': True,
+        'Demisto two before GA': is_any_test_runnable(test_ids=tests, server_version=two_before_ga, conf=conf, id_set=id_set),
+        'Demisto one before GA': is_any_test_runnable(test_ids=tests, server_version=one_before_ga, conf=conf, id_set=id_set),
+        'Demisto GA': is_any_test_runnable(test_ids=tests, server_version=ga, conf=conf, id_set=id_set),
+    }
+    print("Creating filter_envs.json with the following envs: {}".format(envs_to_test))
+    with open("./Tests/filter_envs.json", "w") as filter_envs_file:
+        json.dump(envs_to_test, filter_envs_file)
+
+
 def create_test_file(is_nightly, skip_save=False):
     """Create a file containing all the tests we need to run for the CI"""
     tests_string = ''
@@ -994,13 +1022,17 @@ def create_test_file(is_nightly, skip_save=False):
             files_string = tools.run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
 
         with open('./Tests/ami_builds.json', 'r') as ami_builds:
-            # get two_before_ga version to check if tests are runnable on that env
-            two_before_ga = json.load(ami_builds).get('TwoBefore-GA', '0').split('-')[0]
+            # get versions to check if tests are runnable on those envs
+            ami_builds = json.load(ami_builds)
+            two_before_ga = ami_builds.get('TwoBefore-GA', '0').split('-')[0]
+            one_before_ga = ami_builds.get('OneBefore-GA', '0').split('-')[0]
+            ga = ami_builds.get('GA', '0').split('-')[0]
 
         conf = load_tests_conf()
         with open("./Tests/id_set.json", 'r') as conf_file:
             id_set = json.load(conf_file)
         tests = get_test_list(files_string, branch_name, two_before_ga, conf, id_set)
+        create_filter_envs_file(tests, two_before_ga, one_before_ga, ga, conf, id_set)
 
         tests_string = '\n'.join(tests)
         if tests_string:
