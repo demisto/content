@@ -12,7 +12,7 @@ configuration:
   defaultvalue: "30"
   type: 0
   required: false
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
   type: 8

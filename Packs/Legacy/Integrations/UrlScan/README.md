@@ -11,7 +11,7 @@
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li><strong>Server URL (e.g. <a href="https://urlscan.io/api/v1/" rel="nofollow">https://urlscan.io/api/v1/</a>)</strong></li>
 <li><strong>API Key (needed only for submitting URLs for scanning)</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 <li>
 <strong>URL Threshold. </strong>Minimum number of positive results from urlscan.io to consider the URL malicious.</li>
