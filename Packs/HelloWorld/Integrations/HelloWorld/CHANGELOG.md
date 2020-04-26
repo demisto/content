@@ -1,5 +1,8 @@
 ## [Unreleased]
-
+Added **domain**
+Added **helloworld-update-alert-status**
+Improved documentation and comments
+Fixed bugs
 
 ## [20.4.0] - 2020-04-14
 Added **helloworld-scan-start**
@@ -10,10 +13,6 @@ Added **helloworld-get-alert**
 Added **helloworld-search-alerts**
 
 Added **ip**
-Added **domain**
-Added **helloworld-update-alert-status**
-Improved documentation and comments
-Fixed bugs
 
 
 ## [20.1.2] - 2020-01-22
