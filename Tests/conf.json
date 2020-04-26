@@ -3,6 +3,16 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Microsoft Intune Feed",
+            "playbookID": "FeedMicrosoftIntune_Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Smokescreen IllusionBLACK",
+            "playbookID": "Smokescreen IllusionBLACK-Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Tanium Threat Response",
             "playbookID": "Tanium Threat Response Test"
         },
@@ -22,6 +32,11 @@
             "integrations": "JSON Feed",
             "playbookID": "JSON_Feed_Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Google Cloud Functions",
+            "playbookID": "test playbook - Google Cloud Functions",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Plain Text Feed",
@@ -183,12 +198,12 @@
         },
         {
             "integrations": "HelloWorld",
-            "playbookID": "TestHelloWorld",
+            "playbookID": "HelloWorld-Test",
             "fromversion": "5.0.0"
         },
         {
             "integrations": "HelloWorld",
-            "playbookID": "TestHelloWorldPlaybook",
+            "playbookID": "HelloWorld_Scan-Test",
             "fromversion": "5.0.0"
         },
         {
@@ -319,10 +334,6 @@
         },
         {
             "playbookID": "test_similar_incidents"
-        },
-        {
-            "playbookID": "autofocus_test",
-            "integrations": "Autofocus"
         },
         {
             "playbookID": "CheckpointFW-test",
@@ -1690,7 +1701,8 @@
                 "carbonblack"
             ],
             "playbookID": "search_endpoints_by_hash_-_generic_-_test",
-            "timeout": 500
+            "timeout": 500,
+            "toversion" : "4.4.9"
         },
         {
             "integrations": "Zscaler",
@@ -2207,7 +2219,6 @@
             "playbookID": "AutoFocus V2 test",
             "fromversion": "5.0.0",
             "timeout": 1000
-
         },
         {
             "playbookID": "Process Email - Generic for Rasterize"
@@ -2619,9 +2630,25 @@
         {
             "integrations": "IBM Resilient Systems",
             "playbookID": "IBM Resilient Systems Test"
+        },
+        {
+            "integrations": "PrismaAccess",
+            "playbookID": "Prisma_Access_Egress_IP_Feed-Test",
+            "timeout" : 60000,
+            "fromversion": "5.5.0",
+            "nightly": true
+        },
+        {
+            "integrations": "PrismaAccess",
+            "playbookID": "Prisma_Access-Test",
+            "timeout" : 60000,
+            "fromversion": "5.5.0",
+            "nightly": true
         }
     ],
     "skipped_tests": {
+        "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get PrismaAccess instance",
+        "Prisma_Access-Test": "unskip after we will get PrismaAccess instance",
         "Test-Shodan_v2": "Issue 23370",
         "Send Investigation Summary Reports - Test": "Issue 22299",
         "Symantec Deepsight Test": "Issue 22971",
@@ -2632,7 +2659,6 @@
         "TestCofenseFeed": "Issue 22854",
         "Cybereason Test": "Issue 22683",
         "AbuseIPDB Test": "Issue 22658",
-        "ExtraHop-Test": "Issue 23731",
         "Bluecat Address Manager test": "Issue 22616",
         "Office365_Feed_Test": "Issue 22517",
         "Send Investigation Summary Reports": "Issue 22299",
@@ -2674,9 +2700,11 @@
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
+        "PrismaAccess": "Instance will be provided soon by Lior and Prasen",
         "Infoblox": "Issue 23770",
         "Trend Micro Apex": "Issue 23632",
         "Awake Security": "Issue 23376",
+        "ExtraHop": "No license, issue 23731",
         "RiskSense": "We should get an instance talk to Francesco",
         "Palo Alto Networks Cortex": "Issue 22300",
         "AWS - IAM": "Issue 21401",
@@ -2742,6 +2770,7 @@
         "LogRhythm": "Issue 21672",
         "SecBI": "Issue 22545",
         "IBM Resilient Systems": "Issue 23722",
+        "VxStream": "Issue #23795",
 
         "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -2827,6 +2856,7 @@
         "Microsoft Graph User": "Test direct access to oproxy",
         "Microsoft_Graph_Files": "Test direct access to oproxy",
         "Microsoft Graph Groups": "Test direct access to oproxy",
+        "Microsoft Defender Advanced Threat Protection": "Test direct access to oproxy",
         "SafeBreach": "SSL Issues",
         "AWS - CloudWatchLogs": "Issue 20958",
         "Gmail Single User" : "googleclient sdk has time based challenge exchange",
