@@ -24,7 +24,7 @@
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li><strong>Server URL (e.g. <a href="https://192.168.0.1/">https://192.168.0.1</a>)</strong></li>
 <li><strong>Username</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy</strong></li>
 <li><strong>IP threshold. Minimum maliciousness confidence level to consider the IP address malicious: High, Medium, Low, Safe, Unknown</strong></li>
 <li><strong>URL threshold. Minimum maliciousness confidence level to consider the URL malicious: High, Medium, Low, Safe, Unknown</strong></li>

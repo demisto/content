@@ -13,7 +13,7 @@
 <li>
 <strong>Account ID</strong>: Account number used for MaxMind</li>
 <li><strong>Use system proxy</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li>
 <strong>Service Version</strong>: Denotes what level of detail for the results. There are three options <code>Country</code>, <code>City</code>, and <code>Insights</code>. Note that each version has a different cost per API call.</li>
 <li>
