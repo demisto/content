@@ -48,7 +48,6 @@ configuration:
   type: 0
 - display: Fetch incidents
   name: isFetch
-  defaultvalue: ""
   type: 8
   required: false
 - display: Trust any certificate (not secure)
@@ -58,7 +57,6 @@ configuration:
   required: false
 - display: Incident type
   name: incidentType
-  defaultvalue: ""
   type: 13
   required: false
 - display: Use system proxy settings
@@ -382,6 +380,7 @@ script:
       description: 'Number of results returned per page. The default page_size is 50, max. is 5000.'
     description: "Runs an advanced search on hosts and detections."
   isfetch: true
-  dockerimage: demisto/python3:3.7.4.2245
+  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage45: demisto/python3:3.7.4.2245
 tests:
   - No test 
