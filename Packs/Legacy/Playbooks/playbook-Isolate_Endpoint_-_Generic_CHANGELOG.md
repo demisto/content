@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+Added new sub-playbook 'Isolate Endpoint - Cybereason'.
 
 
 ## [20.3.4] - 2020-03-30
