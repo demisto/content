@@ -375,7 +375,7 @@ tasks:
     task:
       id: beecfebc-ceaa-462b-81bd-3207a042ea6f
       version: -1
-      name: add the list items to the EDL
+      name: Add the list items to the EDL
       description: Creates an internal list in Demisto and creates an external file
         on the web server.
       script: '|||pan-os-edl-update'
