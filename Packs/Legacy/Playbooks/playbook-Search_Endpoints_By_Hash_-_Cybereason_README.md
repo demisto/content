@@ -31,4 +31,8 @@ This playbook does not use any scripts.
 | Endpoint.Hostname | Device hostname | string |
 | Endpoint | The endpoint | unknown |
 
-<!-- Playbook PNG image comes here -->
+## Playbook Image
+---
+![Search Endpoints By Hash - Cybereason](https://github.com/demisto/content/blob/6988419eed445d9c0cd45af44efe5b170eb6af22/docs/images/playbooks/Search_Endpoints_By_Hash_-_Cybereason.png)
+
+

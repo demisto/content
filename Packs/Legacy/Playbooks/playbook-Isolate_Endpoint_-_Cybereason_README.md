@@ -26,4 +26,7 @@ This playbook does not use any scripts.
 ---
 There are no outputs for this playbook.
 
-<!-- Playbook PNG image comes here -->
+## Playbook Image
+---
+![Isolate Endpoint - Cybereason](https://github.com/demisto/content/blob/master/docs/images/playbooks/Isolate_Endpoint_-_Cybereason.png)
+
