@@ -321,10 +321,6 @@
             "playbookID": "test_similar_incidents"
         },
         {
-            "playbookID": "autofocus_test",
-            "integrations": "Autofocus"
-        },
-        {
             "playbookID": "CheckpointFW-test",
             "integrations": "Check Point"
         },
@@ -1690,7 +1686,8 @@
                 "carbonblack"
             ],
             "playbookID": "search_endpoints_by_hash_-_generic_-_test",
-            "timeout": 500
+            "timeout": 500,
+            "toversion" : "4.4.9"
         },
         {
             "integrations": "Zscaler",
@@ -2207,7 +2204,6 @@
             "playbookID": "AutoFocus V2 test",
             "fromversion": "5.0.0",
             "timeout": 1000
-
         },
         {
             "playbookID": "Process Email - Generic for Rasterize"
