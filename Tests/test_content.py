@@ -9,6 +9,7 @@ import threading
 import subprocess
 from time import sleep
 from datetime import datetime
+from distutils.version import LooseVersion
 
 import urllib3
 import requests
@@ -20,7 +21,7 @@ from Tests.test_integration import Docker, test_integration, disable_all_integra
 from Tests.test_dependencies import get_used_integrations, get_tests_allocation_for_threads
 from demisto_sdk.commands.common.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF, PB_Status
 from demisto_sdk.commands.common.tools import print_color, print_error, print_warning, \
-    LOG_COLORS, str2bool, server_version_compare
+    LOG_COLORS, str2bool
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -604,6 +605,7 @@ def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_te
     # Skip version mismatch test
     test_from_version = t.get('fromversion', '0.0.0')
     test_to_version = t.get('toversion', '99.99.99')
+
     if not (LooseVersion(test_from_version) <= LooseVersion(server_numeric_version) <= LooseVersion(test_to_version)):
         prints_manager.add_print_job(f'\n------ Test {test_message} start ------', print, thread_index,
                                      include_timestamp=True)
@@ -651,6 +653,10 @@ def get_and_print_server_numeric_version(tests_settings):
                 server_numeric_version = server_numeric_version[0]
             else:
                 server_numeric_version = '99.99.98'  # latest
+
+            if server_numeric_version.count('.') == 1:
+                server_numeric_version += ".0"
+
             print('Server image info: {}'.format(image_data[0]))
             print('Server version: {}'.format(server_numeric_version))
             return server_numeric_version
