@@ -1,4 +1,8 @@
 ## [Unreleased]
+Fixed an issue where filters were not properly implemented in the ***msg-search-alerts*** command.   
+(**Note**: Existing ***msg-search-alerts*** command results might change the next time the command is executed.)
+
+## [20.4.0] - 2020-04-14
 -
 
 

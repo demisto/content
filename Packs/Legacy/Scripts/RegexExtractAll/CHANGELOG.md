@@ -2,6 +2,10 @@
 -
 
 
+## [20.4.0] - 2020-04-14
+-
+
+
 ## [19.12.1] - 2019-12-25
 #### New Script
 Extraction of all matches from a specified regular expression pattern from a provided string.  Returns an array of results.  This differs from RegexGroups in several ways:

@@ -1,4 +1,3 @@
-elasticcommonfields: {}
 id: Microsoft Defender Advanced Threat Protection - Test
 version: -1
 name: Microsoft Defender Advanced Threat Protection - Test
@@ -6,11 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8b3ae35c-d848-4efe-8bc7-ed87dadc0cd7
+    taskid: b8715e0a-c403-429f-8d9a-9709575203b7
     type: start
     task:
-      elasticcommonfields: {}
-      id: 8b3ae35c-d848-4efe-8bc7-ed87dadc0cd7
+      id: b8715e0a-c403-429f-8d9a-9709575203b7
       version: -1
       name: ""
       iscommand: false
@@ -33,11 +31,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 65c34acb-0e46-4487-8077-3bb9d57da284
+    taskid: ff85b308-1c3c-4eae-8a68-95c21205f33e
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 65c34acb-0e46-4487-8077-3bb9d57da284
+      id: ff85b308-1c3c-4eae-8a68-95c21205f33e
       version: -1
       name: Get ATP list alerts
       script: '|||microsoft-atp-list-alerts'
@@ -67,11 +64,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: a21aeb47-0acc-42f8-8120-b445e572eb53
+    taskid: 657188f7-1e28-446d-8fbd-ff4f0794be5b
     type: condition
     task:
-      elasticcommonfields: {}
-      id: a21aeb47-0acc-42f8-8120-b445e572eb53
+      id: 657188f7-1e28-446d-8fbd-ff4f0794be5b
       version: -1
       name: Assert an alert was fetched
       type: condition
@@ -111,11 +107,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 5fdfae57-2edf-456a-8682-ff9783c4afe2
+    taskid: 9d43fdce-80ae-4b06-8c6d-e242bb94b9cc
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 5fdfae57-2edf-456a-8682-ff9783c4afe2
+      id: 9d43fdce-80ae-4b06-8c6d-e242bb94b9cc
       version: -1
       name: Assert right machine was fetched
       type: condition
@@ -152,11 +147,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 92ab19b3-77b9-4d64-8a81-a834d0d7b11e
+    taskid: caa6576f-139e-47a3-8bd9-605ad1bafe6b
     type: title
     task:
-      elasticcommonfields: {}
-      id: 92ab19b3-77b9-4d64-8a81-a834d0d7b11e
+      id: caa6576f-139e-47a3-8bd9-605ad1bafe6b
       version: -1
       name: Done
       type: title
@@ -177,11 +171,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: a67b172f-e21b-4d43-8d44-4453c42c9d24
+    taskid: 50e427dd-48a9-4698-8dc4-1d52e5218f2c
     type: regular
     task:
-      elasticcommonfields: {}
-      id: a67b172f-e21b-4d43-8d44-4453c42c9d24
+      id: 50e427dd-48a9-4698-8dc4-1d52e5218f2c
       version: -1
       name: Get machines by health status
       description: Retrieves a collection of machines that have communicated with
@@ -215,11 +208,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: f09d0c2a-59f6-4a0f-8479-3a6ff185642d
+    taskid: 686d0e9a-71a7-42dc-8674-78fa584fe60b
     type: regular
     task:
-      elasticcommonfields: {}
-      id: f09d0c2a-59f6-4a0f-8479-3a6ff185642d
+      id: 686d0e9a-71a7-42dc-8674-78fa584fe60b
       version: -1
       name: Create alert with time as name
       script: '|||microsoft-atp-create-alert'
@@ -279,11 +271,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 932f408e-8a97-47b7-8f0e-573c66af26f9
+    taskid: ff9c6dfb-0fca-4203-8da3-3b32bd35c10c
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 932f408e-8a97-47b7-8f0e-573c66af26f9
+      id: ff9c6dfb-0fca-4203-8da3-3b32bd35c10c
       version: -1
       name: Assert alert created
       type: condition
@@ -317,11 +308,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: acce8587-d9ab-4f19-89cd-1f9b8a4cbf1e
+    taskid: 70cee97f-2de0-4f9d-8b77-b8554c96c6cd
     type: regular
     task:
-      elasticcommonfields: {}
-      id: acce8587-d9ab-4f19-89cd-1f9b8a4cbf1e
+      id: 70cee97f-2de0-4f9d-8b77-b8554c96c6cd
       version: -1
       name: Advance query
       script: '|||microsoft-atp-advanced-hunting'
@@ -349,11 +339,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: d4ffaa59-060a-4eea-81a8-7e8ad106e981
+    taskid: e89f2c9b-5782-4f35-80a8-9c874321ccf2
     type: condition
     task:
-      elasticcommonfields: {}
-      id: d4ffaa59-060a-4eea-81a8-7e8ad106e981
+      id: e89f2c9b-5782-4f35-80a8-9c874321ccf2
       version: -1
       name: Assert query results
       type: condition
@@ -387,11 +376,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 6cafba4a-b64c-4beb-821e-78770b2e003d
+    taskid: 1de85d22-ed66-4c96-8b15-5858846b677c
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 6cafba4a-b64c-4beb-821e-78770b2e003d
+      id: 1de85d22-ed66-4c96-8b15-5858846b677c
       version: -1
       name: Get machine related to file
       description: Get a collection of machines related to a given file hash.
@@ -422,11 +410,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 919829f9-964f-4009-806f-ea0e4cff8198
+    taskid: 79cee876-0e9e-4763-81b5-72806f48f0ff
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 919829f9-964f-4009-806f-ea0e4cff8198
+      id: 79cee876-0e9e-4763-81b5-72806f48f0ff
       version: -1
       name: Get alert related files
       description: Retrieves the files associated to a specific alert.
@@ -458,11 +445,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: c16c432d-4ce5-4052-806f-cdaa3042837e
+    taskid: 5c181bbb-8d06-42ba-8e61-5e585d74092f
     type: regular
     task:
-      elasticcommonfields: {}
-      id: c16c432d-4ce5-4052-806f-cdaa3042837e
+      id: 5c181bbb-8d06-42ba-8e61-5e585d74092f
       version: -1
       name: Get file related alerts
       description: Retrieves a collection of alerts related to a given file hash.
@@ -501,11 +487,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: abe83665-e722-443f-8b8e-eb130f15333f
+    taskid: 81595274-3c30-4de2-8e53-6e9baf929615
     type: regular
     task:
-      elasticcommonfields: {}
-      id: abe83665-e722-443f-8b8e-eb130f15333f
+      id: 81595274-3c30-4de2-8e53-6e9baf929615
       version: -1
       name: Delete context
       description: Delete field from context
@@ -540,11 +525,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: d5368aef-5dab-461b-8af9-11701e9029f1
+    taskid: 9f4667b6-7c52-470e-8b00-6627fda9509e
     type: regular
     task:
-      elasticcommonfields: {}
-      id: d5368aef-5dab-461b-8af9-11701e9029f1
+      id: 9f4667b6-7c52-470e-8b00-6627fda9509e
       version: -1
       name: Get file statistics
       description: Retrieves the statistics for the given file.
@@ -583,11 +567,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: fc674176-0999-4553-83c2-3a1c9d64eb21
+    taskid: 61079179-a568-4fc9-8c9e-54701597e1ef
     type: regular
     task:
-      elasticcommonfields: {}
-      id: fc674176-0999-4553-83c2-3a1c9d64eb21
+      id: 61079179-a568-4fc9-8c9e-54701597e1ef
       version: -1
       name: Get machine action data
       description: Return the machine's actions. If you set an action id it will return
@@ -620,11 +603,10 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: a0aadb2f-eb91-498e-879d-b056fd305977
+    taskid: f6879cc4-31da-4eb3-817c-f4eda0de4a9e
     type: regular
     task:
-      elasticcommonfields: {}
-      id: a0aadb2f-eb91-498e-879d-b056fd305977
+      id: f6879cc4-31da-4eb3-817c-f4eda0de4a9e
       version: -1
       name: Get domain statistics
       description: Retrieves the statistics on the given domain.
@@ -653,11 +635,10 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: 12fcaea8-e513-49bf-8557-9b8af344ba22
+    taskid: e3d5742d-2756-4309-8c50-f20ed51a81c2
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 12fcaea8-e513-49bf-8557-9b8af344ba22
+      id: e3d5742d-2756-4309-8c50-f20ed51a81c2
       version: -1
       name: Get ip statistics
       description: Retrieves the statistics for the given IP.
@@ -686,11 +667,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: 263d360b-e684-4cd5-8527-21a32c4fbcd6
+    taskid: 1b144c05-0ba6-49a2-8080-7cc90926ad86
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 263d360b-e684-4cd5-8527-21a32c4fbcd6
+      id: 1b144c05-0ba6-49a2-8080-7cc90926ad86
       version: -1
       name: Get user alerts
       description: Retrieves a collection of alerts related to a given user ID.
@@ -709,7 +689,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1605
         }
       }
     note: false
@@ -719,11 +699,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: 4883193c-09c8-4b28-8bd1-85e5439934cc
+    taskid: fd3dd08d-e746-4640-86d7-a6a60e727e18
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 4883193c-09c8-4b28-8bd1-85e5439934cc
+      id: fd3dd08d-e746-4640-86d7-a6a60e727e18
       version: -1
       name: Get user machines
       description: Retrieves a collection of machines related to a given user ID.
@@ -733,7 +712,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "41"
+      - "8"
     scriptarguments:
       username:
         simple: demisto
@@ -752,11 +731,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: d6158411-7a20-4f80-8384-a4eda65e2b02
+    taskid: dc8d8b47-5a82-44c4-8f3a-723b35281ed5
     type: regular
     task:
-      elasticcommonfields: {}
-      id: d6158411-7a20-4f80-8384-a4eda65e2b02
+      id: dc8d8b47-5a82-44c4-8f3a-723b35281ed5
       version: -1
       name: Add machine tag
       description: Adds or remove tag to a specific Machine.
@@ -789,11 +767,10 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: bbca5a88-c646-4f99-8afb-5d7dbb9ae0c1
+    taskid: c4b963f0-d367-439e-8c6d-91a0a97f5a6e
     type: regular
     task:
-      elasticcommonfields: {}
-      id: bbca5a88-c646-4f99-8afb-5d7dbb9ae0c1
+      id: c4b963f0-d367-439e-8c6d-91a0a97f5a6e
       version: -1
       name: Remove machine tag
       description: Adds or remove tag to a specific Machine.
@@ -824,46 +801,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "41":
-    id: "41"
-    taskid: f683af5e-2aed-466d-89dc-d1c5fe6131c5
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: f683af5e-2aed-466d-89dc-d1c5fe6131c5
-      version: -1
-      name: Get alert related user
-      description: Retrieves the user associated to a specific alert.
-      script: '|||microsoft-atp-get-alert-related-user'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      id:
-        simple: da637178102407855446_82583843
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "42":
     id: "42"
-    taskid: 03aae045-e122-4ffb-8f10-c56ab2c4364f
+    taskid: e5538e73-b803-47ac-832b-b559176e1f83
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 03aae045-e122-4ffb-8f10-c56ab2c4364f
+      id: e5538e73-b803-47ac-832b-b559176e1f83
       version: -1
       name: Get file related machines
       description: Get a collection of machines related to a given file hash.
@@ -894,11 +837,10 @@ tasks:
     quietmode: 0
   "43":
     id: "43"
-    taskid: 49a3e5d4-2aa6-451f-8eda-c791623c05a7
+    taskid: b028e1b2-deb3-4a18-803d-6a8a9e6d1f09
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 49a3e5d4-2aa6-451f-8eda-c791623c05a7
+      id: b028e1b2-deb3-4a18-803d-6a8a9e6d1f09
       version: -1
       name: update alert
       description: Update the properties of an alert entity

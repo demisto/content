@@ -1,4 +1,8 @@
 ## [Unreleased]
+-
+
+
+## [20.4.0] - 2020-04-14
 Fixed an issue with partial results parsing.
 
 ## [20.3.4] - 2020-03-30

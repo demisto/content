@@ -89,6 +89,17 @@ def test_get_alert_related_domains_command(mocker):
     }
 
 
+def test_get_alert_related_user_command(mocker):
+    import MicrosoftDefenderAdvancedThreatProtection as atp
+    mocker.patch.object(demisto, 'args', return_value={'id': '123', 'limit': '2', 'offset': '0'})
+    mocker.patch.object(atp, 'get_alert_related_user_request', return_value=ALERT_RELATED_USER_API_RESPONSE)
+    _, res, _ = atp.get_alert_related_user_command()
+    assert res['MicrosoftATP.AlertUser(val.AlertID === obj.AlertID)'] == {
+        'AlertID': '123',
+        'User': USER_DATA
+    }
+
+
 def test_get_action_data(mocker):
     import MicrosoftDefenderAdvancedThreatProtection as atp
     mocker.patch.object(atp, 'get_machine_action_by_id_request', return_value=ACTION_DATA_API_RESPONSE)
@@ -300,6 +311,36 @@ ALERT_RELATED_DOMAINS_API_RESPONSE = {
         }
 
     ]
+}
+
+ALERT_RELATED_USER_API_RESPONSE = {
+    "id": "test/user1",
+    "accountName": "user1",
+    "accountDomain": "test",
+    "accountSid": "12345678",
+    "firstSeen": "2019-12-08T06:33:39Z",
+    "lastSeen": "2020-01-05T06:58:34Z",
+    "mostPrevalentMachineId": "1234",
+    "leastPrevalentMachineId": "5678",
+    "logonTypes": "Network",
+    "logOnMachinesCount": 1,
+    "isDomainAdmin": "false",
+    "isOnlyNetworkUser": "false"
+}
+
+USER_DATA = {
+    'ID': "test/user1",
+    'AccountName': "user1",
+    'AccountDomain': "test",
+    'AccountSID': "12345678",
+    'FirstSeen': "2019-12-08T06:33:39Z",
+    'LastSeen': "2020-01-05T06:58:34Z",
+    'MostPrevalentMachineID': "1234",
+    'LeastPrevalentMachineID': "5678",
+    'LogonTypes': "Network",
+    'LogonCount': 1,
+    'DomainAdmin': "false",
+    'NetworkUser': "false"
 }
 
 ACTION_DATA_API_RESPONSE = {

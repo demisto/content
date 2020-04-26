@@ -2,6 +2,10 @@
 -
 
 
+## [20.4.0] - 2020-04-14
+-
+
+
 ## [20.2.0] - 2020-02-04
 - Fixed an issue with creating outputs for the **dnstwist-domain-variations** command.
 

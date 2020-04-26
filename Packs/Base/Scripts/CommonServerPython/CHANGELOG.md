@@ -1,4 +1,25 @@
 ## [Unreleased]
+  - Added retry mechanism to the BaseClient
+  - Deprecated the following enums: 
+    - **entryTypes**
+    - **formats**
+    - **dbotscores**
+  - Added new enums: 
+    - **DBotScoreType** (replaces *dbotscores*)
+    - **EntryFormat** (replaces *formats*)
+    - **EntryType** (replaces *entryTypes*)
+  - Added new classes to represent reputation outputs:
+    - **DBotScore**
+    - **IP**
+    - **URL**
+    - **CVE**
+    - **File**
+    - **Domain**
+    - **WHOIS**
+    - **CommandResults** (returns results to the War Room)
+  - Added support for traceback in debug-log mode.
+
+## [20.4.0] - 2020-04-14
   - Added the argument *ignore_auto_extract* to the ***return_outputs*** command.
   - Added a default value to the indicator timeline field **Category** when a value is not provided in an entry's timeline data.
   - Improved error message parsing of HTTP response in BaseClient.

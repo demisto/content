@@ -2,6 +2,10 @@
 -
 
 
+## [20.4.0] - 2020-04-14
+-
+
+
 ## [20.3.4] - 2020-03-30
 Fixed the ***Fetch incidents***' raw data to match the data and format of the ***kl-get-records*** data command.
 

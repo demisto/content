@@ -1,5 +1,9 @@
 ## [Unreleased]
 -
+
+
+## [20.4.0] - 2020-04-14
+-
 Fixed a bug that caused errors for certain file types.
 
 ## [20.2.3] - 2020-02-18
