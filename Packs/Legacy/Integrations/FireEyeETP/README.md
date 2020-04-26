@@ -353,83 +353,83 @@ Returns detailed information for any specified alert. Alerts that are more than 
 ##### Raw Output
 <pre>
 {  
-   "data":[  
+   "data": [  
       {  
-         "attributes":{  
-            "meta":{  
-               "read":false,
-               "last_modified_on":"2018-04-03T15:58:07.280",
-               "legacy_id":52564988,
-               "acknowledged":false
+         "attributes": {  
+            "meta": {  
+               "read": false,
+               "last_modified_on": "2018-04-03T15:58:07.280",
+               "legacy_id": 52564988,
+               "acknowledged": false
             },
-            "ati":{  
-               "data":{  
+            "ati": {  
+               "data": {  
 
                }
             },
-            "alert":{  
-               "product":"ETP",
-               "alert_type":[  
+            "alert": {  
+               "product": "ETP",
+               "alert_type": [  
                   "at"
                ],
-               "severity":"majr",
-               "ack":"no",
-               "explanation":{  
-                  "analysis":"binary",
-                  "anomaly":"",
-                  "cnc_services":{  
+               "severity": "major",
+               "ack": "no",
+               "explanation": {  
+                  "analysis": "binary",
+                  "anomaly": "",
+                  "cnc_services": {  
 
                   },
-                  "malware_detected":{  
-                     "malware":[  
+                  "malware_detected": {  
+                     "malware": [  
                         {  
-                           "domain":"112.126.94.107",
-                           "downloaded_at":"2018-04-03T15:57:58Z",
-                           "executed_at":"2018-04-03T15:57:59Z",
-                           "name":"Phish.LIVE.DTI.URL",
-                           "sid":"88000012",
-                           "stype":"known-url",
-                           "submitted_at":"2018-04-03T15:57:58Z"
+                           "domain": "112.126.94.107",
+                           "downloaded_at": "2018-04-03T15:57:58Z",
+                           "executed_at": "2018-04-03T15:57:59Z",
+                           "name": "Phish.LIVE.DTI.URL",
+                           "sid": "88000012",
+                           "stype": "known-url",
+                           "submitted_at": "2018-04-03T15:57:58Z"
                         }
                      ]
                   },
-                  "os_changes":[  
+                  "os_changes": [  
 
                   ],
-                  "protocol":"",
-                  "timestamp":"2018-04-03T15:57:59Z"
+                  "protocol": "",
+                  "timestamp": "2018-04-03T15:57:59Z"
                },
-               "timestamp":"2018-04-03T15:58:01.614",
-               "action":"notified",
-               "name":"malware-object"
+               "timestamp": "2018-04-03T15:58:01.614",
+               "action": "notified",
+               "name": "malware-object"
             },
-            "email":{  
-               "status":"quarantined",
-               "source_ip":"68.232.142.41",
-               "smtp":{  
-                  "rcpt_to":"rachel@corp.com",
-                  "mail_from":"soc+bncbc433amq6qhrb76ir3l0000edcdhd3q@corp.com "
+            "email": {  
+               "status": "quarantined",
+               "source_ip": "68.232.142.41",
+               "smtp": {  
+                  "rcpt_to": "rachel@corp.com",
+                  "mail_from": "soc+bncbc433amq6qhrb76ir3l0000edcdhd3q@corp.com "
                },
-               "etp_message_id":"76CF1709028AAAA5d61a8dbe",
-               "headers":{  
-                  "cc":"\u003csoc@corp.com\u003e|\u003cquiessence@ corp.com\u003e|\u003csarwar@ corp.com\u003e",
-                  "to":"\u003crachel @ orp.com \u003e",
-                  "from":"soc+bncbc433amq6qhrb76000edcdhd3q@corp.com",
-                  "subject":"[CAT 6] HRA: Suspicious Executable | 11819"
+               "etp_message_id": "76CF1709028AAAA5d61a8dbe",
+               "headers": {  
+                  "cc": "\u003csoc@corp.com\u003e|\u003cquiessence@ corp.com\u003e|\u003csarwar@ corp.com\u003e",
+                  "to": "\u003crachel @ orp.com \u003e",
+                  "from": "soc+bncbc433amq6qhrb76000edcdhd3q@corp.com",
+                  "subject": "[CAT 6] HRA: Suspicious Executable | 11819"
                },
-               "attachment":"hxxp://112.126.94.107/shop/ok.exe',([System.IO.Path]::GetTempPath()+'\\KQEW.exe')",
-               "timestamp":{  
-                  "accepted":"2018-04-03T15:57:55"
+               "attachment": "hxxp://112.126.94.107/shop/ok.exe',([System.IO.Path]::GetTempPath()+'\\KQEW.exe')",
+               "timestamp": {  
+                  "accepted": "2018-04-03T15:57:55"
                }
             }
          },
-         "id":"AWKMOs-2_r7_CWOc2okO"
+         "id": "AWKMOs-2_r7_CWOc2okO"
       }
    ],
-   "meta":{  
-      "total":1,
-      "copyright":"Copyright 2017 Fireeye Inc."
+   "meta": {  
+      "total": 1,
+      "copyright": "Copyright 2017 Fireeye Inc."
    },
-   "type":"alerts"
+   "type": "alerts"
 }
 </pre>
