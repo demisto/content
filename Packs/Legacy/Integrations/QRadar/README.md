@@ -28,7 +28,7 @@
 <li><strong>Authentication token</strong></li>
 <li><strong>Query to fetch offenses</strong></li>
 <li><strong>Number of offenses to pull per API call</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 <li><strong>Fetch incidents</strong></li>
 <li><strong>Incident type</strong></li>

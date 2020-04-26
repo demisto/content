@@ -746,7 +746,7 @@ def clear_entries_command():
 
 
 @logger
-def add_entries_command():
+def entries_command(func):
     resource_id = demisto.args().get('resourceId')
     entries = demisto.args().get('entries')
     query_path = 'www/manager-service/services/ActiveListService/'
@@ -761,7 +761,7 @@ def add_entries_command():
 
     columns = ''.join(COLUMN(column) for column in entries[0])  # the fields in the entryList matrix are the columns
     entry_list = BODY(columns + ''.join(ENTRY_LIST(''.join(ENTRY(v) for v in en.values())) for en in entries))
-    body = REQ_SOAP_BODY(function='addEntries', auth_token=AUTH_TOKEN, resource_id=resource_id, entryList=entry_list)
+    body = REQ_SOAP_BODY(function=func, auth_token=AUTH_TOKEN, resource_id=resource_id, entryList=entry_list)
     res = send_request(query_path, body=body)
 
     if not res.ok:
@@ -833,8 +833,11 @@ try:
     elif demisto.command() == 'as-get-entries':
         get_entries_command()
 
-    elif demisto.command() == 'as-add-entries':
-        add_entries_command()
+    elif demisto.command() in 'as-add-entries':
+        entries_command(func='addEntries')
+
+    elif demisto.command() in 'as-delete-entries':
+        entries_command(func='deleteEntries')
 
     elif demisto.command() == 'as-clear-entries':
         clear_entries_command()
