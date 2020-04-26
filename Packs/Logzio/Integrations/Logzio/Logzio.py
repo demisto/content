@@ -4,6 +4,7 @@ from CommonServerPython import *
 import urllib3
 import requests
 import json
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -20,20 +21,21 @@ SEARCH_LOGS_API_SUFFIX = "v1/search"
 SEARCH_RULE_LOGS_API_SUFFIX = "v2/security/rules/events/logs/search"
 
 
-class Client:
-    def __init__(self, region, security_api_token, op_api_token, verify, proxies):
+class Client(BaseClient):
+    def __init__(self, region, security_api_token, op_api_token, verify, proxy):
+        super(Client, self).__init__(BASE_URL, verify, proxy)
         self.security_api_token = security_api_token
         self.op_api_token = op_api_token
         self.region = region
         self.verify = verify
-        self.proxies = proxies
+        self.proxies = proxy
 
     def fetch_triggered_rules(self, search=None, severities=None, start_time=time.time()):
         url = self.get_triggered_rules_api()
         payload = {
             "pagination": {
                 "pageNumber": 1,
-                "pageSize": 50
+                "pageSize": DEFAULT_LIMIT
             },
             "sort": [
                 {
@@ -53,12 +55,10 @@ class Client:
         remove_nulls_from_dictionary(payload["filter"])
         remove_nulls_from_dictionary(payload)
         response = execute_api(url, payload, self.security_api_token)
-        result = None
         try:
-            result = response.json()
-        except Exception as e:
-            return_error('Could not parse response to json: %s' % response.text, e)
-        return result
+            return response.json()
+        except:
+            raise ValueError(f'Could not parse response to JSON: {response.text}')
 
     def search_logs(self, query, size, from_time, to_time):
         payload = {
@@ -92,16 +92,16 @@ class Client:
         except Exception as e:
             return_error('Could not parse response to json: %s' % response.text, e)
 
-    def get_rule_logs(self, id, size, page_size=1000):
+    def get_rule_logs(self, id, size, page_size=MAX_LOGZIO_DOCS):
         payload = {
-                      "filter": {
-                        "alertEventId": id
-                      },
-                      "pagination": {
-                        "pageNumber": 1,
-                        "pageSize": page_size
-                      }
-                  }
+            "filter": {
+                "alertEventId": id
+            },
+            "pagination": {
+                "pageNumber": 1,
+                "pageSize": page_size
+            }
+        }
         response = execute_api(self.get_rule_logs_api(), payload, self.security_api_token)
         try:
             total = response.json()["total"]
@@ -160,7 +160,7 @@ def test_module(client):
 
 def search_logs_command(client, args):
     query = args.get('query')
-    size = args.get('size', 1000)
+    size = args.get('size', MAX_LOGZIO_DOCS)
     from_time = args.get('from_time')
     to_time = args.get('to_time')
     resp = client.search_logs(query, size, from_time, to_time)
@@ -179,7 +179,7 @@ def search_logs_command(client, args):
 
 
 def search_logs_by_fields_command(client, args):
-    size = args.get('size', 1000)
+    size = args.get('size', MAX_LOGZIO_DOCS)
     from_time = args.get('from_time', "")
     to_time = args.get('to_time', "")
     params = {}
@@ -205,7 +205,7 @@ def search_logs_by_fields_command(client, args):
 def get_rule_logs_by_id_command(client, args):
     id = args.get("id")
     size = args.get("size", 100)
-    page_size = args.get("page_size", 1000)
+    page_size = args.get("page_size", MAX_LOGZIO_DOCS)
     resp = client.get_rule_logs(id, size, page_size)
     return {
         'ContentsFormat': formats['json'],
@@ -235,7 +235,8 @@ def fetch_incidents(client, last_run, search, severities, first_fetch_time):
             for field in event["groupBy"]:
                 event[field] = event["groupBy"][field]
             del event["groupBy"]
-        del event["hits"]  # this field is incorrect
+        if "hits" in event:
+            del event["hits"]  # this field is incorrect
         event_date = datetime.fromtimestamp(event["eventDate"])
         event_date_string = event_date.strftime(DATE_FORMAT)
         incident = {
@@ -257,14 +258,18 @@ def main():
     try:
         security_api_token = demisto.params().get('security_api_token')
         op_api_token = demisto.params().get('operational_api_token')
+        # Todo: test this one
+        if security_api_token is None and op_api_token is None:
+            raise ValueError('No tokens were provided. Please provide either Logz.io Operational API token,'
+                             ' Logz.io Security API token, or both.')
         region = demisto.params().get('region')
         first_fetch_time = demisto.params().get('fetch_time', '1 hours')
         severities = demisto.params().get('severities')
         search = demisto.params().get('search')
         verify = not demisto.params().get('insecure', False)
-        proxies = handle_proxy()
+        proxy = demisto.params().get('proxy', False)
 
-        client = Client(region, security_api_token, op_api_token, verify, proxies)
+        client = Client(region, security_api_token, op_api_token, verify, proxy)
         command = demisto.command()
         # Run the commands
         if command == 'logzio-search-logs':

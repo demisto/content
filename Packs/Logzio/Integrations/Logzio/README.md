@@ -2,8 +2,6 @@
 ---
 
 Fetch incidents from Logz.io Cloud SIEM to activate Demisto Playbooks
-This integration was integrated and tested with version xx of Logz.io
-
 
 ## Use Cases
 ---
