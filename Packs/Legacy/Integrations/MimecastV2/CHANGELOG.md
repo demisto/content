@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+Fixed an issue where the time calculation for the first fetch was incorrect.
 
 
 ## [20.4.0] - 2020-04-14
@@ -7,7 +7,9 @@
 
 
 ## [20.3.3] - 2020-03-18
--
+- Fixed an issue where an SSL error occurred while in insecure mode.
+- Adding support for auto correct in ***mimecast-create-remediation-incident*** command when using message id.
+
 
 ## [20.2.0] - 2020-02-04
 Added the ***mimecast-update-policy*** command.
@@ -24,7 +26,3 @@ Added the ***mimecast-update-policy*** command.
   - ***mimecast-get-remediation-incident***
   - ***mimecast-search-file-hash***
 - Fixed an issue with instance SSL configuration.
-
-
-## [19.9.0] - 2019-09-04
--

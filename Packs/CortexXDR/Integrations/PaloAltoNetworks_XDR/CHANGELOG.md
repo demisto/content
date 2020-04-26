@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+- Fixed an issue where the ***xdr-get-endpoints*** command failed when returning all the endpoints if no filters were given. 
 
 ## [20.4.0] - 2020-04-14
   - Fixed the issue where the ***xdr-isolate-endpoint*** command was failing when:  
