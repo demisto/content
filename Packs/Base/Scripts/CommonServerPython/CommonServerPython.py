@@ -13,6 +13,7 @@ import re
 import socket
 import sys
 import time
+import traceback
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
 from datetime import datetime, timedelta
@@ -2548,15 +2549,21 @@ def return_error(message, error='', outputs=None):
         :return: Error entry object
         :rtype: ``dict``
     """
+    is_server_handled = hasattr(demisto, 'command') and demisto.command() in ('fetch-incidents',
+                                                                              'long-running-execution',
+                                                                              'fetch-indicators')
+    if is_debug_mode() and not is_server_handled and any(sys.exc_info()):  # Checking that an exception occurred
+        message = "{}\n\n{}".format(message, traceback.format_exc())
+
     LOG(message)
     if error:
         LOG(str(error))
+
     LOG.print_log()
     if not isinstance(message, str):
         message = message.encode('utf8') if hasattr(message, 'encode') else str(message)
 
-    if hasattr(demisto, 'command') and demisto.command() in ('fetch-incidents', 'long-running-execution',
-                                                             'fetch-indicators'):
+    if is_server_handled:
         raise Exception(message)
     else:
         demisto.results({
@@ -3001,14 +3008,14 @@ class DebugLogger(object):
 
     def __init__(self):
         logging.raiseExceptions = False
-        self.handler = None  # just incase our http_client code throws an exception. so we don't error in the __del__
+        self.handler = None  # just in case our http_client code throws an exception. so we don't error in the __del__
         if IS_PY3:
             # pylint: disable=import-error
             import http.client as http_client
             # pylint: enable=import-error
             self.http_client = http_client
             self.http_client.HTTPConnection.debuglevel = 1
-            self.http_client_print = getattr(http_client, 'print', None)  # save in case someone else patched it alread
+            self.http_client_print = getattr(http_client, 'print', None)  # save in case someone else patched it already
             self.int_logger = IntegrationLogger()
             self.int_logger.set_buffering(False)
             setattr(http_client, 'print', self.int_logger.print_override)
