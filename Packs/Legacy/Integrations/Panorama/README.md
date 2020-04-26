@@ -2341,6 +2341,11 @@
 <td style="width: 81px;">string</td>
 <td style="width: 417px;">Job ID details.</td>
 </tr>
+<tr>
+<td style="width: 242px;">Panorama.Commit.Warnings</td>
+<td style="width: 81px;">string</td>
+<td style="width: 417px;">Job ID warnings.</td>
+</tr>
 </tbody>
 </table>
 <p> </p>
