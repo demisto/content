@@ -42,7 +42,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: GitJub app integration ID
+- display: GitHub app integration ID
   name: integration_id
   required: false
   type: 0
