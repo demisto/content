@@ -126,11 +126,11 @@ Retrieves details for an OTRS ticket by ticket ID or ticket number.
 ### OTRS Ticket 7023
 |ID|Number|Age|Title|State|Lock|Queue|Owner|CustomerID|Priority|Type|Created|DynamicField|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 7023 | 2020042610000031 | 0 h 09 m | UpdatedTitle | open | unlock | Inbox::SIEM | siem | jb | 1 very low | Incident | 2020-04-26 11:05:07 | Firstname: Jens<br>Gender: male |
+| 7023 | 2020042610000031 | 0 h 09 m | UpdatedTitle | open | unlock | Inbox::SIEM | siem | jb | 1 very low | Incident | 2020-04-26 11:05:07 | Firstname: Jens<br\>Gender: male |
 ### Articles
 |ID|From|Subject|Body|CreateTime|ContentType|
 |---|---|---|---|---|---|
-| 11187 | "Jens Bothe" <jens.bothe@otrs.com> | TestArticle | Testing | 2020-04-26 11:05:07 | text/plain; charset=utf8 |
+| 11187 | "Jens Bothe" <jens.bothe@otrs.com\> | TestArticle | Testing | 2020-04-26 11:05:07 | text/plain; charset=utf8 |
 | 11188 | SIEM Webservice | ClosingSubject | ClosingBody | 2020-04-26 11:05:12 | text/plain; charset=utf8 |
 
 
