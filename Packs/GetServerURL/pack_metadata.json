@@ -1,7 +1,7 @@
 {
     "name": "GetServerURL",
     "description": "Get the URL of the Cortex XSOAR server.",
-    "support": "Cortex XSOAR",
+    "support": "xsoar",
     "serverMinVersion": "1.0.0",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

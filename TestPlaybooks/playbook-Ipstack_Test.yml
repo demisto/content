@@ -1,5 +1,5 @@
 id: Ipstack_Test
-version: 10
+version: -1
 name: Ipstack_Test
 starttaskid: "0"
 tasks:

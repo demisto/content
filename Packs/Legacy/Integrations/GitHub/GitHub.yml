@@ -9,8 +9,12 @@ configuration:
   type: 8
 - display: API Token
   name: token
-  required: true
+  required: false
   type: 4
+- display: Credentials
+  name: credentials
+  required: false
+  type: 9
 - display: 'Username of the repository owner, for example: github.com/repos/{_owner_}/{repo}/issues'
   name: user
   required: false
@@ -34,11 +38,18 @@ configuration:
   name: insecure
   required: false
   type: 8
-- defaultvalue: ""
-  display: Incident type
+- display: Incident type
   name: incidentType
   required: false
   type: 13
+- display: GitHub app integration ID
+  name: integration_id
+  required: false
+  type: 0
+- display: GitHub app installation ID
+  name: installation_id
+  required: false
+  type: 0
 description: Integration to GitHub API
 display: GitHub
 name: GitHub
@@ -135,7 +146,7 @@ script:
       description: The state of the closed issue.
       type: String
     - contextPath: GitHub.Issue.Labels
-      description: Labels spplied to the issue.
+      description: Labels applied to the issue.
       type: String
     - contextPath: GitHub.Issue.Assignees
       description: Users assigned to the issue.
@@ -144,7 +155,7 @@ script:
       description: Date when the issue was created.
       type: Date
     - contextPath: GitHub.Issue.Updated_at
-      description: Date when the issue was last updated
+      description: Date when the issue was last updated.
       type: Date
     - contextPath: GitHub.Issue.Closed_at
       description: Date when the issue was closed.
@@ -2575,7 +2586,7 @@ script:
     - contextPath: GitHub.PR.ChangedFiles
       description: The number of changed files in the pull request.
       type: Number
-  dockerimage: demisto/python3:3.7.3.286
+  dockerimage: demisto/pyjwt3:1.0.0.4946
   subtype: python3
   isfetch: true
   longRunning: false
