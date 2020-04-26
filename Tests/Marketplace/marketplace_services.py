@@ -479,7 +479,7 @@ class Pack(object):
             if signature_string:
                 with open("keyfile", "wb") as keyfile:
                     keyfile.write(signature_string.encode())
-                arg = f'./signDirectory {self._pack_path} /keyfile base64'
+                arg = f'./signDirectory {self._pack_path} keyfile base64'
                 signing_process = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 output, err = signing_process.communicate()
 
