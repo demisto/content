@@ -173,13 +173,17 @@ def fetch_indicators_command(client: Client) -> List[Dict]:
 
 
 def main():
+    PRISMA_ACCESS_EGRESS_V2_URI = 'getPrismaAccessIP/v2'
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
     param_api_key = demisto.params().get('api_key')
     insecure = demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy')
-    feedURL = demisto.params().get('URL')
+    baseURL = demisto.params().get('URL')
+    if baseURL[-1] != '/':
+        baseURL += '/'
+    feedURL = baseURL + PRISMA_ACCESS_EGRESS_V2_URI
 
     feedParams = {
         "serviceType": demisto.params().get('serviceType', 'all'),
