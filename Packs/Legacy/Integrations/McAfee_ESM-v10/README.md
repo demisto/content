@@ -20,7 +20,7 @@
 <li><strong>Incident type</strong></li>
 <li><strong>Fetch Types: cases, alarms, both (relevant only for fetch incident mode)</strong></li>
 <li><strong>Start fetch after Case ID: (relevant only for fetch incident mode)</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Version: (one of 10.0, 10.1, 10.2, 10.3)</strong></li>
 <li><strong>ESM time format, e.g., %Y/%m/%d %H:%M:%S. Select “auto-discovery” to extract the format automatically.</strong></li>
 <li>__McAfee ESM Timezone in hours (e.g if ESM timezone is +0300 =&gt; then insert 3) __</li>

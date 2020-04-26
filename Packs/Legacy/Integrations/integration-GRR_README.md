@@ -19,7 +19,7 @@
 <strong>Port</strong>: e.g. 8000</li>
 <li>
 <strong>Username</strong>: The username of the GRR server.</li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 </ul>
 </li>
