@@ -645,6 +645,20 @@ class Client(BaseClient):
         """
         return self.send_request(f'table/{table_name}?sysparm_limit=1', 'GET')
 
+    def document_route_to_table_request(self, queue_id: str, document_table: str, document_id: str) -> dict:
+        """Get table fields by sending a GET request.
+
+        Args:
+        queue_id: Queue ID.
+        document_table: Document table.
+        document_id: Document ID.
+
+        Returns:
+            Response from API.
+        """
+        body = {'document_sys_id': document_id, 'document_table': document_table}
+        return self.send_request(f'awa/queues/{queue_id}/work_item', 'POST', body=body)
+
 
 def get_ticket_command(client: Client, args: dict):
     """Get a ticket.
@@ -1420,6 +1434,41 @@ def get_table_name_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, A
     return human_readable, entry_context, result, False
 
 
+def document_route_to_table(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any], bool]:
+    """List table fields.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    queue_id = str(args.get('queue_id', ''))
+    document_table = str(args.get('document_table', ''))
+    document_id = str(args.get('document_id', ''))
+
+    result = client.document_route_to_table_request(queue_id, document_table, document_id)
+    if not result or 'result' not in result:
+        return 'Route to table was not found.', {}, {}, True
+
+    route = result.get('result', {})
+    context = {
+        'DisplayName': route.get('display_name'),
+        'DocumentID': route.get('document_id'),
+        'DocumentTable': route.get('document_table'),
+        'QueueID': route.get('queue'),
+        'WorkItemID': route.get('sys_id')
+    }
+
+    headers = ['DisplayName', 'DocumentID', 'DocumentTable', 'QueueID', 'WorkItemID']
+    human_readable = tableToMarkdown('ServiceNow Queue', t=context, headers=headers, removeNull=True,
+                                     headerTransform=pascalToSpace)
+    entry_context = {'ServiceNow.WorkItem(val.WorkItemID===obj.WorkItemID)': createContext(context, removeNull=True)}
+
+    return human_readable, entry_context, result, True
+
+
 def fetch_incidents(client: Client):
     query_params = {}
     incidents = []
@@ -1572,7 +1621,8 @@ def main():
             'servicenow-query-computers': query_computers_command,
             'servicenow-query-groups': query_groups_command,
             'servicenow-query-users': query_users_command,
-            'servicenow-get-table-name': get_table_name_command
+            'servicenow-get-table-name': get_table_name_command,
+            'servicenow-document-route-to-queue': document_route_to_table
         }
         args = demisto.args()
         if command == 'fetch-incidents':

@@ -1,4 +1,5 @@
 ## [Unreleased]
+  - Added the ***servicenow-document-route-to-queue*** command.
   - Added the *additional_fields* argument to the following commands:
     - ***servicenow-get-ticket***
     - ***servicenow-update-ticket***
