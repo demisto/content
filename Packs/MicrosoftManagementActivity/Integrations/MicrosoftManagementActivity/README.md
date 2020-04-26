@@ -227,7 +227,44 @@ Returns all content of a specific content type.
 
 
 ##### Command Example
-``` ```
+```!ms-management-activity-list-content content_type=audit.general```
+
+##### Context Example
+```
+{
+    "MicrosoftManagement": {
+        "ContentRecord": [
+            {
+                "CreationTime": "2020-04-26T10:10:10",
+                "ID": "TEST ID",
+                "ObjectID": "test-id",
+                "Operation": "TeamsSessionStarted",
+                "OrganizationID": "test-organization",
+                "RecordType": 9,
+                "UserID": "test@mail.com",
+                "UserKey": "test-key",
+                "UserType": 12,
+                "Workload": "MicrosoftTeams"
+            },
+            {
+                "CreationTime": "2020-04-26T09:09:09",
+                "ID": "TEST ID",
+                "Operation": "MemberAdded",
+                "OrganizationID": "test-organization",
+                "RecordType": 8,
+                "UserID": "Application",
+                "UserKey": "test-key",
+                "UserType": 11,
+                "Workload": "MicrosoftTeams"
+            }
+        ]
+    }
+}
+```
 
 ##### Human Readable Output
-
+### Content for content type audit.general
+|ID|CreationTime|Workload|Operation|
+|---|---|---|---|
+| 1111111-aaaa-bbbb | 2020-04-26T10:10:10 | MicrosoftTeams | TeamsSessionStarted |
+| 2222222-vvvv-gggg | 2020-04-26T09:09:09 | MicrosoftTeams | MemberAdded |
