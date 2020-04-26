@@ -6,7 +6,6 @@
 <li>Manage users</li>
 </ol>
 <h2>Required Permissions in the MS Graph Security App:</h2>
-<li>Directory.Read.All - Delegated</li>
 <li>SecurityEvents.ReadWrite.All - Application</li>
 <li>User.Read.All - Application</li>
 <li>User.Read - Delegated</li>
