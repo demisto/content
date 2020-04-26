@@ -1,5 +1,6 @@
 ## [Unreleased]
 Fixed exception parsing
+Added retry mechanism when requesting access token from refresh token
 Fixed 'port' parameter for **cdl-query-traffic-logs** and **cdl-query-threat-logs**- querying ports as number instead of string 
 
 ## [20.3.4] - 2020-03-30
