@@ -40,6 +40,7 @@ tasks:
       id: 81cb5852-b5f9-4cd5-8ffb-58af2534ddba
       version: -1
       name: Is Prisma Access integration enabled?
+      description: ''
       type: condition
       iscommand: false
       brand: ""

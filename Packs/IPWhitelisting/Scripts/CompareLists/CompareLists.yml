@@ -2,6 +2,7 @@ commonfields:
   id: CompareLists
   version: -1
 name: CompareLists
+comment: Compare  two lists and put the differences in context.
 script: ''
 type: python
 tags: []
