@@ -142,48 +142,50 @@ EXPECTED_ALERT_DETAILS_CONTEXT = {
                                                    'EventDate': '2020-04-16T01:22:39.3222427Z',
                                                    'Status': 'newAlert', 'Vendor': 'Microsoft',
                                                    'Provider': 'Microsoft Defender ATP'}}
-EXPECTED_ALERT_DETAILS_HR_ALL = '## Microsoft Security Graph Alert Details - alert_id\n' \
-                                '### Basic Properties\n' \
-                                '|AzureTenantID|Category|CreatedDate|Description|EventDate|LastModifiedDate|Severity|Status' \
-                                '|Title|\n' \
-                                '|---|---|---|---|---|---|---|---|---|\n' \
-                                '| <tenant id> | Malware | 2020-04-16T01:24:13.0578348Z | Backdoors are malicious remote ' \
-                                'access tools that allow attackers to access and control infected machines. Backdoors can ' \
-                                'also be used to exfiltrate data.<br><br>A malware is considered active if it is found ' \
-                                'running on the machine or it already has persistence mechanisms in place. Active malware ' \
-                                'detections are assigned higher severity ratings.<br><br>Because this malware was active, ' \
-                                'take precautionary measures and check for residual signs of infection. | ' \
-                                '2020-04-16T01:22:39.3222427Z | 2020-04-16T01:22:39.3222427Z | medium | ' \
-                                "newAlert | An active 'Wintapp' backdoor was detected |\n" \
-                                "### File Security States for Alert\n" \
-                                "|FileHash|Name|Path|\n" \
-                                "|---|---|---|\n" \
-                                "| f809b926576cab647125a3907ef9265bdb130a0a | <file_name> | <file_path> |\n" \
-                                "### Host Security States for Alert\n" \
-                                "|Fqdn|OS|PrivateIPAddress|PublicIPAddress|RiskScore|\n" \
-                                "|---|---|---|---|---|\n" \
-                                "| desktop-s2455r8 | Windows10 | 127.0.0.1 | 127.0.0.1 | High |\n" \
-                                "### Vendor Information for Alert\n" \
-                                "|Provider|SubProvider|Vendor|\n" \
-                                "|---|---|---|\n" \
-                                "| Microsoft Defender ATP | MicrosoftDefenderATP | Microsoft |\n"
-EXPECTED_ALERT_DETAILS_HR_FILE_STATE = '## Microsoft Security Graph Alert Details - alert_id\n' \
-                                       '### Basic Properties\n' \
-                                       '|AzureTenantID|Category|CreatedDate|Description|EventDate|LastModifiedDate|Severity|Status' \
-                                       '|Title|\n' \
-                                       '|---|---|---|---|---|---|---|---|---|\n' \
-                                       '| <tenant id> | Malware | 2020-04-16T01:24:13.0578348Z | Backdoors are malicious remote ' \
-                                       'access tools that allow attackers to access and control infected machines. Backdoors can ' \
-                                       'also be used to exfiltrate data.<br><br>A malware is considered active if it is found ' \
-                                       'running on the machine or it already has persistence mechanisms in place. Active malware ' \
-                                       'detections are assigned higher severity ratings.<br><br>Because this malware was active, ' \
-                                       'take precautionary measures and check for residual signs of infection. | ' \
-                                       '2020-04-16T01:22:39.3222427Z | 2020-04-16T01:22:39.3222427Z | medium | ' \
-                                       "newAlert | An active 'Wintapp' backdoor was detected |\n" \
-                                       "### File Security States for Alert\n" \
-                                       "|FileHash|Name|Path|\n" \
-                                       "|---|---|---|\n" \
-                                       "| f809b926576cab647125a3907ef9265bdb130a0a | <file_name> | <file_path> |\n"
+EXPECTED_ALERT_DETAILS_HR_ALL = \
+    '## Microsoft Security Graph Alert Details - alert_id\n' \
+    '### Basic Properties\n' \
+    '|AzureTenantID|Category|CreatedDate|Description|EventDate|LastModifiedDate|Severity|Status' \
+    '|Title|\n' \
+    '|---|---|---|---|---|---|---|---|---|\n' \
+    '| <tenant id> | Malware | 2020-04-16T01:24:13.0578348Z | Backdoors are malicious remote ' \
+    'access tools that allow attackers to access and control infected machines. Backdoors can ' \
+    'also be used to exfiltrate data.<br><br>A malware is considered active if it is found ' \
+    'running on the machine or it already has persistence mechanisms in place. Active malware ' \
+    'detections are assigned higher severity ratings.<br><br>Because this malware was active, ' \
+    'take precautionary measures and check for residual signs of infection. | ' \
+    '2020-04-16T01:22:39.3222427Z | 2020-04-16T01:22:39.3222427Z | medium | ' \
+    "newAlert | An active 'Wintapp' backdoor was detected |\n" \
+    "### File Security States for Alert\n" \
+    "|FileHash|Name|Path|\n" \
+    "|---|---|---|\n" \
+    "| f809b926576cab647125a3907ef9265bdb130a0a | <file_name> | <file_path> |\n" \
+    "### Host Security States for Alert\n" \
+    "|Fqdn|OS|PrivateIPAddress|PublicIPAddress|RiskScore|\n" \
+    "|---|---|---|---|---|\n" \
+    "| desktop-s2455r8 | Windows10 | 127.0.0.1 | 127.0.0.1 | High |\n" \
+    "### Vendor Information for Alert\n" \
+    "|Provider|SubProvider|Vendor|\n" \
+    "|---|---|---|\n" \
+    "| Microsoft Defender ATP | MicrosoftDefenderATP | Microsoft |\n"
+EXPECTED_ALERT_DETAILS_HR_FILE_STATE = \
+    '## Microsoft Security Graph Alert Details - alert_id\n' \
+    '### Basic Properties\n' \
+    '|AzureTenantID|Category|CreatedDate|Description|EventDate|LastModifiedDate|Severity|Status' \
+    '|Title|\n' \
+    '|---|---|---|---|---|---|---|---|---|\n' \
+    '| <tenant id> | Malware | 2020-04-16T01:24:13.0578348Z | Backdoors are malicious remote ' \
+    'access tools that allow attackers to access and control infected machines. Backdoors can ' \
+    'also be used to exfiltrate data.<br><br>A malware is considered active if it is found ' \
+    'running on the machine or it already has persistence mechanisms in place. Active malware ' \
+    'detections are assigned higher severity ratings.<br><br>Because this malware was active, ' \
+    'take precautionary measures and check for residual signs of infection. | ' \
+    '2020-04-16T01:22:39.3222427Z | 2020-04-16T01:22:39.3222427Z | medium | ' \
+    "newAlert | An active 'Wintapp' backdoor was detected |\n" \
+    "### File Security States for Alert\n" \
+    "|FileHash|Name|Path|\n" \
+    "|---|---|---|\n" \
+    "| f809b926576cab647125a3907ef9265bdb130a0a | <file_name> | <file_path> |\n"
 
 client_mocker = MsGraphClient(tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name',
                               base_url='url', verify='use_ssl', proxy='proxy', self_deployed='self_deployed')
