@@ -479,7 +479,7 @@ Returns the complete set of fields for a given record within a component.
 ### With the following fields:
 |Assignee|Attachment|Audit Project|Authority Doc Citations|Comments|Created At|Created By|Current Revision|Deleted|Description|Document Attachment|Due Date|Evidence|Id|Published Revision|Task ID|Updated At|Updated By|Work Log|Workflow Stage|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Value: Admin, Keylight<br>ID: 6 |  |  |  |  | 2019-11-20T14:26:17.2285486 | Value: Development, Demisto<br>ID: 268 | 1 | false |  |  |  |  | 13 | 1 | This is a task | 2019-11-20T14:26:17.2285486 | Value: Development, Demisto<br>ID: 268 |  | Value: Published<br>ID: 221 |
+| Value: Admin, Keylight<br></br>ID: 6 |  |  |  |  | 2019-11-20T14:26:17.2285486 | Value: Development, Demisto<br></br>ID: 268 | 1 | false |  |  |  |  | 13 | 1 | This is a task | 2019-11-20T14:26:17.2285486 | Value: Development, Demisto<br></br>ID: 268 |  | Value: Published<br></br>ID: 221 |
 
 
 ### kl-get-records
@@ -843,7 +843,7 @@ Creates a new record within the specified component of the Keylight application.
 ### With the following fields:
 |Assignee|Attachment|Audit Project|Authority Doc Citations|Comments|Created At|Created By|Current Revision|Deleted|Description|Document Attachment|Due Date|Evidence|Id|Published Revision|Task ID|Updated At|Updated By|Work Log|Workflow Stage|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-|  |  | Value: 123<br>ID: 3 |  |  | 2020-04-19T07:20:16.195364Z | Value: Development, Demisto<br>ID: 268 | 1 | false |  |  |  |  | 359 |  | Created by Demisto Test Playbook | 2020-04-19T07:20:16.195364Z | Value: Development, Demisto<br>ID: 268 |  | Value: Published<br>ID: 221 |
+|  |  | Value: 123<br></br>ID: 3 |  |  | 2020-04-19T07:20:16.195364Z | Value: Development, Demisto<br></br>ID: 268 | 1 | false |  |  |  |  | 359 |  | Created by Demisto Test Playbook | 2020-04-19T07:20:16.195364Z | Value: Development, Demisto<br></br>ID: 268 |  | Value: Published<br></br>ID: 221 |
 
 
 ### kl-update-record
@@ -966,5 +966,5 @@ Get user details by his ID.
 ### Keylight user 268
 |APIAccess|AccountType|Active|Deleted|EmailAddress|Fax|FirstName|FullName|FunctionalRoles|Groups|HomePhone|Id|IsLDAP|IsSAML|Language|LastName|Locked|MiddleName|MobilePhone|SecurityConfiguration|SecurityRoles|Title|Username|WorkPhone|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| true | 1 | true | false | demisto@demisto.com |  | Demisto | Development, Demisto |  | {'Id': 42, 'Name': 'Demisto Development'} |  | 268 | false | false | 1033 | Development | false |  |  | Id: 7<br>DisplayName: Standard User Configuration | {'Id': 28, 'Name': 'Demisto Developer'} | Demisto Users | demisto@demisto.com |  |
+| true | 1 | true | false | demisto@demisto.com |  | Demisto | Development, Demisto |  | {'Id': 42, 'Name': 'Demisto Development'} |  | 268 | false | false | 1033 | Development | false |  |  | Id: 7<br></br>DisplayName: Standard User Configuration | {'Id': 28, 'Name': 'Demisto Developer'} | Demisto Users | demisto@demisto.com |  |
 
