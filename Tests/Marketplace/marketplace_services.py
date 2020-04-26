@@ -29,6 +29,19 @@ class GCPConfig(object):
     GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
     BASE_PACK = "Base"  # base pack name
     INDEX_NAME = "index"  # main index folder name
+    CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
+    CORE_PACKS_LIST = [BASE_PACK]  # cores packs list
+
+
+class Metadata(object):
+    """ Metadata constants and default values that are used in metadata parsing.
+    """
+    DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+    XSOAR_SUPPORT = "xsoar"
+    XSOAR_SUPPORT_URL = "https://www.paloaltonetworks.com/cortex"  # disable-secrets-detection
+    XSOAR_AUTHOR = "Cortex XSOAR"
+    SERVER_DEFAULT_MIN_VERSION = "6.0.0"
+    CERTIFIED = "certified"
 
 
 class PackFolders(enum.Enum):
@@ -54,7 +67,7 @@ class PackFolders(enum.Enum):
         return [
             PackFolders.SCRIPTS.value, PackFolders.DASHBOARDS.value, PackFolders.INCIDENT_FIELDS.value,
             PackFolders.INCIDENT_TYPES.value, PackFolders.INTEGRATIONS.value, PackFolders.PLAYBOOKS.value,
-            PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value
+            PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value, PackFolders.MISC.value
         ]
 
     @classmethod
@@ -73,6 +86,7 @@ class PackStatus(enum.Enum):
 
     """
     SUCCESS = "Successfully uploaded pack data to gcs"
+    FAILED_LOADING_USER_METADATA = "Failed in loading user defined metadata"
     FAILED_IMAGES_UPLOAD = "Failed to upload pack integration images to gcs"
     FAILED_AUTHOR_IMAGE_UPLOAD = "Failed to upload pack author image to gcs"
     FAILED_METADATA_PARSING = "Failed to parse and create metadata.json"
@@ -95,7 +109,6 @@ class Pack(object):
 
     Attributes:
         PACK_INITIAL_VERSION (str): pack initial version that will be used as default.
-        DATE_FORMAT (str): date format of.
         CHANGELOG_JSON (str): changelog json full name, may be changed in the future.
         CHANGELOG_MD (str): changelog md full name.
         README (str): pack's readme file name.
@@ -106,7 +119,6 @@ class Pack(object):
 
     """
     PACK_INITIAL_VERSION = "1.0.0"
-    DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
     CHANGELOG_JSON = "changelog.json"
     CHANGELOG_MD = "changelog.md"
     README = "README.md"
@@ -118,10 +130,13 @@ class Pack(object):
     def __init__(self, pack_name, pack_path):
         self._pack_name = pack_name
         self._pack_path = pack_path
-        self._pack_repo_path = os.path.join(PACKS_FULL_PATH, pack_name)
         self._status = None
-        self._relative_storage_path = ""
+        self._public_storage_path = ""
         self._remove_files_list = []  # tracking temporary files, in order to delete in later step
+        self._sever_min_version = "1.0.0"  # initialized min version
+        self._support_type = None  # initialized in load_user_metadata function
+        self._current_version = None  # initialized in load_user_metadata function
+        self._hidden = False  # initialized in load_user_metadata function
 
     @property
     def name(self):
@@ -154,16 +169,61 @@ class Pack(object):
         self._status = status_value
 
     @property
-    def relative_storage_path(self):
-        """ str: relative gcs path of uploaded pack.
+    def public_storage_path(self):
+        """ str: public gcs path of uploaded pack.
         """
-        return self._relative_storage_path
+        return self._public_storage_path
 
-    @relative_storage_path.setter
-    def relative_storage_path(self, path_value):
-        """ setter of relative gcs path of uploaded pack.
+    @public_storage_path.setter
+    def public_storage_path(self, path_value):
+        """ setter of public gcs path of uploaded pack.
         """
-        self._relative_storage_path = path_value
+        self._public_storage_path = path_value
+
+    @property
+    def support_type(self):
+        """ str: support type of the pack.
+        """
+        return self._support_type
+
+    @support_type.setter
+    def support_type(self, support_value):
+        """ setter of support type of the pack.
+        """
+        self._support_type = support_value
+
+    @property
+    def current_version(self):
+        """ str: current version of the pack (different from latest_version).
+        """
+        return self._current_version
+
+    @current_version.setter
+    def current_version(self, current_version_value):
+        """ setter of current version of the pack.
+        """
+        self._current_version = current_version_value
+
+    @property
+    def hidden(self):
+        """ bool: internal content field for preventing pack from being displayed.
+        """
+        return self._hidden
+
+    @hidden.setter
+    def hidden(self, hidden_value):
+        """ setter of hidden property of the pack.
+        """
+        self._hidden = hidden_value
+
+    @property
+    def server_min_version(self):
+        """ str: server min version according to collected items.
+        """
+        if not self._sever_min_version or self._sever_min_version == "1.0.0":
+            return Metadata.SERVER_DEFAULT_MIN_VERSION
+        else:
+            return self._sever_min_version
 
     def _get_latest_version(self):
         """ Return latest semantic version of the pack.
@@ -242,8 +302,50 @@ class Pack(object):
         return parsed_result
 
     @staticmethod
+    def _create_support_section(support_type, support_url=None, support_email=None):
+        """ Creates support dictionary that is part of metadata.
+
+        In case of support type xsoar, adds default support url. If support is xsoar and support url is defined and
+        doesn't match xsoar default url, warning is raised.
+
+        Args:
+            support_type (str): support type of pack, optional values are: partner, developer, xsoar and nonsupported
+            support_url (str): support full url
+            support_email (str): support email address.
+
+        Returns:
+            dict: supported data dictionary.
+        """
+        support_details = {}
+
+        if support_url:  # set support url from user input
+            support_details['url'] = support_url
+        elif support_type == Metadata.XSOAR_SUPPORT:  # in case support type is xsoar, set default xsoar support url
+            support_details['url'] = Metadata.XSOAR_SUPPORT_URL
+        # add support email if defined
+        if support_email:
+            support_details['email'] = support_email
+
+        return support_details
+
+    @staticmethod
+    def _get_author(support_type, author=None):
+        """ Returns pack author. In case support type is xsoar, more additional validation are applied.
+
+        Returns:
+            str: returns author from the input.
+        """
+        if support_type == Metadata.XSOAR_SUPPORT and not author:
+            return Metadata.XSOAR_AUTHOR  # returned xsoar default author
+        elif support_type == Metadata.XSOAR_SUPPORT and author != Metadata.XSOAR_AUTHOR:
+            print_warning(f"{author} author doest not match {Metadata.XSOAR_AUTHOR} default value")
+            return author
+        else:
+            return author
+
+    @staticmethod
     def _parse_pack_metadata(user_metadata, pack_content_items, pack_id, integration_images, author_image,
-                             dependencies_data):
+                             dependencies_data, server_min_version):
         """ Parses pack metadata according to issue #19786 and #20091. Part of field may change over the time.
 
         Args:
@@ -253,52 +355,42 @@ class Pack(object):
             integration_images (list): list of gcs uploaded integration images.
             author_image (str): gcs uploaded author image
             dependencies_data (dict): mapping of pack dependencies data, of all levels.
+            server_min_version (str): server minimum version found during the iteration over content items.
 
         Returns:
             dict: parsed pack metadata.
 
         """
-        pack_metadata = {}
-        # part of old packs are initialized with empty list
-        user_metadata = {} if isinstance(user_metadata, list) else user_metadata
-        pack_metadata['name'] = user_metadata.get('name') if user_metadata.get('name') else pack_id
-        pack_metadata['id'] = pack_id
-        pack_metadata['description'] = user_metadata.get('description') if user_metadata.get('description') else pack_id
-        pack_metadata['created'] = user_metadata.get('created', datetime.utcnow().strftime(Pack.DATE_FORMAT))
-        pack_metadata['updated'] = datetime.utcnow().strftime(Pack.DATE_FORMAT)
-        pack_metadata['legacy'] = user_metadata.get('legacy', True)
-        pack_metadata['support'] = user_metadata.get('support', '')
-        pack_metadata['supportDetails'] = {}
-        support_url = user_metadata.get('url')
-        if support_url:
-            pack_metadata['supportDetails']['url'] = support_url
 
-        support_email = user_metadata.get('email')
-        if support_email:
-            pack_metadata['supportDetails']['email'] = support_email
-        pack_metadata['author'] = user_metadata.get('author', '')
+        # part of old packs are initialized with empty list
+        pack_metadata = {}
+        pack_metadata['name'] = user_metadata.get('name') or pack_id
+        pack_metadata['id'] = pack_id
+        pack_metadata['description'] = user_metadata.get('description') or pack_id
+        pack_metadata['created'] = user_metadata.get('created', datetime.utcnow().strftime(Metadata.DATE_FORMAT))
+        pack_metadata['updated'] = datetime.utcnow().strftime(Metadata.DATE_FORMAT)
+        pack_metadata['legacy'] = user_metadata.get('legacy', True)
+        pack_metadata['support'] = user_metadata.get('support') or Metadata.XSOAR_SUPPORT
+        pack_metadata['supportDetails'] = Pack._create_support_section(support_type=pack_metadata['support'],
+                                                                       support_url=user_metadata.get('url'),
+                                                                       support_email=user_metadata.get('email'))
+        pack_metadata['author'] = Pack._get_author(support_type=pack_metadata['support'],
+                                                   author=user_metadata.get('author', ''))
         pack_metadata['authorImage'] = author_image
-        is_beta = user_metadata.get('beta', False)
-        pack_metadata['beta'] = bool(strtobool(is_beta)) if isinstance(is_beta, str) else is_beta
-        is_deprecated = user_metadata.get('deprecated', False)
-        pack_metadata['deprecated'] = bool(strtobool(is_beta)) if isinstance(is_deprecated, str) else is_deprecated
-        pack_metadata['certification'] = user_metadata.get('certification', '')
-        try:
-            pack_metadata['price'] = int(user_metadata.get('price'))
-        except Exception as e:
-            print_warning(f"{pack_id} pack price is not valid. The price was set to 0. Additional "
-                          f"details {e}")
-            pack_metadata['price'] = 0
-        pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion', '')
+        pack_metadata['beta'] = get_valid_bool(user_metadata.get('beta', False))
+        pack_metadata['deprecated'] = get_valid_bool(user_metadata.get('deprecated', False))
+        pack_metadata['certification'] = user_metadata.get('certification', Metadata.CERTIFIED)
+        pack_metadata['price'] = convert_price(pack_id=pack_id, price_value_input=user_metadata.get('price'))
+        pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion') or server_min_version
         pack_metadata['serverLicense'] = user_metadata.get('serverLicense', '')
         pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
-        pack_metadata['tags'] = input_to_list(user_metadata.get('tags'))
-        pack_metadata['categories'] = input_to_list(user_metadata.get('categories'))
+        pack_metadata['tags'] = input_to_list(input_data=user_metadata.get('tags'), capitalize_input=True)
+        pack_metadata['categories'] = input_to_list(input_data=user_metadata.get('categories'), capitalize_input=True)
         pack_metadata['contentItems'] = pack_content_items
         pack_metadata['integrations'] = Pack._get_all_pack_images(integration_images,
                                                                   user_metadata.get('displayedImages', []),
                                                                   dependencies_data)
-        pack_metadata['useCases'] = input_to_list(user_metadata.get('useCases'))
+        pack_metadata['useCases'] = input_to_list(input_data=user_metadata.get('useCases'), capitalize_input=True)
         pack_metadata['keywords'] = input_to_list(user_metadata.get('keywords'))
         pack_metadata['dependencies'] = Pack._parse_pack_dependencies(user_metadata.get('dependencies', {}),
                                                                       dependencies_data)
@@ -336,8 +428,11 @@ class Pack(object):
 
         return dependencies_data_result
 
-    def remove_unwanted_files(self):
+    def remove_unwanted_files(self, delete_test_playbooks=True):
         """ Iterates over pack folder and removes hidden files and unwanted folders.
+
+        Args:
+            delete_test_playbooks (bool): whether to delete test playbooks folder.
 
         Returns:
             bool: whether the operation succeeded.
@@ -358,16 +453,11 @@ class Pack(object):
 
                     current_directory = root.split(os.path.sep)[-1]
 
-                    if current_directory in Pack.EXCLUDE_DIRECTORIES and os.path.isdir(root):
+                    if current_directory in Pack.EXCLUDE_DIRECTORIES and os.path.isdir(root) and delete_test_playbooks:
                         shutil.rmtree(root)
                         print(f"Deleted pack {current_directory} directory for {self._pack_name} pack")
                         continue
 
-                    if current_directory == PackFolders.MISC.value and not fnmatch.fnmatch(pack_file,
-                                                                                           'reputation-*.json'):
-                        # reputation in old format aren't supported in 6.0.0 server version
-                        os.remove(full_file_path)
-                        print(f"Deleted pack {pack_file} file for {self._pack_name} pack")
         except Exception as e:
             task_status = False
             print_error(f"Failed to delete ignored files for pack {self._pack_name} - {str(e)}")
@@ -465,7 +555,7 @@ class Pack(object):
             with open(zip_pack_path, "rb") as pack_zip:
                 blob.upload_from_file(pack_zip)
 
-            self.relative_storage_path = blob.name
+            self.public_storage_path = blob.public_url
             print_color(f"Uploaded {self._pack_name} pack to {pack_full_path} path.", LOG_COLORS.GREEN)
 
             return task_status, False
@@ -494,7 +584,8 @@ class Pack(object):
                 PackFolders.INCIDENT_TYPES.value: "incidenttype",
                 PackFolders.DASHBOARDS.value: "dashboard",
                 PackFolders.INDICATOR_FIELDS.value: "indicatorfield",
-                PackFolders.REPORTS.value: "reports"
+                PackFolders.REPORTS.value: "reports",
+                PackFolders.MISC.value: "reputation"
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
@@ -511,11 +602,32 @@ class Pack(object):
 
                     pack_file_path = os.path.join(root, pack_file_name)
 
+                    # reputation in old format aren't supported in 6.0.0 server version
+                    if current_directory == PackFolders.MISC.value and not fnmatch.fnmatch(pack_file_name,
+                                                                                           'reputation-*.json'):
+                        os.remove(pack_file_path)
+                        print(f"Deleted pack {pack_file_name} reputation file for {self._pack_name} pack")
+                        continue
+
                     with open(pack_file_path, 'r') as pack_file:
                         if current_directory in PackFolders.yml_supported_folders():
                             content_item = yaml.safe_load(pack_file)
                         elif current_directory in PackFolders.json_supported_folders():
                             content_item = json.load(pack_file)
+
+                    # check if content item has to version
+                    to_version = content_item.get('toversion') or content_item.get('toVersion')
+
+                    if to_version and LooseVersion(to_version) < LooseVersion(Metadata.SERVER_DEFAULT_MIN_VERSION):
+                        os.remove(pack_file_path)
+                        print(f"{self._pack_name} pack content item {pack_file_name} has to version: {to_version}. "
+                              f"{pack_file_name} file was deleted.")
+                        continue
+
+                    print(f"Iterating over {pack_file_path} file and collecting items of {self._pack_name} pack")
+                    # updated min server version from current content item
+                    self._sever_min_version = get_higher_server_version(self._sever_min_version, content_item,
+                                                                        self._pack_name)
 
                     if current_directory == PackFolders.SCRIPTS.value:
                         folder_collected_items.append({
@@ -561,10 +673,10 @@ class Pack(object):
                     elif current_directory == PackFolders.INDICATOR_FIELDS.value:
                         folder_collected_items.append({
                             'name': content_item.get('name', ""),
-                            'type': content_item.get('description', ""),
+                            'type': content_item.get('type', ""),
                             'description': content_item.get('description', "")
                         })
-                    elif current_directory == PackFolders.REPORTS.value:
+                    elif current_directory == PackFolders.REPORTS.value:  # todo finalize this part with server side
                         dash_board_section = content_item.get('dashboard', {})
 
                         folder_collected_items.append({
@@ -574,25 +686,63 @@ class Pack(object):
                             'period': dash_board_section.get('period', {}),
                             'fromDateLicense': dash_board_section.get('fromDateLicense', "")
                         })
+                    elif current_directory == PackFolders.MISC.value:
+                        folder_collected_items.append({
+                            'details': content_item.get('details', ""),
+                            'reputationScriptName': content_item.get('reputationScriptName', ""),
+                            'enhancementScriptNames': content_item.get('enhancementScriptNames', [])
+                        })
 
                 content_item_key = content_item_name_mapping[current_directory]
                 content_items_result[content_item_key] = folder_collected_items
 
+            print_color(f"Finished collecting content items for {self._pack_name} pack", LOG_COLORS.GREEN)
             task_status = True
         except Exception as e:
             print_error(f"Failed collecting content items in {self._pack_name} pack. Additional info:\n {e}")
         finally:
             return task_status, content_items_result
 
-    def format_metadata(self, pack_content_items, integration_images, author_image, index_folder_path):
+    def load_user_metadata(self):
+        """ Loads user defined metadata and stores part of it's data in defined properties fields.
+
+        Returns:
+            dict: user metadata of pack defined in content repo pack (pack_metadata.json)
+
+        """
+        task_status = False
+
+        try:
+            user_metadata_path = os.path.join(self._pack_path, Pack.USER_METADATA)  # user metadata path before parsing
+
+            if not os.path.exists(user_metadata_path):
+                print_error(f"{self._pack_name} pack is missing {Pack.USER_METADATA} file.")
+                return task_status
+
+            with open(user_metadata_path, "r") as user_metadata_file:
+                user_metadata = json.load(user_metadata_file)  # loading user metadata
+                # part of old packs are initialized with empty list
+                user_metadata = {} if isinstance(user_metadata, list) else user_metadata
+
+            # store important user metadata fields
+            self.support_type = user_metadata.get('support', Metadata.XSOAR_SUPPORT)
+            self.current_version = user_metadata.get('currentVersion', '')
+            self.hidden = user_metadata.get('hidden', False)
+
+            print(f"Finished loading {self._pack_name} pack user metadata")
+            task_status = True
+        except Exception as e:
+            print_error(f"Failed in loading {self._pack_name} user metadata. Additional info:\n{e}")
+        finally:
+            return task_status, user_metadata
+
+    def format_metadata(self, user_metadata, pack_content_items, integration_images, author_image, index_folder_path):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
         Args:
-            pack_content_items (dict): content items that are located inside specific pack. Possible keys of the dict:
-            Classifiers, Dashboards, IncidentFields, IncidentTypes, IndicatorFields, Integrations, Layouts, Playbooks,
-            Reports, Scripts and Widgets. Each key is mapped to list of items with name and description. Several items
-            have no description.
+            user_metadata (dict): user defined pack_metadata, prior the parsing process.
+            pack_content_items (dict): content items that are located inside specific pack.
             integration_images (list): list of uploaded integration images with integration display name and image gcs
             public url.
             author_image (str): uploaded public gcs path to author image.
@@ -605,15 +755,7 @@ class Pack(object):
         task_status = False
 
         try:
-            user_metadata_path = os.path.join(self._pack_path, Pack.USER_METADATA)  # user metadata path before parsing
             metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
-
-            if not os.path.exists(user_metadata_path):
-                print_error(f"{self._pack_name} pack is missing {Pack.USER_METADATA} file.")
-                return task_status
-
-            with open(user_metadata_path, "r") as user_metadata_file:
-                user_metadata = json.load(user_metadata_file)  # loading user metadata
 
             dependencies_data = self._load_pack_dependencies(index_folder_path,
                                                              user_metadata.get('dependencies', {}),
@@ -623,7 +765,8 @@ class Pack(object):
                                                            pack_id=self._pack_name,
                                                            integration_images=integration_images,
                                                            author_image=author_image,
-                                                           dependencies_data=dependencies_data)
+                                                           dependencies_data=dependencies_data,
+                                                           server_min_version=self.server_min_version)
 
             with open(metadata_path, "w") as metadata_file:
                 json.dump(formatted_metadata, metadata_file, indent=4)  # writing back parsed metadata
@@ -706,86 +849,65 @@ class Pack(object):
 
         return image_data
 
-    def _get_not_spitted_yml_image_data(self, root, target_folder_files):
+    def _get_image_data_from_yml(self, pack_file_path):
         """ Creates temporary image file and retrieves integration display name.
 
         Args:
-            root (str): full path to the target folder to search integration image.
-            target_folder_files (list): list of files inside the targeted folder.
+            pack_file_path (str): full path to the target yml_path integration yml to search integration image.
 
         Returns:
-            list: collection of paths to temporary integration images and display names of the integrations.
+            dict: path to temporary integration image and display name of the integrations.
 
         """
-        images_data_collection = []
+        image_data = {}
 
-        for pack_file in target_folder_files:
-            image_data = {}
+        if pack_file_path.endswith('.yml'):
+            with open(pack_file_path, 'r') as integration_file:
+                integration_yml = yaml.safe_load(integration_file)
 
-            if pack_file.endswith('.yml'):
-                with open(os.path.join(root, pack_file), 'r') as integration_file:
-                    integration_yml = yaml.safe_load(integration_file)
+            image_data['display_name'] = integration_yml.get('display', '')
+            # create temporary file of base64 decoded data
+            integration_name = integration_yml.get('name', '')
+            base64_image = integration_yml['image'].split(',')[1] if integration_yml.get('image') else None
 
-                image_data['display_name'] = integration_yml.get('display', '')
-                # create temporary file of base64 decoded data
-                integration_name = integration_yml.get('name', '')
-                base64_image = integration_yml['image'].split(',')[1] if integration_yml.get('image') else None
+            if not base64_image:
+                print_warning(f"{integration_name} integration image was not found in {self._pack_name} pack")
+                return {}
 
-                if not base64_image:
-                    print_warning(f"{integration_name} integration image was not found in {self._pack_name} pack")
-                    continue  # no image found current integration
+            temp_image_name = f'{integration_name.replace(" ", "")}_image.png'
+            temp_image_path = os.path.join(self._pack_path, temp_image_name)
 
-                temp_image_name = f'{integration_name.replace(" ", "_")}_image.png'
-                temp_image_path = os.path.join(self._pack_path, temp_image_name)
+            with open(temp_image_path, 'wb') as image_file:
+                image_file.write(base64.b64decode(base64_image))
 
-                with open(temp_image_path, 'wb') as image_file:
-                    image_file.write(base64.b64decode(base64_image))
+            self._remove_files_list.append(temp_image_name)  # add temporary file to tracking list
+            image_data['image_path'] = temp_image_path
 
-                self._remove_files_list.append(temp_image_name)  # add temporary file to tracking list
-                image_data['repo_image_path'] = temp_image_path
+            print(f"Created temporary integration {image_data['display_name']} image for {self._pack_name} pack")
 
-                if image_data:
-                    images_data_collection.append(image_data)
+        return image_data
 
-        return images_data_collection
-
-    def _search_for_images(self, target_folder, folder_depth=2):
+    def _search_for_images(self, target_folder):
         """ Searches for png files in targeted folder.
 
         Args:
             target_folder (str): full path to directory to search.
-            folder_depth (int): depth of traversal inside target folder.
 
         Returns:
             list: list of dictionaries that include image path and display name of integration, example:
-            [{'repo_image_path': image_path, 'display_name': integration_display_name},...]
+            [{'image_path': image_path, 'display_name': integration_display_name},...]
         """
-        target_folder_path = os.path.join(self._pack_repo_path, target_folder)
-        local_repo_images = []
+        target_folder_path = os.path.join(self._pack_path, target_folder)
+        images_list = []
 
         if os.path.exists(target_folder_path):
-            for (root, _, target_folder_files) in os.walk(target_folder_path, topdown=True):
-                image_data = {}
+            for pack_item in os.scandir(target_folder_path):
+                image_data = self._get_image_data_from_yml(pack_item.path)
 
-                if root[len(target_folder_path):].count(os.sep) < folder_depth:
-                    if any(f.endswith('_image.png') for f in target_folder_files) \
-                            and any(f.endswith('.yml') for f in target_folder_files) \
-                            and any(f.endswith('.py') for f in target_folder_files):
-                        # detected spitted integration yml file
-                        image_data = Pack._get_spitted_yml_image_data(root, target_folder_files)
+                if image_data and image_data not in images_list:
+                    images_list.append(image_data)
 
-                        if image_data:
-                            local_repo_images.append(image_data)
-
-                    elif any(f.endswith('.yml') for f in target_folder_files) \
-                            and not any(f.endswith('_image.png') for f in target_folder_files):
-                        # detected not spitted integration file
-                        images_data_collection = self._get_not_spitted_yml_image_data(root, target_folder_files)
-
-                        if images_data_collection:
-                            local_repo_images.extend(images_data_collection)
-
-        return local_repo_images
+        return images_list
 
     def upload_integration_images(self, storage_bucket):
         """ Uploads pack integrations images to gcs.
@@ -812,15 +934,16 @@ class Pack(object):
             pack_storage_root_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name)
 
             for image_data in pack_local_images:
-                image_local_path = image_data.get('repo_image_path')
-                if not image_local_path:
+                image_path = image_data.get('image_path')
+                if not image_path:
                     raise Exception(f"{self._pack_name} pack integration image was not found")
 
-                image_name = os.path.basename(image_local_path)
+                image_name = os.path.basename(image_path)
                 image_storage_path = os.path.join(pack_storage_root_path, image_name)
                 pack_image_blob = storage_bucket.blob(image_storage_path)
+                print(f"Uploading {self._pack_name} pack integration image: {image_name}")
 
-                with open(image_local_path, "rb") as image_file:
+                with open(image_path, "rb") as image_file:
                     pack_image_blob.upload_from_file(image_file)
                     uploaded_integration_images.append({
                         'name': image_data.get('display_name', ''),
@@ -853,22 +976,21 @@ class Pack(object):
         author_image_storage_path = ""
 
         try:
-            repo_author_image_path = os.path.join(self._pack_repo_path,  # disable-secrets-detection
-                                                  Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
+            author_image_path = os.path.join(self._pack_name, Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
 
-            if os.path.exists(repo_author_image_path):
+            if os.path.exists(author_image_path):
                 image_to_upload_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name,
                                                             Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
                 pack_author_image_blob = storage_bucket.blob(image_to_upload_storage_path)
 
-                with open(repo_author_image_path, "rb") as author_image_file:
+                with open(author_image_path, "rb") as author_image_file:
                     pack_author_image_blob.upload_from_file(author_image_file)
 
                 author_image_storage_path = pack_author_image_blob.name if GCPConfig.USE_GCS_RELATIVE_PATH \
                     else pack_author_image_blob.public_url
 
                 print_color(f"Uploaded successfully {self._pack_name} pack author image", LOG_COLORS.GREEN)
-            else:  # use default Base pack image
+            elif self.support_type == Metadata.XSOAR_SUPPORT:  # use default Base pack image for xsoar supported packs
                 author_image_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, GCPConfig.BASE_PACK,
                                                          Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
 
@@ -879,6 +1001,9 @@ class Pack(object):
                     # disable-secrets-detection-end
                 print_color((f"Skipping uploading of {self._pack_name} pack author image "
                              f"and use default {GCPConfig.BASE_PACK} pack image"), LOG_COLORS.GREEN)
+            else:
+                print(f"Skipping uploading of {self._pack_name} pack. "
+                      f"The pack is defined as {self.support_type} support type")
 
         except Exception as e:
             print_error(f"Failed uploading {self._pack_name} pack author image. Additional info:\n {e}")
@@ -896,15 +1021,83 @@ class Pack(object):
             print(f"Cleanup {self._pack_name} pack from: {self._pack_path}")
 
 
-def input_to_list(input_data):
+# HELPER FUNCTIONS
+
+def input_to_list(input_data, capitalize_input=False):
     """ Helper function for handling input list or str from the user.
 
     Args:
         input_data (list or str): input from the user to handle.
+        capitalize_input (boo): whether to capitalize the input list data or not.
 
     Returns:
         list: returns the original list or list that was split by comma.
 
     """
     input_data = input_data if input_data else []
-    return input_data if isinstance(input_data, list) else [s for s in input_data.split(',') if s]
+    input_data = input_data if isinstance(input_data, list) else [s for s in input_data.split(',') if s]
+
+    if capitalize_input:
+        return [i.title() for i in input_data]
+    else:
+        return input_data
+
+
+def get_valid_bool(bool_input):
+    """ Converts and returns valid bool.
+
+    Returns:
+        bool: converted bool input.
+    """
+    return bool(strtobool(bool_input)) if isinstance(bool_input, str) else bool_input
+
+
+def convert_price(pack_id, price_value_input=None):
+    """ Converts to integer value price input. In case no price input provided, return zero as price.
+
+    Args:
+        pack_id (str): pack unique identifier.
+        price_value_input (str): price string to convert.
+
+    Returns:
+        int: converted to int pack price.
+    """
+
+    try:
+        if not price_value_input:
+            return 0  # in case no price was supported, return 0
+        else:
+            return int(price_value_input)  # otherwise convert to int and return result
+    except Exception as e:
+        print_warning(f"{pack_id} pack price is not valid. The price was set to 0. Additional "
+                      f"details {e}")
+        return 0
+
+
+def get_higher_server_version(current_string_version, compared_content_item, pack_name):
+    """ Compares two semantic server versions and returns the higher version between them.
+
+    Args:
+         current_string_version (str): current string version.
+         compared_content_item (dict): compared content item entity.
+         pack_name (str): the pack name (id).
+
+    Returns:
+        str: latest version between compared versions.
+    """
+    higher_version_result = current_string_version
+
+    try:
+        compared_string_version = compared_content_item.get('fromversion') or compared_content_item.get(
+            'fromVersion') or "1.0.0"
+        current_version, compared_version = LooseVersion(current_string_version), LooseVersion(compared_string_version)
+
+        if current_version < compared_version:
+            higher_version_result = compared_string_version
+    except Exception as e:
+        content_item_name = compared_content_item.get('name') or compared_content_item.get(
+            'display') or compared_content_item.get('id') or compared_content_item.get('details', '')
+        print_error(f"{pack_name} failed in version comparison of content item {content_item_name}. "
+                    f"Additional info:\n {e}")
+    finally:
+        return higher_version_result
