@@ -8,7 +8,7 @@ import re
 requests.packages.urllib3.disable_warnings()
 
 # CONSTANTS
-google_base_dns = "_cloud-netblocks.googleusercontent.com"
+GOOGLE_BASE_DNS = "_cloud-netblocks.googleusercontent.com"
 
 
 def fetch_cidr(dnsAddress):
@@ -78,7 +78,7 @@ def main():
     LOG(f'Command being called is {demisto.command()}')
     try:
         client = Client(
-            base_url=google_base_dns,
+            base_url=GOOGLE_BASE_DNS,
             verify=verify_certificate,
             proxy=proxy)
 
