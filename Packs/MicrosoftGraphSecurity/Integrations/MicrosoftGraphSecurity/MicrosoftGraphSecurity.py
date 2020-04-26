@@ -1,12 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-import requests
-from datetime import datetime, timedelta
+
 from typing import Dict, Any
 
 # disable insecure warnings
-
 requests.packages.urllib3.disable_warnings()
 
 APP_NAME = 'ms-graph-security'
@@ -33,10 +31,10 @@ class MsGraphClient:
     Microsoft Graph Mail Client enables authorized access to a user's Office 365 mail data in a personal account.
     """
 
-    def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed, ok_codes):
+    def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed):
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name, base_url=base_url, verify=verify,
-            proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes)
+            proxy=proxy, self_deployed=self_deployed)
 
     def search_alerts(self, last_modified, severity, category, vendor, time_from, time_to, filter_query):
         filters = ''
@@ -52,18 +50,19 @@ class MsGraphClient:
             filters += "&createdDate lt '{}'".format(time_to)
         if filter_query:
             filters += "&{}".format(filter_query)
-        cmd_url = 'security/alerts/?$filter=' + filters[1:]
-        response = self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        cmd_url = 'security/alerts/'
+        params = {'$filter': filters[1:]}
+        response = self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
         return response
 
     def get_alert_details(self, alert_id):
-        cmd_url = 'security/alerts/' + alert_id
+        cmd_url = f'security/alerts/{alert_id}'
         response = self.ms_client.http_request(method='GET', url_suffix=cmd_url)
         return response
 
     def update_alert(self, alert_id, vendor_information, provider_information,
                      assigned_to, closed_date_time, comments, feedback, status, tags):
-        cmd_url = '/security/alerts/' + alert_id
+        cmd_url = f'/security/alerts/{alert_id}'
         data: Dict[str, Any] = {
             'vendorInformation': {
                 'provider': provider_information,
@@ -90,7 +89,7 @@ class MsGraphClient:
         return response
 
     def get_user(self, user_id):
-        cmd_url = 'users/' + user_id
+        cmd_url = f'users/{user_id}'
         response = self.ms_client.http_request(method='GET', url_suffix=cmd_url)
         return response
 
@@ -434,7 +433,6 @@ def main():
     use_ssl = not params.get('insecure', False)
     self_deployed: bool = params.get('self_deployed', False)
     proxy = params.get('proxy', False)
-    ok_codes = (200, 204, 206)
 
     commands = {
         'test-module': test_function,
@@ -450,7 +448,7 @@ def main():
     try:
         client: MsGraphClient = MsGraphClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key,
                                               app_name=APP_NAME, base_url=url, verify=use_ssl, proxy=proxy,
-                                              self_deployed=self_deployed, ok_codes=ok_codes)
+                                              self_deployed=self_deployed)
         human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
         return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
 

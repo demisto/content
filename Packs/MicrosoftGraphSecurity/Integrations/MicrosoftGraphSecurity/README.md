@@ -1,17 +1,20 @@
 <!-- HTML_DOC -->
 <p>Use the Microsoft Graph integration to connect to and interact with data on Microsoft Platforms. This integration was integrated and tested with Microsoft Graph v1.0.</p>
-<p> </p>
 <h2>Use Cases</h2>
-<p> </p>
 <ol>
 <li>Manage alerts</li>
 <li>Manage users</li>
 </ol>
-<p> </p>
+<h2>Required Permissions in the MS Graph Security App:</h2>
+<li>SecurityEvents.Read.All</li>
+<li>SecurityEvents.ReadWrite.All</li>
+<li>User.Read.All</li>
+<li>User.ReadWrite.All</li>
+<li>Directory.Read.All</li>
+<li>Directory.ReadWrite.All</li>
+
 <h2>Generate Authentication Parameters</h2>
-<p> </p>
 <p>To use this integration, you have to grant access to Demisto from Microsoft Graph.</p>
-<p> </p>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Microsoft Graph Security.</li>
@@ -28,9 +31,8 @@
 </ul>
 </li>
 </ol>
-<p> </p>
+
 <h2>Configure Microsoft Graph on Demisto</h2>
-<p> </p>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Microsoft Graph.</li>
@@ -58,11 +60,8 @@ To configure the integration in Demisto to use the application, place those para
 Token - Tenant ID<br>
 Key - Client Secret</p></p>
 
-
 <h2>Commands</h2>
-<p> </p>
 <p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.<br> After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
-<p> </p>
 <ol>
 <li><a href="#h_842458104521538470633978">Search alerts: msg-search-alerts</a></li>
 <li><a href="#h_3611731291071538470639531">Get details for an alert: msg-get-alert-details</a></li>
@@ -70,28 +69,18 @@ Key - Client Secret</p></p>
 <li><a href="#h_6620251952141538470649590">Get a list of user objects: msg-get-users</a></li>
 <li><a href="#h_4642340712641538470655690">Get information for a user object: msg-get-user</a></li>
 </ol>
-<p> </p>
 <h3 id="h_842458104521538470633978">1. Search alerts</h3>
-<p> </p>
 <hr>
-<p> </p>
 <p>List alerts (security issues) within a customer's tenant that Microsoft or partner security solutions have identified.</p>
-<p> </p>
 <h5>Required Permissions</h5>
-<p> </p>
 <p>For more information about required permissions, see the <a href="https://docs.microsoft.com/en-us/graph/permissions-reference" target="_blank" rel="noopener">Microsoft Graph documentation.</a></p>
-<p> </p>
 <ul>
 <li>SecurityEvents.Read.All</li>
 <li>SecurityEvents.ReadWrite.All</li>
 </ul>
-<p> </p>
 <h5>Base Command</h5>
-<p> </p>
 <p><code>msg-search-alerts</code></p>
-<p> </p>
 <h5>Input</h5>
-<p> </p>
 <table style="width: 746px;">
 <thead>
 <tr>
@@ -136,11 +125,7 @@ Key - Client Secret</p></p>
 </tr>
 </tbody>
 </table>
-<p> </p>
-<p> </p>
-<p> </p>
 <h5>Context Output</h5>
-<p> </p>
 <table style="width: 748px;">
 <thead>
 <tr>
@@ -208,14 +193,9 @@ Key - Client Secret</p></p>
 </tbody>
 </table>
 <p> </p>
-<p> </p>
-<p> </p>
 <h5>Command Example</h5>
-<p> </p>
 <pre>!msg-search-alerts category=repeatedShareActivity time_from=2018-09-19</pre>
-<p> </p>
 <h5>Context Example</h5>
-<p> </p>
 <pre>{
     "MsGraph": {
       "Alert": [
@@ -247,30 +227,20 @@ Key - Client Secret</p></p>
 </pre>
 <p> </p>
 <h5>Human Readable Output</h5>
-<p> </p>
 <p><a href="https://user-images.githubusercontent.com/31018228/46071116-0053b900-c188-11e8-8d29-3a3831af3151.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/31018228/46071116-0053b900-c188-11e8-8d29-3a3831af3151.png" alt="screen shot 2018-09-26 at 12 29 33" width="748" height="150"></a></p>
 <p> </p>
 <h3 id="h_3611731291071538470639531">2. Get details for an alert</h3>
-<p> </p>
 <hr>
-<p> </p>
 <p>Get details for a specific alert.</p>
-<p> </p>
 <h5>Required Permissions</h5>
-<p> </p>
 <p>For more information about required permissions, see the <a href="https://docs.microsoft.com/en-us/graph/permissions-reference" target="_blank" rel="noopener">Microsoft Graph documentation.</a></p>
-<p> </p>
 <ul>
 <li>SecurityEvents.Read.All</li>
 <li>SecurityEvents.ReadWrite.All</li>
 </ul>
-<p> </p>
 <h5>Base Command</h5>
-<p> </p>
 <p><code>msg-get-alert-details</code></p>
-<p> </p>
 <h5>Input</h5>
-<p> </p>
 <table style="width: 747px;">
 <thead>
 <tr>
@@ -292,11 +262,7 @@ Key - Client Secret</p></p>
 </tr>
 </tbody>
 </table>
-<p> </p>
-<p> </p>
-<p> </p>
 <h5>Context Output</h5>
-<p> </p>
 <table style="width: 747px;">
 <thead>
 <tr>
@@ -353,15 +319,9 @@ Key - Client Secret</p></p>
 </tr>
 </tbody>
 </table>
-<p> </p>
-<p> </p>
-<p> </p>
 <h5>Command Example</h5>
-<p> </p>
 <pre>!msg-get-alert-details alert_id=E21C584F-EA0B-34D9-8DD6-4DABF442A232 fields_to_include=VendorInformation</pre>
-<p> </p>
 <h5>Context Example</h5>
-<p> </p>
 <pre>{
     "MsGraph": {
       "Alert": {
@@ -379,30 +339,20 @@ Key - Client Secret</p></p>
 </pre>
 <p> </p>
 <h5>Human Readable Output</h5>
-<p> </p>
 <p><a href="https://user-images.githubusercontent.com/31018228/46071327-6dffe500-c188-11e8-9390-9c4e60c0935b.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/31018228/46071327-6dffe500-c188-11e8-9390-9c4e60c0935b.png" alt="screen shot 2018-09-26 at 12 33 24" width="751" height="623"></a></p>
 <p> </p>
 <h3 id="h_4798847561611538470644248">3. Update an alert: msg-update-alert</h3>
-<p> </p>
 <hr>
-<p> </p>
 <p>Update an editable alert property within any integrated solution to keep alert status and assignments in sync across solutions using its reference ID.</p>
-<p> </p>
-<h5>Required Permissions</h5>
-<p> </p>
+<h4>Required Permissions</h4>
 <p>For more information about required permissions, see the <a href="https://docs.microsoft.com/en-us/graph/permissions-reference" target="_blank" rel="noopener">Microsoft Graph documentation.</a></p>
-<p> </p>
 <ul>
 <li>SecurityEvents.Read.All</li>
 <li>SecurityEvents.ReadWrite.All</li>
 </ul>
-<p> </p>
 <h5>Base Command</h5>
-<p> </p>
 <p><code>msg-update-alert</code></p>
-<p> </p>
 <h5>Input</h5>
-<p> </p>
 <table style="width: 748px;">
 <thead>
 <tr>
@@ -459,11 +409,7 @@ Key - Client Secret</p></p>
 </tr>
 </tbody>
 </table>
-<p> </p>
-<p> </p>
-<p> </p>
 <h5>Context Output</h5>
-<p> </p>
 <table style="width: 748px;">
 <thead>
 <tr>
@@ -485,40 +431,25 @@ Key - Client Secret</p></p>
 </tr>
 </tbody>
 </table>
-<p> </p>
-<p> </p>
-<p> </p>
+
 <h5>Command Example</h5>
-<p> </p>
 <pre>!msg-update-alert alert_id=E21C584F-EA0B-34D9-8DD6-4DABF442A232 provider_information="Cloud Application Security" vendor_information=Microsoft status=inProgress</pre>
-<p> </p>
 <h5>Human Readable Output</h5>
-<p> </p>
 <p><code>Alert E21C584F-EA0B-34D9-8DD6-4DABF442A232 has ben successfully updated.</code></p>
-<p> </p>
 <h3 id="h_6620251952141538470649590">4. Get a list of user objects: msg-get-users</h3>
-<p> </p>
 <hr>
-<p> </p>
 <p>Retrieve a list of user objects.</p>
-<p> </p>
 <h5>Required Permissions</h5>
-<p> </p>
 <p>For more information about required permissions, see the <a href="https://docs.microsoft.com/en-us/graph/permissions-reference" target="_blank" rel="noopener">Microsoft Graph documentation.</a></p>
-<p> </p>
 <ul>
 <li>User.Read.All</li>
 <li>User.ReadWrite.All</li>
 <li>Directory.Read.All</li>
 <li>Directory.ReadWrite.All</li>
 </ul>
-<p> </p>
 <h5>Base Command</h5>
-<p> </p>
 <p><code>msg-get-users</code></p>
-<p> </p>
 <h5>Context Output</h5>
-<p> </p>
 <table style="width: 749px;">
 <thead>
 <tr>
@@ -550,15 +481,9 @@ Key - Client Secret</p></p>
 </tr>
 </tbody>
 </table>
-<p> </p>
-<p> </p>
-<p> </p>
 <h5>Command Example</h5>
-<p> </p>
 <pre>!msg-get-users</pre>
-<p> </p>
 <h5>Context Example</h5>
-<p> </p>
 <pre>{
     "MsGraph": {
      "User": {
@@ -572,21 +497,14 @@ Key - Client Secret</p></p>
 </pre>
 <p> </p>
 <h5>Human Readable Output</h5>
-<p> </p>
 <p><a href="https://user-images.githubusercontent.com/31018228/46080215-fdfe5880-c1a1-11e8-9df4-6e963c4aab11.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/31018228/46080215-fdfe5880-c1a1-11e8-9df4-6e963c4aab11.png" alt="screen shot 2018-09-26 at 15 36 31"></a></p>
 <p> </p>
 <h3 id="h_4642340712641538470655690">5. Get information for a user object</h3>
-<p> </p>
 <hr>
-<p> </p>
 <p>Retrieve the properties and relationships of user object.</p>
-<p> </p>
 <h5>Base Command</h5>
-<p> </p>
 <p><code>msg-get-user</code></p>
-<p> </p>
 <h5>Input</h5>
-<p> </p>
 <table style="width: 747px;">
 <thead>
 <tr>
@@ -603,11 +521,7 @@ Key - Client Secret</p></p>
 </tr>
 </tbody>
 </table>
-<p> </p>
-<p> </p>
-<p> </p>
 <h5>Context Output</h5>
-<p> </p>
 <table style="width: 748px;">
 <thead>
 <tr>
@@ -639,15 +553,9 @@ Key - Client Secret</p></p>
 </tr>
 </tbody>
 </table>
-<p> </p>
-<p> </p>
-<p> </p>
 <h5>Command Example</h5>
-<p> </p>
 <pre>!msg-get-user user_id=17174111-8edf-4613-97d4-74c605c5c181</pre>
-<p> </p>
 <h5>Context Example</h5>
-<p> </p>
 <pre>{
     "MsGraph": {
      "User": {
@@ -659,11 +567,8 @@ Key - Client Secret</p></p>
     }
 }
 </pre>
-<p> </p>
 <h5>Human Readable Output</h5>
-<p> </p>
 <p><a href="https://user-images.githubusercontent.com/31018228/46080581-fa1f0600-c1a2-11e8-894b-38055e85c840.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/31018228/46080581-fa1f0600-c1a2-11e8-894b-38055e85c840.png" alt="screen shot 2018-09-26 at 15 43 39"></a></p>
 <p> </p>
 <h2>Troubleshooting</h2>
-<p> </p>
 <p>If not all expected alerts were returned, it is possible that partial content was returned from Microsoft Graph. If so, the response headers will be printed to Demisto logs, and you can find more details under the Warning header. For more information, see the <a href="https://docs.microsoft.com/en-us/graph/api/resources/security-error-codes?view=graph-rest-1.0" target="_blank" rel="noopener">Microsoft Graph documentation</a>.</p>
