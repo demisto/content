@@ -228,20 +228,21 @@ def search_alerts_command(args):
 
 
 def search_alerts(last_modified, severity, category, vendor, time_from, time_to, filter_query):
-    filters = ''
+    filters = []
     if last_modified:
-        filters += "&modifiedDate gt '{}'".format(get_timestamp(last_modified))
+        filters.append("modifiedDate gt '{}'".format(get_timestamp(last_modified)))
     if category:
-        filters += "&category eq '{}'".format(category)
+        filters.append("category eq '{}'".format(category))
     if severity:
-        filters += "&severity eq '{}'".format(severity)
+        filters.append("severity eq '{}'".format(severity))
     if time_from:
-        filters += "&createdDate gt '{}'".format(time_from)
+        filters.append("createdDate gt '{}'".format(time_from))
     if time_to:
-        filters += "&createdDate lt '{}'".format(time_to)
+        filters.append("createdDate lt '{}'".format(time_to))
     if filter_query:
-        filters += "&{}".format(filter_query)
-    cmd_url = 'security/alerts/?$filter=' + filters[1:]
+        filters.append("{}".format(filter_query))
+    filters = " and ".join(filters)
+    cmd_url = 'security/alerts?$filter=' + filters
     response = http_request('GET', cmd_url)
     return response
 
