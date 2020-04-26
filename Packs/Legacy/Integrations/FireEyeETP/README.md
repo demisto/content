@@ -112,7 +112,7 @@ Search for messages using specific message attributes as indicators.
 `!fireeye-etp-search-messages from_email=diana@corp.com,charles@corp.com`
 
 ##### Raw Output
-<pre>
+<pre><code>
 {  
    "data": [  
       {  
@@ -164,7 +164,7 @@ Search for messages using specific message attributes as indicators.
       }
    }
 }
-</pre>
+</code></pre>
 
 * * *
 
@@ -247,7 +247,7 @@ fireeye-etp-get-alerts
 `!fireeye-etp-get-alerts legacy_id=50038117`
 
 ##### Raw Output
-<pre>
+<pre><code>
 {
   "data": [
     {
@@ -294,7 +294,7 @@ fireeye-etp-get-alerts
   },
   "type": "alerts"
 }
-</pre>
+</code></pre>
 
 * * *
 
@@ -351,7 +351,7 @@ Returns detailed information for any specified alert. Alerts that are more than 
 `!fireeye-etp-get-alert alert_id= AWKMOs-2_r7_CWOc2okO`
 
 ##### Raw Output
-<pre>
+<pre><code>
 {  
    "data": [  
       {  
@@ -432,4 +432,4 @@ Returns detailed information for any specified alert. Alerts that are more than 
    },
    "type": "alerts"
 }
-</pre>
+</code></pre>
