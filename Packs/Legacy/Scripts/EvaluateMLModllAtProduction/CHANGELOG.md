@@ -1,5 +1,5 @@
 ## [Unreleased]
 #### New Script
-Evaluate ML model using incidents from production
+Evaluates an ML model using incidents from production.
 
 
