@@ -1,5 +1,5 @@
 ## [Unreleased]
-  - Removed default initial value for **Listen Port**. 
+Removed the default initial value for the **Listen Port** parameter.
 
 ## [20.4.0] - 2020-04-14
 Updated the reference to the traffic light protocol indicator field to use the new **cliname**.
