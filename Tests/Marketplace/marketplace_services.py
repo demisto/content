@@ -61,6 +61,7 @@ class PackFolders(enum.Enum):
     LAYOUTS = 'Layouts'
     CLASSIFIERS = 'Classifiers'
     MISC = 'Misc'
+    CONNECTIONS = "Connections"
 
     @classmethod
     def pack_displayed_items(cls):
@@ -72,13 +73,13 @@ class PackFolders(enum.Enum):
 
     @classmethod
     def yml_supported_folders(cls):
-        return [cls.INTEGRATIONS.value, cls.SCRIPTS.value, cls.PLAYBOOKS.value]
+        return [PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value, PackFolders.PLAYBOOKS.value]
 
     @classmethod
     def json_supported_folders(cls):
-        all_displayed_packs = cls.pack_displayed_items()
-        yml_supported_folders = cls.yml_supported_folders()
-        return [f for f in all_displayed_packs if f not in yml_supported_folders]
+        return [PackFolders.CLASSIFIERS.value, PackFolders.CONNECTIONS.value, PackFolders.DASHBOARDS.value,
+                PackFolders.INCIDENT_FIELDS.value, PackFolders.INCIDENT_TYPES.value, PackFolders.INDICATOR_FIELDS.value,
+                PackFolders.LAYOUTS.value, PackFolders.MISC.value, PackFolders.REPORTS.value, PackFolders.REPORTS.value]
 
 
 class PackStatus(enum.Enum):
@@ -479,7 +480,7 @@ class Pack(object):
             if signature_string:
                 with open("keyfile", "wb") as keyfile:
                     keyfile.write(signature_string.encode())
-                arg = f'./signDirectory {self._pack_path} /keyfile base64'
+                arg = f'./signDirectory {self._pack_path} keyfile base64'
                 signing_process = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 output, err = signing_process.communicate()
 
@@ -584,16 +585,13 @@ class Pack(object):
                 PackFolders.INCIDENT_TYPES.value: "incidenttype",
                 PackFolders.DASHBOARDS.value: "dashboard",
                 PackFolders.INDICATOR_FIELDS.value: "indicatorfield",
-                PackFolders.REPORTS.value: "reports",
+                PackFolders.REPORTS.value: "report",
                 PackFolders.MISC.value: "reputation"
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
                 pack_dirs[:] = [d for d in pack_dirs if d not in PackFolders.TEST_PLAYBOOKS.value]
                 current_directory = root.split(os.path.sep)[-1]
-
-                if current_directory not in PackFolders.pack_displayed_items():
-                    continue
 
                 folder_collected_items = []
                 for pack_file_name in pack_files_names:
@@ -614,6 +612,8 @@ class Pack(object):
                             content_item = yaml.safe_load(pack_file)
                         elif current_directory in PackFolders.json_supported_folders():
                             content_item = json.load(pack_file)
+                        else:
+                            continue
 
                     # check if content item has to version
                     to_version = content_item.get('toversion') or content_item.get('toVersion')
@@ -623,6 +623,9 @@ class Pack(object):
                         print(f"{self._pack_name} pack content item {pack_file_name} has to version: {to_version}. "
                               f"{pack_file_name} file was deleted.")
                         continue
+
+                    if current_directory not in PackFolders.pack_displayed_items():
+                        continue  # skip content items that are not displayed in contentItems
 
                     print(f"Iterating over {pack_file_path} file and collecting items of {self._pack_name} pack")
                     # updated min server version from current content item
@@ -676,15 +679,10 @@ class Pack(object):
                             'type': content_item.get('type', ""),
                             'description': content_item.get('description', "")
                         })
-                    elif current_directory == PackFolders.REPORTS.value:  # todo finalize this part with server side
-                        dash_board_section = content_item.get('dashboard', {})
-
+                    elif current_directory == PackFolders.REPORTS.value:
                         folder_collected_items.append({
                             'name': content_item.get('name', ""),
-                            'fromDate': dash_board_section.get('fromDate', ""),
-                            'toDate': dash_board_section.get('toDate', ""),
-                            'period': dash_board_section.get('period', {}),
-                            'fromDateLicense': dash_board_section.get('fromDateLicense', "")
+                            'description': content_item.get('description', "")
                         })
                     elif current_directory == PackFolders.MISC.value:
                         folder_collected_items.append({
@@ -693,8 +691,9 @@ class Pack(object):
                             'enhancementScriptNames': content_item.get('enhancementScriptNames', [])
                         })
 
-                content_item_key = content_item_name_mapping[current_directory]
-                content_items_result[content_item_key] = folder_collected_items
+                if current_directory in PackFolders.pack_displayed_items():
+                    content_item_key = content_item_name_mapping[current_directory]
+                    content_items_result[content_item_key] = folder_collected_items
 
             print_color(f"Finished collecting content items for {self._pack_name} pack", LOG_COLORS.GREEN)
             task_status = True
