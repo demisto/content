@@ -88,8 +88,8 @@ configuration:
   hidden: false
   name: services
   options:
-  - connectApi
-  - fusion
+  - Connect Api
+  - Fusion
   required: true
   type: 16
 - additionalinfo: |-

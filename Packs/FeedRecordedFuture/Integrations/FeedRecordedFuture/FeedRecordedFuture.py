@@ -72,7 +72,7 @@ class Client(BaseClient):
         Returns:
             requests.PreparedRequest: The prepared request which will be sent to the server
         """
-        if service == 'connectApi':
+        if service == 'Connect Api':
             if self.risk_rule is None:
                 url = self.BASE_URL + indicator_type + '/risklist'
             else:
@@ -85,7 +85,7 @@ class Client(BaseClient):
                 params=self.PARAMS
             )
 
-        elif service == 'fusion':
+        elif service == 'Fusion':
             url = self.BASE_URL + 'fusion/files/?path='
             if self.fusion_file_path is None:
                 fusion_path = '/public/risklists/default_' + indicator_type + '_risklist.csv'
