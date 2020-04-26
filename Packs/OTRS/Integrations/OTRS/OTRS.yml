@@ -52,6 +52,7 @@ configuration:
   type: 0
 description: Service management suite that comprises ticketing, workflow automation,
   and notification.
+fromversion: 4.1.0
 display: OTRS
 name: OTRS
 script:
@@ -533,6 +534,5 @@ script:
   script: '-'
   subtype: python3
   type: python
-  fromversion: 4.1.0
 tests:
  - OTRS Test
