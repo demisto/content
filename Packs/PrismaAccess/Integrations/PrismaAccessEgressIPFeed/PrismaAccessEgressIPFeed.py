@@ -156,7 +156,19 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, D
     human_readable = tableToMarkdown('Prisma Access Egress IPs:', indicators,
                                      headers=['zone', 'value'], removeNull=True)
 
-    return human_readable, {'PrismaAccess.Egress.IP': [{'Address': ip.get('value', ''), 'Zone': ip.get('zone', '')} for ip in indicators]}, {'raw_response': indicators}
+    outputs = {
+    'PrismaAccess.Egress.IP':
+        [
+            {
+                'Address': ip.get('value', ''),
+                'Zone': ip.get('zone', '')
+            } for ip in indicators
+        ]
+    }
+
+    retIndicators = {'raw_response': indicators}
+
+    return human_readable, outputs, retIndicators
 
 
 def fetch_indicators_command(client: Client) -> List[Dict]:
