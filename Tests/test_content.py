@@ -350,7 +350,7 @@ def mock_run(tests_settings, c, proxy, failed_playbooks, integrations, playbook_
         status, inc_id = test_integration(c, server_url, integrations, playbook_id, prints_manager, test_options,
                                           is_mock_run=True, thread_index=thread_index)
         # use results
-        proxy.stop()
+        proxy.stop(thread_index=thread_index, prints_manager=prints_manager)
         if status == PB_Status.COMPLETED:
             succeed_message = 'PASS: {} succeed'.format(test_message)
             prints_manager.add_print_job(succeed_message, print_color, thread_index, LOG_COLORS.GREEN)

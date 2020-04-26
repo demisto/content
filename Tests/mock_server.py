@@ -261,7 +261,7 @@ class MITMProxy:
         path = path or self.current_folder
         problem_keys_filepath = os.path.join(path, get_folder_path(playbook_id), 'problematic_keys.json')
         # print('problem_keys_filepath: "{}"'.format(problem_keys_filepath))
-        prints_manager.add_print_job(f'{problem_keys_filepath=}', print, thread_index)
+        prints_manager.add_print_job(f'problem_keys_filepath="{problem_keys_filepath}"', print, thread_index)
         problem_key_file_exists = ["[", "-f", problem_keys_filepath, "]"]
         if not self.ami.call(problem_key_file_exists) == 0:
             err_msg = 'Error: The problematic_keys.json file was not written to the file path' \
@@ -307,7 +307,11 @@ class MITMProxy:
             try:
                 clean_cmd_output = check_output(self.ami.add_ssh_prefix(split_command, ssh_options='-t'))
                 # print(f'clean_cmd_output="{clean_cmd_output}"')
-                prints_manager.add_print_job(f'{clean_cmd_output.decode()=}', print, thread_index)
+                prints_manager.add_print_job(
+                    f'clean_cmd_output.decode()={clean_cmd_output.decode()}',
+                    print,
+                    thread_index
+                )
             except CalledProcessError as e:
                 # print('There may have been a problem when filtering timestamp data from the mock file.')
                 cleaning_err_msg = 'There may have been a problem when filtering timestamp data from the mock file.'
@@ -328,7 +332,7 @@ class MITMProxy:
             try:
                 diff_cmd_output = self.ami.check_output(diff_cmd.split()).decode().strip()
                 # print(f'diff_cmd_output="{diff_cmd_output}"')
-                prints_manager.add_print_job(f'{diff_cmd_output=}', print, thread_index)
+                prints_manager.add_print_job(f'diff_cmd_output={diff_cmd_output}', print, thread_index)
                 if diff_cmd_output.endswith('are identical'):
                     identical_msg = 'cleaned mock file and original mock file are identical... ' \
                                     'uh oh looks like cleaning didn\'t work properly'
@@ -384,18 +388,18 @@ class MITMProxy:
 
         # if the keys file doesn't exist, create an empty one
         repo_problem_keys_filepath = os.path.join(self.repo_folder, get_folder_path(playbook_id), 'problematic_keys.json')
-        prints_manager.add_print_job(f'{repo_problem_keys_filepath=}', print, thread_index)
+        prints_manager.add_print_job(f'repo_problem_keys_filepath={repo_problem_keys_filepath}', print, thread_index)
         # print('repo_problem_keys_filepath: "{}"'.format(repo_problem_keys_filepath))
         current_problem_keys_filepath = os.path.join(path, get_folder_path(playbook_id), 'problematic_keys.json')
         # print('current_problem_keys_filepath: "{}"'.format(current_problem_keys_filepath))
-        prints_manager.add_print_job(f'{current_problem_keys_filepath=}', print, thread_index)
+        prints_manager.add_print_job(f'current_problem_keys_filepath={current_problem_keys_filepath}', print, thread_index)
 
         script_filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'timestamp_replacer.py')
         # print('script_filepath: {}'.format(script_filepath))
-        prints_manager.add_print_job(f'{script_filepath=}', print, thread_index)
+        prints_manager.add_print_job(f'script_filepath={script_filepath}', print, thread_index)
         remote_script_path = self.ami.copy_file(script_filepath)
         # print('remote_script_path: {}'.format(remote_script_path))
-        prints_manager.add_print_job(f'{remote_script_path=}', print, thread_index)
+        prints_manager.add_print_job(f'remote_script_path={remote_script_path}', print, thread_index)
 
         # if recording
         # record with detect_timestamps and then rewrite mock file
