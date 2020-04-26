@@ -52,7 +52,7 @@ def get_current_table(grid_id: str, sort_by: Optional[str], columns: Optional[st
         raise ValueError("Columns not specified correctly!")
     # Validate sort is valide col
     if sort_by and sort_by not in columns:
-        raise ValueError(f'sort_by: {sort_by} is not columns: {columns}')
+        raise ValueError(f'sort_by "{sort_by}" is not one of the columns: {columns}')
 
     return current_table, columns
 
