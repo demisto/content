@@ -71,8 +71,8 @@ class Client(BaseClient):
                             result.append(indicator)
                 else:
                     demisto.debug(str(prismaStatus))
-                    raise Exception(
-                        f'Non-success status returned from call to {INTEGRATION_NAME}.\nRaw response: ' + json.dumps(responseData, indent=2))
+                    raise Exception(f'Non-success status returned from call to {INTEGRATION_NAME}.\n'
+                                    f'Raw response: ' + json.dumps(responseData, indent=2))
             except requests.exceptions.SSLError as err:
                 demisto.debug(str(err))
                 raise Exception(f'SSL error in the API call to {INTEGRATION_NAME}.\n'
