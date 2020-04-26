@@ -1,10 +1,7 @@
 import json
-import re
 import sys
-import uuid
 from base64 import b64encode
-from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict
 
 import requests
 
@@ -57,7 +54,7 @@ def panos_ssh(cmd: str, net_connect: Netmiko = None):
         Run any command
         """
 
-     # execute command
+    # execute command
         try:
             if not net_connect:
                 net_connect = Netmiko(**panos)
@@ -77,7 +74,6 @@ def prisma_access_cli_command():
         sshRes = panos_ssh(cmd)
         md = '### Prisma Access CLI Results\n' + sshRes
         ec = {"PrismaAccess.CLICommand": {'Command': cmd, 'Results': sshRes}}
-        contents = sshRes
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['text'],
