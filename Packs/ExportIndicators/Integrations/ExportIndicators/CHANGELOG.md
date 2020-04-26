@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+-
 
 ## [20.4.0] - 2020-04-14
   - Fixed an issue where running **On-Demand** mode an error appeared if export was not initialized.
