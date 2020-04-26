@@ -22,8 +22,8 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Source** | **Required** |
 | --- | --- | --- | --- | --- |
-|  |  |  |  | Optional |
-| OpenIncidentToReviewIndicatorsManually | This input determines if processed indicators that have the manual review tag are reviewed in a new incident. To create an incident, enter any value other than &\#x27;No&\#x27;. | No |  | Required |
+| From indicators Query | The names of the feeds to auto process for example sourceBrands:"Feed A" or sourceBrands:"Feed B" |  |  | Optional |
+| OpenIncidentToReviewIndicatorsManually | This input determines if processed indicators that have the manual review tag are reviewed in a new incident. To create an incident, enter any value other than "No" | No |  | Required |
 
 ## Playbook Outputs
 ---
