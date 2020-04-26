@@ -19,5 +19,7 @@
     "useCases": [],
     "keywords": [],
     "dependencies": {},
-    "displayedImages": []
+    "displayedImages": [],
+    "serverMinVersion": "5.0",
+    "certification": "certified"
 }
