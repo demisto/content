@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+- Added new command **gcp-compute-project-info-add-metadata** - Add or update project wide metadata.
 
 
 ## [20.4.0] - 2020-04-14

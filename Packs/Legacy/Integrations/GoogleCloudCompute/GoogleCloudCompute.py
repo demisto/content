@@ -1,8 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-""" IMPORTS """
 
+""" IMPORTS """
 
 from googleapiclient import discovery
 from google.oauth2 import service_account
@@ -19,13 +19,11 @@ import time
 SERVICE_ACCOUNT_FILE = demisto.params().get('service')
 SERVICE_ACT_PROJECT_ID = None
 
-
 # Params for constructing googleapiclient service object
 API_VERSION = 'v1'
 GSERVICE = 'compute'
 SCOPE = ['https://www.googleapis.com/auth/cloud-platform']
 SERVICE = None  # variable set by build_and_authenticate() function
-
 
 """
 HELPER FUNCTIONS
@@ -157,8 +155,8 @@ def wait_for_zone_operation(args):
     while True:
         result = (
             compute.zoneOperations()
-            .get(project=project, zone=zone, operation=name)
-            .execute()
+                .get(project=project, zone=zone, operation=name)
+                .execute()
         )
         if result.get('status') == 'DONE':
             if 'error' in result:
@@ -202,8 +200,8 @@ def wait_for_region_operation(args):
     while True:
         result = (
             compute.regionOperations()
-            .get(project=project, region=region, operation=name)
-            .execute()
+                .get(project=project, region=region, operation=name)
+                .execute()
         )
         if result.get('status') == 'DONE':
             if 'error' in result:
@@ -271,7 +269,6 @@ def wait_for_global_operation(args):
 
 
 def test_module():
-
     build_and_authenticate(GSERVICE)
     demisto.results('ok')
 
@@ -543,8 +540,8 @@ def create_instance(args):
         if 'initializeParams' not in config['disks'][0].keys():
             config['disks'][0].update({'initializeParams': {}})
         if (
-            'sourceImageEncryptionKey'
-            not in config['disks'][0]['initializeParams'].keys()
+                'sourceImageEncryptionKey'
+                not in config['disks'][0]['initializeParams'].keys()
         ):
             config['disks'][0]['initializeParams'].update(
                 {'sourceImageEncryptionKey': {}}
@@ -562,8 +559,8 @@ def create_instance(args):
         if 'initializeParams' not in config['disks'][0].keys():
             config['disks'][0].update({'initializeParams': {}})
         if (
-            'sourceImageEncryptionKey'
-            not in config['disks'][0]['initializeParams'].keys()
+                'sourceImageEncryptionKey'
+                not in config['disks'][0]['initializeParams'].keys()
         ):
             config['disks'][0]['initializeParams'].update(
                 {'sourceImageEncryptionKey': {}}
@@ -640,8 +637,8 @@ def create_instance(args):
 
     service_accounts = {}  # type: dict
     if (
-        args.get('serviceAccountEmail') is not None
-        and args.get('serviceAccountscopes') is not None
+            args.get('serviceAccountEmail') is not None
+            and args.get('serviceAccountscopes') is not None
     ):
         service_accounts = {
             'serviceAccounts': [
@@ -1488,8 +1485,8 @@ def insert_image(args):
     project = SERVICE_ACT_PROJECT_ID
     response = (
         compute.images()
-        .insert(project=project, forceCreate=force_create, body=config)
-        .execute()
+            .insert(project=project, forceCreate=force_create, body=config)
+            .execute()
     )
 
     data_res = {
@@ -1553,8 +1550,8 @@ def networks_add_peering(args):
     project = SERVICE_ACT_PROJECT_ID
     response = (
         compute.networks()
-        .addPeering(project=project, network=network, body=config)
-        .execute()
+            .addPeering(project=project, network=network, body=config)
+            .execute()
     )
 
     data_res = {
@@ -1739,8 +1736,8 @@ def networks_removepeering(args):
     project = SERVICE_ACT_PROJECT_ID
     response = (
         compute.networks()
-        .removePeering(project=project, network=network, body=config)
-        .execute()
+            .removePeering(project=project, network=network, body=config)
+            .execute()
     )
 
     data_res = {
@@ -2250,8 +2247,8 @@ def insert_address(args):
     project = SERVICE_ACT_PROJECT_ID
     response = (
         compute.addresses()
-        .insert(project=project, region=region, body=config)
-        .execute()
+            .insert(project=project, region=region, body=config)
+            .execute()
     )
 
     data_res = {
@@ -2619,8 +2616,8 @@ def create_disk_snapshot(args):
     project = SERVICE_ACT_PROJECT_ID
     response = (
         compute.disks()
-        .createSnapshot(project=project, zone=zone, disk=disk, body=config)
-        .execute()
+            .createSnapshot(project=project, zone=zone, disk=disk, body=config)
+            .execute()
     )
 
     data_res = {
@@ -2919,8 +2916,8 @@ def resize_disk(args):
     project = SERVICE_ACT_PROJECT_ID
     response = (
         compute.disks()
-        .resize(project=project, zone=zone, disk=disk, body=config)
-        .execute()
+            .resize(project=project, zone=zone, disk=disk, body=config)
+            .execute()
     )
 
     data_res = {
@@ -3335,8 +3332,8 @@ def insert_instance_group(args):
     project = SERVICE_ACT_PROJECT_ID
     response = (
         compute.instanceGroups()
-        .insert(project=project, zone=zone, body=config)
-        .execute()
+            .insert(project=project, zone=zone, body=config)
+            .execute()
     )
 
     data_res = {
@@ -3549,10 +3546,10 @@ def set_instance_group_named_ports(args):
     project = SERVICE_ACT_PROJECT_ID
     response = (
         compute.instanceGroups()
-        .setNamedPorts(
+            .setNamedPorts(
             project=project, zone=zone, instanceGroup=instance_group, body=config
         )
-        .execute()
+            .execute()
     )
 
     data_res = {
@@ -3653,7 +3650,6 @@ def list_regions(args):
 
 
 def get_zone(args):
-
     """
     Get a specified zone resource.
 
@@ -3682,7 +3678,6 @@ def get_zone(args):
 
 
 def list_zones(args):
-
     """
     parameter: (string) zone
         Name of the zone for this request.
@@ -3738,7 +3733,6 @@ def list_zones(args):
 
 
 def aggregated_list_machine_types(args):
-
     """
     parameter: (string) zone
         Name of the zone for this request.
@@ -3799,7 +3793,6 @@ def aggregated_list_machine_types(args):
 
 
 def get_machine_type(args):
-
     """
     Get a specified machine type.
 
@@ -3837,7 +3830,6 @@ def get_machine_type(args):
 
 
 def list_machine_types(args):
-
     """
     parameter: (string) zone
         Name of the zone for this request.
@@ -4075,7 +4067,6 @@ def patch_firewall(args):
 
 
 def list_firewalls(args):
-
     """
     parameter: (number) maxResults
         The maximum number of results per page that should be returned (Default 500).
@@ -4331,255 +4322,284 @@ def set_snapshot_labels(args):
     )
 
 
+def add_project_info_metadata(metadata, zone):
+    """
+    Add or update project wide metadata.
+    :param metadata:  Each metadata entry is a key/value pair separated by ';' like so: key=abc,value=123;key=abc,value=123
+    :param zone: The name of the zone for this request.
+    """
+    project = SERVICE_ACT_PROJECT_ID
+    project_instance = compute.instances().get(project=project, zone=zone, instance=project).execute()
+    fingerprint = project_instance.get('tags', {}).get('fingerprint')
+    items = parse_labels(metadata)
+    body = assign_params(
+        fingerprint=fingerprint,
+        item=items,
+        kind='compute#metadata'
+    )
+    raw_res = compute.instances.setMetadata(project=project, zone=zone, instance=project, body=body).execute()
+    ec = {'GoogleCloudCompute.ProjectMetadata(val.id === obj.id)': raw_res}
+    return_outputs(
+        tableToMarkdown('Google Cloud Compute Project Metadata Updated Successfully', raw_res, removeNull=True,
+                        headerTransform=pascalToSpace),
+        ec,
+        response
+    )
+
+
 """
 EXECUTION CODE
 """
 
 try:
     compute = build_and_authenticate(GSERVICE)
-    if demisto.command() == 'test-module':
+    command = demisto.command()
+    if command == 'test-module':
         # This is the call made when pressing the integration test button.
         test_module()
 
-    elif demisto.command() == 'gcp-compute-insert-instance':
+    elif command == 'gcp-compute-insert-instance':
         create_instance(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-get-instance':
+    elif command == 'gcp-compute-get-instance':
         get_instance(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-delete-instance':
+    elif command == 'gcp-compute-delete-instance':
         delete_instance(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-start-instance':
+    elif command == 'gcp-compute-start-instance':
         start_instance(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-stop-instance':
+    elif command == 'gcp-compute-stop-instance':
         stop_instance(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-reset-instance':
+    elif command == 'gcp-compute-reset-instance':
         reset_instance(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-list-instances':
+    elif command == 'gcp-compute-list-instances':
         list_instances(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-set-instance-labels':
+    elif command == 'gcp-compute-set-instance-labels':
         set_instance_labels(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-set-instance-metadata':
+    elif command == 'gcp-compute-set-instance-metadata':
         set_instance_metadata(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-set-instance-machine-type':
+    elif command == 'gcp-compute-set-instance-machine-type':
         set_instance_machine_type(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-aggregated-list-instances':
+    elif command == 'gcp-compute-aggregated-list-instances':
         aggregated_list_instances(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-get-image-from-family':
+    elif command == 'gcp-compute-get-image-from-family':
         get_image_from_family(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-get-image':
+    elif command == 'gcp-compute-get-image':
         get_image(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-networks-add-peering':
+    elif command == 'gcp-compute-networks-add-peering':
         networks_add_peering(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-delete-network':
+    elif command == 'gcp-compute-delete-network':
         delete_network(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-get-network':
+    elif command == 'gcp-compute-get-network':
         get_network(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-insert-network':
+    elif command == 'gcp-compute-insert-network':
         insert_network(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-list-networks':
+    elif command == 'gcp-compute-list-networks':
         list_networks(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-networks-remove-peering':
+    elif command == 'gcp-compute-networks-remove-peering':
         networks_removepeering(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-get-global-operation':
+    elif command == 'gcp-compute-get-global-operation':
         get_global_operation(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-get-zone-operation':
+    elif command == 'gcp-compute-get-zone-operation':
         get_zone_operation(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-get-region-operation':
+    elif command == 'gcp-compute-get-region-operation':
         get_region_operation(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-list-zone-operation':
+    elif command == 'gcp-compute-list-zone-operation':
         list_zone_operation(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-list-global-operation':
+    elif command == 'gcp-compute-list-global-operation':
         list_global_operation(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-list-region-operation':
+    elif command == 'gcp-compute-list-region-operation':
         list_region_operation(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-delete-zone-operation':
+    elif command == 'gcp-compute-delete-zone-operation':
         delete_zone_operation(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-delete-global-operation':
+    elif command == 'gcp-compute-delete-global-operation':
         delete_global_operation(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-delete-region-operation':
+    elif command == 'gcp-compute-delete-region-operation':
         delete_region_operation(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-delete-address':
+    elif command == 'gcp-compute-delete-address':
         delete_address(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-get-address':
+    elif command == 'gcp-compute-get-address':
         get_address(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-insert-address':
+    elif command == 'gcp-compute-insert-address':
         insert_address(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-list-addresses':
+    elif command == 'gcp-compute-list-addresses':
         list_addresses(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-aggregated-list-addresses':
+    elif command == 'gcp-compute-aggregated-list-addresses':
         aggregated_list_addresses(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-delete-global-address':
+    elif command == 'gcp-compute-delete-global-address':
         delete_global_address(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-get-global-address':
+    elif command == 'gcp-compute-get-global-address':
         get_global_address(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-insert-global-address':
+    elif command == 'gcp-compute-insert-global-address':
         insert_global_address(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-list-global-addresses':
+    elif command == 'gcp-compute-list-global-addresses':
         list_global_addresses(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-aggregated-list-disks':
+    elif command == 'gcp-compute-aggregated-list-disks':
         aggregated_list_disks(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-create-disk-snapshot':
+    elif command == 'gcp-compute-create-disk-snapshot':
         create_disk_snapshot(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-delete-disk':
+    elif command == 'gcp-compute-delete-disk':
         delete_disk(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-get-disk':
+    elif command == 'gcp-compute-get-disk':
         get_disk(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-insert-disk':
+    elif command == 'gcp-compute-insert-disk':
         insert_disk(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-list-disks':
+    elif command == 'gcp-compute-list-disks':
         list_disks(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-resize-disk':
+    elif command == 'gcp-compute-resize-disk':
         resize_disk(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-set-disk-labels':
+    elif command == 'gcp-compute-set-disk-labels':
         set_disk_labels(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-aggregated-list-disk-types':
+    elif command == 'gcp-compute-aggregated-list-disk-types':
         aggregated_list_disk_types(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-get-disk-type':
+    elif command == 'gcp-compute-get-disk-type':
         get_disk_type(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-list-disk-types':
+    elif command == 'gcp-compute-list-disk-types':
         list_disks_types(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-list-images':
+    elif command == 'gcp-compute-list-images':
         list_images(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-delete-image':
+    elif command == 'gcp-compute-delete-image':
         delete_image(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-set-image-labels':
+    elif command == 'gcp-compute-set-image-labels':
         set_image_labels(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-insert-image':
+    elif command == 'gcp-compute-insert-image':
         insert_image(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-instance-groups-add-instances':
+    elif command == 'gcp-compute-instance-groups-add-instances':
         instance_groups_add_instances(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-aggregated-list-instance-groups':
+    elif command == 'gcp-compute-aggregated-list-instance-groups':
         aggregated_list_instance_groups(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-delete-instance-group':
+    elif command == 'gcp-compute-delete-instance-group':
         delete_instance_group(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-get-instance-group':
+    elif command == 'gcp-compute-get-instance-group':
         get_instance_group(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-insert-instance-group':
+    elif command == 'gcp-compute-insert-instance-group':
         insert_instance_group(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-list-instance-groups':
+    elif command == 'gcp-compute-list-instance-groups':
         list_instance_groups(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-list-instance-group-instances':
+    elif command == 'gcp-compute-list-instance-group-instances':
         list_instance_groups_instances(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-instance-groups-remove-instances':
+    elif command == 'gcp-compute-instance-groups-remove-instances':
         instance_groups_remove_instances(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-set-group-instance-named-ports':
+    elif command == 'gcp-compute-set-group-instance-named-ports':
         set_instance_group_named_ports(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-get-region':
+    elif command == 'gcp-compute-get-region':
         get_region(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-list-regions':
+    elif command == 'gcp-compute-list-regions':
         list_regions(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-get-zone':
+    elif command == 'gcp-compute-get-zone':
         get_zone(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-list-zones':
+    elif command == 'gcp-compute-list-zones':
         list_zones(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-aggregated-list-machine-types':
+    elif command == 'gcp-compute-aggregated-list-machine-types':
         aggregated_list_machine_types(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-get-machine-type':
+    elif command == 'gcp-compute-get-machine-type':
         get_machine_type(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-list-machine-types':
+    elif command == 'gcp-compute-list-machine-types':
         list_machine_types(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-wait-for-zone-operation':
+    elif command == 'gcp-compute-wait-for-zone-operation':
         wait_for_zone_operation(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-wait-for-region-operation':
+    elif command == 'gcp-compute-wait-for-region-operation':
         wait_for_region_operation(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-wait-for-global-operation':
+    elif command == 'gcp-compute-wait-for-global-operation':
         wait_for_global_operation(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-insert-firewall':
+    elif command == 'gcp-compute-insert-firewall':
         insert_firewall(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-patch-firewall':
+    elif command == 'gcp-compute-patch-firewall':
         patch_firewall(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-list-firewall':
+    elif command == 'gcp-compute-list-firewall':
         list_firewalls(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-get-firewall':
+    elif command == 'gcp-compute-get-firewall':
         get_firewall(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-delete-firewall':
+    elif command == 'gcp-compute-delete-firewall':
         delete_firewall(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-set-snapshot-labels':
+    elif command == 'gcp-compute-set-snapshot-labels':
         set_snapshot_labels(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-list-snapshots':
+    elif command == 'gcp-compute-list-snapshots':
         list_snapshots(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-get-snapshot':
+    elif command == 'gcp-compute-get-snapshot':
         get_snapshot(demisto.args())
 
-    elif demisto.command() == 'gcp-compute-delete-snapshot':
+    elif command == 'gcp-compute-delete-snapshot':
         delete_snapshot(demisto.args())
+
+    elif command == 'gcp-compute-project-info-add-metadata':
+        add_project_info_metadata(**demisto.args())
 
 except Exception as e:
     LOG(e)
