@@ -22,7 +22,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Source** | **Required** |
 | --- | --- | --- | --- | --- |
-|  |  |  |  | Optional |
+| From indicators Query | The indicators that have the pending review tag and not the being reviewd tag | tags:pending_review and -tags:being_reviewed |  | Optional |
 | ApproversEmailAddress | This input specifies the email address to which to send the approval form if approval is required. |  |  | Optional |
 
 ## Playbook Outputs
