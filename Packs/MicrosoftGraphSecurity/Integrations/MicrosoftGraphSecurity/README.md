@@ -6,12 +6,13 @@
 <li>Manage users</li>
 </ol>
 <h2>Required Permissions in the MS Graph Security App:</h2>
-<li>SecurityEvents.Read.All</li>
-<li>SecurityEvents.ReadWrite.All</li>
-<li>User.Read.All</li>
-<li>User.ReadWrite.All</li>
-<li>Directory.Read.All</li>
-<li>Directory.ReadWrite.All</li>
+<li>Directory.Read.All - Delegated</li>
+<li>SecurityEvents.ReadWrite.All - Application</li>
+<li>User.Read.All - Application</li>
+<li>User.Read - Delegated</li>
+<li>User.ReadWrite.All - Application</li>
+<li>Directory.Read.All - Delegated</li>
+<li>Directory.ReadWrite.All - Application</li>
 
 <h2>Generate Authentication Parameters</h2>
 <p>To use this integration, you have to grant access to Demisto from Microsoft Graph.</p>
