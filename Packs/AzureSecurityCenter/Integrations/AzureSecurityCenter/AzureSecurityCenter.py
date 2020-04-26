@@ -1568,7 +1568,7 @@ try:
         delete_jit_command(demisto.args())
     elif demisto.command() == "azure-sc-list-storage":
         list_sc_storage_command()
-except Exception, e:
+except Exception as e:
     LOG(e.message)
     LOG.print_log()
     raise
