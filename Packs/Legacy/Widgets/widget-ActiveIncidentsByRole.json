@@ -1,5 +1,5 @@
 {
-  "id": "incidents-by-role",
+  "id": "active-incidents-by-role",
   "version": -1,
   "name": "Active Incidents by Role",
   "dataType": "incidents",
