@@ -1,11 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-def main():
-    left = argToList(demisto.args().get('left'))
-    right = argToList(demisto.args().get('right'))
-
-    out = {
+def compare(left, right):
+    return {
         'ListCompare':
             {
                 'LeftOnly': [x for x in left if x not in right],
@@ -14,6 +11,12 @@ def main():
             }
     }
 
+def main():
+    left = argToList(demisto.args().get('left'))
+    right = argToList(demisto.args().get('right'))
+
+    out = compare(left, right)
+
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
@@ -21,6 +24,6 @@ def main():
         'HumanReadable': 'Set comparisons in Context.',
         'EntryContext': out
     })
-    
+
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
