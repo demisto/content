@@ -1,11 +1,13 @@
 import pytest
+import json
 from QuestKace import Client, get_machines_list_command, \
     get_assets_list_command, get_queues_list_command, get_queues_fields_list_command, get_tickets_list_command, \
-    parse_response
+    parse_response, fetch_incidents
 
 from test_module.RawData import MACHINES_LIST_COMMAND_RESPONSE, \
     ASSETS_LIST_COMMAND_RESPONSE, QUEUES_LIST_COMMAND_RESPONSE, QUEUES_FIELDS_LIST_COMMAND_RESPONSE, \
-    TICKETS_LIST_COMMAND_RESPONSE, LIST_BEFORE_PARSE
+    TICKETS_LIST_COMMAND_RESPONSE, LIST_BEFORE_PARSE, FIRST_FETCH_INCIDENTS_RAW_RESPONSE, \
+    SECOND_FETCH_INCIDENTS_RAW_RESPONSE, NO_RESULTS_FETCH_INCIDENTS_RAW_RESPONSE
 
 from test_module.ExpectedResult import MACHINES_LIST_COMMAND_EXPECTED, \
     ASSETS_LIST_COMMAND_EXPECTED, QUEUES_LIST_COMMAND_EXPECTED, QUEUES_FIELDS_LIST_COMMAND_EXPECTED, \
@@ -35,3 +37,35 @@ def test_commands(command, args, response, expected_result, mocker):
 @pytest.mark.parametrize('list_before_parse, expected_lst_of_dict', [(LIST_BEFORE_PARSE, LIST_EXPECTED_AFTER_PARSE)])
 def test_parse_response(list_before_parse, expected_lst_of_dict):
     assert parse_response(list_before_parse) == expected_lst_of_dict
+
+
+def test_first_fetch(mocker):
+    mocker.patch('QuestKace.parse_date_range', return_value=("2020-03-11T08:30:41Z", 'never mind'))
+    mocker.patch.object(Client, 'tickets_list_request', return_value=FIRST_FETCH_INCIDENTS_RAW_RESPONSE)
+    mocker.patch.object(Client, 'get_token', return_value=(1, 1))
+    client = Client(url="http://test.com", username="admin", password="123", verify=False, proxy=False)
+    incidents = fetch_incidents(client=client, last_run={}, fetch_time="3 years", fetch_shaping="", fetch_limit="3")
+    assert len(incidents) == 3
+
+
+def test_second_fetch(mocker):
+    mocker.patch('QuestKace.parse_date_range', return_value=("2020-03-11 08:30:41", 'never mind'))
+    mocker.patch.object(Client, 'tickets_list_request', return_value=SECOND_FETCH_INCIDENTS_RAW_RESPONSE)
+    mocker.patch.object(Client, 'get_token', return_value=(1, 1))
+    client = Client(url="http://test.com", username="admin", password="123", verify=False, proxy=False)
+    incidents = fetch_incidents(client=client, last_run={'last_fetch': '2020-04-12T02:28:02Z'},
+                                fetch_time="1 day", fetch_shaping="", fetch_limit="5")
+    assert len(incidents) == 5
+    assert incidents[4]['name']
+    assert incidents[4]['occurred']
+    assert json.loads(incidents[4]['rawJSON'])['id'] == 10
+
+
+def test_fetch_No_Results(mocker):
+    mocker.patch('QuestKace.parse_date_range', return_value=("2020-03-11 08:30:41", 'never mind'))
+    mocker.patch.object(Client, 'tickets_list_request', return_value=NO_RESULTS_FETCH_INCIDENTS_RAW_RESPONSE)
+    mocker.patch.object(Client, 'get_token', return_value=(1, 1))
+    client = Client(url="http://test.com", username="admin", password="123", verify=False, proxy=False)
+    incidents = fetch_incidents(client=client, last_run={'last_fetch': '2020-04-12T02:28:02Z'},
+                                fetch_time="1 day", fetch_shaping="", fetch_limit="5")
+    assert incidents == []

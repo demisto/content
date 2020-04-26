@@ -12,14 +12,6 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - display: Username
   name: credentials
   required: true
@@ -29,9 +21,8 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-- defaultvalue: ״hd_ticket all,submitter limited,owner limited, asset limited,machine
-    limited, priority limited,category limited, impact limited,status limited, related_tickets
-    limited״
+- defaultvalue: '"hd_ticket all,submitter limited,owner limited, asset limited,machine
+    limited, priority limited,category limited, impact limited,status limited"'
   display: Shaping for query of the tickets.
   name: fetch_shaping
   required: false
@@ -49,12 +40,29 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: This is the Hello World integration for getting started.
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: This is the Quest KACE integration.
 display: Quest KACE Systems Management Appliance
 name: QuestKace
 script:
   commands:
-  - deprecated: false
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of machines to return. The default value is
+        50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
     description: All machines that are in system.
     execution: false
     name: kace-machines-list
@@ -128,7 +136,15 @@ script:
     - contextPath: QuestKace.Machines.ManualEntry
       description: Number of Manual entry to the machine.
       type: String
-  - deprecated: false
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of assets to return. The default value is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
     description: All assets of QuestKace system.
     execution: false
     name: kace-assets-list
@@ -183,11 +199,17 @@ script:
   - arguments:
     - default: false
       defaultValue: '"hd_ticket all,submitter limited,owner limited, asset limited,machine
-        limited,priority limited,category limited, impact limited,status limited,
-        related_tickets limited"'
-      description: Custom fields for shaping tickets list
+        limited,priority limited,category limited, impact limited,status limited"'
+      description: Custom shaping for the query.
       isArray: false
-      name: custom_fields
+      name: custom_shaping
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of tickets to return. The default value is 50.
+      isArray: false
+      name: limit
       required: false
       secret: false
     deprecated: false
@@ -269,9 +291,6 @@ script:
       type: Number
     - contextPath: QuestKace.Tickets.Status.State
       description: State of the status of the ticket.
-      type: String
-    - contextPath: QuestKace.Tickets.RelatedTickets
-      description: List of related tickets of the ticket.
       type: String
     - contextPath: QuestKace.Tickets.ID
       description: ID of the ticket
@@ -370,13 +389,13 @@ script:
     name: kace-ticket-create
   - arguments:
     - default: false
-      description: 'Queue number '
+      description: Queue number.
       isArray: false
       name: queue_number
       required: true
       secret: false
     deprecated: false
-    description: List fo fileds of queue
+    description: List fo fileds of queue.
     execution: false
     name: kace-queues-fields-list
     outputs:
@@ -482,3 +501,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+tests:
+- No test - no instance
+fromversion: 5.0.0
