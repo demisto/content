@@ -1,7 +1,7 @@
 The Microsoft Management Activity API integration enables you to subscribe or unsubscribe to different audits, receive their content and fetch new content as incidents.
 This integration was integrated and tested with version xx of Microsoft Management Activity API (O365 Azure Events)
 
-## How to authenticate and create a working instance 
+## Authentication
 
 To read the integration's description and authentication instructions more conveniently, you are  welcome to browse them here:
 https://xsoar.pan.dev/docs/reference/integrations/microsoft-management-activity-api-(O365/Azure-Events)
@@ -26,7 +26,6 @@ https://login.windows.net/common/oauth2/authorize?response_type=code&resource=ht
 SOME_PREFIX?code=AUTH_CODE&session_state=SESSION_STATE
 Take the AUTH_CODE (without the “code=” prefix) and enter it to the instance configuration under the “Authentication” code section.
 Moreover, enter your client secret as the “Key” parameter and your client ID as the “ID” parameter. 
-
 
 ## Configure Microsoft Management Activity API (O365 Azure Events) on Demisto
 
@@ -76,10 +75,22 @@ Starts a subscription to a given content type
 There is no context output for this command.
 
 ##### Command Example
-``` ```
+```!ms-management-activity-start-subscription content_type=Audit.Exchange```
+
+##### Context Example
+```
+{
+    "MicrosoftManagement": {
+        "Subscription": {
+            "ContentType": "Audit.Exchange",
+            "Enabled": true
+        }
+    }
+}
+```
 
 ##### Human Readable Output
-
+Successfully started subscription to content type: Audit.Exchange
 
 ### ms-management-activity-stop-subscription
 ***
@@ -101,10 +112,22 @@ Stops a subscription to a given content type
 There is no context output for this command.
 
 ##### Command Example
-``` ```
+```!ms-management-activity-stop-subscription content_type=Audit.Exchange```
+
+##### Context Example
+```
+{
+    "MicrosoftManagement": {
+        "Subscription": {
+            "ContentType": "Audit.Exchange",
+            "Enabled": false
+        }
+    }
+}
+```
 
 ##### Human Readable Output
-
+Successfully stopped subscription to content type: Audit.Exchange
 
 ### ms-management-activity-list-subscriptions
 ***
@@ -126,9 +149,42 @@ There are no input arguments for this command.
 
 
 ##### Command Example
-``` ```
+```!ms-management-activity-list-subscriptions```
+
+##### Context Example
+```
+{
+    "MicrosoftManagement": {
+        "Subscription": [
+            {
+                "ContentType": "Audit.AzureActiveDirectory",
+                "Enabled": true
+            },
+            {
+                "ContentType": "Audit.Exchange",
+                "Enabled": true
+            },
+            {
+                "ContentType": "Audit.General",
+                "Enabled": true
+            },
+            {
+                "ContentType": "Audit.SharePoint",
+                "Enabled": true
+            }
+        ]
+    }
+}
+```
 
 ##### Human Readable Output
+### Current Subscriptions
+|Current Subscriptions|
+|---|
+| Audit.AzureActiveDirectory |
+| Audit.Exchange |
+| Audit.General |
+| Audit.SharePoint |
 
 
 ### ms-management-activity-list-content
