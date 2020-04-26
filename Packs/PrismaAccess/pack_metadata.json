@@ -2,7 +2,7 @@
     "name": "Prisma Access",
     "description": "Integrate with Palo Alto Networks Prisma Access to query activity and take actions.",
     "support": "demisto",
-    "serverMinVersion": "5.5",
+    "serverMinVersion": "5.5.0",
     "currentVersion": "1.0.0",
     "author": "Lior Kolnik",
     "url": "",
