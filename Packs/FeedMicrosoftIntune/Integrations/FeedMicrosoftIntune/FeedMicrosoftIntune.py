@@ -83,12 +83,13 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]
     return 'ok', {}, {}
 
 
-def fetch_indicators(client: Client, limit: int = -1) -> List[Dict]:
+def fetch_indicators(client: Client, feed_tags: List = [], limit: int = -1) -> List[Dict]:
     """Retrieves indicators from the feed
 
     Args:
-        client: Client object with request
-        limit: limit the results
+        client (Client): Client object with request
+        feed_tags (list): tags to assign fetched indicators
+        limit (int): limit the results
 
     Returns:
         Indicators.
@@ -106,42 +107,51 @@ def fetch_indicators(client: Client, limit: int = -1) -> List[Dict]:
         }
         for key, val in item.items():
             raw_data.update({key: val})
-        indicators.append({
+        indicator_obj = {
             "value": value,
             "type": type_,
             "rawJSON": raw_data,
-        })
+        }
+        if feed_tags:
+            indicator_obj['fields'] = {
+                'tags': feed_tags
+            }
+        indicators.append(indicator_obj)
     return indicators
 
 
-def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+def get_indicators_command(client: Client, params: Dict[str, str], args: Dict[str, str]) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
     """Wrapper for retrieving indicators from the feed to the war-room.
 
     Args:
         client: Client object with request
+        params: demisto.params()
         args: demisto.args()
 
     Returns:
         Outputs.
     """
-    limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 10
-    indicators = fetch_indicators(client, limit)
+    feed_tags = argToList(params.get('feedTags', ''))
+    limit = int(args.get('limit', '10'))
+    indicators = fetch_indicators(client, feed_tags, limit)
     human_readable = tableToMarkdown('Indicators from Microsoft Intune Feed:', indicators,
                                      headers=['value', 'type'], removeNull=True)
 
     return human_readable, {}, {'raw_response': indicators}
 
 
-def fetch_indicators_command(client: Client) -> List[Dict]:
+def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List[Dict]:
     """Wrapper for fetching indicators from the feed to the Indicators tab.
 
     Args:
         client: Client object with request
+        params: demisto.params()
 
     Returns:
         Indicators.
     """
-    indicators = fetch_indicators(client)
+    feed_tags = argToList(params.get('feedTags', ''))
+    indicators = fetch_indicators(client, feed_tags)
     return indicators
 
 
@@ -151,7 +161,7 @@ def main():
     """
     params = demisto.params()
     base_url = params.get('url')
-    insecure = params.get('insecure', False)
+    insecure = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
     command = demisto.command()
@@ -169,10 +179,10 @@ def main():
             'intune-get-indicators': get_indicators_command
         }
         if command in commands:
-            return_outputs(*commands[command](client, demisto.args()))
+            return_outputs(*commands[command](client, demisto.params(), demisto.args()))
 
         elif command == 'fetch-indicators':
-            indicators = fetch_indicators_command(client)
+            indicators = fetch_indicators_command(client, demisto.params())
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
 
