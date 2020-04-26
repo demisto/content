@@ -1,5 +1,5 @@
 id: 3da2e31b-f114-4d7f-8702-117f3b498de9
-version: 14
+version: -1
 name: AWS - CloudTrail Test Playbook
 starttaskid: "0"
 tasks:

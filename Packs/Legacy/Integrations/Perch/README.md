@@ -12,7 +12,7 @@
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li><strong>Server URL (e.g.,<span> </span>https://api.perch.rocks/)</strong></li>
 <li><strong>API Token</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy</strong></li>
 <li><strong>Previous days to fetch</strong></li>
 <li><strong>Credentials</strong></li>

@@ -1,3 +1,5 @@
+from typing import Optional
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -39,6 +41,7 @@ API_PARAM_DICT = {
         'Ascending': 'asc',
         'Descending': 'desc'
     },
+    'artifact': 'artifactSource',
     'sort': {
         'App Name': 'app_name',
         'App Packagename': 'app_packagename',
@@ -151,7 +154,8 @@ API_PARAM_DICT = {
         'filename': 'FileName',
         'device_industry': 'Industry',
         'upload_src': 'UploadSource',
-        'fileurl': 'FileURL'
+        'fileurl': 'FileURL',
+        'artifact': 'Artifact',
     }
 }
 SAMPLE_ANALYSIS_LINE_KEYS = {
@@ -295,15 +299,48 @@ def http_request(url_suffix, method='POST', data={}, err_operation=None):
     return parse_response(res, err_operation)
 
 
-def validate_sort_and_order(sort, order):
-    if sort and not order:
-        return_error('Please specify the order of sorting (Ascending or Descending).')
-    if order and not sort:
-        return_error('Please specify a field to sort by.')
-    return sort and order
+def validate_sort_and_order_and_artifact(sort: Optional[str] = None, order: Optional[str] = None,
+                                         artifact_source: Optional[str] = None) -> bool:
+    """
+    Function that validates the arguments combination.
+    sort and order arguments must be defined together.
+    Sort and order can't appear with artifact.
+    Args:
+        sort: variable to sort by.
+        order: the order which the results is ordered by.
+        artifact_source: true if artifacts are needed and false otherwise.
+    Returns:
+        true if arguments are valid for the request, false otherwise.
+    """
+    if artifact_source == 'true' and sort:
+        raise Exception('Please remove or disable one of sort or artifact,'
+                        ' As they are not supported in the api together.')
+    elif sort and not order:
+        raise Exception('Please specify the order of sorting (Ascending or Descending).')
+    elif order and not sort:
+        raise Exception('Please specify a field to sort by.')
+    elif sort and order:
+        return True
+    return False
 
 
-def do_search(search_object, query, scope, size=None, sort=None, order=None, err_operation=None):
+def do_search(search_object: str, query: dict, scope: Optional[str], size: Optional[str] = None,
+              sort: Optional[str] = None, order: Optional[str] = None, err_operation: Optional[str] = None,
+              artifact_source: Optional[str] = None) -> dict:
+    """
+    This function created the data to be sent in http request and sends it.
+    Args:
+        search_object: Type of search sessions or samples.
+        query: Query based on conditions specified within this object.
+        scope:  Scope of the search. Only available and required for: samples. e.g. Public, Global, Private.
+        size: Number of results to provide.
+        sort: Sort based on the provided artifact.
+        order: How to display sort results in ascending or descending order.
+        err_operation: String error which specificed which command failed.
+        artifact_source: Whether artifacts are wanted or not.
+    Returns:
+        raw response of the http request.
+    """
     path = '/samples/search' if search_object == 'samples' else '/sessions/search'
     data = {
         'query': query,
@@ -311,24 +348,40 @@ def do_search(search_object, query, scope, size=None, sort=None, order=None, err
     }
     if scope:
         data.update({'scope': API_PARAM_DICT['scope'][scope]})  # type: ignore
-    if validate_sort_and_order(sort, order):
+    if validate_sort_and_order_and_artifact(sort, order, artifact_source):
         data.update({'sort': {API_PARAM_DICT['sort'][sort]: {'order': API_PARAM_DICT['order'][order]}}})  # type: ignore
-
+    if artifact_source == 'true':
+        data.update({'artifactSource': 'af'})
+        data.update({'type': 'scan'})
     # Remove nulls
     data = createContext(data, removeNull=True)
     result = http_request(path, data=data, err_operation=err_operation)
     return result
 
 
-def run_search(search_object, query, scope=None, size=None, sort=None, order=None):
+def run_search(search_object: str, query: str, scope: Optional[str] = None, size: str = None, sort: str = None,
+               order: str = None, artifact_source: str = None) -> dict:
+    """
+    This function searches the relevent search and returns search info for result command.
+    Args:
+        search_object: Type of search sessions or samples.
+        query: Query based on conditions specified within this object.
+        scope:  Scope of the search. Only available and required for: samples. e.g. Public, Global, Private.
+        size: Number of results to provide.
+        sort: Sort based on the provided artifact.
+        order: How to display sort results in ascending or descending order.
+        artifact_source: Whether artifacts are wanted or not.
+    Returns:
+        dict of response for result commands.
+    """
     result = do_search(search_object, query=json.loads(query), scope=scope, size=size, sort=sort, order=order,
-                       err_operation='Search operation failed')
+                       artifact_source=artifact_source, err_operation='Search operation failed')
     in_progress = result.get('af_in_progress')
     status = 'in progress' if in_progress else 'complete'
     search_info = {
         'AFCookie': result.get('af_cookie'),
         'Status': status,
-        'SessionStart': datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
+        'SessionStart': datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
     }
     return search_info
 
@@ -684,12 +737,13 @@ def filter_object_entries_by_dict_values(result_object, response_dict_name):
 
 
 def search_samples(query=None, scope=None, size=None, sort=None, order=None, file_hash=None, domain=None, ip=None,
-                   url=None, wildfire_verdict=None, first_seen=None, last_updated=None):
+                   url=None, wildfire_verdict=None, first_seen=None, last_updated=None, artifact_source=None):
     validate_no_query_and_indicators(query, [file_hash, domain, ip, url, wildfire_verdict, first_seen, last_updated])
     if not query:
         validate_no_multiple_indicators_for_search([file_hash, domain, ip, url])
         query = build_sample_search_query(file_hash, domain, ip, url, wildfire_verdict, first_seen, last_updated)
-    return run_search('samples', query=query, scope=scope, size=size, sort=sort, order=order)
+    return run_search('samples', query=query, scope=scope, size=size, sort=sort, order=order,
+                      artifact_source=artifact_source)
 
 
 def build_sample_search_query(file_hash, domain, ip, url, wildfire_verdict, first_seen, last_updated):
@@ -850,12 +904,7 @@ def search_indicator(indicator_type, indicator_value):
     return result_json
 
 
-def parse_indicator_response(res, indicator_type):
-    if not res.get('indicator'):
-        raise ValueError('Invalid response for indicator')
-    raw_tags = res.get('tags')
-    res = res['indicator']
-
+def parse_indicator_response(res, raw_tags, indicator_type):
     indicator = {}
     indicator['IndicatorValue'] = res.get('indicatorValue', '')
     indicator['IndicatorType'] = res.get('indicatorType', '')
@@ -902,7 +951,7 @@ def parse_indicator_response(res, indicator_type):
 
 
 def calculate_dbot_score(indicator_response, indicator_type):
-    latest_pan_verdicts = indicator_response['indicator']['latestPanVerdicts']
+    latest_pan_verdicts = indicator_response['latestPanVerdicts']
     if not latest_pan_verdicts:
         raise Exception('latestPanVerdicts value is empty in indicator response.')
 
@@ -917,71 +966,6 @@ def calculate_dbot_score(indicator_response, indicator_type):
     else:
         score = next(iter(latest_pan_verdicts.values()))
         return VERDICTS_TO_DBOTSCORE.get(score.lower(), 0)
-
-
-def get_indicator_outputs(indicator_type, indicators, indicator_context_output):
-    human_readable = ''
-    raw_res = []
-    scores = []
-    _indicators = []
-    context = []
-
-    for indicator in indicators:
-        indicator_response = indicator['response']
-        indicator_value = indicator['value']
-
-        dbot_score = {
-            'Indicator': indicator_value,
-            'Type': indicator_type.lower(),
-            'Vendor': VENDOR_NAME,
-            'Score': indicator['score']
-        }
-
-        indicator_context = {
-            indicator_context_output: indicator_value
-        }
-
-        if indicator['score'] == 3:
-            indicator_context['Malicious'] = {
-                'Vendor': VENDOR_NAME
-            }
-
-        if indicator_type == 'Domain':
-            whois = dict()  # type: ignore
-            whois['Admin'] = dict()
-            whois['Registrant'] = dict()
-            whois['Registrar'] = dict()
-            whois['CreationDate'] = indicator_response['WhoisDomainCreationDate']
-            whois['ExpirationDate'] = indicator_response['WhoisDomainExpireDate']
-            whois['UpdatedDate'] = indicator_response['WhoisDomainUpdateDate']
-            whois['Admin']['Email'] = indicator_response['WhoisAdminEmail']
-            whois['Admin']['Name'] = indicator_response['WhoisAdminName']
-            whois['Registrar']['Name'] = indicator_response['WhoisRegistrar']
-            whois['Registrant']['Name'] = indicator_response['WhoisRegistrant']
-            indicator_context['WHOIS'] = whois
-
-        tags = indicator_response.get('Tags')
-        table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {indicator_value}'
-        if tags:
-            indicators_data = indicator_response.copy()
-            del indicators_data['Tags']
-            md = tableToMarkdown(table_name, indicators_data, headerTransform=string_to_table_header)
-            md += tableToMarkdown('Indicator Tags:', tags, headerTransform=string_to_table_header)
-        else:
-            md = tableToMarkdown(table_name, indicator_response, headerTransform=string_to_table_header)
-
-        human_readable += md
-        raw_res.append(indicator['raw_response'])
-        scores.append(dbot_score)
-        context.append(indicator_context)
-        _indicators.append(indicator_response)
-
-    ec = {
-        outputPaths['dbotscore']: scores,
-        outputPaths[indicator_type.lower()]: context,
-        f'AutoFocus.{indicator_type}(val.IndicatorValue === obj.IndicatorValue)': _indicators,
-    }
-    return_outputs(readable_output=human_readable, outputs=ec, raw_response=raw_res)
 
 
 def check_for_ip(indicator):
@@ -1103,9 +1087,10 @@ def search_samples_command():
     max_results = args.get('max_results')
     sort = args.get('sort')
     order = args.get('order')
+    artifact_source = args.get('artifact')
     info = search_samples(query=query, scope=scope, size=max_results, sort=sort, order=order, file_hash=file_hash,
                           domain=domain, ip=ip, url=url, wildfire_verdict=wildfire_verdict, first_seen=first_seen,
-                          last_updated=last_updated)
+                          last_updated=last_updated, artifact_source=artifact_source)
     md = tableToMarkdown(f'Search Samples Info:', info)
     demisto.results({
         'Type': entryTypes['note'],
@@ -1145,23 +1130,51 @@ def samples_search_results_command():
     af_cookie = args.get('af_cookie')
     results, status = get_search_results('samples', af_cookie)
     files = get_files_data_from_results(results)
-    if not results:
-        md = results = 'No entries found that match the query'
+    hr = ''
+    if not results or len(results) == 0:
+        hr = 'No entries found that match the query'
         status = 'complete'
-    else:
-        md = tableToMarkdown(f'Search Samples Results is {status}', results)
     context = {
         'AutoFocus.SamplesResults(val.ID === obj.ID)': results,
         'AutoFocus.SamplesSearch(val.AFCookie ==== obj.AFCookie)': {'Status': status, 'AFCookie': af_cookie},
         outputPaths['file']: files
     }
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['text'],
-        'Contents': results,
-        'EntryContext': context,
-        'HumanReadable': md
-    })
+    if not results:
+        return_outputs(readable_output=hr, outputs=context, raw_response={})
+    else:
+        # for each result a new entry will be set with two tables, one of the result and one of its artifacts
+        for result in results:
+            if 'Artifact' in result:
+                hr = samples_search_result_hr(result, status)
+                return_outputs(readable_output=hr, outputs=context, raw_response=results)
+            else:
+                hr = tableToMarkdown(f'Search Samples Result is {status}', result)
+                hr += tableToMarkdown(f'Artifacts for Sample: ', [])
+                return_outputs(readable_output=hr, outputs=context, raw_response=results)
+
+
+def samples_search_result_hr(result: dict, status: str) -> str:
+    """
+    Creates human readable output for a specific entry which contains two tables, one for the result's
+    and another for the artifacts that are related to it.
+    Args:
+        result: one result of the search sample command.
+        status: status of result command.
+    Returns:
+        human readable of two tables for this result.
+    """
+    artifact = result.pop('Artifact')
+    updated_artifact = []
+    for indicator in artifact:
+        # Filter on returned indicator types, as we do not support Mutex and User Agent.
+        if 'Mutex' not in indicator.get('indicator_type') and 'User Agent' not in indicator.get('indicator_type'):
+            updated_artifact.append(indicator)
+    rest = result
+    hr = tableToMarkdown(f'Search Samples Result is {status}', rest)
+    hr += '\n\n'
+    hr += tableToMarkdown(f'Artifacts for Sample: ', updated_artifact, headers=["b", "g", "m", "indicator_type",
+                                                                                "confidence", "indicator"])
+    return hr
 
 
 def sessions_search_results_command():
@@ -1169,7 +1182,7 @@ def sessions_search_results_command():
     af_cookie = args.get('af_cookie')
     results, status = get_search_results('sessions', af_cookie)
     files = get_files_data_from_results(results)
-    if not results:
+    if not results or len(results) == 0:
         md = results = 'No entries found that match the query'
         status = 'complete'
     else:
@@ -1279,53 +1292,263 @@ def top_tags_results_command():
 def search_ip_command(ip):
     indicator_type = 'IP'
     ip_list = argToList(ip)
-    indicator_details = []
+
+    ip_indicators = []
+    outputs = []
+    raw_response = []
+    human_readable = ''
+
     for ip_address in ip_list:
         raw_res = search_indicator('ipv4_address', ip_address)
-        score = calculate_dbot_score(raw_res, indicator_type)
-        res = parse_indicator_response(raw_res, indicator_type)
-        indicator_details.append({'raw_response': raw_res, 'value': ip_address, 'score': score, 'response': res})
+        if not raw_res.get('indicator'):
+            raise ValueError('Invalid response for indicator')
 
-    get_indicator_outputs(indicator_type, indicator_details, 'Address')
+        indicator = raw_res.get('indicator')
+        raw_tags = raw_res.get('tags')
+
+        score = calculate_dbot_score(indicator, indicator_type)
+        dbot_score = Common.DBotScore(
+            indicator=ip_address,
+            indicator_type=DBotScoreType.IP,
+            integration_name=VENDOR_NAME,
+            score=score
+        )
+
+        ip = Common.IP(
+            ip=ip_address,
+            dbot_score=dbot_score
+        )
+
+        autofocus_ip_output = parse_indicator_response(indicator, raw_tags, indicator_type)
+
+        # create human readable markdown for ip
+        tags = autofocus_ip_output.get('Tags')
+        table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {ip_address}'
+        if tags:
+            indicators_data = autofocus_ip_output.copy()
+            del indicators_data['Tags']
+            md = tableToMarkdown(table_name, indicators_data)
+            md += tableToMarkdown('Indicator Tags:', tags)
+        else:
+            md = tableToMarkdown(table_name, autofocus_ip_output)
+
+        human_readable += md
+
+        ip_indicators.append(ip)
+        outputs.append(autofocus_ip_output)
+        raw_response.append(raw_res)
+
+    command_results = CommandResults(
+        outputs_prefix='AutoFocus.IP',
+        outputs_key_field='IndicatorValue',
+        outputs=outputs,
+
+        readable_output=human_readable,
+        raw_response=raw_response,
+        indicators=ip_indicators
+    )
+
+    return command_results
 
 
-def search_domain_command(domain):
+def search_domain_command(args):
     indicator_type = 'Domain'
-    domain_list = argToList(domain)
-    indicator_details = []
-    for _domain in domain_list:
-        raw_res = search_indicator('domain', _domain)
-        score = calculate_dbot_score(raw_res, indicator_type)
-        res = parse_indicator_response(raw_res, indicator_type)
-        indicator_details.append({'raw_response': raw_res, 'value': _domain, 'score': score, 'response': res})
+    domain_name_list = argToList(args.get('domain'))
 
-    get_indicator_outputs(indicator_type, indicator_details, 'Name')
+    domain_indicator_list = []
+    autofocus_domain_list = []
+    raw_response = []
+    human_readable = ''
+
+    for domain_name in domain_name_list:
+        raw_res = search_indicator('domain', domain_name)
+        if not raw_res.get('indicator'):
+            raise ValueError('Invalid response for indicator')
+
+        indicator = raw_res.get('indicator')
+        raw_tags = raw_res.get('tags')
+
+        score = calculate_dbot_score(indicator, indicator_type)
+
+        dbot_score = Common.DBotScore(
+            indicator=domain_name,
+            indicator_type=DBotScoreType.DOMAIN,
+            integration_name=VENDOR_NAME,
+            score=score
+        )
+        demisto.log(json.dumps(raw_res, indent=4))
+
+        domain = Common.Domain(
+            domain=domain_name,
+            dbot_score=dbot_score,
+            whois=Common.WHOIS(
+                creation_date=indicator.get('whoisDomainCreationDate'),
+                expiration_date=indicator.get('whoisDomainExpireDate'),
+                update_date=indicator.get('whoisDomainUpdateDate'),
+
+                admin_email=indicator.get('whoisAdminEmail'),
+                admin_name=indicator.get('whoisAdminName'),
+
+                registrar_name=indicator.get('whoisRegistrar'),
+
+                registrant_name=indicator.get('whoisRegistrant')
+            )
+        )
+
+        autofocus_domain_output = parse_indicator_response(indicator, raw_tags, indicator_type)
+
+        # create human readable markdown for ip
+        tags = autofocus_domain_output.get('Tags')
+        table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {domain_name}'
+        if tags:
+            indicators_data = autofocus_domain_output.copy()
+            del indicators_data['Tags']
+            md = tableToMarkdown(table_name, indicators_data)
+            md += tableToMarkdown('Indicator Tags:', tags)
+        else:
+            md = tableToMarkdown(table_name, autofocus_domain_output)
+
+        human_readable += md
+
+        domain_indicator_list.append(domain)
+        raw_response.append(raw_res)
+        autofocus_domain_list.append(autofocus_domain_output)
+
+    command_results = CommandResults(
+        outputs_prefix='AutoFocus.Domain',
+        outputs_key_field='IndicatorValue',
+        outputs=autofocus_domain_list,
+
+        readable_output=human_readable,
+        raw_response=raw_response,
+        indicators=domain_indicator_list
+    )
+
+    return command_results
 
 
 def search_url_command(url):
     indicator_type = 'URL'
     url_list = argToList(url)
-    indicator_details = []
-    for _url in url_list:
-        raw_res = search_indicator('url', _url)
-        score = calculate_dbot_score(raw_res, indicator_type)
-        res = parse_indicator_response(raw_res, indicator_type)
-        indicator_details.append({'raw_response': raw_res, 'value': _url, 'score': score, 'response': res})
 
-    get_indicator_outputs(indicator_type, indicator_details, 'Data')
+    url_indicator_list = []
+    autofocus_url_list = []
+    raw_response = []
+    human_readable = ''
+
+    for url_name in url_list:
+
+        raw_res = search_indicator('url', url_name)
+        if not raw_res.get('indicator'):
+            raise ValueError('Invalid response for indicator')
+
+        indicator = raw_res.get('indicator')
+        raw_tags = raw_res.get('tags')
+
+        score = calculate_dbot_score(indicator, indicator_type)
+
+        dbot_score = Common.DBotScore(
+            indicator=url_name,
+            indicator_type=DBotScoreType.URL,
+            integration_name=VENDOR_NAME,
+            score=score
+        )
+
+        url = Common.URL(
+            url=url_name,
+            dbot_score=dbot_score
+        )
+
+        autofocus_url_output = parse_indicator_response(indicator, raw_tags, indicator_type)
+
+        tags = autofocus_url_output.get('Tags')
+        table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {url_name}'
+        if tags:
+            indicators_data = autofocus_url_output.copy()
+            del indicators_data['Tags']
+            md = tableToMarkdown(table_name, indicators_data)
+            md += tableToMarkdown('Indicator Tags:', tags)
+        else:
+            md = tableToMarkdown(table_name, autofocus_url_output)
+
+        human_readable += md
+
+        url_indicator_list.append(url)
+        raw_response.append(raw_res)
+        autofocus_url_list.append(autofocus_url_output)
+
+    command_results = CommandResults(
+        outputs_prefix='AutoFocus.URL',
+        outputs_key_field='IndicatorValue',
+        outputs=autofocus_url_list,
+
+        readable_output=human_readable,
+        raw_response=raw_response,
+        indicators=url_indicator_list
+    )
+
+    return command_results
 
 
 def search_file_command(file):
     indicator_type = 'File'
     file_list = argToList(file)
-    indicator_details = []
-    for _file in file_list:
-        raw_res = search_indicator('sha256', _file)
-        score = calculate_dbot_score(raw_res, indicator_type)
-        res = parse_indicator_response(raw_res, indicator_type)
-        indicator_details.append({'raw_response': raw_res, 'value': _file, 'score': score, 'response': res})
 
-    get_indicator_outputs(indicator_type, indicator_details, 'SHA256')
+    file_indicator_list = []
+    autofocus_file_list = []
+    raw_response = []
+    human_readable = ''
+
+    for sha256 in file_list:
+        raw_res = search_indicator('sha256', sha256.lower())
+        if not raw_res.get('indicator'):
+            raise ValueError('Invalid response for indicator')
+
+        indicator = raw_res.get('indicator')
+        raw_tags = raw_res.get('tags')
+
+        score = calculate_dbot_score(indicator, indicator_type)
+        dbot_score = Common.DBotScore(
+            indicator=sha256,
+            indicator_type=DBotScoreType.FILE,
+            integration_name=VENDOR_NAME,
+            score=score
+        )
+
+        file = Common.File(
+            sha256=sha256,
+            dbot_score=dbot_score
+        )
+
+        autofocus_file_output = parse_indicator_response(indicator, raw_tags, indicator_type)
+
+        tags = autofocus_file_output.get('Tags')
+        table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {sha256}'
+        if tags:
+            indicators_data = autofocus_file_output.copy()
+            del indicators_data['Tags']
+            md = tableToMarkdown(table_name, indicators_data)
+            md += tableToMarkdown('Indicator Tags:', tags)
+        else:
+            md = tableToMarkdown(table_name, autofocus_file_output)
+
+        human_readable += md
+
+        file_indicator_list.append(file)
+        raw_response.append(raw_res)
+        autofocus_file_list.append(autofocus_file_output)
+
+    command_results = CommandResults(
+        outputs_prefix='AutoFocus.File',
+        outputs_key_field='IndicatorValue',
+        outputs=autofocus_file_list,
+
+        readable_output=human_readable,
+        raw_response=raw_response,
+        indicators=file_indicator_list
+    )
+
+    return command_results
 
 
 def get_export_list_command(args):
@@ -1414,52 +1637,51 @@ def get_export_list_command(args):
                    results)
 
 
-''' COMMANDS MANAGER / SWITCH PANEL '''
+def main():
+    demisto.debug('Command being called is %s' % (demisto.command()))
 
-LOG('Command being called is %s' % (demisto.command()))
+    try:
+        # Remove proxy if not set to true in params
+        handle_proxy()
+        active_command = demisto.command()
 
-try:
-    # Remove proxy if not set to true in params
-    handle_proxy()
-    active_command = demisto.command()
+        args = {k: v for (k, v) in demisto.args().items() if v}
+        if active_command == 'test-module':
+            # This is the call made when pressing the integration test button.
+            test_module()
+            demisto.results('ok')
+        elif active_command == 'autofocus-search-samples':
+            search_samples_command()
+        elif active_command == 'autofocus-search-sessions':
+            search_sessions_command()
+        elif active_command == 'autofocus-samples-search-results':
+            samples_search_results_command()
+        elif active_command == 'autofocus-sessions-search-results':
+            sessions_search_results_command()
+        elif active_command == 'autofocus-get-session-details':
+            get_session_details_command()
+        elif active_command == 'autofocus-sample-analysis':
+            sample_analysis_command()
+        elif active_command == 'autofocus-tag-details':
+            tag_details_command()
+        elif active_command == 'autofocus-top-tags-search':
+            top_tags_search_command()
+        elif active_command == 'autofocus-top-tags-results':
+            top_tags_results_command()
+        elif active_command == 'autofocus-get-export-list-indicators':
+            get_export_list_command(args)
+        elif active_command == 'ip':
+            return_results(search_ip_command(**args))
+        elif active_command == 'domain':
+            return_results(search_domain_command(args))
+        elif active_command == 'url':
+            return_results(search_url_command(**args))
+        elif active_command == 'file':
+            return_results(search_file_command(**args))
 
-    args = {k: v for (k, v) in demisto.args().items() if v}
-    if active_command == 'test-module':
-        # This is the call made when pressing the integration test button.
-        test_module()
-        demisto.results('ok')
-    elif active_command == 'autofocus-search-samples':
-        search_samples_command()
-    elif active_command == 'autofocus-search-sessions':
-        search_sessions_command()
-    elif active_command == 'autofocus-samples-search-results':
-        samples_search_results_command()
-    elif active_command == 'autofocus-sessions-search-results':
-        sessions_search_results_command()
-    elif active_command == 'autofocus-get-session-details':
-        get_session_details_command()
-    elif active_command == 'autofocus-sample-analysis':
-        sample_analysis_command()
-    elif active_command == 'autofocus-tag-details':
-        tag_details_command()
-    elif active_command == 'autofocus-top-tags-search':
-        top_tags_search_command()
-    elif active_command == 'autofocus-top-tags-results':
-        top_tags_results_command()
-    elif active_command == 'autofocus-get-export-list-indicators':
-        get_export_list_command(args)
-    elif active_command == 'ip':
-        search_ip_command(**args)
-    elif active_command == 'domain':
-        search_domain_command(**args)
-    elif active_command == 'url':
-        search_url_command(**args)
-    elif active_command == 'file':
-        search_file_command(**args)
+    except Exception as e:
+        return_error(f'Unexpected error: {e}')
 
 
-# Log exceptions
-except Exception as e:
-    LOG(e)
-    LOG.print_log()
-    return_error(f'Unexpected error: {e}')
+if __name__ in ['__main__', 'builtin', 'builtins']:
+    main()

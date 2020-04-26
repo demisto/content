@@ -1,5 +1,5 @@
 id: Test CommonServer
-version: 3
+version: -1
 name: Test CommonServer
 starttaskid: "0"
 tasks:

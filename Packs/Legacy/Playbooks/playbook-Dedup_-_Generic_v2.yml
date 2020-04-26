@@ -458,7 +458,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "yes"
+              simple: "true"
     view: |-
       {
         "position": {
@@ -477,7 +477,7 @@ tasks:
       id: 2f6d5087-c0f1-47e3-8065-06cc25ced46a
       version: -1
       name: Link similar incidents
-      description: commands.local.cmd.linkIncidents
+      description: Links similar incidents.
       script: Builtin|||linkIncidents
       type: regular
       iscommand: true
