@@ -1756,13 +1756,13 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: any
       description: A comma-separated list of application object namesfor the rule
         to create.
       isArray: true
       name: application
       required: false
       secret: false
-      defaultValue: any
     - default: false
       defaultValue: any
       description: Source user for the rule to create.
@@ -2196,6 +2196,9 @@ script:
     - contextPath: Panorama.Commit.Details
       description: Job ID details.
       type: string
+    - contextPath: Panorama.Commit.Warnings
+      description: Job ID warnings
+      type: String
   - arguments:
     - default: false
       description: Job ID to check.
@@ -2220,6 +2223,9 @@ script:
     - contextPath: Panorama.Push.Details
       description: Job ID details.
       type: string
+    - contextPath: Panorama.Push.Warnings
+      description: Job ID warnings
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -2425,7 +2431,7 @@ script:
     deprecated: false
     description: Unregisters Users from a tag.
     execution: false
-    name: panorama-unregister-user-tag    
+    name: panorama-unregister-user-tag
   - arguments:
     - default: false
       description: Specifies the match criteria for the logs. This is similar to the
@@ -3409,7 +3415,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The device for which to check the installation status of the content update.
+      description: The device for which to check the installation status of the content
+        update.
       isArray: false
       name: target
       required: false
@@ -3459,7 +3466,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Downloads the target PAN-OS software version to install on the target device.
+    description: Downloads the target PAN-OS software version to install on the target
+      device.
     execution: false
     name: panorama-download-panos-version
     outputs:
@@ -3498,7 +3506,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The target device on which to install the target PAN-OS software version.
+      description: The target device on which to install the target PAN-OS software
+        version.
       isArray: false
       name: target
       required: false

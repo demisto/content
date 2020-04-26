@@ -1,6 +1,6 @@
 elasticcommonfields: {}
 id: MongoDB - Test
-version: 27
+version: -1
 name: MongoDB - Test
 starttaskid: "0"
 tasks:
