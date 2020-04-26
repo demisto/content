@@ -27,4 +27,4 @@ This playbook does not use any scripts.
 ---
 There are no outputs for this playbook.
 
-<!-- Playbook PNG image comes here -->
+![Playbook Image](https://raw.githubusercontent.com/demisto/content/c20427ed8dde64841a1249b5d7c44e8773df2b72/Packs/PrismaAccess/doc_files/Prisma_Access_Whitelist_Egress_IPs_on_SaaS_Services.png)

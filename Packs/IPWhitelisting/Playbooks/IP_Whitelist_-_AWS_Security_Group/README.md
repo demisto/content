@@ -36,4 +36,4 @@ This playbook does not use any sub-playbooks.
 ---
 There are no outputs for this playbook.
 
-<!-- Playbook PNG image comes here -->
+![Playbook Image](https://raw.githubusercontent.com/demisto/content/c20427ed8dde64841a1249b5d7c44e8773df2b72/Packs/IPWhitelisting/doc_files/IP_Whitelist_-_AWS_Security_Group.png)
