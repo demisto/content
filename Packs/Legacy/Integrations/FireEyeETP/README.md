@@ -1,3 +1,5 @@
+#FireEye Email Threat Prevention (ETP)
+
 ##Overview
 Use the FireEye Email Threat Prevention (ETP) integration to import messages as incidents, search for messages with specific attributes, and retrieve alert data.
 
