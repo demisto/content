@@ -17,8 +17,11 @@ args:
   isArray: true
 outputs:
 - contextPath: ListCompare.LeftOnly
+  description: Items only found within the list in the left argument
 - contextPath: ListCompare.RightOnly
+  description: Items only found within the list in the right argument
 - contextPath: ListCompare.Both
+  description: Common items that were found in both lists
 scripttarget: 0
 subtype: python3
 runonce: false
