@@ -1,7 +1,7 @@
 {
     "name": "IP Whitelisting",
     "description": "Playbooks to enable access to Cloud and SaaS services by updating whitelists of source IP addresses.",
-    "support": "demisto",
+    "support": "xsoar",
     "serverMinVersion": "5.5.0",
     "currentVersion": "1.0.0",
     "author": "Lior Kolnik and Prasen Shelar",
@@ -24,5 +24,18 @@
     "useCases": [],
     "keywords": [],
     "price": 0,
-    "dependencies": {}
+    "dependencies": {
+		"Legacy": {
+			"display_name": "Legacy",
+			"mandatory": true
+		},
+		"Base": {
+			"display_name": "Base",
+			"mandatory": true
+		},
+		"Prisma Access": {
+			"display_name": "Prisma Access",
+			"mandatory": true
+		}
+	}
 }
