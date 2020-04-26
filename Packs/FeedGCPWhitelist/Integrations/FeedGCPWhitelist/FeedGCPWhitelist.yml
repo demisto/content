@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: GCP Whitelist
+  id: GCP Whitelist Feed
   version: -1
 configuration:
 - defaultvalue: 'true'
@@ -35,7 +35,7 @@ configuration:
   type: 15
 - display: ""
   name: feedExpirationPolicy
-  defaultvalue: indicatorType
+  defaultvalue: suddenDeath
   type: 17
   required: false
   options:
@@ -69,8 +69,8 @@ configuration:
   type: 8
 description: Use the Google Cloud Platform whitelist integration to get indicators
   from the feed.
-display: GCP Whitelist
-name: GCP Whitelist
+display: GCP Whitelist Feed
+name: GCP Whitelist Feed
 script:
   commands:
   - arguments:
