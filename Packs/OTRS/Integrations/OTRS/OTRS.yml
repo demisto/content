@@ -77,6 +77,9 @@ script:
     - contextPath: OTRS.Ticket.ID
       description: Ticket ID
       type: string
+    - contextPath: OTRS.Ticket.Number
+      description: Ticket number
+      type: string
     - contextPath: OTRS.Ticket.Created
       description: Ticket creation date
       type: date
@@ -164,9 +167,6 @@ script:
     - contextPath: File.Extension
       description: Attachment file extension
       type: string
-    - contextPath: OTRS.Ticket.TicketNumber
-      description: Ticket number
-      type: string
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -234,6 +234,9 @@ script:
     - contextPath: OTRS.Ticket.ID
       description: Ticket ID
       type: string
+    - contextPath: OTRS.Ticket.Number
+      description: Ticket number
+      type: string
     - contextPath: OTRS.Ticket.Created
       description: Ticket creation date
       type: date
@@ -257,9 +260,6 @@ script:
       type: string
     - contextPath: OTRS.Ticket.Type
       description: Ticket type
-      type: string
-    - contextPath: OTRS.Ticket.TicketNumber
-      description: Ticket number
       type: string
   - arguments:
     - default: false
@@ -352,6 +352,9 @@ script:
     - contextPath: OTRS.Ticket.ID
       description: Ticket ID
       type: string
+    - contextPath: OTRS.Ticket.Number
+      description: Ticket number
+      type: string
     - contextPath: OTRS.Ticket.Created
       description: Ticket creation date
       type: date
@@ -375,9 +378,6 @@ script:
       type: string
     - contextPath: OTRS.Ticket.DynamicField
       description: Ticket dynamic fields
-      type: string
-    - contextPath: OTRS.Ticket.TicketNumber
-      description: Ticket number
       type: string
   - arguments:
     - default: false
@@ -533,5 +533,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+  fromversion: 4.1.0
 tests:
  - OTRS Test

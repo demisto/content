@@ -5,12 +5,6 @@ from CommonServerPython import *
 from pyotrs import Article, Attachment, Client, DynamicField, Ticket
 
 
-if not demisto.params()['proxy']:
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
-
 # disable insecure warnings
 urllib3.disable_warnings()
 
@@ -564,7 +558,7 @@ def fetch_incidents():
 
 
 ''' EXECUTION CODE '''
-
+handle_proxy(demisto.params().get('proxy'))
 client = Client(SERVER, USERNAME, PASSWORD, https_verify=USE_SSL)
 client.session_create()
 

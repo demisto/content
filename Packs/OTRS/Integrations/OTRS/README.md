@@ -1,9 +1,9 @@
 Service management suite that comprises ticketing, workflow automation, and notification.
 This integration was integrated and tested with version 7.x of OTRS
-## Configure OTRSv2 on Demisto
+## Configure OTRS on Demisto
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for OTRSv2.
+2. Search for OTRS.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
