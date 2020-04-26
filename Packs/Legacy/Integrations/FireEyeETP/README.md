@@ -114,53 +114,53 @@ Search for messages using specific message attributes as indicators.
 ##### Raw Output
 <pre>
 {  
-   "data":[  
+   "data": [  
       {  
-         "attributes":{  
-            "acceptedDateTime":"2018-06-09T10:49:32.000Z",
-            "countryCode":"US",
-            "domain":"eartv45.uni",
-            "downStreamMsgID":"250 2.0.0 OK 100041373 d14-v6si970000qtb.70 - gsmtp",
-            "emailSize":9.89,
-            "lastModifiedDateTime":"2018-06-09T10:49:33.329Z",
-            "recipientHeader":[  
+         "attributes": {  
+            "acceptedDateTime": "2018-06-09T10:49:32.000Z",
+            "countryCode": "US",
+            "domain": "eartv45.uni",
+            "downStreamMsgID": "250 2.0.0 OK 100041373 d14-v6si970000qtb.70 - gsmtp",
+            "emailSize": 9.89,
+            "lastModifiedDateTime": "2018-06-09T10:49:33.329Z",
+            "recipientHeader": [  
                "Security Operations Center <SOC@corp.com>"
             ],
-            "recipientSMTP":[  
+            "recipientSMTP": [  
                "jason@corp.com"
             ],
-            "senderHeader":"\"newnsm@corp.com\" <newnsm@ corp.com >",
-            "senderSMTP":"prvs=691a9462a=jblanks@ corp.com ",
-            "senderIP":"***.***.***.***",
-            "status":"delivered",
-            "subject":"Attack TCP: SYN Host Sweep (Medium)",
-            "verdicts":{  
-               "AS":"",
-               "AV":"",
-               "AT":"pass",
-               "PV":""
+            "senderHeader": "\"newnsm@corp.com\" <newnsm@ corp.com >",
+            "senderSMTP": "prvs=691a9462a=jblanks@ corp.com ",
+            "senderIP": "***.***.***.***",
+            "status": "delivered",
+            "subject": "Attack TCP: SYN Host Sweep (Medium)",
+            "verdicts": {  
+               "AS": "",
+               "AV": "",
+               "AT": "pass",
+               "PV": ""
             }
          },
-         "included":[  
+         "included": [  
             {  
-               "type":"domain",
-               "id":29074,
-               "attributes":{  
-                  "name":" corp.com "
+               "type": "domain",
+               "id": 29074,
+               "attributes": {  
+                  "name": " corp.com "
                }
             }
          ],
-         "id":"C88B18749AAAAB1B55fc0fa78",
-         "type":"trace"
+         "id": "C88B18749AAAAB1B55fc0fa78",
+         "type": "trace"
       },
       …
    ],
-   "meta":{  
-      "total":85347,
-      "copyright":"Copyright 2018 Fireeye Inc",
-      "fromLastModifiedOn":{  
-         "start":"2018-06-09T10:49:33.329Z",
-         "end":"2018-06-09T10:50:59.034Z"
+   "meta": {  
+      "total": 85347,
+      "copyright": "Copyright 2018 Fireeye Inc",
+      "fromLastModifiedOn": {  
+         "start": "2018-06-09T10:49:33.329Z",
+         "end": "2018-06-09T10:50:59.034Z"
       }
    }
 }
