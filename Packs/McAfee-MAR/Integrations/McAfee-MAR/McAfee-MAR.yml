@@ -31,6 +31,7 @@ configuration:
 script:
   script: ''
   type: python
+  subtype: python3
   commands:
   - name: mar-search
     arguments:
@@ -513,5 +514,5 @@ script:
     - contextPath: MAR.HostInfo.Os
       description: Host operation system
     description: Gets host information from McAfee Active Response
-  dockerimage: demisto/dxl
+  dockerimage: demisto/dxl:1.0.0.4989
   runonce: false
