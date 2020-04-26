@@ -104,7 +104,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.MaximumCIDRSizeToApproce
+              simple: inputs.MaximumCIDRSizeToApprove
             iscontext: true
     view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 180\n  }\n}"
     note: false
