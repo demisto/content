@@ -1,83 +1,67 @@
-commands:
-  content-setup:
-    description: "Content enviorment setup"
-    steps:
-      - checkout
-      - setup_remote_docker
-      - restore_cache:
-          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
-      - run:
-          name: Prepare Environment
-          when: always
-          command: |
-            if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 0 ] ;
-              then
-                echo "Skipping - instance tests tasks are running only in container number 0"
-                exit 0
-            fi
-            echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
-            echo 'export PATH="/home/circleci/.local/bin:${PWD}/node_modules/.bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
-            echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
-            echo 'export DEMISTO_README_VALIDATION=true' >> $BASH_ENV
-            echo "=== sourcing $BASH_ENV ==="
-            source $BASH_ENV
-            sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
-            chmod +x ./Tests/scripts/*
-            chmod +x ./Tests/lastest_server_build_scripts/*
-            echo "Parameters: NIGHTLY: $NIGHTLY, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME, INSTANCE_TESTS: $INSTANCE_TESTS"
-            if [ ! -e "venv" ]; then
-              echo "installing venv"
-              NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap
-              source ./venv/bin/activate
-              pip install -r .circleci/build-requirements.txt
-              pip3 install -r .circleci/build-requirements.txt
-            else
-              echo "venv exists (from cache). activating"
-              source ./venv/bin/activate
-            fi
-            # Install node packages
-            npm install .
-            # store in bash env so we load our venv in each step
-            echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
-            git config diff.renameLimit 6000
-            python --version
-            python3 --version
-            demisto-sdk --version
-      - save_cache:
-          paths:
-            - venv
-            - node_modules
-          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
-      - add_ssh_keys:
-          fingerprints:
-            - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
-            - "f5:25:6a:e5:ac:4b:84:fb:60:54:14:82:f1:e9:6c:f9" # disable-secrets-detection
+aliases:
+  - &cache-restore
+      key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
+  - &cache-save
+      paths:
+        - venv
+        - node_modules
+      key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
+  - &prepare-environment
+      command: |
+        if [ -n "${INSTANCE_TESTS}" ];
+          then
+            echo "Skipping - instance tests tasks are running only in container number 0"
+            exit 0
+        fi
+        echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
+        echo 'export PATH="/home/circleci/.local/bin:${PWD}/node_modules/.bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
+        echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
+        echo 'export DEMISTO_README_VALIDATION=true' >> $BASH_ENV
+        echo "=== sourcing $BASH_ENV ==="
+        source $BASH_ENV
+        sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
+        chmod +x ./Tests/scripts/*
+        chmod +x ./Tests/lastest_server_build_scripts/*
+        echo "Parameters: NIGHTLY: $NIGHTLY, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME, INSTANCE_TESTS: $INSTANCE_TESTS"
+        if [ ! -e "venv" ]; then
+          echo "installing venv"
+          NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap
+          source ./venv/bin/activate
+          pip install -r .circleci/build-requirements.txt
+          pip3 install -r .circleci/build-requirements.txt
+        else
+          echo "venv exists (from cache). activating"
+          source ./venv/bin/activate
+        fi
+        # Install node packages
+        npm install .
+        # store in bash env so we load our venv in each step
+        echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
+        git config diff.renameLimit 6000
+        python --version
+        python3 --version
+        demisto-sdk --version
 
 
-executors:
-  content-executor:
-    docker:
-      - image: devdemisto/content-build:3.0.0.7332
-    resource_class: medium+
-    environment:
-      CONTENT_VERSION: "20.4.0"
-      SERVER_VERSION: "5.5.0"
-      GIT_SHA1: "8e167aa32b7c7c76ca7d4ac2fa5fdae88be1b64f"
-
+defaults: &defaults
+  docker:
+    - image: devdemisto/content-build:3.0.0.7332
+  resource_class: medium+
+  environment:
+    CONTENT_VERSION: "20.4.0"
+    SERVER_VERSION: "5.5.0"
+    GIT_SHA1: "8e167aa32b7c7c76ca7d4ac2fa5fdae88be1b64f"
 
 jobs:
-  create_test_id_set:
-    executor: content-executor
-    steps:
-      - content-setup
-      - run:
-          command: demisto-sdk create-id-set -o ./Tests/id_set.json
-
   infrastructure_testing:
-    executor: content-executor
-    steps:
-      - content-setup
-      - run:
+     <<: *defaults
+     steps:
+       - checkout
+       - setup_remote_docker
+       - restore_cache: *cache-restore
+       - run: *prepare-environment
+       - save_cache: *cache-save
+       - run:
           command: |
             if [ -n "${INSTANCE_TESTS}" ];
               then
@@ -92,62 +76,81 @@ jobs:
             python3 -m pytest ./Tests/Marketplace/Tests/upload_packs_test.py -v
             python3 -m pytest ./Tests/Marketplace/Tests/search_and_install_packs_test.py -v
 
-    validate_files_and_yaml:
-      executor: content-executor
-      steps:
-        - content-setup
-        - run:
-            command: |
-              if [ -n "${INSTANCE_TESTS}" ];
-                then
-                  echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
-                  exit 0
-              fi
-
-              # Run flake8 on all excluding Integraions and Scripts (they will be handled in linting)
-              ./Tests/scripts/pyflake.sh *.py
-              find . -maxdepth 1 -type d -not \( -path . -o -path ./Integrations -o -path ./Scripts -o -path ./Beta_Integrations -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
-
-              [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD="false" || CHECK_BACKWARD="true"
-
-              if [ "${CHECK_BACKWARD}" = "true" ] ;
-                then
-                   demisto-sdk validate -g --post-commit
-
-                else
-                   demisto-sdk validate -g --post-commit --no-backward-comp
-              fi
-
-    secrets:
-      executor: content-executor
-      steps:
-        - content-setup
-        - run: |
+  validate_files_and_yaml:
+    <<: *defaults
+    steps:
+      - checkout
+      - setup_remote_docker
+      - restore_cache: *cache-restore
+      - run: *prepare-environment
+      - save_cache: *cache-save
+      - run:
+          command: |
             if [ -n "${INSTANCE_TESTS}" ];
               then
                 echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
                 exit 0
             fi
 
-            demisto-sdk secrets --post-commit --ignore-entropy
+            # Run flake8 on all excluding Integraions and Scripts (they will be handled in linting)
+            ./Tests/scripts/pyflake.sh *.py
+            find . -maxdepth 1 -type d -not \( -path . -o -path ./Integrations -o -path ./Scripts -o -path ./Beta_Integrations -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
 
-    spell_checks:
-      executor: content-executor
-      steps:
-        - content-setup
-        - run: |
-              if [ -n "${INSTANCE_TESTS}" ];
-                then
-                  echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
-                  exit 0
+            [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD="false" || CHECK_BACKWARD="true"
+
+            if [ "${CHECK_BACKWARD}" = "true" ] ;
+              then
+                 demisto-sdk validate -g --post-commit
+
+              else
+                 demisto-sdk validate -g --post-commit --no-backward-comp
+            fi
+
+  secrets:
+    <<: *defaults
+    steps:
+      - checkout
+      - setup_remote_docker
+      - restore_cache: *cache-restore
+      - run: *prepare-environment
+      - save_cache: *cache-save
+      - run:
+          command: |
+             if [ -n "${INSTANCE_TESTS}" ];
+              then
+                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
+                exit 0
               fi
-              python3 ./Tests/scripts/circleci_spell_checker.py $CIRCLE_BRANCH
 
-    build_content_descriptor:
-      executor: content-executor
-      steps:
-        - content-setup
-        - run: |
+              demisto-sdk secrets --post-commit --ignore-entropy
+
+  spell_checks:
+    <<: *defaults
+    steps:
+      - checkout
+      - setup_remote_docker
+      - restore_cache: *cache-restore
+      - run: *prepare-environment
+      - save_cache: *cache-save
+      - run:
+          command: |
+            if [ -n "${INSTANCE_TESTS}" ];
+              then
+                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
+                exit 0
+            fi
+            python3 ./Tests/scripts/circleci_spell_checker.py $CIRCLE_BRANCH
+
+  build_content_descriptor:
+    <<: *defaults
+    steps:
+      - checkout
+      - setup_remote_docker
+      - restore_cache: *cache-restore
+      - run: *prepare-environment
+      - save_cache: *cache-save
+      - run:
+          command: |
             if [ -n "${GITHUB_TOKEN}" ] ;
               then
                 python3 release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION --github-token $GITHUB_TOKEN
@@ -156,39 +159,59 @@ jobs:
                 python3 release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION
             fi
 
-    common_server_documentation:
-      executor: content-executor
-      steps:
-        - content-setup
-        - run: ./Documentation/commonServerDocs.sh
+  common_server_documentation:
+    <<: *defaults
+    steps:
+      - checkout
+      - setup_remote_docker
+      - restore_cache: *cache-restore
+      - run: *prepare-environment
+      - save_cache: *cache-save
+      - run:
+          command: ./Documentation/commonServerDocs.sh
 
 
-    content_docs_site:
-      executor: content-executor
-      steps:
-        - content-setup
-        - run: ./Documentation/docs_site_update.sh
+  content_docs_site:
+    <<: *defaults
+    steps:
+      - checkout
+      - setup_remote_docker
+      - restore_cache: *cache-restore
+      - run: *prepare-environment
+      - save_cache: *cache-save
+      - run:
+          command: ./Documentation/docs_site_update.sh
 
-    create_content_artifacts:
-      executor: content-executor
-      steps:
-        - content-setup
-        - run: |
+  create_content_artifacts:
+    <<: *defaults
+    steps:
+      - checkout
+      - setup_remote_docker
+      - restore_cache: *cache-restore
+      - run: *prepare-environment
+      - save_cache: *cache-save
+      - run:
+          command: |
             demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS
             # create zip with contents of content_new.zip and content_test.zip for use in updating content on instances
             cp "$CIRCLE_ARTIFACTS/content_new.zip" "$CIRCLE_ARTIFACTS/all_content.zip"
             unzip -q "$CIRCLE_ARTIFACTS/content_test.zip" -d "test_content_dir"
             zip -j "$CIRCLE_ARTIFACTS/all_content.zip" test_content_dir/*
             rm -r test_content_dir
-        - store_artifacts:
-            path: artifacts
-            destination: artifacts
+      - store_artifacts:
+          path: artifacts
+          destination: artifacts
 
-    run_unit_test_and_lint:
-      executor: content-executor
-      steps:
-        - content-setup
-        - run: |
+  run_unit_test_and_lint:
+    <<: *defaults
+    steps:
+      - checkout
+      - setup_remote_docker
+      - restore_cache: *cache-restore
+      - run: *prepare-environment
+      - save_cache: *cache-save
+      - run:
+          command: |
             echo "demisto-sdk version: $(demisto-sdk --version)"
             echo "mypy version: $(mypy --version)"
             echo "flake8 py2 version: $(python2 -m flake8 --version)"
@@ -206,28 +229,40 @@ jobs:
               demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts --json-report ./artifacts
             fi
           name: Run demisto-sdk lint
-        - store_test_results:
-            path: ./unit-tests
-        - store_artifacts:
-            path: artifacts
-            destination: artifacts
+      - store_test_results:
+          path: ./unit-tests
+      - store_artifacts:
+          path: artifacts
+          destination: artifacts
 
-    verify_base_branch_for_contribution:
-      executor: content-executor
-      steps:
-        - content-setup
-        - run: |
+  verify_base_branch_for_contribution:
+    <<: *defaults
+    steps:
+      - checkout
+      - setup_remote_docker
+      - restore_cache: *cache-restore
+      - run: *prepare-environment
+      - save_cache: *cache-save
+      - run:
+          command: |
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]] ;
               then
                 python3 ./Tests/scripts/verify_base_branch_for_contribution.py $CIRCLE_BRANCH
             fi
 
-    configure_test_filter:
-      executor: content-executor
-      steps:
-        - content-setup
-        - run: |
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+  configure_test_filter:
+    <<: *defaults
+    steps:
+      - checkout
+      - setup_remote_docker
+      - restore_cache: *cache-restore
+      - run: *prepare-environment
+      - save_cache: *cache-save
+      - run:
+          command: demisto-sdk create-id-set -o ./Tests/id_set.json
+      - run:
+          command: |
+            if [ -n "${INSTANCE_TESTS}" ];
               then
                 echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
                 exit 0
@@ -240,7 +275,6 @@ workflows:
   version: 2
   verify_and_test:
     jobs:
-      - create_test_id_set
       - infrastructure_testing
       - validate_files_and_yaml
       - secrets

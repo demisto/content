@@ -494,18 +494,11 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
-              then
-                echo 'Skipping - running only in container number 0.'
-                exit 0;
-              else
-                python3 ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./env_results.json
+            python3 ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./env_results.json
 
-                export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
-                zip -P $PSWD $CIRCLE_ARTIFACTS/ServerLogs.zip $CIRCLE_ARTIFACTS/server*.log
-                rm -f $CIRCLE_ARTIFACTS/server*.log
-            fi
-          when: always
+            export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
+            zip -P $PSWD $CIRCLE_ARTIFACTS/ServerLogs.zip $CIRCLE_ARTIFACTS/server*.log
+            rm -f $CIRCLE_ARTIFACTS/server*.log
       - run:
           name: Upload Packs To Marketplace Storage
           command: |
