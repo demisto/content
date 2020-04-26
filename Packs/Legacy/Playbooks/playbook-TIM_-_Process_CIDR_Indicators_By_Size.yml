@@ -104,7 +104,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.MaximumCIDRSizeToApprovce
+              simple: inputs.MaximumCIDRSizeToApproce
             iscontext: true
     view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 180\n  }\n}"
     note: false
@@ -181,7 +181,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: inputs.MaximumCIDRSizeToApprovce
+                        simple: inputs.MaximumCIDRSizeToApprove
                       iscontext: true
                 accessor: value
             iscontext: true
@@ -239,7 +239,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: inputs.MaximumCIDRSizeToApprovce
+                  simple: inputs.MaximumCIDRSizeToApprove
                 iscontext: true
           accessor: value
           transformers:
@@ -275,7 +275,7 @@ inputs:
         field: ''
       fromdatelicenseval: 0001-01-01 00:00:00+00:00
     runFromLastJobTime: false
-- key: MaximumCIDRSizeToApprovce
+- key: MaximumCIDRSizeToApprove
   value: {}
   required: false
   description: The maximum number of hosts that a CIDR can contain for auto approval.
