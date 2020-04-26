@@ -2,6 +2,10 @@
 -
 
 
+## [20.4.0] - 2020-04-14
+-
+
+
 ## [20.1.0] - 2020-01-07
 Fixed an issue where child processes were defunct after converting PDF files to HTML.
 

@@ -16,7 +16,7 @@
 <li><strong>URL (for example: <a href="https://192.168.0.1:5000/" rel="nofollow">https://192.168.0.1:5000</a>)</strong></li>
 <li><strong>Username</strong></li>
 <li><strong>Use system proxy settings</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 </ul>
 </li>
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>

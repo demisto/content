@@ -1,4 +1,7 @@
 ## [Unreleased]
+Fixed an issue where incident polling did not behave as expected in some situations.
+
+## [20.4.0] - 2020-04-14
   - Added support for pulling behavior data to create new incidents.
   - Added support for the ***expanse-get-behavior*** command.
   - Added support for the ***expanse-get-certificate*** command.

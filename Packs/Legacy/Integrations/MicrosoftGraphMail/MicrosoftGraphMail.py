@@ -136,7 +136,7 @@ class MsGraphClient:
         with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages/{message_id}'  # type: ignore
         no_folder = f'/users/{user_id}/messages/{message_id}'
         suffix = with_folder if folder_id else no_folder
-        self.ms_client.http_request('DELETE', suffix)
+        self.ms_client.http_request('DELETE', suffix, resp_type="")
         return True
 
     def get_attachment(self, message_id: str, user_id: str, attachment_id: str, folder_id: str = None) -> dict:
@@ -271,7 +271,7 @@ class MsGraphClient:
         """
 
         suffix = f'/users/{user_id}/mailFolders/{folder_id}'
-        return self.ms_client.http_request('DELETE', suffix)
+        return self.ms_client.http_request('DELETE', suffix, resp_type="")
 
     def move_email(self, user_id: str, message_id: str, destination_folder_id: str) -> dict:
         """Moves email to destination folder
@@ -1432,7 +1432,7 @@ def main():
     enc_key: str = params.get('enc_key', '')
     base_url: str = urljoin(params.get('url', ''), '/v1.0')
     app_name: str = 'ms-graph-mail'
-    ok_codes: tuple = (200, 201, 202)
+    ok_codes: tuple = (200, 201, 202, 204)
     use_ssl: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
 

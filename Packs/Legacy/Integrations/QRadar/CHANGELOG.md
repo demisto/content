@@ -1,5 +1,9 @@
 ## [Unreleased]
 -
+
+
+## [20.4.0] - 2020-04-14
+-
 - Improved error handlingfor HTML error replies.
 - Fixed an issue where the ***qradar-get-search-results*** and ***qradar-get-search*** ignored the headers argument.
 - You can now supply a comma-separated list for the *value* argument in the ***qradar-update-reference-set-value*** command.

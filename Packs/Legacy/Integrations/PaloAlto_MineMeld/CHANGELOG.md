@@ -2,6 +2,10 @@
 -
 
 
+## [20.4.0] - 2020-04-14
+-
+
+
 ## [20.1.2] - 2020-01-22
 Added the *type* argument, which specifies the indicator type, to the following commands.
   - ***minemeld-add-to-miner***

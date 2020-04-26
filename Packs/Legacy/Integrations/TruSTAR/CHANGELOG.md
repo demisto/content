@@ -1,4 +1,15 @@
 ## [Unreleased]
+- Added 3 new commands:
+  - ***trustar-get-phishing-submissions***
+  - ***trustar-get-phishing-indicators***
+  - ***trustar-set-triage-status***
+- Deprecated the following commands:
+  - ***file***
+  - ***url***
+  - ***ip***
+  - ***domain***
+
+## [20.4.0] - 2020-04-14
 -
 
 

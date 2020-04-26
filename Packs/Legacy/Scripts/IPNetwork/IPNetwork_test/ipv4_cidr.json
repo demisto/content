@@ -1,0 +1,10 @@
+{
+  "Broadcast_address": "192.168.0.255",
+  "CIDR": "192.168.0.0/24",
+  "First_address": "192.168.0.0",
+  "Last_address": "192.168.0.255",
+  "Max_prefix_len": 32,
+  "Num_addresses": 256,
+  "Private": true,
+  "Version": 4
+}
