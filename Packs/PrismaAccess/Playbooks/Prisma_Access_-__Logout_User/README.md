@@ -1,4 +1,4 @@
-This playbook accepts an XDR endpoint ID and isolates it using the 'Palo Alto Networks Cortex XDR - Investigation and Response' integration.
+This playbook forces logout of a specific user and computer from Prisma Access.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -27,5 +27,3 @@ This playbook does not use any scripts.
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
-
-<!-- Playbook PNG image comes here -->

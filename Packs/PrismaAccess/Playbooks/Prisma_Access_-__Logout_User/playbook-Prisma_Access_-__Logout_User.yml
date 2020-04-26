@@ -1,8 +1,7 @@
 id: Prisma Access -  Logout User
 version: -1
 name: Prisma Access -  Logout User
-description: This playbook accepts an XDR endpoint ID and isolates it using the 'Palo
-  Alto Networks Cortex XDR - Investigation and Response' integration.
+description: This playbook forces logout of a specific user and computer from Prisma Access.
 starttaskid: '0'
 tasks:
   '0':
