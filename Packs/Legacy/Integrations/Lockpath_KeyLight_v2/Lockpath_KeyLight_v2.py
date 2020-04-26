@@ -33,9 +33,9 @@ class Client(BaseClient):
     def _http_request(self, method, url_suffix, full_url=None, headers=None,
                       auth=None, json_data=None, params=None, data=None, files=None,
                       timeout=10, resp_type='json', ok_codes=None, **kwargs):
-        res = super()._http_request(method, url_suffix, full_url, headers,
-                                    auth, json_data, params, data, files,
-                                    timeout, resp_type, ok_codes, **kwargs)
+        res = super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
+                                    auth=auth, json_data=json_data, params=params, data=data, files=files,
+                                    timeout=timeout, resp_type=resp_type, ok_codes=ok_codes, **kwargs)
         return res
 
     def login(self, username: str, password: str) -> bool:
