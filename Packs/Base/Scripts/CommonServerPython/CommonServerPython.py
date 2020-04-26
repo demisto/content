@@ -17,8 +17,6 @@ import traceback
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
 from datetime import datetime, timedelta
-from requests.adapters import HTTPAdapter
-from urllib3.util import Retry
 from abc import abstractmethod
 
 import demistomock as demisto
@@ -26,6 +24,8 @@ import demistomock as demisto
 # imports something that can be missed from docker image
 try:
     import requests
+    from requests.adapters import HTTPAdapter
+    from urllib3.util import Retry
 except Exception:
     pass
 
@@ -3350,20 +3350,23 @@ if 'requests' in sys.modules:
                 if status falls in ``status_forcelist`` range and retries have
                 been exhausted.
             """
-            retry = Retry(
-                total=retries,
-                read=retries,
-                connect=retries,
-                backoff_factor=backoff_factor,
-                status=retries,
-                status_forcelist=status_list_to_retry,
-                method_whitelist=frozenset(['GET', 'POST', 'PUT']),
-                raise_on_status=raise_on_status,
-                raise_on_redirect=raise_on_redirect
-            )
-            adapter = HTTPAdapter(max_retries=retry)
-            self._session.mount('http://', adapter)
-            self._session.mount('https://', adapter)
+            try:
+                retry = Retry(
+                    total=retries,
+                    read=retries,
+                    connect=retries,
+                    backoff_factor=backoff_factor,
+                    status=retries,
+                    status_forcelist=status_list_to_retry,
+                    method_whitelist=frozenset(['GET', 'POST', 'PUT']),
+                    raise_on_status=raise_on_status,
+                    raise_on_redirect=raise_on_redirect
+                )
+                adapter = HTTPAdapter(max_retries=retry)
+                self._session.mount('http://', adapter)
+                self._session.mount('https://', adapter)
+            except NameError:
+                pass
 
         def _http_request(self, method, url_suffix, full_url=None, headers=None, auth=None, json_data=None,
                           params=None, data=None, files=None, timeout=10, resp_type='json', ok_codes=None,
