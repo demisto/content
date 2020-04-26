@@ -1,5 +1,5 @@
 The Microsoft Management Activity API integration enables you to subscribe or unsubscribe to different audits, receive their content and fetch new content as incidents.
-This integration was integrated and tested with version xx of Microsoft Management Activity API (O365 Azure Events)
+This integration was integrated and tested with version 1.0 of Microsoft Management Activity API (O365 Azure Events)
 
 ## Authentication
 
