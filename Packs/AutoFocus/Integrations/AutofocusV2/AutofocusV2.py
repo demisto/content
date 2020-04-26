@@ -1132,7 +1132,7 @@ def samples_search_results_command():
     files = get_files_data_from_results(results)
     hr = ''
     if not results or len(results) == 0:
-        hr = results = 'No entries found that match the query'
+        hr = 'No entries found that match the query'
         status = 'complete'
     context = {
         'AutoFocus.SamplesResults(val.ID === obj.ID)': results,
