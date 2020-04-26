@@ -134,10 +134,21 @@ script:
       name: last_updated
       required: false
       secret: false
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: 'Whether to return artifacts of samples.'
+      isArray: false
+      name: artifact
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: Searches for samples in AutoFocus. To view results, run the autofocus-samples-search-results
-      command with the returned AF Cookie. The AF Cookie expires 120 seconds after the search completes.
-      `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
+      command with the returned AF Cookie. The AF Cookie expires 120 seconds after
+      the search completes. `Autofocus Query Samples, Sessions and Tags` Playbook
+      is recommended for querying and polling.
     execution: false
     name: autofocus-search-samples
     outputs:
@@ -254,8 +265,9 @@ script:
       secret: false
     deprecated: false
     description: Searches for sessions in AutoFocus. To view results, run the autofocus-sessions-search-results
-      command with the returned AF Cookie. The AF Cookie expires 120 seconds after the search completes.
-      `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
+      command with the returned AF Cookie. The AF Cookie expires 120 seconds after
+      the search completes. `Autofocus Query Samples, Sessions and Tags` Playbook
+      is recommended for querying and polling.
     execution: false
     name: autofocus-search-sessions
     outputs:
@@ -278,8 +290,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns results of a previous samples search. `Autofocus Query Samples, Sessions and Tags` Playbook is
-      recommended for querying and polling.
+    description: Returns results of a previous samples search. `Autofocus Query Samples,
+      Sessions and Tags` Playbook is recommended for querying and polling.
     execution: false
     name: autofocus-samples-search-results
     outputs:
@@ -332,6 +344,27 @@ script:
     - contextPath: File.Tags
       description: Tags of the file.
       type: String
+    - contextPath: AutoFocus.SamplesResults.Artifact.b
+      description: How many set the artifact as benign.
+      type: Number
+    - contextPath: AutoFocus.SamplesResults.Artifact.g
+      description: How many set the artifact as grayware.
+      type: Number
+    - contextPath: AutoFocus.SamplesResults.Artifact.m
+      description: How many set the artifact as malicious.
+      type: Number
+    - contextPath: AutoFocus.SamplesResults.Artifact.confidence
+      description: Confidence in the decision.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.Artifact.indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.Artifact.indicator_type
+      description: 'The indicator type, for example: Mutex, User agent, IPv4, Domain.'
+      type: String
+    - contextPath: AutoFocus.SamplesResults.ID
+      description: ID of sample search
+      type: String
   - arguments:
     - default: false
       description: The AF Cookie for retrieving the results of a previous search.
@@ -341,8 +374,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns results of a previous sessions search. `Autofocus Query Samples, Sessions and Tags` Playbook is
-      recommended for querying and polling.
+    description: Returns results of a previous sessions search. `Autofocus Query Samples,
+      Sessions and Tags` Playbook is recommended for querying and polling.
     execution: false
     name: autofocus-sessions-search-results
     outputs:
@@ -361,9 +394,6 @@ script:
     - contextPath: AutoFocus.SessionsResults.SHA256
       description: The SHA256 hash of the file.
       type: String
-    - contextPath: AutoFocus.SessionsResults.Seen
-      description: Seen date.
-      type: Date
     - contextPath: AutoFocus.SessionsResults.UploadSource
       description: The source of the uploaded sample.
       type: String
@@ -385,6 +415,9 @@ script:
     - contextPath: File.Tags
       description: Tags of the file.
       type: String
+    - contextPath: AutoFocus.SessionsResults.Seen
+      description: Session seen.
+      type: Date
   - arguments:
     - default: false
       description: The session ID.
@@ -627,8 +660,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Performs a search to identify the most popular tags. `Autofocus Query Samples, Sessions and Tags`
-      Playbook is recommended for querying and polling.
+    description: Performs a search to identify the most popular tags. `Autofocus Query
+      Samples, Sessions and Tags` Playbook is recommended for querying and polling.
     execution: false
     name: autofocus-top-tags-search
     outputs:
@@ -651,8 +684,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns the results of a previous top tags search. `Autofocus Query Samples, Sessions and Tags`
-      Playbook is recommended for querying and polling.
+    description: Returns the results of a previous top tags search. `Autofocus Query
+      Samples, Sessions and Tags` Playbook is recommended for querying and polling.
     execution: false
     name: autofocus-top-tags-results
     outputs:
@@ -1018,7 +1051,7 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 tests:
 - AutoFocus V2 test
