@@ -83,7 +83,7 @@ class Client(BaseClient):
                                 f'Check your Server URL parameter.\n\n{err}')
             except requests.exceptions.HTTPError as err:
                 demisto.debug(str(err))
-                raise Exception(f'HTTP error in the API call to {INTEGRATION_NAME}.\n')
+                raise Exception(f'HTTP error in the API call to {INTEGRATION_NAME}:\n\n' + str(err))
             except ValueError as err:
                 demisto.debug(str(err))
                 raise ValueError(f'Could not parse returned data to Json. \n\nError message: {err}')
@@ -151,7 +151,7 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, D
     """
     indicator_type = str(args.get('indicator_type'))
     indicator_type_lower = indicator_type.lower()
-    limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 10
+    limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 0
     indicators = fetch_indicators(client, limit)
     human_readable = tableToMarkdown('Prisma Access Egress IPs:', indicators,
                                      headers=['zone', 'value'], removeNull=True)
@@ -173,13 +173,17 @@ def fetch_indicators_command(client: Client) -> List[Dict]:
 
 
 def main():
+    PRISMA_ACCESS_EGRESS_V2_URI = 'getPrismaAccessIP/v2'
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
     param_api_key = demisto.params().get('api_key')
     insecure = demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy')
-    feedURL = demisto.params().get('URL')
+    baseURL = demisto.params().get('URL')
+    if baseURL[-1] != '/':
+        baseURL += '/'
+    feedURL = baseURL + PRISMA_ACCESS_EGRESS_V2_URI
 
     feedParams = {
         "serviceType": demisto.params().get('serviceType', 'all'),

@@ -2615,6 +2615,18 @@
             "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
             "timeout" : 60000,
             "fromversion": "4.5.0"
+        },
+        {
+            "playbookID": "Prisma_Access_Egress_IP_Feed-Test",
+            "timeout" : 60000,
+            "fromversion": "5.5.0",
+            "nightly": true
+        },
+        {
+            "playbookID": "Prisma_Access-Test",
+            "timeout" : 60000,
+            "fromversion": "5.5.0",
+            "nightly": true
         }
     ],
     "skipped_tests": {

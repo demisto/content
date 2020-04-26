@@ -1,44 +1,33 @@
-## Overview
----
+Integrate with Prisma Access to monitor the status of the Service, alert and take actions.
 
-Integrate with Prisma Access to monitor the status of the service, alert and take actions.
 
-The integration uses both the Panorama XML API and SSH into the PAN-OS CLI. SSH is based on the netmiko library and will use the netmiko docker image.
+This integration was integrated and tested with version xx of Prisma Access
+## Configure Prisma Access on Demisto
 
-## Use Cases
----
-
-## Configure Prisma Access on XSOAR
----
-
-1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Prisma Access.
-3. Click __Add instance__ to create and configure a new integration instance.
-    * __Name__: a textual name for the integration instance.
-    * __Server Host or IP (e.g.,  10.1.1.9 or panorama.mydomain)__
-    * __API Port (e.g 443)__
-    * __API Key__
-    * __Trust any certificate (not secure)__
-    * __Use system proxy settings__
-    * __Device group - Panorama instances only (write shared for Shared location)__
-    * __Vsys - Firewall instances only__
-    * __SSH Port__
-    * __SSH Credentials for CLI__
-4. Click __Test__ to validate the URLs, token, and connection.
-## Fetched Incidents Data
----
+3. Click **Add instance** to create and configure a new integration instance.
 
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| server | Server Host or IP \(e.g.,  10.1.1.9 or panorama.my.domain\) | True |
+| port | API Port \(e.g 443\) | False |
+| key | API Key | False |
+| insecure | Trust any certificate \(not secure\) | False |
+| proxy | Use system proxy settings | False |
+| device_group | Device group \- Panorama instances only \(write shared for Shared location\) | False |
+| vsys | Vsys \- Firewall instances only | False |
+| sshport | SSH Port | False |
+| Username | SSH Credentials for CLI | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
----
-You can execute these commands from the XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-1. prisma-access-logout-user
-2. prisma-access-query
-3. prisma-access-cli-command
-4. prisma-access-active-users
-### 1. prisma-access-logout-user
----
+### prisma-access-logout-user
+***
 Force logout a specific user from Prisma Access
+
 
 ##### Base Command
 
@@ -60,24 +49,14 @@ Force logout a specific user from Prisma Access
 
 
 ##### Command Example
-```!prisma-access-logout-user user="JSmith" domain="mydomain" computer="PC3"```
+```!prisma-access-logout-user user="jsmith" domain="acme" computer="jsmithPC"```
 
-##### Human Readable Output
-```
-Result from Prisma Access:
-{
-"result": {
-"status": "pass",
-"msg": ""success""
-}
-}
-```
 
-### 2. prisma-access-query
----
+### prisma-access-query
+***
 Run a query via the Prisma Access CLI
-##### Required Permissions
-Permissions to connect to CLI via SSH and run a debug command.
+
+
 ##### Base Command
 
 `prisma-access-query`
@@ -96,15 +75,14 @@ Permissions to connect to CLI via SSH and run a debug command.
 
 
 ##### Command Example
-```!prisma-access-query query="querystring limit=5 action getGPaaSLast90DaysUniqueUsers"```
+```!prisma-access-query query="querystring limit=2 action getGPaaSActiveUsers"```
 
 
-
-### 3. prisma-access-cli-command
----
+### prisma-access-cli-command
+***
 Run a custom CLI command on Prisma Access
-##### Required Permissions
-Permissions to connect to CLI via SSH and run a debug command.
+
+
 ##### Base Command
 
 `prisma-access-cli-command`
@@ -120,16 +98,14 @@ Permissions to connect to CLI via SSH and run a debug command.
 There is no context output for this command.
 
 ##### Command Example
-``` ```
-
-##### Human Readable Output
+```!prisma-access-cli-command cmd="show system info | match hostname"```
 
 
-### 4. prisma-access-active-users
----
+### prisma-access-active-users
+***
 Query currently active users.
-##### Required Permissions
-Permissions to connect to CLI via SSH and run a debug command.
+
+
 ##### Base Command
 
 `prisma-access-active-users`
@@ -148,4 +124,5 @@ Permissions to connect to CLI via SSH and run a debug command.
 
 
 ##### Command Example
-```!prisma-access-active-users limit="2"```
+```!prisma-access-active-users limit=10```
+

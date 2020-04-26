@@ -20,7 +20,7 @@ configuration:
 - display: API Key
   name: key
   type: 4
-  required: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -90,7 +90,7 @@ script:
     - contextPath: PrismaAccess.ActiveUsers
       description: Active Users on Prisma Access
     description: Query currently active users.
-  dockerimage: netmiko:latest
+  dockerimage: demisto/netmiko:1.0.0.7647
   runonce: false
   subtype: python3
-fromversion: 5.0.0
+fromversion: 5.5.0

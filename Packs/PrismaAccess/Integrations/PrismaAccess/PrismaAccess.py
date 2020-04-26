@@ -7,64 +7,86 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
 import requests
-from netmiko import Netmiko
 
 import demistomock as demisto
 from CommonServerPython import *
+from netmiko import Netmiko
+
+''' Common setup '''
+
+# server param is mandatory, no need to check if present
+HOSTNAME = demisto.params()['server']
 
 ''' SSH integration  setup '''
 
-HOSTNAME = demisto.params()['server']
-USERNAME = demisto.params()['Username']['identifier']
-PASSWORD = demisto.params()['Username']['password']
-SSHPORT = int(demisto.params()['sshport'])
-panos = {
-    'device_type': 'paloalto_panos',
-    'ip':          HOSTNAME,
-    'username':    USERNAME,
-    'password':    PASSWORD,
-    'port':        SSHPORT
+sshConfigured = False
 
-}
+# Others are not mandatory as user may choose to only use XML API commands and not SSH
+CREDS = demisto.params().get('Username', {})
+USERNAME = CREDS.get('identifier')
+PASSWORD = CREDS.get('password')
+SSHPORT = demisto.params().get('sshport')
+panos = {}
+
+# Does user intend to leverage SSH commands
+if USERNAME and PASSWORD and SSHPORT:
+    sshConfigured = True
+    panos = {
+        'device_type': 'paloalto_panos',
+        'ip': HOSTNAME,
+        'username': USERNAME,
+        'password': PASSWORD,
+        'port': SSHPORT
+    }
 
 
-def connect():
+def panos_connect(net_connect: Netmiko = None):
     try:
-        net_connect = Netmiko(**panos)
+        if not net_connect:
+            net_connect = Netmiko(**panos)
         prompt = net_connect.find_prompt()
     finally:
-        net_connect.disconnect()
-    return(prompt)
+        if net_connect:
+            net_connect.disconnect()
+    return prompt
 
 
-def panos_ssh(cmd: str):
-    """
-    Run any command
-    """
+def panos_ssh(cmd: str, net_connect: Netmiko = None):
+    if sshConfigured:
+        """
+        Run any command
+        """
 
- # execute command
-    try:
-        net_connect = Netmiko(**panos)
-        result_cmd = net_connect.send_command_timing(cmd)
-    finally:
-        net_connect.disconnect()
-    return result_cmd
+     # execute command
+        try:
+            if not net_connect:
+                net_connect = Netmiko(**panos)
+            result_cmd = net_connect.send_command_timing(cmd)
+        finally:
+            if net_connect:
+                net_connect.disconnect()
+        return result_cmd
+    else:
+        return_error('You must configure the SSH integration parameters to use this command.')
 
 
 def prisma_access_cli_command():
-    cmd = demisto.args().get('cmd')
-    sshRes = panos_ssh(cmd)
-    md = '### Prisma Access CLI Results\n' + sshRes
-    ec = {"PrismaAccess.CLICommand": {'Command': cmd, 'Results': sshRes}}
-    contents = sshRes
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['text'],
-        'Contents': sshRes,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': md,
-        'EntryContext': ec
-    })
+    if sshConfigured:
+        cmd = demisto.args().get('cmd')
+        sshRes = panos_ssh(cmd)
+        md = '### Prisma Access CLI Results\n' + sshRes
+        ec = {"PrismaAccess.CLICommand": {'Command': cmd, 'Results': sshRes}}
+        contents = sshRes
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': sshRes,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': ec
+        })
+    else:
+        return_error('You must configure the SSH integration parameters to use this command.')
 
 
 def prisma_access_query():
@@ -114,47 +136,54 @@ def prisma_access_active_users():
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS '''
-if not demisto.params().get('port'):
-    return_error('Set a port for the instance')
+apiConfigured = False
 
-URL = 'https://' + demisto.params()['server'].rstrip('/:') + ':' + demisto.params().get('port') + '/api/'
-API_KEY = str(demisto.params().get('key'))
-USE_SSL = not demisto.params().get('insecure')
+# Others are not mandatory as user may choose to only use XML API commands and not SSH
+KEY = demisto.params().get('key', {})
+PORT = demisto.params().get('port')
 
-# determine a vsys or a device-group
-VSYS = demisto.params().get('vsys')
-if demisto.args() and demisto.args().get('device-group', None):
-    DEVICE_GROUP = demisto.args().get('device-group')
-else:
-    DEVICE_GROUP = demisto.params().get('device_group', None)
+# Does user intend to leverage SSH commands
+if KEY and PORT:
+    apiConfigured = True
 
-# configuration check
-if DEVICE_GROUP and VSYS:
-    return_error('Cannot configure both vsys and Device group. Set vsys for firewall, set Device group for Panorama.')
-if not DEVICE_GROUP and not VSYS:
-    return_error('Set vsys for firewall or Device group for Panorama.')
+    URL = 'https://' + demisto.params()['server'].rstrip('/:') + ':' + PORT + '/api/'
+    API_KEY = str(KEY)
+    USE_SSL = not demisto.params().get('insecure')
 
-# setting security xpath relevant to FW or panorama management
-if DEVICE_GROUP:
-    device_group_shared = DEVICE_GROUP.lower()
-    if device_group_shared == 'shared':
-        XPATH_SECURITY_RULES = "/config/shared/"
-        DEVICE_GROUP = device_group_shared
+    # determine a vsys or a device-group
+    VSYS = demisto.params().get('vsys')
+    if demisto.args() and demisto.args().get('device-group', None):
+        DEVICE_GROUP = demisto.args().get('device-group')
     else:
-        XPATH_SECURITY_RULES = "/config/devices/entry/device-group/entry[@name=\'" + DEVICE_GROUP + "\']/"
-else:
-    XPATH_SECURITY_RULES = "/config/devices/entry/vsys/entry[@name=\'" + VSYS + "\']/rulebase/security/rules/entry"
+        DEVICE_GROUP = demisto.params().get('device_group', None)
 
-# setting objects xpath relevant to FW or panorama management
-if DEVICE_GROUP:
-    device_group_shared = DEVICE_GROUP.lower()
-    if DEVICE_GROUP == 'shared':
-        XPATH_OBJECTS = "/config/shared/"
-        DEVICE_GROUP = device_group_shared
+    # configuration check
+    if DEVICE_GROUP and VSYS:
+        return_error('Cannot configure both vsys and Device group. Set vsys for firewall, set Device group for Panorama.')
+    if not DEVICE_GROUP and not VSYS:
+        return_error('Set vsys for firewall or Device group for Panorama.')
+
+    # setting security xpath relevant to FW or panorama management
+    if DEVICE_GROUP:
+        device_group_shared = DEVICE_GROUP.lower()
+        if device_group_shared == 'shared':
+            XPATH_SECURITY_RULES = "/config/shared/"
+            DEVICE_GROUP = device_group_shared
+        else:
+            XPATH_SECURITY_RULES = "/config/devices/entry/device-group/entry[@name=\'" + DEVICE_GROUP + "\']/"
     else:
-        XPATH_OBJECTS = "/config/devices/entry/device-group/entry[@name=\'" + DEVICE_GROUP + "\']/"
-else:
-    XPATH_OBJECTS = "/config/devices/entry/vsys/entry[@name=\'" + VSYS + "\']/"
+        XPATH_SECURITY_RULES = "/config/devices/entry/vsys/entry[@name=\'" + VSYS + "\']/rulebase/security/rules/entry"
+
+    # setting objects xpath relevant to FW or panorama management
+    if DEVICE_GROUP:
+        device_group_shared = DEVICE_GROUP.lower()
+        if DEVICE_GROUP == 'shared':
+            XPATH_OBJECTS = "/config/shared/"
+            DEVICE_GROUP = device_group_shared
+        else:
+            XPATH_OBJECTS = "/config/devices/entry/device-group/entry[@name=\'" + DEVICE_GROUP + "\']/"
+    else:
+        XPATH_OBJECTS = "/config/devices/entry/vsys/entry[@name=\'" + VSYS + "\']/"
 
 
 PAN_OS_ERROR_DICT = {
@@ -288,25 +317,39 @@ def http_request(uri: str, method: str, headers: Dict = {},
     return json_result
 
 
-def panorama_test():
+def prisma_access_test():
     """
     test module
     """
-    params = {
-        'type': 'op',
-        'cmd': '<show><system><info></info></system></show>',
-        'key': API_KEY
-    }
 
-    http_request(
-        URL,
-        'GET',
-        params=params
-    )
+    # Test API connection only if user configured it
+    if apiConfigured:
+        try:
+            params = {
+                'type': 'op',
+                'cmd': '<show><system><info></info></system></show>',
+                'key': API_KEY
+            }
 
-    if DEVICE_GROUP and DEVICE_GROUP != 'shared':
-        device_group_test()
+            http_request(
+                URL,
+                'GET',
+                params=params
+            )
 
+            if DEVICE_GROUP and DEVICE_GROUP != 'shared':
+                device_group_test()
+        except Exception as ex:
+            raise type(ex)("PAN-OS XML API Test:\n" + str(ex))
+
+    # Test SSH connection only if user configured it
+    if sshConfigured:
+        try:
+            panos_connect()
+        except Exception as ex:
+            raise type(ex)("PAN-OS SSH CLI Test:\n" + str(ex))
+
+    # If reached this point, all ok
     demisto.results('ok')
 
 
@@ -351,18 +394,20 @@ def device_group_test():
 
 @logger
 def prisma_access_logout_user(computer: str, domain: str, user: str) -> Dict[str, str]:
-
-    xmlComputer = '<computer>%s</computer>' % b64encode(computer.encode('utf8')).decode('utf8') if computer else ''
-    b64User = (b64encode(user.encode('utf8'))).decode('utf8')
-    params = {
-        'type': 'op',
-        'key': API_KEY,
-        'cmd': '''<request><plugins><cloud_services><gpcs>
-                <logout_mobile_user><gateway>%s<domain>%s</domain><user>%s</user></gateway></logout_mobile_user>
-                </gpcs></cloud_services></plugins></request>''' % (xmlComputer, domain, b64User)
-    }
-    result = http_request(URL, 'GET', params=params)
-    return result
+    if apiConfigured:
+        xmlComputer = '<computer>%s</computer>' % b64encode(computer.encode('utf8')).decode('utf8') if computer else ''
+        b64User = (b64encode(user.encode('utf8'))).decode('utf8')
+        params = {
+            'type': 'op',
+            'key': API_KEY,
+            'cmd': '''<request><plugins><cloud_services><gpcs>
+                    <logout_mobile_user><gateway>%s<domain>%s</domain><user>%s</user></gateway></logout_mobile_user>
+                    </gpcs></cloud_services></plugins></request>''' % (xmlComputer, domain, b64User)
+        }
+        result = http_request(URL, 'GET', params=params)
+        return result
+    else:
+        return_error('You must configure the PAN-OS API Key and Port parameters to use this command.')
 
 
 def prisma_access_logout_user_command():
@@ -374,7 +419,7 @@ def prisma_access_logout_user_command():
 
     if 'result' in result['response'] and result['response']['@status'] == 'success':
         res = result['response'].get('result', '')
-        hr = '### Prisma Access Logout Results:\n'+json.dumps(res, indent=4)
+        hr = '### Prisma Access Logout Results:\n' + json.dumps(res, indent=4)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -397,7 +442,7 @@ def main():
         handle_proxy()
 
         if demisto.command() == 'test-module':
-            panorama_test()
+            prisma_access_test()
 
         elif demisto.command() == 'prisma-access-logout-user':
             prisma_access_logout_user_command()

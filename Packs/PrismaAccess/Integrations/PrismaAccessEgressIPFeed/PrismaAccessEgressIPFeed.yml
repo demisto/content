@@ -14,9 +14,9 @@ configuration:
   required: false
 - display: URL
   name: URL
-  defaultvalue: https://api.gpcloudservice.com/getPrismaAccessIP/v2
+  defaultvalue: https://api.gpcloudservice.com
   type: 0
-  required: false
+  required: true
 - display: Prisma Access API Key
   name: api_key
   type: 4
@@ -121,8 +121,8 @@ script:
   - name: prisma-access-get-indicators
     arguments:
     - name: limit
-      description: The maximum number of results to return. The default value is 10.
-      defaultValue: "10"
+      description: The maximum number of results to return.  By default all IPs are
+        returned.
     outputs:
     - contextPath: PrismaAccess.Egress.IP.Address
       description: Prisma Access Egress IP address
