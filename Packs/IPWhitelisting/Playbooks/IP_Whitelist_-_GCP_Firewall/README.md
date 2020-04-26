@@ -8,6 +8,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 * Builtin
+* Google Cloud Compute
 
 ### Scripts
 * CompareLists
