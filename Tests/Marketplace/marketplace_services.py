@@ -61,6 +61,7 @@ class PackFolders(enum.Enum):
     LAYOUTS = 'Layouts'
     CLASSIFIERS = 'Classifiers'
     MISC = 'Misc'
+    CONNECTIONS = "Connections"
 
     @classmethod
     def pack_displayed_items(cls):
@@ -72,13 +73,13 @@ class PackFolders(enum.Enum):
 
     @classmethod
     def yml_supported_folders(cls):
-        return [cls.INTEGRATIONS.value, cls.SCRIPTS.value, cls.PLAYBOOKS.value]
+        return [PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value, PackFolders.PLAYBOOKS.value]
 
     @classmethod
     def json_supported_folders(cls):
-        all_displayed_packs = cls.pack_displayed_items()
-        yml_supported_folders = cls.yml_supported_folders()
-        return [f for f in all_displayed_packs if f not in yml_supported_folders]
+        return [PackFolders.CLASSIFIERS.value, PackFolders.CONNECTIONS.value, PackFolders.DASHBOARDS.value,
+                PackFolders.INCIDENT_FIELDS.value, PackFolders.INCIDENT_TYPES.value, PackFolders.INDICATOR_FIELDS.value,
+                PackFolders.LAYOUTS.value, PackFolders.MISC.value, PackFolders.REPORTS.value, PackFolders.REPORTS.value]
 
 
 class PackStatus(enum.Enum):
@@ -592,9 +593,6 @@ class Pack(object):
                 pack_dirs[:] = [d for d in pack_dirs if d not in PackFolders.TEST_PLAYBOOKS.value]
                 current_directory = root.split(os.path.sep)[-1]
 
-                if current_directory not in PackFolders.pack_displayed_items():
-                    continue
-
                 folder_collected_items = []
                 for pack_file_name in pack_files_names:
                     if not pack_file_name.endswith(('.json', '.yml')):
@@ -614,6 +612,10 @@ class Pack(object):
                             content_item = yaml.safe_load(pack_file)
                         elif current_directory in PackFolders.json_supported_folders():
                             content_item = json.load(pack_file)
+                        else:
+                            print_warning(f"{self._pack_name} pack {current_directory} folder is not listed "
+                                          f"as supported supported folder. Skipping to next content item.")
+                            continue
 
                     # check if content item has to version
                     to_version = content_item.get('toversion') or content_item.get('toVersion')
@@ -623,6 +625,9 @@ class Pack(object):
                         print(f"{self._pack_name} pack content item {pack_file_name} has to version: {to_version}. "
                               f"{pack_file_name} file was deleted.")
                         continue
+
+                    if current_directory not in PackFolders.pack_displayed_items():
+                        continue  # skip content items that are not displayed in contentItems
 
                     print(f"Iterating over {pack_file_path} file and collecting items of {self._pack_name} pack")
                     # updated min server version from current content item
