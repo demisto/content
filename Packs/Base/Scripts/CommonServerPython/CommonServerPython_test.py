@@ -836,9 +836,315 @@ class TestBuildDBotEntry(object):
             }
         }
 
+
+class TestCommandResults:
+    def test_return_command_results(self):
+        from CommonServerPython import Common, CommandResults, EntryFormat, EntryType, DBotScoreType
+        ip = Common.IP(
+            ip='8.8.8.8',
+            asn='some asn',
+            hostname='test.com',
+            geo_country=None,
+            geo_description=None,
+            geo_latitude=None,
+            geo_longitude=None,
+            positive_engines=None,
+            detection_engines=None
+        )
+
+        dbot_score = Common.DBotScore(
+            indicator='8.8.8.8',
+            integration_name='Virus Total',
+            indicator_type=DBotScoreType.IP,
+            score=Common.DBotScore.GOOD
+        )
+        ip.set_dbot_score(dbot_score)
+
+        results = CommandResults(
+            outputs_key_field=None,
+            outputs_prefix=None,
+            outputs=None,
+            indicators=[ip]
+        )
+
+        assert results.to_context() == {
+            'Type': EntryType.NOTE,
+            'ContentsFormat': EntryFormat.JSON,
+            'Contents': None,
+            'HumanReadable': None,
+            'EntryContext': {
+                'IP(val.Address && val.Address == obj.Address)': {
+                    'Address': '8.8.8.8',
+                    'ASN': 'some asn',
+                    'Hostname': 'test.com'
+                },
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': {
+                    'Indicator': '8.8.8.8',
+                    'Vendor': 'Virus Total',
+                    'Score': 1,
+                    'Type': 'ip'
+                }
+            }
+        }
+
+    def test_create_dbot_score(self):
+        from CommonServerPython import Common, CommandResults, EntryFormat, EntryType, DBotScoreType
+
+        dbot_score = Common.DBotScore(
+            indicator='8.8.8.8',
+            integration_name='Virus Total',
+            indicator_type=DBotScoreType.IP,
+            score=Common.DBotScore.GOOD
+        )
+
+        results = CommandResults(
+            outputs_key_field=None,
+            outputs_prefix=None,
+            outputs=None,
+            indicators=[dbot_score]
+        )
+
+        assert results.to_context() == {
+            'Type': EntryType.NOTE,
+            'ContentsFormat': EntryFormat.JSON,
+            'Contents': None,
+            'HumanReadable': None,
+            'EntryContext': {
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': {
+                    'Indicator': '8.8.8.8',
+                    'Vendor': 'Virus Total',
+                    'Score': 1,
+                    'Type': 'ip'
+                }
+            }
+        }
+
+    def test_return_list_of_items(self):
+        from CommonServerPython import CommandResults, EntryFormat, EntryType
+        tickets = [
+            {
+                'ticket_id': 1,
+                'title': 'foo'
+            },
+            {
+                'ticket_id': 2,
+                'title': 'goo'
+            }
+        ]
+        results = CommandResults(
+            outputs_prefix='Jira.Ticket',
+            outputs_key_field='ticket_id',
+            outputs=tickets
+        )
+
+        assert results.to_context() == {
+            'Type': EntryType.NOTE,
+            'ContentsFormat': EntryFormat.JSON,
+            'Contents': tickets,
+            'HumanReadable': tableToMarkdown('Results', tickets),
+            'EntryContext': {
+                'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
+            }
+        }
+
+    def test_create_dbot_score_with_invalid_score(self):
+        from CommonServerPython import Common, DBotScoreType
+
+        try:
+            Common.DBotScore(
+                indicator='8.8.8.8',
+                integration_name='Virus Total',
+                score=100,
+                indicator_type=DBotScoreType.IP
+            )
+
+            assert False
+        except TypeError:
+            assert True
+
+    def test_create_ip(self):
+        from CommonServerPython import Common
+
+        ip = Common.IP(
+            ip='8.8.8.8',
+            asn='some asn',
+            hostname='test.com',
+            geo_country=None,
+            geo_description=None,
+            geo_latitude=None,
+            geo_longitude=None,
+            positive_engines=None,
+            detection_engines=None
+        )
+
+        assert ip is not None
+
+    def test_create_domain(self):
+        from CommonServerPython import CommandResults, Common, EntryType, EntryFormat, DBotScoreType
+
+        domain = Common.Domain(
+            domain='somedomain.com',
+            dns='dns.somedomain',
+            detection_engines=10,
+            positive_detections=5,
+            organization='Some Organization',
+            whois=Common.WHOIS(
+                admin_phone='18000000',
+                admin_email='admin@test.com',
+
+                registrant_name='Mr Registrant',
+
+                registrar_name='Mr Registrar',
+                registrar_abuse_email='registrar@test.com'
+            ),
+            creation_date='2019-01-01T00:00:00',
+            update_date='2019-01-02T00:00:00',
+            expiration_date=None,
+            domain_status='ACTIVE',
+            name_servers=[
+                'PNS31.CLOUDNS.NET',
+                'PNS32.CLOUDNS.NET'
+            ],
+            sub_domains=[
+                'sub-domain1.somedomain.com',
+                'sub-domain2.somedomain.com',
+                'sub-domain3.somedomain.com'
+            ]
+        )
+
+        dbot_score = Common.DBotScore(
+            indicator='somedomain.com',
+            integration_name='Virus Total',
+            indicator_type=DBotScoreType.DOMAIN,
+            score=Common.DBotScore.GOOD
+        )
+        domain.set_dbot_score(dbot_score)
+
+        results = CommandResults(
+            outputs_key_field=None,
+            outputs_prefix=None,
+            outputs=None,
+            indicators=[domain]
+        )
+
+        assert results.to_context() == {
+            'Type': EntryType.NOTE,
+            'ContentsFormat': EntryFormat.JSON,
+            'Contents': None,
+            'HumanReadable': None,
+            'EntryContext': {
+                'Domain(val.Name && val.Name == obj.Name)': {
+                    'Name': 'somedomain.com',
+                    'DNS': 'dns.somedomain',
+                    'DetectionEngines': 10,
+                    'PositiveDetections': 5,
+                    'Organization': 'Some Organization',
+                    'CreationDate': '2019-01-01T00:00:00',
+                    'UpdateDate': '2019-01-02T00:00:00',
+                    'DomainStatus': 'ACTIVE',
+                    'NameServers': [
+                        'PNS31.CLOUDNS.NET',
+                        'PNS32.CLOUDNS.NET'
+                    ],
+                    'Subdomains': [
+                        'sub-domain1.somedomain.com',
+                        'sub-domain2.somedomain.com',
+                        'sub-domain3.somedomain.com'
+                    ],
+                    'Admin': {
+                        'Phone': '18000000',
+                        'Email': 'admin@test.com',
+                        'Name': None
+                    },
+                    'Registrant': {
+                        'Name': 'Mr Registrant',
+                        'Email': None,
+                        'Phone': None
+                    },
+                    'WHOIS': {
+                        'Admin': {
+                            'Name': None,
+                            'Phone': '18000000',
+                            'Email': 'admin@test.com'
+                        },
+                        'Registrar': {
+                            'Name': 'Mr Registrar',
+                            'AbuseEmail': 'registrar@test.com',
+                            'AbusePhone': None
+                        },
+                        'Registrant': {
+                            'Name': 'Mr Registrant',
+                            'Email': None,
+                            'Phone': None
+                        }
+                    }
+                },
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': {
+                    'Indicator': 'somedomain.com',
+                    'Vendor': 'Virus Total',
+                    'Score': 1,
+                    'Type': 'domain'
+                }
+            }
+        }
+
+
+class TestBaseClient:
     from CommonServerPython import BaseClient
     text = {"status": "ok"}
     client = BaseClient('http://example.com/api/v2/', ok_codes=(200, 201))
+
+    RETRIES_POSITIVE_TEST = [
+        'get',
+        'put',
+        'post'
+    ]
+
+    @pytest.mark.parametrize('method', RETRIES_POSITIVE_TEST)
+    def test_http_requests_with_retry_sanity(self, method):
+        """
+            Given
+            - A base client
+
+            When
+            - Making http request call with retries configured to a number higher then 0
+
+            Then
+            -  Ensure a successful request return response as expected
+        """
+        url = 'http://httpbin.org/{}'.format(method)
+        res = self.client._http_request(method,
+                                        '',
+                                        full_url=url,
+                                        retries=1,
+                                        status_list_to_retry=[401])
+        assert res['url'] == url
+    RETRIES_NEGATIVE_TESTS_INPUT = [
+        ('get', 400), ('get', 401), ('get', 500),
+        ('put', 400), ('put', 401), ('put', 500),
+        ('post', 400), ('post', 401), ('post', 500),
+
+    ]
+
+    @pytest.mark.parametrize('method, status', RETRIES_NEGATIVE_TESTS_INPUT)
+    def test_http_requests_with_retry_negative_sanity(self, method, status):
+        """
+            Given
+            - A base client
+
+            When
+            - Making http request call with retries configured to a number higher then 0
+
+            Then
+            -  An unsuccessful request returns a DemistoException regardless the bad status code.
+        """
+        from CommonServerPython import DemistoException
+        with raises(DemistoException, match='{}'.format(status)):
+            self.client._http_request(method,
+                                      '',
+                                      full_url='http://httpbin.org/status/{}'.format(status),
+                                      retries=3,
+                                      status_list_to_retry=[400, 401, 500])
 
     def test_http_request_json(self, requests_mock):
         requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
@@ -1228,3 +1534,37 @@ data_test_b64_encode = [
 def test_b64_encode(_input, expected_output):
     output = b64_encode(_input)
     assert output == expected_output, 'b64_encode({}) returns: {} instead: {}'.format(_input, output, expected_output)
+
+
+def test_traceback_in_return_error_debug_mode_on(mocker):
+    mocker.patch.object(demisto, 'command', return_value="test-command")
+    mocker.spy(demisto, 'results')
+    mocker.patch('CommonServerPython.is_debug_mode', return_value=True)
+    from CommonServerPython import return_error
+
+    try:
+        raise Exception("This is a test string")
+    except Exception:
+        with pytest.raises(SystemExit):
+            return_error("some text")
+
+    assert "This is a test string" in str(demisto.results.call_args)
+    assert "Traceback" in str(demisto.results.call_args)
+    assert "some text" in str(demisto.results.call_args)
+
+
+def test_traceback_in_return_error_debug_mode_off(mocker):
+    mocker.patch.object(demisto, 'command', return_value="test-command")
+    mocker.spy(demisto, 'results')
+    mocker.patch('CommonServerPython.is_debug_mode', return_value=False)
+    from CommonServerPython import return_error
+
+    try:
+        raise Exception("This is a test string")
+    except Exception:
+        with pytest.raises(SystemExit):
+            return_error("some text")
+
+    assert "This is a test string" not in str(demisto.results.call_args)
+    assert "Traceback" not in str(demisto.results.call_args)
+    assert "some text" in str(demisto.results.call_args)

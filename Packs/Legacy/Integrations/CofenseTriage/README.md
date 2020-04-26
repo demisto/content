@@ -18,7 +18,7 @@
 <li><strong>Match Priority - the highest match priority based on rule hits for the report</strong></li>
 <li><strong>Tags - CSV list of tags of processed reports by which to filter</strong></li>
 <li><strong>Maximum number of incidents to fetch each time</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy</strong></li>
 </ul>
 </li>

@@ -2,7 +2,6 @@ commonfields:
   id: AssignAnalystToIncident
   version: -1
 name: AssignAnalystToIncident
-system: true
 script: |
   if (args.email && args.username) {
       throw 'Please provide either username or email';
@@ -27,6 +26,7 @@ script: |
   }
 
   assignBy = args.assignBy || 'random';
+  var onCallArg = true ? args.onCall === 'true' : false;
 
   function pickRandomUser(usersRes) {
       var usersList = usersRes[0].Contents.map(function (u) { return u.username });
@@ -36,28 +36,29 @@ script: |
   if (!userToAssign) {
       switch(assignBy) {
           case 'online':
-              var usersRes = executeCommand('getUsers', { roles: args.roles, online: true });
+              var usersRes = executeCommand('getUsers', { roles: args.roles, online: true, onCall: onCallArg });
               if (isError(usersRes[0])) {
                   return usersRes[0];
               }
               pickRandomUser(usersRes);
               break;
           case 'current':
-              var usersRes = executeCommand('getUsers', { current: true });
+              var usersRes = executeCommand('getUsers', { current: true, onCall: onCallArg });
               if (isError(usersRes[0])) {
                   return usersRes[0];
               }
               pickRandomUser(usersRes);
               break;
           case 'random':
-              var usersRes = executeCommand('getUsers', { roles: args.roles });
+              var usersRes = executeCommand('getUsers', { roles: args.roles, onCall: onCallArg });
               if (isError(usersRes[0])) {
                   return usersRes[0];
               }
               pickRandomUser(usersRes);
               break;
           default:
-              res = executeCommand("getOwnerSuggestion", {})[0].Contents;
+              res = executeCommand("getOwnerSuggestion", { shiftOnly: onCallArg })[0].Contents;
+
               switch (assignBy) {
                   case 'machine-learning':
                       userToAssign = res.ownerByMl;
@@ -71,7 +72,7 @@ script: |
               }
 
               if (!userToAssign) {
-                  var usersRes = executeCommand('getUsers', { roles: args.roles });
+                  var usersRes = executeCommand('getUsers', { roles: args.roles, onCall: onCallArg });
                   if (isError(usersRes[0])) {
                       return usersRes[0];
                   }
@@ -133,5 +134,12 @@ args:
 - name: email
   description: When specified, the user of provided email will be assigned as the
     incident owner (optional)
+- name: onCall
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Set to true to assign only user that is currently on shift. Requires Cortex XSOAR v5.5 or later.
+  defaultValue: "false"
 scripttarget: 0
 runonce: false
