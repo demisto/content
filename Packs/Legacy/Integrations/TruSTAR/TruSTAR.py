@@ -71,16 +71,22 @@ def translate_indicators(ts_indicators, context_path=''):
     ec = {}
     if file_context:
         ec['{}File(val.Name && val.Name === obj.Name)'.format(context_path)] = file_context
+        ec['File(val.Name && val.Name === obj.Name)'] = file_context
     if url_context:
         ec['{}URL(val.Address && val.Address === obj.Address)'.format(context_path)] = url_context
+        ec['URL(val.Address && val.Address === obj.Address)'] = url_context
     if ip_context:
         ec['{}IP(val.Address && val.Address === obj.Address)'.format(context_path)] = ip_context
+        ec['IP(val.Address && val.Address === obj.Address)'] = ip_context
     if email_context:
         ec['{}Account.Email(val.Address && val.Address === obj.Address)'.format(context_path)] = email_context
+        ec['Account.Email(val.Address && val.Address === obj.Address)'] = email_context
     if key_context:
         ec['{}RegistryKey(val.Path && val.Path === obj.Path)'.format(context_path)] = key_context
+        ec['RegistryKey(val.Path && val.Path === obj.Path)'] = key_context
     if cve_context:
         ec['{}CVE(val.ID && val.ID === obj.ID)'.format(context_path)] = cve_context
+        ec['CVE(val.ID && val.ID === obj.ID)'] = cve_context
     return indicators, ec
 
 
@@ -796,9 +802,22 @@ try:
     elif demisto.command() == 'trustar-get-enclaves':
         demisto.results(get_enclaves())
 
-    elif demisto.command() in ('file', 'ip', 'url', 'domain'):
-        deprecation_notice = "DEPRECATED - This command is no longer supported and will be removed in a future release."
-        demisto.results(deprecation_notice)
+    elif demisto.command() == 'file':
+        demisto.results(generic_search_indicator(demisto.args().get('file'), demisto.params().get(
+            'file_threshold'), ('File', 'MD5', 'SHA1', 'SHA256'), create_file_ec))
+
+    elif demisto.command() == 'ip':
+        demisto.results(generic_search_indicator(demisto.args().get('ip'),
+                                                 demisto.params().get('ip_threshold'), ('IP',), create_ip_ec))
+
+    elif demisto.command() == 'url':
+        demisto.results(generic_search_indicator(demisto.args().get('url'),
+                                                 demisto.params().get('url_threshold'), ('URL',), create_url_ec))
+
+    elif demisto.command() == 'domain':
+        demisto.results(generic_search_indicator(demisto.args().get('domain'),
+                                                 demisto.params().get('domain_threshold'),
+                                                 ('Domain', 'URL',), create_domain_ec))
 
     elif demisto.command() == 'trustar-get-phishing-indicators':
         nts = argToList(demisto.args().get('normalized_triage_score'))
