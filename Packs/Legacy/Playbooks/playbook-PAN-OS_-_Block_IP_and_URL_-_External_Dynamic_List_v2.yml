@@ -560,7 +560,7 @@ tasks:
       rule-position:
         complex:
           root: inputs.ip-rule-position
-      web-server-ip:
+      web-server-url:
         complex:
           root: 'inputs.EDLManagementServerURL '
     separatecontext: true
@@ -623,7 +623,7 @@ tasks:
       rule-position:
         complex:
           root: inputs.url-rule-position
-      web-server-ip:
+      web-server-url:
         complex:
           root: 'inputs.EDLManagementServerURL '
     separatecontext: true

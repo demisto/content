@@ -310,7 +310,7 @@ tasks:
       type:
         simple: ${inputs.ioc-type}
       url:
-        simple: ${inputs.web-server-ip}${inputs.list-name}.txt
+        simple: ${inputs.web-server-url}${inputs.list-name}.txt
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 1060,\n    \"y\": 1080\n  }\n}"
     note: false
@@ -686,11 +686,10 @@ inputs:
   value: {}
   required: false
   description: The server address to which to forward logs.
-- key: web-server-ip
+- key: web-server-url
   value: {}
   required: true
-  description: The IP address of the web server on which the files are stored. The
-    web server IP address is configured in the integration instance.
+  description: The full URL path of the web server on which the files are stored.
 - key: pre-post-rulebase
   value:
     simple: pre-rulebase
