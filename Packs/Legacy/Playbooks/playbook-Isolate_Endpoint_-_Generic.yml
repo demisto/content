@@ -24,11 +24,12 @@ tasks:
       - "1"
       - "3"
       - "4"
+      - "5"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 50
         }
       }
@@ -86,7 +87,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 370
         }
       }
@@ -163,13 +164,48 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 6ff6aacf-a0b2-4c8a-8237-de2a0911b5d3
+    type: playbook
+    task:
+      id: 6ff6aacf-a0b2-4c8a-8237-de2a0911b5d3
+      version: -1
+      name: Isolate Endpoint - Cybereason
+      playbookName: Isolate Endpoint - Cybereason
+      description: ""
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Hostname:
+        complex:
+          root: inputs.Hostname
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 385,
-        "width": 1240,
+        "width": 1670,
         "x": 50,
         "y": 50
       }
