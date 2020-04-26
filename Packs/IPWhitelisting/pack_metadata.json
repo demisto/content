@@ -24,5 +24,18 @@
     "useCases": [],
     "keywords": [],
     "price": 0,
-    "dependencies": {}
+    "dependencies": {
+		"Legacy": {
+			"display_name": "Legacy",
+			"mandatory": true
+		},
+		"Base": {
+			"display_name": "Base",
+			"mandatory": true
+		},
+		"Prisma Access": {
+			"display_name": "Prisma Access",
+			"mandatory": true
+		}
+	}
 }
