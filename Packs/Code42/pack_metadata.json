@@ -1,7 +1,7 @@
 {
     "name": "Code42",
-    "description": "\uffff\uffffUse the Code42 integration to identify potential data exfiltration from insider threats while speeding investigation and response by providing fast access to file events and metadata across physical and cloud environments.",
-    "support": "\uffffPartner",
+    "description": "Use the Code42 integration to identify potential data exfiltration from insider threats while speeding investigation and response by providing fast access to file events and metadata across physical and cloud environments.",
+    "support": "partner",
     "serverMinVersion": "1.0.0",
     "currentVersion": "1.0.0",
     "author": "Code42",
@@ -11,7 +11,7 @@
         "Endpoint"
     ],
     "tags": [
-        "Recommended by Demisto"
+        "Recommended by Cortex XSOAR"
     ],
     "created": "2020-03-11T13:16:53Z",
     "updated": "2020-03-11T13:16:53Z",

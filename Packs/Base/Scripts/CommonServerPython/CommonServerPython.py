@@ -13,9 +13,12 @@ import re
 import socket
 import sys
 import time
+import traceback
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
 from datetime import datetime, timedelta
+from requests.adapters import HTTPAdapter
+from urllib3.util import Retry
 from abc import abstractmethod
 
 import demistomock as demisto
@@ -2548,15 +2551,21 @@ def return_error(message, error='', outputs=None):
         :return: Error entry object
         :rtype: ``dict``
     """
+    is_server_handled = hasattr(demisto, 'command') and demisto.command() in ('fetch-incidents',
+                                                                              'long-running-execution',
+                                                                              'fetch-indicators')
+    if is_debug_mode() and not is_server_handled and any(sys.exc_info()):  # Checking that an exception occurred
+        message = "{}\n\n{}".format(message, traceback.format_exc())
+
     LOG(message)
     if error:
         LOG(str(error))
+
     LOG.print_log()
     if not isinstance(message, str):
         message = message.encode('utf8') if hasattr(message, 'encode') else str(message)
 
-    if hasattr(demisto, 'command') and demisto.command() in ('fetch-incidents', 'long-running-execution',
-                                                             'fetch-indicators'):
+    if is_server_handled:
         raise Exception(message)
     else:
         demisto.results({
@@ -3001,14 +3010,14 @@ class DebugLogger(object):
 
     def __init__(self):
         logging.raiseExceptions = False
-        self.handler = None  # just incase our http_client code throws an exception. so we don't error in the __del__
+        self.handler = None  # just in case our http_client code throws an exception. so we don't error in the __del__
         if IS_PY3:
             # pylint: disable=import-error
             import http.client as http_client
             # pylint: enable=import-error
             self.http_client = http_client
             self.http_client.HTTPConnection.debuglevel = 1
-            self.http_client_print = getattr(http_client, 'print', None)  # save in case someone else patched it alread
+            self.http_client_print = getattr(http_client, 'print', None)  # save in case someone else patched it already
             self.int_logger = IntegrationLogger()
             self.int_logger.set_buffering(False)
             setattr(http_client, 'print', self.int_logger.print_override)
@@ -3275,9 +3284,67 @@ if 'requests' in sys.modules:
             if not proxy:
                 self._session.trust_env = False
 
-        def _http_request(self, method, url_suffix, full_url=None, headers=None,
-                          auth=None, json_data=None, params=None, data=None, files=None,
-                          timeout=10, resp_type='json', ok_codes=None, return_empty_response = False, **kwargs):
+        def _implement_retry(self, retries=0,
+                             status_list_to_retry=None,
+                             backoff_factor=5,
+                             raise_on_redirect=False,
+                             raise_on_status=False):
+            """
+            Implements the retry mechanism.
+            In the default case where retries = 0 the request will fail on the first time
+
+            :type retries: ``int``
+            :param retries: How many retries should be made in case of a failure. when set to '0'- will fail on the first time
+
+            :type status_list_to_retry: ``iterable``
+            :param status_list_to_retry: A set of integer HTTP status codes that we should force a retry on.
+                A retry is initiated if the request method is in ['GET', 'POST', 'PUT']
+                and the response status code is in ``status_list_to_retry``.
+
+            :type backoff_factor ``float``
+            :param backoff_factor:
+                A backoff factor to apply between attempts after the second try
+                (most errors are resolved immediately by a second try without a
+                delay). urllib3 will sleep for::
+
+                    {backoff factor} * (2 ** ({number of total retries} - 1))
+
+                seconds. If the backoff_factor is 0.1, then :func:`.sleep` will sleep
+                for [0.0s, 0.2s, 0.4s, ...] between retries. It will never be longer
+                than :attr:`Retry.BACKOFF_MAX`.
+
+                By default, backoff_factor set to 5
+
+            :type raise_on_redirect ``bool``
+            :param raise_on_redirect: Whether, if the number of redirects is
+                exhausted, to raise a MaxRetryError, or to return a response with a
+                response code in the 3xx range.
+
+            :type raise_on_status ``bool``
+            :param raise_on_status: Similar meaning to ``raise_on_redirect``:
+                whether we should raise an exception, or return a response,
+                if status falls in ``status_forcelist`` range and retries have
+                been exhausted.
+            """
+            retry = Retry(
+                total=retries,
+                read=retries,
+                connect=retries,
+                backoff_factor=backoff_factor,
+                status=retries,
+                status_forcelist=status_list_to_retry,
+                method_whitelist=frozenset(['GET', 'POST', 'PUT']),
+                raise_on_status=raise_on_status,
+                raise_on_redirect=raise_on_redirect
+            )
+            adapter = HTTPAdapter(max_retries=retry)
+            self._session.mount('http://', adapter)
+            self._session.mount('https://', adapter)
+
+        def _http_request(self, method, url_suffix, full_url=None, headers=None, auth=None, json_data=None,
+                          params=None, data=None, files=None, timeout=10, resp_type='json', ok_codes=None,
+                          return_empty_response = False, retries=0, status_list_to_retry=None,
+                          backoff_factor=5, raise_on_redirect=False, raise_on_status=False, **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
             :type method: ``str``
@@ -3331,12 +3398,46 @@ if 'requests' in sys.modules:
 
             :return: Depends on the resp_type parameter
             :rtype: ``dict`` or ``str`` or ``requests.Response``
+
+            :type retries: ``int``
+            :param retries: How many retries should be made in case of a failure. when set to '0'- will fail on the first time
+
+            :type status_list_to_retry: ``iterable``
+            :param status_list_to_retry: A set of integer HTTP status codes that we should force a retry on.
+                A retry is initiated if the request method is in ['GET', 'POST', 'PUT']
+                and the response status code is in ``status_list_to_retry``.
+
+            :type backoff_factor ``float``
+            :param backoff_factor:
+                A backoff factor to apply between attempts after the second try
+                (most errors are resolved immediately by a second try without a
+                delay). urllib3 will sleep for::
+
+                    {backoff factor} * (2 ** ({number of total retries} - 1))
+
+                seconds. If the backoff_factor is 0.1, then :func:`.sleep` will sleep
+                for [0.0s, 0.2s, 0.4s, ...] between retries. It will never be longer
+                than :attr:`Retry.BACKOFF_MAX`.
+
+                By default, backoff_factor set to 5
+
+            :type raise_on_redirect ``bool``
+            :param raise_on_redirect: Whether, if the number of redirects is
+                exhausted, to raise a MaxRetryError, or to return a response with a
+                response code in the 3xx range.
+
+            :type raise_on_status ``bool``
+            :param raise_on_status: Similar meaning to ``raise_on_redirect``:
+                whether we should raise an exception, or return a response,
+                if status falls in ``status_forcelist`` range and retries have
+                been exhausted.
             """
             try:
                 # Replace params if supplied
                 address = full_url if full_url else urljoin(self._base_url, url_suffix)
                 headers = headers if headers else self._headers
                 auth = auth if auth else self._auth
+                self._implement_retry(retries, status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status)
                 # Execute
                 res = self._session.request(
                     method,
@@ -3403,6 +3504,14 @@ if 'requests' in sys.modules:
                           ' is correct and that you have access to the server from your host.' \
                     .format(err_type, exception.errno, exception.strerror)
                 raise DemistoException(err_msg, exception)
+            except requests.exceptions.RetryError as exception:
+                try:
+                    reason = 'Reason: {}'.format(exception.args[0].reason.args[0])
+                except:
+                    reason = ''
+                err_msg = 'Max Retries Error- Request attempts with {} retries failed. \n{}'.format(retries, reason)
+                raise DemistoException(err_msg, exception)
+
 
         def _is_status_code_valid(self, response, ok_codes=None):
             """If the status code is OK, return 'True'.

@@ -22,7 +22,7 @@
 <li><strong>API auth secret</strong></li>
 <li><strong>API auth key</strong></li>
 <li><strong>API url</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Fetch incidents</strong></li>
 <li><strong>Incident type</strong></li>
 <li><strong>Required severity levels for alerts separated by comma, from [Information,Warning,Threat,Severe,Critical]. For ex.: Warning, Threat</strong></li>
