@@ -2,7 +2,6 @@
     "name": "AWS - IAM",
     "description": "Amazon Web Services Identity and Access Management (IAM)",
     "support": "xsoar",
-    "serverMinVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
