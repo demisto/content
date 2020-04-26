@@ -21,7 +21,7 @@
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li><strong>Server URL (e.g. https://api.secureworks.com)</strong></li>
 <li><strong>Username</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 <li><strong>Fetch incidents</strong></li>
 <li><strong>Fetch tickets matching to one of SERVICE_REQUEST, INCIDENT or CHANGE</strong></li>
