@@ -44,7 +44,7 @@ class Client(BaseClient):
             return text
 
         try:
-            scraped_domains = sum([subs(cell.text).rstrip().split() for cell in soup.select(
+            scraped_domains: List = sum([subs(cell.text).rstrip().split() for cell in soup.select(
                 "tbody tr td") if re.findall(r'microsoft\.(com|net)', cell.text)], [])
             for domain in scraped_domains:
                 result.append({
@@ -120,7 +120,10 @@ def fetch_indicators(client: Client, feed_tags: List = [], limit: int = -1) -> L
     return indicators
 
 
-def get_indicators_command(client: Client, params: Dict[str, str], args: Dict[str, str]) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+def get_indicators_command(client: Client,
+                           params: Dict[str, str],
+                           args: Dict[str, str]
+                           ) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
     """Wrapper for retrieving indicators from the feed to the war-room.
 
     Args:
@@ -174,7 +177,9 @@ def main():
             proxy=proxy,
         )
 
-        commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
+        commands: Dict[
+            str, Callable[[Client, Dict[str, str], Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]
+        ] = {
             'test-module': test_module,
             'intune-get-indicators': get_indicators_command
         }
