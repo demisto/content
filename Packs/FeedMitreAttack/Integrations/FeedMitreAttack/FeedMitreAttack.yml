@@ -91,16 +91,16 @@ script:
     arguments:
     - name: limit
       required: true
-      description: Limit the number of indicators returned.
+      description: The maximum number of indicators to return. The default is 10.
       defaultValue: '10'
     - name: raw
       auto: PREDEFINED
       predefined:
       - 'False'
       - 'True'
-      description: Output in raw JSON format
+      description: Output in raw JSON format. Can be "True" or "False". The default is "False".
       defaultValue: 'False'
-    description: Retreives a limited number of the indicators .
+    description: Retreives a limited number of the indicators.
   - name: mitre-show-feeds
     arguments: []
     description: Shows the feed names and IDs from TAXII.
@@ -108,13 +108,13 @@ script:
     arguments:
     - name: search
       required: true
-      description: The search word
+      description: The search word.
     - name: casesensitive
       auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
-      description: Is the search case sensitive.
+      description: Whether the search case sensitive. Can be "True" or "False". The default is "False".
       defaultValue: 'False'
     outputs:
     - contextPath: indicators.id
@@ -129,13 +129,13 @@ script:
     - name: indicator
       required: true
       default: true
-      description: Indicator to lookup
+      description: Indicator to look up.
     outputs:
     - contextPath: MITRE.ATT&CK.value
-      description: Indicator value
+      description: The indicator value.
       type: string
     - contextPath: MITRE.ATT&CK.indicatorid
-      description: Indicator ID
+      description: Indicator ID.
       type: number
     description: Lookup reputation in the indicators.
   dockerimage: demisto/taxii2:1.0.0.6793
