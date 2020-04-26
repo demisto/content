@@ -1,5 +1,5 @@
 ## [Unreleased]
-- Added support for github bots
+Added support for GitHub bots.
 
 ## [20.4.0] - 2020-04-14
 -
