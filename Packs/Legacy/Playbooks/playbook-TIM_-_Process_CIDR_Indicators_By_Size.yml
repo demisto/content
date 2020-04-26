@@ -3,9 +3,9 @@ version: -1
 fromversion: 5.5.0
 name: TIM - Process CIDR Indicators By Size
 description: This playbook processes CIDR indicators of both IPV4 and IPV6. By specifying
-  in the inputs the maximum number of hosts allowed per CIDR the playbook will tag
+  in the inputs the maximum number of hosts allowed per CIDR, the playbook tags
   any CIDR that exceeds the number as pending_review. If the maximum CIDR size is
-  not specified in inputs the playbook wont run.
+  not specified in the inputs, the playbook does not run.
 starttaskid: '0'
 tasks:
   '0':
@@ -87,11 +87,11 @@ tasks:
     task:
       id: c5e590d9-9679-469b-8815-1b1c495aaa6b
       version: -1
-      name: Was maximum CIDR size specified?
+      name: Was maximum host size specified?
       type: condition
       iscommand: false
       brand: ''
-      description: ''
+      description: 'Was the maximum number of hosts permitted defined.'
     nexttasks:
       '#default#':
       - '3'
@@ -104,7 +104,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.MaximumCIDRSizeToApprove
+              simple: inputs.MaximumHostSizePermitted
             iscontext: true
     view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 180\n  }\n}"
     note: false
@@ -138,7 +138,7 @@ tasks:
     task:
       id: db408f8d-0b56-4566-8e96-4f4f5b7fa6cd
       version: -1
-      name: Are there CIDRs that exceed the maximum allowed size?
+      name: Are there CIDRs that exceed the maximum number of hosts allowed?
       type: condition
       iscommand: false
       brand: ''
@@ -181,7 +181,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: inputs.MaximumCIDRSizeToApprove
+                        simple: inputs.MaximumHostSizePermitted
                       iscontext: true
                 accessor: value
             iscontext: true
@@ -239,7 +239,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: inputs.MaximumCIDRSizeToApprove
+                  simple: inputs.MaximumHostSizePermitted
                 iscontext: true
           accessor: value
           transformers:
@@ -275,11 +275,11 @@ inputs:
         field: ''
       fromdatelicenseval: 0001-01-01 00:00:00+00:00
     runFromLastJobTime: false
-- key: MaximumCIDRSizeToApprove
+- key: MaximumHostSizePermitted
   value: {}
   required: false
   description: The maximum number of hosts that a CIDR can contain for auto approval.
-    If the number of hosts is greater than approved the CIDR will be tagged for manual
+    If the number of hosts is greater than approved, the CIDR is tagged for manual
     review.
   playbookInputQuery:
 outputs: []
