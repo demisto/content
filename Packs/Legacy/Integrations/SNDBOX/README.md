@@ -31,7 +31,7 @@
 <li><strong>Use Public API Key. (By approving SNDBOX public API you are accepting SNDBOX TOS @ https://app.sndbox.com/tos). Public submissions are shared with the community</strong></li>
 <li><strong>Private API Key</strong></li>
 <li><strong>Use system proxy settings</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Max. Polling Time (in seconds):</strong></li>
 <li><strong>Verbose (show log in case of error)</strong></li>
 </ul>
