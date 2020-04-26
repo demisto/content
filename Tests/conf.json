@@ -2671,7 +2671,8 @@
         "TAXII_Feed_Test": "Issue #22423",
         "PAN-OS Query Logs For Indicators Test": "Issue #23505",
         "Panorama Query Logs - Test": "Issue #23505",
-        "palo_alto_panorama_test_pb": "Issue #22835"
+        "palo_alto_panorama_test_pb": "Issue #22835",
+        "RecordedFutureFeed - Test": "Quota"
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
@@ -2744,6 +2745,7 @@
         "SecBI": "Issue 22545",
         "IBM Resilient Systems": "Issue 23722",
         "VxStream": "Issue #23795",
+        "Recorded Future Feed": "Quota",
 
         "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
