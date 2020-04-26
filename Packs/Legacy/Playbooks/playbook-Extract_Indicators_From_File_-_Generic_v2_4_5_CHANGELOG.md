@@ -1,5 +1,5 @@
 ## [Unreleased]
-- Added support to CSV file type.
+- Updated playbook description.
 
 
 ## [19.11.1] - 2019-11-26
