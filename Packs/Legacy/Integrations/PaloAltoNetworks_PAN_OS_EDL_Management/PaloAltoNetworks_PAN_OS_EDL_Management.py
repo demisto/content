@@ -9,6 +9,8 @@ import subprocess
 import shutil
 import os
 import traceback
+from typing import List
+from urllib.parse import urlparse, urlunparse
 
 ''' GLOBALS '''
 
@@ -42,7 +44,7 @@ def create_certificate_file(authentication: dict):
     return cert_file
 
 
-AUTHENTICATION = demisto.params().get('Authentication')
+AUTHENTICATION = demisto.params().get('Authentication', {})
 
 HOSTNAME = demisto.params().get('hostname')
 USERNAME = AUTHENTICATION.get('identifier')
@@ -122,6 +124,45 @@ def scp_execute(file_name: str, file_path: str):
             return_error('Command failed with exit status: ' + str(result.returncode))
     else:
         return True
+
+
+def parse_url(item: str) -> str:
+    """ Parse url if in url form to valid EDL form - without http / https
+
+    Args:
+        item(str): Item to parse.
+
+    Returns:
+        str: parsed item, if URL returned without http / https
+
+    Examples:
+        >>> parse_url('http://google.com')
+        'google.com'
+        >>> parse_url('https://google.com')
+        'google.com'
+        >>> parse_url('https://google.com/hello_world')
+        'google.com/hello_world'
+        >>> parse_url('not url')
+        'not url'
+    """
+    try:
+        url_obj = urlparse(item)._replace(scheme='')
+        return urlunparse(url_obj).replace('//', '')
+    except ValueError:
+        return item
+
+
+def parse_items(items: str) -> List[str]:
+    """ Parse list of item to update, parsing steps:
+        1. Remove http and https from
+
+    Args:
+        items(str): items for update
+
+    Returns:
+        list: list of parsed items.
+    """
+    return [parse_url(item) for item in argToList(items)]
 
 
 ''' COMMANDS '''
@@ -284,8 +325,10 @@ def edl_update():
     file_path = demisto.args().get('file_path')
     if DOCUMENT_ROOT:
         file_path = os.path.join(DOCUMENT_ROOT, file_path)
+
+    # Parse list items
     list_name = demisto.args().get('list_name')
-    list_items = argToList(demisto.args().get('list_items'))
+    list_items = parse_items(items=demisto.args().get('list_items'))
     if demisto.args().get('add_or_remove') not in ['add', 'remove']:
         return_error('add_or_remove argument is neither \'add\' nor \'remove\'.')
     add = demisto.args().get('add_or_remove') == 'add'
