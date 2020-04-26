@@ -700,15 +700,15 @@ tasks:
       id: 02dd331a-9400-4f13-8bdd-d1d85f23a492
       version: -1
       name: Manually debug EDL warning
-      description: "An EDL commit warning can caused by an environment issue or a\
-        \ bad playbook input, you should check the following:\n\n1. Playbook inputs\
+      description: "An EDL commit warning can be caused by an environment issue or a\
+        \ bad playbook input. Check the following:\n\n1. Playbook inputs\
         \ \n    1. IPListName - Cannot contain spaces\n    2. URLListName - Cannot\
         \ contain spaces \n    3. EDLManagementServerURL - Valid format http://hostname/listfolder/,\
         \ http://1.1.1.1/listfolder/. https://hostname/listfolder/, https://1.1.1.1/listfolder/\
         \ \n2. Possible environment issues \n    1. The EDL list\\EDL Management server\
         \ is not accessible from PAN-OS \n    2. Network Permissions \n    3. The\
-        \ URL entered on the EDL object has typo, spaces etc\n    4. List\\EDL object\
-        \ name contains spaces\n    5. EDL Objects cant handle redirect from the EDL\
+        \ URL entered on the EDL object has a typo, spaces, etc.\n    4. List\\EDL object\
+        \ name contains spaces\n    5. EDL Objects can't handle the redirect from the EDL\
         \ management server\n\n"
       type: regular
       iscommand: false
@@ -752,7 +752,7 @@ inputs:
   value: {}
   required: false
   description: IP address list from the instance context with which to override the
-    remote file. cannot contain spaces
+    remote file. Cannot contain spaces
 - key: IP
   value:
     complex:
@@ -787,7 +787,7 @@ inputs:
   value: {}
   required: false
   description: URL list from the instance context with which to override the remote
-    file. cannot contain spaces
+    file. Cannot contain spaces
 - key: LogForwarding
   value: {}
   required: false
@@ -795,7 +795,7 @@ inputs:
 - key: 'EDLManagementServerURL '
   value: {}
   required: false
-  description: "EDL Management server Full URL address.\n\n* http://hostname/pathtolist/\n\
+  description: "The EDL Management server full URL address.\n\n* http://hostname/pathtolist/\n\
     * https://hostname/pathtolist/"
 - key: AutoCommit
   value:
