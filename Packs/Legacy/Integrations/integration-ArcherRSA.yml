@@ -1472,7 +1472,7 @@ script:
                 } else if (field.ListValues != null && field.ListValues['#text'] != null) {
                     toContext.Fields[GLOBAL_MAPPING[field['-id']].Name] = field.ListValues['#text'];
                 } else {
-                    toContext.Fields[GLOBAL_MAPPING[field['-id']].Name] = field['#text'];
+                    toContext.Fields[GLOBAL_MAPPING[field['-id']].Name] = null;
                 }
             });
             outputs.push(toContext);
