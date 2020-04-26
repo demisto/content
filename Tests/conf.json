@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Smokescreen IllusionBLACK",
+            "playbookID": "Smokescreen IllusionBLACK-Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Tanium Threat Response",
             "playbookID": "Tanium Threat Response Test"
         },
@@ -319,10 +324,6 @@
         },
         {
             "playbookID": "test_similar_incidents"
-        },
-        {
-            "playbookID": "autofocus_test",
-            "integrations": "Autofocus"
         },
         {
             "playbookID": "CheckpointFW-test",
@@ -2208,7 +2209,6 @@
             "playbookID": "AutoFocus V2 test",
             "fromversion": "5.0.0",
             "timeout": 1000
-
         },
         {
             "playbookID": "Process Email - Generic for Rasterize"
@@ -2829,6 +2829,7 @@
         "Microsoft Graph User": "Test direct access to oproxy",
         "Microsoft_Graph_Files": "Test direct access to oproxy",
         "Microsoft Graph Groups": "Test direct access to oproxy",
+        "Microsoft Defender Advanced Threat Protection": "Test direct access to oproxy",
         "SafeBreach": "SSL Issues",
         "AWS - CloudWatchLogs": "Issue 20958",
         "Gmail Single User" : "googleclient sdk has time based challenge exchange",
