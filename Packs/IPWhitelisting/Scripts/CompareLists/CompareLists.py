@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 
+
 def compare(left, right):
     return {
         'ListCompare':
@@ -10,6 +11,7 @@ def compare(left, right):
                 'Both': [x for x in left if x in right]
             }
     }
+
 
 def main():
     left = argToList(demisto.args().get('left'))
@@ -24,6 +26,7 @@ def main():
         'HumanReadable': 'Set comparisons in Context.',
         'EntryContext': out
     })
+
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

@@ -67,7 +67,6 @@ def panos_ssh(cmd: str, net_connect: Netmiko = None):
         raise Exception('You must configure the SSH integration parameters to use this command.')
 
 
-
 def prisma_access_cli_command():
     if sshConfigured:
         cmd = demisto.args().get('cmd')

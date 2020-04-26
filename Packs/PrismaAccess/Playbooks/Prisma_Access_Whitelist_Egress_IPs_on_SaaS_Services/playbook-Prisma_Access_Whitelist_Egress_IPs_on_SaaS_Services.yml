@@ -13,6 +13,7 @@ tasks:
       id: aa1a3fba-8ef4-4c29-8c6e-516e657e03cb
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -98,6 +99,7 @@ tasks:
       id: f76c403a-a599-46ce-8e6d-4b5fe75319a5
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -122,6 +124,7 @@ tasks:
       id: 98ca16b2-e6b5-49a6-88e7-6de69200df94
       version: -1
       name: IP Whitelist - AWS Security Group
+      description: ""
       playbookName: IP Whitelist - AWS Security Group
       type: playbook
       iscommand: false
@@ -161,6 +164,7 @@ tasks:
       id: 08285a8e-9b30-456c-8563-e690c7907cb8
       version: -1
       name: IP Whitelist - GCP Firewall
+      description: ""
       playbookName: IP Whitelist - GCP Firewall
       type: playbook
       iscommand: false

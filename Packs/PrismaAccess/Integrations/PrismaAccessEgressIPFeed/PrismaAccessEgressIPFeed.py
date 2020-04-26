@@ -149,20 +149,19 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, D
     Returns:
         Outputs.
     """
-    indicator_type = str(args.get('indicator_type'))
     limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 0
     indicators = fetch_indicators(client, limit)
     human_readable = tableToMarkdown('Prisma Access Egress IPs:', indicators,
                                      headers=['zone', 'value'], removeNull=True)
 
     outputs = {
-    'PrismaAccess.Egress.IP':
-        [
-            {
-                'Address': ip.get('value', ''),
-                'Zone': ip.get('zone', '')
-            } for ip in indicators
-        ]
+        'PrismaAccess.Egress.IP':
+            [
+                {
+                    'Address': ip.get('value', ''),
+                    'Zone': ip.get('zone', '')
+                } for ip in indicators
+            ]
     }
 
     retIndicators = {'raw_response': indicators}
