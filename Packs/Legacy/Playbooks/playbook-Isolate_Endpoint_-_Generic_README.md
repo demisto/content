@@ -8,6 +8,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 * Block Endpoint - Carbon Black Response
 * Traps Isolate Endpoint
+* Isolate Endpoint - Cybereason
 
 ### Integrations
 This playbook does not use any integrations.
@@ -38,4 +39,6 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
+<!-- disable-secrets-detection-start -->
 ![Isolate_Endpoint_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Isolate_Endpoint_Generic.png)
+<!-- disable-secrets-detection-end -->

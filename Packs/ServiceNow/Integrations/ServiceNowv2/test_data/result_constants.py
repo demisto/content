@@ -114,6 +114,21 @@ EXPECTED_UPDATE_TICKET = {
         'Priority': '4 - Low', 'State': '1'
     }
 }
+EXPECTED_UPDATE_TICKET_SC_REQ = {
+    'ServiceNow.Ticket(val.ID===obj.ID)': {
+        'ID': '1234', 'Summary': 'Microsoft Access', 'Number': 'RITM0010028', 'CreatedOn': '2020-04-16 15:33:00',
+        'Active': 'true', 'OpenedAt': '2020-04-16 15:33:00', 'OpenedBy': 'admin',
+        'Creator': 'admin', 'Priority': '4 - Low', 'State': '1'
+    }
+}
+EXPECTED_UPDATE_TICKET_ADDITIONAL = {
+    'ServiceNow.Ticket(val.ID===obj.ID)': {
+        'ID': '1234', 'Summary': 'Trouble getting to Oregon mail server', 'Number': 'INC0000039',
+        'CreatedOn': '2019-09-05 00:42:29', 'Active': 'true', 'OpenedAt': '2019-09-05 00:41:01',
+        'approval': 'rejected', 'OpenedBy': 'admin', 'Creator': 'admin',
+        'Priority': '5 - Planning', 'State': '1'
+    }
+}
 EXPECTED_CREATE_TICKET = {
     'Ticket(val.ID===obj.ID)': {
         'ID': 'sys_id', 'Number': 'INC0010007', 'CreatedOn': '2020-04-06 13:04:44',
