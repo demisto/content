@@ -316,7 +316,7 @@ def wildfire_upload_file(upload):
                 upload_file_uri,
                 'POST',
                 body=body,
-                files={'file': file}
+                files={'file': file.read()}
             )
     finally:
         shutil.rmtree(file_name, ignore_errors=True)
