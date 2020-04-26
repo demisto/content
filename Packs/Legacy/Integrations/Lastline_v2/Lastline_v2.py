@@ -254,10 +254,6 @@ def file_hash(path: str) -> str:
     return file_hasher.hexdigest()
 
 
-def return_error(err_msg, error):
-    raise error
-
-
 def main():
     params = demisto.params()
     base_url = params.get('url')
