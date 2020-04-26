@@ -59,13 +59,13 @@ script:
   commands:
   - arguments:
     - default: true
-      description: Ticket ID of the ticket to get details of. Exactly one between tocket_id or ticket_number must be provided.
+      description: Ticket ID of the ticket to get details of. A ticket_id or ticket_number must be provided.
       isArray: false
       name: ticket_id
       required: false
       secret: false
     - default: false
-      description: Ticket Number of the ticket to get details of. Exactly one between tocket_id or ticket_number must be provided.
+      description: Ticket Number of the ticket to get details of. A ticket_id or ticket_number must be provided.
       isArray: false
       name: ticket_number
       required: false
