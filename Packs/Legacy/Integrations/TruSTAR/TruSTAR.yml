@@ -4,8 +4,8 @@ commonfields:
 name: TruSTAR
 display: TruSTAR
 category: Data Enrichment & Threat Intelligence
-description: TruSTAR's threat intelligence platform enriches every stage of the security
-  operations workflow from the trusted and relevant data sources.
+description: TruSTAR is an Intelligence Management Platform that helps you operationalize data across tools and teams,
+  helping you prioritize investigations and accelerate incident response.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
