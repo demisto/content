@@ -61,7 +61,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: Whether to set demisto out-of-the-box DBot fields
+  description: Whether to set Demisto out-of-the-box DBot fields.
   isArray: false
   name: setIncidentFields
   predefined:
