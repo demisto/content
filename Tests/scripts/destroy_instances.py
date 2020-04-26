@@ -14,6 +14,7 @@ def main():
         env_results = json.load(json_file)
 
     for env in env_results:
+        print(f'Downloading server log from {env.get("Role", "Unknown role")}')
         ssh_string = 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} ' \
                      '"sudo chmod -R 755 /var/log/demisto"'
         scp_string = 'scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ' \
@@ -38,11 +39,12 @@ def main():
             print(exc.output)
 
         if os.path.isfile("./Tests/is_build_passed_{}.txt".format(env["Role"].replace(' ', ''))):
+            print(f'Destroying instance {env.get("Role", "Unknown role")}')
             rminstance = aws_functions.destroy_instance(env["Region"], env["InstanceID"])
             if aws_functions.isError(rminstance):
                 print_error(rminstance)
         else:
-            print_warning("Tests failed on {} ,keeping instance alive".format(env["Role"]))
+            print_warning(f'Tests failed on {env.get("Role", "Unknown role")}, keeping instance alive')
 
 
 if __name__ == "__main__":
