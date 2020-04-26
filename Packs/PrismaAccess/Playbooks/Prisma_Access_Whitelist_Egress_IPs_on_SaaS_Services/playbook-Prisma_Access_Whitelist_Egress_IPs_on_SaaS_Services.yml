@@ -1,0 +1,268 @@
+id: Prisma Access Whitelist Egress IPs on SaaS Services
+version: -1
+name: Prisma Access Whitelist Egress IPs on SaaS Services
+description: Retrieve Prisma Access Egress IP for specific geographic Zones and populate
+  in security groups within cloud services.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: aa1a3fba-8ef4-4c29-8c6e-516e657e03cb
+    type: start
+    task:
+      id: aa1a3fba-8ef4-4c29-8c6e-516e657e03cb
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 81cb5852-b5f9-4cd5-8ffb-58af2534ddba
+    type: condition
+    task:
+      id: 81cb5852-b5f9-4cd5-8ffb-58af2534ddba
+      version: -1
+      name: Is Prisma Access integration enabled?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Prisma Access Egress IP feed
+                accessor: brand
+            iscontext: true
+          right:
+            value:
+              simple: Prisma Access Egress IP feed
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: f76c403a-a599-46ce-8e6d-4b5fe75319a5
+    type: title
+    task:
+      id: f76c403a-a599-46ce-8e6d-4b5fe75319a5
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 98ca16b2-e6b5-49a6-88e7-6de69200df94
+    type: playbook
+    task:
+      id: 98ca16b2-e6b5-49a6-88e7-6de69200df94
+      version: -1
+      name: IP Whitelist - AWS Security Group
+      description: ""
+      playbookName: IP Whitelist - AWS Security Group
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      IP:
+        simple: ${PrismaAccess.Egress.IP(["Cambodia","Argentina"].indexOf(val.Zone)>=0).Address}
+      IndicatorTagName:
+        simple: AWS_Prisma_IP_Whitelist
+      SecurityGroupName: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "36":
+    id: "36"
+    taskid: 08285a8e-9b30-456c-8563-e690c7907cb8
+    type: playbook
+    task:
+      id: 08285a8e-9b30-456c-8563-e690c7907cb8
+      version: -1
+      name: IP Whitelist - GCP Firewall
+      description: ""
+      playbookName: IP Whitelist - GCP Firewall
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      GCPFirewallName: {}
+      IP:
+        simple: ${PrismaAccess.Egress.IP(["Cambodia","Argentina"].indexOf(val.Zone)>=0).Address}
+      IndicatorTagName:
+        simple: GCP_Prisma_IP_Whitelist
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "40":
+    id: "40"
+    taskid: 92b4a48f-be9d-40f9-8970-0883b0e6d0a6
+    type: regular
+    task:
+      id: 92b4a48f-be9d-40f9-8970-0883b0e6d0a6
+      version: -1
+      name: Prisma Access Egress IP Feed - Get IPs
+      description: Gets indicators from the feed.
+      script: '|||prisma-access-get-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+      - "36"
+    scriptarguments:
+      limit:
+        simple: "1000"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 875,
+        "width": 1100,
+        "x": 40,
+        "y": 200
+      }
+    }
+  }
+inputs:
+- key: ""
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+    query: ""
+    queryEntity: indicators
+    results: null
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue: null
+        fromvalue: null
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: false
+outputs: []
+quiet: true
+fromversion: 5.5.0
