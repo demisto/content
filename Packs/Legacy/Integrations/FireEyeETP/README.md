@@ -1,18 +1,18 @@
-#FireEye Email Threat Prevention (ETP)
+# FireEye Email Threat Prevention (ETP)
 
-##Overview
+## Overview
 Use the FireEye Email Threat Prevention (ETP) integration to import messages as incidents, search for messages with specific attributes, and retrieve alert data.
 
-##Use Cases
+## Use Cases
 * Search for messages using specific message attributes as indicators.
 * Import messages as Demisto incidents, using the message status as indicator.
 
-##Prerequisites
+## Prerequisites
 Make sure you obtain the following information.
 * Valid FireEye ETP account
 * Configure an API key on the ETP Web portal. Select the product as both *Email Threat Prevention* and *Identity Access Management*. Select all entitlements.
 
-##Configure FireEye ETP on Demisto
+## Configure FireEye ETP on Demisto
 1. Navigate to *Settings > Integrations > Servers & Services*.
 2. Search for FireEye ETP.
 3. Click *Add instance* to create and configure a new integration instance.
@@ -37,7 +37,7 @@ Make sure you obtain the following information.
         * temporary failure
 4. Click Test to validate the URLs and connection.
 
-##Fetched Incidents Data
+## Fetched Incidents Data
 To use Fetch incidents:
 1. Configure a new instance.
 2. Navigate to *instance settings*, and specify the *message status* (using the valid values).
@@ -45,22 +45,24 @@ To use Fetch incidents:
 
 The integration will fetch alerts as incidents. It is possible to filter alerts using the specified message status.
 
-##Commands
+## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-1. [Search for messages: fireeye-etp-search-messages](#Search for messages)
+1. [Search for messages: fireeye-etp-search-messages](###Search for messages)
 2. [Get metadata of a specified message: fireeye-etp-get-message](#Get metadata of a specified message)
 3. [Get summary of all alerts: fireeye-etp-get-alerts](#Get summary of all alerts)
 4. [Get details of a specified alert: fireeye-etp-get-alert](#Get details of specified alert)
 
-###Search for messages
+* * *
+
+### Search for messages
 Search for messages using specific message attributes as indicators.
 
-#####Base Command
+##### Base Command
 
 `fireeye-etp-search-messages`
 
-#####Input
+##### Input
 
 |Parameter|Description|More Information|
 |---|---|---|
@@ -80,7 +82,7 @@ Search for messages using specific message attributes as indicators.
 |has_attachments|Indicates if the message has attachments|Boolean value|
 |max_message_size|Maximum message size|Default value is 20 KB.<br/>Maximum value is 100 KB.|
 
-#####Context Output
+##### Context Output
 
 |Path|Description|
 |---|---|
@@ -103,13 +105,13 @@ Search for messages using specific message attributes as indicators.
 |FireEyeETP.Message.verdicts.PV|Verdict for PV (pass/fail)|
 |FireEyeETP.Message.id|Message ID|
  
-#####Command example 1
+##### Command example 1
 `!fireeye-etp-search-messages to_accepted_date_time=2017-10- 24T10:00:00.000Z from_accepted_date_time=2017-10- 24T10:30:00.000Z`
 
-#####Command example 2
+##### Command example 2
 `!fireeye-etp-search-messages from_email=diana@corp.com,charles@corp.com`
 
-#####Raw Output
+##### Raw Output
 <pre>
 {  
    "data":[  
@@ -164,18 +166,18 @@ Search for messages using specific message attributes as indicators.
 }
 </pre>
 
-###Get metadata of a specified message
+### Get metadata of a specified message
 Get the metadata of a specified message.
 
-#####Base Command
+#### Base Command
 `fireeye-etp-get-message`
 
-#####Input
+##### Input
 |Parameter|Description|
 |---|----|
 |message_id|Message ID|
  
-#####Context Output
+##### Context Output
 |Path|Description|
 |---|---|
 |FireEyeETP.Message.acceptedDateTime|Date and time that the message was accepted|
@@ -197,19 +199,19 @@ Get the metadata of a specified message.
 |FireEyeETP.Message.verdicts.PV|Verdict for PV (pass/fail)|
 |FireEyeETP.Message.id|Message ID|
  
-#####Command example
+##### Command example
 `!fireeye-etp-get-message message_id= C88B18749AAAAB1B55fc0fa78`
 
-#####Raw Output
+##### Raw Output
 There is no raw output for this command.
 
-###Get summary of all alerts
+### Get summary of all alerts
 Get summary-format information about the alerts. Alerts that are more than 90 days old are not available.
 
-#####Base Command
+##### Base Command
 fireeye-etp-get-alerts
 
-#####Input
+##### Input
 |Parameter|Description|More Information|
 |---|---|---|
 |legacy_id|Alert ID as shown in ETP Web Portal|
@@ -217,7 +219,7 @@ fireeye-etp-get-alerts
 |etp_message_id|Email message ID|
 |size|Number of alerts intended in response|Default is 20.<br />Valid range is 1-100.|
 
-#####Context Output
+##### Context Output
 |Path|Description|
 |---|---|
 |FireEyeETP.Alerts.meta.read|Has the email been read?|
@@ -239,10 +241,10 @@ fireeye-etp-get-alerts
 |FireEyeETP.Alerts.email.timestamp.accepted|Time the email was accepted|
 |FireEyeETP.Alerts.id|Alert ID|
  
-#####Command example
+##### Command example
 `!fireeye-etp-get-alerts legacy_id=50038117`
 
-#####Raw Output
+##### Raw Output
 <pre>
 {
   "data": [
@@ -292,19 +294,19 @@ fireeye-etp-get-alerts
 }
 </pre>
 
-###Get details of specified alert
+### Get details of specified alert
 Returns detailed information for any specified alert. Alerts that are more than 90 days old are not available.
 
-#####Base Command
+##### Base Command
 `fireeye-etp-get-alert`
 
-#####Input
+##### Input
 |Parameter|Description|
 |---|---|
 |alert_id|Alert ID|
  
 
-#####Context Output
+##### Context Output
 |Path|Description|
 |---|---|
 |FireEyeETP.Alerts.meta.read|Has the email been read?|
@@ -341,10 +343,10 @@ Returns detailed information for any specified alert. Alerts that are more than 
 |FireEyeETP.Alerts.email.timestamp.accepted|Time that the email was accepted|
 |FireEyeETP.Alerts.id|The alert unique ID|  
  
-#####Command example
+##### Command example
 `!fireeye-etp-get-alert alert_id= AWKMOs-2_r7_CWOc2okO`
 
-#####Raw Output
+##### Raw Output
 <pre>
 {  
    "data":[  
