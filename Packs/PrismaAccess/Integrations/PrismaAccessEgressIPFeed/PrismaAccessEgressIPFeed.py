@@ -151,7 +151,7 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, D
     """
     indicator_type = str(args.get('indicator_type'))
     indicator_type_lower = indicator_type.lower()
-    limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 10
+    limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 0
     indicators = fetch_indicators(client, limit)
     human_readable = tableToMarkdown('Prisma Access Egress IPs:', indicators,
                                      headers=['zone', 'value'], removeNull=True)
