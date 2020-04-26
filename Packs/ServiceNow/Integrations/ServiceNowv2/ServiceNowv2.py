@@ -646,7 +646,7 @@ class Client(BaseClient):
         return self.send_request(f'table/{table_name}?sysparm_limit=1', 'GET')
 
     def document_route_to_table_request(self, queue_id: str, document_table: str, document_id: str) -> dict:
-        """Get table fields by sending a GET request.
+        """Routes a document(ticket/incident) to a queue by sending a GET request.
 
         Args:
         queue_id: Queue ID.
@@ -1435,7 +1435,7 @@ def get_table_name_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, A
 
 
 def document_route_to_table(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any], bool]:
-    """List table fields.
+    """Document routes to table.
 
     Args:
         client: Client object with request.
