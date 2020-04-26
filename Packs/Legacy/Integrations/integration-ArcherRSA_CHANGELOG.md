@@ -1,5 +1,5 @@
 ## [Unreleased]
-Fixed a bug in searh which caused type 4 fields not to be displayed.
+Fixed an issue where type 4 fields were not displayed in search.
 
 
 ## [20.3.3] - 2020-03-18
