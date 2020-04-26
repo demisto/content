@@ -918,22 +918,11 @@ tasks:
       - '26'
     scriptarguments:
       add_to_context: {}
-      brand_name: {}
+      brand_name:
+        simple: HelloWorld
       error_msg_in_incident: {}
       expect_data: {}
-      instance_name:
-        complex:
-          root: modules
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: modules.brand
-                iscontext: true
-              right:
-                value:
-                  simple: HelloWorld
-          accessor: name
+      instance_name: {}
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 4450\n  }\n}"
     note: false
