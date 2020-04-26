@@ -224,7 +224,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
+    quietmode: 1
 view: |-
   {
     "linkLabelsPosition": {},
