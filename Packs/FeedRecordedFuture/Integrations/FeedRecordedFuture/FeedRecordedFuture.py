@@ -42,7 +42,7 @@ class Client(BaseClient):
              indicator_type: string, the indicator type of the feed.
              api_token: string, the api token for RecordedFuture.
              services: list, the services from RecordedFuture.
-             risk_rule: string, an optional argument to the 'ConnectApi' service request.
+             risk_rule: string, an optional argument to the 'Connect Api' service request.
              fusion_file_path: string, an optional argument to the 'Fusion' service request.
              insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
              polling_timeout: timeout of the polling request in seconds. Default: 20
@@ -66,13 +66,13 @@ class Client(BaseClient):
     def _build_request(self, service, indicator_type):
         """Builds the request for the Recorded Future feed.
         Args:
-            service (str): The service from recorded future. Can be 'connectApi' or 'fusion'
+            service (str): The service from recorded future. Can be 'Connect Api' or 'Fusion'
             indicator_type (str) The indicator type. Can be 'domain', 'ip', 'hash' or 'url'
 
         Returns:
             requests.PreparedRequest: The prepared request which will be sent to the server
         """
-        if service == 'Connect Api':
+        if service in ('Connect Api', 'connectApi'):
             if self.risk_rule is None:
                 url = self.BASE_URL + indicator_type + '/risklist'
             else:
@@ -85,7 +85,7 @@ class Client(BaseClient):
                 params=self.PARAMS
             )
 
-        elif service == 'Fusion':
+        elif service in ('Fusion', 'fusion'):
             url = self.BASE_URL + 'fusion/files/?path='
             if self.fusion_file_path is None:
                 fusion_path = '/public/risklists/default_' + indicator_type + '_risklist.csv'
@@ -102,7 +102,7 @@ class Client(BaseClient):
     def build_iterator(self, service, indicator_type):
         """Retrieves all entries from the feed.
         Args:
-            service (str): The service from recorded future. Can be 'connectApi' or 'fusion'
+            service (str): The service from recorded future. Can be 'Connect Api' or 'Fusion'
             indicator_type (str) The indicator type. Can be 'domain', 'ip', 'hash' or 'url'
 
         Returns:
@@ -162,9 +162,9 @@ class Client(BaseClient):
             None in success, Error otherwise
         """
         if self.risk_rule is not None:
-            if 'connectApi' not in self.services:
-                return_error("You entered a risk rule but the 'connectApi' service is not chosen. "
-                             "Add the 'connectApi' service to the list or remove the risk rule.")
+            if 'Connect Api' not in self.services and 'connectApi' not in self.services:
+                return_error("You entered a risk rule but the 'Connect Api' service is not chosen. "
+                             "Add the 'Connect Api' service to the list or remove the risk rule.")
 
             elif not is_valid_risk_rule(self, self.risk_rule):
                 return_error("The given risk rule does not exist, "
@@ -172,9 +172,9 @@ class Client(BaseClient):
                              "To see all available risk rules run the '!rf-get-risk-rules' command.")
 
         if self.fusion_file_path is not None:
-            if 'fusion' not in self.services:
-                return_error("You entered a fusion file path but the 'fusion' service is not chosen. "
-                             "Add the 'fusion' service to the list or remove the fusion file path.")
+            if 'Fusion' not in self.services and 'fusion' not in self.services:
+                return_error("You entered a fusion file path but the 'Fusion' service is not chosen. "
+                             "Add the 'Fusion' service to the list or remove the fusion file path.")
 
 
 def is_valid_risk_rule(client: Client, risk_rule):
