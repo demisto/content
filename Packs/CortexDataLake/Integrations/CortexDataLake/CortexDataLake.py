@@ -79,7 +79,7 @@ class Client(BaseClient):
         oproxy_response = self._http_request('POST',
                                              '/cdl-token',
                                              json_data={'token': get_encrypted(self.refresh_token, self.enc_key)},
-                                             timeout=30,
+                                             timeout=(60 * 3, 60 * 3),
                                              retries=3,
                                              backoff_factor=10,
                                              status_list_to_retry=[400])
@@ -111,10 +111,13 @@ class Client(BaseClient):
 
         if not response.ok:
             status_code = response.status_code
-            # For some error responses the messages are in 'query_result['errors'] and for some they are simply
-            # in 'query_result
-            errors = query_result.get('errors', query_result)
-            error_message = ''.join([message.get('message') for message in errors])
+            try:
+                # For some error responses the messages are in 'query_result['errors'] and for some they are simply
+                # in 'query_result
+                errors = query_result.get('errors', query_result)
+                error_message = ''.join([message.get('message') for message in errors])
+            except AttributeError:
+                error_message = query_result
 
             raise DemistoException(f'Error in query to Cortex Data Lake [{status_code}] - {error_message}')
 
