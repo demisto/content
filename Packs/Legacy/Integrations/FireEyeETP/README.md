@@ -48,7 +48,7 @@ The integration will fetch alerts as incidents. It is possible to filter alerts 
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-1. [Search for messages: fireeye-etp-search-messages](#search-for-message)
+1. [Search for messages: fireeye-etp-search-messages](#search-for-messages)
 2. [Get metadata of a specified message: fireeye-etp-get-message](#get-metadata-of-a-specified-message)
 3. [Get summary of all alerts: fireeye-etp-get-alerts](#get-summary-of-all-alerts)
 4. [Get details of a specified alert: fireeye-etp-get-alert](#get-details-of-specified-alert)
@@ -165,6 +165,8 @@ Search for messages using specific message attributes as indicators.
    }
 }
 </pre>
+
+* * *
 
 ### Get metadata of a specified message
 Get the metadata of a specified message.
@@ -293,6 +295,8 @@ fireeye-etp-get-alerts
   "type": "alerts"
 }
 </pre>
+
+* * *
 
 ### Get details of specified alert
 Returns detailed information for any specified alert. Alerts that are more than 90 days old are not available.
