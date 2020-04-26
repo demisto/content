@@ -7,8 +7,8 @@ import time
 import requests
 import collections
 import json as JSON
+from urlparse import urlparse
 from requests.utils import quote  # type: ignore
-from urllib.parse import urlparse
 
 
 """ POLLING FUNCTIONS"""
