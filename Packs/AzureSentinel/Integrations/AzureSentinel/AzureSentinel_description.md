@@ -13,7 +13,7 @@ You need to grant Cortex XSOAR authorization to access Azure Sentinel.
 
 Follow these steps for a self-deployed configuration.
 
-1. To use a self configured Azure application, a new Azure App Registration should be added in the Azure Portal. To add such registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
+1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
 2. Make sure the following permissions are granted for the app registration:
    -  API/Permission name `user_impersonation` of type `Delegated`
 3. Copy the following URL and replace the ***CLIENT_ID*** and ***REDIRECT_URI*** with your own client ID and redirect URI, accordingly.
