@@ -1,13 +1,13 @@
 args:
 - default: false
   defaultValue: Phishing
-  description: A common-separatetd list of incident types by which to filter.
+  description: A common-separated list of incident types by which to filter.
   isArray: false
   name: incidentTypes
   required: false
   secret: false
 - default: false
-  description: The incidents query to fetch the training data for the model.
+  description: The incident query to fetch the training data for the model.
   isArray: false
   name: incidentsQuery
   required: false
@@ -57,8 +57,8 @@ args:
   required: false
   secret: false
 - default: false
-  description: A comma-separated list of incident fields names to include in the results
-    file
+  description: A comma-separated list of incident field names to include in the results
+    file.
   isArray: false
   name: additionalFields
   required: false
@@ -96,4 +96,4 @@ tags:
 timeout: 120µs
 tests:
   - No test
-comment: Evaluate ML model in production
+comment: Evaluates an ML model in production.
