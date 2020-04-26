@@ -479,7 +479,7 @@ class Pack(object):
             if signature_string:
                 with open("keyfile", "wb") as keyfile:
                     keyfile.write(signature_string.encode())
-                arg = f'./signDirectory {self._pack_path} /keyfile base64'
+                arg = f'./signDirectory {self._pack_path} keyfile base64'
                 signing_process = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 output, err = signing_process.communicate()
 
@@ -584,7 +584,7 @@ class Pack(object):
                 PackFolders.INCIDENT_TYPES.value: "incidenttype",
                 PackFolders.DASHBOARDS.value: "dashboard",
                 PackFolders.INDICATOR_FIELDS.value: "indicatorfield",
-                PackFolders.REPORTS.value: "reports",
+                PackFolders.REPORTS.value: "report",
                 PackFolders.MISC.value: "reputation"
             }
 
@@ -676,15 +676,10 @@ class Pack(object):
                             'type': content_item.get('type', ""),
                             'description': content_item.get('description', "")
                         })
-                    elif current_directory == PackFolders.REPORTS.value:  # todo finalize this part with server side
-                        dash_board_section = content_item.get('dashboard', {})
-
+                    elif current_directory == PackFolders.REPORTS.value:
                         folder_collected_items.append({
                             'name': content_item.get('name', ""),
-                            'fromDate': dash_board_section.get('fromDate', ""),
-                            'toDate': dash_board_section.get('toDate', ""),
-                            'period': dash_board_section.get('period', {}),
-                            'fromDateLicense': dash_board_section.get('fromDateLicense', "")
+                            'description': content_item.get('description', "")
                         })
                     elif current_directory == PackFolders.MISC.value:
                         folder_collected_items.append({
