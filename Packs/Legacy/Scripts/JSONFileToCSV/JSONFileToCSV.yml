@@ -47,6 +47,7 @@ script: '-'
 system: false
 timeout: 600ns
 type: python
+subtype: python2
 runonce: false
 tags: []
 tests:

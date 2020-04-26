@@ -80,7 +80,7 @@
 <li><strong>Server URL (e.g. <a href="https://192.168.0.1/" rel="nofollow">https://192.168.0.1</a>)</strong></li>
 <li><strong>Port</strong></li>
 <li><strong>API Key</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 <li>
 <strong>Device group - Required for Panorama instance</strong>. If you want to use a shared location, the value in this field should be "shared".</li>
@@ -2340,6 +2340,11 @@
 <td style="width: 242px;">Panorama.Commit.Details</td>
 <td style="width: 81px;">string</td>
 <td style="width: 417px;">Job ID details.</td>
+</tr>
+<tr>
+<td style="width: 242px;">Panorama.Commit.Warnings</td>
+<td style="width: 81px;">string</td>
+<td style="width: 417px;">Job ID warnings.</td>
 </tr>
 </tbody>
 </table>
