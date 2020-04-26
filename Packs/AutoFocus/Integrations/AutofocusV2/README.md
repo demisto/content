@@ -70,6 +70,7 @@ Searches for samples. To view results run the `autofocus-samples-search-results`
 | domain | The domain to search. | Optional | 
 | ip | The IP address to search. | Optional | 
 | url | The URL to search. | Optional | 
+| artifact | Whether to return artifacts of samples. | Optional | 
 | wildfire_verdict | The WildFire verdict. Can be "Malware", "Grayware", "Benign", or "Phishing". | Optional | 
 | first_seen | The date range of the creation date. Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end. Example: 2019-09-09T00:00:00,2019-09-09T23:01:59 | Optional | 
 | last_updated | The date range of the last updated date. Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end. Example: 2019-09-09T00:00:00,2019-09-09T23:01:59 | Optional | 
@@ -207,6 +208,12 @@ Returns the results of a previous samples search.
 | AutoFocus.SamplesResults.Verdict | Number | The verdict of the sample. | 
 | AutoFocus.SamplesResults.TagGroups | String | The groups of relevant tags. | 
 | AutoFocus.SamplesSearch.Status | String | The search status. Can be "in progress" or "complete". | 
+| AutoFocus.SamplesSearch.Artifact.b | Number | How many set the artifact as benign. | 
+| AutoFocus.SamplesSearch.Artifact.g | Number | How many set the artifact as grayware. | 
+| AutoFocus.SamplesSearch.Artifact.m | Number | How many set the artifact as malicious. | 
+| AutoFocus.SamplesSearch.Artifact.confidence | String | How confident the decision. | 
+| AutoFocus.SamplesSearch.Artifact.indicator | String | The indicator that was tested. | 
+| AutoFocus.SamplesSearch.Artifact.indicator_type | String | The indicator type, for example: Mutex, User agent, IPv4, Domain. | 
 | File.Size | Number | The size of the file in bytes. | 
 | File.SHA1 | String | The SHA1 hash of the file. | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
@@ -231,20 +238,59 @@ Returns the results of a previous samples search.
     ], 
     "AutoFocus.SamplesResults": [
         {
-            "tag_groups": [], 
-            "update_date": "2013-12-04T16:37:03", 
-            "Created": "2011-07-14T19:37:28", 
-            "FileType": "PE", 
-            "ispublic": 2, 
-            "ID": "55f66d613414b35d46e48b952541403a5b2a5d1a1e3c0bef2bd76607b41400b9", 
-            "Finished": "2013-12-04T16:37:03", 
-            "Size": 28832, 
-            "Verdict": 1, 
-            "SHA256": "55f66d613414b35d46e48b952541403a5b2a5d1a1e3c0bef2bd76607b41400b9", 
+            "Artifact": [
+                {
+                    "b": 914,
+                    "confidence": "interesting",
+                    "g": 25,
+                    "indicator": "1048576",
+                    "indicator_type": "Mutex",
+                    "m": 292
+                },
+                {
+                    "b": 120,
+                    "confidence": "interesting",
+                    "g": 0,
+                    "indicator": "1048577",
+                    "indicator_type": "Mutex",
+                    "m": 179
+                },
+                {
+                    "b": 64605,
+                    "confidence": "suspect",
+                    "g": 7095,
+                    "indicator": "ZonesCacheCounterMutex",
+                    "indicator_type": "Mutex",
+                    "m": 512566
+                }
+            ],
+            "Created": "2020-04-03T00:35:53",
+            "FileType": "PE",
+            "Finished": "2020-04-03T00:43:33",
+            "ID": "2dfb6b0cb24d745fa412479ea3b0cabe9d2b57e008016656af55a6d3832c2091",
+            "MD5": "ef05777192cccc6502609dbdf0dc6149",
             "Region": [
                 "us"
-            ], 
-            "MD5": "6d34c561e20e76e6b62568d83f39ef1c"
+            ],
+            "SHA1": "c23fe9ce9c9f6260c5eb385cbb71fa1f6817cca5",
+            "SHA256": "2dfb6b0cb24d745fa412479ea3b0cabe9d2b57e008016656af55a6d3832c2091",
+            "Size": 234505,
+            "Tags": [
+                "Unit42.InitialSystemDataEnumeration",
+                "Unit42.RunOnce",
+                "Unit42.GandCrab"
+            ],
+            "Verdict": 1,
+            "imphash": "af2a98692b8b30d8401f26d24a673b23",
+            "ssdeep": "3072:kKogwq8P3Nm0ZSLPjerAg0FuD5HibZ6nEdMmgcUUcNS7FY+qTtwuz0f8TpIe8OuW:CvqqAOF+640UcSFNuzokpIx95K3",
+            "tag_groups": [
+                "Ransomware"
+            ],
+            "tasks": [
+                {
+                    "metadata_compilation_ts": "2018-05-14T22:05:59"
+                }
+            ]
         }
     ], 
     "AutoFocus.SamplesSearch": {
@@ -255,39 +301,18 @@ Returns the results of a previous samples search.
 ```
 
 ##### Human Readable Output
-##### Search Samples Results is complete
-|Created|FileType|Finished|ID|MD5|Region|SHA256|Size|Verdict|ispublic|tag_groups|update_date|
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| 2011-07-14T19:37:28 | PE | 2013-12-04T16:37:03 | 55f66d613414b35d46e48b952541403a5b2a5d1a1e3c0bef2bd76607b41400b9 | 6d34c561e20e76e6b62568d83f39ef1c | us | 55f66d613414b35d46e48b952541403a5b2a5d1a1e3c0bef2bd76607b41400b9 | 28832 | 1 | 2 |  | 2013-12-04T16:37:03 |
-| 2011-07-14T21:20:31 | PE | 2013-12-04T16:38:03 | 029269655941e1a963916837cd3c6489422b8e75a41c33a87e28bf4af02da7dc | ee4e6d2d64507089fea3768dca417738 | us | 029269655941e1a963916837cd3c6489422b8e75a41c33a87e28bf4af02da7dc | 56832 | 1 | 1 |  | 2013-12-04T16:38:03 |
-| 2011-07-14T21:43:14 | PE | 2013-12-04T16:42:23 | 65d664d9101a064209ed4aabd5b..........476f3049070370d09195ffa5d5f | b9d6a5f0bb8..........3129bb9b1cc | us | 65d664d9101a064209ed4aabd5b..........476f3049070370d09195ffa5d5f | 28864 | 1 |  |  | 2013-12-04T16:42:23 |
-| 2011-07-14T21:46:15 | PE |  | f1db690de6bf92076a0d1572ba1..........be3a79ec73652b2dacd5d39f016 | dc4c0a463cb..........c48a0853aa3 | us | f1db690de6bf92076a0d1572ba1..........be3a79ec73652b2dacd5d39f016 | 40275 | 1 |  |  |  |
-| 2011-07-14T21:46:40 | PE |  | 9dafb74fa01520c6e2868b7aa23..........ac4a09e3deec539077971c11316 | 57920ed8aea..........a6ba2697329 | us | 9dafb74fa01520c6e2868b7aa23..........ac4a09e3deec539077971c11316 | 48715 | 1 |  |  |  |
-| 2011-07-14T22:15:04 | PE |  | c8fffb2e737514c551b2d7bcaf8baa459564b059cab1a35a3cec4b3c270d4525 | 3018e99857f31a59e0777396ae634a8f | us | c8fffb2e737514c551b2d7bcaf8baa459564b059cab1a35a3cec4b3c270d4525 | 29568 | 1 | 1 |  |  |
-| 2011-07-14T22:16:12 | PE |  | dbd56821ab59d42e384bb1cdb15d334245670fa9fa8a0fffe018534787d484c0 | b9beb39484e6742f8d2a1825429e2ca4 | us | dbd56821ab59d42e384bb1cdb15d334245670fa9fa8a0fffe018534787d484c0 | 108032 | 1 | 1 |  |  |
-| 2011-07-14T22:17:19 | PE |  | 8e0ec2363553587ab239423a32e26c003e54531456081b3530efea9e66cfdc03 | f8a96cc4ab8711ea3b960088428d4037 | us | 8e0ec2363553587ab239423a32e26c003e54531456081b3530efea9e66cfdc03 | 59392 | 1 | 1 |  |  |
-| 2011-07-14T22:31:39 | PE |  | 74a6cbda34ea96c7eb92abd6e3d..........1f3d86206aa54dda899d2c38086 | 2a6a82dcf9d..........ef1d887bcb1 | us | 74a6cbda34ea96c7eb92abd6e3d..........1f3d86206aa54dda899d2c38086 | 28864 | 1 |  |  |  |
-| 2011-07-14T22:49:44 | PE |  | 8bc709e6257f6f4d0f2bc7af2eaa064a527e140152c2512e723c7edb3d91cf48 | f8e21525c6848f45e4ab77aee05f0a28 | us | 8bc709e6257f6f4d0f2bc7af2eaa064a527e140152c2512e723c7edb3d91cf48 | 27480 | 1 | 1 |  |  |
-| 2011-07-14T22:55:56 | PE |  | 1ef090562ef527b99873c9a48c33a3d6e7014acc2f8d6c3f801c7b4c988cc013 | 1c66904ecb846da5b1fb2072f9ea6e0e | us | 1ef090562ef527b99873c9a48c33a3d6e7014acc2f8d6c3f801c7b4c988cc013 | 95690 | 1 | 1 |  |  |
-| 2011-07-14T22:58:21 | PE |  | e29138070b0da4e10eb33f43c58..........1f25fcf39423e483633326ab866 | cdef57dda70..........9dce45c0afa | us | e29138070b0da4e10eb33f43c58..........1f25fcf39423e483633326ab866 | 28832 | 1 |  |  |  |
-| 2011-07-14T22:59:15 | PE |  | 75d5ebc5d1a16d7e742f45f05c4..........7c5a830e6e4fd55b0b4a34a2a57 | fa50281f81d..........290f13ad7ad | us | 75d5ebc5d1a16d7e742f45f05c4..........7c5a830e6e4fd55b0b4a34a2a57 | 28832 | 1 |  |  |  |
-| 2011-07-14T23:00:23 | PE |  | 9e6c2e3417e660d825115d41bb8..........9517177bfda4070b62e4217c4a0 | 712c7d922f2..........c3fc1d568f9 | us | 9e6c2e3417e660d825115d41bb8..........9517177bfda4070b62e4217c4a0 | 28832 | 1 |  |  |  |
-| 2011-07-14T23:00:48 | PE |  | 6bd5771c35fb9deab8c45cd30fb..........6f812464439b536a05f6a350812 | f1eeb146f69..........161e12cc7f8 | us | 6bd5771c35fb9deab8c45cd30fb..........6f812464439b536a05f6a350812 | 28832 | 1 |  |  |  |
-| 2011-07-14T23:15:55 | PE |  | 4aac6fbf433dade622bb9882b637011963afd2fbbd8794910f85c8f35709adb6 | 57e0d672d7dcdcf61a407ac268a9f1b5 | us | 4aac6fbf433dade622bb9882b637011963afd2fbbd8794910f85c8f35709adb6 | 32768 | 1 | 1 |  |  |
-| 2011-07-14T23:16:20 | PE |  | 2c4fe22e50d9a4ebce1bd8efa03b5e7eca3f321d17dae7156612979794f01b4b | 8d2da677321861b9d6f3f846f6d8a537 | us | 2c4fe22e50d9a4ebce1bd8efa03b5e7eca3f321d17dae7156612979794f01b4b | 49104 | 1 | 1 |  |  |
-| 2011-07-14T23:17:08 | PE |  | 90c3f61bcb7bbc04cf5c65c335d..........c8272ad300a3baabba9ca164b42 | 00a8138a59c..........6bb252f5920 | us | 90c3f61bcb7bbc04cf5c65c335d..........c8272ad300a3baabba9ca164b42 | 19840 | 1 |  |  |  |
-| 2011-07-14T23:17:36 | PE |  | a95410b29088657b25dd3fa058b402b57ae3c78bb1ec60ed6efac43f17f6fc00 | d9b602bd50035d6dfc9fc728b2276b4c | us | a95410b29088657b25dd3fa058b402b57ae3c78bb1ec60ed6efac43f17f6fc00 | 391992 | 1 | 1 |  |  |
-| 2011-07-14T23:18:01 | PE |  | 1ee9c36474c68b99f7e3aa69f27..........9d5468d50a38c4c559bb9327f80 | 50dfe61f4b4..........10ab8bd51df | us | 1ee9c36474c68b99f7e3aa69f27..........9d5468d50a38c4c559bb9327f80 | 45056 | 1 |  |  |  |
-| 2011-07-14T23:18:26 | PE |  | 975d628ecbcf4f96e038d97f6171f0426e608698e7ac2a0509e03b62e7f3205a | 3fe58cf2af09ea99384b6aae41c574c0 | us | 975d628ecbcf4f96e038d97f6171f0426e608698e7ac2a0509e03b62e7f3205a | 36864 | 1 | 1 |  |  |
-| 2011-07-14T23:18:52 | PE |  | 6ee81b8bf0a611f35bc64f2ad4c22b9621515d8ffe5bf35d5f93e7581cc47b2c | 78aabe05b2812e602e8e5110f1c4a454 | us | 6ee81b8bf0a611f35bc64f2ad4c22b9621515d8ffe5bf35d5f93e7581cc47b2c | 24576 | 1 | 1 |  |  |
-| 2011-07-14T23:19:17 | PE |  | d179777a5c05d7d7a8d62ade0e8106068c891a2d3c08f71190fa3e3932afd0eb | 28e84995a369c69abf74256f5579bec6 | us | d179777a5c05d7d7a8d62ade0e8106068c891a2d3c08f71190fa3e3932afd0eb | 38650 | 1 | 1 |  |  |
-| 2011-07-14T23:19:42 | PE |  | 26cc2c929ae1295f0441c1cb3b8..........953183fa41d34543c2305f151ad | f7212a74bce..........56ccd886af0 | us | 26cc2c929ae1295f0441c1cb3b8..........953183fa41d34543c2305f151ad | 25105 | 1 |  |  |  |
-| 2011-07-14T23:20:08 | PE |  | 51c968d9d57fb53ea1a2b2330bb64ab52f8f7b7f52174ca3605452874c1fc10b | 53d109380b6756cde27b1635c36afa94 | us | 51c968d9d57fb53ea1a2b2330bb64ab52f8f7b7f52174ca3605452874c1fc10b | 467968 | 1 | 1 |  |  |
-| 2011-07-14T23:20:33 | PE |  | fed65eea8eecade252900eb4f5364ecf60c210771c8f1489b8f6213375dfa5bd | 3527bbfaba4d6c900c7e45b23c8b2c1b | us | fed65eea8eecade252900eb4f5364ecf60c210771c8f1489b8f6213375dfa5bd | 14848 | 1 | 1 |  |  |
-| 2011-07-14T23:20:59 | PE |  | e19f8e411bf95bdb3413ef1cf2c68bd4688e1f2b9f520d60526a521586803523 | 237a21a936337efbdb04695c8957deee | us | e19f8e411bf95bdb3413ef1cf2c68bd4688e1f2b9f520d60526a521586803523 | 1509364 | 1 | 1 |  |  |
-| 2011-07-14T23:21:24 | PE |  | 073ae7b7bdfa68e900f18bd32e652ffc102033838eb0fb6bb2e710c7234a1dec | 70017806596aeb0c0956a1a9b0afdf3b | us | 073ae7b7bdfa68e900f18bd32e652ffc102033838eb0fb6bb2e710c7234a1dec | 30208 | 1 | 1 |  |  |
-| 2011-07-14T23:22:40 | PE |  | 268bb4eedaf5a726d07033bb363fdd7961e7a499ea39f44f3b8fd90086a47cd3 | 14909eba6a9f49f87d86993f13b301fa | us | 268bb4eedaf5a726d07033bb363fdd7961e7a499ea39f44f3b8fd90086a47cd3 | 290816 | 1 | 1 |  |  |
-| 2011-07-14T23:23:05 | PE |  | 2cd2995e3b567e0c78e687802e8..........f2b98157a7d7ca944422302e758 | bbc0971f93e..........ba03275c4b8 | us | 2cd2995e3b567e0c78e687802e8..........f2b98157a7d7ca944422302e758 | 3072 | 1 |  |  |  |
+### Search Samples Result is in progress
+|Created|FileType|Finished|ID|MD5|Region|SHA1|SHA256|Size|Tags|Verdict|imphash|ssdeep|tag_groups|tasks|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 2020-04-05T00:03:49 | PE | 2020-04-05T00:11:59 | d455abd39edc7a2f03fa43b4d0f9194a11e73fce9c794021b5ca050dd0bc156d | 77c94c76214c7069b7fc5e7634b7e225 | us | 1460b6a9a0955f0d5c011edba569786c13b6d8a6 | d455abd39edc7a2f03fa43b4d0f9194a11e73fce9c794021b5ca050dd0bc156d | 362331 | Unit42.IPAddressLookup,Unit42.InitialSystemDataEnumeration,Unit42.RunOnce,Unit42.GandCrab | 1 | f456e8b8fd5e0768c2e3120e086c8ebc | 6144 | Ransomware | {'metadata_compilation_ts': '2018-06-11T11:15:25'} |
+
+### Artifacts for Sample: 
+|b|g|m|indicator_type|confidence|indicator|
+|---|---|---|---|---|---|
+| 1 | 0 | 145006 | Domain | suspect | carder.bit |
+| 1 | 0 | 208393 | Domain | suspect | ransomware.bit |
+| 373 | 67 | 317773 | IPv4 | suspect | 66.171.248.178 |
+
 
 ### Get results of a sessions search
 ---
