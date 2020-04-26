@@ -1,6 +1,5 @@
 Full documentation for this integration is available at our [reference docs](https://xsoar.pan.dev/docs/reference/integrations/azure-sentinel).
 
-
 ## Authorize Cortex XSOAR for Azure Sentinel
 
 You need to grant Cortex XSOAR authorization to access Azure Sentinel.
