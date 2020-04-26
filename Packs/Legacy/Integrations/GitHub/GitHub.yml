@@ -146,7 +146,7 @@ script:
       description: The state of the closed issue.
       type: String
     - contextPath: GitHub.Issue.Labels
-      description: Labels spplied to the issue.
+      description: Labels applied to the issue.
       type: String
     - contextPath: GitHub.Issue.Assignees
       description: Users assigned to the issue.
@@ -155,7 +155,7 @@ script:
       description: Date when the issue was created.
       type: Date
     - contextPath: GitHub.Issue.Updated_at
-      description: Date when the issue was last updated
+      description: Date when the issue was last updated.
       type: Date
     - contextPath: GitHub.Issue.Closed_at
       description: Date when the issue was closed.
