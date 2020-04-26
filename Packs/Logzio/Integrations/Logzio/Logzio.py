@@ -88,7 +88,7 @@ class Client(BaseClient):
             )
         response = execute_api(self.get_search_api(), payload, self.op_api_token)
         try:
-            return response.json()["hits"]["hits"]
+            return response.json().get("hits", {}).get("hits", {})
         except Exception as e:
             return_error('Could not parse response to json: {}'.format(response.text), e)
 
@@ -104,13 +104,13 @@ class Client(BaseClient):
         }
         response = execute_api(self.get_rule_logs_api(), payload, self.security_api_token)
         try:
-            total = response.json()["total"]
-            results = response.json()["results"]
+            total = response.json().get("total", 0)
+            results = response.json().get("results", [])
             if total > page_size and size > page_size:
                 for i in range(2, (min(size, total) + page_size - 1) // page_size + 1):  # Ceiling division
                     payload["pagination"]["pageNumber"] = i
                     response = execute_api(self.get_rule_logs_api(), payload, self.security_api_token)
-                    results += response.json()["results"]
+                    results += response.json().get("results", [])
             return results
         except Exception as e:
             return_error('Could not parse response to json: {}'.format(response.text), e)
@@ -164,7 +164,7 @@ def search_logs_command(client, args):
     from_time = args.get('from_time')
     to_time = args.get('to_time')
     resp = client.search_logs(query, size, from_time, to_time)
-    content = [res["_source"] for res in resp]
+    content = [res.get("_source", None) for res in resp]
     context = {
         'Logzio.Logs.Count': len(content),
         'Logzio.Logs.Results': content
@@ -194,7 +194,7 @@ def fetch_incidents(client, last_run, search, severities, first_fetch_time):
         next_run["last_fetch"] = max(start_query_time, time.time() - ONE_HOUR)
     raw_events = client.fetch_triggered_rules(search=search, severities=severities,
                                               start_time=start_query_time)
-    for event in raw_events["results"]:
+    for event in raw_events.get("results", []):
         if "groupBy" in event:
             for field in event["groupBy"]:
                 event[field] = event["groupBy"][field]
@@ -204,13 +204,14 @@ def fetch_incidents(client, last_run, search, severities, first_fetch_time):
         event_date = datetime.fromtimestamp(event["eventDate"])
         event_date_string = event_date.strftime(DATE_FORMAT)
         incident = {
-            "name": event["name"],
+            "name": event.get("name", ""),
             "rawJSON": json.dumps(event),
             "occurred": event_date_string
         }
         incidents.append(incident)
     if incidents:
-        latest_event_timestamp = raw_events['results'][-1]["eventDate"]
+        last_incident = raw_events.get('results', [{}])[-1]
+        latest_event_timestamp = last_incident.get("eventDate", last_run.get("last_fetch"))
         next_run["last_fetch"] = latest_event_timestamp + 0.1  # The addition here is so we won't have duplicates
     return incidents, next_run
 
@@ -238,8 +239,6 @@ def main():
         # Run the commands
         if command == 'logzio-search-logs':
             search_logs_command(client, demisto.args())
-            # demisto.results(search_logs_command(client, demisto.args()))
-            # return_outputs(results['HumanReadable'], results['EntryContext'], results['Contents'])
         elif command == 'logzio-get-logs-by-rule-id':
             get_rule_logs_by_id_command(client, demisto.args())
         elif demisto.command() == 'test-module':
