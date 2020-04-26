@@ -27,7 +27,7 @@ ORG_NAME = demisto.params()['org']
 USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
 USE_SSL = not demisto.params().get('insecure', False)
-FETCH_TIME = demisto.params().get('fetch_time', '')
+
 
 INCIDENT_TYPE_DICT = {
     'CommunicationError': 17,
