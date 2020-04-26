@@ -1,12 +1,14 @@
-import demistomock as demisto
-from CommonServerPython import *
-''' IMPORTS '''
-import requests
-import time
-import trustar
+import base64
 import collections
-from trustar.models.indicator import Indicator
-from trustar.models.page import Page
+import time
+
+import demistomock as demisto
+import requests
+from CommonServerPython import *
+
+import trustar
+
+''' IMPORTS '''
 
 handle_proxy()
 
@@ -23,7 +25,9 @@ INSECURE = demisto.params()['insecure']
 ''' HELPER FUNCTIONS '''
 
 
-def translate_indicators(ts_indicators):
+def translate_indicators(ts_indicators, context_path=''):
+    if context_path and context_path[-1] != '.':
+        context_path += '.'
     indicators = []
     file_context = []
     url_context = []
@@ -32,9 +36,8 @@ def translate_indicators(ts_indicators):
     key_context = []
     cve_context = []
     for indicator in ts_indicators:
-        current_indicator = indicator.to_dict(remove_nones=True)
+        current_indicator = indicator if isinstance(indicator, dict) else indicator.to_dict(remove_nones=True)
         indicator_type = current_indicator['indicatorType']
-        priority_level = current_indicator.get('priorityLevel')
         value = current_indicator['value']
         if indicator_type == 'SOFTWARE':
             # Extracts the filename out of file path
@@ -44,55 +47,56 @@ def translate_indicators(ts_indicators):
                 file_name = value.split('/')[-1]  # Handles file path with slash
             current_indicator['value'] = file_name
             context_dict = {'Name': file_name}
-            if priority_level:
-                context_dict.update({'priorityLevel': priority_level})
             file_context.append(context_dict)
         elif indicator_type in {'SHA256', 'SHA1', 'MD5'}:
             context_dict = {indicator_type: value}
-            if priority_level:
-                context_dict.update({'priorityLevel': priority_level})
             file_context.append(context_dict)
         elif indicator_type == 'URL':
             context_dict = {'Address': value}
-            if priority_level:
-                context_dict.update({'priorityLevel': priority_level})
             url_context.append(context_dict)
         elif indicator_type == 'IP':
             context_dict = {'Address': value}
-            if priority_level:
-                context_dict.update({'priorityLevel': priority_level})
             ip_context.append(context_dict)
         elif indicator_type == 'EMAIL_ADDRESS':
             context_dict = {'Address': value}
-            if priority_level:
-                context_dict.update({'priorityLevel': priority_level})
             email_context.append(context_dict)
         elif indicator_type == 'REGISTRY_KEY':
             context_dict = {'Path': value}
-            if priority_level:
-                context_dict.update({'priorityLevel': priority_level})
             key_context.append(context_dict)
         elif indicator_type == 'CVE':
             context_dict = {'ID': value}
-            if priority_level:
-                context_dict.update({'priorityLevel': priority_level})
             cve_context.append(context_dict)
         indicators.append(current_indicator)
     # Build Entry Context
     ec = {}
     if file_context:
+        ec['{}File(val.Name && val.Name === obj.Name)'.format(context_path)] = file_context
         ec['File(val.Name && val.Name === obj.Name)'] = file_context
     if url_context:
+        ec['{}URL(val.Address && val.Address === obj.Address)'.format(context_path)] = url_context
         ec['URL(val.Address && val.Address === obj.Address)'] = url_context
     if ip_context:
+        ec['{}IP(val.Address && val.Address === obj.Address)'.format(context_path)] = ip_context
         ec['IP(val.Address && val.Address === obj.Address)'] = ip_context
     if email_context:
+        ec['{}Account.Email(val.Address && val.Address === obj.Address)'.format(context_path)] = email_context
         ec['Account.Email(val.Address && val.Address === obj.Address)'] = email_context
     if key_context:
+        ec['{}RegistryKey(val.Path && val.Path === obj.Path)'.format(context_path)] = key_context
         ec['RegistryKey(val.Path && val.Path === obj.Path)'] = key_context
     if cve_context:
+        ec['{}CVE(val.ID && val.ID === obj.ID)'.format(context_path)] = cve_context
         ec['CVE(val.ID && val.ID === obj.ID)'] = cve_context
     return indicators, ec
+
+
+def translate_triage_submission(submissions):
+    submission_dicts = [s.to_dict(remove_nones=True) for s in submissions]
+    for submission in submission_dicts:
+        indicators = [c.to_dict(remove_nones=True) for c in submission.get('context')]
+        submission['context'] = indicators
+    ec = {'TruSTAR.PhishingSubmission(val.submissionId == obj.submissionId)': submission_dicts}
+    return submission_dicts, ec
 
 
 def translate_specific_indicators(ts_indicators, specific_types):
@@ -100,13 +104,11 @@ def translate_specific_indicators(ts_indicators, specific_types):
     for indicator in ts_indicators:
         current_indicator = indicator.to_dict(remove_nones=True)
         indicator_type = current_indicator['indicatorType']
-        priority_level = current_indicator.get('priorityLevel')
         value = current_indicator['value']
         whitelisted = current_indicator.get('whitelisted')
         if indicator_type in specific_types:
             res.append({
                 'value': value,
-                'priorityLevel': priority_level,
                 'whitelisted': whitelisted,
                 'indicatorType': indicator_type
             })
@@ -138,6 +140,9 @@ def date_to_unix(timestamp):
 
 
 def create_file_ec(indicators, file, threshold):
+    '''DEPRECATED this function relies on priorityLevel score which TruSTAR no longer supports.
+    This function will be removed in a future release
+    '''
     if not indicators:
         return {
             'DBotScore': {
@@ -181,6 +186,9 @@ def create_file_ec(indicators, file, threshold):
 
 
 def create_ip_ec(indicators, ip, threshold):
+    '''DEPRECATED this function relies on priorityLevel score which TruSTAR no longer supports.
+    This function will be removed in a future release
+    '''
     if not indicators:
         return {
             'DBotScore': {
@@ -224,6 +232,9 @@ def create_ip_ec(indicators, ip, threshold):
 
 
 def create_url_ec(indicators, url, threshold):
+    '''DEPRECATED this function relies on priorityLevel score which TruSTAR no longer supports.
+    This function will be removed in a future release
+    '''
     if not indicators:
         return {
             'DBotScore': {
@@ -267,6 +278,9 @@ def create_url_ec(indicators, url, threshold):
 
 
 def create_domain_ec(indicators, url, threshold):
+    '''DEPRECATED this function relies on priorityLevel score which TruSTAR no longer supports.
+    This function will be removed in a future release
+    '''
     if not indicators:
         return {
             'DBotScore': {
@@ -309,13 +323,17 @@ def create_domain_ec(indicators, url, threshold):
     }
 
 
+def encode_cursor(page_size, page_number):
+    cursor = '{' + '"pageSize":{},"pageNumber":{}'.format(page_size, page_number) + '}'
+    return base64.b64encode(cursor.encode()).decode()
+
+
 ''' FUNCTIONS '''
 
 
 def get_related_indicators(indicators, enclave_ids, page_size, page_number):
     # To display priority score
     items_list = []
-    indicators_json = dict()
     related_indicator_response = ts.get_related_indicators_page(indicators, enclave_ids, page_size, page_number)
     for related_indicator in related_indicator_response:
         current_indicator = related_indicator.to_dict(remove_nones=True)
@@ -324,14 +342,9 @@ def get_related_indicators(indicators, enclave_ids, page_size, page_number):
         for found_indicator in search_indicator_response:
             current_found_indicator = found_indicator.to_dict(remove_nones=True)
             if current_indicator['value'] == current_found_indicator['value']:
-                current_indicator['priorityLevel'] = current_found_indicator['priorityLevel']
                 break
-        if not current_indicator.get('priorityLevel'):
-            current_indicator['priorityLevel'] = "NOT_FOUND"
         items_list.append(current_indicator)
-    indicators_json.update({'items': items_list})
-    response = Page.from_dict(indicators_json, content_type=Indicator)
-    related_indicators, ec = translate_indicators(response)
+    related_indicators, ec = translate_indicators(items_list)
     if related_indicators:
         title = 'TruSTAR indicators related to ' + indicators
         entry = {
@@ -559,7 +572,7 @@ def get_reports(from_time, to_time, enclave_ids, distribution_type, tags, exclud
 
 def get_correlated_reports(indicators, enclave_ids, distribution_type, page_size, page_number):
     response = ts.get_correlated_reports_page(indicators, enclave_ids, page_number, page_size)
-    correlated_reports = []  # type: List
+    correlated_reports = []
     for report in response:
         current_report = report.to_dict(remove_nones=True)
         current_report['updated'] = normalize_time(current_report['updated'])
@@ -625,10 +638,10 @@ def remove_from_whitelist(indicator, indicator_type):
         value=indicator,
         type=indicator_type
     )
-    response = ts.delete_indicator_from_whitelist(ts_indicator)
-    if response:
+    try:
+        ts.delete_indicator_from_whitelist(ts_indicator)
         return 'Removed from the whitelist successfully'
-    else:
+    except Exception:
         return 'Indicator could not be removed from the whitelist.'
 
 
@@ -648,12 +661,77 @@ def get_enclaves():
     return entry
 
 
+def get_all_phishing_indicators(normalized_triage_score,
+                                normalized_source_score,
+                                from_time,
+                                to_time,
+                                status):
+    cursor = encode_cursor(1000, 0)
+    args = {'normalized_triage_score': normalized_triage_score,
+            'normalized_source_score': normalized_source_score,
+            'status': status,
+            'cursor': cursor,
+            'from_time': date_to_unix(from_time) if from_time else None,
+            'to_time': date_to_unix(to_time) if to_time else None}
+    response = ts.get_phishing_indicators_page(**args)
+    indicators, ec = translate_indicators(response.items, 'TruSTAR.PhishingIndicator')
+    if indicators:
+        title = 'TruSTAR phishing indicators'
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': indicators,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, indicators),
+            'EntryContext': ec
+        }
+        return entry
+    return 'No phishing indicators were found.'
+
+
+def get_phishing_submissions(normalized_triage_score,
+                             from_time,
+                             to_time,
+                             status):
+    cursor = encode_cursor(1000, 0)
+    args = {'normalized_triage_score': normalized_triage_score,
+            'status': status,
+            'cursor': cursor,
+            'from_time': date_to_unix(from_time) if from_time else None,
+            'to_time': date_to_unix(to_time) if to_time else None}
+    response = ts.get_phishing_submissions_page(**args)
+    if not response.items:
+        return 'No phishing submissions were found.'
+    submissions, ec = translate_triage_submission(response.items)
+    title = 'TruSTAR phishing triage submissions'
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': submissions,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown(title, submissions),
+        'EntryContext': ec
+    }
+    return entry
+
+
+def set_triage_status(submission_id, status):
+    try:
+        response = ts.mark_triage_status(submission_id, status)
+        response.raise_for_status()
+        return "Submission ID {} is {}".format(submission_id, status)
+    except requests.exceptions.HTTPError as err:
+        return str(err)
+
+
 ''' EXECUTION CODE '''
 config = {
     'user_api_key': API_KEY,
     'user_api_secret': API_SECRET,
     'api_endpoint': BASE_URL,
-    'verify': INSECURE
+    'verify': INSECURE,
+    'client_type': "Python_SDK",
+    'client_metatag': "demisto-xsoar"
 }
 ts = trustar.TruStar(config=config)
 
@@ -737,8 +815,28 @@ try:
                                                  demisto.params().get('url_threshold'), ('URL',), create_url_ec))
 
     elif demisto.command() == 'domain':
-        demisto.results(generic_search_indicator(demisto.args().get('domain'), demisto.params().get('domain_threshold'),
+        demisto.results(generic_search_indicator(demisto.args().get('domain'),
+                                                 demisto.params().get('domain_threshold'),
                                                  ('Domain', 'URL',), create_domain_ec))
+
+    elif demisto.command() == 'trustar-get-phishing-indicators':
+        nts = argToList(demisto.args().get('normalized_triage_score'))
+        nss = argToList(demisto.args().get('normalized_source_score'))
+        ft = demisto.args().get('from_time')
+        tt = demisto.args().get('to_time')
+        st = argToList(demisto.args().get('status'))
+        demisto.results(get_all_phishing_indicators(nts, nss, ft, tt, st))
+
+    elif demisto.command() == 'trustar-get-phishing-submissions':
+        nts = argToList(demisto.args().get('normalized_triage_score'))
+        ft = demisto.args().get('from_time')
+        tt = demisto.args().get('to_time')
+        st = argToList(demisto.args().get('status'))
+        demisto.results(get_phishing_submissions(nts, ft, tt, st))
+
+    elif demisto.command() == 'trustar-set-triage-status':
+        demisto.results(set_triage_status(demisto.args().get('submission_id'),
+                                          demisto.args().get('status')))
 
 except Exception as e:
     return_error(str(e))
