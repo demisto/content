@@ -15,6 +15,7 @@ PRAGMA_REGEX = r'Pragma: ([^\\]+)'
 TYPE_REGEX = r'Type: (.+)'
 CLASS_REGEX = r'Class: (.+)'
 COMMAND_REGEX = r'Command: (.+)'
+SNAME_REGES = r'SNameString: (.+)'
 '''HELPER FUNCTIONS'''
 
 
@@ -173,8 +174,9 @@ def main():
     # file_path = "/Users/olichter/Downloads/nb6-hotspot.pcap"                #syslog
     # file_path = "/Users/olichter/Downloads/wpa-Induction.pcap"               #wpa - Password is Induction
     # file_path = "/Users/olichter/Downloads/iseries.cap"
-    file_path = "/Users/olichter/Downloads/2019-12-03-traffic-analysis-exercise (1).pcap"
+    # file_path = "/Users/olichter/Downloads/2019-12-03-traffic-analysis-exercise (1).pcap"
     # file_path = "/Users/olichter/Downloads/smb-on-windows-10.pcapng"
+    file_path = "/Users/olichter/Downloads/telnet-cooked.pcap"
 
 
     # PC Script
@@ -184,8 +186,7 @@ def main():
     conversation_number_to_display = 15
     is_flows = True
     is_reg_extract = True
-    is_syslog = False
-    extracted_protocols = ['SMTP', 'DNS', 'HTTP', 'SMB2', 'NETBIOS', 'ICMP']
+    extracted_protocols = ['SMTP', 'DNS', 'HTTP', 'SMB2', 'NETBIOS', 'ICMP', 'KERBEROS', 'SYSLOG', 'TELNET']
 
     pcap_filter = ''
     pcap_filter_new_file_name = ''  # '/Users/olichter/Downloads/try.pcap'
@@ -240,6 +241,7 @@ def main():
     emails_extracted = set([])
     homemade_extracted = set([])
     last_layer = set([])
+    kerb_data = set()
     syslogs = []
     protocol_data = dict()
     for protocol in extracted_protocols:
@@ -267,6 +269,8 @@ def main():
         reg_class = re.compile(CLASS_REGEX)
     if 'SMB2' in extracted_protocols:
         reg_cmd = re.compile(COMMAND_REGEX)
+    if 'KERBEROS':
+        reg_sname = re.compile(SNAME_REGES)
     if homemade_regex:
         reg_homemad = re.compile(homemade_regex)
 
@@ -386,6 +390,21 @@ def main():
                 hosts = str([a, b])
                 conversations[hosts] = conversations.get(hosts, 0) + 1
 
+            if 'KERBEROS' in extracted_protocols:
+                kerb_layer = packet.get_multiple_layers('KERBEROS')
+                sname_results = reg_sname.findall(str(kerb_layer))
+                if kerb_layer:
+                    kerb_data.add({
+                        'Realm': kerb_layer[0].get('realm'),
+                        'CName': kerb_layer[0].get('CNameString'),
+                        'SName': sname_results[0] if sname_results else None,
+                    })
+
+            if 'TELNET' in extracted_protocols:
+                telnet_layer = packet.get_multiple_layers('TELNET')
+                if telnet_layer:
+                    print(telnet_layer[0])
+
             if 'LLMNR' in extracted_protocols:
                 llmnr_layer = packet.get_multiple_layers('llmnr')
                 if llmnr_layer:
@@ -401,7 +420,7 @@ def main():
                     }
                     add_to_data(protocol_data['LLMNR'], llmnr_data)
 
-            if is_syslog:
+            if 'SYSLOG' in extracted_protocols:
                 syslog_layer = packet.get_multiple_layers('syslog')
                 if syslog_layer:
                     syslogs.append(syslog_layer[0].get('msg'))
@@ -496,6 +515,8 @@ def main():
             general_context[protocol] = list(protocol_data[protocol].values())
         if 'ICMP' in extracted_protocols:
             general_context['ICMP'] = list(icmp_data)
+        if 'KERBEROS' in extracted_protocols:
+            general_context['KERBEROS'] = list(kerb_data)
         if is_flows:
             general_context['Flow'] = flows_to_ec(flows)
         if is_reg_extract:
