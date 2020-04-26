@@ -1,151 +1,15 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-import requests
-from datetime import datetime, timedelta
-from typing import Dict, Any
-import base64
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
-if not demisto.params()['proxy']:
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+from typing import Dict, Any
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-''' GLOBAL VARS '''
-PARAMS = demisto.params()
-SERVER = PARAMS['host'][:-1] if PARAMS['host'].endswith('/') else PARAMS['host']
-BASE_URL = SERVER + '/v1.0/'
-TENANT = PARAMS['tenant_id']
-AUTH_AND_TOKEN_URL = PARAMS['auth_id'].split('@')
-AUTH_ID = AUTH_AND_TOKEN_URL[0]
-ENC_KEY = PARAMS.get('enc_key')
-USE_SSL = not PARAMS.get('insecure', False)
-if len(AUTH_AND_TOKEN_URL) != 2:
-    TOKEN_RETRIEVAL_URL = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
-else:
-    TOKEN_RETRIEVAL_URL = AUTH_AND_TOKEN_URL[1]
 APP_NAME = 'ms-graph-security'
 
 ''' HELPER FUNCTIONS '''
-
-
-def epoch_seconds(d=None):
-    """
-    Return the number of seconds for given date. If no date, return current.
-    """
-    if not d:
-        d = datetime.utcnow()
-    return int((d - datetime.utcfromtimestamp(0)).total_seconds())
-
-
-def get_encrypted(content: str, key: str) -> str:
-    """
-
-    Args:
-        content (str): content to encrypt. For a request to Demistobot for a new access token, content should be
-            the tenant id
-        key (str): encryption key from Demistobot
-
-    Returns:
-        encrypted timestamp:content
-    """
-    def create_nonce() -> bytes:
-        return os.urandom(12)
-
-    def encrypt(string: str, enc_key: str) -> bytes:
-        """
-
-        Args:
-            enc_key (str):
-            string (str):
-
-        Returns:
-            bytes:
-        """
-        # String to bytes
-        enc_key = base64.b64decode(enc_key)
-        # Create key
-        aes_gcm = AESGCM(enc_key)
-        # Create nonce
-        nonce = create_nonce()
-        # Create ciphered data
-        data = string.encode()
-        ct = aes_gcm.encrypt(nonce, data, None)
-        return base64.b64encode(nonce + ct)
-    now = epoch_seconds()
-    encrypted = encrypt(f'{now}:{content}', key).decode('utf-8')
-    return encrypted
-
-
-def get_access_token():
-    integration_context = demisto.getIntegrationContext()
-    access_token = integration_context.get('access_token')
-    valid_until = integration_context.get('valid_until')
-    calling_context = demisto.callingContext.get('context', {})  # type: ignore[attr-defined]
-    brand_name = calling_context.get('IntegrationBrand', '')
-    instance_name = calling_context.get('IntegrationInstance', '')
-    if access_token and valid_until:
-        if epoch_seconds() < valid_until:
-            return access_token
-    headers = {'Accept': 'application/json'}
-    headers['X-Content-Version'] = CONTENT_RELEASE_VERSION
-    headers['X-Branch-Name'] = CONTENT_BRANCH_NAME
-    headers['X-Content-Name'] = brand_name or instance_name or 'Name not found'
-
-    dbot_response = requests.post(
-        TOKEN_RETRIEVAL_URL,
-        headers=headers,
-        data=json.dumps({
-            'app_name': APP_NAME,
-            'registration_id': AUTH_ID,
-            'encrypted_token': get_encrypted(TENANT, ENC_KEY)
-        }),
-        verify=USE_SSL
-    )
-    if dbot_response.status_code not in {200, 201}:
-        msg = 'Error in authentication. Try checking the credentials you entered.'
-        try:
-            demisto.info('Authentication failure from server: {} {} {}'.format(
-                dbot_response.status_code, dbot_response.reason, dbot_response.text))
-            err_response = dbot_response.json()
-            server_msg = err_response.get('message')
-            if not server_msg:
-                title = err_response.get('title')
-                detail = err_response.get('detail')
-                if title:
-                    server_msg = f'{title}. {detail}'
-            if server_msg:
-                msg += ' Server message: {}'.format(server_msg)
-        except Exception as ex:
-            demisto.error('Failed parsing error response - Exception: {}'.format(ex))
-        raise Exception(msg)
-    try:
-        gcloud_function_exec_id = dbot_response.headers.get('Function-Execution-Id')
-        demisto.info(f'Google Cloud Function Execution ID: {gcloud_function_exec_id}')
-        parsed_response = dbot_response.json()
-    except ValueError:
-        raise Exception(
-            'There was a problem in retrieving an updated access token.\n'
-            'The response from the Demistobot server did not contain the expected content.'
-        )
-    access_token = parsed_response.get('access_token')
-    expires_in = parsed_response.get('expires_in', 3595)
-    time_now = epoch_seconds()
-    time_buffer = 5  # seconds by which to shorten the validity period
-    if expires_in - time_buffer > 0:
-        # err on the side of caution with a slightly shorter access token validity period
-        expires_in = expires_in - time_buffer
-
-    demisto.setIntegrationContext({
-        'access_token': access_token,
-        'valid_until': time_now + expires_in
-    })
-    return access_token
 
 
 def get_timestamp(time_description):
@@ -158,39 +22,80 @@ def get_timestamp(time_description):
     return datetime.strftime(datetime.now() - timedelta(time_delta), '%Y-%m-%d')
 
 
-def http_request(method, url_suffix, json=None, params=None):
-    """
-    Generic request to the graph
-    """
-    token = get_access_token()
-    r = requests.request(
-        method,
-        BASE_URL + url_suffix,
-        json=json,
-        params=params,
-        headers={
-            'Authorization': 'Bearer ' + token,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }
-    )
-    if r.status_code not in {200, 204, 206}:
-        return_error('Error in API call to Microsoft Graph [%d] - %s' % (r.status_code, r.reason))
-    elif r.status_code == 206:  # 206 indicates Partial Content, and the reason for that will be in the Warning header
-        demisto.debug(str(r.headers))
-    if not r.text:
-        return {}
-    return r.json()
-
-
 def capitalize_first_letter(string):
     return string[:1].upper() + string[1:]
 
 
-''' FUNCTIONS '''
+class MsGraphClient:
+    """
+    Microsoft Graph Mail Client enables authorized access to a user's Office 365 mail data in a personal account.
+    """
+
+    def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed):
+        self.ms_client = MicrosoftClient(
+            tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name, base_url=base_url, verify=verify,
+            proxy=proxy, self_deployed=self_deployed)
+
+    def search_alerts(self, last_modified, severity, category, vendor, time_from, time_to, filter_query):
+        filters = []
+        if last_modified:
+            filters.append("modifiedDate gt '{}'".format(get_timestamp(last_modified)))
+        if category:
+            filters.append("category eq '{}'".format(category))
+        if severity:
+            filters.append("severity eq '{}'".format(severity))
+        if time_from:
+            filters.append("createdDate gt '{}'".format(time_from))
+        if time_to:
+            filters.append("createdDate lt '{}'".format(time_to))
+        if filter_query:
+            filters.append("{}".format(filter_query))
+        filters = " and ".join(filters)
+        cmd_url = 'security/alerts'
+        params = {'$filter': filters}
+        response = self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
+        return response
+
+    def get_alert_details(self, alert_id):
+        cmd_url = f'security/alerts/{alert_id}'
+        response = self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return response
+
+    def update_alert(self, alert_id, vendor_information, provider_information,
+                     assigned_to, closed_date_time, comments, feedback, status, tags):
+        cmd_url = f'/security/alerts/{alert_id}'
+        data: Dict[str, Any] = {
+            'vendorInformation': {
+                'provider': provider_information,
+                'vendor': vendor_information
+            }
+        }
+        if assigned_to:
+            data['assignedTo'] = assigned_to
+        if closed_date_time:
+            data['closedDateTime'] = closed_date_time
+        if comments:
+            data['comments'] = [comments]
+        if feedback:
+            data['feedback'] = feedback
+        if status:
+            data['status'] = status
+        if tags:
+            data['tags'] = [tags]
+        self.ms_client.http_request(method='PATCH', url_suffix=cmd_url, json_data=data, resp_type="text")
+
+    def get_users(self):
+        cmd_url = 'users'
+        response = self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return response
+
+    def get_user(self, user_id):
+        cmd_url = f'users/{user_id}'
+        response = self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return response
 
 
-def search_alerts_command(args):
+def search_alerts_command(client: MsGraphClient, args):
     last_modified = args.get('last_modified')
     severity = args.get('severity')
     category = args.get('category')
@@ -198,7 +103,7 @@ def search_alerts_command(args):
     time_from = args.get('time_from')
     time_to = args.get('time_to')
     filter_query = args.get('filter')
-    alerts = search_alerts(last_modified, severity, category, vendor, time_from, time_to, filter_query)['value']
+    alerts = client.search_alerts(last_modified, severity, category, vendor, time_from, time_to, filter_query)['value']
     outputs = []
     for alert in alerts:
         outputs.append({
@@ -216,38 +121,11 @@ def search_alerts_command(args):
         'MsGraph.Alert(val.ID && val.ID === obj.ID)': outputs
     }
     table_headers = ['ID', 'Vendor', 'Provider', 'Title', 'Category', 'Severity', 'CreatedDate', 'EventDate', 'Status']
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': alerts,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Microsoft Security Graph Alerts', outputs, table_headers, removeNull=True),
-        'EntryContext': ec
-    }
-    demisto.results(entry)
+    human_readable = tableToMarkdown('Microsoft Security Graph Alerts', outputs, table_headers, removeNull=True)
+    return human_readable, ec, alerts
 
 
-def search_alerts(last_modified, severity, category, vendor, time_from, time_to, filter_query):
-    filters = []
-    if last_modified:
-        filters.append("modifiedDate gt '{}'".format(get_timestamp(last_modified)))
-    if category:
-        filters.append("category eq '{}'".format(category))
-    if severity:
-        filters.append("severity eq '{}'".format(severity))
-    if time_from:
-        filters.append("createdDate gt '{}'".format(time_from))
-    if time_to:
-        filters.append("createdDate lt '{}'".format(time_to))
-    if filter_query:
-        filters.append("{}".format(filter_query))
-    filters = " and ".join(filters)
-    cmd_url = 'security/alerts?$filter=' + filters
-    response = http_request('GET', cmd_url)
-    return response
-
-
-def get_alert_details_command(args):
+def get_alert_details_command(client: MsGraphClient, args):
     alert_id = args.get('alert_id')
     fields_to_include = args.get('fields_to_include')
     if fields_to_include:
@@ -257,7 +135,7 @@ def get_alert_details_command(args):
 
     show_all_fields = True if 'All' in fields_list else False
 
-    alert_details = get_alert_details(alert_id)
+    alert_details = client.get_alert_details(alert_id)
 
     hr = '## Microsoft Security Graph Alert Details - {}\n'.format(alert_id)
 
@@ -461,24 +339,10 @@ def get_alert_details_command(args):
     ec = {
         'MsGraph.Alert(val.ID && val.ID === obj.ID)': context
     }
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': alert_details,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': hr,
-        'EntryContext': ec
-    }
-    demisto.results(entry)
+    return hr, ec, alert_details
 
 
-def get_alert_details(alert_id):
-    cmd_url = 'security/alerts/' + alert_id
-    response = http_request('GET', cmd_url)
-    return response
-
-
-def update_alert_command(args):
+def update_alert_command(client: MsGraphClient, args):
     alert_id = args.get('alert_id')
     vendor_information = args.get('vendor_information')
     provider_information = args.get('provider_information')
@@ -490,8 +354,8 @@ def update_alert_command(args):
     tags = args.get('tags')
     if all(v is None for v in [assigned_to, closed_date_time, comments, feedback, status, tags]):
         return_error('No data to update was provided')
-    update_alert(alert_id, vendor_information, provider_information,
-                 assigned_to, closed_date_time, comments, feedback, status, tags)
+    client.update_alert(alert_id, vendor_information, provider_information,
+                        assigned_to, closed_date_time, comments, feedback, status, tags)
     context = {
         'ID': alert_id
     }
@@ -500,43 +364,12 @@ def update_alert_command(args):
     ec = {
         'MsGraph.Alert(val.ID && val.ID === obj.ID)': context
     }
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': context,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': 'Alert {} has been successfully updated.'.format(alert_id),
-        'EntryContext': ec
-    }
-    demisto.results(entry)
+    human_readable = 'Alert {} has been successfully updated.'.format(alert_id)
+    return human_readable, ec, context
 
 
-def update_alert(alert_id, vendor_information, provider_information,
-                 assigned_to, closed_date_time, comments, feedback, status, tags):
-    cmd_url = '/security/alerts/' + alert_id
-    data: Dict[str, Any] = {
-        'vendorInformation': {
-            'provider': provider_information,
-            'vendor': vendor_information
-        }
-    }
-    if assigned_to:
-        data['assignedTo'] = assigned_to
-    if closed_date_time:
-        data['closedDateTime'] = closed_date_time
-    if comments:
-        data['comments'] = [comments]
-    if feedback:
-        data['feedback'] = feedback
-    if status:
-        data['status'] = status
-    if tags:
-        data['tags'] = [tags]
-    http_request('PATCH', cmd_url, json=data)
-
-
-def get_users_command():
-    users = get_users()['value']
+def get_users_command(client: MsGraphClient, args):
+    users = client.get_users()['value']
     outputs = []
     for user in users:
         outputs.append({
@@ -549,26 +382,13 @@ def get_users_command():
         'MsGraph.User(val.ID && val.ID === obj.ID)': outputs
     }
     table_headers = ['Name', 'Title', 'Email', 'ID']
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': users,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Microsoft Graph Users', outputs, table_headers, removeNull=True),
-        'EntryContext': ec
-    }
-    demisto.results(entry)
+    human_readable = tableToMarkdown('Microsoft Graph Users', outputs, table_headers, removeNull=True)
+    return human_readable, ec, users
 
 
-def get_users():
-    cmd_url = 'users'
-    response = http_request('GET', cmd_url)
-    return response
-
-
-def get_user_command():
-    user_id = demisto.args().get('user_id')
-    raw_user = get_user(user_id)
+def get_user_command(client: MsGraphClient, args):
+    user_id = args.get('user_id')
+    raw_user = client.get_user(user_id)
     user = {
         'Name': raw_user['displayName'],
         'Title': raw_user['jobTitle'],
@@ -579,42 +399,24 @@ def get_user_command():
         'MsGraph.User(val.ID && val.ID === obj.ID)': user
     }
     table_headers = ['Name', 'Title', 'Email', 'ID']
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': raw_user,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Microsoft Graph User ' + user_id, user, table_headers, removeNull=True),
-        'EntryContext': ec
-    }
-    demisto.results(entry)
+    human_readable = tableToMarkdown('Microsoft Graph User ' + user_id, user, table_headers, removeNull=True)
+    return human_readable, ec, raw_user
 
 
-def get_user(user_id):
-    cmd_url = 'users/' + user_id
-    response = http_request('GET', cmd_url)
-    return response
-
-
-def test_function():
-    token = get_access_token()
-    response = requests.get(
-        BASE_URL + 'users',
-        headers={
-            'Authorization': 'Bearer ' + token,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        },
-        params={'$select': 'displayName'},
-        verify=USE_SSL
-    )
+def test_function(client: MsGraphClient, args):
+    """
+       Performs basic GET request to check if the API is reachable and authentication is successful.
+       Returns ok if successful.
+       """
+    response = client.ms_client.http_request(
+        method='GET', url_suffix='users', params={'$select': 'displayName'}, resp_type='response')
     try:
         data = response.json() if response.text else {}
         if not response.ok:
             return_error(f'API call to MS Graph Security failed. Please check authentication related parameters.'
                          f' [{response.status_code}] - {demisto.get(data, "error.message")}')
 
-        demisto.results('ok')
+        return 'ok', None, None
 
     except TypeError as ex:
         demisto.debug(str(ex))
@@ -622,28 +424,40 @@ def test_function():
                      f'Please check authentication related parameters. [{response.status_code}]')
 
 
-''' EXECUTION CODE '''
+def main():
 
-LOG('command is %s' % (demisto.command(), ))
+    params: dict = demisto.params()
+    url = params.get('host', '').rstrip('/') + '/v1.0/'
+    tenant = params.get('tenant_id')
+    auth_and_token_url = params.get('auth_id', '')
+    enc_key = params.get('enc_key')
+    use_ssl = not params.get('insecure', False)
+    self_deployed: bool = params.get('self_deployed', False)
+    proxy = params.get('proxy', False)
 
-try:
-    if demisto.command() == 'test-module':
-        test_function()
+    commands = {
+        'test-module': test_function,
+        'msg-search-alerts': search_alerts_command,
+        'msg-get-alert-details': get_alert_details_command,
+        'msg-update-alert': update_alert_command,
+        'msg-get-users': get_users_command,
+        'msg-get-user': get_user_command
+    }
+    command = demisto.command()
+    LOG(f'Command being called is {command}')
 
-    elif demisto.command() == 'msg-search-alerts':
-        search_alerts_command(demisto.args())
+    try:
+        client: MsGraphClient = MsGraphClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key,
+                                              app_name=APP_NAME, base_url=url, verify=use_ssl, proxy=proxy,
+                                              self_deployed=self_deployed)
+        human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
+        return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
 
-    elif demisto.command() == 'msg-get-alert-details':
-        get_alert_details_command(demisto.args())
+    except Exception as err:
+        return_error(str(err))
 
-    elif demisto.command() == 'msg-update-alert':
-        update_alert_command(demisto.args())
 
-    elif demisto.command() == 'msg-get-users':
-        get_users_command()
+from MicrosoftApiModule import *  # noqa: E402
 
-    elif demisto.command() == 'msg-get-user':
-        get_user_command()
-
-except Exception as e:
-    return_error(str(e))
+if __name__ in ['__main__', 'builtin', 'builtins']:
+    main()
