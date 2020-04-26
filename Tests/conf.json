@@ -198,12 +198,12 @@
         },
         {
             "integrations": "HelloWorld",
-            "playbookID": "TestHelloWorld",
+            "playbookID": "HelloWorld-Test",
             "fromversion": "5.0.0"
         },
         {
             "integrations": "HelloWorld",
-            "playbookID": "TestHelloWorldPlaybook",
+            "playbookID": "HelloWorld_Scan-Test",
             "fromversion": "5.0.0"
         },
         {
