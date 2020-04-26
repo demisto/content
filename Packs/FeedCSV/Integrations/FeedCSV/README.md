@@ -17,7 +17,9 @@ Fetch indicators from a CSV feed. The integration allows a great amount of user 
     * __Fetch indicators__: boolean flag. If set to true will fetch indicators.
     * __Fetch Interval__: Interval of the fetches.
     * __Reliability__: Reliability of the feed. 
-    * __Username__
+    * __Username + Password__ - Credentials to access feeds that require basic authentication. 
+These fields also support the use of API key headers. To use API key headers, specify the header name and value in the following format:
+`_header:<header_name>` in the **Username** field and the header value in the **Password** field.
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
     * __Request Timeout__: Time (in seconds) before HTTP requests timeout.
@@ -64,3 +66,12 @@ Now we have successfully configured an instance for the Abuse SSL BL feed, once 
 
 By clicking `Mapping` in the integration instance, we can map the field names we previously configured to actual indicator fields (except `value` which is the indicator value).
 We can use `Set up a new classification rule` using actual data from the feed.
+
+
+## Demo Video
+---
+<video controls>
+    <source src="https://github.com/demisto/content/raw/938ae7b509fa9ccd7d9b293d612c33a731908618/Packs/FeedCSV/Integrations/FeedCSV/doc_files/CSVFeed_Video.mp4"
+            type="video/mp4"/>
+    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content/blob/938ae7b509fa9ccd7d9b293d612c33a731908618/Packs/FeedCSV/Integrations/FeedCSV/doc_files/CSVFeed_Video.mp4 
+</video>
