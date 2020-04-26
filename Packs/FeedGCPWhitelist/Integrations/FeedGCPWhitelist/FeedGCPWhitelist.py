@@ -3,6 +3,7 @@ from CommonServerPython import *
 # IMPORTS
 import dns.resolver
 import re
+from typing import List, Dict
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -11,12 +12,12 @@ requests.packages.urllib3.disable_warnings()
 GOOGLE_BASE_DNS = "_cloud-netblocks.googleusercontent.com"
 
 
-def fetch_cidr(dnsAddress):
+def fetch_cidr(dns_address: str) -> List[str]:
     cidr_arr = []
     regex_dns = r"(include:.*? )"
     regex_cidr = r"(ip4:.*? )"
 
-    query_response_str = str(list(dns.resolver.query(dnsAddress, "TXT"))[0])
+    query_response_str = str(list(dns.resolver.query(dns_address, "TXT"))[0])
     dns_matches = re.finditer(regex_dns, query_response_str)
     for match in dns_matches:
         m = match.group()
@@ -52,7 +53,7 @@ def test_module(client):
     return 'ok', {}, {}
 
 
-def fetch_indicators(client):
+def fetch_indicators(client: Client) -> List[Dict]:
     iterator = client.build_iterator()
     indicators = []
     for indicator in iterator:
