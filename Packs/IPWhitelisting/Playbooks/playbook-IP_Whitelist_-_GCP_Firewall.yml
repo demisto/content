@@ -5,10 +5,10 @@ starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: dd86f393-aa0d-4afd-83bf-4a3e6ab0f2c4
+    taskid: d51a7d75-be14-4f93-8519-a2b419baaf56
     type: start
     task:
-      id: dd86f393-aa0d-4afd-83bf-4a3e6ab0f2c4
+      id: d51a7d75-be14-4f93-8519-a2b419baaf56
       version: -1
       name: ''
       iscommand: false
@@ -26,10 +26,10 @@ tasks:
     quietmode: 0
   '3':
     id: '3'
-    taskid: 5e4dd508-ad40-479e-858b-609f04e875e5
+    taskid: 2529d9b0-ff39-482c-8b5b-a5b1b426fe86
     type: title
     task:
-      id: 5e4dd508-ad40-479e-858b-609f04e875e5
+      id: 2529d9b0-ff39-482c-8b5b-a5b1b426fe86
       version: -1
       name: Whitelist IPs on GCP (Firewall)
       type: title
@@ -48,10 +48,10 @@ tasks:
     quietmode: 0
   '8':
     id: '8'
-    taskid: 61d4af4d-0a63-4641-847c-989863413102
+    taskid: a79f304f-89c7-4fe7-859f-982551ba2b75
     type: regular
     task:
-      id: 61d4af4d-0a63-4641-847c-989863413102
+      id: a79f304f-89c7-4fe7-859f-982551ba2b75
       version: -1
       name: Add whitelisted Tag
       description: commands.local.cmd.set.indicator
@@ -175,10 +175,10 @@ tasks:
     quietmode: 0
   '13':
     id: '13'
-    taskid: 73c91fb6-4baf-4043-8c30-2a0793cd2369
+    taskid: ac24597a-5d87-496d-87ec-75a1cda0ad10
     type: regular
     task:
-      id: 73c91fb6-4baf-4043-8c30-2a0793cd2369
+      id: ac24597a-5d87-496d-87ec-75a1cda0ad10
       version: -1
       name: Close Incident
       description: commands.local.cmd.close.inv
@@ -209,10 +209,10 @@ tasks:
     quietmode: 0
   '22':
     id: '22'
-    taskid: 14ca603d-6921-4c55-8978-8ae2175a52e9
+    taskid: bd8df7e2-a56a-4491-8313-587b2b5cdefc
     type: regular
     task:
-      id: 14ca603d-6921-4c55-8978-8ae2175a52e9
+      id: bd8df7e2-a56a-4491-8313-587b2b5cdefc
       version: -1
       name: Get GCP Firewall
       description: Returns the specified firewall.
@@ -235,12 +235,12 @@ tasks:
     quietmode: 0
   '24':
     id: '24'
-    taskid: ebbf6728-d87f-4654-84da-152d61495e24
+    taskid: b5ca5e44-fb29-4b32-8d41-d9df966d7c04
     type: regular
     task:
-      id: ebbf6728-d87f-4654-84da-152d61495e24
+      id: b5ca5e44-fb29-4b32-8d41-d9df966d7c04
       version: -1
-      name: Add IPs to GCP Security Firewall
+      name: Set and replace IP list on GCP Security Firewall
       description: Updates the specified firewall rule with the data included in the
         request.
       script: '|||gcp-compute-patch-firewall'
@@ -285,10 +285,10 @@ tasks:
     quietmode: 0
   '29':
     id: '29'
-    taskid: 73902ccb-e21c-4d29-89d0-731a88387836
+    taskid: 06d6eb8d-ae65-4dc6-833d-4e3d41fead15
     type: condition
     task:
-      id: 73902ccb-e21c-4d29-89d0-731a88387836
+      id: 06d6eb8d-ae65-4dc6-833d-4e3d41fead15
       version: -1
       name: Is Google Compute integration enabled?
       type: condition
@@ -339,10 +339,10 @@ tasks:
     quietmode: 0
   '34':
     id: '34'
-    taskid: f63990fb-840d-4180-8a37-13d8c195e8c8
+    taskid: f0a64fd4-ce44-42ad-8606-721d432c7cf4
     type: title
     task:
-      id: f63990fb-840d-4180-8a37-13d8c195e8c8
+      id: f0a64fd4-ce44-42ad-8606-721d432c7cf4
       version: -1
       name: Done
       type: title
@@ -358,10 +358,10 @@ tasks:
     quietmode: 0
   '35':
     id: '35'
-    taskid: 231f2ea0-6a23-4ec4-8030-703fd78673bf
+    taskid: c796cea1-6199-4288-80dc-dc4687c04301
     type: condition
     task:
-      id: 231f2ea0-6a23-4ec4-8030-703fd78673bf
+      id: c796cea1-6199-4288-80dc-dc4687c04301
       version: -1
       name: GCP Firewall found?
       type: condition
@@ -394,10 +394,10 @@ tasks:
     quietmode: 0
   '36':
     id: '36'
-    taskid: b82093a3-8698-48db-8940-fbd28886b83c
+    taskid: 0d8441a6-2dda-46ef-80cb-8c2359ba557a
     type: regular
     task:
-      id: b82093a3-8698-48db-8940-fbd28886b83c
+      id: 0d8441a6-2dda-46ef-80cb-8c2359ba557a
       version: -1
       name: Compare IPs with current list
       scriptName: CompareLists
@@ -422,10 +422,10 @@ tasks:
     quietmode: 0
   '37':
     id: '37'
-    taskid: 54be5d96-e0b1-4693-85be-4b55a397815a
+    taskid: 49934a26-f7ac-4798-8779-2850008b3085
     type: title
     task:
-      id: 54be5d96-e0b1-4693-85be-4b55a397815a
+      id: 49934a26-f7ac-4798-8779-2850008b3085
       version: -1
       name: GCP Firewall Name Not Founnd
       type: title
@@ -444,10 +444,10 @@ tasks:
     quietmode: 0
   '38':
     id: '38'
-    taskid: a1587288-ee7f-413a-885c-22a8bd80b9df
+    taskid: aa69ad2b-9911-439d-8b39-603117c9a2f6
     type: regular
     task:
-      id: a1587288-ee7f-413a-885c-22a8bd80b9df
+      id: aa69ad2b-9911-439d-8b39-603117c9a2f6
       version: -1
       name: Engineer - Fix Firewall Name and rerun
       type: regular
@@ -463,10 +463,10 @@ tasks:
     quietmode: 0
   '40':
     id: '40'
-    taskid: 090b1e44-d84d-4be4-8a53-34bec13e3439
+    taskid: a03162f6-13ca-4156-88e6-76e800583a86
     type: regular
     task:
-      id: 090b1e44-d84d-4be4-8a53-34bec13e3439
+      id: a03162f6-13ca-4156-88e6-76e800583a86
       version: -1
       name: Remove whitelisted Tag
       description: commands.local.cmd.remove.values.to.indicator.multi.select.field
@@ -495,10 +495,10 @@ tasks:
     quietmode: 0
   '41':
     id: '41'
-    taskid: 9126a7fb-d5ce-4299-83c2-926b11d04b7d
+    taskid: b0c3533c-cc3c-480b-83f5-f15d8a1519b6
     type: condition
     task:
-      id: 9126a7fb-d5ce-4299-83c2-926b11d04b7d
+      id: b0c3533c-cc3c-480b-83f5-f15d8a1519b6
       version: -1
       name: Any IPs in GCP whitelist that should be removed?
       type: condition
@@ -527,10 +527,10 @@ tasks:
     quietmode: 0
   '42':
     id: '42'
-    taskid: f1aa25d0-3fa7-4e1b-8bcc-3d8ab5f79425
+    taskid: 86e1c61a-1567-4937-8fd5-cf48dd0d136c
     type: condition
     task:
-      id: f1aa25d0-3fa7-4e1b-8bcc-3d8ab5f79425
+      id: 86e1c61a-1567-4937-8fd5-cf48dd0d136c
       version: -1
       name: Any IPs to whitelist that are not already in GCP?
       type: condition
@@ -551,7 +551,7 @@ tasks:
             value:
               simple: ListCompare.LeftOnly
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": -30,\n    \"y\": 1260\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": -30,\n    \"y\": 1270\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -599,7 +599,6 @@ inputs:
   description: Name of the Indicator Tag to apply to any IPs whitelisted by this playbook.
   playbookInputQuery:
 outputs: []
-sourceplaybookid: 6b4415d2-cf8e-4a22-8bb0-012e4b692b60
 quiet: true
-fromversion: 5.0.0
+fromversion: 5.5.0
 description: ''
