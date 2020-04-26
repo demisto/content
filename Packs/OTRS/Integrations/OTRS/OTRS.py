@@ -127,7 +127,7 @@ def get_ticket_command():
 
     output = {
         'ID': str(ticket['TicketID']),
-        'TicketNumber': ticket['TicketNumber'],
+        'Number': ticket['TicketNumber'],
         'Created': ticket['Created'],
         'CustomerID': ticket['CustomerUserID'],
         'Owner': ticket['Owner'],
@@ -150,7 +150,7 @@ def get_ticket_command():
                 output['DynamicField'][name] = value
 
     title = 'OTRS Ticket ' + str(ticket['TicketID'])
-    headers = ['ID', 'TicketNumber', 'Age', 'Title', 'State', 'Lock', 'Queue',
+    headers = ['ID', 'Number', 'Age', 'Title', 'State', 'Lock', 'Queue',
                'Owner', 'CustomerID', 'Priority', 'Type', 'Created', 'DynamicField']
     human_readable = tableToMarkdown(title, output, headers=headers, removeNull=True)
 
@@ -261,7 +261,7 @@ def search_ticket_command():
             raw_ticket = get_ticket(ticket_id)
             ticket = {
                 'ID': str(raw_ticket['TicketID']),
-                'TicketNumber': raw_ticket['TicketNumber'],
+                'Number': raw_ticket['TicketNumber'],
                 'Created': raw_ticket['Created'],
                 'Owner': raw_ticket['Owner'],
                 'Priority': raw_ticket['Priority'],
@@ -275,7 +275,7 @@ def search_ticket_command():
             'OTRS.Ticket(val.ID===obj.ID)': output
         }
         title = 'OTRS Search Results'
-        headers = ['ID', 'TicketNumber', 'Title', 'Type', 'State', 'Priority', 'Queue', 'Created', 'Owner']
+        headers = ['ID', 'Number', 'Title', 'Type', 'State', 'Priority', 'Queue', 'Created', 'Owner']
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -349,7 +349,7 @@ def create_ticket_command():
 
     context = {
         'ID': str(ticket['TicketID']),
-        'TicketNumber': ticket['TicketNumber'],
+        'Number': ticket['TicketNumber'],
         'CustomerUser': customer_user,
         'Priority': priority,
         'Queue': queue,

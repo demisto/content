@@ -1,16 +1,16 @@
 Service management suite that comprises ticketing, workflow automation, and notification.
-This integration was integrated and tested with version 7.x of OTRS
-## Configure OTRS on Demisto
+This integration was integrated and tested with version xx of OTRS copy
+## Configure OTRS copy on Demisto
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for OTRS.
+2. Search for OTRS copy.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| server | OTRS Server URL \(e.g. https://demisto.managed\-otrs.com\) | True |
+| server | OTRS Server URL \(e.g. http://example.com\) | True |
 | credentials | OTRS Credentials | True |
-| unsecure | Trust any certificate \(unsecure\) | False |
+| unsecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 | isFetch | Fetch incidents | False |
 | incidentType | Incident type | False |
@@ -34,8 +34,8 @@ Retrieves details for an OTRS ticket by ticket ID or ticket number.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ticket_id | Ticket ID of the ticket to get details of | Optional | 
-| ticket_number | Ticket Number of the ticket to get details of | Optional | 
+| ticket_id | Ticket ID of the ticket to get details of. Exactly one between tocket_id or ticket_number must be provided. | Optional | 
+| ticket_number | Ticket Number of the ticket to get details of. Exactly one between tocket_id or ticket_number must be provided. | Optional | 
 
 
 ##### Context Output
@@ -43,6 +43,7 @@ Retrieves details for an OTRS ticket by ticket ID or ticket number.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | OTRS.Ticket.ID | string | Ticket ID | 
+| OTRS.Ticket.Number | string | Ticket number | 
 | OTRS.Ticket.Created | date | Ticket creation date | 
 | OTRS.Ticket.CustomerUser | string | Customer user related to ticket | 
 | OTRS.Ticket.Owner | string | Ticket owner | 
@@ -72,13 +73,65 @@ Retrieves details for an OTRS ticket by ticket ID or ticket number.
 | File.Type | string | Attachment file type | 
 | File.MD5 | string | Attachment file MD5 | 
 | File.Extension | string | Attachment file extension | 
-| OTRS.Ticket.TicketNumber | string | Ticket number | 
 
 
 ##### Command Example
-``` ```
+```!otrs-get-ticket ticket_id="7023"```
+
+##### Context Example
+```
+{
+    "OTRS": {
+        "Ticket": {
+            "Age": "0 h 09 m",
+            "Article": [
+                {
+                    "Body": "Testing",
+                    "ContentType": "text/plain; charset=utf8",
+                    "CreateTime": "2020-04-26 11:05:07",
+                    "From": "\"Jens Bothe\" <jens.bothe@otrs.com\>",
+                    "ID": "11187",
+                    "Subject": "TestArticle"
+                },
+                {
+                    "Body": "ClosingBody",
+                    "ContentType": "text/plain; charset=utf8",
+                    "CreateTime": "2020-04-26 11:05:12",
+                    "From": "SIEM Webservice",
+                    "ID": "11188",
+                    "Subject": "ClosingSubject"
+                }
+            ],
+            "Created": "2020-04-26 11:05:07",
+            "CustomerID": "jb",
+            "DynamicField": {
+                "Firstname": "Jens",
+                "Gender": "male"
+            },
+            "ID": "7023",
+            "Lock": "unlock",
+            "Number": "2020042610000031",
+            "Owner": "siem",
+            "Priority": "1 very low",
+            "Queue": "Inbox::SIEM",
+            "State": "open",
+            "Title": "UpdatedTitle",
+            "Type": "Incident"
+        }
+    }
+}
+```
 
 ##### Human Readable Output
+### OTRS Ticket 7023
+|ID|Number|Age|Title|State|Lock|Queue|Owner|CustomerID|Priority|Type|Created|DynamicField|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 7023 | 2020042610000031 | 0 h 09 m | UpdatedTitle | open | unlock | Inbox::SIEM | siem | jb | 1 very low | Incident | 2020-04-26 11:05:07 | Firstname: Jens<br>Gender: male |
+### Articles
+|ID|From|Subject|Body|CreateTime|ContentType|
+|---|---|---|---|---|---|
+| 11187 | "Jens Bothe" <jens.bothe@otrs.com> | TestArticle | Testing | 2020-04-26 11:05:07 | text/plain; charset=utf8 |
+| 11188 | SIEM Webservice | ClosingSubject | ClosingBody | 2020-04-26 11:05:12 | text/plain; charset=utf8 |
 
 
 ### otrs-search-ticket
@@ -107,6 +160,7 @@ Search for an OTRS ticket using search filters
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | OTRS.Ticket.ID | string | Ticket ID | 
+| OTRS.Ticket.Number | string | Ticket number | 
 | OTRS.Ticket.Created | date | Ticket creation date | 
 | OTRS.Ticket.CustomerUser | string | Customer user related to ticket | 
 | OTRS.Ticket.Owner | string | Ticket owner | 
@@ -115,14 +169,18 @@ Search for an OTRS ticket using search filters
 | OTRS.Ticket.State | string | Ticket state | 
 | OTRS.Ticket.Title | string | Ticket title | 
 | OTRS.Ticket.Type | string | Ticket type | 
-| OTRS.Ticket.TicketNumber | string | Ticket number | 
 
 
 ##### Command Example
-``` ```
+```!otrs-search-ticket state="PendingReminder" title="7023"```
+
+##### Context Example
+```
+{}
+```
 
 ##### Human Readable Output
-
+No results found
 
 ### otrs-create-ticket
 ***
@@ -155,6 +213,7 @@ Create a new ticket in OTRS
 | OTRS.Ticket.Article.Subject | string | Ticket article subject | 
 | OTRS.Ticket.Article.Body | string | Ticket article body | 
 | OTRS.Ticket.ID | string | Ticket ID | 
+| OTRS.Ticket.Number | string | Ticket number | 
 | OTRS.Ticket.Created | date | Ticket creation date | 
 | OTRS.Ticket.Priority | string | Ticket priority | 
 | OTRS.Ticket.Queue | string | Queue that the ticket is in | 
@@ -163,14 +222,36 @@ Create a new ticket in OTRS
 | OTRS.Ticket.Type | string | Ticket type | 
 | OTRS.Ticket.CustomerUser | string | Customer user related to ticket | 
 | OTRS.Ticket.DynamicField | string | Ticket dynamic fields | 
-| OTRS.Ticket.TicketNumber | string | Ticket number | 
 
 
 ##### Command Example
-``` ```
+```!otrs-create-ticket title="TestTicket" queue="Inbox::SIEM" state="New" priority="2Low" customer_user="jb" article_subject="TestArticle" article_body="Testing" type="Unclassified"```
+
+##### Context Example
+```
+{
+    "OTRS": {
+        "Ticket": {
+            "Article": {
+                "Body": "Testing",
+                "Subject": "TestArticle"
+            },
+            "CustomerUser": "jb",
+            "DynamicField": [],
+            "ID": "7024",
+            "Number": "2020042610000049",
+            "Priority": "2 low",
+            "Queue": "Inbox::SIEM",
+            "State": "new",
+            "Title": "TestTicket",
+            "Type": "Unclassified"
+        }
+    }
+}
+```
 
 ##### Human Readable Output
-
+Created ticket 7024 successfully
 
 ### otrs-update-ticket
 ***
@@ -212,10 +293,25 @@ Update an OTRS ticket
 
 
 ##### Command Example
-``` ```
+```!otrs-update-ticket ticket_id="7023" title="UpdatedTitle" state="Open" priority="1VeryLow" type="Incident"```
+
+##### Context Example
+```
+{
+    "OTRS": {
+        "Ticket": {
+            "ID": "7023",
+            "Priority": "1 very low",
+            "State": "open",
+            "Title": "UpdatedTitle",
+            "Type": "Incident"
+        }
+    }
+}
+```
 
 ##### Human Readable Output
-
+Updated ticket 7023 successfully
 
 ### otrs-close-ticket
 ***
@@ -245,7 +341,23 @@ Close an OTRS ticket
 
 
 ##### Command Example
-``` ```
+```!otrs-close-ticket ticket_id="7023" article_subject="ClosingSubject" article_body="ClosingBody"```
+
+##### Context Example
+```
+{
+    "OTRS": {
+        "Ticket": {
+            "Article": {
+                "Body": "ClosingBody",
+                "Subject": "ClosingSubject"
+            },
+            "ID": "7023",
+            "State": "closed successful"
+        }
+    }
+}
+```
 
 ##### Human Readable Output
-
+Closed ticket 7023 successfully
