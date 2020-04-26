@@ -63,7 +63,7 @@ def http_request(method, url_suffix, json=None, wait=0, retries=0):
         if should_continue_on_blacklisted_urls and error_description == BLACKLISTED_URL_ERROR_MESSAGE:
             response_json['url_is_blacklisted'] = True
             requested_url = JSON.loads(json)['url']
-            blacklisted_message = f'The URL {requested_url} is blacklisted, thus no results will be returned for it.'
+            blacklisted_message = 'The URL {} is blacklisted, no results will be returned for it.'.format(requested_url)
             demisto.results(blacklisted_message)
             return response_json
 
