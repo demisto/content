@@ -460,7 +460,7 @@ try:
     elif command == "device":
         lookupDevice()
 
-except Exception, e:
+except Exception as e:
     if command == "fetch-incidents":
         raise
     LOG(e)
