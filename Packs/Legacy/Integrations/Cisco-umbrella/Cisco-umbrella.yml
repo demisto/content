@@ -11,7 +11,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -708,18 +708,18 @@ script:
     - contextPath: Domain.Malicious.Description
       description: For malicious domains, the reason for the vendor to make the decision
       type: Unknown
-    - contextPath: DBotScore.Score
-      description: The DBot score
-      type: number
-    - contextPath: DBotScore.Type
-      description: The Indicator type
-      type: string
-    - contextPath: DBotScore.Vendor
-      description: The DBot score vendor
-      type: string
     - contextPath: DBotScore.Indicator
-      description: The Indicator
-      type: string
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
   - arguments:
     - default: true
       description: Enter a domain regular expression (e.g. "cn.*\\\\.com"). Note to
@@ -835,15 +835,15 @@ script:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
-    - contextPath: DBotScore.Score
-      description: The actual score.
-      type: Number
     - contextPath: DBotScore.Type
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: The vendor used to calculate the score.
       type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
     - contextPath: Domain.Umbrella.ContentCategories
       description: The Umbrella content category or categories that match this domain.
         If none of them match, the return will be blank.
@@ -1116,17 +1116,17 @@ script:
         traffic matches what is expected for this TLD.
       type: number
     - contextPath: DBotScore.Indicator
-      description: The Indicator
-      type: string
-    - contextPath: DBotScore.Score
-      description: The DBot score
-      type: number
+      description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
-      description: The Indicator type
-      type: string
+      description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
-      description: The DBot score vendor
-      type: string
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
     - contextPath: Domain.Malicious.Vendor
       description: For malicious domains, the vendor that made the decision
       type: string
