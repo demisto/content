@@ -2093,7 +2093,7 @@ tasks:
       version: -1
       name: cve-indicator-test
       description: Returns CVE information by CVE ID.
-      script: '|||cve'
+      script: VulnDB|||cve
       type: regular
       iscommand: true
       brand: ""

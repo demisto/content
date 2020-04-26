@@ -5,6 +5,7 @@ import hashlib
 from typing import Any, Dict
 import dateparser
 import urllib3
+import traceback
 from CommonServerPython import *
 
 # Disable insecure warnings
@@ -929,29 +930,38 @@ def isolate_endpoint_command(client, args):
 
     endpoint = client.get_endpoints(endpoint_id_list=[endpoint_id])
     if len(endpoint) == 0:
-        raise ValueError(f'Endpoint {endpoint_id} was not found')
+        raise ValueError(f'Error: Endpoint {endpoint_id} was not found')
 
     endpoint = endpoint[0]
+    endpoint_status = endpoint.get('endpoint_status')
     is_isolated = endpoint.get('is_isolated')
     if is_isolated == 'AGENT_ISOLATED':
         return (
-            f'Endpoint {endpoint_id} already isolated',
+            f'Endpoint {endpoint_id} already isolated.',
             None,
             None
         )
-
     if is_isolated == 'AGENT_PENDING_ISOLATION':
         return (
-            f'Endpoint {endpoint_id} pending isolation',
+            f'Endpoint {endpoint_id} pending isolation.',
             None,
             None
         )
-
+    if endpoint_status == 'DISCONNECTED':
+        raise ValueError(
+            f'Error: Endpoint {endpoint_id} is disconnected and therefore can not be isolated.'
+        )
+    if is_isolated == 'AGENT_PENDING_ISOLATION_CANCELLATION':
+        raise ValueError(
+            f'Error: Endpoint {endpoint_id} is pending isolation cancellation and therefore can not be isolated.'
+        )
     client.isolate_endpoint(endpoint_id)
 
     return (
-        f'Endpoint {endpoint_id} has isolated successfully',
-        None,
+        f'The isolation request has been submitted successfully on Endpoint {endpoint_id}.\n'
+        f'To check the endpoint isolation status please run: !xdr-get-endpoints endpoint_id_list={endpoint_id}'
+        f' and look at the [is_isolated] field.',
+        {f'{INTEGRATION_CONTEXT_BRAND}.Isolation.endpoint_id(val.endpoint_id == val.endpoint_id)': endpoint_id},
         None
     )
 
@@ -961,29 +971,38 @@ def unisolate_endpoint_command(client, args):
 
     endpoint = client.get_endpoints(endpoint_id_list=[endpoint_id])
     if len(endpoint) == 0:
-        raise ValueError(f'Endpoint {endpoint_id} was not found')
+        raise ValueError(f'Error: Endpoint {endpoint_id} was not found')
 
     endpoint = endpoint[0]
+    endpoint_status = endpoint.get('endpoint_status')
     is_isolated = endpoint.get('is_isolated')
     if is_isolated == 'AGENT_UNISOLATED':
         return (
-            f'Endpoint {endpoint_id} already unisolated',
+            f'Endpoint {endpoint_id} already unisolated.',
             None,
             None
         )
-
     if is_isolated == 'AGENT_PENDING_ISOLATION_CANCELLATION':
         return (
-            f'Endpoint {endpoint_id} pending isolation cancellation',
+            f'Endpoint {endpoint_id} pending isolation cancellation.',
             None,
             None
         )
-
+    if endpoint_status == 'DISCONNECTED':
+        raise ValueError(
+            f'Error: Endpoint {endpoint_id} is disconnected and therefore can not be un-isolated.'
+        )
+    if is_isolated == 'AGENT_PENDING_ISOLATION':
+        raise ValueError(
+            f'Error: Endpoint {endpoint_id} is pending isolation and therefore can not be un-isolated.'
+        )
     client.unisolate_endpoint(endpoint_id)
 
     return (
-        f'Endpoint {endpoint_id} has un-isolated successfully',
-        None,
+        f'The un-isolation request has been submitted successfully on Endpoint {endpoint_id}.\n'
+        f'To check the endpoint isolation status please run: !xdr-get-endpoints endpoint_id_list={endpoint_id}'
+        f' and look at the [is_isolated] field.',
+        {f'{INTEGRATION_CONTEXT_BRAND}.UnIsolation.endpoint_id(val.endpoint_id == val.endpoint_id)': endpoint_id},
         None
     )
 
@@ -1352,7 +1371,8 @@ def main():
         if demisto.command() == 'fetch-incidents':
             LOG(str(err))
             raise
-        demisto.error()
+
+        demisto.error(traceback.format_exc())
         return_error(str(err))
 
 

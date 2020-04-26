@@ -1,5 +1,5 @@
 id: d66e5f86-e045-403f-819e-5058aa603c32
-version: 60
+version: -1
 name: AWS - EC2 Test Playbook actions
 starttaskid: "0"
 tasks:

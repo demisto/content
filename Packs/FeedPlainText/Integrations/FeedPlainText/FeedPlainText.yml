@@ -66,8 +66,8 @@ configuration:
   required: true
   type: 15
 - defaultvalue: indicatorType
-  name: feedExpirationPolicy
   display: ''
+  name: feedExpirationPolicy
   options:
   - never
   - interval
@@ -76,8 +76,8 @@ configuration:
   required: false
   type: 17
 - defaultvalue: '20160'
-  name: feedExpirationInterval
   display: ''
+  name: feedExpirationInterval
   required: false
   type: 1
 - defaultvalue: '240'
@@ -101,6 +101,11 @@ configuration:
 - additionalinfo: Python regular expression for lines to ignore
   display: Ignore Regex
   name: ignore_regex
+  required: false
+  type: 0
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
   required: false
   type: 0
 - display: Trust any certificate (not secure)
@@ -145,7 +150,8 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to return to the output. The default value is 50.
+      description: The maximum number of results to return to the output. The default
+        value is 50.
       isArray: false
       name: limit
       required: false
@@ -160,7 +166,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: plaintext-get-indicators
-  dockerimage: demisto/python3:3.8.1.6120
+  dockerimage: demisto/python3:3.8.2.6981
   feed: true
   isfetch: false
   longRunning: false

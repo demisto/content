@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 from typing import List, Dict
 import requests
@@ -10,6 +11,7 @@ requests.packages.urllib3.disable_warnings()
 
 """
 Created on August 1, 2019
+Updated on April 2, 2020
 
 @author: Saadat Abid
 """
@@ -29,6 +31,7 @@ HOST_REPORT_API = '/oti/v1/host/report'
 DL_SC_API = '/oti/v1/download/screenshot'
 DL_HTML_API = '/oti/v1/download/html'
 DL_TEXT_API = '/oti/v1/download/text'
+API_QUOTA = '/oti/v1/quota/status'
 
 
 ''' HELPERS FUNCTIONS '''
@@ -326,10 +329,8 @@ def validate_snx_api_key():
     Validate the provided SlashNext cloud API key and test connection, in case of any error exit the program
     @:return: None
     """
-    api_data = {
-        'host': 'www.google.com'
-    }
-    response = http_request(endpoint=HOST_REPUTE_API, data=api_data)
+    api_data = {}   # type: Dict[str, str]
+    response = http_request(endpoint=API_QUOTA, data=api_data)
 
     if response.get('errorNo') != 0:
         return_error('API Returned, {}:{}'.format(response.get('errorNo'), response.get('errorMsg')))
@@ -607,9 +608,6 @@ def host_report_command():
     title = 'SlashNext Phishing Incident Response - Latest Scanned URL\n' \
             '##### host = {}'.format(enc_host.decode())
 
-    if response.get('normalizeData').get('normalizeStatus') == 1:
-        title += ' *\n*' + response.get('normalizeData').get('normalizeMessage')
-
     md = tableToMarkdown(
         title,
         snx_ioc_cont,
@@ -697,9 +695,6 @@ def host_urls_command():
 
     title = 'SlashNext Phishing Incident Response - Host URLs\n' \
             '##### host = {}'.format(host.decode())
-
-    if response.get('normalizeData').get('normalizeStatus') == 1:
-        title += ' *\n*' + response.get('normalizeData').get('normalizeMessage')
 
     md = tableToMarkdown(
         title,
@@ -1156,6 +1151,60 @@ def download_text_command():
     })
 
 
+def api_quota():
+    """
+    Execute SlashNext's quota/status to get the quota status information
+    :return: Response of the SlashNext quota/status API
+    """
+    # Create the required data dictionary for Quota/Status
+    api_data = {}   # type: Dict[str, str]
+    response = http_request(endpoint=API_QUOTA, data=api_data)
+
+    if response.get('errorNo') != 0:
+        return_error('API Returned, {}:{}'.format(response.get('errorNo'), response.get('errorMsg')))
+
+    return response
+
+
+def api_quota_command():
+    """
+    Execute SlashNext's quota/status to get the quota status information
+    @:return: None
+    """
+    # 1. There is no parameter input required from Demisto
+    # 2. Get the quota status info from SlashNext API
+    response = api_quota()
+    if response.get('errorNo') != 0:
+        return
+    # 3. Parse and format the response
+    quota_data = response.get('quotaDetails')
+
+    title = 'SlashNext Phishing Incident Response - API Quota\n'\
+            '##### Note: {}'.format(quota_data.get('note'))
+
+    snx_ioc_cont = {
+        'Licensed Quota': quota_data.get('licensedQuota'),
+        'Remaining Quota': quota_data.get('remainingQuota'),
+        'Expiration Date': quota_data.get('expiryDate')
+    }
+
+    md = tableToMarkdown(
+        title,
+        snx_ioc_cont,
+        ['Licensed Quota',
+         'Remaining Quota',
+         'Expiration Date']
+    )
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': snx_ioc_cont,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': md
+    })
+
+
 ''' EXECUTION '''
 
 
@@ -1188,6 +1237,8 @@ def main():
             download_html_command()
         elif demisto.command() == 'slashnext-download-text':
             download_text_command()
+        elif demisto.command() == 'slashnext-api-quota':
+            api_quota_command()
 
     except Exception as e:
         return_error(str(e))

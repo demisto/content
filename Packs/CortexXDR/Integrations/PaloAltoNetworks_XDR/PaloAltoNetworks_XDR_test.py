@@ -1,5 +1,5 @@
 import json
-
+import pytest
 
 XDR_URL = 'https://api.xdrurl.com'
 
@@ -157,7 +157,8 @@ def test_isolate_endpoint(requests_mock):
         'reply': {
             'endpoints': [
                 {
-                    'endpoint_id': '1111'
+                    'endpoint_id': '1111',
+                    "endpoint_status": "CONNECTED"
                 }
             ]
         }
@@ -174,9 +175,39 @@ def test_isolate_endpoint(requests_mock):
         "endpoint_id": "1111"
     }
 
-    readable_output, outputs, _ = isolate_endpoint_command(client, args)
-    assert outputs is None
-    assert readable_output == 'Endpoint 1111 has isolated successfully'
+    readable_output, _, _ = isolate_endpoint_command(client, args)
+    assert readable_output == 'The isolation request has been submitted successfully on Endpoint 1111.\n' \
+                              'To check the endpoint isolation status please run:' \
+                              ' !xdr-get-endpoints endpoint_id_list=1111 and look at the [is_isolated] field.'
+
+
+def test_isolate_endpoint_unconnected_machine(requests_mock, mocker):
+    from PaloAltoNetworks_XDR import isolate_endpoint_command, Client
+#    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+
+    requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/get_endpoint/', json={
+        'reply': {
+            'endpoints': [
+                {
+                    'endpoint_id': '1111',
+                    "endpoint_status": "DISCONNECTED"
+                }
+            ]
+        }
+    })
+
+    isolate_endpoint_response = load_test_data('./test_data/isolate_endpoint.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/isolate', json=isolate_endpoint_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1'
+    )
+
+    args = {
+        "endpoint_id": "1111"
+    }
+    with pytest.raises(ValueError, match='Error: Endpoint 1111 is disconnected and therefore can not be isolated.'):
+        isolate_endpoint_command(client, args)
 
 
 def test_unisolate_endpoint(requests_mock):
@@ -186,7 +217,8 @@ def test_unisolate_endpoint(requests_mock):
         'reply': {
             'endpoints': [
                 {
-                    'endpoint_id': '1111'
+                    'endpoint_id': '1111',
+                    "endpoint_status": "CONNECTED"
                 }
             ]
         }
@@ -203,9 +235,39 @@ def test_unisolate_endpoint(requests_mock):
         "endpoint_id": "1111"
     }
 
-    readable_output, outputs, _ = unisolate_endpoint_command(client, args)
-    assert outputs is None
-    assert readable_output == 'Endpoint 1111 has un-isolated successfully'
+    readable_output, _, _ = unisolate_endpoint_command(client, args)
+    assert readable_output == 'The un-isolation request has been submitted successfully on Endpoint 1111.\n' \
+                              'To check the endpoint isolation status please run:' \
+                              ' !xdr-get-endpoints endpoint_id_list=1111 and look at the [is_isolated] field.'
+
+
+def test_unisolate_endpoint_pending_isolation(requests_mock):
+    from PaloAltoNetworks_XDR import unisolate_endpoint_command, Client
+
+    requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/get_endpoint/', json={
+        'reply': {
+            'endpoints': [
+                {
+                    'endpoint_id': '1111',
+                    "is_isolated": "AGENT_PENDING_ISOLATION"
+                }
+            ]
+        }
+    })
+
+    unisolate_endpoint_response = load_test_data('./test_data/unisolate_endpoint.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/unisolate', json=unisolate_endpoint_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1'
+    )
+
+    args = {
+        "endpoint_id": "1111"
+    }
+    with pytest.raises(ValueError, match='Error: Endpoint 1111 is pending isolation and therefore can not be'
+                                         ' un-isolated.'):
+        unisolate_endpoint_command(client, args)
 
 
 def test_get_distribution_url(requests_mock):

@@ -2,6 +2,10 @@
 -
 
 
+## [20.4.0] - 2020-04-14
+-
+
+
 ## [19.11.1] - 2019-11-26
 - Fixed an issue with handling input as comma separated string.
 - Added support to floating numbers.

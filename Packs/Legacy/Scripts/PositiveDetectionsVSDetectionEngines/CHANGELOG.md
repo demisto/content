@@ -2,6 +2,10 @@
 -
 
 
+## [20.4.0] - 2020-04-14
+-
+
+
 ## [20.1.2] - 2020-01-22
 - Fixed an issue that made the script display error messages when it didn't get required fields.
 

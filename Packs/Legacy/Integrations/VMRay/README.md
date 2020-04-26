@@ -22,7 +22,7 @@
 <li><strong>Server URL (e.g.,<span> </span>https://cloud.vmray.com)</strong></li>
 <li><strong>API Key</strong></li>
 <li><strong>Use system proxy</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 </ul>
 </li>
 <li>Click<span> </span><strong>Test</strong><span> </span>to validate the URLs, token, and connection.</li>

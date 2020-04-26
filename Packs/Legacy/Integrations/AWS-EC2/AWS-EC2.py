@@ -2698,6 +2698,184 @@ def modify_image_attribute_command(args):
         demisto.results('Image attribute sucessfully modified')
 
 
+def detach_internet_gateway_command(args):
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    kwargs = {}
+    if args.get('InternetGatewayId') is not None:
+        kwargs.update({'InternetGatewayId': args.get('InternetGatewayId')})
+    if args.get('VpcId') is not None:
+        kwargs.update({'VpcId': args.get('VpcId')})
+
+    response = client.detach_internet_gateway(**kwargs)
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        demisto.results('Internet gateway sucessfully detached')
+
+
+def delete_subnet_command(args):
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    kwargs = {}
+    if args.get('SubnetId') is not None:
+        kwargs.update({'SubnetId': args.get('SubnetId')})
+
+    response = client.delete_subnet(**kwargs)
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        demisto.results('Subnet sucessfully deleted')
+
+
+def delete_vpc_command(args):
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    kwargs = {}
+    if args.get('VpcId') is not None:
+        kwargs.update({'VpcId': args.get('VpcId')})
+
+    response = client.delete_vpc(**kwargs)
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        demisto.results('VPC sucessfully deleted')
+
+
+def delete_internet_gateway_command(args):
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    kwargs = {}
+    if args.get('InternetGatewayId') is not None:
+        kwargs.update({'InternetGatewayId': args.get('InternetGatewayId')})
+
+    response = client.delete_internet_gateway(**kwargs)
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        demisto.results('Internet gateway sucessfully deleted')
+
+
+def describe_internet_gateway_command(args):
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    obj = vars(client._client_config)
+    kwargs = {}
+    data = []
+    output = []
+    if args.get('filters') is not None:
+        kwargs.update({'Filters': parse_filter_field(args.get('filters'))})
+    if args.get('InternetGatewayIds') is not None:
+        kwargs.update({'InternetGatewayIds': parse_resource_ids(args.get('InternetGatewayIds'))})
+
+    response = client.describe_internet_gateways(**kwargs)
+
+    if len(response['InternetGateways']) == 0:
+        demisto.results('No Internet Gateways were found.')
+        return
+    for i, internet_gateway in enumerate(response['InternetGateways']):
+        data.append({
+            'InternetGatewayId': internet_gateway['InternetGatewayId'],
+            'OwnerId': internet_gateway['OwnerId']
+        })
+        if 'Tags' in internet_gateway:
+            for tag in internet_gateway['Tags']:
+                data[i].update({
+                    tag['Key']: tag['Value']
+                })
+        if 'Attachments' in internet_gateway:
+            for attachment in internet_gateway['Attachments']:
+                data[i].update({
+                    'State': attachment['State'],
+                    'VpcId': attachment['VpcId']
+                })
+        internet_gateway.update({'Region': obj['_user_provided_options']['region_name']})
+        output.append(internet_gateway)
+
+    try:
+        raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
+    except ValueError as e:
+        return_error('Could not decode/encode the raw response - {err_msg}'.format(err_msg=e))
+    ec = {'AWS.EC2.InternetGateways(val.InternetGatewayId === obj.InternetGatewayId)': raw}
+    human_readable = tableToMarkdown('AWS EC2 Internet Gateway Ids', data)
+    return_outputs(human_readable, ec)
+
+
+def create_traffic_mirror_session_command(args):
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    kwargs = {}
+    if args.get('NetworkInterfaceId') is not None:
+        kwargs.update({'NetworkInterfaceId': args.get('NetworkInterfaceId')})
+    if args.get('TrafficMirrorTargetId') is not None:
+        kwargs.update({'TrafficMirrorTargetId': args.get('TrafficMirrorTargetId')})
+    if args.get('TrafficMirrorFilterId') is not None:
+        kwargs.update({'TrafficMirrorFilterId': args.get('TrafficMirrorFilterId')})
+    if args.get('PacketLength') is not None:
+        kwargs.update({'PacketLength': int(args.get('PacketLength'))})
+    if args.get('SessionNumber') is not None:
+        kwargs.update({'SessionNumber': int(args.get('SessionNumber'))})
+    if args.get('VirtualNetworkId') is not None:
+        kwargs.update({'VirtualNetworkId': int(args.get('VirtualNetworkId'))})
+    if args.get('Description') is not None:
+        kwargs.update({'Description': args.get('Description')})
+    if args.get('ClientToken') is not None:
+        kwargs.update({'ClientToken': args.get('ClientToken')})
+    if args.get('DryRun') is not None:
+        kwargs.update({'DryRun': True if args.get('DryRun') == 'True' else False})
+
+    tag_specifications = []  # type: list
+    if args.get('Tags') is not None:
+        arr = args.get('Tags').split('#')
+        for i, item in enumerate(arr):
+            if len(tag_specifications) - 1 < (i):
+                tag_specifications.append({})
+            tg = item.split(':')
+            tag_specifications[i].update({
+                'ResourceType': tg[0],
+                'Tags': parse_tag_field(tg[1])
+            })
+    if tag_specifications:
+        kwargs.update({'TagSpecifications': tag_specifications})
+
+    response = client.create_traffic_mirror_session(**kwargs)
+    traffic_mirror_session = response['TrafficMirrorSession']
+    client_token = response['ClientToken']
+    data = {
+        'TrafficMirrorSessionId': traffic_mirror_session['TrafficMirrorSessionId'],
+        'TrafficMirrorTargetId': traffic_mirror_session['TrafficMirrorTargetId'],
+        'TrafficMirrorFilterId': traffic_mirror_session['TrafficMirrorFilterId'],
+        'NetworkInterfaceId': traffic_mirror_session['NetworkInterfaceId'],
+        'OwnerId': traffic_mirror_session['OwnerId'],
+        'PacketLength': traffic_mirror_session['PacketLength'],
+        'SessionNumber': traffic_mirror_session['SessionNumber'],
+        'VirtualNetworkId': traffic_mirror_session['VirtualNetworkId'],
+        'Description': traffic_mirror_session['Description'],
+        'Tags': traffic_mirror_session['Tags'],
+        'VpcId': traffic_mirror_session['VpcId'],
+        'ClientToken': client_token
+    }
+    ec = {'AWS.EC2.TrafficMirrorSession': data}
+    human_readable = tableToMarkdown('AWS Traffic Mirror Session', data)
+    return_outputs(human_readable, ec)
+
+
 """COMMAND BLOCK"""
 try:
     LOG('Command being called is {command}'.format(command=demisto.command()))
@@ -2890,6 +3068,24 @@ try:
 
     elif demisto.command() == 'aws-ec2-modify-instance-attribute':
         modify_instance_attribute_command(demisto.args())
+
+    elif demisto.command() == 'aws-ec2-detach-internet-gateway':
+        detach_internet_gateway_command(demisto.args())
+
+    elif demisto.command() == 'aws-ec2-delete-internet-gateway':
+        delete_internet_gateway_command(demisto.args())
+
+    elif demisto.command() == 'aws-ec2-describe-internet-gateway':
+        describe_internet_gateway_command(demisto.args())
+
+    elif demisto.command() == 'aws-ec2-delete-subnet':
+        delete_subnet_command(demisto.args())
+
+    elif demisto.command() == 'aws-ec2-delete-vpc':
+        delete_vpc_command(demisto.args())
+
+    elif demisto.command() == 'aws-ec2-create-traffic-mirror-session':
+        create_traffic_mirror_session_command(demisto.args())
 
 except ResponseParserError as e:
     return_error('Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(

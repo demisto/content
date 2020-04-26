@@ -1,8 +1,8 @@
 {
     "displayName": "FidelisEndpoint",
     "name": "FidelisEndpoint",
-    "description": "",
-    "support": "demisto",
+    "description": "Fidelis Endpoint",
+    "support": "xsoar",
     "serverMinVersion": "",
     "currentVersion": "1.0.0",
     "author": "",

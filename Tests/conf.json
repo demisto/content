@@ -234,8 +234,8 @@
             "integrations": "SlackV2",
             "playbookID": "Slack Test Playbook",
             "timeout" : 2400,
-            "fromversion": "5.0.0",
-            "pid_threshold": 30
+            "pid_threshold": 5,
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Cortex XDR - IR",
@@ -319,10 +319,6 @@
         },
         {
             "playbookID": "test_similar_incidents"
-        },
-        {
-            "playbookID": "autofocus_test",
-            "integrations": "Autofocus"
         },
         {
             "playbookID": "CheckpointFW-test",
@@ -413,7 +409,7 @@
             "playbookID": "CVE Search v2 - Test"
         },
         {
-            "integrations": "CVE Search",
+            "integrations": "CVE Search v2",
             "playbookID": "cveReputation Test"
         },
         {
@@ -1014,7 +1010,7 @@
             "playbookID": "decodemimeheader_-_test"
         },
         {
-            "integrations": "CVE Search",
+            "integrations": "CVE Search v2",
             "playbookID": "cve_enrichment_-_generic_-_test"
         },
         {
@@ -1690,7 +1686,8 @@
                 "carbonblack"
             ],
             "playbookID": "search_endpoints_by_hash_-_generic_-_test",
-            "timeout": 500
+            "timeout": 500,
+            "toversion" : "4.4.9"
         },
         {
             "integrations": "Zscaler",
@@ -2207,7 +2204,6 @@
             "playbookID": "AutoFocus V2 test",
             "fromversion": "5.0.0",
             "timeout": 1000
-
         },
         {
             "playbookID": "Process Email - Generic for Rasterize"
@@ -2412,11 +2408,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "Sixgill",
-            "playbookID": "Sixgill - Darkfeed - Indicators-Test",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "AutoFocus Feed",
             "playbookID": "playbook-FeedAutofocus_test",
             "fromversion": "5.5.0"
@@ -2434,7 +2425,7 @@
             "playbookID": "RecordedFutureFeed - Test",
             "timeout": 1000,
             "fromversion": "5.5.0",
-            "memory_threshold": 80
+            "memory_threshold": 86
         },
         {
             "integrations": "Expanse",
@@ -2469,6 +2460,18 @@
         {
             "integrations": "illuminate",
             "playbookID": "illuminate Integration Demonstration - Test"
+        },
+        {
+            "integrations": "MongoDB Key Value Store",
+            "playbookID": "MongoDB KeyValueStore - Test",
+            "pid_threshold": 12,
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "MongoDB Log",
+            "playbookID": "MongoDBLog - Test",
+            "pid_threshold": 12,
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Google Chronicle Backstory",
@@ -2570,6 +2573,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "SafeBreach v2",
+            "playbookID": "playbook-SafeBreach-Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "playbookID": "DbotPredictOufOfTheBoxTest",
             "fromversion": "4.5.0",
             "timeout": 1000
@@ -2603,6 +2611,10 @@
             "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
             "timeout" : 60000,
             "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "IBM Resilient Systems",
+            "playbookID": "IBM Resilient Systems Test"
         }
     ],
     "skipped_tests": {
@@ -2612,12 +2624,11 @@
         "OTRS Test": "Issue 23167",
         "Akamai_WAF_SIEM-Test": "Issue 22225",
         "Cloaken-Test": "Issue 20036",
-        "Test-VulnDB": "Issue 23138",
         "test_MsGraphFiles": "Issue 22853 ",
         "TestCofenseFeed": "Issue 22854",
-        "RecordedFutureFeed - Test": "Issue 22855",
         "Cybereason Test": "Issue 22683",
         "AbuseIPDB Test": "Issue 22658",
+        "ExtraHop-Test": "Issue 23731",
         "Bluecat Address Manager test": "Issue 22616",
         "Office365_Feed_Test": "Issue 22517",
         "Send Investigation Summary Reports": "Issue 22299",
@@ -2653,10 +2664,14 @@
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633",
         "TAXII_Feed_Test": "Issue #22423",
+        "PAN-OS Query Logs For Indicators Test": "Issue #23505",
+        "Panorama Query Logs - Test": "Issue #23505",
         "palo_alto_panorama_test_pb": "Issue #22835"
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
+        "Infoblox": "Issue 23770",
+        "Trend Micro Apex": "Issue 23632",
         "Awake Security": "Issue 23376",
         "RiskSense": "We should get an instance talk to Francesco",
         "Palo Alto Networks Cortex": "Issue 22300",
@@ -2722,6 +2737,8 @@
         "Code42": "Instance not set up yet",
         "LogRhythm": "Issue 21672",
         "SecBI": "Issue 22545",
+        "IBM Resilient Systems": "Issue 23722",
+        "VxStream": "Issue #23795",
 
         "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -2729,6 +2746,8 @@
         "VirusTotal - Private API": "Issue 22638",
 
         "_comment": "~~~ OTHER ~~~",
+        "Cortex Data Lake": "Issue 23718",
+        "Microsoft Defender Advanced Threat Protection": "Issue 23704",
         "Pentera": "authentication method will not work with testing",
         "EclecticIQ Platform": "Issue 8821",
         "BitDam": "Issue #17247",
@@ -2739,6 +2758,7 @@
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lockpath KeyLight": "Deprecated. No tests.",
         "SafeBreach": "pending rewrite",
+        "SafeBreach v2": "it is a partner integration, no instance",
         "Cymulate": "Partner didn't provided test playbook",
 
         "_comment": "~~~ QUOTA ISSUES ~~~",
@@ -2813,7 +2833,9 @@
         "Google Chronicle Backstory": "SDK",
         "Google Vision AI": "SDK",
         "Syslog Sender": "syslog",
-        "syslog": "syslog"
+        "syslog": "syslog",
+        "MongoDB Log": "Our instance not using SSL",
+        "MongoDB Key Value Store": "Our instance not using SSL"
     },
     "docker_thresholds": {
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",

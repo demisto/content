@@ -1007,6 +1007,7 @@ tasks:
       '#none#':
       - '48'
     scriptarguments:
+      app: {}
       batch_limit: {}
       earliest_time:
         simple: ${inputs.earliest_time}
@@ -1029,7 +1030,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: ') | table '
+                  simple: ')  | table '
           - operator: concat
             args:
               prefix: {}
@@ -1067,7 +1068,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: inputs.HostFieldsToReturn
+                  simple: inputs.UserFieldsToReturn
                 iscontext: true
           - operator: concat
             args:
@@ -1075,6 +1076,13 @@ tasks:
               suffix:
                 value:
                   simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.HostFieldsToReturn
+                iscontext: true
           - operator: concat
             args:
               prefix:
@@ -1085,7 +1093,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: Index
+                  simple: inputs.IndexName
                 iscontext: true
               suffix: {}
           - operator: concat
@@ -1770,8 +1778,7 @@ tasks:
         simple: ${inputs.latest_time}
       query:
         complex:
-          root: File
-          accessor: SHA256
+          root: IP
           transformers:
           - operator: join
             args:

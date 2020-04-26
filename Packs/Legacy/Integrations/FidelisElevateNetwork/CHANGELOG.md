@@ -2,6 +2,9 @@
 -
 
 
+## [20.4.0] - 2020-04-14
+Fixed an issue with partial results parsing.
+
 ## [20.3.4] - 2020-03-30
 - Added the following commands: 
   - ***fidelis-get-alert-session-data*** - Gets the session data of an alert.

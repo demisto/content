@@ -1,5 +1,5 @@
 id: AWS-Lambda-Test (Read-Only)
-version: 1
+version: -1
 name: AWS-Lambda-Test (Read-Only)
 starttaskid: "0"
 tasks:

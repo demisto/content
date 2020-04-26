@@ -2,6 +2,10 @@
 -
 
 
+## [20.4.0] - 2020-04-14
+-
+
+
 ## [19.11.0] - 2019-11-12
   - New version to support the new API version (tested on 2.1).
   - Added support for API token authentication. 

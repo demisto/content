@@ -418,10 +418,19 @@ def get_alert_sessiondata_command():
 
     # The API has typos built in "serverDomaniName" - should be ServerDomainName,
     # clientDomaniName - should be ClientDomainName,
-    context_result['ServerDomainName'] = context_result['ServerDomaniName']
-    del context_result['ServerDomaniName']
-    context_result['ClientDomainName'] = context_result['ClientDomaniClient']
-    del context_result['ClientDomaniClient']
+    if context_result.get('ServerDomaniName'):
+        context_result['ServerDomainName'] = context_result['ServerDomaniName']
+        del context_result['ServerDomaniName']
+
+    else:
+        context_result['ServerDomainName'] = None
+
+    if context_result.get('ClientDomaniClient'):
+        context_result['ClientDomainName'] = context_result.get('ClientDomaniClient')
+        del context_result['ClientDomaniClient']
+
+    else:
+        context_result['ClientDomainName'] = None
 
     output = {
         'ID': alert_id,
@@ -688,7 +697,7 @@ def sandbox_upload_command():
 
 @logger
 def sandbox_upload(upload_item):
-    raise NotImplementedError()
+    raise NotImplementedError("The command is not implemented and could only be done manually through Fidelis.")
 
 
 def list_alerts_command():
@@ -1018,9 +1027,14 @@ def list_metadata():
 
 def request_dpath(alert_id):
     res = http_request('GET', '/j/rest/v1/alert/dpath/{}/'.format(alert_id))
-    dpath = res.get('decodingPaths')[0]
-    link_path = dpath.get('linkPath')
-    encoded_path = urllib.quote(link_path)
+    if res.get('decodingPaths'):
+        dpath = res.get('decodingPaths')[0]
+        link_path = dpath.get('linkPath')
+        encoded_path = urllib.quote(link_path)
+
+    else:
+        encoded_path = None
+
     return encoded_path
 
 
@@ -1047,13 +1061,18 @@ def download_malware_file():
     """
     alert_id = demisto.args().get('alert_id')
     file_name = request_dpath(alert_id)
-    decoded_file_name = urllib.unquote(file_name)
-    results = download_malware_file_request(alert_id)
 
-    demisto.results(fileResult(
-        decoded_file_name + '.zip',
-        results,
-        file_type=entryTypes['file']))
+    if not file_name:
+        return_outputs("No File Found", {}, {})
+
+    else:
+        decoded_file_name = urllib.unquote(file_name)
+        results = download_malware_file_request(alert_id)
+
+        demisto.results(fileResult(
+            decoded_file_name + '.zip',
+            results,
+            file_type=entryTypes['file']))
 
 
 def download_pcap_request(alert_id):

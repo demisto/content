@@ -27,6 +27,16 @@ This integration provides External Dynamic List (EDL) as a service for the syste
 | Collapse IPs | Whether to collapse IPs, and if so - to ranges or CIDRs. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+### Access the EDL Service by Instance Name (HTTPS)
+**The route will be open without security hardening and might expose you to network risks.**
+
+To access the EDL service by instance name, make sure ***Instance execute external*** is enabled. 
+
+1. In Demisto, go to **Settings > About > Troubleshooting**.
+2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/integrations/long-running#invoking-http-integrations-via-cortex-xsoar-servers-route-handling) for further information.
+3. In a web browser, go to **https://*<demisto_address>*/instance/execute/*<instance_name>*** .
+
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.

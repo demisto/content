@@ -10,57 +10,43 @@ import urllib.parse
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-''' GLOBALS/PARAMS '''
-
-# Remove trailing slash to prevent wrong URL path to service
-API_URL = demisto.params()['api_url'].rstrip('/')
-
-# Should we use SSL
-USE_SSL = not demisto.params().get('insecure', False)
-
-# Remove proxy if not set to true in params
-if not demisto.params().get('proxy'):
-    os.environ.pop('HTTP_PROXY', None)
-    os.environ.pop('HTTPS_PROXY', None)
-    os.environ.pop('http_proxy', None)
-    os.environ.pop('https_proxy', None)
-
-CLIENT_ID = demisto.params()['client_id']
-
-CLIENT_SECRET = demisto.params()['client_secret']
-
 ''' HELPER FUNCTIONS '''
 
 
-def get_oath_token():
-    # Workaround ParseResult immutability
-    parse_result = list(urllib.parse.urlparse(API_URL))
-    parse_result[2] = '/oauth/token'
-    oath_url = urllib.parse.urlunparse(parse_result)
+class Client(BaseClient):
 
-    return requests.post(oath_url,
-                         verify=USE_SSL,
-                         data={
-                             'client_id': CLIENT_ID,
-                             'client_secret': CLIENT_SECRET,
-                             'grant_type': 'client_credentials'
-                         }).json()['access_token']
+    def __init__(self, proxy, use_ssl, base_url, client_id, client_secret):
+        super().__init__(base_url=base_url, verify=use_ssl, proxy=proxy)
+        access_token = self.get_oath_token(client_id, client_secret)
+        headers = {'Content-Type': 'application/json',
+                   'Authorization': f'Bearer {access_token}'}
+        self._headers = headers
 
+    def get_oath_token(self, client_id, client_secret):
+        # Workaround ParseResult immutability
+        parse_result = list(urllib.parse.urlparse(self._base_url))
+        parse_result[2] = '/oauth/token'
+        oath_url = urllib.parse.urlunparse(parse_result)
+        res = self._http_request('POST',
+                                 '',
+                                 json_data={
+                                     'client_id': client_id,
+                                     'client_secret': client_secret,
+                                     'grant_type': 'client_credentials'
+                                 },
+                                 full_url=oath_url)
+        return res.get('access_token')
 
-def http_request(url, size=None):
-    params = {'size': size} if size else None
-    try:
-        res = requests.get(url,
-                           verify=USE_SSL,
-                           headers={'Authorization': f'Bearer {get_oath_token()}'},
-                           params=params)
-        res.raise_for_status()
-        response = res.json()
-    except requests.exceptions.RequestException as err:
-        return_error(str(err))
-    except json.decoder.JSONDecodeError:
-        return_error("Failed to parse HTTP response to JSON. Original response: \n\n{}".format(res.text))
-    return response
+    def http_request(self, url_suffix, size=None):
+        params = {'size': size} if size else None
+        res = self._http_request("GET",
+                                 url_suffix=url_suffix,
+                                 params=params)
+        # The details could reside in either error or details, not both
+        for error_attribute in ['error', 'details']:
+            if error_attribute in res:
+                raise DemistoException(res[error_attribute])
+        return res
 
 
 def vulndb_vulnerability_to_entry(vuln):
@@ -123,8 +109,6 @@ def vulndb_vulnerability_to_entry(vuln):
 
 
 def vulndb_vulnerability_results_to_demisto_results(res):
-    if 'error' in res:
-        return_error(res['error'])
     if 'vulnerability' in res:
         results = [res['vulnerability']]
     elif 'results' in res:
@@ -157,43 +141,40 @@ def vulndb_vendor_to_entry(vendor):
 
 
 def vulndb_vendor_results_to_demisto_results(res):
-    if 'error' in res:
-        return_error(res['error'])
+    if 'vendor' in res:
+        results = [res['vendor']]
+    elif 'results' in res:
+        results = res['results']
     else:
-        if 'vendor' in res:
-            results = [res['vendor']]
-        elif 'results' in res:
-            results = res['results']
-        else:
-            demisto.results({
-                'Type': entryTypes['error'],
-                'Contents': res,
-                'ContentsFormat': formats['json'],
-                'HumanReadable': 'No "vendor" or "results" keys in the returned JSON',
-                'HumanReadableFormat': formats['text']
-            })
-            return
+        demisto.results({
+            'Type': entryTypes['error'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'HumanReadable': 'No "vendor" or "results" keys in the returned JSON',
+            'HumanReadableFormat': formats['text']
+        })
+        return
 
-        for result in results:
-            ec = {
-                'VulnDB': vulndb_vendor_to_entry(result)
-            }
+    for result in results:
+        ec = {
+            'VulnDB': vulndb_vendor_to_entry(result)
+        }
 
-            human_readable = tableToMarkdown(f'Result for vendor ID: {ec["VulnDB"]["Results"]["Id"]}', {
-                'ID': ec['VulnDB']['Results']['Id'],
-                'Name': ec['VulnDB']['Results']['Name'],
-                'Short Name': ec['VulnDB']['Results']['ShortName'],
-                'Vendor URL': ec['VulnDB']['Results']['VendorUrl']
-            })
+        human_readable = tableToMarkdown(f'Result for vendor ID: {ec["VulnDB"]["Results"]["Id"]}', {
+            'ID': ec['VulnDB']['Results']['Id'],
+            'Name': ec['VulnDB']['Results']['Name'],
+            'Short Name': ec['VulnDB']['Results']['ShortName'],
+            'Vendor URL': ec['VulnDB']['Results']['VendorUrl']
+        })
 
-            demisto.results({
-                'Type': entryTypes['note'],
-                'Contents': res,
-                'ContentsFormat': formats['json'],
-                'HumanReadable': human_readable,
-                'HumanReadableFormat': formats['markdown'],
-                'EntryContext': ec
-            })
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'HumanReadable': human_readable,
+            'HumanReadableFormat': formats['markdown'],
+            'EntryContext': ec
+        })
 
 
 def vulndb_product_to_entry(product):
@@ -206,202 +187,180 @@ def vulndb_product_to_entry(product):
 
 
 def vulndb_product_results_to_demisto_results(res):
-    if 'error' in res:
-        return_error(res['error'])
+    if 'results' in res:
+        results = res['results']
     else:
-        if 'results' in res:
-            results = res['results']
-        else:
-            demisto.results({
-                'Type': entryTypes['error'],
-                'Contents': res,
-                'ContentsFormat': formats['json'],
-                'HumanReadable': 'No "results" key in the returned JSON',
-                'HumanReadableFormat': formats['text']
-            })
-            return
+        demisto.results({
+            'Type': entryTypes['error'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'HumanReadable': 'No "results" key in the returned JSON',
+            'HumanReadableFormat': formats['text']
+        })
+        return
 
-        for result in results:
-            ec = {
-                'VulnDB': vulndb_product_to_entry(result)
-            }
+    for result in results:
+        ec = {
+            'VulnDB': vulndb_product_to_entry(result)
+        }
 
-            human_readable = tableToMarkdown(f'Result for product ID: {ec["VulnDB"]["Results"]["Id"]}', {
-                'ID': ec['VulnDB']['Results']['Id'],
-                'Name': ec['VulnDB']['Results']['Name']
-            })
+        human_readable = tableToMarkdown(f'Result for product ID: {ec["VulnDB"]["Results"]["Id"]}', {
+            'ID': ec['VulnDB']['Results']['Id'],
+            'Name': ec['VulnDB']['Results']['Name']
+        })
 
-            demisto.results({
-                'Type': entryTypes['note'],
-                'Contents': res,
-                'ContentsFormat': formats['json'],
-                'HumanReadable': human_readable,
-                'HumanReadableFormat': formats['markdown'],
-                'EntryContext': ec
-            })
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'HumanReadable': human_readable,
+            'HumanReadableFormat': formats['markdown'],
+            'EntryContext': ec
+        })
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def test_module():
+def test_module(client: Client, client_id, client_secret):
     """
     Performs basic get request to get item samples
     """
-    get_oath_token()
+    client.get_oath_token(client_id, client_secret)
 
 
-def vulndb_get_vuln_by_id_command():
-    vulndb_id = demisto.args()['vuln_id']
+def vulndb_get_vuln_by_id_command(args: dict, client: Client):
+    vulndb_id = args['vuln_id']
 
-    res = requests.get(f'{API_URL}/vulnerabilities/{vulndb_id}',
-                       verify=USE_SSL,
-                       headers={'Authorization': f'Bearer {get_oath_token()}'}
-                       ).json()
+    res = client.http_request(f'/vulnerabilities/{vulndb_id}')
 
     vulndb_vulnerability_results_to_demisto_results(res)
 
 
-def vulndb_get_vuln_by_vendor_and_product_name_command():
-    vendor_name = demisto.args()['vendor_name']
-    product_name = demisto.args()['product_name']
-    max_size = demisto.args().get('max_size')
+def vulndb_get_vuln_by_vendor_and_product_name_command(args: dict, client: Client):
+    vendor_name = args['vendor_name']
+    product_name = args['product_name']
+    max_size = args.get('max_size')
 
-    res = http_request(
-        f'{API_URL}/vulnerabilities/find_by_vendor_and_product_name?vendor_name={vendor_name}&product_name={product_name}',
+    res = client.http_request(
+        f'/vulnerabilities/find_by_vendor_and_product_name?vendor_name={vendor_name}&product_name={product_name}',
         max_size)
 
     vulndb_vulnerability_results_to_demisto_results(res)
 
 
-def vulndb_get_vuln_by_vendor_and_product_id_command():
-    vendor_id = demisto.args()['vendor_id']
-    product_id = demisto.args()['product_id']
-    max_size = demisto.args().get('max_size')
+def vulndb_get_vuln_by_vendor_and_product_id_command(args: dict, client: Client):
+    vendor_id = args['vendor_id']
+    product_id = args['product_id']
+    max_size = args.get('max_size')
 
-    res = http_request(
-        f'{API_URL}/vulnerabilities/find_by_vendor_and_product_id?vendor_id={vendor_id}&product_id={product_id}',
-        max_size)
-
-    vulndb_vulnerability_results_to_demisto_results(res)
-
-
-def vulndb_get_vuln_by_vendor_id_command():
-    vendor_id = demisto.args()['vendor_id']
-    max_size = demisto.args().get('max_size')
-
-    res = http_request(f'{API_URL}/vulnerabilities/find_by_vendor_id?vendor_id={vendor_id}',
-                       max_size)
+    res = client.http_request(
+        f'/vulnerabilities/find_by_vendor_and_product_id?vendor_id={vendor_id}&product_id={product_id}', max_size)
 
     vulndb_vulnerability_results_to_demisto_results(res)
 
 
-def vulndb_get_vuln_by_product_id_command():
-    product_id = demisto.args()['product_id']
-    max_size = demisto.args().get('max_size')
+def vulndb_get_vuln_by_vendor_id_command(args: dict, client: Client):
+    vendor_id = args['vendor_id']
+    max_size = args.get('max_size')
 
-    res = http_request(f'{API_URL}/vulnerabilities/find_by_product_id?product_id={product_id}',
-                       max_size)
-
-    vulndb_vulnerability_results_to_demisto_results(res)
-
-
-def vulndb_get_vuln_by_cve_id_command():
-    cve_id = demisto.args()['cve_id']
-    max_size = demisto.args().get('max_size')
-
-    res = http_request(f'{API_URL}/vulnerabilities/{cve_id}/find_by_cve_id',
-                       max_size)
+    res = client.http_request(f'/vulnerabilities/find_by_vendor_id?vendor_id={vendor_id}', max_size)
 
     vulndb_vulnerability_results_to_demisto_results(res)
 
 
-def vulndb_get_updates_by_dates_or_hours_command():
-    start_date = demisto.args().get('start_date')
-    end_date = demisto.args().get('end_date')
-    hours_ago = demisto.args().get('hours_ago')
-    max_size = demisto.args().get('max_size')
+def vulndb_get_vuln_by_product_id_command(args: dict, client: Client):
+    product_id = args['product_id']
+    max_size = args.get('max_size')
+
+    res = client.http_request(f'/vulnerabilities/find_by_product_id?product_id={product_id}', max_size)
+
+    vulndb_vulnerability_results_to_demisto_results(res)
+
+
+def vulndb_get_vuln_by_cve_id_command(args: dict, client: Client):
+    cve_id = args['cve_id']
+    max_size = args.get('max_size')
+
+    res = client.http_request(f'/vulnerabilities/{cve_id}/find_by_cve_id', max_size)
+
+    vulndb_vulnerability_results_to_demisto_results(res)
+
+
+def vulndb_get_updates_by_dates_or_hours_command(args: dict, client: Client):
+    start_date = args.get('start_date')
+    end_date = args.get('end_date')
+    hours_ago = args.get('hours_ago')
+    max_size = args.get('max_size')
 
     if start_date:
-        url = f'{API_URL}/vulnerabilities/find_by_date?start_date={start_date}'
+        url_suffix = f'/vulnerabilities/find_by_date?start_date={start_date}'
         if end_date:
-            url += f'&end_date={end_date}'
+            url_suffix += f'&end_date={end_date}'
 
-        res = http_request(url,
-                           max_size)
+        res = client.http_request(url_suffix, max_size)
     elif hours_ago is not None:
-        res = http_request(f'{API_URL}/vulnerabilities/find_by_time?hours_ago={hours_ago}',
-                           max_size)
+        res = client.http_request(f'/vulnerabilities/find_by_time?hours_ago={hours_ago}', max_size)
     else:
         return_error('Must provide either start date or hours ago.')
 
     vulndb_vulnerability_results_to_demisto_results(res)
 
 
-def vulndb_get_vendor_command():
-    vendor_id = demisto.args().get('vendor_id')
-    vendor_name = demisto.args().get('vendor_name')
-    max_size = demisto.args().get('max_size')
+def vulndb_get_vendor_command(args: dict, client: Client):
+    vendor_id = args.get('vendor_id')
+    vendor_name = args.get('vendor_name')
+    max_size = args.get('max_size')
 
     if vendor_id is not None and vendor_name is not None:
         return_error('Provide either vendor id or vendor name or neither, not both.')
     elif vendor_id:
-        res = http_request(f'{API_URL}/vendors/{vendor_id}',
-                           max_size)
+        res = client.http_request(f'/vendors/{vendor_id}', max_size)
     elif vendor_name:
-        res = http_request(f'{API_URL}/vendors/by_name?vendor_name={vendor_name}',
-                           max_size)
+        res = client.http_request(f'/vendors/by_name?vendor_name={vendor_name}', max_size)
     else:
-        res = http_request(f'{API_URL}/vendors',
-                           max_size)
+        res = client.http_request(f'/vendors', max_size)
 
     vulndb_vendor_results_to_demisto_results(res)
 
 
-def vulndb_get_product_command():
-    vendor_id = demisto.args().get('vendor_id')
-    vendor_name = demisto.args().get('vendor_name')
-    max_size = demisto.args().get('max_size')
+def vulndb_get_product_command(args: dict, client: Client):
+    vendor_id = args.get('vendor_id')
+    vendor_name = args.get('vendor_name')
+    max_size = args.get('max_size')
 
     if vendor_id is not None and vendor_name is not None:
         return_error('Provide either vendor id or vendor name or neither, not both.')
     elif vendor_id:
-        res = http_request(f'{API_URL}/products/by_vendor_id?vendor_id={vendor_id}',
-                           max_size)
+        res = client.http_request(f'/products/by_vendor_id?vendor_id={vendor_id}', max_size)
     elif vendor_name:
-        res = http_request(f'{API_URL}/products/by_vendor_name?vendor_name={vendor_name}',
-                           max_size)
+        res = client.http_request(f'/products/by_vendor_name?vendor_name={vendor_name}', max_size)
     else:
-        res = http_request(f'{API_URL}/products',
-                           max_size)
+        res = client.http_request('/products', max_size)
 
     vulndb_product_results_to_demisto_results(res)
 
 
-def vulndb_get_version_command():
-    product_id = demisto.args().get('product_id')
-    product_name = demisto.args().get('product_name')
-    max_size = demisto.args().get('max_size')
+def vulndb_get_version_command(args: dict, client: Client):
+    product_id = args.get('product_id')
+    product_name = args.get('product_name')
+    max_size = args.get('max_size')
 
     if product_id is not None and product_name is not None:
         return_error('Provide either product id or vendor name, not both.')
     elif product_id:
-        res = http_request(f'{API_URL}/versions/by_product_id?product_id={product_id}',
-                           max_size)
+        res = client.http_request(f'/versions/by_product_id?product_id={product_id}', max_size)
     elif product_name:
-        res = http_request(f'{API_URL}/versions/by_product_name?product_name={product_name}',
-                           max_size)
+        res = client.http_request(f'/versions/by_product_name?product_name={product_name}', max_size)
 
     vulndb_product_results_to_demisto_results(res)
 
 
-def vulndb_get_cve_command():
-    cve_id = demisto.args()['cve_id']
-    max_size = demisto.args().get('max_size')
+def vulndb_get_cve_command(args: dict, client: Client):
+    cve_id = args['cve_id']
+    max_size = args.get('max_size')
 
-    res = http_request(f'{API_URL}/vulnerabilities/{cve_id}/find_by_cve_id', max_size)
-    if 'error' in res:
-        return_error(res['error'])
+    res = client.http_request(f'/vulnerabilities/{cve_id}/find_by_cve_id', max_size)
     results = res.get("results")
     if not results:
         return_error('Could not find "results" in the returned JSON')
@@ -421,31 +380,50 @@ def vulndb_get_cve_command():
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
-LOG('Command being called is %s' % (demisto.command()))
 
-if demisto.command() == 'test-module':
-    # This is the call made when pressing the integration test button.
-    test_module()
-    demisto.results('ok')
-if demisto.command() == 'vulndb-get-vuln-by-id':
-    vulndb_get_vuln_by_id_command()
-elif demisto.command() == 'vulndb-get-vuln-by-vendor-and-product-name':
-    vulndb_get_vuln_by_vendor_and_product_name_command()
-elif demisto.command() == 'vulndb-get-vuln-by-vendor-and-product-id':
-    vulndb_get_vuln_by_vendor_and_product_id_command()
-elif demisto.command() == 'vulndb-get-vuln-by-vendor-id':
-    vulndb_get_vuln_by_vendor_id_command()
-elif demisto.command() == 'vulndb-get-vuln-by-product-id':
-    vulndb_get_vuln_by_product_id_command()
-elif demisto.command() == 'vulndb-get-vuln-by-cve-id':
-    vulndb_get_vuln_by_cve_id_command()
-elif demisto.command() == 'vulndb-get-vendor':
-    vulndb_get_vendor_command()
-elif demisto.command() == 'vulndb-get-product':
-    vulndb_get_product_command()
-elif demisto.command() == 'vulndb-get-version':
-    vulndb_get_version_command()
-elif demisto.command() == 'vulndb-get-updates-by-dates-or-hours':
-    vulndb_get_updates_by_dates_or_hours_command()
-elif demisto.command() == 'cve':
-    vulndb_get_cve_command()
+def main():
+    params = demisto.params()
+    # Remove trailing slash to prevent wrong URL path to service
+    api_url = params['api_url']
+    client_id = params['client_id']
+    client_secret = params['client_secret']
+    use_ssl = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
+    client = Client(proxy, use_ssl, api_url, client_id, client_secret)
+    args = demisto.args()
+    command = demisto.command()
+    LOG(f'Command being called is {command}')
+    try:
+        if command == 'test-module':
+            # This is the call made when pressing the integration test button.
+            test_module(client, client_id, client_secret)
+            demisto.results('ok')
+        if command == 'vulndb-get-vuln-by-id':
+            vulndb_get_vuln_by_id_command(args, client)
+        elif command == 'vulndb-get-vuln-by-vendor-and-product-name':
+            vulndb_get_vuln_by_vendor_and_product_name_command(args, client)
+        elif command == 'vulndb-get-vuln-by-vendor-and-product-id':
+            vulndb_get_vuln_by_vendor_and_product_id_command(args, client)
+        elif command == 'vulndb-get-vuln-by-vendor-id':
+            vulndb_get_vuln_by_vendor_id_command(args, client)
+        elif command == 'vulndb-get-vuln-by-product-id':
+            vulndb_get_vuln_by_product_id_command(args, client)
+        elif command == 'vulndb-get-vuln-by-cve-id':
+            vulndb_get_vuln_by_cve_id_command(args, client)
+        elif command == 'vulndb-get-vendor':
+            vulndb_get_vendor_command(args, client)
+        elif command == 'vulndb-get-product':
+            vulndb_get_product_command(args, client)
+        elif command == 'vulndb-get-version':
+            vulndb_get_version_command(args, client)
+        elif command == 'vulndb-get-updates-by-dates-or-hours':
+            vulndb_get_updates_by_dates_or_hours_command(args, client)
+        elif command == 'cve':
+            vulndb_get_cve_command(args, client)
+    except Exception as e:
+        error_message = f'Failed to execute {command} command. Error: {str(e)}'
+        return_error(error_message)
+
+
+if __name__ in ('__main__', 'builtins'):
+    main()

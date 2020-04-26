@@ -2,6 +2,10 @@
 -
 
 
+## [20.4.0] - 2020-04-14
+-
+
+
 ## [20.2.3] - 2020-02-18
 Fixed an issue where the ***fetch-incidents*** was fetching the same incident repeatedly.
 

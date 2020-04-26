@@ -42,7 +42,8 @@ args:
   required: false
   secret: false
 - default: false
-  description: The maximum number of indicators to fetch. If this argument is not specified, will parse the entire file.
+  description: The maximum number of indicators to fetch. If this argument is not
+    specified, will parse the entire file.
   isArray: false
   name: limit
   required: false
@@ -57,15 +58,16 @@ args:
 - default: false
   defaultValue: '1'
   description: Only for spreadsheet files. The column number in the spreadsheet that
-    contains the indicators. The first column number is 1. If this argument is not specified, will use
-    at the first column.
+    contains the indicators. The first column number is 1. If this argument is not
+    specified, will use at the first column.
   isArray: false
   name: indicator_column_number
   required: false
   secret: false
 - default: false
   description: Only for spreadsheet files. The name of the Excel sheet to fetch indicators
-    from. If this argument is not specified, will fetch from the first sheet of the workbook.
+    from. If this argument is not specified, will fetch from the first sheet of the
+    workbook.
   isArray: false
   name: sheet_name
   required: false
@@ -101,9 +103,9 @@ outputs:
 script: '-'
 subtype: python3
 system: false
-fromversion: 5.5.0
 tags:
 - indicators
 timeout: '0'
 type: python
-dockerimage: demisto/xlrd-py3:1.0.0.5808
+dockerimage: demisto/xlrd-py3:1.0.0.7364
+fromversion: 5.5.0
