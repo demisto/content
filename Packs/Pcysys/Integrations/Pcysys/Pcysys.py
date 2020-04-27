@@ -8,6 +8,7 @@ from enum import Enum
 import requests
 import csv
 import io
+import json
 from typing import List
 
 # Disable insecure warnings
@@ -169,11 +170,23 @@ def pentera_authentication(client: Client):
 
 def pentera_get_task_run_full_action_report_command(client: Client, args, access_token: str):
     def _convert_csv_file_to_dict(csv_file):
+        def _map_parameters_string_to_object(str_parameters: str = None):
+            if str_parameters:
+                return json.loads(str_parameters)
+            return None
+
         csv_reader = csv.DictReader(io.StringIO(csv_file), fieldnames=FULL_ACTION_REPORT_FIELDNAMES)
-        data = [row for row in csv_reader]
-        if data and len(data) > 0:
-            return data[1:]
-        return []
+        data = []
+        for row in csv_reader:
+            # Skipping first line
+            if list(row.values()) != FULL_ACTION_REPORT_FIELDNAMES:
+                row_copy = row.copy()
+                converted_params = _map_parameters_string_to_object(row_copy.get('Parameters'))
+                if converted_params:
+                    row_copy['Parameters'] = converted_params
+                data.append(row_copy)
+
+        return data
 
     def _convert_full_action_report_time(full_action_report_list: List[dict]):
         def _parse_date(full_date, separator):

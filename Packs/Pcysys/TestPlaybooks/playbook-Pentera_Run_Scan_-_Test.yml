@@ -1,118 +1,137 @@
 id: Pentera Run Scan - Test
 version: -1
-fromversion: 5.0.0
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
 name: Pentera Run Scan - Test
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: "20"
+  '0':
+    id: '0'
+    taskid: 0f3c125c-0340-40ad-8ae1-b487469ec90d
     type: start
     task:
-      id: "20"
+      id: 0f3c125c-0340-40ad-8ae1-b487469ec90d
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
-  "1":
-    id: "1"
-    taskid: "21"
+    quietmode: 0
+  '1':
+    id: '1'
+    taskid: ff0bc97c-5864-4f96-890e-0ce7a67eac4f
     type: regular
     task:
-      id: "21"
+      id: ff0bc97c-5864-4f96-890e-0ce7a67eac4f
       version: -1
       name: Delete Context
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       all:
-        simple: "yes"
+        simple: yes
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 180
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
-  "2":
-    id: "2"
-    taskid: "41"
+    quietmode: 0
+  '2':
+    id: '2'
+    taskid: 24420e74-48b7-44f0-8499-4c32020df8de
     type: playbook
     task:
-      id: "41"
+      id: 24420e74-48b7-44f0-8499-4c32020df8de
       version: -1
       name: Pentera Run Scan
       playbookName: Pentera Run Scan
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '3'
     scriptarguments:
       PenteraTaskName:
         simple: Test Template for Playbook
-    separatecontext: true
+    separatecontext: false
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 0
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 360
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 405,
-        "width": 380,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
+    quietmode: 0
+  '3':
+    id: '3'
+    taskid: 4ef62755-8a4d-4918-8c65-c2e056156d76
+    type: playbook
+    task:
+      id: 4ef62755-8a4d-4918-8c65-c2e056156d76
+      version: -1
+      name: Pentera Filter And Create Incident
+      description: Sub-playbook to select specific entries from the Pentera action
+        report and create incidents for each of the selected entries
+      playbookName: Pentera Filter And Create Incident
+      type: playbook
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      Filter BlueKeep vulnerability:
+        simple: 'True'
+      Filter MS17-010 vulnerability:
+        simple: 'True'
+      Filter Minimum Severity:
+        simple: '0'
+      Filter network device default password usage:
+        simple: 'True'
+      'Filter open shares ':
+        simple: 'True'
+      Filter password cracking:
+        simple: 'True'
+      FullActionReport:
+        complex:
+          root: Pentera
+          accessor: TaskRun.FullActionReport
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 100
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 590,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"
 inputs: []
 outputs: []
+fromversion: 5.0.0
+description: ''

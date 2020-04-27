@@ -18,13 +18,7 @@ tasks:
       '#none#':
       - '3'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -48,13 +42,7 @@ tasks:
       template_name:
         simple: ${inputs.PenteraTaskName}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 340
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 340\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -95,13 +83,7 @@ tasks:
       iscommand: false
       exitCondition: ''
       wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 660
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 660\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -121,13 +103,7 @@ tasks:
       '#none#':
       - '1'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -147,13 +123,7 @@ tasks:
       '#none#':
       - '2'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 515
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 515\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -173,13 +143,7 @@ tasks:
       '#none#':
       - '6'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1155
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1155\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -200,13 +164,7 @@ tasks:
       task_run_id:
         simple: ${Pentera.TaskRun.ID}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1300
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1300\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -226,13 +184,7 @@ tasks:
       '#none#':
       - '8'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 835
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 835\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -256,28 +208,13 @@ tasks:
       task_run_id:
         simple: ${Pentera.TaskRun.ID}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 980
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 980\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1345,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1345,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"
 inputs:
 - key: PenteraTaskName
   value: {}

@@ -1,0 +1,29 @@
+[
+	{
+		"id": "Pentera Insight",
+		"version": 1,
+		"modified": "2020-04-20T19:06:25.599674949+03:00",
+		"sortValues": null,
+		"vcShouldIgnore": false,
+		"commitMessage": "",
+		"shouldCommit": false,
+		"locked": false,
+		"name": "Pentera Insight",
+		"prevName": "Pentera Insight",
+		"color": "#418ae6",
+		"hours": 0,
+		"days": 0,
+		"weeks": 0,
+		"hoursR": 0,
+		"daysR": 0,
+		"weeksR": 0,
+		"system": false,
+		"readonly": false,
+		"default": false,
+		"autorun": false,
+		"preProcessingScript": "",
+		"closureScript": "",
+		"disabled": false,
+		"reputationCalc": 0
+	}
+]
