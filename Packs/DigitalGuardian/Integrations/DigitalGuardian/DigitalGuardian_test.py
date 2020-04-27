@@ -43,14 +43,6 @@ def test_missing_parameters(mocker):
     assert "Missing required parameter(s)" in err_msg
     assert "arc_url" in err_msg
 
-#    return_error_mock.reset_mock()
-#    mocker.patch.object(demisto, 'params', return_value=params_2)
-#    with pytest.raises(ConnectionError):
-#        main()
-
-#    err_msg = return_error_mock.call_args_list[0][0][0]
-#    assert "Unauthorized" in err_msg  # ie. we got past the param check
-
 
 def test_test_module(mocker, capfd):
     from DigitalGuardian import main
