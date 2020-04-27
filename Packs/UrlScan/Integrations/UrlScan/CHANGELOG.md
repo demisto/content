@@ -1,6 +1,5 @@
 ## [Unreleased]
--
-
+Fixed an issue where a "download" error message constantly appeared.
 
 ## [20.4.0] - 2020-04-14
 -

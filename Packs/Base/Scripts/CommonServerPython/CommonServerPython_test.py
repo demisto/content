@@ -14,7 +14,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
-    encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown
+    encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge
 
 try:
     from StringIO import StringIO
@@ -35,6 +35,16 @@ INFO = {'b': 1,
             'c': {'d': 10},
         }
         }
+
+
+@pytest.fixture()
+def clear_version_cache():
+    """
+    Clear the version cache at end of the test (in case we mocked demisto.serverVersion)
+    """
+    yield
+    if hasattr(get_demisto_version, '_version'):
+        delattr(get_demisto_version, '_version')
 
 
 def test_xml():
@@ -736,7 +746,7 @@ def test_exception_in_return_error(mocker):
     assert IntegrationLogger.__call__.call_count == 2
 
 
-def test_get_demisto_version(mocker):
+def test_get_demisto_version(mocker, clear_version_cache):
     # verify expected server version and build returned in case Demisto class has attribute demistoVersion
     mocker.patch.object(
         demisto,
@@ -750,6 +760,26 @@ def test_get_demisto_version(mocker):
         'version': '5.0.0',
         'buildNumber': '50000'
     }
+    # call again to check cache
+    assert get_demisto_version() == {
+        'version': '5.0.0',
+        'buildNumber': '50000'
+    }
+    # call count should be 1 as we cached
+    assert demisto.demistoVersion.call_count == 1
+    # test is_demisto_version_ge
+    assert is_demisto_version_ge('5.0.0')
+    assert is_demisto_version_ge('4.5.0')
+    assert not is_demisto_version_ge('5.5.0')
+
+
+def test_is_demisto_version_ge_4_5(mocker):
+    get_version_patch = mocker.patch('CommonServerPython.get_demisto_version')
+    get_version_patch.side_effect = AttributeError('simulate missing demistoVersion')
+    assert not is_demisto_version_ge('5.0.0')
+    assert not is_demisto_version_ge('6.0.0')
+    with raises(AttributeError, match='simulate missing demistoVersion'):
+        is_demisto_version_ge('4.5.0')
 
 
 def test_assign_params():
@@ -878,7 +908,8 @@ class TestCommandResults:
                     'ASN': 'some asn',
                     'Hostname': 'test.com'
                 },
-                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': {
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
+                'val.Vendor == obj.Vendor && val.Type == obj.Type)': {
                     'Indicator': '8.8.8.8',
                     'Vendor': 'Virus Total',
                     'Score': 1,
@@ -910,7 +941,8 @@ class TestCommandResults:
             'Contents': None,
             'HumanReadable': None,
             'EntryContext': {
-                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': {
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
+                'val.Vendor == obj.Vendor && val.Type == obj.Type)': {
                     'Indicator': '8.8.8.8',
                     'Vendor': 'Virus Total',
                     'Score': 1,
@@ -1079,7 +1111,8 @@ class TestCommandResults:
                         }
                     }
                 },
-                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': {
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
+                'val.Vendor == obj.Vendor && val.Type == obj.Type)': {
                     'Indicator': 'somedomain.com',
                     'Vendor': 'Virus Total',
                     'Score': 1,
@@ -1093,58 +1126,6 @@ class TestBaseClient:
     from CommonServerPython import BaseClient
     text = {"status": "ok"}
     client = BaseClient('http://example.com/api/v2/', ok_codes=(200, 201))
-
-    RETRIES_POSITIVE_TEST = [
-        'get',
-        'put',
-        'post'
-    ]
-
-    @pytest.mark.parametrize('method', RETRIES_POSITIVE_TEST)
-    def test_http_requests_with_retry_sanity(self, method):
-        """
-            Given
-            - A base client
-
-            When
-            - Making http request call with retries configured to a number higher then 0
-
-            Then
-            -  Ensure a successful request return response as expected
-        """
-        url = 'http://httpbin.org/{}'.format(method)
-        res = self.client._http_request(method,
-                                        '',
-                                        full_url=url,
-                                        retries=1,
-                                        status_list_to_retry=[401])
-        assert res['url'] == url
-    RETRIES_NEGATIVE_TESTS_INPUT = [
-        ('get', 400), ('get', 401), ('get', 500),
-        ('put', 400), ('put', 401), ('put', 500),
-        ('post', 400), ('post', 401), ('post', 500),
-
-    ]
-
-    @pytest.mark.parametrize('method, status', RETRIES_NEGATIVE_TESTS_INPUT)
-    def test_http_requests_with_retry_negative_sanity(self, method, status):
-        """
-            Given
-            - A base client
-
-            When
-            - Making http request call with retries configured to a number higher then 0
-
-            Then
-            -  An unsuccessful request returns a DemistoException regardless the bad status code.
-        """
-        from CommonServerPython import DemistoException
-        with raises(DemistoException, match='{}'.format(status)):
-            self.client._http_request(method,
-                                      '',
-                                      full_url='http://httpbin.org/status/{}'.format(status),
-                                      retries=3,
-                                      status_list_to_retry=[400, 401, 500])
 
     def test_http_request_json(self, requests_mock):
         requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
