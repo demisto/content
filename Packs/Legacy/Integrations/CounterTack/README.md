@@ -12,7 +12,7 @@
 <li class="has-line-data" data-line-start="6" data-line-end="7"><strong>Server URL (e.g.<span> </span>https://democloud.countertack.com)</strong></li>
 <li class="has-line-data" data-line-start="7" data-line-end="8"><strong>User Name</strong></li>
 <li class="has-line-data" data-line-start="8" data-line-end="9"><strong>Use system proxy settings</strong></li>
-<li class="has-line-data" data-line-start="9" data-line-end="10"><strong>Trust any certificate (unsecure)</strong></li>
+<li class="has-line-data" data-line-start="9" data-line-end="10"><strong>Trust any certificate (not secure)</strong></li>
 <li class="has-line-data" data-line-start="10" data-line-end="11"><strong>Fetch incidents</strong></li>
 <li class="has-line-data" data-line-start="11" data-line-end="12"><strong>Incident type</strong></li>
 <li class="has-line-data" data-line-start="12" data-line-end="13"><strong>First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year)</strong></li>
