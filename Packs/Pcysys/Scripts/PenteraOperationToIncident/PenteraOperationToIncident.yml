@@ -1,25 +1,27 @@
 commonfields:
-  id: 69a8e212-2c56-4c70-8e2d-0fa1f6d0e7ab
-  version: 38
+  id: PenteraOperationToIncident
+  version: -1
 name: PenteraOperationToIncident
 script: ''
 type: python
 tags: []
 enabled: true
 args:
-- name: full_action_report
-  required: true
-  description: Pentera Full Action Report
-  isArray: true
-- name: custom_fields_output
-- name: context_key
+  - name: full_action_report
+    required: true
+    description: Pentera Full Action Report
+    isArray: true
+  - name: custom_fields_output
+    description: Name of the field to serialize details into
+  - name: context_key
+    description: Context key to be used for the output. If omitted is PenteraIncidents
 outputs:
-- contextPath: PenteraIncidents
-  description: Pentera list of incidents
-  type: unknown
+  - contextPath: PenteraIncidents
+    description: Pentera list of incidents
+    type: unknown
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 dockerimage: demisto/pyjwt3:1.0.0.4946
 runas: DBotWeakRole
+comment: Groups Pentera Full Actions Reports by Operation Type to generate an output usable in creating incidents

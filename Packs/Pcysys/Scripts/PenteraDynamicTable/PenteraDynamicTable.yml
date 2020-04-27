@@ -1,15 +1,15 @@
 commonfields:
-  id: 757b362f-2d99-43b4-8ca8-9bf6aa54005c
-  version: 15
+  id: PenteraDynamicTable
+  version: -1
 name: PenteraDynamicTable
 script: ''
 type: python
 tags:
-- dynamic-section
+  - dynamic-section
 enabled: true
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.8.2.6981
 runas: DBotWeakRole
+comment: Renders a Markdown Table from penteraoperationdetails field in Pentera Insight incidents
