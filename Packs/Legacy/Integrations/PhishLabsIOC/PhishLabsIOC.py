@@ -309,11 +309,12 @@ def indicator_type_finder(indicator_data: dict):
     indicator = indicator_data.get('value')
     # PhishLabs IOC does not classify Email indicators correctly giving them typing of "ReplayTo", "HeaderReplyTo"
     # "ReturnPath" and so on - to combat that we find the Email indicator type by regex
-    if re.match(emailRegex, indicator):
+    # returned URLs could fit the email regex at some cases so we exclude them
+    if re.match(str(emailRegex), str(indicator)) and str(indicator_data.get('type')).lower() != 'url':
         return 'Email'
 
     else:
-        return indicator.get('type')
+        return indicator_data.get('type')
 
 
 @logger
