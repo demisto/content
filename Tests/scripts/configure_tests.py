@@ -850,18 +850,18 @@ def is_test_runnable(test_id, id_set, conf, server_version):
     4. If test has integrations, then all integrations
         a. fromversion is earlier or equal to server_version
         b. toversion is after or equal to server_version
-    5. If test has scripts, then all scripts
-        a. fromversion is earlier or equal to server_version
-        b. toversion is after or equal to server_version
     """
     skipped_tests = conf.get_skipped_tests()
+    warning_prefix = '{} is not runnable on {}'.format(test_id, server_version)
     # check if test is skipped
     if test_id in skipped_tests:
+        print_warning('{prefix} - skipped'.format(prefix=warning_prefix))
         return False
     test_conf = get_test_conf_from_conf(test_id, server_version, conf)
 
     # check if there's a test to run
     if not test_conf:
+        print_warning('{prefix} - couldn\'t find test in conf.json'.format(prefix=warning_prefix))
         return False
     conf_fromversion = test_conf.get('fromversion', '0')
     conf_toversion = test_conf.get('toversion', '99.99.99')
@@ -870,12 +870,20 @@ def is_test_runnable(test_id, id_set, conf, server_version):
 
     # check whether the test is runnable in id_set
     if not test_playbook_obj:
+        print_warning('{prefix} - couldn\'t find the test in id_set.json'.format(prefix=warning_prefix))
         return False
 
-    return all([
-        is_test_integrations_available(server_version, test_conf, conf, id_set),    # check used integrations available
-        is_runnable_in_server_version(conf_fromversion, server_version, conf_toversion)  # check conf from/to
-    ])
+    # check used integrations available
+    if not is_test_integrations_available(server_version, test_conf, conf, id_set):
+        print_warning('{prefix} - no active integration found'.format(prefix=warning_prefix))
+        return False
+
+    # check conf from/to
+    if not is_runnable_in_server_version(conf_fromversion, server_version, conf_toversion):
+        print_warning('{prefix} - conf.json from/to version'.format(prefix=warning_prefix))
+        return False
+
+    return True
 
 
 def is_test_integrations_available(server_version, test_conf, conf, id_set):
@@ -888,9 +896,10 @@ def is_test_integrations_available(server_version, test_conf, conf, id_set):
             test_integration_ids = [test_integration_ids]
         if not is_test_uses_active_integration(test_integration_ids, conf):
             return False
-        # check integrations from/toversion is valid with server_version
+        # check if any integration from/toversion is valid with server_version
         integrations_set = id_set.get('integrations', [])
-        if any(extract_matching_object_from_id_set(integration_id, integrations_set, server_version) is None for integration_id in
+        if all(extract_matching_object_from_id_set(integration_id, integrations_set, server_version) is None for
+               integration_id in
                test_integration_ids):
             return False
     return True
