@@ -326,7 +326,6 @@ def ip_command():
     })
 
 
-@logger
 def ip(ip_addr, owners, rating_threshold, confidence_threshold):
     indicators = get_indicators(ip_addr, 'Address', owners, rating_threshold, confidence_threshold)
 
@@ -361,7 +360,6 @@ def url_command():
     })
 
 
-@logger
 def url(url_addr, owners, rating_threshold, confidence_threshold):
     indicators = get_indicators(url_addr, 'URL', owners, rating_threshold, confidence_threshold)
     if not indicators:
@@ -392,7 +390,6 @@ def file_command():
     })
 
 
-# @logger
 def _file(url_addr, owners, rating_threshold, confidence_threshold):
     indicators = get_indicators(url_addr, 'File', owners, rating_threshold, confidence_threshold)
     if not indicators:
@@ -423,7 +420,6 @@ def domain_command():
     })
 
 
-# @logger
 def domain(domain_addr, owners, rating_threshold, confidence_threshold):
     indicators = get_indicators(domain_addr, 'Host', owners, rating_threshold, confidence_threshold)
     ec, indicators = create_context(indicators, include_dbot_score=True)
@@ -451,7 +447,6 @@ def tc_owners_command():
     })
 
 
-# @logger
 def tc_owners():
     tc = get_client()
     ro = RequestObject()
@@ -579,7 +574,6 @@ def tc_indicators_command():
     })
 
 
-# @logger
 def tc_indicators(owners, limit):
     tc = get_client()
     tc.set_api_result_limit(limit)
@@ -612,7 +606,6 @@ def tc_get_tags_command():
     })
 
 
-# @logger
 def tc_get_tags():
     tc = get_client()
     ro = RequestObject()
@@ -682,22 +675,25 @@ def tc_get_indicator_command():
         = tc_get_indicator(indicator, owners, rating_threshold, confidence_threshold, associated_groups,
                            associated_indicators, include_observations, include_tags, indicator_type)
     # remove extra items from the indicator markdown
+    demisto.error('{}{}'.format('\n' * 6, ec))
+    if ec:
+        indicators = copy.deepcopy(ec)
+        indicators = indicators['TC.Indicator(val.ID && val.ID === obj.ID)']
 
-    indicators = copy.deepcopy(ec)
-    indicators = indicators['TC.Indicator(val.ID && val.ID === obj.ID)']
-
-    if associated_groups:
-        if 'IndicatorGroups' in indicators[0]:
-            del indicators[0]['IndicatorGroups']
-    if associated_indicators:
-        if 'IndicatorAssociations' in indicators[0]:
-            del indicators[0]['IndicatorAssociations']
-    if include_tags:
-        if 'IndicatorTags' in indicators[0]:
-            del indicators[0]['IndicatorTags']
-    if include_observations:
-        if 'IndicatorsObservations' in indicators[0]:
-            del indicators[0]['IndicatorsObservations']
+        if associated_groups:
+            if 'IndicatorGroups' in indicators[0]:
+                del indicators[0]['IndicatorGroups']
+        if associated_indicators:
+            if 'IndicatorAssociations' in indicators[0]:
+                del indicators[0]['IndicatorAssociations']
+        if include_tags:
+            if 'IndicatorTags' in indicators[0]:
+                del indicators[0]['IndicatorTags']
+        if include_observations:
+            if 'IndicatorsObservations' in indicators[0]:
+                del indicators[0]['IndicatorsObservations']
+    else:
+        indicators = []
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -753,7 +749,6 @@ def tc_get_indicator_command():
         })
 
 
-@logger
 def tc_get_indicator(indicator, owners, rating_threshold, confidence_threshold, associated_groups,
                      associated_indicators, include_observations, include_tags, indicator_type):
     raw_indicators = get_indicators(indicator, indicator_type=indicator_type, owners=owners,
@@ -761,27 +756,17 @@ def tc_get_indicator(indicator, owners, rating_threshold, confidence_threshold, 
                                     confidence_threshold=confidence_threshold, associated_groups=associated_groups,
                                     associated_indicators=associated_indicators,
                                     include_observations=include_observations, include_tags=include_tags)
+    demisto.error('{}{}'.format('\n' * 6, raw_indicators))
     ec, indicators = create_context(raw_indicators, include_dbot_score=True)
 
-    if 'group_associations' in raw_indicators[0]:
-        indicator_groups = raw_indicators[0]['group_associations']
-    else:
-        indicator_groups = []
+    if raw_indicators:
+        indicator_groups = raw_indicators[0].get('group_associations', [])
+        indicators_associations = raw_indicators[0].get('indicator_associations', [])
+        indicator_tags = raw_indicators[0].get('indicator_tags', [])
+        indicator_observations = raw_indicators[0].get('indicator_observations', [])
 
-    if 'indicator_associations' in raw_indicators[0]:
-        indicators_associations = raw_indicators[0]['indicator_associations']
     else:
-        indicators_associations = []
-
-    if 'indicator_tags' in raw_indicators[0]:
-        indicator_tags = raw_indicators[0]['indicator_tags']
-    else:
-        indicator_tags = []
-
-    if 'indicator_observations' in raw_indicators[0]:
-        indicator_observations = raw_indicators[0]['indicator_observations']
-    else:
-        indicator_observations = []
+        indicators_associations = indicator_groups = indicator_observations = indicator_tags = []
 
     return ec, indicators, raw_indicators, indicators_associations, indicator_groups, indicator_observations, indicator_tags
 
@@ -805,7 +790,6 @@ def tc_get_indicators_by_tag_command():
     })
 
 
-# @logger
 def tc_get_indicators_by_tag(tag, owner):
     tc = get_client()
     ro = RequestObject()
@@ -844,7 +828,6 @@ def tc_add_indicator_command():
     })
 
 
-# @logger
 def tc_add_indicator(indicator, organization, rating=0, confidence=0):
     tc = get_client()
     indicators = tc.indicators()
@@ -887,7 +870,6 @@ def tc_create_incident_command():
     })
 
 
-# @logger
 def tc_create_incident(incident_name, owner, event_date, tag=None, security_label=None, description=None):
     tc = get_client()
     incidents = tc.incidents()
@@ -923,7 +905,6 @@ def tc_fetch_incidents_command():
     })
 
 
-# @logger
 def tc_fetch_incidents(incident_id, incident_name, owner):
     tc = get_client()
     incidents = tc.incidents()
@@ -959,7 +940,6 @@ def tc_get_incident_associate_indicators_command():
     })
 
 
-# @logger
 def tc_get_incident_associate_indicators(incident_id, owners):
     tc = get_client()
     incidents = tc.incidents()
@@ -1019,7 +999,6 @@ def tc_incident_associate_indicator_command():
     })
 
 
-# @logger
 def tc_incident_associate_indicator(incident_id, indicator_type, indicator, owners):
     tc = get_client()
     incidents = tc.incidents()
@@ -1069,7 +1048,6 @@ def tc_update_indicator_command():
     })
 
 
-# @logger
 def tc_update_indicator(indicator, rating=None, confidence=None, size=None, dns_active=None, whois_active=None,
                         false_positive=False, observations=0, security_label=None, threat_assess_confidence=-1,
                         threat_assess_rating=-1):
@@ -1120,7 +1098,6 @@ def tc_delete_indicator_command():
     })
 
 
-# @logger
 def tc_delete_indicator(indicator):
     tc = get_client()
     indicators = tc.indicators()
@@ -1156,7 +1133,6 @@ def tc_delete_indicator_tag_command():
     })
 
 
-# @logger
 def tc_delete_indicator_tag(indicator, tag, owners=None):
     tc = get_client()
     indicators = tc.indicators()
@@ -1209,7 +1185,6 @@ def tc_create_campaign_command():
     })
 
 
-# @logger
 def tc_create_campaign(name, owner, first_seen, tag=None, security_label=None, description=None):
     tc = get_client()
     ro = RequestObject()
@@ -1643,7 +1618,6 @@ def get_group():
     except TypeError as t:
         return_error('group_id must be a number', t)
     response = get_group_request(group_type, group_id)
-    demisto.results(response)
     response = response.get('data', {})
     if group_type == 'adversaries':
         data = response.get('adversarie', {})
@@ -2121,6 +2095,7 @@ COMMANDS = {
     'tc-associate-group-to-group': associate_group_to_group,
     'tc-get-indicator-owners': tc_get_indicator_owners
 }
+
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     try:
