@@ -1832,6 +1832,12 @@
             "nightly": true
         },
         {
+            "integrations": "GooglePubSub",
+            "playbookID": "GooglePubSub_Test",
+            "nightly": true,
+            "fromversion": "5.0.0"
+        },
+        {
             "playbookID": "Calculate Severity - Generic v2 - Test",
             "integrations": [
                 "Palo Alto Minemeld",
@@ -2630,11 +2636,26 @@
         {
             "integrations": "IBM Resilient Systems",
             "playbookID": "IBM Resilient Systems Test"
+        },
+        {
+            "integrations": "PrismaAccess",
+            "playbookID": "Prisma_Access_Egress_IP_Feed-Test",
+            "timeout" : 60000,
+            "fromversion": "5.5.0",
+            "nightly": true
+        },
+        {
+            "integrations": "PrismaAccess",
+            "playbookID": "Prisma_Access-Test",
+            "timeout" : 60000,
+            "fromversion": "5.5.0",
+            "nightly": true
         }
     ],
     "skipped_tests": {
+        "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get PrismaAccess instance",
+        "Prisma_Access-Test": "unskip after we will get PrismaAccess instance",
         "Test-Shodan_v2": "Issue 23370",
-        "Send Investigation Summary Reports - Test": "Issue 22299",
         "Symantec Deepsight Test": "Issue 22971",
         "OTRS Test": "Issue 23167",
         "Akamai_WAF_SIEM-Test": "Issue 22225",
@@ -2645,7 +2666,6 @@
         "AbuseIPDB Test": "Issue 22658",
         "Bluecat Address Manager test": "Issue 22616",
         "Office365_Feed_Test": "Issue 22517",
-        "Send Investigation Summary Reports": "Issue 22299",
         "test-Expanse": "Expanse should provide domain that they have in their system",
         "TestProofpointFeed": "Issue 22229",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 22227",
@@ -2669,6 +2689,7 @@
         "Cofense Triage Test": "Creds only works on demo4",
         "nexpose_test": "Issue 18694",
         "Recorded Future Test": "Issue 18922",
+        "RecordedFutureFeed - Test": "Issue 18922",
         "IntSights Mssp Test": "Issue #16351",
         "CheckPhish-Test": "Issue 19188",
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
@@ -2680,10 +2701,12 @@
         "TAXII_Feed_Test": "Issue #22423",
         "PAN-OS Query Logs For Indicators Test": "Issue #23505",
         "Panorama Query Logs - Test": "Issue #23505",
-        "palo_alto_panorama_test_pb": "Issue #22835"
+        "palo_alto_panorama_test_pb": "Issue #22835",
+        "VxStream Test": "Issue #23795"
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
+        "PrismaAccess": "Instance will be provided soon by Lior and Prasen",
         "Infoblox": "Issue 23770",
         "Trend Micro Apex": "Issue 23632",
         "Awake Security": "Issue 23376",
@@ -2762,7 +2785,6 @@
 
         "_comment": "~~~ OTHER ~~~",
         "Cortex Data Lake": "Issue 23718",
-        "Microsoft Defender Advanced Threat Protection": "Issue 23704",
         "Pentera": "authentication method will not work with testing",
         "EclecticIQ Platform": "Issue 8821",
         "BitDam": "Issue #17247",
@@ -2861,6 +2883,9 @@
             },
             "demisto/py-ews:2.0": {
                 "memory_threshold": 150
+            },
+            "demisto/pytan": {
+                "pid_threshold": 11
             }
         }
     }
