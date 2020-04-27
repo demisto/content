@@ -432,7 +432,7 @@ def check_if_fetch_incidents_is_tested(missing_ids, integration_ids, id_set, con
     return missing_ids, tests_set
 
 
-def find_tests_and_packs_for_modified_files(modified_files, conf, id_set):
+def find_tests_and_content_packs_for_modified_files(modified_files, conf, id_set):
     script_names = set([])
     playbook_names = set([])
     integration_ids = set([])
@@ -486,7 +486,7 @@ def update_with_tests_sections(missing_ids, modified_files, test_ids, tests):
     return missing_ids
 
 
-def collect_packs_to_install(id_set: Dict, integration_ids: set, playbook_names: set, script_names: set) -> set:
+def collect_content_packs_to_install(id_set: Dict, integration_ids: set, playbook_names: set, script_names: set) -> set:
     """Iterates all content entities in the ID set and extract the pack names for the modified ones.
 
     Args:
@@ -622,7 +622,7 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     if deprecated_commands_message:
         print_color(deprecated_commands_message, LOG_COLORS.YELLOW)
 
-    packs_to_install = collect_packs_to_install(id_set, integration_ids, playbook_names, script_names)
+    packs_to_install = collect_content_packs_to_install(id_set, integration_ids, playbook_names, script_names)
 
     return tests_set, catched_scripts, catched_playbooks, packs_to_install
 
@@ -1023,7 +1023,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     tests = set([])
     packs_to_install = set([])
     if modified_files:
-        tests, packs_to_install = find_tests_and_packs_for_modified_files(modified_files, conf, id_set)
+        tests, packs_to_install = find_tests_and_content_packs_for_modified_files(modified_files, conf, id_set)
 
     # Adding a unique test for a json file.
     if is_reputations_json:

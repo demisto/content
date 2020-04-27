@@ -27,7 +27,7 @@ class TestUtils(object):
             ryaml.dump(data, f)
 
     @staticmethod
-    def create_integration(name, with_commands=None):
+    def create_integration(name, with_commands=None, pack=""):
         mock_integration = demisto_sdk_tools.get_yaml(
             'Tests/scripts/infrastructure_tests/tests_data/mock_integrations/fake_integration.yml')
 
@@ -52,7 +52,8 @@ class TestUtils(object):
                     "fromversion": "4.1.0",
                     "toversion": "5.4.9",
                     "file_path": save_path,
-                    "commands": commands
+                    "commands": commands,
+                    "pack": pack
                 }
             }
         }
@@ -669,4 +670,59 @@ def test_dont_fail_integration_on_no_tests_if_it_has_test_playbook_in_conf(mocke
         ])
 
         # reset _FAILED flag
+        collect_tests_and_content_packs._FAILED = False
+
+
+def test_added_content_packs_are_collected(mocker):
+    """
+    Given
+    - Modified integration named GreatIntegration which is in pack named GreatPack.
+
+    When
+    - Collecting content packs to install.
+
+    Then
+    - Ensure the content pack GreatPack is collected.
+    - Ensure the collection runs successfully.
+    """
+    from Tests.scripts import collect_tests_and_content_packs
+    collect_tests_and_content_packs._FAILED = False  # reset the FAILED flag
+
+    pack_name = "GreatPack"
+    integration_name = "GreatIntegration"
+    test_name = "GreatTest"
+    fake_integration = TestUtils.create_integration(
+        name=integration_name, with_commands=["great-command"], pack=pack_name
+    )
+    fake_test_playbook = TestUtils.create_test_playbook(name=test_name, with_scripts=["FetchFromInstance"])
+
+    try:
+        TestUtils.mock_get_modified_files(mocker, modified_files_list=[fake_integration['path']])
+        fake_id_set = TestUtils.create_id_set(
+            with_integration=fake_integration["id_set"],
+            with_test_playbook=fake_test_playbook["id_set"]
+        )
+
+        fake_conf = TestUtils.create_tests_conf(
+            with_test_configuration={
+                "integrations": integration_name,
+                "playbookID": test_name
+            }
+        )
+
+        filtered_tests, content_packs = get_test_list_and_content_packs_to_install(
+            files_string="",
+            branch_name="dummy-branch",
+            two_before_ga_ver=TWO_BEFORE_GA_VERSION,
+            conf=fake_conf,
+            id_set=fake_id_set
+        )
+
+        assert content_packs == {pack_name}
+        assert not collect_tests_and_content_packs._FAILED
+    finally:
+        TestUtils.delete_files([
+            fake_integration["path"]
+        ])
+
         collect_tests_and_content_packs._FAILED = False
