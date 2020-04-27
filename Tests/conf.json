@@ -2689,6 +2689,7 @@
         "Cofense Triage Test": "Creds only works on demo4",
         "nexpose_test": "Issue 18694",
         "Recorded Future Test": "Issue 18922",
+        "RecordedFutureFeed - Test": "Issue 18922",
         "IntSights Mssp Test": "Issue #16351",
         "CheckPhish-Test": "Issue 19188",
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
@@ -2700,7 +2701,8 @@
         "TAXII_Feed_Test": "Issue #22423",
         "PAN-OS Query Logs For Indicators Test": "Issue #23505",
         "Panorama Query Logs - Test": "Issue #23505",
-        "palo_alto_panorama_test_pb": "Issue #22835"
+        "palo_alto_panorama_test_pb": "Issue #22835",
+        "VxStream Test": "Issue #23795"
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
@@ -2783,7 +2785,6 @@
 
         "_comment": "~~~ OTHER ~~~",
         "Cortex Data Lake": "Issue 23718",
-        "Microsoft Defender Advanced Threat Protection": "Issue 23704",
         "Pentera": "authentication method will not work with testing",
         "EclecticIQ Platform": "Issue 8821",
         "BitDam": "Issue #17247",
