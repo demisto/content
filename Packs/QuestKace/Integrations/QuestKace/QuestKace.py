@@ -530,7 +530,7 @@ def delete_ticket_command(client, args) -> Tuple[str, dict, dict]:
     except Exception as e:
         raise DemistoException(e)
     if response.get('Result') == 'Success':
-        return f'Ticket was updated successfully. Ticket number {ticket_id}', {}, {}
+        return f'Ticket was deleted successfully. Ticket number {ticket_id}', {}, {}
     else:
         raise DemistoException(f'Error while deleting the ticket.')
 
