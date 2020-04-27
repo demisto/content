@@ -26,6 +26,15 @@ from test_module.ExpectedResult import MACHINES_LIST_COMMAND_EXPECTED, \
      TICKETS_LIST_COMMAND_RESPONSE, TICKETS_LIST_COMMAND_EXPECTED),
 ])
 def test_commands(command, args, response, expected_result, mocker):
+    """ Unit test
+    Given
+        - 5 main commands of the integration.
+        - command args
+        - command raw response
+    When
+        - mock the Clients's get token function.
+    Check if all commands with given arguments run correctly according to expected result.
+    """
     mocker.patch.object(Client, 'get_token', return_value=(1, 1))
     client = Client(url='https://demisto', username='admin', password='admin', verify=True,
                     proxy=True)
@@ -36,10 +45,27 @@ def test_commands(command, args, response, expected_result, mocker):
 
 @pytest.mark.parametrize('list_before_parse, expected_lst_of_dict', [(LIST_BEFORE_PARSE, LIST_EXPECTED_AFTER_PARSE)])
 def test_parse_response(list_before_parse, expected_lst_of_dict):
+    """ Unit test
+    Check if the parser function of snake case to camel case works corretcly.
+    """
     assert parse_response(list_before_parse) == expected_lst_of_dict
 
 
 def test_first_fetch(mocker):
+    """Unit test
+        Given
+        - fetch incidents command
+        - command args
+        - command raw response
+        When
+        - mock the Clients's get token function.
+        - mock the Clients's tickets_list_request.
+        - mock the parse_date_range function.
+        Then
+        - run the fetch incidents command using the Client
+        Validate The length of the results.
+        Validate that the first run of fetch incidents runs correctly.
+        """
     mocker.patch('QuestKace.parse_date_range', return_value=("2020-03-11T08:30:41Z", 'never mind'))
     mocker.patch.object(Client, 'tickets_list_request', return_value=FIRST_FETCH_INCIDENTS_RAW_RESPONSE)
     mocker.patch.object(Client, 'get_token', return_value=(1, 1))
@@ -49,7 +75,22 @@ def test_first_fetch(mocker):
 
 
 def test_second_fetch(mocker):
-    mocker.patch('QuestKace.parse_date_range', return_value=("2020-03-11 08:30:41", 'never mind'))
+    """Unit test
+        Given
+        - fetch incidents command
+        - command args
+        - command raw response
+        When
+        - mock the Clients's get token function.
+        - mock the Clients's tickets_list_request.
+        - mock the parse_date_range function.
+        Then
+        - run the fetch incidents command using the Client
+        Validate that the second run of fetch incidents runs correctly from last fetch time.
+        Validate The length of the results.
+        Validate That the name and occurred exist in the created incidents.
+        Validate The id of returned incidents.
+        """
     mocker.patch.object(Client, 'tickets_list_request', return_value=SECOND_FETCH_INCIDENTS_RAW_RESPONSE)
     mocker.patch.object(Client, 'get_token', return_value=(1, 1))
     client = Client(url="http://test.com", username="admin", password="123", verify=False, proxy=False)
@@ -62,6 +103,19 @@ def test_second_fetch(mocker):
 
 
 def test_fetch_No_Results(mocker):
+    """Unit test
+        Given
+        - fetch incidents command
+        - command args
+        - command raw response
+        When
+        - mock the Clients's get token function.
+        - mock the Clients's tickets_list_request.
+        - mock the parse_date_range function.
+        Then
+        - run the fetch incidents command using the Client
+        - Check that no incidents are created falsely.
+        """
     mocker.patch('QuestKace.parse_date_range', return_value=("2020-03-11 08:30:41", 'never mind'))
     mocker.patch.object(Client, 'tickets_list_request', return_value=NO_RESULTS_FETCH_INCIDENTS_RAW_RESPONSE)
     mocker.patch.object(Client, 'get_token', return_value=(1, 1))

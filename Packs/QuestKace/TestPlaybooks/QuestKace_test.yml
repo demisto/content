@@ -1,0 +1,362 @@
+id: 2b5d7d67-6633-42d4-80fc-2b3d95573d2d
+version: -1
+name: QuestKace test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 82f21e2c-4c6e-4d71-8984-f9bcf46158d4
+    type: start
+    task:
+      id: 82f21e2c-4c6e-4d71-8984-f9bcf46158d4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: ee69f686-fa6f-4c0e-8a60-2f5ac7f60b03
+    type: regular
+    task:
+      id: ee69f686-fa6f-4c0e-8a60-2f5ac7f60b03
+      version: -1
+      name: create-ticket
+      description: Create a new ticket to the system.
+      script: '|||kace-ticket-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      asset: {}
+      category: {}
+      custom_fields: {}
+      impact: {}
+      machine: {}
+      priority: {}
+      queue_id:
+        simple: "1"
+      status: {}
+      summary: {}
+      title:
+        simple: Test number 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 4f54f02b-c6bd-4249-83b9-52489f3a0fce
+    type: regular
+    task:
+      id: 4f54f02b-c6bd-4249-83b9-52489f3a0fce
+      version: -1
+      name: tickets list
+      description: List of all tickets in the system.
+      script: '|||kace-tickets-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      custom_shaping: {}
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 1196b818-6924-4394-83ed-779ba3336a5b
+    type: condition
+    task:
+      id: 1196b818-6924-4394-83ed-779ba3336a5b
+      version: -1
+      name: validate new ticket
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: QuestKace
+                accessor: Tickets.Title
+                transformers:
+                - operator: LastArrayElement
+            iscontext: true
+          right:
+            value:
+              simple: Test number 1
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 4637d856-782d-42cf-8679-deb1f2f671d4
+    type: regular
+    task:
+      id: 4637d856-782d-42cf-8679-deb1f2f671d4
+      version: -1
+      name: delete ticket
+      description: Delete specific ticket by id.
+      script: '|||kace-ticket-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      ticket_id:
+        complex:
+          root: QuestKace
+          accessor: Tickets.ID
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 7b96f1b2-7e9e-4894-818e-e685217d761d
+    type: regular
+    task:
+      id: 7b96f1b2-7e9e-4894-818e-e685217d761d
+      version: -1
+      name: tickets list
+      description: List of all tickets in the system.
+      script: '|||kace-tickets-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      custom_shaping: {}
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 16dfa670-6764-45db-8edc-6c5276d9a27e
+    type: condition
+    task:
+      id: 16dfa670-6764-45db-8edc-6c5276d9a27e
+      version: -1
+      name: validate deleted ticket
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: QuestKace
+                accessor: Tickets.Title
+                transformers:
+                - operator: LastArrayElement
+            iscontext: true
+          right:
+            value:
+              simple: Test number 1
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 7edd681d-776b-4337-8ca7-13af0f83890b
+    type: title
+    task:
+      id: 7edd681d-776b-4337-8ca7-13af0f83890b
+      version: -1
+      name: done
+      description: Executes test for all integration instances available and returns
+        a detailed table about failed integration instances
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 5f11f5fc-d113-460b-8f58-a96d44b6584c
+    type: regular
+    task:
+      id: 5f11f5fc-d113-460b-8f58-a96d44b6584c
+      version: -1
+      name: delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 6ca1fc9b-a65d-482e-8bce-ac604611946c
+    type: title
+    task:
+      id: 6ca1fc9b-a65d-482e-8bce-ac604611946c
+      version: -1
+      name: Failed
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

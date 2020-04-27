@@ -493,7 +493,7 @@ script:
     description: Delete specific ticket by id.
     execution: false
     name: kace-ticket-delete
-  dockerimage: demisto/python3:3.7.4.2245
+  dockerimage: demisto/python3:3.8.2.6981
   isfetch: true
   longRunning: false
   longRunningPort: false
@@ -502,5 +502,5 @@ script:
   subtype: python3
   type: python
 tests:
-- No test - no instance
+-  QuestKace test
 fromversion: 5.0.0

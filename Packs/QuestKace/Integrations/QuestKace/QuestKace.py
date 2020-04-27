@@ -100,6 +100,13 @@ class Client(BaseClient):
             raise DemistoException("Could not get cookie")
         return token, cookie
 
+    def update_token(self):
+        """Update cookie and token.
+            Returns:
+                Tuple of token and cookie.
+        """
+        self._token, self._cookie = self.get_token()
+
     def get_cookie(self, res_cookie: dict) -> str:
         """Get a cookie from an cookie object in the needed format for the requests.
             Args:
@@ -282,15 +289,18 @@ def test_module(client: Client, args=None) -> Tuple[str, dict, dict]:
        Returns:
            human readable, context, raw response of this command.
     """
+    response_machines = client.machines_list_request()
+    machines = response_machines.get('Machines')
+    client.update_token()
     response = client.tickets_list_request()
     list_tickets_res = response.get('Tickets')
     if list_tickets_res and demisto.params().get('isFetch'):
         parsed_time = (datetime.utcnow() - timedelta(days=20))
-        incidents, parsed_time = fetch_incidents_create_incidents(list_tickets_res, "1", '%Y-%m-%dT%H:%M:%SZ', parsed_time)
+        incidents, parsed_time = parse_incidents(list_tickets_res, "1", '%Y-%m-%dT%H:%M:%SZ', parsed_time)
         for incident in incidents:
             if not all(key in incident for key in ('name', 'occurred', 'rawJSON')):
                 raise DemistoException('Missing params in fetch incidents Test.')
-    if list_tickets_res or response.get('Count') == 0:
+    if (list_tickets_res or response.get('Count') == 0) and (machines or response_machines.get('Count') == 0):
         return 'ok', {}, {}
     else:
         return 'Test failed', {}, {}
@@ -428,6 +438,7 @@ def create_ticket_command(client, args) -> Tuple[str, dict, dict]:
             id = response.get('IDs')[0]
         except Exception as e:
             raise DemistoException(e)
+        client.update_token()
         res = client.ticket_by_id_request(id)
         ticket = res.get('Tickets')
         ticket_view = tableToMarkdown(f'New ticket was added successfully, ticket number {id}.\n', ticket)
@@ -563,7 +574,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_shaping: str, last_ru
                  f"Last fetch was on {str(parsed_last_time)}")
     items: dict = client.tickets_list_request(fetch_shaping, fetch_filter)
     items: list = items.get('Tickets', [])
-    incidents, parsed_last_time = fetch_incidents_create_incidents(items, fetch_limit, time_format, parsed_last_time)
+    incidents, parsed_last_time = parse_incidents(items, fetch_limit, time_format, parsed_last_time)
     parsed_last_time = parsed_last_time.strftime(time_format)
     demisto.info(f"Fetching Incident has Finished\n"
                  f"Fetch limit was {fetch_limit}"
@@ -573,7 +584,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_shaping: str, last_ru
     return incidents
 
 
-def fetch_incidents_create_incidents(items: list, fetch_limit: str, time_format: str, parsed_last_time: datetime) \
+def parse_incidents(items: list, fetch_limit: str, time_format: str, parsed_last_time: datetime) \
         -> Tuple[list, datetime]:
     """
     This function will create a list of incidents
