@@ -1,6 +1,6 @@
-id: Test-URLhaus
+id: Test_URLhaus
 version: -1
-name: Test-URLhaus
+name: Test_URLhaus
 starttaskid: "0"
 tasks:
   "0":
