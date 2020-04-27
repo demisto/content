@@ -1,5 +1,4 @@
 ## [Unreleased]
--
 Fixed an issue when the last time of the fetch was not updated correctly.
 
 ## [19.11.0] - 2019-11-12
