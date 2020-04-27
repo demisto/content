@@ -62,18 +62,20 @@ def test_module(client):
     return 'ok', {}, {}
 
 
-def get_indicators(client: Client, args: Dict[str, str]) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+def get_indicators(client: Client, params: Dict[str, str], args: Dict[str, str]) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
     """Wrapper for retrieving indicators from the feed to the war-room.
 
     Args:
         client: Client object with request
+        params: demisto.params()
         args: demisto.args()
 
     Returns:
         Outputs.
     """
-    indicators = fetch_indicators(client, args)
-    human_readable = tableToMarkdown('Indicators from GCP Whitelist Feed:', indicators,
+    limit = int(args.get('limit', '10'))
+    indicators = fetch_indicators(client, params)
+    human_readable = tableToMarkdown('Indicators from GCP Whitelist Feed:', indicators[0:limit],
                                      headers=['value', 'type'], removeNull=True)
 
     return human_readable, {}, {'raw_response': indicators}
@@ -121,7 +123,7 @@ def main():
         }
 
         if command in commands:
-            return_outputs(*commands[command](client, demisto.params()))
+            return_outputs(*commands[command](client, demisto.params(), demisto.args()))
 
         elif demisto.command() == 'fetch-indicators':
             indicators = fetch_indicators(client, demisto.params())

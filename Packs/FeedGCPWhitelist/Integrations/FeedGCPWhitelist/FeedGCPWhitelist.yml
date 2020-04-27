@@ -79,12 +79,9 @@ name: GCP Whitelist Feed
 script:
   commands:
   - arguments:
-    - default: false
-      isArray: false
-      name: limit
-      description: The maximum number of results to return.  Default value is Unlimited.
-      required: false
-      secret: false
+    - name: limit
+      description: The maximum number of results to return. The default value is 10.
+      defaultValue: "10"
     deprecated: false
     description: Gets indicators from the feed.
     execution: false
