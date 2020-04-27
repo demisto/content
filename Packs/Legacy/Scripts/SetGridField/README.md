@@ -25,34 +25,34 @@ Assume the following:
 1. Entry Context:
 ```json
 {
-    "EWS": {
-        "Items": {
-            "HeadersMap": {
-                    "X-MS-Exchange-Organization-AuthSource": "Example", 
-                    "Received": "Example", 
-                    "Thread-Index": "Example", 
-                    "Accept-Language": "Example", 
-            }, 
-            "headers": [
-                {
-                    "name": "Example1", 
-                    "value": "Example2"
-                }, 
-                {
-                    "name": "Example1", 
-                    "value": "Example2"
-                }, 
-                {
-                    "name": "Example1", 
-                    "value": "Example2"
-                }, 
-                {
-                    "name": "Example1", 
-                    "value": "Example2"
-                }
-            ]
+  "EWS": {
+    "Items": {
+      "HeadersMap": {
+        "X-MS-Exchange-Organization-AuthSource": "Value1",
+        "Received": "Value2",
+        "Thread-Index": "Value3",
+        "Accept-Language": "Value4"
+      },
+      "headers": [
+        {
+          "name": "name1",
+          "value": "value1"
+        },
+        {
+          "name": "name2",
+          "value": "value2"
+        },
+        {
+          "name": "name3",
+          "value": "value3"
+        },
+        {
+          "name": "name4",
+          "value": "value4"
         }
+      ]
     }
+  }
 }
 ```
 

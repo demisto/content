@@ -1,5 +1,5 @@
 # STD Libaries
-from typing import Optional, List, Dict, Any, NoReturn
+from typing import Optional, List, Dict, Any
 # 3-rd party libaries
 import pandas as pd
 import phrases_case
@@ -27,7 +27,7 @@ def normalized_string(phrase: str) -> str:
     return phrases_case.camel(phrase).replace("'", "").lower()
 
 
-def filterTheDict(dict_obj: Dict[Any, Any], keys: List[str], max_keys: Optional[int] = None) -> Dict[Any, Any]:
+def filter_the_dict(dict_obj: Dict[Any, Any], keys: List[str], max_keys: Optional[int] = None) -> Dict[Any, Any]:
     """ Filter keys from Dictionary:
             1. Will save all keys in keys parameter.
             2. If key in index 0 is "*", will save all keys until max_keys (as much as Grid can include).
@@ -49,8 +49,9 @@ def filterTheDict(dict_obj: Dict[Any, Any], keys: List[str], max_keys: Optional[
                 new_dict[key] = value
     else:
         if max_keys:
-            new_dict = list(dict_obj.items())[:max_keys]
-        new_dict = dict_obj
+            new_dict = dict(list(dict_obj.items())[:max_keys])
+        else:
+            new_dict = dict_obj
 
     return new_dict
 
@@ -71,13 +72,14 @@ def get_current_table(grid_id: str) -> List[Dict[Any, Any]]:
     return pd.DataFrame(current_table)
 
 
-def validate_entry_context(entry_context: Any) -> NoReturn:
+def validate_entry_context(entry_context: Any, keys: List[str]):
     """ Validate entry context structure is valid should be:
             1. List[Dict[str, str]
             2. Dict[str, str] - for developer it will be in first index of a list.
 
     Args:
         entry_context: Entry context to validate
+        keys: keys to collect data from
 
     Raises:
         ValueError: If structure is not valid.
@@ -89,8 +91,9 @@ def validate_entry_context(entry_context: Any) -> NoReturn:
                 raise ValueError(exception_msg)
             else:
                 for key, value in item.items():
-                    if not (isinstance(key, str) and isinstance(value, str)):
-                        raise ValueError(exception_msg)
+                    if key in keys:
+                        if not (isinstance(key, str) and isinstance(value, str)):
+                            raise ValueError(exception_msg)
     else:
         raise ValueError(exception_msg)
 
@@ -114,17 +117,17 @@ def build_grid(context_path: str, keys: List[str], columns: List[str]) -> pd.Dat
     # Retrieve entry context data
     entry_context_data = demisto.dt(demisto.context(), context_path)
     # Validate entry context structure
-    validate_entry_context(entry_context_data)
+    validate_entry_context(entry_context_data, keys)
     # Building new Grid
     if len(entry_context_data) > 1:
         # Handle entry context list option
-        entry_context_filtered_by_keys = [filterTheDict(item, keys, len(columns)) for item in entry_context_data]
-        table = pd.DataFrame(entry_context_filtered_by_keys)
+        entry_context_data = [filter_the_dict(item, keys, len(columns)) for item in entry_context_data]
+        table = pd.DataFrame(entry_context_data)
         table.rename(columns=dict(zip(table.columns, columns)), inplace=True)
     elif len(entry_context_data) == 1 and isinstance(entry_context_data[0], dict):
         # Handle entry context key, vlaue option
-        entry_context_filtered_by_keys = filterTheDict(entry_context_data[0], keys).items()
-        table = pd.DataFrame(entry_context_filtered_by_keys, columns=columns[:2])
+        entry_context_data = filter_the_dict(entry_context_data[0], keys).items()
+        table = pd.DataFrame(entry_context_data, columns=columns[:2])
     else:
         table = []
 
@@ -132,7 +135,7 @@ def build_grid(context_path: str, keys: List[str], columns: List[str]) -> pd.Dat
 
 
 def build_grid_command(grid_id: str, context_path: str, keys: List[str], columns: List[str], overwrite: bool, sort_by: str) \
-        -> List[Dict[any, any]]:
+        -> List[Dict[Any, Any]]:
     """ Build Grid in one of the 2 options:
             1. Context_path contain list, e.g. [{'a': 1, 'b': 2}, {'a': 1, 'b': 2}]
             2. Context_path contain dict (key value pairs), e.g. {'a': 1, 'b': 2}
