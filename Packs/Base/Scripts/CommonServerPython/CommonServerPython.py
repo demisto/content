@@ -13,6 +13,7 @@ import re
 import socket
 import sys
 import time
+import traceback
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
 from datetime import datetime, timedelta
@@ -1790,7 +1791,8 @@ class Common(object):
         SUSPICIOUS = 2
         BAD = 3
 
-        CONTEXT_PATH = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'
+        CONTEXT_PATH = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor ' \
+            '&& val.Type == obj.Type)'
 
         CONTEXT_PATH_PRIOR_V5_5 = 'DBotScore'
 
@@ -1819,10 +1821,10 @@ class Common(object):
 
         @staticmethod
         def get_context_path():
-            if get_demisto_version().get('version') >= '5.5.0':
+            if is_demisto_version_ge('5.5.0'):
                 return Common.DBotScore.CONTEXT_PATH
             else:
-                Common.DBotScore.CONTEXT_PATH_PRIOR_V5_5
+                return Common.DBotScore.CONTEXT_PATH_PRIOR_V5_5
 
         def to_context(self):
             return {
@@ -2548,15 +2550,21 @@ def return_error(message, error='', outputs=None):
         :return: Error entry object
         :rtype: ``dict``
     """
+    is_server_handled = hasattr(demisto, 'command') and demisto.command() in ('fetch-incidents',
+                                                                              'long-running-execution',
+                                                                              'fetch-indicators')
+    if is_debug_mode() and not is_server_handled and any(sys.exc_info()):  # Checking that an exception occurred
+        message = "{}\n\n{}".format(message, traceback.format_exc())
+
     LOG(message)
     if error:
         LOG(str(error))
+
     LOG.print_log()
     if not isinstance(message, str):
         message = message.encode('utf8') if hasattr(message, 'encode') else str(message)
 
-    if hasattr(demisto, 'command') and demisto.command() in ('fetch-incidents', 'long-running-execution',
-                                                             'fetch-indicators'):
+    if is_server_handled:
         raise Exception(message)
     else:
         demisto.results({
@@ -2961,10 +2969,33 @@ def get_demisto_version():
     :return: Demisto version object if Demisto class has attribute demistoVersion, else raises AttributeError
     :rtype: ``dict``
     """
+    if getattr(get_demisto_version, '_version', None):
+        return get_demisto_version._version
     if hasattr(demisto, 'demistoVersion'):
-        return demisto.demistoVersion()
+        version = demisto.demistoVersion()
+        get_demisto_version._version = version
+        return version
     else:
         raise AttributeError('demistoVersion attribute not found.')
+
+
+def is_demisto_version_ge(version):
+    """Utility function to check if current running integration is at a server greater or equal to the passed version
+
+    :type version: ``str``
+    :param version: Version to check
+
+    :return: True if running within a Server version greater or equal than the passed version
+    :rtype: ``bool``
+    """
+    try:
+        server_version = get_demisto_version()
+        return server_version.get('version') >= version
+    except AttributeError:
+        # demistoVersion was added in 5.0.0. We are currently runnining in 4.5.0 and below
+        if version >= "5.0.0":
+            return False
+        raise
 
 
 def is_debug_mode():
@@ -3001,14 +3032,14 @@ class DebugLogger(object):
 
     def __init__(self):
         logging.raiseExceptions = False
-        self.handler = None  # just incase our http_client code throws an exception. so we don't error in the __del__
+        self.handler = None  # just in case our http_client code throws an exception. so we don't error in the __del__
         if IS_PY3:
             # pylint: disable=import-error
             import http.client as http_client
             # pylint: enable=import-error
             self.http_client = http_client
             self.http_client.HTTPConnection.debuglevel = 1
-            self.http_client_print = getattr(http_client, 'print', None)  # save in case someone else patched it alread
+            self.http_client_print = getattr(http_client, 'print', None)  # save in case someone else patched it already
             self.int_logger = IntegrationLogger()
             self.int_logger.set_buffering(False)
             setattr(http_client, 'print', self.int_logger.print_override)

@@ -143,6 +143,7 @@ tags:
 - incidents
 timeout: 300ns
 type: python
+subtype: python2
 runonce: false
 tests:
 - dedup_-_generic_-_test

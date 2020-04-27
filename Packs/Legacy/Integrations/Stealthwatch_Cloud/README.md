@@ -22,7 +22,7 @@
 <li><strong>Stealthwatch server URL</strong></li>
 <li><strong>Stealthwatch Cloud API key. Should be in the form of "ApiKey :&lt;api_key&gt;"</strong></li>
 <li><strong>Use system proxy settings</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Fetch incidents</strong></li>
 <li><strong>Incident type</strong></li>
 </ul>
