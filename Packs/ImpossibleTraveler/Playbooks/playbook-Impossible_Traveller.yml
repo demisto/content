@@ -3040,7 +3040,6 @@ outputs:
 - contextPath: Endpoint.Domain
   description: Endpoint domain name
   type: string
-sourceplaybookid: Impossible Traveler
 fromversion: 5.0.0
 tests:
 - Impossible Traveler - Test
