@@ -8,14 +8,14 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
 - display: Username
   name: credentials
   required: true
   type: 9
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
 - defaultvalue: 1 hour
   display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
   name: fetch_time
@@ -23,15 +23,15 @@ configuration:
   type: 0
 - defaultvalue: '"hd_ticket all,submitter limited,owner limited, asset limited,machine
     limited, priority limited,category limited, impact limited,status limited"'
-  display: Shaping for query of the tickets.
+  display: Shaping query parameter for tickets.
   name: fetch_shaping
   required: false
   type: 0
-- display: Filter for the tickets.
+- display: Filter for the tickets
   name: fetch_filter
   required: false
   type: 0
-- defaultvalue: '10'
+- defaultvalue: '50'
   display: Fetch limit per query.
   name: fetch_limit
   required: false
@@ -67,73 +67,73 @@ script:
     execution: false
     name: kace-machines-list
     outputs:
-    - contextPath: QuestKace.Machines.ID
+    - contextPath: QuestKace.Machine.ID
       description: ID of machine
       type: String
-    - contextPath: QuestKace.Machines.Modified
+    - contextPath: QuestKace.Machine.Modified
       description: Modified date of Machine.
       type: String
-    - contextPath: QuestKace.Machines.Created
+    - contextPath: QuestKace.Machine.Created
       description: Created date of machine in kace system.
       type: String
-    - contextPath: QuestKace.Machines.User
+    - contextPath: QuestKace.Machine.User
       description: User of the machine.
       type: String
-    - contextPath: QuestKace.Machines.Name
+    - contextPath: QuestKace.Machine.Name
       description: Name of machine.
       type: String
-    - contextPath: QuestKace.Machines.Ip
+    - contextPath: QuestKace.Machine.IP
       description: IP of machine.
       type: String
-    - contextPath: QuestKace.Machines.OsName
+    - contextPath: QuestKace.Machine.OSName
       description: Name of Operating System of the machine.
       type: String
-    - contextPath: QuestKace.Machines.OsNumber
+    - contextPath: QuestKace.Machine.OSNumber
       description: Number of Operating System of the machine.
       type: String
-    - contextPath: QuestKace.Machines.LastInventory
+    - contextPath: QuestKace.Machine.LastInventory
       description: Last inventory date of the machine.
       type: String
-    - contextPath: QuestKace.Machines.LastSync
+    - contextPath: QuestKace.Machine.LastSync
       description: Last sync date of the machine.
       type: String
-    - contextPath: QuestKace.Machines.RamTotal
+    - contextPath: QuestKace.Machine.RamTotal
       description: Total Ram memory of the machine in bytes.
       type: String
-    - contextPath: QuestKace.Machines.RamUsed
+    - contextPath: QuestKace.Machine.RamUsed
       description: Used Ram memory of the machine.
       type: String
-    - contextPath: QuestKace.Machines.RamMax
+    - contextPath: QuestKace.Machine.RamMax
       description: Max Ram memory of the machine.
       type: String
-    - contextPath: QuestKace.Machines.BiosIdentificationCode
+    - contextPath: QuestKace.Machine.BiosIdentificationCode
       description: Bios identification code of the machine.
       type: String
-    - contextPath: QuestKace.Machines.SoundDevices
+    - contextPath: QuestKace.Machine.SoundDevices
       description: Connected Sound Devices of the machine.
       type: String
-    - contextPath: QuestKace.Machines.CdromDevices
+    - contextPath: QuestKace.Machine.CdromDevices
       description: Connected CDRom devices to the machine.
       type: String
-    - contextPath: QuestKace.Machines.VideoControllers
+    - contextPath: QuestKace.Machine.VideoControllers
       description: Video controlleres of the machine.
       type: String
-    - contextPath: QuestKace.Machines.Monitor
+    - contextPath: QuestKace.Machine.Monitor
       description: Monitor of the machine.
       type: String
-    - contextPath: QuestKace.Machines.RegistrySize
+    - contextPath: QuestKace.Machine.RegistrySize
       description: Size of Registory of the machine.
       type: String
-    - contextPath: QuestKace.Machines.RegistryMaxSize
+    - contextPath: QuestKace.Machine.RegistryMaxSize
       description: Max Size of registry of the machine.
       type: String
-    - contextPath: QuestKace.Machines.PagefileSize
+    - contextPath: QuestKace.Machine.PagefileSize
       description: Size of pagefile of the machine.
       type: String
-    - contextPath: QuestKace.Machines.PagefileMaxSize
+    - contextPath: QuestKace.Machine.PagefileMaxSize
       description: Max size of pagefile of the machine.
       type: String
-    - contextPath: QuestKace.Machines.ManualEntry
+    - contextPath: QuestKace.Machine.ManualEntry
       description: Number of Manual entry to the machine.
       type: String
   - arguments:
@@ -149,40 +149,40 @@ script:
     execution: false
     name: kace-assets-list
     outputs:
-    - contextPath: QuestKace.Assets.ID
+    - contextPath: QuestKace.Asset.ID
       description: ID of the asset.
       type: Number
-    - contextPath: QuestKace.Assets.AssetTypeId
+    - contextPath: QuestKace.Asset.AssetTypeID
       description: Type ID of the asset.
       type: Number
-    - contextPath: QuestKace.Assets.Name
+    - contextPath: QuestKace.Asset.Name
       description: Name of the asset.
       type: String
-    - contextPath: QuestKace.Assets.AssetDataId
+    - contextPath: QuestKace.Asset.AssetDataID
       description: Data ID of the asset.
       type: Number
-    - contextPath: QuestKace.Assets.OwnerId
+    - contextPath: QuestKace.Asset.OwnerID
       description: Owner ID of the asset.
       type: Number
-    - contextPath: QuestKace.Assets.Modified
+    - contextPath: QuestKace.Asset.Modified
       description: Modified date of the asset.
       type: String
-    - contextPath: QuestKace.Assets.Created
+    - contextPath: QuestKace.Asset.Created
       description: Created date of the asset.
       type: String
-    - contextPath: QuestKace.Assets.MappedId
+    - contextPath: QuestKace.Asset.MappedID
       description: Mapped ID of the asset.
       type: Number
-    - contextPath: QuestKace.Assets.AssetClassId
+    - contextPath: QuestKace.Asset.AssetClassID
       description: Class ID of the asset.
       type: Number
-    - contextPath: QuestKace.Assets.Archieve
+    - contextPath: QuestKace.Asset.Archieve
       description: Archive of the asset.
       type: String
-    - contextPath: QuestKace.Assets.AssetStatusId
+    - contextPath: QuestKace.Asset.AssetStatusID
       description: Status ID of the asset.
       type: Number
-    - contextPath: QuestKace.Assets.AssetTypeName
+    - contextPath: QuestKace.Asset.AssetTypeName
       description: Type name of the asset.
       type: String
   - deprecated: false
@@ -190,17 +190,44 @@ script:
     execution: false
     name: kace-queues-list
     outputs:
-    - contextPath: QuestKace.Queues.ID
+    - contextPath: QuestKace.Queue.ID
       description: ID of the queue
       type: Number
-    - contextPath: QuestKace.Queues.Name
+    - contextPath: QuestKace.Queue.Name
       description: Name of the queue
+      type: String
+    - contextPath: QuestKace.Queue.Field.ID
+      description: ID of the field of the Queue.
+      type: Number
+    - contextPath: QuestKace.Queue.Field.HdQueueID
+      description: Queue ID of the field.
+      type: Number
+    - contextPath: QuestKace.Queue.Field.Name
+      description: Name of the field
+      type: String
+    - contextPath: QuestKace.Queue.Field.HdTicketFieldName
+      description: View field name.
+      type: String
+    - contextPath: QuestKace.Queue.Field.Ordinal
+      description: Ordinal fo the field.
+      type: Number
+    - contextPath: QuestKace.Queue.Field.RequiredState
+      description: Requered state of the field if exists.
+      type: String
+    - contextPath: QuestKace.Queue.Field.FieldLabel
+      description: Field label.
+      type: String
+    - contextPath: QuestKace.Queue.Field.Visible
+      description: Visibility of the field.
       type: String
   - arguments:
     - default: false
       defaultValue: '"hd_ticket all,submitter limited,owner limited, asset limited,machine
         limited,priority limited,category limited, impact limited,status limited"'
-      description: Custom shaping for the query.
+      description: |-
+        The shaping query parameter limits the amount of returned data is specified. The returned fields for each
+        associated entity is controlled by two query values. The first is the name of the entity, while the second half of the
+        pair is the associated level. e.g. "submitter all, asset limited".
       isArray: false
       name: custom_shaping
       required: false
@@ -212,114 +239,122 @@ script:
       name: limit
       required: false
       secret: false
+    - default: false
+      description: |-
+        Filter for the query. Each filter is specified by an optional entity name, a field name, an
+        operator, and a value. e.g. "title eq test" / "id gt 1"
+      isArray: false
+      name: custom_filter
+      required: false
+      secret: false
     deprecated: false
     description: List of all tickets in the system.
     execution: false
     name: kace-tickets-list
     outputs:
-    - contextPath: QuestKace.Tickets.Submitter.ID
+    - contextPath: QuestKace.Ticket.Submitter.ID
       description: Submitter id of the ticket.
       type: Number
-    - contextPath: QuestKace.Tickets.Submitter.UserName
+    - contextPath: QuestKace.Ticket.Submitter.UserName
       description: Submitter user name of the ticket.
       type: String
-    - contextPath: QuestKace.Tickets.Submitter.Email
+    - contextPath: QuestKace.Ticket.Submitter.Email
       description: Email submitter's email.
       type: String
-    - contextPath: QuestKace.Tickets.Submitter.FullName
+    - contextPath: QuestKace.Ticket.Submitter.FullName
       description: Full name of submitter's of the ticket.
       type: String
-    - contextPath: QuestKace.Tickets.Asset.ID
+    - contextPath: QuestKace.Ticket.Asset.ID
       description: ID of the asset of the ticket.
       type: Number
-    - contextPath: QuestKace.Tickets.Asset.AssetTypeId
+    - contextPath: QuestKace.Ticket.Asset.AssetTypeId
       description: Asset type id of the ticket.
       type: Number
-    - contextPath: QuestKace.Tickets.Asset.Name
+    - contextPath: QuestKace.Ticket.Asset.Name
       description: Name of the asset of the ticket.
       type: String
-    - contextPath: QuestKace.Tickets.Asset.OwnerId
+    - contextPath: QuestKace.Ticket.Asset.OwnerId
       description: Owner ID of the asset of the ticket.
       type: Number
-    - contextPath: QuestKace.Tickets.Asset.AssetClassId
+    - contextPath: QuestKace.Ticket.Asset.AssetClassId
       description: Asset class id of the ticket
       type: Number
-    - contextPath: QuestKace.Tickets.Machine.ID
+    - contextPath: QuestKace.Ticket.Machine.ID
       description: ID of the machine of the ticket
       type: Number
-    - contextPath: QuestKace.Tickets.Machine.Name
+    - contextPath: QuestKace.Ticket.Machine.Name
       description: Name of the machine of the ticket.
       type: String
-    - contextPath: QuestKace.Tickets.Priority.ID
+    - contextPath: QuestKace.Ticket.Priority.ID
       description: Priority id of the ticket.
       type: Number
-    - contextPath: QuestKace.Tickets.Priority.Name
+    - contextPath: QuestKace.Ticket.Priority.Name
       description: Priority name of the ticket.
       type: String
-    - contextPath: QuestKace.Tickets.Priority.Ordinal
+    - contextPath: QuestKace.Ticket.Priority.Ordinal
       description: Priority ordinal of the ticket.
       type: Number
-    - contextPath: QuestKace.Tickets.Priority.Color
+    - contextPath: QuestKace.Ticket.Priority.Color
       description: Priority color of the ticket.
       type: String
-    - contextPath: QuestKace.Tickets.Priority.IsSlaEnable
+    - contextPath: QuestKace.Ticket.Priority.IsSlaEnable
       description: Is Sla enabled on the priority of the ticket.
       type: Number
-    - contextPath: QuestKace.Tickets.Category.ID
+    - contextPath: QuestKace.Ticket.Category.ID
       description: Category ID of the ticket
       type: Number
-    - contextPath: QuestKace.Tickets.Category.Name
+    - contextPath: QuestKace.Ticket.Category.Name
       description: Category name of the ticket.
       type: String
-    - contextPath: QuestKace.Tickets.Impact.ID
+    - contextPath: QuestKace.Ticket.Impact.ID
       description: ID of the impact of the ticket
       type: Number
-    - contextPath: QuestKace.Tickets.Impact.Ordinal
+    - contextPath: QuestKace.Ticket.Impact.Ordinal
       description: Ordinal of the impact of the ticket.
       type: Number
-    - contextPath: QuestKace.Tickets.Impact.Name
+    - contextPath: QuestKace.Ticket.Impact.Name
       description: Name of the impact of the ticket.
       type: String
-    - contextPath: QuestKace.Tickets.Status.ID
+    - contextPath: QuestKace.Ticket.Status.ID
       description: ID of the status of the ticket.
       type: Number
-    - contextPath: QuestKace.Tickets.Status.Name
+    - contextPath: QuestKace.Ticket.Status.Name
       description: Name of the status of the tickets.
       type: String
-    - contextPath: QuestKace.Tickets.Status.Ordinal
+    - contextPath: QuestKace.Ticket.Status.Ordinal
       description: Ordinal of the status of the ticket.
       type: Number
-    - contextPath: QuestKace.Tickets.Status.State
+    - contextPath: QuestKace.Ticket.Status.State
       description: State of the status of the ticket.
       type: String
-    - contextPath: QuestKace.Tickets.ID
+    - contextPath: QuestKace.Ticket.ID
       description: ID of the ticket
       type: Number
-    - contextPath: QuestKace.Tickets.Title
+    - contextPath: QuestKace.Ticket.Title
       description: Title of the ticket.
       type: String
-    - contextPath: QuestKace.Tickets.Summary
+    - contextPath: QuestKace.Ticket.Summary
       description: Summary of the ticket.
       type: String
-    - contextPath: QuestKace.Tickets.Modified
+    - contextPath: QuestKace.Ticket.Modified
       description: Modified date of the ticket.
       type: String
-    - contextPath: QuestKace.Tickets.Created
+    - contextPath: QuestKace.Ticket.Created
       description: Created date of the ticket.
       type: String
-    - contextPath: QuestKace.Tickets.HdQueueId
+    - contextPath: QuestKace.Ticket.HdQueueID
       description: Queue number that the ticket is related to.
       type: Number
-    - contextPath: QuestKace.Tickets.CcList
+    - contextPath: QuestKace.Ticket.CcList
       description: Cc list of the ticket.
       type: String
-    - contextPath: QuestKace.Tickets.IsManualDueDate
+    - contextPath: QuestKace.Ticket.IsManualDueDate
       description: 'Is manual due date '
       type: Number
-    - contextPath: QuestKace.Tickets.Resolution
+    - contextPath: QuestKace.Ticket.Resolution
       description: Resolution of the ticket.
       type: String
-    - contextPath: QuestKace.Tickets.DueDate
+    - contextPath: QuestKace.Ticket.DueDate
       description: Dua date of the ticket
       type: String
   - arguments:
@@ -387,36 +422,6 @@ script:
     description: Create a new ticket to the system.
     execution: false
     name: kace-ticket-create
-  - arguments:
-    - default: false
-      description: Queue number.
-      isArray: false
-      name: queue_number
-      required: true
-      secret: false
-    deprecated: false
-    description: List fo fileds of queue.
-    execution: false
-    name: kace-queues-fields-list
-    outputs:
-    - contextPath: QuestKace.Queue.Fields.jsonKey
-      description: Json Key of the field.
-      type: String
-    - contextPath: QuestKace.Queue.Fields.Label
-      description: Label of field.
-      type: String
-    - contextPath: QuestKace.Queue.Fields.Column
-      description: Column of field.
-      type: String
-    - contextPath: QuestKace.Queue.Fields.Type
-      description: Type of field.
-      type: String
-    - contextPath: QuestKace.Queue.Fields.Visible
-      description: Visibility of field.
-      type: String
-    - contextPath: QuestKace.Queue.Fields.Required
-      description: 'Requiered type of field, e.g. all, '
-      type: Unknown
   - arguments:
     - default: false
       description: updated title of the ticket.
@@ -502,5 +507,5 @@ script:
   subtype: python3
   type: python
 tests:
--  QuestKace test
+- QuestKace test
 fromversion: 5.0.0

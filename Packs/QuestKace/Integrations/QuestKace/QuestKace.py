@@ -20,7 +20,41 @@ def convert_snake_to_camel(snake_str: str) -> str:
         """
     snake_split = snake_str.split("_")
     camel_string = "".join(map(str.capitalize, snake_split))
+    camel_string = check_demisto_convension(camel_string)
     return camel_string
+
+
+def check_demisto_convension(string: str):
+    """
+    Convert specific keys to demisto standard
+    Args:
+        string: the text to transform
+    Returns:
+        A Demisto output standard string
+    """
+    if string == 'OsName':
+        return 'OSName'
+    if string == 'OsNumber':
+        return 'OSNumber'
+    if string == 'Ram total':
+        return 'RamTotal'
+    if string == 'AssetDataId':
+        return 'AssetDataID'
+    if string == 'AssetClassId':
+        return 'AssetClassID'
+    if string == 'AssetStatusId':
+        return 'AssetStatusID'
+    if string == 'AssetTypeId':
+        return 'AssetTypeID'
+    if string == 'MappedId':
+        return 'MappedID'
+    if string == 'OwnerId':
+        return 'OwnerID'
+    if string == 'HdQueueId':
+        return 'HdQueueID'
+    if string == 'Ip':
+        return 'IP'
+    return string
 
 
 def convert_dict_snake_to_camel(dic: dict) -> dict:
@@ -36,6 +70,10 @@ def convert_dict_snake_to_camel(dic: dict) -> dict:
             inner_dict = convert_dict_snake_to_camel(dic[snake_str])
             camel = convert_snake_to_camel(snake_str)
             context_dict[camel] = inner_dict
+        elif type(dic[snake_str]) is list:
+            inner_dict = parse_response(dic[snake_str])
+            camel = convert_snake_to_camel(snake_str)
+            context_dict[camel] = inner_dict
         elif snake_str in ['id', 'Id']:
             context_dict['ID'] = dic.get(snake_str, '')
         else:
@@ -44,7 +82,7 @@ def convert_dict_snake_to_camel(dic: dict) -> dict:
     return context_dict
 
 
-def parse_response(lst: list) -> list:
+def parse_response(lst: list):
     """Convert a Api response to wanted format.
         Args:
             lst: A list of dictionaries that return from api call.
@@ -56,6 +94,12 @@ def parse_response(lst: list) -> list:
         context_dict = convert_dict_snake_to_camel(dic)
         list_res.append(context_dict)
     return list_res
+
+
+def add_IsDeleted_key(raw_response: list) -> list:
+    for response in raw_response:
+        response['IsDeleted'] = False
+    return raw_response
 
 
 class Client(BaseClient):
@@ -182,7 +226,7 @@ class Client(BaseClient):
             'x-dell-api-version': '5',
             'Cookie': self._cookie
         }
-        return self._http_request("GET", url_suffix="/service_desk/queues", headers=headers)
+        return self._http_request("GET", url_suffix="/service_desk/queues?shaping=fields all", headers=headers)
 
     def queues_list_fields_request(self, queue_number: str) -> dict:
         """List of fields in specific queue.
@@ -294,6 +338,7 @@ def test_module(client: Client, *_) -> Tuple[str, dict, dict]:
     response = client.tickets_list_request()
     list_tickets_res = response.get('Tickets')
     if list_tickets_res and demisto.params().get('isFetch'):
+        parse_date_range(demisto.params().get('fetch_time'), date_format='%Y-%m-%dT%H:%M:%SZ')
         parsed_time = (datetime.utcnow() - timedelta(days=20))
         incidents, _ = parse_incidents(list_tickets_res, "1", '%Y-%m-%dT%H:%M:%SZ', parsed_time)
     return 'ok', {}, {}
@@ -311,9 +356,18 @@ def get_machines_list_command(client, args) -> Tuple[str, dict, dict]:
     response = client.machines_list_request()
     raw_response = response.get('Machines')[:limit]
     context = parse_response(raw_response)
-    human_readable_markdown = tableToMarkdown('Quest Kace Machines', context, removeNull=True)
+    human_readable_markdown = tableToMarkdown('Quest Kace Machines', context, removeNull=True, headers=['ID', 'Name',
+                                                                                                        'IP', 'Created',
+                                                                                                        'Modified',
+                                                                                                        'LastInventory',
+                                                                                                        'LastSync',
+                                                                                                        'ManualEntry',
+                                                                                                        'PagefileMaxSize',
+                                                                                                        'PagefileSize',
+                                                                                                        'RamTotal',
+                                                                                                        'RamUsed'])
     context = {
-        'QuestKace.Machines(val.ID === obj.ID)': context
+        'QuestKace.Machine(val.ID === obj.ID)': context
     }
     return human_readable_markdown, context, raw_response
 
@@ -330,9 +384,12 @@ def get_assets_list_command(client, args) -> Tuple[str, dict, dict]:
     response = client.assets_list_request()
     raw_response = response.get('Assets')[:limit]
     context = parse_response(raw_response)
-    human_readable_markdown = tableToMarkdown('Quest Kace Assets', context, removeNull=True)
+    human_readable_markdown = tableToMarkdown('Quest Kace Assets', context, removeNull=True,
+                                              headers=['ID', 'Name', 'Created', 'Modified', 'OwnerID', 'MappedID',
+                                                       'AssetClassID', 'AssetDataID', 'AssetStatusID', 'AssetTypeID',
+                                                       'AssetTypeName'])
     context = {
-        'QuestKace.Assets(val.ID === obj.ID)': context
+        'QuestKace.Asset(val.ID === obj.ID)': context
     }
     return human_readable_markdown, context, raw_response
 
@@ -348,28 +405,10 @@ def get_queues_list_command(client, args) -> Tuple[str, dict, dict]:
     response = client.queues_list_request()
     raw_response = response.get('Queues')
     context = parse_response(raw_response)
-    human_readable_markdown = tableToMarkdown('Quest Kace Queues', context, removeNull=True)
+    human_readable_markdown = tableToMarkdown('Quest Kace Queues', context, removeNull=True,
+                                              headers=['ID', 'Name', 'Fields'])
     context = {
-        'QuestKace.Queues(val.ID === obj.ID)': context
-    }
-    return human_readable_markdown, context, raw_response
-
-
-def get_queues_fields_list_command(client, args) -> Tuple[str, dict, dict]:
-    """Function which returns all fields of a specific queue by queue id.
-        Args:
-            client : Integretion client which communicates with the api.
-            args: Users arguments of the command.
-       Returns:
-           human readable, context, raw response of this command.
-    """
-    queue_number = args.get('queue_number')
-    response = client.queues_list_fields_request(queue_number)
-    raw_response = response.get('Fields')
-    context = parse_response(raw_response)
-    human_readable_markdown = tableToMarkdown(f'Quest Kace Queue {queue_number} Fields', context, removeNull=True)
-    context = {
-        'QuestKace.Queues.Fields(val.JsonKey === obj.JsonKey)': context
+        'QuestKace.Queue(val.ID === obj.ID)': context
     }
     return human_readable_markdown, context, raw_response
 
@@ -383,13 +422,17 @@ def get_tickets_list_command(client, args) -> Tuple[str, dict, dict]:
            human readable, context, raw response of this command.
     """
     limit = int(args.get('limit', 50))
-    shaping_fields = args.get("custom_shaping")
-    response = client.tickets_list_request(shaping_fields)
+    custom_shaping = args.get("custom_shaping")
+    custom_filter = args.get("custom_filter")
+    response = client.tickets_list_request(custom_shaping, custom_filter)
     raw_response = response.get('Tickets')[:limit]
     context = parse_response(raw_response)
-    human_readable_markdown = tableToMarkdown(f'Quest Kace Tickets', context, removeNull=True)
+    context = add_IsDeleted_key(context)
+    human_readable_markdown = tableToMarkdown(f'Quest Kace Tickets', context, removeNull=True,
+                                              headers=['ID', 'Title', 'Created', 'Modified', 'HdQueueID', 'DueDate',
+                                                       'IsDeleted'])
     context = {
-        'QuestKace.Tickets(val.ID === obj.ID)': context
+        'QuestKace.Ticket(val.ID === obj.ID)': context
     }
     return human_readable_markdown, context, raw_response
 
@@ -530,7 +573,17 @@ def delete_ticket_command(client, args) -> Tuple[str, dict, dict]:
     except Exception as e:
         raise DemistoException(e)
     if response.get('Result') == 'Success':
-        return f'Ticket was deleted successfully. Ticket number {ticket_id}', {}, {}
+        context = {}
+        old_context = demisto.dt(demisto.context(), f'QuestKace.Ticket(val.ID === {ticket_id})')
+        if old_context:
+            demisto.info(f'test old cotext {str(old_context)}')
+            if isinstance(old_context, list):
+                old_context = old_context[0]
+            old_context['IsDeleted'] = True
+            context = {
+                f'QuestKace.Ticket(val.ID === obj.ID)': old_context
+            }
+        return f'Ticket was deleted successfully. Ticket number {ticket_id}', context, {}
     else:
         raise DemistoException(f'Error while deleting the ticket.')
 
@@ -646,7 +699,6 @@ def main():
             'kace-machines-list': get_machines_list_command,
             'kace-assets-list': get_assets_list_command,
             'kace-queues-list': get_queues_list_command,
-            'kace-queues-fields-list': get_queues_fields_list_command,
             'kace-tickets-list': get_tickets_list_command,
             'kace-ticket-create': create_ticket_command,
             'kace-ticket-update': update_ticket_command,

@@ -43,27 +43,30 @@ ASSETS_LIST_COMMAND_RESPONSE = {
          }
     ]
 }
+
 QUEUES_LIST_COMMAND_RESPONSE = {
     'Queues': [
         {'id': 1,
-         'name': 'The K1000 Service Desk'}
-    ]
-}
-
-QUEUES_FIELDS_LIST_COMMAND_RESPONSE = {
-    'Fields': [
-        {'jsonKey': 'title',
-         'label': 'Title',
-         'column': 'TITLE',
-         'type': 'text',
-         'visible': 'usercreate',
-         'required': 'all'},
-        {'jsonKey': 'related_tickets',
-         'label': 'See Also',
-         'column': 'RELATED_TICKET_IDS',
-         'type': 'ticket_array',
-         'visible': 'userhidden',
-         'required': 'none'}
+         'name': 'The K1000 Service Desk',
+         'fields': [
+             {'id': 1,
+              'hd_queue_id': 1,
+              'name': 'SAT_SURVEY',
+              'hd_ticket_field_name': 'sat_survey',
+              'ordinal': 0,
+              'required_state': 'none',
+              'field_label': 'Please tell us about your recent help desk experience',
+              'visible': 'usercreate'},
+             {'id': 2,
+              'hd_queue_id': 1,
+              'name': 'TITLE',
+              'hd_ticket_field_name': 'title',
+              'ordinal': 1,
+              'required_state': 'all',
+              'field_label': 'Title',
+              'visible': 'usercreate'}
+         ]
+         }
     ]
 }
 
@@ -109,8 +112,7 @@ TICKETS_LIST_COMMAND_RESPONSE = {
              'id': 5,
              'name': 'Reopened',
              'ordinal': 2,
-             'state': 'opened'},
-         'related_tickets': []
+             'state': 'opened'}
          }
     ]
 }
@@ -156,8 +158,7 @@ LIST_BEFORE_PARSE = [
          'id': 5,
          'name': 'Reopened',
          'ordinal': 2,
-         'state': 'opened'},
-     'related_tickets': []
+         'state': 'opened'}
      }
 ]
 
