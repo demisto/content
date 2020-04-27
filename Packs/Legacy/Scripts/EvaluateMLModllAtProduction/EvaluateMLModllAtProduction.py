@@ -107,6 +107,7 @@ def main(incident_types, incident_query, y_true_field, y_pred_field, y_pred_prob
     if is_error(incidents_query_res):
         return_error(get_error(incidents_query_res))
     incidents = json.loads(incidents_query_res[-1]['Contents'])
+    demisto.results('Found {} incidents'.format(len(incidents)))
     y_true = []
     y_pred = []
     y_pred_prob = []
