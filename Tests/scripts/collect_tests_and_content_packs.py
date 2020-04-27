@@ -198,8 +198,9 @@ def get_tests(file_path):
         return data_dictionary.get('tests', [])
 
 
-def collect_tests_and_content_packs(script_ids, playbook_ids, integration_ids, catched_scripts, catched_playbooks, tests_set, id_set,
-                                    conf):
+def collect_tests_and_content_packs(
+        script_ids, playbook_ids, integration_ids, catched_scripts, catched_playbooks, tests_set, id_set, conf
+):
     """Collect tests for the affected script_ids,playbook_ids,integration_ids.
 
     :param script_ids: The ids of the affected scripts in your change set.
@@ -1106,7 +1107,9 @@ def create_test_file(is_nightly, skip_save=False):
         conf = load_tests_conf()
         with open("./Tests/id_set.json", 'r') as conf_file:
             id_set = json.load(conf_file)
-        tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name, two_before_ga, conf, id_set)
+        tests, packs_to_install = get_test_list_and_content_packs_to_install(
+            files_string, branch_name, two_before_ga, conf, id_set
+        )
         create_filter_envs_file(tests, two_before_ga, one_before_ga, ga, conf, id_set)
 
         tests_string = '\n'.join(tests)

@@ -1,13 +1,12 @@
-import json
 import copy
+import json
 import os
-from ruamel.yaml import YAML
-from Tests.scripts.collect_tests_and_content_packs import get_modified_files, RANDOM_TESTS_NUM, TestConf, \
-    create_filter_envs_file
+
 import demisto_sdk.commands.common.tools as demisto_sdk_tools
+from ruamel.yaml import YAML
 
 from Tests.scripts.collect_tests_and_content_packs import (
-    RANDOM_TESTS_NUM, get_modified_files,
+    RANDOM_TESTS_NUM, TestConf, create_filter_envs_file, get_modified_files,
     get_test_list_and_content_packs_to_install)
 
 with open('Tests/scripts/infrastructure_tests/tests_data/mock_id_set.json', 'r') as mock_id_set_f:
@@ -437,8 +436,8 @@ def get_mock_test_list(two_before_ga=TWO_BEFORE_GA_VERSION, get_modified_files_r
             return_value=get_modified_files_ret
         )
     tests, content_packs = get_test_list_and_content_packs_to_install(
-        git_diff_ret, branch_name, two_before_ga, id_set=MOCK_ID_SET, conf=TestConf(MOCK_CONF
-    ))
+        git_diff_ret, branch_name, two_before_ga, id_set=MOCK_ID_SET, conf=TestConf(MOCK_CONF)
+    )
     return tests, content_packs
 
 
