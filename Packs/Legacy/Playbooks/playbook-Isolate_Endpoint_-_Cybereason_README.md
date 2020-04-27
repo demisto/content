@@ -28,5 +28,5 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Isolate Endpoint - Cybereason](https://github.com/demisto/content/blob/master/docs/images/playbooks/Isolate_Endpoint_-_Cybereason.png)
+![Isolate Endpoint - Cybereason](https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/Isolate_Endpoint_-_Cybereason.png)
 
