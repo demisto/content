@@ -21,7 +21,7 @@ from demisto_sdk.commands.common.constants import YML_INTEGRATION_REGEXES, INTEG
     BETA_INTEGRATION_REGEX, RUN_ALL_TESTS_FORMAT
 from demisto_sdk.commands.common.tools import server_version_compare
 from Tests.update_content_data import update_content
-# from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies
+from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies
 
 
 def options_handler():
@@ -723,11 +723,11 @@ def main():
 
     if new_integrations_files:
         # TODO: uncomment when we start testing packs
-        # if server_version_compare(server_numeric_version, '6.0') >= 0:
-        #    # Test packs search and installation - beginning of infrastructure
-        #    client = demisto_client.configure(base_url=servers[0], username=username, password=password,
-        #                                      verify_ssl=False)
-        #    search_and_install_packs_and_their_dependencies(new_integrations_files, client, prints_manager)
+        if server_version_compare(server_numeric_version, '6.0') >= 0:
+            # Test packs search and installation - beginning of infrastructure
+            client = demisto_client.configure(base_url=servers[0], username=username, password=password,
+                                              verify_ssl=False)
+            search_and_install_packs_and_their_dependencies(new_integrations_files, client, prints_manager)
 
         new_integrations_names = get_integration_names_from_files(new_integrations_files)
         new_integrations_names_message = \
@@ -736,11 +736,11 @@ def main():
 
     if modified_integrations_files:
         # TODO: uncomment when we start testing packs
-        # if server_version_compare(server_numeric_version, '6.0') >= 0:
-        #     # Test packs search and installation - beginning of infrastructure
-        #     client = demisto_client.configure(base_url=servers[0], username=username, password=password,
-        #                                       verify_ssl=False)
-        #     search_and_install_packs_and_their_dependencies(modified_integrations_files, client, prints_manager)
+        if server_version_compare(server_numeric_version, '6.0') >= 0:
+            # Test packs search and installation - beginning of infrastructure
+            client = demisto_client.configure(base_url=servers[0], username=username, password=password,
+                                              verify_ssl=False)
+            search_and_install_packs_and_their_dependencies(modified_integrations_files, client, prints_manager)
 
         modified_integrations_names = get_integration_names_from_files(modified_integrations_files)
         modified_integrations_names_message = \
