@@ -1832,6 +1832,12 @@
             "nightly": true
         },
         {
+            "integrations": "GooglePubSub",
+            "playbookID": "GooglePubSub_Test",
+            "nightly": true,
+            "fromversion": "5.0.0"
+        },
+        {
             "playbookID": "Calculate Severity - Generic v2 - Test",
             "integrations": [
                 "Palo Alto Minemeld",
@@ -2876,6 +2882,9 @@
             },
             "demisto/py-ews:2.0": {
                 "memory_threshold": 150
+            },
+            "demisto/pytan": {
+                "pid_threshold": 11
             }
         }
     }
