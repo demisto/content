@@ -1,0 +1,327 @@
+from IllusiveNetworks import Client, is_deceptive_user_command, is_deceptive_server_command,\
+    delete_deceptive_users_command, delete_deceptive_servers_command, run_forensics_on_demand_command, \
+    get_asm_host_insight_command, get_asm_cj_insight_command, get_deceptive_users_command, \
+    get_deceptive_servers_command, get_forensics_timeline_command, assign_host_to_policy_command, \
+    remove_host_from_policy_command, add_deceptive_users_command, add_deceptive_servers_command, \
+    get_incidents_command, get_event_incident_id_command, fetch_incidents
+
+from CommonServerPython import parse_date_range
+
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.000Z'
+
+
+def test_is_deceptive_user_command_returns_true(requests_mock):
+    mock_response = {'result': 'true'}
+    requests_mock.get('https://server/api/v1/deceptive-entities/user?userName=myUser', json=mock_response)
+
+    client = Client(base_url='https://server', verify=False, credentials='test')
+    args = {
+        'username': 'myUser'
+    }
+    _, outputs, _ = is_deceptive_user_command(client, args)
+
+    assert outputs['Illusive.IsDeceptive(val.Username == obj.Username)']['Username'] == args['username']
+    assert outputs['Illusive.IsDeceptive(val.Username == obj.Username)']['IsDeceptiveUser'] is True
+
+
+def test_is_deceptive_user_command_returns_false(requests_mock):
+    requests_mock.get('https://server/api/v1/deceptive-entities/user?userName=myUser', text='')
+
+    client = Client(base_url='https://server', verify=False, credentials='test')
+    args = {
+        'username': 'myUser'
+    }
+    _, outputs, _ = is_deceptive_user_command(client, args)
+
+    assert outputs['Illusive.IsDeceptive(val.Username == obj.Username)']['Username'] == args['username']
+    assert outputs['Illusive.IsDeceptive(val.Username == obj.Username)']['IsDeceptiveUser'] is False
+
+
+def test_is_deceptive_server_command_returns_true(requests_mock):
+    mock_response = {'result': 'true'}
+    requests_mock.get('https://server/api/v1/deceptive-entities/server?hostName=myHost', json=mock_response)
+
+    client = Client(base_url='https://server', verify=False, credentials='test')
+    args = {
+        'hostname': 'myHost'
+    }
+    _, outputs, _ = is_deceptive_server_command(client, args)
+
+    assert outputs['Illusive.IsDeceptive(val.Hostname == obj.Hostname)']['Hostname'] == args['hostname']
+    assert outputs['Illusive.IsDeceptive(val.Hostname == obj.Hostname)']['IsDeceptiveServer'] is True
+
+
+def test_is_deceptive_server_command_returns_false(requests_mock):
+    requests_mock.get('https://server/api/v1/deceptive-entities/server?hostName=myHost', text='')
+
+    client = Client(base_url='https://server', verify=False, credentials='test')
+    args = {
+        'hostname': 'myHost'
+    }
+    _, outputs, _ = is_deceptive_server_command(client, args)
+
+    assert outputs['Illusive.IsDeceptive(val.Hostname == obj.Hostname)']['Hostname'] == args['hostname']
+    assert outputs['Illusive.IsDeceptive(val.Hostname == obj.Hostname)']['IsDeceptiveServer'] is False
+
+
+def test_delete_deceptive_users_command(requests_mock):
+    mock_response = {'result': 'False'}
+    requests_mock.delete('https://server/api/v1/deceptive-entities/users?deceptive_users=user1&deceptive_users=user2',
+                         json=mock_response)
+
+    client = Client(base_url='https://server', verify=False, credentials='test')
+
+    args = {
+        'deceptive_users': ['user1', 'user2']
+    }
+    _, outputs, _ = delete_deceptive_users_command(client, args)
+
+    assert outputs == {}
+
+
+def test_delete_deceptive_servers_command(requests_mock):
+    mock_response = {'result': 'False'}
+    requests_mock.delete('https://server/api/v1/deceptive-entities/servers?deceptive_hosts=server1', json=mock_response)
+
+    client = Client(base_url='https://server', verify=False, credentials='test')
+
+    args = {
+        'deceptive_hosts': ['server1']
+    }
+    _, outputs, _ = delete_deceptive_servers_command(client, args)
+
+    assert outputs == {}
+
+
+def test_run_forensics_on_demand_command(requests_mock):
+    mock_response = {'EventId': '1234'}
+    requests_mock.post('https://server/api/v1/event/create-external-event?hostNameOrIp=myIp', json=mock_response)
+
+    client = Client(base_url='https://server', verify=False, credentials='test')
+    args = {
+        'fqdn_or_ip': "myIp"
+    }
+    _, outputs, _ = run_forensics_on_demand_command(client, args)
+
+    assert outputs == {'Illusive.Event(val.eventId == obj.eventId)': {'EventId': '1234'}}
+
+
+def test_get_event_incident_id_command(requests_mock):
+    mock_response = {'EventId': '1234', 'IncidentId': '1'}
+    requests_mock.get('https://server/api/v1/incidents/id?event_id=1234', json=mock_response)
+
+    client = Client(base_url='https://server', verify=False, credentials='test')
+
+    args = {
+        'event_id': "1234"
+    }
+    _, outputs, _ = get_event_incident_id_command(client, args)
+
+    assert outputs == {'Illusive.Event(val.eventId == obj.eventId)':
+                       [{'eventId': '1234', 'incidentId': {'EventId': '1234', 'IncidentId': '1'},
+                        'status': 'Done'}]}
+
+
+def test_get_asm_host_insight_command(requests_mock):
+    mock_response = {'hostname': 'aaa', 'domainName': 'bbb', 'ipAddresses': '1.1.1.1'}
+    requests_mock.get('https://server/api/v1/attack-surface/machine-insights?hostNameOrIp=myIp',
+                      json=mock_response, status_code=202)
+
+    client = Client(base_url='https://server', verify=False, credentials='test')
+
+    args = {
+        'hostnameOrIp': "myIp"
+    }
+    _, outputs, _ = get_asm_host_insight_command(client, args)
+
+    assert outputs == {'Illusive.AttackSurfaceInsights.Host(val.ipAddresses == obj.ipAddresses)':
+                       {'hostname': 'aaa', 'domainName': 'bbb', 'ipAddresses': '1.1.1.1'}}
+
+
+def test_get_asm_cj_insight_command(requests_mock):
+    mock_response = {'data': [], 'hostname': 'bbb', 'machineTagAndSubTags': {'tag': 'tag', 'subTag': 'sub'}}
+    requests_mock.get('https://server/api/v1/crownjewels/insights', json=mock_response, status_code=202)
+
+    client = Client(base_url='https://server', verify=False, credentials='test')
+
+    args = {
+    }
+    _, outputs, _ = get_asm_cj_insight_command(client, args)
+
+    assert outputs == {'Illusive.AttackSurfaceInsights.CrownJewel(val.hostname == obj.hostname)':
+                       {'data': [], 'hostname': 'bbb', 'machineTagAndSubTags': {'tag': 'tag', 'subTag': 'sub'}}}
+
+
+def test_get_deceptive_users_command(requests_mock):
+    mock_response = {'data': [], 'hostname': 'bbb', 'machineTagAndSubTags': {'tag': 'tag', 'subTag': 'sub'}}
+    requests_mock.get('https://server/api/v1/deceptive-entities/users?deceptive_user_type=ALL', json=mock_response)
+
+    client = Client(base_url='https://server', verify=False, credentials='test')
+    args = {
+    }
+    _, outputs, _ = get_deceptive_users_command(client, args)
+
+    assert outputs == {'Illusive.DeceptiveUser(val.userName == obj.userName)':
+                       {'data': [], 'hostname': 'bbb', 'machineTagAndSubTags': {'tag': 'tag', 'subTag': 'sub'}}}
+
+
+def test_get_deceptive_servers_command(requests_mock):
+    mock_response = {'data': [], 'hostname': 'bbb', 'machineTagAndSubTags': {'tag': 'tag', 'subTag': 'sub'}}
+    requests_mock.get('https://server/api/v1/deceptive-entities/servers?deceptive_server_type=SUGGESTED',
+                      json=mock_response)
+
+    client = Client(base_url='https://server', verify=False, credentials='test')
+    args = {
+        'type': "SUGGESTED",
+    }
+    _, outputs, _ = get_deceptive_servers_command(client, args)
+
+    assert outputs == {'Illusive.DeceptiveServer(val.host == obj.host)':
+                       {'data': [], 'hostname': 'bbb', 'machineTagAndSubTags': {'tag': 'tag', 'subTag': 'sub'}}}
+
+
+def test_get_forensics_timeline_command(requests_mock):
+    mock_response = {'IncidentId': "aaa", 'Status': 'Done', 'Evidence': []}
+    requests_mock.get('https://server/api/v1/forensics/timeline?incident_id=3'
+                      '&end_date=1994-09-24T17:30:00.000Z&start_date=1993-09-24T17:30:00.000Z', json=mock_response)
+
+    client = Client(base_url='https://server', verify=False, credentials='test')
+    args = {
+        'incident_id': "3",
+        'start_date': "1993-09-24T17:30:00.000Z",
+        'end_date': "1994-09-24T17:30:00.000Z"
+    }
+    _, outputs, _ = get_forensics_timeline_command(client, args)
+
+    assert outputs == {'Illusive.Forensics(val.IncidentId == obj.IncidentId)':
+                       {'IncidentId': '3', 'Status': 'Done', 'Evidence':
+                        {'IncidentId': 'aaa', 'Status': 'Done', 'Evidence': []}}}
+
+
+def test_remove_host_from_policy_command(requests_mock):
+    mock_response = {'result': 'True'}
+    requests_mock.post('https://server/api/v1/policy/domain_hosts/remove_assignment', json=mock_response)
+
+    client = Client(base_url='https://server', verify=False, credentials='test')
+    args = {
+        'hosts': ['aaa@domain.com']
+    }
+    _, outputs, _ = remove_host_from_policy_command(client, args)
+
+    assert outputs == {'Illusive.DeceptionPolicy.isAssigned(val.hosts == obj.hosts)':
+                       [{'isAssigned': False, 'hosts': 'aaa@domain.com', 'policy_name': ''}]}
+
+
+def test_assign_host_to_policy_command(requests_mock):
+    mock_response = {'result': 'True'}
+    requests_mock.post('https://server/api/v1/policy/domain_hosts/assign?policy_name=myPolicy', json=mock_response)
+
+    client = Client(base_url='https://server', verify=False, credentials='test')
+    args = {
+        'policy_name': "myPolicy",
+        'hosts': ['aaa@domain.com']
+    }
+
+    _, outputs, _ = assign_host_to_policy_command(client, args)
+
+    assert outputs == {'Illusive.DeceptionPolicy.isAssigned(val.hosts == obj.hosts)':
+                       [{'isAssigned': True, 'hosts': 'aaa@domain.com', 'policy_name': 'myPolicy'}]}
+
+
+def test_add_deceptive_users_command(requests_mock):
+    mock_response = {'id': 'aaa'}
+    requests_mock.post('https://server/api/v1/deceptive-entities/users', json=mock_response)
+
+    client = Client(base_url='https://server', verify=False, credentials='test')
+    user_name = "aaa"
+    domain_name = "illusive.com"
+    args = {
+        'password': "aaa",
+        'username': user_name,
+        'domain_name': domain_name,
+        'policy_names': ["myPolicy"]
+    }
+
+    _, outputs, _ = add_deceptive_users_command(client, args)
+
+    assert outputs == {'Illusive.DeceptiveUser(val.userName == obj.userName)':
+                       {'userName': 'aaa', 'domainName': 'illusive.com', 'policyNames': ['myPolicy'], 'password': 'aaa'}}
+
+
+def test_add_deceptive_servers_command(requests_mock):
+    mock_response = {'id': 'aaa'}
+    requests_mock.post('https://server/api/v1/deceptive-entities/servers', json=mock_response)
+
+    client = Client(base_url='https://server', verify=False, credentials='test')
+    user_name = 'aaa.illusive.com'
+    args = {
+        'service_types': ["FTP", "SSH"],
+        'host': user_name
+    }
+
+    _, outputs, _ = add_deceptive_servers_command(client, args)
+
+    assert outputs == {'Illusive.DeceptiveServer(val.host == obj.host)':
+                       {'host': 'aaa.illusive.com', 'serviceTypes': ['FTP', 'SSH'], 'policyNames': "All Policies"}}
+
+
+def test_get_incident_command(requests_mock):
+    mock_response = {'deceptionFamilies': [], 'incidentId': '1234', 'hasForensics': True, 'incidentTypes': 'MACHINE'}
+    requests_mock.get('https://server/api/v2/incidents/incident?incident_id=13', json=mock_response)
+
+    client = Client(base_url='https://server', verify=False, credentials='test')
+    args = {
+        'incident_id': "13",
+        'start_date': "1993-09-24T17:30:00.000Z",
+        'end_date': "1994-09-24T17:30:00.000Z"
+    }
+    _, outputs, _ = get_incidents_command(client, args)
+
+    assert outputs == {'Illusive.Incident(val.incidentId == obj.incidentId)':
+                       {'deceptionFamilies': [], 'incidentId': '1234', 'hasForensics': True, 'incidentTypes': 'MACHINE'}}
+
+
+def test_get_incidents_command(requests_mock):
+    mock_response = [{'deceptionFamilies': [], 'incidentId': '1234', 'hasForensics': True, 'incidentTypes': 'MACHINE'},
+                     {'deceptionFamilies': [], 'incidentId': '4321', 'hasForensics': False, 'incidentTypes': 'MACHINE'}]
+    requests_mock.get('https://server/api/v1/incidents?limit=10&offset=0', json=mock_response)
+
+    client = Client(base_url='https://server', verify=False, credentials='test')
+    args = {
+    }
+    _, outputs, _ = get_incidents_command(client, args)
+
+    assert outputs == {'Illusive.Incident(val.incidentId == obj.incidentId)': [
+                      {'deceptionFamilies': [], 'incidentId': '1234', 'hasForensics': True, 'incidentTypes': 'MACHINE'},
+                      {'deceptionFamilies': [], 'incidentId': '4321', 'hasForensics': False, 'incidentTypes': 'MACHINE'}
+    ]}
+
+
+def test_fetch_incidents(requests_mock):
+    client = Client(base_url='https://server', verify=False, credentials='test')
+    mock_response = [{'deceptionFamilies': [], 'incidentId': '1234', 'hasForensics': True,
+                      'incidentTypes': 'MACHINE', 'incidentTimeUTC': '2020-04-21T15:39:32.954Z'},
+                     {'deceptionFamilies': [], 'incidentId': '4321', 'hasForensics':False,
+                     'incidentTypes': 'MACHINE', 'incidentTimeUTC': '2020-04-21T14:53:54.234Z'}]
+    first_fetch_time = "7 days"
+    requests_mock.get('https://server/api/v1/incidents?limit=10&offset=0&start_date=2018-10-24T14:13:20+00:000Z',
+                      json=mock_response)
+    nextcheck, incidents = fetch_incidents(client, {'last_run': "2018-10-24T14:13:20+00:000Z"}, first_fetch_time)
+
+    assert str(nextcheck['last_run']) == '2020-04-21T15:39:32.954Z'
+    assert isinstance(incidents, list)
+    assert isinstance(incidents[0]['name'], str)
+
+
+def test_fetch_incidents_first_fetch(requests_mock):
+    client = Client(base_url='https://server', verify=False, credentials='test')
+    mock_response = []
+    first_fetch_time = "7 days"
+    last_fetch, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
+    requests_mock.get('https://server/api/v1/incidents?limit=10&offset=0&start_date={}'.format(last_fetch),
+                      json=mock_response)
+    nextcheck, incidents = fetch_incidents(client, {'last_run': None}, first_fetch_time)
+
+    assert str(nextcheck['last_run']) == last_fetch
+    assert isinstance(incidents, list)
+    assert len(incidents) == 0

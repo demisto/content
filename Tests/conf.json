@@ -2556,6 +2556,11 @@
             "playbookID": "RiskSense Get Apps - Test"
         },
         {
+            "integrations": "IllusiveNetworks",
+            "playbookID": "IllusiveNetworks-Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "RiskSense",
             "playbookID": "RiskSense Get Host Detail - Test"
         },

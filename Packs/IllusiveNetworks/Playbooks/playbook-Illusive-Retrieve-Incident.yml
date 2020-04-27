@@ -1,0 +1,243 @@
+id: Illusive-Retrieve-Incident
+version: -1
+name: Illusive-Retrieve-Incident
+description: This playbook is used for retrieving an extensive view over a detected
+  incident by retrieving the incident details and a forensics timeline if and when
+  forensics have been successfully collected.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 6a28f289-d1c4-4474-8b84-9224721804a8
+    type: start
+    task:
+      id: 6a28f289-d1c4-4474-8b84-9224721804a8
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 730,\n    \"y\": -150\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: 1b77703e-0353-47e5-8112-6539c9c9b6c7
+    type: regular
+    task:
+      id: 1b77703e-0353-47e5-8112-6539c9c9b6c7
+      version: -1
+      name: illusive-get-incidents
+      description: Retrieve incidents
+      script: IllusiveNetworks|||illusive-get-incidents
+      type: regular
+      iscommand: true
+      brand: IllusiveNetworks
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      has_forensics: {}
+      hostnames: {}
+      incident_id:
+        complex:
+          root: inputs.incident_id
+      limit: {}
+      offset: {}
+      start_date: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 190\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: 9232b9e7-3f15-4252-8383-6fbe74b1d814
+    type: condition
+    task:
+      id: 9232b9e7-3f15-4252-8383-6fbe74b1d814
+      version: -1
+      name: Check If Incident Has Forensics
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '5'
+      yes:
+      - '3'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Illusive
+                accessor: Incident.hasForensics
+            iscontext: true
+          right:
+            value:
+              simple: 'true'
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 370\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '3':
+    id: '3'
+    taskid: 178b6b11-43f1-4e52-8da1-7abb02a71ac7
+    type: regular
+    task:
+      id: 178b6b11-43f1-4e52-8da1-7abb02a71ac7
+      version: -1
+      name: illusive-get-forensics-timeline
+      description: Retrieve forensics timeline for a specific incident
+      script: IllusiveNetworks|||illusive-get-forensics-timeline
+      type: regular
+      iscommand: true
+      brand: IllusiveNetworks
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      end_date:
+        complex:
+          root: inputs.end_date
+      incident_id:
+        complex:
+          root: Illusive
+          accessor: Incident.incidentId
+      start_date:
+        complex:
+          root: inputs.start_date
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 570\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '5':
+    id: '5'
+    taskid: a77db5bd-4c3c-4882-85bf-cd2b2d2a00d8
+    type: regular
+    task:
+      id: a77db5bd-4c3c-4882-85bf-cd2b2d2a00d8
+      version: -1
+      name: Print No Forensics Timeline for Incdient
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      value:
+        simple: '"The Incident Has No Forensics'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 1040,\n    \"y\": 560\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '6':
+    id: '6'
+    taskid: f77899aa-acc8-4544-83b6-b95037e16d0c
+    type: regular
+    task:
+      id: f77899aa-acc8-4544-83b6-b95037e16d0c
+      version: -1
+      name: Print Incident Forensics Timeline
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      value:
+        simple: ${Illusive.Forensics.Evidence}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 740\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '7':
+    id: '7'
+    taskid: 2ae61415-ccdd-4a43-8dde-d3a2ad4d2132
+    type: condition
+    task:
+      id: 2ae61415-ccdd-4a43-8dde-d3a2ad4d2132
+      version: -1
+      name: Check Initial Values
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '8'
+      yes:
+      - '1'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: inputs.incident_id
+            iscontext: true
+          right:
+            value:
+              simple: '""'
+    view: "{\n  \"position\": {\n    \"x\": 730,\n    \"y\": -20\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '8':
+    id: '8'
+    taskid: 0ad3a5d3-70d0-43e7-8348-019a7482acda
+    type: regular
+    task:
+      id: 0ad3a5d3-70d0-43e7-8348-019a7482acda
+      version: -1
+      name: Input Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      message:
+        simple: Incident Id is missing
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 1030,\n    \"y\": 190\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 985,\n      \"width\": 970,\n      \"x\": 450,\n      \"y\": -150\n\
+  \    }\n  }\n}"
+inputs:
+- key: incident_id
+  value: {}
+  required: false
+  description: The desired incident ID to retrieve.
+- key: start_date
+  value: {}
+  required: false
+  description: "The starting date of the forensics timeline.\nstart_date is in Zulu\
+    \ time format, for example: 1993-09-24T17:30:00.000Z."
+- key: end_date
+  value: {}
+  required: false
+  description: "The last date of the forensics timeline.\nend_date is in Zulu time\
+    \ format, for example: 1993-09-24T17:30:00.000Z."
+outputs: []
+fromversion: 5.0.0
+tests:
+- No tests
