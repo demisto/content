@@ -40,7 +40,7 @@ INTEGRATION_REGEXES = [
     PACKS_INTEGRATION_REGEX,
     TEST_DATA_INTEGRATION_YML_REGEX
 ]
-TEST_DATA_SCRIPT_YML_REGEX = r'Tests\/scripts\/infrastructure_tests\/tests_data\/mock_scripts\/.*\.yml'
+TEST_DATA_SCRIPT_YML_REGEX = r'Tests/scripts/infrastructure_tests/tests_data/mock_scripts/.*.yml'
 SCRIPT_REGEXES = [
     TEST_DATA_SCRIPT_YML_REGEX
 ]
@@ -788,7 +788,7 @@ def extract_matching_object_from_id_set(obj_id, obj_set, server_version='0'):
         # try to get object by name
         else:
             obj_keys = list(obj_wrpr.keys())
-            if len(obj_keys) == 0:
+            if not obj_keys:
                 continue
             obj = obj_wrpr[obj_keys[0]]
             if obj.get('name') != obj_id:
