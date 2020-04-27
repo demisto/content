@@ -77,6 +77,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "QuestKace",
+            "playbookID": "QuestKace test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Cofense Feed",
             "playbookID": "TestCofenseFeed",
             "fromversion": "5.5.0"

@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Tuple, Callable
+from typing import Dict, Optional, Tuple, Callable, Any
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -145,7 +145,7 @@ class Client(BaseClient):
             raise DemistoException("Error Code 401 - Invalid user or password")
         return response.__dict__
 
-    def machines_list_request(self) -> dict:
+    def machines_list_request(self):
         """List of machines.
            Returns:
                Response from API.
@@ -281,29 +281,22 @@ class Client(BaseClient):
         return self._http_request("GET", url_suffix=f"/service_desk/tickets?filtering={filter_fields}", headers=headers)
 
 
-def test_module(client: Client, args=None) -> Tuple[str, dict, dict]:
+def test_module(client: Client, *_) -> Tuple[str, dict, dict]:
     """Function which checks if there is a connection with the api.
         Args:
-            client : Integretion client which communicates with the api.
+            client : Integration client which communicates with the api.
             args: Users arguments of the command.
        Returns:
            human readable, context, raw response of this command.
     """
-    response_machines = client.machines_list_request()
-    machines = response_machines.get('Machines')
+    _ = client.machines_list_request()
     client.update_token()
     response = client.tickets_list_request()
     list_tickets_res = response.get('Tickets')
     if list_tickets_res and demisto.params().get('isFetch'):
         parsed_time = (datetime.utcnow() - timedelta(days=20))
-        incidents, parsed_time = parse_incidents(list_tickets_res, "1", '%Y-%m-%dT%H:%M:%SZ', parsed_time)
-        for incident in incidents:
-            if not all(key in incident for key in ('name', 'occurred', 'rawJSON')):
-                raise DemistoException('Missing params in fetch incidents Test.')
-    if (list_tickets_res or response.get('Count') == 0) and (machines or response_machines.get('Count') == 0):
-        return 'ok', {}, {}
-    else:
-        return 'Test failed', {}, {}
+        incidents, _ = parse_incidents(list_tickets_res, "1", '%Y-%m-%dT%H:%M:%SZ', parsed_time)
+    return 'ok', {}, {}
 
 
 def get_machines_list_command(client, args) -> Tuple[str, dict, dict]:
@@ -444,9 +437,9 @@ def create_ticket_command(client, args) -> Tuple[str, dict, dict]:
         ticket_view = tableToMarkdown(f'New ticket was added successfully, ticket number {id}.\n', ticket)
         return ticket_view, {}, {}
     elif response.get('errorDescription'):
-        return f"Error while adding a new ticket.\n {response.get('errorDescription')}", {}, {}
+        raise DemistoException(f"Error while adding a new ticket.\n {response.get('errorDescription')}")
     else:
-        return f'Error while adding a new ticket.', {}, {}
+        raise DemistoException(f'Error while adding a new ticket.')
 
 
 def create_body_from_args(hd_queue_id: str = None, title: str = None, summary: str = None, impact: str = None,
@@ -518,9 +511,9 @@ def update_ticket_command(client, args) -> Tuple[str, dict, dict]:
 
     response = client.update_ticket_request(ticket_id, data)
     if response.get('Result') == 'Success':
-        return f'Ticket was updated successfully. Ticket number {ticket_id}', {}, {}
+        raise DemistoException(f'Ticket was updated successfully. Ticket number {ticket_id}')
     else:
-        return f'Error while updating the ticket.', {}, {}
+        raise DemistoException(f'Error while updating the ticket.')
 
 
 def delete_ticket_command(client, args) -> Tuple[str, dict, dict]:
@@ -537,9 +530,9 @@ def delete_ticket_command(client, args) -> Tuple[str, dict, dict]:
     except Exception as e:
         raise DemistoException(e)
     if response.get('Result') == 'Success':
-        return f'Ticket was updated successfully. Ticket number {ticket_id}', {}, {}
+        raise DemistoException(f'Ticket was updated successfully. Ticket number {ticket_id}')
     else:
-        return f'Error while deleting the ticket.', {}, {}
+        raise DemistoException(f'Error while deleting the ticket.')
 
 
 def fetch_incidents(client: Client, fetch_time: str, fetch_shaping: str, last_run: Dict, fetch_limit: str,
@@ -585,7 +578,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_shaping: str, last_ru
 
 
 def parse_incidents(items: list, fetch_limit: str, time_format: str, parsed_last_time: datetime) \
-        -> Tuple[list, datetime]:
+        -> Tuple[list, Any]:
     """
     This function will create a list of incidents
     Args:
