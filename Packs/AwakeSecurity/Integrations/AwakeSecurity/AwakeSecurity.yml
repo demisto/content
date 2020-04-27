@@ -380,6 +380,9 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
+    - contextPath: Domain.Name
+      description: The domain name.
+      type: String
     description: Lookup and enrich a domain
   - name: ip
     arguments:
@@ -421,6 +424,9 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
+    - contextPath: IP.Address
+      description: The IP Address.
+      type: String
     description: Lookup and enrich an IP address
   - name: email
     arguments:

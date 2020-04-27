@@ -1791,7 +1791,8 @@ class Common(object):
         SUSPICIOUS = 2
         BAD = 3
 
-        CONTEXT_PATH = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'
+        CONTEXT_PATH = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor ' \
+            '&& val.Type == obj.Type)'
 
         CONTEXT_PATH_PRIOR_V5_5 = 'DBotScore'
 
@@ -1820,10 +1821,10 @@ class Common(object):
 
         @staticmethod
         def get_context_path():
-            if get_demisto_version().get('version') >= '5.5.0':
+            if is_demisto_version_ge('5.5.0'):
                 return Common.DBotScore.CONTEXT_PATH
             else:
-                Common.DBotScore.CONTEXT_PATH_PRIOR_V5_5
+                return Common.DBotScore.CONTEXT_PATH_PRIOR_V5_5
 
         def to_context(self):
             return {
@@ -2968,10 +2969,33 @@ def get_demisto_version():
     :return: Demisto version object if Demisto class has attribute demistoVersion, else raises AttributeError
     :rtype: ``dict``
     """
+    if getattr(get_demisto_version, '_version', None):
+        return get_demisto_version._version
     if hasattr(demisto, 'demistoVersion'):
-        return demisto.demistoVersion()
+        version = demisto.demistoVersion()
+        get_demisto_version._version = version
+        return version
     else:
         raise AttributeError('demistoVersion attribute not found.')
+
+
+def is_demisto_version_ge(version):
+    """Utility function to check if current running integration is at a server greater or equal to the passed version
+
+    :type version: ``str``
+    :param version: Version to check
+
+    :return: True if running within a Server version greater or equal than the passed version
+    :rtype: ``bool``
+    """
+    try:
+        server_version = get_demisto_version()
+        return server_version.get('version') >= version
+    except AttributeError:
+        # demistoVersion was added in 5.0.0. We are currently runnining in 4.5.0 and below
+        if version >= "5.0.0":
+            return False
+        raise
 
 
 def is_debug_mode():
