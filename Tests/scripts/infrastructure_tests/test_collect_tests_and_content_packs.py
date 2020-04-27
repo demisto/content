@@ -2,6 +2,8 @@ import json
 import copy
 import os
 from ruamel.yaml import YAML
+from Tests.scripts.collect_tests_and_content_packs import get_modified_files, RANDOM_TESTS_NUM, TestConf, \
+    create_filter_envs_file
 import demisto_sdk.commands.common.tools as demisto_sdk_tools
 
 from Tests.scripts.collect_tests_and_content_packs import (
@@ -214,7 +216,7 @@ class TestChangedTestPlaybook:
             - one_before_ga is '4.1.0'
             - ga is '4.5.0'
         When:
-            - running get_test_list
+            - running get_test_list_and_content_packs_to_install
             - running create_filter_envs_file
         Then:
             - Create test list with fake_test_playbook
@@ -250,7 +252,7 @@ class TestChangedTestPlaybook:
             - one_before_ga is '4.0.1'
             - ga is '4.1.0'
         When:
-            - running get_test_list
+            - running get_test_list_and_content_packs_to_install
             - running create_filter_envs_file
         Then:
             - Create test list with fake_test_playbook
@@ -479,10 +481,10 @@ def get_mock_test_list(two_before_ga=TWO_BEFORE_GA_VERSION, get_modified_files_r
             'Tests.scripts.collect_tests_and_content_packs.get_modified_files',
             return_value=get_modified_files_ret
         )
-    tests = get_test_list_and_content_packs_to_install(
+    tests, content_packs = get_test_list_and_content_packs_to_install(
         git_diff_ret, branch_name, two_before_ga, id_set=MOCK_ID_SET, conf=TestConf(MOCK_CONF
     ))
-    return tests
+    return tests, content_packs
 
 
 def test_skipped_integration_should_not_be_tested(mocker):
@@ -519,7 +521,7 @@ def test_skipped_integration_should_not_be_tested(mocker):
 
     # When
     # - filtering tests to run
-    filtered_tests = get_test_list(
+    filtered_tests = get_test_list_and_content_packs_to_install(
         files_string='',
         branch_name='dummy_branch',
         two_before_ga_ver=TWO_BEFORE_GA_VERSION,
@@ -571,7 +573,7 @@ def test_integration_has_no_test_playbook_should_fail_on_validation(mocker):
 
         # When
         # - filtering tests to run
-        get_test_list(
+        get_test_list_and_content_packs_to_install(
             files_string='',
             branch_name='dummy_branch',
             two_before_ga_ver=TWO_BEFORE_GA_VERSION,
@@ -625,7 +627,7 @@ def test_conf_has_modified(mocker):
 
         # When
         # - filtering tests to run
-        get_test_list(
+        get_test_list_and_content_packs_to_install(
             files_string='',
             branch_name='dummy_branch',
             two_before_ga_ver=TWO_BEFORE_GA_VERSION,
@@ -691,7 +693,7 @@ def test_dont_fail_integration_on_no_tests_if_it_has_test_playbook_in_conf(mocke
 
         # When
         # - filtering tests to run
-        filtered_tests = get_test_list(
+        filtered_tests, content_packs = get_test_list_and_content_packs_to_install(
             files_string='',
             branch_name='dummy_branch',
             two_before_ga_ver=TWO_BEFORE_GA_VERSION,
