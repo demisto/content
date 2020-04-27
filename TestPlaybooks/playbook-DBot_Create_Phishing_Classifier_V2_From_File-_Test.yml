@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 377.5,
           "y": 50
         }
       }
@@ -101,7 +101,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 377.5,
           "y": 895
         }
       }
@@ -148,7 +148,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 377.5,
           "y": 1070
         }
       }
@@ -173,15 +173,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 377.5,
           "y": 1245
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "6":
     id: "6"
     taskid: 9c1f4f1d-aad8-406c-8f6a-902241a9599f
@@ -200,6 +198,7 @@ tasks:
       '#none#':
       - "1"
       - "8"
+      - "10"
     scriptarguments:
       all:
         simple: "yes"
@@ -211,7 +210,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 377.5,
           "y": 195
         }
       }
@@ -229,8 +228,8 @@ tasks:
       id: 20b2b299-83b0-4991-8277-72da22820677
       version: -1
       name: DBot Create Phishing Classifier V2 From File
-      description: Create a phishing classifier using machine learning technique from
-        extracted incidents files, based on email content.
+      description: Create a phishing classifier using machine learning. The classifier
+        is based on incidents files extracted from email content.
       playbookName: DBot Create Phishing Classifier V2 From File
       type: playbook
       iscommand: false
@@ -265,7 +264,7 @@ tasks:
       outputFormat:
         simple: pickle
       overrideModel:
-        simple: "false"
+        simple: "true"
       phishingLabels:
         simple: '*'
       removeShortTextThreshold:
@@ -275,19 +274,16 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
-      max: 100
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 377.5,
           "y": 720
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "8":
     id: "8"
     taskid: cf68c2df-0927-4dbb-8bef-3fe61e408828
@@ -296,7 +292,7 @@ tasks:
       elasticcommonfields: {}
       id: cf68c2df-0927-4dbb-8bef-3fe61e408828
       version: -1
-      name: Load Docker
+      name: Load WordTokenizer Docker
       description: Tokenize the words in a input text.
       scriptName: WordTokenizerNLP
       type: regular
@@ -327,15 +323,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 377.5,
           "y": 370
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "9":
     id: "9"
     taskid: 9caafb5b-4ebb-4de0-8e24-7a03f11c0aaa
@@ -360,22 +354,67 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 592.5,
           "y": 545
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+  "10":
+    id: "10"
+    taskid: bb9beb1d-7c59-41b5-8554-507df945ee59
+    type: regular
+    task:
+      id: bb9beb1d-7c59-41b5-8554-507df945ee59
+      version: -1
+      name: Load Train Docker
+      description: Train a machine learning text classifier.
+      scriptName: DBotTrainTextClassifierV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      findKeywords: {}
+      input:
+        simple: dummy
+      inputType: {}
+      keywordMinScore: {}
+      maxBelowThreshold: {}
+      metric: {}
+      modelName: {}
+      originalTextFields: {}
+      overrideExistingModel: {}
+      phishingLabels: {}
+      returnPredictionsOnTestSet: {}
+      storeModel: {}
+      tagField:
+        simple: dummy
+      targetAccuracy: {}
+      textField: {}
+      trainSetRatio: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1260,
-        "width": 810,
+        "width": 1137.5,
         "x": 50,
         "y": 50
       }
