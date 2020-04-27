@@ -13,6 +13,14 @@ GOOGLE_BASE_DNS = "_cloud-netblocks.googleusercontent.com"
 
 
 def fetch_cidr(dns_address: str) -> List[Dict]:
+    """Recursively builds a CIDR dictionary with the relevant ip and type
+
+    Args:
+        dns_address: the dns address to lookup
+
+    Returns:
+        CIDR list
+    """
     cidr_arr = []
     regex_dns = r"(include:.*? )"
     regex_cidr = r"(ip.*?:.*? )"
@@ -54,19 +62,24 @@ def test_module(client):
     return 'ok', {}, {}
 
 
-def fetch_indicators(client: Client) -> List[Dict]:
+def fetch_indicators(client: Client, params: Dict[str, str]) -> List[Dict]:
+    feed_tags = argToList(params.get('feedTags', ''))
     iterator = client.build_iterator()
     indicators = []
     for indicator in iterator:
-        indicators.append({
+        indicator_obj = {
             'value': indicator["ip"],
             'type': indicator["type"],
             'rawJSON': {
                 'value': indicator["ip"],
                 'type': indicator["type"],
             },
-        })
-
+        }
+        if feed_tags:
+            indicator_obj['fields'] = {
+                'tags': feed_tags
+            }
+        indicators.append(indicator_obj)
     return indicators
 
 
@@ -88,8 +101,12 @@ def main():
             return_outputs(*test_module(client))
 
         elif demisto.command() == 'gcp-whitelist-get-indicators':
-            demisto.createIndicators(fetch_indicators(client))
             return_outputs(str(fetch_indicators(client)))
+
+        elif demisto.command() == 'fetch-indicators':
+            indicators = fetch_indicators(client, demisto.params())
+            for single_batch in batch(indicators, batch_size=2000):
+                demisto.createIndicators(single_batch)
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
