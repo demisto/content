@@ -137,7 +137,7 @@ def get_modified_files(files_string):
         # r100 means the file was just renamed with no change in contents
         # also, ignore files in ".circle", ".github" and ".hooks" directories and .gitignore
         if ((file_status.lower() == 'm' or file_status.lower() == 'a' or file_status.lower().startswith('r'))
-                and (not file_path.startswith('.') and not file_status.lower() == 'r100')):
+                and not file_path.startswith('.')):
             if checked_type(file_path, CODE_FILES_REGEX) and validate_not_a_package_test_script(file_path):
                 dir_path = os.path.dirname(file_path)
                 file_path = glob.glob(dir_path + "/*.yml")[0]
