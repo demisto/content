@@ -2617,6 +2617,11 @@
             "fromversion": "4.5.0"
         },
         {
+            "playbookID": "DigitalGuardian-Test",
+            "integrations": "Digital Guardian",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "IBM Resilient Systems",
             "playbookID": "IBM Resilient Systems Test"
         }

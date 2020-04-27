@@ -1,0 +1,289 @@
+id: DigitalGuardian-SendEmail-to-User-Manager-Email
+inputs: []
+name: DigitalGuardian-SendEmail-to-User-Manager-Email
+outputs: []
+sourceplaybookid: 20bb2629-4467-456f-8d20-c89e17842fa7
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: dc51de78-6807-4b2e-81ac-f9b53236c577
+      iscommand: false
+      name: ''
+      version: -1
+      description: ''
+    taskid: dc51de78-6807-4b2e-81ac-f9b53236c577
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '2':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.name
+          operator: startWith
+          right:
+            value:
+              simple: DLP1018
+      label: yes
+    id: '2'
+    ignoreworker: false
+    nexttasks:
+      yes:
+      - '10'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: becb6260-274d-48e0-8d8b-8c1b031d6a4e
+      iscommand: false
+      name: Check if Alarm is Write to Removable (non classified)
+      type: condition
+      version: -1
+      description: ''
+    taskid: becb6260-274d-48e0-8d8b-8c1b031d6a4e
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: ${Account.[0].DisplayName} has written ${File} to removable media
+      cc: {}
+      htmlBody: {}
+      raw_message: {}
+      replyTo: {}
+      subject:
+        simple: Removable Media Policy Violation
+      templateParams: {}
+      to:
+        complex:
+          accessor: '[1].Email'
+          root: Account
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Send an email
+      id: 54e53227-7b0a-4d00-8a53-c0f792560d96
+      iscommand: true
+      name: Send the user's Manager an email about the violation
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: 54e53227-7b0a-4d00-8a53-c0f792560d96
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 280,\n    \"y\": 1250\n  }\n}"
+  '7':
+    id: '7'
+    ignoreworker: false
+    note: false
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id:
+        simple: ${incident.id}
+      phishingsubtype: {}
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 0fea6efd-84ac-4437-82e0-7a4ebade272d
+      iscommand: true
+      name: Close incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 0fea6efd-84ac-4437-82e0-7a4ebade272d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1420\n  }\n}"
+  '9':
+    id: '9'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    scriptarguments:
+      all:
+        simple: yes
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: 8555ee98-e68f-4b29-8c4d-ac0cf00a8eb9
+      iscommand: false
+      name: Delete Incident Context
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 8555ee98-e68f-4b29-8c4d-ac0cf00a8eb9
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '10':
+    id: '10'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '11'
+    note: false
+    scriptarguments:
+      attributes: {}
+      custom-field-data: {}
+      custom-field-type: {}
+      dn: {}
+      email: {}
+      limit: {}
+      name: {}
+      user-account-control-out: {}
+      username:
+        simple: ${incident.labels.Username}
+    separatecontext: false
+    task:
+      brand: Active Directory Query v2
+      description: Retrieves detailed information about a user account. The user can
+        be specified by name, email address, or as an Active Directory Distinguished
+        Name (DN). If no filter is specified, all users are returned.
+      id: 57221984-b1e7-422b-8523-32590d6707dc
+      iscommand: true
+      name: ad-get-user
+      script: Active Directory Query v2|||ad-get-user
+      type: regular
+      version: -1
+    taskid: 57221984-b1e7-422b-8523-32590d6707dc
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '11':
+    conditions:
+    - condition:
+      - - left:
+            value:
+              simple: ad-get-user
+          operator: isNotEmpty
+      label: yes
+    id: '11'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '7'
+      yes:
+      - '12'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 29f0b76d-8960-4b9c-8cb9-5e596a973bcc
+      iscommand: false
+      name: Found user in AD
+      type: condition
+      version: -1
+      description: ''
+    taskid: 29f0b76d-8960-4b9c-8cb9-5e596a973bcc
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '12':
+    id: '12'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '13'
+    note: false
+    scriptarguments:
+      attributes: {}
+      custom-field-data: {}
+      custom-field-type: {}
+      dn:
+        simple: ${Account.Manager}
+      email: {}
+      limit: {}
+      name: {}
+      user-account-control-out: {}
+      username: {}
+    separatecontext: false
+    task:
+      brand: Active Directory Query v2
+      description: Retrieves detailed information about a user account. The user can
+        be specified by name, email address, or as an Active Directory Distinguished
+        Name (DN). If no filter is specified, all users are returned.
+      id: 3f421b21-def1-4d54-8eec-e717953ed7e9
+      iscommand: true
+      name: Get User Managers Email
+      script: Active Directory Query v2|||ad-get-user
+      type: regular
+      version: -1
+    taskid: 3f421b21-def1-4d54-8eec-e717953ed7e9
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 895\n  }\n}"
+  '13':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Account.[1].Email
+          operator: isNotEmpty
+      label: yes
+    id: '13'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '7'
+      yes:
+      - '5'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 2cf4b906-0939-48f7-83df-acf6521f97f1
+      iscommand: false
+      name: Found Managers Email
+      type: condition
+      version: -1
+      description: ''
+    taskid: 2cf4b906-0939-48f7-83df-acf6521f97f1
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1070\n  }\n}"
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1465,\n      \"width\": 610,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"
+fromversion: 5.0.0
+description: 'Send an email to the manager of a user if a specific alert is detected.'
+tests:
+- No tests
