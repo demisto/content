@@ -2,6 +2,10 @@
 -
 
 
+## [20.4.0] - 2020-04-14
+-
+
+
 ## [19.9.1] - 2019-09-18
 Added the *batch_size* argument to the ***cylance-protect-delete-devices*** command, which specifies the number of devices to delete per request (batch).
 

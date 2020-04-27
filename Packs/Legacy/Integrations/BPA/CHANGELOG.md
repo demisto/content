@@ -1,5 +1,9 @@
 ## [Unreleased]
 -
+
+
+## [20.4.0] - 2020-04-14
+-
 Updated the integration name to Palo Alto Networks BPA.
 
 ## [20.3.3] - 2020-03-18

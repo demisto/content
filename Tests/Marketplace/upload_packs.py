@@ -12,7 +12,7 @@ from google.cloud import storage
 from datetime import datetime
 from zipfile import ZipFile
 from Tests.Marketplace.marketplace_services import Pack, PackStatus, GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, \
-    PACKS_FOLDER, IGNORED_PATHS
+    PACKS_FOLDER, IGNORED_PATHS, Metadata
 from demisto_sdk.commands.common.tools import run_command, print_error, print_warning, print_color, LOG_COLORS
 
 
@@ -141,13 +141,15 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
         sys.exit(1)
 
 
-def update_index_folder(index_folder_path, pack_name, pack_path):
+def update_index_folder(index_folder_path, pack_name, pack_path, pack_version='', hidden_pack=False):
     """Copies pack folder into index folder.
 
     Args:
         index_folder_path (str): full path to index folder.
         pack_name (str): pack folder name to copy.
         pack_path (str): pack folder full path.
+        pack_version (str): pack latest version.
+        hidden_pack (bool): whether pack is hidden/internal or regular pack.
 
     Returns:
         bool: whether the operation succeeded.
@@ -158,10 +160,38 @@ def update_index_folder(index_folder_path, pack_name, pack_path):
         index_folder_subdirectories = [d for d in os.listdir(index_folder_path) if
                                        os.path.isdir(os.path.join(index_folder_path, d))]
         index_pack_path = os.path.join(index_folder_path, pack_name)
+        metadata_files_in_index = glob.glob(f"{index_pack_path}/metadata-*.json")
+        new_metadata_path = os.path.join(index_pack_path, f"metadata-{pack_version}.json")
 
+        if pack_version:
+            # Update the latest metadata
+            if new_metadata_path in metadata_files_in_index:
+                metadata_files_in_index.remove(new_metadata_path)
+
+        # Remove old files but keep metadata files
         if pack_name in index_folder_subdirectories:
-            shutil.rmtree(index_pack_path)
-        shutil.copytree(pack_path, index_pack_path)
+            for d in os.scandir(index_pack_path):
+                if d.path not in metadata_files_in_index:
+                    os.remove(d.path)
+
+        # skipping index update in case hidden is set to True
+        if hidden_pack:
+            if os.path.exists(index_pack_path):
+                shutil.rmtree(index_pack_path)  # remove pack folder inside index in case that it exists
+            print_warning(f"Skipping updating {pack_name} pack files to index")
+            task_status = True
+            return
+
+        # Copy new files and add metadata for latest version
+        for d in os.scandir(pack_path):
+            if not os.path.exists(index_pack_path):
+                os.mkdir(index_pack_path)
+                print(f"Created {pack_name} pack folder in {GCPConfig.INDEX_NAME}")
+
+            shutil.copy(d.path, index_pack_path)
+            if pack_version and Pack.METADATA == d.name:
+                shutil.copy(d.path, new_metadata_path)
+
         task_status = True
     except Exception as e:
         print_error(f"Failed in updating index folder for {pack_name} pack\n. Additional info: {e}")
@@ -185,7 +215,7 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
             'description': 'Master index for Demisto Content Packages',
             'baseUrl': 'https://marketplace.demisto.ninja/content/packs',  # disable-secrets-detection
             'revision': build_number,
-            'modified': datetime.utcnow().strftime(Pack.DATE_FORMAT),
+            'modified': datetime.utcnow().strftime(Metadata.DATE_FORMAT),
             'landingPage': {
                 'sections': [
                     'Trending',
@@ -211,9 +241,42 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
     print_color(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.", LOG_COLORS.GREEN)
 
 
-def get_private_packs(private_index_path):
+def upload_core_packs_config(storage_bucket, packs_list):
+    """Uploads corepacks.json file configuration to bucket. corepacks file includes core packs for server installation.
+
+     Args:
+        storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is uploaded.
+        packs_list (list): list of initialized packs.
+
     """
-    Get the list of ID and price of the private packs.
+    # todo later check if it is not pre release and only then upload corepacks.json
+    core_packs_public_urls = [c.public_storage_path for c in packs_list if
+                              c.name in GCPConfig.CORE_PACKS_LIST and c.public_storage_path]
+
+    if not core_packs_public_urls:
+        print(f"No core packs detected, skipping {GCPConfig.CORE_PACK_FILE_NAME} upload")
+        return
+
+    if len(core_packs_public_urls) != len(GCPConfig.CORE_PACKS_LIST):
+        print_warning(f"Found core packs does not match configured core packs. "
+                      f"Found {len(core_packs_public_urls)} and configured {len(GCPConfig.CORE_PACKS_LIST)}, "
+                      f"skipping {GCPConfig.CORE_PACK_FILE_NAME} upload")
+
+    # construct core pack data with public gcs urls
+    core_packs_data = {
+        'corePacks': core_packs_public_urls
+    }
+
+    core_packs_config_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, GCPConfig.CORE_PACK_FILE_NAME)
+    blob = storage_bucket.blob(core_packs_config_path)
+    blob.upload_from_string(json.dumps(core_packs_data, indent=4))
+
+    print_color(f"Finished uploading {GCPConfig.CORE_PACK_FILE_NAME} to storage.", LOG_COLORS.GREEN)
+
+
+def get_private_packs(private_index_path):
+    """ Get the list of ID and price of the private packs.
+
     Args:
         private_index_path: The path for the index of the private packs.
 
@@ -246,8 +309,8 @@ def get_private_packs(private_index_path):
 
 
 def add_private_packs_to_index(index_folder_path, private_index_path):
-    """
-    Add the private packs to the index folder.
+    """ Add the private packs to the index folder.
+
     Args:
         index_folder_path: The index folder path.
         private_index_path: The path for the index of the private packs.
@@ -256,6 +319,35 @@ def add_private_packs_to_index(index_folder_path, private_index_path):
     for d in os.scandir(private_index_path):
         if os.path.isdir(d.path):
             update_index_folder(index_folder_path, d.name, d.path)
+
+
+def update_index_with_priced_packs(private_storage_bucket, extract_destination_path, index_folder_path):
+    """ Updates index with priced packs and returns list of priced packs data.
+
+    Args:
+        private_storage_bucket (google.cloud.storage.bucket.Bucket): google storage private bucket.
+        extract_destination_path (str): full path to extract directory.
+        index_folder_path (str): downloaded index folder directory path.
+
+    Returns:
+        list: priced packs from private bucket.
+
+    """
+    private_index_path = ""
+    private_packs = []
+
+    try:
+        private_index_path, _ = download_and_extract_index(private_storage_bucket,
+                                                           os.path.join(extract_destination_path, 'private'))
+        private_packs = get_private_packs(private_index_path)
+        add_private_packs_to_index(index_folder_path, private_index_path)
+        print("Finished updating index with priced packs")
+    except Exception as e:
+        print_error(f'Could not add private packs to the index: {str(e)}')
+    finally:
+        if private_index_path:
+            shutil.rmtree(os.path.dirname(private_index_path), ignore_errors=True)
+        return private_packs
 
 
 def _build_summary_table(packs_input_list):
@@ -307,6 +399,7 @@ def print_packs_summary(packs_list):
         print_error(f"Number of failed packs: {len(failed_packs)}")
         failed_packs_table = _build_summary_table(failed_packs)
         print_error(failed_packs_table)
+        sys.exit(1)
 
 
 def option_handler():
@@ -320,6 +413,7 @@ def option_handler():
     # disable-secrets-detection-start
     parser.add_argument('-a', '--artifacts_path', help="The full path of packs artifacts", required=True)
     parser.add_argument('-e', '--extract_path', help="Full path of folder to extract wanted packs", required=True)
+    parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
     parser.add_argument('-s', '--service_account',
                         help=("Path to gcloud service account, is for circleCI usage. "
                               "For local development use your personal account and "
@@ -332,14 +426,13 @@ def option_handler():
                         help=("Comma separated list of target pack names. "
                               "Define `All` in order to store all available packs."),
                         required=False, default="")
-    parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
     parser.add_argument('-n', '--ci_build_number',
                         help="CircleCi build number (will be used as hash revision at index file)", required=False)
     parser.add_argument('-o', '--override_pack', help="Override existing packs in cloud storage", default=False,
                         action='store_true', required=False)
     parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
                         required=False)
-    parser.add_argument('-P', '--private_bucket_name', help="Private storage bucket name", required=False)
+    parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
     # disable-secrets-detection-end
     return parser.parse_args()
 
@@ -359,12 +452,9 @@ def main():
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
-    private_storage_bucket = storage_client.bucket(private_bucket_name)
+
+    # download and extract index from public bucket
     index_folder_path, index_blob = download_and_extract_index(storage_bucket, extract_destination_path)
-    private_index_path = ''
-    if private_bucket_name:
-        private_index_path, _ = download_and_extract_index(private_storage_bucket,
-                                                           os.path.join(extract_destination_path, 'private'))
 
     # detect new or modified packs
     modified_packs = get_modified_packs(specific_packs)
@@ -372,17 +462,28 @@ def main():
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in modified_packs
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
-    # Add private packs to the index
-    if private_index_path:
-        try:
-            private_packs = get_private_packs(private_index_path)
-            add_private_packs_to_index(index_folder_path, private_index_path)
-        except Exception as e:
-            print_warning(f'Could not add private packs to the index: {str(e)}')
-        finally:
-            shutil.rmtree(private_index_path, ignore_errors=True)
+    if private_bucket_name:  # Add private packs to the index
+        private_storage_bucket = storage_client.bucket(private_bucket_name)
+        private_packs = update_index_with_priced_packs(private_storage_bucket, extract_destination_path,
+                                                       index_folder_path)
+    else:  # skipping private packs
+        print("Skipping index update of priced packs")
+        private_packs = []
 
+    # starting iteration over packs
     for pack in packs_list:
+        task_status, user_metadata = pack.load_user_metadata()
+        if not task_status:
+            pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value
+            pack.cleanup()
+            continue
+
+        task_status, pack_content_items = pack.collect_content_items()
+        if not task_status:
+            pack.status = PackStatus.FAILED_COLLECT_ITEMS.name
+            pack.cleanup()
+            continue
+
         task_status, integration_images = pack.upload_integration_images(storage_bucket)
         if not task_status:
             pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
@@ -395,14 +496,9 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, pack_content_items = pack.collect_content_items()
-        if not task_status:
-            pack.status = PackStatus.FAILED_COLLECT_ITEMS.name
-            pack.cleanup()
-            continue
-
-        task_status = pack.format_metadata(pack_content_items, integration_images, author_image,
-                                           index_folder_path)
+        task_status = pack.format_metadata(user_metadata=user_metadata, pack_content_items=pack_content_items,
+                                           integration_images=integration_images, author_image=author_image,
+                                           index_folder_path=index_folder_path)
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack.cleanup()
@@ -448,16 +544,21 @@ def main():
             pack.cleanup()
             continue
 
-        task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path)
+        task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path,
+                                          pack_version=pack.latest_version, hidden_pack=pack.hidden)
         if not task_status:
             pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name
             pack.cleanup()
             continue
 
         pack.status = PackStatus.SUCCESS.name
+        pack.cleanup()
 
     # finished iteration over content packs
     upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs)
+
+    # upload core packs json to bucket
+    upload_core_packs_config(storage_bucket, packs_list)
 
     # summary of packs status
     print_packs_summary(packs_list)

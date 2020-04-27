@@ -1,4 +1,8 @@
 ## [Unreleased]
+Fixed an issue where the ***wildfire-upload*** failed uploading some files.
+
+
+## [20.4.0] - 2020-04-14
 -
 
 

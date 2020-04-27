@@ -3,6 +3,16 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Microsoft Intune Feed",
+            "playbookID": "FeedMicrosoftIntune_Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Smokescreen IllusionBLACK",
+            "playbookID": "Smokescreen IllusionBLACK-Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Tanium Threat Response",
             "playbookID": "Tanium Threat Response Test"
         },
@@ -22,6 +32,11 @@
             "integrations": "JSON Feed",
             "playbookID": "JSON_Feed_Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Google Cloud Functions",
+            "playbookID": "test playbook - Google Cloud Functions",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Plain Text Feed",
@@ -183,12 +198,12 @@
         },
         {
             "integrations": "HelloWorld",
-            "playbookID": "TestHelloWorld",
+            "playbookID": "HelloWorld-Test",
             "fromversion": "5.0.0"
         },
         {
             "integrations": "HelloWorld",
-            "playbookID": "TestHelloWorldPlaybook",
+            "playbookID": "HelloWorld_Scan-Test",
             "fromversion": "5.0.0"
         },
         {
@@ -234,8 +249,8 @@
             "integrations": "SlackV2",
             "playbookID": "Slack Test Playbook",
             "timeout" : 2400,
-            "fromversion": "5.0.0",
-            "pid_threshold": 30
+            "pid_threshold": 5,
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Cortex XDR - IR",
@@ -319,10 +334,6 @@
         },
         {
             "playbookID": "test_similar_incidents"
-        },
-        {
-            "playbookID": "autofocus_test",
-            "integrations": "Autofocus"
         },
         {
             "playbookID": "CheckpointFW-test",
@@ -413,7 +424,7 @@
             "playbookID": "CVE Search v2 - Test"
         },
         {
-            "integrations": "CVE Search",
+            "integrations": "CVE Search v2",
             "playbookID": "cveReputation Test"
         },
         {
@@ -1014,7 +1025,7 @@
             "playbookID": "decodemimeheader_-_test"
         },
         {
-            "integrations": "CVE Search",
+            "integrations": "CVE Search v2",
             "playbookID": "cve_enrichment_-_generic_-_test"
         },
         {
@@ -1690,7 +1701,8 @@
                 "carbonblack"
             ],
             "playbookID": "search_endpoints_by_hash_-_generic_-_test",
-            "timeout": 500
+            "timeout": 500,
+            "toversion" : "4.4.9"
         },
         {
             "integrations": "Zscaler",
@@ -1818,6 +1830,12 @@
             "playbookID": "GCS - Test",
             "timeout": 500,
             "nightly": true
+        },
+        {
+            "integrations": "GooglePubSub",
+            "playbookID": "GooglePubSub_Test",
+            "nightly": true,
+            "fromversion": "5.0.0"
         },
         {
             "playbookID": "Calculate Severity - Generic v2 - Test",
@@ -2207,7 +2225,6 @@
             "playbookID": "AutoFocus V2 test",
             "fromversion": "5.0.0",
             "timeout": 1000
-
         },
         {
             "playbookID": "Process Email - Generic for Rasterize"
@@ -2412,11 +2429,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "Sixgill",
-            "playbookID": "Sixgill - Darkfeed - Indicators-Test",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "AutoFocus Feed",
             "playbookID": "playbook-FeedAutofocus_test",
             "fromversion": "5.5.0"
@@ -2434,7 +2446,7 @@
             "playbookID": "RecordedFutureFeed - Test",
             "timeout": 1000,
             "fromversion": "5.5.0",
-            "memory_threshold": 80
+            "memory_threshold": 86
         },
         {
             "integrations": "Expanse",
@@ -2620,23 +2632,40 @@
             "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
             "timeout" : 60000,
             "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "IBM Resilient Systems",
+            "playbookID": "IBM Resilient Systems Test"
+        },
+        {
+            "integrations": "PrismaAccess",
+            "playbookID": "Prisma_Access_Egress_IP_Feed-Test",
+            "timeout" : 60000,
+            "fromversion": "5.5.0",
+            "nightly": true
+        },
+        {
+            "integrations": "PrismaAccess",
+            "playbookID": "Prisma_Access-Test",
+            "timeout" : 60000,
+            "fromversion": "5.5.0",
+            "nightly": true
         }
     ],
     "skipped_tests": {
+        "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get PrismaAccess instance",
+        "Prisma_Access-Test": "unskip after we will get PrismaAccess instance",
         "Test-Shodan_v2": "Issue 23370",
-        "Send Investigation Summary Reports - Test": "Issue 22299",
         "Symantec Deepsight Test": "Issue 22971",
         "OTRS Test": "Issue 23167",
         "Akamai_WAF_SIEM-Test": "Issue 22225",
         "Cloaken-Test": "Issue 20036",
         "test_MsGraphFiles": "Issue 22853 ",
         "TestCofenseFeed": "Issue 22854",
-        "RecordedFutureFeed - Test": "Issue 22855",
         "Cybereason Test": "Issue 22683",
         "AbuseIPDB Test": "Issue 22658",
         "Bluecat Address Manager test": "Issue 22616",
         "Office365_Feed_Test": "Issue 22517",
-        "Send Investigation Summary Reports": "Issue 22299",
         "test-Expanse": "Expanse should provide domain that they have in their system",
         "TestProofpointFeed": "Issue 22229",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 22227",
@@ -2675,7 +2704,11 @@
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
+        "PrismaAccess": "Instance will be provided soon by Lior and Prasen",
+        "Infoblox": "Issue 23770",
+        "Trend Micro Apex": "Issue 23632",
         "Awake Security": "Issue 23376",
+        "ExtraHop": "No license, issue 23731",
         "RiskSense": "We should get an instance talk to Francesco",
         "Palo Alto Networks Cortex": "Issue 22300",
         "AWS - IAM": "Issue 21401",
@@ -2740,6 +2773,8 @@
         "Code42": "Instance not set up yet",
         "LogRhythm": "Issue 21672",
         "SecBI": "Issue 22545",
+        "IBM Resilient Systems": "Issue 23722",
+        "VxStream": "Issue #23795",
 
         "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -2747,6 +2782,8 @@
         "VirusTotal - Private API": "Issue 22638",
 
         "_comment": "~~~ OTHER ~~~",
+        "Cortex Data Lake": "Issue 23718",
+        "Microsoft Defender Advanced Threat Protection": "Issue 23704",
         "Pentera": "authentication method will not work with testing",
         "EclecticIQ Platform": "Issue 8821",
         "BitDam": "Issue #17247",
@@ -2823,6 +2860,7 @@
         "Microsoft Graph User": "Test direct access to oproxy",
         "Microsoft_Graph_Files": "Test direct access to oproxy",
         "Microsoft Graph Groups": "Test direct access to oproxy",
+        "Microsoft Defender Advanced Threat Protection": "Test direct access to oproxy",
         "SafeBreach": "SSL Issues",
         "AWS - CloudWatchLogs": "Issue 20958",
         "Gmail Single User" : "googleclient sdk has time based challenge exchange",
@@ -2844,6 +2882,9 @@
             },
             "demisto/py-ews:2.0": {
                 "memory_threshold": 150
+            },
+            "demisto/pytan": {
+                "pid_threshold": 11
             }
         }
     }

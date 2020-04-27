@@ -2,6 +2,10 @@
 -
 
 
+## [20.4.0] - 2020-04-14
+-
+
+
 ## [19.11.0] - 2019-11-12
 - Fixed an issue where commands in the top part were in the format **name:name** instead of **description:name**.
 - Added links for the list of commands to each command.

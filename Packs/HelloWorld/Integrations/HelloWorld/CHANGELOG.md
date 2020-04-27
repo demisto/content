@@ -1,4 +1,10 @@
 ## [Unreleased]
+Added **domain**
+Added **helloworld-update-alert-status**
+Improved documentation and comments
+Fixed bugs
+
+## [20.4.0] - 2020-04-14
 Added **helloworld-scan-start**
 Added **helloworld-scan-status**
 Added **helloworld-scan-results**

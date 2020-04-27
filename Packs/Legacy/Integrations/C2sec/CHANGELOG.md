@@ -2,6 +2,10 @@
 -
 
 
+## [20.4.0] - 2020-04-14
+-
+
+
 ## [20.3.3] - 2020-03-18
 Fixed an issue where the ***irisk-get-domain-issues*** failed on KeyError.
 

@@ -2,6 +2,10 @@
 -
 
 
+## [20.4.0] - 2020-04-14
+-
+
+
 ## [20.1.2] - 2020-01-22
 - Add support to unicode default value
 - Consider "None" string as empty

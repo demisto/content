@@ -3,12 +3,14 @@
 This script is used to create a filter_file.txt file which will run only the needed the tests for a given change.
 """
 import os
+import re
 import sys
 import json
 import time
 import glob
 import random
 import argparse
+import demisto_sdk.commands.common.tools as tools
 from typing import Dict
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -17,8 +19,9 @@ sys.path.append(CONTENT_DIR)
 
 from demisto_sdk.commands.common.constants import *  # noqa: E402
 from demisto_sdk.commands.common.tools import get_yaml, str2bool, get_from_version, get_to_version, \
-    collect_ids, get_script_or_integration_id, run_command, LOG_COLORS, print_error, print_color, \
+    collect_ids, get_script_or_integration_id, LOG_COLORS, print_error, print_color, \
     print_warning, server_version_compare  # noqa: E402
+
 
 # Search Keyword for the changed file
 NO_TESTS_FORMAT = 'No test( - .*)?'
@@ -29,10 +32,14 @@ FILE_IN_PACKS_INTEGRATIONS_DIR_REGEX = r'{}/([^/]+)/{}/(.+)'.format(
     PACKS_DIR, INTEGRATIONS_DIR)
 FILE_IN_PACKS_SCRIPTS_DIR_REGEX = r'{}/([^/]+)/{}/(.+)'.format(
     PACKS_DIR, SCRIPTS_DIR)
+
+
+TEST_DATA_INTEGRATION_YML_REGEX = r'Tests\/scripts\/infrastructure_tests\/tests_data\/mock_integrations\/.*\.yml'
 INTEGRATION_REGEXES = [
     INTEGRATION_REGEX,
     BETA_INTEGRATION_REGEX,
-    PACKS_INTEGRATION_REGEX
+    PACKS_INTEGRATION_REGEX,
+    TEST_DATA_INTEGRATION_YML_REGEX
 ]
 INCIDENT_FIELD_REGEXES = [
     INCIDENT_FIELD_REGEX,
@@ -209,7 +216,9 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
     caught_missing_test = False
     catched_intergrations = set([])
 
-    test_ids, skipped_tests = get_test_ids(conf=conf)
+    test_ids = conf.get_test_playbook_ids()
+    skipped_tests = conf.get_skipped_tests()
+    skipped_integrations = conf.get_skipped_integrations()
 
     if not id_set:
         with open("./Tests/id_set.json", 'r') as id_set_file:
@@ -255,6 +264,10 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
     missing_ids = update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts,
                                       integration_ids, playbook_ids, script_ids)
 
+    # remove skipped integrations from the list
+    missing_ids = missing_ids - set(skipped_integrations)
+
+    return test_ids, missing_ids, caught_missing_test
     packs_to_install = set()
     id_set_test_playbooks = id_set.get('TestPlaybooks', [])
     for test_playbook in id_set_test_playbooks:
@@ -282,7 +295,59 @@ def update_missing_sets(catched_intergrations, catched_playbooks, catched_script
     return missing_ids
 
 
-def get_test_ids(check_nightly_status=False, conf=None):
+class TestConf(object):
+    __test__ = False  # pytest will not try to run it just because it has Test prefix
+
+    def __init__(self, conf):
+        #  (dict) -> None
+
+        self._conf = conf
+
+    def get_skipped_integrations(self):
+        return list(self._conf['skipped_integrations'].keys())
+
+    def get_skipped_tests(self):
+        return list(self._conf['skipped_tests'].keys())
+
+    def get_tests(self):
+        return self._conf.get('tests', {})
+
+    def get_test_playbook_ids(self):
+        conf_tests = self._conf['tests']
+        test_ids = []
+
+        for t in conf_tests:
+            playbook_id = t['playbookID']
+            test_ids.append(playbook_id)
+
+        return test_ids
+
+    def get_all_tested_integrations(self):
+        all_integrations = []
+        conf_tests = self._conf['tests']
+
+        for t in conf_tests:
+            if 'integrations' in t:
+                if isinstance(t['integrations'], list):
+                    all_integrations.extend(t['integrations'])
+                else:
+                    all_integrations.append(t['integrations'])
+
+        return all_integrations
+
+    def get_test_playbooks_configured_with_integration(self, integration_id):
+        test_playbooks = []
+        conf_tests = self._conf['tests']
+
+        for t in conf_tests:
+            if 'integrations' in t:
+                if integration_id in t['integrations']:
+                    test_playbooks.append(t['playbookID'])
+
+        return test_playbooks
+
+
+def load_tests_conf(conf=None):
     """Get the test ids from conf.json
 
     Keyword Arguments:
@@ -291,18 +356,11 @@ def get_test_ids(check_nightly_status=False, conf=None):
     Returns:
         tuple: (test_ids, skipped_tests)
     """
-    test_ids = []
     if not conf:
         with open("./Tests/conf.json", 'r') as conf_file:
             conf = json.load(conf_file)
 
-    conf_tests = conf['tests']
-    for t in conf_tests:
-        if not check_nightly_status or not t.get('nightly', False):
-            playbook_id = t['playbookID']
-            test_ids.append(playbook_id)
-
-    return test_ids, list(conf['skipped_tests'].keys())
+    return TestConf(conf)
 
 
 def get_integration_commands(integration_ids, integration_set):
@@ -329,6 +387,51 @@ def get_integration_commands(integration_ids, integration_set):
     return integration_to_command, deprecated_message
 
 
+def is_integration_fetching_incidents(integration_yml_path):
+    integration_yml_dict = get_yaml(integration_yml_path)
+
+    return integration_yml_dict.get('script').get('isfetch', False) is True
+
+
+def id_set__get_test_playbook(id_set, test_playbook_id):
+    for test_playbook in id_set.get('TestPlaybooks', []):
+        if test_playbook_id in test_playbook.keys():
+            return test_playbook[test_playbook_id]
+
+
+def id_set__get_integration_file_path(id_set, integration_id):
+    for integration in id_set.get('integrations', []):
+        if integration_id in integration.keys():
+            return integration[integration_id]['file_path']
+
+
+def check_if_fetch_incidents_is_tested(missing_ids, integration_ids, id_set, conf, tests_set):
+    # If integration is mentioned/used in one of the test configurations, it means that integration is tested.
+    # For example there could be a test playbook that tests fetch incidents command of some integration
+    # so the test playbook will use FetchFromInstance script in the playbook, which is not direct command of a specific
+    # integration
+
+    missing_integration_ids = missing_ids & integration_ids
+    for missing_id in missing_integration_ids:
+        integration_file_path = id_set__get_integration_file_path(id_set, missing_id)
+        is_fetching = is_integration_fetching_incidents(integration_file_path)
+        if not is_fetching:
+            continue
+
+        test_playbook_ids = conf.get_test_playbooks_configured_with_integration(missing_id)
+        if len(test_playbook_ids) == 0:
+            # there are no test playbooks for this integration configured
+            continue
+
+        for test_playbook_id in test_playbook_ids:
+            test_playbook = id_set__get_test_playbook(id_set, test_playbook_id)
+            if 'FetchFromInstance' in test_playbook.get('implementing_scripts'):
+                missing_ids = missing_ids - {missing_id}
+                tests_set.add(test_playbook_id)
+
+    return missing_ids, tests_set
+
+
 def find_tests_and_packs_for_modified_files(modified_files, conf, id_set):
     script_names = set([])
     playbook_names = set([])
@@ -343,6 +446,8 @@ def find_tests_and_packs_for_modified_files(modified_files, conf, id_set):
     packs_to_install.update(test_packs_to_install)
 
     missing_ids = update_with_tests_sections(missing_ids, modified_files, test_ids, tests_set)
+
+    missing_ids, tests_set = check_if_fetch_incidents_is_tested(missing_ids, integration_ids, id_set, conf, tests_set)
 
     if len(missing_ids) > 0:
         test_string = '\n'.join(missing_ids)
@@ -731,8 +836,9 @@ def get_test_conf_from_conf(test_id, server_version, conf=None):
     """Gets first occurrence of test conf with matching playbookID value to test_id with a valid from/to version"""
     if not conf:
         with open("./Tests/conf.json", 'r') as conf_file:
-            conf = json.load(conf_file)
-    test_conf_lst = conf.get('tests', {})
+            conf = TestConf(json.load(conf_file))
+
+    test_conf_lst = conf.get_tests()
     # return None if nothing is found
     test_conf = next((test_conf for test_conf in test_conf_lst if (
         test_conf.get('playbookID') == test_id
@@ -758,7 +864,7 @@ def extract_matching_object_from_id_set(obj_id, obj_set, server_version='0'):
 def get_test_from_conf(branch_name, conf=None):
     tests = set([])
     changed = set([])
-    change_string = run_command("git diff origin/master...{} Tests/conf.json".format(branch_name))
+    change_string = tools.run_command("git diff origin/master...{} Tests/conf.json".format(branch_name))
     added_groups = re.findall(r'(\+[ ]+")(.*)(":)', change_string)
     if added_groups:
         for group in added_groups:
@@ -771,9 +877,9 @@ def get_test_from_conf(branch_name, conf=None):
 
     if not conf:
         with open("./Tests/conf.json", 'r') as conf_file:
-            conf = json.load(conf_file)
+            conf = TestConf(json.load(conf_file))
 
-    conf_tests = conf['tests']
+    conf_tests = conf.get_tests()
     for t in conf_tests:
         playbook_id = t['playbookID']
         integrations_conf = t.get('integrations', [])
@@ -807,7 +913,7 @@ def is_test_runnable(test_id, id_set, conf, server_version):
         a. fromversion is earlier or equal to server_version
         b. toversion is after or equal to server_version
     """
-    skipped_tests = conf['skipped_tests'].keys()
+    skipped_tests = conf.get_skipped_tests()
     # check if test is skipped
     if test_id in skipped_tests:
         return False
@@ -869,12 +975,26 @@ def is_test_uses_active_integration(integration_ids, conf=None):
     """Checks whether there's an an integration in test_integration_ids that's not skipped"""
     if not conf:
         with open("./Tests/conf.json", 'r') as conf_file:
-            conf = json.load(conf_file)
-    skipped_integrations = conf['skipped_integrations'].keys()
+            conf = TestConf(json.load(conf_file))
+
+    skipped_integrations = conf.get_skipped_integrations()
     # check if all integrations are skipped
     if all(integration_id in skipped_integrations for integration_id in integration_ids):
         return False
+
     return True
+
+
+def is_any_test_runnable(test_ids, conf, id_set=None, server_version='0'):
+    """Checks whether there's a runnable test in tests"""
+    if test_ids and isinstance(test_ids, set):
+        if not id_set:
+            with open("./Tests/id_set.json", 'r') as conf_file:
+                id_set = json.load(conf_file)
+        for test_id in test_ids:
+            if is_test_runnable(test_id, id_set, conf, server_version):
+                return True
+    return False
 
 
 def get_random_tests(tests_num, conf=None, id_set=None, server_version='0'):
@@ -882,11 +1002,11 @@ def get_random_tests(tests_num, conf=None, id_set=None, server_version='0'):
     if not id_set:
         with open("./Tests/id_set.json", 'r') as conf_file:
             id_set = json.load(conf_file)
-    if not conf:
-        with open("./Tests/conf.json", 'r') as conf_file:
-            conf = json.load(conf_file)
+
     tests = set([])
-    test_ids = get_test_ids(conf=conf)[0]
+
+    test_ids = conf.get_test_playbook_ids()
+
     rand = random.Random(time.time())
     while len(tests) < tests_num:
         test = rand.choice(test_ids)
@@ -928,12 +1048,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
             get_random_tests(tests_num=RANDOM_TESTS_NUM, conf=conf, id_set=id_set, server_version=two_before_ga_ver))
 
     if not tests:
-        if modified_files or modified_tests_list:
-            print_error(
-                "There is no test-playbook that checks the changes you've done, please make sure you write one.")
-            global _FAILED
-            _FAILED = True
-        elif changed_common:
+        if changed_common:
             print_warning('Adding 3 random tests due to: {}'.format(','.join(changed_common)))
             tests = tests.union(get_random_tests(tests_num=RANDOM_TESTS_NUM, conf=conf, id_set=id_set,
                                                  server_version=two_before_ga_ver))
@@ -950,27 +1065,50 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     return tests, packs_to_install
 
 
+def create_filter_envs_file(tests, two_before_ga, one_before_ga, ga, conf, id_set):
+    """Create a file containing all the envs we need to run for the CI"""
+    # always run master and PreGA
+    envs_to_test = {
+        'Server Master': True,
+        'Demisto PreGA': True,
+        'Demisto two before GA': is_any_test_runnable(test_ids=tests, server_version=two_before_ga, conf=conf, id_set=id_set),
+        'Demisto one before GA': is_any_test_runnable(test_ids=tests, server_version=one_before_ga, conf=conf, id_set=id_set),
+        'Demisto GA': is_any_test_runnable(test_ids=tests, server_version=ga, conf=conf, id_set=id_set),
+    }
+    print("Creating filter_envs.json with the following envs: {}".format(envs_to_test))
+    with open("./Tests/filter_envs.json", "w") as filter_envs_file:
+        json.dump(envs_to_test, filter_envs_file)
+
+
 def create_test_file(is_nightly, skip_save=False):
     """Create a file containing all the tests we need to run for the CI"""
     tests_string = ''
     if not is_nightly:
-        branches = run_command("git branch")
+        branches = tools.run_command("git branch")
         branch_name_reg = re.search(r"\* (.*)", branches)
         branch_name = branch_name_reg.group(1)
 
         print("Getting changed files from the branch: {0}".format(branch_name))
         if branch_name != 'master':
-            files_string = run_command("git diff --name-status origin/master...{0}".format(branch_name))
+            files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
         else:
-            commit_string = run_command("git log -n 2 --pretty='%H'")
+            commit_string = tools.run_command("git log -n 2 --pretty='%H'")
             commit_string = commit_string.replace("'", "")
             last_commit, second_last_commit = commit_string.split()
-            files_string = run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
+            files_string = tools.run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
 
         with open('./Tests/ami_builds.json', 'r') as ami_builds:
-            # get two_before_ga version to check if tests are runnable on that env
-            two_before_ga = json.load(ami_builds).get('TwoBefore-GA', '0').split('-')[0]
-        tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name, two_before_ga)
+            # get versions to check if tests are runnable on those envs
+            ami_builds = json.load(ami_builds)
+            two_before_ga = ami_builds.get('TwoBefore-GA', '0').split('-')[0]
+            one_before_ga = ami_builds.get('OneBefore-GA', '0').split('-')[0]
+            ga = ami_builds.get('GA', '0').split('-')[0]
+
+        conf = load_tests_conf()
+        with open("./Tests/id_set.json", 'r') as conf_file:
+            id_set = json.load(conf_file)
+        tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name, two_before_ga, conf, id_set)
+        create_filter_envs_file(tests, two_before_ga, one_before_ga, ga, conf, id_set)
 
         tests_string = '\n'.join(tests)
         if tests_string:

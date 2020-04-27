@@ -1,5 +1,6 @@
 ## [Unreleased]
--
+- Added the *OnCall* input to assign only users that are on shift.
+- Fixed an issue where the playbook was not authenticating emails.
 
 
 ## [20.1.2] - 2020-01-22

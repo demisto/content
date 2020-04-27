@@ -1,0 +1,79 @@
+args:
+- auto: PREDEFINED
+  default: false
+  description: Incident severity
+  isArray: false
+  name: severity
+  predefined:
+  - 1 - High
+  - 2 - Medium
+  - 3 - Low
+  required: false
+  secret: false
+- default: false
+  description: Incident assigne name (e.g John Smith)
+  isArray: false
+  name: assignee
+  required: false
+  secret: false
+- default: false
+  description: Incident description
+  isArray: false
+  name: description
+  required: false
+  secret: false
+- default: false
+  description: Incident assigned group name (e.g Incident Management Group)
+  isArray: false
+  name: assigned_group
+  required: false
+  secret: false
+- default: false
+  description: Incident ID to update
+  isArray: false
+  name: id
+  required: false
+  secret: false
+- default: false
+  description: Incident number to update
+  isArray: false
+  name: number
+  required: false
+  secret: false
+- default: false
+  description: 'Query to use '
+  isArray: false
+  name: query
+  required: false
+  secret: false
+comment: |-
+  This script is used to wrap the generic update-record command in ServiceNow.
+  You can add fields that you want to update the record with as script arguments or in the
+  code and work with the records easily.
+commonfields:
+  id: ServiceNowUpdateIncident
+  version: -1
+enabled: true
+name: ServiceNowUpdateIncident
+outputs:
+- contextPath: ServiceNow.Incident.ID
+  description: Incident ID
+  type: string
+- contextPath: ServiceNow.Incident.Number
+  description: Incident number
+  type: string
+script: '-'
+system: false
+tags:
+- servicenow
+- servicenow v2
+timeout: '0'
+type: python
+subtype: python2
+runonce: false
+dependson:
+  must:
+  - servicenow-update-record
+  - servicenow-query-table
+tests:
+- No test - Hibernating instance

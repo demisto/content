@@ -1,7 +1,7 @@
 {
     "name": "AzureSentinel",
     "description": "Azure Sentinel is a cloud-native security information and event manager (SIEM) platform that uses built-in AI to help analyze large volumes of data across an enterprise.",
-    "support": "Cortex XSOAR",
+    "support": "xsoar",
     "serverMinVersion": "5.0.0",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

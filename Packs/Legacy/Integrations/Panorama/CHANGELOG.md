@@ -1,4 +1,8 @@
 ## [Unreleased]
+- Added warnings to the ***panorama-commit-status*** command.
+Fixed an issue where the *job_id* argument in the ***panorama-download-panos-status*** command was misspelled.
+
+## [20.4.0] - 2020-04-14
 -
 
 

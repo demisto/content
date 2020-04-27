@@ -71,7 +71,7 @@ tasks:
       script: '|||servicenow-create-ticket'
       type: regular
       iscommand: true
-      brand: ServiceNow
+      brand: ""
     nexttasks:
       '#none#':
       - "6"
@@ -217,7 +217,7 @@ tasks:
       script: '|||servicenow-create-ticket'
       type: regular
       iscommand: true
-      brand: ServiceNow
+      brand: ""
     nexttasks:
       '#none#':
       - "8"
@@ -406,7 +406,7 @@ tasks:
       script: '|||servicenow-query-tickets'
       type: regular
       iscommand: true
-      brand: ServiceNow
+      brand: ""
     nexttasks:
       '#none#':
       - "37"
@@ -437,7 +437,7 @@ tasks:
       script: '|||servicenow-get-ticket'
       type: regular
       iscommand: true
-      brand: ServiceNow
+      brand: ""
     nexttasks:
       '#none#':
       - "41"
@@ -649,7 +649,7 @@ tasks:
       script: '|||servicenow-add-comment'
       type: regular
       iscommand: true
-      brand: ServiceNow
+      brand: ""
     nexttasks:
       '#none#':
       - "42"
@@ -682,7 +682,7 @@ tasks:
       script: '|||servicenow-add-link'
       type: regular
       iscommand: true
-      brand: ServiceNow
+      brand: ""
     nexttasks:
       '#none#':
       - "43"
@@ -997,7 +997,7 @@ tasks:
       script: '|||servicenow-upload-file'
       type: regular
       iscommand: true
-      brand: ServiceNow
+      brand: ""
     nexttasks:
       '#none#':
       - "44"
@@ -1070,7 +1070,7 @@ tasks:
       script: '|||servicenow-query-groups'
       type: regular
       iscommand: true
-      brand: ServiceNow
+      brand: ""
     nexttasks:
       '#none#':
       - "49"
@@ -1140,7 +1140,7 @@ tasks:
       script: '|||servicenow-get-ticket'
       type: regular
       iscommand: true
-      brand: ServiceNow
+      brand: ""
     nexttasks:
       '#none#':
       - "51"
@@ -1245,7 +1245,7 @@ tasks:
       script: '|||servicenow-query-table'
       type: regular
       iscommand: true
-      brand: ServiceNow
+      brand: ""
     nexttasks:
       '#none#':
       - "54"
@@ -1318,7 +1318,7 @@ tasks:
       script: '|||servicenow-delete-ticket'
       type: regular
       iscommand: true
-      brand: ServiceNow
+      brand: ""
     nexttasks:
       '#none#':
       - "69"
@@ -1349,7 +1349,7 @@ tasks:
       script: '|||servicenow-create-record'
       type: regular
       iscommand: true
-      brand: ServiceNow
+      brand: ""
     nexttasks:
       '#none#':
       - "57"
@@ -1383,7 +1383,7 @@ tasks:
       script: '|||servicenow-get-record'
       type: regular
       iscommand: true
-      brand: ServiceNow
+      brand: ""
     nexttasks:
       '#none#':
       - "58"
@@ -1458,7 +1458,7 @@ tasks:
       script: '|||servicenow-update-record'
       type: regular
       iscommand: true
-      brand: ServiceNow
+      brand: ""
     nexttasks:
       '#none#':
       - "60"
@@ -1493,7 +1493,7 @@ tasks:
       script: '|||servicenow-get-record'
       type: regular
       iscommand: true
-      brand: ServiceNow
+      brand: ""
     nexttasks:
       '#none#':
       - "61"
@@ -1568,7 +1568,7 @@ tasks:
       script: '|||servicenow-delete-record'
       type: regular
       iscommand: true
-      brand: ServiceNow
+      brand: ""
     nexttasks:
       '#none#':
       - "63"
@@ -1600,7 +1600,7 @@ tasks:
       script: '|||servicenow-list-table-fields'
       type: regular
       iscommand: true
-      brand: ServiceNow
+      brand: ""
     nexttasks:
       '#none#':
       - "64"
@@ -1630,7 +1630,7 @@ tasks:
       script: '|||servicenow-query-computers'
       type: regular
       iscommand: true
-      brand: ServiceNow
+      brand: ""
     nexttasks:
       '#none#':
       - "65"
@@ -1664,7 +1664,7 @@ tasks:
       script: '|||servicenow-query-groups'
       type: regular
       iscommand: true
-      brand: ServiceNow
+      brand: ""
     nexttasks:
       '#none#':
       - "68"
@@ -1735,7 +1735,7 @@ tasks:
       script: '|||servicenow-query-users'
       type: regular
       iscommand: true
-      brand: ServiceNow
+      brand: ""
     nexttasks:
       '#none#':
       - "70"
@@ -1803,7 +1803,7 @@ tasks:
       script: '|||servicenow-get-table-name'
       type: regular
       iscommand: true
-      brand: ServiceNow
+      brand: ""
     nexttasks:
       '#none#':
       - "67"
@@ -1834,7 +1834,7 @@ tasks:
       script: '|||servicenow-get-ticket-notes'
       type: regular
       iscommand: true
-      brand: ServiceNow
+      brand: ""
     nexttasks:
       '#none#':
       - "72"
@@ -2139,7 +2139,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: ServiceNow
+                  simple: ServiceNowv2
           accessor: name
     separatecontext: false
     view: |-
@@ -2164,7 +2164,7 @@ tasks:
       script: '|||servicenow-query-tickets'
       type: regular
       iscommand: true
-      brand: ServiceNow
+      brand: ""
     nexttasks:
       '#none#':
       - "79"
@@ -2198,7 +2198,7 @@ tasks:
       script: '|||servicenow-get-ticket'
       type: regular
       iscommand: true
-      brand: ServiceNow
+      brand: ""
     scriptarguments:
       get_attachments: {}
       id:
