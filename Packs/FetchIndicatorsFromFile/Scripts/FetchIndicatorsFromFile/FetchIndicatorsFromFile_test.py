@@ -74,6 +74,14 @@ def test_xls_file_to_indicator_list_3():
     assert result == XLS_TEST_RESULTS_2
 
 
+def test_xls_file_to_indicator_list_4():
+    from FetchIndicatorsFromFile import xls_file_to_indicator_list
+    result = xls_file_to_indicator_list(file_path='test_data/IndicatorsXls.xlsx', sheet_name=None,
+                                        col_num=1, starting_row=0, auto_detect=True, default_type=None, type_col=None,
+                                        limit=None, offset=0)
+    assert result == XLS_TEST_RESULTS_1
+
+
 def test_txt_file_to_indicator_list_1():
     from FetchIndicatorsFromFile import txt_file_to_indicator_list
     result = txt_file_to_indicator_list(file_path='test_data/IndicatorsList.txt',
