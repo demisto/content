@@ -40,7 +40,7 @@ INTEGRATION_REGEXES = [
     PACKS_INTEGRATION_REGEX,
     TEST_DATA_INTEGRATION_YML_REGEX
 ]
-TEST_DATA_SCRIPT_YML_REGEX = r'Tests\/scripts\/infrastructure_tests\/tests_data\/.*\.yml'
+TEST_DATA_SCRIPT_YML_REGEX = r'Tests\/scripts\/infrastructure_tests\/tests_data\/mock_scripts\/.*\.yml'
 SCRIPT_REGEXES = [
     TEST_DATA_SCRIPT_YML_REGEX
 ]
