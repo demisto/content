@@ -874,24 +874,8 @@ def is_test_runnable(test_id, id_set, conf, server_version):
 
     return all([
         is_test_integrations_available(server_version, test_conf, conf, id_set),    # check used integrations available
-        is_test_scripts_available(test_playbook_obj, server_version, id_set),       # check used scripts available
         is_runnable_in_server_version(conf_fromversion, server_version, conf_toversion)  # check conf from/to
     ])
-
-
-def is_test_scripts_available(test_playbook_obj, server_version, id_set):
-    """
-    Check if all used scripts are skipped / available
-    """
-    test_scripts_ids = test_playbook_obj.get('implementing_scripts', [])
-    if test_scripts_ids:
-        if not isinstance(test_scripts_ids, list):
-            test_scripts_ids = [test_scripts_ids]
-        scripts = id_set.get('scripts', [])
-        if any(extract_matching_object_from_id_set(script_id, scripts, server_version) is None for script_id in
-               test_scripts_ids):
-            return False
-    return True
 
 
 def is_test_integrations_available(server_version, test_conf, conf, id_set):
