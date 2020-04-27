@@ -16,6 +16,7 @@ def csv_file_to_indicator_list(file_path, col_num, starting_row, auto_detect, de
 
     line_index = 0
     with open(file_path, 'rU') as csv_file:
+        # csv reader can fail when encountering a NULL byte (\0) - so we go through the file and take out the NUL bytes.
         file_reader = csv.reader(line.replace('\0', '') for line in csv_file)
         for row in file_reader:
             if line_index >= starting_row + offset and len(row) != 0:
@@ -188,6 +189,9 @@ def detect_type(indicator):
         return FeedIndicatorType.Email
 
     try:
+        # we use TLDExtract class to fetch all existing domain suffixes from the bellow mentioned file:
+        # https://raw.githubusercontent.com/publicsuffix/list/master/public_suffix_list.dat
+        # the suffix_list_urls=None is used to not make http calls using the extraction - avoiding SSL errors
         if tldextract.TLDExtract(cache_file='https://raw.githubusercontent.com/publicsuffix'
                                             '/list/master/public_suffix_list.dat',
                                  suffix_list_urls=None).__call__(indicator).suffix:
