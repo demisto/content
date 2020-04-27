@@ -1546,6 +1546,14 @@ script:
       name: offset
       required: false
       secret: false
+    - default: false
+      description: 'System parameters. overrides the query, limit and offset arguments.
+        e.g: "sysparm_display_value=all&sysparm_exclude_reference_link=True&state=1&assignment_group=<group
+        id>"'
+      isArray: false
+      name: system_params
+      required: false
+      secret: false
     deprecated: false
     description: Query a specified table in ServiceNow
     execution: false

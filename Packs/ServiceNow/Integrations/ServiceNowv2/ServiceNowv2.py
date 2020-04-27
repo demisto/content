@@ -617,18 +617,23 @@ class Client(BaseClient):
         return self.send_request('attachment/upload', 'POST', headers={'Accept': 'application/json'},
                                  body=body, file={'id': file_id, 'name': file_name})
 
-    def query(self, table_name: str, sys_param_limit: str, sys_param_offset: str, sys_param_query: str) -> dict:
-        """Query tickets by sending a PATCH request.
+    def query(self, table_name: str, sys_param_limit: str, sys_param_offset: str, sys_param_query: str,
+              system_params: str = '') -> dict:
+        """Query records by sending a GET request.
 
         Args:
         table_name: table name
         sys_param_limit: limit the number of results
         sys_param_offset: offset the results
         sys_param_query: the query
+        system_params: system parameters
 
         Returns:
             Response from API.
         """
+        if system_params:
+            return self.send_request(f'table/{table_name}?{system_params}', 'GET',)
+
         query_params = {'sysparm_limit': sys_param_limit, 'sysparm_offset': sys_param_offset}
         if sys_param_query:
             query_params['sysparm_query'] = sys_param_query
@@ -1146,10 +1151,11 @@ def query_table_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bo
     table_name = str(args.get('table_name', ''))
     sys_param_limit = args.get('limit', client.sys_param_limit)
     sys_param_query = str(args.get('query', ''))
+    system_params = str(args.get('system_params', ''))
     sys_param_offset = args.get('offset', client.sys_param_offset)
     fields = args.get('fields')
 
-    result = client.query(table_name, sys_param_limit, sys_param_offset, sys_param_query)
+    result = client.query(table_name, sys_param_limit, sys_param_offset, sys_param_query, system_params)
     if not result or 'result' not in result or len(result['result']) == 0:
         return 'No results found', {}, {}, False
     table_entries = result.get('result', {})
@@ -1582,6 +1588,7 @@ def main():
             demisto.results(get_ticket_command(client, args))
         elif command in commands:
             md_, ec_, raw_response, ignore_auto_extract = commands[command](client, args)
+            demisto.log(str(ec_))
             return_outputs(md_, ec_, raw_response, ignore_auto_extract=ignore_auto_extract)
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
