@@ -2,6 +2,7 @@
 	"typeId": "GDPR Data Breach",
 	"kind": "details",
 	"fromVersion": "4.5.0",
+	"toversion": "4.9.9",
 	"layout": {
 		"id": "GDPR Data Breach",
 		"version": -1,
