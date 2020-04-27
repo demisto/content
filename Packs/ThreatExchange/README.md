@@ -2,8 +2,6 @@
 ---
 
 Receive threat intelligence about applications, IP addresses, URLs and hashes, a service by Facebook
-This integration was integrated and tested with version xx of ThreatExchange
-
 
 ## Configure ThreatExchange on Demisto
 ---

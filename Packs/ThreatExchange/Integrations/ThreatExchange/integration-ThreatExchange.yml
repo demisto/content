@@ -62,7 +62,7 @@ script:
                 Body: method == 'POST' ? encodeToURLQuery(parameters).substring(1) : ''
             },
             params.insecure,
-            params.useproxyf
+            params.useproxy
         );
         if (result.StatusCode < 200 || result.StatusCode > 299) {
             throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode + ' with Body: '+ result.Body;
