@@ -15,14 +15,6 @@ def test_missing_parameters(mocker):
         "auth_url": "https://authorization_url.com"
     }
 
-    params_2 = {
-        "auth_url": "https://authorization_url.com",
-        "arc_url": "https://arc_url.com",
-        "client_id": "client_id",
-        "client_secret": "client_secret",
-        "insecure": True
-    }
-
     mocker.patch.object(demisto, 'params', return_value=params_0)
     mocker.patch.object(demisto, 'command', return_value='test-module')
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=InterruptedError())
