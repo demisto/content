@@ -12,7 +12,7 @@ configuration:
   required: true
   type: 9
 - defaultvalue: 'false'
-  display: Trust any certificate (unsecure)
+  display: Trust any certificate (not secure)
   name: unsecure
   required: false
   type: 8
@@ -1007,6 +1007,7 @@ script:
   runonce: false
   script: '-'
   type: python
+  subtype: python2
 fromversion: 3.6.0
 tests:
   - nexpose_test

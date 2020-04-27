@@ -1,5 +1,7 @@
 ## [Unreleased]
-Fixed an issue where commands resulting with an empty list would raise an error instead of a warning.
+- Fixed an issue where commands resulting with an empty list would raise an error instead of a warning.
+- Added warnings to the ***panorama-commit-status*** command.
+- Fixed an issue where the *job_id* argument in the ***panorama-download-panos-status*** command was misspelled.
 
 ## [20.4.0] - 2020-04-14
 -

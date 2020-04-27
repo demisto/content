@@ -93,11 +93,11 @@ args:
   description: The headers for the http request, in the format of 'key1:value1,key2:value2, ...'
 - name: insecure
   auto: PREDEFINED
-  description: Trust any certificate (unsecure)
+  description: Trust any certificate (not secure)
   deprecated: true
 - name: unsecure
   auto: PREDEFINED
-  description: Trust any certificate (unsecure)
+  description: Trust any certificate (not secure)
   predefined:
   - "true"
   - "false"
