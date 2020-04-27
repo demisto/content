@@ -120,7 +120,7 @@ def http_request(api_endpoint, params_dict=None, method='GET', data_list=None):
         res.raise_for_status()
         return res.json()
 
-    except Exception, e:
+    except Exception as e:
         LOG(e)
         raise
 
@@ -1849,7 +1849,7 @@ try:
     elif demisto.command() == 'umbrella-get-url-timeline':
         demisto.results(get_url_timeline_command())
 
-except Exception, e:
+except Exception as e:
     LOG(e.message)
     LOG.print_log()
     return_error(e.message)
