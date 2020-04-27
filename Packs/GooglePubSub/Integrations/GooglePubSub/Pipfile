@@ -5,16 +5,14 @@ verify_ssl = true
 
 [dev-packages]
 pylint = "*"
-pytest = "*"
+pytest = "==5.0.1"
 pytest-mock = "*"
 requests-mock = "*"
-pytest-xdist = "*"
-flake8 = "*"
+pytest-asyncio = "*"
 
 [packages]
-dxlclient = "==3.1.0.587"
-dxlmarclient = "==0.1.2"
-virtualenv = "==15.0.3"
+pytest = "*"
+requests = "*"
 
 [requires]
-python_version = "2.7"
+python_version = "3.7"
