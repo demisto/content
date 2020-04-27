@@ -3,7 +3,7 @@ from CommonServerPython import *
 # IMPORTS
 import dns.resolver
 import re
-from typing import List, Dict
+from typing import List, Dict, Callable, Tuple, Any
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -62,6 +62,23 @@ def test_module(client):
     return 'ok', {}, {}
 
 
+def get_indicators(client: Client, args: Dict[str, str]) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+    """Wrapper for retrieving indicators from the feed to the war-room.
+
+    Args:
+        client: Client object with request
+        args: demisto.args()
+
+    Returns:
+        Outputs.
+    """
+    indicators = fetch_indicators(client, args)
+    human_readable = tableToMarkdown('Indicators from GCP Whitelist Feed:', indicators,
+                                     headers=['value', 'type'], removeNull=True)
+
+    return human_readable, {}, {'raw_response': indicators}
+
+
 def fetch_indicators(client: Client, params: Dict[str, str]) -> List[Dict]:
     feed_tags = argToList(params.get('feedTags', ''))
     iterator = client.build_iterator()
@@ -90,6 +107,7 @@ def main():
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
 
+    command = demisto.command()
     LOG(f'Command being called is {demisto.command()}')
     try:
         client = Client(
@@ -97,17 +115,19 @@ def main():
             verify=verify_certificate,
             proxy=proxy)
 
-        if demisto.command() == 'test-module':
-            return_outputs(*test_module(client))
+        commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
+            'test-module': test_module,
+            'gcp-whitelist-get-indicators': get_indicators
+        }
 
-        elif demisto.command() == 'gcp-whitelist-get-indicators':
-            return_outputs(str(fetch_indicators(client)))
+        if command in commands:
+            return_outputs(*commands[command](client, demisto.params()))
 
         elif demisto.command() == 'fetch-indicators':
             indicators = fetch_indicators(client, demisto.params())
             for single_batch in batch(indicators, batch_size=2000):
                 demisto.createIndicators(single_batch)
-    # Log exceptions
+
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 

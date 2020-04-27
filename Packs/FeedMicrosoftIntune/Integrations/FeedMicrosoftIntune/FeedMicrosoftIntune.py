@@ -183,6 +183,7 @@ def main():
             'test-module': test_module,
             'intune-get-indicators': get_indicators_command
         }
+
         if command in commands:
             return_outputs(*commands[command](client, demisto.params(), demisto.args()))
 
