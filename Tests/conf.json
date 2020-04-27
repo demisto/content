@@ -2630,9 +2630,25 @@
         {
             "integrations": "IBM Resilient Systems",
             "playbookID": "IBM Resilient Systems Test"
+        },
+        {
+            "integrations": "PrismaAccess",
+            "playbookID": "Prisma_Access_Egress_IP_Feed-Test",
+            "timeout" : 60000,
+            "fromversion": "5.5.0",
+            "nightly": true
+        },
+        {
+            "integrations": "PrismaAccess",
+            "playbookID": "Prisma_Access-Test",
+            "timeout" : 60000,
+            "fromversion": "5.5.0",
+            "nightly": true
         }
     ],
     "skipped_tests": {
+        "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get PrismaAccess instance",
+        "Prisma_Access-Test": "unskip after we will get PrismaAccess instance",
         "Test-Shodan_v2": "Issue 23370",
         "Send Investigation Summary Reports - Test": "Issue 22299",
         "Symantec Deepsight Test": "Issue 22971",
@@ -2684,6 +2700,7 @@
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
+        "PrismaAccess": "Instance will be provided soon by Lior and Prasen",
         "Infoblox": "Issue 23770",
         "Trend Micro Apex": "Issue 23632",
         "Awake Security": "Issue 23376",
