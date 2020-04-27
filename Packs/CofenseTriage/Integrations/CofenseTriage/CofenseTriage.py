@@ -5,6 +5,8 @@ from typing import Any, List, Dict
 from io import BytesIO
 from PIL import Image
 
+from . import triage_instance
+triage_instance.init() 
 from .triage_instance import TRIAGE_INSTANCE
 from .triage_report import TriageReport
 from .triage_reporter import TriageReporter
@@ -50,7 +52,7 @@ def test_function() -> None:
     try:
         response = TRIAGE_INSTANCE.request("processed_reports")
 
-        if response.ok:
+        if response:
             # test fetching mechanism
             if demisto.params().get('isFetch'):
                 fetch_reports()
@@ -158,7 +160,8 @@ def search_reports(subject=None, url=None, file_hash=None, reported_at=None, cre
     matches = []
 
     for report in reports:
-        if subject and subject != report.get('subject'):
+        if subject and subject != report.get('report_subject'):
+            # TODO do we really want to do exact string match here? not case-insensitive substring?
             continue
         if url and url != report.get('url'):
             continue
@@ -236,7 +239,7 @@ def get_attachment_command() -> None:
 
 
 def get_attachment(attachment_id):
-    response = TRIAGE_INSTANCE.request(f'attachment/{attachment_id}', params={'attachment_id': attachment_id}, raw_response=True)
+    response = TRIAGE_INSTANCE.request(f'attachment/{attachment_id}', raw_response=True)
     if not response.ok:
         return_error(f'Call to Cofense Triage failed [{response.status_code}]')
     else:
@@ -244,14 +247,13 @@ def get_attachment(attachment_id):
 
 
 def get_report_by_id_command() -> None:
-    # arguments importing
     report_id = int(demisto.getArg('report_id'))  # type: int
     verbose = demisto.getArg('verbose') == "true"
 
-    # running the command
-    res = get_report_by_id(report_id)[0]
+    report = TriageReport(TRIAGE_INSTANCE.request(f"reports/{report_id}"))
+        # TODO new classmethod on TriageReport that makes the TRIAGE_INSTANCE call
+    res = report.attrs #TODO
 
-    # parsing outputs
     if not verbose:
         # extract only relevant fields
         res = {k: res[k] for k in res.keys() & TERSE_FIELDS}
@@ -361,7 +363,9 @@ def get_report_png_by_id_command() -> None:
 
 def get_report_png_by_id(report_id):
     """Fetch and return the PNG file associated with the specified report_id"""
-    return TRIAGE_INSTANCE.request(f"reports/{report_id}.png", raw_response=True).content
+    return TRIAGE_INSTANCE.request(
+        f"reports/{report_id}.png", raw_response=True
+    ).content
 
 
 def parse_report_body(report) -> None:
@@ -375,13 +379,6 @@ def parse_report_body(report) -> None:
         ] = '### Cofense HTML Report:\nHTML report download request has been completed'
         demisto.results(attachment)
         del report['report_body']
-
-
-def get_report_by_id(report_id):
-    """Fetch a report from Triage by report_id"""
-
-    return TRIAGE_INSTANCE.request(f"reports/{report_id}", params={'report_id': report_id})
-
 
 
 try:

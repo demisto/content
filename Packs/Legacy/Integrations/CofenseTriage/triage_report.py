@@ -22,11 +22,25 @@ class TriageReport:
 
     @property
     def category_name(self):
-        pass
+        return {
+            1: 'Non-Malicious',
+            2: 'Spam',
+            3: 'Crimeware',
+            4: 'Advanced Threats',
+            5: 'Phishing Simulation',
+            # TODO is this still complete?
+        }.get(self.attrs["category_id"], "Unknown")
 
     @property
     def severity(self):
-        pass
+        # Demisto's severity levels are 4 - Critical, 3 - High, 2 - Medium, 1 - Low, 0 - Unknown
+        return {
+            1: 1,  # non malicious -> low
+            2: 0,  # spam -> unknown
+            3: 2,  # crimeware -> medium
+            4: 2,  # advanced threats -> medium
+            5: 1,  # phishing simulation -> low
+        }.get(self.attrs["category_id"], 0)
 
     @property
     def report_body(self):
@@ -41,7 +55,7 @@ class TriageReport:
         """Flatten the Reporter object to a set of `reporter_` prefixed attributes"""
         return {
             **self.attrs,
-            **{f"reporter_{k}": v for k, v in self.reporter.attrs},
+            **{f"reporter_{k}": v for k, v in self.reporter.attrs.items()},
         }
 
     @property

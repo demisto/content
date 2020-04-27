@@ -23,8 +23,8 @@ class TestTriageInstance:
 
         requests = triage_instance.TRIAGE_INSTANCE.request("processed_reports")
 
-        assert len(requests) == 3
-        assert requests[0]["subject"] == "my great subject"
+        assert len(requests) == 1
+        assert requests[0]["report_subject"] == "suspicious subject"
 
     def test_request_unsuccessful(self, mocker, requests_mock):
         requests_mock.get(

@@ -36,12 +36,6 @@ def get_demisto_arg(name):
     )
 
 
-def demisto_handle_error(message, error="", outputs=None):
-    raise Exception(
-        f"Reported error to Demisto: {message} (error={error}) (outputs={outputs})"
-    )
-
-
 @pytest.fixture(autouse=True)
 def stub_demisto_setup(mocker):
     mocker.patch("demistomock.getArg", get_demisto_arg)
