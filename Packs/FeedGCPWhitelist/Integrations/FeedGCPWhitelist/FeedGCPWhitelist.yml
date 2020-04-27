@@ -88,7 +88,7 @@ script:
     - contextPath: hello
       description: Should be Hello **something** here
       type: String
-  dockerimage: gcp2:latest
+  dockerimage: devtesting/dnspython:1.0.0.1587970266
   feed: true
   isfetch: false
   longRunning: false
