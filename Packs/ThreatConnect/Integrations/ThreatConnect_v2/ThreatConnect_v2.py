@@ -675,7 +675,6 @@ def tc_get_indicator_command():
         = tc_get_indicator(indicator, owners, rating_threshold, confidence_threshold, associated_groups,
                            associated_indicators, include_observations, include_tags, indicator_type)
     # remove extra items from the indicator markdown
-    demisto.error('{}{}'.format('\n' * 6, ec))
     if ec:
         indicators = copy.deepcopy(ec)
         indicators = indicators['TC.Indicator(val.ID && val.ID === obj.ID)']
@@ -756,7 +755,6 @@ def tc_get_indicator(indicator, owners, rating_threshold, confidence_threshold, 
                                     confidence_threshold=confidence_threshold, associated_groups=associated_groups,
                                     associated_indicators=associated_indicators,
                                     include_observations=include_observations, include_tags=include_tags)
-    demisto.error('{}{}'.format('\n' * 6, raw_indicators))
     ec, indicators = create_context(raw_indicators, include_dbot_score=True)
 
     if raw_indicators:
