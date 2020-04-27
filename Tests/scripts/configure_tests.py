@@ -40,6 +40,10 @@ INTEGRATION_REGEXES = [
     PACKS_INTEGRATION_REGEX,
     TEST_DATA_INTEGRATION_YML_REGEX
 ]
+TEST_DATA_SCRIPT_YML_REGEX = r'Tests\/scripts\/infrastructure_tests\/tests_data\/.*\.yml'
+SCRIPT_REGEXES = [
+    TEST_DATA_SCRIPT_YML_REGEX
+]
 INCIDENT_FIELD_REGEXES = [
     INCIDENT_FIELD_REGEX,
     PACKS_INCIDENT_FIELDS_REGEX
@@ -476,7 +480,7 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     playbook_to_version = {}
     integration_to_version = {}
     for file_path in modified_files:
-        if checked_type(file_path, YML_SCRIPT_REGEXES):
+        if checked_type(file_path, SCRIPT_REGEXES + YML_SCRIPT_REGEXES):
             name = get_name(file_path)
             script_names.add(name)
             script_to_version[name] = (get_from_version(file_path), get_to_version(file_path))
@@ -775,15 +779,27 @@ def get_test_conf_from_conf(test_id, server_version, conf=None):
 
 
 def extract_matching_object_from_id_set(obj_id, obj_set, server_version='0'):
-    """Gets first occurrence of object in the object's id_set with matching id and valid from/to version"""
-    # return None if nothing is found
-    test = next((obj_wrpr[obj_id] for obj_wrpr in obj_set if (
-        obj_id in obj_wrpr
-        and is_runnable_in_server_version(from_v=obj_wrpr.get(obj_id).get('fromversion', '0'),
-                                          server_v=server_version,
-                                          to_v=obj_wrpr.get(obj_id).get('toversion', '99.99.99'))
-    )), None)
-    return test
+    """Gets first occurrence of object in the object's id_set with matching id/name and valid from/to version"""
+    for obj_wrpr in obj_set:
+        # try to get object by id
+        if obj_id in obj_wrpr:
+            obj = obj_wrpr.get(obj_id)
+
+        # try to get object by name
+        else:
+            obj_keys = list(obj_wrpr.keys())
+            if len(obj_keys) == 0:
+                continue
+            obj = obj_wrpr[obj_keys[0]]
+            if obj.get('name') != obj_id:
+                continue
+
+        # check if object is runnable
+        fromversion = obj.get('fromversion', '0')
+        toversion = obj.get('toversion', '99.99.99')
+        if is_runnable_in_server_version(from_v=fromversion, server_v=server_version, to_v=toversion):
+            return obj
+    return None
 
 
 def get_test_from_conf(branch_name, conf=None):
