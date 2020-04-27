@@ -152,8 +152,7 @@ Search for messages using specific message attributes as indicators.
          ],
          "id": "C88B18749AAAAB1B55fc0fa78",
          "type": "trace"
-      },
-      …
+      }
    ],
    "meta": {  
       "total": 85347,
@@ -272,7 +271,7 @@ fireeye-etp-get-alerts
           },
           "etp_message_id": "0103174000EA2CA54302e5ef",
           "headers": {
-            "cc": "<birdperson@ earth45.uni>"
+            "cc": "<birdperson@ earth45.uni>",
             "to": "< morty@earth45. uni >",
             "from": " rick@ earth45. uni ",
             "subject": "[ CAT 6 ] DOHMH: Suspicious Activity Detected | 11810"
@@ -281,17 +280,14 @@ fireeye-etp-get-alerts
           "timestamp": {
             "accepted": "2018-04-02T22:28:38"
           }
-        }
-      },
+        },
       "id": "AWKIehnC9Y6JVVonz9xG",
       "links": {
         "detail": "/api/v1/alerts/AWKIehnC9Y6JVVonz9xG"
-      }
-    },
- 	….
+      }},
     "total": 109,
     "copyright": "Copyright 2018 Fireeye Inc"
-  },
+  }],
   "type": "alerts"
 }
 ```
