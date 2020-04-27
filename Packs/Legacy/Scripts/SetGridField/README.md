@@ -61,15 +61,20 @@ Assume the following:
 
 Considering the following cases:
 1. Key value to Grid:
-`!SetGridField columns="columnheade1,columnheade2,columnheade3" context_path=EWS.Items.HeadersMap grid_id=mygrid keys
-="Received,Thread-Index"` 
- Grid after update: 
- ![Grid](grid_key_value_update.png)
+```shell script
+!SetGridField columns="columnheade1,columnheade2,columnheade3" context_path=EWS.Items.HeadersMap grid_id=mygrid keys="Received,Thread-Index"
+```
+
+Grid after update: \
+![Grid](grid_key_value_update.png)
  
 2. List of item properties to Grid:
-`!SetGridField columns="columnheade1,columnheade2,columnheade3" context_path=EWS.Items.headers grid_id=mygrid keys="Received,Thread-Index"` 
- Grid after update:/
- ![Grid](grid_list_update.png) 
+```shell script
+!SetGridField columns="columnheade1,columnheade2,columnheade3" context_path=EWS.Items.headers grid_id=mygrid keys="Received,Thread-Index"
+```
+
+Grid after update: \
+![Grid](grid_list_update.png) 
 
 
 
