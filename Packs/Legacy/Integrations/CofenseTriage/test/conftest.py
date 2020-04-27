@@ -21,8 +21,11 @@ def fixture_from_file():
 DEMISTO_ARGS = {}
 
 
-def set_demisto_arg(name, value):
-    DEMISTO_ARGS[name] = value
+@pytest.fixture
+def set_demisto_arg():
+    def _set_demisto_arg(name, value):
+        DEMISTO_ARGS[name] = value
+    return _set_demisto_arg
 
 
 def get_demisto_arg(name):
