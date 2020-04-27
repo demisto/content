@@ -16,7 +16,7 @@
 <li><strong>URL</strong></li>
 <li><strong>Access Key</strong></li>
 <li><strong>Secret Key</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 </ul>
 </li>

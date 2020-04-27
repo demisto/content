@@ -11,13 +11,11 @@ configuration:
   name: token
   required: true
   type: 4
-- defaultvalue: 'False'
-  display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-- defaultvalue: 'False'
-  display: Use system proxy settings
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8

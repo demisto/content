@@ -25,11 +25,13 @@
     "hidden": false,
     "associatedTypes": [
         "Malware",
-        "Traps"
+        "Traps",
+        "Port Scan"
     ],
     "systemAssociatedTypes": [
         "Malware",
-        "Traps"
+        "Traps",
+        "Port Scan"
     ],
     "associatedToAll": false,
     "unmapped": false,

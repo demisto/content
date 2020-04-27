@@ -297,6 +297,25 @@ def create_phishlabs_object(indicator: dict) -> dict:
     }
 
 
+def indicator_type_finder(indicator_data: dict):
+    """Find the indicator type of the given indicator
+
+    Args:
+        indicator_data(dict): The data about the indicator
+
+    Returns:
+        str. The indicator type
+    """
+    indicator = indicator_data.get('value')
+    # PhishLabs IOC does not classify Email indicators correctly giving them typing of "ReplayTo", "HeaderReplyTo"
+    # "ReturnPath" and so on - to combat that we find the Email indicator type by regex
+    if re.match(emailRegex, indicator):
+        return 'Email'
+
+    else:
+        return indicator.get('type')
+
+
 @logger
 def create_indicator_content(indicator: dict) -> dict:
     """
@@ -304,10 +323,11 @@ def create_indicator_content(indicator: dict) -> dict:
     :param indicator: The indicator
     :return: The object to return to the War Room
     """
+
     return {
         'ID': indicator.get('id'),
         'Indicator': indicator.get('value'),
-        'Type': indicator.get('type'),
+        'Type': indicator_type_finder(indicator),
         'CreatedAt': indicator.get('createdAt'),
         'UpdatedAt': indicator['updatedAt'] if indicator.get('updatedAt', NONE_DATE) != NONE_DATE else '',
         'FalsePositive': indicator.get('falsePositive')

@@ -168,7 +168,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.ArcsightBlackIPValueFieldName
+              simple: inputs.ArcsightBlackListIPValueFieldName
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -263,7 +263,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: inputs.ArcsightBlackIPValueFieldName
+                  simple: inputs.ArcsightBlackListIPValueFieldName
                 iscontext: true
               suffix: {}
           - operator: join
@@ -331,7 +331,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.ArcsightWhiteIPValueFieldName
+              simple: inputs.ArcsightWhiteListIPValueFieldName
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -633,7 +633,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.ArcsightWatchIPValueFieldName
+              simple: inputs.ArcsightWatchListIPValueFieldName
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -842,7 +842,7 @@ inputs:
   required: false
   description: ID of the black list IP Active List resource as appears in ArcSight.
   playbookInputQuery: null
-- key: ArcsightBlackIPValueFieldName
+- key: ArcsightBlackListIPValueFieldName
   value: {}
   required: false
   description: The name of the black list Active List field to insert the IP value
