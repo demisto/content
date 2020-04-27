@@ -60,8 +60,8 @@ None
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | The desired incident ID | Required | 
-| start_date | The starting date of the forensics timeline.<br>start_date is in Zulu time format, for example: 1993-09-24T17:30:00.000Z. | Optional | 
-| end_date | The last date of the forensics timeline.<br>end_date is in Zulu time format, for example: 1993-09-24T17:30:00.000Z. | Optional | 
+| start_date | The starting date of the forensics timeline.<br/>start_date is in Zulu time format, for example: 1993-09-24T17:30:00.000Z. | Optional | 
+| end_date | The last date of the forensics timeline.<br/>end_date is in Zulu time format, for example: 1993-09-24T17:30:00.000Z. | Optional | 
 
 
 ##### Context Output
@@ -86,8 +86,8 @@ illusive-get-forensics-timeline incident_id=80 start_date=2020-02-21T15:00:00.00
 ### Illusive Forensics Timeline
 |details|eventId|id|source|starred|time|title|type|
 |---|---|---|---|---|---|---|---|
-| date: 2020-04-21 15:04:26.234<br>serviceType: EXTERNAL<br>hasForensics: No<br>data: API call source IP: 172.16.1.42<br>sourceIP: 172.27.139.14<br>id: 90<br>type: EXTERNAL<br>title: [External] Event 90 | 90 | ad552472-9132-4b80-8e4e-092dadd56f24 | MANAGEMENT | false | 1587481466234 | [External] Event 90 | EVENT |
-| date: 2020-04-21 15:05:21.035<br>serviceType: EXTERNAL<br>hasForensics: No<br>data: API call source IP: 172.16.1.42<br>sourceIP: 172.27.139.14<br>id: 92<br>type: EXTERNAL<br>title: [External] Event 92 | 92 | 421c517d-a252-4aec-a492-2ad6486ad6ab | MANAGEMENT | false | 1587481521035 | [External] Event 92 | EVENT |
+| date: 2020-04-21 15:04:26.234<br/>serviceType: EXTERNAL<br/>hasForensics: No<br/>data: API call source IP: 172.16.1.42<br/>sourceIP: 172.27.139.14<br/>id: 90<br/>type: EXTERNAL<br/>title: [External] Event 90 | 90 | ad552472-9132-4b80-8e4e-092dadd56f24 | MANAGEMENT | false | 1587481466234 | [External] Event 90 | EVENT |
+| date: 2020-04-21 15:05:21.035<br/>serviceType: EXTERNAL<br/>hasForensics: No<br/>data: API call source IP: 172.16.1.42<br/>sourceIP: 172.27.139.14<br/>id: 92<br/>type: EXTERNAL<br/>title: [External] Event 92 | 92 | 421c517d-a252-4aec-a492-2ad6486ad6ab | MANAGEMENT | false | 1587481521035 | [External] Event 92 | EVENT |
 
 
 ### 2. illusive-get-asm-host-insight
@@ -235,9 +235,9 @@ None
 ### Illusive Deceptive Servers
 |adHost|deceptiveState|host|policyNames|serviceTypes|
 |---|---|---|---|---|
-| false | APPROVED | server1.illusive.com | adiPo,<br>Full Protection | SHARE,<br>DB |
-| false | APPROVED | server2.illusive.com | Full Protection | WEB,<br>DB |
-| false | APPROVED | server3.illusive.com | adiPo,<br>Full Protection | FTP,<br>SHARE,<br>DB |
+| false | APPROVED | server1.illusive.com | adiPo,<br/>Full Protection | SHARE,<br/>DB |
+| false | APPROVED | server2.illusive.com | Full Protection | WEB,<br/>DB |
+| false | APPROVED | server3.illusive.com | adiPo,<br/>Full Protection | FTP,<br/>SHARE,<br/>DB |
 
 
 ### 6. illusive-is-deceptive-user
@@ -370,7 +370,7 @@ There is no context output for this command.
 ### Illusive Add Deceptive Server Succeeded
 |host|policyNames|serviceTypes|
 |---|---|---|
-| server4.illusive.com | All Policies | FTP,<br>SSH |
+| server4.illusive.com | All Policies | FTP,<br/>SSH |
 
 
 ### 10. illusive-delete-deceptive-users
@@ -441,7 +441,7 @@ None
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | policy_name | Policy name to assign | Required | 
-| hosts | List of hosts to assign, in the following format: machine@domain.<br>Maximum number of hosts is 1000. | Required | 
+| hosts | List of hosts to assign, in the following format: machine@domain.<br/>Maximum number of hosts is 1000. | Required | 
 
 
 ##### Context Output
@@ -470,7 +470,7 @@ None
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hosts | List of hosts to remove policy assignment from, in the following format: machine@domain.<br>Maximum number of hosts is 1000 | Required | 
+| hosts | List of hosts to remove policy assignment from, in the following format: machine@domain.<br/>Maximum number of hosts is 1000 | Required | 
 
 
 ##### Context Output
@@ -531,10 +531,10 @@ None
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | The desired incident ID to retrieve.<br>If specified - other arguments are ignored and only a single incident can be retrieved<br> | Optional | 
+| incident_id | The desired incident ID to retrieve.<br/>If specified - other arguments are ignored and only a single incident can be retrieved<br/> | Optional | 
 | hostnames | The list of hostnames to retrieve incidents | Optional | 
 | has_forensics | Whether to retrieve incidents with forensics only | Optional | 
-| limit | Use offset and limit for pagination.<br>The maximum limit is 100. | Optional | 
+| limit | Use offset and limit for pagination.<br/>The maximum limit is 100. | Optional | 
 | offset | Use offset and limit for pagination. | Optional | 
 | start_date | start_date is in Zulu time format, for example: 1993-09-24T17:30:00.000Z. | Optional | 
 
@@ -568,7 +568,7 @@ None
 ### Illusive Incidents
 |closed|deceptionFamilies|flagged|hasForensics|incidentId|incidentTimeUTC|incidentTypes|lastSeenUser|policyName|riskInsights|sourceHostname|sourceIp|sourceOperatingSystem|unread|userNotes|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| false | FAMILY_TYPE_BROWSERS | false | false | 28 | 2020-04-20T06:44:33.207Z | DECEPTION |  |  | stepsToDomainAdmin: null<br>stepsToCrownJewel: null |  | 172.27.139.14 |  | false |  |
+| false | FAMILY_TYPE_BROWSERS | false | false | 28 | 2020-04-20T06:44:33.207Z | DECEPTION |  |  | stepsToDomainAdmin: null<br/>stepsToCrownJewel: null |  | 172.27.139.14 |  | false |  |
 
 
 ### 16. illusive-get-event-incident-id
