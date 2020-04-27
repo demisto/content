@@ -44,7 +44,7 @@ configuration:
   - suspicious
   required: false
   type: 16
-- display: 'Bad dispositions (CheckPhish labels for phishing URLs). Defaults are 
+- display: 'Bad dispositions (CheckPhish labels for phishing URLs). Defaults are
     "cryptojacking", "phish", "likely_phish", "scam".'
   name: bad_disp
   options:
@@ -125,3 +125,4 @@ script:
   runonce: false
   script: '-'
   type: python
+  subtype: python3
