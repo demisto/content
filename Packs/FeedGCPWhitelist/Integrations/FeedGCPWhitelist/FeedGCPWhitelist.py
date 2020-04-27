@@ -12,10 +12,10 @@ requests.packages.urllib3.disable_warnings()
 GOOGLE_BASE_DNS = "_cloud-netblocks.googleusercontent.com"
 
 
-def fetch_cidr(dns_address: str) -> List[str]:
+def fetch_cidr(dns_address: str) -> List[Dict]:
     cidr_arr = []
     regex_dns = r"(include:.*? )"
-    regex_cidr = r"(ip4:.*? )"
+    regex_cidr = r"(ip.*?:.*? )"
 
     query_response_str = str(list(dns.resolver.query(dns_address, "TXT"))[0])
     dns_matches = re.finditer(regex_dns, query_response_str)
@@ -26,8 +26,9 @@ def fetch_cidr(dns_address: str) -> List[str]:
     cidr_matches = re.finditer(regex_cidr, query_response_str)
     for match in cidr_matches:
         m = match.group()
-        address = m[4:len(m) - 1]
-        cidr_arr.append(address)
+        cidr_type = FeedIndicatorType.CIDR if(m[0:3] == "ip4") else FeedIndicatorType.IPv6CIDR
+        cidr_ip = m[4:len(m) - 1]
+        cidr_arr.append({"type": cidr_type, "ip": cidr_ip})
     return cidr_arr
 
 
@@ -58,11 +59,11 @@ def fetch_indicators(client: Client) -> List[Dict]:
     indicators = []
     for indicator in iterator:
         indicators.append({
-            'value': indicator,
-            'type': FeedIndicatorType.CIDR,
+            'value': indicator["ip"],
+            'type': indicator["type"],
             'rawJSON': {
-                'value': indicator,
-                'type': FeedIndicatorType.CIDR,
+                'value': indicator["ip"],
+                'type': indicator["type"],
             },
         })
 
