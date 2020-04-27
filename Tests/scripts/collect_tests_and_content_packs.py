@@ -198,8 +198,8 @@ def get_tests(file_path):
         return data_dictionary.get('tests', [])
 
 
-def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, catched_playbooks, tests_set, id_set,
-                  conf):
+def collect_tests_and_content_packs(script_ids, playbook_ids, integration_ids, catched_scripts, catched_playbooks, tests_set, id_set,
+                                    conf):
     """Collect tests for the affected script_ids,playbook_ids,integration_ids.
 
     :param script_ids: The ids of the affected scripts in your change set.
@@ -267,7 +267,6 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
     # remove skipped integrations from the list
     missing_ids = missing_ids - set(skipped_integrations)
 
-    return test_ids, missing_ids, caught_missing_test
     packs_to_install = set()
     id_set_test_playbooks = id_set.get('TestPlaybooks', [])
     for test_playbook in id_set_test_playbooks:
@@ -440,7 +439,7 @@ def find_tests_and_packs_for_modified_files(modified_files, conf, id_set):
     tests_set, catched_scripts, catched_playbooks, packs_to_install = collect_changed_ids(
         integration_ids, playbook_names, script_names, modified_files, id_set)
 
-    test_ids, missing_ids, caught_missing_test, test_packs_to_install = collect_tests(
+    test_ids, missing_ids, caught_missing_test, test_packs_to_install = collect_tests_and_content_packs(
         script_names, playbook_names, integration_ids, catched_scripts, catched_playbooks, tests_set, id_set, conf)
 
     packs_to_install.update(test_packs_to_install)
