@@ -85,6 +85,11 @@ script:
       name: record-id
       required: true
       secret: false
+    - default: false
+      isArray: false
+      name: application-id
+      required: true
+      secret: false
     deprecated: false
     execution: false
     name: archer-get-record
@@ -160,6 +165,15 @@ script:
   - deprecated: false
     execution: false
     name: archer-reset-cache
+  - arguments:
+    - default: false
+      isArray: false
+      name: field-id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: archer-get-valuelist
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: true

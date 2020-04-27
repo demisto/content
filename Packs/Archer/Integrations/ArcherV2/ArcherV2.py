@@ -70,6 +70,18 @@ def get_search_options_soap_request(token, report_guid):
            '</soap:Envelope>'
 
 
+def get_get_value_list_soap_request(token, field_id):
+    return '<?xml version="1.0" encoding="utf-8"?>' + \
+           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
+           '    <soap:Body>' + \
+           '        <GetValueListForField xmlns="http://archer-tech.com/webservices/">' + \
+           f'            <sessionToken>{token}</sessionToken>' + \
+           f'            <fieldId>{field_id}</fieldId>' + \
+           '        </GetValueListForField>' + \
+           '    </soap:Body>' + \
+           '</soap:Envelope>'
+
+
 SOAP_COMMANDS = {'archer-get-reports':
                  {'soapAction': 'http://archer-tech.com/webservices/GetReports',
                   'urlSuffix': 'rsaarcher/ws/search.asmx',
@@ -84,7 +96,13 @@ SOAP_COMMANDS = {'archer-get-reports':
                      {'soapAction': 'http://archer-tech.com/webservices/GetSearchOptionsByGuid',
                       'urlSuffix': 'rsaarcher/ws/search.asmx',
                       'soapBody': get_search_options_soap_request,
-                      'outputPath': 'Envelope.Body.GetSearchOptionsByGuidResponse.GetSearchOptionsByGuidResult'}}
+                      'outputPath': 'Envelope.Body.GetSearchOptionsByGuidResponse.GetSearchOptionsByGuidResult'},
+                 'archer-get-valuelist':
+                     {'soapAction': 'http://archer-tech.com/webservices/GetValueListForField',
+                      'urlSuffix': 'rsaarcher/ws/field.asmx',
+                      'soapBody': get_get_value_list_soap_request,
+                      'outputPath': 'Envelope.Body.GetValueListForFieldResponse.GetValueListForFieldResult'}
+                 }
 
 
 def extract_from_xml(xml, path):
@@ -130,7 +148,7 @@ class Client(BaseClient):
             'Password': self.password
         }
 
-        res = self._http_request('Post', 'core/security/login', json_data=body, ok_codes=[200])
+        res = self._http_request('Post', '/rsaarcher/api/core/security/login', json_data=body, ok_codes=[200])
 
         session = res.get('RequestedObject').get('SessionToken')
         REQUEST_HEADERS['Authorization'] = f'Archer session-id={session}'
@@ -157,31 +175,36 @@ class Client(BaseClient):
 
         res = self._http_request('Post', req_data['urlSuffix'], headers=headers,
                                   data=body, ok_codes=[200], resp_type='content')
-        self.destroy_token(token)
         return extract_from_xml(res, req_data['outputPath'])
 
-
     def get_level_by_app_id(self, app_id):
+        cache = demisto.getIntegrationContext()
+        if cache.get(app_id):
+            return cache[app_id]
+
         levels = []
         res = self.do_request('GET', f'rsaarcher/api/core/system/level/module/{app_id}')
         for level in res:
             if level.get('RequestedObject') and level.get('IsSuccessful'):
-                levels.append(level.get('RequestedObject').get('Id'))
+                level_id = level.get('RequestedObject').get('Id')
+
+                fields = {}
+                res = self.do_request('GET', f'rsaarcher/api/core/system/fielddefinition/level/{level_id}')
+                for field in res:
+                    if field.get('RequestedObject') and field.get('IsSuccessful'):
+                        field_item = field.get('RequestedObject')
+                        fields[field_item.get('Id')] = {'Type': field_item.get('Type'),
+                                                        'Name': field_item.get('Name'),
+                                                        'IsRequired': field_item.get('IsRequired', False)}
+
+                levels.append({'level': level_id, 'mapping': fields})
+
+        if levels:
+            cache[app_id] = levels
+            demisto.setIntegrationContext(cache)
         return levels
 
-    def get_fields_by_level_id(self, level_id):
-        fields = {}
-        res = self.do_request('GET', f'rsaarcher/api/core/system/fielddefinition/level/{level_id}')
-        for field in res:
-            if field.get('RequestedObject') and field.get('IsSuccessful'):
-                field_item = field.get('RequestedObject')
-                fields[field_item.get('Id')] = {'Type': field_item.get('Type'),
-                               'Name': field_item.get('Name'),
-                               'IsRequired': field_item.get('IsRequired', False)}
-        return fields
-
-    def generate_field_contents(self, fields_values, app_id, level_id):
-        level_fields = self.get_fields_by_level_id(level_id)
+    def generate_field_contents(self, fields_values, level_fields):
         fields_values = json.loads(fields_values)
 
         field_content = {}
@@ -198,6 +221,13 @@ class Client(BaseClient):
                                       'FieldId': _id}
         return field_content
 
+    def get_sub_form_id(self, app_id, field_id, value_for_sub_form):
+        level_data = self.get_level_by_app_id(app_id)[0]
+        body = {'Content': {'LevelId': level_data['level'],
+                'FieldContents': {'29906': {'Type': 1, 'FieldId': 29906, 'Value': value_for_sub_form}}},
+                'SubformFieldId': field_id}
+
+        res = self.do_request('Post', f'rsaarcher/api/core/content', data=body)
 
 def test_module(client: Client) -> str:
     return 'ok' if client.do_request('GET', 'rsaarcher/api/core/system/application') else 'Connection failed.'
@@ -237,7 +267,7 @@ def search_applications_command(client: Client, args: Dict[str, str]) -> Tuple[s
 def get_application_fields_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     app_id = args.get('application-id')
 
-    res = client.do_request('GET', f'core/system/fielddefinition/application/{app_id}')
+    res = client.do_request('GET', f'rsaarcher/api/core/system/fielddefinition/application/{app_id}')
 
     fields = []
     for field in res:
@@ -299,7 +329,8 @@ def get_mapping_by_level_command(client: Client, args: Dict[str, str]) -> Tuple[
 
 def get_record_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     record_id = args.get('record-id')
-    res = client.do_request('GET', f'core/content/{record_id}')
+    app_id = args.get('application-id')
+    res = client.do_request('GET', f'rsaarcher/api/core/content/{record_id}')
 
     if res.get('ValidationMessages'):
         messages = []
@@ -310,7 +341,10 @@ def get_record_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
     if res.get('RequestedObject') and res.get('IsSuccessful'):
         content_obj = res.get('RequestedObject')
         level_id = content_obj.get('LevelId')
-        level_fields = client.get_fields_by_level_id(level_id)
+        levels = client.get_level_by_app_id(app_id)
+        level_fields = list(filter(lambda m: m['level'] == level_id, levels))
+        if level_fields:
+            level_fields = level_fields[0]['mapping']
 
         record_fields = {}
         for _id, field in content_obj.get('FieldContents').items():
@@ -324,7 +358,6 @@ def get_record_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
             if field_value and field_data.get('Name'):
                 record_fields[field_data.get('Name')] = field_value
 
-
         record = {'Id': content_obj.get('Id'),'Record': record_fields}
         markdown = tableToMarkdown('archer-get-record', record)
         context: dict = {
@@ -337,10 +370,11 @@ def get_record_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
 def create_record_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     app_id = args.get('application-id')
     fields_values = args.get('fields-to-values')
-    level_id = client.get_level_by_app_id(app_id)[0]
-    field_contents = client.generate_field_contents(fields_values, app_id, level_id)
 
-    body = {'Content': {'LevelId': level_id, 'FieldContents': field_contents}}
+    level_data = client.get_level_by_app_id(app_id)[0]
+    field_contents = client.generate_field_contents(fields_values, level_data['mapping'])
+
+    body = {'Content': {'LevelId': level_data['level'], 'FieldContents': field_contents}}
 
     res = client.do_request('Post', f'rsaarcher/api/core/content', data=body)
 
@@ -367,10 +401,10 @@ def update_record_command(client: Client, args: Dict[str, str]) -> Tuple[str, di
     app_id = args.get('application-id')
     record_id = args.get('record-id')
     fields_values = args.get('fields-to-values')
-    level_id = client.get_level_by_app_id(app_id)[0]
-    field_contents = client.generate_field_contents(fields_values, app_id, level_id)
+    level_data = client.get_level_by_app_id(app_id)[0]
+    field_contents = client.generate_field_contents(fields_values,  level_data['mapping'])
 
-    body = {'Content': {'Id': record_id, 'LevelId': level_id, 'FieldContents': field_contents}}
+    body = {'Content': {'Id': record_id, 'LevelId':  level_data['level'], 'FieldContents': field_contents}}
     res = client.do_request('Put', f'rsaarcher/api/core/content', data=body)
 
     if res.get('IsSuccessful'):
@@ -411,6 +445,18 @@ def search_options(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any
 
 def reset_cache(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     demisto.setIntegrationContext({})
+    return '', {}, ''
+
+
+def get_value_list(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+    field_id = args.get('field-id')
+    raw_res = client.do_soap_request('archer-get-valuelist', field_id=field_id)
+    try:
+        res = json.loads(xml2json(raw_res))
+    except Exception as e:
+        print('')
+    return res, {}, raw_res
+
 
 def main():
     params = demisto.params()
@@ -434,7 +480,8 @@ def main():
         'archer-execute-statistic-search-by-report': execute_statistics_command,
         'archer-get-reports': get_reports,
         'archer-get-search-options-by-guid': search_options,
-        'archer-reset-cache': reset_cache
+        'archer-reset-cache': reset_cache,
+        'archer-get-valuelist': get_value_list
     }
 
     command = demisto.command()
