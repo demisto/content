@@ -7,7 +7,7 @@ from ruamel.yaml import YAML
 
 from Tests.scripts.collect_tests_and_content_packs import (
     RANDOM_TESTS_NUM, TestConf, create_filter_envs_file, get_modified_files,
-    get_test_list_and_content_packs_to_install)
+    get_test_list_and_content_packs_to_install, collect_content_packs_to_install)
 
 with open('Tests/scripts/infrastructure_tests/tests_data/mock_id_set.json', 'r') as mock_id_set_f:
     MOCK_ID_SET = json.load(mock_id_set_f)
@@ -673,7 +673,7 @@ def test_dont_fail_integration_on_no_tests_if_it_has_test_playbook_in_conf(mocke
         collect_tests_and_content_packs._FAILED = False
 
 
-def test_added_content_packs_are_collected(mocker):
+def test_modified_integration_content_pack_is_collected(mocker):
     """
     Given
     - Modified integration named GreatIntegration which is in pack named GreatPack.
@@ -726,3 +726,54 @@ def test_added_content_packs_are_collected(mocker):
         ])
 
         collect_tests_and_content_packs._FAILED = False
+
+
+def test_collect_content_packs_to_install(mocker):
+    """
+    Given
+    - ID set of content entities
+    - Set of integration IDs which contain integration named GreatIntegration which is in pack named GreatPack.
+    - Set of script names which contain script named fake-script which is in pack named FakePack.
+    - Set of playbook names which contain playbook named fake-playbook which is in pack named FakePack.
+
+    When
+    - Collecting content packs to install - running `collect_content_packs_to_install()`.
+
+    Then
+    - Ensure the content packs GreatPack and FakePack are collected.
+    - Ensure the collection runs successfully.
+    """
+    from Tests.scripts import collect_tests_and_content_packs
+    collect_tests_and_content_packs._FAILED = False  # reset the FAILED flag
+
+    great_pack_name = "GreatPack"
+    great_integration_name = "GreatIntegration"
+    great_test_name = "GreatTest"
+    fake_integration = TestUtils.create_integration(
+        name=great_integration_name, with_commands=["great-command"], pack=great_pack_name
+    )
+    fake_test_playbook = TestUtils.create_test_playbook(name=great_test_name, with_scripts=["FetchFromInstance"])
+
+    try:
+        TestUtils.mock_get_modified_files(mocker, modified_files_list=[fake_integration['path']])
+        fake_id_set = TestUtils.create_id_set(
+            with_integration=fake_integration["id_set"],
+            with_test_playbook=fake_test_playbook["id_set"]
+        )
+
+        content_packs_to_install = collect_content_packs_to_install(
+            id_set=fake_id_set,
+            integration_ids={great_integration_name},
+            playbook_names={"fake_playbook"},
+            script_names={"fake-script"}
+        )
+
+        assert content_packs_to_install == {great_pack_name, "FakePack"}
+        assert not collect_tests_and_content_packs._FAILED
+    finally:
+        TestUtils.delete_files([
+            fake_integration["path"]
+        ])
+
+        collect_tests_and_content_packs._FAILED = False
+
