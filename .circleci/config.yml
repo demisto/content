@@ -108,7 +108,7 @@ jobs:
 
             python3 -m pytest ./Tests/scripts/infrastructure_tests/mock_unit_test.py -v
             python3 -m pytest ./Tests/scripts/infrastructure_tests/release_notes_test.py -v
-            python3 -m pytest ./Tests/scripts/infrastructure_tests/test_configure_tests.py -v
+            python3 -m pytest ./Tests/scripts/infrastructure_tests/test_collect_tests_and_content_packs.py -v
             python3 -m pytest ./Tests/Marketplace/Tests/marketplace_services_test.py -v
             python3 -m pytest ./Tests/Marketplace/Tests/upload_packs_test.py -v
       - run:
@@ -156,7 +156,7 @@ jobs:
             fi
 
             [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-            python3 ./Tests/scripts/configure_tests.py -n $IS_NIGHTLY
+            python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY
       - run:
           name: Prepare Content Packs For Testing
           when: always
