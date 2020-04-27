@@ -1,20 +1,11 @@
-from datetime import datetime
-
 import pytest
 from freezegun import freeze_time
-import datetime
 
-demisto_params = {
-    "host": "https://some-triage-host/",
-    "token": "api_token",
-    "user": "user",
-}
-with patch("demistomock.params", lambda: demisto_params):
-    import CofenseTriage
+from . import CofenseTriage
 
 
 def fixture_from_file(fname):
-    with open(f"test_fixtures/{fname}", "r") as file:
+    with open(f"test/fixtures/{fname}", "r") as file:
         return file.read()
 
 
@@ -33,17 +24,10 @@ def get_demisto_arg(name):
     )
 
 
-def demisto_handle_error(message, error="", outputs=None):
-    raise Exception(
-        f"Reported error to Demisto: {message} (error={error}) (outputs={outputs})"
-    )
-
-
 @pytest.fixture(autouse=True)
 def stub_demisto_setup(mocker):
-    mocker.patch("CofenseTriage.return_outputs")
-    mocker.patch("CofenseTriage.return_error", demisto_handle_error)
-    mocker.patch("CofenseTriage.fileResult")
+    mocker.patch("CofenseTriage.triage_instance.return_error")
+    mocker.patch("CofenseTriage.CofenseTriage.fileResult")
     mocker.patch("demistomock.getArg", get_demisto_arg)
     mocker.patch("demistomock.getParam", get_demisto_arg)  # args ≡ params in tests
     mocker.patch("demistomock.results")
@@ -61,119 +45,98 @@ class TestCofenseTriage:
 
         CofenseTriage.demisto.results.assert_called_once_with("ok")
 
-    def test_fetch_reports(self, mocker, requests_mock):
+    def test_test_function_error(self, requests_mock):
+        requests_mock.get(
+            "https://some-triage-host/api/public/v1/processed_reports",
+            status_code=404,
+            text=fixture_from_file("processed_reports.json"),
+        )
+
+        CofenseTriage.test_function()
+
+        CofenseTriage.triage_instance.return_error.assert_called_once()
+
+    @freeze_time("2000-10-31")
+    def test_fetch_reports(self, requests_mock):
         set_demisto_arg("max_fetch", 10)
-        set_demisto_arg("date_range", "unused")
+        set_demisto_arg("date_range", "1 day")
         set_demisto_arg("category_id", 5)
         set_demisto_arg("match_priority", 2)
         set_demisto_arg("tags", "")
-        mocker.patch(
-            "CofenseTriage.parse_date_range",
-            lambda _x, date_format: (
-                datetime.fromtimestamp(688867200),
-                datetime.fromtimestamp(688867200),
-            ),
+        requests_mock.get(
+            "https://some-triage-host/api/public/v1/processed_reports?category_id=5&match_priority=2&tags=&start_date=2000-10-30T00%3A00%3A00.000000Z",
+            text=fixture_from_file("processed_reports.json"),
         )
         requests_mock.get(
-            "https://some-triage-host/api/public/v1/processed_reports?category_id=5&match_priority=2&tags=&start_date=1991-10-30+19%3A00%3A00",
-            text=fixture_from_file("processed_reports.json"),
+            "https://some-triage-host/api/public/v1/reporters/5331",
+            text=fixture_from_file("reporters.json"),
         )
 
         CofenseTriage.fetch_reports()
 
-        CofenseTriage.demisto.incidents.assert_called_with(
-            [
-                {
-                    "name": "cofense triage report 1: Unknown",
-                    "occurred": "2000-04-20T01:02:03.000000Z",
-                    "rawJSON": '{"id": "1", "subject": "my great subject", "url": "my-great-url", "created_at": "2000-04-20T01:02:03.000000Z", "md5": "md5-value", "sha256": "sha256-value", "reporter_id": "reporter1", "report_body": "report 1 body"}',
-                    "severity": 0,
-                },
-                {
-                    "name": "cofense triage report 2: Unknown",
-                    "occurred": "2000-04-20T01:02:03.000000Z",
-                    "rawJSON": '{"id": "2", "subject": "some other subject that does not match", "url": "my-great-url", "created_at": "2000-04-20T01:02:03.000000Z", "md5": "md5-value", "sha256": "sha256-value", "reporter_id": "reporter2", "report_body": "report 2 body"}',
-                    "severity": 0,
-                },
-                {
-                    "name": "cofense triage report 3: Unknown",
-                    "occurred": "2000-04-20T01:02:03.000000Z",
-                    "rawJSON": '{"id": "3", "subject": "my great subject", "url": "some-url-that-does-not-match", "created_at": "2000-04-20T01:02:03.000000Z", "md5": "md5-value", "sha256": "sha256-value", "reporter_id": "reporter3", "report_body": "report 3 body"}',
-                    "severity": 0,
-                },
-            ]
+        demisto_incidents = CofenseTriage.demisto.incidents.call_args_list[0][0][0]
+        assert (
+            demisto_incidents[0]["name"]
+            == "cofense triage report 13363: Phishing Simulation"
+        )
+        assert demisto_incidents[0]["occurred"] == "2020-03-19T16:43:09.715Z"
+        assert demisto_incidents[0]["severity"] == 1
+
+    @freeze_time("2000-10-31")
+    def test_search_reports_command(self, requests_mock):
+        set_demisto_arg("subject", "suspicious subject")
+        set_demisto_arg("url", "")
+        set_demisto_arg("file_hash", "")
+        set_demisto_arg("reporter", "")
+        set_demisto_arg("max_matches", 10)
+        set_demisto_arg("verbose", "")
+        requests_mock.get(
+            "https://some-triage-host/api/public/v1/processed_reports?start_date=2000-10-24T00%3A00%3A00.000000Z",
+            text=fixture_from_file("processed_reports.json"),
         )
 
-    def test_search_reports_command(self, mocker, requests_mock):
+        CofenseTriage.search_reports_command()
+
+        demisto_results = CofenseTriage.demisto.results.call_args_list[0][0]
+        assert len(demisto_results) == 1
+        assert demisto_results[0]["HumanReadable"] == (
+            "### Reports:\n"
+            "|Category Id|Created At|Email Attachments|Id|Location|Match Priority|Md5|Report Body|Report Subject|Reported At|Reporter Id|Sha256|\n"
+            "|---|---|---|---|---|---|---|---|---|---|---|---|\n"
+            "| 5 | 2020-03-19T16:43:09.715Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | 13363 | Processed | 1 | 111 | From: Sender <sender@example.com><br>Reply-To: \"sender@example.com\" <sender@example.com><br>Date: Wednesday, March 18, 2020 at 3:34 PM<br>To: recipient@example.com<br>Subject: suspicious subject<br>click on this link! trust me! <a href=\"http://example.com/malicious\">here</a> | suspicious subject | 2020-03-19T16:42:22.000Z | 5331 | 222 |\n"
+        )
+
+    @freeze_time("2000-10-31")
+    def test_search_reports_command_not_found(self, requests_mock):
         set_demisto_arg("subject", "my great subject")
         set_demisto_arg("url", "my-great-url")
         set_demisto_arg("file_hash", "")
         set_demisto_arg("reporter", "")
         set_demisto_arg("max_matches", 10)
         set_demisto_arg("verbose", "")
-        mocker.patch(
-            "CofenseTriage.parse_date_range",
-            lambda _x: (
-                datetime.fromtimestamp(688867200),
-                datetime.fromtimestamp(688867200),
-            ),
-        )
         requests_mock.get(
-            "https://some-triage-host/api/public/v1/processed_reports?start_date=1991-10-30T19%3A00%3A00.000000Z",
+            "https://some-triage-host/api/public/v1/processed_reports?start_date=2000-10-24T00%3A00%3A00.000000Z",
             text=fixture_from_file("processed_reports.json"),
         )
 
         CofenseTriage.search_reports_command()
 
-        CofenseTriage.demisto.results.assert_called_with(
-            {
-                "Type": 1,
-                "ContentsFormat": "markdown",
-                "Contents": [
-                    {
-                        "created_at": "2000-04-20T01:02:03.000000Z",
-                        "id": "1",
-                        "md5": "md5-value",
-                        "report_body": "report 1 body",
-                        "reporter_id": "reporter1",
-                        "sha256": "sha256-value",
-                    }
-                ],
-                "HumanReadable": (
-                    "### Reports:\n"
-                    "|Created At|Id|Md5|Report Body|Reporter Id|Sha256|\n"
-                    "|---|---|---|---|---|---|\n"
-                    "| 2000-04-20T01:02:03.000000Z | 1 | md5-value | report 1 body | reporter1 | sha256-value |\n"
-                ),
-                "EntryContext": {
-                    "Cofense.Report(val.ID && val.ID == obj.ID)": [
-                        {
-                            "CreatedAt": "2000-04-20T01:02:03.000000Z",
-                            "ID": "1",
-                            "Md5": "md5-value",
-                            "Sha256": "sha256-value",
-                            "ReportBody": "report 1 body",
-                            "ReporterId": "reporter1",
-                        }
-                    ]
-                },
-            }
-        )
+        demisto_results = CofenseTriage.demisto.results.call_args_list[0][0]
+        assert len(demisto_results) == 1
+        assert demisto_results[0]["HumanReadable"] == "no results were found."
 
     def test_get_attachment_command(self, mocker, requests_mock):
         set_demisto_arg("attachment_id", "5")
         set_demisto_arg("file_name", "my_great_file")
         requests_mock.get(
-            "https://some-triage-host/api/public/v1/attachment/5?attachment_id=5",  # TODO get param probably unnecessary
+            "https://some-triage-host/api/public/v1/attachment/5",
             text=fixture_from_file("attachment.txt"),
         )
 
         CofenseTriage.get_attachment_command()
 
         CofenseTriage.fileResult.assert_called_with(
-            # TODO use keyword args in the module
-            "my_great_file",
-            b"A Great Attachment\n",
+            "my_great_file", b"A Great Attachment\n"
         )
         CofenseTriage.demisto.results.assert_has_calls(
             [
@@ -192,99 +155,64 @@ class TestCofenseTriage:
             ]
         )
 
-    def test_get_reporter_command(self, mocker, requests_mock):
+    def test_get_reporter_command(self, requests_mock):
         set_demisto_arg("reporter_id", "5")
         requests_mock.get(
             "https://some-triage-host/api/public/v1/reporters/5",
-            text=fixture_from_file("individual_reporter_response.json"),
+            text=fixture_from_file("reporters.json"),
         )
 
         CofenseTriage.get_reporter_command()
 
-        CofenseTriage.return_outputs.assert_called_once_with(
-            readable_output="Reporter: user387@cofense.com",
-            outputs={
-                "Cofense.Reporter(val.ID && val.ID == obj.ID)": {
-                    "ID": "5",
-                    "Email": "user387@cofense.com",
-                }
-            },
+        demisto_results = CofenseTriage.demisto.results.call_args_list[0][0]
+        assert demisto_results[0]["HumanReadable"] == (
+            "### Reporter Results:\n"
+            "|Created At|Credibility Score|Email|Id|Last Reported At|Reports Count|Updated At|Vip|\n"
+            "|---|---|---|---|---|---|---|---|\n"
+            "| 2019-04-12T02:58:17.401Z | 0 | reporter1@example.com | 111 | 2016-02-18T00:24:45.000Z | 3 | 2019-04-12T02:59:22.287Z | false |\n"
         )
+        assert demisto_results[0]["Contents"] == {
+            "id": 111,
+            "email": "reporter1@example.com",
+            "created_at": "2019-04-12T02:58:17.401Z",
+            "updated_at": "2019-04-12T02:59:22.287Z",
+            "credibility_score": 0,
+            "reports_count": 3,
+            "last_reported_at": "2016-02-18T00:24:45.000Z",
+            "vip": False,
+        }
 
     def test_get_report_by_id_command(self, requests_mock):
         set_demisto_arg("report_id", "6")
         set_demisto_arg("verbose", "false")
         requests_mock.get(
-            "https://some-triage-host/api/public/v1/reports/6?report_id=6",  # TODO that get param is probably unnecessary
-            text=fixture_from_file("individual_report_response.json"),
+            "https://some-triage-host/api/public/v1/reports/6",
+            text=fixture_from_file("single_report.json"),
         )
         requests_mock.get(
             "https://some-triage-host/api/public/v1/reporters/5",
-            text=fixture_from_file("individual_reporter_response.json"),
+            text=fixture_from_file("reporters.json"),
         )
 
         CofenseTriage.get_report_by_id_command()
 
-        CofenseTriage.return_outputs.assert_called_once_with(
-            readable_output=(
-                "### Report Summary:\n"
-                "|Cluster Id|Id|Reporter|Reporter Id|\n"
-                "|---|---|---|---|\n"
-                "| 212 | 6 | user387@cofense.com | 5 |\n"
-            ),
-            outputs={
-                "Cofense.Report(val.ID && val.ID == obj.ID)": [
-                    {
-                        "ClusterId": "212",
-                        "ID": "6",
-                        "Reporter": "user387@cofense.com",
-                        "ReporterId": "5",
-                    }
-                ]
-            },
+        demisto_results = CofenseTriage.demisto.results.call_args_list[0][0]
+        assert demisto_results[0]["HumanReadable"] == (
+            "### Report Summary:\n"
+            "|Category Id|Created At|Email Attachments|Id|Location|Match Priority|Md5|Report Body|Report Subject|Reported At|Reporter Id|Sha256|\n"
+            "|---|---|---|---|---|---|---|---|---|---|---|---|\n"
+            "| 7 | 2020-03-19T16:43:09.715Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | 13363 | Processed | 1 | 111 | From: Sender <sender@example.com><br>Reply-To: \"sender@example.com\" <sender@example.com><br>Date: Wednesday, March 18, 2020 at 3:34 PM<br>To: recipient@example.com<br>Subject: suspicious subject<br>click on this link! trust me! <a href=\"http://example.com/malicious\">here</a> | suspicious subject | 2020-03-19T16:42:22.000Z | 5331 | 222 |\n"
         )
 
     def test_get_all_reporters(self, requests_mock):
         requests_mock.get(
             "https://some-triage-host/api/public/v1/reporters?start_date=1995-01-01",
-            text=fixture_from_file("reporters_response.json"),
+            text=fixture_from_file("reporters.json"),
         )
 
         reporters = CofenseTriage.get_all_reporters("1995-01-01")
 
         assert reporters == [
-            "user1@cofense.com",
-            "user2@cofense.com",
-            "user3@cofense.com",
+            "reporter1@example.com",
+            "reporter2@example.com",
         ]
-
-    def test_malformed_json(self, mocker, requests_mock):
-        mocker.patch(
-            "CofenseTriage.return_error"
-        )  # we expect an error, so stub out the re-raising behavior
-        requests_mock.get(
-            "https://some-triage-host/api/public/v1/processed_reports",
-            text=fixture_from_file("malformed_json.json"),
-        )
-
-        CofenseTriage.http_request("/processed_reports")
-
-        CofenseTriage.return_error.assert_called_with(
-            "Error in API call to Cofense Triage, could not parse result [200]"
-        )
-
-    def test_error_from_triage(self, mocker, requests_mock):
-        mocker.patch(
-            "CofenseTriage.return_error"
-        )  # we expect an error, so stub out the re-raising behavior
-        requests_mock.get(
-            "https://some-triage-host/api/public/v1/processed_reports",
-            text='{"message": "some error message"}',
-            status_code=403,
-        )
-
-        CofenseTriage.http_request("/processed_reports")
-
-        CofenseTriage.return_error.assert_called_with(
-            'Call to Cofense Triage failed [403] - [{"message": "some error message"}]'
-        )
