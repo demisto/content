@@ -6,13 +6,7 @@ import re
 import xlrd
 import csv
 import tldextract
-import warnings
 import traceback
-
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
-warnings.filterwarnings(action="ignore", message='.*certificate verify failed: '
-                                                 'self signed certificate in certificate chain')
 
 
 def csv_file_to_indicator_list(file_path, col_num, starting_row, auto_detect, default_type, type_col, limit, offset):
