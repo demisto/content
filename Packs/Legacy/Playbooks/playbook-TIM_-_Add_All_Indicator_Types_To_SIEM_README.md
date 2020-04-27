@@ -25,7 +25,7 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Source** | **Required** |
 | --- | --- | --- | --- | --- |
-|  |  |  |  | Optional |
+| From indicators Query | The types of indicators and their tags that will be sent to SIEM | (type:ip or type:file or type:Domain or type:URL) -tags:pending_review and (tags:approved_black or tags:approved_white or tags:approved_watchlist) |  | Optional |
 
 ## Playbook Outputs
 ---
