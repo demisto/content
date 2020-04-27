@@ -362,6 +362,13 @@ jobs:
                 echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
                 exit 0
             fi
+            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto GA"')
+            echo "Demisto GA filter=$TEMP"
+            if [[ "$TEMP" == "false" ]];
+              then
+                echo "Skipping - instance was not setup"
+                exit 0
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/run_tests.sh "Demisto GA"
@@ -381,6 +388,13 @@ jobs:
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
               then
                 echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
+                exit 0
+            fi
+            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto one before GA"')
+            echo "Demisto one before GA filter=$TEMP"
+            if [[ "$TEMP" == "false" ]];
+              then
+                echo "Skipping - instance was not setup"
                 exit 0
             fi
             if ./Tests/scripts/is_ami.sh ;
@@ -404,6 +418,13 @@ jobs:
                 echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
                 exit 0
             fi
+            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto two before GA"')
+            echo "Demisto two before GA filter=$TEMP"
+            if [[ "$TEMP" == "false" ]];
+              then
+                echo "Skipping - instance was not setup"
+                exit 0
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/run_tests.sh "Demisto two before GA"
@@ -425,6 +446,13 @@ jobs:
                 echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
                 exit 0
             fi
+            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Server Master"')
+            echo "Server Master filter=$TEMP"
+            if [[ "$TEMP" == "false" ]];
+              then
+                echo "Skipping - instance was not setup"
+                exit 0
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/run_tests.sh "Server Master"
@@ -444,6 +472,13 @@ jobs:
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
                 echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
+                exit 0
+            fi
+            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto PreGA"')
+            echo "Demisto PreGA filter=$TEMP"
+            if [[ "$TEMP" == "false" ]];
+              then
+                echo "Skipping - instance was not setup"
                 exit 0
             fi
             if ./Tests/scripts/is_ami.sh ;
