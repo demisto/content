@@ -757,7 +757,7 @@ def main():
     brand_new_integrations = []
     testing_server = servers[0]  # test integration instances only on a single server
     client = demisto_client.configure(base_url=testing_server, username=username, password=password,
-                                              verify_ssl=False)
+                                      verify_ssl=False)
     set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number)
     for test in tests_for_iteration:
         testing_client = demisto_client.configure(base_url=testing_server, username=username, password=password,
