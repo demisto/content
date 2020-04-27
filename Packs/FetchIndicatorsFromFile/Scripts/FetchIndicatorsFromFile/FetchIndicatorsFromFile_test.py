@@ -110,4 +110,3 @@ def test_detect_type():
     assert 'DomainGlob' == detect_type('*.demisto.com')
     assert 'IPv6CIDR' == detect_type('2001:db8:85a3:8d3:1319:8a2e:370:7348/32')
     assert None is detect_type('not_an_indicator')
-
