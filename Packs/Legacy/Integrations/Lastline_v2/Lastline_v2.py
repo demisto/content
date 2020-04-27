@@ -182,6 +182,7 @@ def get_report_context(result: Dict, threshold=None) -> Dict:
             'Vendor': 'Lastline',
             'Score': 0
         }
+        dbotscore_list = []
         if 'score' in result['data']:
             status = 'Completed'
             if threshold is None:
@@ -235,10 +236,14 @@ def get_report_context(result: Dict, threshold=None) -> Dict:
             if key == 'File':
                 dbotscore_copy = dbotscore.copy()
                 dbotscore_copy['Type'] = 'file'
-                dbotscore = [dbotscore, dbotscore_copy]
+                dbotscore_list = [dbotscore, dbotscore_copy]
             context_entry['Lastline'] = lastline
             context_entry[key] = data
-        if (key == 'URL' and dbotscore['Score'] != 0) or (key == 'File' and dbotscore[0]['Score'] != 0):
+
+        if key == 'File' and dbotscore_list[0]['Score'] != 0:
+            context_entry['DBotScore'] = dbotscore_list
+
+        if key == 'URL' and dbotscore['Score'] != 0:
             context_entry['DBotScore'] = dbotscore
     return context_entry
 

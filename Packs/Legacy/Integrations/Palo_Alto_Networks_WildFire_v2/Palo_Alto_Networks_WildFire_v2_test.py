@@ -32,8 +32,10 @@ def test_prettify_verdict():
 
 
 def test_create_dbot_score_from_verdict():
-    expected_dbot_score = dict({
-        'Indicator': "sha256_hash", 'Type': "hash", 'Vendor': "WildFire", 'Score': 3})
+    expected_dbot_score = [{
+        'Indicator': "sha256_hash", 'Type': "hash", 'Vendor': "WildFire", 'Score': 3},
+        {'Indicator': "sha256_hash", 'Type': "file", 'Vendor': "WildFire", 'Score': 3},
+    ]
     dbot_score_dict = create_dbot_score_from_verdict({'SHA256': "sha256_hash", 'Verdict': "1"})
     assert expected_dbot_score == dbot_score_dict
 
@@ -48,7 +50,9 @@ def test_prettify_verdicts():
 
 def test_create_dbot_score_from_verdicts():
     expected_dbot_scores = [{'Indicator': "sha256_hash", 'Type': "hash", 'Vendor': "WildFire", 'Score': 3},
-                            {'Indicator': "md5_hash", 'Type': "hash", 'Vendor': "WildFire", 'Score': 1}]
+                            {'Indicator': "sha256_hash", 'Type': "file", 'Vendor': "WildFire", 'Score': 3},
+                            {'Indicator': "md5_hash", 'Type': "hash", 'Vendor': "WildFire", 'Score': 1},
+                            {'Indicator': "md5_hash", 'Type': "file", 'Vendor': "WildFire", 'Score': 1}]
     dbot_score_dict = create_dbot_score_from_verdicts(
         [{'SHA256': "sha256_hash", 'Verdict': "1"}, {'MD5': "md5_hash", 'Verdict': "0"}])
     assert expected_dbot_scores == dbot_score_dict

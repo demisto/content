@@ -1357,3 +1357,5 @@ script:
         paging.
     description: Private API. Retrieves comments for a given resource.
   runonce: false
+tests:
+ -  virusTotal-test-playbook

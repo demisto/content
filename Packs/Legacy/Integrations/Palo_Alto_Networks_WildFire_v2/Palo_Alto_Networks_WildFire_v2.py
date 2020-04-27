@@ -6,7 +6,6 @@ import json
 import shutil
 import requests
 
-
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -75,6 +74,7 @@ VERDICTS_TO_DBOTSCORE = {
 
 class NotFoundError(Exception):
     """ Report or File not found. """
+
     def __init__(self, *args):  # real signature unknown
         pass
 
@@ -179,10 +179,10 @@ def create_dbot_score_from_verdict(pretty_verdict):
         'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]]
     },
         {
-        'Indicator': pretty_verdict["SHA256"] if 'SHA256' in pretty_verdict else pretty_verdict["MD5"],
-        'Type': 'file',
-        'Vendor': 'WildFire',
-        'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]]
+            'Indicator': pretty_verdict["SHA256"] if 'SHA256' in pretty_verdict else pretty_verdict["MD5"],
+            'Type': 'file',
+            'Vendor': 'WildFire',
+            'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]]
     }
 
     ]
@@ -418,13 +418,10 @@ def wildfire_get_verdict_command():
 
         dbot_score_list = create_dbot_score_from_verdict(pretty_verdict)
         entry_context = {
-            {"WildFire.Verdicts(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5)": pretty_verdict},
-            {"DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && "
-             "val.Type == obj.Type)": {dbot_score_list[0]}},
-            {"DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && "
-             "val.Type == obj.Type)": {dbot_score_list[1]}}
+            "WildFire.Verdicts(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5)": pretty_verdict,
+            "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && "
+            "val.Type === obj.Type)": dbot_score_list
         }
-
         demisto.results({
             'Type': entryTypes['note'],
             'Contents': result,
@@ -477,11 +474,9 @@ def wildfire_get_verdicts_command():
         dbot_score_list = create_dbot_score_from_verdicts(pretty_verdicts)
 
         entry_context = {
-            {"WildFire.Verdicts(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5)": pretty_verdicts},
-            {"DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && "
-             "val.Type == obj.Type)": {dbot_score_list[0]}},
-            {"DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && "
-             "val.Type == obj.Type)": {dbot_score_list[1]}}
+            "WildFire.Verdicts(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5)": pretty_verdicts,
+            "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && "
+            "val.Type == obj.Type)": dbot_score_list
         }
 
         demisto.results({
@@ -573,17 +568,13 @@ def create_report(file_hash, reports, file_info, format_='xml', verbose=False):
             outputs["Evidence"]["Text"] = evidence_text
 
     entry_context = {}
-    entry_context["DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && "
-                  "val.Type == obj.Type)"] = {'Indicator': file_hash, 'Type': 'hash', 'Vendor': 'WildFire', 'Score': 0}
-
-    entry_context["DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && "
-                  "val.Type == obj.Type)"] = {'Indicator': file_hash, 'Type': 'file', 'Vendor': 'WildFire', 'Score': 0}
+    dbot_score_file = 0
 
     entry_context["WildFire.Report(val.SHA256 === obj.SHA256)"] = outputs
 
     if file_info:
         if file_info["malware"] == 'yes':
-            entry_context["DBotScore"]["Score"] = 3
+            dbot_score_file = 3
             entry_context[outputPaths['file']] = {
                 'Type': file_info["filetype"],
                 'MD5': file_info["md5"],
@@ -594,7 +585,14 @@ def create_report(file_hash, reports, file_info, format_='xml', verbose=False):
                 'Malicious': {'Vendor': 'WildFire'}
             }
         else:
-            entry_context["DBotScore"]["Score"] = 1
+            dbot_score_file = 1
+
+    entry_context["DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && "
+                  "val.Type == obj.Type)"] = [{'Indicator': file_hash, 'Type': 'hash',
+                                               'Vendor': 'WildFire', 'Score': dbot_score_file},
+                                              {'Indicator': file_hash, 'Type': 'file',
+                                               'Vendor': 'WildFire', 'Score': dbot_score_file}]
+
     if format_ == 'pdf':
         get_report_uri = URL + URL_DICT["report"]
         params = {
