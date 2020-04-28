@@ -639,7 +639,7 @@ def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_te
 
 
 def get_and_print_server_numeric_version(tests_settings):
-    if tests_settings.is_local_run:
+    if tests_settings.is_local_run or not os.path.isfile('./Tests/images_data.txt'):
         # TODO: verify this logic, it's a workaround because the test_image file does not exist on local run
         return '99.99.98'  # latest
     with open('./Tests/images_data.txt', 'r') as image_data_file:
