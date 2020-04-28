@@ -47,10 +47,15 @@ class Client(BaseClient):
     """
 
     def build_iterator(self):
+        """Retrieves all entries from the feed.
+
+        Returns:
+            A list of objects, containing the data.
+        """
         return fetch_cidr(self._base_url)
 
 
-def test_module(client):
+def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
     """Builds the iterator to check that the feed is accessible.
     Args:
         client: Client object.
@@ -82,6 +87,15 @@ def get_indicators(client: Client, params: Dict[str, str], args: Dict[str, str])
 
 
 def fetch_indicators(client: Client, params: Dict[str, str]) -> List[Dict]:
+    """Retrieves indicators from the feed
+
+    Args:
+        client (Client): Client object with request
+        params: demisto.params() to retrieve tags
+
+    Returns:
+        Indicators.
+    """
     feed_tags = argToList(params.get('feedTags', ''))
     iterator = client.build_iterator()
     indicators = []
@@ -117,11 +131,12 @@ def main():
             verify=verify_certificate,
             proxy=proxy)
 
-        commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
+        commands: Dict[
+            str, Callable[[Client, Dict[str, str], Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]
+        ] = {
             'test-module': test_module,
             'gcp-whitelist-get-indicators': get_indicators
         }
-
         if command in commands:
             return_outputs(*commands[command](client, demisto.params(), demisto.args()))
 
