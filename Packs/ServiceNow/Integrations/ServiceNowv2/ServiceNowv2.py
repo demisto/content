@@ -817,11 +817,12 @@ def query_tickets_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
     sys_param_limit = args.get('limit', client.sys_param_limit)
     sys_param_offset = args.get('offset', client.sys_param_offset)
     sys_param_query = str(args.get('query', ''))
+    system_params = split_fields(args.get('system_params', ''))
     additional_fields = argToList(str(args.get('additional_fields')))
 
     ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
 
-    result = client.query(ticket_type, sys_param_limit, sys_param_offset, sys_param_query)
+    result = client.query(ticket_type, sys_param_limit, sys_param_offset, sys_param_query, system_params)
 
     if not result or 'result' not in result or len(result['result']) == 0:
         return 'No ServiceNow tickets matched the query.', {}, {}, True
