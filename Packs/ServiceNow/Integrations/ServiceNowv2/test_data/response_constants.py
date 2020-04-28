@@ -1608,6 +1608,292 @@ RESPONSE_QUERY_TABLE = {
         }
     ]
 }
+RESPONSE_QUERY_TABLE_SYS_PARAMS = {
+    "result": [
+        {
+            "active": {
+                "display_value": "true",
+                "value": "true"
+            },
+            "activity_due": {
+                "display_value": "UNKNOWN",
+                "value": ""
+            },
+            "additional_assignee_list": {
+                "display_value": "",
+                "value": ""
+            },
+            "approval": {
+                "display_value": "Not Yet Requested",
+                "value": "not requested"
+            },
+            "approval_history": {
+                "display_value": "",
+                "value": ""
+            },
+            "approval_set": {
+                "display_value": "",
+                "value": ""
+            },
+            "assigned_to": {
+                "display_value": "",
+                "value": ""
+            },
+            "assignment_group": {
+                "display_value": "Procurement",
+                "value": "1234"
+            },
+            "business_duration": {
+                "display_value": "",
+                "value": ""
+            },
+            "business_service": {
+                "display_value": "",
+                "value": ""
+            },
+            "calendar_duration": {
+                "display_value": "",
+                "value": ""
+            },
+            "calendar_stc": {
+                "display_value": "",
+                "value": ""
+            },
+            "close_notes": {
+                "display_value": "",
+                "value": ""
+            },
+            "closed_at": {
+                "display_value": "",
+                "value": ""
+            },
+            "closed_by": {
+                "display_value": "",
+                "value": ""
+            },
+            "cmdb_ci": {
+                "display_value": "",
+                "value": ""
+            },
+            "comments": {
+                "display_value": "",
+                "value": ""
+            },
+            "comments_and_work_notes": {
+                "display_value": "",
+                "value": ""
+            },
+            "company": {
+                "display_value": "",
+                "value": ""
+            },
+            "contact_type": {
+                "display_value": None,
+                "value": ""
+            },
+            "contract": {
+                "display_value": "",
+                "value": ""
+            },
+            "correlation_display": {
+                "display_value": "",
+                "value": ""
+            },
+            "correlation_id": {
+                "display_value": "",
+                "value": ""
+            },
+            "delivery_plan": {
+                "display_value": "",
+                "value": ""
+            },
+            "delivery_task": {
+                "display_value": "",
+                "value": ""
+            },
+            "description": {
+                "display_value": "Order from vendor or move from in-stock inventory\n\t\t",
+                "value": "Order from vendor or move from in-stock inventory\n\t\t"
+            },
+            "due_date": {
+                "display_value": "2020-04-20 13:58:46",
+                "value": "2020-04-20 20:58:46"
+            },
+            "escalation": {
+                "display_value": "Normal",
+                "value": "0"
+            },
+            "expected_start": {
+                "display_value": "2020-04-20 13:58:46",
+                "value": "2020-04-20 20:58:46"
+            },
+            "follow_up": {
+                "display_value": "",
+                "value": ""
+            },
+            "group_list": {
+                "display_value": "",
+                "value": ""
+            },
+            "impact": {
+                "display_value": "3 - Low",
+                "value": "3"
+            },
+            "knowledge": {
+                "display_value": "false",
+                "value": "false"
+            },
+            "location": {
+                "display_value": "",
+                "value": ""
+            },
+            "made_sla": {
+                "display_value": "true",
+                "value": "true"
+            },
+            "number": {
+                "display_value": "TASK0000001",
+                "value": "TASK0000001"
+            },
+            "opened_at": {
+                "display_value": "2020-04-20 13:58:46",
+                "value": "2020-04-20 20:58:46"
+            },
+            "opened_by": {
+                "display_value": "System Administrator",
+                "value": "1234"
+            },
+            "order": {
+                "display_value": "",
+                "value": ""
+            },
+            "parent": {
+                "display_value": "RITM0000001",
+                "value": "aeed229047801200e0ef563dbb9a71c2"
+            },
+            "priority": {
+                "display_value": "4 - Low",
+                "value": "4"
+            },
+            "reassignment_count": {
+                "display_value": "0",
+                "value": "0"
+            },
+            "request": {
+                "display_value": "REQ0000001",
+                "value": "1234"
+            },
+            "request_item": {
+                "display_value": "RITM0000001",
+                "value": "1234"
+            },
+            "sc_catalog": {
+                "display_value": "",
+                "value": ""
+            },
+            "service_offering": {
+                "display_value": "",
+                "value": ""
+            },
+            "short_description": {
+                "display_value": "Order from vendor or move from in-stock inventory\n\t\t",
+                "value": "Order from vendor or move from in-stock inventory\n\t\t"
+            },
+            "skills": {
+                "display_value": "",
+                "value": ""
+            },
+            "sla_due": {
+                "display_value": "UNKNOWN",
+                "value": ""
+            },
+            "state": {
+                "display_value": "Open",
+                "value": "1"
+            },
+            "sys_class_name": {
+                "display_value": "Catalog Task",
+                "value": "sc_task"
+            },
+            "sys_created_by": {
+                "display_value": "admin",
+                "value": "admin"
+            },
+            "sys_created_on": {
+                "display_value": "2020-04-20 13:58:46",
+                "value": "2020-04-20 20:58:46"
+            },
+            "sys_domain": {
+                "display_value": "global",
+                "value": "global"
+            },
+            "sys_domain_path": {
+                "display_value": "/",
+                "value": "/"
+            },
+            "sys_id": {
+                "display_value": "1234",
+                "value": "1234"
+            },
+            "sys_mod_count": {
+                "display_value": "0",
+                "value": "0"
+            },
+            "sys_tags": {
+                "display_value": "",
+                "value": ""
+            },
+            "sys_updated_by": {
+                "display_value": "admin",
+                "value": "admin"
+            },
+            "sys_updated_on": {
+                "display_value": "2020-04-20 13:58:46",
+                "value": "2020-04-20 20:58:46"
+            },
+            "time_worked": {
+                "display_value": "",
+                "value": ""
+            },
+            "upon_approval": {
+                "display_value": "Proceed to Next Task",
+                "value": "proceed"
+            },
+            "upon_reject": {
+                "display_value": "Cancel all future Tasks",
+                "value": "cancel"
+            },
+            "urgency": {
+                "display_value": "3 - Low",
+                "value": "3"
+            },
+            "user_input": {
+                "display_value": "",
+                "value": ""
+            },
+            "watch_list": {
+                "display_value": "",
+                "value": ""
+            },
+            "work_end": {
+                "display_value": "",
+                "value": ""
+            },
+            "work_notes": {
+                "display_value": "",
+                "value": ""
+            },
+            "work_notes_list": {
+                "display_value": "",
+                "value": ""
+            },
+            "work_start": {
+                "display_value": "",
+                "value": ""
+            }
+        }
+    ]
+}
 RESPONSE_LIST_TABLE_FIELDS = {
     "result": [
         {
