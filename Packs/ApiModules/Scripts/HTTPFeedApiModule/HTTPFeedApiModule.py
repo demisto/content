@@ -262,13 +262,13 @@ def datestring_to_millisecond_timestamp(datestring):
     return int(date.timestamp() * 1000)
 
 
-def get_indicator_fields(line, url, feedTags: list, client: Client):
+def get_indicator_fields(line, url, feed_tags: list, client: Client):
     """
     Extract indicators according to the feed type
     :param line: The current line in the feed
     :param url: The feed URL
     :param client: The client
-    :param feedTags: The indicator tags.
+    :param feed_tags: The indicator tags.
     :return: The indicator
     """
     attributes = None
@@ -324,17 +324,17 @@ def get_indicator_fields(line, url, feedTags: list, client: Client):
                     attributes[f] = i
         attributes['value'] = value = extracted_indicator
         attributes['type'] = feed_config.get('indicator_type', client.indicator_type)
-        attributes['tags'] = feedTags
+        attributes['tags'] = feed_tags
     return attributes, value
 
 
-def fetch_indicators_command(client, feedTags, itype, **kwargs):
+def fetch_indicators_command(client, feed_tags, itype, **kwargs):
     iterators = client.build_iterator(**kwargs)
     indicators = []
     for iterator in iterators:
         for url, lines in iterator.items():
             for line in lines:
-                attributes, value = get_indicator_fields(line, url, feedTags, client)
+                attributes, value = get_indicator_fields(line, url, feed_tags, client)
                 if value:
                     if 'lastseenbysource' in attributes.keys():
                         attributes['lastseenbysource'] = datestring_to_millisecond_timestamp(
@@ -361,8 +361,8 @@ def fetch_indicators_command(client, feedTags, itype, **kwargs):
 def get_indicators_command(client: Client, args):
     itype = args.get('indicator_type', client.indicator_type)
     limit = int(args.get('limit'))
-    feedTags = args.get('feedTags')
-    indicators_list = fetch_indicators_command(client, feedTags, itype)[:limit]
+    feed_tags = args.get('feedTags')
+    indicators_list = fetch_indicators_command(client, feed_tags, itype)[:limit]
     entry_result = camelize(indicators_list)
     hr = tableToMarkdown('Indicators', entry_result, headers=['Value', 'Type', 'Rawjson'])
     return hr, {}, indicators_list
