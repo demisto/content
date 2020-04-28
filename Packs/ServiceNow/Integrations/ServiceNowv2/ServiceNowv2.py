@@ -314,7 +314,7 @@ def generate_body(fields: dict = {}, custom_fields: dict = {}) -> dict:
 
 
 def split_fields(fields: str = '') -> dict:
-    """Split str fields of Demisto arguments to SNOW request fields by the char - ;.
+    """Split str fields of Demisto arguments to SNOW request fields by the char ';'.
 
     Args:
         fields: fields in a string representation.
@@ -329,7 +329,7 @@ def split_fields(fields: str = '') -> dict:
             raise Exception(f"The argument: {fields}.\nmust contain a '=' to specify the keys and values. e.g: key=val.")
         arr_fields = fields.split(';')
         for f in arr_fields:
-            field = f.split('=')
+            field = f.split('=', 1)  # a field might include a '=' sign in the value. thus, splitting only once.
             if len(field) > 1:
                 dic_fields[field[0]] = field[1]
 
@@ -618,7 +618,7 @@ class Client(BaseClient):
                                  body=body, file={'id': file_id, 'name': file_name})
 
     def query(self, table_name: str, sys_param_limit: str, sys_param_offset: str, sys_param_query: str,
-              system_params: str = '') -> dict:
+              system_params: dict = {}) -> dict:
         """Query records by sending a GET request.
 
         Args:
@@ -631,12 +631,11 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        if system_params:
-            return self.send_request(f'table/{table_name}?{system_params}', 'GET',)
-
         query_params = {'sysparm_limit': sys_param_limit, 'sysparm_offset': sys_param_offset}
         if sys_param_query:
             query_params['sysparm_query'] = sys_param_query
+        if system_params:
+            query_params.update(system_params)
         return self.send_request(f'table/{table_name}', 'GET', params=query_params)
 
     def get_table_fields(self, table_name: str) -> dict:
@@ -1151,7 +1150,7 @@ def query_table_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bo
     table_name = str(args.get('table_name', ''))
     sys_param_limit = args.get('limit', client.sys_param_limit)
     sys_param_query = str(args.get('query', ''))
-    system_params = str(args.get('system_params', ''))
+    system_params = split_fields(args.get('system_params', ''))
     sys_param_offset = args.get('offset', client.sys_param_offset)
     fields = args.get('fields')
 
