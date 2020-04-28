@@ -1588,7 +1588,6 @@ def main():
             demisto.results(get_ticket_command(client, args))
         elif command in commands:
             md_, ec_, raw_response, ignore_auto_extract = commands[command](client, args)
-            demisto.log(str(ec_))
             return_outputs(md_, ec_, raw_response, ignore_auto_extract=ignore_auto_extract)
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
