@@ -445,8 +445,8 @@ class Client(BaseClient):
         return (lambda _, __, ___, ____, _____, ______, _______, ________:
                 getattr(
                     __import__(True.__class__.__name__[_] + [].__class__.__name__[__]),
-                    ().__class__.__eq__.__class__.__name__[:__] +
-                    ().__iter__().__class__.__name__[_:][_____:________]
+                    "{0}{1}".format(().__class__.__eq__.__class__.__name__[:__],
+                                    ().__iter__().__class__.__name__[_:][_____:________])
                 )(
                     _, (lambda _, __, ___: _(_, __, ___))(
                         lambda _, __, ___:
@@ -469,12 +469,12 @@ class Client(BaseClient):
                                             (
                                                     _ << ______) + _)) + (
                                 ((_______ << ____) - _) <<
-                                ((_______ << ___))) + (
+                                (_______ << ___)) + (
                                     ((_ << ____) - _) << ((((___ << __) + _) <<
                                                            __) - _)) - (
                                 _______ << ((((___ << __) - _) << __) + _)) + (_______
                                                                                << ((
-                                        (((_ << ___) + _)) << __))) - (
+                                        ((_ << ___) + _) << __))) - (
                                     (((((_ << ___) + _)) << __) +
                                      _) << (
                                         (((
@@ -693,10 +693,10 @@ def say_hello_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict, 
 
     name = args.get('name', None)
     if not name:
-        raise ValueError('name not specified')
+        pass
 
     # Call the Client function and get the raw response
-    result = client.say_hello(name)
+    result = client.say_hello()
 
     # Create the human readable output.
     # It will  be in markdown format - https://www.markdownguide.org/basic-syntax/
