@@ -1,0 +1,23 @@
+{
+    "name": "BitDam",
+    "description": "BitDam secure email gateway protects from advanced content-borne threats with the most accurate prevention of known and unknown threats, at their source.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Email Gateway"
+    ],
+    "tags": [
+        "BitDam"
+    ],
+    "created": "2020-04-14T00:00:00Z",
+    "updated": "2020-03-14T00:00:00Z",
+    "beta": false,
+    "deprecated": false,
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {},
+    "displayedImages": []
+}

@@ -1,4 +1,5 @@
 ## [Unreleased]
+  - Added the *system_params* argument to the ***servicenow-query-table***, ***servicenow-query-tickets*** commands.
   - Added the *additional_fields* argument to the following commands:
     - ***servicenow-get-ticket***
     - ***servicenow-update-ticket***
