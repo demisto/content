@@ -19,7 +19,7 @@ class Client:
     """
 
     def __init__(self, dialect: str, host: str, username: str, password: str, port: str,
-                 database: str, connect_parameters: str):
+                 database: str, connect_parameters: str, ssl_connect: bool):
         self.dialect = dialect
         self.host = host
         self.username = username
@@ -27,6 +27,7 @@ class Client:
         self.port = port
         self.dbname = database
         self.connect_parameters = connect_parameters
+        self.ssl_connect = ssl_connect
         self.connection = self._create_engine_and_connect()
 
     @staticmethod
@@ -63,6 +64,9 @@ class Client:
             elif self.connect_parameters and self.dialect != "Microsoft SQL Server":
                 # a "?" was already added when the driver was defined
                 db_preferences += f'?{self.connect_parameters}'
+            if self.ssl_connect:
+                ssl_connection = {'ssl': {'ssl-mode': 'preferred'}}
+                return sqlalchemy.create_engine(db_preferences, connect_args=ssl_connection).connect()
             return sqlalchemy.create_engine(db_preferences).connect()
         except Exception as err:
             raise Exception(err)
@@ -179,12 +183,13 @@ def main():
     password = params.get("credentials").get("password")
     host = params.get('host')
     database = params.get('dbname')
+    ssl_connect = params.get('ssl_connect')
     connect_parameters = params.get('connect_parameters')
     try:
         command = demisto.command()
         LOG(f'Command being called in SQL is: {command}')
         client = Client(dialect=dialect, host=host, username=user, password=password,
-                        port=port, database=database, connect_parameters=connect_parameters)
+                        port=port, database=database, connect_parameters=connect_parameters, ssl_connect=ssl_connect)
         commands: Dict[str, Callable[[Client, Dict[str, str], str], Tuple[str, Dict[Any, Any], List[Any]]]] = {
             'test-module': test_module,
             'query': sql_query_execute,

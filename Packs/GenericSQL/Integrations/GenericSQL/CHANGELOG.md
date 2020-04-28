@@ -3,6 +3,7 @@
 - Added support for stack trace and the query error message.
 - Added support to Oracle connection.
 - Added support for **limit** and **skip** command arguments in context output.
+- Added support for ssl connection.
 
 ## [20.3.4] - 2020-03-30
 -
