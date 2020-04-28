@@ -167,6 +167,6 @@ def test_sql_queries(command, args, response, expected_result, header, mocker):
     """
     mocker.patch.object(Client, '_create_engine_and_connect')  # needed in order not to make a connection in tests
     mocker.patch.object(Client, 'sql_query_execute_request', return_value=(response, header))
-    client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "")
+    client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "", False)
     result = command(client, args)
     assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command

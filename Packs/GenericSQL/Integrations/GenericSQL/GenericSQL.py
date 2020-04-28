@@ -64,9 +64,11 @@ class Client:
             elif self.connect_parameters and self.dialect != "Microsoft SQL Server":
                 # a "?" was already added when the driver was defined
                 db_preferences += f'?{self.connect_parameters}'
+
             if self.ssl_connect:
                 ssl_connection = {'ssl': {'ssl-mode': 'preferred'}}
                 return sqlalchemy.create_engine(db_preferences, connect_args=ssl_connection).connect()
+
             return sqlalchemy.create_engine(db_preferences).connect()
         except Exception as err:
             raise Exception(err)
