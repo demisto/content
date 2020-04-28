@@ -50,6 +50,15 @@ def test_split_fields():
     expected_custom_field = {'u_customfield': "<a href=\'https://google.com\'>Link text</a>"}
     assert expected_custom_field == split_fields("u_customfield=<a href=\'https://google.com\'>Link text</a>")
 
+    expected_custom_sys_params = {
+        "sysparm_display_value": 'all',
+        "sysparm_exclude_reference_link": 'True',
+        "sysparm_query": 'number=TASK0000001'
+    }
+
+    assert expected_custom_sys_params == split_fields(
+        "sysparm_display_value=all;sysparm_exclude_reference_link=True;sysparm_query=number=TASK0000001")
+
     try:
         split_fields('a')
     except Exception as err:
@@ -80,8 +89,8 @@ def test_split_fields():
     (query_table_command, {'table_name': "alm_asset", 'fields': "asset_tag,sys_updated_by,display_name",
     'query': "display_nameCONTAINSMacBook", 'limit': 3}, RESPONSE_QUERY_TABLE, EXPECTED_QUERY_TABLE, False),
     (query_table_command, {'table_name': "sc_task", 'system_params':
-        "sysparm_display_value=all;sysparm_exclude_reference_link=True;state=1", 'fields': "approval,state,escalation,"
-                                                                                           "number,description"},
+        "sysparm_display_value=all;sysparm_exclude_reference_link=True;sysparm_query=number=TASK0000001",
+                           'fields': "approval,state,escalation,number,description"},
      RESPONSE_QUERY_TABLE_SYS_PARAMS, EXPECTED_QUERY_TABLE_SYS_PARAMS, False),
     (list_table_fields_command, {'table_name': "alm_asset"}, RESPONSE_LIST_TABLE_FIELDS, EXPECTED_LIST_TABLE_FIELDS,
      False),
