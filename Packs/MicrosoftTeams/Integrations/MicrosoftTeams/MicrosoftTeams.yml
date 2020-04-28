@@ -1,3 +1,4 @@
+
 category: Messaging
 commonfields:
   id: Microsoft Teams
@@ -284,7 +285,7 @@ script:
     description: Creates a new channel in a Microsoft Teams team.
     execution: false
     name: microsoft-teams-create-channel
-  dockerimage: demisto/teams:1.0.0.6483
+  dockerimage: demisto/teams:1.0.0.7727
   feed: false
   isfetch: false
   longRunning: true
