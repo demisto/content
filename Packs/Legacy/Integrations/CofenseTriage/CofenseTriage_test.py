@@ -28,6 +28,7 @@ def get_demisto_arg(name):
 def stub_demisto_setup(mocker):
     mocker.patch("CofenseTriage.triage_instance.return_error")
     mocker.patch("CofenseTriage.CofenseTriage.fileResult")
+    mocker.patch("CofenseTriage.triage_report.fileResult")
     mocker.patch("demistomock.getArg", get_demisto_arg)
     mocker.patch("demistomock.getParam", get_demisto_arg)  # args ≡ params in tests
     mocker.patch("demistomock.results")
@@ -202,6 +203,32 @@ class TestCofenseTriage:
             "|Category Id|Created At|Email Attachments|Id|Location|Match Priority|Md5|Report Body|Report Subject|Reported At|Reporter Id|Sha256|\n"
             "|---|---|---|---|---|---|---|---|---|---|---|---|\n"
             "| 7 | 2020-03-19T16:43:09.715Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | 13363 | Processed | 1 | 111 | From: Sender <sender@example.com><br>Reply-To: \"sender@example.com\" <sender@example.com><br>Date: Wednesday, March 18, 2020 at 3:34 PM<br>To: recipient@example.com<br>Subject: suspicious subject<br>click on this link! trust me! <a href=\"http://example.com/malicious\">here</a> | suspicious subject | 2020-03-19T16:42:22.000Z | 5331 | 222 |\n"
+        )
+
+    def test_get_report_by_id_command_with_attachment(self, requests_mock):
+        set_demisto_arg("report_id", "6")
+        set_demisto_arg("verbose", "false")
+        requests_mock.get(
+            "https://some-triage-host/api/public/v1/reports/6",
+            text=fixture_from_file("single_report_with_attachment.json"),
+        )
+        requests_mock.get(
+            "https://some-triage-host/api/public/v1/reporters/5",
+            text=fixture_from_file("reporters.json"),
+        )
+
+        CofenseTriage.get_report_by_id_command()
+
+        demisto_results = CofenseTriage.demisto.results.call_args_list
+        assert demisto_results[0][0][0]["HumanReadable"] == (
+            "### Cofense HTML Report:\n"
+            "HTML report download request has been completed"
+        )
+        assert demisto_results[1][0][0]["HumanReadable"] == (
+            "### Report Summary:\n"
+            "|Category Id|Created At|Email Attachments|Id|Location|Match Priority|Md5|Report Subject|Reported At|Reporter Id|Sha256|\n"
+            "|---|---|---|---|---|---|---|---|---|---|---|\n"
+            "| 7 | 2020-03-19T16:43:09.715Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | 13363 | Processed | 1 | 111 | suspicious subject | 2020-03-19T16:42:22.000Z | 5331 | 222 |\n"
         )
 
     def test_get_all_reporters(self, requests_mock):

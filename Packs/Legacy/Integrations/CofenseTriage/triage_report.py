@@ -3,7 +3,26 @@ from CommonServerPython import fileResult
 import functools
 import json
 
+from .triage_instance import TRIAGE_INSTANCE
 from .triage_reporter import TriageReporter
+
+
+TERSE_FIELDS = [
+    'id',
+    'cluster_id',
+    'reporter_id',
+    'location',
+    'created_at',
+    'reported_at',
+    'report_subject',
+    'report_body',
+    'md5',
+    'sha256',
+    'category_id',
+    'match_priority',
+    'tags',
+    'email_attachments',
+]
 
 
 class TriageReport:
@@ -51,6 +70,10 @@ class TriageReport:
     def reporter(self):
         return TriageReporter(self.attrs["reporter_id"])
 
+    @property
+    def terse_attrs(self):
+        return {key: self.attrs[key] for key in self.attrs.keys() & TERSE_FIELDS}
+
     def to_json(self):
         """Flatten the Reporter object to a set of `reporter_` prefixed attributes"""
         return {
@@ -77,3 +100,7 @@ class TriageReport:
     @classmethod
     def from_json(cls, json_str):
         return cls(json.loads(json_str))
+
+    @classmethod
+    def from_id(cls, report_id):
+        return cls(TRIAGE_INSTANCE.request(f"reports/{report_id}"))
