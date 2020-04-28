@@ -411,7 +411,7 @@ def feed_main(feed_name, params=None, prefix=''):
             args = demisto.args()
             args['feed_name'] = feed_name
             if feedTags:
-                feedTags['tags'] = feedTags
+                args['feedTags'] = feedTags
             readable_output, outputs, raw_response = commands[command](client, args)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
