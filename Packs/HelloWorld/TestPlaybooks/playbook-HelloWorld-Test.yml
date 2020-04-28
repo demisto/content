@@ -109,7 +109,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Hello Dbot
+              simple: Hello world!
     view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
     note: false
     timertriggers: []

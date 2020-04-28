@@ -77,7 +77,7 @@ def test_say_hello():
     }
     _, outputs, _ = say_hello_command(client, args)
 
-    assert outputs['hello'] == 'Hello Dbot'
+    assert outputs['hello'] == 'Hello world!'
 
 
 def test_start_scan(requests_mock):
