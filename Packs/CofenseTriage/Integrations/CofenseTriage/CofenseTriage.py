@@ -250,24 +250,28 @@ def get_report_by_id_command() -> None:
     report_id = int(demisto.getArg('report_id'))  # type: int
     verbose = demisto.getArg('verbose') == "true"
 
-    report = TriageReport(TRIAGE_INSTANCE.request(f"reports/{report_id}"))
-        # TODO new classmethod on TriageReport that makes the TRIAGE_INSTANCE call
-    res = report.attrs #TODO
+    report = TriageReport.from_id(report_id)
 
-    if not verbose:
-        # extract only relevant fields
-        res = {k: res[k] for k in res.keys() & TERSE_FIELDS}
+    if not report:
+        return return_error('Could not find report with matching ID')
 
-    # get the report body, and create html file if necessary
-    if res:
-        parse_report_body(res)
-    #FIXME    res['reporter'] = get_reporter(res.get('reporter_id'))  # enrich: id -> email
-        hr = tableToMarkdown("Report Summary:", res, headerTransform=split_snake, removeNull=True)
-        ec = {'Cofense.Report(val.ID && val.ID == obj.ID)': snake_to_camel_keys([res])}
-        return_outputs(readable_output=hr, outputs=ec)
-
+    if verbose:
+        report_attrs = report.attrs
     else:
-        return_error('Could not find report with matching ID')
+        report_attrs = report.terse_attrs
+
+    if report.attachment:
+        demisto.results(
+            {
+                **report.attachment,
+                **{"HumanReadable": "### Cofense HTML Report:\nHTML report download request has been completed"},
+            }
+        )
+        del report_attrs["report_body"]
+
+    hr = tableToMarkdown("Report Summary:", report_attrs, headerTransform=split_snake, removeNull=True)
+    ec = {'Cofense.Report(val.ID && val.ID == obj.ID)': snake_to_camel_keys([report_attrs])}
+    return_outputs(readable_output=hr, outputs=ec)
 
 
 def get_threat_indicators(indicator_type=None, level=None, start_date=None, end_date=None, page=None, per_page=None) -> list:
@@ -366,19 +370,6 @@ def get_report_png_by_id(report_id):
     return TRIAGE_INSTANCE.request(
         f"reports/{report_id}.png", raw_response=True
     ).content
-
-
-def parse_report_body(report) -> None:
-    if 'report_body' in report and 'HTML' in report['report_body']:
-        attachment = fileResult(
-            filename=f'{report.get("id")}-report.html',
-            data=report.get('report_body').encode(),
-        )
-        attachment[
-            'HumanReadable'
-        ] = '### Cofense HTML Report:\nHTML report download request has been completed'
-        demisto.results(attachment)
-        del report['report_body']
 
 
 try:
