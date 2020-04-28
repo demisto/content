@@ -384,12 +384,11 @@ def test_module(client: Client, args):
 
 
 def feed_main(feed_name, params=None, prefix=''):
-    global TAGS
     if not params:
         params = assign_params(**demisto.params())
     if 'feed_name' not in params:
         params['feed_name'] = feed_name
-    feedTags = argToList(demisto.params().get('feedTags'))
+    feed_tags = argToList(demisto.params().get('feedTags'))
     client = Client(**params)
     command = demisto.command()
     if command != 'fetch-indicators':
@@ -403,15 +402,15 @@ def feed_main(feed_name, params=None, prefix=''):
     }
     try:
         if command == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, feedTags, params.get('indicator_type'))
+            indicators = fetch_indicators_command(client, feed_tags, params.get('indicator_type'))
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
         else:
             args = demisto.args()
             args['feed_name'] = feed_name
-            if feedTags:
-                args['feedTags'] = feedTags
+            if feed_tags:
+                args['feedTags'] = feed_tags
             readable_output, outputs, raw_response = commands[command](client, args)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
