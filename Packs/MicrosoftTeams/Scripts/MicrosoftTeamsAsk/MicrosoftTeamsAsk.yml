@@ -68,7 +68,7 @@ tags:
 - microsoftteams
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.7.4.1150
+dockerimage: demisto/python3:3.8.2.6981
 tests:
 - No test
 dependson:
