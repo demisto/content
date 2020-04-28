@@ -1,6 +1,6 @@
 ## Overview
 Use the Securonix integration to manage incidents and watchlists.
-Integration was build and tested with SNYPR Version 6.3.
+Integration was build and tested with SNYPR Versions: 6.2, 6.3.
 
 This integration supports both cloud and on-prem instances of Securonix.
 To configure a cloud base instance use the *tenant* parameter only.
