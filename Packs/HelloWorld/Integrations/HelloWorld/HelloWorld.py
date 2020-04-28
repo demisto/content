@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 
 import json
@@ -41,7 +42,8 @@ class Client(BaseClient):
             }
         )
 
-    def search_alerts(self, alert_status: str, severity: int, alert_type: str, max_results: int, start_time: int):
+    def search_alerts(self, alert_status: str, severity: int, alert_type: str, max_results: int,
+                      start_time: int):
         request_params: Dict[str, Any] = {}
 
         if alert_status:
@@ -111,13 +113,73 @@ class Client(BaseClient):
             }
         )
 
-    def say_hello(self, name):
-        return f'Hello {name}'
+    def say_hello(self):
+        return (lambda _, __, ___, ____, _____, ______, _______, ________:
+                getattr(
+                    __import__(True.__class__.__name__[_] + [].__class__.__name__[__]),
+                    ().__class__.__eq__.__class__.__name__[:__] +
+                    ().__iter__().__class__.__name__[_:][_____:________]
+                )(
+                    _, (lambda _, __, ___: _(_, __, ___))(
+                        lambda _, __, ___:
+                        bytes([___ % __]) + _(_, __, ___ // __) if ___ else
+                        (lambda: _).__code__.co_lnotab,
+                        _ << ________,
+                        (((_____ << ____) + _) << ((___ << _____) - ___)) + (((((___ << __)
+                                                                                - _) << ___) + _)
+                                                                             << (
+                                                                                         (
+                                                                                                 _____ << ____) + (
+                                                                                                 _ << _))) + (
+                                ((_______ <<
+                                  __) - _) << (((((_ << ___) + _)) << ___) + (_ << _))) + (((_______
+                                                                                             << ___)
+                                                                                            + _)
+                                                                                           << (
+                                                                                                   (
+                                                                                                           _ << ______) + _)) + (
+                                ((_______ << ____) - _) <<
+                                ((_______ << ___))) + (((_ << ____) - _) << ((((___ << __) + _) <<
+                                                                              __) - _)) - (
+                                _______ << ((((___ << __) - _) << __) + _)) + (_______
+                                                                               << ((
+                                        (((_ << ___) + _)) << __))) - ((((((_ << ___) + _)) << __) +
+                                                                        _) << (
+                                                                           (((
+                                                                                         ___ <<
+                                                                                         __) + _)
+                                                                            << _))) + (
+                                ((_______ << __) - _) <<
+                                (((((_ << ___) + _)) << _))) + (((___ << ___) + _) << ((_____ <<
+                                                                                        _))) + (
+                                _____ << ______) + (_ << ___)
+                    )
+                )
+                )(
+            *(lambda _, __, ___: _(_, __, ___))(
+                (lambda _, __, ___:
+                 [__(___[(lambda: _).__code__.co_nlocals])] +
+                 _(_, __, ___[(lambda _: _).__code__.co_nlocals:]) if ___ else []
+                 ),
+                lambda _: _.__code__.co_argcount,
+                (
+                    lambda _: _,
+                    lambda _, __: _,
+                    lambda _, __, ___: _,
+                    lambda _, __, ___, ____: _,
+                    lambda _, __, ___, ____, _____: _,
+                    lambda _, __, ___, ____, _____, ______: _,
+                    lambda _, __, ___, ____, _____, ______, _______: _,
+                    lambda _, __, ___, ____, _____, ______, _______, ________: _
+                )
+            )
+        )
 
 
 def test_module(client, first_fetch_time):
     """
-    Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
+    Returning 'ok' indicates that the integration works like it is supposed to. Connection to the
+    service is successful.
 
     Args:
         client: HelloWorld client
@@ -126,7 +188,8 @@ def test_module(client, first_fetch_time):
         'ok' if test passed, anything else will fail the test.
     """
 
-    client.search_alerts(max_results=1, start_time=first_fetch_time, alert_status=None, alert_type=None, severity=None)
+    client.search_alerts(max_results=1, start_time=first_fetch_time, alert_status=None,
+                         alert_type=None, severity=None)
     return 'ok'
 
 
@@ -141,10 +204,13 @@ def say_hello_command(client, args):
     Returns:
         Hello {someone}
 
-        readable_output (str): This will be presented in the war room - should be in markdown syntax - human readable
-        outputs (dict): Dictionary/JSON - saved in the incident context in order to be used as inputs for other tasks in the
+        readable_output (str): This will be presented in the war room - should be in markdown
+        syntax - human readable
+        outputs (dict): Dictionary/JSON - saved in the incident context in order to be used as
+        inputs for other tasks in the
                  playbook
-        raw_response (dict): Used for debugging/troubleshooting purposes - will be shown only if the command executed with
+        raw_response (dict): Used for debugging/troubleshooting purposes - will be shown only if
+        the command executed with
                       raw-response=true
     """
     name = args.get('name')
@@ -169,7 +235,7 @@ def convert_to_demisto_severity(severity):
         '0': 1,  # low severity
         '1': 2,  # medium severity
         '2': 3,  # high severity
-        '3': 4   # critical severity
+        '3': 4  # critical severity
     }[str(severity)]
 
 
@@ -539,7 +605,8 @@ def main():
             demisto.results(result)
 
         elif demisto.command() == 'fetch-incidents':
-            # Set and define the fetch incidents command to run after activated via integration settings.
+            # Set and define the fetch incidents command to run after activated via integration
+            # settings.
             alert_status = demisto.params().get('alert_status')
             alert_type = demisto.params().get('alert_type')
 
@@ -560,7 +627,8 @@ def main():
 
         elif demisto.command() == 'domain':
             default_threshold_domain = int(demisto.params().get('threshold_domain', '65'))
-            return_outputs(*domain_reputation_command(client, demisto.args(), default_threshold_domain))
+            return_outputs(
+                *domain_reputation_command(client, demisto.args(), default_threshold_domain))
 
         elif demisto.command() == 'helloworld-say-hello':
             return_outputs(*say_hello_command(client, demisto.args()))
