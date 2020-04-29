@@ -1,0 +1,246 @@
+{
+    "header": {
+        "id": "51029ec9-1445-11ea-8f4c-0efb1918365c",
+        "queryParams": {
+            "format": "json",
+            "maxRecords": 7
+        },
+        "requestDate": "2019-12-01T14:17:33.264669831Z",
+        "returnResult": 7,
+        "totalResult": 7,
+        "user": "api.ioc.demisto"
+    },
+    "data": [
+        {
+            "caseId": "12d329b7-13db-11ea-94e8-0ee0a3f3cb1c",
+            "title": "=? =?gb2312?Q?ted:_www.icloud.com.agona.cn?=",
+            "description": "From: PhishLabs Security Operations <not@domain.com>\nSubject: =? =?gb2312?Q?ted:_www.icloud.com.agona.cn?=\n\n\r\n________________________________\r\nFrom: west263\r\nSent: Saturday, November 30, 2019 8:36:41 PM (UTC-05:00) Eastern Time (US & Canada)\r\nTo: PhishLabs Security Operations; not@domain.com; not@domain.com\r\nSubject: 回复：[PL-1405082] Malicious domain detected: www.icloud.com.agona.cn\r\n\r\n-- External email--\r\n\r\n\r\nThank you for allowing us an opportunity to assist you.\r\n\r\nWe have suspended our customer to use this domain. You can check it later.\r\n\r\nIf you have any questions, please do not hesitate to contact us. We look forward to assisting you.\r\n\r\nHave a wonderful day!\r\n\r\n\r\n\r\n------------------\r\n\r\nBest regards,\r\n\r\nLillian\r\n\r\n\r\n------------------ 原始邮件 ------------------\r\n\r\n发件人:  PhishLabs Security Operations<not@domain.com>;\r\n日  期:  2019-11-30 (星期六) 08:37:19\r\n收件人:  not@domain.com<not@domain.com>;not@domain.com<not@domain.com>;not@domain.com<not@domain.com>;\r\n主  题:  [PL-1405082] Malicious domain detected: www.icloud.com.agona.cn\r\n\r\n\r\nDuring an investigation of fraud, we discovered a domain(s) registered for the sole intent of malicious activity, which is being used to attack our client and their customers.\r\n\r\nWe have addressed this report to the responsible authoritative providers over this website who have the ability to disable the malicious content in question. This includes but is not limited to the hosting provider(s), nameserver, registrar and if applicable, the registry.  Based on your relationship to the content in question or services provided, please see our specific request below.\r\n\r\nThis threat has been active for at least 2.1 hours.\r\n\r\nhXXp www[.]icloud[.]com[.]agona[.]cn/ios/uy930glgr8yx54n4zkcw[.]asp?uy930glgr8yx54n4zkcw=\r\nhXXp www[.]icloud[.]com[.]agona[.]cn/ios/upvf7o4kon1kpt4vfy18[.]asp?upvf7o4kon1kpt4vfy18=\r\nhXXp www[.]icloud[.]com[.]agona[.]cn/ios/vweixhklbjw1t1ve3b4n[.]asp?vweixhklbjw1t1ve3b4n=\r\nhXXp www[.]icloud[.]com[.]agona[.]cn/an3n3abqqtkpuok9vw9c[.]asp?an3n3abqqtkpuok9vw9c\r\n\r\nFirst detection of malicious activity: 11-29-2019 22:26:17 UTC\r\nMost recent observation of malicious activity: 11-30-2019 00:35:06 UTC\r\nAssociated IP Addresses: 8.8.8.8\r\n\r\nEvidence of malicious content is provided below my signature.\r\n\r\n===   HOSTING  PROVIDER AND/OR WEBSITE OWNER    ===\r\nIf you agree that this is malicious, we kindly request that you take steps to have the content removed as soon as possible.  It is highly likely that the intruder who set up this phishing content has also left additional fraudulent material on this server such as illegitimate access points.\r\n\r\n===   REGISTRAR / REGISTRY   ===\r\nWe kindly request that this domain is placed on hold as soon as possible and all client related information sink holed. It is also very likely the registrant in question has registered various other domains through your service and it is suggested you investigate as you see fit.\r\n\r\n===   NAMESERVER, SOA   ===\r\nIf it is within your power, please consider disabling the routing to this domain to prevent further abuse to the public.\r\n\r\n===   CERT/CIRT, ETC.   ===\r\nIf you're able to assist in any means possible to see to the termination of this content, please do so.  Your local expertise and influence on this matter is critical to this effort.\r\n\r\nIf we have contacted you in error, or if there is a better way for us to report this incident, please let us know so that we may continue our investigation.\r\n\r\nWe are extremely grateful for your assistance.\r\n\r\nKind regards,\r\n\r\nYogender Chauhan\r\nPhishLabs Security Operations\r\n12023866001\r\nAvailable 24/7\r\n\r\n\r\nEvidence:\r\nPlease see attached screenshot.\r\n.\r\n\r\n[PL-1405082]\r\n\r\n\r\n ",
+            "caseNumber": 1406220,
+            "createdBy": {
+                "id": "30c2e916-c72d-11e3-860e-002590387e36",
+                "name": "soc.phishlabs",
+                "displayName": "SOC PhishLabs"
+            },
+            "brand": "",
+            "caseType": "Other",
+            "resolutionStatus": "Accidental creation",
+            "caseStatus": "Rejected",
+            "dateCreated": "2019-12-01T01:37:02Z",
+            "dateClosed": "2019-12-01T01:40:36Z",
+            "dateModified": "2019-12-01T01:40:36Z",
+            "customer": "PhishLabs",
+            "attachments": [
+                {
+                    "id": "12e5eeaa-13db-11ea-8247-0ad24386a0d6",
+                    "type": "Email",
+                    "description": "Source Email for case creation",
+                    "dateAdded": "2019-12-01T01:37:02Z",
+                    "fileName": "msg.oFAH.eml",
+                    "fileURL": "https://caseapi.phishlabs.com/v1/data/attachment/12e5eeaa-13db-11ea-8247-0ad24386a0d6"
+                }
+            ],
+            "formReceiver": false,
+            "brandAbuseFlag": false,
+            "appDate": "0001-01-01T00:00:00Z",
+            "primaryMarketplace": false
+        },
+        {
+            "caseId": "a70f2336-13da-11ea-94e8-0ee0a3f3cb1c",
+            "title": "=? =?gb2312?Q?ted:_www.icloud.com.agona.cn?=",
+            "description": "From: PhishLabs Security Operations <not@domain.com>\nSubject: =? =?gb2312?Q?ted:_www.icloud.com.agona.cn?=\n\n\r\n________________________________\r\nFrom: west263\r\nSent: Saturday, November 30, 2019 8:33:03 PM (UTC-05:00) Eastern Time (US & Canada)\r\nTo: PhishLabs Security Operations\r\nSubject: 回复：[PL-1405082] Malicious domain detected: www.icloud.com.agona.cn\r\n\r\n-- External email--\r\n\r\n\r\nHello,\r\n\r\n\r\nCould you please kindly send us some screenshot for it?\r\n\r\n\r\n------------------\r\n\r\nBest regards,\r\n\r\nLillian\r\n\r\n\r\n------------------ 原始邮件 ------------------\r\n\r\n发件人:  PhishLabs Security Operations<not@domain.com>;\r\n日  期:  2019-12-01 (星期日) 06:06:42\r\n收件人:  not@domain.com<not@domain.com>;not@domain.com<not@domain.com>;not@domain.com<not@domain.com>;\r\n主  题:  [PL-1405082] Malicious domain detected: www.icloud.com.agona.cn\r\n\r\n\r\nDuring an investigation of fraud, we discovered a domain(s) registered for the sole intent of malicious activity, which is being used to attack our client and their customers.\r\n\r\nWe have addressed this report to the responsible authoritative providers over this website who have the ability to disable the malicious content in question. This includes but is not limited to the hosting provider(s), nameserver, registrar and if applicable, the registry.  Based on your relationship to the content in question or services provided, please see our specific request below.\r\n\r\nThis threat has been active for at least 23.6 hours.\r\n\r\nhXXp www[.]icloud[.]com[.]agona[.]cn/ios/vweixhklbjw1t1ve3b4n[.]asp?vweixhklbjw1t1ve3b4n=\r\nhXXp www[.]icloud[.]com[.]agona[.]cn/an3n3abqqtkpuok9vw9c[.]asp?an3n3abqqtkpuok9vw9c\r\nhXXp www[.]icloud[.]com[.]agona[.]cn/ios/uy930glgr8yx54n4zkcw[.]asp?uy930glgr8yx54n4zkcw=\r\nhXXp www[.]icloud[.]com[.]agona[.]cn/ios/upvf7o4kon1kpt4vfy18[.]asp?upvf7o4kon1kpt4vfy18=\r\n\r\nFirst detection of malicious activity: 11-29-2019 22:26:17 UTC\r\nMost recent observation of malicious activity: 11-30-2019 22:04:11 UTC\r\nAssociated IP Addresses: 8.8.8.8\r\n\r\nEvidence of malicious content is provided below my signature.\r\n\r\n===   HOSTING  PROVIDER AND/OR WEBSITE OWNER    ===\r\nIf you agree that this is malicious, we kindly request that you take steps to have the content removed as soon as possible.  It is highly likely that the intruder who set up this phishing content has also left additional fraudulent material on this server such as illegitimate access points.\r\n\r\n===   REGISTRAR / REGISTRY   ===\r\nWe kindly request that this domain is placed on hold as soon as possible and all client related information sink holed. It is also very likely the registrant in question has registered various other domains through your service and it is suggested you investigate as you see fit.\r\n\r\n===   NAMESERVER, SOA   ===\r\nIf it is within your power, please consider disabling the routing to this domain to prevent further abuse to the public.\r\n\r\n===   CERT/CIRT, ETC.   ===\r\nIf you're able to assist in any means possible to see to the termination of this content, please do so.  Your local expertise and influence on this matter is critical to this effort.\r\n\r\nIf we have contacted you in error, or if there is a better way for us to report this incident, please let us know so that we may continue our investigation.\r\n\r\nWe are extremely grateful for your assistance.\r\n\r\nKind regards,\r\n\r\nKaran Kumar\r\nPhishLabs Security Operations\r\n12023866001\r\nAvailable 24/7\r\n\r\n\r\nEvidence:\r\nPlease see attached screenshot.\r\n\r\n\r\n[PL-1405082]\r\n\r\n\r\n ",
+            "caseNumber": 1406218,
+            "createdBy": {
+                "id": "30c2e916-c72d-11e3-860e-002590387e36",
+                "name": "soc.phishlabs",
+                "displayName": "SOC PhishLabs"
+            },
+            "brand": "",
+            "caseType": "Other",
+            "resolutionStatus": "Accidental creation",
+            "caseStatus": "Rejected",
+            "dateCreated": "2019-12-01T01:34:01Z",
+            "dateClosed": "2019-12-01T01:34:48Z",
+            "dateModified": "2019-12-01T01:34:48Z",
+            "customer": "PhishLabs",
+            "attachments": [
+                {
+                    "id": "a722c9fb-13da-11ea-9004-0eb92493f786",
+                    "type": "Email",
+                    "description": "Source Email for case creation",
+                    "dateAdded": "2019-12-01T01:34:01Z",
+                    "fileName": "msg.9FAH.eml",
+                    "fileURL": "https://caseapi.phishlabs.com/v1/data/attachment/a722c9fb-13da-11ea-9004-0eb92493f786"
+                }
+            ],
+            "formReceiver": false,
+            "brandAbuseFlag": false,
+            "appDate": "0001-01-01T00:00:00Z",
+            "primaryMarketplace": false
+        },
+        {
+            "caseId": "1ed58c18-13a0-11ea-94e8-0ee0a3f3cb1c",
+            "title": "Fw: [Pl-1405778] [6e5658a2b054ed4f]: Cloudflare has responded to your phishing report.",
+            "description": "From: PhishLabs Security Operations <not@domain.com>\nSubject: Fw: [Pl-1405778] [6e5658a2b054ed4f]: Cloudflare has responded to your phishing report.\n\n________________________________________\nFrom: Cloudflare Trust & Safety <not@domain.com>\nSent: Saturday, November 30, 2019 13:20\nTo: PhishLabs Security Operations\nSubject: [6e5658a2b054ed4f]: Cloudflare has responded to your phishing report.\n\n-- External email--\n\n\nCloudflare received your phishing report regarding:\noxicciw-iw-iwo.pp.ua\n\nPlease be aware Cloudflare is a network provider offering a reverse proxy, pass-through security service. We are not a hosting provider. Cloudflare does not control the content of our customers. Access to the submitted phishing URL(s) has been restricted.\n\nAccepted URL(s) on oxicciw-iw-iwo.pp.ua:\ngoogle.com/MFZ6ZktBNlI=/\n\n        IP Address: 8.8.8.8\n\n        Hosting Provider:\n        -----------------\n\n        SHINJIRU-MY\n\n        Abuse Contact:\n        --------------\n\n        not@domain.com\n\n\n\nWe have notified our customer of your report. We have forwarded your report on to the responsible hosting provider.\nYou may also direct your report to:\n\n1. The provider where oxicciw-iw-iwo.pp.ua is hosted (provided above);\n2. The owner listed in the WHOIS record for oxicciw-iw-iwo.pp.ua and/or;\n3. The contact listed on the oxicciw-iw-iwo.pp.ua site.\n\nNote: A lookup of the IP for a Cloudflare customer website will show Cloudflare IPs because we are a pass-through network. The actual website is still hosted at the hosting provider indicated above. If the hosting provider has any questions, please have the hosting provider contact us directly regarding this site. Due to attempted abuse of our complaint reporting process, we will only provide the IP of oxicciw-iw-iwo.pp.ua to the responsible hosting provider if they contact us directly at not@domain.com\n\nRegards,\n\nCloudflare Abuse\n\n ",
+            "caseNumber": 1405835,
+            "createdBy": {
+                "id": "30c2e916-c72d-11e3-860e-002590387e36",
+                "name": "soc.phishlabs",
+                "displayName": "SOC PhishLabs"
+            },
+            "brand": "",
+            "caseType": "Other",
+            "resolutionStatus": "Accidental creation",
+            "caseStatus": "Rejected",
+            "dateCreated": "2019-11-30T18:35:02Z",
+            "dateClosed": "2019-11-30T18:42:02Z",
+            "dateModified": "2019-11-30T18:42:02Z",
+            "customer": "PhishLabs",
+            "attachments": [
+                {
+                    "id": "1ee9426c-13a0-11ea-8247-0ad24386a0d6",
+                    "type": "Email",
+                    "description": "Source Email for case creation",
+                    "dateAdded": "2019-11-30T18:35:02Z",
+                    "fileName": "msg.kKAH.eml",
+                    "fileURL": "https://caseapi.phishlabs.com/v1/data/attachment/1ee9426c-13a0-11ea-8247-0ad24386a0d6"
+                }
+            ],
+            "formReceiver": false,
+            "brandAbuseFlag": false,
+            "appDate": "0001-01-01T00:00:00Z",
+            "primaryMarketplace": false
+        },
+        {
+            "caseId": "45602b51-12e2-11ea-94e8-0ee0a3f3cb1c",
+            "title": "FW: [PL-XXXXXX] RespOrg Information",
+            "description": "From: PhishLabs Security Operations <not@domain.com>\nSubject: FW: [PL-XXXXXX] RespOrg Information\n\n\n\n\n________________________________________\nFrom: Apache\nSent: Friday, November 29, 2019 2:55:54 PM (UTC-05:00) Eastern Time (US & Canada)\nTo: PhishLabs Security Operations\nSubject: [PL-XXXXXX] RespOrg Information\n\n-- External email--\n\n\n------------------------------\nData 24-7 Results\n------------------------------\nNumber: 18502547313\nStatus: OK\nCarrier: Bandwidth.com\nCarrier ID: 50025\nCountry: United States\nIs Wireless: n\n\n ",
+            "caseNumber": 1404846,
+            "createdBy": {
+                "id": "30c2e916-c72d-11e3-860e-002590387e36",
+                "name": "soc.phishlabs",
+                "displayName": "SOC PhishLabs"
+            },
+            "brand": "",
+            "caseType": "Other",
+            "resolutionStatus": "Accidental creation",
+            "caseStatus": "Rejected",
+            "dateCreated": "2019-11-29T19:56:02Z",
+            "dateClosed": "2019-11-29T20:05:51Z",
+            "dateModified": "2019-11-29T20:05:51Z",
+            "customer": "PhishLabs",
+            "attachments": [
+                {
+                    "id": "456c3ed6-12e2-11ea-9004-0eb92493f786",
+                    "type": "Email",
+                    "description": "Source Email for case creation",
+                    "dateAdded": "2019-11-29T19:56:02Z",
+                    "fileName": "msg.nKAH.eml",
+                    "fileURL": "https://caseapi.phishlabs.com/v1/data/attachment/456c3ed6-12e2-11ea-9004-0eb92493f786"
+                }
+            ],
+            "formReceiver": false,
+            "brandAbuseFlag": false,
+            "appDate": "0001-01-01T00:00:00Z",
+            "primaryMarketplace": false
+        },
+        {
+            "caseId": "90cd78d5-1250-11ea-94e8-0ee0a3f3cb1c",
+            "title": "=?= =?=",
+            "description": "From: PhishLabs Security Operations <not@domain.com>\nSubject: =?= =?=\n\n\r\n________________________________\r\nFrom: 阿里云信息安全\r\nSent: Thursday, November 28, 2019 9:32:14 PM (UTC-05:00) Eastern Time (US & Canada)\r\nTo: PhishLabs Security Operations\r\nSubject: 回复：[PL-1383454] Phishing attack(s) hosted on: maidenform.top\r\n\r\n-- External email--\r\n\r\nwe have notified the owner of the website and asked them to clean up the fraud information as soon as possible.\r\n------------------------------------------------------------------\r\n发件人：PhishLabs Security Operations <not@domain.com>\r\n发送时间：2019年11月28日(星期四) 22:58\r\n收件人：[无]\r\n抄　送：larry.xiaol <not@domain.com>; infosec <not@domain.com>; Alibaba-Digest <not@domain.com>\r\n主　题：[PL-1383454] Phishing attack(s) hosted on: maidenform.top\r\n\r\nDuring an investigation of fraud, we discovered a compromised website (maidenform.top) that is being used to attack our client and their customers.\r\n\r\nIn addition to the website owner, we have addressed this report to the responsible authoritative providers who have the ability to disable the malicious content in question. Based on your relationship to the content in question, please see our specific request below.\r\n\r\nThis threat has been active for at least 467.0 hours.\r\n\r\nhXXp://maidenform.top/ax3klgrtn/indexmob.php\r\nhXXp://maidenform.top/ax3klgrtn/confirmnew.php\r\nhXXp://maidenform.top/ax3klgrtn/cb-pc-ver.php\r\nhXXp://maidenform.top/ax3klgrtn/confirm.php\r\nhXXp://maidenform.top/ax3klgrtn/index.php\r\nhXXp://maidenform.top/ax3klgrtn/cb-on-mob.php\r\n\r\nFirst detection of malicious activity: 11-09-2019 03:56:20 UTC\r\nMost recent observation of malicious activity: 11-28-2019 14:53:56 UTC\r\nAssociated IP Addresses:\r\n47.88.151.176\r\n\r\n===   HOSTING  PROVIDER   ===\r\nIf you agree that this is malicious, we kindly request that you take steps to have the content removed as soon as possible.  It is highly likely that the intruder who set up this phishing content has also left additional fraudulent material on this server such as illegitimate access points.\r\n\r\n===     WEBSITE OWNER     ===\r\nWe recommend taking the following actions to secure the web site and prevent the attackers from returning:\r\n    - Update your web applications including CMS, blog, ecommerce, and other applications (and all add-on modules/components/plugins).\r\n    - Search all of your web directories for suspicious files as attackers commonly leave backdoors.\r\n    - Scan the computer from which you login to your web hosting control panel or ftp server with anti-virus software.\r\n    - Change your web hosting provider if this is an ongoing issue.\r\n\r\nIf your provider has disabled your account because of this incident, you must coordinate a resolution with them directly as PhishLabs has no control over this aspect.\r\n\r\nIf we have contacted you in error, or if there is a better way for us to report this incident, please let us know so that we may continue our investigation.\r\n\r\nWe are grateful for your assistance.\r\n\r\n\r\nKind regards,\r\nJadon Hiott\r\nPhishLabs Security Operations\r\n12023866001\r\nAvailable 24/7\r\n\r\n\r\n[PL-1383454]\r\n\r\n ",
+            "caseNumber": 1403931,
+            "createdBy": {
+                "id": "30c2e916-c72d-11e3-860e-002590387e36",
+                "name": "soc.phishlabs",
+                "displayName": "SOC PhishLabs"
+            },
+            "brand": "",
+            "caseType": "Other",
+            "resolutionStatus": "Accidental creation",
+            "caseStatus": "Rejected",
+            "dateCreated": "2019-11-29T02:33:02Z",
+            "dateClosed": "2019-11-29T02:34:00Z",
+            "dateModified": "2019-11-29T02:34:00Z",
+            "customer": "PhishLabs",
+            "attachments": [
+                {
+                    "id": "90d69777-1250-11ea-9004-0eb92493f786",
+                    "type": "Email",
+                    "description": "Source Email for case creation",
+                    "dateAdded": "2019-11-29T02:33:02Z",
+                    "fileName": "msg.sFAH.eml",
+                    "fileURL": "https://caseapi.phishlabs.com/v1/data/attachment/90d69777-1250-11ea-9004-0eb92493f786"
+                }
+            ],
+            "formReceiver": false,
+            "brandAbuseFlag": false,
+            "appDate": "0001-01-01T00:00:00Z",
+            "primaryMarketplace": false
+        },
+       {
+            "caseId": "04ea42a5-0361-11ea-94e8-0ee0a3f3cb1c",
+            "title": "FW: [PL-XXXXXX] RespOrg Information",
+            "description": "From: PhishLabs Security Operations <not@domain.com>\nSubject: FW: [PL-XXXXXX] RespOrg Information\n\n\n\n\n________________________________________\nFrom: Apache\nSent: Saturday, November 9, 2019 9:22:04 PM (UTC-05:00) Eastern Time (US & Canada)\nTo: PhishLabs Security Operations\nSubject: [PL-XXXXXX] RespOrg Information\n\n-- External email--\n\n\n------------------------------\nFonefinder Results\n------------------------------\nNumber: 8889090104\nCity/Switch Name:\nState:\nTelephone Company: N/A\nTelco Type: N/A\n\n ",
+            "caseNumber": 1374701,
+            "createdBy": {
+                "id": "30c2e916-c72d-11e3-860e-002590387e36",
+                "name": "soc.phishlabs",
+                "displayName": "SOC PhishLabs"
+            },
+            "brand": "",
+            "caseType": "Other",
+            "resolutionStatus": "Accidental creation",
+            "caseStatus": "Rejected",
+            "dateCreated": "2019-11-10T02:23:01Z",
+            "dateClosed": "2019-11-10T02:30:37Z",
+            "dateModified": "2019-11-10T02:30:37Z",
+            "customer": "PhishLabs",
+            "attachments": [
+                {
+                    "id": "04fced89-0361-11ea-9b11-0ad24386a0d6",
+                    "type": "Email",
+                    "description": "Source Email for case creation",
+                    "dateAdded": "2019-11-10T02:23:01Z",
+                    "fileName": "msg.kKAH.eml",
+                    "fileURL": "https://caseapi.phishlabs.com/v1/data/attachment/04fced89-0361-11ea-9b11-0ad24386a0d6"
+                }
+            ],
+            "formReceiver": false,
+            "brandAbuseFlag": false,
+            "appDate": "0001-01-01T00:00:00Z",
+            "primaryMarketplace": false
+        },
+        {
+            "caseId": "eca21458-035e-11ea-94e8-0ee0a3f3cb1c",
+            "title": "FW: [PL-XXXXXX] RespOrg Information",
+            "description": "From: PhishLabs Security Operations <not@domain.com>\nSubject: FW: [PL-XXXXXX] RespOrg Information\n\n\n\n\n________________________________________\nFrom: Apache\nSent: Saturday, November 9, 2019 9:07:28 PM (UTC-05:00) Eastern Time (US & Canada)\nTo: PhishLabs Security Operations\nSubject: [PL-XXXXXX] RespOrg Information\n\n-- External email--\n\n\n------------------------------\nData 24-7 Results\n------------------------------\nNumber: 1\nStatus: OK\nCarrier: Distributel Communications Limited\nCarrier ID: 50717\nCountry: Canada\nIs Wireless: n\n\n------------------------------\nFonefinder Results\n------------------------------\nNumber: \nCity/Switch Name: Kingston\nState: Ontario\nTelephone Company: Distributel\nTelco Type:\n\n ",
+            "caseNumber": 1374695,
+            "createdBy": {
+                "id": "30c2e916-c72d-11e3-860e-002590387e36",
+                "name": "soc.phishlabs",
+                "displayName": "SOC PhishLabs"
+            },
+            "brand": "",
+            "caseType": "Other",
+            "resolutionStatus": "Accidental creation",
+            "caseStatus": "Rejected",
+            "dateCreated": "2019-11-10T02:08:02Z",
+            "dateClosed": "2019-11-10T02:09:17Z",
+            "dateModified": "2019-11-10T02:09:17Z",
+            "customer": "PhishLabs",
+            "attachments": [
+                {
+                    "id": "ecb86bda-035e-11ea-9b11-0ad24386a0d6",
+                    "type": "Email",
+                    "description": "Source Email for case creation",
+                    "dateAdded": "2019-11-10T02:08:02Z",
+                    "fileName": "msg.r_AH.eml",
+                    "fileURL": "https://caseapi.phishlabs.com/v1/data/attachment/ecb86bda-035e-11ea-9b11-0ad24386a0d6"
+                }
+            ],
+            "formReceiver": false,
+            "brandAbuseFlag": false,
+            "appDate": "0001-01-01T00:00:00Z",
+            "primaryMarketplace": false
+        }
+    ]
+}

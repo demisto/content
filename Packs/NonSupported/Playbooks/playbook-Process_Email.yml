@@ -1,0 +1,128 @@
+id: Process Email
+version: -1
+name: Process Email
+fromversion: 2.5.0
+description: Deprecated - We recommend using Process Email - Generic playbook instead.
+  Add email details into the relevant context entities and handle the case
+  where you have attached original emails.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ccd00127-175c-4a93-8edb-14e71f7d47ea
+    type: start
+    task:
+      id: ccd00127-175c-4a93-8edb-14e71f7d47ea
+      version: -1
+      description: ""
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 0a3b6760-ffc7-4a5f-8042-47e9a15402ee
+    type: condition
+    task:
+      id: 0a3b6760-ffc7-4a5f-8042-47e9a15402ee
+      version: -1
+      name: Do we have original emails attached?
+      description: Check if we have any attachments with relevant attachment types
+        like eml or rfc822
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "2"
+      "yes":
+      - "3"
+    scriptarguments:
+      value: ${File(val.Type.toLowerCase().indexOf('composite document file v2 document')
+        >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 || val.Extension
+        == 'eml' && val.Type.toLowerCase().indexOf('ascii') >= 0 && val.Type.toLowerCase().indexOf('crlf')
+        >= 0).EntryID}
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 3ad45b93-5373-4303-8a74-fcaeba4c3344
+    type: regular
+    task:
+      id: 3ad45b93-5373-4303-8a74-fcaeba4c3344
+      version: -1
+      description: ""
+      name: Add original email details to context
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      key: Email
+      value: '${incident.labels={To: val[''Email''], CC: val[''Email/cc''], From:
+        val[''Email/from''], Subject: val[''Email/subject''], Text: val[''Email/text''],
+        HTML: val[''Email/html''], Headers: val[''Email/headers''], Format: val[''Email/format'']}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: b7f50774-0497-4821-8910-02df73f2c91d
+    type: regular
+    task:
+      id: b7f50774-0497-4821-8910-02df73f2c91d
+      version: -1
+      description: ""
+      name: Add original email attachments to context
+      scriptName: ParseEmailFiles
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      entryid: ${File(val.Type.toLowerCase().indexOf('composite document file v2 document')
+        >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 || val.Extension
+        == 'eml' && val.Type.toLowerCase().indexOf('ascii') >= 0 && val.Type.toLowerCase().indexOf('crlf')
+        >= 0).EntryID}
+    results:
+    - AttachmentName
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 415,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+tests:
+  - No tests - Deprecated playbook

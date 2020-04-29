@@ -1,0 +1,260 @@
+id: TIE - IOC Hunt
+version: -1
+name: TIE - IOC Hunt
+fromversion: 2.5.0
+description: |-
+  Hunt for sightings of MD5, SHA1 and/or SHA256 hashes on endpoints, using McAfee TIE (requires ePO as well).
+
+  Input:
+  * Hash (default, takes all deferent hashes from context)
+
+  Output:
+  * All agents that files with "Hash" has been executed on (TIE)
+  * Enrich Agents info from ePO
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b79d975a-a6dc-4a66-8515-c8f4177b0a40
+    type: start
+    task:
+      id: b79d975a-a6dc-4a66-8515-c8f4177b0a40
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 1bf80041-9e03-4daf-861c-a709df537687
+    type: condition
+    task:
+      id: 1bf80041-9e03-4daf-861c-a709df537687
+      version: -1
+      name: Is TIE enabled?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    scriptarguments:
+      left: ""
+      right: ""
+      value: ${modules(val.brand=="McAfee Threat Intelligence Exchange")}
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 340
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 992f05a8-3c0e-43bc-8f68-b40d2a9542e9
+    type: condition
+    task:
+      id: 992f05a8-3c0e-43bc-8f68-b40d2a9542e9
+      version: -1
+      name: Is ePO enabled?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "6"
+    scriptarguments:
+      left: ""
+      right: ""
+      value: ${modules(val.brand=="epo")}
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1080
+        }
+      }
+  "3":
+    id: "3"
+    taskid: c906e63c-45c5-4540-8f42-b74db1943725
+    type: regular
+    task:
+      id: c906e63c-45c5-4540-8f42-b74db1943725
+      version: -1
+      name: List all agents that the Hash has been executed on
+      script: McAfee Threat Intelligence Exchange|||tie-file-references
+      type: regular
+      iscommand: true
+      brand: McAfee Threat Intelligence Exchange
+      description: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      file: ${inputs.Hash}
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 519
+        }
+      }
+  "4":
+    id: "4"
+    taskid: c283821d-46ac-4b77-8728-9bc136f0c729
+    type: title
+    task:
+      id: c283821d-46ac-4b77-8728-9bc136f0c729
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    view: |-
+      {
+        "position": {
+          "x": 135,
+          "y": 1492
+        }
+      }
+  "5":
+    id: "5"
+    taskid: adfc3709-ca91-4ac0-8c2b-179c44d30403
+    type: condition
+    task:
+      id: adfc3709-ca91-4ac0-8c2b-179c44d30403
+      version: -1
+      name: Did we find any relevant agents?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "8"
+    scriptarguments:
+      value: ${File.References.AgentGuid}
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 703
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 6b8b1d0c-fae5-4779-83a2-9b0e5edbd983
+    type: regular
+    task:
+      id: 6b8b1d0c-fae5-4779-83a2-9b0e5edbd983
+      version: -1
+      name: Get Agent info from ePO
+      scriptName: EPOFindSystem
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      searchText: ${File.References.AgentGuid}
+      taskID: ""
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1326
+        }
+      }
+  "7":
+    id: "7"
+    taskid: a08baee9-a402-4bc8-8cae-77c4c144d889
+    type: title
+    task:
+      id: a08baee9-a402-4bc8-8cae-77c4c144d889
+      version: -1
+      name: Hunt HASH in TIE
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 1df1aefe-fce4-4fb8-80e0-3fbef311f772
+    type: title
+    task:
+      id: 1df1aefe-fce4-4fb8-80e0-3fbef311f772
+      version: -1
+      name: Enrich in ePO
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 956
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_4_#default#": 0.1,
+      "2_4_#default#": 0.17,
+      "5_4_#default#": 0.11
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1507,
+        "width": 675,
+        "x": 135,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Hash
+  value: ${.=val.File.map(function(f) {return [f.MD5, f.SHA1, f.SHA256];}).reduce(function(a,
+    b){return a.concat(b);}, []).filter(function (val1) {return val1;})}
+  description: |-
+    The Hash to hunt (Could be MD5,SHA1,SHA256).
+    Default is set to all hashes
+tests:
+  - No test

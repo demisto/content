@@ -1,0 +1,172 @@
+id: playbook17
+fromversion: 2.5.0
+system: true
+version: -1
+name: Carbon black Protection Rapid IOC Hunting
+description: Hunt for endpoint activity involving hash and domain IOCs, using Carbon
+  black Protection (Bit9).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a68f66e4-9f00-4be5-82d5-66a604a8e127
+    type: start
+    task:
+      id: a68f66e4-9f00-4be5-82d5-66a604a8e127
+      version: -1
+      description: ""
+      name: start_task
+      type: start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "8":
+    id: "8"
+    taskid: ee3ec982-b1ea-4c96-81d6-6b1ea068cfb4
+    type: regular
+    task:
+      id: ee3ec982-b1ea-4c96-81d6-6b1ea068cfb4
+      version: -1
+      description: "Searching The Bit9 file catalog for the hashes"
+      name: Search observed hashes in the Bit9 file catalog
+      scriptName: CBPCatalogFindHash
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      md5: ${File.MD5}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 572
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 0f461a0b-6e31-4537-8b10-564d6c2e0dfa
+    type: regular
+    task:
+      id: 0f461a0b-6e31-4537-8b10-564d6c2e0dfa
+      version: -1
+      description: "If the hashes have been approved or blocked in the past, they will be in existing rules. It is useful to see whether the hash was in some blacklist or whitelist or a person marked them as such, possibly with a comment explaining their reasons."
+      name: Check if the hashes are included in any Bit9 rules
+      scriptName: CBPFindRule
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      hash: ${File.MD5}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 734
+        }
+      }
+  "10":
+    id: "10"
+    taskid: ec572e1b-78cf-4daf-8185-688d7b04041b
+    type: condition
+    task:
+      id: ec572e1b-78cf-4daf-8185-688d7b04041b
+      version: -1
+      name: Is CarbonBlack Protection enabled?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "12"
+    scriptarguments:
+      value: ${modules(val.brand == 'carbonblackprotection' && val.state == 'active')}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "11":
+    id: "11"
+    taskid: b403c310-7926-4e04-8c81-ce7a9defb5c4
+    type: title
+    task:
+      id: b403c310-7926-4e04-8c81-ce7a9defb5c4
+      version: -1
+      description: "Done"
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 902
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 71e0a3f7-355e-41b2-8623-b6a606e9e79f
+    type: condition
+    task:
+      id: 71e0a3f7-355e-41b2-8623-b6a606e9e79f
+      version: -1
+      name: Do we have files to hunt?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "8"
+    scriptarguments:
+      value: ${File.MD5}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 382
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_11_#default#": 0.36,
+      "12_11_#default#": 0.16
+    },
+    "paper": {
+      "dimensions": {
+        "height": 917,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []

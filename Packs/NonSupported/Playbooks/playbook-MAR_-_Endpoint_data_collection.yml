@@ -1,0 +1,791 @@
+id: MAR - Endpoint data collection
+version: -1
+name: MAR - Endpoint data collection
+fromversion: ""
+description: |-
+  Use McAfee Active Response to collect data from an endpoint for IR purposes (requires ePO as well)
+
+  Input:
+  * Hostname (Default: ${Endpoint.Hostname})
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 14834984-3a59-4eed-8de7-54179611c63d
+    type: start
+    task:
+      id: 14834984-3a59-4eed-8de7-54179611c63d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "4"
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 528a058d-8c60-46dc-80b0-8139b45eeafd
+    type: condition
+    task:
+      id: 528a058d-8c60-46dc-80b0-8139b45eeafd
+      version: -1
+      name: is ePO enabled?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    scriptarguments:
+      value: ${modules(val.brand=="epo")}
+    view: |-
+      {
+        "position": {
+          "x": 369,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 5c61873e-d9e2-4967-8776-82db5c05628b
+    type: regular
+    task:
+      id: 5c61873e-d9e2-4967-8776-82db5c05628b
+      version: -1
+      name: Get host info from ePO
+      scriptName: EPOFindSystem
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      searchText: ${inputs.Hostname}
+    view: |-
+      {
+        "position": {
+          "x": 92.5,
+          "y": 355
+        }
+      }
+  "3":
+    id: "3"
+    taskid: fed35557-6859-44e6-817a-ee0538819714
+    type: title
+    task:
+      id: fed35557-6859-44e6-817a-ee0538819714
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 1710
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 71f42a72-b2e7-479a-86e7-bc6ff218671e
+    type: condition
+    task:
+      id: 71f42a72-b2e7-479a-86e7-bc6ff218671e
+      version: -1
+      name: is MAR enabled?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "26"
+    scriptarguments:
+      value: ${modules(val.brand=="McAfee Active Response")}
+    view: |-
+      {
+        "position": {
+          "x": 1122,
+          "y": 195
+        }
+      }
+  "6":
+    id: "6"
+    taskid: d3c21d0d-fc2a-4ba5-8bb9-da70f49ae96c
+    type: regular
+    task:
+      id: d3c21d0d-fc2a-4ba5-8bb9-da70f49ae96c
+      version: -1
+      name: Get host Processes
+      script: McAfee Active Response|||mar-search-multiple
+      type: regular
+      iscommand: true
+      brand: McAfee Active Response
+      description: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      collector: Processes
+      collectors: HostInfo,Processes
+      filter-by: hostname
+      filter-operator: Equals
+      filter-value: ${inputs.Hostname}
+      filter_collector: HostInfo
+      outputs: ""
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 835
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 98827aec-511a-4f30-8fdb-04240496380d
+    type: regular
+    task:
+      id: 98827aec-511a-4f30-8fdb-04240496380d
+      version: -1
+      name: Get host Scheduled tasks
+      script: McAfee Active Response|||mar-search-multiple
+      type: regular
+      iscommand: true
+      brand: McAfee Active Response
+      description: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      collector: Processes
+      collectors: HostInfo,ScheduledTasks
+      filter-by: hostname
+      filter-operator: Equals
+      filter-value: ${inputs.Hostname}
+      filter_collector: HostInfo
+      outputs: ""
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 660
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 38ad462f-1c16-4c4a-8cd8-446e19c24694
+    type: regular
+    task:
+      id: 38ad462f-1c16-4c4a-8cd8-446e19c24694
+      version: -1
+      name: Get host services
+      script: McAfee Active Response|||mar-search-multiple
+      type: regular
+      iscommand: true
+      brand: McAfee Active Response
+      description: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      collector: Processes
+      collectors: HostInfo,Services
+      filter-by: hostname
+      filter-operator: Equals
+      filter-value: ${inputs.Hostname}
+      filter_collector: HostInfo
+      outputs: ""
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 1010
+        }
+      }
+  "11":
+    id: "11"
+    taskid: 6e9fb885-21b5-417d-800c-e02aa81cb91f
+    type: regular
+    task:
+      id: 6e9fb885-21b5-417d-800c-e02aa81cb91f
+      version: -1
+      name: Get host Command line history
+      script: McAfee Active Response|||mar-search-multiple
+      type: regular
+      iscommand: true
+      brand: McAfee Active Response
+      description: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      collector: Processes
+      collectors: HostInfo,CommandLineHistory
+      filter-by: hostname
+      filter-operator: Equals
+      filter-value: ${inputs.Hostname}
+      filter_collector: HostInfo
+      outputs: ""
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 1185
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 69f8efa1-8783-4165-8ce4-2f5e0f3db937
+    type: regular
+    task:
+      id: 69f8efa1-8783-4165-8ce4-2f5e0f3db937
+      version: -1
+      name: Get host "Current flow"
+      script: McAfee Active Response|||mar-search-multiple
+      type: regular
+      iscommand: true
+      brand: McAfee Active Response
+      description: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      collector: Processes
+      collectors: HostInfo,CurrentFlow
+      filter-by: hostname
+      filter-operator: Equals
+      filter-value: ${inputs.Hostname}
+      filter_collector: HostInfo
+      outputs: ""
+    view: |-
+      {
+        "position": {
+          "x": 1042.5,
+          "y": 660
+        }
+      }
+  "13":
+    id: "13"
+    taskid: 08612fec-a2cb-4b1c-8a10-e8148722075f
+    type: regular
+    task:
+      id: 08612fec-a2cb-4b1c-8a10-e8148722075f
+      version: -1
+      name: Get host DNS cache
+      script: McAfee Active Response|||mar-search-multiple
+      type: regular
+      iscommand: true
+      brand: McAfee Active Response
+      description: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      collector: Processes
+      collectors: HostInfo,DNSCache
+      filter-by: hostname
+      filter-operator: Equals
+      filter-value: ${inputs.Hostname}
+      filter_collector: HostInfo
+      outputs: ""
+    view: |-
+      {
+        "position": {
+          "x": 1042.5,
+          "y": 835
+        }
+      }
+  "14":
+    id: "14"
+    taskid: 5479417e-4e95-422a-8e92-4f585f40fd50
+    type: regular
+    task:
+      id: 5479417e-4e95-422a-8e92-4f585f40fd50
+      version: -1
+      name: Get host environment variables
+      script: McAfee Active Response|||mar-search-multiple
+      type: regular
+      iscommand: true
+      brand: McAfee Active Response
+      description: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      collector: Processes
+      collectors: HostInfo,EnvironmentVariables
+      filter-by: hostname
+      filter-operator: Equals
+      filter-value: ${inputs.Hostname}
+      filter_collector: HostInfo
+      outputs: ""
+    view: |-
+      {
+        "position": {
+          "x": 1902.5,
+          "y": 1360
+        }
+      }
+  "15":
+    id: "15"
+    taskid: cd3926a0-6157-4ef3-8fd1-86b6cbd79e7c
+    type: regular
+    task:
+      id: cd3926a0-6157-4ef3-8fd1-86b6cbd79e7c
+      version: -1
+      name: Get host local groups
+      script: McAfee Active Response|||mar-search-multiple
+      type: regular
+      iscommand: true
+      brand: McAfee Active Response
+      description: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      collector: Processes
+      collectors: HostInfo,LocalGroups
+      filter-by: hostname
+      filter-operator: Equals
+      filter-value: ${inputs.Hostname}
+      filter_collector: HostInfo
+      outputs: ""
+    view: |-
+      {
+        "position": {
+          "x": 1472.5,
+          "y": 1185
+        }
+      }
+  "17":
+    id: "17"
+    taskid: 0287ca41-8587-4bb2-84d6-4824b5133df1
+    type: regular
+    task:
+      id: 0287ca41-8587-4bb2-84d6-4824b5133df1
+      version: -1
+      name: Get host logged in users
+      script: McAfee Active Response|||mar-search-multiple
+      type: regular
+      iscommand: true
+      brand: McAfee Active Response
+      description: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      collector: Processes
+      collectors: HostInfo,LoggedInUsers
+      filter-by: hostname
+      filter-operator: Equals
+      filter-value: ${inputs.Hostname}
+      filter_collector: HostInfo
+      outputs: ""
+    view: |-
+      {
+        "position": {
+          "x": 1472.5,
+          "y": 1360
+        }
+      }
+  "18":
+    id: "18"
+    taskid: c781977e-2b17-4273-86c2-246912262601
+    type: regular
+    task:
+      id: c781977e-2b17-4273-86c2-246912262601
+      version: -1
+      name: Get host network shares
+      script: McAfee Active Response|||mar-search-multiple
+      type: regular
+      iscommand: true
+      brand: McAfee Active Response
+      description: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      collector: Processes
+      collectors: HostInfo,NetworkShares
+      filter-by: hostname
+      filter-operator: Equals
+      filter-value: ${inputs.Hostname}
+      filter_collector: HostInfo
+      outputs: ""
+    view: |-
+      {
+        "position": {
+          "x": 1042.5,
+          "y": 1010
+        }
+      }
+  "19":
+    id: "19"
+    taskid: ebfbc02e-b674-4899-8586-ea8621533c3b
+    type: regular
+    task:
+      id: ebfbc02e-b674-4899-8586-ea8621533c3b
+      version: -1
+      name: Get host interactive sessions
+      script: McAfee Active Response|||mar-search-multiple
+      type: regular
+      iscommand: true
+      brand: McAfee Active Response
+      description: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      collector: Processes
+      collectors: HostInfo,InteractiveSessions
+      filter-by: hostname
+      filter-operator: Equals
+      filter-value: ${inputs.Hostname}
+      filter_collector: HostInfo
+      outputs: ""
+    view: |-
+      {
+        "position": {
+          "x": 1042.5,
+          "y": 1185
+        }
+      }
+  "20":
+    id: "20"
+    taskid: 79f385d1-1aa0-47f9-84de-f0b579492151
+    type: regular
+    task:
+      id: 79f385d1-1aa0-47f9-84de-f0b579492151
+      version: -1
+      name: Get host network interfaces
+      script: McAfee Active Response|||mar-search-multiple
+      type: regular
+      iscommand: true
+      brand: McAfee Active Response
+      description: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      collector: Processes
+      collectors: HostInfo,NetworkInterfaces
+      filter-by: hostname
+      filter-operator: Equals
+      filter-value: ${inputs.Hostname}
+      filter_collector: HostInfo
+      outputs: ""
+    view: |-
+      {
+        "position": {
+          "x": 1042.5,
+          "y": 1360
+        }
+      }
+  "21":
+    id: "21"
+    taskid: c35f205c-5c9a-4846-85b9-0a11e1b9f5ad
+    type: regular
+    task:
+      id: c35f205c-5c9a-4846-85b9-0a11e1b9f5ad
+      version: -1
+      name: Get host's connected USB Storage Devices
+      script: McAfee Active Response|||mar-search-multiple
+      type: regular
+      iscommand: true
+      brand: McAfee Active Response
+      description: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      collector: Processes
+      collectors: HostInfo,UsbConnectedStorageDevices
+      filter-by: hostname
+      filter-operator: Equals
+      filter-value: ${inputs.Hostname}
+      filter_collector: HostInfo
+      outputs: ""
+    view: |-
+      {
+        "position": {
+          "x": 1902.5,
+          "y": 1535
+        }
+      }
+  "22":
+    id: "22"
+    taskid: cac5062b-32b7-4789-8f25-c28ea0e40873
+    type: regular
+    task:
+      id: cac5062b-32b7-4789-8f25-c28ea0e40873
+      version: -1
+      name: Get host user profiles
+      script: McAfee Active Response|||mar-search-multiple
+      type: regular
+      iscommand: true
+      brand: McAfee Active Response
+      description: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      collector: Processes
+      collectors: HostInfo,UserProfiles
+      filter-by: hostname
+      filter-operator: Equals
+      filter-value: ${inputs.Hostname}
+      filter_collector: HostInfo
+      outputs: ""
+    view: |-
+      {
+        "position": {
+          "x": 1472.5,
+          "y": 1535
+        }
+      }
+  "23":
+    id: "23"
+    taskid: 00e3cf95-5dda-411c-8ec5-027ba3348a21
+    type: regular
+    task:
+      id: 00e3cf95-5dda-411c-8ec5-027ba3348a21
+      version: -1
+      name: Get host installed software
+      script: McAfee Active Response|||mar-search-multiple
+      type: regular
+      iscommand: true
+      brand: McAfee Active Response
+      description: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      collector: Processes
+      collectors: HostInfo,Software
+      filter-by: hostname
+      filter-operator: Equals
+      filter-value: ${inputs.Hostname}
+      filter_collector: HostInfo
+      outputs: ""
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 1360
+        }
+      }
+  "24":
+    id: "24"
+    taskid: 4afc3a44-f5f9-462a-8f41-dc697c9366e2
+    type: regular
+    task:
+      id: 4afc3a44-f5f9-462a-8f41-dc697c9366e2
+      version: -1
+      name: Get host Network Sessions
+      script: McAfee Active Response|||mar-search-multiple
+      type: regular
+      iscommand: true
+      brand: McAfee Active Response
+      description: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      collector: Processes
+      collectors: HostInfo,NetworkSessions
+      filter-by: hostname
+      filter-operator: Equals
+      filter-value: ${inputs.Hostname}
+      filter_collector: HostInfo
+      outputs: ""
+    view: |-
+      {
+        "position": {
+          "x": 1042.5,
+          "y": 1535
+        }
+      }
+  "25":
+    id: "25"
+    taskid: e7fcd15d-3273-4163-803e-26d5e76f712e
+    type: regular
+    task:
+      id: e7fcd15d-3273-4163-803e-26d5e76f712e
+      version: -1
+      name: Get host Startup items
+      script: McAfee Active Response|||mar-search-multiple
+      type: regular
+      iscommand: true
+      brand: McAfee Active Response
+      description: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      collector: Processes
+      collectors: HostInfo,Startup
+      filter-by: hostname
+      filter-operator: Equals
+      filter-value: ${inputs.Hostname}
+      filter_collector: HostInfo
+      outputs: ""
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 1535
+        }
+      }
+  "26":
+    id: "26"
+    taskid: 41252036-b29b-4a75-82e7-68fe3fa9b0a5
+    type: title
+    task:
+      id: 41252036-b29b-4a75-82e7-68fe3fa9b0a5
+      version: -1
+      name: Collect data from endpoint
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "27"
+      - "28"
+      - "29"
+      - "30"
+    view: |-
+      {
+        "position": {
+          "x": 1257.5,
+          "y": 370
+        }
+      }
+  "27":
+    id: "27"
+    taskid: 23bbdc19-0b43-4b5e-8d2b-939183909e09
+    type: title
+    task:
+      id: 23bbdc19-0b43-4b5e-8d2b-939183909e09
+      version: -1
+      name: Users and groups
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    view: |-
+      {
+        "position": {
+          "x": 1472.5,
+          "y": 515
+        }
+      }
+  "28":
+    id: "28"
+    taskid: bf8c2f0a-d98b-4059-82db-a9f06f937177
+    type: title
+    task:
+      id: bf8c2f0a-d98b-4059-82db-a9f06f937177
+      version: -1
+      name: Executable
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 515
+        }
+      }
+  "29":
+    id: "29"
+    taskid: abee0804-81a8-45da-8fab-a3792b165c49
+    type: title
+    task:
+      id: abee0804-81a8-45da-8fab-a3792b165c49
+      version: -1
+      name: Network
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    view: |-
+      {
+        "position": {
+          "x": 1042.5,
+          "y": 515
+        }
+      }
+  "30":
+    id: "30"
+    taskid: c5ff2c93-f30c-45eb-87b7-bcd676d1e7a2
+    type: title
+    task:
+      id: c5ff2c93-f30c-45eb-87b7-bcd676d1e7a2
+      version: -1
+      name: Others
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    view: |-
+      {
+        "position": {
+          "x": 1902.5,
+          "y": 515
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_yes": 0.54
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1725,
+        "width": 2190,
+        "x": 92.5,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Hostname
+  value: ${Endpoint.Hostname}
+  description: Hostname to run on
+tests:
+  - No tests - Need to add

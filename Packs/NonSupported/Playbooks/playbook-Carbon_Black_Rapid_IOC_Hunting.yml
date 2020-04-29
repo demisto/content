@@ -1,0 +1,146 @@
+id: Carbon Black Rapid IOC Hunting
+fromversion: 2.5.0
+system: true
+version: -1
+name: Carbon Black Rapid IOC Hunting
+description: Hunt for malicious indicators using Carbon Black
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 729a5739-da09-4d2f-8a3c-abc427e3efd2
+    type: start
+    task:
+      id: 729a5739-da09-4d2f-8a3c-abc427e3efd2
+      version: -1
+      description: "Playbook start point"
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 1a3ea7e1-aaf3-4df0-89f6-70e2680bda7a
+    type: regular
+    task:
+      id: 1a3ea7e1-aaf3-4df0-89f6-70e2680bda7a
+      version: -1
+      name: CBFindHash
+      description: Search Carbon Black for connection to specified md5 hash(es).
+      scriptName: CBFindHash
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      md5: ${File.MD5}
+    results:
+    - found_file_locations
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "2":
+    id: "2"
+    taskid: c687c04f-ba90-4572-800a-923193bacc32
+    type: condition
+    task:
+      id: c687c04f-ba90-4572-800a-923193bacc32
+      version: -1
+      name: Is Carbon Black enabled?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    scriptarguments:
+      value: ${modules(val.brand == 'carbonblack' && val.state == 'active')}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 189b725f-2b0a-42cc-8148-95395f810983
+    type: title
+    task:
+      id: 189b725f-2b0a-42cc-8148-95395f810983
+      version: -1
+      description: "Done"
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "4":
+    id: "4"
+    taskid: a4a842fc-727c-4a64-883d-873968708ded
+    type: condition
+    task:
+      id: a4a842fc-727c-4a64-883d-873968708ded
+      version: -1
+      name: Do we have files to hunt?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "1"
+    scriptarguments:
+      value: ${File.MD5}
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_3_#default#": 0.27
+    },
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []

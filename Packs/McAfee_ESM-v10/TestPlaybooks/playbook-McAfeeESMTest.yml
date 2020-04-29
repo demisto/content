@@ -1,0 +1,953 @@
+id: McAfeeESMTest
+version: -1
+name: McAfeeESMTest
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5985abd4-2661-4077-8f90-65dda191f955
+    type: start
+    task:
+      id: 5985abd4-2661-4077-8f90-65dda191f955
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+      - "32"
+      - "33"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 308e35ee-825b-4990-8ed8-60ffc89013e6
+    type: regular
+    task:
+      id: 308e35ee-825b-4990-8ed8-60ffc89013e6
+      version: -1
+      name: esm-add-case
+      description: Add a case to the system
+      script: '|||esm-add-case'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      assignee: {}
+      organization: {}
+      severity: {}
+      status: {}
+      summary:
+        simple: this is the first case
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 3ae4d425-f495-4933-83c9-1743b219cf71
+    type: regular
+    task:
+      id: 3ae4d425-f495-4933-83c9-1743b219cf71
+      version: -1
+      name: Clear Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      additional: {}
+      all:
+        simple: "yes"
+      contextKey: {}
+      data: {}
+      filter: {}
+      filterType: {}
+      key: {}
+      out: {}
+      table: {}
+      title: {}
+      verbose: {}
+      xml: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 5b144d8b-8570-4b8f-8b64-d9ee85136bef
+    type: regular
+    task:
+      id: 5b144d8b-8570-4b8f-8b64-d9ee85136bef
+      version: -1
+      name: Edit severity, organization and summary
+      script: '|||esm-edit-case'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      assignedUser: {}
+      assignee: {}
+      customEnd: {}
+      customStart: {}
+      filters: {}
+      id:
+        simple: ${Case.ID}
+      maxWait: {}
+      organization:
+        simple: LuthorCorp
+      queryType: {}
+      severity:
+        simple: "50"
+      status: {}
+      summary:
+        simple: editing first case
+      timeRange: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: cf5f24bd-5ac7-4d32-84fb-a6fb79eda330
+    type: regular
+    task:
+      id: cf5f24bd-5ac7-4d32-84fb-a6fb79eda330
+      version: -1
+      name: Get case info after event assignment
+      script: '|||esm-get-case-detail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      field1: {}
+      field2: {}
+      field3: {}
+      field4: {}
+      id:
+        simple: ${Case.ID}
+      value1: {}
+      value2: {}
+      value3: {}
+      value4: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 5ed048f9-e4cb-4749-8ef8-c6f970e635c0
+    type: regular
+    task:
+      id: 5ed048f9-e4cb-4749-8ef8-c6f970e635c0
+      version: -1
+      name: Add new case with all parameters.
+      script: '|||esm-add-case'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      assignee:
+        simple: JKRolling
+      organization:
+        simple: LuthorCorp
+      severity:
+        simple: "1"
+      status:
+        simple: Research_${TimeNowUnix}
+      summary:
+        simple: McAfee ESM playbook test - all parameter case
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: d88b9072-9c2a-4301-8672-3bd1517a8db6
+    type: regular
+    task:
+      id: d88b9072-9c2a-4301-8672-3bd1517a8db6
+      version: -1
+      name: Edit the user name of last case to default
+      script: '|||esm-edit-case'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      assignee:
+        simple: me
+      id:
+        simple: ${Case.ID}
+      organization: {}
+      severity: {}
+      status:
+        simple: Open
+      summary: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: cf9dae43-8c4c-41c6-8247-711a819694e0
+    type: regular
+    task:
+      id: cf9dae43-8c4c-41c6-8247-711a819694e0
+      version: -1
+      name: Change case status name from Research to Development
+      script: '|||esm-edit-case-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      new_name:
+        simple: Development_${TimeNowUnix}
+      original_name:
+        simple: Research_${TimeNowUnix}
+      show_in_case_pane: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: ab491efa-5956-40bf-8b5c-492222572987
+    type: regular
+    task:
+      id: ab491efa-5956-40bf-8b5c-492222572987
+      version: -1
+      name: Remove additional case status
+      script: '|||esm-delete-case-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      name:
+        simple: Development_${TimeNowUnix}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 59ba0557-874b-45f9-8260-1cde3ebba3d3
+    type: regular
+    task:
+      id: 59ba0557-874b-45f9-8260-1cde3ebba3d3
+      version: -1
+      name: Set show case pane of new case status
+      script: '|||esm-add-case-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      name:
+        simple: VooDoo_${TimeNowUnix}
+      show_in_case_pane:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: f48b645d-18b9-4d5d-84b5-b391e8c4e034
+    type: regular
+    task:
+      id: f48b645d-18b9-4d5d-84b5-b391e8c4e034
+      version: -1
+      name: Change case status optional parameter
+      script: '|||esm-edit-case-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      new_name:
+        simple: VooDoo_${TimeNowUnix}
+      original_name:
+        simple: VooDoo_${TimeNowUnix}
+      show_in_case_pane:
+        simple: "False"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: b9bd2237-14eb-4cfe-8ceb-09af44759de4
+    type: regular
+    task:
+      id: b9bd2237-14eb-4cfe-8ceb-09af44759de4
+      version: -1
+      name: Remove additional case status2
+      script: '|||esm-delete-case-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      name:
+        simple: VooDoo_${TimeNowUnix}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: d51965c9-43bc-44af-8a99-c4becd316916
+    type: title
+    task:
+      id: d51965c9-43bc-44af-8a99-c4becd316916
+      version: -1
+      name: All listing commands
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+      - "25"
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 7d222eac-395c-47ec-88f4-db036d572bbd
+    type: regular
+    task:
+      id: 7d222eac-395c-47ec-88f4-db036d572bbd
+      version: -1
+      name: Get status cases
+      script: '|||esm-get-case-statuses'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: 40e5d7d2-1ea1-417f-8110-c78fff946029
+    type: regular
+    task:
+      id: 40e5d7d2-1ea1-417f-8110-c78fff946029
+      version: -1
+      name: Get users
+      script: '|||esm-get-user-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: 6047d94f-2aa4-4313-8712-6cd570b5706c
+    type: regular
+    task:
+      id: 6047d94f-2aa4-4313-8712-6cd570b5706c
+      version: -1
+      name: Get organizations
+      script: '|||esm-get-organization-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: ef0596aa-cc23-4d2b-8376-e4a1909a7333
+    type: regular
+    task:
+      id: ef0596aa-cc23-4d2b-8376-e4a1909a7333
+      version: -1
+      name: Close Case
+      script: '|||esm-edit-case'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      assignedUser: {}
+      assignee: {}
+      customEnd: {}
+      customStart: {}
+      filters: {}
+      id:
+        simple: ${Case.ID}
+      maxWait: {}
+      organization: {}
+      queryType: {}
+      severity: {}
+      status:
+        simple: Closed
+      summary: {}
+      timeRange: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: 59b77a71-31e8-445a-84b8-f8502ea9a3fa
+    type: regular
+    task:
+      id: 59b77a71-31e8-445a-84b8-f8502ea9a3fa
+      version: -1
+      name: Search by fields
+      script: '|||esm-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      customEnd: {}
+      customStart: {}
+      fields:
+        simple: SrcIP,IPSIDAlertID,DstIP
+      filters:
+        simple: '[{  "type": "EsmFieldFilter",  "field": {"name": "SrcIP"},  "operator":
+          "EQUALS",   "values": [{  "type": "EsmBasicValue",    "value": "199.203.151.209"  }]  }]'
+      maxWait: {}
+      queryType: {}
+      timeRange:
+        simple: CURRENT_DAY
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: e4c94277-90dc-4b83-8553-202cdf791a0c
+    type: regular
+    task:
+      id: e4c94277-90dc-4b83-8553-202cdf791a0c
+      version: -1
+      name: Add a new case status named with timestamp
+      script: '|||esm-add-case-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      name:
+        simple: Research_${TimeNowUnix}
+      show_in_case_pane: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: 363dde45-3b64-4ef4-8ebf-2b4830341f9a
+    type: regular
+    task:
+      id: 363dde45-3b64-4ef4-8ebf-2b4830341f9a
+      version: -1
+      name: Setup
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat: {}
+      extend-context: {}
+      hoursAgo: {}
+      minutesAgo: {}
+      monthsAgo: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "31":
+    id: "31"
+    taskid: 042fcf01-2e7f-47c9-8c7f-6e570b018375
+    type: regular
+    task:
+      id: 042fcf01-2e7f-47c9-8c7f-6e570b018375
+      version: -1
+      name: Fetch Alarms
+      script: '|||esm-fetch-alarms'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      assignedUser: {}
+      customEnd: {}
+      customStart: {}
+      timeRange:
+        simple: LAST_3_DAYS
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1790,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "32":
+    id: "32"
+    taskid: 62f6307a-b8f5-4cae-8aec-4a465bb872b7
+    type: title
+    task:
+      id: 62f6307a-b8f5-4cae-8aec-4a465bb872b7
+      version: -1
+      name: Case Management
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "33":
+    id: "33"
+    taskid: 392e98ab-9297-4248-88f7-8a76953ae881
+    type: title
+    task:
+      id: 392e98ab-9297-4248-88f7-8a76953ae881
+      version: -1
+      name: Alarm Management
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1790,
+          "y": 1930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "34":
+    id: "34"
+    taskid: 0d0d5658-85a3-4310-85db-0da3f51d9668
+    type: condition
+    task:
+      id: 0d0d5658-85a3-4310-85db-0da3f51d9668
+      version: -1
+      name: Check if we got results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "37"
+      "yes":
+      - "35"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path: {}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Alarm.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1790,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "35":
+    id: "35"
+    taskid: 1f3e40a9-f6fb-47ee-8287-407ed886738a
+    type: regular
+    task:
+      id: 1f3e40a9-f6fb-47ee-8287-407ed886738a
+      version: -1
+      name: 'Get Event list of alarm '
+      script: '|||esm-list-alarm-events'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      alarmId:
+        complex:
+          root: Alarm
+          accessor: ID
+          transformers:
+          - operator: GetFirstObject
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1902.5,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "36":
+    id: "36"
+    taskid: 528e4d17-1a54-441c-8be6-5cfeb8f0ea8b
+    type: regular
+    task:
+      id: 528e4d17-1a54-441c-8be6-5cfeb8f0ea8b
+      version: -1
+      name: Get specific event details
+      script: '|||esm-get-alarm-event-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      eventId:
+        complex:
+          root: EsmAlarmEvent
+          accessor: ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1790,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "37":
+    id: "37"
+    taskid: 2d666b32-9a98-4e65-84b2-f385d009fd16
+    type: title
+    task:
+      id: 2d666b32-9a98-4e65-84b2-f385d009fd16
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "38":
+    id: "38"
+    taskid: ee474fc6-a791-447b-8dcf-2eff1c323ae4
+    type: regular
+    task:
+      id: ee474fc6-a791-447b-8dcf-2eff1c323ae4
+      version: -1
+      name: Validate event details context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: EsmAlarmEvent.SrcMac
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1790,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "39":
+    id: "39"
+    taskid: 028ccce3-d5f1-4238-8310-4f7cafe28997
+    type: condition
+    task:
+      id: 028ccce3-d5f1-4238-8310-4f7cafe28997
+      version: -1
+      name: Check if we got results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "37"
+      "yes":
+      - "36"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path: {}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: EsmAlarmEvent.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1902.5,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3155,
+        "width": 2232.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

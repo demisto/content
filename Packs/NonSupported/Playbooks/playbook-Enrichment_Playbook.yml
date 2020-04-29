@@ -1,0 +1,386 @@
+id: Enrichment Playbook
+version: -1
+name: Enrichment Playbook
+system: true
+fromversion: 2.5.0
+description: Deprecated - We recommend using Entity Enrichment - Generic playbook instead.
+  Enrich data with reputation. Data is expected to be found in the standard
+  locations like File, URL, IP.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: start-enrich
+    type: start
+    task:
+      id: start-enrich
+      description: ""
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 50
+        }
+      }
+  "5":
+    id: "5"
+    taskid: enrich-integ
+    type: title
+    task:
+      id: enrich-integ
+      version: -1
+      description: ""
+      name: Enrich with Integrations
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+      - "12"
+      - "14"
+      - "15"
+      - "16"
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 195
+        }
+      }
+  "8":
+    id: "8"
+    taskid: check-res
+    type: title
+    task:
+      id: check-res
+      version: -1
+      description: ""
+      name: Check Result
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 690
+        }
+      }
+  "9":
+    id: "9"
+    taskid: enrich-done
+    type: regular
+    task:
+      id: enrich-done
+      version: -1
+      description: ""
+      name: Done
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value: Enrichment done
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 835
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 1b38d3b8-4657-4cea-84f9-6e4ac2b5d544
+    type: condition
+    task:
+      id: 1b38d3b8-4657-4cea-84f9-6e4ac2b5d544
+      version: -1
+      description: ""
+      name: Do we have MD5 hashes?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "11"
+    scriptarguments:
+      value: ${File.MD5}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+  "11":
+    id: "11"
+    taskid: d2de03c7-2e14-40b0-83f6-dee616098d0e
+    type: regular
+    task:
+      id: d2de03c7-2e14-40b0-83f6-dee616098d0e
+      version: -1
+      description: ""
+      name: Check MD5s
+      scriptName: FileReputation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      file: ${File.MD5}
+    view: |-
+      {
+        "position": {
+          "x": 167.5,
+          "y": 515
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 8c9ccba0-d9d6-477e-8774-3f6fc8624a57
+    type: condition
+    task:
+      id: 8c9ccba0-d9d6-477e-8774-3f6fc8624a57
+      version: -1
+      description: ""
+      name: Do we have SHA1 hashes?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "13"
+    scriptarguments:
+      value: ${File.SHA1}
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 340
+        }
+      }
+  "13":
+    id: "13"
+    taskid: b01bef15-7c9d-40a8-83e7-7fe9474399d4
+    type: regular
+    task:
+      id: b01bef15-7c9d-40a8-83e7-7fe9474399d4
+      version: -1
+      description: ""
+      name: Check SHA1s
+      scriptName: FileReputation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      file: ${File.SHA1}
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 515
+        }
+      }
+  "14":
+    id: "14"
+    taskid: 5006c24b-1bc8-4af3-86be-0944cb97d7db
+    type: condition
+    task:
+      id: 5006c24b-1bc8-4af3-86be-0944cb97d7db
+      version: -1
+      description: ""
+      name: Do we have SHA256 hashes?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "18"
+    scriptarguments:
+      value: ${File.SHA256}
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 340
+        }
+      }
+  "15":
+    id: "15"
+    taskid: 57fc5852-cd27-43ba-87fc-03f8fd220b4d
+    type: condition
+    task:
+      id: 57fc5852-cd27-43ba-87fc-03f8fd220b4d
+      version: -1
+      description: ""
+      name: Do we have IPs?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "19"
+    scriptarguments:
+      value: ${IP.Address}
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 340
+        }
+      }
+  "16":
+    id: "16"
+    taskid: 5417106f-4250-4478-8ce6-5bc2465393f9
+    type: condition
+    task:
+      id: 5417106f-4250-4478-8ce6-5bc2465393f9
+      version: -1
+      description: ""
+      name: Do we have URLs?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "20"
+    scriptarguments:
+      value: ${URL.Data}
+    view: |-
+      {
+        "position": {
+          "x": 1850,
+          "y": 340
+        }
+      }
+  "18":
+    id: "18"
+    taskid: c54d3c30-e2bb-47af-83a0-bfe2279edc19
+    type: regular
+    task:
+      id: c54d3c30-e2bb-47af-83a0-bfe2279edc19
+      version: -1
+      description: ""
+      name: Check SHA256s
+      scriptName: FileReputation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      file: ${File.SHA256}
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 515
+        }
+      }
+  "19":
+    id: "19"
+    taskid: de7cff35-df2d-4e32-8f3e-657226146b05
+    type: regular
+    task:
+      id: de7cff35-df2d-4e32-8f3e-657226146b05
+      version: -1
+      description: ""
+      name: Check IPs
+      scriptName: IPReputation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      file: ${File.SHA256}
+      ip: ${IP.Address}
+    view: |-
+      {
+        "position": {
+          "x": 1512.5,
+          "y": 515
+        }
+      }
+  "20":
+    id: "20"
+    taskid: 015bee76-dcfa-4a82-8db6-0ca8e268c7ab
+    type: regular
+    task:
+      id: 015bee76-dcfa-4a82-8db6-0ca8e268c7ab
+      version: -1
+      description: ""
+      name: Check URLs
+      scriptName: URLReputation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      file: ${File.SHA256}
+      ip: ""
+      url: ${URL.Data}
+    view: |-
+      {
+        "position": {
+          "x": 1962.5,
+          "y": 515
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_11_yes": 0.42,
+      "10_8_#default#": 0.21,
+      "12_8_#default#": 0.28,
+      "14_8_#default#": 0.24,
+      "15_8_#default#": 0.1,
+      "16_8_#default#": 0.18
+    },
+    "paper": {
+      "dimensions": {
+        "height": 880,
+        "width": 2292.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+tests:
+  - No tests - Deprecated playbook

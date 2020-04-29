@@ -1,0 +1,1232 @@
+id: playbook7
+version: -1
+name: Hunting C&C Communication Playbook
+description: A playbook to use the latest Threat Intelligence to hunt across your
+  infrastructure and look for malicious C&C communications.
+system: true
+fromversion: 2.5.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b0106ff2-1f84-4336-811c-501b301327a3
+    type: start
+    task:
+      id: b0106ff2-1f84-4336-811c-501b301327a3
+      description: ""
+      version: -1
+      name: start_task
+      type: start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 6bb644a4-ab7a-4f6c-82ff-c2543048a30d
+    type: title
+    task:
+      id: 6bb644a4-ab7a-4f6c-82ff-c2543048a30d
+      version: -1
+      description: ""
+      name: Prepare
+      issystemtask: true
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 370
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 3608118f-e307-4a7e-8478-a74fe26a8747
+    type: regular
+    task:
+      id: 3608118f-e307-4a7e-8478-a74fe26a8747
+      description: ""
+      version: -1
+      name: Trigger an update of our IoC repository from all available Threat Intel
+        sources
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 515
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 2ec8a165-89f6-44b7-8329-8258b97edec4
+    type: regular
+    task:
+      id: 2ec8a165-89f6-44b7-8329-8258b97edec4
+      version: -1
+      name: Retrieve fresh lists of C&C IoCs from repository
+      description: Retrieve IoCs from repository into the incident context - IP addresses,
+        domains, URLs
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 690
+        }
+      }
+  "4":
+    id: "4"
+    taskid: e0c2eca8-a6bd-4924-835b-4264c1d5a673
+    type: title
+    task:
+      id: e0c2eca8-a6bd-4924-835b-4264c1d5a673
+      description: ""
+      version: -1
+      name: Hunt
+      issystemtask: true
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 865
+        }
+      }
+  "5":
+    id: "5"
+    taskid: efa206e7-f25b-44fe-8c31-8a8a8b322336
+    type: regular
+    task:
+      id: efa206e7-f25b-44fe-8c31-8a8a8b322336
+      version: -1
+      name: Query netflow records for traffic to C&C IPs
+      description: Query the data repository where netflow records are continuously
+        aggregated.
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1010
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 4ddbe71f-9a61-4f7c-8dd4-50673f386a1a
+    type: regular
+    task:
+      id: 4ddbe71f-9a61-4f7c-8dd4-50673f386a1a
+      version: -1
+      description: ""
+      name: Search web proxy logs for C&C URLs
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1185
+        }
+      }
+  "7":
+    id: "7"
+    taskid: bbefe0d0-cde1-4f50-8bdc-f469f3c80264
+    type: regular
+    task:
+      id: bbefe0d0-cde1-4f50-8bdc-f469f3c80264
+      version: -1
+      description: ""
+      name: Search the organization's DNS server logs for C&C domains
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1360
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 388ef341-1a5b-4352-8328-2af51d604196
+    type: regular
+    task:
+      id: 388ef341-1a5b-4352-8328-2af51d604196
+      version: -1
+      description: ""
+      name: Search Endpoint monitoring infrastructure for communication with C&C IPs
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1535
+        }
+      }
+  "9":
+    id: "9"
+    taskid: d36f548c-3e55-42e5-8059-73e1adf0371e
+    type: regular
+    task:
+      id: d36f548c-3e55-42e5-8059-73e1adf0371e
+      version: -1
+      name: Search Firewall and IPS logs for C&C IPs
+      description: Check if any traffic was attempted to a C&C IP and blocked by our
+        Network Security controls such as Firewalls and IPSs
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1710
+        }
+      }
+  "10":
+    id: "10"
+    taskid: e8beb59e-d7fd-4bc4-8c5d-f29bfa3370ce
+    type: title
+    task:
+      id: e8beb59e-d7fd-4bc4-8c5d-f29bfa3370ce
+      version: -1
+      description: ""
+      name: Validate findings
+      issystemtask: true
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1885
+        }
+      }
+  "11":
+    id: "11"
+    taskid: 20253d8e-c1d5-4918-82d1-aeac6837d061
+    type: condition
+    task:
+      id: 20253d8e-c1d5-4918-82d1-aeac6837d061
+      version: -1
+      description: ""
+      name: Did we uncover any suspected C&C communication?
+      issystemtask: true
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "12"
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 2030
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 66696f7e-2a82-4d91-880d-a68502b214a5
+    type: regular
+    task:
+      id: 66696f7e-2a82-4d91-880d-a68502b214a5
+      version: -1
+      name: Review correlations with past investigations in case management / incident
+        tracking
+      description: Have any of our IoCs appeared in a past investigation? What did
+        we know about them then, and what was the conclusion?
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    view: |-
+      {
+        "position": {
+          "x": 941,
+          "y": 2202
+        }
+      }
+  "13":
+    id: "13"
+    taskid: 45237e6a-0780-41c5-8f55-d6aeefda3db1
+    type: regular
+    task:
+      id: 45237e6a-0780-41c5-8f55-d6aeefda3db1
+      version: -1
+      name: Review reputation data for each indicator
+      description: Review displayed reputation data for IPs, domains and URLs using
+        all reputation sources
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    view: |-
+      {
+        "position": {
+          "x": 941,
+          "y": 2375
+        }
+      }
+  "14":
+    id: "14"
+    taskid: 69cd0199-8b53-4358-89ed-63677ad5c20c
+    type: condition
+    task:
+      id: 69cd0199-8b53-4358-89ed-63677ad5c20c
+      version: -1
+      description: ""
+      name: Is PassiveTotal Available?
+      scriptName: Exists
+      issystemtask: true
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "15"
+    scriptarguments:
+      brandname: ""
+      value: ${modules.brand(val==='PassiveTotal')}
+    view: |-
+      {
+        "position": {
+          "x": 941,
+          "y": 2550
+        }
+      }
+  "15":
+    id: "15"
+    taskid: 0f052e94-da1b-49b1-898f-4de332126b3f
+    type: regular
+    task:
+      id: 0f052e94-da1b-49b1-898f-4de332126b3f
+      version: -1
+      name: Review PassiveTotal enrichment data for the indicators
+      description: Has PassiveTotal marked the domain as "ever compromised"? Does
+        it associate the domain with a known malware?
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    view: |-
+      {
+        "position": {
+          "x": 1187,
+          "y": 2737
+        }
+      }
+  "16":
+    id: "16"
+    taskid: 0d2eda66-3682-4884-892e-82d33324855d
+    type: condition
+    task:
+      id: 0d2eda66-3682-4884-892e-82d33324855d
+      version: -1
+      description: ""
+      name: Is CrowdStrike Intel Available?
+      scriptName: Exists
+      issystemtask: true
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "17"
+    scriptarguments:
+      brandname: ""
+      value: ${modules.brand(val==='FalconIntel')}
+    view: |-
+      {
+        "position": {
+          "x": 842,
+          "y": 2918
+        }
+      }
+  "17":
+    id: "17"
+    taskid: 2676407a-39f4-4dae-8f1e-b72e52bcd409
+    type: regular
+    task:
+      id: 2676407a-39f4-4dae-8f1e-b72e52bcd409
+      version: -1
+      description: ""
+      name: Get and review CrowdStrike indicator information
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    view: |-
+      {
+        "position": {
+          "x": 1187,
+          "y": 3083
+        }
+      }
+  "18":
+    id: "18"
+    taskid: 1127e16d-2f20-4090-89a2-e000f2cd9461
+    type: condition
+    task:
+      id: 1127e16d-2f20-4090-89a2-e000f2cd9461
+      version: -1
+      description: ""
+      name: Do the found IoCs include domain names?
+      issystemtask: true
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "19"
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 3289
+        }
+      }
+  "19":
+    id: "19"
+    taskid: a71b6494-370c-486a-84ac-1a3c58118c11
+    type: regular
+    task:
+      id: a71b6494-370c-486a-84ac-1a3c58118c11
+      version: -1
+      description: ""
+      name: Review the domains' Whois information
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    view: |-
+      {
+        "position": {
+          "x": 1197.5,
+          "y": 3450
+        }
+      }
+  "20":
+    id: "20"
+    taskid: caae4dd9-e7c0-458c-84a9-90db5c2e6fac
+    type: regular
+    task:
+      id: caae4dd9-e7c0-458c-84a9-90db5c2e6fac
+      version: -1
+      description: ""
+      name: Retrieve DNS history for these domains
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    view: |-
+      {
+        "position": {
+          "x": 1197.5,
+          "y": 3625
+        }
+      }
+  "21":
+    id: "21"
+    taskid: c91818be-5898-46ee-8263-a2f531216e5e
+    type: regular
+    task:
+      id: c91818be-5898-46ee-8263-a2f531216e5e
+      version: -1
+      description: ""
+      name: Review IP reputation for the IPs to which this domain resolved at the
+        time
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    view: |-
+      {
+        "position": {
+          "x": 1197.5,
+          "y": 3792
+        }
+      }
+  "22":
+    id: "22"
+    taskid: 5823c9d5-90cc-41cf-87c5-7b94b692f96e
+    type: regular
+    task:
+      id: 5823c9d5-90cc-41cf-87c5-7b94b692f96e
+      version: -1
+      description: ""
+      name: Summarize the list of validated malicious indicators
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    view: |-
+      {
+        "position": {
+          "x": 807,
+          "y": 3973
+        }
+      }
+  "23":
+    id: "23"
+    taskid: b7ee6752-2787-4142-8802-0d3ae23033c7
+    type: title
+    task:
+      id: b7ee6752-2787-4142-8802-0d3ae23033c7
+      version: -1
+      description: ""
+      name: Respond
+      issystemtask: true
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 4189
+        }
+      }
+  "24":
+    id: "24"
+    taskid: 9ac6e273-1fa9-42e3-8367-031ce8a663f3
+    type: condition
+    task:
+      id: 9ac6e273-1fa9-42e3-8367-031ce8a663f3
+      version: -1
+      description: ""
+      name: Have any machines been confirmed as compromised?
+      issystemtask: true
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "35"
+      "yes":
+      - "25"
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 4385
+        }
+      }
+  "25":
+    id: "25"
+    taskid: 7b632ce1-d607-40a1-8704-1097f5df2e72
+    type: regular
+    task:
+      id: 7b632ce1-d607-40a1-8704-1097f5df2e72
+      description: ""
+      version: -1
+      name: Isolate compromised hosts from network
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    view: |-
+      {
+        "position": {
+          "x": 1113,
+          "y": 4545
+        }
+      }
+  "26":
+    id: "26"
+    taskid: 1a83ba02-3043-423b-8f6e-b91e3ed5de09
+    type: regular
+    task:
+      id: 1a83ba02-3043-423b-8f6e-b91e3ed5de09
+      version: -1
+      name: Disable compromised AD user account(s)
+      description: Block access to the compromised user account in AD pending investigation
+        and cleanup, after which the account will be reinstated by an Active Directory
+        administrator with the required permissions.
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    view: |-
+      {
+        "position": {
+          "x": 1113,
+          "y": 4737
+        }
+      }
+  "27":
+    id: "27"
+    taskid: bd9b46ea-07eb-46ee-8308-46888a11640b
+    type: regular
+    task:
+      id: bd9b46ea-07eb-46ee-8308-46888a11640b
+      version: -1
+      name: Lock / Rotate any other compromised accounts, keys and credentials
+      description: If the machine contained any authentication keys, accounts to internal
+        company resources and information systems, these should be locked and revoked,
+        and reinstated later with new passwords.
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    view: |-
+      {
+        "position": {
+          "x": 1113,
+          "y": 4917
+        }
+      }
+  "28":
+    id: "28"
+    taskid: 00d3bb90-f069-4f86-8b0d-b68573ec9ddc
+    type: condition
+    task:
+      id: 00d3bb90-f069-4f86-8b0d-b68573ec9ddc
+      description: ""
+      version: -1
+      name: Is Slack Available?
+      scriptName: Exists
+      issystemtask: true
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "29"
+      "yes":
+      - "33"
+    scriptarguments:
+      value: ${modules.brand(val==='slack')}
+    view: |-
+      {
+        "position": {
+          "x": 1113,
+          "y": 5101
+        }
+      }
+  "29":
+    id: "29"
+    taskid: e7c70fba-f94f-4a02-8041-ef0bbf35baf0
+    type: regular
+    task:
+      id: e7c70fba-f94f-4a02-8041-ef0bbf35baf0
+      description: ""
+      version: -1
+      name: Retrieve the user's phone number from Active Directory
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    view: |-
+      {
+        "position": {
+          "x": 897,
+          "y": 5305
+        }
+      }
+  "30":
+    id: "30"
+    taskid: 9f4c6dba-dd4b-4673-86a8-19de7b29b237
+    type: condition
+    task:
+      id: 9f4c6dba-dd4b-4673-86a8-19de7b29b237
+      description: ""
+      version: -1
+      name: Is Twilio Available?
+      scriptName: Exists
+      issystemtask: true
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "31"
+      "yes":
+      - "32"
+    scriptarguments:
+      brandname: ""
+      value: ${modules.brand(val==='Twilio')}
+    view: |-
+      {
+        "position": {
+          "x": 897,
+          "y": 5481
+        }
+      }
+  "31":
+    id: "31"
+    taskid: dcf67394-61f2-49bb-8e0d-bc4fe64777b8
+    type: regular
+    task:
+      id: dcf67394-61f2-49bb-8e0d-bc4fe64777b8
+      version: -1
+      description: ""
+      name: Call the user and tell them that their machine is being isolated and investigated
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 5678
+        }
+      }
+  "32":
+    id: "32"
+    taskid: 322e404d-bfed-49fd-824d-67dc96c95596
+    type: regular
+    task:
+      id: 322e404d-bfed-49fd-824d-67dc96c95596
+      version: -1
+      description: ""
+      name: SMS the user that their machine is being isolated and investigated
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    view: |-
+      {
+        "position": {
+          "x": 1085,
+          "y": 5678
+        }
+      }
+  "33":
+    id: "33"
+    taskid: 3c17b8bd-e79e-4a02-8b1d-83e10fd749a8
+    type: regular
+    task:
+      id: 3c17b8bd-e79e-4a02-8b1d-83e10fd749a8
+      version: -1
+      description: ""
+      name: Tell the user on Slack that their machine is being isolated and investigated
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    view: |-
+      {
+        "position": {
+          "x": 1547,
+          "y": 5305
+        }
+      }
+  "34":
+    id: "34"
+    taskid: c43c578d-8337-42b4-8fbc-73e178f6d0d5
+    type: regular
+    task:
+      id: c43c578d-8337-42b4-8fbc-73e178f6d0d5
+      version: -1
+      description: ""
+      name: Open separate incidents to further investigate each compromised host
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    view: |-
+      {
+        "position": {
+          "x": 1352,
+          "y": 6075
+        }
+      }
+  "35":
+    id: "35"
+    taskid: 789a66bc-3116-4084-8c04-61b840d818ce
+    type: title
+    task:
+      id: 789a66bc-3116-4084-8c04-61b840d818ce
+      version: -1
+      description: ""
+      name: Remediate and Wrap up
+      issystemtask: true
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    view: |-
+      {
+        "position": {
+          "x": 733,
+          "y": 6234
+        }
+      }
+  "36":
+    id: "36"
+    taskid: 6f288fd3-3fb2-49af-8036-96f1063cd098
+    type: condition
+    task:
+      id: 6f288fd3-3fb2-49af-8036-96f1063cd098
+      version: -1
+      description: ""
+      name: Have the machines been cleaned successfully?
+      issystemtask: true
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "37"
+      "yes":
+      - "38"
+    view: |-
+      {
+        "position": {
+          "x": 733,
+          "y": 6393
+        }
+      }
+  "37":
+    id: "37"
+    taskid: ba3b890e-71b4-4f4d-8fd1-b33f295fd72e
+    type: regular
+    task:
+      id: ba3b890e-71b4-4f4d-8fd1-b33f295fd72e
+      version: -1
+      description: ""
+      name: Open a ticket for IT to reimage the machine
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 6587
+        }
+      }
+  "38":
+    id: "38"
+    taskid: c3330605-13ed-4282-8d71-6150364e16d2
+    type: regular
+    task:
+      id: c3330605-13ed-4282-8d71-6150364e16d2
+      version: -1
+      description: ""
+      name: Restore network access for cleaned up hosts
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    view: |-
+      {
+        "position": {
+          "x": 1151,
+          "y": 6587
+        }
+      }
+  "39":
+    id: "39"
+    taskid: bd76719e-c055-464d-868f-da361e6d134c
+    type: regular
+    task:
+      id: bd76719e-c055-464d-868f-da361e6d134c
+      version: -1
+      description: ""
+      name: Reinstate locked user accounts with new credentials
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    view: |-
+      {
+        "position": {
+          "x": 733,
+          "y": 6857
+        }
+      }
+  "40":
+    id: "40"
+    taskid: a80fd4c5-d1b2-4095-88a8-242e4ae17db5
+    type: condition
+    task:
+      id: a80fd4c5-d1b2-4095-88a8-242e4ae17db5
+      version: -1
+      description: ""
+      name: Is Slack Available?
+      scriptName: IsIntegrationAvailable
+      issystemtask: true
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "41"
+      "yes":
+      - "45"
+    scriptarguments:
+      brandname: slack
+    results:
+    - brandInstances
+    view: |-
+      {
+        "position": {
+          "x": 733,
+          "y": 7028
+        }
+      }
+  "41":
+    id: "41"
+    taskid: b195772e-ba3d-4283-8cd5-2103d953285d
+    type: regular
+    task:
+      id: b195772e-ba3d-4283-8cd5-2103d953285d
+      version: -1
+      description: ""
+      name: Retrieve the user's phone number from Active Directory
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    view: |-
+      {
+        "position": {
+          "x": 475,
+          "y": 7244
+        }
+      }
+  "42":
+    id: "42"
+    taskid: 18edd09f-be16-4da9-872c-3934845a255d
+    type: condition
+    task:
+      id: 18edd09f-be16-4da9-872c-3934845a255d
+      version: -1
+      description: ""
+      name: Is Twilio Available?
+      scriptName: Exists
+      issystemtask: true
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "43"
+      "yes":
+      - "44"
+    scriptarguments:
+      brandname: ""
+      value: ${modules.brand(val==='Twilio')}
+    view: |-
+      {
+        "position": {
+          "x": 475,
+          "y": 7434
+        }
+      }
+  "43":
+    id: "43"
+    taskid: 2c7bfecc-9b5d-43ba-8e1b-a35265824fef
+    type: regular
+    task:
+      id: 2c7bfecc-9b5d-43ba-8e1b-a35265824fef
+      version: -1
+      description: ""
+      name: Call the user and tell them that their accounts have been reinstated
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    view: |-
+      {
+        "position": {
+          "x": 212.5,
+          "y": 7614
+        }
+      }
+  "44":
+    id: "44"
+    taskid: 59e491df-f254-42fe-8e01-5956b8eba874
+    type: regular
+    task:
+      id: 59e491df-f254-42fe-8e01-5956b8eba874
+      version: -1
+      name: SMS the user that their account has been reinstated
+      description: Optionally - include the temporary random password generated for
+        the account. The user will have to choose a new password on first login.
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    view: |-
+      {
+        "position": {
+          "x": 637,
+          "y": 7614
+        }
+      }
+  "45":
+    id: "45"
+    taskid: 5d519042-711d-4b60-826c-c3566049f1e6
+    type: regular
+    task:
+      id: 5d519042-711d-4b60-826c-c3566049f1e6
+      version: -1
+      name: Notify the user via Slack that their account has been reinstated
+      description: Optionally - include the temporary random password generated for
+        the account. The user will have to choose a new password on first login.
+      script: slack|||slack-send
+      issystemtask: true
+      type: regular
+      iscommand: true
+      brand: slack
+    nexttasks:
+      '#none#':
+      - "46"
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": 7244
+        }
+      }
+  "46":
+    id: "46"
+    taskid: 1a2dbd58-f17d-437d-8573-54a8339d3ccb
+    type: regular
+    task:
+      id: 1a2dbd58-f17d-437d-8573-54a8339d3ccb
+      version: -1
+      description: ""
+      name: Deploy validated IoCs with high confidence rating against future attacks
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    view: |-
+      {
+        "position": {
+          "x": 961,
+          "y": 8033
+        }
+      }
+  "47":
+    id: "47"
+    taskid: e1c5da88-1515-496c-8501-1b5b4c504f93
+    type: regular
+    task:
+      id: e1c5da88-1515-496c-8501-1b5b4c504f93
+      version: -1
+      name: Share the validated IoCs with partner organizations
+      description: Include any information gleaned about attribution to a known threat
+        actor, especially if the actor is known to be targeting your industrial sector.
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    view: |-
+      {
+        "position": {
+          "x": 961,
+          "y": 8237
+        }
+      }
+  "48":
+    id: "48"
+    taskid: a5a8e072-2d12-46ad-8448-1c958924aa4d
+    type: regular
+    task:
+      id: a5a8e072-2d12-46ad-8448-1c958924aa4d
+      version: -1
+      description: ""
+      name: Issue report to CISO by email
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    view: |-
+      {
+        "position": {
+          "x": 961,
+          "y": 8435
+        }
+      }
+  "49":
+    id: "49"
+    taskid: a38ffd8c-2fc9-4c28-8726-a9f59033aaca
+    type: regular
+    task:
+      id: a38ffd8c-2fc9-4c28-8726-a9f59033aaca
+      version: -1
+      description: ""
+      name: Expose Configured Integrations
+      script: ExposeModules
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 195
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_23_#default#": 0.88,
+      "24_35_#default#": 0.76,
+      "42_43_no": 0.61
+    },
+    "paper": {
+      "dimensions": {
+        "height": 8480,
+        "width": 1714.5,
+        "x": 212.5,
+        "y": 50
+      }
+    }
+  }

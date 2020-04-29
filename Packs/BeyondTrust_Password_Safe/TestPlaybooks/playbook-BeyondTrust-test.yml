@@ -1,0 +1,196 @@
+id: BeyondTrust-Test
+version: -1
+name: BeyondTrust-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0f75abf4-a51e-46ea-8ece-e1669c27868e
+    type: start
+    task:
+      id: 0f75abf4-a51e-46ea-8ece-e1669c27868e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: e76c2a5e-53e2-421f-8cad-f152527c61a5
+    type: regular
+    task:
+      id: e76c2a5e-53e2-421f-8cad-f152527c61a5
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 050f980b-5f3a-4fdc-88f3-76f7011e8f40
+    type: regular
+    task:
+      id: 050f980b-5f3a-4fdc-88f3-76f7011e8f40
+      version: -1
+      name: Get Managed Accounts
+      description: Returns a list of managed accounts that the current user has permissions
+        to request.
+      script: '|||beyondtrust-get-managed-accounts'
+      type: regular
+      iscommand: true
+      brand: BeyondTrust Password Safe
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 9021b6f6-1406-4ea4-80c5-4b2d512f08b2
+    type: regular
+    task:
+      id: 9021b6f6-1406-4ea4-80c5-4b2d512f08b2
+      version: -1
+      name: Get Managed Systems
+      description: Returns a list of managed systems.
+      script: '|||beyondtrust-get-managed-systems'
+      type: regular
+      iscommand: true
+      brand: BeyondTrust Password Safe
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 35db7c5c-bd96-465f-8014-c0058c3c7246
+    type: regular
+    task:
+      id: 35db7c5c-bd96-465f-8014-c0058c3c7246
+      version: -1
+      name: 'Create release request '
+      description: Creates a new credentials release request.
+      script: '|||beyondtrust-create-release-request'
+      type: regular
+      iscommand: true
+      brand: BeyondTrust Password Safe
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      access_type:
+        simple: View
+      account_id:
+        simple: "8"
+      conflict_option: {}
+      duration_minutes:
+        simple: "1"
+      reason: {}
+      system_id:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: c66135a1-a65d-4883-86ae-9eb9a25549eb
+    type: regular
+    task:
+      id: c66135a1-a65d-4883-86ae-9eb9a25549eb
+      version: -1
+      name: Check-In credentials
+      description: Checks-in/releases a request before it expires.
+      script: '|||beyondtrust-check-in-credentials'
+      type: regular
+      iscommand: true
+      brand: BeyondTrust Password Safe
+    scriptarguments:
+      reason: {}
+      request_id:
+        simple: ${BeyondTrust.Request.RequestID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 825,
+        "width": 1020,
+        "x": 170,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

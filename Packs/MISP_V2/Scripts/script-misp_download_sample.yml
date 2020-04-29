@@ -1,0 +1,47 @@
+commonfields:
+  id: misp_download_sample
+  version: -1
+name: misp_download_sample
+script: |+
+  import base64
+
+  # Executing command if MISP V2 has an active instance
+  misp_v2 = False
+  for instance_name, data in demisto.getModules().items():
+      if data.get('brand') == 'MISP V2' and data.get('state') == 'active':
+          misp_v2 = True
+          break
+
+  if misp_v2:
+      demisto.results(demisto.executeCommand('misp-download-sample', demisto.args()))
+  else:
+      if not get_hash_type(demisto.args().get('hash')) == 'Unknown':
+          res = demisto.executeCommand('internal-misp-download-sample', demisto.args() )
+          if 'message' in res[0]['Contents'] and res[0]['Contents']['message'] == 'No hits with the given parameters.':
+              demisto.results(res[0]['Contents']['message'])
+          else:
+              filename = res[0]['Contents']['result'][0]['filename']
+              fileContent = base64.b64decode(res[0]['Contents']['result'][0]['base64'])
+              demisto.results(fileResult(filename, fileContent))
+      else:
+          return_error('Hash length is invalid.')
+
+type: python
+tags: []
+comment: Download malicious file sample from MISP
+enabled: true
+args:
+- name: hash
+  required: true
+  default: true
+  description: 'A hash in MD5 format. If allSamples is set, this can be any one of
+    the following: md5, sha1, sha256.'
+- name: eventID
+  description: If set, it will only fetch data from the given event ID.
+- name: allSamples
+  description: If set, it will return all samples from events that have a match for
+    the hash provided above
+scripttarget: 0
+tests:
+- MISP V2 Test
+deprecated: true

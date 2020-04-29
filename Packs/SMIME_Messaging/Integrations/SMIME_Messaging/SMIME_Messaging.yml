@@ -1,0 +1,108 @@
+category: Utilities
+commonfields:
+  id: SMIME Messaging
+  version: -1
+configuration:
+- display: Public Key
+  name: public_key
+  required: true
+  type: 12
+- display: Private Key
+  name: private_key
+  required: true
+  type: 14
+description: Use the S/MIME (Secure Multipurpose Internet Mail Extensions) integration
+  to send and receive secure MIME data.
+display: SMIME Messaging
+name: SMIME Messaging
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The message body to send.
+      isArray: false
+      name: message_body
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves items from the service.
+    execution: false
+    name: smime-sign-email
+    outputs:
+    - contextPath: SMIME.Signed.Message
+      description: The signed message body.
+      type: String
+    - contextPath: SMIME.Signed.Headers
+      description: The S/MIME signing headers.
+      type: String
+  - arguments:
+    - default: false
+      description: The message body to encrypt.
+      isArray: false
+      name: message
+      required: true
+      secret: false
+    deprecated: false
+    description: Encrypts an email message with S/MIME protocol by using a public
+      RSA certificate.
+    execution: false
+    name: smime-encrypt-email-body
+    outputs:
+    - contextPath: SMIME.Encrypted.Message
+      description: The encrypted message.
+      type: String
+    - contextPath: SMIME.Encrypted.Headers
+      description: The encryption headers.
+      type: String
+  - arguments:
+    - default: false
+      description: The signed email with .p7 extension.
+      isArray: false
+      name: signed_message
+      required: true
+      secret: false
+    deprecated: false
+    description: Verifies the signature.
+    execution: false
+    name: smime-verify-sign
+  - arguments:
+    - default: false
+      description: The encrypted message with .p7 extension.
+      isArray: false
+      name: encrypt_message
+      required: true
+      secret: false
+    deprecated: false
+    description: Decrypts the message body.
+    execution: false
+    name: smime-decrypt-email-body
+    outputs:
+    - contextPath: SMIME.Decrypted.Message
+      description: The decrypted message.
+      type: String
+  - arguments:
+    - default: false
+      description: The message body to encrypt and sign.
+      isArray: false
+      name: message
+      required: true
+      secret: false
+    deprecated: false
+    description: Encrypts and signs an email message with S/MIME protocol by using a public
+      RSA certificate.
+    execution: false
+    name: smime-sign-and-encrypt
+    outputs:
+    - contextPath: SMIME.SignedAndEncrypted.Message
+      description: The raw message to send.
+      type: String
+  dockerimage: demisto/m2crypto:1.0.0.1850
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+tests:
+- No tests - added unitest

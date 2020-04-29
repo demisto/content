@@ -8,13 +8,14 @@ from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICK
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_QUERY_TICKETS, RESPONSE_ADD_LINK, \
     RESPONSE_ADD_COMMENT, RESPONSE_UPLOAD_FILE, RESPONSE_GET_TICKET_NOTES, RESPONSE_GET_RECORD, \
     RESPONSE_UPDATE_RECORD, RESPONSE_CREATE_RECORD, RESPONSE_QUERY_TABLE, RESPONSE_LIST_TABLE_FIELDS, \
-    RESPONSE_QUERY_COMPUTERS, RESPONSE_GET_TABLE_NAME, RESPONSE_UPDATE_TICKET_ADDITIONAL
+    RESPONSE_QUERY_COMPUTERS, RESPONSE_GET_TABLE_NAME, RESPONSE_UPDATE_TICKET_ADDITIONAL, \
+    RESPONSE_QUERY_TABLE_SYS_PARAMS
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \
     EXPECTED_TICKET_HR, EXPECTED_MULTIPLE_TICKET_HR, EXPECTED_UPDATE_TICKET, EXPECTED_UPDATE_TICKET_SC_REQ, \
     EXPECTED_CREATE_TICKET, EXPECTED_QUERY_TICKETS, EXPECTED_ADD_LINK_HR, EXPECTED_ADD_COMMENT_HR, \
     EXPECTED_UPLOAD_FILE, EXPECTED_GET_TICKET_NOTES, EXPECTED_GET_RECORD, EXPECTED_UPDATE_RECORD, \
     EXPECTED_CREATE_RECORD, EXPECTED_QUERY_TABLE, EXPECTED_LIST_TABLE_FIELDS, EXPECTED_QUERY_COMPUTERS, \
-    EXPECTED_GET_TABLE_NAME, EXPECTED_UPDATE_TICKET_ADDITIONAL
+    EXPECTED_GET_TABLE_NAME, EXPECTED_UPDATE_TICKET_ADDITIONAL, EXPECTED_QUERY_TABLE_SYS_PARAMS
 
 
 def test_get_server_url():
@@ -46,6 +47,18 @@ def test_split_fields():
     expected_dict_fields = {'a': 'b', 'c': 'd'}
     assert expected_dict_fields == split_fields('a=b;c=d')
 
+    expected_custom_field = {'u_customfield': "<a href=\'https://google.com\'>Link text</a>"}
+    assert expected_custom_field == split_fields("u_customfield=<a href=\'https://google.com\'>Link text</a>")
+
+    expected_custom_sys_params = {
+        "sysparm_display_value": 'all',
+        "sysparm_exclude_reference_link": 'True',
+        "sysparm_query": 'number=TASK0000001'
+    }
+
+    assert expected_custom_sys_params == split_fields(
+        "sysparm_display_value=all;sysparm_exclude_reference_link=True;sysparm_query=number=TASK0000001")
+
     try:
         split_fields('a')
     except Exception as err:
@@ -75,6 +88,10 @@ def test_split_fields():
      RESPONSE_CREATE_RECORD, EXPECTED_CREATE_RECORD, True),
     (query_table_command, {'table_name': "alm_asset", 'fields': "asset_tag,sys_updated_by,display_name",
     'query': "display_nameCONTAINSMacBook", 'limit': 3}, RESPONSE_QUERY_TABLE, EXPECTED_QUERY_TABLE, False),
+    (query_table_command, {'table_name': "sc_task", 'system_params':
+        "sysparm_display_value=all;sysparm_exclude_reference_link=True;sysparm_query=number=TASK0000001",
+                           'fields': "approval,state,escalation,number,description"},
+     RESPONSE_QUERY_TABLE_SYS_PARAMS, EXPECTED_QUERY_TABLE_SYS_PARAMS, False),
     (list_table_fields_command, {'table_name': "alm_asset"}, RESPONSE_LIST_TABLE_FIELDS, EXPECTED_LIST_TABLE_FIELDS,
      False),
     (query_computers_command, {'computer_id': '1234'}, RESPONSE_QUERY_COMPUTERS, EXPECTED_QUERY_COMPUTERS, False),
