@@ -63,9 +63,9 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
-      false:
+      no:
       - '7'
-      true:
+      yes:
       - '26'
     scriptarguments:
       left:
@@ -97,9 +97,9 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
-      false:
+      no:
       - '7'
-      true:
+      yes:
       - '35'
     scriptarguments:
       first:
@@ -243,9 +243,9 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
-      false:
+      no:
       - '7'
-      true:
+      yes:
       - '36'
     scriptarguments:
       first:
@@ -285,9 +285,9 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
-      false:
+      no:
       - '7'
-      true:
+      yes:
       - '14'
     scriptarguments:
       left:
