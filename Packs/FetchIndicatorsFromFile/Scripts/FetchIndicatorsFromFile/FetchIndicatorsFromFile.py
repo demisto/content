@@ -6,13 +6,7 @@ import re
 import xlrd
 import csv
 import tldextract
-import warnings
 import traceback
-
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
-warnings.filterwarnings(action="ignore", message='.*certificate verify failed: '
-                                                 'self signed certificate in certificate chain')
 
 
 def csv_file_to_indicator_list(file_path, col_num, starting_row, auto_detect, default_type, type_col, limit, offset):
@@ -21,14 +15,18 @@ def csv_file_to_indicator_list(file_path, col_num, starting_row, auto_detect, de
     # TODO: add run on all columns functionality
 
     line_index = 0
-    with open(file_path) as csv_file:
-        file_reader = csv.reader(csv_file)
+    with open(file_path, 'rU') as csv_file:
+        # csv reader can fail when encountering a NULL byte (\0) - so we go through the file and take out the NUL bytes.
+        file_reader = csv.reader(line.replace('\0', '') for line in csv_file)
         for row in file_reader:
             if line_index >= starting_row + offset and len(row) != 0:
                 indicator = row[col_num]
 
                 indicator_type = get_indicator_type(indicator, auto_detect, default_type, file_type='csv',
                                                     type_col=type_col, csv_row=row)
+
+                if indicator_type is None:
+                    continue
 
                 indicator_list.append({
                     "type": indicator_type,
@@ -61,6 +59,9 @@ def xls_file_to_indicator_list(file_path, sheet_name, col_num, starting_row, aut
 
         indicator_type = get_indicator_type(indicator, auto_detect, default_type, file_type='xls',
                                             type_col=type_col, xl_sheet=xl_sheet, xl_row_index=row_index)
+
+        if indicator_type is None:
+            continue
 
         indicator_list.append({
             'type': indicator_type,
@@ -188,7 +189,12 @@ def detect_type(indicator):
         return FeedIndicatorType.Email
 
     try:
-        if tldextract.extract(indicator).suffix:
+        # we use TLDExtract class to fetch all existing domain suffixes from the bellow mentioned file:
+        # https://raw.githubusercontent.com/publicsuffix/list/master/public_suffix_list.dat
+        # the suffix_list_urls=None is used to not make http calls using the extraction - avoiding SSL errors
+        if tldextract.TLDExtract(cache_file='https://raw.githubusercontent.com/publicsuffix'
+                                            '/list/master/public_suffix_list.dat',
+                                 suffix_list_urls=None).__call__(indicator).suffix:
             if '*' in indicator:
                 return FeedIndicatorType.DomainGlob
             return FeedIndicatorType.Domain

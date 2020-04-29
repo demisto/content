@@ -1,4 +1,5 @@
 ## [Unreleased]
+  - Added the *system_params* argument to the ***servicenow-query-table***, ***servicenow-query-tickets*** commands.
 
 
 ## [20.4.1] - 2020-04-29
