@@ -423,54 +423,40 @@ def get_report_by_id_command() -> None:
     return_outputs(readable_output=hr, outputs=ec)
 
 
-def get_threat_indicators(indicator_type=None, level=None, start_date=None, end_date=None, page=None, per_page=None) -> list:
-    params = {}
-    params['type'] = indicator_type
-    params['level'] = level
-    params['start_date'] = start_date
-    params['end_date'] = end_date
-    params['page'] = page
-    params['per_page'] = per_page
-    results = TRIAGE_INSTANCE.request("triage_threat_indicators", params=params)
-
-    if not isinstance(results, list):
-        results = [results]
-
-    return results
-
-
 def get_threat_indicators_command() -> None:
-    demisto.log('testing')
-    # arguments importing
-    indicator_type = demisto.getArg('type')
-    level = demisto.getArg('level')
-    start_date = demisto.getArg('start_date')
-    end_date = demisto.getArg('end_date')
-    page = demisto.getArg('page')
-    per_page = demisto.getArg('per_page')
-
-    results = get_threat_indicators(
-        indicator_type, level, start_date, end_date, page, per_page
+    results = TRIAGE_INSTANCE.request(
+        "triage_threat_indicators",
+        params={
+            "type": demisto.getArg("type"),
+            "level": demisto.getArg("level"),
+            "start_date": demisto.getArg("start_date"),
+            "end_date": demisto.getArg("end_date"),
+            "page": demisto.getArg("page"),
+            "per_page": demisto.getArg("per_page"),
+        },
     )
-    demisto.log(str(results))
 
+    if not results:
+        return return_outputs("no results were found.", {})
 
-# parsing outputs
-    if results:
-        ec = {'Cofense.ThreatIndicators(val.ID && val.ID == obj.ID)': snake_to_camel_keys(results)}
-        hr = tableToMarkdown(
-            "Threat Indicators:", results, headerTransform=split_snake, removeNull=True
-        )
-
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['markdown'],
-            'Contents': results if results else "no results were found",
-            'HumanReadable': hr,
-            'EntryContext': ec
-        })
-    else:
-        return_outputs("no results were found.", {})
+    demisto.results(
+        {
+            "Type": entryTypes["note"],
+            "ContentsFormat": formats["markdown"],
+            "Contents": results if results else "no results were found",
+            "HumanReadable": tableToMarkdown(
+                "Threat Indicators:",
+                results,
+                headerTransform=split_snake,
+                removeNull=True,
+            ),
+            "EntryContext": {
+                "cofense.threatindicators(val.id && val.id == obj.id)": snake_to_camel_keys(
+                    results
+                )
+            },
+        }
+    )
 
 
 def get_report_png_by_id_command() -> None:

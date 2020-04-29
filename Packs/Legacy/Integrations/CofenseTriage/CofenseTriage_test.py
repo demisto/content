@@ -242,3 +242,44 @@ class TestCofenseTriage:
             "reporter1@example.com",
             "reporter2@example.com",
         ]
+
+    def test_get_threat_indicators_command(self, requests_mock):
+        set_demisto_arg("type", "what")
+        set_demisto_arg("level", "what")
+        set_demisto_arg("start_date", "what")
+        set_demisto_arg("end_date", "what")
+        set_demisto_arg("page", "what")
+        set_demisto_arg("per_page", "what")
+        requests_mock.get(
+            "https://some-triage-host/api/public/v1/triage_threat_indicators?type=what&level=what&start_date=what&end_date=what&page=what&per_page=what",
+            text=fixture_from_file("threat_indicators.json"),
+        )
+
+        CofenseTriage.get_threat_indicators_command()
+
+        demisto_results = CofenseTriage.demisto.results.call_args_list[0][0]
+        assert len(demisto_results) == 1
+        assert demisto_results[0]["HumanReadable"] == (
+            "### Threat Indicators:\n"
+            "|Created At|Id|Operator Id|Report Id|Threat Key|Threat Level|Threat Value|\n"
+            "|---|---|---|---|---|---|---|\n"
+            "| 2020-03-16T17:39:14.579Z | 37 | 2 | 13353 | Domain | Malicious | malicious.example.com |\n"
+        )
+
+    def test_get_threat_indicators_command_not_found(self, requests_mock):
+        set_demisto_arg("type", "what")
+        set_demisto_arg("level", "what")
+        set_demisto_arg("start_date", "what")
+        set_demisto_arg("end_date", "what")
+        set_demisto_arg("page", "what")
+        set_demisto_arg("per_page", "what")
+        requests_mock.get(
+            "https://some-triage-host/api/public/v1/triage_threat_indicators?type=what&level=what&start_date=what&end_date=what&page=what&per_page=what",
+            text="[]",
+        )
+
+        CofenseTriage.get_threat_indicators_command()
+
+        demisto_results = CofenseTriage.demisto.results.call_args_list[0][0]
+        assert len(demisto_results) == 1
+        assert demisto_results[0]["HumanReadable"] == ("no results were found.")
