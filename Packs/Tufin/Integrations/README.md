@@ -32,8 +32,8 @@ You can execute these commands from the Demisto CLI, as part of an automation, o
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. tufin-search-topology
 2. tufin-search-topology-image
-3. tufin-resolve-object
-4. tufin-search-policies
+3. tufin-object-resolve
+4. tufin-policy-search
 5. tufin-get-zone-for-ip
 6. tufin-submit-change-request
 7. tufin-search-devices
@@ -98,14 +98,14 @@ There is no context output for this command.
 ##### Human Readable Output
 ![image](https://raw.githubusercontent.com/jtmoran/screenshots/master/tufin%20cortex%20xsoar%20integration/tufin-search-topology-image.png)
 
-### 3. tufin-resolve-object
+### 3. tufin-object-resolve
 ---
 Resolve IP address to Network Object
 ##### Required Permissions
 **FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
-`tufin-resolve-object`
+`tufin-object-resolve`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -121,19 +121,19 @@ Resolve IP address to Network Object
 
 
 ##### Command Example
-```!tufin-resolve-object ip=10.3.3.3```
+```!tufin-object-resolve ip=10.3.3.3```
 
 ##### Human Readable Output
-![image](https://raw.githubusercontent.com/jtmoran/screenshots/master/tufin%20cortex%20xsoar%20integration/tufin-resolve-object.png)
+![image](https://raw.githubusercontent.com/jtmoran/screenshots/master/tufin%20cortex%20xsoar%20integration/tufin-object-resolve.png)
 
-### 4. tufin-search-policies
+### 4. tufin-policy-search
 ---
 Search the policies of all devices managed by Tufin
 ##### Required Permissions
 **FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
-`tufin-search-policies`
+`tufin-policy-search`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -149,10 +149,10 @@ Search the policies of all devices managed by Tufin
 
 
 ##### Command Example
-```!tufin-search-policies search="source:192.168.1.1"```
+```!tufin-policy-search search="source:192.168.1.1"```
 
 ##### Human Readable Output
-![image](https://raw.githubusercontent.com/jtmoran/screenshots/master/tufin%20cortex%20xsoar%20integration/tufin-search-policies.png)
+![image](https://raw.githubusercontent.com/jtmoran/screenshots/master/tufin%20cortex%20xsoar%20integration/tufin-policy-search.png)
 
 ### 5. tufin-get-zone-for-ip
 ---
@@ -195,7 +195,7 @@ Submit a change request to SecureChange
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| reqType | Request Type | Required | 
+| request-type | Request Type | Required | 
 | priority | Request Priority | Required | 
 | source | Source or Target | Required | 
 | destination | Destination (Mandatory for FW Change) | Optional | 
@@ -214,7 +214,7 @@ Submit a change request to SecureChange
 
 
 ##### Command Example
-```!tufin-submit-change-request reqType="Decommission Request" priority=High source=192.168.1.1 subject="This host is infected with ransomware"```
+```!tufin-submit-change-request request-type="Decommission Request" priority=High source=192.168.1.1 subject="This host is infected with ransomware"```
 
 ##### Human Readable Output
 ![image](https://raw.githubusercontent.com/jtmoran/screenshots/master/tufin%20cortex%20xsoar%20integration/tufin-submit-change-request.png)
@@ -266,7 +266,7 @@ Get information on a SecureChange Ticket
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ticketId |  | Required | 
+| ticket-id |  | Required | 
 
 
 ##### Context Output
@@ -284,7 +284,7 @@ Get information on a SecureChange Ticket
 
 
 ##### Command Example
-```!tufin-get-change-info ticketId=250```
+```!tufin-get-change-info ticket-id=250```
 
 ##### Human Readable Output
 ![image](https://raw.githubusercontent.com/jtmoran/screenshots/master/tufin%20cortex%20xsoar%20integration/tufin-get-change-info.png)
@@ -335,26 +335,26 @@ Get SecureApp application connections
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| appId | Application ID | Required | 
+| application-id | Application ID | Required | 
 
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Tufin.Connections.ID | unknown | Connection ID | 
-| Tufin.Connections.Name | unknown | Connection name | 
-| Tufin.Connections.Status | unknown | Connection status | 
-| Tufin.Connections.Source.ID | unknown | Connection source ID | 
-| Tufin.Connections.Source.Type | unknown | Connection source type | 
-| Tufin.Connections.Source.Name | unknown | Connection source name | 
-| Tufin.Connections.Destination.ID | unknown | Connection destination ID | 
-| Tufin.Connections.Destination.Type | unknown | Connection destination type | 
-| Tufin.Connections.Destination.Name | unknown | Connection destination name | 
-| Tufin.Connections.Service.ID | unknown | Connection service ID | 
-| Tufin.Connections.Service.Name | unknown | Connection service name | 
-| Tufin.Connections.Comment | unknown | Connection comment | 
-| Tufin.Connections.ApplicationID | unknown | Application ID | 
+| Tufin.Apps.Connections.ID | unknown | Connection ID | 
+| Tufin.Apps.Connections.Name | unknown | Connection name | 
+| Tufin.Apps.Connections.Status | unknown | Connection status | 
+| Tufin.Apps.Connections.Source.ID | unknown | Connection source ID | 
+| Tufin.Apps.Connections.Source.Type | unknown | Connection source type | 
+| Tufin.Apps.Connections.Source.Name | unknown | Connection source name | 
+| Tufin.Apps.Connections.Destination.ID | unknown | Connection destination ID | 
+| Tufin.Apps.Connections.Destination.Type | unknown | Connection destination type | 
+| Tufin.Apps.Connections.Destination.Name | unknown | Connection destination name | 
+| Tufin.Apps.Connections.Service.ID | unknown | Connection service ID | 
+| Tufin.Apps.Connections.Service.Name | unknown | Connection service name | 
+| Tufin.Apps.Connections.Comment | unknown | Connection comment | 
+| Tufin.Apps.Connections.ApplicationID | unknown | Application ID | 
 
 
 ##### Command Example
