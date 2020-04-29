@@ -1177,4 +1177,4 @@ Creates an incident. For more information about the required arguments, see the 
 
 ## Limitations
 The `opened` argument for fetching and listing incidents is currently not filtering the only the opened incidents.
-This is an open issue on the vendor side, currently happening on SNYPR Version 6.3 and 6.2. 
+This is an open issue on the vendor side, currently happening on SNYPR Versions 6.2, 6,3.
