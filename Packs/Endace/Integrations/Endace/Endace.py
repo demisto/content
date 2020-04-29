@@ -363,6 +363,12 @@ class EndaceApp(object):
         function_args['src_port_list'] = argToList(args.get("src_port_list"))[:10]
         #   args.get("dest_port_list")
         function_args['dest_port_list'] = argToList(args.get("dest_port_list"))[:10]
+
+        #   adding a limit to number of filter items to be passed to 10 max
+        if (len(function_args['src_host_list']) + len(function_args['dest_host_list']) +
+            len(function_args['src_port_list']) + len(function_args['dest_port_list'])) > 10:
+            raise ValueError("Wrong set of filters - Limit search filters to 10 items")
+
         function_args['protocol'] = args.get("protocol")
 
         #   Doing a sanity check on input function arguments
@@ -396,6 +402,8 @@ class EndaceApp(object):
 
         if not function_args['src_host_list'] and not function_args['dest_host_list']:
             raise ValueError("Wrong or missing value of Src or Dest IP arguments")
+
+
 
         return function_args
 
@@ -638,14 +646,8 @@ class EndaceApp(object):
                   "Start": args.get('start'), "End": args.get('end'), "P2Vurl": "",
                   "FileName": args['archive_filename']}
 
-        datasource = ''
-        try:
-            probe_hostname = self.applianceurl.split(".")[0].split("//")[1]
-            datasource = probe_hostname + ":" + input_args_dict['archive_filename']
-        except ValueError:
-            raise ValueError("Hostname format: https://hostname...com, where abc is hostname")
-        else:
-            datasource = "tag:rotation-file"
+        probe_hostname = self.applianceurl.split(".")[0].split("//")[1]
+        datasource = probe_hostname + ":" + input_args_dict['archive_filename']
 
         start_time_in_ms = str(int(input_args_dict['start']) * 1000)
         end_time_in_ms = str(int(input_args_dict['end']) * 1000)
@@ -703,7 +705,8 @@ class EndaceApp(object):
                 return result
             else:
                 if rd.status_code == 200:
-                    for rotfile in rd.json()["payload"]:
+                    payload = response.get("payload")
+                    for rotfile in payload:
                         if rotfile["type"] == "rotation_file_v2":
                             rotfile_ids.append(rotfile["id"])
 

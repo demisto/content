@@ -63,9 +63,9 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
-      no:
+      false:
       - '7'
-      yes:
+      true:
       - '26'
     scriptarguments:
       left:
@@ -97,9 +97,9 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
-      no:
+      false:
       - '7'
-      yes:
+      true:
       - '35'
     scriptarguments:
       first:
@@ -243,9 +243,9 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
-      no:
+      false:
       - '7'
-      yes:
+      true:
       - '36'
     scriptarguments:
       first:
@@ -285,9 +285,9 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
-      no:
+      false:
       - '7'
-      yes:
+      true:
       - '14'
     scriptarguments:
       left:
@@ -602,3 +602,5 @@ outputs:
   description: error occured during downloading of this file
   type: string
 fromversion: 5.0.0
+tests:
+- No tests
