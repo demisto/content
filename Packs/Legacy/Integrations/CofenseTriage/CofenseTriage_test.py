@@ -26,9 +26,8 @@ def get_demisto_arg(name):
 
 @pytest.fixture(autouse=True)
 def stub_demisto_setup(mocker):
-    mocker.patch("CofenseTriage.triage_instance.return_error")
+    mocker.patch("CofenseTriage.CofenseTriage.return_error")
     mocker.patch("CofenseTriage.CofenseTriage.fileResult")
-    mocker.patch("CofenseTriage.triage_report.fileResult")
     mocker.patch("demistomock.getArg", get_demisto_arg)
     mocker.patch("demistomock.getParam", get_demisto_arg)  # args ≡ params in tests
     mocker.patch("demistomock.results")
@@ -55,7 +54,7 @@ class TestCofenseTriage:
 
         CofenseTriage.test_function()
 
-        CofenseTriage.triage_instance.return_error.assert_called_once()
+        CofenseTriage.return_error.assert_called_once()
 
     @freeze_time("2000-10-31")
     def test_fetch_reports(self, requests_mock):

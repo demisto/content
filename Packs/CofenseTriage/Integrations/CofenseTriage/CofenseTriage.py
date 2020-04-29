@@ -4,12 +4,8 @@ from CommonServerPython import *
 from typing import Any, List, Dict
 from io import BytesIO
 from PIL import Image
-
-from . import triage_instance
-triage_instance.init() 
-from .triage_instance import TRIAGE_INSTANCE
-from .triage_report import TriageReport
-from .triage_reporter import TriageReporter
+from datetime import datetime
+import functools
 
 DEFAULT_TIME_RANGE = '7 days'  # type: str
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'  # type: str
@@ -30,6 +26,165 @@ TERSE_FIELDS = [
     'tags',
     'email_attachments',
 ]
+
+
+class TriageInstance:
+    def __init__(self, *, host, token, user, disable_tls_verification=False):
+        self.host = host
+        self.token = token
+        self.user = user
+        self.disable_tls_verification = disable_tls_verification
+
+    def request(self, endpoint, params=None, body=None, raw_response=False):
+        """
+        Make a request to the configured Triage instance and return the result.
+        """
+        # TODO automatic rate-limiting
+        response = requests.get(
+            self.api_url(endpoint),
+            headers={
+                "Authorization": f"Token token={self.user}:{self.token}",
+                "Accept": "application/json",
+            },
+            params=params,
+            data=body,
+            verify=not self.disable_tls_verification,
+        )
+
+        if not response.ok:
+            return return_error(
+                f"Call to Cofense Triage failed ({response.status_code}): {response.text}"
+            )
+
+        if response.status_code == 206:
+            # 206 indicates Partial Content. The reason will be in the warning header.
+            demisto.debug(str(response.headers))
+
+        if raw_response:
+            # TODO refactor to get rid of this?
+            return response
+
+        if not response.text or response.text == "[]":
+            return {}
+
+        try:
+            return response.json()
+        except json.decoder.JSONDecodeError as ex:
+            demisto.debug(str(ex))
+            return return_error(
+                f"Could not parse result from Cofense Triage ({response.status_code})"
+            )
+
+    def api_url(self, endpoint):
+        """Return a full URL for the configured Triage host and the specified endpoint"""
+
+        endpoint = endpoint.lstrip("/")
+        return f"{self.host}/api/public/v1/{endpoint}"
+
+
+class TriageReport:
+    """Class representing a Triage report by an end-user of a suspicious message"""
+
+    def __init__(self, attrs):
+        self.attrs = attrs
+
+    @property
+    def id(self):
+        return self.attrs["id"]
+
+    @property
+    def date(self):
+        return self.attrs.get("created_at")
+
+    @property
+    def category_name(self):
+        return {
+            1: 'Non-Malicious',
+            2: 'Spam',
+            3: 'Crimeware',
+            4: 'Advanced Threats',
+            5: 'Phishing Simulation',
+            # TODO is this still complete?
+        }.get(self.attrs["category_id"], "Unknown")
+
+    @property
+    def severity(self):
+        # Demisto's severity levels are 4 - Critical, 3 - High, 2 - Medium, 1 - Low, 0 - Unknown
+        return {
+            1: 1,  # non malicious -> low
+            2: 0,  # spam -> unknown
+            3: 2,  # crimeware -> medium
+            4: 2,  # advanced threats -> medium
+            5: 1,  # phishing simulation -> low
+        }.get(self.attrs["category_id"], 0)
+
+    @property
+    def report_body(self):
+        return self.attrs.get("report_body")
+
+    @property
+    @functools.lru_cache()
+    def reporter(self):
+        return TriageReporter(self.attrs["reporter_id"])
+
+    @property
+    def terse_attrs(self):
+        return {key: self.attrs[key] for key in self.attrs.keys() & TERSE_FIELDS}
+
+    def to_json(self):
+        """Flatten the Reporter object to a set of `reporter_` prefixed attributes"""
+        return {
+            **self.attrs,
+            **{f"reporter_{k}": v for k, v in self.reporter.attrs.items()},
+        }
+
+    @property
+    @functools.lru_cache()
+    def attachment(self):
+        # TODO case-insensitive?
+        if "HTML" in self.report_body:
+            html_attachment = fileResult(
+                filename=f"{self.id}-report.html", data=self.report_body.encode()
+            )
+            attachment = {
+                "path": html_attachment.get("FileID"),
+                "name": html_attachment.get("FileName"),
+            }
+            return attachment
+
+        return None
+
+    @classmethod
+    def from_json(cls, json_str):
+        return cls(json.loads(json_str))
+
+    @classmethod
+    def from_id(cls, report_id):
+        return cls(TRIAGE_INSTANCE.request(f"reports/{report_id}"))
+
+
+class TriageReporter:
+    """Class representing an end user who has reported a suspicious message"""
+
+    def __init__(self, reporter_id):
+        """Fetch data for the first matching reporter from Triage"""
+        matching_reporters = TRIAGE_INSTANCE.request(f"reporters/{reporter_id}")
+
+        if matching_reporters:
+            self.attrs = matching_reporters[0]
+        else:
+            self.attrs = {}
+
+    def exists(self):
+        return bool(self.attrs)
+
+
+TRIAGE_INSTANCE = TriageInstance(
+    host=demisto.getParam('host').rstrip('/'),
+    token=demisto.getParam('token'),
+    user=demisto.getParam('user'),
+    disable_tls_verification=demisto.params().get('insecure', False),
+)
 
 
 def snake_to_camel_keys(snake_list: List[Dict]) -> List[Dict]:
@@ -147,15 +302,9 @@ def search_reports_command() -> None:
 
 def search_reports(subject=None, url=None, file_hash=None, reported_at=None, created_at=None, reporter=None,
                    verbose=False, max_matches=30) -> list:
+    # TODO move to new TriageReportQuery (or similar) class
     params = {'start_date': datetime.strftime(reported_at, TIME_FORMAT)}
     reports = TRIAGE_INSTANCE.request("processed_reports", params=params)
-
-    if not isinstance(reports, list):
-        reports = [reports]
-
-    reporters = []  # type: list
-    if reporter:
-        reporters = get_all_reporters(time_frame=min(reported_at, created_at))
 
     matches = []
 

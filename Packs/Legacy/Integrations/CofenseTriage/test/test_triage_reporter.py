@@ -1,6 +1,6 @@
 import pytest
 
-from ..triage_reporter import TriageReporter
+from ..CofenseTriage import TriageReporter
 
 
 class TestTriageReporter:
