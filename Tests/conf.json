@@ -204,7 +204,8 @@
         {
             "integrations": "HelloWorld",
             "playbookID": "HelloWorld_Scan-Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 2000
         },
         {
             "integrations": "ThreatQ v2",

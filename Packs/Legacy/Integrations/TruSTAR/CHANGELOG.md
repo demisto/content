@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.4.1] - 2020-04-29
 - Added 3 new commands:
   - ***trustar-get-phishing-submissions***
   - ***trustar-get-phishing-indicators***
