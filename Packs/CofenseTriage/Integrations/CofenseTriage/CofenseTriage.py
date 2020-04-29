@@ -372,8 +372,7 @@ def get_attachment_command() -> None:
     attachment_id = demisto.getArg('attachment_id')  # type: str
     file_name = demisto.getArg('file_name') or attachment_id  # type: str
 
-    # running the command
-    res = get_attachment(attachment_id)
+    res = TRIAGE_INSTANCE.request(f'attachment/{attachment_id}', raw_response=True)
 
     # parsing outputs
     context_data = {'ID': attachment_id}
@@ -385,14 +384,6 @@ def get_attachment_command() -> None:
         'HumanReadable': '',
         'EntryContext': {'Cofense.Attachment(val.ID == obj.ID)': context_data}
     })
-
-
-def get_attachment(attachment_id):
-    response = TRIAGE_INSTANCE.request(f'attachment/{attachment_id}', raw_response=True)
-    if not response.ok:
-        return_error(f'Call to Cofense Triage failed [{response.status_code}]')
-    else:
-        return response
 
 
 def get_report_by_id_command() -> None:
