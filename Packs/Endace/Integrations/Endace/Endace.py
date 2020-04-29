@@ -365,8 +365,8 @@ class EndaceApp(object):
         function_args['dest_port_list'] = argToList(args.get("dest_port_list"))[:10]
 
         #   adding a limit to number of filter items to be passed to 10 max
-        if (len(function_args['src_host_list']) + len(function_args['dest_host_list']) +
-            len(function_args['src_port_list']) + len(function_args['dest_port_list'])) > 10:
+        if (len(function_args['src_host_list']) + len(function_args['dest_host_list'])
+                + len(function_args['src_port_list']) + len(function_args['dest_port_list'])) > 10:
             raise ValueError("Wrong set of filters - Limit search filters to 10 items")
 
         function_args['protocol'] = args.get("protocol")
@@ -402,8 +402,6 @@ class EndaceApp(object):
 
         if not function_args['src_host_list'] and not function_args['dest_host_list']:
             raise ValueError("Wrong or missing value of Src or Dest IP arguments")
-
-
 
         return function_args
 
