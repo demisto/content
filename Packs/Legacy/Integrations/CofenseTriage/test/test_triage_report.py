@@ -1,6 +1,6 @@
 import pytest
 
-from ..triage_report import TriageReport
+from ..CofenseTriage import TriageReport
 
 
 @pytest.fixture
@@ -23,7 +23,7 @@ class TestTriageReport:
 
     def test_reporter(self, mocker, single_report_json):
         stubbed_triagereporter_init = mocker.patch(
-            "CofenseTriage.triage_report.TriageReporter"
+            "CofenseTriage.CofenseTriage.TriageReporter"
         )
 
         TriageReport.from_json(single_report_json).reporter
@@ -37,7 +37,7 @@ class TestTriageReport:
 
     def test_attachment_present(self, mocker, single_report_with_attachment_json):
         mocker.patch(
-            "CofenseTriage.triage_report.fileResult",
+            "CofenseTriage.CofenseTriage.fileResult",
             lambda **_kwargs: {
                 "FileID": "file_result_id",
                 "FileName": "file_result_name",
