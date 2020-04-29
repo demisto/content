@@ -67,10 +67,10 @@ tasks:
         question and answer.The new user will immediately be able to login after activation
         with the assigned password. This flow is common when developing a custom user
         registration experience.
-      script: '|||okta-create-user'
+      script: Okta v2|||okta-create-user
       type: regular
       iscommand: true
-      brand: ''
+      brand: Okta v2
     nexttasks:
       '#none#':
       - '7'
@@ -145,10 +145,10 @@ tasks:
       version: -1
       name: deactivate user
       description: Deactivate User.
-      script: '|||okta-deactivate-user'
+      script: Okta v2|||okta-deactivate-user
       type: regular
       iscommand: true
-      brand: ''
+      brand: Okta v2
     nexttasks:
       '#none#':
       - '9'
@@ -171,7 +171,7 @@ tasks:
       version: -1
       name: add user to Demisto group
       description: Adds a user to a group with OKTA_GROUP type
-      script: '|||okta-add-to-group'
+      script: Okta v2|||okta-add-to-group
       type: regular
       iscommand: true
       brand: ''
@@ -202,10 +202,10 @@ tasks:
       version: -1
       name: activate user
       description: Activates a specific user.
-      script: '|||okta-activate-user'
+      script: Okta v2|||okta-activate-user
       type: regular
       iscommand: true
-      brand: ''
+      brand: Okta v2
     nexttasks:
       '#none#':
       - '15'
@@ -229,10 +229,10 @@ tasks:
       version: -1
       name: get Demisto group members
       description: Enumerates all users that are members of  a group
-      script: '|||okta-get-group-members'
+      script: Okta v2|||okta-get-group-members
       type: regular
       iscommand: true
-      brand: ''
+      brand: Okta v2
     nexttasks:
       '#none#':
       - '23'
@@ -258,10 +258,10 @@ tasks:
       version: -1
       name: get groups for user
       description: Returns all user groups associated with a specified user.
-      script: '|||okta-get-groups'
+      script: Okta v2|||okta-get-groups
       type: regular
       iscommand: true
-      brand: ''
+      brand: Okta v2
     nexttasks:
       '#none#':
       - '22'
@@ -284,10 +284,10 @@ tasks:
       version: -1
       name: remove from group
       description: Removes a user from a group with OKTA_GROUP type
-      script: '|||okta-remove-from-group'
+      script: Okta v2|||okta-remove-from-group
       type: regular
       iscommand: true
-      brand: ''
+      brand: Okta v2
     nexttasks:
       '#none#':
       - '40'
@@ -316,10 +316,10 @@ tasks:
       name: update user
       description: Update user with a given login, all fields are optional, fields
         which are not set will not be overriden.
-      script: '|||okta-update-user'
+      script: Okta v2|||okta-update-user
       type: regular
       iscommand: true
-      brand: ''
+      brand: Okta v2
     nexttasks:
       '#none#':
       - '27'
@@ -383,10 +383,10 @@ tasks:
       description: Suspends a user. This operation can only be performed on users
         with an ACTIVE status. The user has a status of SUSPENDED when the process
         is completed
-      script: '|||okta-suspend-user'
+      script: Okta v2|||okta-suspend-user
       type: regular
       iscommand: true
-      brand: ''
+      brand: Okta v2
     nexttasks:
       '#none#':
       - '16'
@@ -410,10 +410,10 @@ tasks:
       name: unsuspend user
       description: Returns a user to ACTIVE status. This operation can only be performed
         on users that have a SUSPENDED status.
-      script: '|||okta-unsuspend-user'
+      script: Okta v2|||okta-unsuspend-user
       type: regular
       iscommand: true
-      brand: ''
+      brand: Okta v2
     nexttasks:
       '#none#':
       - '14'
@@ -566,10 +566,10 @@ tasks:
       version: -1
       name: okta-delete-user
       description: Delete specified user
-      script: '|||okta-delete-user'
+      script: Okta v2|||okta-delete-user
       type: regular
       iscommand: true
-      brand: ''
+      brand: Okta v2
     nexttasks:
       '#none#':
       - '39'
@@ -593,10 +593,10 @@ tasks:
       version: -1
       name: set-password
       description: Sets passwords without validating existing user credentials
-      script: '|||okta-set-password'
+      script: Okta v2|||okta-set-password
       type: regular
       iscommand: true
-      brand: ''
+      brand: Okta v2
     nexttasks:
       '#none#':
       - '27'
@@ -1186,10 +1186,10 @@ tasks:
       version: -1
       name: okta-delete-user
       description: Delete specified user
-      script: '|||okta-delete-user'
+      script: Okta v2|||okta-delete-user
       type: regular
       iscommand: true
-      brand: ''
+      brand: Okta v2
     nexttasks:
       '#none#':
       - '5'
