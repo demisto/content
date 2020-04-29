@@ -25,21 +25,17 @@ display: FalconX
 name: FalconX
 script:
   commands:
-  - deprecated: false
-    description: Upload a file for sandbox analysis.
-    execution: false
-    name: Upload FIle
   - arguments:
     - default: false
       description: Name of the file
       isArray: false
-      name: File Name
+      name: file_name
       required: true
       secret: false
     - default: false
       description: A descriptive comment to identify the file for other users.
       isArray: false
-      name: Comment
+      name: comment
       required: false
       secret: false
     - auto: PREDEFINED
@@ -47,16 +43,16 @@ script:
       defaultValue: 'true'
       description: Defines visibility of this file in Falcon MalQuery.
       isArray: false
-      name: 'Is Confidential '
+      name: is_confidential
       predefined:
       - 'true'
-      - ' false'
+      - 'false'
       required: false
       secret: false
     - default: false
       description: Content of the uploaded sample in binary format.
       isArray: false
-      name: File
+      name: file
       required: true
       secret: false
     deprecated: false
@@ -72,16 +68,17 @@ script:
       type: String
   - arguments:
     - default: false
-      description: SHA256 ID of the sample
+      description: SHA256 ID of the sample, which is a SHA256 hash value. Find a sample
+        ID from the response when uploading a malware sample or search with - cs-fx-upload-file.
       isArray: false
-      name: SHA256
+      name: sha256
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
       description: Specifies the sandbox environment used for analysis
       isArray: false
-      name: Environment ID
+      name: environment_id
       predefined:
       - '300: Linux Ubuntu 16.04'
       - ' 64-bit'
@@ -98,7 +95,7 @@ script:
       default: false
       description: Runtime script for sandbox analysis.
       isArray: false
-      name: Action Script
+      name: action_script
       predefined:
       - default
       - default_maxantievasion
@@ -108,15 +105,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: Command line script passed to the submitted file at runtime.
+      description: 'Command line script passed to the submitted file at runtime. Max
+        length: 2048 characters.'
       isArray: false
-      name: Command Line
+      name: command_line
       required: false
       secret: false
     - default: false
-      description: Auto-filled for Adobe or Office files that prompt for a password.
+      description: 'Auto-filled for Adobe or Office files that prompt for a password.
+        Max length: 32 characters.'
       isArray: false
-      name: Document Password
+      name: document_password
       required: false
       secret: false
     - auto: PREDEFINED
@@ -124,7 +123,7 @@ script:
       defaultValue: 'false'
       description: If true, sandbox analysis routes network traffic via TOR.
       isArray: false
-      name: Enable Tor
+      name: enable_tor
       predefined:
       - 'true'
       - ' false'
@@ -132,21 +131,21 @@ script:
       secret: false
     - default: false
       description: Name of the malware sample that’s used for file type detection
-        and analysis
+        and analysis.
       isArray: false
-      name: Submit Name
+      name: submit_name
       required: false
       secret: false
     - default: false
-      description: Set a custom date in the format yyyy-MM-dd for the sandbox environment
+      description: Set a custom date in the format yyyy-MM-dd for the sandbox environment.
       isArray: false
-      name: System Date
+      name: system_date
       required: false
       secret: false
     - default: false
       description: Set a custom time in the format HH:mm for the sandbox environment.
       isArray: false
-      name: System Time
+      name: system_time
       required: false
       secret: false
     deprecated: false
@@ -171,7 +170,9 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: ID of a submitted malware sample.
+      description: |-
+        ID of a submitted malware sample. Find a submission ID from the response when submitting a malware sample or search with
+        cs-fx-detonate-uploaded-file.
       isArray: true
       name: ids
       required: true
@@ -240,7 +241,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ID of a submitted malware sample.
+      description: ID of a submitted malware sample. Find a submission ID from the
+        response when submitting a malware sample or search with cs-fx-detonate-uploaded-file.
       isArray: true
       name: ids
       required: true
@@ -309,7 +311,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ID of a submitted malware sample.
+      description: D of a submitted malware sample. Find a submission ID from the
+        response when submitting a malware sample or search with cs-fx-detonate-uploaded-file/url.
       isArray: true
       name: ids
       required: true
@@ -378,29 +381,36 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ID of an artifact.
+      description: ID of an artifact, such as an IOC pack, PCAP file, or actor image.
+        Find an artifact ID in a report or summary.
       isArray: false
-      name: ID
+      name: id
       required: true
       secret: false
     - default: false
       description: The name given to your downloaded file.
       isArray: false
-      name: Name
+      name: name
       required: false
       secret: false
     - default: false
+      defaultValue: gzip
       description: Format used to compress your downloaded file. Currently, you must
         provide the value gzip, the only valid format.
       isArray: false
-      name: Accept-Encodong
+      name: accept_encodong
       required: false
       secret: false
     deprecated: false
     description: Download IOC packs, PCAP files, and other analysis artifacts.
     execution: false
     name: cs-fx-download-ioc
-  - deprecated: false
+  - arguments:
+    - default: false
+      isArray: false
+      required: false
+      secret: false
+    deprecated: false
     description: Search endpoint contains File Hash
     execution: false
     name: cs-fx-check-quota
@@ -417,27 +427,31 @@ script:
   - arguments:
     - default: false
       description: Optional filter and sort criteria in the form of an FQL query.
-        For more information about FQL queries
+        For more information about FQL queries.
       isArray: false
-      name: Filter
+      name: filter
       required: false
       secret: false
     - default: false
       description: The offset to start retrieving reports from.
       isArray: false
-      name: Offset
+      name: offset
       required: false
       secret: false
     - default: false
       description: 'Maximum number of report IDs to return. Max: 5000.'
       isArray: false
-      name: Limit
+      name: limit
       required: false
       secret: false
-    - default: false
-      description: 'Sort order: asc or desc.'
+    - auto: PREDEFINED
+      default: false
+      description: Sort order.
       isArray: false
-      name: Sort
+      name: sort
+      predefined:
+      - asc
+      - desc
       required: false
       secret: false
     deprecated: false
@@ -453,25 +467,29 @@ script:
       description: Optional filter and sort criteria in the form of an FQL query.
         For more information about FQL queries
       isArray: false
-      name: Filter
+      name: filter
       required: false
       secret: false
     - default: false
       description: The offset to start retrieving reports from.
       isArray: false
-      name: Offset
+      name: offset
       required: false
       secret: false
     - default: false
       description: 'Maximum number of report IDs to return. Max: 5000.'
       isArray: false
-      name: Limit
+      name: limit
       required: false
       secret: false
-    - default: false
-      description: 'Sort order: asc or desc.'
+    - auto: PREDEFINED
+      default: false
+      description: Sort order.
       isArray: false
-      name: Sort
+      name: sort
+      predefined:
+      - asc
+      - desc
       required: false
       secret: false
     deprecated: false
@@ -485,15 +503,14 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: |
+      description: |-
         A web page or file URL. It can be HTTP(S) or FTP.
-        “https://url.com”
-        “ftp://ftp.com”
+        e.g.-“https://url.com”,“ftp://ftp.com”
       isArray: false
-      name: URL
+      name: url
       required: true
       secret: false
-    - default: true
+    - default: false
       description: |-
         Specifies the sandbox environment used for analysis. Values:
         300: Linux Ubuntu 16.04, 64-bit
@@ -502,8 +519,8 @@ script:
         110: Windows 7, 64-bit
         100: Windows 7, 32-bit
       isArray: false
-      name: Environment ID
-      required: false
+      name: environment_id
+      required: true
       secret: false
     - default: false
       description: |-
@@ -514,41 +531,46 @@ script:
         default_randomtheme
         default_openie
       isArray: false
-      name: Action Script
+      name: action_script
       required: false
       secret: false
     - default: false
       description: 'Command line script passed to the submitted file at runtime. Max
         length: 2048 characters'
       isArray: false
-      name: Command Line
+      name: command_line
       required: false
       secret: false
     - default: false
       description: 'Auto-filled for Adobe or Office files that prompt for a password.
-        Max length: 32 characters'
+        Max length: 32 characters.'
       isArray: false
-      name: Document Password
+      name: document_password
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
       description: 'If true, sandbox analysis routes network traffic via TOR. Default:
         false.'
       isArray: false
-      name: Enable Tor
+      name: enable_tor
+      predefined:
+      - 'false'
+      - ' true'
       required: false
       secret: false
     - default: false
       description: Name of the malware sample that’s used for file type detection
-        and analysis
+        and analysis.
       isArray: false
-      name: Submit Name
+      name: submit_name
       required: false
       secret: false
     - default: false
-      description: Set a custom date in the format yyyy-MM-dd for the sandbox environment
+      description: Set a custom date in the format yyyy-MM-dd for the sandbox environment.
       isArray: false
-      name: System Date
+      name: system_date
       required: false
       secret: false
     - default: false
