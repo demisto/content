@@ -204,7 +204,8 @@
         {
             "integrations": "HelloWorld",
             "playbookID": "HelloWorld_Scan-Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 2000
         },
         {
             "integrations": "ThreatQ v2",
@@ -2653,6 +2654,7 @@
         }
     ],
     "skipped_tests": {
+        "PhishLabsIOC TestPlaybook": "integration bug (23926)",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get PrismaAccess instance",
         "Prisma_Access-Test": "unskip after we will get PrismaAccess instance",
         "Test-Shodan_v2": "Issue 23370",
