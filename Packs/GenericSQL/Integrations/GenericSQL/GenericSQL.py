@@ -57,6 +57,7 @@ class Client:
         try:
             module = self._convert_dialect_to_module(self.dialect)
             db_preferences = f'{module}://{self.username}:{self.password}@{self.host}:{self.port}/{self.dbname}'
+            ssl_connection=""
             if self.dialect == "Microsoft SQL Server":
                 db_preferences += "?driver=FreeTDS"
             if self.connect_parameters and self.dialect == "Microsoft SQL Server":
@@ -67,9 +68,8 @@ class Client:
 
             if self.ssl_connect:
                 ssl_connection = {'ssl': {'ssl-mode': 'preferred'}}
-                return sqlalchemy.create_engine(db_preferences, connect_args=ssl_connection).connect()
 
-            return sqlalchemy.create_engine(db_preferences).connect()
+            return sqlalchemy.create_engine(db_preferences, connect_args=ssl_connection).connect()
         except Exception as err:
             raise Exception(err)
 
