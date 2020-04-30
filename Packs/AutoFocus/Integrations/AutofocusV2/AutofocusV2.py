@@ -881,9 +881,16 @@ def search_indicator(indicator_type, indicator_value):
             headers=headers,
             params=params
         )
+
         # Handle error responses gracefully
         result.raise_for_status()
         result_json = result.json()
+
+    # Handle with connection error
+    except requests.exceptions.ConnectionError as err:
+        err_message = f'Error connecting to server. Check your URL/Proxy/Certificate settings: {err}'
+        return_error(err_message)
+
     # Unexpected errors (where no json object was received)
     except Exception as err:
         try:
