@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.4.1] - 2020-04-29
 Added support for GitHub bots.
 
 ## [20.4.0] - 2020-04-14
