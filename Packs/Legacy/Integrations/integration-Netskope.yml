@@ -283,6 +283,8 @@ script:
         args.endtime = now().toString();
         alerts = getAlerts().data;
         var incidents = [];
+        var latestIncidedentTimeString = null;
+        var latestIncidedentTimeInt = null;
         if (typeof alerts !== 'undefined') {
             alerts.reverse();  // alerts are fetched in descending order, reversing to process older first
             for (var i = 0; i < alerts.length; i++) {
@@ -293,13 +295,18 @@ script:
                 incident.name = item.alert_type + " - " + item.alert_name;
                 incident.rawJSON = JSON.stringify(item);
                 incidents.push(incident);
-                last_run = item.timestamp;
-                if (incidents >= Math.min(50, params.maxFetch)) {
+                if (latestIncidedentTimeInt == null || parseInt(item.timestamp) > latestIncidedentTimeInt) {
+                    latestIncidedentTimeInt = parseInt(item.timestamp);
+                    latestIncidedentTimeString = item.timestamp
+                }
+                if (incidents.length >= Math.min(50, params.maxFetch)) {
                     break;
                 }
             }
         }
-        lastRun = {'lastTime': args.endtime};
+        var incidentsLimitReached = (incidents.length >= Math.min(50, params.maxFetch));
+        lastTime = incidentsLimitReached ? latestIncidedentTimeString : args.endtime;
+        lastRun = {'lastTime': lastTime};
         setLastRun(lastRun);
         logInfo('Netskope lastRun is: ' + String(args.endtime));
         return JSON.stringify(incidents);

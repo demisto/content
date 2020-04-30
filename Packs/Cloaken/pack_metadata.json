@@ -1,0 +1,23 @@
+{
+    "name": "Cloaken",
+    "description": "Unshorten URLs onsite using the power of a Tor proxy server to prevent leaking IP addresses to adversaries.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Cloaken"
+    ],
+    "created": "2020-04-14T00:00:00Z",
+    "updated": "2020-03-14T00:00:00Z",
+    "beta": false,
+    "deprecated": false,
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {},
+    "displayedImages": []
+}
