@@ -708,7 +708,7 @@ inputs:
   required: false
   description: ""
   playbookInputQuery:
-    query: ""
+    query: sourceBrands:"Office 365 Feed"
     queryEntity: indicators
     results: null
     daterange:

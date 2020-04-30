@@ -709,7 +709,7 @@ inputs:
   required: false
   description: ""
   playbookInputQuery:
-    query: ""
+    query: sourceBrands:"AWS Feed"
     queryEntity: indicators
     results: null
     daterange:

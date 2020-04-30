@@ -702,7 +702,7 @@ inputs:
   required: false
   description: ""
   playbookInputQuery:
-    query: ""
+    query: sourceBrands:AzureFeed
     queryEntity: indicators
     results: null
     daterange:
