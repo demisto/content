@@ -1,5 +1,7 @@
 ## [Unreleased]
 Added authentication using Certificate key and text file.
+
+## [20.4.1] - 2020-04-29
 Fixed an issue where the test module did not work as intended.
 
 
