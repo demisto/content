@@ -28,7 +28,7 @@ try:
     orientation = demisto.args().get('orientation', 'portrait')
     resourceTimeout = demisto.args().get('resourceTimeout', '4000')
     reportType = demisto.args().get('reportType', 'pdf')
-    headerLeftImage = demisto.args().get('customerLogo  ', '')
+    headerLeftImage = demisto.args().get('customerLogo', '')
     headerRightImage = demisto.args().get('demistoLogo', '')
     pageSize = demisto.args().get('paperSize', 'letter')
     disableHeaders = demisto.args().get('disableHeaders', '')
