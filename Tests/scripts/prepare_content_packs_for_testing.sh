@@ -5,6 +5,9 @@ set -e
 
 CIRCLE_BRANCH=${CIRCLE_BRANCH:-unknown}
 CIRCLE_BUILD_NUM=${CIRCLE_BUILD_NUM:-00000}
+CIRCLE_ARTIFACTS=${CIRCLE_ARTIFACTS}
+PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
+EXTRACT_FOLDER=$(mktemp -d)
 
 if [[ -z "$GCS_MARKET_KEY" ]]; then
     echo "$GCS_MARKET_KEY not set aborting!"
