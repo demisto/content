@@ -23,22 +23,7 @@ SNAME_REGEX = r'SNameString: (.+)'
 
 
 class PCAP():
-    def __init__(self, pcap_file_path, pcap_filter='', new_pcap_file_name='', decrypt_key=None, convs_to_display=15, is_flows=True,
-                 is_reg_extract=True, extracted_protocols=[], homeade_regex=''):
-
-        # set parameters
-        self.file_path = pcap_file_path
-        self.decrypt_key = decrypt_key
-        self.conv_num = convs_to_display
-        self.is_flows = is_flows
-        self.is_reg_extract = is_reg_extract
-        self.extracted_protocols = extracted_protocols
-
-        self.pcap_filter = pcap_filter
-        self.pcap_filter_new_file_name = new_pcap_file_name
-        self.homemade_regex = ''  # 'Layer (.+):'
-        self.pcap_filter_new_file_path = ''
-
+    def __init__(self, is_reg_extract, extracted_protocols, homemade_regex):
         # setup data structures
         self.hierarchy = {}  # type: Dict[str, int]
         self.num_of_packets = 0
@@ -56,10 +41,12 @@ class PCAP():
         self.emails_extracted = set([])
         self.homemade_extracted = set([])
         self.last_layer = set([])
-        self.kerb_data = list()
+        self.kerb_data = set()
         self.syslogs = []
         self.protocol_data = dict()
-        for protocol in self.extracted_protocols:
+        self.extracted_protocols = extracted_protocols
+        self.homemade_regex = homemade_regex
+        for protocol in extracted_protocols:
             self.protocol_data[protocol] = dict()
 
         # Regex compilation
@@ -85,9 +72,268 @@ class PCAP():
         if 'SMB2' in extracted_protocols:
             self.reg_cmd = re.compile(COMMAND_REGEX)
         if 'KERBEROS':
-            self.reg_sname = re.compile(SNAME_REGES)
+            self.reg_sname = re.compile(SNAME_REGEX)
         if homemade_regex:
             self.reg_homemad = re.compile(self.homemade_regex)
+
+    def mine(self, file_path, decrypt_key, conversation_number_to_display, is_flows, is_reg_extract, pcap_filter,
+             pcap_filter_new_file_path, entry_id):
+        try:
+            cap = pyshark.FileCapture(file_path, display_filter=pcap_filter, output_file=pcap_filter_new_file_path,
+                                      decryption_key=decrypt_key, encryption_type='WPA-PWD')
+            j = 0
+            for packet in cap:
+                j += 1
+                if (j % 100 == 0):
+                    print(j)
+                self.last_layer.add(packet.layers[-1].layer_name)
+
+                layers = str(packet.layers)
+                # remove duplicate layer names such as [ETH,DATA,DATA] -> # [ETH, DATA]
+                layers = list(dict.fromkeys(layers.split(',')))
+                layers = strip(str(layers))
+                self.hierarchy[layers] = self.hierarchy.get(layers, 0) + 1
+
+                # update times
+                packet_epoch_time = float(packet.frame_info.get('time_epoch'))
+                self.max_time = max(self.max_time, packet_epoch_time)
+                self.min_time = min(self.min_time, packet_epoch_time)
+
+                # count packets
+                self.num_of_packets += 1
+
+                # count bytes
+                self.bytes_transmitted += int(packet.length)
+
+                # count num of streams + get src/dest ports
+                tcp = packet.get_multiple_layers('tcp')
+
+                if tcp:
+                    tcp_streams = max(int(tcp[0].get('stream', 0)), self.tcp_streams)
+                    src_port = int(tcp[0].get('srcport', 0))
+                    dest_port = int(tcp[0].get('dstport', 0))
+
+                udp = packet.get_multiple_layers('udp')
+                if udp:
+                    udp_streams = max(int(udp[0].get('stream', 0)), self.udp_streams)
+                    src_port = int(udp[0].get('srcport', 0))
+                    dest_port = int(udp[0].get('dstport', 0))
+
+                # extract DNS layer
+                if 'DNS' in self.extracted_protocols:
+                    dns_layer = packet.get_multiple_layers('dns')
+                    if dns_layer:
+                        temp_dns = {
+                            'ID': dns_layer[0].get('id'),
+                            'Request': dns_layer[0].get('qry_name'),
+                            'Response': dns_layer[0].get('a'),
+                            'Type': self.reg_type.findall(str(dns_layer[0]))[0] if self.reg_type.findall(
+                                str(dns_layer[0])) else None
+                        }
+                        add_to_data(self.protocol_data['DNS'], temp_dns)
+
+                # add conversations
+                ip_layer = packet.get_multiple_layers('ip')
+                if ip_layer:
+                    a = ip_layer[0].get('src_host', '')
+                    b = ip_layer[0].get('dst_host')
+                    self.unique_source_ip.add(a)
+                    self.unique_dest_ip.add(b)
+
+                    # generate flow data
+                    if is_flows:
+                        if "src_port" not in locals():
+                            continue
+                        if (b, dest_port, a, src_port) in self.flows.keys():
+                            b, a, src_port, dest_port = a, b, dest_port, src_port
+                        flow = (a, src_port, b, dest_port)
+                        flow_data = self.flows.get(flow, {'min_time': float('inf'),
+                                                     'max_time': -float('inf'),
+                                                     'bytes': 0,
+                                                     'counter': 0})
+                        flow_data['min_time'] = min(flow_data['min_time'], packet_epoch_time)
+                        flow_data['max_time'] = max(flow_data['min_time'], packet_epoch_time)
+                        flow_data['bytes'] += int(packet.length)
+                        flow_data['counter'] += 1
+                        self.flows[flow] = flow_data
+
+                    # gather http data
+                    if 'HTTP' in self.extracted_protocols:
+                        http_layer = packet.get_multiple_layers('http')
+                        if http_layer:
+                            all_fields = http_layer[0]._all_fields
+                            temp_http = {
+                                "ID": http_layer[0].get('request_in', packet.number),
+                                'RequestAgent': all_fields.get("http.user_agent"),
+                                'RequestHost': all_fields.get('http.host'),
+                                'RequestSourceIP': a,
+                                'RequestURI': http_layer[0].get('request_full_uri'),
+                                'RequestMethod': http_layer[0].get('request_method'),
+                                'RequestVersion': http_layer[0].get('request_version'),
+                                'RequestAcceptEncoding': http_layer[0].get('accept_encoding'),
+                                'RequestPragma': self.reg_pragma.findall(str(http_layer[0]))[0]
+                                if self.reg_pragma.findall(str(http_layer[0])) else None,
+                                'RequestAcceptLanguage': http_layer[0].get('accept_language'),
+                                'RequestCacheControl': http_layer[0].get('cache_control')
+
+                            }
+                            # if the packet is a response
+                            if all_fields.get('http.response'):
+                                temp_http.update({
+                                    'ResponseStatusCode': http_layer[0].get('response_code'),
+                                    'ResponseVersion': all_fields.get('http.response.version'),
+                                    'ResponseCodeDesc': http_layer[0].get('response_code_desc'),
+                                    'ResponseContentLength': http_layer[0].get('content_length'),
+                                    'ResponseContentType': http_layer[0].get('content_type'),
+                                    'ResponseDate': formatEpochDate(packet_epoch_time)
+                                })
+                            add_to_data(self.protocol_data['HTTP'], temp_http)
+                    if (b, a) in self.conversations.keys():
+                        a, b = b, a
+                    hosts = (a, b)
+                    self.conversations[hosts] = self.conversations.get(hosts, 0) + 1
+
+                if 'KERBEROS' in self.extracted_protocols:
+                    kerb_layer = packet.get_multiple_layers('KERBEROS')
+                    if kerb_layer:
+                        sname_results = self.reg_sname.findall(str(kerb_layer))
+                        self.kerb_data.update({
+                            'Realm': kerb_layer[0].get('realm'),
+                            'CName': kerb_layer[0].get('CNameString'),
+                            'SName': sname_results[0] if sname_results else None,
+                        })
+
+                if 'TELNET' in self.extracted_protocols:
+                    telnet_layer = packet.get_multiple_layers('TELNET')
+                    if telnet_layer:
+                        pass
+                    # TODO finish this
+
+                if 'LLMNR' in self.extracted_protocols:
+                    llmnr_layer = packet.get_multiple_layers('llmnr')
+                    if llmnr_layer:
+                        llmnr_layer_string = str(llmnr_layer[0])
+                        llmnr_data = {
+                            'ID': llmnr_layer[0].get('dns_id'),
+                            'QueryType': None if len(llmnr_type.findall(llmnr_layer_string)) == 0 else
+                            llmnr_type.findall(llmnr_layer_string)[0],
+                            'QueryClass': None if len(llmnr_class.findall(llmnr_layer_string)) == 0 else
+                            llmnr_class.findall(llmnr_layer_string)[0],
+                            'QueryName': str(llmnr_layer[0].get('dns_qry_name')),
+                            'Questions': int(llmnr_layer[0].get('dns_count_queries'))
+                        }
+                        add_to_data(self.protocol_data['LLMNR'], llmnr_data)
+
+                if 'SYSLOG' in self.extracted_protocols:
+                    syslog_layer = packet.get_multiple_layers('syslog')
+                    if syslog_layer:
+                        self.syslogs.append(syslog_layer[0].get('msg'))
+
+                if 'SMTP' in self.extracted_protocols:
+                    imf_layer = packet.get_multiple_layers('imf')
+                    if imf_layer:
+                        imf_data = {
+                            'ID': imf_layer[0].get('Message-ID', -1),
+                            'To': imf_layer[0].get('to'),
+                            'From': imf_layer[0].get('from'),
+                            'Subject': imf_layer[0].get('subject'),
+                            'MimeVersion': imf_layer[0].get('mime-version')
+                        }
+                        add_to_data(self.protocol_data['SMTP'], imf_data)
+
+                if 'SMB2' in self.extracted_protocols:
+                    smb_layer = packet.get_multiple_layers('smb2')
+                    if smb_layer:
+                        command_results = self.reg_cmd.findall(str(smb_layer))
+                        smb_data = {
+                            'ID': smb_layer[0].get('sesid', -1),
+                            'UserName': smb_layer[0].get('ntlmssp_auth_username'),
+                            'Domain': smb_layer[0].get('ntlmssp_auth_domain'),
+                            'HostName': smb_layer[0].get('ntlmssp_auth_hostname'),
+                            'Command': command_results[0] if command_results else None,
+                            'FileName': smb_layer[0].get('smb2.filename'),
+                            'Tree': smb_layer[0].get('tree')
+                        }
+                        add_to_data(self.protocol_data['SMB2'], smb_data)
+
+                if 'NETBIOS' in self.extracted_protocols:
+                    netbios_layer = packet.get_multiple_layers('nbns')
+                    if netbios_layer:
+                        type_results = self.reg_type.findall(str(netbios_layer[0]))
+                        class_results = self.reg_class.findall(str(netbios_layer[0]))
+                        netbios_data = {
+                            'ID': netbios_layer[0].get('id', -1),
+                            'Name': netbios_layer[0].get('name'),
+                            'Type': type_results[0] if type_results else None,
+                            'Class': class_results[0] if class_results else None
+                        }
+                        add_to_data(self.protocol_data['NETBIOS'], netbios_data)
+
+                if 'ICMP' in self.extracted_protocols:
+                    icmp_layer = packet.get_multiple_layers('icmp')
+                    if icmp_layer:
+                        type_results = self.reg_type.findall(str(icmp_layer[0]))
+                        if type_results:
+                            self.icmp_data.add(type_results[0])
+
+                if is_reg_extract:
+                    self.ips_extracted.update(self.reg_ip.findall(str(packet)))
+                    self.emails_extracted.update(self.reg_email.findall(str(packet)))
+                    self.urls_extracted.update(self.reg_url.findall(str(packet)))
+
+                if self.homemade_regex:
+                    self.homemade_extracted.update(self.reg_homemade.findall((str(packet))))
+
+            self.tcp_streams += 1
+            self.udp_streams += 1
+
+            # Human Readable
+            md = f'## PCAP Info:\n' \
+                f'Between {formatEpochDate(self.min_time)} and {formatEpochDate(self.max_time)} there were {self.num_of_packets} ' \
+                f'packets transmitted in {self.tcp_streams + self.udp_streams} streams.\n'
+            md += '#### Protocol Breakdown\n'
+            md += hierarchy_to_md(self.hierarchy)
+            md += f'#### Top {conversation_number_to_display} Conversations\n'
+            md += conversations_to_md(self.conversations, conversation_number_to_display)
+            if is_flows:
+                md += f'#### Top {conversation_number_to_display} Flows\n'
+                md += flows_to_md(self.flows, conversation_number_to_display)
+
+            # Entry Context
+            general_context = {
+                'EntryID': entry_id,
+                'Bytes': self.bytes_transmitted,
+                'Packets': self.num_of_packets,
+                'StreamCount': self.tcp_streams + self.udp_streams,
+                'UniqueSourceIP': len(self.unique_source_ip),
+                'UniqueDestIP': len(self.unique_dest_ip),
+                'StartTime': formatEpochDate(self.min_time),
+                'EndTime': formatEpochDate(self.max_time),
+                'Protocols': list(self.last_layer)
+            }
+            for protocol in self.extracted_protocols:
+                general_context[protocol] = list(self.protocol_data[protocol].values())
+            if 'ICMP' in self.extracted_protocols:
+                general_context['ICMP'] = list(self.icmp_data)
+            if 'KERBEROS' in self.extracted_protocols:
+                general_context['KERBEROS'] = list(self.kerb_data)
+            if is_flows:
+                general_context['Flow'] = flows_to_ec(self.flows)
+            if is_reg_extract:
+                general_context['IP'] = list(self.ips_extracted)
+                general_context['URL'] = list(self.urls_extracted)
+                general_context['Email'] = list(self.emails_extracted)
+            if self.homemade_regex:
+                general_context['Regex'] = list(self.homemade_extracted)
+            ec = {'PcapResults(val.EntryID == obj.EntryID)': general_context}
+            return_outputs(md, ec, general_context)
+
+        except pyshark.capture.capture.TSharkCrashException:
+            raise ValueError("Filter could not be applied to file. Please make sure it is of correct syntax.")
+
+        except Exception as error:
+            print(str(error))
+            traceback.print_exc()
 
 '''HELPER FUNCTIONS'''
 
@@ -230,255 +476,255 @@ def add_to_data(d: dict, data: dict) -> None:
             d[data_id].update(remove_nones(data))
 
 
-def analyse_packet(input):
-    packet, j = input
-    if (j%100==0):
-        print(j)
-    packet_metadata = dict()
-    packet_metadata['last_layer'] = packet.layers[-1].layer_name
-    layer_data = dict()
-
-    layers = str(packet.layers)
-    # remove duplicate layer names such as [ETH,DATA,DATA] -> # [ETH, DATA]
-    layers = list(dict.fromkeys(layers.split(',')))
-    layers = strip(str(layers))
-    packet_metadata['layers'] = layers
-    #TODO move outside: hierarchy[layers] = hierarchy.get(layers, 0) + 1  # access outside
-
-    # update times
-    packet_epoch_time = float(packet.frame_info.get('time_epoch'))
-    packet_metadata['packet_epoch_time'] = packet_epoch_time
-    # TODO move outside:
-    # max_time = max(max_time, packet_epoch_time)
-    # min_time = min(min_time, packet_epoch_time)
-
-    # count packets
-    # TODO move outside:
-    #num_of_packets += 1
-
-    # count bytes
-    packet_metadata['bytes'] = int(packet.length)
-    # TODO move outside:
-    #bytes_transmitted += bytes
-
-    # count num of streams + get src/dest ports
-    tcp = packet.get_multiple_layers('tcp')
-
-    if tcp:
-        packet_metadata['tcp_stream'] = int(tcp[0].get('stream', 0))
-        #todo move outside
-        #tcp_streams = max(int(tcp[0].get('stream', 0)), tcp_streams)
-
-        src_port = int(tcp[0].get('srcport', 0))
-        dest_port = int(tcp[0].get('dstport', 0))
-
-    udp = packet.get_multiple_layers('udp')
-    if udp:
-        packet_metadata['udp_straem'] = int(udp[0].get('stream', 0))
-        # move outside
-        # udp_streams = max(int(udp[0].get('stream', 0)), udp_streams)
-        src_port = int(udp[0].get('srcport', 0))
-        dest_port = int(udp[0].get('dstport', 0))
-
-    # extract DNS layer
-    if 'DNS' in extracted_protocols:
-        dns_layer = packet.get_multiple_layers('dns')
-        if dns_layer:
-            temp_dns = {
-                'ID': dns_layer[0].get('id'),
-                'Request': dns_layer[0].get('qry_name'),
-                'Response': dns_layer[0].get('a'),
-                'Type': reg_type.findall(str(dns_layer[0]))[0] if reg_type.findall(str(dns_layer[0])) else None
-            }
-            layer_data['DNS'] = temp_dns
-            # TODO move outside:
-            # add_to_data(protocol_data['DNS'], temp_dns)
-
-    # add conversations
-    ip_layer = packet.get_multiple_layers('ip')
-    if ip_layer:
-        a = ip_layer[0].get('src_host', '')
-        b = ip_layer[0].get('dst_host')
-        packet_metadata['source_ip'] = a
-        packet_metadata['dest_ip'] = b
-        # TODO move outside:
-        # unique_source_ip.add(a)
-        # unique_dest_ip.add(b)
-
-        # generate flow data
-        if is_flows:
-            #TODO move outside and change keys
-            #if str([b, dest_port, a, src_port]) in flows.keys():
-            #    b, a, src_port, dest_port = a, b, dest_port, src_port
-            if "src_port" not in locals():
-                #This happens when a protocol doesn't use UDP or TCP ie IGMP. Not handled atm.
-                return {}, {}
-            flow = (a, src_port, b, dest_port)
-            #flow_data = flows.get(flow, {'min_time': float('inf'),
-            #                             'max_time': -float('inf'),
-            #                              'bytes': 0,
-            #                              'counter': 0})
-            # flow_data['min_time'] = min(flow_data['min_time'], packet_epoch_time)
-            # flow_data['max_time'] = max(flow_data['min_time'], packet_epoch_time)
-            # flow_data['bytes'] += int(packet.length)
-            # flow_data['counter'] += 1
-            packet_metadata['flow'] = {'flow': flow,
-                                       'time': packet_epoch_time,
-                                       'bytes': int(packet.length)}
-            #flows[flow] = flow_data
-
-        # gather http data
-        if 'HTTP' in extracted_protocols:
-            http_layer = packet.get_multiple_layers('http')
-            if http_layer:
-                all_fields = http_layer[0]._all_fields
-                temp_http = {
-                    "ID": http_layer[0].get('request_in', packet.number),
-                    'RequestAgent': all_fields.get("http.user_agent"),
-                    'RequestHost': all_fields.get('http.host'),
-                    'RequestSourceIP': a,
-                    'RequestURI': http_layer[0].get('request_full_uri'),
-                    'RequestMethod': http_layer[0].get('request_method'),
-                    'RequestVersion': http_layer[0].get('request_version'),
-                    'RequestAcceptEncoding': http_layer[0].get('accept_encoding'),
-                    'RequestPragma': reg_pragma.findall(str(http_layer[0]))[0]
-                    if reg_pragma.findall(str(http_layer[0])) else None,
-                    'RequestAcceptLanguage': http_layer[0].get('accept_language'),
-                    'RequestCacheControl': http_layer[0].get('cache_control')
-
-                }
-                # if the packet is a response
-                if all_fields.get('http.response'):
-                    temp_http.update({
-                        'ResponseStatusCode': http_layer[0].get('response_code'),
-                        'ResponseVersion': all_fields.get('http.response.version'),
-                        'ResponseCodeDesc': http_layer[0].get('response_code_desc'),
-                        'ResponseContentLength': http_layer[0].get('content_length'),
-                        'ResponseContentType': http_layer[0].get('content_type'),
-                        'ResponseDate': formatEpochDate(packet_epoch_time)
-                    })
-                layer_data['HTTP'] = temp_http
-                #TODO: move outside
-                #add_to_data(protocol_data['HTTP'], temp_http)
-        # TODO: move outside
-        #if str([b, a]) in conversations.keys():
-        #    a, b = b, a
-        #hosts = str([a, b])
-        #conversations[hosts] = conversations.get(hosts, 0) + 1
-
-    if 'KERBEROS' in extracted_protocols:
-        kerb_layer = packet.get_multiple_layers('KERBEROS')
-        if kerb_layer:
-            sname_results = reg_sname.findall(str(kerb_layer))
-            kerb_data = {
-                'Realm': kerb_layer[0].get('realm'),
-                'CName': kerb_layer[0].get('CNameString'),
-                'SName': sname_results[0] if sname_results else None,
-            }
-            layer_data['KERBEROS'] = kerb_data
-
-    if 'TELNET' in extracted_protocols:
-        telnet_layer = packet.get_multiple_layers('TELNET')
-        if telnet_layer:
-            pass
-
-    if 'LLMNR' in extracted_protocols:
-        llmnr_layer = packet.get_multiple_layers('llmnr')
-        if llmnr_layer:
-            llmnr_layer_string = str(llmnr_layer[0])
-            llmnr_data = {
-                'ID': llmnr_layer[0].get('dns_id'),
-                'QueryType': None if len(llmnr_type.findall(llmnr_layer_string)) == 0 else
-                llmnr_type.findall(llmnr_layer_string)[0],
-                'QueryClass': None if len(llmnr_class.findall(llmnr_layer_string)) == 0 else
-                llmnr_class.findall(llmnr_layer_string)[0],
-                'QueryName': str(llmnr_layer[0].get('dns_qry_name')),
-                'Questions': int(llmnr_layer[0].get('dns_count_queries'))
-            }
-            layer_data['LLMNR'] = llmnr_data
-            #TODO: move outside
-            #add_to_data(protocol_data['LLMNR'], llmnr_data)
-
-    if 'SYSLOG' in extracted_protocols:
-        syslog_layer = packet.get_multiple_layers('syslog')
-        if syslog_layer:
-            layer_data['SYSLOG'] = syslog_layer[0].get('msg')
-            #TODO move outside:
-            # #syslogs.append(syslog_layer[0].get('msg'))
-
-    if 'SMTP' in extracted_protocols:
-        imf_layer = packet.get_multiple_layers('imf')
-        if imf_layer:
-            imf_data = {
-                'ID': imf_layer[0].get('Message-ID', -1),
-                'To': imf_layer[0].get('to'),
-                'From': imf_layer[0].get('from'),
-                'Subject': imf_layer[0].get('subject'),
-                'MimeVersion': imf_layer[0].get('mime-version')
-            }
-            layer_data['SMTP'] = imf_data
-            #TODO:move outside
-            #add_to_data(protocol_data['SMTP'], imf_data)
-
-    if 'SMB2' in extracted_protocols:
-        smb_layer = packet.get_multiple_layers('smb2')
-        if smb_layer:
-            command_results = reg_cmd.findall(str(smb_layer))
-            smb_data = {
-                'ID': smb_layer[0].get('sesid', -1),
-                'UserName': smb_layer[0].get('ntlmssp_auth_username'),
-                'Domain': smb_layer[0].get('ntlmssp_auth_domain'),
-                'HostName': smb_layer[0].get('ntlmssp_auth_hostname'),
-                'Command': command_results[0] if command_results else None,
-                'FileName': smb_layer[0].get('smb2.filename'),
-                'Tree': smb_layer[0].get('tree')
-            }
-            layer_data['SMB2'] = smb_data
-            #TODO:move outside
-            #add_to_data(protocol_data['SMB2'], smb_data)
-
-    if 'NETBIOS' in extracted_protocols:
-        netbios_layer = packet.get_multiple_layers('nbns')
-        if netbios_layer:
-            type_results = reg_type.findall(str(netbios_layer[0]))
-            class_results = reg_class.findall(str(netbios_layer[0]))
-            netbios_data = {
-                'ID': netbios_layer[0].get('id', -1),
-                'Name': netbios_layer[0].get('name'),
-                'Type': type_results[0] if type_results else None,
-                'Class': class_results[0] if class_results else None
-            }
-            layer_data['NETBIOS'] = netbios_data
-            #TODO:move outside
-            #add_to_data(protocol_data['NETBIOS'], netbios_data)
-
-    if 'ICMP' in extracted_protocols:
-        icmp_layer = packet.get_multiple_layers('icmp')
-        if icmp_layer:
-            type_results = reg_type.findall(str(icmp_layer[0]))
-            if type_results:
-                layer_data['ICMP'] = type_results[0]
-                # TODO:move outside
-                #icmp_data.add(type_results[0])
-
-    if is_reg_extract:
-        packet_metadata['IPs'] = list(reg_ip.findall(str(packet)))
-        packet_metadata['emails'] = list(reg_email.findall(str(packet)))
-        packet_metadata['URLs'] = list(reg_url.findall(str(packet)))
-        #TODO: move outside
-
-        # for i in reg_ip.finditer(str(packet)):
-        #     ips_extracted.add(i[0])
-        # for i in reg_email.finditer(str(packet)):
-        #     emails_extracted.add(i[0])
-        # for i in reg_url.finditer(str(packet)):
-        #     urls_extracted.add(i[0])
-
-    if homemade_regex:
-        packet_metadata['homeade_regex'] = reg_homemade.findall((str(packet)))
-        #TODO: move outside
-            # homemade_extracted.add(i)
-    return packet_metadata, layer_data
+# def analyse_packet(input):
+#     packet, j = input
+#     if (j%100==0):
+#         print(j)
+#     packet_metadata = dict()
+#     packet_metadata['last_layer'] = packet.layers[-1].layer_name
+#     layer_data = dict()
+#
+#     layers = str(packet.layers)
+#     # remove duplicate layer names such as [ETH,DATA,DATA] -> # [ETH, DATA]
+#     layers = list(dict.fromkeys(layers.split(',')))
+#     layers = strip(str(layers))
+#     packet_metadata['layers'] = layers
+#     #TODO move outside: hierarchy[layers] = hierarchy.get(layers, 0) + 1  # access outside
+#
+#     # update times
+#     packet_epoch_time = float(packet.frame_info.get('time_epoch'))
+#     packet_metadata['packet_epoch_time'] = packet_epoch_time
+#     # TODO move outside:
+#     # max_time = max(max_time, packet_epoch_time)
+#     # min_time = min(min_time, packet_epoch_time)
+#
+#     # count packets
+#     # TODO move outside:
+#     #num_of_packets += 1
+#
+#     # count bytes
+#     packet_metadata['bytes'] = int(packet.length)
+#     # TODO move outside:
+#     #bytes_transmitted += bytes
+#
+#     # count num of streams + get src/dest ports
+#     tcp = packet.get_multiple_layers('tcp')
+#
+#     if tcp:
+#         packet_metadata['tcp_stream'] = int(tcp[0].get('stream', 0))
+#         #todo move outside
+#         #tcp_streams = max(int(tcp[0].get('stream', 0)), tcp_streams)
+#
+#         src_port = int(tcp[0].get('srcport', 0))
+#         dest_port = int(tcp[0].get('dstport', 0))
+#
+#     udp = packet.get_multiple_layers('udp')
+#     if udp:
+#         packet_metadata['udp_straem'] = int(udp[0].get('stream', 0))
+#         # move outside
+#         # udp_streams = max(int(udp[0].get('stream', 0)), udp_streams)
+#         src_port = int(udp[0].get('srcport', 0))
+#         dest_port = int(udp[0].get('dstport', 0))
+#
+#     # extract DNS layer
+#     if 'DNS' in extracted_protocols:
+#         dns_layer = packet.get_multiple_layers('dns')
+#         if dns_layer:
+#             temp_dns = {
+#                 'ID': dns_layer[0].get('id'),
+#                 'Request': dns_layer[0].get('qry_name'),
+#                 'Response': dns_layer[0].get('a'),
+#                 'Type': reg_type.findall(str(dns_layer[0]))[0] if reg_type.findall(str(dns_layer[0])) else None
+#             }
+#             layer_data['DNS'] = temp_dns
+#             # TODO move outside:
+#             # add_to_data(protocol_data['DNS'], temp_dns)
+#
+#     # add conversations
+#     ip_layer = packet.get_multiple_layers('ip')
+#     if ip_layer:
+#         a = ip_layer[0].get('src_host', '')
+#         b = ip_layer[0].get('dst_host')
+#         packet_metadata['source_ip'] = a
+#         packet_metadata['dest_ip'] = b
+#         # TODO move outside:
+#         # unique_source_ip.add(a)
+#         # unique_dest_ip.add(b)
+#
+#         # generate flow data
+#         if is_flows:
+#             #TODO move outside and change keys
+#             #if str([b, dest_port, a, src_port]) in flows.keys():
+#             #    b, a, src_port, dest_port = a, b, dest_port, src_port
+#             if "src_port" not in locals():
+#                 #This happens when a protocol doesn't use UDP or TCP ie IGMP. Not handled atm.
+#                 return {}, {}
+#             flow = (a, src_port, b, dest_port)
+#             #flow_data = flows.get(flow, {'min_time': float('inf'),
+#             #                             'max_time': -float('inf'),
+#             #                              'bytes': 0,
+#             #                              'counter': 0})
+#             # flow_data['min_time'] = min(flow_data['min_time'], packet_epoch_time)
+#             # flow_data['max_time'] = max(flow_data['min_time'], packet_epoch_time)
+#             # flow_data['bytes'] += int(packet.length)
+#             # flow_data['counter'] += 1
+#             packet_metadata['flow'] = {'flow': flow,
+#                                        'time': packet_epoch_time,
+#                                        'bytes': int(packet.length)}
+#             #flows[flow] = flow_data
+#
+#         # gather http data
+#         if 'HTTP' in extracted_protocols:
+#             http_layer = packet.get_multiple_layers('http')
+#             if http_layer:
+#                 all_fields = http_layer[0]._all_fields
+#                 temp_http = {
+#                     "ID": http_layer[0].get('request_in', packet.number),
+#                     'RequestAgent': all_fields.get("http.user_agent"),
+#                     'RequestHost': all_fields.get('http.host'),
+#                     'RequestSourceIP': a,
+#                     'RequestURI': http_layer[0].get('request_full_uri'),
+#                     'RequestMethod': http_layer[0].get('request_method'),
+#                     'RequestVersion': http_layer[0].get('request_version'),
+#                     'RequestAcceptEncoding': http_layer[0].get('accept_encoding'),
+#                     'RequestPragma': reg_pragma.findall(str(http_layer[0]))[0]
+#                     if reg_pragma.findall(str(http_layer[0])) else None,
+#                     'RequestAcceptLanguage': http_layer[0].get('accept_language'),
+#                     'RequestCacheControl': http_layer[0].get('cache_control')
+#
+#                 }
+#                 # if the packet is a response
+#                 if all_fields.get('http.response'):
+#                     temp_http.update({
+#                         'ResponseStatusCode': http_layer[0].get('response_code'),
+#                         'ResponseVersion': all_fields.get('http.response.version'),
+#                         'ResponseCodeDesc': http_layer[0].get('response_code_desc'),
+#                         'ResponseContentLength': http_layer[0].get('content_length'),
+#                         'ResponseContentType': http_layer[0].get('content_type'),
+#                         'ResponseDate': formatEpochDate(packet_epoch_time)
+#                     })
+#                 layer_data['HTTP'] = temp_http
+#                 #TODO: move outside
+#                 #add_to_data(protocol_data['HTTP'], temp_http)
+#         # TODO: move outside
+#         #if str([b, a]) in conversations.keys():
+#         #    a, b = b, a
+#         #hosts = str([a, b])
+#         #conversations[hosts] = conversations.get(hosts, 0) + 1
+#
+#     if 'KERBEROS' in extracted_protocols:
+#         kerb_layer = packet.get_multiple_layers('KERBEROS')
+#         if kerb_layer:
+#             sname_results = reg_sname.findall(str(kerb_layer))
+#             kerb_data = {
+#                 'Realm': kerb_layer[0].get('realm'),
+#                 'CName': kerb_layer[0].get('CNameString'),
+#                 'SName': sname_results[0] if sname_results else None,
+#             }
+#             layer_data['KERBEROS'] = kerb_data
+#
+#     if 'TELNET' in extracted_protocols:
+#         telnet_layer = packet.get_multiple_layers('TELNET')
+#         if telnet_layer:
+#             pass
+#
+#     if 'LLMNR' in extracted_protocols:
+#         llmnr_layer = packet.get_multiple_layers('llmnr')
+#         if llmnr_layer:
+#             llmnr_layer_string = str(llmnr_layer[0])
+#             llmnr_data = {
+#                 'ID': llmnr_layer[0].get('dns_id'),
+#                 'QueryType': None if len(llmnr_type.findall(llmnr_layer_string)) == 0 else
+#                 llmnr_type.findall(llmnr_layer_string)[0],
+#                 'QueryClass': None if len(llmnr_class.findall(llmnr_layer_string)) == 0 else
+#                 llmnr_class.findall(llmnr_layer_string)[0],
+#                 'QueryName': str(llmnr_layer[0].get('dns_qry_name')),
+#                 'Questions': int(llmnr_layer[0].get('dns_count_queries'))
+#             }
+#             layer_data['LLMNR'] = llmnr_data
+#             #TODO: move outside
+#             #add_to_data(protocol_data['LLMNR'], llmnr_data)
+#
+#     if 'SYSLOG' in extracted_protocols:
+#         syslog_layer = packet.get_multiple_layers('syslog')
+#         if syslog_layer:
+#             layer_data['SYSLOG'] = syslog_layer[0].get('msg')
+#             #TODO move outside:
+#             # #syslogs.append(syslog_layer[0].get('msg'))
+#
+#     if 'SMTP' in extracted_protocols:
+#         imf_layer = packet.get_multiple_layers('imf')
+#         if imf_layer:
+#             imf_data = {
+#                 'ID': imf_layer[0].get('Message-ID', -1),
+#                 'To': imf_layer[0].get('to'),
+#                 'From': imf_layer[0].get('from'),
+#                 'Subject': imf_layer[0].get('subject'),
+#                 'MimeVersion': imf_layer[0].get('mime-version')
+#             }
+#             layer_data['SMTP'] = imf_data
+#             #TODO:move outside
+#             #add_to_data(protocol_data['SMTP'], imf_data)
+#
+#     if 'SMB2' in extracted_protocols:
+#         smb_layer = packet.get_multiple_layers('smb2')
+#         if smb_layer:
+#             command_results = reg_cmd.findall(str(smb_layer))
+#             smb_data = {
+#                 'ID': smb_layer[0].get('sesid', -1),
+#                 'UserName': smb_layer[0].get('ntlmssp_auth_username'),
+#                 'Domain': smb_layer[0].get('ntlmssp_auth_domain'),
+#                 'HostName': smb_layer[0].get('ntlmssp_auth_hostname'),
+#                 'Command': command_results[0] if command_results else None,
+#                 'FileName': smb_layer[0].get('smb2.filename'),
+#                 'Tree': smb_layer[0].get('tree')
+#             }
+#             layer_data['SMB2'] = smb_data
+#             #TODO:move outside
+#             #add_to_data(protocol_data['SMB2'], smb_data)
+#
+#     if 'NETBIOS' in extracted_protocols:
+#         netbios_layer = packet.get_multiple_layers('nbns')
+#         if netbios_layer:
+#             type_results = reg_type.findall(str(netbios_layer[0]))
+#             class_results = reg_class.findall(str(netbios_layer[0]))
+#             netbios_data = {
+#                 'ID': netbios_layer[0].get('id', -1),
+#                 'Name': netbios_layer[0].get('name'),
+#                 'Type': type_results[0] if type_results else None,
+#                 'Class': class_results[0] if class_results else None
+#             }
+#             layer_data['NETBIOS'] = netbios_data
+#             #TODO:move outside
+#             #add_to_data(protocol_data['NETBIOS'], netbios_data)
+#
+#     if 'ICMP' in extracted_protocols:
+#         icmp_layer = packet.get_multiple_layers('icmp')
+#         if icmp_layer:
+#             type_results = reg_type.findall(str(icmp_layer[0]))
+#             if type_results:
+#                 layer_data['ICMP'] = type_results[0]
+#                 # TODO:move outside
+#                 #icmp_data.add(type_results[0])
+#
+#     if is_reg_extract:
+#         packet_metadata['IPs'] = list(reg_ip.findall(str(packet)))
+#         packet_metadata['emails'] = list(reg_email.findall(str(packet)))
+#         packet_metadata['URLs'] = list(reg_url.findall(str(packet)))
+#         #TODO: move outside
+#
+#         # for i in reg_ip.finditer(str(packet)):
+#         #     ips_extracted.add(i[0])
+#         # for i in reg_email.finditer(str(packet)):
+#         #     emails_extracted.add(i[0])
+#         # for i in reg_url.finditer(str(packet)):
+#         #     urls_extracted.add(i[0])
+#
+#     if homemade_regex:
+#         packet_metadata['homeade_regex'] = reg_homemade.findall((str(packet)))
+#         #TODO: move outside
+#             # homemade_extracted.add(i)
+#     return packet_metadata, layer_data
 
 def pcap_miner(file_path, entry_id, pcap_filter='', pcap_filter_new_file_path='', decrypt_key=None,
                conversation_number_to_display=15, is_flows=True, is_reg_extract=True, extracted_protocols=[],
@@ -546,9 +792,9 @@ def pcap_miner(file_path, entry_id, pcap_filter='', pcap_filter_new_file_path=''
                                   decryption_key=decrypt_key, encryption_type='WPA-PWD')
         j = 0
         for packet in cap:
-            # j += 1
-            # if (j % 100 == 0):
-            #     print(j)
+            j += 1
+            if (j % 100 == 0):
+                print(j)
             last_layer.add(packet.layers[-1].layer_name)
 
             layers = str(packet.layers)
@@ -848,11 +1094,11 @@ def local_main():  #TODO remove this function
     # file_path = "/Users/olichter/Downloads/tftp_rrq.pcap"                 # tftp
     # file_path = "/Users/olichter/Downloads/rsasnakeoil2.cap"              # encrypted SSL
     # file_path = "/Users/olichter/Downloads/smb-legacy-implementation.pcapng"  # llmnr/netbios/smb
-    # file_path = "/Users/olichter/Downloads/smtp.pcap"                      # SMTP#
+    file_path = "/Users/olichter/Downloads/smtp.pcap"                      # SMTP#
     # file_path = "/Users/olichter/Downloads/nb6-hotspot.pcap"                #syslog
     # file_path = "/Users/olichter/Downloads/wpa-Induction.pcap"               #wpa - Password is Induction
     # file_path = "/Users/olichter/Downloads/iseries.cap"
-    file_path = "/Users/olichter/Downloads/2019-12-03-traffic-analysis-exercise.pcap"  # 1 min
+    # file_path = "/Users/olichter/Downloads/2019-12-03-traffic-analysis-exercise.pcap"  # 1 min
     # file_path = "/Users/olichter/Downloads/smb-on-windows-10.pcapng"  # ran for 2.906 secs
     # file_path = "/Users/olichter/Downloads/telnet-cooked.pcap"
 
@@ -870,14 +1116,18 @@ def local_main():  #TODO remove this function
     homemade_regex = ''  # 'Layer (.+):'
     pcap_filter_new_file_path = ''
 
-    pcap_miner(file_path, entry_id, pcap_filter, pcap_filter_new_file_path, decrypt_key, conversation_number_to_display, is_flows,
-               is_reg_extract, extracted_protocols, homemade_regex)
+    # pcap_miner(file_path, entry_id, pcap_filter, pcap_filter_new_file_path, decrypt_key, conversation_number_to_display, is_flows,
+    #            is_reg_extract, extracted_protocols, homemade_regex)
+
+    pcap = PCAP(is_reg_extract, extracted_protocols, homemade_regex)
+    pcap.mine(file_path, decrypt_key, conversation_number_to_display, is_flows, is_reg_extract, pcap_filter,
+              pcap_filter_new_file_path, entry_id)
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     from datetime import datetime
 
     startTime = datetime.now()
-    main()
+    local_main()
     print(datetime.now() - startTime)
     # print(timeit.timeit(local_main), number=1)
 
