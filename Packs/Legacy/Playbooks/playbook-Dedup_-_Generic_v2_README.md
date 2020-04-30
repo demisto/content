@@ -41,4 +41,4 @@ This playbook does not use any sub-playbooks.
 | isSimilarIncidentFound | Whether a similar incident was found? Can be &quot;true&quot; or &quot;false&quot;. | boolean |
 | similarIncident | The similar incident. | unknown |
 
-<!-- Playbook PNG image comes here -->
+![Playbook Image](https://github.com/demisto/content/raw/308423391b388c7785e7b1211691770131465d79/Packs/Legacy/doc_files/Dedup_-_Generic_v2.png)
