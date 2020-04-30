@@ -1125,7 +1125,7 @@ def parse_incident_from_item(item, is_fetch):
                     # other item attachment
                     label_attachment_type = 'attachmentItems'
                     label_attachment_id_type = 'attachmentItemsId'
-
+                    attachment.item.parent_item = item
                     # save the attachment
                     if attachment.item.mime_content:
                         attached_email = email.message_from_string(attachment.item.mime_content)
