@@ -1,7 +1,9 @@
 import pytest
 from freezegun import freeze_time
+import datetime
 
 from . import CofenseTriage
+from .CofenseTriage import parse_triage_date
 
 
 def fixture_from_file(fname):
@@ -124,6 +126,38 @@ class TestCofenseTriage:
         demisto_results = CofenseTriage.demisto.results.call_args_list[0][0]
         assert len(demisto_results) == 1
         assert demisto_results[0]["HumanReadable"] == "no results were found."
+
+    @freeze_time("2000-10-31")
+    @pytest.mark.parametrize(
+        "filter_attrs, expected_found_report_ids",
+        [
+            ({"subject": "suspicious subject"}, [13363]),
+            ({"subject": "suspicious"}, []),
+            ({"subject": "nah"}, []),
+            ({"url": "http://example.com/malicious"}, [13363]),
+            ({"url": "example.com"}, []),
+            ({"url": "nah"}, []),
+            ({"created_at": parse_triage_date("2055-03-19T16:43:09.715Z")}, []),
+            ({"created_at": parse_triage_date("1999-03-19T16:43:09.715Z")}, [13363]),
+            ({"file_hash": "123"}, [13363]),
+            ({"file_hash": "1234"}, [13363]),
+            ({"file_hash": "5"}, []),
+            ({"reporter": "5331"}, [13363]),
+            ({"reporter": "2000"}, []),
+        ],
+    )
+    def test_search_reports_filtering(
+        self, requests_mock, filter_attrs, expected_found_report_ids
+    ):
+        requests_mock.get(
+            "https://some-triage-host/api/public/v1/processed_reports?start_date=2000-10-31T00%3A00%3A00.000000Z",
+            text=fixture_from_file("processed_reports.json"),
+        )
+
+        found_reports = CofenseTriage.search_reports(
+            **filter_attrs, reported_at=datetime.datetime.now()
+        )
+        assert [report["id"] for report in found_reports] == expected_found_report_ids
 
     def test_get_attachment_command(self, mocker, requests_mock):
         set_demisto_arg("attachment_id", "5")
