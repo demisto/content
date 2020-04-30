@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 import json
 import shutil
 import requests
+from typing import Dict, Any
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -567,7 +568,7 @@ def create_report(file_hash, reports, file_info, format_='xml', verbose=False):
         if len(evidence_text) > 0:
             outputs["Evidence"]["Text"] = evidence_text
 
-    entry_context = {}
+    entry_context = {}  # type: Dict[str, Any]
     dbot_score_file = 0
 
     entry_context["WildFire.Report(val.SHA256 === obj.SHA256)"] = outputs
@@ -586,12 +587,10 @@ def create_report(file_hash, reports, file_info, format_='xml', verbose=False):
             }
         else:
             dbot_score_file = 1
-
+    dbot = [{'Indicator': file_hash, 'Type': 'hash', 'Vendor': 'WildFire', 'Score': dbot_score_file},
+            {'Indicator': file_hash, 'Type': 'file', 'Vendor': 'WildFire', 'Score': dbot_score_file}]
     entry_context["DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && "
-                  "val.Type == obj.Type)"] = [{'Indicator': file_hash, 'Type': 'hash',
-                                               'Vendor': 'WildFire', 'Score': dbot_score_file},
-                                              {'Indicator': file_hash, 'Type': 'file',
-                                               'Vendor': 'WildFire', 'Score': dbot_score_file}]
+                  "val.Type == obj.Type)"] = dbot
 
     if format_ == 'pdf':
         get_report_uri = URL + URL_DICT["report"]
