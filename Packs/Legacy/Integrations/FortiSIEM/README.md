@@ -27,7 +27,7 @@
 <li><strong>Incident type</strong></li>
 <li><strong>Server URL (e.g.: https://192.168.0.1)</strong></li>
 <li><strong>Credentials</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 </ul>
 </li>

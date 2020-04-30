@@ -4,6 +4,7 @@ commonfields:
 name: WordTokenizer
 script: ''
 type: python
+subtype: python3
 tags:
 - phishing
 - ml

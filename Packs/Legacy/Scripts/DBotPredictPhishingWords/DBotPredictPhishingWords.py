@@ -32,7 +32,7 @@ def handle_error(message, is_return_error):
 
 
 def predict_phishing_words(model_name, model_store_type, email_subject, email_body, min_text_length, label_threshold,
-                           word_threshold, top_word_limit, is_return_error):
+                           word_threshold, top_word_limit, is_return_error, set_incidents_fields=False):
     model_data = get_model_data(model_name, model_store_type, is_return_error)
     model = demisto_ml.decode_model(model_data)
     text = "%s %s" % (email_subject, email_body)
@@ -54,9 +54,10 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
                                                     0,
                                                     word_threshold,
                                                     top_word_limit)
-    if explain_result["Probability"] < label_threshold:
+    predicted_prob = explain_result["Probability"]
+    if predicted_prob < label_threshold:
         handle_error("Label probability is {:.2f} and it's below the input threshold".format(
-            explain_result["Probability"]), is_return_error)
+            predicted_prob), is_return_error)
 
     if tokenized_text_result.get('hashedTokenizedText'):
         words_to_token_maps = tokenized_text_result['wordsToHashedTokens']
@@ -84,13 +85,19 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
     explain_result['NegativeWords'] = negative_words
     explain_result['OriginalText'] = tokenized_text_result['originalText'].strip()
     explain_result['TextTokensHighlighted'] = highlighted_text_markdown
+    predicted_label = explain_result["Label"]
 
     explain_result_hr = dict()
     explain_result_hr['TextTokensHighlighted'] = highlighted_text_markdown
-    explain_result_hr['Label'] = explain_result["Label"]
-    explain_result_hr['Probability'] = "%.2f" % explain_result["Probability"]
+    explain_result_hr['Label'] = predicted_label
+    explain_result_hr['Probability'] = "%.2f" % predicted_prob
     explain_result_hr['PositiveWords'] = ", ".join(positive_words)
     explain_result_hr['NegativeWords'] = ", ".join(negative_words)
+    incident_context = demisto.incidents()[0]
+    if not incident_context['isPlayground'] and set_incidents_fields:
+        demisto.executeCommand("setIncident", {'dbotprediction': predicted_label,
+                                               'dbotpredictionprobability': predicted_prob,
+                                               'dbottextsuggestionhighlighted': highlighted_text_markdown})
     return {
         'Type': entryTypes['note'],
         'Contents': explain_result,
@@ -123,7 +130,8 @@ def main():
                                     float(demisto.args().get("labelProbabilityThreshold", 0)),
                                     float(demisto.args().get('wordThreshold', 0)),
                                     int(demisto.args()['topWordsLimit']),
-                                    demisto.args()['returnError'] == 'true'
+                                    demisto.args()['returnError'] == 'true',
+                                    demisto.args().get('setIncidentFields', 'false') == 'true'
                                     )
 
     return result

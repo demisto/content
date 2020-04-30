@@ -22,7 +22,7 @@ configuration:
   defaultvalue: ""
   type: 4
   required: false
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: unsecure
   defaultvalue: ""
   type: 8
