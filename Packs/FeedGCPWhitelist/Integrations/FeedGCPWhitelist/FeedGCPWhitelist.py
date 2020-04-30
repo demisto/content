@@ -79,8 +79,8 @@ def get_indicators(client: Client, params: Dict[str, str], args: Dict[str, str])
         Outputs.
     """
     limit = int(args.get('limit', '10'))
-    indicators = fetch_indicators(client, params)
-    human_readable = tableToMarkdown('Indicators from GCP Whitelist Feed:', indicators[0:limit],
+    indicators = fetch_indicators(client, params)[:limit]
+    human_readable = tableToMarkdown('Indicators from GCP Whitelist Feed:', indicators,
                                      headers=['value', 'type'], removeNull=True)
 
     return human_readable, {}, {'raw_response': indicators}
