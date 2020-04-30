@@ -1,5 +1,6 @@
 ## [Unreleased]
-Added support for GitHub bots.
+- Added support for GitHub bots.
+- Added handling of a deleted forked repository in the `GitHub-get-pull-request` command.
 
 ## [20.4.0] - 2020-04-14
 -
