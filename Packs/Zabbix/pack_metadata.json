@@ -1,7 +1,7 @@
 {
     "name": "Zabbix",
     "description": "Allow integration with Zabbix api.",
-    "support": "xsoar",
+    "support": "developer",
     "serverMinVersion": "5.0.0",
     "currentVersion": "2.0.0",
     "author": "Henrique Caires",
