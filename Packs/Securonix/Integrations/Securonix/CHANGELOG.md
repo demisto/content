@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed an issue where the *fetch incidents* did not fetch all of the incidents.
 
 ## [20.4.1] - 2020-04-29
   - Added the *action_parameters* argument to the ***securonix-perform-action-on-incident*** command.

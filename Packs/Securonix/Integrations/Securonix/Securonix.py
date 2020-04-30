@@ -1136,9 +1136,9 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: 
 
     if securonix_incidents:
         incidents_items = list(securonix_incidents.get('incidentItems'))  # type: ignore
-        last_incident_id = last_run.get('id', '0')
+        last_incident_id = int(last_run.get('id', 0))
         for incident in incidents_items:
-            incident_id = incident.get('incidentId')
+            incident_id = int(incident.get('incidentId', 0))
             if incident_id > last_incident_id:
                 incident_name = get_incident_name(incident, incident_id)  # Try to get incident reason as incident name
                 demisto_incidents.append({
