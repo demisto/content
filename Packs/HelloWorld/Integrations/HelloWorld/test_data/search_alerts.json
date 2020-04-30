@@ -4,7 +4,7 @@
             "name": "Hello World Alert 100",
             "alert_type": "Science Fiction",
             "alert_status": "ACTIVE",
-            "severity": 3,
+            "severity": "Critical",
             "created": 1581982463,
             "alert_id": "100"
         },
@@ -12,7 +12,7 @@
             "name": "Hello World Alert 200",
             "alert_type": "Science Fiction",
             "alert_status": "ACTIVE",
-            "severity": 0,
+            "severity": "Medium",
             "created": 1581982463,
             "alert_id": "200"
         }

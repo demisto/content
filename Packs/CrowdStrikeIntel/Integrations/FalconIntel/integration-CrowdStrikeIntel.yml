@@ -904,3 +904,4 @@ script:
   runonce: false
 tests:
 - CrowdStrike Falcon Intel v2
+fromversion: 3.1.1
