@@ -751,7 +751,7 @@ If a dedicated channel for incident notifications is configured, the following n
 <li>Incident updated</li>
 <li>Investigation closed</li>
 <li>Investigation deleted</li>
-<li>Incident SLA</li>
+<li>Incident SLA changed</li>
 <li>Task completed</li>
 </ul>
 <h3>Blocks and interactve components</h3>
