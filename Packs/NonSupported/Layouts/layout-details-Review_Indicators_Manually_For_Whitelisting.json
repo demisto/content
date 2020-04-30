@@ -4,21 +4,10 @@
     "fromVersion": "5.5.0",
 	"layout": {
 		"TypeName": "",
-		"commitMessage": "",
-		"fromServerVersion": "",
 		"id": "Review Indicators Manually For Whitelisting",
-		"itemVersion": "",
 		"kind": "details",
 		"modified": "2020-04-30T10:45:07.616094247Z",
 		"name": "",
-		"packID": "",
-		"prevKind": "details",
-		"prevTypeId": "Review Indicators Manually For Whitelisting",
-		"propagationLabels": [
-			"all"
-		],
-		"shouldCommit": false,
-		"sortValues": null,
 		"system": false,
 		"tabs": [
 			{
@@ -430,9 +419,7 @@
 				"type": "custom"
 			}
 		],
-		"toServerVersion": "",
 		"typeId": "Review Indicators Manually For Whitelisting",
-		"vcShouldIgnore": false,
 		"version": -1
 	},
 	"typeId": "Review Indicators Manually For Whitelisting",
