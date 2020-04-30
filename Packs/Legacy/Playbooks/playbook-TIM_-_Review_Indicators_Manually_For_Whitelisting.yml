@@ -176,7 +176,7 @@ tasks:
     task:
       id: 21dc7963-c302-415d-843b-257e7d2861ac
       version: -1
-      name: Allow to remove pending review tag from all indicators
+      name: Allow to remove whitelist review tag from all indicators
       type: condition
       iscommand: false
       brand: ""
