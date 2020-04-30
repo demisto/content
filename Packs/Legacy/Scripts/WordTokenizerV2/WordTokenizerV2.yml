@@ -180,7 +180,7 @@ outputs:
   description: Output text
   type: Unknown
 script: '-'
-subtype: python3
+subtype: python2
 system: false
 tags:
 - phishing
