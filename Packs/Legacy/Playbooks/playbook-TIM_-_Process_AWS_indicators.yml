@@ -702,7 +702,7 @@ inputs:
   required: false
   description: 'Use this input to define which tag to apply to AWS indicators. An
     example tag can be whitelist_review. If no tags are specified in the input the
-    tag pending_review will be used. '
+    tag whitelist_review will be used. '
   playbookInputQuery: null
 - key: ""
   value: {}
