@@ -1,5 +1,5 @@
 Configures an external dynamic list in PAN-OS.
-In the event that the file exists on the web server, it will sync it to Cortex xSOAR. Then it will create an EDL object and a matching rule.
+In the event that the file exists on the web server, it syncs the file to Cortex XSOAR. Then it creates an EDL object and a matching rule.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -27,11 +27,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Source** | **Required** |
 | --- | --- | --- | --- | --- |
-| list-name | The name of the list that will store the IOCs.
+| list-name | The name of the list that stores the IOCs.
 The name of the file on the web server. This file name is the same as the name of the list with the extension &quot;.txt&quot; added. |  |  | Required |
-| ioc-type | The type of the IOCs that the list will store. Can be &quot;ip&quot;, &quot;url&quot;, or &quot;domain&quot;. |  |  | Required |
+| ioc-type | The type of the IOCs that the list stores. Can be &quot;ip&quot;, &quot;url&quot;, or &quot;domain&quot;. |  |  | Required |
 | list-items | comma separated values |  |  | Required |
-| action-type | The action that will be defined in the rule:
+| action-type | The action that is defined in the rule:
 allow/deny/drop | drop |  | Required |
 | auto-commit | Whether to commit the configuration automatically. | False |  | Optional |
 | log-forwarding-object-name | The server address to which to forward logs. |  |  | Optional |
