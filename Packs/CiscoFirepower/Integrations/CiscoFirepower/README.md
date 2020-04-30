@@ -4700,7 +4700,7 @@ Retrieves information about a previously submitted pending job or task with the 
 ---
 
 
-## Possible Errors (DO NOT PUBLISH ON ZENDESK):
+
 * 'No valid access token'
 * f'{INTEGRATION_NAME} - Could not delete the object.'
 * f'{INTEGRATION_NAME} - Could not create new group, Missing value or ID.'

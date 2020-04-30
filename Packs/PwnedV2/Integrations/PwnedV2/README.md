@@ -388,6 +388,6 @@ In June 2011, the hacktivist group known as "LulzSec" leaked [one final large da
 Data breached: **Dates of birth,Email addresses,Instant messenger identities,IP addresses,Passwords,Social connections,Spoken languages,Time zones,User website URLs,Usernames,Website activity**
 
 
-## Possible Errors (DO NOT PUBLISH ON ZENDESK):
+
 * Max retry time has exceeded.
 * Error in API call to Pwned Integration

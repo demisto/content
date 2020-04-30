@@ -166,4 +166,4 @@ This commands return full cymulate's incidents information
 ---
 
 
-## Possible Errors (DO NOT PUBLISH ON ZENDESK):
+
