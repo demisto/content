@@ -586,7 +586,7 @@ tasks:
       travelmaplink: {}
       triggeredsecurityprofile: {}
       type:
-        simple: Review Indicators Manually
+        simple: Review Indicators Manually For Whitelisting
       urlsslverification: {}
       user: {}
       useraccountcontrol: {}
