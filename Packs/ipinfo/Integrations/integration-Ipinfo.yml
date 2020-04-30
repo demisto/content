@@ -9,7 +9,7 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAABGd
 description: Use the ipinfo.io API to get data about an IP address
 defaultEnabled: false
 configuration:
-- display: Use system proxy settings
+- display: Use system proxy se
   name: proxy
   defaultvalue: "false"
   type: 8
