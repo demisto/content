@@ -321,8 +321,7 @@ inputs:
   required: false
   description: ""
   playbookInputQuery:
-    query: (sourceBrands:"Office 365 Feed" or sourceBrands:"AWS Feed" or sourceBrands:AzureFeed)
-      and reputation:Good
+    query: (sourceBrands:"Office 365 Feed" or sourceBrands:"AWS Feed" or sourceBrands:AzureFeed) and reputation:Good
     queryEntity: indicators
     results: null
     daterange:
