@@ -1137,7 +1137,7 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: 
     if securonix_incidents:
         incidents_items = list(securonix_incidents.get('incidentItems'))  # type: ignore
         for incident in incidents_items:
-            incident_id = int(incident.get('incidentId', 0))
+            incident_id = incident.get('incidentId', '0')
             incident_name = get_incident_name(incident, incident_id)  # Try to get incident reason as incident name
             demisto_incidents.append({
                 'name': incident_name,
@@ -1145,9 +1145,6 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: 
                 'severity': incident_priority_to_dbot_score(incident.get('priority')),
                 'rawJSON': json.dumps(incident)
             })
-        if demisto_incidents:
-            last_incident_id = incidents_items[-1].get('incidentId')
-            new_last_run.update({'id': last_incident_id})
 
     new_last_run.update({'time': now})
     demisto.setLastRun(new_last_run)
