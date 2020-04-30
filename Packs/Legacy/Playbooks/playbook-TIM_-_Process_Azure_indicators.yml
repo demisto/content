@@ -252,7 +252,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 2
+    quietmode: 0
   "26":
     id: "26"
     taskid: 4e0a4d74-1cf0-48b3-831f-a75573f85d45
