@@ -80,10 +80,6 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
-    scriptarguments:
-      AWSIndicatorTagName: {}
-      OpenIncidentToReviewIndicatorsManually:
-        simple: "Yes"
     separatecontext: true
     loop:
       iscommand: false
@@ -122,11 +118,6 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
-    scriptarguments:
-      Office365FeedIndicatorTagName:
-        simple: approved_white
-      OpenIncidentToReviewIndicatorsManually:
-        simple: "No"
     separatecontext: true
     loop:
       iscommand: false
