@@ -86,7 +86,7 @@ tasks:
             value:
               simple: inputs.Office365FeedIndicatorTagName
             iscontext: true
-        - operator: isNotEqualString
+      - - operator: isNotEqualString
           left:
             value:
               simple: inputs.Office365FeedIndicatorTagName
