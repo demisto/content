@@ -2,8 +2,8 @@ import demistomock as demisto
 from CommonServerPython import *
 
 import urllib3
-import requests
 import json
+import dateutil
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -22,20 +22,20 @@ SEARCH_RULE_LOGS_API_SUFFIX = "v2/security/rules/events/logs/search"
 
 
 class Client(BaseClient):
-    def __init__(self, region, security_api_token, op_api_token, verify, proxy):
-        super(Client, self).__init__(BASE_URL, verify, proxy)
+    def __init__(self, region, security_api_token, op_api_token, verify, proxy, max_fetch = DEFAULT_LIMIT):
         self.security_api_token = security_api_token
         self.op_api_token = op_api_token
         self.region = region
         self.verify = verify
         self.proxies = proxy
+        self.max_fetch = max_fetch
+        super(Client, self).__init__(self.get_base_api_url(), verify, proxy)
 
     def fetch_triggered_rules(self, search=None, severities=None, start_time=time.time()):
-        url = self.get_triggered_rules_api()
         payload = {
             "pagination": {
                 "pageNumber": 1,
-                "pageSize": DEFAULT_LIMIT
+                "pageSize": self.max_fetch
             },
             "sort": [
                 {
@@ -54,11 +54,7 @@ class Client(BaseClient):
         }
         remove_nulls_from_dictionary(payload["filter"])
         remove_nulls_from_dictionary(payload)
-        response = execute_api(url, payload, self.security_api_token)
-        try:
-            return response.json()
-        except:
-            raise ValueError(f'Could not parse response to JSON: {response.text}')
+        return self.execute_api(TRIGGERED_RULES_API_SUFFIX, payload, self.security_api_token)
 
     def search_logs(self, query, size, from_time, to_time):
         payload = {
@@ -86,11 +82,8 @@ class Client(BaseClient):
                     "range": {"@timestamp": time_filter}
                 }
             )
-        response = execute_api(self.get_search_api(), payload, self.op_api_token)
-        try:
-            return response.json().get("hits", {}).get("hits", {})
-        except Exception as e:
-            return_error('Could not parse response to json: {}'.format(response.text), e)
+        response = self.execute_api(SEARCH_LOGS_API_SUFFIX, payload, self.op_api_token)
+        return response.get("hits", {}).get("hits", {})
 
     def get_rule_logs(self, id, size, page_size=MAX_LOGZIO_DOCS):
         payload = {
@@ -102,30 +95,15 @@ class Client(BaseClient):
                 "pageSize": page_size
             }
         }
-        response = execute_api(self.get_rule_logs_api(), payload, self.security_api_token)
-        try:
-            total = response.json().get("total", 0)
-            results = response.json().get("results", [])
-            if total > page_size and size > page_size:
-                for i in range(2, (min(size, total) + page_size - 1) // page_size + 1):  # Ceiling division
-                    payload["pagination"]["pageNumber"] = i
-                    response = execute_api(self.get_rule_logs_api(), payload, self.security_api_token)
-                    results += response.json().get("results", [])
-            return results
-        except Exception as e:
-            return_error('Could not parse response to json: {}'.format(response.text), e)
-
-    def get_triggered_rules_api(self):
-        return self.get_api_url(TRIGGERED_RULES_API_SUFFIX)
-
-    def get_search_api(self):
-        return self.get_api_url(SEARCH_LOGS_API_SUFFIX)
-
-    def get_rule_logs_api(self):
-        return self.get_api_url(SEARCH_RULE_LOGS_API_SUFFIX)
-
-    def get_api_url(self, api_suffix):
-        return "{}{}".format(self.get_base_api_url(), api_suffix)
+        response = self.execute_api(SEARCH_RULE_LOGS_API_SUFFIX, payload, self.security_api_token)
+        total = response.get("total", 0)
+        results = response.get("results", [])
+        if total > page_size and size > page_size:
+            for i in range(2, (min(size, total) + page_size - 1) // page_size + 1):  # Ceiling division
+                payload["pagination"]["pageNumber"] = i
+                response = self.execute_api(SEARCH_RULE_LOGS_API_SUFFIX, payload, self.security_api_token)
+                results += response.get("results", [])
+        return results
 
     def get_base_api_url(self):
         return BASE_URL.replace("api.", "api{}.".format(self.get_region_code()))
@@ -135,19 +113,16 @@ class Client(BaseClient):
             return "-{}".format(self.region)
         return ""
 
+    def execute_api(self, url_suffix, payload, api_token):
+        headers = {
+            'Content-Type': 'application/json',
+            'X-API-TOKEN': api_token
+        }
+        return BaseClient._http_request(self, "POST", url_suffix, headers=headers, data=json.dumps(payload),
+                                        ok_codes=(200, ))
+
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
-
-
-def execute_api(url, payload, api_token):
-    headers = {
-        'Content-Type': 'application/json',
-        'X-API-TOKEN': api_token
-    }
-    response = requests.request("POST", url, headers=headers, data=json.dumps(payload))
-    if response.status_code != 200:
-        return_error('Error in API call [{}] - {}: {}'.format(response.status_code, response.reason, response.content))
-    return response
 
 
 def test_module(client):
@@ -172,7 +147,6 @@ def search_logs_command(client, args):
     return_outputs(tableToMarkdown("Logs", content), context, content)
 
 
-
 def get_rule_logs_by_id_command(client, args):
     id = args.get("id")
     size = args.get("size", 100)
@@ -183,6 +157,7 @@ def get_rule_logs_by_id_command(client, args):
             'Logzio.Logs.Results': resp
     }
     return_outputs(tableToMarkdown("Logs", resp), context, resp)
+
 
 def fetch_incidents(client, last_run, search, severities, first_fetch_time):
     incidents = []
@@ -223,7 +198,6 @@ def main():
     try:
         security_api_token = demisto.params().get('security_api_token')
         op_api_token = demisto.params().get('operational_api_token')
-        # Todo: test this one
         if security_api_token is None and op_api_token is None:
             raise ValueError('No tokens were provided. Please provide either Logz.io Operational API token,'
                              ' Logz.io Security API token, or both.')
@@ -231,10 +205,11 @@ def main():
         first_fetch_time = demisto.params().get('fetch_time', '1 hours')
         severities = demisto.params().get('severities')
         search = demisto.params().get('search')
+        max_fetch = demisto.params().get('fetch_count', DEFAULT_LIMIT)
         verify = not demisto.params().get('insecure', False)
         proxy = demisto.params().get('proxy', False)
 
-        client = Client(region, security_api_token, op_api_token, verify, proxy)
+        client = Client(region, security_api_token, op_api_token, verify, proxy, max_fetch)
         command = demisto.command()
         # Run the commands
         if command == 'logzio-search-logs':
