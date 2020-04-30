@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.4.1] - 2020-04-29
 Fixed an issue where list values in context were not compared correctly while using the "similarContextKeys" argument.
 
 ## [20.3.4] - 2020-03-30
