@@ -38,72 +38,49 @@ except Exception:
     raise
 
 
-def remove_apostrophes(cell):
-    """Drops the leading and trailing " in a multi-lined cell value
+def clear_appostrophes(value):
+    if value.startswith('\"'):
+        value = value[1:]
+    if value.endswith('\"'):
+        value = value[:-1]
 
-    Args:
-        cell (str): the value of the multi-lined single cell in the table
-
-    Returns:
-        str. The value of the multi-lined cell without the "
-    """
-    return cell[1:-1]
+    return value
 
 
-def get_full_cell(string_lines, current_string_line_index, current_cell):
-    """Gathers all the values in a multi-lined single cell in a csv table
+def split_lines(lines):
+    lines = lines.split(',')
+    formatted_lines = []
+    for val in lines:
+        # situation1: val1\nval2 or val1\n"val2_1\nval2_2"
+        if val.startswith('\n'):
+            val = val[1:]
 
-    Args:
-        string_lines (list): a list of all lines in the csv
-        current_string_line_index (int): the current line index being gathered
-        current_cell: the value of the multi-lined single cell in the table
+        if '\n' in val and not val.startswith("\""):
+            split_values = val.split("\n", 1)
+            formatted_lines.append(clear_appostrophes(split_values[0]))
+            formatted_lines.append(clear_appostrophes(split_values[1]))
 
-    Returns:
-        Tuple(str, list). The full value of the single multi-lined cell and the rest of the values in it's line if exist
-    """
-    current_string_line_index += 1
-    line_below = string_lines[current_string_line_index].split(',')
+        # situation2: "val1_1\nval1_2"\nval2,
+        elif '\n' in val and val.startswith("\"") and not val.endswith("\""):
+            val = val[1:]
+            split_values = val.split("\"\n", 1)
+            formatted_lines.append(clear_appostrophes(split_values[0]))
+            formatted_lines.append(clear_appostrophes(split_values[1]))
 
-    # removing enter empty lines
-    if line_below[0] != '':
-        current_cell = current_cell + "\n" + line_below[0]
+        elif '\n' in val and val.startswith("\"") and val.endswith("\""):
+            if val.count("\"") == 2:
+                formatted_lines.append(clear_appostrophes(val))
 
-    if line_below[0].endswith("\""):
-        # case1: no additional info on that line
-        if len(line_below) == 1:
-            return remove_apostrophes(current_cell), [], current_string_line_index
+            else:
+                val = val[1:]
+                split_values = val.split("\"\n", 1)
+                formatted_lines.append(clear_appostrophes(split_values[0]))
+                formatted_lines.append(clear_appostrophes(split_values[1]))
 
-        # case2: additional info on that line
         else:
-            return remove_apostrophes(current_cell), line_below[1:], current_string_line_index
+            formatted_lines.append(clear_appostrophes(val))
 
-    return get_full_cell(string_lines, current_string_line_index, current_cell)
-
-
-def gather_line(string_lines, current_string_line_index):
-    """gather the values of a single line in the answered csv
-
-    Args:
-        string_lines (list): a list of all lines in the csv
-        current_string_line_index (int): the current line index being gathered
-
-    Returns:
-        Tuple(list, int). A list containing all the values of a single line, the number of the last line checked
-    """
-    line_cells_content = string_lines[current_string_line_index].split(',')
-
-    # edge case - empty starting line
-    if len(line_cells_content) == 0 or (len(line_cells_content) == 1 and len(line_cells_content[0]) == 0):
-        return [], current_string_line_index
-
-    # multi lined cells start with " and end with "
-    while line_cells_content[-1].startswith("\"") and not line_cells_content[-1].endswith("\""):
-        current_cell = line_cells_content[-1]
-        current_cell, rest_of_line, current_line_index = get_full_cell(string_lines, current_string_line_index, current_cell)
-        line_cells_content[-1] = current_cell
-        line_cells_content.extend(rest_of_line)
-
-    return line_cells_content, current_string_line_index
+    return formatted_lines
 
 
 def csvstr_to_list(text_content):
@@ -123,31 +100,27 @@ def csvstr_to_list(text_content):
     # col1 relates to header1, col3 relates to header3 and col2_1
     # and col2_2 relate to header2 as marked by the leading and trailing apostrophes (")
     # for more examples of this look at Tanium_test.py
-    string_lines = text_content.splitlines()
-    if len(string_lines) < 2:
+    text_content = '\n'.join(text_content.splitlines())
+    text_content = text_content.split('\n', 1)
+    headers = text_content[0].split(',')
+    if len(text_content) < 2:
         return []
-
-    headers = string_lines[0].split(',')
-    total_column_num = len(headers)
-
-    string_lines = string_lines[1:]  # The first line is the headers
-    total_lines_num = len(string_lines)
+    lines = text_content[1]
+    total_cols_num = len(headers)
+    lines = split_lines(lines)
+    total_rows_num = len(lines) // total_cols_num
     result = []
-    current_string_line_index = 0
-    while current_string_line_index < total_lines_num:
-        line_dict = {}
-        line_values, current_string_line_index = gather_line(string_lines, current_string_line_index)
+    for row_index in range(total_rows_num):
+        row_starting_cell_index = row_index * total_cols_num
+        row_final_cell_index = row_starting_cell_index + total_cols_num
+        row = lines[row_starting_cell_index:row_final_cell_index]
+        table_dict = {}
+        for index in range(total_cols_num):
+            header = headers[index]
+            value = row[index]
+            table_dict[header] = value
 
-        if len(line_values) == 0:
-            current_string_line_index += 1
-            continue
-
-        for index in range(total_column_num):
-            line_dict[headers[index]] = line_values[index]
-
-        current_string_line_index += 1
-
-        result.append(line_dict)
+        result.append(table_dict)
 
     return result
 

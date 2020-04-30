@@ -77,6 +77,20 @@ RESULT_DICT_4 = [
     }
 ]
 
+RESULT_DICT_6 = [
+    {
+        "header1": "col1",
+        "header2": "col2_1\ncol2_2\n\ncol2_3",
+        "header3": "col3"
+    },
+    {
+        "header1": "col1",
+        "header2": "col2",
+        "header3": "col3"
+    }
+]
+
+
 RESULT_DICT_7 = [
     {
         "col_1": "data_1",
@@ -171,7 +185,7 @@ def test_csvstr_to_list_5():
 def test_csvstr_to_list_6():
     from Tanium import csvstr_to_list
     result = csvstr_to_list(CSV_STRING_6)
-    assert result == RESULT_DICT_4
+    assert result == RESULT_DICT_6
 
 
 def test_csvstr_to_list_7():
