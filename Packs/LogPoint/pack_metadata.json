@@ -1,0 +1,24 @@
+{
+    "name": "LogPoint",
+    "description": "LogPoint",
+    "support": "demisto",
+    "serverMinVersion": "5.0.0",
+    "currentVersion": "1.0.0",
+    "author": "Harri Ruuttila",
+    "url": "",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [
+        "logpoint"
+    ],
+    "created": "2020-04-30T10:21:55Z",
+    "updated": "2020-04-30T10:21:55Z",
+    "beta": false,
+    "deprecated": false,
+    "certification": "certified",
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {}
+}
