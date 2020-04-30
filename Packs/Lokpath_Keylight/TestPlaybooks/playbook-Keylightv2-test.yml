@@ -1,16 +1,14 @@
 id: Keylight v2 - Test
 version: -1
-contentitemfields:
-  propagationLabels: []
 name: Keylight v2 - Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b765a4e4-9fd3-456d-883a-d7bc6f4b63d0
+    taskid: d99dea2a-933a-42ae-82ab-52cb5a4b5152
     type: start
     task:
-      id: b765a4e4-9fd3-456d-883a-d7bc6f4b63d0
+      id: d99dea2a-933a-42ae-82ab-52cb5a4b5152
       version: -1
       name: ""
       iscommand: false
@@ -30,12 +28,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 00c12ebe-dca8-4823-875f-46609f2aa41d
+    taskid: c5dca405-0a5f-4176-8006-e590d232d423
     type: regular
     task:
-      id: 00c12ebe-dca8-4823-875f-46609f2aa41d
+      id: c5dca405-0a5f-4176-8006-e590d232d423
       version: -1
       name: Get component by alias
       description: Retrieves a component specified by its ID.
@@ -62,12 +61,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 3af662a3-eeb2-4825-8663-c9d642dd11fe
+    taskid: 44744738-b81c-49cb-85e0-a02cd11ed375
     type: regular
     task:
-      id: 3af662a3-eeb2-4825-8663-c9d642dd11fe
+      id: 44744738-b81c-49cb-85e0-a02cd11ed375
       version: -1
       name: Delete context
       description: Delete field from context
@@ -97,12 +97,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: 418f76a5-7f1f-4be7-86e0-0fa8bf3276cc
+    taskid: 2d404918-6f56-438e-82ac-842baf7d07ef
     type: condition
     task:
-      id: 418f76a5-7f1f-4be7-86e0-0fa8bf3276cc
+      id: 2d404918-6f56-438e-82ac-842baf7d07ef
       version: -1
       name: Check outputs
       type: condition
@@ -134,12 +135,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: fbea35b2-105f-4a10-84b4-35743125f30b
+    taskid: 3be0594b-cda1-4c62-856a-e9ba8e250c4e
     type: regular
     task:
-      id: fbea35b2-105f-4a10-84b4-35743125f30b
+      id: 3be0594b-cda1-4c62-856a-e9ba8e250c4e
       version: -1
       name: Delete context
       description: Delete field from context
@@ -169,12 +171,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: 7504c29a-d25b-4529-81e4-bdf1b82f68b1
+    taskid: dc6a1be7-8fd3-4887-8d15-032b434de1c3
     type: regular
     task:
-      id: 7504c29a-d25b-4529-81e4-bdf1b82f68b1
+      id: dc6a1be7-8fd3-4887-8d15-032b434de1c3
       version: -1
       name: Get component list
       description: Retrieves a component specified by its ID.
@@ -200,12 +203,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: 815192a5-817b-4941-89f5-627fc878ce63
+    taskid: 008c75ba-a9d1-4c68-8d75-1f670653ddd2
     type: condition
     task:
-      id: 815192a5-817b-4941-89f5-627fc878ce63
+      id: 008c75ba-a9d1-4c68-8d75-1f670653ddd2
       version: -1
       name: Check Outputs
       type: condition
@@ -237,12 +241,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: 35b1825c-2f5f-4e86-8c7c-2c49f6f4b01b
+    taskid: 94217b83-5f0a-40fb-8219-6324a310bf11
     type: regular
     task:
-      id: 35b1825c-2f5f-4e86-8c7c-2c49f6f4b01b
+      id: 94217b83-5f0a-40fb-8219-6324a310bf11
       version: -1
       name: Delete context
       description: Delete field from context
@@ -272,12 +277,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: 340466df-66f5-4149-846f-415ec3f50227
+    taskid: 97853ce9-77c2-48f1-82a4-05db2acb0f81
     type: regular
     task:
-      id: 340466df-66f5-4149-846f-415ec3f50227
+      id: 97853ce9-77c2-48f1-82a4-05db2acb0f81
       version: -1
       name: Get specific component
       description: Retrieves a component specified by its ID.
@@ -303,12 +309,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    taskid: 00712a3f-6036-4e12-8e31-e7d9b29eae6e
+    taskid: 9e1586ee-81e9-47eb-8bb6-688a44fa013e
     type: condition
     task:
-      id: 00712a3f-6036-4e12-8e31-e7d9b29eae6e
+      id: 9e1586ee-81e9-47eb-8bb6-688a44fa013e
       version: -1
       name: Verify outputs
       type: condition
@@ -340,12 +347,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    taskid: bcea6a42-2a55-4e01-896f-246c5718f0f0
+    taskid: 802e4458-c7d7-4400-852a-1b5a96c477cc
     type: regular
     task:
-      id: bcea6a42-2a55-4e01-896f-246c5718f0f0
+      id: 802e4458-c7d7-4400-852a-1b5a96c477cc
       version: -1
       name: Get field list
       description: Retrieves detail field listing for a component specified by its
@@ -373,12 +381,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: ba99645f-5d08-4ce4-8531-cdd3e42622a9
+    taskid: 28acf315-b8f8-468e-82db-2edcfe8b7f4b
     type: condition
     task:
-      id: ba99645f-5d08-4ce4-8531-cdd3e42622a9
+      id: 28acf315-b8f8-468e-82db-2edcfe8b7f4b
       version: -1
       name: Verify number of fields
       type: condition
@@ -414,12 +423,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
-    taskid: a38bad21-c2b5-4f83-884f-f43585be4822
+    taskid: 05483100-18b6-492f-84db-319a720bd51e
     type: regular
     task:
-      id: a38bad21-c2b5-4f83-884f-f43585be4822
+      id: 05483100-18b6-492f-84db-319a720bd51e
       version: -1
       name: Get specific field
       description: Retrieves details for a field specified by its ID.
@@ -450,12 +460,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: 09c48ecd-252e-45fc-8d8f-a6dc15fb4bdd
+    taskid: 6862b6fd-ff1b-495b-83b5-6cf20e692bbb
     type: condition
     task:
-      id: 09c48ecd-252e-45fc-8d8f-a6dc15fb4bdd
+      id: 6862b6fd-ff1b-495b-83b5-6cf20e692bbb
       version: -1
       name: Verify field name
       type: condition
@@ -487,12 +498,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
-    taskid: 4a40ee36-dc1d-4ade-89c8-3e900499792d
+    taskid: be9e97aa-babc-42a5-8026-af6db98ed3c7
     type: regular
     task:
-      id: 4a40ee36-dc1d-4ade-89c8-3e900499792d
+      id: be9e97aa-babc-42a5-8026-af6db98ed3c7
       version: -1
       name: Delete context
       description: Delete field from context
@@ -522,12 +534,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "15":
     id: "15"
-    taskid: 8e04a839-4134-40ad-8e90-8b0f0f7b176f
+    taskid: 5515f4fa-7d34-4939-8814-80927874e257
     type: regular
     task:
-      id: 8e04a839-4134-40ad-8e90-8b0f0f7b176f
+      id: 5515f4fa-7d34-4939-8814-80927874e257
       version: -1
       name: Create record
       description: |-
@@ -561,12 +574,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
-    taskid: 8675dd93-17b6-42ae-8f0e-7e9f0bb05f74
+    taskid: bc4aa2d2-3919-4836-8a10-9faca8467a53
     type: condition
     task:
-      id: 8675dd93-17b6-42ae-8f0e-7e9f0bb05f74
+      id: bc4aa2d2-3919-4836-8a10-9faca8467a53
       version: -1
       name: Check name of created task
       type: condition
@@ -598,12 +612,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "17":
     id: "17"
-    taskid: 422cc280-6cdb-45ed-8abc-277b892bc805
+    taskid: 08c2fee6-f13c-4ae4-8059-09e1daf40f32
     type: regular
     task:
-      id: 422cc280-6cdb-45ed-8abc-277b892bc805
+      id: 08c2fee6-f13c-4ae4-8059-09e1daf40f32
       version: -1
       name: Update task
       description: |-
@@ -637,12 +652,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "18":
     id: "18"
-    taskid: 2b96b0b4-23bc-4deb-8ef4-039524f4a0b0
+    taskid: d0b20dfa-03a9-4704-81e0-cb10020c7a45
     type: regular
     task:
-      id: 2b96b0b4-23bc-4deb-8ef4-039524f4a0b0
+      id: d0b20dfa-03a9-4704-81e0-cb10020c7a45
       version: -1
       name: Delete task
       description: Delete a selected record from within a chosen component.
@@ -650,6 +666,9 @@ tasks:
       type: regular
       iscommand: true
       brand: Lockpath KeyLight v2
+    nexttasks:
+      '#none#':
+      - "23"
     scriptarguments:
       component_id:
         simple: "10359"
@@ -667,12 +686,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "19":
     id: "19"
-    taskid: 102aa7f7-daf4-46a2-8af7-3b73c1ce438c
+    taskid: bfb593d3-0307-4638-8165-372a25f735b8
     type: regular
     task:
-      id: 102aa7f7-daf4-46a2-8af7-3b73c1ce438c
+      id: bfb593d3-0307-4638-8165-372a25f735b8
       version: -1
       name: Get updated tasks
       description: |-
@@ -711,12 +731,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "20":
     id: "20"
-    taskid: 2c93d683-f672-4b89-8dcd-d08ad5841ed0
+    taskid: 31aade13-a3df-4dea-882c-45ec4ea99877
     type: regular
     task:
-      id: 2c93d683-f672-4b89-8dcd-d08ad5841ed0
+      id: 31aade13-a3df-4dea-882c-45ec4ea99877
       version: -1
       name: Delete context
       description: Delete field from context
@@ -746,12 +767,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "21":
     id: "21"
-    taskid: f5b9063b-4b3b-488f-8349-2c234522d6c9
+    taskid: fb52f3a9-86cb-4ae2-8116-aecb7c838174
     type: regular
     task:
-      id: f5b9063b-4b3b-488f-8349-2c234522d6c9
+      id: fb52f3a9-86cb-4ae2-8116-aecb7c838174
       version: -1
       name: Generate Json
       description: Copy
@@ -779,12 +801,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "22":
     id: "22"
-    taskid: 96dae6a5-1291-4e95-84c0-712200cd225b
+    taskid: f58793f3-ff9e-4a73-8795-11d7754f9c76
     type: regular
     task:
-      id: 96dae6a5-1291-4e95-84c0-712200cd225b
+      id: f58793f3-ff9e-4a73-8795-11d7754f9c76
       version: -1
       name: Generate update Json
       description: Copy
@@ -812,12 +835,115 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: fd73689c-cc8c-4a09-895a-185bccd8b418
+    type: regular
+    task:
+      id: fd73689c-cc8c-4a09-895a-185bccd8b418
+      version: -1
+      name: Get Demisto user
+      description: Get user details by his ID.
+      script: '|||kl-get-user-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      user_id:
+        simple: "268"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 6fa84863-d853-49a9-87d4-df714ff32d0c
+    type: condition
+    task:
+      id: 6fa84863-d853-49a9-87d4-df714ff32d0c
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Keylight.User.EmailAddress
+            iscontext: true
+          right:
+            value:
+              simple: "demistoadmin@demisto.int"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Keylight.User.FirstName
+            iscontext: true
+          right:
+            value:
+              simple: Demisto
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 7a481a3d-7dc4-400e-87d7-590af5b704eb
+    type: title
+    task:
+      id: 7a481a3d-7dc4-400e-87d7-590af5b704eb
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3915,
+        "height": 4315,
         "width": 380,
         "x": 50,
         "y": 50
