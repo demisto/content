@@ -34,7 +34,8 @@ class Client(BaseClient):
 
     def __del__(self):
         if self.isASAv and self.auth_token:
-            self._http_request('DELETE', f'/api/tokenservices/{self.auth_token}', resp_type='response')
+            try:
+                self._http_request('DELETE', f'/api/tokenservices/{self.auth_token}', resp_type='response')
 
     def get_all_rules(self, specific_interface: Optional[str] = None, rule_type: str = 'All') -> list:
         """
