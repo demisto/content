@@ -356,6 +356,9 @@ script:
     - contextPath: IntSights.Alerts.IsClosed
       description: Whether or not the alert is closed.
       type: boolean
+    - contextPath: IntSights.Alerts.Closed.IsClosed
+      description: Whether or not the alert is closed.
+      type: boolean
     - contextPath: IntSights.Alerts.IsFlagged
       description: Whether or not the alert is flagged.
       type: boolean
@@ -799,6 +802,9 @@ script:
       description: The network type of the alert.
       type: string
     - contextPath: IntSights.Alerts.IsClosed
+      description: Whether or not the alert is closed.
+      type: boolean
+    - contextPath: IntSights.Alerts.Closed.IsClosed
       description: Whether or not the alert is closed.
       type: boolean
     - contextPath: IntSights.Alerts.IsFlagged

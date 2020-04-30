@@ -224,7 +224,7 @@ def get_alerts():
     """
     alerts_human_readable, alerts_context = get_alerts_helper(handle_filters())
     headers = ['ID', 'Severity', 'Type', 'FoundDate', 'SourceType', 'SourceURL',
-               'SourceEmail', 'SourceNetworkType', 'IsClosed', 'IsFlagged', 'Images', 'Tags',
+               'SourceEmail', 'SourceNetworkType', 'IsClosed', 'Closed', 'IsFlagged', 'Images', 'Tags',
                'Description', 'Title', 'TakedownStatus', 'SubType']
     demisto.results({
         'Type': entryTypes['note'],
@@ -256,7 +256,8 @@ def alert_to_readable(alert, parse_tags):
         'Description': demisto.get(alert, 'Details.Description'),
         'Title': demisto.get(alert, 'Details.Title'),
         'TakedownStatus': demisto.get(alert, 'TakedownStatus'),
-        'SubType': demisto.get(alert, 'Details.SubType')
+        'SubType': demisto.get(alert, 'Details.SubType'),
+        'Closed': demisto.get(alert, 'Closed')
     }
 
     tags = demisto.get(alert, 'Details.Tags')
@@ -290,8 +291,8 @@ def get_alert_by_id():
         'Contents': activity_hr,
         'HumanReadable': tableToMarkdown('IntSights Alert Details', [activity_hr],
                                          ['ID', 'Severity', 'Type', 'FoundDate', 'SourceType', 'SourceURL',
-                                          'SourceEmail', 'SourceNetworkType', 'IsClosed', 'IsFlagged', 'Images', 'Tags',
-                                          'Description', 'Title', 'TakedownStatus', 'SubType']),
+                                          'SourceEmail', 'SourceNetworkType', 'IsClosed', 'Closed', 'IsFlagged',
+                                          'Images', 'Tags', 'Description', 'Title', 'TakedownStatus', 'SubType']),
         'ContentsFormat': formats['json']
     })
 

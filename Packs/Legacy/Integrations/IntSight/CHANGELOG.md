@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+Added support for *Closed.IsClosed* context in ***intsights-get-alert-by-id*** and ***intsights-get-alerts*** commands.
 
 
 ## [20.4.0] - 2020-04-14
