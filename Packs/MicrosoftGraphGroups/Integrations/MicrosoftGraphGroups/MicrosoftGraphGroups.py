@@ -96,9 +96,9 @@ class MsGraphClient:
         # default value = 100
         params = {'$top': top}
         if order_by:
-            params['$orderby'] = order_by
+            params['$orderby'] = order_by  # type: ignore
         if filter_:
-            params['$filter'] = filter_
+            params['$filter'] = filter_  # type: ignore
         return self.ms_client.http_request(
             method='GET',
             url_suffix='groups',
@@ -155,7 +155,7 @@ class MsGraphClient:
             return self.ms_client.http_request(method='GET', full_url=next_link)
         params = {'$top': top}
         if filter_:
-            params['$filter'] = filter_
+            params['$filter'] = filter_  # type: ignore
 
         return self.ms_client.http_request(
             method='GET',
