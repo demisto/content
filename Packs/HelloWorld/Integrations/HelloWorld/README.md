@@ -5,7 +5,7 @@ Please make sure you look at the integration source code and comments.
 
 This integration was built to interact with the sample SOAR Hello World API To check the API source code go to [GitHub](https://github.com/fvigo/soarhelloworld).
 
-## Configure HelloWorld on Cortex XSOAR
+## Configure HelloWorld on Demisto
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for HelloWorld.
@@ -26,8 +26,6 @@ This integration was built to interact with the sample SOAR Hello World API To c
 | first_fetch | First fetch time | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
-
-The API key can be provided to you by the XSOAR team if needed.
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -94,7 +92,7 @@ Search HelloWorld Alerts.
 | HelloWorld.Alert.alert_id | String | Alert ID. | 
 | HelloWorld.Alert.alert_status | String | Alert status. Can be &\#x27;ACTIVE&\#x27; or &\#x27;CLOSED&\#x27;. | 
 | HelloWorld.Alert.alert_type | String | Alert type. For example &\#x27;Bug&\#x27; or &\#x27;Vulnerability&\#x27;. | 
-| HelloWorld.Alert.created | Number | Alert created time. Format is timestamp in seconds from epoch \(i.e. 1587835844\). | 
+| HelloWorld.Alert.created | Date | Alert created time. Format is ISO8601 \(i.e. &\#x27;2020\-04\-30T10:35:00.000Z&\#x27;\). | 
 | HelloWorld.Alert.name | String | Alert name. | 
 | HelloWorld.Alert.severity | String | Alert severity. Can be &\#x27;Low&\#x27;, &\#x27;Medium&\#x27;, &\#x27;High&\#x27; or &\#x27;Critical&\#x27;. | 
 
@@ -108,18 +106,18 @@ Search HelloWorld Alerts.
     "HelloWorld": {
         "Alert": [
             {
-                "alert_id": "44cb338e-2d6a-4e2d-9299-23508e210731",
+                "alert_id": "7bb32cdc-b653-4b19-ab9f-33a511642fd9",
                 "alert_status": "ACTIVE",
                 "alert_type": "Feature",
-                "created": 1587831337,
+                "created": "2020-04-29T16:36:20.000Z",
                 "name": "Hello World Alert of type Feature",
                 "severity": "Critical"
             },
             {
-                "alert_id": "fdaacbf6-4efd-4474-a230-ee13439c164e",
+                "alert_id": "6847f1eb-893d-43e0-a6b0-622cc9066da0",
                 "alert_status": "ACTIVE",
                 "alert_type": "Bug",
-                "created": 1587628001,
+                "created": "2020-04-30T05:30:10.000Z",
                 "name": "Hello World Alert of type Bug",
                 "severity": "Critical"
             }
@@ -132,8 +130,8 @@ Search HelloWorld Alerts.
 ### HelloWorld Alerts
 |alert_id|alert_status|alert_type|created|name|severity|
 |---|---|---|---|---|---|
-| 44cb338e-2d6a-4e2d-9299-23508e210731 | ACTIVE | Feature | 1587831337 | Hello World Alert of type Feature | Critical |
-| fdaacbf6-4efd-4474-a230-ee13439c164e | ACTIVE | Bug | 1587628001 | Hello World Alert of type Bug | Critical |
+| 7bb32cdc-b653-4b19-ab9f-33a511642fd9 | ACTIVE | Feature | 2020-04-29T16:36:20.000Z | Hello World Alert of type Feature | Critical |
+| 6847f1eb-893d-43e0-a6b0-622cc9066da0 | ACTIVE | Bug | 2020-04-30T05:30:10.000Z | Hello World Alert of type Bug | Critical |
 
 
 ### helloworld-get-alert
@@ -156,7 +154,7 @@ Retrieve alert extra data by ID.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | HelloWorld.Alert.alert_id | String | Alert ID. | 
-| HelloWorld.Alert.created | Number | Alert created time. Format is timestamp in seconds from epoch \(i.e. 1587835844\). | 
+| HelloWorld.Alert.created | Date | Alert created time. Format is ISO8601 \(i.e. &\#x27;2020\-04\-30T10:35:00.000Z&\#x27;\). | 
 | HelloWorld.Alert.description | String | Alert description. | 
 | HelloWorld.Alert.device_id | String | ID of the device involved in the alert. | 
 | HelloWorld.Alert.device_ip | String | IP Address of the device involved in the alert. | 
@@ -173,12 +171,12 @@ Retrieve alert extra data by ID.
     "HelloWorld": {
         "Alert": {
             "alert_id": "695b3238-05d6-4934-86f5-9fff3201aeb0",
-            "created": 1587836463,
-            "description": "Me no internet, only janitor, me just wax floors.",
-            "device_id": "58eff32d-48b8-44aa-a039-a004b9e15264",
-            "device_ip": "107.156.233.48",
-            "location": "Your House",
-            "user": "Otto Octavius"
+            "created": "2020-04-30T21:22:19.000Z",
+            "description": "Unfortunately we have run out of bits/bytes/whatever. Don't worry, the next supply will be coming next week.",
+            "device_id": "b39a0e54-cf1f-4480-8121-f01fd9195290",
+            "device_ip": "125.161.12.169",
+            "location": "Coruscant",
+            "user": "Vertigo"
         }
     }
 }
@@ -188,7 +186,7 @@ Retrieve alert extra data by ID.
 ### HelloWorld Alert 695b3238-05d6-4934-86f5-9fff3201aeb0
 |alert_id|created|description|device_id|device_ip|location|user|
 |---|---|---|---|---|---|---|
-| 695b3238-05d6-4934-86f5-9fff3201aeb0 | 1587836463 | Me no internet, only janitor, me just wax floors. | 58eff32d-48b8-44aa-a039-a004b9e15264 | 107.156.233.48 | Your House | Otto Octavius |
+| 695b3238-05d6-4934-86f5-9fff3201aeb0 | 2020-04-30T21:22:19.000Z | Unfortunately we have run out of bits/bytes/whatever. Don't worry, the next supply will be coming next week. | b39a0e54-cf1f-4480-8121-f01fd9195290 | 125.161.12.169 | Coruscant | Vertigo |
 
 
 ### helloworld-update-alert-status
@@ -212,7 +210,7 @@ Update the status for an alert.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | HelloWorld.Alert.alert_id | String | Alert ID. | 
-| HelloWorld.Alert.updated | Number | Alert update time. Format is timestamp in seconds from epoch \(i.e. 1587835844\). | 
+| HelloWorld.Alert.updated | Date | Alert update time. Format is ISO8601 \(i.e. &\#x27;2020\-04\-30T10:35:00.000Z&\#x27;\). | 
 | HelloWorld.Alert.alert_status | String | Alert status. Can be &\#x27;ACTIVE&\#x27; or &\#x27;CLOSED&\#x27;. | 
 
 
@@ -226,7 +224,7 @@ Update the status for an alert.
         "Alert": {
             "alert_id": "695b3238-05d6-4934-86f5-9fff3201aeb0",
             "alert_status": "CLOSED",
-            "updated": 1587836469
+            "updated": "2020-04-30T21:22:22.000Z"
         }
     }
 }
@@ -236,7 +234,7 @@ Update the status for an alert.
 ### HelloWorld Alert 695b3238-05d6-4934-86f5-9fff3201aeb0
 |alert_id|alert_status|updated|
 |---|---|---|
-| 695b3238-05d6-4934-86f5-9fff3201aeb0 | CLOSED | 1587836469 |
+| 695b3238-05d6-4934-86f5-9fff3201aeb0 | CLOSED | 2020-04-30T21:22:22.000Z |
 
 
 ### ip
@@ -276,7 +274,7 @@ Return IP information and reputation
 | HelloWorld.IP.network.end_address | String | The last IP address of the CIDR. | 
 | HelloWorld.IP.network.events.action | String | The action that happened on the event. | 
 | HelloWorld.IP.network.events.actor | Unknown | The actor that performed the action on the event. | 
-| HelloWorld.IP.network.events.timestamp | Date | The timestamp when the event occurred. | 
+| HelloWorld.IP.network.events.timestamp | String | The timestamp when the event occurred. | 
 | HelloWorld.IP.network.handle | String | The handle of the network. | 
 | HelloWorld.IP.network.ip_version | String | The IP address version. | 
 | HelloWorld.IP.network.links | String | Links associated to the IP address. | 
@@ -293,8 +291,10 @@ Return IP information and reputation
 | HelloWorld.IP.query | String | IP address that was queried. | 
 | HelloWorld.IP.raw | Unknown | Additional raw data for the IP address. | 
 | HelloWorld.IP.score | Number | Reputation score from HelloWorld for this IP \(0 to 100, where higher is worse\). | 
-| IP.ASN | String | The autonomous system name for the IP address. | 
 | IP.Address | String | IP address. | 
+| IP.Malicious.Vendor | String | The vendor reporting the IP address as malicious. | 
+| IP.Malicious.Description | String | A description explaining why the IP address was reported as malicious. | 
+| IP.ASN | String | The autonomous system name for the IP address. | 
 
 
 ##### Command Example
@@ -305,7 +305,7 @@ Return IP information and reputation
 {
     "DBotScore": {
         "Indicator": "8.8.8.8",
-        "Score": 2,
+        "Score": 1,
         "Type": "ip",
         "Vendor": "HelloWorld"
     },
@@ -377,7 +377,7 @@ Return IP information and reputation
             },
             "query": "8.8.8.8",
             "raw": null,
-            "score": 58
+            "score": 2
         }
     },
     "IP": {
@@ -419,15 +419,30 @@ Returns Domain information and reputation.
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | Domain.Name | String | The domain name. | 
+| Domain.Malicious.Vendor | String | The vendor reporting the domain as malicious. | 
+| Domain.Malicious.Description | String | A description explaining why the domain was reported as malicious. | 
+| Domain.Registrant.Name | String | The name of the registrant. | 
+| Domain.Registrant.Country | String | The country of the registrant. | 
+| Domain.Organization | String | The organization of the domain. | 
+| Domain.CreationDate | Date | The creation date of the domain. Format is ISO8601 \(i.e. &\#x27;2020\-04\-30T10:35:00.000Z&\#x27;\). | 
+| Domain.ExpirationDate | Date | The expiration date of the domain. Format is ISO8601 \(i.e. &\#x27;2020\-04\-30T10:35:00.000Z&\#x27;\). | 
+| Domain.UpdatedDate | Date | The date when the domain was last updated. Format is ISO8601 \(i.e. &\#x27;2020\-04\-30T10:35:00.000Z&\#x27;\). | 
+| Domain.NameServers | String | Name servers of the domain. | 
+| Domain.WHOIS.NameServers | String | A CSV string of name servers, for example &\#x27;ns1.bla.com, ns2.bla.com&\#x27;. | 
+| Domain.WHOIS.CreationDate | Date | The creation date of the domain. Format is ISO8601 \(i.e. &\#x27;2020\-04\-30T10:35:00.000Z&\#x27;\). | 
+| Domain.WHOIS.UpdatedDate | Date | The date when the domain was last updated. Format is ISO8601 \(i.e. &\#x27;2020\-04\-30T10:35:00.000Z&\#x27;\). | 
+| Domain.WHOIS.ExpirationDate | Date | The expiration date of the domain. | 
+| Domain.WHOIS.Registrar.Name | String | The name of the registrar, for example &\#x27;GoDaddy&\#x27; | 
+| IP.ASN | String | The autonomous system name for the IP address. | 
 | HelloWorld.Domain.address | String | Domain admin address. | 
 | HelloWorld.Domain.city | String | Domain admin city. | 
 | HelloWorld.Domain.country | String | Domain admin country. | 
-| HelloWorld.Domain.creation_date | Date | Domain creation date. | 
+| HelloWorld.Domain.creation_date | Date | Domain creation date. Format is ISO8601. | 
 | HelloWorld.Domain.dnssec | String | DNSSEC status. | 
 | HelloWorld.Domain.domain | String | The domain name. | 
 | HelloWorld.Domain.domain_name | String | Domain name options. | 
 | HelloWorld.Domain.emails | String | Contact emails. | 
-| HelloWorld.Domain.expiration_date | Date | Expiration date. | 
+| HelloWorld.Domain.expiration_date | Date | Expiration date. Format is ISO8601. | 
 | HelloWorld.Domain.name | String | Domain admin name. | 
 | HelloWorld.Domain.name_servers | String | Name server. | 
 | HelloWorld.Domain.org | String | Domain organization. | 
@@ -436,84 +451,89 @@ Returns Domain information and reputation.
 | HelloWorld.Domain.score | Number | Reputation score from HelloWorld for this domain \(0 to 100, where higher is worse\). | 
 | HelloWorld.Domain.state | String | Domain admin state. | 
 | HelloWorld.Domain.status | String | Domain status. | 
-| HelloWorld.Domain.updated_date | Date | Updated date. | 
+| HelloWorld.Domain.updated_date | Date | Updated date. Format is ISO8601. | 
 | HelloWorld.Domain.whois_server | String | WHOIS server. | 
 | HelloWorld.Domain.zipcode | Unknown | Domain admin zipcode. | 
 
 
 ##### Command Example
-```!domain domain="google.com"```
+```!domain domain="demisto.com"```
 
 ##### Context Example
 ```
 {
     "DBotScore": {
-        "Indicator": "google.com",
-        "Score": 2,
+        "Indicator": "demisto.com",
+        "Score": 1,
         "Type": "domain",
         "Vendor": "HelloWorld"
     },
     "Domain": {
-        "Name": "google.com"
+        "CreationDate": "2015-01-16T21:36:27.000Z",
+        "ExpirationDate": "2026-01-16T21:36:27.000Z",
+        "Name": "demisto.com",
+        "NameServers": [
+            "PNS31.CLOUDNS.NET",
+            "PNS32.CLOUDNS.NET",
+            "PNS33.CLOUDNS.NET",
+            "PNS34.CLOUDNS.NET",
+            "pns31.cloudns.net",
+            "pns32.cloudns.net",
+            "pns33.cloudns.net",
+            "pns34.cloudns.net"
+        ],
+        "Organization": "WhoisGuard, Inc.",
+        "Registrant": {
+            "Country": "PA",
+            "Name": "WhoisGuard Protected"
+        },
+        "UpdatedDate": "2019-05-14T16:14:12.000Z",
+        "WHOIS": {
+            "CreationDate": "2015-01-16T21:36:27.000Z",
+            "ExpirationDate": "2026-01-16T21:36:27.000Z",
+            "NameServers": "PNS31.CLOUDNS.NET,PNS32.CLOUDNS.NET,PNS33.CLOUDNS.NET,PNS34.CLOUDNS.NET,pns31.cloudns.net,pns32.cloudns.net,pns33.cloudns.net,pns34.cloudns.net",
+            "Registrar": {
+                "Name": "NAMECHEAP INC"
+            },
+            "UpdatedDate": "2019-05-14T16:14:12.000Z"
+        }
     },
     "HelloWorld": {
         "Domain": {
-            "address": null,
-            "city": null,
-            "country": "US",
-            "creation_date": [
-                "1997-09-15 04:00:00",
-                "1997-09-15 00:00:00"
-            ],
+            "address": "P.O. Box 0823-03411",
+            "city": "Panama",
+            "country": "PA",
+            "creation_date": "2015-01-16T21:36:27.000Z",
             "dnssec": "unsigned",
-            "domain": "google.com",
+            "domain": "demisto.com",
             "domain_name": [
-                "GOOGLE.COM",
-                "google.com"
+                "DEMISTO.COM",
+                "demisto.com"
             ],
             "emails": [
-                "abusecomplaints@markmonitor.com",
-                "whoisrequest@markmonitor.com"
+                "abuse@namecheap.com",
+                "5be9245893ff486d98c3640879bb2657.protect@whoisguard.com"
             ],
-            "expiration_date": [
-                "2028-09-14 04:00:00",
-                "2028-09-13 00:00:00"
-            ],
-            "name": null,
+            "expiration_date": "2026-01-16T21:36:27.000Z",
+            "name": "WhoisGuard Protected",
             "name_servers": [
-                "NS1.GOOGLE.COM",
-                "NS2.GOOGLE.COM",
-                "NS3.GOOGLE.COM",
-                "NS4.GOOGLE.COM",
-                "ns1.google.com",
-                "ns4.google.com",
-                "ns3.google.com",
-                "ns2.google.com"
+                "PNS31.CLOUDNS.NET",
+                "PNS32.CLOUDNS.NET",
+                "PNS33.CLOUDNS.NET",
+                "PNS34.CLOUDNS.NET",
+                "pns31.cloudns.net",
+                "pns32.cloudns.net",
+                "pns33.cloudns.net",
+                "pns34.cloudns.net"
             ],
-            "org": "Google LLC",
+            "org": "WhoisGuard, Inc.",
             "referral_url": null,
-            "registrar": "MarkMonitor, Inc.",
-            "score": 36,
-            "state": "CA",
-            "status": [
-                "clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited",
-                "clientTransferProhibited https://icann.org/epp#clientTransferProhibited",
-                "clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited",
-                "serverDeleteProhibited https://icann.org/epp#serverDeleteProhibited",
-                "serverTransferProhibited https://icann.org/epp#serverTransferProhibited",
-                "serverUpdateProhibited https://icann.org/epp#serverUpdateProhibited",
-                "clientUpdateProhibited (https://www.icann.org/epp#clientUpdateProhibited)",
-                "clientTransferProhibited (https://www.icann.org/epp#clientTransferProhibited)",
-                "clientDeleteProhibited (https://www.icann.org/epp#clientDeleteProhibited)",
-                "serverUpdateProhibited (https://www.icann.org/epp#serverUpdateProhibited)",
-                "serverTransferProhibited (https://www.icann.org/epp#serverTransferProhibited)",
-                "serverDeleteProhibited (https://www.icann.org/epp#serverDeleteProhibited)"
-            ],
-            "updated_date": [
-                "2019-09-09 15:39:04",
-                "2019-09-09 08:39:04"
-            ],
-            "whois_server": "whois.markmonitor.com",
+            "registrar": "NAMECHEAP INC",
+            "score": 0,
+            "state": "Panama",
+            "status": "clientTransferProhibited https://icann.org/epp#clientTransferProhibited",
+            "updated_date": "2019-05-14T16:14:12.000Z",
+            "whois_server": "whois.namecheap.com",
             "zipcode": null
         }
     }
@@ -522,9 +542,9 @@ Returns Domain information and reputation.
 
 ##### Human Readable Output
 ### Domain List
-|Name|
-|---|
-| google.com |
+|CreationDate|ExpirationDate|Name|NameServers|Organization|Registrant|UpdatedDate|WHOIS|
+|---|---|---|---|---|---|---|---|
+| 2015-01-16T21:36:27.000Z | 2026-01-16T21:36:27.000Z | demisto.com | PNS31.CLOUDNS.NET,<br/>PNS32.CLOUDNS.NET,<br/>PNS33.CLOUDNS.NET,<br/>PNS34.CLOUDNS.NET,<br/>pns31.cloudns.net,<br/>pns32.cloudns.net,<br/>pns33.cloudns.net,<br/>pns34.cloudns.net | WhoisGuard, Inc. | Name: WhoisGuard Protected<br/>Country: PA | 2019-05-14T16:14:12.000Z | NameServers: PNS31.CLOUDNS.NET,PNS32.CLOUDNS.NET,PNS33.CLOUDNS.NET,PNS34.CLOUDNS.NET,pns31.cloudns.net,pns32.cloudns.net,pns33.cloudns.net,pns34.cloudns.net<br/>CreationDate: 2015-01-16T21:36:27.000Z<br/>ExpirationDate: 2026-01-16T21:36:27.000Z<br/>UpdatedDate: 2019-05-14T16:14:12.000Z<br/>Registrar: {"Name": "NAMECHEAP INC"} |
 
 
 ### helloworld-scan-start
@@ -560,7 +580,7 @@ Start scan on an asset.
     "HelloWorld": {
         "Scan": {
             "hostname": "example.com",
-            "scan_id": "b56b332f-1f75-4669-84c3-24fd3fb5a571",
+            "scan_id": "71368d35-fea4-401f-ae6f-3c710cbda3c6",
             "status": "RUNNING"
         }
     }
@@ -568,7 +588,7 @@ Start scan on an asset.
 ```
 
 ##### Human Readable Output
-Started scan b56b332f-1f75-4669-84c3-24fd3fb5a571
+Started scan 71368d35-fea4-401f-ae6f-3c710cbda3c6
 
 ### helloworld-scan-status
 ***
@@ -602,7 +622,7 @@ Retrieve scan status for one or more scan IDs.
     "HelloWorld": {
         "Scan": {
             "scan_id": "100",
-            "status": "COMPLETE"
+            "status": "RUNNING"
         }
     }
 }
@@ -612,7 +632,7 @@ Retrieve scan status for one or more scan IDs.
 ### Scan status
 |scan_id|status|
 |---|---|
-| 100 | COMPLETE |
+| 100 | RUNNING |
 
 
 ### helloworld-scan-results
@@ -659,132 +679,132 @@ Retrieve scan status in Context or as a File (default) for a Scan.
 {
     "CVE": {
         "ID": [
-            "CVE-2019-9580",
-            "CVE-2019-0667",
-            "CVE-2019-12611",
-            "CVE-2019-16320",
-            "CVE-2019-4139",
-            "CVE-2019-10311",
-            "CVE-2019-19817",
-            "CVE-2019-17426",
-            "CVE-2019-13524",
-            "CVE-2019-7081",
-            "CVE-2019-11971",
-            "CVE-2019-3420",
-            "CVE-2019-0186",
-            "CVE-2019-20091",
-            "CVE-2019-16177",
-            "CVE-2019-7974",
-            "CVE-2019-17342",
-            "CVE-2019-1728",
-            "CVE-2019-2257",
-            "CVE-2019-7940",
-            "CVE-2019-15497",
-            "CVE-2019-5989",
-            "CVE-2019-16534",
-            "CVE-2019-5579",
-            "CVE-2019-0746",
-            "CVE-2019-1732",
-            "CVE-2019-8029",
-            "CVE-2019-12762",
-            "CVE-2019-5880",
-            "CVE-2019-17399",
-            "CVE-2019-5450",
             "CVE-2019-2889",
-            "CVE-2019-5632",
-            "CVE-2019-13339",
-            "CVE-2019-1959",
-            "CVE-2019-15472",
-            "CVE-2019-0819",
-            "CVE-2019-7711",
-            "CVE-2019-1512",
-            "CVE-2019-2239",
-            "CVE-2019-5084",
-            "CVE-2019-10956",
-            "CVE-2019-11163",
-            "CVE-2019-6579",
-            "CVE-2019-13301",
-            "CVE-2019-18769",
-            "CVE-2019-18250",
-            "CVE-2019-6273",
-            "CVE-2019-2923",
-            "CVE-2019-15485",
-            "CVE-2019-13507",
-            "CVE-2019-2610",
-            "CVE-2019-11213",
-            "CVE-2019-19767",
-            "CVE-2019-4860",
-            "CVE-2019-9147",
-            "CVE-2019-8654",
-            "CVE-2019-10401",
-            "CVE-2019-17269",
-            "CVE-2019-0887",
-            "CVE-2019-3735",
-            "CVE-2019-9624",
-            "CVE-2019-6291",
-            "CVE-2019-9114",
-            "CVE-2019-5763",
-            "CVE-2019-4856",
-            "CVE-2019-5279",
             "CVE-2019-7169",
-            "CVE-2019-14805",
-            "CVE-2019-5252",
-            "CVE-2019-8139",
-            "CVE-2019-10481",
-            "CVE-2019-1716",
-            "CVE-2019-19532",
-            "CVE-2019-7390",
-            "CVE-2019-15064",
-            "CVE-2019-16237",
-            "CVE-2019-4811",
-            "CVE-2019-19592",
-            "CVE-2019-9368",
-            "CVE-2019-18671",
-            "CVE-2019-12978",
-            "CVE-2019-10490",
-            "CVE-2019-8994",
-            "CVE-2019-18824",
-            "CVE-2019-16205",
-            "CVE-2019-9578",
-            "CVE-2019-20443",
-            "CVE-2019-15593",
-            "CVE-2019-0757",
-            "CVE-2019-9792",
-            "CVE-2019-5095",
-            "CVE-2019-9025",
-            "CVE-2019-0200",
-            "CVE-2019-20424",
-            "CVE-2019-1787",
-            "CVE-2019-5114",
-            "CVE-2019-11331",
-            "CVE-2019-2946",
-            "CVE-2019-2128",
-            "CVE-2019-10763",
-            "CVE-2019-5789",
-            "CVE-2019-14357",
-            "CVE-2019-10492",
-            "CVE-2019-6457",
-            "CVE-2019-9375",
-            "CVE-2019-11632",
-            "CVE-2019-6335",
-            "CVE-2019-12162",
-            "CVE-2019-1003074",
-            "CVE-2019-15233",
-            "CVE-2019-16792",
-            "CVE-2019-4038",
-            "CVE-2019-9322",
-            "CVE-2019-10479",
-            "CVE-2019-0734",
-            "CVE-2019-2658",
-            "CVE-2019-8926",
-            "CVE-2019-5250",
-            "CVE-2019-13100",
+            "CVE-2019-17426",
+            "CVE-2019-15485",
             "CVE-2019-18241",
+            "CVE-2019-5084",
+            "CVE-2019-13100",
+            "CVE-2019-7390",
+            "CVE-2019-2257",
+            "CVE-2019-9147",
+            "CVE-2019-15064",
+            "CVE-2019-5789",
+            "CVE-2019-10401",
+            "CVE-2019-4038",
             "CVE-2019-8748",
-            "CVE-2019-9974",
-            "CVE-2019-0240",
+            "CVE-2019-16534",
+            "CVE-2019-11213",
+            "CVE-2019-0887",
+            "CVE-2019-20091",
+            "CVE-2019-18671",
+            "CVE-2019-10763",
+            "CVE-2019-5450",
+            "CVE-2019-11632",
+            "CVE-2019-2128",
+            "CVE-2019-20424",
+            "CVE-2019-11331",
+            "CVE-2019-4811",
+            "CVE-2019-5763",
+            "CVE-2019-5252",
+            "CVE-2019-15472",
+            "CVE-2019-4860",
+            "CVE-2019-1732",
+            "CVE-2019-20443",
+            "CVE-2019-2946",
+            "CVE-2019-7974",
+            "CVE-2019-9375",
+            "CVE-2019-2658",
+            "CVE-2019-13507",
+            "CVE-2019-15233",
+            "CVE-2019-7940",
+            "CVE-2019-9368",
+            "CVE-2019-10479",
+            "CVE-2019-5989",
+            "CVE-2019-4856",
+            "CVE-2019-17269",
+            "CVE-2019-6457",
+            "CVE-2019-18824",
+            "CVE-2019-1003074",
+            "CVE-2019-16792",
+            "CVE-2019-6335",
+            "CVE-2019-7081",
+            "CVE-2019-5250",
+            "CVE-2019-5114",
+            "CVE-2019-13339",
+            "CVE-2019-6291",
+            "CVE-2019-17399",
+            "CVE-2019-16320",
             "CVE-2019-10528",
-            "CVE-2019-0335"
+            "CVE-2019-9624",
+            "CVE-2019-3735",
+            "CVE-2019-5880",
+            "CVE-2019-13301",
+            "CVE-2019-1512",
+            "CVE-2019-16177",
+            "CVE-2019-1716",
+            "CVE-2019-0746",
+            "CVE-2019-16205",
+            "CVE-2019-8029",
+            "CVE-2019-2239",
+            "CVE-2019-9025",
+            "CVE-2019-19817",
+            "CVE-2019-11163",
+            "CVE-2019-9580",
+            "CVE-2019-15593",
+            "CVE-2019-0667",
+            "CVE-2019-1728",
+            "CVE-2019-10490",
+            "CVE-2019-9114",
+            "CVE-2019-18769",
+            "CVE-2019-8139",
+            "CVE-2019-14357",
+            "CVE-2019-12611",
+            "CVE-2019-12762",
+            "CVE-2019-1959",
+            "CVE-2019-5579",
+            "CVE-2019-0819",
+            "CVE-2019-9578",
+            "CVE-2019-15497",
+            "CVE-2019-10311",
+            "CVE-2019-0186",
+            "CVE-2019-9974",
+            "CVE-2019-19532",
+            "CVE-2019-0757",
+            "CVE-2019-6273",
+            "CVE-2019-10956",
+            "CVE-2019-8926",
+            "CVE-2019-11971",
+            "CVE-2019-0200",
+            "CVE-2019-10481",
+            "CVE-2019-8994",
+            "CVE-2019-2610",
+            "CVE-2019-6579",
+            "CVE-2019-19592",
+            "CVE-2019-5632",
+            "CVE-2019-14805",
+            "CVE-2019-0240",
+            "CVE-2019-18250",
+            "CVE-2019-5279",
+            "CVE-2019-1787",
+            "CVE-2019-8654",
+            "CVE-2019-12162",
+            "CVE-2019-0335",
+            "CVE-2019-17342",
+            "CVE-2019-2923",
+            "CVE-2019-9792",
+            "CVE-2019-7711",
+            "CVE-2019-13524",
+            "CVE-2019-9322",
+            "CVE-2019-3420",
+            "CVE-2019-0734",
+            "CVE-2019-12978",
+            "CVE-2019-16237",
+            "CVE-2019-4139",
+            "CVE-2019-10492",
+            "CVE-2019-5095",
+            "CVE-2019-19767"
         ]
     },
     "HelloWorld": {
