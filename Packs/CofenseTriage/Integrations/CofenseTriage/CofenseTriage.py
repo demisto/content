@@ -203,6 +203,10 @@ def split_snake(string: str) -> str:
     return string.replace("_", " ").title()
 
 
+def parse_triage_date(date: str):
+    return datetime.strptime(date, TIME_FORMAT)
+
+
 def test_function() -> None:
     try:
         response = TRIAGE_INSTANCE.request("processed_reports")
@@ -312,13 +316,29 @@ def search_reports(subject=None, url=None, file_hash=None, reported_at=None, cre
         if subject and subject != report.get('report_subject'):
             # TODO do we really want to do exact string match here? not case-insensitive substring?
             continue
-        if url and url != report.get('url'):
+        if url and url not in [email_url["url"] for email_url in report["email_urls"]]:
             continue
-        if created_at and 'created_at' in report and created_at >= datetime.strptime(report['created_at'], TIME_FORMAT):
+        if (
+            created_at
+            and 'created_at' in report
+            and created_at >= parse_triage_date(report['created_at'])
+        ):
             continue
-        if file_hash and file_hash != report.get('md5') and file_hash != report.get('sha256'):
+        if (
+            file_hash
+            and file_hash
+            not in [
+                attachment["email_attachment_payload"]["md5"]
+                for attachment in report["email_attachments"]
+            ]
+            and file_hash
+            not in [
+                attachment["email_attachment_payload"]["sha256"]
+                for attachment in report["email_attachments"]
+            ]
+        ):
             continue
-        if reporter and int(reporter) != report.get('reporter_id') and reporter not in reporters:
+        if reporter and int(reporter) != report.get('reporter_id'):
             continue
 
         if not verbose:
