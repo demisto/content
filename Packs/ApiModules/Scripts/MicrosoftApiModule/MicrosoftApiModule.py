@@ -75,7 +75,7 @@ class MicrosoftClient(BaseClient):
         self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
         self.verify = verify
 
-    def http_request(self, resp_type='json', *args, **kwargs):
+    def http_request(self, resp_type='json', headers=None, *args, **kwargs):
         """
         Overrides Base client request function, retrieves and adds to headers access token before sending the request.
 
@@ -83,14 +83,19 @@ class MicrosoftClient(BaseClient):
             requests.Response: The http response
         """
         token = self.get_access_token()
-        headers = {
+        default_headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         }
+        if headers:
+            default_headers.update(headers)
+
+        response = super()._http_request(
+            *args, resp_type="response", headers=default_headers, **kwargs)  # type: ignore[misc]
+
         # 206 indicates Partial Content, reason will be in the warning header.
         # In that case, logs with the warning header will be written.
-        response = super()._http_request(*args, resp_type="response", headers=headers, **kwargs)  # type: ignore[misc]
         if response.status_code == 206:
             demisto.debug(str(response.headers))
         try:
