@@ -206,7 +206,7 @@ tasks:
     task:
       id: f7de89f6-eb9a-44e6-84da-8ef43a58aa25
       version: -1
-      name: Remove pending review tag from indicators
+      name: Remove whitelist review tag from indicators
       description: Remove pending review tag from indicators
       script: Builtin|||removeIndicatorField
       type: regular
@@ -219,7 +219,7 @@ tasks:
       field:
         simple: tags
       fieldValue:
-        simple: pending_review
+        simple: whitelist_review
       indicatorsValues:
         simple: ${playbookQuery.value}
     separatecontext: false
