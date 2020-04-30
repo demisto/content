@@ -262,7 +262,7 @@
 				"sections": [
 					{
 						"description": "The GDPR defines a \"personal data breach\" in Article 4(12) as:\n\"A breach of security leading to the accidental or unlawful destruction, loss, alteration, unauthorized disclosure of, or access to, personal data transmitted, stored or otherwise processed.\"\nArt. 4 - https://gdpr-info.eu/art-4-gdpr/",
-						"displayType": "ROW",
+						"displayType": "CARD",
 						"h": 3,
 						"hideName": false,
 						"i": "sfmcsjvzpo-824b5140-d878-11e9-b030-ad5c55d12ecb",
