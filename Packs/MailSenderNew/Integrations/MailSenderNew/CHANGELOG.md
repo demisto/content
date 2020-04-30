@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+Added support for the *SSL/TLS* parameter to configure SSL/TLS connection, which is not STARTTLS.
 
 
 ## [20.4.0] - 2020-04-14

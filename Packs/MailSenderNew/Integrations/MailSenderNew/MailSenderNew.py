@@ -7,7 +7,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.message import Message
 from email.header import Header
-from smtplib import SMTP
+from smtplib import SMTP, SMTP_SSL
 from smtplib import SMTPRecipientsRefused
 import base64
 import json
@@ -93,7 +93,8 @@ def handle_html(htmlBody):
     attachments = []
     cleanBody = ''
     lastIndex = 0
-    for i, m in enumerate(re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', htmlBody, re.I)):
+    for i, m in enumerate(
+            re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', htmlBody, re.I)):
         maintype, subtype = m.group(2).split('/', 1)
         att = {
             'maintype': maintype,
@@ -333,22 +334,31 @@ def main():
     FROM = demisto.getParam('from')
     FQDN = demisto.params().get('fqdn')
     FQDN = (FQDN and FQDN.strip()) or None
+    TLS = demisto.getParam('tls')
     stderr_org = None
     try:
         if demisto.command() == 'test-module':
             stderr_org = swap_stderr(LOG)
             smtplib.SMTP.debuglevel = 1
-        SERVER = SMTP(demisto.getParam('host'), int(demisto.params().get('port', 0)), local_hostname=FQDN)
-        SERVER.ehlo()
+
         # TODO - support for non-valid certs
-        if demisto.getParam('tls'):
-            SERVER.starttls()
+        if TLS == 'SSL/TLS':
+            SERVER = SMTP_SSL(demisto.getParam('host'), int(demisto.params().get('port', 0)), local_hostname=FQDN)
+        else:
+            SERVER = SMTP(demisto.getParam('host'),     # type: ignore[assignment]
+                          int(demisto.params().get('port', 0)), local_hostname=FQDN)
+
+        SERVER.ehlo()  # type: ignore
+        # For BC purposes where TLS was a checkbox (no value only true or false) if TLS=True or TLS='STARTTLS' we enter
+        # this condition, otherwise it means TLS is not configured (TLS=False) or is set to 'SSL/TLS' or 'None'.
+        if TLS is True or TLS == 'STARTTLS':
+            SERVER.starttls()  # type: ignore
         user, password = get_user_pass()
         if user:
-            SERVER.login(user, password)
+            SERVER.login(user, password)  # type: ignore[union-attr]
     except Exception as e:
         # also reset at the bottom finally
-        swap_stderr(stderr_org)  # type: ignore
+        swap_stderr(stderr_org)  # type: ignore[union-attr]
         smtplib.SMTP.debuglevel = 0
         demisto.error('Failed test: {}\nStack trace: {}'.format(e, traceback.format_exc()))
         return_error_mail_sender(e)
@@ -360,8 +370,8 @@ def main():
             msg['Subject'] = 'Test mail from Demisto'
             msg['From'] = FROM
             msg['To'] = FROM
-            SERVER.sendmail(FROM, [FROM], msg.as_string())
-            SERVER.quit()
+            SERVER.sendmail(FROM, [FROM], msg.as_string())  # type: ignore[union-attr]
+            SERVER.quit()  # type: ignore[union-attr]
             demisto.results('ok')
         elif demisto.command() == 'send-mail':
             raw_message = demisto.getArg('raw_message')
@@ -373,8 +383,8 @@ def main():
             else:
                 (str_msg, to, cc, bcc) = create_msg()
 
-            SERVER.sendmail(FROM, to + cc + bcc, str_msg)  # type: ignore
-            SERVER.quit()  # type: ignore
+            SERVER.sendmail(FROM, to + cc + bcc, str_msg)  # type: ignore[union-attr]
+            SERVER.quit()  # type: ignore[union-attr]
             demisto.results('Mail sent successfully')
         else:
             return_error_mail_sender('Command not recognized')
@@ -384,7 +394,7 @@ def main():
     except Exception as e:
         return_error_mail_sender(e)
     finally:
-        swap_stderr(stderr_org)  # type: ignore
+        swap_stderr(stderr_org)  # type: ignore[union-attr]
         smtplib.SMTP.debuglevel = 0
 
 
