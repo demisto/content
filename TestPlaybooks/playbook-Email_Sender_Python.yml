@@ -193,8 +193,8 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: 'from:avishai@demistodev.onmicrosoft.com subject:special
-                    test via playbook after:'
+                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works
+                    subject:special test via playbook after:'
               suffix: {}
       subject: {}
       to: {}
@@ -632,8 +632,22 @@ tasks:
       max-results: {}
       page-token: {}
       query:
-        simple: from:avishai@demistodev.onmicrosoft.com subject:special test via playbook
-          newer_than:1d
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: division
+            args:
+              by:
+                value:
+                  simple: "1000"
+          - operator: floor
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works subject:special
+                    test via playbook after:'
+              suffix: {}
       subject: {}
       to: {}
       user-id:
@@ -1378,7 +1392,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: 'from:avishai@demistodev.onmicrosoft.com subject:special
+                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works subject:special
                     test via playbook after:'
               suffix: {}
       subject: {}
@@ -1482,7 +1496,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: 'from:avishai@demistodev.onmicrosoft.com subject:special
+                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works subject:special
                     test via playbook after:'
               suffix: {}
       subject: {}
@@ -1546,7 +1560,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: 'from:avishai@demistodev.onmicrosoft.com subject:special
+                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works subject:special
                     test via playbook after:'
               suffix: {}
       subject: {}
@@ -1610,7 +1624,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: 'from:avishai@demistodev.onmicrosoft.com subject:special
+                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works subject:special
                     test via playbook after:'
               suffix: {}
       subject: {}
