@@ -17,7 +17,7 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: unsecure
   defaultvalue: "true"
   type: 8
@@ -177,6 +177,7 @@ script:
   - name: tufin-get-change-info
     arguments:
     - name: ticket-id
+      description: SecureChange Ticket ID
       required: true
     outputs:
     - contextPath: Tufin.Tickets.ID
@@ -252,4 +253,3 @@ script:
   dockerimage: demisto/netutils:1.0.0.5165
   runonce: false
   subtype: python3
-sourcemoduleid: Tufin

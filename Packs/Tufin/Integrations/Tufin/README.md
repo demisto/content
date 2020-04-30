@@ -19,7 +19,7 @@ Gather network intelligence from SecureTrack and SecureApp, perform topology que
     * __Name__: a textual name for the integration instance.
     * __TOS IP or FQDN__
     * __TOS User Credentials__
-    * __Trust any certificate (unsecure)__
+    * __Trust any certificate (not secure)__
     * __Use system proxy settings__
     * __Maximum number of rules returned from device durring a policy search__
 4. Click __Test__ to validate the URLs, token, and connection.
@@ -136,7 +136,7 @@ Search the policies of all devices managed by Tufin
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| search | The text format is for a field is <fieldname>:<text> for example source:192.168.1.1 or bareword for free text search. See the search info documentation in Securetrack Policy Browser page for more information. | Required | 
+| search | The text format is for a field is fieldname:text for example source:192.168.1.1 or bareword for free text search. See the search info documentation in Securetrack Policy Browser page for more information. | Required | 
 
 
 ##### Context Output
@@ -260,7 +260,7 @@ Get information on a SecureChange Ticket (Ticket ID retrieved from Tufin UI)
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ticket-id |  | Required | 
+| ticket-id | SecureChange Ticket ID | Required | 
 
 
 ##### Context Output
