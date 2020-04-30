@@ -40,6 +40,10 @@ INTEGRATION_REGEXES = [
     PACKS_INTEGRATION_REGEX,
     TEST_DATA_INTEGRATION_YML_REGEX
 ]
+TEST_DATA_SCRIPT_YML_REGEX = r'Tests/scripts/infrastructure_tests/tests_data/mock_scripts/.*.yml'
+SCRIPT_REGEXES = [
+    TEST_DATA_SCRIPT_YML_REGEX
+]
 INCIDENT_FIELD_REGEXES = [
     INCIDENT_FIELD_REGEX,
     PACKS_INCIDENT_FIELDS_REGEX
@@ -475,7 +479,7 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     playbook_to_version = {}
     integration_to_version = {}
     for file_path in modified_files:
-        if checked_type(file_path, YML_SCRIPT_REGEXES):
+        if checked_type(file_path, SCRIPT_REGEXES + YML_SCRIPT_REGEXES):
             name = get_name(file_path)
             script_names.add(name)
             script_to_version[name] = (get_from_version(file_path), get_to_version(file_path))
@@ -774,15 +778,27 @@ def get_test_conf_from_conf(test_id, server_version, conf=None):
 
 
 def extract_matching_object_from_id_set(obj_id, obj_set, server_version='0'):
-    """Gets first occurrence of object in the object's id_set with matching id and valid from/to version"""
-    # return None if nothing is found
-    test = next((obj_wrpr[obj_id] for obj_wrpr in obj_set if (
-        obj_id in obj_wrpr
-        and is_runnable_in_server_version(from_v=obj_wrpr.get(obj_id).get('fromversion', '0'),
-                                          server_v=server_version,
-                                          to_v=obj_wrpr.get(obj_id).get('toversion', '99.99.99'))
-    )), None)
-    return test
+    """Gets first occurrence of object in the object's id_set with matching id/name and valid from/to version"""
+    for obj_wrpr in obj_set:
+        # try to get object by id
+        if obj_id in obj_wrpr:
+            obj = obj_wrpr.get(obj_id)
+
+        # try to get object by name
+        else:
+            obj_keys = list(obj_wrpr.keys())
+            if not obj_keys:
+                continue
+            obj = obj_wrpr[obj_keys[0]]
+            if obj.get('name') != obj_id:
+                continue
+
+        # check if object is runnable
+        fromversion = obj.get('fromversion', '0')
+        toversion = obj.get('toversion', '99.99.99')
+        if is_runnable_in_server_version(from_v=fromversion, server_v=server_version, to_v=toversion):
+            return obj
+    return None
 
 
 def get_test_from_conf(branch_name, conf=None):
@@ -833,18 +849,18 @@ def is_test_runnable(test_id, id_set, conf, server_version):
     4. If test has integrations, then all integrations
         a. fromversion is earlier or equal to server_version
         b. toversion is after or equal to server_version
-    5. If test has scripts, then all scripts
-        a. fromversion is earlier or equal to server_version
-        b. toversion is after or equal to server_version
     """
     skipped_tests = conf.get_skipped_tests()
+    warning_prefix = f'{test_id} is not runnable on {server_version}'
     # check if test is skipped
     if test_id in skipped_tests:
+        print_warning(f'{warning_prefix} - skipped')
         return False
     test_conf = get_test_conf_from_conf(test_id, server_version, conf)
 
     # check if there's a test to run
     if not test_conf:
+        print_warning(f'{warning_prefix} - couldn\'t find test in conf.json')
         return False
     conf_fromversion = test_conf.get('fromversion', '0')
     conf_toversion = test_conf.get('toversion', '99.99.99')
@@ -853,27 +869,19 @@ def is_test_runnable(test_id, id_set, conf, server_version):
 
     # check whether the test is runnable in id_set
     if not test_playbook_obj:
+        print_warning(f'{warning_prefix} - couldn\'t find the test in id_set.json')
         return False
 
-    return all([
-        is_test_integrations_available(server_version, test_conf, conf, id_set),    # check used integrations available
-        is_test_scripts_available(test_playbook_obj, server_version, id_set),       # check used scripts available
-        is_runnable_in_server_version(conf_fromversion, server_version, conf_toversion)  # check conf from/to
-    ])
+    # check used integrations available
+    if not is_test_integrations_available(server_version, test_conf, conf, id_set):
+        print_warning(f'{warning_prefix} - no active integration found')
+        return False
 
+    # check conf from/to
+    if not is_runnable_in_server_version(conf_fromversion, server_version, conf_toversion):
+        print_warning(f'{warning_prefix} - conf.json from/to version')
+        return False
 
-def is_test_scripts_available(test_playbook_obj, server_version, id_set):
-    """
-    Check if all used scripts are skipped / available
-    """
-    test_scripts_ids = test_playbook_obj.get('implementing_scripts', [])
-    if test_scripts_ids:
-        if not isinstance(test_scripts_ids, list):
-            test_scripts_ids = [test_scripts_ids]
-        scripts = id_set.get('scripts', [])
-        if any(extract_matching_object_from_id_set(script_id, scripts, server_version) is None for script_id in
-               test_scripts_ids):
-            return False
     return True
 
 
@@ -887,9 +895,10 @@ def is_test_integrations_available(server_version, test_conf, conf, id_set):
             test_integration_ids = [test_integration_ids]
         if not is_test_uses_active_integration(test_integration_ids, conf):
             return False
-        # check integrations from/toversion is valid with server_version
+        # check if all integration from/toversion is valid with server_version
         integrations_set = id_set.get('integrations', [])
-        if any(extract_matching_object_from_id_set(integration_id, integrations_set, server_version) is None for integration_id in
+        if any(extract_matching_object_from_id_set(integration_id, integrations_set, server_version) is None for
+               integration_id in
                test_integration_ids):
             return False
     return True
