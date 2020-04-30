@@ -101,8 +101,7 @@ There is no context output for this command.
 ### 3. tufin-object-resolve
 ---
 Resolve IP address to Network Object
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `tufin-object-resolve`
@@ -129,8 +128,7 @@ Resolve IP address to Network Object
 ### 4. tufin-policy-search
 ---
 Search the policies of all devices managed by Tufin
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `tufin-policy-search`
@@ -157,8 +155,7 @@ Search the policies of all devices managed by Tufin
 ### 5. tufin-get-zone-for-ip
 ---
 Match the IP address to the assigned Tufin Zone
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `tufin-get-zone-for-ip`
@@ -186,8 +183,7 @@ Match the IP address to the assigned Tufin Zone
 ### 6. tufin-submit-change-request
 ---
 Submit a change request to SecureChange
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `tufin-submit-change-request`
@@ -222,8 +218,7 @@ Submit a change request to SecureChange
 ### 7. tufin-search-devices
 ---
 Search SecureTrack devices
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `tufin-search-devices`
@@ -256,9 +251,8 @@ Search SecureTrack devices
 
 ### 8. tufin-get-change-info
 ---
-Get information on a SecureChange Ticket
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+Get information on a SecureChange Ticket (Ticket ID retrieved from Tufin UI)
+
 ##### Base Command
 
 `tufin-get-change-info`
@@ -292,8 +286,7 @@ Get information on a SecureChange Ticket
 ### 9. tufin-search-applications
 ---
 Search SecureApp applications
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `tufin-search-applications`
@@ -326,8 +319,7 @@ Search SecureApp applications
 ### 10. tufin-search-application-connections
 ---
 Get SecureApp application connections
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `tufin-search-application-connections`

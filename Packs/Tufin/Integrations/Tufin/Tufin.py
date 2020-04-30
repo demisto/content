@@ -3,6 +3,7 @@ from CommonServerPython import *
 import json
 import requests
 import socket
+from typing import Dict, Any, List
 from netaddr import IPNetwork, IPAddress
 
 # Disable insecure warnings
@@ -105,7 +106,7 @@ def valid_ip(ipa):
 
 def path_finder(querystring):
     # Define the basic output for the function, augmenting later with TOS data
-    entry = {
+    entry: Dict[str, Any] = {
         'Type': entryTypes['note'],
         'Contents': '',
         'ContentsFormat': formats['json'],
@@ -122,7 +123,17 @@ def path_finder(querystring):
         entry['EntryContext']['Tufin.Topology.TrafficAllowed'] = o['path_calc_results']['traffic_allowed']
         entry['EntryContext']['Tufin.Topology.TrafficDevices'] = [d['name'] for d in o['path_calc_results']['device_info']]
         entry['Contents'] = o['path_calc_results']['device_info']
-        entry['HumanReadable'] = tableToMarkdown('Tufin Topology Search for {} to {} via Service {}. Traffic is {}'.format(querystring['src'], querystring['dst'], querystring['service'], ('**Denied**', '**Allowed**')[o['path_calc_results']['traffic_allowed']]), {'Start': querystring['src'], 'Devices in Path': '-->'.join(['**' + d['name'] + '**' + ' ({})' .format(d['vendor']) for d in o['path_calc_results']['device_info']]), 'End': querystring['dst']}, ['Start', 'Devices in Path', 'End'])
+        entry['HumanReadable'] = tableToMarkdown(
+            'Tufin Topology Search for {} to {} via Service {}. Traffic is {}'.format(querystring['src'],
+                                                                                      querystring['dst'],
+                                                                                      querystring['service'],
+                                                                                      ('**Denied**', '**Allowed**')[
+                                                                                          o['path_calc_results'][
+                                                                                              'traffic_allowed']]),
+            {'Start': querystring['src'], 'Devices in Path': '-->'.join(
+                ['**' + d['name'] + '**' + ' ({})'.format(d['vendor']) for d in o['path_calc_results']['device_info']]),
+             'End': querystring['dst']}, ['Start', 'Devices in Path', 'End'])
+
     except KeyError:
         return_error('Unknown Output Returned')
     # Send back to Demisto inside function
@@ -188,7 +199,7 @@ def device_name(devices, device_id):
 
 
 def object_lookup(querystring):
-    entry = {
+    entry: Dict[str, Any] = {
         'Type': entryTypes['note'],
         'Contents': '',
         'ContentsFormat': formats['json'],
@@ -197,7 +208,7 @@ def object_lookup(querystring):
         'EntryContext': {}
     }
 
-    return_json = {'objects': []}
+    return_json: Dict[str, List] = {'objects': []}
 
     o = tos_request('GET', '/securetrack/api/network_objects/search', querystring)
 
@@ -248,7 +259,7 @@ def object_lookup_command():
 def policy_search(querystring, max_rules_per_device=100):
     """ Search policy across all devices.  See docs for syntax """
     u = '/securetrack/api/rule_search'
-    entry = {
+    entry: Dict[str, Any] = {
         'Type': entryTypes['note'],
         'Contents': '',
         'ContentsFormat': formats['json'],
@@ -308,7 +319,7 @@ def policy_search_command():
 
 def zone_match(ipaddr):
     """ Find the zone for the given IP address """
-    entry = {
+    entry: Dict[str, Any] = {
         'Type': entryTypes['note'],
         'Contents': '',
         'ContentsFormat': formats['text'],
@@ -351,7 +362,7 @@ def zone_match_command():
 
 def change_req(req_type, subj, priority, src, dst='', proto='', port='', action='', comment=''):
     """ Submit a change request to SecureChange """
-    entry = {
+    entry: Dict[str, Any] = {
         'Type': entryTypes['note'],
         'Contents': '',
         'ContentsFormat': formats['text'],
@@ -433,7 +444,7 @@ def change_req_command():
 
 def dev_search(name='', ip='', vendor='', model=''):
     """ Search SecureTrack Devices """
-    entry = {
+    entry: Dict[str, Any] = {
         'Type': entryTypes['note'],
         'Contents': '',
         'ContentsFormat': formats['text'],
@@ -482,7 +493,7 @@ def dev_search_command():
 
 def change_info(ticket_id):
     """ Get the information from a change request """
-    entry = {
+    entry: Dict[str, Any] = {
         'Type': entryTypes['note'],
         'Contents': '',
         'ContentsFormat': formats['text'],
@@ -534,7 +545,7 @@ def change_info_command():
 
 def app_search(name=''):
     """ Search for applications in SecureApp """
-    entry = {
+    entry: Dict[str, Any] = {
         'Type': entryTypes['note'],
         'Contents': '',
         'ContentsFormat': formats['text'],
@@ -569,7 +580,7 @@ def app_search_command():
 
 def app_conns(app_id):
     """ Get application connections from SecureApp """
-    entry = {
+    entry: Dict[str, Any] = {
         'Type': entryTypes['note'],
         'Contents': '',
         'ContentsFormat': formats['text'],

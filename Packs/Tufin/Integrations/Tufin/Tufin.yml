@@ -195,7 +195,7 @@ script:
       description: Ticket workflow name
     - contextPath: Tufin.Tickets.CurrentStep
       description: Ticket current step
-    description: Get information on a SecureChange Ticket
+    description: Get information on a SecureChange Ticket (ID retrieved from SecureChange UI)
   - name: tufin-search-applications
     arguments:
     - name: name
