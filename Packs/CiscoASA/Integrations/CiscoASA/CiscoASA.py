@@ -32,10 +32,9 @@ class Client(BaseClient):
             self._headers['X-Auth-Token'] = auth_token
             self.auth_token = auth_token
 
-    def __del__(self):
+    def logoff(self):
         if self.isASAv and self.auth_token:
-            try:
-                self._http_request('DELETE', f'/api/tokenservices/{self.auth_token}', resp_type='response')
+            self._http_request('DELETE', f'/api/tokenservices/{self.auth_token}', resp_type='response')
 
     def get_all_rules(self, specific_interface: Optional[str] = None, rule_type: str = 'All') -> list:
         """
@@ -578,9 +577,8 @@ def main():
     }
 
     LOG(f'Command being called is {demisto.command()}')
+    client = Client(server_url, auth=(username, password), verify=verify_certificate, proxy=proxy, headers={})
     try:
-
-        client = Client(server_url, auth=(username, password), verify=verify_certificate, proxy=proxy, headers={})
         client.login(isASAv)
 
         if demisto.command() == 'test-module':
@@ -594,6 +592,9 @@ def main():
     except Exception as e:
         return_error(f"Failed to execute {demisto.command()} command. Error: {e}")
         raise
+
+    finally:
+        client.logoff()
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
