@@ -1,14 +1,14 @@
 id: GCPWhitelist_Feed_Test
-version: 25
+version: 4
 name: GCPWhitelist_Feed_Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8880741e-ee8b-4fd8-877f-00a7058fa5ad
+    taskid: bb5d904c-b4f5-42de-870f-6ea600998825
     type: start
     task:
-      id: 8880741e-ee8b-4fd8-877f-00a7058fa5ad
+      id: bb5d904c-b4f5-42de-870f-6ea600998825
       version: -1
       name: ""
       iscommand: false
@@ -31,10 +31,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 914ea164-5046-41bc-830d-1ca16288da15
+    taskid: df2ab760-1d0e-4c53-8847-c31d7c33cd99
     type: regular
     task:
-      id: 914ea164-5046-41bc-830d-1ca16288da15
+      id: df2ab760-1d0e-4c53-8847-c31d7c33cd99
       version: -1
       name: Get Indicators - GCP Whitelist (Limited)
       description: Gets indicators from the feed.
@@ -65,10 +65,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: ea37c542-16dc-476c-8564-eaa9539c6d35
+    taskid: 9e3e058f-f4ea-4c00-87f9-6138c9b1bc54
     type: condition
     task:
-      id: ea37c542-16dc-476c-8564-eaa9539c6d35
+      id: 9e3e058f-f4ea-4c00-87f9-6138c9b1bc54
       version: -1
       name: Assert Output
       type: condition
@@ -119,31 +119,22 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 15698bb9-0e84-473a-880d-1bf28fd28317
-    type: regular
+    taskid: f9c0aa97-ccf8-44e8-86d2-4c1e4aedcc39
+    type: title
     task:
-      id: 15698bb9-0e84-473a-880d-1bf28fd28317
+      id: f9c0aa97-ccf8-44e8-86d2-4c1e4aedcc39
       version: -1
       name: Done
       description: commands.local.cmd.close.inv
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
+      type: title
+      iscommand: false
       brand: Builtin
-    scriptarguments:
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      code42alerttype: {}
-      emailclassification: {}
-      id: {}
-      phishingsubtype: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 460,
-          "y": 1410
+          "y": 1400
         }
       }
     note: false
@@ -153,10 +144,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 83b68382-7653-413c-88e5-f8a61a085b8d
+    taskid: 634bbaa6-8f0a-4692-897d-25acb8c73cbc
     type: regular
     task:
-      id: 83b68382-7653-413c-88e5-f8a61a085b8d
+      id: 634bbaa6-8f0a-4692-897d-25acb8c73cbc
       version: -1
       name: Get Indicators - GCP Whitelist (Default Limit)
       description: Gets indicators from the feed.
@@ -186,10 +177,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: b873da32-f1f1-4353-8a9a-a230722397ee
+    taskid: 29a617d6-f8e1-436e-8da4-b396e86469ed
     type: condition
     task:
-      id: b873da32-f1f1-4353-8a9a-a230722397ee
+      id: 29a617d6-f8e1-436e-8da4-b396e86469ed
       version: -1
       name: Assert Output
       type: condition
@@ -240,10 +231,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 47a2dadc-adec-4aab-8c3a-eb68b9c19111
+    taskid: 389bbe5b-5153-4444-8e95-60eb2376af13
     type: regular
     task:
-      id: 47a2dadc-adec-4aab-8c3a-eb68b9c19111
+      id: 389bbe5b-5153-4444-8e95-60eb2376af13
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -276,10 +267,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 844dfb5e-b7e2-4abf-8ea6-7f1d8a0a36e3
+    taskid: d39b7548-71da-4b57-805b-f0ad2abfe7d8
     type: regular
     task:
-      id: 844dfb5e-b7e2-4abf-8ea6-7f1d8a0a36e3
+      id: d39b7548-71da-4b57-805b-f0ad2abfe7d8
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -315,7 +306,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1445,
+        "height": 1405,
         "width": 380,
         "x": 460,
         "y": 60
