@@ -1,6 +1,17 @@
 Use the AutoFocus Feeds integration to fetch indicators from AutoFocus.
 For more information click [here](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/autofocus-feeds.html).
 
+## How to Get Your AutoFocus API Key
+Follow these steps to access and activate your AutoFocus API Key.
+1. Log in to the [Customer Support Portal](https://support.paloaltonetworks.comand) and add your authorization code.
+2. Select the **Assets > Site Licenses** tab.
+3. Select **Add Site License**.
+4. Enter the authorization code.
+5. Select the **Enable** action in **Site Licenses**.
+6. Select the **API Key** link.
+   The API key appears onscreen. Use this API key for all AutoFocus API requests.
+
+
 ## Configure AutoFocus Feed on Demisto
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
