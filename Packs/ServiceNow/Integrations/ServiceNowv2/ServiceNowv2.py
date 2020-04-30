@@ -1007,8 +1007,6 @@ def add_tag_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bool]:
 
     return human_readable, entry_context, result, True
 
-    # return f'Tag {tag_id} was added successfully to ticket {ticket_id}.', {}, result, True
-
 
 def get_ticket_notes_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bool]:
     """Get the ticket's note.
