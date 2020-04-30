@@ -1,4 +1,5 @@
 ## [Unreleased]
+Fixed an issue where the output of some answers was malformed.
 
 
 ## [20.4.1] - 2020-04-29

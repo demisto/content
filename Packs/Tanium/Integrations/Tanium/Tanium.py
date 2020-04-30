@@ -1,4 +1,3 @@
-import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import json
@@ -7,11 +6,9 @@ import sys
 
 from cStringIO import StringIO
 
-if not demisto.params()['proxy']:
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+handle_proxy(demisto.params().get('proxy'))
+
+response = ''
 
 # disable python from generating a .pyc file
 sys.dont_write_bytecode = True
@@ -41,13 +38,105 @@ except Exception:
     raise
 
 
-def csvstr_to_list(str):
-    lines = str.splitlines()
-    if len(lines) < 2:
+def clear_apostrophes(value):
+    """Clear leading an trailing apostrophe from a value
+    """
+    if value.startswith('\"'):
+        value = value[1:]
+    if value.endswith('\"'):
+        value = value[:-1]
+
+    return value
+
+
+def split_lines(string_lines):
+    """Split a csv string to a list of the csv values
+
+    Args:
+        string_lines(str): A string representing the values of a csv
+
+    Returns:
+        list. A list of csv values.
+    """
+    string_lines = string_lines.split(',')
+    formatted_lines = []
+    for val in string_lines:
+        # make sure no extra line drops at the start of the value
+        while val.startswith('\n'):
+            val = val[1:]
+
+        # situation1: val1\nval2 or val1\n"val2_1\nval2_2"
+        if '\n' in val and not val.startswith("\""):
+            split_values = val.split("\n", 1)
+            formatted_lines.append(clear_apostrophes(split_values[0]))
+            formatted_lines.append(clear_apostrophes(split_values[1]))
+
+        # situation2: "val1_1\nval1_2"\nval2,
+        elif '\n' in val and val.startswith("\"") and not val.endswith("\""):
+            val = val[1:]
+            split_values = val.split("\"\n", 1)
+            formatted_lines.append(clear_apostrophes(split_values[0]))
+            formatted_lines.append(clear_apostrophes(split_values[1]))
+
+        elif '\n' in val and val.startswith("\"") and val.endswith("\""):
+            # situation3: "val1_1\nval1_2"
+            if val.count("\"") == 2:
+                formatted_lines.append(clear_apostrophes(val))
+
+            # situation4: "val1_1\nval1_2"\n"val2_1\nval2_2"
+            else:
+                val = val[1:]
+                split_values = val.split("\"\n", 1)
+                formatted_lines.append(clear_apostrophes(split_values[0]))
+                formatted_lines.append(clear_apostrophes(split_values[1]))
+
+        # situation5: no formatting needed
+        else:
+            formatted_lines.append(clear_apostrophes(val))
+
+    return formatted_lines
+
+
+def csvstr_to_list(text_content):
+    """Gets a csv string representing a table of an answer given from Tanium and formats it as a list of dictionaries
+
+    Args:
+        text_content (str): a csv string containing the tabled answer for the question asked in Tanium
+
+    Returns:
+        list. The formatted answer as a list where each element is a dict representing a line of the tabled answer
+    """
+    # string_lines is an array of split lines that together create the full CSV
+    # the first element will always be the headers but the next elements do not necessarily correlate to the csv lines
+    # for expmple:
+    # ['header1,header2,header3', 'col1,"col2_1', 'col2_2",col3']
+    # this represents a table with 3 headers and a *single line* below it -
+    # col1 relates to header1, col3 relates to header3 and col2_1
+    # and col2_2 relate to header2 as marked by the leading and trailing apostrophes (")
+    # for more examples of this look at Tanium_test.py
+    text_content = '\n'.join(text_content.splitlines())
+    text_content = text_content.split('\n', 1)
+    headers = text_content[0].split(',')
+    if len(text_content) < 2:
         return []
-    else:
-        headers = lines[0].split(',')
-        return [dict(zip(headers, line.split(','))) for line in lines[1:]]
+    string_lines = text_content[1]
+    total_cols_num = len(headers)
+    string_lines = split_lines(string_lines)
+    total_rows_num = len(string_lines) // total_cols_num
+    result = []
+    for row_index in range(total_rows_num):
+        row_starting_cell_index = row_index * total_cols_num
+        row_final_cell_index = row_starting_cell_index + total_cols_num
+        row = string_lines[row_starting_cell_index:row_final_cell_index]
+        table_dict = {}
+        for index in range(total_cols_num):
+            header = headers[index]
+            value = row[index]
+            table_dict[header] = value
+
+        result.append(table_dict)
+
+    return result
 
 
 def parseToJson(handler, response):
@@ -92,10 +181,10 @@ def filter_list(lst, keys):
 def get_handler():
     handler_args = {}
 
-    handler_args['username'] = demisto.params()['credentials']['identifier']
-    handler_args['password'] = demisto.params()['credentials']['password']
-    handler_args['host'] = demisto.params()['host']
-    handler_args['port'] = demisto.params()['port']
+    handler_args['username'] = demisto.params().get('credentials', {}).get('identifier')
+    handler_args['password'] = demisto.params().get('credentials', {}).get('password')
+    handler_args['host'] = demisto.params().get('host')
+    handler_args['port'] = demisto.params().get('port')
 
     handler_args['loglevel'] = 1
     handler_args['debugformat'] = False
@@ -403,6 +492,22 @@ def approveSavedAction(handler, action_id, saved_action_id):
     return final_result
 
 
+def format_context(res):
+    """Reformat the response's multi-lined cells to look better in the context
+
+    Args:
+        res (list): a list of dictionaries formatted from the Tanium answer
+
+    Returns:
+        list. A list of dictionaries where multi-lined cells have spaces instead of line drops.
+    """
+    context = []
+    for element in res:
+        context.append({key: value.replace("\n", " ") for (key, value) in element.items()})
+
+    return context
+
+
 def askQuestion(handler, kwargs):
     response = handler.ask(**kwargs)
 
@@ -419,7 +524,7 @@ def askQuestion(handler, kwargs):
 
         result = csvstr_to_list(out)
 
-        ec = {'Tanium.QuestionResults': result}
+        ec = {'Tanium.QuestionResults': format_context(result)}
         return create_entry(
             'Result for parsed query - %s' % (query_text,),
             result,
@@ -556,65 +661,72 @@ def restore_sout_and_exit(final_result):
     sys.stdout = sout
     LOG.print_log()
     demisto.results(final_result)
-    sys.exit(0)
+    # kill this thread and any additional thread in existence in the docker
+    os._exit(0)
 
 
 # Dealing with Broken Pipe issues raised by some commands
 sout = sys.stdout
 sys.stdout = StringIO()
 
-try:
-    handler = get_handler()
-    LOG("successfully logged into Tanium")
-    response = ''
-    d_args = demisto.args()
 
-    if demisto.command() == 'test-module':
-        test_question = 'get Computer Name from all machines with Computer Name contains "this is a test"'
-        final_result = ask_parsed_question(handler, test_question, '1')
-        restore_sout_and_exit('ok')
-    if demisto.command() == 'tn-get-package':
-        final_result = get_package(handler)
-    if demisto.command() == 'tn-get-saved-question':
-        final_result = get_saved_question(handler)
-    if demisto.command() == 'tn-get-object':
-        final_result = get_object(handler, unicode(d_args['object_type']), d_args.get('name'), d_args.get('id'))
-    if demisto.command() == 'tn-get-all-objects':
-        final_result = get_all_objects(handler, unicode(d_args['object_type']))
-    if demisto.command() == 'tn-get-all-packages':
-        final_result = getAllPackages(handler)
-    if demisto.command() == 'tn-get-all-sensors':
-        final_result = get_all_sensors(handler)
-    if demisto.command() == 'tn-get-all-saved-questions':
-        final_result = get_all_saved_questions(handler)
-    if demisto.command() == 'tn-get-all-saved-actions':
-        final_result = get_all_saved_actions(handler)
-    if demisto.command() == 'tn-get-all-pending-actions':
-        final_result = getAllPendingActions(handler)
-    if demisto.command() == 'tn-deploy-package':
-        final_result = deploy_action(handler)
-    if demisto.command() == 'tn-ask-system':
-        final_result = ask_parsed_question(handler, 'Get Computer Name from all machines with Computer Name matching \"'
-                                           + demisto.args()['hostname'] + '\"', '1')
-    if demisto.command() == 'tn-ask-question':
-        final_result = ask_parsed_question(handler, d_args['question'], d_args.get('index', '1'))
-    if demisto.command() == 'tn-create-package':
-        final_result = create_package(handler)
-    if demisto.command() == 'tn-approve-pending-action':
-        final_result = approveSavedAction(handler, d_args.get('id'),
-                                          d_args.get('saved_action_id', d_args.get('action_id')))
-    if demisto.command() == 'tn-ask-manual-question':
-        final_result = ask_manual_question(handler, d_args)
-    if demisto.command() == 'tn-parse-query':
-        final_result = get_parse_query_options(handler, d_args['question'])
-    if demisto.command() == 'tn-get-sensor':
-        final_result = get_sensor(handler)
-    if demisto.command() == 'tn-get-action':
-        final_result = get_action(handler)
+def main():
+    try:
+        handler = get_handler()
+        LOG("successfully logged into Tanium")
+        d_args = demisto.args()
 
-except Exception as ex:
-    sys.stdout = sout
-    LOG.print_log()
-    raise
+        if demisto.command() == 'test-module':
+            test_question = 'get Computer Name from all machines with Computer Name contains "this is a test"'
+            final_result = ask_parsed_question(handler, test_question, '1')
+            restore_sout_and_exit('ok')
+        if demisto.command() == 'tn-get-package':
+            final_result = get_package(handler)
+        if demisto.command() == 'tn-get-saved-question':
+            final_result = get_saved_question(handler)
+        if demisto.command() == 'tn-get-object':
+            final_result = get_object(handler, unicode(d_args['object_type']), d_args.get('name'), d_args.get('id'))
+        if demisto.command() == 'tn-get-all-objects':
+            final_result = get_all_objects(handler, unicode(d_args['object_type']))
+        if demisto.command() == 'tn-get-all-packages':
+            final_result = getAllPackages(handler)
+        if demisto.command() == 'tn-get-all-sensors':
+            final_result = get_all_sensors(handler)
+        if demisto.command() == 'tn-get-all-saved-questions':
+            final_result = get_all_saved_questions(handler)
+        if demisto.command() == 'tn-get-all-saved-actions':
+            final_result = get_all_saved_actions(handler)
+        if demisto.command() == 'tn-get-all-pending-actions':
+            final_result = getAllPendingActions(handler)
+        if demisto.command() == 'tn-deploy-package':
+            final_result = deploy_action(handler)
+        if demisto.command() == 'tn-ask-system':
+            final_result = ask_parsed_question(handler, 'Get Computer Name from all machines with Computer Name matching \"'
+                                               + demisto.args()['hostname'] + '\"', '1')
+        if demisto.command() == 'tn-ask-question':
+            final_result = ask_parsed_question(handler, d_args['question'], d_args.get('index', '1'))
+        if demisto.command() == 'tn-create-package':
+            final_result = create_package(handler)
+        if demisto.command() == 'tn-approve-pending-action':
+            final_result = approveSavedAction(handler, d_args.get('id'),
+                                              d_args.get('saved_action_id', d_args.get('action_id')))
+        if demisto.command() == 'tn-ask-manual-question':
+            final_result = ask_manual_question(handler, d_args)
+        if demisto.command() == 'tn-parse-query':
+            final_result = get_parse_query_options(handler, d_args['question'])
+        if demisto.command() == 'tn-get-sensor':
+            final_result = get_sensor(handler)
+        if demisto.command() == 'tn-get-action':
+            final_result = get_action(handler)
 
-restore_sout_and_exit(final_result)
+    except Exception:
+        sys.stdout = sout
+        LOG.print_log()
+        raise
+
+    restore_sout_and_exit(final_result)
+
+
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == "__builtin__" or __name__ == "builtins" or __name__ == "__main__":
+    main()
