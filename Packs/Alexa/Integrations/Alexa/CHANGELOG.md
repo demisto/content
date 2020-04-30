@@ -1,5 +1,5 @@
 ## [Unreleased]
-Fixed an issue where the integration failed retrieving the correct rank. 
+Fixed an issue where the integration failed to retrieve the correct rank. 
 
 
 ## [19.12.0] - 2019-12-10
