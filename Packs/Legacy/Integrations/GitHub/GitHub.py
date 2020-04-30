@@ -401,7 +401,7 @@ def format_head_or_base_outputs(head_or_base: dict = {}) -> dict:
 
     if head_or_base_repo:
         head_or_base_repo_owner = head_or_base_repo.get('owner', {})
-    else:  # in case of an a deleted fork
+    else:  # in case of a deleted fork
         head_or_base_repo = {}
         head_or_base_repo_owner = {
             "Login": "Unknown"
