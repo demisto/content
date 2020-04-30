@@ -1979,13 +1979,13 @@ script:
       secret: false
     - default: false
       description: 'Tag system ID. Can be retrieved using: "!servicenow-query-table
-        table_name=label fields=name,active"'
+        table_name=label fields=name,active,sys_id"'
       isArray: false
       name: tag_id
       required: true
       secret: false
     - default: false
-      description: tag_title
+      description: 'Tag title. e.g: "Incident - INC000001"'
       isArray: false
       name: title
       required: true
@@ -2006,9 +2006,21 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Adds a tag to a ticket. the tag will be visible in the Tags table.
+    description: 'Adds a tag to a ticket. the tag will be visible in the label_entry
+      table. Can be retrieved using: "!servicenow-query-table table_name=label_entry
+      fields=title,table,sys_id,id_display,id_type"'
     execution: false
     name: servicenow-add-tag
+    outputs:
+    - contextPath: ServiceNow.Ticket.ID
+      description: The unique ticket identifier.
+      type: String
+    - contextPath: ServiceNow.Ticket.TagTitle
+      description: Ticket tag title.
+      type: String
+    - contextPath: ServiceNow.Ticket.TagID
+      description: Ticket tag ID.
+      type: String
   dockerimage: demisto/python3:3.8.2.6981
   feed: false
   isfetch: true

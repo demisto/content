@@ -990,7 +990,24 @@ def add_tag_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bool]:
     if not result or 'result' not in result:
         raise Exception(f'Could not add tag {title} to ticket {ticket_id}.')
 
-    return f'Tag {tag_id} was added successfully to ticket {ticket_id}.', {}, result, True
+    added_tag_resp = result.get('result', {})
+    hr_ = {
+        'Title': added_tag_resp.get('title'),
+        'Ticket ID': added_tag_resp.get('id_display'),
+        'Ticket Type': added_tag_resp.get('id_type'),
+        'Tag ID': added_tag_resp.get('sys_id'),
+    }
+    human_readable = tableToMarkdown(f'Tag {tag_id} was added successfully to ticket {ticket_id}.', t=hr_)
+    context = {
+        'ID': ticket_id,
+        'TagTitle': added_tag_resp.get('title'),
+        'TagID': added_tag_resp.get('sys_id'),
+    }
+    entry_context = {'ServiceNow.Ticket(val.ID===obj.ID)': context}
+
+    return human_readable, entry_context, result, True
+
+    # return f'Tag {tag_id} was added successfully to ticket {ticket_id}.', {}, result, True
 
 
 def get_ticket_notes_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bool]:
