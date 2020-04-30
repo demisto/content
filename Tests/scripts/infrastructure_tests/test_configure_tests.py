@@ -57,6 +57,31 @@ class TestUtils(object):
         return integration
 
     @staticmethod
+    def create_script(name):
+        mock_script = demisto_sdk_tools.get_yaml(
+            'Tests/scripts/infrastructure_tests/tests_data/mock_scripts/fake-script.yml')
+
+        mock_script['commonfields']['id'] = name
+        mock_script['name'] = name
+
+        save_path = os.path.join('Tests/scripts/infrastructure_tests/tests_data/mock_scripts', name + '.yml')
+        TestUtils.save_yaml(save_path, mock_script)
+
+        script = {
+            'path': save_path,
+            'id_set': {
+                name: {
+                    "name": name,
+                    "fromversion": "4.1.0",
+                    "toversion": "5.4.9",
+                    "file_path": save_path,
+                }
+            }
+        }
+
+        return script
+
+    @staticmethod
     def create_test_playbook(name, with_scripts=None, with_integration_commands=None):
         test_playbook_default = demisto_sdk_tools.get_yaml(
             'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml')
@@ -117,7 +142,7 @@ class TestUtils(object):
         return TestConf(conf)
 
     @staticmethod
-    def create_id_set(with_integration=None, with_test_playbook=None):
+    def create_id_set(with_integration=None, with_test_playbook=None, with_scripts=None):
         with open('Tests/scripts/infrastructure_tests/tests_data/mock_id_set.json', 'r') as mock_id_set_f:
             id_set = json.load(mock_id_set_f)
 
@@ -126,6 +151,9 @@ class TestUtils(object):
 
         if with_test_playbook:
             id_set['TestPlaybooks'].append(with_test_playbook)
+
+        if with_scripts:
+            id_set['scripts'].append(with_scripts)
 
         return id_set
 
@@ -646,3 +674,78 @@ def test_dont_fail_integration_on_no_tests_if_it_has_test_playbook_in_conf(mocke
 
         # reset _FAILED flag
         configure_tests._FAILED = False
+
+
+class TestExtractMatchingObjectFromIdSet:
+    def test_mismatching_script_id(self, mocker):
+        """
+        Given
+        - integration_a was modified
+        - tests were provided for integration_a with mismatching id
+
+        When
+        - filtering tests to run
+
+        Then
+        - ensure test_playbook_a will run/returned
+        """
+        from Tests.scripts import configure_tests
+        configure_tests._FAILED = False  # reset the FAILED flag
+
+        # Given
+        # - integration_a exists
+        script_name = 'script_a'
+        fake_script = TestUtils.create_script(name=script_name)
+
+        # - tests were provided for integration_a with mismatching id
+        id_set_obj = fake_script['id_set'][script_name]
+        fake_script['id_set'] = {'wrong_id': id_set_obj}
+
+        # mark as modified
+        TestUtils.mock_get_modified_files(mocker,
+                                          modified_files_list=[
+                                              fake_script['path']
+                                          ])
+
+        # - test_playbook_a exists that should test script_a
+        fake_test_playbook = TestUtils.create_test_playbook(name='test_playbook_a',
+                                                            with_scripts=[script_name])
+
+        try:
+            # - both in conf.json
+            fake_conf = TestUtils.create_tests_conf(
+                with_test_configuration={
+                    'playbookID': 'test_playbook_a'
+                }
+            )
+
+            fake_id_set = TestUtils.create_id_set(
+                with_scripts=fake_script['id_set'],
+                with_test_playbook=fake_test_playbook['id_set']
+            )
+
+            # When
+            # - filtering tests to run
+            filtered_tests = get_test_list(
+                files_string='',
+                branch_name='dummy_branch',
+                two_before_ga_ver=TWO_BEFORE_GA_VERSION,
+                conf=fake_conf,
+                id_set=fake_id_set
+            )
+
+            # Then
+            # - ensure test_playbook_a will run/returned
+            assert 'test_playbook_a' in filtered_tests
+
+            # - ensure the validation not failing
+            assert not configure_tests._FAILED
+        finally:
+            # delete the mocked files
+            TestUtils.delete_files([
+                fake_script['path'],
+                fake_test_playbook['path']
+            ])
+
+            # reset _FAILED flag
+            configure_tests._FAILED = False

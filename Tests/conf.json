@@ -998,7 +998,19 @@
                 "Gmail"
             ],
             "playbookID": "Mail Sender (New) Test",
-            "instance_names": ["Mail_Sender_(New)_STARTTLS"]
+            "instance_names": [
+                "Mail_Sender_(New)_STARTTLS"
+            ]
+        },
+        {
+            "integrations": [
+                "Mail Sender (New)",
+                "Gmail"
+            ],
+            "playbookID": "Mail Sender (New) Test",
+            "instance_names": [
+                "Mail_Sender_(New)_SSL/TLS"
+            ]
         },
         {
             "playbookID": "buildewsquery_test"
