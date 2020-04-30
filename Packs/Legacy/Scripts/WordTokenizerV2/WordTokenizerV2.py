@@ -96,7 +96,7 @@ def tokenize_text(text):
 
 
 def tokenize_text_other(unicode_text):
-    _ , preprocessed_tokens_list = tokenize_text_spacy(unicode_text, language='English')
+    _, preprocessed_tokens_list = tokenize_text_spacy(unicode_text, language='English')
     tokenization_method = demisto.args()['tokenizationMethod']
     if tokenization_method == 'byWords':
         tokens_list = []
@@ -104,7 +104,7 @@ def tokenize_text_other(unicode_text):
         for t in preprocessed_tokens_list:
             if t in reserved_tokens:
                 tokens_list.append(t)
-                original_words_to_tokens[token_without_punct] = t
+                original_words_to_tokens[t] = t
             else:
                 token_without_punct = ''.join([c for c in t if c not in string.punctuation])
                 if len(token_without_punct) > 0:
