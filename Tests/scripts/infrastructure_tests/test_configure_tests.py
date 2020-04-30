@@ -2,7 +2,8 @@ import json
 import copy
 import os
 from ruamel.yaml import YAML
-from Tests.scripts.configure_tests import get_test_list, get_modified_files, RANDOM_TESTS_NUM, TestConf
+from Tests.scripts.configure_tests import get_test_list, get_modified_files, RANDOM_TESTS_NUM, TestConf, \
+    create_filter_envs_file
 import demisto_sdk.commands.common.tools as demisto_sdk_tools
 
 with open('Tests/scripts/infrastructure_tests/tests_data/mock_id_set.json', 'r') as mock_id_set_f:
@@ -85,9 +86,25 @@ class TestUtils(object):
         return test_playbook
 
     @staticmethod
-    def mock_get_modified_files(mocker, modified_files_list):
+    def mock_get_modified_files(mocker, modified_files_list, is_conf_json=False):
         return mocker.patch('Tests.scripts.configure_tests.get_modified_files',
-                            return_value=create_get_modified_files_ret(modified_files_list=modified_files_list))
+                            return_value=create_get_modified_files_ret(
+                                modified_files_list=modified_files_list,
+                                is_conf_json=is_conf_json
+                            ))
+
+    @staticmethod
+    def mock_run_command(mocker, on_command, return_value):
+        def on_run_command(*args):
+            command = args[0]
+            if command == on_command:
+                return return_value
+
+            return ''
+
+        mock = mocker.patch('demisto_sdk.commands.common.tools.run_command')
+        mock.side_effect = on_run_command
+        return mock
 
     @staticmethod
     def create_tests_conf(with_test_configuration=None):
@@ -157,29 +174,78 @@ class TestChangedTestPlaybook:
         assert len(filterd_tests) == 1
 
     def test_changed_unrunnable_test__integration_fromversion(self, mocker):
-        # fake_test_playbook is fromversion 4.1.0 in integration file
+        """
+        Given:
+            - fake_test_playbook integration is fromversion 4.1.0 in integration file
+            - two_before_ga is '4.0.0'
+            - one_before_ga is '4.1.0'
+            - ga is '4.5.0'
+        When:
+            - running get_test_list
+            - running create_filter_envs_file
+        Then:
+            - Create test list with fake_test_playbook
+            - Create filter_envs.json file with Demisto two before GA False
+
+        """
+        two_before_ga = '4.0.0'
+        one_before_ga = '4.1.0'
+        ga = '4.5.0'
         test_id = 'fake_test_playbook'
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[test_path],
                                                                modified_tests_list=[test_path])
-        filterd_tests = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
-
+        filterd_tests = get_mock_test_list(two_before_ga, get_modified_files_ret, mocker)
         assert test_id in filterd_tests
         assert len(filterd_tests) == 1
 
-    def test_changed_unrunnable_test__playbook_fromversion(self, mocker):
-        # fake_test_playbook is fromversion 4.1.0 in playbook file
+        create_filter_envs_file(filterd_tests, two_before_ga, one_before_ga, ga, TestConf(MOCK_CONF), MOCK_ID_SET)
+        with open("./Tests/filter_envs.json", "r") as filter_envs_file:
+            filter_envs = json.load(filter_envs_file)
+        assert filter_envs.get('Server Master') is True
+        assert filter_envs.get('Demisto PreGA') is True
+        assert filter_envs.get('Demisto two before GA') is False
+        assert filter_envs.get('Demisto one before GA') is True
+        assert filter_envs.get('Demisto GA') is True
+
+    def test_changed_unrunnable_test__playbook_fromversion_1(self, mocker):
+        """
+        Given:
+            - fake_test_playbook is fromversion 4.1.0 in integration file
+            - two_before_ga is '4.0.0'
+            - one_before_ga is '4.0.1'
+            - ga is '4.1.0'
+        When:
+            - running get_test_list
+            - running create_filter_envs_file
+        Then:
+            - Create test list with fake_test_playbook
+            - Create filter_envs.json file with Demisto two before GA False and Demisto one before GA False
+
+        """
+        two_before_ga = '4.0.0'
+        one_before_ga = '4.0.1'
+        ga = '4.1.0'
         test_id = 'fake_test_playbook'
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[test_path],
                                                                modified_tests_list=[test_path])
-        filterd_tests = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
+        filterd_tests = get_mock_test_list(two_before_ga, get_modified_files_ret, mocker)
 
         assert test_id in filterd_tests
         assert len(filterd_tests) == 1
 
-    def test_changed_unrunnable_test__playbook_toversion(self, mocker):
-        # future_playbook_1 is toversion 99.99.99 in conf file
+        create_filter_envs_file(filterd_tests, two_before_ga, one_before_ga, ga, TestConf(MOCK_CONF), MOCK_ID_SET)
+        with open("./Tests/filter_envs.json", "r") as filter_envs_file:
+            filter_envs = json.load(filter_envs_file)
+        assert filter_envs.get('Server Master') is True
+        assert filter_envs.get('Demisto PreGA') is True
+        assert filter_envs.get('Demisto two before GA') is False
+        assert filter_envs.get('Demisto one before GA') is False
+        assert filter_envs.get('Demisto GA') is True
+
+    def test_changed_unrunnable_test__playbook_fromvesion_2(self, mocker):
+        # future_playbook_1 is fromversion 99.99.99 in conf file
         test_id = 'future_test_playbook_1'
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/future_test_playbook_1.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[test_path],
@@ -189,7 +255,7 @@ class TestChangedTestPlaybook:
         assert test_id in filterd_tests
         assert len(filterd_tests) == 1
 
-    def test_changed_runnable_test__playbook_toversion(self, mocker):
+    def test_changed_runnable_test__playbook_fromversion(self, mocker):
         # future_playbook_1 is toversion 99.99.99 in conf file
         test_id = 'future_test_playbook_1'
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/future_test_playbook_1.yml'
@@ -224,7 +290,7 @@ class TestChangedTestPlaybook:
 class TestChangedIntegration:
     TEST_ID = 'PagerDuty Test'
     # points at a real file. if that file changes path the test should fail
-    GIT_DIFF_RET = "M Packs/Legacy/Integrations/PagerDuty/PagerDuty.yml"
+    GIT_DIFF_RET = "M Packs/PagerDuty/Integrations/PagerDuty/PagerDuty.yml"
 
     def test_changed_runnable_test__unmocked_get_modified_files(self):
         filterd_tests = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
@@ -246,7 +312,7 @@ class TestChangedIntegration:
 class TestChangedIntegrationAndPlaybook:
     TEST_ID = 'PagerDuty Test\nCalculate Severity - Standard - Test'
     # points at a real file. if that file changes path the test should fail
-    GIT_DIFF_RET = "M Packs/Legacy/Integrations/PagerDuty/PagerDuty.py\n" \
+    GIT_DIFF_RET = "M Packs/PagerDuty/Integrations/PagerDuty/PagerDuty.py\n" \
                    "M Packs/Legacy/Playbooks/playbook-Calculate_Severity_By_Highest_DBotScore.yml"
 
     def test_changed_runnable_test__unmocked_get_modified_files(self):
@@ -323,7 +389,7 @@ class TestNoChange:
         assert len(filterd_tests) >= RANDOM_TESTS_NUM
 
 
-def create_get_modified_files_ret(modified_files_list=[], modified_tests_list=[], changed_common=[], is_conf_json=[],
+def create_get_modified_files_ret(modified_files_list=[], modified_tests_list=[], changed_common=[], is_conf_json=False,
                                   sample_tests=[], is_reputations_json=[], is_indicator_json=[]):
     """
     Returns return value for get_modified_files() to be used with a mocker patch
@@ -411,7 +477,7 @@ def test_integration_has_no_test_playbook_should_fail_on_validation(mocker):
     - filtering tests to run
 
     Then
-    - ensure the validation not failing
+    - ensure the validation is failing
     """
     from Tests.scripts import configure_tests
     configure_tests._FAILED = False  # reset the FAILED flag
@@ -446,7 +512,7 @@ def test_integration_has_no_test_playbook_should_fail_on_validation(mocker):
         )
 
         # Then
-        # - ensure the validation not failing
+        # - ensure the validation is failing
         assert configure_tests._FAILED
     finally:
         # delete the mocked files
@@ -454,6 +520,55 @@ def test_integration_has_no_test_playbook_should_fail_on_validation(mocker):
             fake_integration['path']
         ])
 
+        # reset _FAILED flag
+        configure_tests._FAILED = False
+
+
+def test_conf_has_modified(mocker):
+    """
+    Given
+    - Tests/conf.json has been modified
+
+    When
+    - filtering tests to run
+
+    Then
+    - ensure the validation not failing
+    """
+    from Tests.scripts import configure_tests
+    configure_tests._FAILED = False  # reset the FAILED flag
+
+    try:
+        # Given
+        # - Tests/conf.json has been modified
+        TestUtils.mock_get_modified_files(mocker,
+                                          modified_files_list=[],
+                                          is_conf_json=True)
+
+        TestUtils.mock_run_command(
+            mocker,
+            on_command='git diff origin/master...dummy_branch Tests/conf.json',
+            return_value='something'
+        )
+        # - both in conf.json
+        fake_conf = TestUtils.create_tests_conf()
+
+        fake_id_set = TestUtils.create_id_set()
+
+        # When
+        # - filtering tests to run
+        get_test_list(
+            files_string='',
+            branch_name='dummy_branch',
+            two_before_ga_ver=TWO_BEFORE_GA_VERSION,
+            conf=fake_conf,
+            id_set=fake_id_set
+        )
+
+        # Then
+        # - ensure the validation not failing
+        assert not configure_tests._FAILED
+    finally:
         # reset _FAILED flag
         configure_tests._FAILED = False
 

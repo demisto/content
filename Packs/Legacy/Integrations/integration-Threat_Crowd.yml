@@ -18,7 +18,7 @@ configuration:
   defaultvalue: v2
   type: 0
   required: true
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8

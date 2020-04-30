@@ -1,5 +1,8 @@
 ## [Unreleased]
--
+
+
+## [20.4.1] - 2020-04-29
+Fixed conditional task test.
 
 
 ## [20.3.4] - 2020-03-30

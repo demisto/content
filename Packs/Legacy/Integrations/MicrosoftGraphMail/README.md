@@ -1,759 +1,1028 @@
-<!-- HTML_DOC -->
-<p>Microsoft Graph lets your app get authorized access to a user’s Outlook mail data in a personal or organization account.</p>
-<h2>Generate Authentication Parameters</h2>
-<p>To use this integration, you have to grant access to Demisto from Microsoft Graph.</p>
-<ol>
-<li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
-<li>Search for Microsoft Graph Mail.</li>
-<li>Click <strong>Add instance</strong> to create and configure a new integration instance.</li>
-<li>Click the question mark button in the upper-right corner and read the information, and click the link.</li>
-<li>Click the <strong>Start Authorization Process</strong> button.</li>
-<li>Log in with Microsoft admin user credentials.</li>
-<li>Authorize Demisto application to access data.</li>
-<li>When you are redirected, copy the parameter values, which you will need when configuring the integration instance in Demisto.
-<ul>
-<li>ID</li>
-<li>Key</li>
-<li>Token</li>
-</ul>
-</li>
-</ol>
-<h2>Configure Microsoft Graph Mail on Demisto</h2>
-<ol>
-<li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
-<li>Search for MicrosoftGraphMail.</li>
-<li>Click <strong>Add instance</strong> to create and configure a new integration instance.
-<ul>
-<li>
-<strong>Name</strong>: a textual name for the integration instance.</li>
-<li><strong>Server URL</strong></li>
-<li><strong>ID you received from the admin consent</strong></li>
-<li><strong>Key you received from the admin consent</strong></li>
-<li><strong>Token you received from the admin consent</strong></li>
-<li><strong>Trust any certificate (not secure)</strong></li>
-<li><strong>Use system proxy</strong></li>
-</ul>
-</li>
-<li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
-</ol>
-<h2>Required Permissions</h2>
-<p>The following permissions are required for all commands:</p>
-<ul>
-<li>Mail.ReadWrite</li>
-<li>Directory.Read.All</li>
-<li>User.Read</li>
-</ul>
-<h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.<br> After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
-<ol>
-<li><a href="#h_cd3b24a2-22a0-4dbb-8a05-3fbd4dadff3c" target="_self">Get a list of emails for a user: msgraph-mail-list-emails</a></li>
-<li><a href="#h_c981218c-d172-46f7-a603-d48e96011101" target="_self">Get email information: msgraph-mail-get-email</a></li>
-<li><a href="#h_adfe17ce-1ced-48f9-b4c0-a2d32d0abc88" target="_self">Delete an email: msgraph-mail-delete-email</a></li>
-<li><a href="#h_d26f8111-bd58-4fe1-a6fb-7baaf90edbc4" target="_self">Get a list of email attachments: msgraph-mail-list-attachments</a></li>
-<li><a href="#h_03de5e7a-ffb1-4200-bc54-9921ac59aaba" target="_self">Get an email attachment: msgraph-mail-get-attachment</a></li>
-</ol>
-<h3 id="h_cd3b24a2-22a0-4dbb-8a05-3fbd4dadff3c">1. Get email properties</h3>
-<p>Gets a list of emails for a user.</p>
-<h5>Base Command</h5>
-<p><code>msgraph-mail-list-emails</code></p>
-<h5>Required Permissions</h5>
-<p>This command requires the following permissions.</p>
-<ul>
-<li>Mail.ReadWrite</li>
-<li>Directory.Read.All</li>
-<li>User.Read</li>
-</ul>
-<h5>Input</h5>
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 160px;"><strong>Argument Name</strong></th>
-<th style="width: 509px;"><strong>Description</strong></th>
-<th style="width: 71px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 160px;">user_id</td>
-<td style="width: 509px;">User ID from which to pull mails (can be principal ID (email address)).</td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 160px;">folder_id</td>
-<td style="width: 509px;">A CSV list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box).</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 160px;">odata</td>
-<td style="width: 509px;">Add an OData query. For example:<br> odata=`?$filter=contains(Subject,'Test') and from/emailAddress/address eq 'user@example.com'</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 160px;">search</td>
-<td style="width: 509px;">The term for which to search. This argument cannot contain reserved characters such as: !, $, #, @, etc.<br> For further information, see https://tools.ietf.org/html/rfc3986#section-2.2</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 160px;">pages_to_pull</td>
-<td style="width: 509px;">The number of pages of emails to pull (maximum is 10 emails per page).</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 304px;"><strong>Path</strong></th>
-<th style="width: 61px;"><strong>Type</strong></th>
-<th style="width: 375px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 304px;">MSGraphMail.ID</td>
-<td style="width: 61px;">String</td>
-<td style="width: 375px;">ID of the email.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.Created</td>
-<td style="width: 61px;">Date</td>
-<td style="width: 375px;">Time the email was created.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.LastModifiedTime</td>
-<td style="width: 61px;">Date</td>
-<td style="width: 375px;">Time the email was last modified.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.ReceivedTime</td>
-<td style="width: 61px;">Date</td>
-<td style="width: 375px;">Time the email was received.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.SendTime</td>
-<td style="width: 61px;">Date</td>
-<td style="width: 375px;">Time of sending email.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.Categories</td>
-<td style="width: 61px;">String</td>
-<td style="width: 375px;">Categories of email.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.HasAttachments</td>
-<td style="width: 61px;">Boolean</td>
-<td style="width: 375px;">Whether there are any email attachments.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.Subject</td>
-<td style="width: 61px;">String</td>
-<td style="width: 375px;">Subject of the email.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.IsDraft</td>
-<td style="width: 61px;">Boolean</td>
-<td style="width: 375px;">Whether the email is a draft.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.Body</td>
-<td style="width: 61px;">String</td>
-<td style="width: 375px;">Body of the email.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.Sender.Name</td>
-<td style="width: 61px;">String</td>
-<td style="width: 375px;">Name of the sender.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.Sender.Address</td>
-<td style="width: 61px;">String</td>
-<td style="width: 375px;">Email address of the sender.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.From.Name</td>
-<td style="width: 61px;">String</td>
-<td style="width: 375px;">Name of the "from" field.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.From.Address</td>
-<td style="width: 61px;">String</td>
-<td style="width: 375px;">Email address of the "from" field.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.CCRecipients.Name</td>
-<td style="width: 61px;">String</td>
-<td style="width: 375px;">Names of recipients of the CC field.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.CCRecipients.Address</td>
-<td style="width: 61px;">String</td>
-<td style="width: 375px;">Email addresses of recipients of the CC field.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.BCCRecipients.Name</td>
-<td style="width: 61px;">String</td>
-<td style="width: 375px;">Names of recipients of the BCC field.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.BCCRecipients.Address</td>
-<td style="width: 61px;">String</td>
-<td style="width: 375px;">Email addresses of recipients of the BCC field.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.ReplyTo.Name</td>
-<td style="width: 61px;">String</td>
-<td style="width: 375px;">Name of the "reply to" field.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.ReplyTo.Address</td>
-<td style="width: 61px;">String</td>
-<td style="width: 375px;">Email address of the "reply to" field.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.UserID</td>
-<td style="width: 61px;">String</td>
-<td style="width: 375px;">ID of the user.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>msgraph-mail-list-emails user_id=ex@example.com</pre>
-<h5>Context Example</h5>
-<pre>  { "MSGraphMail": [ { "CCRecipients": null, "From": { "Name": "Oren Zohar", "Address":
-              "ex@example.com" }, "Sender": { "Name": "Oren Zohar", "Address": "ex@example.com"
-              }, "Created": "2019-04-24T13:58:22Z", "HasAttachments": false, "ReceivedTime":
-              "2019-04-24T13:58:23Z", "UserID": "or@example.com", "IsDraft": false, "ReplyTo":
-              null, "BCCRecipients": null, "LastModifiedTime": "2019-04-24T13:58:24Z", "Subject":
-              "jn", "ID": "AAMkADMzZWNjMjBNFPVsAqlO3YRKNFAAAF0dZUAAA=", "Categories": [], "SendTime":
-              "2019-04-24T13:58:22Z" }, { "CCRecipients": null, "From": { "Name": "Oren Zohar",
-              "Address": "ex@example.com" }, "Sender": { "Name": "Oren Zohar", "Address": "ex@example.com"
-              }, "Created": "2019-04-24T13:57:05Z", "HasAttachments": false, "ReceivedTime":
-              "2019-04-24T13:57:06Z", "UserID": "ex@example.com", "IsDraft": false, "ReplyTo":
-              null, "BCCRecipients": null, "LastModifiedTime": "2019-04-24T13:57:07Z", "Subject":
-              "this is test 2", "ID": "AAMkADMzoON8u7AAAF0dZTAAA=", "Categories": [], "SendTime":
-              "2019-04-24T13:57:06Z" }, { "CCRecipients": null, "From": { "Name": "Oren Zohar",
-              "Address": "ex@example.com" }, "Sender": { "Name": "Oren Zohar", "Address": "ex@example.com"
-              }, "Created": "2019-04-24T13:54:50Z", "HasAttachments": false, "ReceivedTime":
-              "2019-04-24T13:55:21Z", "UserID": "ex@example.com", "IsDraft": false, "ReplyTo":
-              null, "BCCRecipients": null, "LastModifiedTime": "2019-04-24T13:55:22Z", "Subject":
-              "this is a test", "ID": "AAMkADMzZ8u7AAAF0dZSAAA=", "Categories": [], "SendTime":
-              "2019-04-24T13:55:20Z" }, { "CCRecipients": null, "From": { "Name": "Oren Zohar",
-              "Address": "ex@example.com" }, "Sender": { "Name": "Oren Zohar", "Address": "ex@example.com"
-              }, "Created": "2019-04-24T13:47:57Z", "HasAttachments": false, "ReceivedTime":
-              "2019-04-24T13:47:57Z", "UserID": "ex@example.com", "IsDraft": false, "ReplyTo":
-              null, "BCCRecipients": null, "LastModifiedTime": "2019-04-24T13:47:58Z", "Subject":
-              "dasdas", "ID": "AAMkADMzZWu7AAAF0Z_AAAA=", "Categories": [], "SendTime": "2019-04-24T13:47:56Z"
-              }, { "CCRecipients": null, "From": { "Name": "Oren Zohar", "Address": "ex@example.com"
-              }, "Sender": { "Name": "Oren Zohar", "Address": "ex@example.com" }, "Created":
-              "2019-04-24T13:47:56Z", "HasAttachments": false, "ReceivedTime": "2019-04-24T13:47:57Z",
-              "UserID": "ex@example.com", "IsDraft": false, "ReplyTo": null, "BCCRecipients":
-              null, "LastModifiedTime": "2019-04-24T13:47:58Z", "Subject": "dasdas", "ID":
-              "AAMkADMzZWNj3YRKNF6ZoON8u7AAAF0dZRAAA=", "Categories": [], "SendTime": "2019-04-24T13:47:56Z"
-              }, { "CCRecipients": null, "From": { "Name": "Bar Hochman", "Address": "se@example.com"
-              }, "Sender": { "Name": "Bar Hochman", "Address": "se@example.com" }, "Created":
-              "2019-04-24T06:42:01Z", "HasAttachments": true, "ReceivedTime": "2019-04-24T06:42:02Z",
-              "UserID": "ex@example.com", "IsDraft": false, "ReplyTo": null, "BCCRecipients":
-              null, "LastModifiedTime": "2019-04-24T06:48:35Z", "Subject": "\u05e7\u05d1\u05dc
-              \u05e7\u05d5\u05d1\u05e5 \u05e8\u05e0\u05d3\u05d5\u05de\u05d0\u05dc\u05d9", "ID":
-              "AAMkADMzZWNjMjiMgBGAAAAAAC7AAAF0Z9-AAA=", "Categories": [], "SendTime": "2019-04-24T06:41:56Z"
-              } ] }
-            </pre>
-<h5>Human Readable Output</h5>
-<h3>### Total of 6 of mails received</h3>
-<table style="width: 748px;">
-<tbody>
-<tr>
-<th style="width: 158px;"><strong>Subject</strong></th>
-<th style="width: 511px;"><strong>From</strong></th>
-<th style="width: 71px;"><strong>SendTime</strong></th>
-</tr>
-<tr>
-<td style="width: 158px;">jn</td>
-<td style="width: 511px;">Name: Or Zoh<br> Address: ex@example.com</td>
-<td style="width: 71px;">2019-04-24T13:58:22Z</td>
-</tr>
-<tr>
-<td style="width: 158px;">this is test 2</td>
-<td style="width: 511px;">Name: Or Zoh<br> Address: ex@example.com</td>
-<td style="width: 71px;">2019-04-24T13:57:06Z</td>
-</tr>
-<tr>
-<td style="width: 158px;">this is a test</td>
-<td style="width: 511px;">Name: Or Zohr<br> Address: ex@example.com</td>
-<td style="width: 71px;">2019-04-24T13:55:20Z</td>
-</tr>
-<tr>
-<td style="width: 158px;">dasdas</td>
-<td style="width: 511px;">Name: Or Zoh<br> Address: ex@example.com</td>
-<td style="width: 71px;">2019-04-24T13:47:56Z</td>
-</tr>
-<tr>
-<td style="width: 158px;">dasdas </td>
-<td style="width: 511px;">Name: Or Zoh<br> Address: ex@example.com</td>
-<td style="width: 71px;">2019-04-24T13:47:56Z</td>
-</tr>
-<tr>
-<td style="width: 158px;">Get a random file </td>
-<td style="width: 511px;">Name: Ba Hoc<br> Address: se@example.com</td>
-<td style="width: 71px;">2019-04-24T06:41:56Z</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h3 id="h_c981218c-d172-46f7-a603-d48e96011101">2. Get email information</h3>
-<p>Gets the properties of an email.</p>
-<h5>Base Command</h5>
-<p><code>msgraph-mail-get-email</code></p>
-<h5>Required Permissions</h5>
-<p>This command requires the following permissions.</p>
-<ul>
-<li>Mail.ReadWrite</li>
-<li>Directory.Read.All</li>
-<li>User.Read</li>
-</ul>
-<h5>Input</h5>
-<table style="width: 748px;">
-<thead>
-<tr>
-<th style="width: 160px;"><strong>Argument Name</strong></th>
-<th style="width: 509px;"><strong>Description</strong></th>
-<th style="width: 71px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 160px;">user_id</td>
-<td style="width: 509px;">User ID or principal ID (mostly email address).</td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 160px;">message_id</td>
-<td style="width: 509px;">Message ID.</td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 160px;">folder_id</td>
-<td style="width: 509px;">A CSV list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box).</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 160px;">odata</td>
-<td style="width: 509px;">OData. Fore more information about the OData parameter and how to build OData, see the <a href="https://docs.microsoft.com/he-il/graph/query-parameters" target="_blank" rel="noopener">Microsoft documentation</a>.</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 160px;">get_body</td>
-<td style="width: 509px;">Whether the message body should be returned.</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 304px;"><strong>Path</strong></th>
-<th style="width: 61px;"><strong>Type</strong></th>
-<th style="width: 375px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 304px;">MSGraphMail.ID</td>
-<td style="width: 61px;">String</td>
-<td style="width: 375px;">ID of the email.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.Created</td>
-<td style="width: 61px;">Date</td>
-<td style="width: 375px;">Time the email was created.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.LastModifiedTime</td>
-<td style="width: 61px;">Date</td>
-<td style="width: 375px;">Time the email was last modified.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.ReceivedTime</td>
-<td style="width: 61px;">Date</td>
-<td style="width: 375px;">Time the email was received.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.SendTime</td>
-<td style="width: 61px;">Date</td>
-<td style="width: 375px;">Time of sending email.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.Categories</td>
-<td style="width: 61px;">String</td>
-<td style="width: 375px;">Categories of email.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.HasAttachments</td>
-<td style="width: 61px;">Boolean</td>
-<td style="width: 375px;">Whether there are any email attachments.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.Subject</td>
-<td style="width: 61px;">String</td>
-<td style="width: 375px;">Subject of the email.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.IsDraft</td>
-<td style="width: 61px;">Boolean</td>
-<td style="width: 375px;">Whether the email is a draft.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.Body</td>
-<td style="width: 61px;">String</td>
-<td style="width: 375px;">Body of the email.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.Sender.Name</td>
-<td style="width: 61px;">String</td>
-<td style="width: 375px;">Name of the sender.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.Sender.Address</td>
-<td style="width: 61px;">String</td>
-<td style="width: 375px;">Email address of the sender.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.From.Name</td>
-<td style="width: 61px;">String</td>
-<td style="width: 375px;">Name of the "from" field.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.From.Address</td>
-<td style="width: 61px;">String</td>
-<td style="width: 375px;">Email address of the "from" field.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.CCRecipients.Name</td>
-<td style="width: 61px;">String</td>
-<td style="width: 375px;">Names of recipients of the CC field.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.CCRecipients.Address</td>
-<td style="width: 61px;">String</td>
-<td style="width: 375px;">Email addresses of recipients of the CC field.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.BCCRecipients.Name</td>
-<td style="width: 61px;">String</td>
-<td style="width: 375px;">Names of recipients of the BCC field.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.BCCRecipients.Address</td>
-<td style="width: 61px;">String</td>
-<td style="width: 375px;">Email addresses of recipients of the BCC field.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.ReplyTo.Name</td>
-<td style="width: 61px;">String</td>
-<td style="width: 375px;">Name of the "reply to" field.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.ReplyTo.Address</td>
-<td style="width: 61px;">String</td>
-<td style="width: 375px;">Email address of the "reply to" field.</td>
-</tr>
-<tr>
-<td style="width: 304px;">MSGraphMail.UserID</td>
-<td style="width: 61px;">String</td>
-<td style="width: 375px;">ID of the user.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>  !msgraph-mail-get-email message_id=AAMkADMzZWNjMgBGAAAAZoON8u7AAAF0Z9-AAA= user_id=ex@example.com
-              get_body=true
-            </pre>
-<h5>Context Example</h5>
-<pre>  <span id="s-1" class="sBrace structure-1">{  </span><br>   <span id="s-2" class="sObjectK">"MSGraphMail"</span><span id="s-3" class="sColon">:</span><span id="s-4" class="sBrace structure-2">{  </span><br>      <span id="s-5" class="sObjectK">"Body"</span><span id="s-6" class="sColon">:</span><span id="s-7" class="sObjectV"><span class="error">"&lt;html&gt;\r\n&lt;head&gt;\r\n&lt;meta http-equiv=\"Content-Type\" <br>  content=\"text/html; charset=utf-8\"&gt;\r\n&lt;meta content=\"text/html; charset=utf-8\"&gt;\r\n&lt;meta <br>  name=\"Generator\" content=\"Microsoft Word 15 (filtered medium)\"&gt;\r\n&lt;style&gt;\r\n&lt;!--\r\n@font-face\r\n\t{font-family:\"Cambria <br>  Math\"}\r\n@font-face\r\n\t{font-family:Calibri}\r\np.MsoNormal, li.MsoNormal, <br>  div.MsoNormal\r\n\t{margin:0cm;\r\n\tmargin-bottom:.0001pt;\r\n\tfont-size:12.0pt;\r\n\tfont-family:\"Calibri\",sans-serif}\r\na:link, <br>  span.MsoHyperlink\r\n\t{color:#0563C1;\r\n\ttext-decoration:underline}\r\na:visited, <br>  span.MsoHyperlinkFollowed\r\n\t{color:#954F72;\r\n\ttext-decoration:underline}\r\nspan.EmailStyle17\r\n\t{font-family:\"Calibri\",sans-serif;\r\n\tcolor:windowtext}\r\n.MsoChpDefault\r\n\t{font-family:\"Calibri\",sans-serif}\r\n@page <br>  WordSection1\r\n\t{margin:72.0pt 72.0pt 72.0pt 72.0pt}\r\ndiv.WordSection1\r\n\t{}\r\n--&gt;\r\n&lt;/style&gt;\r\n&lt;/head&gt;\r\n&lt;body <br>  lang=\"EN-US\" link=\"#0563C1\" vlink=\"#954F72\"&gt;\r\n&lt;div class=\"WordSection1\"&gt;\r\n&lt;p <br>  class=\"MsoNormal\"&gt;&lt;span lang=\"HE\" dir=\"RTL\" style=\"font-size:11.0pt; <br>  font-family:&amp;quot;Arial&amp;quot;,sans-serif\"&gt;\u05d4\u05e0\u05d4 \u05e7\u05d5\u05d1\u05e5&lt;/span&gt;&lt;span <br>  style=\"font-size:11.0pt\"&gt;&lt;/span&gt;&lt;/p&gt;\r\n&lt;/div&gt;\r\n&lt;/body&gt;\r\n&lt;/html&gt;\r\n"</span></span><span id="s-8" class="sComma">,</span><br>      <span id="s-9" class="sObjectK">"CCRecipients"</span><span id="s-10" class="sColon">:</span><span id="s-11" class="sObjectV">null</span><span id="s-12" class="sComma">,</span><br>      <span id="s-13" class="sObjectK">"From"</span><span id="s-14" class="sColon">:</span><span id="s-15" class="sBrace structure-3">{  </span><br>         <span id="s-16" class="sObjectK">"Name"</span><span id="s-17" class="sColon">:</span><span id="s-18" class="sObjectV">"Bar Hochman"</span><span id="s-19" class="sComma">,</span><br>         <span id="s-20" class="sObjectK">"Address"</span><span id="s-21" class="sColon">:</span><span id="s-22" class="sObjectV">"se@example.com"</span><br>      <span id="s-23" class="sBrace structure-3">}</span><span id="s-24" class="sComma">,</span><br>      <span id="s-25" class="sObjectK">"Sender"</span><span id="s-26" class="sColon">:</span><span id="s-27" class="sBrace structure-3">{  </span><br>         <span id="s-28" class="sObjectK">"Name"</span><span id="s-29" class="sColon">:</span><span id="s-30" class="sObjectV">"Bar Hochman"</span><span id="s-31" class="sComma">,</span><br>         <span id="s-32" class="sObjectK">"Address"</span><span id="s-33" class="sColon">:</span><span id="s-34" class="sObjectV">"se@example.com"</span><br>      <span id="s-35" class="sBrace structure-3">}</span><span id="s-36" class="sComma">,</span><br>      <span id="s-37" class="sObjectK">"Created"</span><span id="s-38" class="sColon">:</span><span id="s-39" class="sObjectV">"2019-04-24T06:42:01Z"</span><span id="s-40" class="sComma">,</span><br>      <span id="s-41" class="sObjectK">"HasAttachments"</span><span id="s-42" class="sColon">:</span><span id="s-43" class="sObjectV">true</span><span id="s-44" class="sComma">,</span><br>      <span id="s-45" class="sObjectK">"ReceivedTime"</span><span id="s-46" class="sColon">:</span><span id="s-47" class="sObjectV">"2019-04-24T06:42:02Z"</span><span id="s-48" class="sComma">,</span><br>      <span id="s-49" class="sObjectK">"UserID"</span><span id="s-50" class="sColon">:</span><span id="s-51" class="sObjectV">"ex@example.com"</span><span id="s-52" class="sComma">,</span><br>      <span id="s-53" class="sObjectK">"IsDraft"</span><span id="s-54" class="sColon">:</span><span id="s-55" class="sObjectV">false</span><span id="s-56" class="sComma">,</span><br>      <span id="s-57" class="sObjectK">"ReplyTo"</span><span id="s-58" class="sColon">:</span><span id="s-59" class="sObjectV">null</span><span id="s-60" class="sComma">,</span><br>      <span id="s-61" class="sObjectK">"BCCRecipients"</span><span id="s-62" class="sColon">:</span><span id="s-63" class="sObjectV">null</span><span id="s-64" class="sComma">,</span><br>      <span id="s-65" class="sObjectK">"LastModifiedTime"</span><span id="s-66" class="sColon">:</span><span id="s-67" class="sObjectV">"2019-04-24T06:48:35Z"</span><span id="s-68" class="sComma">,</span><br>      <span id="s-69" class="sObjectK">"Subject"</span><span id="s-70" class="sColon">:</span><span id="s-71" class="sObjectV"><span class="error">"\u05e7\u05d1\u05dc <br>  \u05e7\u05d5\u05d1\u05e5 \u05e8\u05e0\u05d3\u05d5\u05de\u05d0\u05dc\u05d9"</span></span><span id="s-72" class="sComma">,</span><br>      <span id="s-73" class="sObjectK">"ID"</span><span id="s-74" class="sColon">:</span><span id="s-75" class="sObjectV">"AAMkADMzZWNjMjBkZoON8u7AAAF0Z9-AAA="</span><span id="s-76" class="sComma">,</span><br>      <span id="s-77" class="sObjectK">"Categories"</span><span id="s-78" class="sColon">:</span><span id="s-79" class="sBracket structure-3">[  </span><br><br>      <span id="s-80" class="sBracket structure-3">]</span><span id="s-81" class="sComma">,</span><br>      <span id="s-82" class="sObjectK">"SendTime"</span><span id="s-83" class="sColon">:</span><span id="s-84" class="sObjectV">"2019-04-24T06:41:56Z"</span><br>   <span id="s-85" class="sBrace structure-2">}</span><br><span id="s-86" class="sBrace structure-1">}</span>
-            </pre>
-<h5>Human Readable Output</h5>
-<h3>Results for message ID AAMkADMzZCPVsAqlO3YRKNF6ZoON8u7AAAF0Z9-AAA=</h3>
-<table style="width: 880px;">
-<tbody>
-<tr>
-<th style="width: 160px;">ID</th>
-<th style="width: 521px;">Subject</th>
-<th style="width: 68px;">SendTime</th>
-<th style="width: 62px;">Sender</th>
-<th style="width: 66px;">From</th>
-<th style="width: 70px;">HasAttachments</th>
-<th style="width: 77px;">Body</th>
-</tr>
-<tr>
-<td style="width: 160px;">AAMkADMzZWF0Z9-AAA=</td>
-<td style="width: 521px;">Get a random file</td>
-<td style="width: 68px;">2019-04-24T06:41:56Z</td>
-<td style="width: 62px;">Name: Ba Hoch<br> Address: se@example.com</td>
-<td style="width: 66px;">Name: Ba Hoch<br> Address: se@example.com</td>
-<td style="width: 70px;">true</td>
-<td style="width: 77px;">File goes here</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h3 id="h_adfe17ce-1ced-48f9-b4c0-a2d32d0abc88">3. Delete an email</h3>
-<p>Deletes an email.</p>
-<h5>Base Command</h5>
-<p><code>msgraph-mail-delete-email</code></p>
-<h5>Required Permissions</h5>
-<p>This command requires the following permissions.</p>
-<ul>
-<li>Mail.ReadWrite</li>
-<li>Directory.Read.All</li>
-<li>User.Read</li>
-</ul>
-<h5>Input</h5>
-<table style="width: 748px;">
-<thead>
-<tr>
-<th style="width: 168px;"><strong>Argument Name</strong></th>
-<th style="width: 501px;"><strong>Description</strong></th>
-<th style="width: 71px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 168px;">user_id</td>
-<td style="width: 501px;">User ID or principal ID (mostly email address).</td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 168px;">message_id</td>
-<td style="width: 501px;">Message ID.</td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 168px;">folder_id</td>
-<td style="width: 501px;">A CSV list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box).</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<p>There is no context output for this command.</p>
-<h5>Command Example</h5>
-<pre>  !msgraph-mail-delete-email user_id=ex@example.com message_id=4jn43h2%$@nf=
-            </pre>
-<h3 id="h_d26f8111-bd58-4fe1-a6fb-7baaf90edbc4">4. Get a list of email attachments</h3>
-<p>Lists all of the attachments of given email</p>
-<h5>Base Command</h5>
-<p><code>msgraph-mail-list-attachments</code></p>
-<h5>Required Permissions</h5>
-<p>This command requires the following permissions.</p>
-<ul>
-<li>Mail.ReadWrite</li>
-<li>Directory.Read.All</li>
-<li>User.Read</li>
-</ul>
-<h5>Input</h5>
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 159px;"><strong>Argument Name</strong></th>
-<th style="width: 510px;"><strong>Description</strong></th>
-<th style="width: 71px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 159px;">user_id</td>
-<td style="width: 510px;">User ID or principal ID (mostly email address).</td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 159px;">message_id</td>
-<td style="width: 510px;">Message ID.</td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 159px;">folder_id</td>
-<td style="width: 510px;">A CSV list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box).</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table>
-<thead>
-<tr>
-<th><strong>Path</strong></th>
-<th><strong>Type</strong></th>
-<th><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>MSGraphMailAttachment.ID</td>
-<td>String</td>
-<td>Email ID.</td>
-</tr>
-<tr>
-<td>MSGraphMailAttachment.Attachment.ID</td>
-<td>String</td>
-<td>ID of the attachment.</td>
-</tr>
-<tr>
-<td>MSGraphMailAttachment.Attachment.Name</td>
-<td>String</td>
-<td>Name of the attachment.</td>
-</tr>
-<tr>
-<td>MSGraphMailAttachment.Attachment.Type</td>
-<td>String</td>
-<td>Type of the attachment.</td>
-</tr>
-<tr>
-<td>MSGraphMailAttachment.UserID</td>
-<td>String</td>
-<td>ID of the user.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>  msgraph-mail-list-attachments user_id=ex@example.com message_id=AAMkADMzZWNjMjBkLTE2PVsAqlO3YRKNF6ZoON8u7AAAF0Z9-AAA=
-            </pre>
-<h5>Context Example</h5>
-<pre>  <span id="s-1" class="sBrace structure-1">{  </span><br>   <span id="s-2" class="sObjectK">"MSGraphMailAttachment"</span><span id="s-3" class="sColon">:</span><span id="s-4" class="sBrace structure-2">{  </span><br>      <span id="s-5" class="sObjectK">"UserID"</span><span id="s-6" class="sColon">:</span><span id="s-7" class="sObjectV">"ex@example.com"</span><span id="s-8" class="sComma">,</span><br>      <span id="s-9" class="sObjectK">"Attachment"</span><span id="s-10" class="sColon">:</span><span id="s-11" class="sBracket structure-3">[  </span><br>         <span id="s-12" class="sBrace structure-4">{  </span><br>            <span id="s-13" class="sObjectK">"Type"</span><span id="s-14" class="sColon">:</span><span id="s-15" class="sObjectV">"image/png"</span><span id="s-16" class="sComma">,</span><br>            <span id="s-17" class="sObjectK">"ID"</span><span id="s-18" class="sColon">:</span><span id="s-19" class="sObjectV">"AAMkADMzZWNjMjBkLTE2ZGQqF1VbAHI="</span><span id="s-20" class="sComma">,</span><br>            <span id="s-21" class="sObjectK">"Name"</span><span id="s-22" class="sColon">:</span><span id="s-23" class="sObjectV">"download-1.png"</span><br>         <span id="s-24" class="sBrace structure-4">}</span><br>      <span id="s-25" class="sBracket structure-3">]</span><span id="s-26" class="sComma">,</span><br>      <span id="s-27" class="sObjectK">"ID"</span><span id="s-28" class="sColon">:</span><span id="s-29" class="sObjectV">"AAMkADMzZWNjMjBkLTE2ZGQtNDN8u7AAAAAAEMAACPVsAqlO3YRKNF6ZoON8u7AAAF0Z9-AAA="</span><br>   <span id="s-30" class="sBrace structure-2">}</span><br><span id="s-31" class="sBrace structure-1">}</span>
-            </pre>
-<h5>Human Readable Output</h5>
-<h3>Total of 1 attachments found in message AAMkADMzZWNjMjBkLTENF6ZoON8u7AAAAAAEMAACPVsAqlO3YRKNF6ZoON8u7AAAF0Z9-AAA= from user <a href="mailto:ex@example.com">ex@example.com</a>
-</h3>
-<table border="2">
-<thead>
-<tr>
-<th>File names</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>download-1.png</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h3 id="h_03de5e7a-ffb1-4200-bc54-9921ac59aaba">5. Get an email attachment</h3>
-<p>Gets an attachment from the email.</p>
-<h5>Base Command</h5>
-<p><code>msgraph-mail-get-attachment</code></p>
-<h5>Required Permissions</h5>
-<p>This command requires the following permissions.</p>
-<ul>
-<li>Mail.ReadWrite</li>
-<li>Directory.Read.All</li>
-<li>User.Read</li>
-</ul>
-<h5>Input</h5>
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 147px;"><strong>Argument Name</strong></th>
-<th style="width: 521px;"><strong>Description</strong></th>
-<th style="width: 72px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 147px;">user_id</td>
-<td style="width: 521px;">User ID or principal ID (mostly email address).</td>
-<td style="width: 72px;">Required</td>
-</tr>
-<tr>
-<td style="width: 147px;">message_id</td>
-<td style="width: 521px;">Message ID.</td>
-<td style="width: 72px;">Required</td>
-</tr>
-<tr>
-<td style="width: 147px;">folder_id</td>
-<td style="width: 521px;">CSV list of folder IDs, for example: (mailFolders,childFolders,childFolders…).</td>
-<td style="width: 72px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 147px;">attachment_id</td>
-<td style="width: 521px;">ID of the attachment.</td>
-<td style="width: 72px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 219px;"><strong>Path</strong></th>
-<th style="width: 132px;"><strong>Type</strong></th>
-<th style="width: 389px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 219px;">File.Size</td>
-<td style="width: 132px;">Number</td>
-<td style="width: 389px;">Size of the file.</td>
-</tr>
-<tr>
-<td style="width: 219px;">File.SHA1</td>
-<td style="width: 132px;">String</td>
-<td style="width: 389px;">SHA1 hash of the file.</td>
-</tr>
-<tr>
-<td style="width: 219px;">File.SHA256</td>
-<td style="width: 132px;">String</td>
-<td style="width: 389px;">SHA256 hash of the file.</td>
-</tr>
-<tr>
-<td style="width: 219px;">File.Name</td>
-<td style="width: 132px;">String</td>
-<td style="width: 389px;">Name of the file.</td>
-</tr>
-<tr>
-<td style="width: 219px;">File.SSDeep</td>
-<td style="width: 132px;">String</td>
-<td style="width: 389px;">ssdeep hash of the file.</td>
-</tr>
-<tr>
-<td style="width: 219px;">File.EntryID</td>
-<td style="width: 132px;">String</td>
-<td style="width: 389px;">Entry ID of the file.</td>
-</tr>
-<tr>
-<td style="width: 219px;">File.Info</td>
-<td style="width: 132px;">String</td>
-<td style="width: 389px;">Details of the file.</td>
-</tr>
-<tr>
-<td style="width: 219px;">File.Type</td>
-<td style="width: 132px;">String</td>
-<td style="width: 389px;">Type of file.</td>
-</tr>
-<tr>
-<td style="width: 219px;">File.MD5</td>
-<td style="width: 132px;">String</td>
-<td style="width: 389px;">MD5 hash of the file.</td>
-</tr>
-<tr>
-<td style="width: 219px;">File.Extension</td>
-<td style="width: 132px;">String</td>
-<td style="width: 389px;">Extension of the file.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>  !msgraph-mail-get-attachment user_id=ex@example.com message_id=!msgraph-mail-get-attachment
-              user_id=ex@example.com message_id=AAMkADMzZWNjO3YRKNF6ZoON8u7AAAAAAEMAACPVsAqlO3YRKNF6ZoON8u7AAAF0Z9-AAA=
-              attachment_id=AAMkADCPVsAqlO3YRKNF6ZoON8u7AAAAAAEMAACPVsAqlO3YRKNF6ZoON8u7AAAF0Z9-AAABEgAQAFBdvAbOjGxNvBHqF1VbAHI=<span style="white-space: normal;">
-            </span></pre>
+Use the Microsoft Graph integration to let your applications get authorized access to a user's Outlook mail data in a personal or organization account.
+
+## Configure MicrosoftGraphMail on Demisto
+
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for MicrosoftGraphMail.
+3. Click **Add instance** to create and configure a new integration instance.
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| url | The server URL. | True |
+| auth_id | The ID (received from the admin consent - see the Detailed Instructions (?) section). | True |
+| tenant_id | The token (received from the admin consent - see the Detailed Instructions (?) section). | True |
+| enc_key | The Key (received from the admin consent - see the Detailed Instructions (?) section). | True |
+| isFetch | The fetched incidents. | False |
+| mailbox_to_fetch | The email address from which to fetch incidents (e.g. "example<span\>>@demisto.com"). | False |
+| folder_to_fetch | The name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g. Inbox/Phishing). | False |
+| first_fetch | The first fetched timestamp ((number) (time unit), e.g., 12 hours, 7 days). | False |
+| fetch_limit | The maximum number of emails to pull per fetch. | False |
+| insecure | Whether to trust any certificate (not secure). | False |
+| proxy | Whether to use system proxy settings. | False |
+| self_deployed | Whether to use a self deployed Azure Application. | False |
+| incidentType | The incident type. | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
+## Commands
+You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### Get properties of returned emails
+***
+Gets the properties of returned emails.
+
+##### Required Permissions
+**The following permissions are required for this command:**
+- Mail.ReadWrite (Application)
+- User.Read
+
+##### Base Command
+
+`msgraph-mail-list-emails`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The user ID from which to pull emails (can be principal ID (email address)). | Required | 
+| folder_id |  The comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box).  | Optional | 
+| odata | The OData query. | Optional | 
+| search | The term for which to search. This argument cannot contain reserved characters such as "!, $, #, @, etc". Click [here](https://tools.ietf.org/html/rfc3986#section-2.2) for further information. | Optional | 
+| pages_to_pull | The number of pages of emails to return. The maximum is 10 emails per page. | Optional | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphMail.ID | String | The ID of the email. | 
+| MSGraphMail.Created | Date | The time the email was created. | 
+| MSGraphMail.LastModifiedTime | Date | The time the email was last modified. | 
+| MSGraphMail.ReceivedTime | Date | The time the email was received. | 
+| MSGraphMail.SendTime | Date | The time the email was sent. | 
+| MSGraphMail.Categories | String | Categories of the email. | 
+| MSGraphMail.HasAttachments | Boolean | Whether the email has attachments. | 
+| MSGraphMail.Subject | String | The subject of the email. | 
+| MSGraphMail.IsDraft | Boolean | Whether the email is a draft. | 
+| MSGraphMail.Body | String | The content (body) of the email. | 
+| MSGraphMail.Sender.Name | String | The name of the sender. | 
+| MSGraphMail.Sender.Address | String | The email address of the sender. | 
+| MSGraphMail.From.Name | String | The name of the user in the 'from' field of the email. | 
+| MSGraphMail.From.Address | String | The email address of the user in the 'from' field of the email | 
+| MSGraphMail.CCRecipients.Name | String | The names of the CC recipients. | 
+| MSGraphMail.CCRecipients.Address | String | The email address of the user in the 'cc' field of the email. | 
+| MSGraphMail.BCCRecipients.Name | String | The names of the users in the 'bcc' field of the email. | 
+| MSGraphMail.BCCRecipients.Address | String | The email address of the user in the 'bcc' field of the email. | 
+| MSGraphMail.ReplyTo.Name | String | The name in the 'replyTo' field of the email. | 
+| MSGraphMail.ReplyTo.Address | String | The email address in the 'replyTo' field of the email. | 
+| MSGraphMail.UserID | String | The ID of the user. | 
+
+
+##### Command Example
+```!msgraph-mail-list-emails user_id=dev@demistodev.onmicrosoft.com search="Demo" folder_id=inbox```
+
+##### Context Example
+```
+{
+    "MSGraphMail": [
+        {
+            "BCCRecipients": null,
+            "CCRecipients": null,
+            "Categories": [],
+            "Created": "2020-03-29T09:56:37Z",
+            "Flag": {
+                "flagStatus": "notFlagged"
+            },
+            "From": {
+                "Address": "dev@demistodev.onmicrosoft.com",
+                "Name": "demisto dev"
+            },
+            "HasAttachments": true,
+            "Headers": null,
+            "ID": """",
+            "Importance": "low",
+            "IsDraft": false,
+            "LastModifiedTime": "2020-03-29T09:56:37Z",
+            "ReceivedTime": "2020-03-29T09:56:37Z",
+            "ReplyTo": null,
+            "SendTime": "2020-03-29T09:56:37Z",
+            "Sender": {
+                "Address": "dev@demistodev.onmicrosoft.com",
+                "Name": "demisto dev"
+            },
+            "Subject": "Demo test send mail",
+            "UserID": "dev@demistodev.onmicrosoft.com"
+        },
+    ]
+}
+```
+
+##### Human Readable Output
+##### ### Total of 7 of mails received
+|Subject|From|SendTime|
+|---|---|---|
+| Demo test send mail | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:56:37Z |
+| RE: Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:56:18Z |
+| Demo test send mail | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:52:59Z |
+| RE: Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:52:41Z |
+| RE: Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:51:06Z |
+| Demo test send mail | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:06:54Z |
+| Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-26T09:21:14Z |
+
+
+### Get the properties of a single email
+***
+Returns the properties of an email.
+
+##### Required Permissions
+**The following permissions are required for this command:**
+- User.Read
+
+##### Base Command
+
+`msgraph-mail-get-email`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The user ID or principal ID (usually an email address in the format someuser<span\>>@example.com). | Required | 
+| message_id | The message ID. | Required | 
+| folder_id | The folder ID. | Optional | 
+| odata | The OData. | Optional | 
+| get_body | Whether to return the message body. Can be "true" or "false". | Optional | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphMail.ID | String | The ID of the email. | 
+| MSGraphMail.Created | Date | The time the email was created. | 
+| MSGraphMail.LastModifiedTime | Date | The time the email was last modified. | 
+| MSGraphMail.ReceivedTime | Date | The time the email was received. | 
+| MSGraphMail.SendTime | Date | The time the email was sent. | 
+| MSGraphMail.Categories | String | The categories of the email. | 
+| MSGraphMail.HasAttachments | Boolean | Whether the email has attachments. | 
+| MSGraphMail.Subject | String | The subject of the email. | 
+| MSGraphMail.IsDraft | Boolean | Whether the email is a draft. | 
+| MSGraphMail.Body | String | The content (body) of the email. | 
+| MSGraphMail.Sender.Name | String | The name of the sender. | 
+| MSGraphMail.Sender.Address | String | The email address of the sender. | 
+| MSGraphMail.From.Name | String | The name of the user in the 'from' field of the email. | 
+| MSGraphMail.From.Address | String | The email address of the user in the 'from' field of the email. | 
+| MSGraphMail.CCRecipients.Name | String | The names of the users in the 'cc' field of the email. | 
+| MSGraphMail.CCRecipients.Address | String | The email address of the user in the 'cc' field of the email. | 
+| MSGraphMail.BCCRecipients.Name | String | The names of the users in the 'bcc' field of the email. | 
+| MSGraphMail.BCCRecipients.Address | String | The email address of the user in the 'bcc' field of the email. | 
+| MSGraphMail.ReplyTo.Name | String | The name in the 'replyTo' field of the email. | 
+| MSGraphMail.ReplyTo.Address | String | The email address in the 'replyTo' field of the email. | 
+| MSGraphMail.UserID | String | The ID of the user. | 
+
+
+##### Command Example
+```!msgraph-mail-get-email message_id="message_id" user_id=dev@demistodev.onmicrosoft.com```
+
+##### Context Example
+```
+{
+    "MSGraphMail": {
+        "BCCRecipients": null,
+        "CCRecipients": null,
+        "Categories": [],
+        "Created": "2020-03-26T09:21:15Z",
+        "Flag": {
+            "flagStatus": "notFlagged"
+        },
+        "From": {
+            "Address": "dev@demistodev.onmicrosoft.com",
+            "Name": "demisto dev"
+        },
+        "HasAttachments": false,
+        "Headers": null,
+        "ID": """",
+        "Importance": "low",
+        "IsDraft": false,
+        "LastModifiedTime": "2020-03-29T09:56:18Z",
+        "ReceivedTime": "2020-03-26T09:21:15Z",
+        "ReplyTo": null,
+        "SendTime": "2020-03-26T09:21:14Z",
+        "Sender": {
+            "Address": "dev@demistodev.onmicrosoft.com",
+            "Name": "demisto dev"
+        },
+        "Subject": "Demo test",
+        "UserID": "dev@demistodev.onmicrosoft.com"
+    }
+}
+```
+
+##### Human Readable Output
+##### Results for message ID ""
+|ID|Subject|SendTime|Sender|From|HasAttachments|Body|
+|---|---|---|---|---|---|---|
+| "" | Demo test | 2020-03-26T09:21:14Z | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | false |  |
+
+##### Required Permissions
+**The following permissions are required for this command:**
+- Mail.ReadWrite (Application)
+
+### Delete an email
+***
+Deletes an email.
+
+
+##### Base Command
+
+`msgraph-mail-delete-email`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The user ID or principal ID (usually an email address in the format someuser<span\>>@example.com). | Required | 
+| message_id | The message ID. | Required | 
+| folder_id | The comma-separated list of folder IDs. For example, "mailFolders,childFolders,childFolders". | Optional | 
+
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+```!msgraph-mail-delete-email user_id=dev@demistodev.onmicrosoft.com message_id="message_id"```
+
+##### Context Example
+```
+{}
+```
+
+##### Human Readable Output
+##### Message has been deleted successfully
+|Message ID|User ID|
+|---|---|
+| "" | dev<span\>>@demistodev.onmicrosoft.com |
+
+
+### List attachments of an email
+***
+Lists all of the attachments of a given email.
+
+##### Required Permissions
+**The following permissions are required for this command:**
+- User.Read
+    
+##### Base Command
+
+`msgraph-mail-list-attachments`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The user ID or principal ID (usually an email address in the format someuser<span\>>@example.com). | Required | 
+| message_id | The message ID. | Required | 
+| folder_id |  The comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box).  | Optional | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphMailAttachment.ID | String | The email ID. | 
+| MSGraphMailAttachment.Attachment.ID | String | The ID of the attachment. | 
+| MSGraphMailAttachment.Attachment.Name | String | The name of the attachment. | 
+| MSGraphMailAttachment.Attachment.Type | String | The attachment type. | 
+| MSGraphMailAttachment.UserID | String | The ID of the user. | 
+
+
+##### Command Example
+```!msgraph-mail-list-attachments message_id="message_id" user_id=dev@demistodev.onmicrosoft.com```
+
+##### Context Example
+```
+{
+    "MSGraphMailAttachment": {
+        "Attachment": [
+            {
+                "ID": """",
+                "Name": "test_attachment",
+                "Type": "application/octet-stream"
+            }
+        ],
+        "ID": """",
+        "UserID": "dev@demistodev.onmicrosoft.com"
+    }
+}
+```
+
+##### Human Readable Output
+##### Total of 1 attachments found in message "" from user dev<span\>>@demistodev.onmicrosoft.com
+|File names|
+|---|
+| test_attachment |
+
+
+### Get an attachment from an email
+***
+Gets an attachment from the email.
+
+##### Required Permissions
+**The following permissions are required for this command:**
+- User.Read
+
+##### Base Command
+
+`msgraph-mail-get-attachment`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The user ID or principal ID (usually an email address in the format someuser<span\>>@example.com). | Required | 
+| message_id | The message ID. | Required | 
+| folder_id | The comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box). | Optional | 
+| attachment_id | The ID of the attachment. | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Size | Number | The size of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.Name | String | The name of the file. | 
+| File.SSDeep | String | The SSDeep hash of the file. | 
+| File.EntryID | String | The entry ID of the file. | 
+| File.Info | String | File information. | 
+| File.Type | String | The file type. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.Extension | String | The file extension. | 
+
+
+##### Command Example
+```!msgraph-mail-get-attachment attachment_id="" message_id="message_id" user_id=dev@demistodev.onmicrosoft.com```
+
+##### Context Example
+```
+{
+    "File": {
+        "EntryID": "8017@f6e9c46f-e2e9-446f-8cd9-909bd5f72dbf",
+        "Info": "image/jpeg",
+        "MD5": "009a889d2f93dceeb9bf0df0870e8f58",
+        "Name": "test_attachment",
+        "SHA1": "3cb49da95c7c1acb80496329636cc14b07fc82fb",
+        "SHA256": "9e930d4a9fc01e91729f3d6acfa2d793cbf6db5a4b48ae2cf9d8c0aac57cc998",
+        "SHA512": """",
+        "SSDeep": """",
+        "Size": 978210,
+        "Type": "JPEG image data, Exif standard: [TIFF image data, big-endian, direntries=12, height=1599, bps=0, PhotometricIntepretation=RGB, orientation=upper-left, width=1200], progressive, precision 8, 1200x1599, frames 3"
+    }
+}
+```
+
+##### Human Readable Output
+There is no Human Readable Output.
+
+### Get the mail folder list under the root folder
+***
+Returns the mail folder list directly under the root folder.
+
+##### Required Permissions
+**The following permissions are required for this command:**
+* Mail.ReadWrite (Application)
+* User.Read
+    
+##### Base Command
+
+`msgraph-mail-list-folders`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The user ID or principal ID (usually an email address in the format someuser<span\>>@example.com). | Required | 
+| limit | The maximum number of mail folder lists to return. The default is 20. | Optional | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphMail.Folders.ChildFolderCount | Number | The number of child folders. | 
+| MSGraphMail.Folders.DisplayName | String | The folder display name. | 
+| MSGraphMail.Folders.ID | String | The target folder ID. | 
+| MSGraphMail.Folders.ParentFolderID | String | The parent folder ID. | 
+| MSGraphMail.Folders.TotalItemCount | Number | The total number of email messages in the folder. | 
+| MSGraphMail.Folders.UnreadItemCount | Number | The number of unread emails in the folder. | 
+
+
+##### Command Example
+```!msgraph-mail-list-folders user_id=dev@demistodev.onmicrosoft.com limit=2```
+
+##### Context Example
+```
+{
+    "MSGraphMail": {
+        "Folders": [
+            {
+                "ChildFolderCount": 0,
+                "DisplayName": "Archive",
+                "ID": """",
+                "ParentFolderID": """",
+                "TotalItemCount": 0,
+                "UnreadItemCount": 0
+            },
+            {
+                "ChildFolderCount": 1,
+                "DisplayName": "Conversation History",
+                "ID": """",
+                "ParentFolderID": """",
+                "TotalItemCount": 0,
+                "UnreadItemCount": 0
+            }
+        ]
+    }
+}
+```
+
+##### Human Readable Output
+
+##### Mail Folder collection under root folder for user dev<span\>>@demistodev.onmicrosoft.com
+
+|ChildFolderCount|DisplayName|ID|ParentFolderID|TotalItemCount|UnreadItemCount|
+|---|---|---|---|---|---|
+| 0 | Archive | "" | "" | 0 | 0 |
+| 1 | Conversation History | "" | "" | 0 | 0 |
+
+
+### Get the folder list for a folder
+***
+Returns the folder list under the specified folder.
+
+##### Required Permissions
+**The following permissions are required for this command:**
+- Mail.ReadWrite (Application)
+- User.Read
+
+##### Base Command
+
+`msgraph-mail-list-child-folders`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The user ID or principal ID (usually an email address in the format someuser<Span\>@example.com). | Required | 
+| parent_folder_id | The ID of the parent folder. | Required | 
+| limit | The maximum number of mail folder lists to return. The default is 20. | Optional | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphMail.Folders.ChildFolderCount | Number | The number of child folders. | 
+| MSGraphMail.Folders.DisplayName | String | The folder display name. | 
+| MSGraphMail.Folders.ID | String | The folder ID. | 
+| MSGraphMail.Folders.ParentFolderID | String | The parent folder ID. | 
+| MSGraphMail.Folders.TotalItemCount | Number | The total number of email messages in the folder. | 
+| MSGraphMail.Folders.UnreadItemCount | Number | The number of unread email messages in the folder. | 
+
+
+##### Command Example
+```!msgraph-mail-list-child-folders user_id=dev@demistodev.onmicrosoft.com parent_folder_id=inbox```
+
+##### Context Example
+```
+{
+    "MSGraphMail": {
+        "Folders": [
+            {
+                "ChildFolderCount": 0,
+                "DisplayName": "child_folder",
+                "ID": ",
+                "ParentFolderID": """",
+                "TotalItemCount": 0,
+                "UnreadItemCount": 0
+            },
+            {
+                "ChildFolderCount": 0,
+                "DisplayName": "new_test",
+                "ID": """",
+                "ParentFolderID": """",
+                "TotalItemCount": 0,
+                "UnreadItemCount": 0
+            }
+        ]
+    }
+}
+```
+
+##### Human Readable Output
+##### Mail Folder collection under inbox folder for user dev<span\>>@demistodev.onmicrosoft.com
+|ChildFolderCount|DisplayName|ID|ParentFolderID|TotalItemCount|UnreadItemCount|
+|---|---|---|---|---|---|
+| 0 | child_folder | "" | "" | 0 | 0 |
+| 0 | new_test | "" | "" | 0 | 0 |
+
+
+### Create a new child folder
+***
+Creates a new folder under the specified folder (parent).
+
+##### Required Permissions
+**The following permissions are required for this command:**
+- Mail.ReadWrite (Application)
+    
+##### Base Command
+
+`msgraph-mail-create-folder`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The user ID or principal ID (usually an email address in the format someuser<span\>>@example.com). | Required | 
+| new_folder_name | The display name of the new folder. | Required | 
+| parent_folder_id | The ID of the parent folder under which to create a new folder. | Optional | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphMail.Folders.ChildFolderCount | Number | The number of child folders. | 
+| MSGraphMail.Folders.DisplayName | String | The folder display name. | 
+| MSGraphMail.Folders.ID | String | The folder ID. | 
+| MSGraphMail.Folders.ParentFolderID | String | The parent folder ID. | 
+| MSGraphMail.Folders.TotalItemCount | Number | The total number of email messages in the folder. | 
+| MSGraphMail.Folders.UnreadItemCount | Number | The number of unread email messages in the folder. | 
+
+
+##### Command Example
+```!msgraph-mail-create-folder user_id=dev@demistodev.onmicrosoft.com new_folder_name="Testing"```
+
+##### Context Example
+```
+{
+    "MSGraphMail": {
+        "Folders": {
+            "ChildFolderCount": 0,
+            "DisplayName": "Testing",
+            "ID": """",
+            "ParentFolderID": """",
+            "TotalItemCount": 0,
+            "UnreadItemCount": 0
+        }
+    }
+}
+```
+
+##### Human Readable Output
+##### Mail folder was created with display name: Testing
+|ChildFolderCount|DisplayName|ID|ParentFolderID|TotalItemCount|UnreadItemCount|
+|---|---|---|---|---|---|
+| 0 | Testing | "" | "" | 0 | 0 |
+
+
+
+### Update a folder's properties
+***
+Updates the properties of the specified folder.
+
+##### Required Permissions
+**The following permissions are required for this command:**
+- Mail.ReadWrite (Application)
+    
+##### Base Command
+
+`msgraph-mail-update-folder`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The user ID or principal ID (usually an email address in the format someuser<span\>>@example.com). | Required | 
+| folder_id | The ID of the folder to update. | Required | 
+| new_display_name | The mail folder display name. | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphMail.Folders.ChildFolderCount | String | The number of child folders. | 
+| MSGraphMail.Folders.DisplayName | String | The folder display name. | 
+| MSGraphMail.Folders.ID | String | The folder ID. | 
+| MSGraphMail.Folders.ParentFolderID | String | The parent folder ID. | 
+| MSGraphMail.Folders.TotalItemCount | Number | The total number of email messages in the folder. | 
+| MSGraphMail.Folders.UnreadItemCount | Number | The unread emails count inside the folder. | 
+
+
+##### Command Example
+```!msgraph-mail-update-folder user_id=dev@demistodev.onmicrosoft.com folder_id="folder_id" new_display_name="new_test"```
+
+##### Context Example
+```
+{
+    "MSGraphMail": {
+        "Folders": {
+            "ChildFolderCount": 0,
+            "DisplayName": "new_test",
+            "ID": """",
+            "ParentFolderID": """",
+            "TotalItemCount": 0,
+            "UnreadItemCount": 0
+        }
+    }
+}
+```
+
+##### Human Readable Output
+##### Mail folder "" was updated with display name: new_test
+|ChildFolderCount|DisplayName|ID|ParentFolderID|TotalItemCount|UnreadItemCount|
+|---|---|---|---|---|---|
+| 0 | new_test | "" | "" | 0 | 0 |
+
+
+### Delete a folder
+***
+Deletes the specified mail folder.
+
+##### Required Permissions
+**The following permissions are required for this command:**
+- Mail.ReadWrite (Application)
+    
+##### Base Command
+
+`msgraph-mail-delete-folder`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The user ID or principal ID (usually an email address in the format someuser<Span\>@example.com). | Required | 
+| folder_id | The ID of the folder to delete. | Required | 
+
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+```!msgraph-mail-delete-folder user_id=dev@demistodev.onmicrosoft.com folder_id="folder_id"```
+
+##### Context Example
+```
+{}
+```
+
+##### Human Readable Output
+The folder "" was deleted successfully
+
+
+### Move a message to a different folder
+***
+Moves a message to a different folder.
+
+##### Required Permissions
+**The following permissions are required for this command:**
+- Mail.ReadWrite (Application)
+    
+##### Base Command
+
+`msgraph-mail-move-email`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| message_id | The message ID. | Required | 
+| destination_folder_id | The ID of the destination folder. | Required | 
+| user_id | The user ID or principal ID (usually an email address in the format someuser<span\>>@example.com). | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphMail.MovedEmails.DestinationFolderID | String | The folder where the email message was moved to. | 
+| MSGraphMail.MovedEmails.ID | String | The new ID of the moved email message. | 
+| MSGraphMail.MovedEmails.UserID | String | The user ID. | 
+
+
+##### Context Example
+```
+{
+    "MSGraphMail": {
+        "MovedEmails": {
+            "DestinationFolderID": "inbox",
+            "ID": """",
+            "UserID": "dev@demistodev.onmicrosoft.com"
+        }
+    }
+}
+```
+
+##### Human Readable Output
+##### The email was moved successfully. Updated email data:
+|DestinationFolderID|ID|UserID|
+|---|---|---|
+| inbox | "" | dev<span\>>@demistodev.onmicrosoft.com |
+
+
+
+### Get an email message by ID and upload the content
+***
+Retrieves an email message by message ID and uploads the content as an EML file.
+
+##### Required Permissions
+**The following permissions are required for this command:**
+- User.Read
+
+##### Base Command
+
+`msgraph-mail-get-email-as-eml`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The user ID or principal ID (usually an email address in the format someuser<span\>>@example.com). | Required | 
+| message_id | The message ID. | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Size | String | The size of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.SHA512 | String | The SHA512 hash of the file. | 
+| File.Name | String | The name of the file. | 
+| File.SSDeep | String | The SSDeep hash of the file. | 
+| File.EntryID | String | The EntryID of the file. | 
+| File.Info | String | Information about the file. | 
+| File.Type | String | The file type. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.Extension | String | The extension of the file. | 
+
+
+##### Command Example
+```!msgraph-mail-get-email-as-eml message_id="message_id" user_id=dev@demistodev.onmicrosoft.com```
+
+##### Context Example
+```
+{
+    "File": {
+        "EntryID": "8025@f6e9c46f-e2e9-446f-8cd9-909bd5f72dbf",
+        "Extension": "eml",
+        "Info": "message/rfc822",
+        "MD5": "5f32dc60c6f4dc7b01b4aa85a12459d9",
+        "Name": """",
+        "SHA1": "0320147ba32722549e810d2ecd5300b95a101bf6",
+        "SHA256": "6476ede07246902ad34118df90ca8b590a006ffbd3dd142046a4cf81d2dde30d",
+        "SHA512": "efa9cd6f787a24a31a9479366d2b6ac73a42e3bd7594933615a2cf659790dcbe9c3120740eb96fa8405e888a077d55745c3797999582d50f237ca2d4964a8547",
+        "SSDeep": """",
+        "Size": 2119,
+        "Type": "RFC 822 mail text, ASCII text, with very long lines, with CRLF line terminators"
+    }
+}
+```
+
+##### Human Readable Output
+There is No Human Readable Output.
+
+### Create a draft message in a user's mailbox
+***
+Creates a draft message in the specified user's mailbox.
+
+##### Required Permissions
+**The following permissions are required for this command:**
+- Mail.ReadWrite (Application)
+
+##### Base Command
+
+`msgraph-mail-create-draft`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| to | The comma-separated list of email addresses for the 'to' field. | Optional | 
+| cc | The comma-separated list of email addresses for the 'cc' field. | Optional | 
+| bcc | The comma-separated list of email addresses for the 'bcc' field. | Optional | 
+| subject | The subject for the draft. | Required | 
+| body | The contents (body) of the draft. | Optional | 
+| bodyType | The body type of the email. Can be, "text", or "HTML". | Optional | 
+| flag | The flag value that indicates the status of the draft. Can be, "notFlagged", "complete", or "flagged". | Optional | 
+| importance | The importance of the draft. Can be, "Low", "Normal", or "High". | Optional | 
+| headers | The comma-separated list of additional headers in the format, "headerName:headerValue". For example, "headerName1:headerValue1,headerName2:headerValue2". | Optional | 
+| attachIDs | The comma-separated list of War Room entry IDs that contain files, which are used to attach files to the draft. For example, "attachIDs=15@8,19@8". | Optional | 
+| attachNames | The comma-separated list of names of attachments to be displayed in the draft. Must be the same number of elements as attachIDs. | Optional | 
+| attachCIDs | The comma-separated list of CIDs to embed attachments within the actual email. | Optional | 
+| from | The email address from which the draft is created. | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftGraph.Draft.Cc | String | The CC recipients of the draft email. | 
+| MicrosoftGraph.Draft.IsRead | String | The "Is read" status of the draft email. | 
+| MicrosoftGraph.Draft.Bcc | String | The BCC recipients of the draft email. | 
+| MicrosoftGraph.Draft.Body | String | The body of the draft email. | 
+| MicrosoftGraph.Draft.MessageID | String | The message ID of the draft email. | 
+| MicrosoftGraph.Draft.SentTime | Date | The created time of the draft email. | 
+| MicrosoftGraph.Draft.Headers | String | The headers of the draft email. | 
+| MicrosoftGraph.Draft.From | String | The user that sent the draft email. | 
+| MicrosoftGraph.Draft.Subject | String | The subject of the draft email. | 
+| MicrosoftGraph.Draft.ReceivedTime | String | The received time of the draft email. | 
+| MicrosoftGraph.Draft.Importance | String | The importance status of the draft email. | 
+| MicrosoftGraph.Draft.CreatedTime | String | The created time of the draft email. | 
+| MicrosoftGraph.Draft.Sender | String | The sender of the draft email. | 
+| MicrosoftGraph.Draft.ModifiedTime | Date | The modified time of the draft email. | 
+| MicrosoftGraph.Draft.IsDraft | Boolean | Whether it is a draft email. | 
+| MicrosoftGraph.Draft.ID | String | The ID of the draft email. | 
+| MicrosoftGraph.Draft.To | String | The 'to' recipients of the draft email. | 
+| MicrosoftGraph.Draft.BodyType | Unknown | The body type of the draft email. | 
+| MicrosoftGraph.Draft.ConversationID | String | The conversation ID of the draft email. | 
+
+
+##### Command Example
+```!msgraph-mail-create-draft from=dev@demistodev.onmicrosoft.com subject="This is a draft" body="This is a body" to=dev@demistodev.onmicrosoft.com```
+
+##### Context Example
+```
+{
+    "MicrosoftGraph": {
+        "Draft": {
+            "Bcc": [],
+            "Body": "This is a body",
+            "BodyType": "text",
+            "Cc": [],
+            "ConversationID": """",
+            "CreatedTime": "2020-03-29T09:57:38Z",
+            "From": "",
+            "Headers": [],
+            "ID": """",
+            "Importance": "low",
+            "IsDraft": true,
+            "IsRead": true,
+            "MessageID": "<AM6PR07MB44530DA96C2DF255705F30FD83CA0@AM6PR07MB4453.eurprd07.prod.outlook.com>",
+            "ModifiedTime": "2020-03-29T09:57:38Z",
+            "ReceivedTime": "2020-03-29T09:57:38Z",
+            "Sender": "",
+            "SentTime": "2020-03-29T09:57:38Z",
+            "Subject": "This is a draft",
+            "To": [
+                "dev@demistodev.onmicrosoft.com"
+            ]
+        }
+    }
+}
+```
+
+##### Human Readable Output
+##### Created draft with id: ""
+|ID|From|Sender|To|Subject|Body|BodyType|Cc|Bcc|Headers|Importance|MessageID|ConversationID|CreatedTime|SentTime|ReceivedTime|ModifiedTime|IsDraft|IsRead|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| "" |  |  | dev<span\>>@demistodev.onmicrosoft.com | This is a draft | This is a body | text |  |  |  | low | <AM6PR07MB44530DA96C2DF255705F30FD83CA0@AM6PR07MB4453.eurprd07.prod.outlook.<span\>>com> | "" | 2020-03-29T09:57:38Z | 2020-03-29T09:57:38Z | 2020-03-29T09:57:38Z | 2020-03-29T09:57:38Z | true | true |
+
+
+### Send an email
+***
+Sends an email using Microsoft Graph.
+
+##### Required Permissions
+**The following permissions are required for this command:**
+- Mail.Send (Application)
+
+##### Base Command
+
+`send-mail`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| to | The comma-separated list of email addresses for the 'to' field. | Optional | 
+| cc | The comma-separated list of email addresses for the 'cc' field. | Optional | 
+| bcc | The comma-separated list of email addresses for the 'bcc' field. | Optional | 
+| subject | The subject of the email. | Required | 
+| body | The contents (body) of the email. | Optional | 
+| bodyType | The body type of the email. Can be, "text" or "HTML". | Optional | 
+| flag | The flag value that indicates the status for the email. Can be, "notFlagged", "complete", or "flagged". | Optional | 
+| importance | The importance of the email. Can be, "Low", "Normal", or "High". | Optional | 
+| headers | The comma-separated list of additional headers in the format: "headerName:headerValue". For example, "headerName1:headerValue1,headerName2:headerValue2". | Optional | 
+| attachIDs | The comma-separated list of War Room entry IDs that contain files, which are used to attach files for the email to send. For example, attachIDs=15@8,19@8. | Optional | 
+| attachNames | The comma-separated list of names of attachments to display in the email to send. It must have the same number of elements as attachIDs. | Optional | 
+| attachCIDs | The comma-separated list of CIDs to embed attachments within the actual email. | Optional | 
+| from | The email address from which to send the email. | Optional | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftGraph.Email.internetMessageHeaders | String | The email headers. | 
+| MicrosoftGraph.Email.body | String | The body of the email. | 
+| MicrosoftGraph.Email.bodyPreview | String | The body preview of the email. | 
+| MicrosoftGraph.Email.subject | String | The subject of the email. | 
+| MicrosoftGraph.Email.flag | String | The flag status of the email. | 
+| MicrosoftGraph.Email.importance | String | The importance status of the email. | 
+| MicrosoftGraph.Email.toRecipients | String | The 'to' recipients of the email. | 
+| MicrosoftGraph.Email.ccRecipients | String | The CC recipients of the email. | 
+| MicrosoftGraph.Email.bccRecipients | String | The BCC recipients of the email. | 
+
+
+##### Command Example
+```!send-mail subject="Demo test send mail" from=dev@demistodev.onmicrosoft.com attachIDs="attach_id" to=dev@demistodev.onmicrosoft.com attachNames="test_attachment"```
+
+##### Context Example
+```
+{
+    "MicrosoftGraph": {
+        "Email": {
+            "body": {
+                "content": "",
+                "contentType": "text"
+            },
+            "flag": {
+                "flagStatus": "notFlagged"
+            },
+            "importance": "Low",
+            "subject": "Demo test send mail",
+            "toRecipients": [
+                "dev@demistodev.onmicrosoft.com"
+            ]
+        }
+    }
+}
+```
+
+##### Human Readable Output
+##### Email was sent successfully.
+|body|flag|importance|subject|toRecipients|
+|---|---|---|---|---|
+| content: contentType: text | flagStatus: notFlagged | Low | Demo test send mail | dev<span\>>@demistodev.onmicrosoft.com |
+
+
+### Reply to a message
+***
+Replies to the recipients of a message.
+
+##### Required Permissions
+**The following permissions are required for this command:**
+- Mail.Send (Application)
+    
+##### Base Command
+
+`msgraph-mail-reply-to`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ID | The ID of the message. | Required | 
+| body | The comment of the replied message. | Required | 
+| to | The comma-separated list of email addresses for the 'to' field. | Required | 
+| from | The email address from which to reply. | Required | 
+
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+```!msgraph-mail-reply-to ID="mail_id" body="reply_body" from=dev@demistodev.onmicrosoft.com to=dev@demistodev.onmicrosoft.com```
+
+##### Context Example
+```
+{}
+```
+
+##### Human Readable Output
+##### Replied to: dev<span\>>@demistodev.onmicrosoft.com with comment: reply_body
+
+### Send a draft email
+***
+Sends a draft email using Microsoft Graph.
+
+##### Required Permissions
+**The following permissions are required for this command:**
+- Mail.Send (Application)
+
+##### Base Command
+
+`msgraph-mail-send-draft`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| draft_id | The ID of the draft email. | Required | 
+| from | The email address from which to send the draft. | Required | 
+
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+```!msgraph-mail-send-draft draft_id="draft_id" from=dev@demistodev.onmicrosoft.com```
+
+##### Context Example
+```
+{}
+```
+
+##### Human Readable Output
+##### Draft with: "" id was sent successfully.

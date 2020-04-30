@@ -1,5 +1,5 @@
 id: skipped_test_playbook_1
-version: 1
+version: -1
 name: skipped_test_playbook_1
 starttaskid: "0"
 tasks:

@@ -1,7 +1,7 @@
 {
   "name": "Securonix",
   "description": "Use the Securonix integration to manage incidents and watchlists.",
-  "support": "Cortex XSOAR",
+  "support": "xsoar",
   "serverMinVersion": "4.5.0",
   "currentVersion": "1.0.0",
   "author": "Cortex XSOAR",
