@@ -1,2 +1,2 @@
 ## [Unreleased]
-Fixed an issue with the **threat-grid-upload-sample** command while in insecure mode.
+Fixed an issue where the ***threat-grid-upload-sample*** command did not work as expected while in insecure mode.
