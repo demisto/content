@@ -1,5 +1,5 @@
 {
-    "name": "hunting",
+    "name": "Hunting",
     "description": "Extracts IOCs from the incident details and attached files using regular expressions and then perform hash hunt in endpoints activity using available toolsa.",
     "support": "Cortex XSOAR",
     "serverMinVersion": "4.5.0",
@@ -36,5 +36,11 @@
         "Hash",
         "File"
     ],
-    "dependencies": {}
+    "dependencies": {
+        "Legacy": {
+            "mandatory": true,
+            "display_name": "Legacy Content"
+        }
+    },
+    "displayedImages": []
 }
