@@ -37,7 +37,7 @@ DEFAULTS = {
 USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
 VERIFY_SSL = not demisto.params().get('insecure', False)
-API = '/api/now/'
+API = '/api/'
 VERSION = demisto.params().get('api_version')
 PARAMS_TICKET_TYPE = demisto.params().get('ticket_type', DEFAULTS['ticket_type'])
 FETCH_TIME = demisto.params().get('fetch_time').strip()
@@ -391,6 +391,24 @@ def convert_to_str(obj):
         return obj
 
 
+def get_item_human_readable(raw_response):
+    item = {
+        'ID': raw_response.get('sys_id'),
+        'Name': raw_response.get('name'),
+        'Description': raw_response.get('short_description'),
+        'Price': raw_response.get('price'),
+        'Variables': []
+    }
+
+    if raw_response.get('variables'):
+        for var in raw_response['variables']:
+            item['Variables'].append({'Question': var.get('label'),
+                                      'Type': var.get('display_type'),
+                                      'Name': var.get('name'),
+                                      'Mandatory': var.get('mandatory')})
+    return item
+
+
 ''' FUNCTIONS '''
 
 
@@ -398,7 +416,7 @@ def get_template(name):
     query_params = {'sysparm_limit': 1, 'sysparm_query': 'name=' + name}
 
     ticket_type = 'sys_template'
-    path = 'table/' + ticket_type
+    path = 'now/table/' + ticket_type
     res = send_request('GET', path, params=query_params)
 
     if len(res['result']) == 0:
@@ -519,9 +537,9 @@ def get(table_name, record_id, number=None):
     path = None
     query_params = {}  # type: Dict
     if record_id:
-        path = 'table/' + table_name + '/' + record_id
+        path = 'now/table/' + table_name + '/' + record_id
     elif number:
-        path = 'table/' + table_name
+        path = 'now/table/' + table_name
         query_params = {
             'number': number
         }
@@ -533,7 +551,7 @@ def get(table_name, record_id, number=None):
 
 
 def get_ticket_attachments(ticket_id):
-    path = 'attachment'
+    path = 'now/attachment'
     query_params = {
         'sysparm_query': 'table_sys_id=' + ticket_id
     }
@@ -627,7 +645,7 @@ def update_record_command():
 
 def update(table_name, record_id, fields, custom_fields):
     body = get_body(fields, custom_fields)
-    path = 'table/' + table_name + '/' + record_id
+    path = 'now/table/' + table_name + '/' + record_id
 
     return send_request(path, 'patch', body=body)
 
@@ -706,7 +724,7 @@ def create_record_command():
 
 def create(table_name, fields, custom_fields):
     body = get_body(fields, custom_fields)
-    path = 'table/' + table_name
+    path = 'now/table/' + table_name
 
     return send_request(path, 'post', body=body)
 
@@ -748,7 +766,7 @@ def delete_record_command():
 
 
 def delete(table_name, record_id):
-    path = 'table/' + table_name + '/' + record_id
+    path = 'now/table/' + table_name + '/' + record_id
 
     return send_request(path, 'delete')
 
@@ -787,7 +805,7 @@ def add_link_command():
 def add_link(ticket_id, ticket_type, key, link):
     body = {}
     body[key] = link
-    path = 'table/' + ticket_type + '/' + ticket_id
+    path = 'now/table/' + ticket_type + '/' + ticket_id
 
     return send_request(path, 'patch', body=body)
 
@@ -825,7 +843,7 @@ def add_comment_command():
 def add_comment(ticket_id, ticket_type, key, text):
     body = {}
     body[key] = text
-    path = 'table/' + ticket_type + '/' + ticket_id
+    path = 'now/table/' + ticket_type + '/' + ticket_id
 
     return send_request(path, 'patch', body=body)
 
@@ -971,7 +989,7 @@ def query(table_name, sysparm_limit, sysparm_offset, sysparm_query):
     if sysparm_query:
         query_params['sysparm_query'] = sysparm_query
 
-    path = 'table/' + table_name
+    path = 'now/table/' + table_name
 
     return send_request(path, 'get', params=query_params)
 
@@ -1037,7 +1055,7 @@ def upload_file(ticket_id, file_id, file_name, ticket_type):
         'file_name': file_name
     }
 
-    path = 'attachment/upload'
+    path = 'now/attachment/upload'
 
     return send_request(path, 'post', headers=headers, body=body, file={'id': file_id, 'name': file_name})
 
@@ -1330,7 +1348,7 @@ def list_table_fields_command():
 
 def get_table_fields(table_name):
     # Get one record
-    path = 'table/' + table_name + '?sysparm_limit=1'
+    path = 'now/table/' + table_name + '?sysparm_limit=1'
     res = send_request(path, 'GET')
 
     return res
@@ -1377,6 +1395,124 @@ def get_table_name_command():
     return entry
 
 
+def query_items():
+    args = unicode_to_str_recur(demisto.args())
+    table_name = 'sc_cat_item'
+    category = args.get('item-category')
+    offset = args.get('offset', DEFAULTS['offset'])
+    limit = args.get('limit', DEFAULTS['limit'])
+
+    items_query = ''
+
+    if category:
+        items_query = 'category.title=' + category
+
+    res = query(table_name, limit, offset, items_query)
+
+    if not res or 'result' not in res:
+        return 'No items found'
+
+    items = res['result']
+    if not isinstance(items, list):
+        items = [items]
+
+    if len(items) == 0:
+        return 'No items found'
+
+    mapped_items = []
+    for item in items:
+        mapped_items.append(get_item_human_readable(item))
+
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': res,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('ServiceNow Catalog Items', mapped_items,
+                                         removeNull=True, headerTransform=pascalToSpace),
+        'EntryContext': {
+            'ServiceNow.CatalogItem(val.ID===obj.ID)': createContext(mapped_items, removeNull=True),
+        }
+    }
+    return entry
+
+
+def get_item_command():
+    args = unicode_to_str_recur(demisto.args())
+    sys_id = args.get('sys-id')
+    res = send_request('/sn_sc/servicecatalog/items/' + sys_id, 'get')
+
+    if not res or 'result' not in res:
+        return 'Item not found'
+
+    res = res['result']
+
+    mapped_item = get_item_human_readable(res)
+
+    hr_item = tableToMarkdown('ServiceNow Catalog Item', mapped_item,
+                              removeNull=True, headerTransform=pascalToSpace,
+                              headers=['ID', 'Name', 'Description'])
+
+    if mapped_item.get('Variables'):
+        hr_item += tableToMarkdown('Item Variables', mapped_item['Variables'],
+                                   removeNull=True, headerTransform=pascalToSpace,
+                                   headers=['Question', 'Type', 'Name', 'Mandatory'])
+
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': res,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('ServiceNow Catalog Item', mapped_item,
+                                         removeNull=True, headerTransform=pascalToSpace),
+        'EntryContext': {
+            'ServiceNow.CatalogItem(val.ID===obj.ID)': createContext(mapped_item, removeNull=True),
+        }
+    }
+    return entry
+
+
+def order_item_command():
+    args = unicode_to_str_recur(demisto.args())
+    sys_id = args.get('sys-id')
+    quantity = args.get('quantity', '1')
+    variables = args.get('variables', '')
+
+    variables_dict = {}
+    if variables:
+        for var in variables.split(','):
+            key = var.split('=')[0]
+            val = var.split('=')[1]
+            variables_dict[key] = val
+
+    params = {'sysparm_quantity': quantity, 'variables': variables_dict}
+
+    res = send_request('/sn_sc/servicecatalog/items/' + sys_id + '/order_now', 'post', body=params)
+
+    if not res or 'result' not in res:
+        return 'Could not order item'
+
+    res = res['result']
+
+    mapped_item = {
+        'ID': res.get('sys_id'),
+        'RequestNumber': res.get('request_number')
+    }
+
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': res,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('ServiceNow Order Request', mapped_item,
+                                         removeNull=True, headerTransform=pascalToSpace),
+        'EntryContext': {
+            'ServiceNow.OrderRequest(val.ID===obj.ID)': createContext(mapped_item, removeNull=True),
+        }
+    }
+    return entry
+
+
 def fetch_incidents():
     query_params = {}
     incidents = []
@@ -1401,7 +1537,7 @@ def fetch_incidents():
 
     query_params['sysparm_limit'] = SYSPARM_LIMIT
 
-    path = 'table/' + TICKET_TYPE
+    path = 'now/table/' + TICKET_TYPE
     res = send_request(path, 'get', params=query_params)
 
     count = 0
@@ -1468,7 +1604,7 @@ def test_module():
     # Validate fetch_time parameter is valid (if not, parse_date_range will raise the error message)
     parse_date_range(FETCH_TIME, '%Y-%m-%d %H:%M:%S')
 
-    path = 'table/' + TICKET_TYPE + '?sysparm_limit=1'
+    path = 'now/table/' + TICKET_TYPE + '?sysparm_limit=1'
     res = send_request(path, 'GET')
     if 'result' not in res:
         return_error('ServiceNow error: ' + str(res))
@@ -1536,6 +1672,12 @@ try:
         demisto.results(get_table_name_command())
     if demisto.command() == 'servicenow-get-ticket-notes':
         demisto.results(get_ticket_notes_command())
+    if demisto.command() == 'servicenow-items-query':
+        demisto.results(query_items())
+    if demisto.command() == 'servicenow-item-details-get':
+        demisto.results(get_item_command())
+    if demisto.command() == 'servicenow-item-order-create':
+        demisto.results(order_item_command())
 except Exception as e:
     LOG(e)
     LOG.print_log()

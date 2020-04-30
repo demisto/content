@@ -1,5 +1,8 @@
 ## [Unreleased]
-
+- Added 3 commands:
+    - ***servicenow-items-query***
+    - ***servicenow-item-details-get***
+    - ***servicenow-item-order-create***
 
 ## [20.4.1] - 2020-04-29
 -
