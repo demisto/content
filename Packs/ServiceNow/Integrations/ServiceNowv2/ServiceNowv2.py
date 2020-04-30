@@ -314,7 +314,7 @@ def generate_body(fields: dict = {}, custom_fields: dict = {}) -> dict:
 
 
 def split_fields(fields: str = '') -> dict:
-    """Split str fields of Demisto arguments to SNOW request fields by the char - ;.
+    """Split str fields of Demisto arguments to SNOW request fields by the char ';'.
 
     Args:
         fields: fields in a string representation.
@@ -329,7 +329,7 @@ def split_fields(fields: str = '') -> dict:
             raise Exception(f"The argument: {fields}.\nmust contain a '=' to specify the keys and values. e.g: key=val.")
         arr_fields = fields.split(';')
         for f in arr_fields:
-            field = f.split('=')
+            field = f.split('=', 1)  # a field might include a '=' sign in the value. thus, splitting only once.
             if len(field) > 1:
                 dic_fields[field[0]] = field[1]
 
@@ -617,14 +617,16 @@ class Client(BaseClient):
         return self.send_request('attachment/upload', 'POST', headers={'Accept': 'application/json'},
                                  body=body, file={'id': file_id, 'name': file_name})
 
-    def query(self, table_name: str, sys_param_limit: str, sys_param_offset: str, sys_param_query: str) -> dict:
-        """Query tickets by sending a PATCH request.
+    def query(self, table_name: str, sys_param_limit: str, sys_param_offset: str, sys_param_query: str,
+              system_params: dict = {}) -> dict:
+        """Query records by sending a GET request.
 
         Args:
         table_name: table name
         sys_param_limit: limit the number of results
         sys_param_offset: offset the results
         sys_param_query: the query
+        system_params: system parameters
 
         Returns:
             Response from API.
@@ -632,6 +634,8 @@ class Client(BaseClient):
         query_params = {'sysparm_limit': sys_param_limit, 'sysparm_offset': sys_param_offset}
         if sys_param_query:
             query_params['sysparm_query'] = sys_param_query
+        if system_params:
+            query_params.update(system_params)
         return self.send_request(f'table/{table_name}', 'GET', params=query_params)
 
     def get_table_fields(self, table_name: str) -> dict:
@@ -813,11 +817,12 @@ def query_tickets_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
     sys_param_limit = args.get('limit', client.sys_param_limit)
     sys_param_offset = args.get('offset', client.sys_param_offset)
     sys_param_query = str(args.get('query', ''))
+    system_params = split_fields(args.get('system_params', ''))
     additional_fields = argToList(str(args.get('additional_fields')))
 
     ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
 
-    result = client.query(ticket_type, sys_param_limit, sys_param_offset, sys_param_query)
+    result = client.query(ticket_type, sys_param_limit, sys_param_offset, sys_param_query, system_params)
 
     if not result or 'result' not in result or len(result['result']) == 0:
         return 'No ServiceNow tickets matched the query.', {}, {}, True
@@ -1146,10 +1151,11 @@ def query_table_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bo
     table_name = str(args.get('table_name', ''))
     sys_param_limit = args.get('limit', client.sys_param_limit)
     sys_param_query = str(args.get('query', ''))
+    system_params = split_fields(args.get('system_params', ''))
     sys_param_offset = args.get('offset', client.sys_param_offset)
     fields = args.get('fields')
 
-    result = client.query(table_name, sys_param_limit, sys_param_offset, sys_param_query)
+    result = client.query(table_name, sys_param_limit, sys_param_offset, sys_param_query, system_params)
     if not result or 'result' not in result or len(result['result']) == 0:
         return 'No results found', {}, {}, False
     table_entries = result.get('result', {})

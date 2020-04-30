@@ -29,4 +29,6 @@ This playbook does not use any scripts.
 ---
 There are no outputs for this playbook.
 
-<!-- Playbook PNG image comes here -->
+## Playbook Image
+---
+![Slack - General Failed Logins V2.1](https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/Slack_-_General_Failed_Logins_v2.1.png)
