@@ -96,18 +96,19 @@ def init_storage_client(service_account=None):
         return storage_client
 
 
-def download_and_extract_index(storage_bucket, extract_destination_path):
+def download_and_extract_index(storage_bucket, extract_destination_path, storage_base_path=GCPConfig.STORAGE_BASE_PATH):
     """Downloads and extracts index zip from cloud storage.
 
     Args:
         storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where index.zip is stored.
         extract_destination_path (str): the full path of extract folder.
+        storage_base_path (str): The storage base path to upload to.
     Returns:
         str: extracted index folder full path.
         Blob: google cloud storage object that represents index.zip blob.
 
     """
-    index_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
+    index_storage_path = os.path.join(storage_base_path, f"{GCPConfig.INDEX_NAME}.zip")
     download_index_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_NAME}.zip")
 
     index_blob = storage_bucket.blob(index_storage_path)
@@ -241,12 +242,13 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
     print_color(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.", LOG_COLORS.GREEN)
 
 
-def upload_core_packs_config(storage_bucket, packs_list):
+def upload_core_packs_config(storage_bucket, packs_list, storage_base_path=GCPConfig.STORAGE_BASE_PATH):
     """Uploads corepacks.json file configuration to bucket. corepacks file includes core packs for server installation.
 
      Args:
         storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is uploaded.
         packs_list (list): list of initialized packs.
+        storage_base_path (str): The storage base path to upload to.
 
     """
     # todo later check if it is not pre release and only then upload corepacks.json
@@ -267,7 +269,7 @@ def upload_core_packs_config(storage_bucket, packs_list):
         'corePacks': core_packs_public_urls
     }
 
-    core_packs_config_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, GCPConfig.CORE_PACK_FILE_NAME)
+    core_packs_config_path = os.path.join(storage_base_path, GCPConfig.CORE_PACK_FILE_NAME)
     blob = storage_bucket.blob(core_packs_config_path)
     blob.upload_from_string(json.dumps(core_packs_data, indent=4))
 
@@ -433,6 +435,7 @@ def option_handler():
     parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
                         required=False)
     parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
+    parser.add_argument('-sb', '--storage_bash_path', help="Storage base path of the directory to upload to.", required=False)
     # disable-secrets-detection-end
     return parser.parse_args()
 
@@ -448,13 +451,16 @@ def main():
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
     override_pack = option.override_pack
     signature_key = option.key_string
+    storage_bash_path = option.storage_bash_path
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
 
     # download and extract index from public bucket
-    index_folder_path, index_blob = download_and_extract_index(storage_bucket, extract_destination_path)
+    index_folder_path, index_blob = download_and_extract_index(
+        storage_bucket, extract_destination_path, storage_bash_path
+    )
 
     # detect new or modified packs
     modified_packs = get_modified_packs(specific_packs)
