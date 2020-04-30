@@ -2006,8 +2006,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Adds a tag to a ticket. the tag will be visible in the label_entry
-      table. Can be retrieved using: "!servicenow-query-table table_name=label_entry
+    description: 'Adds a tag to a ticket. The tag will be visible in the label_entry
+      table and can be retrieved using: "!servicenow-query-table table_name=label_entry
       fields=title,table,sys_id,id_display,id_type"'
     execution: false
     name: servicenow-add-tag
