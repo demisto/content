@@ -92,7 +92,7 @@ class MicrosoftClient(BaseClient):
             default_headers.update(headers)
 
         response = super()._http_request(
-            *args, resp_type="response", headers=default_headers, **kwargs)  # type: ignore[misc]
+            resp_type="response", headers=default_headers, *args, **kwargs)  # type: ignore[misc]
 
         # 206 indicates Partial Content, reason will be in the warning header.
         # In that case, logs with the warning header will be written.
