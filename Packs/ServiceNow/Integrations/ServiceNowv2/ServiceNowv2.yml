@@ -1290,6 +1290,13 @@ script:
       name: additional_fields
       required: false
       secret: false
+    - default: false
+      description: 'System parameters in the format: fieldname1=value;fieldname2=value.
+        e.g: "sysparm_display_value=al;&sysparm_exclude_reference_link=True"'
+      isArray: false
+      name: system_params
+      required: false
+      secret: false
     deprecated: false
     description: Retrieve ticket info with a query
     execution: false
@@ -1544,6 +1551,13 @@ script:
       description: Starting record index to begin retrieving records from
       isArray: false
       name: offset
+      required: false
+      secret: false
+    - default: false
+      description: 'System parameters in the format: fieldname1=value;fieldname2=value.
+        e.g: "sysparm_display_value=al;&sysparm_exclude_reference_link=True"'
+      isArray: false
+      name: system_params
       required: false
       secret: false
     deprecated: false
