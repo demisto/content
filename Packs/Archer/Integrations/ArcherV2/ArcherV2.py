@@ -70,7 +70,7 @@ def get_search_options_soap_request(token, report_guid):
            '</soap:Envelope>'
 
 
-def get_get_value_list_soap_request(token, field_id):
+def get_value_list_soap_request(token, field_id):
     return '<?xml version="1.0" encoding="utf-8"?>' + \
            '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
            '    <soap:Body>' + \
@@ -78,6 +78,19 @@ def get_get_value_list_soap_request(token, field_id):
            f'            <sessionToken>{token}</sessionToken>' + \
            f'            <fieldId>{field_id}</fieldId>' + \
            '        </GetValueListForField>' + \
+           '    </soap:Body>' + \
+           '</soap:Envelope>'
+
+
+def get_user_info_soap_request(token, username, domain):
+    return '<?xml version="1.0" encoding="utf-8"?>' + \
+           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
+           '    <soap:Body>' + \
+           '        <LookupDomainUserId xmlns="http://archer-tech.com/webservices/">' + \
+           f'            <sessionToken>{token}</sessionToken>' + \
+           f'            <username>{username}</username>' + \
+           f'            <usersDomain>{domain}</usersDomain>' + \
+           '        </LookupDomainUserId>' + \
            '    </soap:Body>' + \
            '</soap:Envelope>'
 
@@ -100,8 +113,13 @@ SOAP_COMMANDS = {'archer-get-reports':
                  'archer-get-valuelist':
                      {'soapAction': 'http://archer-tech.com/webservices/GetValueListForField',
                       'urlSuffix': 'rsaarcher/ws/field.asmx',
-                      'soapBody': get_get_value_list_soap_request,
-                      'outputPath': 'Envelope.Body.GetValueListForFieldResponse.GetValueListForFieldResult'}
+                      'soapBody': get_value_list_soap_request,
+                      'outputPath': 'Envelope.Body.GetValueListForFieldResponse.GetValueListForFieldResult'},
+                 'archer-get-user-id':
+                     {'soapAction': 'http://archer-tech.com/webservices/LookupDomainUserId',
+                      'urlSuffix': 'rsaarcher/ws/accesscontrol.asmx',
+                      'soapBody': get_user_info_soap_request,
+                      'outputPath': 'response.Envelope.Body.LookupDomainUserIdResponse.LookupDomainUserIdResult'}
                  }
 
 
@@ -458,6 +476,18 @@ def get_value_list(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any
     return res, {}, raw_res
 
 
+def get_user_id(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+    user_info = args.get('user-info')
+    user_info = user_info.split('/')
+    raw_res = client.do_soap_request('archer-get-user-id',
+                                     domain=user_info[0].lower(), username=user_info[1].lower())
+    try:
+        res = json.loads(xml2json(raw_res))
+    except Exception as e:
+        print('')
+    return res, {}, raw_res
+
+
 def main():
     params = demisto.params()
     credentials = params.get('credentials')
@@ -481,7 +511,8 @@ def main():
         'archer-get-reports': get_reports,
         'archer-get-search-options-by-guid': search_options,
         'archer-reset-cache': reset_cache,
-        'archer-get-valuelist': get_value_list
+        'archer-get-valuelist': get_value_list,
+        'archer-get-user-id': get_user_id
     }
 
     command = demisto.command()
