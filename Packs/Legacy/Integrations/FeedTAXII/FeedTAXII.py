@@ -948,7 +948,7 @@ def interval_in_sec(val):
     return None
 
 
-def test_module(client, args):
+def test_module(client, *_):
     try:
         all_collections = client.get_all_collections(is_raise_error=True)
     except ConnectionError:
