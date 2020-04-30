@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 
+## [20.4.1] - 2020-04-29
+Removed the default initial value for the **Listen Port** parameter.
+
 ## [20.4.0] - 2020-04-14
   - Fixed an issue where running **On-Demand** mode an error appeared if export was not initialized.
   - Now when the *query* argument in the ***eis-update*** command is not supplied, the query from the integration parameters is used.

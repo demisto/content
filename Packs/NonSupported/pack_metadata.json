@@ -1,0 +1,21 @@
+{
+  "name": "Non Supported",
+  "description": "Non supported pack that includes old format content items",
+  "support": "nonsupported",
+  "serverMinVersion": "5.5.0",
+  "currentVersion": "1.0.0",
+  "author": "Cortex XSOAR",
+  "url": "",
+  "email": "",
+  "categories": [],
+  "tags": [],
+  "created": "2020-04-26T15:55:25Z",
+  "updated": "2020-04-26T15:55:25Z",
+  "beta": false,
+  "deprecated": true,
+  "certification": "verified",
+  "useCases": [],
+  "keywords": [],
+  "hidden": true,
+  "dependencies": {}
+}

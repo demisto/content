@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.4.1] - 2020-04-29
   - Deprecated the following enums: 
     - **entryTypes**
     - **formats**
@@ -16,6 +19,7 @@
     - **Domain**
     - **WHOIS**
     - **CommandResults** (returns results to the War Room)
+  - Added support for traceback in debug-log mode.
 
 ## [20.4.0] - 2020-04-14
   - Added the argument *ignore_auto_extract* to the ***return_outputs*** command.
