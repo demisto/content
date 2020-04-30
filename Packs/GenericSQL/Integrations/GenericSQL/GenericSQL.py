@@ -57,7 +57,7 @@ class Client:
         try:
             module = self._convert_dialect_to_module(self.dialect)
             db_preferences = f'{module}://{self.username}:{self.password}@{self.host}:{self.port}/{self.dbname}'
-            ssl_connection = ""
+            ssl_connection = {}
             if self.dialect == "Microsoft SQL Server":
                 db_preferences += "?driver=FreeTDS"
             if self.connect_parameters and self.dialect == "Microsoft SQL Server":
