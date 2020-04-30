@@ -5,7 +5,7 @@ name: PAN-OS - Block IP and URL - External Dynamic List v2
 description: "This playbook blocks IP addresses and URLs using Palo Alto Networks\
   \ Panorama or Firewall External Dynamic Lists.\nIt checks if the EDL configuration\
   \ is in place with the 'PAN-OS EDL Setup' sub-playbook (otherwise the list will\
-  \ be configured), and adds the input IPs and URLs to the relevant lists."
+  \ be configured), and adds the inputted IPs and URLs to the relevant lists."
 starttaskid: '0'
 tasks:
   '0':
