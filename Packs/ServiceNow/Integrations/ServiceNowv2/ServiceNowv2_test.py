@@ -8,13 +8,14 @@ from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICK
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_QUERY_TICKETS, RESPONSE_ADD_LINK, \
     RESPONSE_ADD_COMMENT, RESPONSE_UPLOAD_FILE, RESPONSE_GET_TICKET_NOTES, RESPONSE_GET_RECORD, \
     RESPONSE_UPDATE_RECORD, RESPONSE_CREATE_RECORD, RESPONSE_QUERY_TABLE, RESPONSE_LIST_TABLE_FIELDS, \
-    RESPONSE_QUERY_COMPUTERS, RESPONSE_GET_TABLE_NAME
+    RESPONSE_QUERY_COMPUTERS, RESPONSE_GET_TABLE_NAME, RESPONSE_UPDATE_TICKET_ADDITIONAL, \
+    RESPONSE_QUERY_TABLE_SYS_PARAMS
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \
     EXPECTED_TICKET_HR, EXPECTED_MULTIPLE_TICKET_HR, EXPECTED_UPDATE_TICKET, EXPECTED_UPDATE_TICKET_SC_REQ, \
     EXPECTED_CREATE_TICKET, EXPECTED_QUERY_TICKETS, EXPECTED_ADD_LINK_HR, EXPECTED_ADD_COMMENT_HR, \
     EXPECTED_UPLOAD_FILE, EXPECTED_GET_TICKET_NOTES, EXPECTED_GET_RECORD, EXPECTED_UPDATE_RECORD, \
     EXPECTED_CREATE_RECORD, EXPECTED_QUERY_TABLE, EXPECTED_LIST_TABLE_FIELDS, EXPECTED_QUERY_COMPUTERS, \
-    EXPECTED_GET_TABLE_NAME
+    EXPECTED_GET_TABLE_NAME, EXPECTED_UPDATE_TICKET_ADDITIONAL, EXPECTED_QUERY_TABLE_SYS_PARAMS
 
 
 def test_get_server_url():
@@ -44,13 +45,34 @@ def test_generate_body():
 
 def test_split_fields():
     expected_dict_fields = {'a': 'b', 'c': 'd'}
-    expected_dict_fields == split_fields('a=b;c=d')
+    assert expected_dict_fields == split_fields('a=b;c=d')
+
+    expected_custom_field = {'u_customfield': "<a href=\'https://google.com\'>Link text</a>"}
+    assert expected_custom_field == split_fields("u_customfield=<a href=\'https://google.com\'>Link text</a>")
+
+    expected_custom_sys_params = {
+        "sysparm_display_value": 'all',
+        "sysparm_exclude_reference_link": 'True',
+        "sysparm_query": 'number=TASK0000001'
+    }
+
+    assert expected_custom_sys_params == split_fields(
+        "sysparm_display_value=all;sysparm_exclude_reference_link=True;sysparm_query=number=TASK0000001")
+
+    try:
+        split_fields('a')
+    except Exception as err:
+        assert "must contain a '=' to specify the keys and values" in str(err)
+        return
+    assert False
 
 
 @pytest.mark.parametrize('command, args, response, expected_result, expected_auto_extract', [
     (update_ticket_command, {'id': '1234', 'impact': '3 - Low'}, RESPONSE_UPDATE_TICKET, EXPECTED_UPDATE_TICKET, True),
     (update_ticket_command, {'id': '1234', 'ticket_type': 'sc_req_item', 'approval': 'requested'},
      RESPONSE_UPDATE_TICKET_SC_REQ, EXPECTED_UPDATE_TICKET_SC_REQ, True),
+    (update_ticket_command, {'id': '1234', 'severity': '2 - Medium', 'additional_fields': "approval=rejected"},
+     RESPONSE_UPDATE_TICKET_ADDITIONAL, EXPECTED_UPDATE_TICKET_ADDITIONAL, True),
     (create_ticket_command, {'active': 'true', 'severity': "2 - Medium", 'description': "creating a test ticket",
                              'sla_due': "2020-10-10 10:10:11"}, RESPONSE_CREATE_TICKET, EXPECTED_CREATE_TICKET, True),
     (query_tickets_command, {'limit': "3", 'query': "impact<2^short_descriptionISNOTEMPTY", 'ticket_type': "incident"},
@@ -66,6 +88,10 @@ def test_split_fields():
      RESPONSE_CREATE_RECORD, EXPECTED_CREATE_RECORD, True),
     (query_table_command, {'table_name': "alm_asset", 'fields': "asset_tag,sys_updated_by,display_name",
     'query': "display_nameCONTAINSMacBook", 'limit': 3}, RESPONSE_QUERY_TABLE, EXPECTED_QUERY_TABLE, False),
+    (query_table_command, {'table_name': "sc_task", 'system_params':
+        "sysparm_display_value=all;sysparm_exclude_reference_link=True;sysparm_query=number=TASK0000001",
+                           'fields': "approval,state,escalation,number,description"},
+     RESPONSE_QUERY_TABLE_SYS_PARAMS, EXPECTED_QUERY_TABLE_SYS_PARAMS, False),
     (list_table_fields_command, {'table_name': "alm_asset"}, RESPONSE_LIST_TABLE_FIELDS, EXPECTED_LIST_TABLE_FIELDS,
      False),
     (query_computers_command, {'computer_id': '1234'}, RESPONSE_QUERY_COMPUTERS, EXPECTED_QUERY_COMPUTERS, False),

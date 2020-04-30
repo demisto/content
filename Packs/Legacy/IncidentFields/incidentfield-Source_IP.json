@@ -3,7 +3,8 @@
 	"associatedToAll": false,
 	"associatedTypes": [
 		"Impossible Traveler",
-		"Cortex XDR Port Scan"
+		"Cortex XDR Port Scan",
+		"Port Scan"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

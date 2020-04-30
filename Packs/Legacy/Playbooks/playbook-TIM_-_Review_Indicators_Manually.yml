@@ -175,7 +175,7 @@ tasks:
     task:
       id: dca3b3a9-aba8-449b-8947-899260a923d6
       version: -1
-      name: Allow to remove pending review tag from all indicatos
+      name: Allow to remove pending review tag from all indicators
       type: condition
       iscommand: false
       brand: ""
