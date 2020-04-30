@@ -520,12 +520,21 @@ class TAXIIClient(object):
             else:
                 self.username = credentials.get('identifier', None)
                 self.password = credentials.get('password', None)
+
         if cert_text and key_text:
-            cf = tempfile.NamedTemporaryFile()
-            cf.write(cert_text.encode())
+
+            cert_text_list = cert_text.split('-----')
+            # replace spaces with newline characters
+            cert_text_fixed = '-----'.join(cert_text_list[:2] + [cert_text_list[2].replace(' ', '\n')] + cert_text_list[3:])
+            cf = tempfile.NamedTemporaryFile(delete=False)
+            cf.write(cert_text_fixed.encode())
             cf.flush()
-            kf = tempfile.NamedTemporaryFile()
-            kf.write(key_text.encode())
+
+            key_text_list = key_text.split('-----')
+            # replace spaces with newline characters
+            key_text_fixed = '-----'.join(key_text_list[:2] + [key_text_list[2].replace(' ', '\n')] + key_text_list[3:])
+            kf = tempfile.NamedTemporaryFile(delete=False)
+            kf.write(key_text_fixed.encode())
             kf.flush()
             self.crt = (cf.name, kf.name)
 
@@ -566,6 +575,7 @@ class TAXIIClient(object):
     def _send_request(self, url, headers, data, stream=False):
         if self.api_key is not None and self.api_header is not None:
             headers[self.api_header] = self.api_key
+
 
         rkwargs = dict(
             stream=stream,
