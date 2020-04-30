@@ -1448,7 +1448,7 @@ def message_handler(integration_context: dict, request_body: dict, channel_data:
 @APP.route('/', methods=['POST'])
 def messages() -> Response:
     """
-    Main handler for messages sent to the bot
+    Main handler for messages sent to the bot - test
     """
     headers: dict = cast(Dict[Any, Any], request.headers)
     if validate_auth_header(headers) is False:
