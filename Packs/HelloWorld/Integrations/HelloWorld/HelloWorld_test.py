@@ -395,7 +395,7 @@ def test_domain(requests_mock):
     # integration changes the format from timestamp to ISO8601.
     mock_response['expiration_date'] = '2028-09-14T04:00:00.000Z'
     mock_response['creation_date'] = '1997-09-15T04:00:00.000Z'
-    mock_response['updated_date'] = '2019-09-09T15:39:04.000Z'        
+    mock_response['updated_date'] = '2019-09-09T15:39:04.000Z'
 
     assert outputs['HelloWorld.Domain(val.domain == obj.domain)']
     assert outputs['HelloWorld.Domain(val.domain == obj.domain)'][0]
