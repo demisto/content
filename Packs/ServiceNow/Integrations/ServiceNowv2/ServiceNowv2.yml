@@ -1970,6 +1970,45 @@ script:
     - contextPath: ServiceNow.Ticket.Note.Type
       description: Ticket note type
       type: string
+  - arguments:
+    - default: false
+      description: Ticket System ID
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: 'Tag system ID. Can be retrieved using: "!servicenow-query-table
+        table_name=label fields=name,active"'
+      isArray: false
+      name: tag_id
+      required: true
+      secret: false
+    - default: false
+      description: tag_title
+      isArray: false
+      name: title
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: incident
+      description: Ticket type.
+      isArray: false
+      name: ticket_type
+      predefined:
+      - incident
+      - problem
+      - change_request
+      - sc_request
+      - sc_task
+      - sc_req_item
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds a tag to a ticket. the tag will be visible in the Tags table.
+    execution: false
+    name: servicenow-add-tag
   dockerimage: demisto/python3:3.8.2.6981
   feed: false
   isfetch: true
