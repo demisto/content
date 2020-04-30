@@ -76,7 +76,7 @@ configuration:
   display: Certificate File as Text
   name: cert_text
   required: false
-  type: 4
+  type: 12
 - additionalinfo: Add a key file as text to connect to the TAXII server
   display: Key File as Text
   name: key_text
