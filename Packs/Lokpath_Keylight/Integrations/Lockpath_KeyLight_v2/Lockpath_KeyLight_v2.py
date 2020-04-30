@@ -4,6 +4,7 @@ from CommonServerUserPython import *
 
 from datetime import datetime, timedelta
 from typing import Union
+import traceback
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -566,6 +567,14 @@ def update_record_command(client: Client, args: dict) -> None:
     client.change_record(component_id, record_id, record_json)
 
 
+def get_user_by_id_command(client: Client, args: dict) -> None:
+    user_id = args.get('user_id', '')
+    res = client._http_request('GET', f'/SecurityService/GetUser?id={user_id}')
+    hr = tableToMarkdown(f'Keylight user {user_id}', res)
+    ec = {'Keylight.User(val.Id && val.Id==obj.Id)': res}
+    return_outputs(hr, ec, res)
+
+
 def fetch_incidents(client: Client, args: dict) -> None:
     name = demisto.params().get('component_name', '')
     filter_field = demisto.params().get('filter_field', '')
@@ -632,7 +641,8 @@ def main():
         'kl-get-record-attachment': get_record_attachment_command,
         'kl-get-record-attachments': get_record_attachments_command,
         'kl-delete-record-attachment': delete_record_attachment_command,
-        'fetch-incidents': fetch_incidents
+        'kl-get-user-by-id': get_user_by_id_command,
+        'fetch-incidents': fetch_incidents,
     }
 
     LOG(f'Command being called is {demisto.command()}')
@@ -648,7 +658,8 @@ def main():
         if demisto.command() == 'test-module':
             return_error(f'Could not connect to instance. Error: {str(e)}')
         else:
-            return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+            return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}',
+                         error=traceback.format_exc())
     finally:
         if logged_in:
             client.logout()
