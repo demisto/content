@@ -265,6 +265,13 @@ def get_ticket_request(ticket_id):
 
     return raw_ticket
 
+def fix_query_suffix(query):
+    new_query = query
+    if new_query.endswith('+AND+'):
+        new_query = new_query[:-5]
+    elif new_query.endswith('+OR+'):
+        new_query = new_query[:-4]
+    return new_query
 
 def search_ticket():
     raw_query = ''
@@ -316,6 +323,7 @@ def search_ticket():
     queue = demisto.args().get('queue')
     if queue:
         raw_query += 'Queue={}{}{}+AND+'.format(apostrophe, queue, apostrophe)
+    raw_query = fix_query_suffix(raw_query)
     raw_tickets = search_ticket_request(raw_query)
     headers = ['ID', 'Subject', 'Status', 'Priority', 'Created', 'Queue', 'Creator', 'Owner', 'InitialPriority',
                'FinalPriority']
@@ -763,6 +771,7 @@ def fetch_incidents():
         status_query = '+AND+('
         for status in status_list:
             status_query += 'Status={}{}{}+OR+'.format(apostrophe, status, apostrophe)
+        status_query = fix_query_suffix(status_query)
         raw_query += status_query + ')'
     tickets = parse_ticket_data(raw_query)
     incidents = []
