@@ -25,11 +25,17 @@ configuration:
   name: fqdn
   required: false
   type: 0
-- defaultvalue: 'false'
-  display: Use TLS for connection
+- display: Connection Security
+  additionalinfo: The connection security. The `SSL/TLS` first establishes a secure `SSL/TLS` connection and conducts
+    SMTP over that connection, and STARTTLS starts with unencrypted SMTP and then switches to SSL/TLS to ensure security.
   name: tls
+  defaultvalue: "None"
+  type: 15
   required: false
-  type: 8
+  options:
+    - None
+    - STARTTLS
+    - SSL/TLS
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
