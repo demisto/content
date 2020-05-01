@@ -75,7 +75,7 @@ class MicrosoftClient(BaseClient):
         self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
         self.verify = verify
 
-    def http_request(self, headers=None, *args, **kwargs):
+    def http_request(self, *args, headers=None, **kwargs):
         """
         Overrides Base client request function, retrieves and adds to headers access token before sending the request.
 
