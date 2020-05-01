@@ -1,6 +1,14 @@
 ## [Unreleased]
--
-
+  - Added the following real-time response API commands:
+    - ***cs-falcon-run-get-command***
+    - ***cs-falcon-status-get-command***
+    - ***cs-falcon-status-command***
+    - ***cs-falcon-get-extracted-file***
+    - ***cs-falcon-list-host-files***
+    - ***cs-falcon-refresh-session***
+    
+  - Added the *target* argument to the ***cs-falcon-run-command*** command to support single and batch operations.
+  - Fixed entry context keys
 
 ## [20.4.0] - 2020-04-14
 -
