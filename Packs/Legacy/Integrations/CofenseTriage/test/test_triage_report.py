@@ -3,39 +3,48 @@ import pytest
 from ..CofenseTriage import TriageReport
 
 
-@pytest.fixture
-def single_report_json(fixture_from_file):
-    return fixture_from_file("single_report.json")
-
-
-@pytest.fixture
-def single_report_with_attachment_json(fixture_from_file):
-    return fixture_from_file("single_report_with_attachment.json")
-
-
 class TestTriageReport:
-    def test_attrs(self, single_report_json):
-        report = TriageReport.from_json(single_report_json)
+    def test_attrs(self, requests_mock, fixture_from_file):
+        requests_mock.get(
+            "https://some-triage-host/api/public/v1/reports/6",
+            text=fixture_from_file("single_report.json"),
+        )
+
+        report = TriageReport.fetch("6")
 
         assert len(report.attrs) == 25
         assert report.id == 13363
         assert report.date == "2020-03-19T16:43:09.715Z"
 
-    def test_reporter(self, mocker, single_report_json):
+    def test_reporter(self, mocker, requests_mock, fixture_from_file):
+        requests_mock.get(
+            "https://some-triage-host/api/public/v1/reports/6",
+            text=fixture_from_file("single_report.json"),
+        )
         stubbed_triagereporter_init = mocker.patch(
             "CofenseTriage.CofenseTriage.TriageReporter"
         )
 
-        TriageReport.from_json(single_report_json).reporter
+        TriageReport.fetch("6").reporter
 
         stubbed_triagereporter_init.assert_called_once_with(5331)
 
-    def test_attachment_none(self, single_report_json):
-        report = TriageReport.from_json(single_report_json)
+    def test_attachment_none(self, requests_mock, fixture_from_file):
+        requests_mock.get(
+            "https://some-triage-host/api/public/v1/reports/6",
+            text=fixture_from_file("single_report.json"),
+        )
+
+        report = TriageReport.fetch("6")
 
         assert report.attachment is None
 
-    def test_attachment_present(self, mocker, single_report_with_attachment_json):
+    def test_attachment_present(self, mocker, requests_mock, fixture_from_file):
+        requests_mock.get(
+            "https://some-triage-host/api/public/v1/reports/6",
+            text=fixture_from_file("single_report_with_attachment.json"),
+        )
+
         mocker.patch(
             "CofenseTriage.CofenseTriage.fileResult",
             lambda **_kwargs: {
@@ -44,7 +53,7 @@ class TestTriageReport:
             },
         )
 
-        report = TriageReport.from_json(single_report_with_attachment_json)
+        report = TriageReport.fetch("6")
         attachment = report.attachment
 
         assert attachment == {"path": "file_result_id", "name": "file_result_name"}
