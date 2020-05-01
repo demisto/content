@@ -73,8 +73,8 @@ args:
   required: false
   secret: false
 comment: |-
-  Automates integration documentation.
-  See (https://github.com/demisto/content/tree/master/docs/integration_documentation)[https://github.com/demisto/content/tree/master/docs/integration_documentation]
+  Deprecated. The recommended way to generate documentation is via the demisto-sdk. 
+  See: https://xsoar.pan.dev/docs/integrations/integration-docs
 system: false
 timeout: '0'
 script: '-'
