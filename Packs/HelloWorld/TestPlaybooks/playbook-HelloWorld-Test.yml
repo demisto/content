@@ -1,0 +1,1198 @@
+id: HelloWorld-Test
+version: -1
+name: HelloWorld-Test
+description: 'HelloWorld Test Playbook - for documentation on how to write test playbooks
+  please refer to: https://xsoar.pan.dev/docs/integrations/test-playbooks'
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 97d83639-06d4-40d2-890c-2c8bfb49ffcd
+    type: start
+    task:
+      id: 97d83639-06d4-40d2-890c-2c8bfb49ffcd
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '1':
+    id: '1'
+    taskid: de2972fd-7a03-4ae6-8590-ceb0526c301b
+    type: regular
+    task:
+      id: de2972fd-7a03-4ae6-8590-ceb0526c301b
+      version: -1
+      name: DeleteContext
+      description: Delete All the Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '2':
+    id: '2'
+    taskid: bc13caa0-7fe3-496e-8a9e-9be26513a975
+    type: regular
+    task:
+      id: bc13caa0-7fe3-496e-8a9e-9be26513a975
+      version: -1
+      name: helloworld-say-hello
+      description: Run the helloworld-say-hello-command with argument name set to
+        "Dbot"
+      script: '|||helloworld-say-hello'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      name:
+        simple: Dbot
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '3':
+    id: '3'
+    taskid: 9e100376-2618-45e1-8c94-b8119af4fcb5
+    type: condition
+    task:
+      id: 9e100376-2618-45e1-8c94-b8119af4fcb5
+      version: -1
+      name: Verify Outputs
+      description: Verify the outputs.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '31'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: hello
+            iscontext: true
+          right:
+            value:
+              simple: Hello Dbot
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '4':
+    id: '4'
+    taskid: 9229aa80-1e2f-4e44-8410-46b89a374614
+    type: regular
+    task:
+      id: 9229aa80-1e2f-4e44-8410-46b89a374614
+      version: -1
+      name: helloworld-search-alerts
+      description: Run the helloworld-search-alerts command to find an alert
+      script: '|||helloworld-search-alerts'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      alert_type:
+        simple: Bug
+      max_results:
+        simple: '1'
+      severity:
+        simple: Critical
+      start_time:
+        simple: '1587717640'
+      status:
+        simple: ACTIVE
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 865\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '5':
+    id: '5'
+    taskid: dd33e71f-369c-4dad-8841-8213d2409ded
+    type: condition
+    task:
+      id: dd33e71f-369c-4dad-8841-8213d2409ded
+      version: -1
+      name: Verify Outputs
+      description: Check if an alert of type Bug and severity 4 (Critical) is found
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HelloWorld.Alert.alert_id
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: HelloWorld.Alert.alert_status
+            iscontext: true
+          right:
+            value:
+              simple: ACTIVE
+      - - operator: isEqualString
+          left:
+            value:
+              simple: HelloWorld.Alert.alert_type
+            iscontext: true
+          right:
+            value:
+              simple: Bug
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HelloWorld.Alert.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HelloWorld.Alert.name
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: HelloWorld.Alert.severity
+            iscontext: true
+          right:
+            value:
+              simple: Critical
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1040\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '6':
+    id: '6'
+    taskid: cf54e733-1131-41b7-8b7c-8b07a6270a86
+    type: regular
+    task:
+      id: cf54e733-1131-41b7-8b7c-8b07a6270a86
+      version: -1
+      name: helloworld-get-alert
+      description: Get the alert details for the alert retrieved in the previous task
+      script: '|||helloworld-get-alert'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      alert_id:
+        complex:
+          root: HelloWorld
+          accessor: Alert.alert_id
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1215\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '7':
+    id: '7'
+    taskid: ad59e196-cf1d-43bc-8502-2be5fdd7f432
+    type: condition
+    task:
+      id: ad59e196-cf1d-43bc-8502-2be5fdd7f432
+      version: -1
+      name: Verify Outputs
+      description: Check if all the alert detail fields are present
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HelloWorld.Alert.alert_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HelloWorld.Alert.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HelloWorld.Alert.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HelloWorld.Alert.device_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HelloWorld.Alert.device_ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HelloWorld.Alert.location
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HelloWorld.Alert.user
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1390\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '8':
+    id: '8'
+    taskid: e745ed55-30a9-4b55-83e2-c2b9138f09d1
+    type: regular
+    task:
+      id: e745ed55-30a9-4b55-83e2-c2b9138f09d1
+      version: -1
+      name: helloworld-update-alert-status
+      description: Change the previous alert status to CLOSED using helloworld-update-alert-status
+      script: '|||helloworld-update-alert-status'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      alert_id:
+        complex:
+          root: HelloWorld
+          accessor: Alert.alert_id
+      status:
+        simple: CLOSED
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1565\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '9':
+    id: '9'
+    taskid: 4aab3a0b-ecf0-438d-843b-4c6e9b01d236
+    type: condition
+    task:
+      id: 4aab3a0b-ecf0-438d-843b-4c6e9b01d236
+      version: -1
+      name: Verify Outputs
+      description: Check if the alert has been closed correctly
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '30'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HelloWorld.Alert.alert_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HelloWorld.Alert.updated
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: HelloWorld.Alert.alert_status
+            iscontext: true
+          right:
+            value:
+              simple: CLOSED
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1740\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '10':
+    id: '10'
+    taskid: 6e80a939-5d8a-455b-8e00-fae04f6d493f
+    type: regular
+    task:
+      id: 6e80a939-5d8a-455b-8e00-fae04f6d493f
+      version: -1
+      name: ip
+      description: Get ip reputation for ip '8.8.8.8'
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+      threshold: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2060\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '11':
+    id: '11'
+    taskid: abc6ccc7-ad70-4c07-854e-acc74523483c
+    type: condition
+    task:
+      id: abc6ccc7-ad70-4c07-854e-acc74523483c
+      version: -1
+      name: Verify Outputs
+      description: Check if the ip command returns accurate data
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '22'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+      - - operator: InRange
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: 0,3
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: ip
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+          right:
+            value:
+              simple: HelloWorld
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HelloWorld.IP.asn
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HelloWorld.IP.asn_cidr
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HelloWorld.IP.asn_country_code
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: HelloWorld.IP.ip
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+      - - operator: isEqualString
+          left:
+            value:
+              simple: HelloWorld.IP.query
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+      - - operator: InRange
+          left:
+            value:
+              simple: HelloWorld.IP.score
+            iscontext: true
+          right:
+            value:
+              simple: 0,100
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.ASN
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2235\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '12':
+    id: '12'
+    taskid: 7c2f9fc9-37b8-4695-8292-551eecb114da
+    type: regular
+    task:
+      id: 7c2f9fc9-37b8-4695-8292-551eecb114da
+      version: -1
+      name: domain
+      description: Run the domain command for domain 'google.com'
+      script: '|||domain'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      domain:
+        simple: google.com
+      threshold: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2585\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '13':
+    id: '13'
+    taskid: a995b15a-d429-4fa6-8480-c9ab42fa7ac1
+    type: condition
+    task:
+      id: a995b15a-d429-4fa6-8480-c9ab42fa7ac1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '29'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: google.com
+      - - operator: InRange
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: 0,3
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: domain
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+          right:
+            value:
+              simple: HelloWorld
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+          right:
+            value:
+              simple: google.com
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HelloWorld.Domain.country
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HelloWorld.Domain.creation_date
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: HelloWorld.Domain.domain
+            iscontext: true
+          right:
+            value:
+              simple: google.com
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HelloWorld.Domain.expiration_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HelloWorld.Domain.registrar
+            iscontext: true
+      - - operator: InRange
+          left:
+            value:
+              simple: HelloWorld.Domain.score
+            iscontext: true
+          right:
+            value:
+              simple: 0,100
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HelloWorld.Domain.updated_date
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2760\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '14':
+    id: '14'
+    taskid: eb8a6fad-c969-46fe-847d-1de9ab538222
+    type: regular
+    task:
+      id: eb8a6fad-c969-46fe-847d-1de9ab538222
+      version: -1
+      name: helloworld-scan-start
+      description: Run scan on hostname 'testhost123.local'
+      script: '|||helloworld-scan-start'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      hostname:
+        simple: testhost123.local
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3080\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '15':
+    id: '15'
+    taskid: abff6ff1-0214-423e-85e3-67f55a4463ac
+    type: condition
+    task:
+      id: abff6ff1-0214-423e-85e3-67f55a4463ac
+      version: -1
+      name: Verify Outputs
+      description: Verify details of the domain
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '16'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HelloWorld.Scan.scan_id
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: HelloWorld.Scan.status
+            iscontext: true
+          right:
+            value:
+              simple: RUNNING
+      - - operator: isEqualString
+          left:
+            value:
+              simple: HelloWorld.Scan.hostname
+            iscontext: true
+          right:
+            value:
+              simple: testhost123.local
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3255\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '16':
+    id: '16'
+    taskid: 9029f9f8-e872-4137-833c-92b015c5bb80
+    type: regular
+    task:
+      id: 9029f9f8-e872-4137-833c-92b015c5bb80
+      version: -1
+      name: helloworld-scan-status
+      description: Test the scan status
+      script: '|||helloworld-scan-status'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments:
+      scan_id:
+        complex:
+          root: HelloWorld
+          accessor: Scan.scan_id
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3430\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '17':
+    id: '17'
+    taskid: 9276dd0e-7791-4674-8342-7bddc21e0779
+    type: condition
+    task:
+      id: 9276dd0e-7791-4674-8342-7bddc21e0779
+      version: -1
+      name: Verify Outputs
+      description: Check if the scan is either running or complete
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '18'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HelloWorld.Scan.scan_id
+            iscontext: true
+      - - operator: inList
+          left:
+            value:
+              simple: HelloWorld.Scan.status
+            iscontext: true
+          right:
+            value:
+              simple: RUNNING,COMPLETE
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3605\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '18':
+    id: '18'
+    taskid: d3eac079-1969-463d-8da1-cee4b48e8f76
+    type: regular
+    task:
+      id: d3eac079-1969-463d-8da1-cee4b48e8f76
+      version: -1
+      name: helloworld-scan-results
+      description: Retrieve the scan results in json format
+      script: '|||helloworld-scan-results'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments:
+      format:
+        simple: json
+      scan_id:
+        complex:
+          root: HelloWorld
+          accessor: Scan.scan_id
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3780\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '19':
+    id: '19'
+    taskid: 77baee90-68d8-4a98-8325-714ea1c1008d
+    type: condition
+    task:
+      id: 77baee90-68d8-4a98-8325-714ea1c1008d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '25'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HelloWorld.Scan.entities.entity-id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HelloWorld.Scan.entities.ip_address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HelloWorld.Scan.entities.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HelloWorld.Scan.entities.vulnerability_status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HelloWorld.Scan.entities.vulns
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HelloWorld.Scan.scan_id
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: HelloWorld.Scan.status
+            iscontext: true
+          right:
+            value:
+              simple: COMPLETE
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CVE.ID
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3955\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '20':
+    id: '20'
+    taskid: 4423132c-0c35-496e-807c-ec0006bc2aa3
+    type: title
+    task:
+      id: 4423132c-0c35-496e-807c-ec0006bc2aa3
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 5295\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '21':
+    id: '21'
+    taskid: 75114d58-44ea-44c6-8da2-1ea52ce7439f
+    type: regular
+    task:
+      id: 75114d58-44ea-44c6-8da2-1ea52ce7439f
+      version: -1
+      name: Test Fetch Incidents
+      description: Execute FetchIncident for a given instance. We get the instance
+        name from the module.
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '26'
+    scriptarguments:
+      add_to_context: {}
+      brand_name:
+        simple: HelloWorld
+      error_msg_in_incident: {}
+      expect_data: {}
+      instance_name: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 4450\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '22':
+    id: '22'
+    taskid: bf7457cf-fd66-4068-8238-92a7dfecda95
+    type: regular
+    task:
+      id: bf7457cf-fd66-4068-8238-92a7dfecda95
+      version: -1
+      name: DeleteContext
+      description: Delete Context to make sure the DBotScore is not tainted from the
+        previous command
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments:
+      all:
+        simple: yes
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2410\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '23':
+    id: '23'
+    taskid: 9b093ceb-31f8-4b38-8acb-86c61c73c6f5
+    type: regular
+    task:
+      id: 9b093ceb-31f8-4b38-8acb-86c61c73c6f5
+      version: -1
+      name: DeleteContext
+      description: Clean up the Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '27'
+    scriptarguments:
+      all:
+        simple: yes
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 4770\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '24':
+    id: '24'
+    taskid: 577e34f8-aab0-4173-83e5-742d4a96c390
+    type: regular
+    task:
+      id: 577e34f8-aab0-4173-83e5-742d4a96c390
+      version: -1
+      name: DeleteContext
+      description: Clean up the Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments:
+      all:
+        simple: yes
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 4275\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '25':
+    id: '25'
+    taskid: ae15c878-7d38-4035-8936-975860e44dca
+    type: title
+    task:
+      id: ae15c878-7d38-4035-8936-975860e44dca
+      version: -1
+      name: Test Fetch Incidents
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '24'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 4130\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '26':
+    id: '26'
+    taskid: b3b1604d-6e17-402e-8a14-555cbc080a4b
+    type: title
+    task:
+      id: b3b1604d-6e17-402e-8a14-555cbc080a4b
+      version: -1
+      name: Test Automation Script
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '23'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 4625\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '27':
+    id: '27'
+    taskid: a14452dd-4ec8-4ca6-8c25-6dbff3813539
+    type: regular
+    task:
+      id: a14452dd-4ec8-4ca6-8c25-6dbff3813539
+      version: -1
+      name: HelloWorldScript
+      description: Run HelloWorldScript with "Dbot" as argument
+      scriptName: HelloWorldScript
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '28'
+    scriptarguments:
+      name:
+        simple: Dbot
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 4945\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '28':
+    id: '28'
+    taskid: 5118c2e1-e78a-4dc2-8bb4-eefaa9a228bb
+    type: condition
+    task:
+      id: 5118c2e1-e78a-4dc2-8bb4-eefaa9a228bb
+      version: -1
+      name: Verify Outputs
+      description: Verify output from script
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '20'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: HelloWorld.hello
+            iscontext: true
+          right:
+            value:
+              simple: Hello Dbot
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 5120\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '29':
+    id: '29'
+    taskid: 5d7435e8-de12-4465-80fc-7cc2ccf8b2d3
+    type: title
+    task:
+      id: 5d7435e8-de12-4465-80fc-7cc2ccf8b2d3
+      version: -1
+      name: Test Scan Commands
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '14'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2935\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '30':
+    id: '30'
+    taskid: b8426dfc-7769-48d2-8f5a-2b5704c09253
+    type: title
+    task:
+      id: b8426dfc-7769-48d2-8f5a-2b5704c09253
+      version: -1
+      name: Test Reputation Commands
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1915\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '31':
+    id: '31'
+    taskid: 152b16c0-7513-4063-82f3-2ede3588600a
+    type: title
+    task:
+      id: 152b16c0-7513-4063-82f3-2ede3588600a
+      version: -1
+      name: Test Alert Commands
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 5310,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"
+inputs: []
+outputs: []
+fromversion: 5.0.0
