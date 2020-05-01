@@ -1141,7 +1141,7 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: 
         if total_incidents > 10:
             demisto.info(f'Fetching Securonix incidents. With offset: {total_incidents-10}')
             securonix_incidents = client.list_incidents_request(from_epoch, to_epoch, incident_status,
-                                                                int(total_incidents  - 10))
+                                                                int(total_incidents - 10))
 
         incidents_items = list(securonix_incidents.get('incidentItems'))  # type: ignore
         # 1st incident is the latest
