@@ -28,7 +28,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: True
+  required: true
   type: 15
 - display: ''
   name: feedExpirationPolicy
