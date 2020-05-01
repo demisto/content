@@ -521,6 +521,8 @@ class TAXIIClient(object):
                 self.username = credentials.get('identifier', None)
                 self.password = credentials.get('password', None)
 
+        if (cert_text and not key_text) or (not cert_text and key_text):
+            raise Exception('You can not configure either certificate text or key, both are required.')
         if cert_text and key_text:
 
             cert_text_list = cert_text.split('-----')
