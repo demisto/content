@@ -13,7 +13,7 @@ from datetime import datetime
 from zipfile import ZipFile
 from Tests.Marketplace.marketplace_services import Pack, PackStatus, GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, \
     PACKS_FOLDER, IGNORED_PATHS, Metadata
-from demisto_sdk.commands.common.tools import run_command, print_error, print_warning, print_color, LOG_COLORS
+from demisto_sdk.commands.common.tools import run_command, print_error, print_warning, print_color, LOG_COLORS, str2bool
 
 
 def get_modified_packs(specific_packs=""):
@@ -435,7 +435,10 @@ def option_handler():
     parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
                         required=False)
     parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
-    parser.add_argument('-sb', '--storage_bash_path', help="Storage base path of the directory to upload to.", required=False)
+    parser.add_argument('-sb', '--storage_bash_path', help="Storage base path of the directory to upload to.",
+                        required=False)
+    parser.add_argument('-sn', '--should_sign_pack', type=str2bool,
+                        help='Should sign content packs or not.', default=False)
     # disable-secrets-detection-end
     return parser.parse_args()
 
@@ -452,6 +455,7 @@ def main():
     override_pack = option.override_pack
     signature_key = option.key_string
     storage_bash_path = option.storage_bash_path
+    should_sign_pack = option.should_sign_pack
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
@@ -519,11 +523,12 @@ def main():
             pack.cleanup()
             continue
 
-        task_status = pack.sign_pack(signature_key)
-        if not task_status:
-            pack.status = PackStatus.FAILED_SIGNING_PACKS.name
-            pack.cleanup()
-            continue
+        if should_sign_pack:
+            task_status = pack.sign_pack(signature_key)
+            if not task_status:
+                pack.status = PackStatus.FAILED_SIGNING_PACKS.name
+                pack.cleanup()
+                continue
 
         task_status, zip_pack_path = pack.zip_pack()
         if not task_status:
