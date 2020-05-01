@@ -411,7 +411,7 @@ def check_if_fetch_incidents_is_tested(missing_ids, integration_ids, id_set, con
 
         for test_playbook_id in test_playbook_ids:
             test_playbook = id_set__get_test_playbook(id_set, test_playbook_id)
-            if 'FetchFromInstance' in test_playbook.get('implementing_scripts'):
+            if test_playbook and 'FetchFromInstance' in test_playbook.get('implementing_scripts', []):
                 missing_ids = missing_ids - {missing_id}
                 tests_set.add(test_playbook_id)
 
