@@ -16,7 +16,7 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: False
+  required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
   display: Source Reliability
