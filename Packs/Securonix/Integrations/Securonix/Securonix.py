@@ -1123,7 +1123,6 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: 
         incidents, new last_run
     """
     timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
-    now = datetime.now().strftime(timestamp_format)
     if not last_run:  # if first time running
         new_last_run = {'time': parse_date_range(fetch_time, date_format=timestamp_format)[0]}
     else:
@@ -1137,18 +1136,17 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: 
     securonix_incidents = client.list_incidents_request(from_epoch, to_epoch, incident_status)
 
     if securonix_incidents:
-
         # Securonix returns the recent 10 incidents, offsetting the response to get the oldest 10 incidents
         total_incidents = int(securonix_incidents.get('totalIncidents', 0))
         if total_incidents > 10:
             demisto.info(f'Fetching Securonix incidents. With offset: {total_incidents-10}')
             securonix_incidents = client.list_incidents_request(from_epoch, to_epoch, incident_status,
-                                                                total_incidents-10)
-            new_last_run.update({'time': securonix_incidents[0].get('lastUpdateDate')})
-        else:
-            new_last_run.update({'time': now})
+                                                                int(total_incidents-10))
 
         incidents_items = list(securonix_incidents.get('incidentItems'))  # type: ignore
+        # 1st incident is the latest
+        new_last_run.update({'time': timestamp_to_datestring(incidents_items[0].get('lastUpdateDate'))})
+
         for incident in incidents_items:
             incident_id = incident.get('incidentId', '0')
             incident_name = get_incident_name(incident, incident_id)  # Try to get incident reason as incident name
