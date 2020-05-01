@@ -1,0 +1,141 @@
+Run nmap scans with the given parameters.
+This integration was integrated and tested with version 7.70 of nmap. The nmap binary is shipped with the Integration docker. You can see the options available for running an nmap scan here: https://nmap.org/book/man-briefoptions.html.
+## Configure nmap on Demisto
+
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for nmap.
+3. Click **Add instance** to create and configure a new integration instance.
+
+
+4. Click **Test** to validate the URLs, token, and connection.
+## Commands
+You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+### nmap-scan
+***
+Scan targets with the given parameters
+
+
+##### Base Command
+
+`nmap-scan`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| targets | The targets to scan. Accepts comma-separated list. | Required | 
+| options | The nmap options to use as documented by nmap | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| NMAP.Scan.Summary | unknown | Scan summary | 
+| NMAP.Scan.Version | unknown | nmap version | 
+| NMAP.Scan.Started | unknown | Start time epoch | 
+| NMAP.Scan.Ended | unknown | End time epoch | 
+| NMAP.Scan.CommandLine | unknown | The command line being used | 
+| NMAP.Scan.ScanType | unknown | The type of discovery scan | 
+| NMAP.Scan.Hosts.Hostname | unknown | DNS hostname of scanned host | 
+| NMAP.Scan.Hosts.Address | unknown | Scanned host address | 
+| NMAP.Scan.Hosts.Status | unknown | Is the host up or down | 
+| NMAP.Scan.Hosts.Services.Port | unknown | The port of the service | 
+| NMAP.Scan.Hosts.Services.Protocol | unknown | The protocol of the service | 
+| NMAP.Scan.Hosts.Services.State | unknown | The state of the service | 
+| NMAP.Scan.Hosts.Services.Banner | unknown | Any captured banner from the service | 
+| NMAP.Scan.Hosts.Services.Service | unknown | The service name | 
+
+
+##### Command Example
+```!nmap-scan options="-sV" targets=scanme.nmap.org```
+
+##### Context Example
+```
+{
+    "NMAP": {
+        "Scan": {
+            "CommandLine": "/usr/bin/nmap -oX - -vvv --stats-every 1s -sV scanme.nmap.org",
+            "Ended": 1588268535,
+            "Hosts": [
+                {
+                    "Address": "45.33.32.156",
+                    "Hostname": "scanme.nmap.org",
+                    "Services": [
+                        {
+                            "Banner": "",
+                            "Port": 21,
+                            "Protocol": "tcp",
+                            "Service": "tcpwrapped",
+                            "State": "open"
+                        },
+                        {
+                            "Banner": "product: OpenSSH version: 6.6.1p1 Ubuntu 2ubuntu2.13 extrainfo: Ubuntu Linux; protocol 2.0 ostype: Linux",
+                            "Port": 22,
+                            "Protocol": "tcp",
+                            "Service": "ssh",
+                            "State": "open"
+                        },
+                        {
+                            "Banner": "product: Apache httpd version: 2.4.7 extrainfo: (Ubuntu)",
+                            "Port": 80,
+                            "Protocol": "tcp",
+                            "Service": "http",
+                            "State": "open"
+                        },
+                        {
+                            "Banner": "",
+                            "Port": 1723,
+                            "Protocol": "tcp",
+                            "Service": "tcpwrapped",
+                            "State": "open"
+                        },
+                        {
+                            "Banner": "",
+                            "Port": 5060,
+                            "Protocol": "tcp",
+                            "Service": "sip",
+                            "State": "open"
+                        },
+                        {
+                            "Banner": "product: Nping echo",
+                            "Port": 9929,
+                            "Protocol": "tcp",
+                            "Service": "nping-echo",
+                            "State": "open"
+                        },
+                        {
+                            "Banner": "",
+                            "Port": 31337,
+                            "Protocol": "tcp",
+                            "Service": "tcpwrapped",
+                            "State": "open"
+                        }
+                    ],
+                    "Status": "up"
+                }
+            ],
+            "ScanType": "connect",
+            "Started": 1588268348,
+            "Summary": "Nmap done at Thu Apr 30 17:42:15 2020; 1 IP address (1 host up) scanned in 186.82 seconds",
+            "Version": "7.70"
+        }
+    }
+}
+```
+
+##### Human Readable Output
+## Nmap done at Thu Apr 30 17:42:15 2020; 1 IP address (1 host up) scanned in 186.82 seconds
+### Nmap scan report for scanme.nmap.org (45.33.32.156)
+#### Host is up.
+### Services
+|Port|Protocol|State|Service|Banner|
+|---|---|---|---|---|
+| 21 | tcp | open | tcpwrapped |  |
+| 22 | tcp | open | ssh | product: OpenSSH version: 6.6.1p1 Ubuntu 2ubuntu2.13 extrainfo: Ubuntu Linux; protocol 2.0 ostype: Linux |
+| 80 | tcp | open | http | product: Apache httpd version: 2.4.7 extrainfo: (Ubuntu) |
+| 1723 | tcp | open | tcpwrapped |  |
+| 5060 | tcp | open | sip |  |
+| 9929 | tcp | open | nping-echo | product: Nping echo |
+| 31337 | tcp | open | tcpwrapped |  |
+
