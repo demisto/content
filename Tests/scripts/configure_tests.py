@@ -166,7 +166,7 @@ def get_modified_files(files_string):
                 is_indicator_json = True
 
             # conf.json
-            elif re.match(CONF_REGEX, file_path, re.IGNORECASE):
+            elif re.match(CONF_PATH, file_path, re.IGNORECASE):
                 is_conf_json = True
 
             # docs and test files do not influence integration tests filtering
