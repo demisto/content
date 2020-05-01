@@ -155,12 +155,8 @@ class TriageReport:
         return None
 
     @classmethod
-    def from_json(cls, json_str):
-        return cls(json.loads(json_str))
-
-    @classmethod
-    def from_id(cls, report_id):
-        return cls(TRIAGE_INSTANCE.request(f"reports/{report_id}"))
+    def fetch(cls, report_id):
+        return cls(TRIAGE_INSTANCE.request(f"reports/{report_id}")[0])
 
 
 class TriageReporter:
@@ -410,7 +406,7 @@ def get_report_by_id_command() -> None:
     report_id = int(demisto.getArg('report_id'))  # type: int
     verbose = demisto.getArg('verbose') == "true"
 
-    report = TriageReport.from_id(report_id)
+    report = TriageReport.fetch(report_id)
 
     if not report:
         return return_error('Could not find report with matching ID')
