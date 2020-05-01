@@ -1145,7 +1145,11 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: 
 
         incidents_items = list(securonix_incidents.get('incidentItems'))  # type: ignore
         # 1st incident is the latest
-        new_last_run.update({'time': timestamp_to_datestring(incidents_items[0].get('lastUpdateDate'))})
+        if incidents_items:
+            now = timestamp_to_datestring(incidents_items[0].get('lastUpdateDate'))
+        else:
+            now = datetime.now().strftime(timestamp_format)
+        new_last_run.update({'time': now})
 
         for incident in incidents_items:
             incident_id = incident.get('incidentId', '0')
