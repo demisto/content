@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "URLhaus",
+            "playbookID": "Test_URLhaus",
+            "timeout": 1000
+        },
+        {
             "integrations": "Microsoft Intune Feed",
             "playbookID": "FeedMicrosoftIntune_Test",
             "fromversion": "5.5.0"
@@ -998,7 +1003,19 @@
                 "Gmail"
             ],
             "playbookID": "Mail Sender (New) Test",
-            "instance_names": ["Mail_Sender_(New)_STARTTLS"]
+            "instance_names": [
+                "Mail_Sender_(New)_STARTTLS"
+            ]
+        },
+        {
+            "integrations": [
+                "Mail Sender (New)",
+                "Gmail"
+            ],
+            "playbookID": "Mail Sender (New) Test",
+            "instance_names": [
+                "Mail_Sender_(New)_SSL/TLS"
+            ]
         },
         {
             "playbookID": "buildewsquery_test"
@@ -2654,7 +2671,7 @@
         }
     ],
     "skipped_tests": {
-        "PhishLabsIOC TestPlaybook": "integration bug (23926)",
+        "Test_URLhaus": "Issue 23857",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get PrismaAccess instance",
         "Prisma_Access-Test": "unskip after we will get PrismaAccess instance",
         "Test-Shodan_v2": "Issue 23370",
