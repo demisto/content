@@ -47,16 +47,16 @@ Scan targets with the given parameters
 | NMAP.Scan.Hosts.Services.Service | unknown | The service name | 
 
 
-##### Command Example
+#### Command Example
 ```!nmap-scan options="-sV" targets=scanme.nmap.org```
 
-##### Context Example
+#### Context Example
 ```
 {
     "NMAP": {
         "Scan": {
             "CommandLine": "/usr/bin/nmap -oX - -vvv --stats-every 1s -sV scanme.nmap.org",
-            "Ended": 1588268535,
+            "Ended": 1588340465,
             "Hosts": [
                 {
                     "Address": "45.33.32.156",
@@ -116,26 +116,26 @@ Scan targets with the given parameters
                 }
             ],
             "ScanType": "connect",
-            "Started": 1588268348,
-            "Summary": "Nmap done at Thu Apr 30 17:42:15 2020; 1 IP address (1 host up) scanned in 186.82 seconds",
+            "Started": 1588340281,
+            "Summary": "Nmap done at Fri May  1 13:41:05 2020; 1 IP address (1 host up) scanned in 183.98 seconds",
             "Version": "7.70"
         }
     }
 }
 ```
 
-##### Human Readable Output
-## Nmap done at Thu Apr 30 17:42:15 2020; 1 IP address (1 host up) scanned in 186.82 seconds
-### Nmap scan report for scanme.nmap.org (45.33.32.156)
-#### Host is up.
-### Services
-|Port|Protocol|State|Service|Banner|
-|---|---|---|---|---|
-| 21 | tcp | open | tcpwrapped |  |
-| 22 | tcp | open | ssh | product: OpenSSH version: 6.6.1p1 Ubuntu 2ubuntu2.13 extrainfo: Ubuntu Linux; protocol 2.0 ostype: Linux |
-| 80 | tcp | open | http | product: Apache httpd version: 2.4.7 extrainfo: (Ubuntu) |
-| 1723 | tcp | open | tcpwrapped |  |
-| 5060 | tcp | open | sip |  |
-| 9929 | tcp | open | nping-echo | product: Nping echo |
-| 31337 | tcp | open | tcpwrapped |  |
+#### Human Readable Output
 
+>## Nmap done at Fri May  1 13:41:05 2020; 1 IP address (1 host up) scanned in 183.98 seconds
+>### Nmap scan report for scanme.nmap.org (45.33.32.156)
+>#### Host is up.
+>### Services
+>|Port|Protocol|State|Service|Banner|
+>|---|---|---|---|---|
+>| 21 | tcp | open | tcpwrapped |  |
+>| 22 | tcp | open | ssh | product: OpenSSH version: 6.6.1p1 Ubuntu 2ubuntu2.13 extrainfo: Ubuntu Linux; protocol 2.0 ostype: Linux |
+>| 80 | tcp | open | http | product: Apache httpd version: 2.4.7 extrainfo: (Ubuntu) |
+>| 1723 | tcp | open | tcpwrapped |  |
+>| 5060 | tcp | open | sip |  |
+>| 9929 | tcp | open | nping-echo | product: Nping echo |
+>| 31337 | tcp | open | tcpwrapped |  |
