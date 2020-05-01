@@ -347,7 +347,7 @@ script:
       description: IP latitude
     - contextPath: IP.Geo.Longitude
       description: IP longitude
-    - contextPath: AlienVaultOTX.Reputation
+    - contextPath: AlienVault_OTX.Reputation
       description: IP reputation
     - contextPath: DBotScore.Indicator
       description: The indicator we tested
@@ -366,9 +366,9 @@ script:
     outputs:
     - contextPath: Domain.Name
       description: Domain name
-    - contextPath: Domain.AlienVaultOTX.Alexa
+    - contextPath: Domain.AlienVault_OTX.Alexa
       description: Alexa URL for domain data
-    - contextPath: Domain.AlienVaultOTX.Whois
+    - contextPath: Domain.AlienVault_OTX.Whois
       description: Whois URL for domain data
     - contextPath: DBotScore.Indicator
       description: The indicator checked
@@ -389,7 +389,7 @@ script:
       description: IP Address
     - contextPath: IP.ASN
       description: IP ASN
-    - contextPath: IP.AlienVaultOTX.Reputation
+    - contextPath: IP.AlienVault_OTX.Reputation
       description: AlienVault IP reputation
     - contextPath: DBotScore.Indicator
       description: The indicator we tested
@@ -408,9 +408,9 @@ script:
     outputs:
     - contextPath: Endpoint.Hostname
       description: Endpoint hostname
-    - contextPath: Endpoint.AlienVaultOTX.Alexa
+    - contextPath: Endpoint.AlienVault_OTX.Alexa
       description: Endpoint Alexa URL
-    - contextPath: Endpoint.AlienVaultOTX.Whois
+    - contextPath: Endpoint.AlienVault_OTX.Whois
       description: Endpoint Whois URL
     description: Query hostname in AlienVault OTX
   - name: file
