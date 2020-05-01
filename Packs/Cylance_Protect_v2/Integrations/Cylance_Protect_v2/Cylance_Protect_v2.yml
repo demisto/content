@@ -962,7 +962,8 @@ script:
       type: boolean
     description: Delete one or more devices from an organization.
     execution: true
-  dockerimage: demisto/cylance_protect_v2
+  dockerimage: demisto/cylance_protect_v2:latest
+  dockerimage45: demisto/cylance_protect_v2
   isfetch: true
   runonce: false
   script: '-'
