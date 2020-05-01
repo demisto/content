@@ -110,7 +110,7 @@ script:
       type: String
     - contextPath: CrowdStrike.Device.PolicyType
       description: The policy types of the device.
-      type: Unknown
+      type: String
     description: Searches for a device that matches the query.
   - name: cs-falcon-get-behavior
     arguments:
@@ -472,6 +472,9 @@ script:
     - contextPath: CrowdStrike.Script.CreatedTime
       description: The creation date of the script.
       type: Date
+    - contextPath: CrowdStrike.Script.Description
+      description: The description of the script
+      type: String
     - contextPath: CrowdStrike.Script.ModifiedBy
       description: The email of the user who modified the script.
       type: String
@@ -522,6 +525,9 @@ script:
     - contextPath: CrowdStrike.Script.CreatedTime
       description: The creation date of the script.
       type: Date
+    - contextPath: CrowdStrike.Script.Description
+      description: The description of the script.
+      type: String
     - contextPath: CrowdStrike.Script.ModifiedBy
       description: The email of the user who modified the script.
       type: String
@@ -566,6 +572,9 @@ script:
     - contextPath: CrowdStrike.Command.HostID
       description: The ID of the host for which the command was running.
       type: String
+    - contextPath: CrowdStrike.Command.SessionID
+      description: The ID of the session of the host.
+      type: String
     - contextPath: CrowdStrike.Command.Stdout
       description: The standard output of the command.
       type: String
@@ -586,6 +595,7 @@ script:
       description: List of host agent ID’s to run RTR command on.
       isArray: true
     - name: file_path
+      required: true
       description: Full path to the file that is to be retrieved from each host in
         the batch.
     - name: optional_hosts

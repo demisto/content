@@ -1395,6 +1395,13 @@ def run_command():
                 'BaseCommand': resource.get('base_command'),
                 'Command': full_command
             })
+        
+        human_readable = tableToMarkdown(f'Command {full_command} results', output, removeNull=True)
+        entry_context = {
+            'CrowdStrike' : {
+              'Command': output
+            }
+        }
     else: # target = 'single'
         response = []
         for host_id in host_ids:
@@ -1425,10 +1432,10 @@ def run_command():
                     'NextSequenceID': 0
                 })
 
-    human_readable = tableToMarkdown(f'Command {full_command} results', output, removeNull=True)
-    entry_context = {
-        'CrowdStrike.Command(val.TaskID === obj.TaskID)': output
-    }
+        human_readable = tableToMarkdown(f'Command {full_command} results', output, removeNull=True)
+        entry_context = {
+            'CrowdStrike.Command(val.TaskID === obj.TaskID)': output
+        }
 
     return create_entry_object(contents=response, ec=entry_context, hr=human_readable)
 
@@ -1671,6 +1678,7 @@ def run_script_command():
         full_command = full_command.replace('`', '')
         output.append({
             'HostID': resource.get('aid'),
+            'SessionID': resource.get('session_id'),
             'Stdout': resource.get('stdout'),
             'Stderr': resource.get('stderr'),
             'BaseCommand': resource.get('base_command'),
@@ -1806,7 +1814,7 @@ def status_command():
                 error_message = f'Could not run command\n{errors}'
             return_error(error_message)
 
-        sequence_id = resource.get('sequence_id')
+        sequence_id = int(resource.get('sequence_id',0))
         output.append({
             'Complete': resource.get('complete') or False,
             'Stdout': resource.get('stdout'),
@@ -1814,7 +1822,7 @@ def status_command():
             'BaseCommand': resource.get('base_command'),
             'TaskID': resource.get('task_id'),
             'SequenceID': sequence_id,
-            'NextSequenceID': None if sequence_id is None else sequence_id + 1
+            'NextSequenceID': sequence_id + 1
         })
 
     human_readable = tableToMarkdown(f'Command status results', output, removeNull=True)
