@@ -566,3 +566,9 @@ class TestHelperFunctions:
         assert "1.1.1.3" not in ip_range_list
         assert "2.2.2.2" in ip_range_list
         assert "25.24.23.22" in ip_range_list
+
+    def test_empty_integartion_context_mimtype(self, mocker):
+        from ExportIndicators import get_outbound_mimetype
+        mocker.patch.object(demisto, 'getIntegrationContext', return_value={})
+        mimtype = get_outbound_mimetype()
+        assert mimtype == 'text/plain'

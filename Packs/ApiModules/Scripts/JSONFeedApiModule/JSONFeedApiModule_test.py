@@ -19,7 +19,7 @@ def test_json_feed_no_config():
             insecure=True
         )
 
-        indicators = fetch_indicators_command(client=client, indicator_type='CIDR')
+        indicators = fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'])
         assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == 1117
 
 
@@ -47,7 +47,7 @@ def test_json_feed_with_config():
             insecure=True
         )
 
-        indicators = fetch_indicators_command(client=client, indicator_type='CIDR')
+        indicators = fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'])
         assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == 1117
 
 
@@ -78,7 +78,7 @@ def test_json_feed_with_config_mapping():
             insecure=True
         )
 
-        indicators = fetch_indicators_command(client=client, indicator_type='CIDR')
+        indicators = fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'])
         assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == 1117
         indicator = indicators[0]
         custom_fields = indicator['fields']

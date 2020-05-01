@@ -34,6 +34,13 @@ configuration:
   - To Ranges
   required: false
   type: 15
+- additionalinfo: If selected, csv and XSOAR-csv formats will create a textual web
+    page instead of downloading a CSV file.
+  display: Show CSV Formats as Text
+  hidden: false
+  name: csv_text
+  required: false
+  type: 8
 - defaultvalue: '10000'
   display: List Size
   name: list_size
@@ -53,9 +60,8 @@ configuration:
   name: longRunning
   required: false
   type: 8
-- additionalinfo: Make sure to use different ports for each Export Indicators Service
-    instance.
-  defaultvalue: '7000'
+- additionalinfo: Requires a unique port for each long-running integration instance.
+    Do not use the same port for multiple instances.
   display: Listen Port
   name: longRunningPort
   required: true
@@ -127,10 +133,11 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The query used to retrieve indicators from the system.
+      description: 'The query used to retrieve indicators from the system. Leave empty
+        to use the query from the integration parameters. '
       isArray: false
       name: query
-      required: true
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
@@ -248,12 +255,23 @@ script:
       - To Ranges
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      description: If True, will output csv and XSOAR-csv formats as textual web pages.
+      isArray: false
+      name: csv_text
+      predefined:
+      - 'False'
+      - 'True'
+      required: false
+      secret: false
     deprecated: false
     description: Updates values stored in the Export Indicators Service (only avaialable
       On-Demand).
     execution: false
     name: eis-update
-  dockerimage: demisto/teams:1.0.0.6483
+  dockerimage: demisto/teams:1.0.0.7727
   feed: false
   isfetch: false
   longRunning: true

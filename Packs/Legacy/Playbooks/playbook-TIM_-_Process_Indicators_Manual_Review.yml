@@ -1,0 +1,626 @@
+id: TIM - Process Indicators - Manual Review
+version: -1
+fromversion: 5.5.0
+name: TIM - Process Indicators - Manual Review
+description: |-
+  This playbook tags indicators ingested by feeds that require manual approval. The playbook is triggered due to a job. The indicators are tagged as requiring a manual review. The playbook optionally concludes with creating a new incident that includes all of the indicators that the analyst must review.
+  To enable the playbook, the indicator query needs to be configured. An example query is a list of the feeds whose ingested indicators should be manually reviewed. For example, sourceBrands:"Feed A" or sourceBrands:"Feed B".
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b59eeea0-db49-4725-8dac-8a7d383cef75
+    type: start
+    task:
+      id: b59eeea0-db49-4725-8dac-8a7d383cef75
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: a6ccee14-545f-4e11-8230-4b13f2ced84c
+    type: condition
+    task:
+      id: a6ccee14-545f-4e11-8230-4b13f2ced84c
+      version: -1
+      name: Are there query results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: playbookQuery.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 248ee366-c269-479e-8679-5fc5131fce23
+    type: title
+    task:
+      id: 248ee366-c269-479e-8679-5fc5131fce23
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 2dcdf680-2e84-4095-878b-35f80edb2a42
+    type: regular
+    task:
+      id: 2dcdf680-2e84-4095-878b-35f80edb2a42
+      version: -1
+      name: Create Process Indicators Manually incident
+      description: Creates an incident that includes all of the indicators that must be manually reviewed.
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      accountid: {}
+      accountname: {}
+      activedirectoryaccountstatus: {}
+      activedirectorydisplayname: {}
+      activedirectorypasswordstatus: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      agentid: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      assets: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      blockedaction: {}
+      bugtraq: {}
+      city: {}
+      clarotyalertresolved: {}
+      clarotyalerttype: {}
+      clarotycategory: {}
+      clarotynetworkid: {}
+      clarotyrelatedassets: {}
+      clarotyresourceid: {}
+      clarotysiteid: {}
+      code42alerttype: {}
+      code42fileevents: {}
+      commandline: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      companypropertystatus: {}
+      contactaddress: {}
+      contactname: {}
+      coordinates: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      designmultiselect: {}
+      designtags: {}
+      dest: {}
+      destinationip: {}
+      destntdomain: {}
+      details: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionticketed: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      devicegsuiteaccountstatus: {}
+      devicename: {}
+      dmcaasset: {}
+      dmcadns: {}
+      dmcafilename: {}
+      dmcafilesize: {}
+      dmcaipaddress: {}
+      dmcalastseedate: {}
+      dmcanoticeid: {}
+      dmcaportid: {}
+      dmcaprotocol: {}
+      dmcatimestamp: {}
+      dpoemailaddress: {}
+      duoaccountstatus: {}
+      duration: {}
+      elasticdisc: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailautoreply: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbody2: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailfrom2: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailsubject2: {}
+      emailto: {}
+      emailto2: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      entryIDs: {}
+      exfiltratedfiles: {}
+      expanseexposuretype: {}
+      expanserawjsonevent: {}
+      expanseseverity: {}
+      extrahopapplianceid: {}
+      extrahophostname: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstseen: {}
+      globaldirectoryvisibility: {}
+      googleaccountstatus: {}
+      googleadminrolesstatus: {}
+      googledisplayname: {}
+      googledrivestatus: {}
+      googlemailstatus: {}
+      googlepasswordstatus: {}
+      hostname: {}
+      indenideviceid: {}
+      indeniissueid: {}
+      infectedhosts: {}
+      investigationstage: {}
+      isolated: {}
+      isthedatasubjecttodpia: {}
+      justification: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastseen: {}
+      likelyimpact: {}
+      mailboxdelegation: {}
+      maliciousbehavior: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      measurestomitigate: {}
+      name:
+        simple: Review Indicators Manually
+      newcompanysize: {}
+      niststage: {}
+      occurred: {}
+      offboardingdate: {}
+      offboardingstage: {}
+      oktaaccountstatus: {}
+      owner: {}
+      parentprocessid: {}
+      participants: {}
+      phase: {}
+      phishingsubtype: {}
+      pid: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      previouscoordinates: {}
+      previouscountry: {}
+      previoussignindatetime: {}
+      previoussourceip: {}
+      prismacloudcomputeactivitytype: {}
+      prismacloudcomputeappid: {}
+      prismacloudcomputecategory: {}
+      prismacloudcomputecollections: {}
+      prismacloudcomputecommand: {}
+      prismacloudcomputecontainer: {}
+      prismacloudcomputecredentialid: {}
+      prismacloudcomputedistribution: {}
+      prismacloudcomputeerror: {}
+      prismacloudcomputeforensic: {}
+      prismacloudcomputefqdn: {}
+      prismacloudcomputefunction: {}
+      prismacloudcomputehost: {}
+      prismacloudcomputeimage: {}
+      prismacloudcomputeinteractive: {}
+      prismacloudcomputekubernetesresource: {}
+      prismacloudcomputelabels: {}
+      prismacloudcomputeline: {}
+      prismacloudcomputelogfile: {}
+      prismacloudcomputemarkdown: {}
+      prismacloudcomputemessage: {}
+      prismacloudcomputeproject: {}
+      prismacloudcomputeprotected: {}
+      prismacloudcomputeprovider: {}
+      prismacloudcomputerawalertjson: {}
+      prismacloudcomputeregion: {}
+      prismacloudcomputeregistry: {}
+      prismacloudcomputerule: {}
+      prismacloudcomputeruntime: {}
+      prismacloudcomputeservice: {}
+      prismacloudcomputeservicetype: {}
+      prismacloudcomputetotal: {}
+      prismacloudcomputetype: {}
+      prismacloudcomputeuser: {}
+      prismacloudid: {}
+      prismacloudreason: {}
+      prismacloudrules: {}
+      prismacloudstatus: {}
+      prismacloudtime: {}
+      rating: {}
+      rawparticipants: {}
+      region: {}
+      regionid: {}
+      reporteremailaddress: {}
+      reputation: {}
+      resourceapiname: {}
+      resourcecloudtype: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      rrn: {}
+      searchresult: {}
+      sectorofaffectedparty: {}
+      severity: {}
+      signature: {}
+      signindatetime: {}
+      sixgillalertid: {}
+      sixgillcontent: {}
+      sixgillthreatlevel: {}
+      sixgillthreattype: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      source: {}
+      sourcehostname: {}
+      sourceip: {}
+      src: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      subscriptionassignedby: {}
+      subscriptioncreatedby: {}
+      subscriptioncreatedon: {}
+      subscriptiondescription: {}
+      subscriptionid: {}
+      subscriptionname: {}
+      subscriptiontype: {}
+      subscriptionupdatedby: {}
+      subscriptionupdatedon: {}
+      subtype: {}
+      systemdefault: {}
+      systems: {}
+      tags: {}
+      targetfirewallversion: {}
+      telephoneno: {}
+      terminatedaction: {}
+      threatactor: {}
+      threatintelsource: {}
+      trapsid: {}
+      travelmaplink: {}
+      triggeredsecurityprofile: {}
+      ttl: {}
+      type:
+        simple: Review Indicators Manually
+      urlsslverification: {}
+      user: {}
+      usermine: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vpcid: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrhostcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrurl: {}
+      xdrusercount: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "5":
+    id: "5"
+    taskid: 39a942f7-9326-4700-8900-e0bf16492f88
+    type: playbook
+    task:
+      id: 39a942f7-9326-4700-8900-e0bf16492f88
+      version: -1
+      name: TIM - Indicator Auto Processing
+      description: This playbook uses several sub playbooks to process and tag indicators, which is used to identify indicators that shouldn't be
+        blacklisted. For example IP indicators that belong to business partners or important hashes we wish to not process. Additional sub playbooks can be added for improving the
+        business logic and tagging according to the user's needs.
+      playbookName: TIM - Indicator Auto Processing
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 84328535-4d96-4b52-8fe6-203310a485f4
+    type: regular
+    task:
+      id: 84328535-4d96-4b52-8fe6-203310a485f4
+      version: -1
+      name: Tag indicators as pending review
+      description: Adds the 'pending_review' tag to the indicators.
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: pending_review
+      indicatorsValues:
+        simple: ${ProcessedIndicators}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "7":
+    id: "7"
+    taskid: 454fb12b-7e06-4720-8b62-24db965eae8e
+    type: condition
+    task:
+      id: 454fb12b-7e06-4720-8b62-24db965eae8e
+      version: -1
+      name: Are there processed indicators to tag for manual review?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ProcessedIndicators
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 524b8391-97d9-49c2-859a-dfc5909620f2
+    type: condition
+    task:
+      id: 524b8391-97d9-49c2-859a-dfc5909620f2
+      version: -1
+      name: Open manual review incident?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "4"
+      "no":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "no"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.OpenIncidentToReviewIndicatorsManually
+            iscontext: true
+          right:
+            value:
+              simple: "No"
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1385,
+        "width": 860,
+        "x": -30,
+        "y": -290
+      }
+    }
+  }
+inputs:
+- key: ""
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+    query: ""
+    queryEntity: indicators
+    results: null
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue: null
+        fromvalue: null
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: false
+- key: OpenIncidentToReviewIndicatorsManually
+  value:
+    simple: "No"
+  required: true
+  description: This input determines if processed indicators that
+    have the manual review tag are reviewed in a new incident. To create an incident, enter any value other than 'No'.
+  playbookInputQuery: null
+outputs: []
+quiet: true
+tests:
+- No test

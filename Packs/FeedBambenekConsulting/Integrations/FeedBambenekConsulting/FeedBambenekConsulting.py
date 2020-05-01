@@ -21,7 +21,8 @@ def main():
                            'info'],
             'indicator_type': FeedIndicatorType.IP,
             'mapping': {
-                'description': 'malwarefamily'
+                'description': 'description',
+                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None)
             }
         },
 
@@ -31,7 +32,8 @@ def main():
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
             'mapping': {
-                'description': 'malwarefamily'
+                'description': 'description',
+                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None)
             }
         },
         'http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist-high.txt': {
@@ -40,7 +42,8 @@ def main():
                            'info'],
             'indicator_type': FeedIndicatorType.IP,
             'mapping': {
-                'description': 'malwarefamily'
+                'description': 'description',
+                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None)
             }
         },
         'http://osint.bambenekconsulting.com/feeds/c2-dommasterlist-high.txt': {
@@ -49,7 +52,8 @@ def main():
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
             'mapping': {
-                'description': 'malwarefamily'
+                'description': 'description',
+                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None)
             }
         },
         'https://faf.bambenekconsulting.com/feeds/dga-feed.gz': {
@@ -58,7 +62,8 @@ def main():
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
             'mapping': {
-                'description': 'malwarefamily'
+                'description': 'description',
+                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None)
             },
             'is_zipped_file': True
         },
@@ -68,7 +73,8 @@ def main():
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
             'mapping': {
-                'description': 'malwarefamily'
+                'description': 'description',
+                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None)
             },
             'is_zipped_file': True
         },
@@ -81,7 +87,7 @@ def main():
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
             'mapping': {
-                'description': 'malwarefamily'
+                'ipaddress': 'ip'
             }
         },
         'https://faf.bambenekconsulting.com/feeds/dga/c2-masterlist-high.txt': {
@@ -93,13 +99,16 @@ def main():
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
             'mapping': {
-                'description': 'malwarefamily'
+                'ipaddress': 'ip'
             }
         },
         'https://faf.bambenekconsulting.com/feeds/sinkhole/latest.csv': {
             'fieldnames': ['value',
                            'owner'],
             'indicator_type': FeedIndicatorType.IP,
+            'mapping': {
+                'description': ('owner', None, 'Sinkholed by {}')
+            }
         }
     }
     params = {k: v for k, v in demisto.params().items() if v is not None}

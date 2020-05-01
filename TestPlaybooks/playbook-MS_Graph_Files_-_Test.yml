@@ -1,8 +1,5 @@
 id: test_MsGraphFiles
 version: -1
-fromversion: "5.0.0"
-contentitemfields:
-  propagationLabels: []
 name: test_MsGraphFiles
 starttaskid: "0"
 tasks:
@@ -23,7 +20,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 50,
           "y": 50
         }
       }
@@ -31,7 +28,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "1":
     id: "1"
     taskid: cbb13684-d442-40c1-8e2d-699f0a24042e
@@ -47,10 +44,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
-      - "21"
       - "24"
-      - "27"
     scriptarguments:
       all:
         simple: "yes"
@@ -62,7 +56,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 50,
           "y": 195
         }
       }
@@ -70,7 +64,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "2":
     id: "2"
     taskid: ea86ac96-86b8-4cf9-8f15-d1c2d7606a63
@@ -98,15 +92,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 370
+          "x": 50,
+          "y": 2380
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "3":
     id: "3"
     taskid: e27848a5-a470-49fb-8a5b-6b2cab20cf44
@@ -139,15 +133,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 720
+          "x": 50,
+          "y": 2730
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "4":
     id: "4"
     taskid: d2351fe3-dba0-42f5-8974-eecc2d902ecb
@@ -205,15 +199,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 895
+          "x": 50,
+          "y": 2905
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "5":
     id: "5"
     taskid: ccd7cd19-bf26-4509-888a-e2fb05f70bf9
@@ -241,15 +235,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2090
+          "x": 50,
+          "y": 4100
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "6":
     id: "6"
     taskid: 93830c3c-d00c-472c-833a-300b15f65a1d
@@ -281,15 +275,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2440
+          "x": 50,
+          "y": 4450
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "7":
     id: "7"
     taskid: 23125e2a-66a7-4de2-8057-40d0caf0139d
@@ -308,15 +302,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1070
+          "x": 50,
+          "y": 3080
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "8":
     id: "8"
     taskid: a7276442-a251-4fa7-8032-fac72fa9d71e
@@ -345,15 +339,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1215
+          "x": 50,
+          "y": 3225
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "9":
     id: "9"
     taskid: 79e0cccc-34cc-4c23-89fa-0c6c46d03b12
@@ -381,15 +375,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1565
+          "x": 50,
+          "y": 3575
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "10":
     id: "10"
     taskid: b3f800b2-94a5-4133-8932-0f142d602f10
@@ -418,15 +412,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1740
+          "x": 50,
+          "y": 3750
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "11":
     id: "11"
     taskid: d189e57f-3be9-4675-8c73-1ca8c67f3fea
@@ -477,15 +471,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2790
+          "x": 50,
+          "y": 4800
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "12":
     id: "12"
     taskid: 759f6a3e-5b88-420d-8c54-629913065339
@@ -504,15 +498,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2965
+          "x": 50,
+          "y": 4975
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "13":
     id: "13"
     taskid: 35cac969-b427-4c63-8ab7-c099a429c39c
@@ -541,15 +535,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 3110
+          "x": 50,
+          "y": 5120
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "14":
     id: "14"
     taskid: 7d159278-59f2-47a3-85a7-a3feccabb31f
@@ -602,15 +596,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 3285
+          "x": 50,
+          "y": 5295
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "15":
     id: "15"
     taskid: c7e01e35-1a4e-4998-8d03-ab9bd13a3ef2
@@ -638,15 +632,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 3605
+          "x": 50,
+          "y": 5790
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "16":
     id: "16"
     taskid: a34fe2f9-29d8-432d-8e74-61dc6897e6c0
@@ -660,20 +654,20 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
+      - "44"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 3460
+          "x": 50,
+          "y": 5470
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "17":
     id: "17"
     taskid: 00826119-620e-4878-891b-d0da68f9c4fe
@@ -701,15 +695,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 4130
+          "x": 50,
+          "y": 6315
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "18":
     id: "18"
     taskid: 25dc81c0-147f-46a6-855e-cc232c83adb1
@@ -738,15 +732,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 3955
+          "x": 50,
+          "y": 6140
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "19":
     id: "19"
     taskid: 112c41f2-bb8b-4330-8259-1c689763a504
@@ -780,15 +774,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 4305
+          "x": 50,
+          "y": 6490
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "20":
     id: "20"
     taskid: 696b7b2f-f7ab-4727-83f3-c7a3ec318ba3
@@ -802,30 +796,29 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "30"
       - "33"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 4655
+          "x": 50,
+          "y": 6840
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "21":
     id: "21"
-    taskid: 2b7062fb-112f-491c-84a0-f894405257c0
+    taskid: 341a5dc1-8989-4149-8987-fe6c0d1da0b2
     type: regular
     task:
-      id: 2b7062fb-112f-491c-84a0-f894405257c0
+      id: 341a5dc1-8989-4149-8987-fe6c0d1da0b2
       version: -1
       name: Test List Sites
-      description: Returns a list of the tenant Sites
+      description: Returns a list of the tenant sites.
       script: Microsoft_Graph_Files|||msgraph-list-sharepoint-sites
       type: regular
       iscommand: true
@@ -837,15 +830,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 370
+          "x": 50,
+          "y": 1710
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "22":
     id: "22"
     taskid: 35bdc65e-ac8c-413a-8644-bfd5e252b537
@@ -895,15 +888,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 720
+          "x": 50,
+          "y": 2060
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "23":
     id: "23"
     taskid: b576aaa8-3935-4cae-8569-d9359ca5001a
@@ -915,19 +908,22 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 910
+          "x": 50,
+          "y": 2235
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "24":
     id: "24"
     taskid: d25f0187-0753-4131-8049-301622a952a5
@@ -953,7 +949,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 50,
           "y": 370
         }
       }
@@ -961,13 +957,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "25":
     id: "25"
-    taskid: 7abe5cc7-af7f-4583-862b-9b6c6d35db96
+    taskid: d96490a5-93ba-42a7-8c60-d3df57834326
     type: condition
     task:
-      id: 7abe5cc7-af7f-4583-862b-9b6c6d35db96
+      id: d96490a5-93ba-42a7-8c60-d3df57834326
       version: -1
       name: Test If Site's Drives Are Saved In Context
       type: condition
@@ -985,33 +981,40 @@ tasks:
             value:
               complex:
                 root: MsGraphFiles
-                accessor: ListChildren.Children.Value.[0].ParentReference.ID
+                accessor: ListDrives.Value.[0].CreatedDateTime
             iscontext: true
       - - operator: isExists
           left:
             value:
               complex:
                 root: MsGraphFiles
-                accessor: ListChildren.Children.Value.[0].FileSystemInfo.CreatedDateTime
+                accessor: ListDrives.Value.[0].Owner.Group.ID
             iscontext: true
       - - operator: isExists
           left:
             value:
               complex:
                 root: MsGraphFiles
-                accessor: ListChildren.Children.Value.[0].ID
+                accessor: ListDrives.Value.[0].ID
             iscontext: true
       - - operator: isExists
           left:
             value:
               complex:
                 root: MsGraphFiles
-                accessor: ListChildren.Children.Value.[0].CreatedBy.DisplayName
+                accessor: ListDrives.Value.[0].CreatedBy.DisplayName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MsGraphFiles
+                accessor: ListDrives.Value.[0].LastModifiedBy.ID
             iscontext: true
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 50,
           "y": 720
         }
       }
@@ -1019,7 +1022,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "26":
     id: "26"
     taskid: 0dcbded7-637b-4209-87d4-deba74f0e8ba
@@ -1031,19 +1034,22 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 910
+          "x": 50,
+          "y": 895
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "27":
     id: "27"
     taskid: 5cbf59ef-414f-4145-8a69-d334fa972965
@@ -1073,15 +1079,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1555,
-          "y": 370
+          "x": 50,
+          "y": 1040
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "28":
     id: "28"
     taskid: 65f131b2-e233-4c36-8acb-cd6a819f38cd
@@ -1131,15 +1137,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1555,
-          "y": 720
+          "x": 50,
+          "y": 1390
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "29":
     id: "29"
     taskid: 2cf4d006-a2a7-4f7e-8601-e48542658a30
@@ -1151,19 +1157,22 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1555,
-          "y": 910
+          "x": 50,
+          "y": 1565
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "30":
     id: "30"
     taskid: 71ee01af-4387-43b5-895d-a1b9b19a108e
@@ -1176,6 +1185,9 @@ tasks:
       type: regular
       iscommand: true
       brand: Microsoft_Graph_Files
+    nexttasks:
+      '#none#':
+      - "43"
     scriptarguments:
       item_id:
         complex:
@@ -1190,14 +1202,14 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4800
+          "y": 7335
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "31":
     id: "31"
     taskid: 90c64134-b49e-4045-8ae2-93ff14de25d9
@@ -1225,15 +1237,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1390
+          "x": 50,
+          "y": 3400
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "32":
     id: "32"
     taskid: 9f407fcb-1998-43b0-828a-f3a179805268
@@ -1261,15 +1273,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 3780
+          "x": 50,
+          "y": 5965
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "33":
     id: "33"
     taskid: f77de60c-a11f-4403-859d-f73b0cf4804c
@@ -1282,6 +1294,9 @@ tasks:
       type: regular
       iscommand: true
       brand: Microsoft_Graph_Files
+    nexttasks:
+      '#none#':
+      - "42"
     scriptarguments:
       item_id:
         complex:
@@ -1295,15 +1310,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 4800
+          "x": 50,
+          "y": 6985
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "34":
     id: "34"
     taskid: 58d66b99-491e-42ee-8ec8-7f48804ac495
@@ -1327,7 +1342,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 50,
           "y": 545
         }
       }
@@ -1335,7 +1350,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "35":
     id: "35"
     taskid: 56323dc2-851b-4746-8ff9-d5c14ce9f633
@@ -1359,21 +1374,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 4480
+          "x": 50,
+          "y": 6665
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "36":
     id: "36"
-    taskid: 08820e99-fd1d-495a-8482-6300de1e90ed
+    taskid: 0361783c-5cd4-4c5c-860e-a35cb14422ae
     type: regular
     task:
-      id: 08820e99-fd1d-495a-8482-6300de1e90ed
+      id: 0361783c-5cd4-4c5c-860e-a35cb14422ae
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -1386,20 +1401,20 @@ tasks:
       - "6"
     scriptarguments:
       seconds:
-        simple: "4"
+        simple: "6"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2265
+          "x": 50,
+          "y": 4275
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "37":
     id: "37"
     taskid: 39b83b71-f144-484e-8844-9a791a143a04
@@ -1423,15 +1438,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2615
+          "x": 50,
+          "y": 4625
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "38":
     id: "38"
     taskid: 6435d52b-e15c-4c47-8bfc-6d42fdb99cbc
@@ -1455,15 +1470,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1555,
-          "y": 545
+          "x": 50,
+          "y": 1215
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "39":
     id: "39"
     taskid: 131cde02-8588-46e6-8130-88b588e8c577
@@ -1487,15 +1502,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 545
+          "x": 50,
+          "y": 1885
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "40":
     id: "40"
     taskid: b2660242-da9f-46c9-812c-31472bea0e8c
@@ -1519,15 +1534,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 545
+          "x": 50,
+          "y": 2555
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "41":
     id: "41"
     taskid: 45ce639e-4f3b-4c10-88d1-25a9a1d17bc1
@@ -1551,22 +1566,110 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1915
+          "x": 50,
+          "y": 3925
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 4f2b93b3-7fd3-4c30-8509-5c9f701ba40d
+    type: regular
+    task:
+      id: 4f2b93b3-7fd3-4c30-8509-5c9f701ba40d
+      version: -1
+      name: sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      seconds:
+        simple: "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: b73fb110-b842-456d-8d04-1eaaffa55228
+    type: title
+    task:
+      id: b73fb110-b842-456d-8d04-1eaaffa55228
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: 1da7d48e-4558-4e8d-80c0-5a9c65b509f2
+    type: regular
+    task:
+      id: 1da7d48e-4558-4e8d-80c0-5a9c65b509f2
+      version: -1
+      name: sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      seconds:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4845,
-        "width": 1885,
+        "height": 7525,
+        "width": 380,
         "x": 50,
         "y": 50
       }
@@ -1574,3 +1677,4 @@ view: |-
   }
 inputs: []
 outputs: []
+sourceplaybookid: test_MsGraphFiles

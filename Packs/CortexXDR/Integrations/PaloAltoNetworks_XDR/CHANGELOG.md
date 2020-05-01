@@ -1,6 +1,18 @@
 ## [Unreleased]
-- Fixed issue where **xdr-isolate-endpoint** was failing if the isolation was still pending
-- Fixed issue where **xdr-unisolate-endpoint** was failing if the isolation cancellation was still pending
+
+
+## [20.4.1] - 2020-04-29
+- Fixed an issue where the ***xdr-get-endpoints*** command failed when returning all the endpoints if no filters were given. 
+
+## [20.4.0] - 2020-04-14
+  - Fixed the issue where the ***xdr-isolate-endpoint*** command was failing when:  
+    - The endpoint was disconnected.  
+    - The isolation was still pending.  
+    - The isolation cancellation was still pending.
+  - Fixed the issue where ***xdr-unisolate-endpoint*** was failing when: 
+    - The endpoint was disconnected.
+    - The isolation was still pending.
+    - The isolation cancellation was still pending.
 
 ## [20.2.0] - 2020-02-04
   - Fixed issue where trailing whitespaces would effect outputs. 

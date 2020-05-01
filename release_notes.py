@@ -503,11 +503,14 @@ def handle_deleted_file(full_file_name, git_sha1):
     :return: None
     """
     data = get_remote_file(full_file_name, git_sha1)
-    name = data.get('name') or data.get('name') or full_file_name
-    file_type = full_file_name.split("/")[0]
-    file_type_mapping = RELEASE_NOTE_GENERATOR.get(file_type)
-    if file_type_mapping is not None:
-        file_type_mapping.add('D', name)
+    # If the data that returns is {} than the file is a md file,
+    # for such files we will not have a release note generator and we will skip
+    if data:
+        name = data.get('name') or full_file_name
+        file_type = full_file_name.split("/")[0]
+        file_type_mapping = RELEASE_NOTE_GENERATOR.get(file_type)
+        if file_type_mapping is not None:
+            file_type_mapping.add('D', name)
 
 
 def create_file_release_notes(change_type, full_file_name):
@@ -634,6 +637,16 @@ def main():
     file_validator = FilesValidator()
     try:
         change_log = run_command('git diff --name-status {}'.format(args.git_sha1), exit_on_error=False)
+    except RuntimeError:
+        print_error('Unable to get the SHA1 of the commit in which the version was released. This can happen if your '
+                    'branch is not updated with origin master. Merge from origin master and, try again.\n'
+                    'If you\'re not on a fork, run "git merge origin/master".\n'
+                    'If you are on a fork, first set https://github.com/demisto/content to be '
+                    'your upstream by running "git remote add upstream https://github.com/demisto/content". After '
+                    'setting the upstream, run "git fetch upstream", and then run "git merge upstream/master". Doing '
+                    'these steps will merge your branch with content master as a base.')
+        sys.exit(1)
+    else:
         modified_files, added_files, removed_files, _ = file_validator.get_modified_files(change_log)
         modified_files, added_files, removed_files = filter_packagify_changes(modified_files, added_files,
                                                                               removed_files, tag=tag)
@@ -645,7 +658,9 @@ def main():
             create_file_release_notes('M', file_path)
 
         for file_path in removed_files:
-            handle_deleted_file(file_path, tag)
+            # content entities are only yml/json files. ignore all the rest.
+            if file_path.endswith('.yml') or file_path.endswith('.json'):
+                handle_deleted_file(file_path, tag)
 
         # join all release notes
         res = []
@@ -669,14 +684,6 @@ def main():
         if missing_release_notes:
             print_error("Error: some release notes are missing. See previous errors.")
             sys.exit(1)
-    except RuntimeError:
-        print_error('Unable to get the SHA1 of the commit in which the version was released. This can happen if your '
-                    'branch is not updated with origin master. Merge from origin master and, try again.\n'
-                    'If you\'re not on a fork, run "git merge origin/master".\n'
-                    'If you are on a fork, first set https://github.com/demisto/content to be '
-                    'your upstream by running "git remote add upstream https://github.com/demisto/content". After '
-                    'setting the upstream, run "git fetch upstream", and then run "git merge upstream/master". Doing '
-                    'these steps will merge your branch with content master as a base.')
 
 
 if __name__ == "__main__":

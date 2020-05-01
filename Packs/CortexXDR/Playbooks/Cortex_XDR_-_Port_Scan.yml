@@ -930,6 +930,9 @@ tasks:
       assignBy:
         simple: random
       email: {}
+      onCall:
+        complex:
+          root: inputs.OnCall
       roles:
         complex:
           root: inputs.RoleForEscalation
@@ -3073,6 +3076,11 @@ inputs:
   required: false
   description: CSV of DN names of critical Active Directory groups. This will affect
     the severity calculated for this incident.
+- key: OnCall
+  value:
+    simple: false
+  required: false
+  description: Set to true to assign only the users that are currently on shift.
 outputs: []
 fromversion: 5.0.0
 tests:

@@ -1,5 +1,6 @@
 ## How to Access the Export Indicators Service
 There are two ways that you can access the Export Indicators Service.
+Use these to make sure your indicators are exported properly.
 
 ### Access the Export Indicators Service by URL and Port (HTTP)
 In a web browser, go to **http://*demisto_address*:*listen_port***.
@@ -12,7 +13,7 @@ In case of several Export Indicators Service integration instances - make sure t
 To access the EDL service by instance name, make sure ***Instance execute external*** is enabled. 
 
 1. In Demisto, go to **Settings > About > Troubleshooting**.
-2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*.
+2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/integrations/long-running#invoking-http-integrations-via-cortex-xsoar-servers-route-handling) for further information.
 3. In a web browser, go to **https://*<demisto_address>*/instance/execute/*<instance_name>*** .
 
 ### Modify Request Parameters Through the URL
@@ -41,3 +42,8 @@ Use the following arguments in the URL to change the request:
     * 1 - Collapse to ranges.
     * 2 - Collapse to CIDRs.
  * Example: https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?q="type:ip and sourceBrand:my_source"&tr=1
+11. **tx** - Whether to output `csv` or `xsoar-csv` formats as textual web pages.
+ * Example: https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=xsoar-csv&tx
+
+### When running in On-Demand mode
+Please make sure to to run !eis-update for the first time to initialize the export process.

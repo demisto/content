@@ -21,21 +21,21 @@ configuration:
   required: false
   type: 8
 - defaultvalue: '7'
-  display: IP Threshold. Minimum risk score for the IP to be consodered malicious
+  display: IP Threshold. Minimum risk score for the IP to be considered malicious
     (ranges from 1 to 10).
   hidden: false
   name: ip_threshold
   required: false
   type: 0
 - defaultvalue: '7'
-  display: URL Threshold. Minimum risk score for the URL to be consodered malicious
+  display: URL Threshold. Minimum risk score for the URL to be considered malicious
     (ranges from 1 to 10).
   hidden: false
   name: url_threshold
   required: false
   type: 0
 - defaultvalue: '5'
-  display: CVE Threshold. Minimum risk score for the URL to be consodered malicious
+  display: CVE Threshold. Minimum risk score for the URL to be considered malicious
     (ranges from 1 to 10).
   hidden: false
   name: cve_threshold

@@ -1,5 +1,5 @@
 id: Nessus - Test
-version: 21
+version: -1
 name: Nessus - Test
 starttaskid: "0"
 tasks:

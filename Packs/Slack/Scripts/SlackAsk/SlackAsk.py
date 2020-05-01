@@ -75,7 +75,8 @@ def main():
         entitlement_string += '|' + demisto.get(demisto.args(), 'task')
 
     args = {
-        'ignoreAddURL': 'true'
+        'ignoreAddURL': 'true',
+        'using-brand': 'SlackV2'
     }
     user_options = [option1, option2]
     options = []

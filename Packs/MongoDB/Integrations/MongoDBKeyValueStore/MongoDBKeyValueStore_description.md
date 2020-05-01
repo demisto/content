@@ -1,0 +1,1 @@
+MongoDB KeyValueStore integration Manipulates key/value pairs by incident.

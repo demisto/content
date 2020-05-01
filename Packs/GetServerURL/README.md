@@ -12,7 +12,7 @@ Gets the Server URL.
 | --- | --- |
 | Script Type | python |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
+
 
 ## Dependencies
 ---

@@ -1,5 +1,5 @@
 id: XFE Test
-version: 10
+version: -1
 name: XFE Test
 description: Test XFE commands via playbook.
 starttaskid: "0"

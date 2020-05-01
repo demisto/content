@@ -1,12 +1,11 @@
 category: Data Enrichment & Threat Intelligence
-fromversion: 5.5.0
 commonfields:
   id: BruteForceBlocker Feed
   version: -1
 configuration:
-- display: Fetch indicators
+- defaultvalue: 'true'
+  display: Fetch indicators
   name: feed
-  defaultvalue: true
   required: false
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
@@ -35,6 +34,7 @@ configuration:
   required: true
   type: 15
 - defaultvalue: indicatorType
+  display: ''
   name: feedExpirationPolicy
   options:
   - never
@@ -43,10 +43,9 @@ configuration:
   - suddenDeath
   required: false
   type: 17
-  display: ""
 - defaultvalue: '20160'
+  display: ''
   name: feedExpirationInterval
-  display: ""
   required: false
   type: 1
 - defaultvalue: '360'
@@ -61,6 +60,11 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -98,3 +102,4 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 5.5.0

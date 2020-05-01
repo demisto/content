@@ -1,6 +1,17 @@
 ## [Unreleased]
 
 
+## [20.4.1] - 2020-04-29
+Removed the default initial value for the **Listen Port** parameter.
+
+## [20.4.0] - 2020-04-14
+  - Fixed an issue where running **On-Demand** mode an error appeared if export was not initialized.
+  - Now when the *query* argument in the ***eis-update*** command is not supplied, the query from the integration parameters is used.
+  - Added a feature to output *csv* and *XSOAR-csv* formats as textual web pages. This can be done by:
+    - The integration configuration.
+    - The URL parameter *tx*.
+    - The *csv_text* argument for the ***eis-update*** command. 
+
 ## [20.3.4] - 2020-03-30
   - Added support for the following inline URL parameters.
     - t - The type indicated in the mwg format.

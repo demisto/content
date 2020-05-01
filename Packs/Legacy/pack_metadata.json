@@ -1,0 +1,27 @@
+{
+  "name": "Legacy Content",
+  "description": "Old format content items",
+  "support": "xsoar",
+  "serverMinVersion": "5.5.0",
+  "currentVersion": "1.0.0",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "categories": [
+  ],
+  "tags": [
+    "legacy content"
+  ],
+  "created": "2020-03-09T16:35:16Z",
+  "updated": "2020-03-09T16:35:16Z",
+  "beta": false,
+  "deprecated": false,
+  "certification": "verified",
+  "useCases": [
+    "content"
+  ],
+  "keywords": [],
+  "price": 0,
+  "dependencies": {},
+  "displayedImages": []
+}
