@@ -576,7 +576,6 @@ class TAXIIClient(object):
         if self.api_key is not None and self.api_header is not None:
             headers[self.api_header] = self.api_key
 
-
         rkwargs = dict(
             stream=stream,
             verify=self.verify_cert,
