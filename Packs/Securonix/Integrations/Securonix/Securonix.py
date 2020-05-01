@@ -316,13 +316,14 @@ class Client(BaseClient):
                                            params=params)
         return violation_data
 
-    def list_incidents_request(self, from_epoch: str, to_epoch: str, incident_status: str) -> Dict:
+    def list_incidents_request(self, from_epoch: str, to_epoch: str, incident_status: str, offset: int = 0) -> Dict:
         """List all incidents by sending a GET request.
 
         Args:
             from_epoch: from time in epoch
             to_epoch: to time in epoch
             incident_status: incident status e.g:closed, opened
+            offset: offset the response
 
         Returns:
             Response from API.
@@ -331,7 +332,8 @@ class Client(BaseClient):
             'type': 'list',
             'from': from_epoch,
             'to': to_epoch,
-            'rangeType': incident_status
+            'rangeType': incident_status,
+            'offset': offset
         }
         incidents = self.http_request('GET', '/incident/get', headers={'token': self._token}, params=params)
         return incidents.get('result').get('data')
@@ -1135,6 +1137,17 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: 
     securonix_incidents = client.list_incidents_request(from_epoch, to_epoch, incident_status)
 
     if securonix_incidents:
+
+        # Securonix returns the recent 10 incidents, offsetting the response to get the oldest 10 incidents
+        total_incidents = int(securonix_incidents.get('totalIncidents', 0))
+        if total_incidents > 10:
+            demisto.info(f'Fetching Securonix incidents. With offset: {total_incidents-10}')
+            securonix_incidents = client.list_incidents_request(from_epoch, to_epoch, incident_status,
+                                                                total_incidents-10)
+            new_last_run.update({'time': securonix_incidents[0].get('lastUpdateDate')})
+        else:
+            new_last_run.update({'time': now})
+
         incidents_items = list(securonix_incidents.get('incidentItems'))  # type: ignore
         for incident in incidents_items:
             incident_id = incident.get('incidentId', '0')
@@ -1146,7 +1159,6 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: 
                 'rawJSON': json.dumps(incident)
             })
 
-    new_last_run.update({'time': now})
     demisto.setLastRun(new_last_run)
     return demisto_incidents
 
