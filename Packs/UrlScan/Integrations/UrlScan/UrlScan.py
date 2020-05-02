@@ -3,11 +3,13 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 '''IMPORTS'''
+import time
 import requests
 import collections
+import json as JSON
 from urlparse import urlparse
 from requests.utils import quote  # type: ignore
-import time
+
 
 """ POLLING FUNCTIONS"""
 try:
@@ -24,7 +26,8 @@ BASE_URL = 'https://urlscan.io/api/v1/'
 APIKEY = demisto.params().get('apikey')
 THRESHOLD = int(demisto.params().get('url_threshold', '1'))
 USE_SSL = not demisto.params().get('insecure', False)
-
+BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist. ' \
+                                'For your own safety we did not perform this scan...'
 
 '''HELPER FUNCTIONS'''
 
@@ -53,6 +56,17 @@ def http_request(method, url_suffix, json=None, wait=0, retries=0):
             else:
                 time.sleep(wait)
                 return http_request(method, url_suffix, json, wait, retries - 1)
+
+        response_json = r.json()
+        error_description = response_json.get('description')
+        should_continue_on_blacklisted_urls = demisto.args().get('continue_on_blacklisted_urls')
+        if should_continue_on_blacklisted_urls and error_description == BLACKLISTED_URL_ERROR_MESSAGE:
+            response_json['url_is_blacklisted'] = True
+            requested_url = JSON.loads(json)['url']
+            blacklisted_message = 'The URL {} is blacklisted, no results will be returned for it.'.format(requested_url)
+            demisto.results(blacklisted_message)
+            return response_json
+
         return_error('Error in API call to URLScan.io [%d] - %s' % (r.status_code, r.reason))
 
     return r.json()
@@ -158,8 +172,7 @@ def urlscan_submit_url():
     wait = int(demisto.args().get('wait', 5))
     retries = int(demisto.args().get('retries', 0))
     r = http_request('POST', 'scan/', sub_json, wait, retries)
-    uuid = r['uuid']
-    return uuid
+    return r
 
 
 def format_results(uuid):
@@ -354,7 +367,10 @@ def urlscan_submit_command():
     urls = argToList(demisto.args().get('url'))
     for url in urls:
         demisto.args()['url'] = url
-        uuid = urlscan_submit_url()
+        response = urlscan_submit_url()
+        if response.get('url_is_blacklisted'):
+            pass
+        uuid = response.get('uuid')
         get_urlscan_submit_results_polling(uuid)
 
 
@@ -550,7 +566,7 @@ try:
     if demisto.command() == 'urlscan-search':
         urlscan_search_command()
     if demisto.command() == 'urlscan-submit-url-command':
-        demisto.results(urlscan_submit_url())
+        demisto.results(urlscan_submit_url().get('uuid'))
     if demisto.command() == 'urlscan-get-http-transaction-list':
         format_http_transaction_list()
     if demisto.command() == 'urlscan-get-result-page':
