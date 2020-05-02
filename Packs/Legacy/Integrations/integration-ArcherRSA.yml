@@ -1467,9 +1467,9 @@ script:
 
             var fields = verifyOrMakeArray(record.Field);
             fields.forEach(function (field) {
-                if (field['#text'] != null) {
+                if (field['#text'] !== null) {
                     toContext.Fields[GLOBAL_MAPPING[field['-id']].Name] = field['#text'];
-                } else if (field.ListValues != null && field.ListValues['#text'] != null) {
+                } else if (field.ListValues !== null && field.ListValues['#text'] !== null) {
                     toContext.Fields[GLOBAL_MAPPING[field['-id']].Name] = field.ListValues.ListValue['#text'];
                 } else {
                     toContext.Fields[GLOBAL_MAPPING[field['-id']].Name] = null;
