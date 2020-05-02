@@ -63,6 +63,7 @@ script: |-
   createRecordResult = demisto.executeCommand("archer-update-record", createRecordArgs)
   demisto.results(createRecordResult)
 type: python
+subtype: python2
 tags: []
 comment: "This script is used to simplify the process of updating a new record in
   Archer. You can add fields that you want in the record as script arguments and or

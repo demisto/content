@@ -21,6 +21,7 @@ script: |
       else:
           demisto.results("No results.")
 type: python
+subtype: python2
 tags:
 - Algosec
 comment: Retrieves a FireFlow change request by its ID
