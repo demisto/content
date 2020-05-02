@@ -35,7 +35,7 @@ CONTENT_PACKS_TO_INSTALL="./Tests/content_packs_to_install.txt"
 while IFS= read -r PACK_NAME
 do
   echo "Updating $PACK_NAME ..."
-  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s $KF -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -p $PACK_NAME -o -sb $TARGET_PATH
+  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s $KF -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -p $PACK_NAME -o -sb $TARGET_PATH -sn false
 #  gsutil -m cp -r "./Packs/$PACK_NAME" "gs://$GCS_BUILD_BUCKET/$TARGET_PATH"
   echo "Updated $PACK_NAME successfully."
 done < "$CONTENT_PACKS_TO_INSTALL"

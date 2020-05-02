@@ -438,7 +438,7 @@ def option_handler():
     parser.add_argument('-sb', '--storage_bash_path', help="Storage base path of the directory to upload to.",
                         required=False)
     parser.add_argument('-sn', '--should_sign_pack', type=str2bool,
-                        help='Should sign content packs or not.', default=False)
+                        help='Should sign content packs or not.', default=True)
     # disable-secrets-detection-end
     return parser.parse_args()
 
