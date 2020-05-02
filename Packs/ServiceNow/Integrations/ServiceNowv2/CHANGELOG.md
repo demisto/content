@@ -1,5 +1,6 @@
 ## [Unreleased]
   - Added the *file_type* argument to the ***servicenow-upload-file*** command.
+  - Added the ***servicenow-add-tag*** command.
   - Added the *system_params* argument to the ***servicenow-query-table***, ***servicenow-query-tickets*** commands.
 
 
