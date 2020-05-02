@@ -1,0 +1,68 @@
+commonfields:
+  id: AlgosecCreateTicket
+  version: -1
+name: AlgosecCreateTicket
+script: |2
+
+  resp = demisto.executeCommand("algosec-create-ticket", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents.createTicketResponse")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          for item in data:
+              for row in item:
+                  if '#text' in item[row]:
+                      item[row] = item[row]['#text']
+
+          data = flattenTable(data)
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+tags:
+- Algosec
+comment: Creates a new FireFlow change request
+system: true
+args:
+- name: description
+  description: A free text description of the issue
+- name: devices
+  description: A list of device names, on which the change should be made
+- name: action
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - "0"
+  - "1"
+  description: 'The device action to perform for the traffic. This can be either of
+    the following: 1 - Allow the traffic, 0 - Block the traffic'
+- name: destAddress
+  required: true
+  description: The destination address to perform the action on
+- name: sourceAddress
+  required: true
+  description: The source address to perform the action on
+- name: requestor
+  required: true
+  description: The email address of the requestor
+- name: subject
+  required: true
+  description: The change request's title
+- name: service
+  required: true
+  description: The device service or port for the connection, for example, "http"
+    or "tcp/123"
+- name: user
+  required: true
+  description: The user for the connection
+- name: application
+  required: true
+  description: The application for the connection
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - algosec-create-ticket

@@ -1,0 +1,44 @@
+commonfields:
+  id: AlgosecQuery
+  version: -1
+name: AlgosecQuery
+script: |2
+
+  resp = demisto.executeCommand("algosec-query", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents.QueryResponse.QueryResult")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = flattenTable(data)
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+tags:
+- Algosec
+comment: Performs a batch traffic simulation query using Firewall Analyzer
+system: true
+args:
+- name: source
+  required: true
+  default: true
+  description: source(s) for the query. Multiple values are separated by commas (,)
+- name: destination
+  required: true
+  description: destination(s) for the query. Multiple values are separated by commas
+    (,)
+- name: service
+  required: true
+  description: service(s) for the query. Multiple values are separated by commas (,)
+- name: user
+  description: user for the query
+- name: application
+  description: application for the query
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - algosec-query

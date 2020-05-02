@@ -19,12 +19,10 @@ configuration:
   required: true
 - display: Fetch incidents
   name: isFetch
-  defaultvalue: ""
   type: 8
   required: false
 - display: Incident type
   name: incidentType
-  defaultvalue: ""
   type: 13
   required: false
 - display: Fetching interval in minutes (default is 15, minimum is 15 )
@@ -44,7 +42,7 @@ configuration:
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "true"
+  defaultvalue: ''
   type: 8
   required: false
 - display: Use system proxy settings
@@ -403,6 +401,7 @@ script:
         aella_get_event_command()
 
   type: python
+  subtype: python2
   commands:
   - name: aella-get-event
     arguments:
