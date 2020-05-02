@@ -966,6 +966,7 @@ def get_test_list(files_string, branch_name, two_before_ga_ver='0', conf=None, i
         tests = tests.union(get_test_from_conf(branch_name, conf))
 
     if not tests:
+        tests = get_random_tests(tests_num=RANDOM_TESTS_NUM, conf=conf, id_set=id_set, server_version=two_before_ga_ver)
         if changed_common:
             print_warning('Adding 3 random tests due to: {}'.format(','.join(changed_common)))
         elif sample_tests:  # Choosing 3 random tests for infrastructure testing
@@ -974,8 +975,6 @@ def get_test_list(files_string, branch_name, two_before_ga_ver='0', conf=None, i
             print_warning("Running Sanity check only")
             tests.add('DocumentationTest')  # test with integration configured
             tests.add('TestCommonPython')  # test with no integration configured
-        tests = tests.union(
-            get_random_tests(tests_num=RANDOM_TESTS_NUM, conf=conf, id_set=id_set, server_version=two_before_ga_ver))
 
     if changed_common:
         tests.add('TestCommonPython')
