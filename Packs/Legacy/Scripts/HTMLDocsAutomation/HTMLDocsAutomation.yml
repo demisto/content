@@ -83,5 +83,6 @@ dockerimage: demisto/python3:3.7.4.1150
 type: python
 subtype: python3
 runonce: false
+deprecated: true
 tests:
   - No test

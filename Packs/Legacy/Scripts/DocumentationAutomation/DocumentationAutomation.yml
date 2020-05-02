@@ -83,5 +83,6 @@ runas: DBotWeakRole
 runonce: false
 subtype: python2
 fromversion: 1.0.0
+deprecated: true
 tests:
 - No tests (auto formatted)
