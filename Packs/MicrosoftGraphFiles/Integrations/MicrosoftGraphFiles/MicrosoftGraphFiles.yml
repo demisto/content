@@ -630,7 +630,7 @@ script:
     - contextPath: File.MD5
       description: The MD5 hash of the file.
       type: String
-  dockerimage: demisto/python_pancloud:1.0.0.4778
+  dockerimage: demisto/python_pancloud:1.0.0.7740
   feed: false
   isfetch: false
   longRunning: false

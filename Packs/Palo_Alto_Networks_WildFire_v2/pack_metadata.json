@@ -1,16 +1,16 @@
 {
-    "name": "Mail Sender (New)",
-    "description": "Send emails implemented in Python with embedded image support",
+    "name": "Palo Alto Networks WildFire v2",
+    "description": "Perform malware dynamic analysis",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Messaging"
+        "Forensics & Malware Analysis"
     ],
     "tags": [
-        "Mail Sender (New)"
+        "Palo Alto Networks WildFire v2"
     ],
     "created": "2020-04-14T00:00:00Z",
     "updated": "2020-03-14T00:00:00Z",
