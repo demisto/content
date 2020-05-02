@@ -439,6 +439,8 @@ def option_handler():
                         required=False)
     parser.add_argument('-sn', '--should_sign_pack', type=str2bool,
                         help='Should sign content packs or not.', default=True)
+    parser.add_argument('-rt', '--remove_test_playbooks', type=str2bool,
+                        help='Should remove test playbooks from content packs or not.', default=True)
     # disable-secrets-detection-end
     return parser.parse_args()
 
@@ -456,6 +458,7 @@ def main():
     signature_key = option.key_string
     storage_bash_path = option.storage_bash_path
     should_sign_pack = option.should_sign_pack
+    remove_test_playbooks = option.remove_test_playbooks
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
@@ -517,7 +520,7 @@ def main():
         # todo finish implementation of release notes
         # pack.parse_release_notes()
 
-        task_status = pack.remove_unwanted_files()
+        task_status = pack.remove_unwanted_files(remove_test_playbooks)
         if not task_status:
             pack.status = PackStatus.FAILED_REMOVING_PACK_SKIPPED_FOLDERS
             pack.cleanup()
