@@ -241,7 +241,7 @@ def alert_to_readable(alert, parse_tags):
     """
 
     is_closed = demisto.get(alert, 'IsClosed')
-    if not is_closed:
+    if is_closed is None:
         is_closed = demisto.get(alert, 'Closed.IsClosed')
 
     readable = {
