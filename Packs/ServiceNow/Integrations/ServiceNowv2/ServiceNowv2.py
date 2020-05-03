@@ -106,19 +106,23 @@ def get_item_human_readable(data: dict) -> dict:
         item human readable.
     """
     item = {
-        'ID': data.get('sys_id'),
-        'Name': data.get('name'),
-        'Description': data.get('short_description'),
-        'Price': data.get('price'),
+        'ID': data.get('sys_id', ''),
+        'Name': data.get('name', ''),
+        'Description': data.get('short_description', ''),
+        'Price': data.get('price', ''),
         'Variables': []
     }
     variables = data.get('variables')
     if variables and isinstance(variables, list):
         for var in variables:
-            item['Variables'].extend({'Question': var.get('label', ''),
-                                      'Type': var.get('display_type', ''),
-                                      'Name': var.get('name', ''),
-                                      'Mandatory': var.get('mandatory', '')})
+            if var:
+                pretty_variables = {
+                    'Question': var.get('label', ''),
+                    'Type': var.get('display_type', ''),
+                    'Name': var.get('name', ''),
+                    'Mandatory': var.get('mandatory', '')
+                }
+                item['Variables'].append(pretty_variables)
     return item
 
 
