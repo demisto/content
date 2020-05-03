@@ -2,20 +2,19 @@
 
 ---
 
-Integration description: Microsoft Graph lets your app get an authorized access to files in OneDrive, SharePoint and MS Teams across all organization. (requires admin consent).
+Microsoft Graph lets your app get an authorized access to files in OneDrive, SharePoint and MS Teams across all organization. (requires admin consent).
 This integration was integrated and tested with version xx of Microsoft_Graph_Files
 
-## Microsoft_Graph_Files Playbook
+## Required Permissions
+1. Directory.Read.All - Delegated
+2. Files.ReadWrite.All - Application
+3. Files.ReadWrite.All - Delegated
+4. Sites.ReadWrite.All - Application
+5. Sites.ReadWrite.All - Delegated
+6. User.Read - Delegated
 
----
+## Configure Microsoft Graph Files on Demisto
 
-## Use Cases
-
----
-
-## Configure Microsoft_Graph_Files on Demisto
-
----
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for Microsoft_Graph_Files.
@@ -29,9 +28,16 @@ This integration was integrated and tested with version xx of Microsoft_Graph_Fi
    * __Use system proxy settings__
 4. Click __Test__ to validate the URLs, token, and connection.
 
-## Fetched Incidents Data
 
----
+## Use a Self-Deployed Azure Application
+
+To use a self-configured Azure application, a need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following Microsoft article:
+https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app">https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app
+<br>The Tenant ID, Client ID, and Client secret are required for the integration.
+To configure the integration in Demisto to use the application, place those parameters in the following manner (instead of how you received them from the admin consent in the current doc):
+* ID - Client ID<br>
+* Token - Tenant ID<br>
+* Key - Client Secret
 
 ## Commands
 
@@ -54,10 +60,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ---
 
 Delete a DriveItem by using its ID
-
-##### Required Permissions
-
-**FILL IN REQUIRED PERMISSIONS HERE**
 
 ##### Base Command
 
@@ -94,10 +96,6 @@ There is no context output for this command.
 ---
 
 Uploads a file from Demisto to MS Graph resource
-
-##### Required Permissions
-
-**FILL IN REQUIRED PERMISSIONS HERE**
 
 ##### Base Command
 
@@ -204,10 +202,6 @@ Uploads a file from Demisto to MS Graph resource
 
 Replace file context in MS Graph resource
 
-##### Required Permissions
-
-**FILL IN REQUIRED PERMISSIONS HERE**
-
 ##### Base Command
 
 `msgraph-replace-existing-file`
@@ -312,10 +306,6 @@ Replace file context in MS Graph resource
 
 Create a new folder in a Drive with a specified parent item or path.
 
-##### Required Permissions
-
-**FILL IN REQUIRED PERMISSIONS HERE**
-
 ##### Base Command
 
 `msgraph-create-new-folder`
@@ -413,10 +403,6 @@ Create a new folder in a Drive with a specified parent item or path.
 
 Returns the list of Drive resources available for a target Site
 
-##### Required Permissions
-
-**FILL IN REQUIRED PERMISSIONS HERE**
-
 ##### Base Command
 
 `msgraph-list-drives-in-site`
@@ -498,10 +484,6 @@ Returns the list of Drive resources available for a target Site
 ---
 
 This command list all the drive's files and folders
-
-##### Required Permissions
-
-**FILL IN REQUIRED PERMISSIONS HERE**
 
 ##### Base Command
 
@@ -607,10 +589,6 @@ This command list all the drive's files and folders
 ---
 
 Returns a list of the tenant Sites
-
-##### Required Permissions
-
-**FILL IN REQUIRED PERMISSIONS HERE**
 
 ##### Base Command
 
@@ -786,10 +764,6 @@ There are no input arguments for this command.
 ---
 
 Download the contents of the file of a DriveItem.
-
-##### Required Permissions
-
-**FILL IN REQUIRED PERMISSIONS HERE**
 
 ##### Base Command
 
