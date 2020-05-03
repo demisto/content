@@ -2023,7 +2023,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Query by name. Match by contains and not by exact name.
+      description: Query by name. Does not require an exact match.
       isArray: false
       name: name
       required: false
