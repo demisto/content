@@ -112,9 +112,9 @@ def get_item_human_readable(data: dict) -> dict:
         'Price': data.get('price'),
         'Variables': []
     }
-
-    if data.get('variables'):
-        for var in data['variables']:
+    variables = data.get('variables')
+    if variables and isinstance(variables, list):
+        for var in variables:
             item['Variables'].append({'Question': var.get('label'),
                                       'Type': var.get('display_type'),
                                       'Name': var.get('name'),
