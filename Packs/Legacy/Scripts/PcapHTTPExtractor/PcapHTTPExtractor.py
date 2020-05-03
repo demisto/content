@@ -204,7 +204,6 @@ def process_tcp_stream(tcp_packets):
             tcp_data['data'] = bytearray.fromhex(segment_hex).decode()
             tcp_data['stream_number'] = t.tcp.stream
             stream.append(tcp_data)
-    print(len(stream))
     return stream
 
 
