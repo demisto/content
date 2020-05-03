@@ -37,7 +37,7 @@ configuration:
   name: connect_parameters
   required: false
   type: 0
-- display: Connect with SSL
+- display: Use SSL secured connection
   hidden: false
   name: ssl_connect
   required: false
@@ -122,7 +122,6 @@ script:
     description: Running a sql query
     execution: false
     name: sql-command
-  dockerimage45: demisto/genericsql:1.0.0.6768
   dockerimage: demisto/genericsql:1.0.0.7446
   feed: false
   isfetch: false
