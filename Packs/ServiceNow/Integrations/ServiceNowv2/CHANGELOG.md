@@ -1,4 +1,8 @@
 ## [Unreleased]
+  - Added 3 commands:
+    - ***servicenow-query-items***
+    - ***servicenow-get-item-details***
+    - ***servicenow-create-item-order***
   - Added the ***servicenow-add-tag*** command.
   - Added the *system_params* argument to the ***servicenow-query-table***, ***servicenow-query-tickets*** commands.
 
