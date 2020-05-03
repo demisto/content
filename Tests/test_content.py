@@ -114,19 +114,6 @@ class ParallelPrintsManager:
         thread_last_update = self.threads_last_update_times[thread_index]
         return current_time - thread_last_update > 300
 
-
-class ParallelPrintsManager:
-
-    def __init__(self, number_of_threads):
-        self.threads_print_jobs = [[] for i in range(number_of_threads)]
-        self.print_lock = threading.Lock()
-        self.threads_last_update_times = [time.time() for i in range(number_of_threads)]
-
-    def should_update_thread_status(self, thread_index):
-        current_time = time.time()
-        thread_last_update = self.threads_last_update_times[thread_index]
-        return current_time - thread_last_update > 300
-
     def add_print_job(self, message_to_print, print_function_to_execute, thread_index, message_color=None,
                       include_timestamp=False):
         if include_timestamp:
@@ -866,140 +853,12 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     #     with open(file_path, "w") as is_build_passed_file:
     #         is_build_passed_file.write('Build passed')
 
-
-def get_unmockable_tests(tests_settings):
-    conf, secret_conf = load_conf_files(tests_settings.conf_path, tests_settings.secret_conf_path)
-    unmockable_integrations = conf['unmockable_integrations']
-    tests = conf['tests']
-    unmockable_tests = []
-    for test_record in tests:
-        test_name = test_record.get("playbookID")
-        integrations_used_in_test = get_used_integrations(test_record)
-        unmockable_integrations_used = [integration_name for integration_name in integrations_used_in_test if
-                                        integration_name in unmockable_integrations]
-        if test_name and (not integrations_used_in_test or unmockable_integrations_used):
-            unmockable_tests.append(test_name)
-    return unmockable_tests
-
 # def main():
 #     options = options_handler()
 #     server = options.server
 #     is_ami = options.isAMI
 #     server_version = options.serverVersion
 #     server_numeric_version = '0.0.0'
-
-
-def get_all_tests(tests_settings):
-    conf, secret_conf = load_conf_files(tests_settings.conf_path, tests_settings.secret_conf_path)
-    tests_records = conf['tests']
-    all_tests = []
-    for test_record in tests_records:
-        test_name = test_record.get("playbookID")
-        if test_name:
-            all_tests.append(test_name)
-    return all_tests
-
-
-def manage_tests(tests_settings):
-    """
-    This function manages the execution of Demisto's tests.
-
-    Args:
-        tests_settings (TestsSettings): An object containing all the relevant data regarding how the tests should be ran
-
-    """
-    tests_settings.serverNumericVersion = get_and_print_server_numeric_version(tests_settings)
-    instances_ips = get_instances_ips_and_names(tests_settings)
-    is_nightly = tests_settings.nightly
-    number_of_instances = len(instances_ips)
-    prints_manager = ParallelPrintsManager(number_of_instances)
-    tests_data_keeper = TestsDataKeeper()
-
-    if tests_settings.server:
-        # If the user supplied a server - all tests will be done on that server.
-        server_ip = tests_settings.server
-        print_color("Starting tests for {}".format(server_ip), LOG_COLORS.GREEN)
-        print("Starts tests with server url - https://{}".format(server_ip))
-        all_tests = get_all_tests(tests_settings)
-        mockable_tests = []
-        print(tests_settings.specific_tests_to_run)
-        unmockable_tests = tests_settings.specific_tests_to_run if tests_settings.specific_tests_to_run else all_tests
-        execute_testing(tests_settings, server_ip, mockable_tests, unmockable_tests, tests_data_keeper, prints_manager,
-                        thread_index=0, is_ami=False)
-    elif tests_settings.isAMI:
-        """
-        Running tests in AMI configuration.
-        This is the way we run most tests, including running Circle for PRs and nightly.
-        """
-        if is_nightly:
-            """
-            If the build is a nightly build, run tests in parallel.
-            """
-            test_allocation = get_tests_allocation_for_threads(number_of_instances, tests_settings.conf_path)
-            current_thread_index = 0
-            all_unmockable_tests_list = get_unmockable_tests(tests_settings)
-            threads_array = []
-            for ami_instance_name, ami_instance_ip in instances_ips:
-                if ami_instance_name == tests_settings.serverVersion:  # Only run tests for given AMI Role
-                    current_instance = ami_instance_ip
-                    tests_allocation_for_instance = test_allocation[current_thread_index]
-
-                    unmockable_tests = [test for test in all_unmockable_tests_list
-                                        if test in tests_allocation_for_instance]
-                    mockable_tests = [test for test in tests_allocation_for_instance if test not in unmockable_tests]
-                    print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
-                    print("Starts tests with server url - https://{}".format(ami_instance_ip))
-
-                    if number_of_instances == 1:
-                        execute_testing(tests_settings, current_instance, mockable_tests, unmockable_tests,
-                                        tests_data_keeper, prints_manager, thread_index=0, is_ami=True)
-                    else:
-                        thread_kwargs = {
-                            "tests_settings": tests_settings,
-                            "server_ip": current_instance,
-                            "mockable_tests_names": mockable_tests,
-                            "unmockable_tests_names": unmockable_tests,
-                            "thread_index": current_thread_index,
-                            "prints_manager": prints_manager,
-                            "tests_data_keeper": tests_data_keeper
-                        }
-                        t = threading.Thread(target=execute_testing, kwargs=thread_kwargs)
-                        threads_array.append(t)
-                        t.start()
-                        current_thread_index += 1
-            for t in threads_array:
-                t.join()
-
-        else:
-            for ami_instance_name, ami_instance_ip in instances_ips:
-                if ami_instance_name == tests_settings.serverVersion:
-                    print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
-                    print("Starts tests with server url - https://{}".format(ami_instance_ip))
-                    all_tests = get_all_tests(tests_settings)
-                    unmockable_tests = get_unmockable_tests(tests_settings)
-                    mockable_tests = [test for test in all_tests if test not in unmockable_tests]
-                    execute_testing(tests_settings, ami_instance_ip, mockable_tests, unmockable_tests,
-                                    tests_data_keeper, prints_manager, thread_index=0, is_ami=True)
-                sleep(8)
-
-    else:
-        # TODO: understand better when this occurs and what will be the settings
-        """
-        This case is rare, and usually occurs on two cases:
-        1. When someone from Server wants to trigger a content build on their branch.
-        2. When someone from content wants to run tests on a specific build.
-        """
-        server_numeric_version = '99.99.98'  # assume latest
-        print("Using server version: {} (assuming latest for non-ami)".format(server_numeric_version))
-        instance_ip = instances_ips[0][1]
-        all_tests = get_all_tests(tests_settings)
-        execute_testing(tests_settings, instance_ip, [], all_tests,
-                        tests_data_keeper, prints_manager, thread_index=0, is_ami=False)
-
-    if playbook_skipped_integration and build_name == 'master':
-        comment = 'The following integrations are skipped and critical for the test:\n {}'.\
-            format('\n- '.join(playbook_skipped_integration))
-        add_pr_comment(comment)
 
 
 def get_unmockable_tests(tests_settings):
