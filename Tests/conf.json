@@ -2729,7 +2729,6 @@
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
         "PrismaAccess": "Instance will be provided soon by Lior and Prasen",
-        "Infoblox": "Issue 23770",
         "Trend Micro Apex": "Issue 23632",
         "Awake Security": "Issue 23376",
         "ExtraHop": "No license, issue 23731",
