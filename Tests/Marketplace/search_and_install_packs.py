@@ -42,7 +42,7 @@ def create_dependencies_data_structure(response_data, pack_id):
 
     if response_data and response_data.get('dependencies'):
         for dependency in response_data.get('dependencies'):
-            is_required = dependency.get('dependants', []).get(pack_id, []).get('level', '') == 'required'
+            is_required = dependency.get('dependants', {}).get(pack_id, {}).get('level', '') == 'required'
             # empty currentVersion field implies the pack isn't installed yet
             if not dependency.get('currentVersion') and is_required:
                 dependencies_data.append({
