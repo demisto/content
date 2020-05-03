@@ -15,11 +15,11 @@ mock_responses_dict = {
 
 
 def test_fetch_cidr(monkeypatch):
-    def mocked_dns_resolver_query(dns_address, _):
+    def mock_dns_resolver_query(dns_address, _):
         response_json = mock_responses_dict[dns_address]
         return json.loads(response_json, object_hook=lambda d: namedtuple('Answer', d.keys())(*d.values()))
 
-    monkeypatch.setattr(dns.resolver, "query", mocked_dns_resolver_query)
+    monkeypatch.setattr(dns.resolver, "query", mock_dns_resolver_query)
     cidr_list = fetch_cidr(mock_root_dns)
     assert len(cidr_list) == 3
     for cidr in cidr_list:
