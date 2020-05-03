@@ -1,11 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-# from Packs.ApiModules.Scripts.MicrosoftApiModule.MicrosoftApiModule import MicrosoftClient
 
 """ IMPORTS """
 
-from urllib.parse import urlencode, parse_qs, urlparse
+from urllib.parse import parse_qs, urlparse
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -105,7 +104,7 @@ def url_validation(url):
 
 class MsGraphClient:
     """
-    Microsoft Graph Mail Client enables authorized access to a user's Office 365 mail data in a personal account.
+    Microsoft Graph Client enables authorized access to organization's files in OneDrive, SharePoint, and MS Teams.
     """
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed, ok_codes):
@@ -141,7 +140,7 @@ class MsGraphClient:
                 "next_page_url: if you have used the limit argument."
             )
 
-        params = urlencode({"$top": limit}) if limit else ""
+        params = {"$top": limit} if limit else ""
 
         if next_page_url:
             url = url_validation(next_page_url)
@@ -160,7 +159,7 @@ class MsGraphClient:
         :param next_page_url: the URL for the next results page. optional.
         :return: graph api raw response
         """
-        params = urlencode({"$top": limit}) if limit else ""
+        params = {"$top": limit} if limit else ""
 
         if next_page_url:
             url = url_validation(next_page_url)
@@ -198,8 +197,6 @@ class MsGraphClient:
 
         elif object_type in ["groups", "sites", "users"]:
             uri = f"{object_type}/{object_type_id}/drive/items/{item_id}/content"
-
-        # send request
         with open(file_path, "rb") as file:
             headers = {"Content-Type": "application/octet-stream"}
             return self.ms_client.http_request(
@@ -289,7 +286,6 @@ class MsGraphClient:
             "folder": {},
             "@microsoft.graph.conflictBehavior": "rename",
         }
-        demisto.log(f"sending POST to {uri} suffix, with the next payload: {payload}")
 
         return self.ms_client.http_request(method="POST", json_data=payload, url_suffix=uri)
 
@@ -633,11 +629,10 @@ def main():
             demisto.results(result)
         elif demisto.command() == "msgraph-delete-file":
             readable_output, raw_response = delete_file_command(client, demisto.args())
-            return_outputs(readable_output=readable_output)
+            return_outputs(readable_output=readable_output, raw_response=raw_response)
         elif demisto.command() == "msgraph-list-sharepoint-sites":
             return_outputs(*list_sharepoint_sites_command(client, demisto.args()))
         elif demisto.command() == "msgraph-download-file":
-
             # it has to be demisto.results instead of return_outputs.
             # because fileResult contains 'content': '' and if that key is empty return_outputs returns error.
             demisto.results(download_file_command(client, demisto.args()))

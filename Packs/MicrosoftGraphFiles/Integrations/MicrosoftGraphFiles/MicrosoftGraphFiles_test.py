@@ -5,7 +5,6 @@ from MicrosoftGraphFiles import remove_identity_key, url_validation, parse_key_t
     download_file_command, list_sharepoint_sites_command, list_drive_content_command, create_new_folder_command, \
     list_drives_in_site_command, MsGraphClient
 
-# TODO: remove dots before paths
 with open("test_data/response.json", "rb") as test_data:
     commands_responses = json.load(test_data)
 
@@ -160,11 +159,10 @@ def test_parse_key_to_context_exclude_keys_from_list():
     "command, args, response, expected_result",
     [
         (
-                download_file_command,
-                {"object_type": "drives", "object_type_id": "123", "item_id": "232"},
-                File,
-                commands_expected_results["download_file"],
-        )
+            download_file_command,
+            {"object_type": "drives", "object_type_id": "123", "item_id": "232"}, File,
+            commands_expected_results["download_file"]
+      ),
     ],
 )  # noqa: E124
 def test_download_file(command, args, response, expected_result, mocker):
@@ -185,10 +183,10 @@ def test_download_file(command, args, response, expected_result, mocker):
     "command, args, response, expected_result",
     [
         (
-                delete_file_command,
-                {"object_type": "drives", "object_type_id": "123", "item_id": "232"},
-                commands_responses["download_file"],
-                commands_expected_results["download_file"],
+            delete_file_command,
+            {"object_type": "drives", "object_type_id": "123", "item_id": "232"},
+            commands_responses["download_file"],
+            commands_expected_results["download_file"],
         )
     ],
 )  # noqa: E124
@@ -210,10 +208,10 @@ def test_delete_file(command, args, response, expected_result, mocker):
     "command, args, response, expected_result",
     [
         (
-                list_sharepoint_sites_command,
-                {},
-                commands_responses["list_tenant_sites"],
-                commands_expected_results["list_tenant_sites"],
+            list_sharepoint_sites_command,
+            {},
+            commands_responses["list_tenant_sites"],
+            commands_expected_results["list_tenant_sites"],
         )
     ],
 )  # noqa: E124
@@ -235,10 +233,10 @@ def test_list_tenant_sites(command, args, response, expected_result, mocker):
     "command, args, response, expected_result",
     [
         (
-                list_drive_content_command,
-                {"object_type": "sites", "object_type_id": "12434", "item_id": "123"},
-                commands_responses["list_drive_children"],
-                commands_expected_results["list_drive_children"],
+            list_drive_content_command,
+            {"object_type": "sites", "object_type_id": "12434", "item_id": "123"},
+            commands_responses["list_drive_children"],
+            commands_expected_results["list_drive_children"],
         )
     ],
 )  # noqa: E124
@@ -260,15 +258,15 @@ def test_list_drive_content(command, args, response, expected_result, mocker):
     "command, args, response, expected_result",
     [
         (
-                create_new_folder_command,
-                {
-                    "object_type": "groups",
-                    "object_type_id": "1234",
-                    "parent_id": "1234",
-                    "folder_name": "name",
-                },
-                commands_responses["create_new_folder"],
-                commands_expected_results["create_new_folder"],
+            create_new_folder_command,
+            {
+                "object_type": "groups",
+                "object_type_id": "1234",
+                "parent_id": "1234",
+                "folder_name": "name",
+            },
+            commands_responses["create_new_folder"],
+            commands_expected_results["create_new_folder"],
         )
     ],
 )  # noqa: E124
@@ -290,10 +288,10 @@ def test_create_name_folder(command, args, response, expected_result, mocker):
     "command, args, response, expected_result",
     [
         (
-                list_drives_in_site_command,
-                {"site_id": "site_id"},
-                commands_responses["list_drives_in_a_site"],
-                commands_expected_results["list_drives_in_a_site"],
+            list_drives_in_site_command,
+            {"site_id": "site_id"},
+            commands_responses["list_drives_in_a_site"],
+            commands_expected_results["list_drives_in_a_site"],
         )
     ],
 )  # noqa: E124

@@ -61,6 +61,10 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 Delete a DriveItem by using its ID
 
+##### Required Permissions
+
+    Files.ReadWrite.All
+
 ##### Base Command
 
 `msgraph-delete-file`
@@ -96,6 +100,10 @@ There is no context output for this command.
 ---
 
 Uploads a file from Demisto to MS Graph resource
+
+##### Required Permissions
+
+    Files.ReadWrite.All
 
 ##### Base Command
 
@@ -199,6 +207,10 @@ Uploads a file from Demisto to MS Graph resource
 ### 3. msgraph-replace-existing-file
 
 ---
+##### Required Permissions
+
+    Files.ReadWrite.All
+    Sites.ReadWrite.All
 
 Replace file context in MS Graph resource
 
@@ -306,6 +318,12 @@ Replace file context in MS Graph resource
 
 Create a new folder in a Drive with a specified parent item or path.
 
+##### Required Permissions
+
+    Files.ReadWrite.All
+    Sites.ReadWrite.All
+
+
 ##### Base Command
 
 `msgraph-create-new-folder`
@@ -403,6 +421,11 @@ Create a new folder in a Drive with a specified parent item or path.
 
 Returns the list of Drive resources available for a target Site
 
+##### Required Permissions
+
+    Sites.ReadWrite.All
+    Files.ReadWrite.All
+
 ##### Base Command
 
 `msgraph-list-drives-in-site`
@@ -484,6 +507,11 @@ Returns the list of Drive resources available for a target Site
 ---
 
 This command list all the drive's files and folders
+
+##### Required Permissions
+
+    Files.ReadWrite.All
+    Sites.ReadWrite.All
 
 ##### Base Command
 
@@ -589,6 +617,10 @@ This command list all the drive's files and folders
 ---
 
 Returns a list of the tenant Sites
+
+##### Required Permissions
+
+    Sites.ReadWrite.All
 
 ##### Base Command
 
@@ -769,6 +801,11 @@ Download the contents of the file of a DriveItem.
 
 `msgraph-download-file`
 
+##### Required Permissions
+
+    Files.ReadWrite.All
+    Sites.ReadWrite.All
+
 ##### Input
 
 | **Argument Name** | **Description**       | **Required** |
@@ -797,6 +834,3 @@ Download the contents of the file of a DriveItem.
 ##### Command Example
 
 ```!msgraph-download-file object_type=drives object_type_id=123 item_id=123```
-
-
-
