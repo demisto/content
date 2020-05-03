@@ -115,10 +115,10 @@ def get_item_human_readable(data: dict) -> dict:
     variables = data.get('variables')
     if variables and isinstance(variables, list):
         for var in variables:
-            item['Variables'].append({'Question': var.get('label'),
-                                      'Type': var.get('display_type'),
-                                      'Name': var.get('name'),
-                                      'Mandatory': var.get('mandatory')})
+            item['Variables'].extend({'Question': var.get('label', ''),
+                                      'Type': var.get('display_type', ''),
+                                      'Name': var.get('name', ''),
+                                      'Mandatory': var.get('mandatory', '')})
     return item
 
 
