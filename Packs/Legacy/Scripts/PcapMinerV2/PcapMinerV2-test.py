@@ -29,15 +29,15 @@ def test_conversations_to_md():
 
 def test_remove_nones():
     d = {'Oh': 1,
-            'My': None,
-            'God': None}
+         'My': None,
+         'God': None}
     from PcapMinerV2 import remove_nones
     assert remove_nones(d) == {'Oh': 1}
 
 
 def test_add_to_data():
     from PcapMinerV2 import add_to_data
-    data = {}
+    data: dict = {}
     data_to_add = {'ID': '1',
                    'Length': 5}
     add_to_data(data, data_to_add)
