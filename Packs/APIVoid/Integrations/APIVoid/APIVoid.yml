@@ -139,12 +139,12 @@ script:
       type: string
     - contextPath: apivoid.IP.ip
       type: string
-    description: Returns the reputation and extended context of the IP.
+    description: Returns the reputation and extended context of the IP address.
   - name: apivoid-domain
     arguments:
     - name: domain
       required: true
-      description: The Domain to query.
+      description: The domain to query.
     outputs:
     - contextPath: Domain
     - contextPath: Domain.DNS
@@ -456,7 +456,7 @@ script:
     arguments:
     - name: ip
       required: true
-      description: The IP to query.
+      description: The IP address to query.
       default: true
       isArray: true
     outputs:
@@ -485,12 +485,12 @@ script:
       type: string
     - contextPath: DBotScore.Vendor
       type: string
-    description: Returns the reputation of the IP.
+    description: Returns the reputation of the IP address.
   - name: domain
     arguments:
     - name: domain
       required: true
-      description: The Domain to query.
+      description: The domain to query.
       default: true
       isArray: true
     outputs:
@@ -564,7 +564,7 @@ script:
       - SOA
       - SRV
       - CAA
-      description: The DNS record type to lookup
+      description: The DNS record type to look up.
       defaultValue: A
     outputs:
     - contextPath: apivoid.DNS
@@ -621,7 +621,7 @@ script:
     arguments:
     - name: host
       required: true
-      description: Host to lookup SSL.
+      description: Host to look up SSL.
     outputs:
     - contextPath: apivoid.SSL
     - contextPath: apivoid.SSL.found
@@ -720,12 +720,12 @@ script:
       type: date
     - contextPath: apivoid.SSL.details.version
       type: string
-    description: Get useful SSL information from a remote host
+    description: Gets useful SSL information from a remote host.
   - name: apivoid-email-verify
     arguments:
     - name: email
       required: true
-      description: Email address to lookup
+      description: Email address to lookup.
     outputs:
     - contextPath: apivoid.Email
     - contextPath: apivoid.Email.email
@@ -774,7 +774,7 @@ script:
       type: boolean
     - contextPath: apivoid.Email.score
       type: number
-    description: Checks if an email is disposable, if it has MX records and more.
+    description: Checks if an email address is disposable, if it has MX records, and more.
   - name: apivoid-threatlog
     arguments:
     - name: host
@@ -789,12 +789,12 @@ script:
       type: string
     - contextPath: Domain.Name
       type: string
-    description: Check if a website is present on ThreatLog database
+    description: Check if a website is present on the ThreatLog database.
   - name: apivoid-parked-domain
     arguments:
     - name: domain
       required: true
-      description: Domain to check
+      description: The domain to check.
     outputs:
     - contextPath: apivoid.ParkedDomain.host
       type: string
@@ -802,12 +802,12 @@ script:
       type: boolean
     - contextPath: Domain.Name
       type: string
-    description: Detect if a domain (i.e google.com) is actually parked
+    description: Detects if a domain (e.g., google.com) is actually parked.
   - name: apivoid-domain-age
     arguments:
     - name: domain
       required: true
-      description: The domain to check
+      description: The domain to check.
     outputs:
     - contextPath: apivoid.DomainAge.debug_message
       type: string
@@ -829,12 +829,12 @@ script:
       type: string
     - contextPath: Domain.Name
       type: string
-    description: Get the registration date of a domain and the domain age in days
+    description: Gets the registration date of a domain and the domain age in days.
   - name: apivoid-url-to-image
     arguments:
     - name: url
       required: true
-      description: URL to capture screenshot of
+      description: The URL for which to capture a screenshot.
     outputs:
     - contextPath: File.Size
       type: number
@@ -858,12 +858,12 @@ script:
       type: string
     - contextPath: File.Extension
       type: string
-    description: Capture a high-quality screenshot of any website or URL
+    description: Captures a high-quality screenshot of any website or URL.
   - name: apivoid-url-to-pdf
     arguments:
     - name: url
       required: true
-      description: URL to create PDF of
+      description: The URL for which to create a PDF.
     outputs:
     - contextPath: File.Size
       type: number
@@ -887,12 +887,12 @@ script:
       type: string
     - contextPath: File.Extension
       type: string
-    description: Convert an URL info high-quality and printable PDF document
+    description: Converts a URL into a high-quality, printable PDF document.
   - name: apivoid-url-to-html
     arguments:
     - name: url
       required: true
-      description: URL to create PDF of
+      description: The URL for which to create a PDF.
     outputs:
     - contextPath: File.Size
       type: number
@@ -916,12 +916,12 @@ script:
       type: string
     - contextPath: File.Extension
       type: string
-    description: Get the body of an html page after javascript has been executed
+    description: Gets the body of an HTML page after javascript has been executed.
   - name: apivoid-site-trustworthiness
     arguments:
     - name: host
       required: true
-      description: The host to check
+      description: The host to check.
     outputs:
     - contextPath: apivoid.SiteTrust.domain_blacklist.detections
       type: number
@@ -1123,7 +1123,7 @@ script:
       type: boolean
     - contextPath: apivoid.SiteTrust.targeted_brands.truereligion
       type: boolean
-    description: A smart API to accurately check the trustworthiness of a website
+    description: A smart API that accurately checks a website's trustworthiness.
   dockerimage: demisto/python3:3.7.4.977
   runonce: false
   subtype: python3
