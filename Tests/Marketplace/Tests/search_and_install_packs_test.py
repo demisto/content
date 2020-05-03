@@ -67,6 +67,8 @@ def mocked_generic_request_func(self, path, method, body, accept):
         return MOCK_PACKS_SEARCH_RESULTS, 200, None
     elif path == '/contentpacks/marketplace/install':
         return MOCK_PACKS_INSTALLATION_RESULT, 200, None
+    elif path == '/contentpacks/marketplace/search/dependencies':
+        return None, 200, None
     return None, None, None
 
 
