@@ -114,6 +114,21 @@ EXPECTED_UPDATE_TICKET = {
         'Priority': '4 - Low', 'State': '1'
     }
 }
+EXPECTED_UPDATE_TICKET_SC_REQ = {
+    'ServiceNow.Ticket(val.ID===obj.ID)': {
+        'ID': '1234', 'Summary': 'Microsoft Access', 'Number': 'RITM0010028', 'CreatedOn': '2020-04-16 15:33:00',
+        'Active': 'true', 'OpenedAt': '2020-04-16 15:33:00', 'OpenedBy': 'admin',
+        'Creator': 'admin', 'Priority': '4 - Low', 'State': '1'
+    }
+}
+EXPECTED_UPDATE_TICKET_ADDITIONAL = {
+    'ServiceNow.Ticket(val.ID===obj.ID)': {
+        'ID': '1234', 'Summary': 'Trouble getting to Oregon mail server', 'Number': 'INC0000039',
+        'CreatedOn': '2019-09-05 00:42:29', 'Active': 'true', 'OpenedAt': '2019-09-05 00:41:01',
+        'approval': 'rejected', 'OpenedBy': 'admin', 'Creator': 'admin',
+        'Priority': '5 - Planning', 'State': '1'
+    }
+}
 EXPECTED_CREATE_TICKET = {
     'Ticket(val.ID===obj.ID)': {
         'ID': 'sys_id', 'Number': 'INC0010007', 'CreatedOn': '2020-04-06 13:04:44',
@@ -217,6 +232,15 @@ EXPECTED_QUERY_TABLE = {
         }
     ]
 }
+EXPECTED_QUERY_TABLE_SYS_PARAMS = {
+    'ServiceNow.Record(val.ID===obj.ID)': [
+        {
+            'number': 'TASK0000001', 'state': '1',
+            'description': 'Order from vendor or move from in-stock inventory\n\t\t',
+            'approval': 'not requested', 'escalation': '0', 'ID': '1234'
+        }
+    ]
+}
 EXPECTED_LIST_TABLE_FIELDS = {
     'ServiceNow.Field': [
         {'Name': 'acquisition_method'}, {'Name': 'asset_tag'}, {'Name': 'assigned'}, {'Name': 'assigned_to'},
@@ -253,4 +277,9 @@ EXPECTED_GET_TABLE_NAME = {
             'ID': '123', 'Name': 'cmdb_ci_lb_ace', 'SystemName': 'CMDB CI Lb Ace'
         }
     ]
+}
+EXPECTED_ADD_TAG = {
+    'ServiceNow.Ticket(val.ID===obj.ID)': {
+        'ID': '123', 'TagTitle': 'title', 'TagID': '1234'
+    }
 }

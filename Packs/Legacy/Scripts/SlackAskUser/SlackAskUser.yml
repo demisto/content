@@ -60,6 +60,7 @@ tags:
 - slack
 timeout: 0s
 type: python
+subtype: python2
 dependson:
   must:
   - slack-send
