@@ -335,3 +335,5 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score
   type: number
+tests:
+  - No test

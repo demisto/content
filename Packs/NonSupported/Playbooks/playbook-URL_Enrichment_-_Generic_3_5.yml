@@ -436,3 +436,5 @@ outputs:
 - contextPath: URL.Description
   description: additional info on the url
   type: string
+tests:
+  - No Test

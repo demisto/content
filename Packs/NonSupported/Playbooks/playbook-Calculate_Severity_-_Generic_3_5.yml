@@ -946,3 +946,5 @@ inputs:
   required: false
   description: Qualys Vulnerability Severity score (1-5)
 outputs: []
+tests:
+  - No test

@@ -274,3 +274,5 @@ inputs:
 - key: SHA256
   value: ""
   description: The SHA256 hash of the file we want to download
+tests:
+  - No test

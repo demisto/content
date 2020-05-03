@@ -171,3 +171,5 @@ inputs:
 - key: ReportFormat
   value: xml
   description: ""
+tests:
+  - No test
