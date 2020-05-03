@@ -18,7 +18,7 @@ tasks:
       '#none#':
       - '1'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 50\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -48,7 +48,7 @@ tasks:
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 195\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -85,7 +85,7 @@ tasks:
       source:
         simple: 1.1.1.1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1070\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -115,7 +115,7 @@ tasks:
       rule_id:
         simple: ${CiscoASA.Rules.ID}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1245\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -156,7 +156,7 @@ tasks:
           right:
             value:
               simple: 2.2.2.2
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1420\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1420\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -194,7 +194,7 @@ tasks:
         simple: ${CiscoASA.Rules.ID}
       source: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1595\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1595\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -235,7 +235,7 @@ tasks:
           right:
             value:
               simple: 1.1.1.1
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1770\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1770\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -284,7 +284,7 @@ tasks:
                 value:
                   simple: '2'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1945\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1945\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -311,7 +311,7 @@ tasks:
       interface_type:
         simple: Global
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 370\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -331,7 +331,7 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - '2'
+      - '11'
       yes:
       - '10'
     separatecontext: false
@@ -362,7 +362,7 @@ tasks:
           right:
             value:
               simple: 'false'
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 545\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -418,7 +418,7 @@ tasks:
                   simple: 2.2.2.2
           accessor: Rules.ID
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 312.5,\n    \"y\": 720\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": -30,\n    \"y\": 720\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -448,14 +448,14 @@ tasks:
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 312.5,\n    \"y\": 895\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 895\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
 view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 1990,\n      \"width\": 642.5,\n      \"x\": 50,\n      \"y\"\
+  \     \"height\": 1990,\n      \"width\": 572.5,\n      \"x\": -30,\n      \"y\"\
   : 50\n    }\n  }\n}"
 inputs: []
 outputs: []
