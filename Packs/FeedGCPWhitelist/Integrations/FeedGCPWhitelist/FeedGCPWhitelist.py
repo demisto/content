@@ -25,7 +25,7 @@ def fetch_cidr(dns_address: str) -> List[Dict]:
     regex_dns = r"(include:.*? )"
     regex_cidr = r"(ip.*?:.*? )"
 
-    query_response_str = str(list(dns.resolver.query(dns_address, "TXT"))[0])
+    query_response_str = str(dns.resolver.query(dns_address, "TXT").response.answer[0][0])
     dns_matches = re.finditer(regex_dns, query_response_str)
     for match in dns_matches:
         m = match.group()
