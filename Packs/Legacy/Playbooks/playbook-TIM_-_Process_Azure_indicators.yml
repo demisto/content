@@ -728,7 +728,7 @@ inputs:
   value:
     simple: "No"
   required: false
-  description: This input determines if processed indicators that have the manual
+  description: This input determines if processed indicators that have the whitelist
     review tag are reviewed in a new incident. To create an incident, enter any value
     other than 'No'.
   playbookInputQuery: null
