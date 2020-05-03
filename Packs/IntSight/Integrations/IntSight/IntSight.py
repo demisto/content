@@ -240,6 +240,10 @@ def alert_to_readable(alert, parse_tags):
     Convert alert to readable format
     """
 
+    is_closed = demisto.get(alert, 'IsClosed')
+    if not is_closed:
+        is_closed = demisto.get(alert, 'Closed.IsClosed')
+
     readable = {
         'ID': demisto.get(alert, '_id'),
         'Severity': demisto.get(alert, 'Details.Severity'),
@@ -249,7 +253,7 @@ def alert_to_readable(alert, parse_tags):
         'SourceURL': demisto.get(alert, 'Details.Source.URL'),
         'SourceEmail': demisto.get(alert, 'Details.Source.Email'),
         'SourceNetworkType': demisto.get(alert, 'Details.Source.NetworkType'),
-        'IsClosed': demisto.get(alert, 'IsClosed'),
+        'IsClosed': is_closed,
         'IsFlagged': demisto.get(alert, 'IsFlagged'),
         'Assets': demisto.get(alert, 'Assets'),
         'Images': demisto.get(alert, 'Details.Images'),
@@ -257,7 +261,6 @@ def alert_to_readable(alert, parse_tags):
         'Title': demisto.get(alert, 'Details.Title'),
         'TakedownStatus': demisto.get(alert, 'TakedownStatus'),
         'SubType': demisto.get(alert, 'Details.SubType'),
-        'Closed': demisto.get(alert, 'Closed')
     }
 
     tags = demisto.get(alert, 'Details.Tags')
@@ -291,7 +294,7 @@ def get_alert_by_id():
         'Contents': activity_hr,
         'HumanReadable': tableToMarkdown('IntSights Alert Details', [activity_hr],
                                          ['ID', 'Severity', 'Type', 'FoundDate', 'SourceType', 'SourceURL',
-                                          'SourceEmail', 'SourceNetworkType', 'IsClosed', 'Closed', 'IsFlagged',
+                                          'SourceEmail', 'SourceNetworkType', 'IsClosed', 'IsFlagged',
                                           'Images', 'Tags', 'Description', 'Title', 'TakedownStatus', 'SubType']),
         'ContentsFormat': formats['json']
     })
