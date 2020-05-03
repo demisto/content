@@ -20,5 +20,7 @@
     "keywords": [],
     "dependencies": {},
     "displayedImages": [],
-    "price": 0
+    "price": 0,
+    "serverMinVersion": "5.0.0",
+    "certification": "certified"
 }

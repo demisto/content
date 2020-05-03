@@ -32,10 +32,6 @@
 		"Base": {
 			"display_name": "Base",
 			"mandatory": true
-		},
-		"Prisma Access": {
-			"display_name": "Prisma Access",
-			"mandatory": true
 		}
 	}
 }
