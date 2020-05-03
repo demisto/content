@@ -118,9 +118,6 @@ class TestLogzio:
         assert time_range["to"] == 1581174759
         assert time_range["from"] == 1581261159
 
-    #
-    # # print search_logs_by_fields_command(client, args)
-
     def test_logzio_get_rule_logs(self, requests_mock):
         client = Logzio.Client("us", "fake-security-token", "fake-operational-token", False, False)
         args = {

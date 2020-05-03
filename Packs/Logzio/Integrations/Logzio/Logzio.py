@@ -128,6 +128,7 @@ class Client(BaseClient):
 def test_module(client):
     try:
         client.fetch_triggered_rules()
+        client.search_logs('*', 10, "", "")
         return 'ok'
     except Exception as e:
         return 'Test failed: {}'.format(e)
@@ -141,12 +142,25 @@ def search_logs_command(client, args):
     from_time = args.get('from_time')
     to_time = args.get('to_time')
     resp = client.search_logs(query, size, from_time, to_time)
-    content = [res.get("_source", None) for res in resp]
-    context = {
-        'Logzio.Logs.Count': len(content),
-        'Logzio.Logs.Results': content
-    }
-    return_outputs(tableToMarkdown("Logs", content), context, content)
+    content = []
+    for res in resp:
+        log = res.get("_source", None)
+        log_context = {
+            'type': log.get("type", None),
+            'timestamp': log.get("@timestamp", None),
+            'content': log
+        }
+        content.append(log_context)
+    if len(content) == 0:
+        context = None
+        readable = '### No logs were found'
+    else:
+        context = {
+            'Logzio.Logs': content
+
+        }
+        readable = tableToMarkdown("Logs", content)
+    return_outputs(readable, context, content)
 
 
 def get_rule_logs_by_id_command(client, args):
