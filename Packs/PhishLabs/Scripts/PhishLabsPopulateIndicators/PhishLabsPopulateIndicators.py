@@ -3,6 +3,27 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 from distutils.util import strtobool
 
+
+def indicator_type_finder(indicator_data: dict):
+    """Find the indicator type of the given indicator
+
+    Args:
+        indicator_data(dict): The data about the indicator
+
+    Returns:
+        str. The indicator type
+    """
+    indicator = indicator_data.get('value')
+    # PhishLabs IOC does not classify Email indicators correctly giving them typing of "ReplayTo", "HeaderReplyTo"
+    # "ReturnPath" and so on - to combat that we find the Email indicator type by regex
+    # returned URLs could fit the email regex at some cases so we exclude them
+    if re.match(str(emailRegex), str(indicator)) and str(indicator_data.get('type')).lower() != 'url':
+        return 'Email'
+
+    else:
+        return indicator_data.get('type')
+
+
 since = demisto.args().get('since')
 delete_false_positive = bool(strtobool(demisto.args().get('delete_false_positive', 'false')))
 limit = demisto.args().get('limit')
@@ -46,7 +67,7 @@ else:
                 return_error('Error deleting PhishLabs indicators - {}'.format(delete_res[0]['Contents']))
     else:
         for indicator in feed:
-            indicator_type = indicator.get('type')
+            indicator_type = indicator_type_finder(indicator)
             indicator_value = indicator.get('value')
             indicator_timestamp = None
             if indicator.get('createdAt'):
@@ -57,7 +78,7 @@ else:
                 indicator_value = file_md5_attribute[0].get('value') if file_md5_attribute else ''
 
             demisto_indicator = {
-                'type': indicator_type,
+                'type': indicator_type_finder(indicator),
                 'value': indicator_value,
                 'source': 'PhishLabs',
                 'reputation': 'Bad',
@@ -67,7 +88,6 @@ else:
 
             if indicator_timestamp:
                 demisto_indicator['sourceTimeStamp'] = datetime.strftime(indicator_timestamp, '%Y-%m-%dT%H:%M:%SZ')
-
             indicator_res = demisto.executeCommand('createNewIndicator', demisto_indicator)
 
             if isError(indicator_res[0]):

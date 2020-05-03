@@ -133,3 +133,4 @@ script:
   type: python
 tests:
 - generic-sql
+

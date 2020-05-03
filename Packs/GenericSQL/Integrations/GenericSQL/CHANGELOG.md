@@ -1,4 +1,5 @@
 ## [Unreleased]
+- Fixed an issue where empty query results raised an error.
 - Added support for ssl connection.
 
 ## [20.4.1] - 2020-04-29
