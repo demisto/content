@@ -1,22 +1,31 @@
 import dns.resolver
-from FeedGCPWhitelist import Client, GOOGLE_BASE_DNS, fetch_cidr
 import json
+from FeedGCPWhitelist import fetch_cidr
 from collections import namedtuple
 
-mocked_google_dns_address = '_cloud-netblocks1.googleusercontent.com'
+mock_root_dns = '_mockDns1.mock.com'
+mock_node_dns = '_mockDns2.mock.com'
+response_data1 = '{"response": { "answer": [["v=spf1 include:'f"{mock_node_dns}"' ip4:130.211.64.0/18 ?all"]] } }'
+response_data2 = '{"response": { "answer": [["v=spf1 ip4:208.68.108.0/23 ip6:2600:1900::/35 ?all"]] } }'
 
-RESPONSE_DATA1 = '{"response": { "answer": [["v=spf1 include:_cloud-netblocks1.googleusercontent.com ip4:130.211.64.0/18 ?all"]] } }'
-RESPONSE_DATA2 = '{"response": { "answer": [["v=spf1 ip4:208.68.108.0/23 ip6:2600:1900::/35 ?all"]] } }'
+mock_responses_dict = {
+            mock_root_dns: response_data1,
+            mock_node_dns: response_data2
+        }
+
 
 def test_fetch_cidr(monkeypatch):
     def mocked_dns_resolver_query(dns_address, _):
-        if dns_address == GOOGLE_BASE_DNS:
-            data = RESPONSE_DATA1
-            x = json.loads(data, object_hook=lambda d: namedtuple('X', d.keys())(*d.values()))
-            return x
+        response_json = mock_responses_dict[dns_address]
+        return json.loads(response_json, object_hook=lambda d: namedtuple('Answer', d.keys())(*d.values()))
 
     monkeypatch.setattr(dns.resolver, "query", mocked_dns_resolver_query)
-    cidr_list = fetch_cidr(GOOGLE_BASE_DNS)
-    print(cidr_list)
+    cidr_list = fetch_cidr(mock_root_dns)
+    assert len(cidr_list) == 3
+    for cidr in cidr_list:
+        assert 'type' in cidr
+        assert 'ip' in cidr
+
+
 
 
