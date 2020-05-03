@@ -38,7 +38,7 @@ divide according to CVE risk and mitigate accordingly (high will have different 
 2. Search for Claroty.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
-    * __CTD Server URL (e.g. https://<IP>:5000)__
+    * __CTD Server URL (e.g. https://\<IP>:5000)__
     * __Username__
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
