@@ -1,5 +1,5 @@
 {
-    "name": "AlienVault OTX v2",
+    "name": "AlienVault OTX",
     "description": "Query Indicators of Compromise in AlienVault OTX.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
@@ -10,8 +10,7 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "AlienValut OTX",
-        "AlienVault OTX v2"
+        "AlienVault OTX"
     ],
     "created": "2020-04-14T00:00:00Z",
     "updated": "2020-03-14T00:00:00Z",
