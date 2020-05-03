@@ -9,7 +9,7 @@ import requests
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
-access_token = "eyJhbGciOiJSUzI1NiIsImtpZCI6InB1YmxpYzphNDdiNTc2MS0zYzk3LTQwMmItOTgzNi0wNmNhODI0NTViOTMiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOlsiMTU3YjMyZjRmNWE5NDQ1Yjg1ODRiODM3ZWY4MDQ0NzciXSwiY2xpZW50X2lkIjoiMTU3YjMyZjRmNWE5NDQ1Yjg1ODRiODM3ZWY4MDQ0NzciLCJleHAiOjE1ODgxNzEwNzAsImlhdCI6MTU4ODE2OTI3MCwiaXNzIjoiaHR0cHM6Ly9hcGkuY3Jvd2RzdHJpa2UuY29tLyIsImp0aSI6ImU5NWYyMTZmLTJhYzMtNGViYi04YjNiLTg2ZDdkODU2MDdhOCIsIm5iZiI6MTU4ODE2OTI3MCwic3ViIjoiMTU3YjMyZjRmNWE5NDQ1Yjg1ODRiODM3ZWY4MDQ0NzcifQ.O9heF_Cii5lk53jF9UJ--I9DP1yG1NjtTp6sz16ff6mCJt3dm3wLKQaFvpj46lhApIqmqupnts2Bnm8Vt7abwppzOA5umTmFKPuFJXrKg8wJmGUF2CEV597qLj4ytq3Iw-VuohVZnv2YMSfwjDBdwzT7cJhMzvJbGFwNg4BPw5e6oJbj--0gCE_2RDaeYivGGgYDcC9njaN12WXRNuZUvKFyjnjKHHsHwtbEPqN4r09bxiKqQ2Fbcj2FuDwtpEDdWPbIe3MKrYo0cuhjJWiEIgUO9haobcQH13gD3RXo9PUOr1m_zSw3DpTJe1MooLizIsjljjyJt3evdY4qEXhEt9b9nY8zBTeSQfhwtNxL-HDrZjpk8DP5OVzGhjvmT1Ok_z0V0XWjMWnb58rB45gNWEolSfKtkwjtlO2bneCe1vKrshJmXW7z1aK7VVNEDCtwRZ_Otn44jTYYUHNm4paBogTNyFfmmPNjO0bIkfTFRqT0hSUZRWeaYcYPEsj1HaW7BpmlPI-MTmDi77MW28OAKZFMYlLWQqQcy4jiwzQEHCDNZC9JHPszTsVF_XkouK3salEHW_bdceAdYZjq4k02tz3A-T-t10bDmC2NLGPmqNvAgdwykK3ao1Ecn6aANlrtoylRaYt9_M0JEOyi1is1h-BGR5Pt71ZU8I5vqS0DV4E"
+access_token = "eyJhbGciOiJSUzI1NiIsImtpZCI6InB1YmxpYzphNDdiNTc2MS0zYzk3LTQwMmItOTgzNi0wNmNhODI0NTViOTMiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOlsiMTU3YjMyZjRmNWE5NDQ1Yjg1ODRiODM3ZWY4MDQ0NzciXSwiY2xpZW50X2lkIjoiMTU3YjMyZjRmNWE5NDQ1Yjg1ODRiODM3ZWY4MDQ0NzciLCJleHAiOjE1ODg0MzgxNzUsImlhdCI6MTU4ODQzNjM3NSwiaXNzIjoiaHR0cHM6Ly9hcGkuY3Jvd2RzdHJpa2UuY29tLyIsImp0aSI6ImMxZGQwZTM5LTdhOTEtNDcwZi1iYmQyLWQ0YTgxYzMxY2UyNiIsIm5iZiI6MTU4ODQzNjM3NSwic3ViIjoiMTU3YjMyZjRmNWE5NDQ1Yjg1ODRiODM3ZWY4MDQ0NzcifQ.ij0bWNnCh2sTbFGaE7v59AjguuLCxhLqOvct0k89uuTYEtc2rjORFRxkdDEoHasmUP8P086kGshGtite2MLJ_Ge0zoomXpIi-sU8v9zDjPQzStpgXmvPbAEl0i-wzHuM0FH5umjVe_5bZj4vuMqttQ-64HNg6aXzlkf3p1DVQUDQAizGkHiHIzoB8xGfXaj267bKeBzvq4Gl9J-9CipskKki93TZehY7_ex8VIjBKyup_0GAxVRwrV9JMx87MIhOculeupmlp7yoVqucRKDDJ1GHUZA9mVAFwgzTttk07F2CkOmMFKzfg-qRZs9Rhwi_U4BoNnFJMmD-tXvSNXovinGOE8tLM1dgpyOVCV_ETPx9LsF-QQR809r6LgQCV-Rasv-gVvrf1iPWvR3DpSYfEAkdOdoLYhxBrRZhRZYYz4gC74uTVZEel8answJGdT6b5uAef2Z-YCzAuqB70aVaYgZLvi09oNIb2o9jf5gV61GNlyw8dy-mOaiQtYz3BSryDRpby2M9D4g3jm0EGTxc_RHdT4Z0OhseqtKtIZj0eURbhDXMYinPqX4ECQYijrD0lNvYUIsZNKyR9a4Zn-EPZCZepNa5pBJA2inIcx1SxptVg3TdYF6rdXe1JKZ4THIRAcWWYqg2p6lB10QYv6DPA427I6jzFFfMwIcpamzVfIQ"
 
 
 class Client(BaseClient):
@@ -21,8 +21,8 @@ class Client(BaseClient):
         self._base_url = server_url
         self._username = username
         self._password = password
-        #self.token = self._generate_token()
-        self.token = access_token
+        self.token = self._generate_token()
+        # self.token = access_token
 
     def http_request(self, method, url_suffix, data, headers=None, params=None, response_type: str = 'json'):
         """
@@ -175,12 +175,13 @@ def send_url_to_sandbox_analysis(client, args):
             }
         ]
     }
+    payload = "{    \"sandbox\": [\n        {\n            \"url\": \"https://www.google.com\",\n            \"environment_id\": 160,\n            \"action_script\": \"\",\n            \"command_line\": \"\",\n            \"document_password\": \"\",\n            \"enable_tor\": false,\n            \"submit_name\": \"\",\n            \"system_date\": \"\",\n            \"system_time\": \"\"\n        }\n    ]\n}"
     headers = {
-        'Authorization': 'Bearer ' + access_token,
+        'Authorization': 'bearer ' + client.token,
         'Content-Type': 'application/json',
     }
-    response = client.http_request("POST", url_suffix, data=body, headers=headers)
-    # demisto.log(response.text)
+    response = client.http_request("POST", url_suffix, headers=headers, data=str(body))
+    demisto.log(response)
     return response
 
 
@@ -250,18 +251,14 @@ def download_ioc(client, args):
 
 
 def check_quota_status(client, args):
-    ids = args.get("ids", "")
-    url_suffix = f"/falconx/entities/submissions/v1?ids={ids}"
+    url_suffix = f"/falconx/entities/submissions/v1?ids="
 
-    params = {
-        "ids": ids
-    }
     headers = {
-        'Authorization': 'Bearer ' + access_token,
+        'Authorization': 'bearer ' + access_token,
     }
 
-    response = client.http_request("GET", url_suffix, headers=headers, data=None, params=params)
-    # demisto.log(response.text)
+    response = client.http_request("GET", url_suffix, headers=headers, data=None)
+    demisto.log(response)
     return response
 
 
@@ -279,11 +276,11 @@ def find_sandbox_reports(client, args):
         "sort": sort,
     }
     headers = {
-        'Authorization': 'Bearer ' + access_token,
+        'Authorization': 'bearer ' + access_token,
     }
 
     response = client.http_request("GET", url_suffix, headers=headers, data=None, params=params)
-    # demisto.log(response.text)
+    demisto.log(response)
     return response
 
 
