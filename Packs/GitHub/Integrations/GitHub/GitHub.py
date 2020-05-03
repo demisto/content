@@ -398,7 +398,15 @@ def format_head_or_base_outputs(head_or_base: dict = {}) -> dict:
     head_or_base_user = head_or_base.get('user', {})
     ec_head_or_base_user = format_user_outputs(head_or_base_user)
     head_or_base_repo = head_or_base.get('repo', {})
-    head_or_base_repo_owner = head_or_base_repo.get('owner', {})
+
+    if head_or_base_repo:
+        head_or_base_repo_owner = head_or_base_repo.get('owner', {})
+    else:  # in case of a deleted fork
+        head_or_base_repo = {}
+        head_or_base_repo_owner = {
+            "Login": "Unknown"
+        }
+
     ec_head_or_base_repo_owner = format_user_outputs(head_or_base_repo_owner)
     ec_head_repo = {
         'ID': head_or_base_repo.get('id'),
