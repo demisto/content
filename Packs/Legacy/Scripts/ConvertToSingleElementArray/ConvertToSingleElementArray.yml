@@ -1,7 +1,7 @@
 commonfields:
-  id: ConvertToArray
+  id: ConvertToSingleElementArray
   version: -1
-name: ConvertToArray
+name: ConvertToSingleElementArray
 script: ''
 type: python
 tags:
