@@ -4,15 +4,10 @@
 	"fromVersion": "5.0.0",
 	"layout": {
 		"TypeName": "",
-		"commitMessage": "",
 		"id": "NIST",
 		"kind": "details",
 		"modified": "2020-05-03T12:54:03.245530695Z",
 		"name": "",
-		"prevKind": "details",
-		"prevTypeId": "NIST",
-		"shouldCommit": false,
-		"sortValues": null,
 		"system": false,
 		"tabs": [
 			{
@@ -591,7 +586,6 @@
 			}
 		],
 		"typeId": "NIST",
-		"vcShouldIgnore": false,
 		"version": -1
 	},
 	"typeId": "NIST",
