@@ -408,7 +408,7 @@ script:
         hr = {}
         hr_headers = {
             'Risk Level': reports['OVERALL_RISK_LEVEL'],
-            'Image Type': reports['IMAGE_TYPE']['TYPE']['#text'],
+            'Image Type': reports.get('IMAGE_TYPE', {}).get('TYPE', {}).get('#text', 'Unknown'),
             'Sum of Files Analyzed': (len(reports['FILE_ANALYZE_REPORT'])) if reports_type_is_list  else '1',
         }
 
@@ -628,7 +628,7 @@ script:
             demisto.results({
                 'Type': entryTypes['note'],
                 'ContentsFormat': formats['text'],
-                'Content': res,
+                'Content': 'Contents': {"value": res.text},
                 'HumanReadable': 'Submission analyzation was not finished yet.',
                 'EntryContext': {
                     'TrendMicroDDA.Submission(val.SHA1 && val.SHA1==obj.SHA1)': ec
@@ -790,7 +790,7 @@ script:
         elif demisto.command() == 'trendmicro-dda-get-sample-list':
             get_sample_list_command()
 
-    except Exception, e:
+    except Exception as e:
         LOG(e.message)
         LOG.print_log()
         raise
@@ -798,6 +798,7 @@ script:
     finally:
         unregister()
   type: python
+  subtype: python2
   commands:
   - name: trendmicro-dda-get-sample
     arguments:
