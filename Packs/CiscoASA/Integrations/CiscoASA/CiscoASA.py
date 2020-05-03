@@ -39,7 +39,7 @@ class Client(BaseClient):
                 self._http_request('DELETE', f'/api/tokenservices/{self.auth_token}', resp_type='response')
         except Exception as e:
             # if failed to logoof just write to log. no need to raise error
-            LOG(f'Logoff error: {str(e)}')
+            demisto.debug(f'Logoff error: {str(e)}')
 
     def get_all_rules(self, specific_interface: Optional[str] = None, rule_type: str = 'All') -> list:
         """
