@@ -1,6 +1,6 @@
 <p>
   <br>
-  <b>SlashNext Phishing Incident Response</b> integration enables Demisto users to fully automate analysis of suspicious
+  <b>SlashNext Phishing Incident Response</b> integration enables Cortex XSOAR users to fully automate analysis of suspicious
   URLs. For example, IR teams responsible for abuse inbox management can extract links or domains out of suspicious
   emails and automatically analyze them with the SlashNext SEER™ threat detection cloud to get definitive, binary
   verdicts (malicious or benign) along with IOCs, screen shots, and more. Automating URL analysis can save IR teams
@@ -9,7 +9,7 @@
   <br>
 
   <br>
-  This integration was integrated and tested with version <b>v1.0</b> of SlashNext Phishing Incident Response.
+  This integration was integrated and tested with version <b>v1.1</b> of SlashNext Phishing Incident Response APIs.
   <br>
 </p>
 <h2>SlashNext Phishing Incident Response Playbook</h2>
@@ -37,7 +37,7 @@
   Any phishing incidents/events that contain supsicious URLs, domains, or IP addresses through the use of an
   <b>Abuse Inbox</b> or by manual reporting.
 </p>
-<h2>Configure SlashNext Phishing Incident Response on Demisto</h2>
+<h2>Configure SlashNext Phishing Incident Response on Cortex XSOAR</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
   &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
@@ -47,7 +47,7 @@
     <ul>
       <li><strong>Name</strong>: A textual name for the integration instance.</li>
    <li><strong>SlashNext API Base URL</strong>: Use the default value unless specifically provided by SlashNext.</li>
-   <li><strong>API Key</strong>: If you don’t have a valid API key, please reach us at <a href = "mailto: support@slashnext.com">support@slashnext.com</a></li>
+   <li><strong>SlashNext API Key</strong>: If you don’t have a valid API key, please reach us at <a href = "mailto: support@slashnext.com">support@slashnext.com</a></li>
     </ul>
   </li>
   <li>
@@ -56,7 +56,7 @@
 </ol>
 <h2>Commands</h2>
 <p>
-  You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+  You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>
@@ -71,6 +71,7 @@
   <li>slashnext-download-screenshot</li>
   <li>slashnext-download-html</li>
   <li>slashnext-download-text</li>
+  <li>slashnext-api-quota</li>
 </ol>
 <h3>1. ip</h3>
 <hr>
@@ -1698,7 +1699,7 @@ Forensics: Webpage Rendered Text for the Scanned URL = http://www.google.com/was
 
 <h3>6. slashnext-url-scan</h3>
 <hr>
-<p>Perform a real-time URL reputation scan with SlashNext cloud-based SEER Engine. If the specified URL already exists in the cloud database, scan results will get returned immediately. If not, this command will submit a URL scan request and return with ‘check back later’ message along with a unique Scan ID. User can check results of this scan with ‘slashnext-scan-report’ command after 60 seconds or later using the retuned Scan ID</p>
+<p>Perform a real-time URL scan with SlashNext cloud-based SEER Engine. If the specified URL already exists in the cloud database, scan results will get returned immediately. If not, this command will submit a URL scan request and return with ‘check back later’ message along with a unique Scan ID. User can check results of this scan with ‘slashnext-scan-report’ command after 60 seconds or later using the retuned Scan ID</p>
 <h5>Base Command</h5>
 <p>
   <code>slashnext-url-scan</code>
@@ -2752,4 +2753,51 @@ Forensics: Webpage Rendered Text for URL Scan ID = 48ae7b06-5915-4633-bc51-2cfaa
  alt="image" width="749" height="412"></a>
  -->
 </p>
+
+<h3>12. slashnext-api-quota</h3>
+<hr>
+<p>Queries the SlashNext cloud database and retrieves the details of API quota.</p>
+<h5>Base Command</h5>
+<p>
+  <code>slashnext-api-quota</code>
+</p>
+
+<h5>Input</h5>
+No input parameter is required.
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+There are no context output for this command.
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <code>!slashnext-api-quota</code>
+</p>
+<h5>Human Readable Output</h5>
+<p>
+<h3>SlashNext Phishing Incident Response - API Quota</h3>
+<h5>Note: Your annual API quota will be reset to zero, once either the limit is reached or upon quota expiration date indicated above.</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th><strong>Licensed Quota</strong></th>
+      <th><strong>Remaining Quota</strong></th>
+      <th><strong>Expiration Date</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td> Unlimited </td>
+      <td> Unlimited </td>
+      <td> 2020-12-01 </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- remove the following comments to manually add an image: -->
+<!--
+<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
+ alt="image" width="749" height="412"></a>
+ -->
+</p>
+
 <h2>Additional Information</h2><h2>Known Limitations</h2><h2>Troubleshooting</h2>

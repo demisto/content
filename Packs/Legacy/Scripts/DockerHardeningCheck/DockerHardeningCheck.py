@@ -26,35 +26,57 @@ def mem_size_to_bytes(mem: str) -> int:
     return b
 
 
-def check_memory(target_mem: str) -> str:
+def check_memory(target_mem: str, check_type: str) -> str:
     """Check allocating memory
 
     Arguments:
         target_mem {str} -- target memory size. Can specify as 1g 1m and so on
+        check_type {str} -- How to check either: cgroup (check configuration of cgroup) or allocate (check actual allocation)
 
     Returns:
         str -- error string if failed
     """
     size = mem_size_to_bytes(target_mem)
-    LOG("starting process to check memory of size: {}".format(size))
-    p = Process(target=big_string, args=(size, ))
-    p.start()
-    p.join()
-    LOG("memory intensive process status code: {}".format(p.exitcode))
-    if p.exitcode == 0:
-        return ("Succeeded allocating memory of size: {}. "
-                "It seems that you haven't limited the available memory to the docker container.".format(target_mem))
+    if check_type == "allocation":
+        LOG("starting process to check memory of size: {}".format(size))
+        p = Process(target=big_string, args=(size, ))
+        p.start()
+        p.join()
+        LOG("memory intensive process status code: {}".format(p.exitcode))
+        if p.exitcode == 0:
+            return ("Succeeded allocating memory of size: {}. "
+                    "It seems that you haven't limited the available memory to the docker container.".format(target_mem))
+    else:
+        cgroup_file = "/sys/fs/cgroup/memory/memory.limit_in_bytes"
+        try:
+            with open(cgroup_file, "r") as f:
+                mem_bytes = int(f.read().strip())
+                if mem_bytes > size:
+                    return (f'According to memory cgroup configuration at: {cgroup_file}'
+                            f' available memory in bytes [{mem_bytes}] is larger than {target_mem}')
+        except Exception as ex:
+            return (f'Failed reading memory cgroup from: {cgroup_file}. Err: {ex}.'
+                    ' You may be running a docker version which does not provide this configuration information.'
+                    ' You can try running the memory check with memory_check=allocate as an alternative.')
     return ""
 
 
 def check_pids(pid_num: int) -> str:
     LOG("Starting pid check for: {}".format(pid_num))
-    processes = [Process(target=time.sleep, args=(5, )) for i in range(pid_num)]
+    processes = [Process(target=time.sleep, args=(30, )) for i in range(pid_num)]
     try:
         for p in processes:
             p.start()
-        return ("Succeeded creating processs of size: {}. "
-                "It seems that you haven't limited the available pids to the docker container.".format(pid_num))
+        time.sleep(0.5)
+        alive = 0
+        for p in processes:
+            if p.is_alive():
+                alive += 1
+        if alive >= pid_num:
+            return ("Succeeded creating processs of size: {}. "
+                    "It seems that you haven't limited the available pids to the docker container.".format(pid_num))
+        else:
+            LOG(f'Number of processes that are alive: {alive} is smaller than {pid_num}. All good.')
     except Exception as ex:
         LOG("Pool startup failed (as expected): {}".format(ex))
     finally:
@@ -121,6 +143,7 @@ def check_cpus(num_cpus: int) -> str:
 
 def main():
     mem = demisto.args().get('memory', "1g")
+    mem_check = demisto.args().get('memory_check', "cgroup")
     pids = int(demisto.args().get('pids', 256))
     fds_soft = int(demisto.args().get('fds_soft', 1024))
     fds_hard = int(demisto.args().get('fds_hard', 8192))
@@ -135,7 +158,7 @@ def main():
         },
         {
             check: "Memory",
-            status: check_memory(mem) or success,
+            status: check_memory(mem, mem_check) or success,
         },
         {
             check: "File Descriptors",

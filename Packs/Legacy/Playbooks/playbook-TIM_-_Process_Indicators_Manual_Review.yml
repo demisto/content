@@ -508,7 +508,7 @@ tasks:
     task:
       id: 454fb12b-7e06-4720-8b62-24db965eae8e
       version: -1
-      name: Are there prcoessed indicators to tag for manual review?
+      name: Are there processed indicators to tag for manual review?
       type: condition
       iscommand: false
       brand: ""

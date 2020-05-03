@@ -4,6 +4,7 @@ from CommonServerUserPython import *
 import slack
 import pytest
 import asyncio
+import threading
 
 import json as js
 import datetime
@@ -250,7 +251,7 @@ PAYLOAD_JSON = r'''
         "team_id":"T9XJ4RGNQ"
      },
      "api_app_id":"AMU4M2QL8",
-     "token":"GBGG7mn61zg0a62MT9blXJnn",
+     "token":"dummy-token",
      "container":{
         "type":"message",
         "message_ts":"1567945126.000100",
@@ -4144,3 +4145,16 @@ def test_unset_proxy_and_ssl(mocker):
     init_args = slack.WebClient.call_args[1]
     assert init_args['ssl'] is None
     assert init_args['proxy'] is None
+
+
+def test_fail_connect_threads(mocker):
+    import Slack
+    mocker.patch.object(demisto, 'params', return_value={'unsecure': 'true', 'bot_token': '123'})
+    mocker.patch.object(demisto, 'args', return_value={'to': 'test', 'message': 'test message'})
+    mocker.patch.object(demisto, 'command', return_value='send-notification')
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+    for i in range(8):
+        Slack.main()
+        time.sleep(0.5)
+    assert return_error_mock.call_count == 8
+    assert threading.active_count() < 6  # we shouldn't have more than 5 threads (1 + 4 max size of executor)

@@ -29,7 +29,7 @@ def get_changed_content_entities(modified_files, added_files):
 def get_file_data(file_path):
     extension = os.path.splitext(file_path)[1]
     if extension not in FILE_TYPE_DICT:
-        return False
+        return {}
 
     load_function = FILE_TYPE_DICT[extension]
     with open(file_path, 'r') as file_obj:
@@ -45,6 +45,8 @@ def should_clear(file_path, current_server_version="0.0.0"):
     :param current_server_version: current server version
     """
     data = get_file_data(file_path)
+    if not data:
+        return False
 
     version = data.get('fromversion') or data.get('fromVersion')
     if version and server_version_compare(current_server_version, str(version)) < 0:

@@ -626,7 +626,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: inputs.EnrichUnknownIndicaotrs
+              simple: inputs.EnrichUnknownIndicators
             iscontext: true
           right:
             value:
@@ -753,7 +753,7 @@ inputs:
   required: false
   description: Enter a value of True to enrich indicators whose reputation from the feed is suspicious.
   playbookInputQuery: null
-- key: EnrichUnknownIndicaotrs
+- key: EnrichUnknownIndicators
   value: {}
   required: false
   description: Enter a value of True to enrich indicators whose reputation from the feed is unknown.

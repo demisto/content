@@ -13,6 +13,7 @@ configuration:
   options:
   - Daily Threat Feed
   - Custom Feed
+  - Samples Feed
   required: true
   type: 16
 - display: The AutoFocus API key
@@ -23,6 +24,20 @@ configuration:
     a CSV of Custom feed URLs.
   display: The URL for the custom feed to fetch
   name: custom_feed_urls
+  required: false
+  type: 0
+- additionalinfo: Only necessary in case a Samples Feed is fetched.
+  display: Samples Feed Scope Type
+  name: scope_type
+  options:
+  - public
+  - private
+  - global
+  required: false
+  type: 15
+- additionalinfo: JSON styled AutoFocus query, an example can be found in the description (?) section. Only necessary in case a Samples Feed is fetched.
+  display: Samples Feed Query
+  name: sample_query
   required: false
   type: 0
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
@@ -92,11 +107,10 @@ script:
   - arguments:
     - default: false
       defaultValue: '10'
-      description: The maximum number of indicators to return. The default value is
-        10.
+      description: The maximum number of indicators to return.
       isArray: false
       name: limit
-      required: true
+      required: false
       secret: false
     - default: false
       defaultValue: '0'
@@ -109,7 +123,7 @@ script:
     description: Gets the indicators from AutoFocus.
     execution: false
     name: autofocus-get-indicators
-  dockerimage: demisto/python3:3.8.2.6920
+  dockerimage: demisto/python3:3.8.2.6981
   feed: true
   isfetch: false
   longRunning: false

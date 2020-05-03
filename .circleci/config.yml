@@ -2,13 +2,13 @@ version: 2
 jobs:
   build:
     docker:
-      - image: devdemisto/content-build:3.0.0.3368  # disable-secrets-detection
+      - image: devdemisto/content-build:3.0.0.7332  # disable-secrets-detection
     resource_class: medium+
     parallelism: 2
     environment:
-      CONTENT_VERSION: "20.3.4"
-      SERVER_VERSION: "5.0.1"
-      GIT_SHA1: "4696087457090e6ac597df96870016bdc2e371a0" # guardrails-disable-line disable-secrets-detection
+      CONTENT_VERSION: "20.4.1"
+      SERVER_VERSION: "5.5.0"
+      GIT_SHA1: "79973624c8b5f0c7ee33d22e8e541d2a8edf1920" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - setup_remote_docker
@@ -111,6 +111,7 @@ jobs:
             python3 -m pytest ./Tests/scripts/infrastructure_tests/test_configure_tests.py -v
             python3 -m pytest ./Tests/Marketplace/Tests/marketplace_services_test.py -v
             python3 -m pytest ./Tests/Marketplace/Tests/upload_packs_test.py -v
+            python3 -m pytest ./Tests/Marketplace/Tests/search_and_install_packs_test.py -v
       - run:
           name: Validate Files and Yaml
           when: always
@@ -217,12 +218,10 @@ jobs:
             unzip -q "$CIRCLE_ARTIFACTS/content_test.zip" -d "test_content_dir"
             zip -j "$CIRCLE_ARTIFACTS/all_content.zip" test_content_dir/*
             rm -r test_content_dir
-      - store_artifacts:
-          path: artifacts
-          destination: artifacts
       - run:
           name: Run Unit Testing and Lint
           when: always
+          no_output_timeout: 5h
           command: |
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 1 ] ;
               then
@@ -238,12 +237,18 @@ jobs:
             echo "vulture py2 version: $(python2 -m vulture --version) 2>&1"
             echo "vulture py3 version: $(python3 -m vulture --version) 2>&1"
             SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
+            mkdir ./unit-tests
             if [ -n "$SHOULD_LINT_ALL" ]; then
               echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-              demisto-sdk lint --run-all-tests --parallel --outfile ./artifacts/failed_unittests.txt -v
+              demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path ./artifacts
             else
-              demisto-sdk lint --git --parallel --outfile ./artifacts/failed_unittests.txt -v
+              demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts
             fi
+      - store_test_results:
+          path: ./unit-tests
+      - store_artifacts:
+          path: artifacts
+          destination: artifacts
       - run:
           name: Verify Base Branch for Contribution
           when: always
@@ -357,6 +362,13 @@ jobs:
                 echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
                 exit 0
             fi
+            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto GA"')
+            echo "Demisto GA filter=$TEMP"
+            if [[ "$TEMP" == "false" ]];
+              then
+                echo "Skipping - instance was not setup"
+                exit 0
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/run_tests.sh "Demisto GA"
@@ -376,6 +388,13 @@ jobs:
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
               then
                 echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
+                exit 0
+            fi
+            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto one before GA"')
+            echo "Demisto one before GA filter=$TEMP"
+            if [[ "$TEMP" == "false" ]];
+              then
+                echo "Skipping - instance was not setup"
                 exit 0
             fi
             if ./Tests/scripts/is_ami.sh ;
@@ -399,6 +418,13 @@ jobs:
                 echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
                 exit 0
             fi
+            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto two before GA"')
+            echo "Demisto two before GA filter=$TEMP"
+            if [[ "$TEMP" == "false" ]];
+              then
+                echo "Skipping - instance was not setup"
+                exit 0
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/run_tests.sh "Demisto two before GA"
@@ -420,6 +446,13 @@ jobs:
                 echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
                 exit 0
             fi
+            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Server Master"')
+            echo "Server Master filter=$TEMP"
+            if [[ "$TEMP" == "false" ]];
+              then
+                echo "Skipping - instance was not setup"
+                exit 0
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/run_tests.sh "Server Master"
@@ -439,6 +472,13 @@ jobs:
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
                 echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
+                exit 0
+            fi
+            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto PreGA"')
+            echo "Demisto PreGA filter=$TEMP"
+            if [[ "$TEMP" == "false" ]];
+              then
+                echo "Skipping - instance was not setup"
                 exit 0
             fi
             if ./Tests/scripts/is_ami.sh ;
@@ -470,11 +510,6 @@ jobs:
             fi
             ./Tests/scripts/slack_notifier.sh $CIRCLE_NODE_INDEX ./env_results.json
 
-          when: always
-      - run:
-          name: Validate Docker Images
-          shell: /bin/bash
-          command: ./Tests/scripts/validate_docker_images.sh
           when: always
       - run:
           name: Instance Test
@@ -523,12 +558,16 @@ jobs:
             PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
             GCS_PATH=$(mktemp)
             echo $GCS_MARKET_KEY > $GCS_PATH
-            python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -s $GCS_PATH -b 'marketplace-dist' -n $CIRCLE_BUILD_NUM -p 'All' -o -k $PACK_SIGNING_KEY
+            python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -p 'All' -pb 'marketplace-dist-private' -o
             rm $GCS_PATH
           when: on_success
       - store_artifacts:
           path: artifacts
           destination: artifacts
+          when: always
+      - run:
+          name: Store Artifacts to GCS
+          command: ./Tests/scripts/upload_artifacts.sh
           when: always
 
 workflows:

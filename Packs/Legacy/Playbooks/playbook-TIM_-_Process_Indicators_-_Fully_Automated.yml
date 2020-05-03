@@ -2,9 +2,10 @@ id: TIM - Process Indicators - Fully Automated
 version: -1
 fromversion: 5.5.0
 name: TIM - Process Indicators - Fully Automated
-description: This playbook tags indicators ingested from high reliability feeds. The playbook is triggered due to a Cortex XSOAR job. The
-  indicators are tagged as approved_white, approved_black, approved_watchlist. The tagged indicators will be ready for consumption for 3rd party systems such as SIEM,
-  EDR etc.
+description: This playbook tags indicators ingested from high reliability feeds. The
+  playbook is triggered due to a Cortex XSOAR job. The indicators are tagged as approved_white,
+  approved_black, approved_watchlist. The tagged indicators will be ready for consumption
+  for 3rd party systems such as SIEM, EDR etc.
 starttaskid: "0"
 tasks:
   "0":
@@ -74,8 +75,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": 135
+          "x": 60,
+          "y": 340
         }
       }
     note: false
@@ -138,7 +139,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 310
+          "y": 520
         }
       }
     note: false
@@ -186,8 +187,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -190,
-          "y": 135
+          "x": -460,
+          "y": 340
         }
       }
     note: false
@@ -235,8 +236,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -610,
-          "y": 135
+          "x": -980,
+          "y": 340
         }
       }
     note: false
@@ -252,25 +253,31 @@ tasks:
       id: 877ec936-86d1-4265-8782-3caae8f80987
       version: -1
       name: TIM - Indicator Auto Processing
-      description: This playbook uses several sub playbooks to process and tag indicators, which is used to identify indicators that shouldn't be
-        blacklisted. For example IP indicators that belong to business partners or important hashes we wish to not process. Additional sub playbooks can be added for improving the
-        business logic and tagging according to the user's needs. This playbook doesn't have its own indicator query as it processes indicators provided by the parent playbook
-        query. To enable the playbook, provide the relevant list names in the sub playbook indicators, such as the ApprovedHashList, OrganizationsExternalIPListName,
-        BusinessPartnersIPListName, etc. Also be sure to append the results of additional sub playbooks to Set indicators to Process Indicators for the additional playbooks results to be in the outputs.
+      description: This playbook uses several sub playbooks to process and tag indicators,
+        which are used to identify indicators that shouldn't be blacklisted. For example
+        IP indicators that belong to business partners, or important hashes we wish
+        to not process. Additional sub playbooks can be added for improving the business
+        logic and tagging according to the user's needs. This playbook doesn't have
+        its own indicator query as it processes indicators provided by the parent
+        playbook query. To enable the playbook, provide the relevant list names in
+        the sub playbook indicators, such as the ApprovedHashList, OrganizationsExternalIPListName,
+        BusinessPartnersIPListName, etc. Also be sure to append the results of additional
+        sub playbooks to Set indicators to Process Indicators for the additional playbooks
+        results to be in the outputs.
       playbookName: TIM - Indicator Auto Processing
       type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
-      - "5"
-      - "1"
+      - "9"
+      - "10"
+      - "11"
     separatecontext: true
     view: |-
       {
         "position": {
-          "x": -190,
+          "x": -230,
           "y": -50
         }
       }
@@ -279,14 +286,162 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "9":
+    id: "9"
+    taskid: 08ae1059-8ace-44a2-8576-d612344b5984
+    type: condition
+    task:
+      id: 08ae1059-8ace-44a2-8576-d612344b5984
+      version: -1
+      name: Are there bad indicators?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "3"
+                accessor: value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 2b06ab28-41d2-4801-8560-278bd100752f
+    type: condition
+    task:
+      id: 2b06ab28-41d2-4801-8560-278bd100752f
+      version: -1
+      name: Are there good indicators?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "1"
+                accessor: value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: de946532-00b9-4ff6-8dc5-369d44aeee25
+    type: condition
+    task:
+      id: de946532-00b9-4ff6-8dc5-369d44aeee25
+      version: -1
+      name: Are there good indicators?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "1"
+                accessor: value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -820,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 715,
-        "width": 1440,
-        "x": -610,
+        "height": 925,
+        "width": 1810,
+        "x": -980,
         "y": -340
       }
     }

@@ -12,7 +12,7 @@ This integration was integrated and tested with version xx of F5 firewall
 | port | Port | True |
 | credentials | Credentials | True |
 | advancedLogin | Advanced login - set to true to authenticate via LDAP, AD etc | False |
-| insecure | Trust any certificate (unsecure) | False |
+| insecure | Trust any certificate (not secure) | False |
 | proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.

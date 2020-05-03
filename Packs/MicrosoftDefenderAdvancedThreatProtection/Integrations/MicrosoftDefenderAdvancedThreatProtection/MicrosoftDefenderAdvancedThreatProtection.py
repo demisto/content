@@ -3,6 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import requests
 import base64
+from dateutil.parser import parse
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 requests.packages.urllib3.disable_warnings()
 
@@ -1926,19 +1927,41 @@ def all_alerts_to_incidents(alerts, latest_creation_time, existing_ids):
     incidents = []
     new_ids = []
     for alert in alerts:
-        alert_creation_time_for_incident = datetime.strptime(alert['alertCreationTime'][:-9], '%Y-%m-%dT%H:%M:%S')
+        alert_creation_time_for_incident = parse(alert['alertCreationTime'])
+        reformatted_alert_creation_time_for_incident = \
+            aware_timestamp_to_naive_timestamp(alert_creation_time_for_incident)
+
         if should_fetch_alert(alert, existing_ids):
-            incident = alert_to_incident(alert, alert_creation_time_for_incident)
+            incident = alert_to_incident(alert, reformatted_alert_creation_time_for_incident)
             incidents.append(incident)
-            if alert_creation_time_for_incident == latest_creation_time:
+
+            if reformatted_alert_creation_time_for_incident == latest_creation_time:
                 new_ids.append(alert["id"])
-            if alert_creation_time_for_incident > latest_creation_time:
-                latest_creation_time = alert_creation_time_for_incident
+            if reformatted_alert_creation_time_for_incident > latest_creation_time:
+                latest_creation_time = reformatted_alert_creation_time_for_incident
                 new_ids = [alert['id']]
 
     if not new_ids:
         new_ids = existing_ids
     return incidents, new_ids, latest_creation_time
+
+
+def aware_timestamp_to_naive_timestamp(aware_timestamp):
+    """Gets aware timestamp and reformatting it to naive timestamp
+
+    Args:
+        aware_timestamp(date): The alert creation time after parse to aware timestamp
+
+    Returns:(date). Naive timestamp for alert creation time
+    """
+    iso_aware = aware_timestamp.isoformat()
+    # Deal with timestamp like: 2020-03-26T17:24:58.441093
+    if '.' in iso_aware:
+        iso_aware = iso_aware.split('.')[0]
+    # Deal with timestamp like: 2020-03-14T22:11:20+0000
+    elif '+' in iso_aware:
+        iso_aware = iso_aware.split('+')[0]
+    return datetime.strptime(iso_aware, '%Y-%m-%dT%H:%M:%S')
 
 
 def should_fetch_alert(alert, existing_ids):
