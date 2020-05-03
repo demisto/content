@@ -53,7 +53,10 @@ script:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: string
-    - contextPath: Alexa.Domain.Data
+    - contextPath: Alexa.Domain.Indicator
+      description: The Domain being checked
+      type: string
+    - contextPath: Alexa.Domain.Name
       description: The Domain being checked
       type: string
     - contextPath: Alexa.Domain.Rank
