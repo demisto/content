@@ -195,6 +195,19 @@ def fix_order(http_packets):
     return new_order
 
 
+def process_tcp_stream(tcp_packets):
+    stream = []
+    for t in tcp_packets:
+        if 'segment_data' in dir(t.tcp):
+            tcp_data = {}
+            segment_hex = re.sub('[:]', '', t.tcp.segment_data)
+            tcp_data['data'] = bytearray.fromhex(segment_hex).decode()
+            tcp_data['stream_number'] = t.tcp.stream
+            stream.append(tcp_data)
+    print(len(stream))
+    return stream
+
+
 def get_http_flows(pcap_file_path):
     """
     Return a list of HTTP requests/responses from pcap file
@@ -206,27 +219,34 @@ def get_http_flows(pcap_file_path):
 
     # Filter all non HTTP packets
     http_packets = [p for p in capture_object if "HTTP" in p]
-
     http_packets = fix_order(http_packets)
+
+    tcp_packets = [q for q in capture_object if 'http' not in q]
+    tcp_stream = process_tcp_stream(tcp_packets)
+    markdown_output = tableToMarkdown("TCPStreamInfo", tcp_stream)
+
+    demisto.results({"Type": entryTypes["note"],
+                     "ContentsFormat": formats["markdown"],
+                     "Contents": markdown_output,
+                     "HumanReadable": markdown_output
+                     })
 
     # Construct request <> response dicts
     http_flows = []
+
     for req, res in _chunker(http_packets, 2):
-        # GZ decompress if needed
-        # if res["HTTP"].get_field_value("Content-Encoding") == "gzip":
-        #
-        #     # Fix data not existing
-        #     if not hasattr(res["HTTP"], "data"):
-        #         res["HTTP"].data = res["HTTP"].get("file_data")
-        #     # else:
-        #         # try:
-        #         #     res["HTTP"].data = decode_gzip(res["HTTP"].data)
-        #         # except zlib.error:
-        #         #     res["HTTP"].data = "Couldn't decompress gzip data (incomplete or truncated stream)."
+        sanitized_req = req
+        sanitized_res = res
+
+        if req:
+            req_fields = req['HTTP'].__dict__["_all_fields"].keys()
+            if 'http.response' in req_fields:
+                sanitized_req = None
+                sanitized_res = req
 
         http_flows.append({
-            "Request": req,
-            "Response": res
+            "Request": sanitized_req,
+            "Response": sanitized_res
         })
     return http_flows
 
