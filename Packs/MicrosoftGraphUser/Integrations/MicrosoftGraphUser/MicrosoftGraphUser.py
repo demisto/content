@@ -238,6 +238,15 @@ def list_users_command(client: MsGraphClient, args: Dict):
 
     return human_readable, outputs, users_data
 
+def get_direct_reports_command():
+    user = demisto.getArg('user')
+    res = http_request('GET ', f'users/{user}/directReports')
+    res.pop('@odata.context', None)
+
+    user_readable, user_outputs = parse_outputs(res)
+    human_readable = tableToMarkdown(name=f"{user} data", t=user_readable, removeNull=True)
+    outputs = {'DirectReports': {'manager': user, 'Reports': user_outputs} }
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
 
 def main():
     params: dict = demisto.params()
@@ -258,7 +267,8 @@ def main():
         'msgraph-user-create': create_user_command,
         'msgraph-user-get-delta': get_delta_command,
         'msgraph-user-get': get_user_command,
-        'msgraph-user-list': list_users_command
+        'msgraph-user-list': list_users_command,
+        'msgraph-direct-reports': get_direct_reports_command
     }
     command = demisto.command()
     LOG(f'Command being called is {command}')
