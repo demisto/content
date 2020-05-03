@@ -201,7 +201,7 @@ def process_tcp_stream(tcp_packets):
         if 'segment_data' in dir(t.tcp):
             tcp_data = {}
             segment_hex = re.sub('[:]', '', t.tcp.segment_data)
-            tcp_data['data'] = bytearray.fromhex(segment_hex).decode()
+            tcp_data['data'] = bytearray.fromhex(segment_hex).decode('utf-8', 'ignore')
             tcp_data['stream_number'] = t.tcp.stream
             stream.append(tcp_data)
     return stream
