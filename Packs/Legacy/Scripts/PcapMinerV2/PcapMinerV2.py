@@ -18,6 +18,7 @@ CLASS_REGEX = r'Class: (.+)'
 COMMAND_REGEX = r'Command: (.+)'
 SNAME_REGEX = r'SNameString: (.+)'
 MESSAGE_CODE = r'Message Code: (.+)'
+RESPONSE_CODE = r'Response code: (.+)'
 
 
 class PCAP():
@@ -40,6 +41,7 @@ class PCAP():
         self.homemade_extracted = set([])
         self.last_layer = set([])
         self.kerb_data = set()
+        self.irc_data = list()
         self.protocol_data: Dict[str, Any] = dict()
         self.extracted_protocols = extracted_protocols
         self.homemade_regex = homemade_regex
@@ -76,6 +78,8 @@ class PCAP():
                          'KeyExchangeMessageCode': set()
                         }
             self.reg_message_code = re.compile(MESSAGE_CODE)
+        if 'FTP' in extracted_protocols:
+            self.reg_res_code = re.compile(RESPONSE_CODE)
         if homemade_regex:
             self.reg_homemade = re.compile(self.homemade_regex)
 
@@ -193,7 +197,53 @@ class PCAP():
                     # direction is client to server
                     self.ssh_data['ClientProtocols'].add(protocol)
                 if message_code_results:
-                    self.ssh_data['KeyExchangeMessageCode'].add(message_code_results[0])
+                    if message_code_results:
+                        self.ssh_data['KeyExchangeMessageCode'].add(message_code_results[0])
+
+        if 'IRC' in self.extracted_protocols:
+            irc_layer = packet.get_multiple_layers('irc')
+            if irc_layer:
+                if irc_layer[0].get('request'):
+                    command = irc_layer[0].get('request_command')
+                    trailer = irc_layer[0].get('request_trailer', '')
+                    prefix = irc_layer[0].get('request_prefix', '')
+                    parameters = irc_layer[0].get('request').replace(command,'').replace(trailer, '')\
+                        .replace(prefix, '').split(' ')
+                    parameters.remove(' ')
+                    irc_data = {
+                        'ID': packet.tcp.get('ack'),
+                        'RequestCommand': command,
+                        'RequestTrailer': trailer,
+                        'RequestPrefix': prefix,
+                        'RequestParameters': parameters
+                    }
+                else:
+                    command = irc_layer[0].get('response_command')
+                    trailer = irc_layer[0].get('response_trailer', '')
+                    prefix = irc_layer[0].get('response_prefix', '')
+                    parameters = irc_layer[0].get('response').replace(command, '').replace(trailer, '')\
+                        .replace(prefix, '').split(' ')
+                    parameters.remove(' ')
+                    irc_data = {
+                        'ID': packet.tcp.get('seq'),
+                        'ResponseCommand': command,
+                        'ResponseTrailer': trailer,
+                        'ResponsePrefix': prefix,
+                        'ResponseParameters': parameters
+                    }
+                add_to_data(self.protocol_data['IRC'], irc_data, next_id=packet.tcp.nxtseq)
+
+        if 'FTP' in self.extracted_protocols:
+            ftp_layer = packet.get_multiple_layers('ftp')
+            if ftp_layer:
+                res_code_results = self.reg_res_code.findall(str(ftp_layer[0]))
+                ftp_data = {
+                    'ID': packet.tcp.get('seq'),
+                    'RequestCommand': ftp_layer[0].get('request_command'),
+                    'ResponseArgs': ftp_layer[0].get('response_arg'),
+                    'ResponseCode': res_code_results[0] if res_code_results else None
+                }
+                add_to_data(self.protocol_data['FTP'], ftp_data, next_id=packet.tcp.nxtseq)
 
 
         if is_reg_extract:
@@ -257,11 +307,11 @@ class PCAP():
             cap = pyshark.FileCapture(file_path, display_filter=pcap_filter, output_file=pcap_filter_new_file_path,
                                       decryption_key=decrypt_key, encryption_type='WPA-PWD', keep_packets=False)
 
-            j = 0
+            # j = 0
             for packet in cap:
-                j += 1
-                if (j % 100 == 0):
-                    print(j)
+                # j += 1
+                # if (j % 100 == 0):
+                #     print(j)
                 self.last_layer.add(packet.layers[-1].layer_name)
 
                 layers = str(packet.layers)
@@ -491,12 +541,15 @@ def remove_nones(d: dict) -> dict:
     return {k: v for k, v in d.items() if v is not None}
 
 
-def add_to_data(d: dict, data: dict) -> None:
+def add_to_data(d: dict, data: dict, next_id: int=None) -> None:
     """
     updates dictionary d to include/update the data. Also removes None values.
     Args:
         d: a Dictionary of ID: data to which we want to update the data according to ID
         data: the data to update. data must have an "ID" field.
+        prev_id: when there's no ID in a packet, we'd like to keep link the data by the next sequence number from TCP
+            protocol. In order to keep this up to date we'd like to know what the next sequence ID and then update
+            it to be the current acknowledge number.
 
     Returns:
         updates dictionary d to include/update the data. Also removes None values.
@@ -506,9 +559,18 @@ def add_to_data(d: dict, data: dict) -> None:
         return
     else:
         if not d.get(data_id):
-            d[data_id] = remove_nones(data)
+            if next_id:
+                d[next_id] = remove_nones(data)
+            else:
+                d[data_id] = remove_nones(data)
         else:
-            d[data_id].update(remove_nones(data))
+            if next_id and next_id > data_id:
+                # id exists but we want to keep its next seq as ID (and also next seq id is larger therefore
+                # there's another packet in the future)
+                d[next_id] = d.pop(data_id).update(remove_nones(data))
+            else:
+                # ID exists, we just want to update it.
+                d[data_id].update(remove_nones(data))
 
 
 '''MAIN'''
@@ -569,8 +631,9 @@ def local_main():  # TODO remove this function
     #file_path = "/Users/olichter/Downloads/2019-12-03-traffic-analysis-exercise.pcap"  # 1 min
     # file_path = "/Users/olichter/Downloads/smb-on-windows-10.pcapng"  # ran for 2.906 secs
     # file_path = "/Users/olichter/Downloads/telnet-cooked.pcap"
-    file_path = "/Users/olichter/Downloads/SSHv2.cap"                        #SSH
-
+    # file_path = "/Users/olichter/Downloads/SSHv2.cap"                        #SSH
+    # file_path = "/Users/olichter/Downloads/SkypeIRC.cap"                        #IRC
+    file_path = "/Users/olichter/Downloads/ftp.pcapng"                      #FTP
     # PC Script
     entry_id = ''
 
@@ -578,7 +641,7 @@ def local_main():  # TODO remove this function
     conversation_number_to_display = 15
     is_flows = True
     is_reg_extract = True
-    extracted_protocols = ['SMTP', 'DNS', 'HTTP', 'SMB2', 'NETBIOS', 'ICMP', 'KERBEROS', 'SYSLOG', 'SSH']
+    extracted_protocols = ['SMTP', 'DNS', 'HTTP', 'SMB2', 'NETBIOS', 'ICMP', 'KERBEROS', 'SYSLOG', 'SSH', 'IRC', 'FTP']
 
     pcap_filter = ''
     # pcap_filter_new_file_name = ''  # '/Users/olichter/Downloads/try.pcap'
@@ -592,11 +655,14 @@ def local_main():  # TODO remove this function
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
-    from datetime import datetime
-
-    startTime = datetime.now()
-    local_main()
-    print(datetime.now() - startTime)
-    # print(timeit.timeit(local_main), number=1)
+    main()
+    #
+    # from datetime import datetime
+    #
+    # startTime = datetime.now()
+    # local_main()
+    # print(datetime.now() - startTime)
 
 # TODO: fix todos
+#TODO: see how to add SSH ID
+#TODO: fix seq and next seq id (specifically in ftp)
