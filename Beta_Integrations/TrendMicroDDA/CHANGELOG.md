@@ -1,6 +1,9 @@
 ## [Unreleased]
 Fixed an issue where parsing a report did not work properly.
 
+## [20.4.1] - 2020-04-29
+-
+
 ## [20.2.0] - 2020-02-04
 Fixed a typo in the proxy parameter.
 

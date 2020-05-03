@@ -296,6 +296,115 @@ RESPONSE_UPDATE_TICKET_SC_REQ = {
         "work_start": ""
     }
 }
+RESPONSE_UPDATE_TICKET_ADDITIONAL = {
+    "result": {
+        "active": "true",
+        "activity_due": "",
+        "additional_assignee_list": "",
+        "approval": "rejected",
+        "approval_history": "",
+        "approval_set": "",
+        "assigned_to": "",
+        "assignment_group": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "business_duration": "",
+        "business_service": "",
+        "business_stc": "",
+        "calendar_duration": "",
+        "calendar_stc": "",
+        "caller_id": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "category": "network",
+        "caused_by": "",
+        "child_incidents": "",
+        "close_code": "",
+        "close_notes": "",
+        "closed_at": "",
+        "closed_by": "",
+        "cmdb_ci": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "comments": "",
+        "comments_and_work_notes": "",
+        "company": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "contact_type": "phone",
+        "correlation_display": "",
+        "correlation_id": "",
+        "delivery_plan": "",
+        "delivery_task": "",
+        "description": "Unable to access Oregon mail server. Is it down?",
+        "due_date": "",
+        "escalation": "0",
+        "expected_start": "",
+        "follow_up": "",
+        "group_list": "",
+        "hold_reason": "",
+        "impact": "3",
+        "incident_state": "1",
+        "knowledge": "false",
+        "location": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "made_sla": "false",
+        "notify": "1",
+        "number": "INC0000039",
+        "opened_at": "2019-09-05 00:41:01",
+        "opened_by": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "order": "",
+        "parent": "",
+        "parent_incident": "",
+        "priority": "5",
+        "problem_id": "",
+        "reassignment_count": "",
+        "reopen_count": "",
+        "reopened_by": "",
+        "reopened_time": "",
+        "resolved_at": "",
+        "resolved_by": "",
+        "rfc": "",
+        "severity": "2",
+        "short_description": "Trouble getting to Oregon mail server",
+        "sla_due": "2019-09-26 00:41:01",
+        "state": "1",
+        "subcategory": "",
+        "sys_class_name": "incident",
+        "sys_created_by": "admin",
+        "sys_created_on": "2019-09-05 00:42:29",
+        "sys_domain": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "sys_domain_path": "/",
+        "sys_id": "1234",
+        "sys_mod_count": "15",
+        "sys_tags": "",
+        "sys_updated_by": "admin",
+        "sys_updated_on": "2020-04-22 07:50:03",
+        "time_worked": "",
+        "u_custom_field_test": "eyy123",
+        "upon_approval": "",
+        "upon_reject": "",
+        "urgency": "3",
+        "user_input": "",
+        "watch_list": "",
+        "work_end": "",
+        "work_notes": "",
+        "work_notes_list": "",
+        "work_start": ""
+    }
+}
 RESPONSE_QUERY_TICKETS = {
     "result": [
         {
@@ -1499,6 +1608,292 @@ RESPONSE_QUERY_TABLE = {
         }
     ]
 }
+RESPONSE_QUERY_TABLE_SYS_PARAMS = {
+    "result": [
+        {
+            "active": {
+                "display_value": "true",
+                "value": "true"
+            },
+            "activity_due": {
+                "display_value": "UNKNOWN",
+                "value": ""
+            },
+            "additional_assignee_list": {
+                "display_value": "",
+                "value": ""
+            },
+            "approval": {
+                "display_value": "Not Yet Requested",
+                "value": "not requested"
+            },
+            "approval_history": {
+                "display_value": "",
+                "value": ""
+            },
+            "approval_set": {
+                "display_value": "",
+                "value": ""
+            },
+            "assigned_to": {
+                "display_value": "",
+                "value": ""
+            },
+            "assignment_group": {
+                "display_value": "Procurement",
+                "value": "1234"
+            },
+            "business_duration": {
+                "display_value": "",
+                "value": ""
+            },
+            "business_service": {
+                "display_value": "",
+                "value": ""
+            },
+            "calendar_duration": {
+                "display_value": "",
+                "value": ""
+            },
+            "calendar_stc": {
+                "display_value": "",
+                "value": ""
+            },
+            "close_notes": {
+                "display_value": "",
+                "value": ""
+            },
+            "closed_at": {
+                "display_value": "",
+                "value": ""
+            },
+            "closed_by": {
+                "display_value": "",
+                "value": ""
+            },
+            "cmdb_ci": {
+                "display_value": "",
+                "value": ""
+            },
+            "comments": {
+                "display_value": "",
+                "value": ""
+            },
+            "comments_and_work_notes": {
+                "display_value": "",
+                "value": ""
+            },
+            "company": {
+                "display_value": "",
+                "value": ""
+            },
+            "contact_type": {
+                "display_value": None,
+                "value": ""
+            },
+            "contract": {
+                "display_value": "",
+                "value": ""
+            },
+            "correlation_display": {
+                "display_value": "",
+                "value": ""
+            },
+            "correlation_id": {
+                "display_value": "",
+                "value": ""
+            },
+            "delivery_plan": {
+                "display_value": "",
+                "value": ""
+            },
+            "delivery_task": {
+                "display_value": "",
+                "value": ""
+            },
+            "description": {
+                "display_value": "Order from vendor or move from in-stock inventory\n\t\t",
+                "value": "Order from vendor or move from in-stock inventory\n\t\t"
+            },
+            "due_date": {
+                "display_value": "2020-04-20 13:58:46",
+                "value": "2020-04-20 20:58:46"
+            },
+            "escalation": {
+                "display_value": "Normal",
+                "value": "0"
+            },
+            "expected_start": {
+                "display_value": "2020-04-20 13:58:46",
+                "value": "2020-04-20 20:58:46"
+            },
+            "follow_up": {
+                "display_value": "",
+                "value": ""
+            },
+            "group_list": {
+                "display_value": "",
+                "value": ""
+            },
+            "impact": {
+                "display_value": "3 - Low",
+                "value": "3"
+            },
+            "knowledge": {
+                "display_value": "false",
+                "value": "false"
+            },
+            "location": {
+                "display_value": "",
+                "value": ""
+            },
+            "made_sla": {
+                "display_value": "true",
+                "value": "true"
+            },
+            "number": {
+                "display_value": "TASK0000001",
+                "value": "TASK0000001"
+            },
+            "opened_at": {
+                "display_value": "2020-04-20 13:58:46",
+                "value": "2020-04-20 20:58:46"
+            },
+            "opened_by": {
+                "display_value": "System Administrator",
+                "value": "1234"
+            },
+            "order": {
+                "display_value": "",
+                "value": ""
+            },
+            "parent": {
+                "display_value": "RITM0000001",
+                "value": "aeed229047801200e0ef563dbb9a71c2"
+            },
+            "priority": {
+                "display_value": "4 - Low",
+                "value": "4"
+            },
+            "reassignment_count": {
+                "display_value": "0",
+                "value": "0"
+            },
+            "request": {
+                "display_value": "REQ0000001",
+                "value": "1234"
+            },
+            "request_item": {
+                "display_value": "RITM0000001",
+                "value": "1234"
+            },
+            "sc_catalog": {
+                "display_value": "",
+                "value": ""
+            },
+            "service_offering": {
+                "display_value": "",
+                "value": ""
+            },
+            "short_description": {
+                "display_value": "Order from vendor or move from in-stock inventory\n\t\t",
+                "value": "Order from vendor or move from in-stock inventory\n\t\t"
+            },
+            "skills": {
+                "display_value": "",
+                "value": ""
+            },
+            "sla_due": {
+                "display_value": "UNKNOWN",
+                "value": ""
+            },
+            "state": {
+                "display_value": "Open",
+                "value": "1"
+            },
+            "sys_class_name": {
+                "display_value": "Catalog Task",
+                "value": "sc_task"
+            },
+            "sys_created_by": {
+                "display_value": "admin",
+                "value": "admin"
+            },
+            "sys_created_on": {
+                "display_value": "2020-04-20 13:58:46",
+                "value": "2020-04-20 20:58:46"
+            },
+            "sys_domain": {
+                "display_value": "global",
+                "value": "global"
+            },
+            "sys_domain_path": {
+                "display_value": "/",
+                "value": "/"
+            },
+            "sys_id": {
+                "display_value": "1234",
+                "value": "1234"
+            },
+            "sys_mod_count": {
+                "display_value": "0",
+                "value": "0"
+            },
+            "sys_tags": {
+                "display_value": "",
+                "value": ""
+            },
+            "sys_updated_by": {
+                "display_value": "admin",
+                "value": "admin"
+            },
+            "sys_updated_on": {
+                "display_value": "2020-04-20 13:58:46",
+                "value": "2020-04-20 20:58:46"
+            },
+            "time_worked": {
+                "display_value": "",
+                "value": ""
+            },
+            "upon_approval": {
+                "display_value": "Proceed to Next Task",
+                "value": "proceed"
+            },
+            "upon_reject": {
+                "display_value": "Cancel all future Tasks",
+                "value": "cancel"
+            },
+            "urgency": {
+                "display_value": "3 - Low",
+                "value": "3"
+            },
+            "user_input": {
+                "display_value": "",
+                "value": ""
+            },
+            "watch_list": {
+                "display_value": "",
+                "value": ""
+            },
+            "work_end": {
+                "display_value": "",
+                "value": ""
+            },
+            "work_notes": {
+                "display_value": "",
+                "value": ""
+            },
+            "work_notes_list": {
+                "display_value": "",
+                "value": ""
+            },
+            "work_start": {
+                "display_value": "",
+                "value": ""
+            }
+        }
+    ]
+}
 RESPONSE_LIST_TABLE_FIELDS = {
     "result": [
         {
@@ -1781,4 +2176,33 @@ RESPONSE_GET_TABLE_NAME = {
             "ws_access": "true"
         }
     ]
+}
+RESPONSE_ADD_TAG = {
+    "result": {
+        "auto": "",
+        "comments": "",
+        "id_display": "INC0000009",
+        "id_type": "Incident",
+        "label": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "notify_onchange": "false",
+        "notify_script": "",
+        "notify_when": "",
+        "read": "no",
+        "reference_count": "",
+        "sys_created_by": "admin",
+        "sys_created_on": "2020-04-30 08:59:33",
+        "sys_id": "1234",
+        "sys_mod_count": "0",
+        "sys_tags": "",
+        "sys_updated_by": "admin",
+        "sys_updated_on": "2020-04-30 08:59:33",
+        "table": "",
+        "table_key": "",
+        "title": "title",
+        "url": "incident.do?sys_id=1234\u0026sysparm_view=",
+        "view_name": ""
+    }
 }

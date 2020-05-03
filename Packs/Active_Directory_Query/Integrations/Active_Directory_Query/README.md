@@ -87,7 +87,7 @@
 <li>
 <strong>Secure Connection</strong>: Use SSL secure connection or ‘None’ (communication over clear-text).</li>
 <li>
-<strong>Trust any certificate (unsecure)</strong>:Select to avoid server certification validation. You may want to do this in case Demisto cannot validate the integration server certificate (due to missing CA certificate)</li>
+<strong>Trust any certificate (not secure)</strong>:Select to avoid server certification validation. You may want to do this in case Demisto cannot validate the integration server certificate (due to missing CA certificate)</li>
 </ul>
 </li>
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>

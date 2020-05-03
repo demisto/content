@@ -114,6 +114,13 @@ script:
       name: custom_fields
       required: false
       secret: false
+    - default: false
+      description: Additional fields to present in the war room entry and incident
+        context.
+      isArray: true
+      name: additional_fields
+      required: false
+      secret: false
     deprecated: false
     description: Retrieve ticket information by specific ticket ID
     execution: false
@@ -672,6 +679,12 @@ script:
       name: approval
       required: false
       secret: false
+    - default: false
+      description: 'Additional fields in the format: fieldname1=value;fieldname2=value;'
+      isArray: false
+      name: additional_fields
+      required: false
+      secret: false
     deprecated: false
     description: Create new ServiceNow ticket
     execution: false
@@ -1200,6 +1213,12 @@ script:
       name: approval
       required: false
       secret: false
+    - default: false
+      description: 'Additional fields in the format: fieldname1=value;fieldname2=value;'
+      isArray: false
+      name: additional_fields
+      required: false
+      secret: false
     deprecated: false
     description: Update specific ticket
     execution: false
@@ -1262,6 +1281,20 @@ script:
       description: Starting record index to begin retrieving records from
       isArray: false
       name: offset
+      required: false
+      secret: false
+    - default: false
+      description: Additional fields to present in the war room entry and incident
+        context.
+      isArray: true
+      name: additional_fields
+      required: false
+      secret: false
+    - default: false
+      description: 'System parameters in the format: fieldname1=value;fieldname2=value.
+        e.g: "sysparm_display_value=al;&sysparm_exclude_reference_link=True"'
+      isArray: false
+      name: system_params
       required: false
       secret: false
     deprecated: false
@@ -1518,6 +1551,13 @@ script:
       description: Starting record index to begin retrieving records from
       isArray: false
       name: offset
+      required: false
+      secret: false
+    - default: false
+      description: 'System parameters in the format: fieldname1=value;fieldname2=value.
+        e.g: "sysparm_display_value=al;&sysparm_exclude_reference_link=True"'
+      isArray: false
+      name: system_params
       required: false
       secret: false
     deprecated: false
@@ -1930,6 +1970,57 @@ script:
     - contextPath: ServiceNow.Ticket.Note.Type
       description: Ticket note type
       type: string
+  - arguments:
+    - default: false
+      description: Ticket System ID
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: 'Tag system ID. Can be retrieved using: "!servicenow-query-table
+        table_name=label fields=name,active,sys_id"'
+      isArray: false
+      name: tag_id
+      required: true
+      secret: false
+    - default: false
+      description: 'Tag title. e.g: "Incident - INC000001"'
+      isArray: false
+      name: title
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: incident
+      description: Ticket type.
+      isArray: false
+      name: ticket_type
+      predefined:
+      - incident
+      - problem
+      - change_request
+      - sc_request
+      - sc_task
+      - sc_req_item
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Adds a tag to a ticket. The tag will be visible in the label_entry
+      table and can be retrieved using: "!servicenow-query-table table_name=label_entry
+      fields=title,table,sys_id,id_display,id_type"'
+    execution: false
+    name: servicenow-add-tag
+    outputs:
+    - contextPath: ServiceNow.Ticket.ID
+      description: The unique ticket identifier.
+      type: String
+    - contextPath: ServiceNow.Ticket.TagTitle
+      description: Ticket tag title.
+      type: String
+    - contextPath: ServiceNow.Ticket.TagID
+      description: Ticket tag ID.
+      type: String
   dockerimage: demisto/python3:3.8.2.6981
   feed: false
   isfetch: true

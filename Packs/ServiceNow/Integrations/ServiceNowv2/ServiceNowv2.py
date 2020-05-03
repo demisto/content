@@ -96,11 +96,12 @@ def get_server_url(server_url: str) -> str:
     return url
 
 
-def create_ticket_context(data: dict) -> Any:
+def create_ticket_context(data: dict, additional_fields: list = None) -> Any:
     """Create ticket context.
 
     Args:
         data: ticket data.
+        additional_fields: additional fields to extract from the ticket
 
     Returns:
         ticket context.
@@ -115,9 +116,11 @@ def create_ticket_context(data: dict) -> Any:
         'CloseCode': data.get('close_code'),
         'OpenedAt': data.get('opened_at')
     }
+    if additional_fields:
+        for additional_field in additional_fields:
+            context[additional_field] = data.get(additional_field)
 
     # These fields refer to records in the database, the value is their system ID.
-
     closed_by = data.get('closed_by')
     if closed_by:
         context['ResolvedBy'] = closed_by.get('value', '')
@@ -140,30 +143,32 @@ def create_ticket_context(data: dict) -> Any:
     return createContext(context, removeNull=True)
 
 
-def get_ticket_context(data: Any) -> Any:
+def get_ticket_context(data: Any, additional_fields: list = None) -> Any:
     """Manager of ticket context creation.
 
     Args:
         data: ticket data. in the form of a dict or a list of dict.
+        additional_fields: additional fields to extract from the ticket
 
     Returns:
         ticket context. in the form of a dict or a list of dict.
     """
     if not isinstance(data, list):
-        return create_ticket_context(data)
+        return create_ticket_context(data, additional_fields)
 
     tickets = []
     for d in data:
-        tickets.append(create_ticket_context(d))
+        tickets.append(create_ticket_context(d, additional_fields))
     return tickets
 
 
-def get_ticket_human_readable(tickets, ticket_type: str) -> list:
+def get_ticket_human_readable(tickets, ticket_type: str, additional_fields: list = None) -> list:
     """Get ticket human readable.
 
     Args:
         tickets: tickets data. in the form of a dict or a list of dict.
         ticket_type: ticket type.
+        additional_fields: additional fields to extract from the ticket
 
     Returns:
         ticket human readable.
@@ -227,7 +232,12 @@ def get_ticket_human_readable(tickets, ticket_type: str) -> list:
                 mapped_approval = TICKET_APPROVAL[ticket_type].get(ticket.get('approval'), mapped_approval)
                 # Approval will be added to the markdown only in the necessary ticket types
                 hr['Approval'] = mapped_approval
+
+        if additional_fields:
+            for additional_field in additional_fields:
+                hr[additional_field] = ticket.get(additional_field)
         result.append(hr)
+
     return result
 
 
@@ -304,7 +314,7 @@ def generate_body(fields: dict = {}, custom_fields: dict = {}) -> dict:
 
 
 def split_fields(fields: str = '') -> dict:
-    """Split str fields of Demisto arguments to SNOW request fields by the char - ;.
+    """Split str fields of Demisto arguments to SNOW request fields by the char ';'.
 
     Args:
         fields: fields in a string representation.
@@ -315,10 +325,11 @@ def split_fields(fields: str = '') -> dict:
     dic_fields = {}
 
     if fields:
+        if '=' not in fields:
+            raise Exception(f"The argument: {fields}.\nmust contain a '=' to specify the keys and values. e.g: key=val.")
         arr_fields = fields.split(';')
-
         for f in arr_fields:
-            field = f.split('=')
+            field = f.split('=', 1)  # a field might include a '=' sign in the value. thus, splitting only once.
             if len(field) > 1:
                 dic_fields[field[0]] = field[1]
 
@@ -606,14 +617,31 @@ class Client(BaseClient):
         return self.send_request('attachment/upload', 'POST', headers={'Accept': 'application/json'},
                                  body=body, file={'id': file_id, 'name': file_name})
 
-    def query(self, table_name: str, sys_param_limit: str, sys_param_offset: str, sys_param_query: str) -> dict:
-        """Query tickets by sending a PATCH request.
+    def add_tag(self, ticket_id: str, tag_id: str, title: str, ticket_type: str) -> dict:
+        """Adds a tag to a ticket by sending a POST request.
+
+        Args:
+            ticket_id: ticket id
+            tag_id:  tag id
+            title: tag title
+            ticket_type: ticket type
+
+        Returns:
+            Response from API.
+        """
+        body = {'label': tag_id, 'table': ticket_type, 'table_key': ticket_id, 'title': title}
+        return self.send_request('/table/label_entry', 'POST', body=body)
+
+    def query(self, table_name: str, sys_param_limit: str, sys_param_offset: str, sys_param_query: str,
+              system_params: dict = {}) -> dict:
+        """Query records by sending a GET request.
 
         Args:
         table_name: table name
         sys_param_limit: limit the number of results
         sys_param_offset: offset the results
         sys_param_query: the query
+        system_params: system parameters
 
         Returns:
             Response from API.
@@ -621,6 +649,8 @@ class Client(BaseClient):
         query_params = {'sysparm_limit': sys_param_limit, 'sysparm_offset': sys_param_offset}
         if sys_param_query:
             query_params['sysparm_query'] = sys_param_query
+        if system_params:
+            query_params.update(system_params)
         return self.send_request(f'table/{table_name}', 'GET', params=query_params)
 
     def get_table_fields(self, table_name: str) -> dict:
@@ -650,6 +680,7 @@ def get_ticket_command(client: Client, args: dict):
     number = str(args.get('number', ''))
     get_attachments = args.get('get_attachments', 'false')
     custom_fields = split_fields(str(args.get('custom_fields', '')))
+    additional_fields = argToList(str(args.get('additional_fields', '')))
 
     result = client.get(ticket_type, ticket_id, generate_body({}, custom_fields), number)
     if not result or 'result' not in result:
@@ -667,12 +698,14 @@ def get_ticket_command(client: Client, args: dict):
     if get_attachments.lower() != 'false':
         entries = client.get_ticket_attachment_entries(ticket.get('sys_id'))
 
-    hr = get_ticket_human_readable(ticket, ticket_type)
-    context = get_ticket_context(ticket)
+    hr = get_ticket_human_readable(ticket, ticket_type, additional_fields)
+    context = get_ticket_context(ticket, additional_fields)
 
     headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Approval',
                'Created On', 'Created By', 'Active', 'Close Notes', 'Close Code', 'Description', 'Opened At',
                'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description', 'Additional Comments']
+    if additional_fields:
+        headers.extend(additional_fields)
 
     entry = {
         'Type': entryTypes['note'],
@@ -703,18 +736,21 @@ def update_ticket_command(client: Client, args: dict) -> Tuple[Any, Dict, Dict, 
     custom_fields = split_fields(str(args.get('custom_fields', '')))
     ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
     ticket_id = str(args.get('id', ''))
+    additional_fields = split_fields(str(args.get('additional_fields', '')))
+    additional_fields_keys = list(additional_fields.keys())
 
     fields = get_ticket_fields(args, ticket_type=ticket_type)
+    fields.update(additional_fields)
 
     result = client.update(ticket_type, ticket_id, fields, custom_fields)
     if not result or 'result' not in result:
         raise Exception('Unable to retrieve response.')
     ticket = result['result']
 
-    hr_ = get_ticket_human_readable(ticket, ticket_type)
+    hr_ = get_ticket_human_readable(ticket, ticket_type, additional_fields_keys)
     human_readable = tableToMarkdown(f'ServiceNow ticket updated successfully\nTicket type: {ticket_type}',
                                      t=hr_, removeNull=True)
-    entry_context = {'ServiceNow.Ticket(val.ID===obj.ID)': get_ticket_context(ticket)}
+    entry_context = {'ServiceNow.Ticket(val.ID===obj.ID)': get_ticket_context(ticket, additional_fields_keys)}
 
     return human_readable, entry_context, result, True
 
@@ -732,10 +768,14 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
     custom_fields = split_fields(str(args.get('custom_fields', '')))
     template = args.get('template')
     ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
+    additional_fields = split_fields(str(args.get('additional_fields', '')))
+    additional_fields_keys = list(additional_fields.keys())
 
     if template:
         template = client.get_template(template)
     fields = get_ticket_fields(args, template, ticket_type)
+    if additional_fields:
+        fields.update(additional_fields)
 
     result = client.create(ticket_type, fields, custom_fields)
 
@@ -743,13 +783,16 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
         raise Exception('Unable to retrieve response.')
     ticket = result['result']
 
-    hr_ = get_ticket_human_readable(ticket, ticket_type)
+    hr_ = get_ticket_human_readable(ticket, ticket_type, additional_fields_keys)
     headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Approval',
                'Created On', 'Created By', 'Active', 'Close Notes', 'Close Code', 'Description', 'Opened At',
                'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description', 'Additional Comments']
+    if additional_fields:
+        headers.extend(additional_fields_keys)
     human_readable = tableToMarkdown('ServiceNow ticket was created successfully.', t=hr_,
                                      headers=headers, removeNull=True)
-    created_ticket_context = get_ticket_context(ticket)
+
+    created_ticket_context = get_ticket_context(ticket, additional_fields_keys)
     entry_context = {
         'Ticket(val.ID===obj.ID)': created_ticket_context,
         'ServiceNow.Ticket(val.ID===obj.ID)': created_ticket_context
@@ -789,21 +832,24 @@ def query_tickets_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
     sys_param_limit = args.get('limit', client.sys_param_limit)
     sys_param_offset = args.get('offset', client.sys_param_offset)
     sys_param_query = str(args.get('query', ''))
+    system_params = split_fields(args.get('system_params', ''))
+    additional_fields = argToList(str(args.get('additional_fields')))
 
     ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
 
-    result = client.query(ticket_type, sys_param_limit, sys_param_offset, sys_param_query)
+    result = client.query(ticket_type, sys_param_limit, sys_param_offset, sys_param_query, system_params)
 
     if not result or 'result' not in result or len(result['result']) == 0:
         return 'No ServiceNow tickets matched the query.', {}, {}, True
     tickets = result.get('result', {})
-    hr_ = get_ticket_human_readable(tickets, ticket_type)
-    context = get_ticket_context(tickets)
+    hr_ = get_ticket_human_readable(tickets, ticket_type, additional_fields)
+    context = get_ticket_context(tickets, additional_fields)
 
     headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Created On', 'Created By',
                'Active', 'Close Notes', 'Close Code', 'Description', 'Opened At', 'Due Date', 'Resolved By',
                'Resolved At', 'SLA Due', 'Short Description', 'Additional Comments']
-
+    if additional_fields:
+        headers.extend(additional_fields)
     human_readable = tableToMarkdown('ServiceNow tickets', t=hr_, headers=headers, removeNull=True)
     entry_context = {
         'Ticket(val.ID===obj.ID)': context,
@@ -921,6 +967,43 @@ def upload_file_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bo
         'ServiceNow.Ticket(val.ID===obj.ID)': context,
         'Ticket(val.ID===obj.ID)': context
     }
+
+    return human_readable, entry_context, result, True
+
+
+def add_tag_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bool]:
+    """Add tag to a ticket.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    ticket_id = str(args.get('id', ''))
+    tag_id = str(args.get('tag_id', ''))
+    title = str(args.get('title', ''))
+    ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
+
+    result = client.add_tag(ticket_id, tag_id, title, ticket_type)
+    if not result or 'result' not in result:
+        raise Exception(f'Could not add tag {title} to ticket {ticket_id}.')
+
+    added_tag_resp = result.get('result', {})
+    hr_ = {
+        'Title': added_tag_resp.get('title'),
+        'Ticket ID': added_tag_resp.get('id_display'),
+        'Ticket Type': added_tag_resp.get('id_type'),
+        'Tag ID': added_tag_resp.get('sys_id'),
+    }
+    human_readable = tableToMarkdown(f'Tag {tag_id} was added successfully to ticket {ticket_id}.', t=hr_)
+    context = {
+        'ID': ticket_id,
+        'TagTitle': added_tag_resp.get('title'),
+        'TagID': added_tag_resp.get('sys_id'),
+    }
+    entry_context = {'ServiceNow.Ticket(val.ID===obj.ID)': context}
 
     return human_readable, entry_context, result, True
 
@@ -1120,10 +1203,11 @@ def query_table_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bo
     table_name = str(args.get('table_name', ''))
     sys_param_limit = args.get('limit', client.sys_param_limit)
     sys_param_query = str(args.get('query', ''))
+    system_params = split_fields(args.get('system_params', ''))
     sys_param_offset = args.get('offset', client.sys_param_offset)
     fields = args.get('fields')
 
-    result = client.query(table_name, sys_param_limit, sys_param_offset, sys_param_query)
+    result = client.query(table_name, sys_param_limit, sys_param_offset, sys_param_query, system_params)
     if not result or 'result' not in result or len(result['result']) == 0:
         return 'No results found', {}, {}, False
     table_entries = result.get('result', {})
@@ -1536,6 +1620,7 @@ def main():
             'servicenow-add-link': add_link_command,
             'servicenow-add-comment': add_comment_command,
             'servicenow-upload-file': upload_file_command,
+            'servicenow-add-tag': add_tag_command,
             'servicenow-get-ticket-notes': get_ticket_notes_command,
             'servicenow-get-record': get_record_command,
             'servicenow-update-record': update_record_command,
