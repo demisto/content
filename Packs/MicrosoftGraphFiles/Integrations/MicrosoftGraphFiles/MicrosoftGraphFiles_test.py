@@ -11,8 +11,7 @@ with open("test_data/response.json", "rb") as test_data:
 with open("test_data/test_inputs.json", "rb") as test_data:
     arguments = json.load(test_data)
 
-with open("test_data/expected_results.json",
-          "rb") as test_data:
+with open("test_data/expected_results.json", "rb") as test_data:
     commands_expected_results = json.load(test_data)
 
 EXCLUDE_LIST = ["eTag"]
