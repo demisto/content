@@ -134,6 +134,8 @@ def test_module(client):
 
 
 def search_logs_command(client, args):
+    if client.op_api_token is None:
+        return_error("Operational API Token wasn't provided, cannot perform search")
     query = args.get('query')
     size = args.get('size', MAX_LOGZIO_DOCS)
     from_time = args.get('from_time')
@@ -148,6 +150,8 @@ def search_logs_command(client, args):
 
 
 def get_rule_logs_by_id_command(client, args):
+    if client.security_api_token is None:
+        return_error("Security API Token wasn't provided, cannot perform search")
     id = args.get("id")
     size = args.get("size", 100)
     page_size = args.get("page_size", MAX_LOGZIO_DOCS)
@@ -160,6 +164,8 @@ def get_rule_logs_by_id_command(client, args):
 
 
 def fetch_incidents(client, last_run, search, severities, first_fetch_time):
+    if client.security_api_token is None:
+        return_error("Security API Token wasn't provided, cannot fetch incidents")
     incidents = []
     next_run = last_run
     start_query_time = last_run.get("last_fetch")
