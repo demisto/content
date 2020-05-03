@@ -2177,3 +2177,32 @@ RESPONSE_GET_TABLE_NAME = {
         }
     ]
 }
+RESPONSE_ADD_TAG = {
+    "result": {
+        "auto": "",
+        "comments": "",
+        "id_display": "INC0000009",
+        "id_type": "Incident",
+        "label": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "notify_onchange": "false",
+        "notify_script": "",
+        "notify_when": "",
+        "read": "no",
+        "reference_count": "",
+        "sys_created_by": "admin",
+        "sys_created_on": "2020-04-30 08:59:33",
+        "sys_id": "1234",
+        "sys_mod_count": "0",
+        "sys_tags": "",
+        "sys_updated_by": "admin",
+        "sys_updated_on": "2020-04-30 08:59:33",
+        "table": "",
+        "table_key": "",
+        "title": "title",
+        "url": "incident.do?sys_id=1234\u0026sysparm_view=",
+        "view_name": ""
+    }
+}
