@@ -25,7 +25,3 @@ def test_fetch_cidr(monkeypatch):
     for cidr in cidr_list:
         assert 'type' in cidr
         assert 'ip' in cidr
-
-
-
-
