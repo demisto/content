@@ -4322,28 +4322,35 @@ def set_snapshot_labels(args):
     )
 
 
-def add_project_info_metadata(metadata, zone):
+def add_project_info_metadata(metadata):
     """
     Add or update project wide metadata.
     :param metadata:  Each metadata entry is a key/value pair separated by ';' like so: key=abc,value=123;key=abc,value=123
-    :param zone: The name of the zone for this request.
     """
     project = SERVICE_ACT_PROJECT_ID
-    project_instance = compute.instances().get(project=project, zone=zone, instance=project).execute()
+    project_instance = compute.projects().get(project=project).execute()
     fingerprint = project_instance.get('tags', {}).get('fingerprint')
     items = parse_labels(metadata)
     body = assign_params(
         fingerprint=fingerprint,
-        item=items,
+        items=items,
         kind='compute#metadata'
     )
-    raw_res = compute.instances.setMetadata(project=project, zone=zone, instance=project, body=body).execute()
+    raw_res = compute.projects().setCommonInstanceMetadata(project=project, body=body).execute()
+    data_res = {
+        'status': raw_res.get('status'),
+        'kind': raw_res.get('kind'),
+        'name': raw_res.get('name'),
+        'id': raw_res.get('id'),
+        'progress': raw_res.get('progress'),
+        'operationType': raw_res.get('operationType')
+    }
     ec = {'GoogleCloudCompute.ProjectMetadata(val.id === obj.id)': raw_res}
     return_outputs(
-        tableToMarkdown('Google Cloud Compute Project Metadata Updated Successfully', raw_res, removeNull=True,
-                        headerTransform=pascalToSpace),
+        tableToMarkdown('Google Cloud Compute Project Metadata Update Operation Started Successfully', data_res,
+                        removeNull=True),
         ec,
-        response
+        raw_res
     )
 
 
