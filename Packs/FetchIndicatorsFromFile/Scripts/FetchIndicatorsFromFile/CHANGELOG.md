@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.4.1] - 2020-04-29
   - Fixed an issue where the default_type was not assigned properly.
   - Added support for **Domain** indicator type auto-detection.
   - Fixed an issue where false indicators could be created from CSV and XLS files.
