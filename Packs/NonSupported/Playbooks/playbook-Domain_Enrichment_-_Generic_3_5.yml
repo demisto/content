@@ -162,3 +162,5 @@ outputs:
 - contextPath: DBotScore
   description: Indicator, Score, Type, Vendor
   type: unknown
+tests:
+  - No test

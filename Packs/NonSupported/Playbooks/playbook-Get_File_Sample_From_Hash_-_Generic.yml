@@ -111,3 +111,5 @@ inputs:
   required: false
   description: Get file sample from MD5 input
 outputs: []
+tests:
+  - No test
