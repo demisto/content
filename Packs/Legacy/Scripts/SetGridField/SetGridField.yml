@@ -24,7 +24,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: Grid columns - comma sperated (col1,col2,..,coln)
+  description: Grid columns - comma separated (col1,col2,..,coln)
   isArray: true
   name: columns
   required: true
