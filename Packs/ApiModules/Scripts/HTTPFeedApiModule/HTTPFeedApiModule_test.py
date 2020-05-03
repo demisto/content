@@ -218,11 +218,11 @@ def test_feed_main_fetch_indicators(mocker, requests_mock):
     # verify one of the expected indicators
     assert {
         'rawJSON': {
-                'asndrop_country': 'US',
-                'asndrop_org': 'LAKSH CYBERSECURITY AND DEFENSE LLC',
-                'tags': tags.split(','),
-                'type': indicator_type,
-                'value': 'AS397539'
+            'asndrop_country': 'US',
+            'asndrop_org': 'LAKSH CYBERSECURITY AND DEFENSE LLC',
+            'tags': tags.split(','),
+            'type': indicator_type,
+            'value': 'AS397539'
         },
         'type': indicator_type,
         'value': 'AS397539'
