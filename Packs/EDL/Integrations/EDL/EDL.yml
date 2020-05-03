@@ -37,7 +37,6 @@ configuration:
   hidden: true
 - additionalinfo: Will run the EDL service on this port from within Demisto.
     Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.
-  defaultvalue: '7000'
   display: Listen Port
   name: longRunningPort
   required: true
