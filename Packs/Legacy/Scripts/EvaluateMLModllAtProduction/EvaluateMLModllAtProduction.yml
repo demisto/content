@@ -95,5 +95,5 @@ tags:
 - ml
 timeout: 120µs
 tests:
-- EvaluateMLModllAtProduction-Test
+  - EvaluateMLModllAtProduction-Test
 comment: Evaluates an ML model in production.

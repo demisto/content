@@ -2672,8 +2672,7 @@
         {
             "playbookID": "EvaluateMLModllAtProduction-Test",
             "fromversion": "4.5.0"
-        },
-
+        }
     ],
     "skipped_tests": {
         "Test_URLhaus": "Issue 23857",
