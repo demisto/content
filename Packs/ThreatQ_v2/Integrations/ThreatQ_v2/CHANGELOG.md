@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+Fixed an issue where indicators with a custom status would raise an error.
 
 
 ## [20.4.0] - 2020-04-14

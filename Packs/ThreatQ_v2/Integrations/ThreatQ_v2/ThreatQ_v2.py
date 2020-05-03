@@ -51,7 +51,8 @@ STATUS_ID_TO_STATUS = {
     2: 'Expired',
     3: 'Indirect',
     4: 'Review',
-    5: 'Whitelisted'
+    5: 'Whitelisted',
+    6: "Custom Status"
 }
 
 TYPE_ID_TO_INDICATOR_TYPE = {

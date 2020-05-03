@@ -109,7 +109,8 @@ MOCK_GET_EVENT_RESPONSE = {
 MOCK_INDICATOR_LIST_RESPONSE = {
     'data': [
         {'id': 10, 'value': 'foo@demisto.com', 'type_id': 4, 'status_id': 2},
-        {'id': 11, 'value': '8.8.8.8', 'type_id': 14, 'status_id': 3}
+        {'id': 11, 'value': '8.8.8.8', 'type_id': 14, 'status_id': 3},
+        {'id': 12, 'value': '1.2.3.4', 'type_id': 14, 'status_id': 6}
     ]
 }
 
@@ -239,9 +240,11 @@ def test_get_related_objs_command(mocker, requests_mock):
     entry_context = results[0]['EntryContext']['ThreatQ.Adversary(val.ID === obj.ID)']
 
     assert 'Related indicator type objects of adversary with ID 1' in results[0]['HumanReadable']
-    assert len(entry_context['RelatedIndicator']) == 2
+
+    assert len(entry_context['RelatedIndicator']) == 3
     assert entry_context['RelatedIndicator'][0]['Type'] == 'Email Address'
     assert entry_context['RelatedIndicator'][1]['Type'] == 'IP Address'
+    assert entry_context['RelatedIndicator'][2]['Status'] == 'Custom Status'
 
 
 def test_get_all_objs_command(mocker, requests_mock):
@@ -254,7 +257,6 @@ def test_get_all_objs_command(mocker, requests_mock):
 
     results = demisto.results.call_args[0]
     entry_context = results[0]['EntryContext']['ThreatQ.Indicator(val.ID === obj.ID)']
-
     assert 'List of all objects of type indicator - 0-1' in results[0]['HumanReadable']
     assert len(entry_context) == 2
     assert entry_context[0]['Type'] == 'Email Address'
