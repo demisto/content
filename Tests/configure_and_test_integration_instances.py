@@ -660,6 +660,7 @@ def main():
 
     filtered_tests, filter_configured, run_all_tests = extract_filtered_tests(is_nightly=options.is_nightly)
     tests_for_iteration = tests
+    run_all_tests = True
     if run_all_tests:
         # skip test button testing
         skipped_instance_test_message = 'Not running instance tests when {} is turned on'.format(RUN_ALL_TESTS_FORMAT)
