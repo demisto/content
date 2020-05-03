@@ -96,28 +96,19 @@ def tokenize_text(text):
 
 
 def tokenize_text_other(unicode_text):
-    _, preprocessed_tokens_list = tokenize_text_spacy(unicode_text, language='English')
+    tokens_list = []
     tokenization_method = demisto.args()['tokenizationMethod']
     if tokenization_method == 'byWords':
-        tokens_list = []
         original_words_to_tokens = {}
-        for t in preprocessed_tokens_list:
-            if t in reserved_tokens:
-                tokens_list.append(t)
-                original_words_to_tokens[t] = t
-            else:
-                token_without_punct = ''.join([c for c in t if c not in string.punctuation])
-                if len(token_without_punct) > 0:
-                    tokens_list.append(token_without_punct)
-                    original_words_to_tokens[token_without_punct] = t
+        for t in unicode_text.split():
+            token_without_punct = ''.join([c for c in t if c not in string.punctuation])
+            if len(token_without_punct) > 0:
+                tokens_list.append(token_without_punct)
+                original_words_to_tokens[token_without_punct] = t
     elif tokenization_method == 'byLetters':
-        tokens_list = []
-        for t in preprocessed_tokens_list:
-            if t in reserved_tokens:
-                tokens_list.append(t)
-            else:
-                tokens_list += [chr for chr in _unicode_chr_splitter(t) if chr]
-        original_words_to_tokens = {c: c for c in tokens_list}
+        for t in unicode_text:
+            tokens_list += [chr for chr in _unicode_chr_splitter(t) if chr]
+            original_words_to_tokens = {c: t for c in tokens_list}
     else:
         return_error('Unsupported tokenization method: when language is "Other" ({})'.format(tokenization_method))
     return original_words_to_tokens, tokens_list
