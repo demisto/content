@@ -27,9 +27,9 @@ def normalized_string(phrase: str) -> str:
     return phrases_case.camel(phrase).replace("'", "").lower()
 
 
-def filter_the_dict(dict_obj: Dict[Any, Any], keys: List[str], max_keys: Optional[int] = None) -> Dict[Any, Any]:
+def filter_dict(dict_obj: Dict[Any, Any], keys: List[str], max_keys: Optional[int] = None) -> Dict[Any, Any]:
     """ Filter keys from Dictionary:
-            1. Will save all keys in keys parameter.
+            1. Will only save keys which specified in keys parameters.
             2. If key in index 0 is "*", will save all keys until max_keys (as much as Grid can include).
 
     Args:
@@ -85,17 +85,17 @@ def validate_entry_context(entry_context: Any, keys: List[str]):
         ValueError: If structure is not valid.
     """
     exception_msg = "Not valid entry context path - dict[str,str] or list[dict[str,str]]"
-    if isinstance(entry_context, list):
-        for item in entry_context:
-            if not isinstance(item, dict):
-                raise ValueError(exception_msg)
-            else:
-                for key, value in item.items():
-                    if key in keys:
-                        if not (isinstance(key, str) and isinstance(value, str)):
-                            raise ValueError(exception_msg)
-    else:
+    if not isinstance(entry_context, list):
         raise ValueError(exception_msg)
+
+    for item in entry_context:
+        if not isinstance(item, dict):
+            raise ValueError(exception_msg)
+
+        for key, value in item.items():
+            if key in keys:
+                if not (isinstance(key, str) and isinstance(value, (str, int, float, None))):
+                    raise ValueError(exception_msg)
 
 
 def build_grid(context_path: str, keys: List[str], columns: List[str]) -> pd.DataFrame:
@@ -121,12 +121,12 @@ def build_grid(context_path: str, keys: List[str], columns: List[str]) -> pd.Dat
     # Building new Grid
     if len(entry_context_data) > 1:
         # Handle entry context list option
-        entry_context_data = [filter_the_dict(item, keys, len(columns)) for item in entry_context_data]
+        entry_context_data = [filter_dict(item, keys, len(columns)) for item in entry_context_data]
         table = pd.DataFrame(entry_context_data)
         table.rename(columns=dict(zip(table.columns, columns)), inplace=True)
     elif len(entry_context_data) == 1 and isinstance(entry_context_data[0], dict):
-        # Handle entry context key, vlaue option
-        entry_context_data = filter_the_dict(entry_context_data[0], keys).items()
+        # Handle entry context key-vlaue option
+        entry_context_data = filter_dict(entry_context_data[0], keys).items()
         table = pd.DataFrame(entry_context_data, columns=columns[:2])
     else:
         table = []
@@ -134,15 +134,16 @@ def build_grid(context_path: str, keys: List[str], columns: List[str]) -> pd.Dat
     return table
 
 
-def build_grid_command(grid_id: str, context_path: str, keys: List[str], columns: List[str], overwrite: bool, sort_by: str) \
+def build_grid_command(grid_id: str, context_path: str, keys: List[str], columns: List[str], overwrite: bool,
+                       sort_by: str) \
         -> List[Dict[Any, Any]]:
     """ Build Grid in one of the 2 options:
             1. Context_path contain list, e.g. [{'a': 1, 'b': 2}, {'a': 1, 'b': 2}]
             2. Context_path contain dict (key value pairs), e.g. {'a': 1, 'b': 2}
 
         Warnings:
-            1. The automation can't validate that the columns name correct and its mandatory.
-            2. The automation knows how to handle only list or dict and doesn't know hoe to handle.
+            1. The automation can't validate that the columns name correct.
+            2. The automation knows how to handle only list or dict primitive python objects (str, inf, float values)
 
         Args:
             grid_id: Grid ID to modify.
@@ -181,7 +182,7 @@ def main():
         table = build_grid_command(grid_id=grid_id,
                                    context_path=demisto.getArg('context_path'),
                                    keys=argToList(demisto.getArg('keys')),
-                                   overwrite=False if demisto.getArg('overwrite') == 'false' else True,
+                                   overwrite=demisto.getArg('overwrite').lower() == 'true',
                                    columns=argToList(demisto.getArg('columns')),
                                    sort_by=demisto.getArg('sort_by'))
         # Execute automation 'setIncident` which change the Context data in the incident

@@ -57,7 +57,7 @@ Assume the following:
 ```
 
 2. Grid: \
-![Grid](grid.png)
+![Grid](doc_files/grid.png)
 
 Considering the following cases:
 1. Key value to Grid:
@@ -66,7 +66,7 @@ Considering the following cases:
 ```
 
 Grid after update: \
-![Grid](grid_key_value_update.png)
+![Grid](doc_files/grid_key_value_update.png)
  
 2. List of item properties to Grid:
 ```shell script
@@ -74,7 +74,7 @@ Grid after update: \
 ```
 
 Grid after update: \
-![Grid](grid_list_update.png) 
+![Grid](doc_files/grid_list_update.png) 
 
 
 

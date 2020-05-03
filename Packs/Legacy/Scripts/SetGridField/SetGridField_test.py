@@ -17,10 +17,10 @@ def test_normalized_string(phrase: str, norm_phrase: str):
                              ({'a': 1, 'b': 2}, ['*'], 2, {'a': 1, 'b': 2})
                          ])
 def test_filter_the_dict(before_dict: dict, keys: dict, max_keys: int, after_dict: dict):
-    from SetGridField import filter_the_dict
-    assert after_dict == filter_the_dict(dict_obj=before_dict,
-                                         keys=keys,
-                                         max_keys=max_keys)
+    from SetGridField import filter_dict
+    assert after_dict == filter_dict(dict_obj=before_dict,
+                                     keys=keys,
+                                     max_keys=max_keys)
 
 
 @pytest.mark.parametrize(argnames="entry_context, keys, raise_exception",

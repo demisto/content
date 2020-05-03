@@ -55,4 +55,4 @@ tags:
 - ''
 timeout: '0'
 type: python
-dockerimage: devdemisto/grid:1.0.0.7488
+dockerimage: demisto/pandas:1.0.0.7793
