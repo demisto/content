@@ -1,6 +1,15 @@
 from GenericSQL import Client, sql_query_execute
 import pytest
 
+
+class ConnectionMock:
+    def __init__(self):
+        self.execute = []
+
+    def fetchall(self):
+        return []
+
+
 args1 = {
     'query': "select Name from city",
     'limit': 5,
@@ -163,10 +172,41 @@ def test_sql_queries(command, args, response, expected_result, header, mocker):
     Then
     - convert the result to human readable table
     - create the context
-    validate the expected_result and the created context
+    - validate the expected_result and the created context
     """
     mocker.patch.object(Client, '_create_engine_and_connect')  # needed in order not to make a connection in tests
     mocker.patch.object(Client, 'sql_query_execute_request', return_value=(response, header))
     client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "")
     result = command(client, args)
     assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
+
+
+empty_output = {
+    'GenericSQL(val.Query && val.Query === obj.Query)': {
+        'GenericSQL':
+            {
+                'Result': [],
+                'Query': 'select Name from city',
+                'InstanceName': 'sql_dialect_database'
+            }
+    }
+}
+
+
+def test_sql_queries_with_empty_table(mocker):
+    """Unit test
+    Given
+    - query that return an empty table
+    - raw response of the database
+    When
+    - mock the database result
+    Then
+    - convert the result to human readable table
+    - create the context
+    - validate the expected_result and the created context
+    """
+    mocker.patch.object(Client, '_create_engine_and_connect')
+    client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "")
+    mocker.patch.object(client.connection, 'execute', return_value=ConnectionMock())
+    result = sql_query_execute(client, args1)
+    assert empty_output == result[1]  # entry context is found in the 2nd place in the result of the command
