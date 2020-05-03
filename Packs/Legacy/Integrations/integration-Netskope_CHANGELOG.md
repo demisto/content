@@ -1,6 +1,5 @@
 ## [Unreleased]
--
-Fixed an issue when the last time of the fetch was not updated correctly.
+Fixed an issue where ***fetch-incidents*** command did not work as expected.
 
 ## [19.11.0] - 2019-11-12
 Added ability to fetch alerts as incidents.
