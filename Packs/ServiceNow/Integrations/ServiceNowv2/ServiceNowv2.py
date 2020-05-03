@@ -406,12 +406,25 @@ class Client(BaseClient):
 
     def send_request(self, path: str, method: str = 'GET', body: dict = None, params: dict = None,
                      headers: dict = None, file=None, sc_api: bool = False):
-        """
-        Generic request to ServiceNow.
+        """Generic request to ServiceNow.
+
+        Args:
+            path: API path
+            method: request method
+            body: request body
+            params: request params
+            headers: request headers
+            file: request  file
+            sc_api: Whether to send the request to the SC API
+
+        Returns:
+            response from API
         """
         body = body if body is not None else {}
         params = params if params is not None else {}
+        # if sc_api is set to true, then sending the request to the 'Service Catalog' instead of the 'now' API.
         url = f'{self._base_url}{path}' if not sc_api else f'{self._sc_server_url}{path}'
+
         if not headers:
             headers = {
                 'Accept': 'application/json',
@@ -697,7 +710,7 @@ class Client(BaseClient):
         return self.send_request(f'table/{table_name}?sysparm_limit=1', 'GET')
 
     def get_item_details(self, id_: str) -> dict:
-        """Get item details from service catalog by sending a GET request.
+        """Get item details from service catalog by sending a GET request to the Service Catalog API.
 
         Args:
         id_: item id
@@ -708,7 +721,7 @@ class Client(BaseClient):
         return self.send_request(f'servicecatalog/items/{id_}', 'GET', sc_api=True)
 
     def create_item_order(self, id_: str, quantity: str, variables: dict = {}) -> dict:
-        """Create item order in the service catalog by sending a POST request.
+        """Create item order in the service catalog by sending a POST request to the Service Catalog API.
 
         Args:
         id_: item id
