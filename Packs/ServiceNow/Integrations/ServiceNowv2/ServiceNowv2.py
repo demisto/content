@@ -617,6 +617,21 @@ class Client(BaseClient):
         return self.send_request('attachment/upload', 'POST', headers={'Accept': 'application/json'},
                                  body=body, file={'id': file_id, 'name': file_name})
 
+    def add_tag(self, ticket_id: str, tag_id: str, title: str, ticket_type: str) -> dict:
+        """Adds a tag to a ticket by sending a POST request.
+
+        Args:
+            ticket_id: ticket id
+            tag_id:  tag id
+            title: tag title
+            ticket_type: ticket type
+
+        Returns:
+            Response from API.
+        """
+        body = {'label': tag_id, 'table': ticket_type, 'table_key': ticket_id, 'title': title}
+        return self.send_request('/table/label_entry', 'POST', body=body)
+
     def query(self, table_name: str, sys_param_limit: str, sys_param_offset: str, sys_param_query: str,
               system_params: dict = {}) -> dict:
         """Query records by sending a GET request.
@@ -952,6 +967,43 @@ def upload_file_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bo
         'ServiceNow.Ticket(val.ID===obj.ID)': context,
         'Ticket(val.ID===obj.ID)': context
     }
+
+    return human_readable, entry_context, result, True
+
+
+def add_tag_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bool]:
+    """Add tag to a ticket.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    ticket_id = str(args.get('id', ''))
+    tag_id = str(args.get('tag_id', ''))
+    title = str(args.get('title', ''))
+    ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
+
+    result = client.add_tag(ticket_id, tag_id, title, ticket_type)
+    if not result or 'result' not in result:
+        raise Exception(f'Could not add tag {title} to ticket {ticket_id}.')
+
+    added_tag_resp = result.get('result', {})
+    hr_ = {
+        'Title': added_tag_resp.get('title'),
+        'Ticket ID': added_tag_resp.get('id_display'),
+        'Ticket Type': added_tag_resp.get('id_type'),
+        'Tag ID': added_tag_resp.get('sys_id'),
+    }
+    human_readable = tableToMarkdown(f'Tag {tag_id} was added successfully to ticket {ticket_id}.', t=hr_)
+    context = {
+        'ID': ticket_id,
+        'TagTitle': added_tag_resp.get('title'),
+        'TagID': added_tag_resp.get('sys_id'),
+    }
+    entry_context = {'ServiceNow.Ticket(val.ID===obj.ID)': context}
 
     return human_readable, entry_context, result, True
 
@@ -1568,6 +1620,7 @@ def main():
             'servicenow-add-link': add_link_command,
             'servicenow-add-comment': add_comment_command,
             'servicenow-upload-file': upload_file_command,
+            'servicenow-add-tag': add_tag_command,
             'servicenow-get-ticket-notes': get_ticket_notes_command,
             'servicenow-get-record': get_record_command,
             'servicenow-update-record': update_record_command,
