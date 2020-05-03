@@ -10,21 +10,28 @@ class ConnectionMock:
         return []
 
 
-args1 = {
+ARGS1 = {
     'query': "select Name from city",
     'limit': 5,
     'skip': 0
 }
 
-args2 = {
+ARGS2 = {
     'query': "select * from mysql.user",
     'limit': 1,
     'skip': 0
 }
 
-raw1 = [{'Name': 'Kabul'}, {'Name': 'Qandahar'}, {'Name': 'Herat'}, {'Name': 'Mazar-e-Sharif'}]
+ARGS3 = {
+    'query': "select Name from city where 1=2",
+    'limit': 5,
+    'skip': 0
+}
 
-raw2 = [{'Host': '%',
+
+RAW1 = [{'Name': 'Kabul'}, {'Name': 'Qandahar'}, {'Name': 'Herat'}, {'Name': 'Mazar-e-Sharif'}]
+
+RAW2 = [{'Host': '%',
          'User': 'admin',
          'Select_priv': 'Y',
          'Insert_priv': 'Y',
@@ -76,7 +83,7 @@ raw2 = [{'Host': '%',
          'Password_require_current': None,
          'User_attributes': None}]
 
-expected_output1 = {
+EXPECTED_OUTPUT1 = {
     'GenericSQL(val.Query && val.Query === obj.Query)':
         {'GenericSQL': {'Result': [{'Name': 'Kabul'},
                                    {'Name': 'Qandahar'},
@@ -86,7 +93,7 @@ expected_output1 = {
                         'InstanceName': 'sql_dialect_database'}}
 }
 
-expected_output2 = \
+EXPECTED_OUTPUT2 = \
     {'GenericSQL(val.Query && val.Query === obj.Query)': {'GenericSQL': {'Result': [{
         'Host': '%',
         'User': 'admin',
@@ -142,9 +149,9 @@ expected_output2 = \
     }], 'Query': 'select * from mysql.user',
         'InstanceName': 'sql_dialect_database'}}}
 
-header1 = ['Name']
+HEADER1 = ['Name']
 
-header2 = ['Host', 'User', 'Select_priv', 'Insert_priv', 'Update_priv', 'Delete_priv', 'Create_priv', 'Drop_priv',
+HEADER2 = ['Host', 'User', 'Select_priv', 'Insert_priv', 'Update_priv', 'Delete_priv', 'Create_priv', 'Drop_priv',
            'Reload_priv', 'Shutdown_priv', 'Process_priv', 'File_priv', 'Grant_priv', 'References_priv', 'Index_priv',
            'Alter_priv', 'Show_db_priv', 'Super_priv', 'Create_tmp_table_priv', 'Lock_tables_priv', 'Execute_priv',
            'Repl_slave_priv', 'Repl_client_priv', 'Create_view_priv', 'Show_view_priv', 'Create_routine_priv',
@@ -154,13 +161,24 @@ header2 = ['Host', 'User', 'Select_priv', 'Insert_priv', 'Update_priv', 'Delete_
            'password_lifetime', 'account_locked', 'Create_role_priv', 'Drop_role_priv', 'Password_reuse_history',
            'Password_reuse_time', 'Password_require_current', 'User_attributes']
 
+EMPTY_OUTPUT = {
+    'GenericSQL(val.Query && val.Query === obj.Query)': {
+        'GenericSQL':
+            {
+                'Result': [],
+                'Query': 'select Name from city where 1=2',
+                'InstanceName': 'sql_dialect_database'
+            }
+    }
+}
+
 
 @pytest.mark.parametrize('command, args, response, expected_result, header', [
     # Classic sql query, showing a table from database and convert it to readable data
-    (sql_query_execute, args1, raw1, expected_output1, header1),
+    (sql_query_execute, ARGS1, RAW1, EXPECTED_OUTPUT1, HEADER1),
     # Simulates an mysql default tables such as "user",
     # in previous bug the value- b'' couldn't be converted to a readable value and the query failed
-    (sql_query_execute, args2, raw2, expected_output2, header2),
+    (sql_query_execute, ARGS2, RAW2, EXPECTED_OUTPUT2, HEADER2),
 ])
 def test_sql_queries(command, args, response, expected_result, header, mocker):
     """Unit test
@@ -181,18 +199,6 @@ def test_sql_queries(command, args, response, expected_result, header, mocker):
     assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
 
 
-empty_output = {
-    'GenericSQL(val.Query && val.Query === obj.Query)': {
-        'GenericSQL':
-            {
-                'Result': [],
-                'Query': 'select Name from city',
-                'InstanceName': 'sql_dialect_database'
-            }
-    }
-}
-
-
 def test_sql_queries_with_empty_table(mocker):
     """Unit test
     Given
@@ -208,5 +214,5 @@ def test_sql_queries_with_empty_table(mocker):
     mocker.patch.object(Client, '_create_engine_and_connect')
     client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "")
     mocker.patch.object(client.connection, 'execute', return_value=ConnectionMock())
-    result = sql_query_execute(client, args1)
-    assert empty_output == result[1]  # entry context is found in the 2nd place in the result of the command
+    result = sql_query_execute(client, ARGS3)
+    assert EMPTY_OUTPUT == result[1]  # entry context is found in the 2nd place in the result of the command
