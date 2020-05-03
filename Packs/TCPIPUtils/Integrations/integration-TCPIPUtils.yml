@@ -91,6 +91,7 @@ script:
     # You can use demisto.params()[paramName] to get a specific params.
     # Params are of the type given in the integration page creation.
   type: python
+  subtype: python2
   commands:
   - name: ip
     arguments:

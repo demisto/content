@@ -13,7 +13,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: ""
+- display: Username
   name: credentials
   defaultvalue: ""
   type: 9

@@ -19,7 +19,7 @@ configuration:
   required: true
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "true"
+  defaultvalue: ""
   type: 8
   required: false
 script:
@@ -206,6 +206,7 @@ script:
     else:
         return_error('Unrecognized command: ' + demisto.command())
   type: python
+  subtype: python2
   commands:
   - name: zoom-create-user
     arguments:

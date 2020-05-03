@@ -1173,6 +1173,7 @@ script:
     else:
         return_error('Unrecognized command: ' + demisto.command())
   type: python
+  subtype: python2
   commands:
   - name: threat-grid-get-samples
     arguments:

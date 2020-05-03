@@ -30,17 +30,15 @@ configuration:
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "true"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Fetch incidents
   name: isFetch
-  defaultvalue: ""
   type: 8
   required: false
 - display: Incident type
   name: incidentType
-  defaultvalue: ""
   type: 13
   required: false
 script:
@@ -935,3 +933,5 @@ script:
     description: Cancels the job specified by the Job ID
   isfetch: true
 hidden: false
+tests:
+  - no test

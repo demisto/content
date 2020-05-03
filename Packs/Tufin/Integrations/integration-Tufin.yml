@@ -21,12 +21,12 @@ configuration:
   required: true
 - display: Trust any certificate (not secure)
   name: unsecure
-  defaultvalue: "true"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "false"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Maximum number of rules returned from device durring a policy search
@@ -304,6 +304,7 @@ script:
     except Exception as e:
         return_error(e)
   type: python
+  subtype: python3
   commands:
   - name: tufin-search-topology
     arguments:
