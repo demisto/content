@@ -329,7 +329,12 @@ jobs:
 
                 else
                   export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
+
+                  # filter environments created to just preGA
+                  echo "filter environments created to just preGA"
+                  echo '{"Server Master": false, "Demisto PreGA": true, "Demisto two before GA": false, "Demisto one before GA": false, "Demisto GA": false}' | tee ./Tests/filter_envs.json
                 fi
+                echo "IFRA_ENV_TYPE equals $IFRA_ENV_TYPE"
                 python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -outfile ./env_results.json
 
             else

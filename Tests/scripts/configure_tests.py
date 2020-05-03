@@ -4,7 +4,6 @@ This script is used to create a filter_file.txt file which will run only the nee
 """
 import re
 import os
-import re
 import sys
 import json
 import time
@@ -1044,10 +1043,10 @@ def create_test_file(is_nightly, skip_save=False):
         create_filter_envs_file(tests, two_before_ga, one_before_ga, ga, conf, id_set)
         # files_string = run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
 
-        with open('./Tests/ami_builds.json', 'r') as ami_builds:
-            # get two_before_ga version to check if tests are runnable on that env
-            two_before_ga = json.load(ami_builds).get('TwoBefore-GA', '0').split('-')[0]
-        tests = get_test_list(files_string, branch_name, two_before_ga)
+        # with open('./Tests/ami_builds.json', 'r') as ami_builds:
+        #     # get two_before_ga version to check if tests are runnable on that env
+        #     two_before_ga = json.load(ami_builds).get('TwoBefore-GA', '0').split('-')[0]
+        # tests = get_test_list(files_string, branch_name, two_before_ga)
 
         tests_string = '\n'.join(tests)
         if tests_string:
