@@ -17,6 +17,7 @@ TYPE_REGEX = r'Type: (.+)'
 CLASS_REGEX = r'Class: (.+)'
 COMMAND_REGEX = r'Command: (.+)'
 SNAME_REGEX = r'SNameString: (.+)'
+MESSAGE_CODE = r'Message Code: (.+)'
 
 
 class PCAP():
@@ -39,7 +40,6 @@ class PCAP():
         self.homemade_extracted = set([])
         self.last_layer = set([])
         self.kerb_data = set()
-        self.syslogs = []
         self.protocol_data: Dict[str, Any] = dict()
         self.extracted_protocols = extracted_protocols
         self.homemade_regex = homemade_regex
@@ -68,12 +68,30 @@ class PCAP():
             self.reg_class = re.compile(CLASS_REGEX)
         if 'SMB2' in extracted_protocols:
             self.reg_cmd = re.compile(COMMAND_REGEX)
-        if 'KERBEROS':
+        if 'KERBEROS' in extracted_protocols:
             self.reg_sname = re.compile(SNAME_REGEX)
+        if 'SSH' in extracted_protocols:
+            self.ssh_data = {'ClientProtocols': set(),
+                         'ServerProtocols': set(),
+                         'KeyExchangeMessageCode': set()
+                        }
+            self.reg_message_code = re.compile(MESSAGE_CODE)
         if homemade_regex:
             self.reg_homemade = re.compile(self.homemade_regex)
 
     def extract_context_from_packet(self, packet, is_reg_extract=False):
+        if 'DNS' in self.extracted_protocols:
+            dns_layer = packet.get_multiple_layers('dns')
+            if dns_layer:
+                temp_dns = {
+                    'ID': dns_layer[0].get('id'),
+                    'Request': dns_layer[0].get('qry_name'),
+                    'Response': dns_layer[0].get('a'),
+                    'Type': self.reg_type.findall(str(dns_layer[0]))[0] if self.reg_type.findall(
+                        str(dns_layer[0])) else None
+                }
+                add_to_data(self.protocol_data['DNS'], temp_dns)
+
         if 'KERBEROS' in self.extracted_protocols:
             kerb_layer = packet.get_multiple_layers('KERBEROS')
             if kerb_layer:
@@ -108,7 +126,13 @@ class PCAP():
         if 'SYSLOG' in self.extracted_protocols:
             syslog_layer = packet.get_multiple_layers('syslog')
             if syslog_layer:
-                self.syslogs.append(syslog_layer[0].get('msg'))
+                syslog_data = {
+                    'ID': syslog_layer[0].get('msgid'),
+                    'Message': syslog_layer[0].get('msg'),
+                    'Hostname': syslog_layer[0].get('hostname'),
+                    'Timestamp': syslog_layer[0].get('timestamp')
+                }
+                add_to_data(self.protocol_data['SYSLOG'], syslog_data)
 
         if 'SMTP' in self.extracted_protocols:
             imf_layer = packet.get_multiple_layers('imf')
@@ -157,6 +181,21 @@ class PCAP():
                 if type_results:
                     self.icmp_data.add(type_results[0])
 
+        if 'SSH' in self.extracted_protocols:
+            ssh_layer = packet.get_multiple_layers('ssh')
+            if ssh_layer:
+                protocol = ssh_layer[0].get('protocol')
+                message_code_results = self.reg_message_code.findall(str(ssh_layer[0]))
+                if protocol and ssh_layer[0].get('direction') == 1:
+                    # direction is server to client
+                    self.ssh_data['ServerProtocols'].add(protocol)
+                if protocol and ssh_layer[0].get('direction') == 0:
+                    # direction is client to server
+                    self.ssh_data['ClientProtocols'].add(protocol)
+                if message_code_results:
+                    self.ssh_data['KeyExchangeMessageCode'].add(message_code_results[0])
+
+
         if is_reg_extract:
             self.ips_extracted.update(self.reg_ip.findall(str(packet)))
             self.emails_extracted.update(self.reg_email.findall(str(packet)))
@@ -166,6 +205,8 @@ class PCAP():
             self.homemade_extracted.update(self.reg_homemade.findall((str(packet))))
 
     def get_outputs(self, entry_id, conversation_number_to_display=15, is_flows=False, is_reg_extract=False):
+        if self.num_of_packets == 0:
+            return "## No packets found.\nTry changing the filter, if applied.", {}, {}
         md = f'## PCAP Info:\n' \
             f'Between {formatEpochDate(self.min_time)} and {formatEpochDate(self.max_time)} ' \
             f'there were {self.num_of_packets} ' \
@@ -196,6 +237,10 @@ class PCAP():
             general_context['ICMP'] = list(self.icmp_data)
         if 'KERBEROS' in self.extracted_protocols:
             general_context['KERBEROS'] = list(self.kerb_data)
+        if 'SSH' in self.extracted_protocols:
+            general_context['SSH'] = dict()
+            for key in self.ssh_data.keys():
+                general_context['SSH'][key] = list(self.ssh_data[key])
         if is_flows:
             general_context['Flow'] = flows_to_ec(self.flows)
         if is_reg_extract:
@@ -205,17 +250,18 @@ class PCAP():
         if self.homemade_regex:
             general_context['Regex'] = list(self.homemade_extracted)
         ec = {'PcapResults(val.EntryID == obj.EntryID)': general_context}
-        return (md, ec, general_context)
+        return md, ec, general_context
 
     def mine(self, file_path, decrypt_key, is_flows, is_reg_extract, pcap_filter, pcap_filter_new_file_path):
         try:
             cap = pyshark.FileCapture(file_path, display_filter=pcap_filter, output_file=pcap_filter_new_file_path,
-                                      decryption_key=decrypt_key, encryption_type='WPA-PWD')
+                                      decryption_key=decrypt_key, encryption_type='WPA-PWD', keep_packets=False)
+
             j = 0
             for packet in cap:
-                # j += 1
-                # if (j % 100 == 0):
-                #     print(j)
+                j += 1
+                if (j % 100 == 0):
+                    print(j)
                 self.last_layer.add(packet.layers[-1].layer_name)
 
                 layers = str(packet.layers)
@@ -248,19 +294,6 @@ class PCAP():
                     udp_streams = max(int(udp[0].get('stream', 0)), self.udp_streams)
                     src_port = int(udp[0].get('srcport', 0))
                     dest_port = int(udp[0].get('dstport', 0))
-
-                # extract DNS layer
-                if 'DNS' in self.extracted_protocols:
-                    dns_layer = packet.get_multiple_layers('dns')
-                    if dns_layer:
-                        temp_dns = {
-                            'ID': dns_layer[0].get('id'),
-                            'Request': dns_layer[0].get('qry_name'),
-                            'Response': dns_layer[0].get('a'),
-                            'Type': self.reg_type.findall(str(dns_layer[0]))[0] if self.reg_type.findall(
-                                str(dns_layer[0])) else None
-                        }
-                        add_to_data(self.protocol_data['DNS'], temp_dns)
 
                 # add conversations
                 ip_layer = packet.get_multiple_layers('ip')
@@ -329,7 +362,8 @@ class PCAP():
             self.udp_streams += 1
 
         except pyshark.capture.capture.TSharkCrashException:
-            raise ValueError("Filter could not be applied to file. Please make sure it is of correct syntax.")
+            raise ValueError("Could not find packets. Make sure that the file is a .cap/.pcap/.pcapng file "
+                             "or that filter is of the correct syntax.")
 
         except Exception as error:
             print(str(error))
@@ -532,9 +566,10 @@ def local_main():  # TODO remove this function
     # file_path = "/Users/olichter/Downloads/nb6-hotspot.pcap"                #syslog
     # file_path = "/Users/olichter/Downloads/wpa-Induction.pcap"               #wpa - Password is Induction
     # file_path = "/Users/olichter/Downloads/iseries.cap"
-    # file_path = "/Users/olichter/Downloads/2019-12-03-traffic-analysis-exercise.pcap"  # 1 min
-    file_path = "/Users/olichter/Downloads/smb-on-windows-10.pcapng"  # ran for 2.906 secs
+    #file_path = "/Users/olichter/Downloads/2019-12-03-traffic-analysis-exercise.pcap"  # 1 min
+    # file_path = "/Users/olichter/Downloads/smb-on-windows-10.pcapng"  # ran for 2.906 secs
     # file_path = "/Users/olichter/Downloads/telnet-cooked.pcap"
+    file_path = "/Users/olichter/Downloads/SSHv2.cap"                        #SSH
 
     # PC Script
     entry_id = ''
@@ -543,9 +578,9 @@ def local_main():  # TODO remove this function
     conversation_number_to_display = 15
     is_flows = True
     is_reg_extract = True
-    extracted_protocols = ['SMTP', 'DNS', 'HTTP', 'SMB2', 'NETBIOS', 'ICMP', 'KERBEROS', 'SYSLOG', 'TELNET']
+    extracted_protocols = ['SMTP', 'DNS', 'HTTP', 'SMB2', 'NETBIOS', 'ICMP', 'KERBEROS', 'SYSLOG', 'SSH']
 
-    pcap_filter = 'smb2'
+    pcap_filter = ''
     # pcap_filter_new_file_name = ''  # '/Users/olichter/Downloads/try.pcap'
     homemade_regex = ''  # 'Layer (.+):'
     pcap_filter_new_file_path = ''
@@ -557,11 +592,11 @@ def local_main():  # TODO remove this function
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
-    # from datetime import datetime
+    from datetime import datetime
 
-    # startTime = datetime.now()
+    startTime = datetime.now()
     local_main()
-    # print(datetime.now() - startTime)
+    print(datetime.now() - startTime)
     # print(timeit.timeit(local_main), number=1)
 
 # TODO: fix todos
