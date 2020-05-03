@@ -87,57 +87,57 @@ script:
       type: string
     - contextPath: DBotScore.Vendor
       type: string
-    - contextPath: 'apivoid.IP.anonymity.is_hosting '
+    - contextPath: APIVoid.IP.anonymity.is_hosting
       type: boolean
-    - contextPath: apivoid.IP.anonymity.is_proxy
+    - contextPath: APIVoid.IP.anonymity.is_proxy
       type: boolean
-    - contextPath: apivoid.IP.anonymity.is_tor
+    - contextPath: APIVoid.IP.anonymity.is_tor
       type: boolean
-    - contextPath: apivoid.IP.anonymity.is_vpn
+    - contextPath: APIVoid.IP.anonymity.is_vpn
       type: boolean
-    - contextPath: apivoid.IP.anonymity.is_webproxy
+    - contextPath: APIVoid.IP.anonymity.is_webproxy
       type: boolean
-    - contextPath: apivoid.IP.blacklists.detection_rate
+    - contextPath: APIVoid.IP.blacklists.detection_rate
       type: string
-    - contextPath: apivoid.IP.blacklists.detections
+    - contextPath: APIVoid.IP.blacklists.detections
       type: number
-    - contextPath: apivoid.IP.blacklists.engines.detected
+    - contextPath: APIVoid.IP.blacklists.engines.detected
       type: boolean
-    - contextPath: apivoid.IP.blacklists.engines.elapsed
+    - contextPath: APIVoid.IP.blacklists.engines.elapsed
       type: string
-    - contextPath: apivoid.IP.blacklists.engines.engine
+    - contextPath: APIVoid.IP.blacklists.engines.engine
       type: string
-    - contextPath: apivoid.IP.blacklists.engines.reference
+    - contextPath: APIVoid.IP.blacklists.engines.reference
       type: string
-    - contextPath: apivoid.IP.blacklists.engines_count
+    - contextPath: APIVoid.IP.blacklists.engines_count
       type: number
-    - contextPath: apivoid.IP.blacklists.scantime
+    - contextPath: APIVoid.IP.blacklists.scantime
       type: string
-    - contextPath: apivoid.IP.information.isp
+    - contextPath: APIVoid.IP.information.isp
       type: string
-    - contextPath: apivoid.IP.information.latitude
+    - contextPath: APIVoid.IP.information.latitude
       type: string
-    - contextPath: apivoid.IP.information.reverse_dns
+    - contextPath: APIVoid.IP.information.reverse_dns
       type: string
-    - contextPath: apivoid.IP.information.longitude
+    - contextPath: APIVoid.IP.information.longitude
       type: string
-    - contextPath: apivoid.IP.information.country_calling_code
+    - contextPath: APIVoid.IP.information.country_calling_code
       type: string
-    - contextPath: apivoid.IP.information.country_name
+    - contextPath: APIVoid.IP.information.country_name
       type: string
-    - contextPath: apivoid.IP.information.region_name
+    - contextPath: APIVoid.IP.information.region_name
       type: string
-    - contextPath: apivoid.IP.information.country_code
+    - contextPath: APIVoid.IP.information.country_code
       type: string
-    - contextPath: apivoid.IP.information.continent_name
+    - contextPath: APIVoid.IP.information.continent_name
       type: string
-    - contextPath: apivoid.IP.information.continent_code
+    - contextPath: APIVoid.IP.information.continent_code
       type: string
-    - contextPath: apivoid.IP.information.country_currency
+    - contextPath: APIVoid.IP.information.country_currency
       type: string
-    - contextPath: apivoid.IP.information.city_name
+    - contextPath: APIVoid.IP.information.city_name
       type: string
-    - contextPath: apivoid.IP.ip
+    - contextPath: APIVoid.IP.ip
       type: string
     description: Returns the reputation and extended context of the IP address.
   - name: apivoid-domain
@@ -164,65 +164,65 @@ script:
       type: string
     - contextPath: DBotScore.Vendor
       type: string
-    - contextPath: apivoid.Domain.alexa_top_100k
+    - contextPath: APIVoid.Domain.alexa_top_100k
       type: boolean
-    - contextPath: apivoid.Domain.domain_length
+    - contextPath: APIVoid.Domain.domain_length
       type: number
-    - contextPath: apivoid.Domain.server.isp
+    - contextPath: APIVoid.Domain.server.isp
       type: string
-    - contextPath: apivoid.Domain.server.ip
+    - contextPath: APIVoid.Domain.server.ip
       type: string
-    - contextPath: apivoid.Domain.server.latitude
+    - contextPath: APIVoid.Domain.server.latitude
       type: string
-    - contextPath: apivoid.Domain.server.reverse_dns
+    - contextPath: APIVoid.Domain.server.reverse_dns
       type: string
-    - contextPath: apivoid.Domain.server.longitude
+    - contextPath: APIVoid.Domain.server.longitude
       type: string
-    - contextPath: apivoid.Domain.server.country_name
+    - contextPath: APIVoid.Domain.server.country_name
       type: string
-    - contextPath: apivoid.Domain.server.region_name
+    - contextPath: APIVoid.Domain.server.region_name
       type: string
-    - contextPath: apivoid.Domain.server.country_code
+    - contextPath: APIVoid.Domain.server.country_code
       type: string
-    - contextPath: apivoid.Domain.server.continent_name
+    - contextPath: APIVoid.Domain.server.continent_name
       type: string
-    - contextPath: apivoid.Domain.server.continent_code
+    - contextPath: APIVoid.Domain.server.continent_code
       type: string
-    - contextPath: apivoid.Domain.server.city_name
+    - contextPath: APIVoid.Domain.server.city_name
       type: string
-    - contextPath: apivoid.Domain.alexa_top_250k
+    - contextPath: APIVoid.Domain.alexa_top_250k
       type: boolean
-    - contextPath: apivoid.Domain.alexa_top_10k
+    - contextPath: APIVoid.Domain.alexa_top_10k
       type: boolean
-    - contextPath: apivoid.Domain.most_abused_tld
+    - contextPath: APIVoid.Domain.most_abused_tld
       type: boolean
-    - contextPath: apivoid.Domain.host
+    - contextPath: APIVoid.Domain.host
       type: string
-    - contextPath: apivoid.Domain.blacklists.detection_rate
+    - contextPath: APIVoid.Domain.blacklists.detection_rate
       type: string
-    - contextPath: apivoid.Domain.blacklists.detections
+    - contextPath: APIVoid.Domain.blacklists.detections
       type: number
-    - contextPath: apivoid.Domain.blacklists.engines.confidence
+    - contextPath: APIVoid.Domain.blacklists.engines.confidence
       type: string
-    - contextPath: apivoid.Domain.blacklists.engines.detected
+    - contextPath: APIVoid.Domain.blacklists.engines.detected
       type: boolean
-    - contextPath: apivoid.Domain.blacklists.engines.elapsed
+    - contextPath: APIVoid.Domain.blacklists.engines.elapsed
       type: string
-    - contextPath: apivoid.Domain.blacklists.engines.engine
+    - contextPath: APIVoid.Domain.blacklists.engines.engine
       type: string
-    - contextPath: apivoid.Domain.blacklists.engines.reference
+    - contextPath: APIVoid.Domain.blacklists.engines.reference
       type: string
-    - contextPath: apivoid.Domain.blacklists.engines_count
+    - contextPath: APIVoid.Domain.blacklists.engines_count
       type: number
-    - contextPath: apivoid.Domain.blacklists.scantime
+    - contextPath: APIVoid.Domain.blacklists.scantime
       type: string
-    - contextPath: apivoid.Domain.category.is_anonymizer
+    - contextPath: APIVoid.Domain.category.is_anonymizer
       type: boolean
-    - contextPath: apivoid.Domain.category.is_free_dynamic_dns
+    - contextPath: APIVoid.Domain.category.is_free_dynamic_dns
       type: boolean
-    - contextPath: apivoid.Domain.category.is_free_hosting
+    - contextPath: APIVoid.Domain.category.is_free_hosting
       type: boolean
-    - contextPath: apivoid.Domain.category.is_url_shortener
+    - contextPath: APIVoid.Domain.category.is_url_shortener
       type: boolean
     description: Returns the reputation of the domain.
   - name: apivoid-url
@@ -247,209 +247,209 @@ script:
       type: string
     - contextPath: DBotScore.Vendor
       type: string
-    - contextPath: apivoid.URL.risk_score.result
+    - contextPath: APIVoid.URL.risk_score.result
       type: number
-    - contextPath: apivoid.URL.domain_blacklist.detections
+    - contextPath: APIVoid.URL.domain_blacklist.detections
       type: number
-    - contextPath: apivoid.URL.domain_blacklist.engines.detected
+    - contextPath: APIVoid.URL.domain_blacklist.engines.detected
       type: boolean
-    - contextPath: apivoid.URL.domain_blacklist.engines.name
+    - contextPath: APIVoid.URL.domain_blacklist.engines.name
       type: string
-    - contextPath: apivoid.URL.domain_blacklist.engines.reference
+    - contextPath: APIVoid.URL.domain_blacklist.engines.reference
       type: string
-    - contextPath: apivoid.URL.geo_location.countries
+    - contextPath: APIVoid.URL.geo_location.countries
       type: string
-    - contextPath: apivoid.URL.server_details.isp
+    - contextPath: APIVoid.URL.server_details.isp
       type: string
-    - contextPath: apivoid.URL.server_details.ip
+    - contextPath: APIVoid.URL.server_details.ip
       type: string
-    - contextPath: apivoid.URL.server_details.latitude
+    - contextPath: APIVoid.URL.server_details.latitude
       type: string
-    - contextPath: apivoid.URL.server_details.longitude
+    - contextPath: APIVoid.URL.server_details.longitude
       type: string
-    - contextPath: apivoid.URL.server_details.hostname
+    - contextPath: APIVoid.URL.server_details.hostname
       type: string
-    - contextPath: apivoid.URL.server_details.country_name
+    - contextPath: APIVoid.URL.server_details.country_name
       type: string
-    - contextPath: apivoid.URL.server_details.region_name
+    - contextPath: APIVoid.URL.server_details.region_name
       type: string
-    - contextPath: apivoid.URL.server_details.country_code
+    - contextPath: APIVoid.URL.server_details.country_code
       type: string
-    - contextPath: apivoid.URL.server_details.continent_name
+    - contextPath: APIVoid.URL.server_details.continent_name
       type: string
-    - contextPath: apivoid.URL.server_details.continent_code
+    - contextPath: APIVoid.URL.server_details.continent_code
       type: string
-    - contextPath: apivoid.URL.server_details.city_name
+    - contextPath: APIVoid.URL.server_details.city_name
       type: string
-    - contextPath: apivoid.URL.response_headers.server
+    - contextPath: APIVoid.URL.response_headers.server
       type: string
-    - contextPath: apivoid.URL.response_headers.code
+    - contextPath: APIVoid.URL.response_headers.code
       type: number
-    - contextPath: apivoid.URL.response_headers.content-type
+    - contextPath: APIVoid.URL.response_headers.content-type
       type: string
-    - contextPath: apivoid.URL.response_headers.date
+    - contextPath: APIVoid.URL.response_headers.date
       type: date
-    - contextPath: apivoid.URL.response_headers.cache-control
+    - contextPath: APIVoid.URL.response_headers.cache-control
       type: string
-    - contextPath: apivoid.URL.response_headers.host-header
+    - contextPath: APIVoid.URL.response_headers.host-header
       type: string
-    - contextPath: apivoid.URL.response_headers.status
+    - contextPath: APIVoid.URL.response_headers.status
       type: string
-    - contextPath: apivoid.URL.response_headers.x-redirect-by
+    - contextPath: APIVoid.URL.response_headers.x-redirect-by
       type: string
-    - contextPath: apivoid.URL.response_headers.expires
+    - contextPath: APIVoid.URL.response_headers.expires
       type: date
-    - contextPath: apivoid.URL.response_headers.location
+    - contextPath: APIVoid.URL.response_headers.location
       type: string
-    - contextPath: apivoid.URL.response_headers.content-length
+    - contextPath: APIVoid.URL.response_headers.content-length
       type: string
-    - contextPath: apivoid.URL.response_headers.upgrade
+    - contextPath: APIVoid.URL.response_headers.upgrade
       type: string
-    - contextPath: apivoid.URL.response_headers.connection
+    - contextPath: APIVoid.URL.response_headers.connection
       type: string
-    - contextPath: apivoid.URL.security_checks.is_windows_exe_file_on_ipv4
+    - contextPath: APIVoid.URL.security_checks.is_windows_exe_file_on_ipv4
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_credit_card_form
+    - contextPath: APIVoid.URL.security_checks.is_credit_card_form
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_windows_exe_file_on_free_hosting
+    - contextPath: APIVoid.URL.security_checks.is_windows_exe_file_on_free_hosting
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_linux_elf_file_on_ipv4
+    - contextPath: APIVoid.URL.security_checks.is_linux_elf_file_on_ipv4
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_linux_elf_file_on_free_hosting
+    - contextPath: APIVoid.URL.security_checks.is_linux_elf_file_on_free_hosting
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_masked_windows_exe_file
+    - contextPath: APIVoid.URL.security_checks.is_masked_windows_exe_file
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_zip_on_directory_listing
+    - contextPath: APIVoid.URL.security_checks.is_zip_on_directory_listing
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_masked_linux_elf_file
+    - contextPath: APIVoid.URL.security_checks.is_masked_linux_elf_file
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_sinkholed_domain
+    - contextPath: APIVoid.URL.security_checks.is_sinkholed_domain
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_suspended_page
+    - contextPath: APIVoid.URL.security_checks.is_suspended_page
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_suspicious_file_extension
+    - contextPath: APIVoid.URL.security_checks.is_suspicious_file_extension
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_uncommon_clickable_url
+    - contextPath: APIVoid.URL.security_checks.is_uncommon_clickable_url
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_suspicious_content
+    - contextPath: APIVoid.URL.security_checks.is_suspicious_content
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_risky_geo_location
+    - contextPath: APIVoid.URL.security_checks.is_risky_geo_location
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_php_on_directory_listing
+    - contextPath: APIVoid.URL.security_checks.is_php_on_directory_listing
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_doc_on_directory_listing
+    - contextPath: APIVoid.URL.security_checks.is_doc_on_directory_listing
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_doc_on_directory_listing
+    - contextPath: APIVoid.URL.security_checks.is_doc_on_directory_listing
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_empty_page_title
+    - contextPath: APIVoid.URL.security_checks.is_empty_page_title
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_login_form
+    - contextPath: APIVoid.URL.security_checks.is_login_form
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_robots_noindex
+    - contextPath: APIVoid.URL.security_checks.is_robots_noindex
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_suspicious_domain
+    - contextPath: APIVoid.URL.security_checks.is_suspicious_domain
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_windows_exe_file_on_free_dynamic_dns
+    - contextPath: APIVoid.URL.security_checks.is_windows_exe_file_on_free_dynamic_dns
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_most_abused_tld
+    - contextPath: APIVoid.URL.security_checks.is_most_abused_tld
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_linux_elf_file_on_free_dynamic_dns
+    - contextPath: APIVoid.URL.security_checks.is_linux_elf_file_on_free_dynamic_dns
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_suspicious_url_pattern
+    - contextPath: APIVoid.URL.security_checks.is_suspicious_url_pattern
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_valid_https
+    - contextPath: APIVoid.URL.security_checks.is_valid_https
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_exe_on_directory_listing
+    - contextPath: APIVoid.URL.security_checks.is_exe_on_directory_listing
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_pdf_on_directory_listing
+    - contextPath: APIVoid.URL.security_checks.is_pdf_on_directory_listing
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_host_an_ipv4
+    - contextPath: APIVoid.URL.security_checks.is_host_an_ipv4
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_domain_blacklisted
+    - contextPath: APIVoid.URL.security_checks.is_domain_blacklisted
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_china_country
+    - contextPath: APIVoid.URL.security_checks.is_china_country
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_windows_exe_file
+    - contextPath: APIVoid.URL.security_checks.is_windows_exe_file
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_masked_file
+    - contextPath: APIVoid.URL.security_checks.is_masked_file
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_email_address_on_url_query
+    - contextPath: APIVoid.URL.security_checks.is_email_address_on_url_query
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_phishing_heuristic
+    - contextPath: APIVoid.URL.security_checks.is_phishing_heuristic
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_non_standard_port
+    - contextPath: APIVoid.URL.security_checks.is_non_standard_port
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_linux_elf_file
+    - contextPath: APIVoid.URL.security_checks.is_linux_elf_file
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_defaced_heuristic
+    - contextPath: APIVoid.URL.security_checks.is_defaced_heuristic
       type: boolean
-    - contextPath: apivoid.URL.security_checks.is_directory_listing
+    - contextPath: APIVoid.URL.security_checks.is_directory_listing
       type: boolean
-    - contextPath: apivoid.URL.dns_records.mx.records.country_code
+    - contextPath: APIVoid.URL.dns_records.mx.records.country_code
       type: string
-    - contextPath: apivoid.URL.dns_records.ns.records.country_name
+    - contextPath: APIVoid.URL.dns_records.ns.records.country_name
       type: string
-    - contextPath: apivoid.URL.dns_records.ns.records.ip
+    - contextPath: APIVoid.URL.dns_records.ns.records.ip
       type: string
-    - contextPath: apivoid.URL.dns_records.ns.records.isp
+    - contextPath: APIVoid.URL.dns_records.ns.records.isp
       type: string
-    - contextPath: apivoid.URL.dns_records.ns.records.target
+    - contextPath: APIVoid.URL.dns_records.ns.records.target
       type: string
-    - contextPath: apivoid.URL.redirection.external
+    - contextPath: APIVoid.URL.redirection.external
       type: boolean
-    - contextPath: apivoid.URL.redirection.found
+    - contextPath: APIVoid.URL.redirection.found
       type: boolean
-    - contextPath: apivoid.URL.redirection.url
+    - contextPath: APIVoid.URL.redirection.url
       type: string
-    - contextPath: apivoid.URL.url
+    - contextPath: APIVoid.URL.url
       type: string
-    - contextPath: apivoid.URL.url_parts.host
+    - contextPath: APIVoid.URL.url_parts.host
       type: string
-    - contextPath: apivoid.URL.url_parts.host_nowww
+    - contextPath: APIVoid.URL.url_parts.host_nowww
       type: string
-    - contextPath: apivoid.URL.url_parts.path
+    - contextPath: APIVoid.URL.url_parts.path
       type: string
-    - contextPath: apivoid.URL.url_parts.port
+    - contextPath: APIVoid.URL.url_parts.port
       type: number
-    - contextPath: apivoid.URL.url_parts.query
+    - contextPath: APIVoid.URL.url_parts.query
       type: string
-    - contextPath: apivoid.URL.url_parts.scheme
+    - contextPath: APIVoid.URL.url_parts.scheme
       type: string
-    - contextPath: apivoid.URL.site_category.is_anonymizer
+    - contextPath: APIVoid.URL.site_category.is_anonymizer
       type: boolean
-    - contextPath: apivoid.URL.site_category.is_free_dynamic_dns
+    - contextPath: APIVoid.URL.site_category.is_free_dynamic_dns
       type: boolean
-    - contextPath: apivoid.URL.site_category.is_free_hosting
+    - contextPath: APIVoid.URL.site_category.is_free_hosting
       type: boolean
-    - contextPath: apivoid.URL.site_category.is_torrent
+    - contextPath: APIVoid.URL.site_category.is_torrent
       type: boolean
-    - contextPath: apivoid.URL.site_category.is_url_shortener
+    - contextPath: APIVoid.URL.site_category.is_url_shortener
       type: boolean
-    - contextPath: apivoid.URL.site_category.is_vpn_provider
+    - contextPath: APIVoid.URL.site_category.is_vpn_provider
       type: boolean
-    - contextPath: apivoid.URL.web_page.description
+    - contextPath: APIVoid.URL.web_page.description
       type: string
-    - contextPath: apivoid.URL.web_page.keywords
+    - contextPath: APIVoid.URL.web_page.keywords
       type: string
-    - contextPath: apivoid.URL.web_page.title
+    - contextPath: APIVoid.URL.web_page.title
       type: string
-    - contextPath: apivoid.URL.html_forms.credit_card_field_present
+    - contextPath: APIVoid.URL.html_forms.credit_card_field_present
       type: boolean
-    - contextPath: apivoid.URL.html_forms.email_field_present
+    - contextPath: APIVoid.URL.html_forms.email_field_present
       type: boolean
-    - contextPath: apivoid.URL.html_forms.number_of_total_forms
+    - contextPath: APIVoid.URL.html_forms.number_of_total_forms
       type: number
-    - contextPath: apivoid.URL.html_forms.number_of_total_input_fields
+    - contextPath: APIVoid.URL.html_forms.number_of_total_input_fields
       type: number
-    - contextPath: apivoid.URL.html_forms.password_field_present
+    - contextPath: APIVoid.URL.html_forms.password_field_present
       type: boolean
-    - contextPath: apivoid.URL.html_forms.two_text_inputs_in_a_form
+    - contextPath: APIVoid.URL.html_forms.two_text_inputs_in_a_form
       type: boolean
-    - contextPath: apivoid.URL.file_type.extension
+    - contextPath: APIVoid.URL.file_type.extension
       type: string
-    - contextPath: apivoid.URL.file_type.headers
+    - contextPath: APIVoid.URL.file_type.headers
       type: string
-    - contextPath: apivoid.URL.file_type.signature
+    - contextPath: APIVoid.URL.file_type.signature
       type: string
     description: Returns the reputation of the URL.
   - name: ip
@@ -567,54 +567,54 @@ script:
       description: The DNS record type to look up.
       defaultValue: A
     outputs:
-    - contextPath: apivoid.DNS
-    - contextPath: apivoid.DNS.items.host
+    - contextPath: APIVoid.DNS
+    - contextPath: APIVoid.DNS.items.host
       type: string
-    - contextPath: apivoid.DNS.items.class
+    - contextPath: APIVoid.DNS.items.class
       type: string
-    - contextPath: apivoid.DNS.items.ttl
+    - contextPath: APIVoid.DNS.items.ttl
       type: number
-    - contextPath: apivoid.DNS.items.type
+    - contextPath: APIVoid.DNS.items.type
       type: string
-    - contextPath: apivoid.DNS.items.ip
+    - contextPath: APIVoid.DNS.items.ip
       type: string
-    - contextPath: apivoid.DNS.found
+    - contextPath: APIVoid.DNS.found
       type: boolean
-    - contextPath: apivoid.DNS.count
+    - contextPath: APIVoid.DNS.count
       type: number
-    - contextPath: apivoid.DNS.items.ipv6
+    - contextPath: APIVoid.DNS.items.ipv6
       type: string
-    - contextPath: apivoid.DNS.items.pri
+    - contextPath: APIVoid.DNS.items.pri
       type: number
-    - contextPath: apivoid.DNS.items.target
+    - contextPath: APIVoid.DNS.items.target
       type: string
-    - contextPath: apivoid.DNS.items.txt
+    - contextPath: APIVoid.DNS.items.txt
       type: string
-    - contextPath: apivoid.DNS.items.entries
+    - contextPath: APIVoid.DNS.items.entries
       type: unknown
-    - contextPath: apivoid.DNS.items.mname
+    - contextPath: APIVoid.DNS.items.mname
       type: string
-    - contextPath: apivoid.DNS.items.rname
+    - contextPath: APIVoid.DNS.items.rname
       type: string
-    - contextPath: apivoid.DNS.items.serial
+    - contextPath: APIVoid.DNS.items.serial
       type: number
-    - contextPath: apivoid.DNS.items.refresh
+    - contextPath: APIVoid.DNS.items.refresh
       type: number
-    - contextPath: apivoid.DNS.items.retry
+    - contextPath: APIVoid.DNS.items.retry
       type: number
-    - contextPath: apivoid.DNS.items.expire
+    - contextPath: APIVoid.DNS.items.expire
       type: number
-    - contextPath: apivoid.DNS.items.minimum-ttl
+    - contextPath: APIVoid.DNS.items.minimum-ttl
       type: number
-    - contextPath: apivoid.DNS.items.weight
+    - contextPath: APIVoid.DNS.items.weight
       type: number
-    - contextPath: apivoid.DNS.items.port
+    - contextPath: APIVoid.DNS.items.port
       type: number
-    - contextPath: apivoid.DNS.items.flags
+    - contextPath: APIVoid.DNS.items.flags
       type: number
-    - contextPath: apivoid.DNS.items.tag
+    - contextPath: APIVoid.DNS.items.tag
       type: string
-    - contextPath: apivoid.DNS.items.value
+    - contextPath: APIVoid.DNS.items.value
       type: string
     description: Gets DNS records of a host.
   - name: apivoid-ssl-info
@@ -623,102 +623,102 @@ script:
       required: true
       description: Host to look up SSL.
     outputs:
-    - contextPath: apivoid.SSL
-    - contextPath: apivoid.SSL.found
+    - contextPath: APIVoid.SSL
+    - contextPath: APIVoid.SSL.found
       type: boolean
-    - contextPath: apivoid.SSL.fingerprint
+    - contextPath: APIVoid.SSL.fingerprint
       type: string
-    - contextPath: apivoid.SSL.deprecated_issuer
+    - contextPath: APIVoid.SSL.deprecated_issuer
       type: boolean
-    - contextPath: apivoid.SSL.expired
+    - contextPath: APIVoid.SSL.expired
       type: boolean
-    - contextPath: apivoid.SSL.valid_peer
+    - contextPath: APIVoid.SSL.valid_peer
       type: boolean
-    - contextPath: apivoid.SSL.host
+    - contextPath: APIVoid.SSL.host
       type: string
-    - contextPath: apivoid.SSL.name_match
+    - contextPath: APIVoid.SSL.name_match
       type: boolean
-    - contextPath: apivoid.SSL.debug_message
+    - contextPath: APIVoid.SSL.debug_message
       type: string
-    - contextPath: apivoid.SSL.blacklisted
+    - contextPath: APIVoid.SSL.blacklisted
       type: boolean
-    - contextPath: apivoid.SSL.valid
+    - contextPath: APIVoid.SSL.valid
       type: boolean
-    - contextPath: apivoid.SSL.details
-    - contextPath: apivoid.SSL.details.extensions
-    - contextPath: apivoid.SSL.details.extensions.authority_info_access
+    - contextPath: APIVoid.SSL.details
+    - contextPath: APIVoid.SSL.details.extensions
+    - contextPath: APIVoid.SSL.details.extensions.authority_info_access
       type: string
-    - contextPath: apivoid.SSL.details.extensions.authority_key_identifier
+    - contextPath: APIVoid.SSL.details.extensions.authority_key_identifier
       type: string
-    - contextPath: apivoid.SSL.details.extensions.basic_constraints
+    - contextPath: APIVoid.SSL.details.extensions.basic_constraints
       type: string
-    - contextPath: apivoid.SSL.details.extensions.certificate_policies
+    - contextPath: APIVoid.SSL.details.extensions.certificate_policies
       type: string
-    - contextPath: apivoid.SSL.details.extensions.crl_distribution_points
+    - contextPath: APIVoid.SSL.details.extensions.crl_distribution_points
       type: string
-    - contextPath: apivoid.SSL.details.extensions.extended_key_usage
+    - contextPath: APIVoid.SSL.details.extensions.extended_key_usage
       type: string
-    - contextPath: apivoid.SSL.details.extensions.key_usage
+    - contextPath: APIVoid.SSL.details.extensions.key_usage
       type: string
-    - contextPath: apivoid.SSL.details.extensions.subject_key_identifier
+    - contextPath: APIVoid.SSL.details.extensions.subject_key_identifier
       type: string
-    - contextPath: apivoid.SSL.details.hash
+    - contextPath: APIVoid.SSL.details.hash
       type: string
-    - contextPath: apivoid.SSL.details.issuer
-    - contextPath: apivoid.SSL.details.issuer.common_name
+    - contextPath: APIVoid.SSL.details.issuer
+    - contextPath: APIVoid.SSL.details.issuer.common_name
       type: string
-    - contextPath: apivoid.SSL.details.issuer.country
+    - contextPath: APIVoid.SSL.details.issuer.country
       type: string
-    - contextPath: apivoid.SSL.details.issuer.location
+    - contextPath: APIVoid.SSL.details.issuer.location
       type: string
-    - contextPath: apivoid.SSL.details.issuer.organization
+    - contextPath: APIVoid.SSL.details.issuer.organization
       type: string
-    - contextPath: apivoid.SSL.details.issuer.organization_unit
+    - contextPath: APIVoid.SSL.details.issuer.organization_unit
       type: string
-    - contextPath: apivoid.SSL.details.issuer.state
+    - contextPath: APIVoid.SSL.details.issuer.state
       type: string
-    - contextPath: apivoid.SSL.details.signature
-    - contextPath: apivoid.SSL.details.signature.serial
+    - contextPath: APIVoid.SSL.details.signature
+    - contextPath: APIVoid.SSL.details.signature.serial
       type: string
-    - contextPath: apivoid.SSL.details.signature.serial_hex
+    - contextPath: APIVoid.SSL.details.signature.serial_hex
       type: string
-    - contextPath: apivoid.SSL.details.signature.type
+    - contextPath: APIVoid.SSL.details.signature.type
       type: string
-    - contextPath: apivoid.SSL.details.subject
-    - contextPath: apivoid.SSL.details.subject.postal_code
+    - contextPath: APIVoid.SSL.details.subject
+    - contextPath: APIVoid.SSL.details.subject.postal_code
       type: string
-    - contextPath: apivoid.SSL.details.subject.street
+    - contextPath: APIVoid.SSL.details.subject.street
       type: string
-    - contextPath: apivoid.SSL.details.subject.name
+    - contextPath: APIVoid.SSL.details.subject.name
       type: string
-    - contextPath: apivoid.SSL.details.subject.organization_unit
+    - contextPath: APIVoid.SSL.details.subject.organization_unit
       type: string
-    - contextPath: apivoid.SSL.details.subject.state
+    - contextPath: APIVoid.SSL.details.subject.state
       type: string
-    - contextPath: apivoid.SSL.details.subject.organization
+    - contextPath: APIVoid.SSL.details.subject.organization
       type: string
-    - contextPath: apivoid.SSL.details.subject.location
+    - contextPath: APIVoid.SSL.details.subject.location
       type: string
-    - contextPath: apivoid.SSL.details.subject.alternative_names
+    - contextPath: APIVoid.SSL.details.subject.alternative_names
       type: string
-    - contextPath: apivoid.SSL.details.subject.country
+    - contextPath: APIVoid.SSL.details.subject.country
       type: string
-    - contextPath: apivoid.SSL.details.subject.category
+    - contextPath: APIVoid.SSL.details.subject.category
       type: string
-    - contextPath: apivoid.SSL.details.subject.common_name
+    - contextPath: APIVoid.SSL.details.subject.common_name
       type: string
-    - contextPath: apivoid.SSL.details.validity
-    - contextPath: apivoid.SSL.details.validity.days_left
+    - contextPath: APIVoid.SSL.details.validity
+    - contextPath: APIVoid.SSL.details.validity.days_left
       type: number
-    - contextPath: apivoid.SSL.details.validity.valid_from
+    - contextPath: APIVoid.SSL.details.validity.valid_from
       type: date
-    - contextPath: apivoid.SSL.details.validity.valid_from_timestamp
+    - contextPath: APIVoid.SSL.details.validity.valid_from_timestamp
       type: date
-    - contextPath: apivoid.SSL.details.validity.valid_to
+    - contextPath: APIVoid.SSL.details.validity.valid_to
       type: date
-    - contextPath: apivoid.SSL.details.validity.valid_to_timestamp
+    - contextPath: APIVoid.SSL.details.validity.valid_to_timestamp
       type: date
-    - contextPath: apivoid.SSL.details.version
+    - contextPath: APIVoid.SSL.details.version
       type: string
     description: Gets useful SSL information from a remote host.
   - name: apivoid-email-verify
@@ -727,65 +727,66 @@ script:
       required: true
       description: Email address to lookup.
     outputs:
-    - contextPath: apivoid.Email
-    - contextPath: apivoid.Email.email
+    - contextPath: APIVoid.Email
+    - contextPath: APIVoid.Email.email
       type: string
-    - contextPath: apivoid.Email.valid_format
+    - contextPath: APIVoid.Email.valid_format
       type: boolean
-    - contextPath: apivoid.Email.username
+    - contextPath: APIVoid.Email.username
       type: string
-    - contextPath: apivoid.Email.role_address
+    - contextPath: APIVoid.Email.role_address
       type: boolean
-    - contextPath: apivoid.Email.suspicious_username
+    - contextPath: APIVoid.Email.suspicious_username
       type: boolean
-    - contextPath: apivoid.Email.dirty_words_username
+    - contextPath: APIVoid.Email.dirty_words_username
       type: boolean
-    - contextPath: apivoid.Email.domain
+    - contextPath: APIVoid.Email.domain
       type: string
-    - contextPath: apivoid.Email.valid_tld
+    - contextPath: APIVoid.Email.valid_tld
       type: boolean
-    - contextPath: apivoid.Email.disposable
+    - contextPath: APIVoid.Email.disposable
       type: boolean
-    - contextPath: apivoid.Email.has_mx_records
+    - contextPath: APIVoid.Email.has_mx_records
       type: boolean
-    - contextPath: apivoid.Email.free_email
+    - contextPath: APIVoid.Email.free_email
       type: boolean
-    - contextPath: apivoid.Email.russian_free_email
+    - contextPath: APIVoid.Email.russian_free_email
       type: boolean
-    - contextPath: apivoid.Email.china_free_email
+    - contextPath: APIVoid.Email.china_free_email
       type: boolean
-    - contextPath: apivoid.Email.suspicious_domain
+    - contextPath: APIVoid.Email.suspicious_domain
       type: boolean
-    - contextPath: apivoid.Email.did_you_mean
+    - contextPath: APIVoid.Email.did_you_mean
       type: string
-    - contextPath: apivoid.Email.dirty_words_domain
+    - contextPath: APIVoid.Email.dirty_words_domain
       type: boolean
-    - contextPath: apivoid.Email.domain_popular
+    - contextPath: APIVoid.Email.domain_popular
       type: boolean
-    - contextPath: apivoid.Email.risky_tld
+    - contextPath: APIVoid.Email.risky_tld
       type: boolean
-    - contextPath: apivoid.Email.police_domain
+    - contextPath: APIVoid.Email.police_domain
       type: boolean
-    - contextPath: apivoid.Email.government_domain
+    - contextPath: APIVoid.Email.government_domain
       type: boolean
-    - contextPath: apivoid.Email.educational_domain
+    - contextPath: APIVoid.Email.educational_domain
       type: boolean
-    - contextPath: apivoid.Email.should_block
+    - contextPath: APIVoid.Email.should_block
       type: boolean
-    - contextPath: apivoid.Email.score
+    - contextPath: APIVoid.Email.score
       type: number
-    description: Checks if an email address is disposable, if it has MX records, and more.
+    description: Checks if an email address is disposable, if it has MX records, and
+      more.
   - name: apivoid-threatlog
     arguments:
     - name: host
       required: true
       description: The host the check
     outputs:
-    - contextPath: apivoid.ThreatLog.detected
+    - contextPath: APIVoid.ThreatLog.detected
       type: boolean
-    - contextPath: apivoid.ThreatLog.host
+    - contextPath: APIVoid.ThreatLog.host
       type: string
-    - contextPath: apivoid.ThreatLog.scantime
+    - contextPath: APIVoid.ThreatLog.scantime
       type: string
     - contextPath: Domain.Name
       type: string
@@ -796,9 +797,9 @@ script:
       required: true
       description: The domain to check.
     outputs:
-    - contextPath: apivoid.ParkedDomain.host
+    - contextPath: APIVoid.ParkedDomain.host
       type: string
-    - contextPath: apivoid.ParkedDomain.parked_domain
+    - contextPath: APIVoid.ParkedDomain.parked_domain
       type: boolean
     - contextPath: Domain.Name
       type: string
@@ -809,21 +810,21 @@ script:
       required: true
       description: The domain to check.
     outputs:
-    - contextPath: apivoid.DomainAge.debug_message
+    - contextPath: APIVoid.DomainAge.debug_message
       type: string
-    - contextPath: apivoid.DomainAge.domain_age_found
+    - contextPath: APIVoid.DomainAge.domain_age_found
       type: boolean
-    - contextPath: apivoid.DomainAge.domain_age_in_days
+    - contextPath: APIVoid.DomainAge.domain_age_in_days
       type: number
-    - contextPath: apivoid.DomainAge.domain_age_in_months
+    - contextPath: APIVoid.DomainAge.domain_age_in_months
       type: number
-    - contextPath: apivoid.DomainAge.domain_age_in_years
+    - contextPath: APIVoid.DomainAge.domain_age_in_years
       type: number
-    - contextPath: apivoid.DomainAge.domain_creation_date
+    - contextPath: APIVoid.DomainAge.domain_creation_date
       type: string
-    - contextPath: apivoid.DomainAge.domain_registered
+    - contextPath: APIVoid.DomainAge.domain_registered
       type: string
-    - contextPath: apivoid.DomainAge.host
+    - contextPath: APIVoid.DomainAge.host
       type: string
     - contextPath: Domain.CreationDate
       type: string
@@ -923,208 +924,210 @@ script:
       required: true
       description: The host to check.
     outputs:
-    - contextPath: apivoid.SiteTrust.domain_blacklist.detections
+    - contextPath: APIVoid.SiteTrust.domain_blacklist.detections
       type: number
-    - contextPath: apivoid.SiteTrust.domain_blacklist.engines.detected
+    - contextPath: APIVoid.SiteTrust.domain_blacklist.engines.detected
       type: boolean
-    - contextPath: apivoid.SiteTrust.domain_blacklist.engines.name
+    - contextPath: APIVoid.SiteTrust.domain_blacklist.engines.name
       type: string
-    - contextPath: apivoid.SiteTrust.domain_blacklist.engines.reference
+    - contextPath: APIVoid.SiteTrust.domain_blacklist.engines.reference
       type: string
-    - contextPath: apivoid.SiteTrust.geo_location.countries
-    - contextPath: apivoid.SiteTrust.domain_age.domain_age_in_days
+    - contextPath: APIVoid.SiteTrust.geo_location.countries
+    - contextPath: APIVoid.SiteTrust.domain_age.domain_age_in_days
       type: number
-    - contextPath: apivoid.SiteTrust.domain_age.domain_age_in_months
+    - contextPath: APIVoid.SiteTrust.domain_age.domain_age_in_months
       type: number
-    - contextPath: apivoid.SiteTrust.domain_age.domain_age_in_years
+    - contextPath: APIVoid.SiteTrust.domain_age.domain_age_in_years
       type: number
-    - contextPath: apivoid.SiteTrust.domain_age.domain_creation_date
+    - contextPath: APIVoid.SiteTrust.domain_age.domain_creation_date
       type: string
-    - contextPath: apivoid.SiteTrust.domain_age.found
+    - contextPath: APIVoid.SiteTrust.domain_age.found
       type: boolean
-    - contextPath: apivoid.SiteTrust.server_details.isp
+    - contextPath: APIVoid.SiteTrust.server_details.isp
       type: string
-    - contextPath: apivoid.SiteTrust.server_details.ip
+    - contextPath: APIVoid.SiteTrust.server_details.ip
       type: string
-    - contextPath: apivoid.SiteTrust.server_details.latitude
+    - contextPath: APIVoid.SiteTrust.server_details.latitude
       type: number
-    - contextPath: apivoid.SiteTrust.server_details.longitude
+    - contextPath: APIVoid.SiteTrust.server_details.longitude
       type: number
-    - contextPath: apivoid.SiteTrust.server_details.hostname
+    - contextPath: APIVoid.SiteTrust.server_details.hostname
       type: string
-    - contextPath: apivoid.SiteTrust.server_details.country_name
+    - contextPath: APIVoid.SiteTrust.server_details.country_name
       type: string
-    - contextPath: apivoid.SiteTrust.server_details.region_name
+    - contextPath: APIVoid.SiteTrust.server_details.region_name
       type: string
-    - contextPath: apivoid.SiteTrust.server_details.country_code
+    - contextPath: APIVoid.SiteTrust.server_details.country_code
       type: string
-    - contextPath: apivoid.SiteTrust.server_details.continent_name
+    - contextPath: APIVoid.SiteTrust.server_details.continent_name
       type: string
-    - contextPath: apivoid.SiteTrust.server_details.continent_code
+    - contextPath: APIVoid.SiteTrust.server_details.continent_code
       type: string
-    - contextPath: apivoid.SiteTrust.server_details.city_name
+    - contextPath: APIVoid.SiteTrust.server_details.city_name
       type: string
-    - contextPath: apivoid.SiteTrust.response_headers.server
+    - contextPath: APIVoid.SiteTrust.response_headers.server
       type: string
-    - contextPath: apivoid.SiteTrust.response_headers.content-encoding
+    - contextPath: APIVoid.SiteTrust.response_headers.content-encoding
       type: string
-    - contextPath: apivoid.SiteTrust.response_headers.code
+    - contextPath: APIVoid.SiteTrust.response_headers.code
       type: number
-    - contextPath: apivoid.SiteTrust.response_headers.content-type
+    - contextPath: APIVoid.SiteTrust.response_headers.content-type
       type: string
-    - contextPath: apivoid.SiteTrust.response_headers.date
+    - contextPath: APIVoid.SiteTrust.response_headers.date
       type: date
-    - contextPath: apivoid.SiteTrust.response_headers.vary
+    - contextPath: APIVoid.SiteTrust.response_headers.vary
       type: string
-    - contextPath: apivoid.SiteTrust.response_headers.status
+    - contextPath: APIVoid.SiteTrust.response_headers.status
       type: string
-    - contextPath: apivoid.SiteTrust.response_headers.x-amz-rid
+    - contextPath: APIVoid.SiteTrust.response_headers.x-amz-rid
       type: string
-    - contextPath: apivoid.SiteTrust.response_headers.content-length
+    - contextPath: APIVoid.SiteTrust.response_headers.content-length
       type: string
-    - contextPath: apivoid.SiteTrust.response_headers.connection
+    - contextPath: APIVoid.SiteTrust.response_headers.connection
       type: string
-    - contextPath: apivoid.SiteTrust.host
+    - contextPath: APIVoid.SiteTrust.host
       type: string
-    - contextPath: apivoid.SiteTrust.security_checks.is_website_popular
+    - contextPath: APIVoid.SiteTrust.security_checks.is_website_popular
       type: boolean
-    - contextPath: apivoid.SiteTrust.security_checks.is_suspended_site
+    - contextPath: APIVoid.SiteTrust.security_checks.is_suspended_site
       type: boolean
-    - contextPath: apivoid.SiteTrust.security_checks.is_domain_recent
+    - contextPath: APIVoid.SiteTrust.security_checks.is_domain_recent
       type: string
-    - contextPath: apivoid.SiteTrust.security_checks.is_heuristic_pattern
+    - contextPath: APIVoid.SiteTrust.security_checks.is_heuristic_pattern
       type: boolean
-    - contextPath: apivoid.SiteTrust.security_checks.is_sinkholed_domain
+    - contextPath: APIVoid.SiteTrust.security_checks.is_sinkholed_domain
       type: boolean
-    - contextPath: apivoid.SiteTrust.security_checks.is_risky_geo_location
+    - contextPath: APIVoid.SiteTrust.security_checks.is_risky_geo_location
       type: boolean
-    - contextPath: apivoid.SiteTrust.security_checks.is_empty_page_title
+    - contextPath: APIVoid.SiteTrust.security_checks.is_empty_page_title
       type: boolean
-    - contextPath: apivoid.SiteTrust.security_checks.is_robots_noindex
+    - contextPath: APIVoid.SiteTrust.security_checks.is_robots_noindex
       type: boolean
-    - contextPath: apivoid.SiteTrust.security_checks.is_suspicious_domain
+    - contextPath: APIVoid.SiteTrust.security_checks.is_suspicious_domain
       type: boolean
-    - contextPath: apivoid.SiteTrust.security_checks.is_most_abused_tld
+    - contextPath: APIVoid.SiteTrust.security_checks.is_most_abused_tld
       type: boolean
-    - contextPath: apivoid.SiteTrust.security_checks.is_valid_https
+    - contextPath: APIVoid.SiteTrust.security_checks.is_valid_https
       type: boolean
-    - contextPath: apivoid.SiteTrust.security_checks.is_domain_blacklisted
+    - contextPath: APIVoid.SiteTrust.security_checks.is_domain_blacklisted
       type: boolean
-    - contextPath: apivoid.SiteTrust.security_checks.is_email_configured
+    - contextPath: APIVoid.SiteTrust.security_checks.is_email_configured
       type: boolean
-    - contextPath: apivoid.SiteTrust.security_checks.is_china_country
+    - contextPath: APIVoid.SiteTrust.security_checks.is_china_country
       type: boolean
-    - contextPath: apivoid.SiteTrust.security_checks.is_directory_listing
+    - contextPath: APIVoid.SiteTrust.security_checks.is_directory_listing
       type: boolean
-    - contextPath: apivoid.SiteTrust.security_checks.is_free_email
+    - contextPath: APIVoid.SiteTrust.security_checks.is_free_email
       type: boolean
-    - contextPath: apivoid.SiteTrust.trust_score.result
+    - contextPath: APIVoid.SiteTrust.trust_score.result
       type: number
-    - contextPath: apivoid.SiteTrust.dns_records
-    - contextPath: apivoid.SiteTrust.redirection.external
+    - contextPath: APIVoid.SiteTrust.dns_records
+    - contextPath: APIVoid.SiteTrust.redirection.external
       type: boolean
-    - contextPath: apivoid.SiteTrust.redirection.found
+    - contextPath: APIVoid.SiteTrust.redirection.found
       type: boolean
-    - contextPath: apivoid.SiteTrust.redirection.url
+    - contextPath: APIVoid.SiteTrust.redirection.url
       type: string
-    - contextPath: apivoid.SiteTrust.url_parts.host
+    - contextPath: APIVoid.SiteTrust.url_parts.host
       type: string
-    - contextPath: apivoid.SiteTrust.url_parts.host_nowww
+    - contextPath: APIVoid.SiteTrust.url_parts.host_nowww
       type: string
-    - contextPath: apivoid.SiteTrust.url_parts.path
+    - contextPath: APIVoid.SiteTrust.url_parts.path
       type: string
-    - contextPath: apivoid.SiteTrust.url_parts.port
+    - contextPath: APIVoid.SiteTrust.url_parts.port
       type: string
-    - contextPath: apivoid.SiteTrust.url_parts.query
+    - contextPath: APIVoid.SiteTrust.url_parts.query
       type: string
-    - contextPath: apivoid.SiteTrust.url_parts.scheme
+    - contextPath: APIVoid.SiteTrust.url_parts.scheme
       type: string
-    - contextPath: apivoid.SiteTrust.ecommerce_platform.is_magento
+    - contextPath: APIVoid.SiteTrust.ecommerce_platform.is_magento
       type: boolean
-    - contextPath: apivoid.SiteTrust.ecommerce_platform.is_opencart
+    - contextPath: APIVoid.SiteTrust.ecommerce_platform.is_opencart
       type: boolean
-    - contextPath: apivoid.SiteTrust.ecommerce_platform.is_prestashop
+    - contextPath: APIVoid.SiteTrust.ecommerce_platform.is_prestashop
       type: boolean
-    - contextPath: apivoid.SiteTrust.ecommerce_platform.is_shopify
+    - contextPath: APIVoid.SiteTrust.ecommerce_platform.is_shopify
       type: boolean
-    - contextPath: apivoid.SiteTrust.ecommerce_platform.is_woocommerce
+    - contextPath: APIVoid.SiteTrust.ecommerce_platform.is_woocommerce
       type: boolean
-    - contextPath: apivoid.SiteTrust.ecommerce_platform.is_zencart
+    - contextPath: APIVoid.SiteTrust.ecommerce_platform.is_zencart
       type: boolean
-    - contextPath: apivoid.SiteTrust.web_page.description
+    - contextPath: APIVoid.SiteTrust.web_page.description
       type: string
-    - contextPath: apivoid.SiteTrust.web_page.keywords
+    - contextPath: APIVoid.SiteTrust.web_page.keywords
       type: string
-    - contextPath: apivoid.SiteTrust.web_page.title
+    - contextPath: APIVoid.SiteTrust.web_page.title
       type: string
-    - contextPath: apivoid.SiteTrust.targeted_brands.patagonia
+    - contextPath: APIVoid.SiteTrust.targeted_brands.patagonia
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.rolex
+    - contextPath: APIVoid.SiteTrust.targeted_brands.rolex
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.timberland
+    - contextPath: APIVoid.SiteTrust.targeted_brands.timberland
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.hugoboss
+    - contextPath: APIVoid.SiteTrust.targeted_brands.hugoboss
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.moncler
+    - contextPath: APIVoid.SiteTrust.targeted_brands.moncler
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.longchamp
+    - contextPath: APIVoid.SiteTrust.targeted_brands.longchamp
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.abercrombie
+    - contextPath: APIVoid.SiteTrust.targeted_brands.abercrombie
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.montblanc
+    - contextPath: APIVoid.SiteTrust.targeted_brands.montblanc
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.carhartt
+    - contextPath: APIVoid.SiteTrust.targeted_brands.carhartt
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.rayban
+    - contextPath: APIVoid.SiteTrust.targeted_brands.rayban
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.drmartens
+    - contextPath: APIVoid.SiteTrust.targeted_brands.drmartens
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.hermes
+    - contextPath: APIVoid.SiteTrust.targeted_brands.hermes
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.oakley
+    - contextPath: APIVoid.SiteTrust.targeted_brands.oakley
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.michaelkors
+    - contextPath: APIVoid.SiteTrust.targeted_brands.michaelkors
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.louisvuitton
+    - contextPath: APIVoid.SiteTrust.targeted_brands.louisvuitton
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.birkenstock
+    - contextPath: APIVoid.SiteTrust.targeted_brands.birkenstock
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.adidas
+    - contextPath: APIVoid.SiteTrust.targeted_brands.adidas
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.vans
+    - contextPath: APIVoid.SiteTrust.targeted_brands.vans
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.ralphlauren
+    - contextPath: APIVoid.SiteTrust.targeted_brands.ralphlauren
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.mulberry
+    - contextPath: APIVoid.SiteTrust.targeted_brands.mulberry
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.converse
+    - contextPath: APIVoid.SiteTrust.targeted_brands.converse
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.versace
+    - contextPath: APIVoid.SiteTrust.targeted_brands.versace
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.ugg
+    - contextPath: APIVoid.SiteTrust.targeted_brands.ugg
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.nike
+    - contextPath: APIVoid.SiteTrust.targeted_brands.nike
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.swarovski
+    - contextPath: APIVoid.SiteTrust.targeted_brands.swarovski
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.peuterey
+    - contextPath: APIVoid.SiteTrust.targeted_brands.peuterey
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.cartier
+    - contextPath: APIVoid.SiteTrust.targeted_brands.cartier
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.pandora
+    - contextPath: APIVoid.SiteTrust.targeted_brands.pandora
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.burberry
+    - contextPath: APIVoid.SiteTrust.targeted_brands.burberry
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.gucci
+    - contextPath: APIVoid.SiteTrust.targeted_brands.gucci
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.salomon
+    - contextPath: APIVoid.SiteTrust.targeted_brands.salomon
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.liujo
+    - contextPath: APIVoid.SiteTrust.targeted_brands.liujo
       type: boolean
-    - contextPath: apivoid.SiteTrust.targeted_brands.truereligion
+    - contextPath: APIVoid.SiteTrust.targeted_brands.truereligion
       type: boolean
     description: A smart API that accurately checks a website's trustworthiness.
   dockerimage: demisto/python3:3.7.4.977
   runonce: false
   subtype: python3
 fromversion: 5.0.0
+tests:
+- APIVoid Test
