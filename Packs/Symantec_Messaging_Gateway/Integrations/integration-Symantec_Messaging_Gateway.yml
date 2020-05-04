@@ -480,7 +480,7 @@ script:
   type: python
   subtype: python2
   dockerimage45: demisto/bs4
-  dockerimage: demisto/bs4:1.0.0.6538
+  dockerimage: devdemisto/bs4:1.0.0.7862
   commands:
   - name: smg-block-email
     arguments:
