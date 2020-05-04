@@ -31,7 +31,7 @@ script:
       - name: params
         description: JSON with params to send with call
       outputs:
-      - contextPath: Zabbix-Execute
+      - contextPath: Zabbix.Execute
         description: result
         type: Unknown
       description: Execute command on Zabbix API
