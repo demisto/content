@@ -25,7 +25,7 @@ Scan targets with the given parameters
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | targets | The targets to scan. Accepts comma-separated list. | Required | 
-| options | The nmap options to useת as documented by nmap. | Required | 
+| options | The nmap options to use as documented by nmap. | Required | 
 
 
 ##### Context Output
