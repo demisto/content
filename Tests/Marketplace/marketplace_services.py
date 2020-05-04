@@ -598,9 +598,9 @@ class Pack(object):
             expected_release_version_int = self.major_minor_rev(expected_release_version_str, path=False)
             release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
             found_versions = []
-            print_warning(f"Found versions are: {found_versions}")
             for filename in os.listdir(release_notes_dir):
                 found_versions.append(filename)
+            print_warning(f"Found versions are: {found_versions}")
             if len(found_versions) == 0:
                 raise Exception(f"Release notes not found for {self._pack_name}. Please add them under the "
                                 f"ReleaseNotes directory.")
