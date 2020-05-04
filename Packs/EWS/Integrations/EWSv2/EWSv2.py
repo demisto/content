@@ -1250,7 +1250,7 @@ def get_entry_for_file_attachment(item_id, attachment):
 
 def parse_attachment_as_dict(item_id, attachment):
     try:
-        # if this is a file attachment or a
+        # if this is a file attachment or a non-empty email attachment
         if isinstance(attachment, FileAttachment) or hasattr(attachment, 'item'):
             attachment_content = attachment.content if isinstance(attachment, FileAttachment) \
                 else attachment.item.mime_content
@@ -1270,6 +1270,7 @@ def parse_attachment_as_dict(item_id, attachment):
                 else ITEM_ATTACHMENT_TYPE
             }
 
+        # If this is an empty email attachment
         else:
             return {
                 ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
