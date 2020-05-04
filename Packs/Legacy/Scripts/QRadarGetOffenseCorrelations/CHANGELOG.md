@@ -1,5 +1,5 @@
 ## [Unreleased]
-- Deprecated. Use `QRadar - Get offense correlations v2` instead.
+Use the **QRadar - Get offense correlations v2** playbook instead.
 
 ## [20.4.0] - 2020-04-14
 -
