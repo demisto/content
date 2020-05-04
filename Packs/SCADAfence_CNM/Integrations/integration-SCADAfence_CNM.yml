@@ -467,6 +467,7 @@ script:
         demisto.incidents(fetch_incidents())
 
   type: python
+  subtype: python2
   commands:
   - name: scadafence-getAlerts
     arguments:

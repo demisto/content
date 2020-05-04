@@ -155,6 +155,7 @@ script:
     finally:
         logout()
   type: python
+  subtype: python2
   commands:
   - name: remedy-get-server-details
     arguments:
