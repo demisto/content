@@ -419,3 +419,5 @@ script:
       description: Optional - request a structured report (formatted as XML/PDF)
     description: Detonate file hosted on a website through WildFire
 hidden: false
+tests:
+ -  No tests
