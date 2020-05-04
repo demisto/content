@@ -868,4 +868,5 @@ inputs:
 outputs:
 - contextPath: Panorama.EDL.Name
   description: Name of the EDL.
-
+tests:
+- No test

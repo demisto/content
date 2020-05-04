@@ -322,3 +322,19 @@ def test_populate_context_emails():
     assert len(context.keys()) == 2
     assert context['Email'] == global_result
     assert context['PhishLabs.Email(val.ID && val.ID === obj.ID)'] == phishlabs_result
+
+
+def test_indicator_type_finder():
+    from PhishLabsIOC import indicator_type_finder
+    indicator_data_1 = {
+        'value': 'email@email.com',
+        'type': "Sender"
+    }
+
+    indicator_data_2 = {
+        'value': 'https://www.some.path/email@email.com',
+        'type': "URL"
+    }
+
+    assert indicator_type_finder(indicator_data_1) == 'Email'
+    assert indicator_type_finder(indicator_data_2) == 'URL'
