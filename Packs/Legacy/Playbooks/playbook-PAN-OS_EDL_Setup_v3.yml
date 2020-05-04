@@ -1,58 +1,52 @@
-id: PAN-OS EDL Setup v2
+id: PAN-OS EDL Setup v3
 version: -1
 fromversion: 4.0.0
-name: PAN-OS EDL Setup v2
-description: |-
-  Configures an external dynamic list in PAN-OS.
-  In the event that the file exists on the web server, it will sync it to demisto. Then it will create an EDL object and a matching rule.
-starttaskid: "0"
+name: PAN-OS EDL Setup v3
+description: "Configures an external dynamic list in PAN-OS.\nIn the event that the\
+  \ file exists on the web server, it will sync it to demisto. Then it will create\
+  \ an EDL object and a matching rule."
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 70986c3d-3e65-4940-89c3-8445cbc4b82d
+  '0':
+    id: '0'
+    taskid: 15be5abe-cd81-459e-8a8d-fd7b40bfe91d
     type: start
     task:
-      id: 70986c3d-3e65-4940-89c3-8445cbc4b82d
+      id: 15be5abe-cd81-459e-8a8d-fd7b40bfe91d
       version: -1
-      name: ""
-      description: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 255,
-          "y": 50
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 255,\n    \"y\": 50\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: 1ae0d0c0-a36d-44fb-884f-91e30aa52d36
+  '1':
+    id: '1'
+    taskid: 64be095d-1f01-4967-847f-5fc69d2b3400
     type: condition
     task:
-      id: 1ae0d0c0-a36d-44fb-884f-91e30aa52d36
+      id: 64be095d-1f01-4967-847f-5fc69d2b3400
       version: -1
       name: Is PAN-OS integration enabled?
       description: Checks if there is an active instance of the PAN-OS integration
         enabled.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "3"
-      "yes":
-      - "2"
+      - '3'
+      yes:
+      - '2'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -78,37 +72,31 @@ tasks:
                         simple: active
                 accessor: brand
             iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 255,
-          "y": 195
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 255,\n    \"y\": 195\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 41efc436-52cb-4e5a-80f0-f5dec772b5b2
+  '2':
+    id: '2'
+    taskid: 0e0a0837-5121-4762-8144-9b0c65eb4ad1
     type: condition
     task:
-      id: 41efc436-52cb-4e5a-80f0-f5dec772b5b2
+      id: 0e0a0837-5121-4762-8144-9b0c65eb4ad1
       version: -1
       name: Is PAN-OS EDL Management integration enabled?
       description: Checks if there is an active instance of the PAN-OS EDL Management
         integration enabled.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "3"
-      "yes":
-      - "7"
+      - '3'
+      yes:
+      - '7'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -134,55 +122,43 @@ tasks:
                         simple: active
                 accessor: brand
             iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 620,
-          "y": 370
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 620,\n    \"y\": 370\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "3":
-    id: "3"
-    taskid: e1b2185d-6051-4fa7-8f5b-9065be6629fd
+  '3':
+    id: '3'
+    taskid: 42adb355-e0d8-4daf-808d-5a6c84d38e9e
     type: title
     task:
-      id: e1b2185d-6051-4fa7-8f5b-9065be6629fd
+      id: 42adb355-e0d8-4daf-808d-5a6c84d38e9e
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 620,
-          "y": 2140
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 620,\n    \"y\": 2140\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "7":
-    id: "7"
-    taskid: e77c425b-8309-4d64-857b-4980880a1215
+  '7':
+    id: '7'
+    taskid: 7ad2604a-f3e5-4bdf-803e-cc7d61dd3bf1
     type: regular
     task:
-      id: e77c425b-8309-4d64-857b-4980880a1215
+      id: 7ad2604a-f3e5-4bdf-803e-cc7d61dd3bf1
       version: -1
       name: Retrieve external file
       description: Extracts metadata for the external file from the web server.
       script: '|||pan-os-edl-get-external-file-metadata'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
     scriptarguments:
       file_path:
         complex:
@@ -196,22 +172,16 @@ tasks:
                   simple: .txt
     continueonerror: true
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1342.5,
-          "y": 540
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1342.5,\n    \"y\": 540\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "16":
-    id: "16"
-    taskid: 16f634ed-b95f-45ec-8f84-5e149846b40d
+  '16':
+    id: '16'
+    taskid: 2720f90b-4027-4694-8373-ffeff3461228
     type: regular
     task:
-      id: 16f634ed-b95f-45ec-8f84-5e149846b40d
+      id: 2720f90b-4027-4694-8373-ffeff3461228
       version: -1
       name: Add changes from external file to the internal list
       description: Fetches the content of the external file and merges it with the
@@ -219,10 +189,10 @@ tasks:
       script: '|||pan-os-edl-update-from-external-file'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "45"
+      - '45'
     scriptarguments:
       file_path:
         simple: ${inputs.list-name}.txt
@@ -232,22 +202,16 @@ tasks:
         simple: merge
       verbose: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1710,
-          "y": 890
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1710,\n    \"y\": 890\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "17":
-    id: "17"
-    taskid: 2d03e7de-979f-4fa8-844e-c4b5b2f9ad7e
+  '17':
+    id: '17'
+    taskid: f82881a1-c5ee-4903-800d-49ef69e5620b
     type: regular
     task:
-      id: 2d03e7de-979f-4fa8-844e-c4b5b2f9ad7e
+      id: f82881a1-c5ee-4903-800d-49ef69e5620b
       version: -1
       name: Create internal list and external file
       description: Creates an internal list in Demisto and creates an external file
@@ -255,10 +219,10 @@ tasks:
       script: '|||pan-os-edl-update'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
     scriptarguments:
       add_or_remove:
         simple: add
@@ -270,36 +234,30 @@ tasks:
         simple: ${inputs.list-name}
       verbose: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1060,
-          "y": 890
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1060,\n    \"y\": 890\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "18":
-    id: "18"
-    taskid: e55e504c-87fe-4537-8361-b67bfa800d16
+  '18':
+    id: '18'
+    taskid: ae1e3f95-b83b-4ac4-8980-1f51d4b132f0
     type: condition
     task:
-      id: e55e504c-87fe-4537-8361-b67bfa800d16
+      id: ae1e3f95-b83b-4ac4-8980-1f51d4b132f0
       version: -1
       name: Is there an external file?
       description: Checks if an external file exists on the web server.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "17"
-      "yes":
-      - "16"
+      - '17'
+      yes:
+      - '16'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: containsGeneral
           left:
@@ -318,22 +276,16 @@ tasks:
                       value:
                         simple: .txt
             iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1342.5,
-          "y": 720
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1342.5,\n    \"y\": 720\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "19":
-    id: "19"
-    taskid: 580c92fa-cc3e-4ecc-8cd5-f7b3ed06a30e
+  '19':
+    id: '19'
+    taskid: 9021dcf2-bcc7-432e-84aa-bcf740cc4c2b
     type: regular
     task:
-      id: 580c92fa-cc3e-4ecc-8cd5-f7b3ed06a30e
+      id: 9021dcf2-bcc7-432e-84aa-bcf740cc4c2b
       version: -1
       name: Create EDL Object
       description: Creates an external dynamic list in PAN-OS and connects it to the
@@ -341,10 +293,10 @@ tasks:
       script: '|||panorama-create-edl'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "42"
+      - '42'
     scriptarguments:
       certificate_profile: {}
       description: {}
@@ -358,51 +310,18 @@ tasks:
       type:
         simple: ${inputs.ioc-type}
       url:
-        simple: http://${inputs.web-server-ip}/files/${inputs.list-name}.txt
+        simple: ${inputs.web-server-url}${inputs.list-name}.txt
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1060,
-          "y": 1080
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1060,\n    \"y\": 1080\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "22":
-    id: "22"
-    taskid: 9608fd32-9ae1-452f-8389-d8f961b02714
-    type: playbook
-    task:
-      id: 9608fd32-9ae1-452f-8389-d8f961b02714
-      version: -1
-      name: PAN-OS-Commit-Configuration
-      playbookName: PAN-OS Commit Configuration
-      description: ""
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 840,
-          "y": 1970
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "23":
-    id: "23"
-    taskid: e603350c-84d9-48db-876a-cef07dd9c396
+  '23':
+    id: '23'
+    taskid: a95785fa-5788-42cb-8339-8126d27af956
     type: condition
     task:
-      id: e603350c-84d9-48db-876a-cef07dd9c396
+      id: a95785fa-5788-42cb-8339-8126d27af956
       version: -1
       name: Is auto-commit defined?
       description: Checks if the values provided in the arguments are equal. If either
@@ -410,74 +329,62 @@ tasks:
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "no":
-      - "27"
-      "yes":
-      - "22"
+      no:
+      - '27'
+      yes:
+      - '48'
     scriptarguments:
       left:
         simple: ${inputs.auto-commit}
       right:
-        simple: "Yes"
+        simple: Yes
     results:
     - AreValuesEqual
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1060,
-          "y": 1800
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1060,\n    \"y\": 1800\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "27":
-    id: "27"
-    taskid: 26b472b7-03ae-419f-81d7-b38e62baece3
+  '27':
+    id: '27'
+    taskid: 7aa57715-2a37-449d-8213-cd6d546a647e
     type: regular
     task:
-      id: 26b472b7-03ae-419f-81d7-b38e62baece3
+      id: 7aa57715-2a37-449d-8213-cd6d546a647e
       version: -1
       name: Manually commit
       description: Allows the analyst to manually commit the changes. This option
         is available when auto-commit is "false".
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1300,
-          "y": 1970
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1300,\n    \"y\": 1970\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "35":
-    id: "35"
-    taskid: 0c9ff993-3a4c-47b2-86e0-2d7bc8f188d9
+  '35':
+    id: '35'
+    taskid: beecfebc-ceaa-462b-81bd-3207a042ea6f
     type: regular
     task:
-      id: 0c9ff993-3a4c-47b2-86e0-2d7bc8f188d9
+      id: beecfebc-ceaa-462b-81bd-3207a042ea6f
       version: -1
-      name: add the list items to the EDL
+      name: Add the list items to the EDL
       description: Creates an internal list in Demisto and creates an external file
         on the web server.
       script: '|||pan-os-edl-update'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       add_or_remove:
         simple: add
@@ -489,32 +396,26 @@ tasks:
         simple: ${inputs.list-name}
       verbose: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1710,
-          "y": 1970
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1710,\n    \"y\": 1970\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "41":
-    id: "41"
-    taskid: a4277eb0-c093-499b-8b61-f657f5fc41ec
+  '41':
+    id: '41'
+    taskid: 601988dc-5e76-46c1-8ba1-151df1df7578
     type: playbook
     task:
-      id: a4277eb0-c093-499b-8b61-f657f5fc41ec
+      id: 601988dc-5e76-46c1-8ba1-151df1df7578
       version: -1
       name: PAN-OS - Create Or Edit EDL Rule
       playbookName: PAN-OS - Create Or Edit EDL Rule
-      description: ""
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "23"
+      - '23'
     scriptarguments:
       action-type:
         complex:
@@ -545,24 +446,18 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 1060,
-          "y": 1620
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1060,\n    \"y\": 1620\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "42":
-    id: "42"
-    taskid: 1e040fd2-4764-469a-8d0e-01c0e1c23f93
+  '42':
+    id: '42'
+    taskid: b47e13f7-06e8-42d8-8acc-09d6ab7f4692
     type: condition
     task:
-      id: 1e040fd2-4764-469a-8d0e-01c0e1c23f93
+      id: b47e13f7-06e8-42d8-8acc-09d6ab7f4692
       version: -1
       name: Is auto-commit defined?
       description: Checks if the values provided in the arguments are equal. If either
@@ -570,102 +465,61 @@ tasks:
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "no":
-      - "44"
-      "yes":
-      - "43"
+      no:
+      - '44'
+      yes:
+      - '49'
     scriptarguments:
       left:
         simple: ${inputs.auto-commit}
       right:
-        simple: "Yes"
+        simple: Yes
     results:
     - AreValuesEqual
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1060,
-          "y": 1280
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1060,\n    \"y\": 1280\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "43":
-    id: "43"
-    taskid: 7863b405-ca3a-4886-8d55-605bbaba4ec1
-    type: playbook
-    task:
-      id: 7863b405-ca3a-4886-8d55-605bbaba4ec1
-      version: -1
-      name: PAN-OS Commit Configuration
-      description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified
-        as Panorama, it also pushes the Policies to the specified Device Group in
-        the instance.
-      playbookName: PAN-OS Commit Configuration
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "41"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 840,
-          "y": 1450
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "44":
-    id: "44"
-    taskid: 0d85c3b6-490e-4d9b-870b-4ef7666d4bbc
+  '44':
+    id: '44'
+    taskid: 6d679c49-0133-43a4-829e-2d49df0342b5
     type: regular
     task:
-      id: 0d85c3b6-490e-4d9b-870b-4ef7666d4bbc
+      id: 6d679c49-0133-43a4-829e-2d49df0342b5
       version: -1
       name: Manually commit
       description: Allows the analyst to manually commit the changes. This option
         is available when auto-commit is "false".
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "41"
+      - '41'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1300,
-          "y": 1450
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1300,\n    \"y\": 1450\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "45":
-    id: "45"
-    taskid: 4e3c6d4a-0742-4abc-83d5-035a353ee731
+  '45':
+    id: '45'
+    taskid: 65e522d7-c2df-47d0-8684-4710e2e534e2
     type: regular
     task:
-      id: 4e3c6d4a-0742-4abc-83d5-035a353ee731
+      id: 65e522d7-c2df-47d0-8684-4710e2e534e2
       version: -1
       name: Fetch Instance Info
       description: Run any command supported in the API.
       script: '|||panorama'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "46"
+      - '46'
     scriptarguments:
       action: {}
       category: {}
@@ -694,36 +548,30 @@ tasks:
       where: {}
       xpath: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1710,
-          "y": 1090
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1710,\n    \"y\": 1090\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "46":
-    id: "46"
-    taskid: 2f378d63-f26d-4615-89ae-cea1e2895022
+  '46':
+    id: '46'
+    taskid: b3e65d83-e451-49db-84b5-c95e81d1054f
     type: condition
     task:
-      id: 2f378d63-f26d-4615-89ae-cea1e2895022
+      id: b3e65d83-e451-49db-84b5-c95e81d1054f
       version: -1
       name: Is Instance type Panorama?
-      description: ''
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#default#':
-      - "47"
-      "yes":
-      - "35"
+      - '47'
+      yes:
+      - '35'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -733,72 +581,88 @@ tasks:
           right:
             value:
               simple: Panorama
-    view: |-
-      {
-        "position": {
-          "x": 1710,
-          "y": 1260
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1710,\n    \"y\": 1260\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "47":
-    id: "47"
-    taskid: 7992acd6-5925-4405-8ed2-9a22b546dc8c
+  '47':
+    id: '47'
+    taskid: 530e2470-d45e-400f-8a36-7106c1e0161b
     type: regular
     task:
-      id: 7992acd6-5925-4405-8ed2-9a22b546dc8c
+      id: 530e2470-d45e-400f-8a36-7106c1e0161b
       version: -1
       name: Get EDL Object
       description: Returns information for an external dynamic list
       script: '|||panorama-get-edl'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "35"
+      - '35'
     scriptarguments:
       device-group: {}
       name:
         simple: ${inputs.list-name}-${inputs.ioc-type}-edl-object
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 2020,
-          "y": 1450
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 2020,\n    \"y\": 1450\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {
-      "18_16_yes": 0.44,
-      "18_17_#default#": 0.39,
-      "1_3_#default#": 0.1,
-      "2_3_#default#": 0.1,
-      "2_7_yes": 0.59
-    },
-    "paper": {
-      "dimensions": {
-        "height": 2155,
-        "width": 2145,
-        "x": 255,
-        "y": 50
-      }
-    }
-  }
+  '48':
+    id: '48'
+    taskid: c8f328b8-325c-4bb9-861b-6b2def304477
+    type: playbook
+    task:
+      id: c8f328b8-325c-4bb9-861b-6b2def304477
+      version: -1
+      name: PAN-OS Commit Configuration
+      playbookName: PAN-OS Commit Configuration
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    separatecontext: true
+    view: "{\n  \"position\": {\n    \"x\": 880,\n    \"y\": 1970\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '49':
+    id: '49'
+    taskid: 197e4c4f-f1a1-45e0-8e15-8f6c4086b9ff
+    type: playbook
+    task:
+      id: 197e4c4f-f1a1-45e0-8e15-8f6c4086b9ff
+      version: -1
+      name: PAN-OS Commit Configuration
+      playbookName: PAN-OS Commit Configuration
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '41'
+    separatecontext: true
+    view: "{\n  \"position\": {\n    \"x\": 830,\n    \"y\": 1450\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: "{\n  \"linkLabelsPosition\": {\n    \"18_16_yes\": 0.44,\n    \"18_17_#default#\"\
+  : 0.39,\n    \"1_3_#default#\": 0.1,\n    \"2_3_#default#\": 0.1,\n    \"2_7_yes\"\
+  : 0.59\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 2155,\n \
+  \     \"width\": 2145,\n      \"x\": 255,\n      \"y\": 50\n    }\n  }\n}"
 inputs:
 - key: list-name
   value: {}
   required: true
-  description: |-
-    The name of the list that will store the IOCs.
-    The name of the file on the web server. This file name is the same as the name of the list with the extension ".txt" added.
+  description: "The name of the list that will store the IOCs.\nThe name of the file\
+    \ on the web server. This file name is the same as the name of the list with the\
+    \ extension \".txt\" added."
 - key: ioc-type
   value: {}
   required: true
@@ -812,23 +676,20 @@ inputs:
   value:
     simple: drop
   required: true
-  description: |-
-    The action that will be defined in the rule:
-    allow/deny/drop
+  description: "The action that will be defined in the rule:\nallow/deny/drop"
 - key: auto-commit
   value:
-    simple: "No"
+    simple: No
   required: false
   description: Whether to commit the configuration automatically.
 - key: log-forwarding-object-name
   value: {}
   required: false
   description: The server address to which to forward logs.
-- key: web-server-ip
+- key: web-server-url
   value: {}
   required: true
-  description: The IP address of the web server on which the files are stored. The
-    web server IP address is configured in the integration instance.
+  description: The full URL path of the web server on which the files are stored.
 - key: pre-post-rulebase
   value:
     simple: pre-rulebase
@@ -838,14 +699,8 @@ inputs:
   value:
     simple: bottom
   required: false
-  description: |-
-    The position of the rule in the ruleset. Valid values are:
-      * top
-      * bottom
-      * before
-      * after
-
-    The default position is 'top'
+  description: "The position of the rule in the ruleset. Valid values are:\n  * top\n\
+    \  * bottom\n  * before\n  * after\n\nThe default position is 'top'"
 - key: relative-rule-name
   value: {}
   required: false
@@ -867,6 +722,12 @@ inputs:
   description: The device group to work on. Exists only in panorama!
 outputs:
 - contextPath: Panorama.EDL.Name
-  description: Name of the EDL.
+  description: Name of theEDL.
+- contextPath: Panorama.Commit.Warnings
+  description: Commit Warnings
+  type: unknown
+- contextPath: Panorama.Push.Warnings
+  description: Push  warnings
+sourceplaybookid: PAN-OS EDL Setup v2
 tests:
-- No test
+- PAN-OS EDL Setup v3 Test
