@@ -217,6 +217,8 @@ def get_http_flows(pcap_file_path):
 
         if req:
             req_fields = req['HTTP'].__dict__["_all_fields"].keys()
+
+            # if the file contains only a response, the response will falsely appear in the 'req' variable
             if 'http.response' in req_fields:
                 sanitized_req = None
                 sanitized_res = req
