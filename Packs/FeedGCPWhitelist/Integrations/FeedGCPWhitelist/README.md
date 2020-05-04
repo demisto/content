@@ -54,6 +54,6 @@ There is no context output for this command.
 ### Indicators from GCP Whitelist Feed:
 |value|type|
 |---|---|
-| 130.211.64.0/18 | CIDR |
-| 130.211.128.0/17 | CIDR |
+| 52.86.122.241/18 | CIDR |
+| 52.15.91.198/18 | CIDR |
 
