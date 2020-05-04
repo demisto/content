@@ -195,18 +195,6 @@ def fix_order(http_packets):
     return new_order
 
 
-def process_tcp_stream(tcp_packets):
-    stream = []
-    for t in tcp_packets:
-        if 'segment_data' in dir(t.tcp):
-            tcp_data = {}
-            segment_hex = re.sub('[:]', '', t.tcp.segment_data)
-            tcp_data['data'] = bytearray.fromhex(segment_hex).decode('utf-8', 'ignore')
-            tcp_data['stream_number'] = t.tcp.stream
-            stream.append(tcp_data)
-    return stream
-
-
 def get_http_flows(pcap_file_path):
     """
     Return a list of HTTP requests/responses from pcap file
@@ -219,16 +207,6 @@ def get_http_flows(pcap_file_path):
     # Filter all non HTTP packets
     http_packets = [p for p in capture_object if "HTTP" in p]
     http_packets = fix_order(http_packets)
-
-    tcp_packets = [q for q in capture_object if 'http' not in q]
-    tcp_stream = process_tcp_stream(tcp_packets)
-    markdown_output = tableToMarkdown("TCPStreamInfo", tcp_stream)
-
-    demisto.results({"Type": entryTypes["note"],
-                     "ContentsFormat": formats["markdown"],
-                     "Contents": markdown_output,
-                     "HumanReadable": markdown_output
-                     })
 
     # Construct request <> response dicts
     http_flows = []
