@@ -112,7 +112,7 @@ class MsGraphClient:
 
     def get_user(self, user, properties):
         user_data = self.ms_client.http_request(
-            method='GET ',
+            method='GET',
             url_suffix=f'users/{user}',
             params={'$select': properties})
         user_data.pop('@odata.context', None)
@@ -129,7 +129,7 @@ class MsGraphClient:
     
     def get_direct_reports(self, user):
         res = self.ms_client.http_request(
-            method='GET ',
+            method='GET',
             url_suffix=f'users/{user}/directReports')
 
         res.pop('@odata.context', None)
