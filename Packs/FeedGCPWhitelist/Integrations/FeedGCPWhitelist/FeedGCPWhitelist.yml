@@ -48,7 +48,7 @@ configuration:
   name: feedExpirationInterval
   required: false
   type: 1
-- defaultvalue: '30'
+- defaultvalue: '180'
   display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
@@ -97,3 +97,5 @@ script:
   subtype: python3
   type: python
 fromversion: 5.5.0
+tests:
+- GCPWhitelist_Feed_Test

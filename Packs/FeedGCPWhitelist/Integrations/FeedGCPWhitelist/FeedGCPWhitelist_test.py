@@ -5,13 +5,15 @@ from collections import namedtuple
 
 mock_root_dns = '_mockDns1.mock.com'
 mock_node_dns = '_mockDns2.mock.com'
-response_data1 = '{"response": { "answer": [["v=spf1 include:'f"{mock_node_dns}"' ip4:130.211.64.0/18 ?all"]] } }'
-response_data2 = '{"response": { "answer": [["v=spf1 ip4:208.68.108.0/23 ip6:2600:1900::/35 ?all"]] } }'
+# disable-secrets-detection-start
+response_data1 = '{"response": { "answer": [["v=spf1 include:'f"{mock_node_dns}"' ip4:201.201.201.201/18 ?all"]] } }'
+response_data2 = '{"response": { "answer": [["v=spf1 ip4:200.200.200.200/23 ip6:1000:1400::/35 ?all"]] } }'
+# disable-secrets-detection-end
 
 mock_responses_dict = {
-            mock_root_dns: response_data1,
-            mock_node_dns: response_data2
-        }
+    mock_root_dns: response_data1,
+    mock_node_dns: response_data2
+}
 
 
 def test_fetch_cidr(monkeypatch):
