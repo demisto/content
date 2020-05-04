@@ -1,6 +1,6 @@
 {
     "name": "Hunting",
-    "description": "Extracts IOCs from the incident details and attached files using regular expressions and then perform hash hunt in endpoints activity using available toolsa.",
+    "description": "Extracts IOCs from the incident details and attached files using regular expressions, and then hunts for hashes on endpoints using available tools.",
     "support": "Cortex XSOAR",
     "serverMinVersion": "4.5.0",
     "currentVersion": "1.0.0",
@@ -25,7 +25,7 @@
     "useCases": [
         "Perform hash hunt",
         "Extract IOCs from a file",
-        "Detect possible threat in the organization endpoints"
+        "Detect possible threat on the organization endpoints"
     ],
     "keywords": [
         "Hunting",
