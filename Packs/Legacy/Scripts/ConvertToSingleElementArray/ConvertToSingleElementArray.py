@@ -1,4 +1,4 @@
-from demistomock import demisto
+import demistomock as demisto
 
 args = demisto.args()
 value = args.get("value")
