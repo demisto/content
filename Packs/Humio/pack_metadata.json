@@ -1,0 +1,26 @@
+{
+    "name": "Humio",
+    "description": "Integration with Humio",
+    "support": "partner",
+    "serverMinVersion": "5.0.0",
+    "currentVersion": "1.0.0",
+    "author": "Kristian Gausel",
+    "url": "",
+    "email": "integrations@humio.com",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [
+        "humio",
+        "log-management",
+        "siem"
+    ],
+    "created": "2020-04-30T15:56:44Z",
+    "updated": "2020-04-30T15:56:44Z",
+    "beta": false,
+    "deprecated": false,
+    "certification": "certified",
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {}
+}

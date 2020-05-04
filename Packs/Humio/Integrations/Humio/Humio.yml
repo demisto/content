@@ -1,0 +1,290 @@
+commonfields:
+  id: Humio
+  version: -1
+name: Humio
+display: Humio
+category: Analytics & SIEM
+description: Integration with Humio
+configuration:
+- display: Humio URL
+  name: url
+  defaultvalue: https://cloud.humio.com
+  type: 0
+  required: true
+- display: User API token
+  name: API-key
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Query to use to fetch incidents
+  name: queryParameter
+  defaultvalue: ""
+  type: 0
+  required: false
+  additionalinfo: Write the query to use to fetch incidents (only used for fetch-incidents)
+- display: Fetch incidents from repository
+  name: queryRepository
+  defaultvalue: ""
+  type: 0
+  required: false
+  additionalinfo: (only used for fetch-incidents)
+- display: Fetch incidents from
+  name: queryStartTime
+  defaultvalue: 24h
+  type: 0
+  required: false
+  additionalinfo: (only used for fetch-incidents)
+- display: TimeZoneOffset in Minutes
+  name: queryTimeZoneOffsetMinutes
+  defaultvalue: "0"
+  type: 0
+  required: false
+  additionalinfo: (only used for fetch-incidents)
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: humio-query
+    arguments:
+    - name: repository
+      required: true
+      description: Repository to search
+    - name: queryString
+      required: true
+      description: Query string to use
+    - name: start
+      description: Relative or absolute (epoch)
+      defaultValue: 24h
+    - name: end
+      description: Relative or absolute (epoch)
+      defaultValue: now
+    - name: isLive
+      description: Answer with true, 1, t, y or yes
+      defaultValue: "false"
+    - name: timeZoneOffsetMinutes
+      description: TimeZoneOffset in Minutes (default 0)
+      defaultValue: "0"
+    - name: arguments
+      description: Additional arguments
+    outputs:
+    - contextPath: Humio.Query
+      description: Query output
+      type: Unknown
+    description: Query the data from Humio
+  - name: humio-query-job
+    arguments:
+    - name: queryString
+      required: true
+      description: Query string to use
+    - name: start
+      description: Relative or absolute (epoch)
+      defaultValue: 24hours
+    - name: end
+      description: Relative or absolute (epoch)
+      defaultValue: now
+    - name: repository
+      required: true
+      description: Repository to use
+    - name: isLive
+      description: Is it live?
+      defaultValue: "False"
+    - name: timeZoneOffsetMinutes
+      description: Timezone offset in Minutes
+      defaultValue: "0"
+    - name: arguments
+      description: Additional Arguments
+    outputs:
+    - contextPath: Humio.Job
+      description: Query Job outputs
+      type: Unknown
+    description: Issue a query job to Humio
+  - name: humio-poll
+    arguments:
+    - name: repository
+      required: true
+      description: Repository to use
+    - name: id
+      required: true
+      description: 'Id to poll for '
+    outputs:
+    - contextPath: Humio.Poll
+      description: Poll results
+      type: Unknown
+    - contextPath: Humio.Poll.cancelled
+      description: If it was cancelled
+      type: Unknown
+    - contextPath: Humio.Poll.events
+      description: Events in the poll
+      type: Unknown
+    - contextPath: Humio.Poll.done
+      description: If its done
+      type: Unknown
+    - contextPath: Humio.Poll.metaData
+      description: MetaData from the poll
+      type: Unknown
+    description: Issue poll command to Humio
+  - name: humio-delete-job
+    arguments:
+    - name: id
+      required: true
+      description: ID of the job to delete
+    - name: repository
+      required: true
+      description: Repository to use
+    description: Issue a job delete command to Humio
+  - name: humio-list-alerts
+    arguments:
+    - name: repository
+      required: true
+      description: Repository to use
+    outputs:
+    - contextPath: Humio.Alerts
+      description: List of alerts
+      type: Unknown
+    description: List alerts from Humio
+  - name: humio-get-alert-by-id
+    arguments:
+    - name: repository
+      required: true
+      description: Repository to use
+    - name: id
+      required: true
+      description: Alert ID
+    outputs:
+    - contextPath: Humio.Alerts
+      description: Alert details
+      type: Unknown
+    description: list alerts by id from Humio
+  - name: humio-create-alert
+    arguments:
+    - name: repository
+      required: true
+      description: Repository to use
+    - name: name
+      required: true
+      description: Name of the alert
+    - name: queryString
+      required: true
+      description: Query to use
+    - name: start
+      required: true
+      description: Start time, relative or epoch in ms.
+    - name: description
+      required: true
+      description: Description of the alert
+    - name: throttleTimeMillis
+      required: true
+      description: Time millis interval
+    - name: silenced
+      description: Is it silenced
+      defaultValue: "false"
+    - name: notifiers
+      required: true
+      description: array of notifier ID strings use , as delimiter
+      isArray: true
+    - name: labels
+      required: true
+      description: array of text labels
+      isArray: true
+    outputs:
+    - contextPath: Humio.CreatedAlerts
+      description: Created alert details
+      type: Unknown
+    description: Create an alert in Humio
+  - name: humio-list-notifiers
+    arguments:
+    - name: repository
+      required: true
+      description: Repository to use
+    outputs:
+    - contextPath: Humio.Notifiers
+      description: List of notifiers
+      type: Unknown
+    description: List all notifiers in Humio
+  - name: humio-update-alert
+    arguments:
+    - name: name
+      required: true
+      description: Name of the alert
+    - name: queryString
+      required: true
+      description: Query to use
+    - name: start
+      required: true
+      description: Start time either relative or epoch in ms
+    - name: description
+      required: true
+      description: Description of the alert
+    - name: throttleTimeMillis
+      required: true
+      description: maximum frequency that notifications are sent
+    - name: silenced
+      description: is it silenced
+      defaultValue: "false"
+    - name: notifiers
+      required: true
+      description: Which notifiers?
+      isArray: true
+    - name: labels
+      required: true
+      description: Labels to use
+      isArray: true
+    - name: repository
+      required: true
+      description: Which repository
+    - name: id
+      required: true
+      description: ID of the alert
+    outputs:
+    - contextPath: Humio.ModifiedAlerts
+      description: updated alert details
+      type: Unknown
+    description: Update an alert in Humio
+  - name: humio-delete-alert
+    arguments:
+    - name: repository
+      required: true
+      description: Repository to use
+    - name: id
+      required: true
+      description: ID of the alert to be deleted
+    outputs:
+    - contextPath: Humio.Humio-delete-alert
+      description: Details of the deletion
+      type: Unknown
+    description: Delete alert in Humio
+  - name: humio-get-notifier-by-id
+    arguments:
+    - name: repository
+      required: true
+      description: Repository to use
+    - name: id
+      required: true
+      description: ID to use
+    outputs:
+    - contextPath: Humio.Notifiers
+      description: Details of the notifier
+      type: Unknown
+    description: Get notifier from Humio by id
+  dockerimage: demisto/python3:3.7.4.2245
+  isfetch: true
+  runonce: false
+  subtype: python3
