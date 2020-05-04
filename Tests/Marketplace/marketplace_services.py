@@ -628,7 +628,7 @@ class Pack(object):
 
                 # We need to retrieve previous releaseNotes.json here
                 latest_gcp_rn_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, _version, '.json')
-                existing_rn_file = storage_bucket.blob(prefix=latest_gcp_rn_path)
+                existing_rn_file = storage_bucket.get_blob(latest_gcp_rn_path)
                 previous_rn = json.loads(existing_rn_file.download_as_string(client=None))
                 print_warning(str(previous_rn))
                 # with open(os.path.join(self._pack_path, 'releaseNotes.json')) as f:
