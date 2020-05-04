@@ -1,5 +1,5 @@
 ## [Unreleased]
-Fixed an issue in a pcap file which contains http response but not a request.
+Fixed an issue where a pcap file which contains only an HTTP response was mishandled.
 
 
 ## [20.4.0] - 2020-04-14
