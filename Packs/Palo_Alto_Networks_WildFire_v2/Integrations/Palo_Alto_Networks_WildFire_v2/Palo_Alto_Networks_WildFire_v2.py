@@ -420,8 +420,7 @@ def wildfire_get_verdict_command():
         dbot_score_list = create_dbot_score_from_verdict(pretty_verdict)
         entry_context = {
             "WildFire.Verdicts(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5)": pretty_verdict,
-            "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && "
-            "val.Type === obj.Type)": dbot_score_list
+            "DBotScore": dbot_score_list
         }
         demisto.results({
             'Type': entryTypes['note'],
