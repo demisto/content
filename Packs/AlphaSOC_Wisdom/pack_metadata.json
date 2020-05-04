@@ -1,6 +1,6 @@
 {
-    "name": "Anomali ThreatStream v2",
-    "description": "Use Anomali ThreatStream to query and submit threats.",
+    "name": "AlphaSOC Wisdom",
+    "description": "DNS and IP threat intelligence via the AlphaSOC platform",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -10,8 +10,7 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Anomali ThreatStream",
-        "Anomali ThreatStream v2"
+        "AlphaSOC Wisdom"
     ],
     "created": "2020-04-14T00:00:00Z",
     "updated": "2020-03-14T00:00:00Z",
