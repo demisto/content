@@ -48,7 +48,7 @@ configuration:
   name: feedExpirationInterval
   required: false
   type: 1
-- defaultvalue: '180'
+- defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
