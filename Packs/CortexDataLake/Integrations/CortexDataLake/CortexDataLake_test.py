@@ -68,11 +68,12 @@ def test_build_where_clause():
                     'file_name': 'name1,name2'},
                    '(source_ip.value = "ip1" OR source_ip.value = "ip2") '
                    'AND (dest_ip.value = "ip3" OR dest_ip.value = "ip4") '
-                   'AND (rule_matched = "rule1") AND (from_zone = "UTC" OR from_zone = "UTC2") '
-                   'AND (dest_port = "555" OR dest_port = "666") '
+                   'AND (rule_matched = "rule1") '
+                   'AND (from_zone = "UTC" OR from_zone = "UTC2") '
                    'AND (action.value = "allow" OR action.value = "unknown") '
                    'AND (file_sha_256 = "hash1" OR file_sha_256 = "hash2") '
-                   'AND (file_name = "name1" OR file_name = "name2")'
+                   'AND (file_name = "name1" OR file_name = "name2") '
+                   'AND (dest_port = 555 OR dest_port = 666)'
                    ),
                   ({'source_ip': 'ip1', 'non_relevant_arg': 'value'}, '(source_ip.value = "ip1")')]
     for args, expected_result in test_cases:

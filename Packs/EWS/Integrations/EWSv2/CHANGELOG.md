@@ -1,6 +1,8 @@
 ## [Unreleased]
-- Fixed an issue where the **fetch-incidents** command caused a timeout from EWS.
-- Fixed an issue where an error occurred when getting mails with malformed attachments.
+Fixed an issue where an error occurred when getting mails with malformed attachments.
+
+## [20.4.1] - 2020-04-29
+Fixed an issue where the **fetch-incidents** command caused a timeout from EWS.
 
 ## [20.4.0] - 2020-04-14
 -
