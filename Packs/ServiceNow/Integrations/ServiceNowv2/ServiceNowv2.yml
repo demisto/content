@@ -213,8 +213,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Ticket urgency. Giving a custom value which predefined in ServiceNow,
-        e.g: ''5 - Informational'' is available.'
+      description: 'Ticket urgency. You may select from the predefined options, or
+        define a custom field by using other value. e.g: "Urgent", "1 - Informational".'
       isArray: false
       name: urgency
       predefined:
@@ -225,8 +225,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Ticket severity. Giving a custom value which predefined in ServiceNow,
-        e.g: ''5 - Informational'' is available.'
+      description: 'Ticket severity. You may select from the predefined options, or
+        define a custom field by using other value. e.g: "Urgent", "1 - Informational".'
       isArray: false
       name: severity
       predefined:
@@ -755,8 +755,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Ticket urgency. Giving a custom value which predefined in ServiceNow,
-        e.g: ''5 - Informational'' is available.'
+      description: 'Ticket urgency. You may select from the predefined options, or
+        define a custom field by using other value. e.g: "Urgent", "1 - Informational".'
       isArray: false
       name: urgency
       predefined:
@@ -767,8 +767,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Ticket severity. Giving a custom value which predefined in ServiceNow,
-        e.g: ''5 - Informational'' is available.'
+      description: 'Ticket severity. You may select from the predefined options, or
+        define a custom field by using other value. e.g: "Urgent", "1 - Informational".'
       isArray: false
       name: severity
       predefined:
