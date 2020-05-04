@@ -401,12 +401,42 @@ script:
       description: The user for which to search direct reports.
     name: msgraph-direct-reports
     outputs:
-    - contextPath: DirectReports.manager
-      description: User's name.
+    - contextPath: MSGraphUserDirectReports.Manager
+      description: ''
       type: String
-    - contextPath: DirectReports.Reports
-      description: User's direct reports list.
+    - contextPath: MSGraphUserDirectReports.Reports.@odata.type
+      description: ''
+      type: String
+    - contextPath: MSGraphUserDirectReports.Reports.displayName
+      description: ''
+      type: String
+    - contextPath: MSGraphUserDirectReports.Reports.givenName
+      description: ''
+      type: String
+    - contextPath: MSGraphUserDirectReports.Reports.id
+      description: ''
+      type: String
+    - contextPath: MSGraphUserDirectReports.Reports.jobTitle
+      description: ''
       type: Unknown
+    - contextPath: MSGraphUserDirectReports.Reports.mail
+      description: ''
+      type: Unknown
+    - contextPath: MSGraphUserDirectReports.Reports.mobilePhone
+      description: ''
+      type: Unknown
+    - contextPath: MSGraphUserDirectReports.Reports.officeLocation
+      description: ''
+      type: Unknown
+    - contextPath: MSGraphUserDirectReports.Reports.preferredLanguage
+      description: ''
+      type: Unknown
+    - contextPath: MSGraphUserDirectReports.Reports.surname
+      description: ''
+      type: String
+    - contextPath: MSGraphUserDirectReports.Reports.userPrincipalName
+      description: ''
+      type: String
     description: Retrieves the direct reports for a user. Direct reports are the people
         who have that user configured as their manager.
   dockerimage: demisto/crypto:1.0.0.303

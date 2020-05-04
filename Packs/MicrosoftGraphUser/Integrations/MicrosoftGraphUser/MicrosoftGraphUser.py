@@ -112,7 +112,7 @@ class MsGraphClient:
 
     def get_user(self, user, properties):
         user_data = self.ms_client.http_request(
-            method='GET ',
+            method='GET',
             url_suffix=f'users/{user}',
             params={'$select': properties})
         user_data.pop('@odata.context', None)
@@ -129,11 +129,11 @@ class MsGraphClient:
     
     def get_direct_reports(self, user):
         res = self.ms_client.http_request(
-            method='GET ',
+            method='GET',
             url_suffix=f'users/{user}/directReports')
 
         res.pop('@odata.context', None)
-        return res
+        return res.get('value', [])
 
 
 def test_function(client, _):
@@ -255,8 +255,8 @@ def get_direct_reports_command(client: MsGraphClient, args: Dict):
     reports_readable, reports = parse_outputs(raw_reports)
     human_readable = tableToMarkdown(name=f"{user} - direct reports", t=reports_readable, removeNull=True)
     outputs = {
-        'DirectReports(val.manager == obj.manager)': {
-            'manager': user,
+        'MSGraphUserDirectReports(val.Manager == obj.Manager)': {
+            'Manager': user,
             'Reports': reports
         }
     }
