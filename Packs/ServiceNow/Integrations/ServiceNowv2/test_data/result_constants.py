@@ -278,3 +278,8 @@ EXPECTED_GET_TABLE_NAME = {
         }
     ]
 }
+EXPECTED_ADD_TAG = {
+    'ServiceNow.Ticket(val.ID===obj.ID)': {
+        'ID': '123', 'TagTitle': 'title', 'TagID': '1234'
+    }
+}
