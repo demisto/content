@@ -2720,3 +2720,4 @@ script:
   runonce: false
 tests:
   - CarbonBlackLiveResponseTest
+fromversion: 3.6.1
