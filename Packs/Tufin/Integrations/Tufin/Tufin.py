@@ -42,7 +42,7 @@ if not demisto.params().get('proxy'):
     del os.environ['https_proxy']
 
 
-def tos_request(req_type, path, params=None, headers=None, data=None):
+def tos_request(tos_app, req_type, path, params=None, headers=None, data=None):
     """ Function to access TOS via REST API """
     if headers is None:
         headers = {
@@ -52,16 +52,28 @@ def tos_request(req_type, path, params=None, headers=None, data=None):
         }
 
     # Get Configuration
-    st_ip = demisto.params()['SecureTrack-Server']
-    st_user = demisto.params()['SecureTrack-User']['identifier']
-    st_pass = demisto.params()['SecureTrack-User']['password']
+    tos_ip = ""
+    tos_user = ""
+    tos_pass = ""
+    if tos_app == "st":
+        tos_ip = demisto.params()['SecureTrack-Server']
+        tos_user = demisto.params()['SecureTrack-User']['identifier']
+        tos_pass = demisto.params()['SecureTrack-User']['password']
+    elif tos_app == "sc":
+        tos_ip = demisto.params()['SecureChange-Server']
+        tos_user = demisto.params()['SecureChange-User']['identifier']
+        tos_pass = demisto.params()['SecureChange-User']['password']
+    elif tos_app == "sa":
+        tos_ip = demisto.params()['SecureApp-Server']
+        tos_user = demisto.params()['SecureApp-User']['identifier']
+        tos_pass = demisto.params()['SecureApp-User']['password']
     verify_ssl = not demisto.params().get('unsecure', False)
-    url = 'https://' + st_ip + path
+    url = 'https://' + tos_ip + path
 
     # Go do
     if req_type.upper() == 'GET':
         try:
-            res = requests.get(url, params=params, headers=headers, auth=(st_user, st_pass), verify=verify_ssl)
+            res = requests.get(url, params=params, headers=headers, auth=(tos_user, tos_pass), verify=verify_ssl)
         except requests.exceptions.RequestException as e:
             return_error(str(e))
 
@@ -78,7 +90,7 @@ def tos_request(req_type, path, params=None, headers=None, data=None):
                 return_error('Error {} Reaching {} to TOS: {}'.format(res.status_code, res.url, res.reason))
     elif req_type.upper() == 'POST':
         try:
-            res = requests.post(url, data=data, params=params, headers=headers, auth=(st_user, st_pass), verify=verify_ssl)
+            res = requests.post(url, data=data, params=params, headers=headers, auth=(tos_user, tos_pass), verify=verify_ssl)
         except requests.exceptions.RequestException as e:
             return_error(str(e))
 
@@ -116,7 +128,7 @@ def path_finder(querystring):
     }
 
     # Ask TOS for the path
-    o = tos_request('GET', '/securetrack/api/topology/path', querystring)
+    o = tos_request('st', 'GET', '/securetrack/api/topology/path', querystring)
 
     # Verify the data and return
     try:
@@ -166,7 +178,7 @@ def path_finder_image(querystring):
 
     try:
         headers = {'accept': 'image/png', 'content-type': 'application/json', 'cache-control': 'no-cache'}
-        img = tos_request('GET', '/securetrack/api/topology/path_image', querystring, headers)
+        img = tos_request('st', 'GET', '/securetrack/api/topology/path_image', querystring, headers)
         # simple check if we have an image or error message.
         if len(img) > 20:
             # Send back to Demisto inside function
@@ -210,7 +222,7 @@ def object_lookup(querystring):
 
     return_json: Dict[str, List] = {'objects': []}
 
-    o = tos_request('GET', '/securetrack/api/network_objects/search', querystring)
+    o = tos_request('st', 'GET', '/securetrack/api/network_objects/search', querystring)
 
     # Validate result
     try:
@@ -219,7 +231,7 @@ def object_lookup(querystring):
         total = 0
 
     if total > 0:
-        device_json = tos_request('GET', '/securetrack/api/devices')['devices']['device']
+        device_json = tos_request('st', 'GET', '/securetrack/api/devices')['devices']['device']
         objs = o['network_objects']['network_object']
         if not isinstance(o['network_objects']['network_object'], list):
             objs = [objs]
@@ -268,7 +280,7 @@ def policy_search(querystring, max_rules_per_device=100):
         'EntryContext': {}
     }
 
-    matches = tos_request('GET', u, querystring)
+    matches = tos_request('st', 'GET', u, querystring)
     search_devices = [e['device_id'] for e in matches['device_list']['device'] if int(e['rule_count']) > 0]
 
     if not len(search_devices):
@@ -281,9 +293,9 @@ def policy_search(querystring, max_rules_per_device=100):
         querystring['count'] = max_rules_per_device
         querystring['start'] = 0
         rule_return = []
-        device_json = tos_request('GET', '/securetrack/api/devices')['devices']['device']
+        device_json = tos_request('st', 'GET', '/securetrack/api/devices')['devices']['device']
         for d in search_devices:
-            rules = tos_request('GET', u + '/{}'.format(d), querystring)
+            rules = tos_request('st', 'GET', u + '/{}'.format(d), querystring)
             # If no matches(there should be) just break the iteration
             if rules['rules']['count'] == 0:
                 break
@@ -328,17 +340,17 @@ def zone_match(ipaddr):
         'EntryContext': {}
     }
     try:
-        zone_list = tos_request('GET', '/securetrack/api/zones/')
+        zone_list = tos_request('st', 'GET', '/securetrack/api/zones/')
         for zone in zone_list['zones']['zone']:
-            zone_subnets = tos_request('GET', '/securetrack/api/zones/%s/entries' % zone['id'])
+            zone_subnets = tos_request('st', 'GET', '/securetrack/api/zones/%s/entries' % zone['id'])
             zone.update(zone_subnets)
             for subnet in zone_subnets['zone_entries']['zone_entry']:
                 ipnet = '%s/%s' % (subnet['ip'], subnet['prefix'])
                 if IPAddress(ipaddr) in IPNetwork(ipnet):
                     z = {}
                     z['Name'] = zone['name']
-                    z['ID'] = zone['id']
-                    entry['EntryContext']['Tufin.Zones'] = [z]
+                    z['ID'] = int(zone['id'])
+                    entry['EntryContext']['Tufin.Zone'] = [z]
                     entry['Contents'] = zone
                     entry['HumanReadable'] = tableToMarkdown('Tufin Zone Search for {}'.format(ipaddr),
                                                              {'Name': zone['name'], 'ID': zone['id']},
@@ -400,7 +412,7 @@ def change_req(req_type, subj, priority, src, dst='', proto='', port='', action=
             (req['ticket']['steps']['step'][0]['tasks']['task']['fields']['field']
                 ['access_request']['action']) = action.capitalize()
             req['ticket']['comment'] = comment
-            tos_request('POST', '/securechangeworkflow/api/securechange/tickets', data=json.dumps(req))
+            tos_request('sc', 'POST', '/securechangeworkflow/api/securechange/tickets', data=json.dumps(req))
             entry['Contents'] = {'status': 'Ticket Created'}
             entry['HumanReadable'] = tableToMarkdown('{} ticket request'.format(req_type),
                                                      {'status': 'Success'}, ['status'], removeNull=True)
@@ -417,7 +429,7 @@ def change_req(req_type, subj, priority, src, dst='', proto='', port='', action=
             (req['ticket']['steps']['step'][0]['tasks']['task']['fields']['field']
                 ['server_decommission_request']['servers']['server']['ip_address']) = src
             req['ticket']['comment'] = comment
-            tos_request('POST', '/securechangeworkflow/api/securechange/tickets', data=json.dumps(req))
+            tos_request('st', 'POST', '/securechangeworkflow/api/securechange/tickets', data=json.dumps(req))
             entry['Contents'] = {'status': 'Ticket Created'}
             entry['HumanReadable'] = tableToMarkdown('{} ticket request'.format(req_type),
                                                      {'status': 'Success'}, ['status'], removeNull=True)
@@ -464,17 +476,17 @@ def dev_search(name='', ip='', vendor='', model=''):
         if not model == '' and model is not None:
             qstr = '{}&model={}'.format(qstr, model)
         url = '/securetrack/api/devices{}'.format(qstr)
-        devices = tos_request('GET', url)
+        devices = tos_request('st', 'GET', url)
         if devices['devices']['count'] > 0:
             for device in devices['devices']['device']:
                 if 'ip' in device.keys():
-                    dev_list.append({'ID': device['id'], 'Name': device['name'], 'IP': device['ip'],
+                    dev_list.append({'ID': int(device['id']), 'Name': device['name'], 'IP': device['ip'],
                                      'Vendor': device['vendor'], 'Model': device['model']})
                 else:
-                    dev_list.append({'ID': device['id'], 'Name': device['name'], 'IP': '0.0.0.0',
+                    dev_list.append({'ID': int(device['id']), 'Name': device['name'], 'IP': '0.0.0.0',
                                      'Vendor': device['vendor'], 'Model': device['model']})
             entry['Contents'] = devices
-            entry['EntryContext'] = {'Tufin.Devices': dev_list}
+            entry['EntryContext'] = {'Tufin.Device': dev_list}
             entry['HumanReadable'] = tableToMarkdown('Device Search Results', dev_list,
                                                      ['ID', 'Name', 'IP', 'Vendor', 'Model'], removeNull=True)
     except Exception as e:
@@ -503,7 +515,7 @@ def change_info(ticket_id):
     }
     try:
         url = '/securechangeworkflow/api/securechange/tickets/{}'.format(ticket_id)
-        ticket = tos_request('GET', url)
+        ticket = tos_request('sc', 'GET', url)
         cur_step = ''
         if type(ticket['ticket']['current_step']) != str:
             cur_step = ticket['ticket']['current_step']['name']
@@ -523,9 +535,9 @@ def change_info(ticket_id):
         chg['Status'] = ticket['ticket']['status']
         chg['CurrentStep'] = cur_step
         chg['Requester'] = ticket['ticket']['requester']
-        chg['Workflow.ID'] = ticket['ticket']['workflow']['id']
-        chg['Workflow.Name'] = ticket['ticket']['workflow']['name']
-        entry['EntryContext']['Tufin.Tickets'] = [chg]
+        chg['WorkflowID'] = ticket['ticket']['workflow']['id']
+        chg['WorkflowName'] = ticket['ticket']['workflow']['name']
+        entry['EntryContext']['Tufin.Ticket'] = [chg]
         entry['HumanReadable'] = tableToMarkdown('Ticket ID {}'.format(ticket_id), {'ID': ticket['ticket']['id'],
                                                  'Subject': ticket['ticket']['subject'],
                                                  'Priority': ticket['ticket']['priority'], 'Status': ticket['ticket']['status'],
@@ -557,14 +569,14 @@ def app_search(name=''):
         url = '/securechangeworkflow/api/secureapp/repository/applications'
         if name is not None and name != '':
             url = '{}?name={}'.format(url, name)
-        apps = tos_request('GET', url)
+        apps = tos_request('sa', 'GET', url)
         app_list = []
         for app in apps['applications']['application']:
             app_list.append({'ID': app['id'], 'Name': app['name'], 'Status': app['status'],
                              'Decommissioned': app['decommissioned'], 'OwnerID': app['owner']['id'],
                              'OwnerName': app['owner']['name'], 'Comments': app['comment']})
         entry['Contents'] = app_list
-        entry['EntryContext']['Tufin.Apps'] = app_list
+        entry['EntryContext']['Tufin.App'] = app_list
         entry['HumanReadable'] = tableToMarkdown('Application Search Results', app_list,
                                                  ['ID', 'Name', 'Status', 'OwnerName', 'Comments'], removeNull=True)
     except Exception as e:
@@ -590,7 +602,7 @@ def app_conns(app_id):
     }
     try:
         url = '/securechangeworkflow/api/secureapp/repository/applications/{}/connections'.format(app_id)
-        conns = tos_request('GET', url)
+        conns = tos_request('sa', 'GET', url)
         conn_list = []
         conn_md = '### Connections for application ID: {}'.format(app_id)
         for conn in conns['connections']['connection']:
@@ -604,27 +616,26 @@ def app_conns(app_id):
             source_list = []
             conn_md = '{}\n\n**Source:**\nid|type|name\n---|---|---'.format(conn_md)
             for source in conn['sources']['source']:
-                source_list.append({'ID': source['id'], 'Type': source['type'], 'Name': source['name']})
+                source_list.append(source['name'])
                 conn_md = '{}\n{} | {} | {}'.format(conn_md, source['id'], source['type'], source['name'])
             # Get destinations
             dest_list = []
             conn_md = '{}\n\n**Destination:**\nid|type|name\n---|---|---'.format(conn_md)
             for dest in conn['destinations']['destination']:
-                dest_list.append({'ID': dest['id'], 'Type': dest['type'], 'Name': dest['name']})
+                dest_list.append(dest['name'])
                 conn_md = '{}\n{} | {} | {}'.format(conn_md, dest['id'], dest['type'], dest['name'])
             # Get services
             service_list = []
             conn_md = '{}\n\n**Service:**\nid|name\n---|---'.format(conn_md)
             for service in conn['services']['service']:
-                service_list.append({'ID': service['id'], 'Name': service['name']})
+                service_list.append(service['name'])
                 conn_md = '{}\n{} | {}'.format(conn_md, service['id'], service['name'])
             # Add to connection list
-            conn_list.append({'ID': conn['id'], 'Name': conn['name'], 'Status': conn['status'], 'External': conn['external'],
-                              'Source': source_list, 'Destination': dest_list, 'Service': service_list,
-                              'Comment': conn['comment']})
+            conn_list.append({'ID': conn['id'], 'Name': conn['name'], 'AppID': app_id, 'Status': conn['status'],
+                              'External': conn['external'], 'Source': source_list, 'Destination': dest_list,
+                              'Service': service_list, 'Comment': conn['comment']})
         entry['Contents'] = conn_list
-        conn_results = {'ID': int(app_id), 'Connections': conn_list}
-        entry['EntryContext']['Tufin.Apps(val.ID && val.ID === obj.ID)'] = createContext(conn_results)
+        entry['EntryContext']['Tufin.AppConnection'] = conn_list
         entry['HumanReadable'] = conn_md
     except Exception as e:
         return_error(f'Error submitting request: {str(e)}')
@@ -638,7 +649,7 @@ def app_conns_command():
 
 
 def test_command():
-    tos_request('GET', '/securetrack/api/devices')
+    tos_request('st', 'GET', '/securetrack/api/devices')
     demisto.results('ok')
 
 
