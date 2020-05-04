@@ -39,7 +39,7 @@ configuration:
   required: false
 - display: Trust any certificate (not secure)
   name: unsecure
-  defaultvalue: "true"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
