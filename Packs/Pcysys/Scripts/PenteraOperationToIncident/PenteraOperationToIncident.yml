@@ -9,7 +9,7 @@ enabled: true
 args:
   - name: full_action_report
     required: true
-    description: Pentera Full Action Report
+    description: Pentera Full Action Report. Produced by the command 'pentera-get-task-run-full-action-report'
     isArray: true
   - name: custom_fields_output
     description: Name of the field to serialize details into
@@ -23,6 +23,6 @@ outputs:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/pyjwt3:1.0.0.4946
+dockerimage: demisto/python3:3.8.2.6981
 runas: DBotWeakRole
 comment: Groups Pentera Full Actions Reports by Operation Type to generate an output usable in creating incidents
