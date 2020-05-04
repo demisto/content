@@ -401,37 +401,40 @@ script:
       description: The user for which to search direct reports.
     name: msgraph-direct-reports
     outputs:
-    - contextPath: MSGraphUserDirectReports.value.@odata.type
+    - contextPath: MSGraphUserDirectReports.Manager
       description: ''
       type: String
-    - contextPath: MSGraphUserDirectReports.value.displayName
+    - contextPath: MSGraphUserDirectReports.Reports.@odata.type
       description: ''
       type: String
-    - contextPath: MSGraphUserDirectReports.value.givenName
+    - contextPath: MSGraphUserDirectReports.Reports.displayName
       description: ''
       type: String
-    - contextPath: MSGraphUserDirectReports.value.id
+    - contextPath: MSGraphUserDirectReports.Reports.givenName
       description: ''
       type: String
-    - contextPath: MSGraphUserDirectReports.value.jobTitle
-      description: ''
-      type: Unknown
-    - contextPath: MSGraphUserDirectReports.value.mail
-      description: ''
-      type: Unknown
-    - contextPath: MSGraphUserDirectReports.value.mobilePhone
-      description: ''
-      type: Unknown
-    - contextPath: MSGraphUserDirectReports.value.officeLocation
-      description: ''
-      type: Unknown
-    - contextPath: MSGraphUserDirectReports.value.preferredLanguage
-      description: ''
-      type: Unknown
-    - contextPath: MSGraphUserDirectReports.value.surname
+    - contextPath: MSGraphUserDirectReports.Reports.id
       description: ''
       type: String
-    - contextPath: MSGraphUserDirectReports.value.userPrincipalName
+    - contextPath: MSGraphUserDirectReports.Reports.jobTitle
+      description: ''
+      type: Unknown
+    - contextPath: MSGraphUserDirectReports.Reports.mail
+      description: ''
+      type: Unknown
+    - contextPath: MSGraphUserDirectReports.Reports.mobilePhone
+      description: ''
+      type: Unknown
+    - contextPath: MSGraphUserDirectReports.Reports.officeLocation
+      description: ''
+      type: Unknown
+    - contextPath: MSGraphUserDirectReports.Reports.preferredLanguage
+      description: ''
+      type: Unknown
+    - contextPath: MSGraphUserDirectReports.Reports.surname
+      description: ''
+      type: String
+    - contextPath: MSGraphUserDirectReports.Reports.userPrincipalName
       description: ''
       type: String
     description: Retrieves the direct reports for a user. Direct reports are the people
