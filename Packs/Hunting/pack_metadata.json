@@ -15,7 +15,8 @@
         "Hunt",
         "indicators",
         "Hash",
-        "File"
+        "File",
+        "Extract"
     ],
     "created": "2020-04-30T15:04:31Z",
     "updated": "2020-04-30T15:04:31Z",
@@ -34,7 +35,8 @@
         "Hunt",
         "indicators",
         "Hash",
-        "File"
+        "File",
+        "Extract"
     ],
     "dependencies": {
         "Legacy": {
