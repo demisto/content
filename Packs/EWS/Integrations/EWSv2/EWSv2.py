@@ -1125,9 +1125,9 @@ def parse_incident_from_item(item, is_fetch):
                     # other item attachment
                     label_attachment_type = 'attachmentItems'
                     label_attachment_id_type = 'attachmentItemsId'
-                    attachment.item.parent_item = item
+
                     # save the attachment
-                    if attachment.item.mime_content:
+                    if hasattr(attachment, 'item') and attachment.item.mime_content:
                         attached_email = email.message_from_string(attachment.item.mime_content)
                         if attachment.item.headers:
                             attached_email_headers = [(h, ' '.join(map(str.strip, v.split('\r\n')))) for (h, v) in
@@ -1148,6 +1148,11 @@ def parse_incident_from_item(item, is_fetch):
                         # save attachment to incident
                         incident['attachment'].append({
                             'path': file_result['FileID'],
+                            'name': get_attachment_name(attachment.name) + ".eml"
+                        })
+
+                    else:
+                        incident['attachment'].append({
                             'name': get_attachment_name(attachment.name) + ".eml"
                         })
 
@@ -1245,21 +1250,38 @@ def get_entry_for_file_attachment(item_id, attachment):
 
 def parse_attachment_as_dict(item_id, attachment):
     try:
-        attachment_content = attachment.content if isinstance(attachment,
-                                                              FileAttachment) else attachment.item.mime_content
-        return {
-            ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
-            ATTACHMENT_ID: attachment.attachment_id.id,
-            'attachmentName': get_attachment_name(attachment.name),
-            'attachmentSHA256': hashlib.sha256(attachment_content).hexdigest() if attachment_content else None,
-            'attachmentContentType': attachment.content_type,
-            'attachmentContentId': attachment.content_id,
-            'attachmentContentLocation': attachment.content_location,
-            'attachmentSize': attachment.size,
-            'attachmentLastModifiedTime': attachment.last_modified_time.ewsformat(),
-            'attachmentIsInline': attachment.is_inline,
-            ATTACHMENT_TYPE: FILE_ATTACHMENT_TYPE if isinstance(attachment, FileAttachment) else ITEM_ATTACHMENT_TYPE
-        }
+        # if this is a file attachment or a
+        if isinstance(attachment, FileAttachment) or hasattr(attachment, 'item'):
+            attachment_content = attachment.content if isinstance(attachment, FileAttachment) \
+                else attachment.item.mime_content
+
+            return {
+                ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
+                ATTACHMENT_ID: attachment.attachment_id.id,
+                'attachmentName': get_attachment_name(attachment.name),
+                'attachmentSHA256': hashlib.sha256(attachment_content).hexdigest() if attachment_content else None,
+                'attachmentContentType': attachment.content_type,
+                'attachmentContentId': attachment.content_id,
+                'attachmentContentLocation': attachment.content_location,
+                'attachmentSize': attachment.size,
+                'attachmentLastModifiedTime': attachment.last_modified_time.ewsformat(),
+                'attachmentIsInline': attachment.is_inline,
+                ATTACHMENT_TYPE: FILE_ATTACHMENT_TYPE if isinstance(attachment, FileAttachment)
+                else ITEM_ATTACHMENT_TYPE
+            }
+
+        else:
+            return {
+                ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
+                ATTACHMENT_ID: attachment.attachment_id.id,
+                'attachmentName': get_attachment_name(attachment.name),
+                'attachmentSize': attachment.size,
+                'attachmentLastModifiedTime': attachment.last_modified_time.ewsformat(),
+                'attachmentIsInline': attachment.is_inline,
+                ATTACHMENT_TYPE: FILE_ATTACHMENT_TYPE if isinstance(attachment, FileAttachment)
+                else ITEM_ATTACHMENT_TYPE
+            }
+
     except TypeError as e:
         if e.message != "must be string or buffer, not None":
             raise
