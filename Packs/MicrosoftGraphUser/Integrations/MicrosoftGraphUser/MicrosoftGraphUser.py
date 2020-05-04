@@ -133,7 +133,7 @@ class MsGraphClient:
             url_suffix=f'users/{user}/directReports')
 
         res.pop('@odata.context', None)
-        return res
+        return res.get('value', [])
 
 
 def test_function(client, _):
