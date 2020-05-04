@@ -9,6 +9,7 @@ from email.message import Message
 from email.header import Header
 from smtplib import SMTP, SMTP_SSL
 from smtplib import SMTPRecipientsRefused
+from distutils.util import strtobool
 import base64
 import json
 import mimetypes
@@ -351,7 +352,7 @@ def main():
         SERVER.ehlo()  # type: ignore
         # For BC purposes where TLS was a checkbox (no value only true or false) if TLS=True or TLS='STARTTLS' we enter
         # this condition, otherwise it means TLS is not configured (TLS=False) or is set to 'SSL/TLS' or 'None'.
-        if TLS is True or TLS == 'STARTTLS':
+        if TLS is True or TLS == 'STARTTLS' or strtobool(str(TLS)):
             SERVER.starttls()  # type: ignore
         user, password = get_user_pass()
         if user:
