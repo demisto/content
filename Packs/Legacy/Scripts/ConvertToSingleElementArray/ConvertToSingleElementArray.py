@@ -1,3 +1,5 @@
+from demistomock import demisto
+
 args = demisto.args()
 value = args.get("value")
 if value and isinstance(value, list):
