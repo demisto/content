@@ -1855,7 +1855,6 @@ def main():
             'servicenow-query-items': query_items_command,
             'servicenow-get-item-details': get_item_details_command,
             'servicenow-create-item-order': create_order_item_command,
-            'servicenow-get-table-name': get_table_name_command,
             'servicenow-document-route-to-queue': document_route_to_table,
         }
         args = demisto.args()
