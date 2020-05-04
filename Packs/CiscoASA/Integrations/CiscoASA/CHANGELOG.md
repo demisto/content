@@ -1,5 +1,5 @@
 ## [Unreleased]
-- Fixed an issue where command is ran and completed but error occurs due to logout failure.
+Fixed an issue in which a command completes but an error is raised.
 
 ## [20.4.0] - 2020-04-14
 -
