@@ -1139,28 +1139,36 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: 
         # Securonix returns the recent 10 incidents, offsetting the response to get the oldest 10 incidents
         total_incidents = int(securonix_incidents.get('totalIncidents', 0))
         if total_incidents > 10:
-            demisto.info(f'Fetching Securonix incidents. With offset: {total_incidents-10}')
+            demisto.info(f'Fetching Securonix incidents. From: {from_epoch}. To: {to_epoch}. '
+                         f'With offset: {total_incidents-10}')
             securonix_incidents = client.list_incidents_request(from_epoch, to_epoch, incident_status,
                                                                 int(total_incidents - 10))
-
         incidents_items = list(securonix_incidents.get('incidentItems'))  # type: ignore
-        # 1st incident is the latest
+
+        last_incident_id = int(last_run.get('id', 0))
+        for incident in incidents_items:
+            incident_id = int(incident.get('incidentId', 0))
+            if incident_id > last_incident_id:
+                incident_name = get_incident_name(incident, incident_id)  # Try to get incident reason as incident name
+                demisto_incidents.append({
+                    'name': incident_name,
+                    'occurred': timestamp_to_datestring(incident.get('lastUpdateDate')),
+                    'severity': incident_priority_to_dbot_score(incident.get('priority')),
+                    'rawJSON': json.dumps(incident)
+                })
+
+        # first Securonix incident is the latest
         if incidents_items:
             now = timestamp_to_datestring(incidents_items[0].get('lastUpdateDate'))
         else:
             now = datetime.now().strftime(timestamp_format)
         new_last_run.update({'time': now})
 
-        for incident in incidents_items:
-            incident_id = incident.get('incidentId', '0')
-            incident_name = get_incident_name(incident, incident_id)  # Try to get incident reason as incident name
-            demisto_incidents.append({
-                'name': incident_name,
-                'occurred': timestamp_to_datestring(incident.get('lastUpdateDate')),
-                'severity': incident_priority_to_dbot_score(incident.get('priority')),
-                'rawJSON': json.dumps(incident)
-            })
+        if demisto_incidents:
+            last_incident_id = incidents_items[0].get('incidentId', 0)  # first Securonix incident is the latest
+            new_last_run.update({'id': last_incident_id})
 
+    demisto.info(f'Setting Securonix last fetch run details. {str(new_last_run)}')
     demisto.setLastRun(new_last_run)
     return demisto_incidents
 
