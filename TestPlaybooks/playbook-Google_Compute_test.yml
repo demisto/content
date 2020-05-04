@@ -1,0 +1,1656 @@
+id: Google_Compute_test
+version: -1
+name: Google_Compute_test
+fromversion: 4.5.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6f0d434b-70fd-4342-8053-fb90de8eac48
+    type: start
+    task:
+      id: 6f0d434b-70fd-4342-8053-fb90de8eac48
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 057bec5f-307d-4a19-8533-654247c1ed11
+    type: regular
+    task:
+      id: 057bec5f-307d-4a19-8533-654247c1ed11
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 31ae2739-c1cd-49c8-8b97-8df55e4b9b90
+    type: regular
+    task:
+      id: 31ae2739-c1cd-49c8-8b97-8df55e4b9b90
+      version: -1
+      name: gcp-compute-get-network
+      script: '|||gcp-compute-get-network'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      network:
+        simple: default
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 5919e51d-dac8-4450-8eb9-b99cdcb8280b
+    type: condition
+    task:
+      id: 5919e51d-dac8-4450-8eb9-b99cdcb8280b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudCompute.Networks.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudCompute.Networks.creationTimestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudCompute.Networks.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudCompute.Networks.kind
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: dffeb18d-8964-4847-85a5-09352e533dfb
+    type: regular
+    task:
+      id: dffeb18d-8964-4847-85a5-09352e533dfb
+      version: -1
+      name: gcp-compute-list-instances
+      script: '|||gcp-compute-list-instances'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      filters: {}
+      maxResults: {}
+      orderBy: {}
+      pageToken: {}
+      zone:
+        simple: europe-west2-a
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 6f786350-2d8a-456f-84a0-77c04d362fc3
+    type: regular
+    task:
+      id: 6f786350-2d8a-456f-84a0-77c04d362fc3
+      version: -1
+      name: gcp-compute-aggregated-list-instances
+      script: '|||gcp-compute-aggregated-list-instances'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 60294954-35ce-4c4a-8284-f96f9dc74288
+    type: regular
+    task:
+      id: 60294954-35ce-4c4a-8284-f96f9dc74288
+      version: -1
+      name: gcp-compute-get-global-operation
+      script: '|||gcp-compute-get-global-operation'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      name:
+        simple: operation-1587460484853-5a3c9724b6e76-64c70639-e03056ef
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 417f1ee5-e036-46f5-8db2-4c6802f1e66f
+    type: regular
+    task:
+      id: 417f1ee5-e036-46f5-8db2-4c6802f1e66f
+      version: -1
+      name: gcp-compute-list-zone-operation
+      script: '|||gcp-compute-list-zone-operation'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      filters: {}
+      maxResults: {}
+      orderBy: {}
+      pageToken: {}
+      zone:
+        simple: europe-west2-a
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: ea41bf15-125e-4af6-8b2f-5cb3c92ae332
+    type: regular
+    task:
+      id: ea41bf15-125e-4af6-8b2f-5cb3c92ae332
+      version: -1
+      name: gcp-compute-list-region-operation
+      script: '|||gcp-compute-list-region-operation'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      filters: {}
+      maxResults: {}
+      orderBy: {}
+      pageToken: {}
+      region:
+        simple: europe-west2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 15b7a439-f79e-4d05-8113-62f5a34c876e
+    type: regular
+    task:
+      id: 15b7a439-f79e-4d05-8113-62f5a34c876e
+      version: -1
+      name: gcp-compute-list-global-operation
+      script: '|||gcp-compute-list-global-operation'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: afdbbd46-3d09-4e36-872b-eb04586b4f6d
+    type: regular
+    task:
+      id: afdbbd46-3d09-4e36-872b-eb04586b4f6d
+      version: -1
+      name: gcp-compute-delete-address
+      script: '|||gcp-compute-delete-address'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      address:
+        simple: testaddress
+      region:
+        simple: europe-west2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: 53d0babf-83b9-4a85-8fe5-1084f39cdeee
+    type: regular
+    task:
+      id: 53d0babf-83b9-4a85-8fe5-1084f39cdeee
+      version: -1
+      name: gcp-compute-get-address
+      script: '|||gcp-compute-get-address'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      address:
+        simple: testaddress
+      region:
+        simple: europe-west2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: c93fd702-3a08-485a-8670-91ce4af9fae3
+    type: regular
+    task:
+      id: c93fd702-3a08-485a-8670-91ce4af9fae3
+      version: -1
+      name: gcp-compute-insert-address
+      script: '|||gcp-compute-insert-address'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      address: {}
+      addressType: {}
+      description: {}
+      name:
+        simple: testaddress
+      network: {}
+      networkTier: {}
+      prefixLength: {}
+      purpose: {}
+      region:
+        simple: europe-west2
+      subnetwork: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: d7940d94-718f-4abd-822b-43be3ebf0c5a
+    type: regular
+    task:
+      id: d7940d94-718f-4abd-822b-43be3ebf0c5a
+      version: -1
+      name: gcp-compute-list-addresses
+      script: '|||gcp-compute-list-addresses'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      filters: {}
+      maxResults: {}
+      orderBy: {}
+      pageToken: {}
+      region:
+        simple: europe-west2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: 1647f6ca-1ab7-425b-8c6e-a08d8c613c75
+    type: regular
+    task:
+      id: 1647f6ca-1ab7-425b-8c6e-a08d8c613c75
+      version: -1
+      name: gcp-compute-aggregated-list-addresses
+      script: '|||gcp-compute-aggregated-list-addresses'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "59":
+    id: "59"
+    taskid: aca3d57e-e90b-443b-85b2-970fe06e9623
+    type: regular
+    task:
+      id: aca3d57e-e90b-443b-85b2-970fe06e9623
+      version: -1
+      name: gcp-compute-list-global-addresses
+      script: '|||gcp-compute-list-global-addresses'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "60":
+    id: "60"
+    taskid: d2908838-3a1e-493f-8fbe-690a8a9268d6
+    type: condition
+    task:
+      id: d2908838-3a1e-493f-8fbe-690a8a9268d6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "61"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudCompute.Addresses.kind
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "61":
+    id: "61"
+    taskid: 368ddc92-3d88-4472-80d1-d6e1d80a05e6
+    type: regular
+    task:
+      id: 368ddc92-3d88-4472-80d1-d6e1d80a05e6
+      version: -1
+      name: gcp-compute-aggregated-list-disks
+      script: '|||gcp-compute-aggregated-list-disks'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "62"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "62":
+    id: "62"
+    taskid: 4df953ff-3778-415e-8253-1245f4a3bf74
+    type: condition
+    task:
+      id: 4df953ff-3778-415e-8253-1245f4a3bf74
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "71"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudCompute.Disks.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudCompute.Disks.creationTimestamp
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "71":
+    id: "71"
+    taskid: 35cbd156-e4ed-4612-8911-084650adad2d
+    type: regular
+    task:
+      id: 35cbd156-e4ed-4612-8911-084650adad2d
+      version: -1
+      name: gcp-compute-list-disks
+      script: '|||gcp-compute-list-disks'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "72"
+    scriptarguments:
+      filters: {}
+      maxResults: {}
+      orderBy: {}
+      pageToken: {}
+      zone:
+        simple: europe-west2-a
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "72":
+    id: "72"
+    taskid: 57f62107-6f29-43ec-8461-a2e881a34d6e
+    type: condition
+    task:
+      id: 57f62107-6f29-43ec-8461-a2e881a34d6e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "77"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudCompute.Disks.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudCompute.Disks.creationTimestamp
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "77":
+    id: "77"
+    taskid: 81d7a1bd-3eab-4459-8cd3-27527082a66a
+    type: regular
+    task:
+      id: 81d7a1bd-3eab-4459-8cd3-27527082a66a
+      version: -1
+      name: gcp-compute-aggregated-list-disk-types
+      script: '|||gcp-compute-aggregated-list-disk-types'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "78"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "78":
+    id: "78"
+    taskid: 05e1eacd-9cbc-4854-859f-c7af5a8914f9
+    type: condition
+    task:
+      id: 05e1eacd-9cbc-4854-859f-c7af5a8914f9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "79"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudCompute.DiskTypes.creationTimestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudCompute.DiskTypes.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudCompute.DiskTypes.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudCompute.DiskTypes.validDiskSize
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "79":
+    id: "79"
+    taskid: 82d5e16d-f0aa-4ac9-8482-447c045da580
+    type: regular
+    task:
+      id: 82d5e16d-f0aa-4ac9-8482-447c045da580
+      version: -1
+      name: gcp-compute-get-disk-type
+      script: '|||gcp-compute-get-disk-type'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "81"
+    scriptarguments:
+      disktype:
+        simple: pd-ssd
+      zone:
+        simple: europe-west2-c
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "81":
+    id: "81"
+    taskid: 4732ef4a-4122-4eb4-81a8-facd2d7d94cd
+    type: regular
+    task:
+      id: 4732ef4a-4122-4eb4-81a8-facd2d7d94cd
+      version: -1
+      name: gcp-compute-list-disk-types
+      script: '|||gcp-compute-list-disk-types'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "95"
+    scriptarguments:
+      filters: {}
+      maxResults: {}
+      orderBy: {}
+      pageToken: {}
+      zone:
+        simple: europe-west2-c
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "95":
+    id: "95"
+    taskid: 2c904aa7-3618-47ac-8d3b-ad9f857466d4
+    type: regular
+    task:
+      id: 2c904aa7-3618-47ac-8d3b-ad9f857466d4
+      version: -1
+      name: gcp-compute-aggregated-list-instance-groups
+      script: '|||gcp-compute-aggregated-list-instance-groups'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "98"
+    scriptarguments:
+      filters: {}
+      maxResults: {}
+      orderBy: {}
+      pageToken: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "98":
+    id: "98"
+    taskid: d11897f2-785f-47f5-8ff1-46cc299a7bd9
+    type: regular
+    task:
+      id: d11897f2-785f-47f5-8ff1-46cc299a7bd9
+      version: -1
+      name: gcp-compute-get-instance-group
+      script: '|||gcp-compute-get-instance-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "102"
+    scriptarguments:
+      instanceGroup:
+        simple: gke-dmst-gke-cluster--dmst-gke-pool-1-9e2d8bda-grp
+      zone:
+        simple: europe-west2-a
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "102":
+    id: "102"
+    taskid: 888c3138-4bec-4b67-86a0-a6a319456049
+    type: regular
+    task:
+      id: 888c3138-4bec-4b67-86a0-a6a319456049
+      version: -1
+      name: gcp-compute-list-instance-groups
+      script: '|||gcp-compute-list-instance-groups'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "104"
+    scriptarguments:
+      filters: {}
+      maxResults: {}
+      orderBy: {}
+      pageToken: {}
+      zone:
+        simple: europe-west2-a
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "104":
+    id: "104"
+    taskid: 2cdba3cd-dcbb-4846-81fd-c2b465e0bcbe
+    type: regular
+    task:
+      id: 2cdba3cd-dcbb-4846-81fd-c2b465e0bcbe
+      version: -1
+      name: gcp-compute-list-instance-group-instances
+      script: '|||gcp-compute-list-instance-group-instances'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "108"
+    scriptarguments:
+      filters: {}
+      instanceGroup:
+        simple: gke-dmst-gke-cluster--dmst-gke-pool-1-9e2d8bda-grp
+      instanceState: {}
+      maxResults: {}
+      orderBy: {}
+      pageToken: {}
+      zone:
+        simple: europe-west2-a
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "108":
+    id: "108"
+    taskid: 5a2ffd6d-32d7-44b8-8a91-1b849a0e00bc
+    type: regular
+    task:
+      id: 5a2ffd6d-32d7-44b8-8a91-1b849a0e00bc
+      version: -1
+      name: gcp-compute-set-group-instance-named-ports
+      script: '|||gcp-compute-set-group-instance-named-ports'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "109"
+    scriptarguments:
+      fingerprint: {}
+      instanceGroup:
+        simple: gke-dmst-gke-cluster--dmst-gke-pool-1-9e2d8bda-grp
+      namedPorts:
+        simple: name=abc,port=123
+      zone:
+        simple: europe-west2-a
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "109":
+    id: "109"
+    taskid: d3e37849-0829-4152-8e9e-8aff363e992d
+    type: condition
+    task:
+      id: d3e37849-0829-4152-8e9e-8aff363e992d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "110"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudCompute.Operations.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudCompute.Operations.kind
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "110":
+    id: "110"
+    taskid: a6863a77-2c36-4dc7-82c3-abb2af4f8e9d
+    type: regular
+    task:
+      id: a6863a77-2c36-4dc7-82c3-abb2af4f8e9d
+      version: -1
+      name: gcp-compute-get-region
+      script: '|||gcp-compute-get-region'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "111"
+    scriptarguments:
+      region:
+        simple: europe-west2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "111":
+    id: "111"
+    taskid: baf84a8c-6c35-4f80-8167-6280fb10fa17
+    type: condition
+    task:
+      id: baf84a8c-6c35-4f80-8167-6280fb10fa17
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "112"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudCompute.Regions.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudCompute.Regions.creationTimestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudCompute.Regions.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudCompute.Regions.kind
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "112":
+    id: "112"
+    taskid: 8f053d91-1336-417d-8084-e45184057b55
+    type: regular
+    task:
+      id: 8f053d91-1336-417d-8084-e45184057b55
+      version: -1
+      name: gcp-compute-list-regions
+      script: '|||gcp-compute-list-regions'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "114"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "114":
+    id: "114"
+    taskid: 6ee93700-9615-4efd-8e30-6666d4f33625
+    type: regular
+    task:
+      id: 6ee93700-9615-4efd-8e30-6666d4f33625
+      version: -1
+      name: gcp-compute-get-zone
+      script: '|||gcp-compute-get-zone'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "116"
+    scriptarguments:
+      zone:
+        simple: europe-west2-a
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "116":
+    id: "116"
+    taskid: 4c51dba5-7986-4559-84cc-5e1acabbbd56
+    type: regular
+    task:
+      id: 4c51dba5-7986-4559-84cc-5e1acabbbd56
+      version: -1
+      name: gcp-compute-list-zones
+      script: '|||gcp-compute-list-zones'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "118"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "118":
+    id: "118"
+    taskid: 36b7764d-08e7-4b56-83d0-d7bd42e9779a
+    type: regular
+    task:
+      id: 36b7764d-08e7-4b56-83d0-d7bd42e9779a
+      version: -1
+      name: gcp-compute-aggregated-list-machine-types
+      script: '|||gcp-compute-aggregated-list-machine-types'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "120"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "120":
+    id: "120"
+    taskid: 49b57db3-a19e-4af1-8daa-968e4fbada08
+    type: regular
+    task:
+      id: 49b57db3-a19e-4af1-8daa-968e4fbada08
+      version: -1
+      name: gcp-compute-get-machine-type
+      script: '|||gcp-compute-get-machine-type'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "122"
+    scriptarguments:
+      machineType:
+        simple: c2-standard-16
+      zone:
+        simple: europe-west2-a
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "122":
+    id: "122"
+    taskid: f602a44f-9593-41e4-80da-21b8fcb11959
+    type: regular
+    task:
+      id: f602a44f-9593-41e4-80da-21b8fcb11959
+      version: -1
+      name: gcp-compute-list-machine-types
+      script: '|||gcp-compute-list-machine-types'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "130"
+    scriptarguments:
+      filters: {}
+      maxResults: {}
+      orderBy: {}
+      pageToken: {}
+      zone:
+        simple: europe-west2-a
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "130":
+    id: "130"
+    taskid: bca53d50-f2a9-41e8-8054-084b1a805941
+    type: regular
+    task:
+      id: bca53d50-f2a9-41e8-8054-084b1a805941
+      version: -1
+      name: gcp-compute-list-networks
+      script: '|||gcp-compute-list-networks'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "141"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "141":
+    id: "141"
+    taskid: d825de97-9ae1-4d1b-8be1-c141b4ae2889
+    type: regular
+    task:
+      id: d825de97-9ae1-4d1b-8be1-c141b4ae2889
+      version: -1
+      name: gcp-compute-list-firewall
+      script: '|||gcp-compute-list-firewall'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "142"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "142":
+    id: "142"
+    taskid: 49d90cf7-dc34-4e80-8a30-6f41954c2940
+    type: condition
+    task:
+      id: 49d90cf7-dc34-4e80-8a30-6f41954c2940
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "143"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudCompute.Firewalls.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudCompute.Firewalls.creationTimestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudCompute.Firewalls.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "143":
+    id: "143"
+    taskid: 9f092180-023e-4415-804f-09e6fb66eac8
+    type: regular
+    task:
+      id: 9f092180-023e-4415-804f-09e6fb66eac8
+      version: -1
+      name: gcp-compute-get-firewall
+      script: '|||gcp-compute-get-firewall'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "144"
+    scriptarguments:
+      name:
+        simple: default-allow-https
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "144":
+    id: "144"
+    taskid: 411ef5dc-1d03-4207-83f1-5d68dbc77aeb
+    type: condition
+    task:
+      id: 411ef5dc-1d03-4207-83f1-5d68dbc77aeb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "149"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudCompute.Firewalls.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudCompute.Firewalls.creationTimestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudCompute.Firewalls.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "149":
+    id: "149"
+    taskid: cb718c51-482b-4d96-8562-4f5ded236e87
+    type: regular
+    task:
+      id: cb718c51-482b-4d96-8562-4f5ded236e87
+      version: -1
+      name: gcp-compute-list-snapshots
+      script: '|||gcp-compute-list-snapshots'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "155"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "155":
+    id: "155"
+    taskid: cdad05d4-2fec-407c-8fd2-64648456e9dd
+    type: regular
+    task:
+      id: cdad05d4-2fec-407c-8fd2-64648456e9dd
+      version: -1
+      name: gcp-compute-project-info-add-metadata
+      script: '|||gcp-compute-project-info-add-metadata'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "156"
+    scriptarguments:
+      metadata:
+        simple: key=abc,value=123
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "156":
+    id: "156"
+    taskid: f7c21d16-861b-401d-8271-c30cb3695d36
+    type: condition
+    task:
+      id: f7c21d16-861b-401d-8271-c30cb3695d36
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "157"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudCompute.ProjectMetadata.operationType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudCompute.ProjectMetadata.insertTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudCompute.ProjectMetadata.selfLink
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "157":
+    id: "157"
+    taskid: b990a300-cd24-4c44-8c60-4db986847039
+    type: title
+    task:
+      id: b990a300-cd24-4c44-8c60-4db986847039
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 8260,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

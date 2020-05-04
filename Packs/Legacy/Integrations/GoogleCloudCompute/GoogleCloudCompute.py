@@ -23,7 +23,7 @@ SERVICE_ACT_PROJECT_ID = None
 API_VERSION = 'v1'
 GSERVICE = 'compute'
 SCOPE = ['https://www.googleapis.com/auth/cloud-platform']
-SERVICE = None  # variable set by build_and_authenticate() function
+COMPUTE = None  # variable set by build_and_authenticate() function
 
 """
 HELPER FUNCTIONS
@@ -129,15 +129,15 @@ def build_and_authenticate(googleservice):
         integration will make API calls
     """
 
-    global SERVICE_ACT_PROJECT_ID
+    global SERVICE_ACT_PROJECT_ID, COMPUTE
     auth_json_string = str(SERVICE_ACCOUNT_FILE).replace("\'", "\"").replace("\\\\", "\\")
     service_account_info = json.loads(auth_json_string)
     SERVICE_ACT_PROJECT_ID = service_account_info.get('project_id')
     service_credentials = service_account.Credentials.from_service_account_info(
         service_account_info, scopes=SCOPE
     )
-    service = discovery.build(GSERVICE, API_VERSION, credentials=service_credentials)
-    return service
+    COMPUTE = discovery.build(GSERVICE, API_VERSION, credentials=service_credentials)
+    return COMPUTE
 
 
 def wait_for_zone_operation(args):
@@ -154,9 +154,9 @@ def wait_for_zone_operation(args):
     name = args.get('name')
     while True:
         result = (
-            compute.zoneOperations()
-                .get(project=project, zone=zone, operation=name)
-                .execute()
+            COMPUTE.zoneOperations()
+            .get(project=project, zone=zone, operation=name)
+            .execute()
         )
         if result.get('status') == 'DONE':
             if 'error' in result:
@@ -199,9 +199,9 @@ def wait_for_region_operation(args):
     name = args.get('name')
     while True:
         result = (
-            compute.regionOperations()
-                .get(project=project, region=region, operation=name)
-                .execute()
+            COMPUTE.regionOperations()
+            .get(project=project, region=region, operation=name)
+            .execute()
         )
         if result.get('status') == 'DONE':
             if 'error' in result:
@@ -239,7 +239,7 @@ def wait_for_global_operation(args):
     name = args.get('name')
     while True:
         result = (
-            compute.globalOperations().get(project=project, operation=name).execute()
+            COMPUTE.globalOperations().get(project=project, operation=name).execute()
         )
         if result.get('status') == 'DONE':
             if 'error' in result:
@@ -715,7 +715,7 @@ def create_instance(args):
     project = SERVICE_ACT_PROJECT_ID
 
     operation = (
-        compute.instances().insert(project=project, zone=zone, body=config).execute()
+        COMPUTE.instances().insert(project=project, zone=zone, body=config).execute()
     )
 
     data_res = {
@@ -759,7 +759,7 @@ def list_instances(args):
     order_by = args.get('orderBy')
     page_token = args.get('pageToken')
 
-    request = compute.instances().list(
+    request = COMPUTE.instances().list(
         project=project,
         zone=zone,
         filter=filters,
@@ -782,7 +782,7 @@ def list_instances(args):
                 }
                 data_res.append(data_res_item)
 
-        request = compute.instances().list_next(
+        request = COMPUTE.instances().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -816,7 +816,7 @@ def aggregated_list_instances(args):
     output = []
     data_res = []
 
-    request = compute.instances().aggregatedList(
+    request = COMPUTE.instances().aggregatedList(
         project=project,
         filter=filters,
         maxResults=max_results,
@@ -838,7 +838,7 @@ def aggregated_list_instances(args):
                         }
                         data_res.append(data_res_item)
 
-        request = compute.instances().aggregatedList_next(
+        request = COMPUTE.instances().aggregatedList_next(
             previous_request=request, previous_response=response
         )
 
@@ -869,7 +869,7 @@ def set_instance_metadata(args):
     if args.get('metadataItems'):
         meta_data.update({'items': parse_metadata_items(args.get('metadataItems'))})
 
-    request = compute.instances().setMetadata(
+    request = COMPUTE.instances().setMetadata(
         project=project, zone=zone, instance=instance, body=meta_data
     )
     response = request.execute()
@@ -904,7 +904,7 @@ def get_instance(args):
     instance = args.get('instance')
     zone = args.get('zone')
 
-    request = compute.instances().get(project=project, zone=zone, instance=instance)
+    request = COMPUTE.instances().get(project=project, zone=zone, instance=instance)
     response = request.execute()
     data_res = {
         'id': response.get('id'),
@@ -934,7 +934,7 @@ def delete_instance(args):
     instance = args.get('instance')
     zone = args.get('zone')
 
-    request = compute.instances().delete(project=project, zone=zone, instance=instance)
+    request = COMPUTE.instances().delete(project=project, zone=zone, instance=instance)
     response = request.execute()
 
     data_res = {
@@ -967,7 +967,7 @@ def start_instance(args):
     instance = args.get('instance')
     zone = args.get('zone')
 
-    request = compute.instances().start(project=project, zone=zone, instance=instance)
+    request = COMPUTE.instances().start(project=project, zone=zone, instance=instance)
     response = request.execute()
 
     data_res = {
@@ -1000,7 +1000,7 @@ def stop_instance(args):
     instance = args.get('instance')
     zone = args.get('zone')
 
-    request = compute.instances().stop(project=project, zone=zone, instance=instance)
+    request = COMPUTE.instances().stop(project=project, zone=zone, instance=instance)
     response = request.execute()
 
     data_res = {
@@ -1033,7 +1033,7 @@ def reset_instance(args):
     instance = args.get('instance')
     zone = args.get('zone')
 
-    request = compute.instances().reset(project=project, zone=zone, instance=instance)
+    request = COMPUTE.instances().reset(project=project, zone=zone, instance=instance)
     response = request.execute()
 
     data_res = {
@@ -1077,7 +1077,7 @@ def set_instance_labels(args):
     if args.get('labelFingerprint'):
         body.update({'labelFingerprint': args.get('labelFingerprint')})
 
-    request = compute.instances().setLabels(
+    request = COMPUTE.instances().setLabels(
         project=project, zone=zone, instance=instance, body=body
     )
     response = request.execute()
@@ -1117,7 +1117,7 @@ def set_instance_machine_type(args):
 
     body = {'machineType': machine_type}
 
-    request = compute.instances().setMachineType(
+    request = COMPUTE.instances().setMachineType(
         project=project, zone=zone, instance=instance, body=body
     )
     response = request.execute()
@@ -1156,7 +1156,7 @@ def get_image(args):
 
     image = args.get('image')
 
-    request = compute.images().get(project=project, image=image)
+    request = COMPUTE.images().get(project=project, image=image)
     response = request.execute()
 
     data_res = {'id': response.get('id'), 'name': response.get('name')}
@@ -1181,7 +1181,7 @@ def get_image_from_family(args):
     project = args.get('project')
     family = args.get('family')
 
-    request = compute.images().getFromFamily(project=project, family=family)
+    request = COMPUTE.images().getFromFamily(project=project, family=family)
     response = request.execute()
 
     data_res = {
@@ -1229,7 +1229,7 @@ def list_images(args):
 
     output = []
     data_res = []
-    request = compute.images().list(
+    request = COMPUTE.images().list(
         project=project,
         filter=filters,
         maxResults=max_results,
@@ -1244,7 +1244,7 @@ def list_images(args):
                 data_res_item = {'id': image.get('id'), 'name': image.get('name')}
                 data_res.append(data_res_item)
 
-        request = compute.images().list_next(
+        request = COMPUTE.images().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -1266,7 +1266,7 @@ def delete_image(args):
     project = SERVICE_ACT_PROJECT_ID
     image = args.get('image')
 
-    request = compute.images().delete(project=project, image=image)
+    request = COMPUTE.images().delete(project=project, image=image)
     response = request.execute()
 
     data_res = {
@@ -1305,7 +1305,7 @@ def set_image_labels(args):
     labels = parse_labels(labels)
     body = {'labels': labels, 'labelFingerprint': label_fingerprint}
 
-    request = compute.images().setLabels(project=project, resource=image, body=body)
+    request = COMPUTE.images().setLabels(project=project, resource=image, body=body)
     response = request.execute()
 
     data_res = {
@@ -1484,9 +1484,9 @@ def insert_image(args):
 
     project = SERVICE_ACT_PROJECT_ID
     response = (
-        compute.images()
-            .insert(project=project, forceCreate=force_create, body=config)
-            .execute()
+        COMPUTE.images()
+        .insert(project=project, forceCreate=force_create, body=config)
+        .execute()
     )
 
     data_res = {
@@ -1549,9 +1549,9 @@ def networks_add_peering(args):
 
     project = SERVICE_ACT_PROJECT_ID
     response = (
-        compute.networks()
-            .addPeering(project=project, network=network, body=config)
-            .execute()
+        COMPUTE.networks()
+        .addPeering(project=project, network=network, body=config)
+        .execute()
     )
 
     data_res = {
@@ -1581,7 +1581,7 @@ def delete_network(args):
     project = SERVICE_ACT_PROJECT_ID
     network = args.get('network')
 
-    request = compute.networks().delete(project=project, network=network)
+    request = COMPUTE.networks().delete(project=project, network=network)
     response = request.execute()
 
     data_res = {
@@ -1611,7 +1611,7 @@ def get_network(args):
     project = SERVICE_ACT_PROJECT_ID
     network = args.get('network')
 
-    request = compute.networks().get(project=project, network=network)
+    request = COMPUTE.networks().get(project=project, network=network)
     response = request.execute()
 
     data_res = {'name': response.get('name'), 'id': response.get('id')}
@@ -1650,7 +1650,7 @@ def insert_network(args):
         config.update({'routingConfig': {'routingMode': routing_config_routing_mode}})
 
     project = SERVICE_ACT_PROJECT_ID
-    response = compute.networks().insert(project=project, body=config).execute()
+    response = COMPUTE.networks().insert(project=project, body=config).execute()
 
     data_res = {
         'status': response.get('status'),
@@ -1690,7 +1690,7 @@ def list_networks(args):
 
     output = []
     data_res = []
-    request = compute.networks().list(
+    request = COMPUTE.networks().list(
         project=project,
         filter=filters,
         maxResults=max_results,
@@ -1705,7 +1705,7 @@ def list_networks(args):
                 data_res_item = {'name': item.get('name'), 'id': item.get('id')}
                 data_res.append(data_res_item)
 
-        request = compute.networks().list_next(
+        request = COMPUTE.networks().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -1735,9 +1735,9 @@ def networks_removepeering(args):
 
     project = SERVICE_ACT_PROJECT_ID
     response = (
-        compute.networks()
-            .removePeering(project=project, network=network, body=config)
-            .execute()
+        COMPUTE.networks()
+        .removePeering(project=project, network=network, body=config)
+        .execute()
     )
 
     data_res = {
@@ -1767,7 +1767,7 @@ def get_global_operation(args):
     project = SERVICE_ACT_PROJECT_ID
     operation = args.get('name')
 
-    request = compute.globalOperations().get(project=project, operation=operation)
+    request = COMPUTE.globalOperations().get(project=project, operation=operation)
     response = request.execute()
 
     data_res = {
@@ -1800,7 +1800,7 @@ def get_zone_operation(args):
     name = args.get('name')
     zone = args.get('zone')
 
-    request = compute.zoneOperations().get(project=project, zone=zone, operation=name)
+    request = COMPUTE.zoneOperations().get(project=project, zone=zone, operation=name)
     response = request.execute()
 
     data_res = {
@@ -1833,7 +1833,7 @@ def get_region_operation(args):
     name = args.get('name')
     region = args.get('region')
 
-    request = compute.regionOperations().get(
+    request = COMPUTE.regionOperations().get(
         project=project, region=region, operation=name
     )
     response = request.execute()
@@ -1879,7 +1879,7 @@ def list_zone_operation(args):
 
     output = []
     data_res = []
-    request = compute.zoneOperations().list(
+    request = COMPUTE.zoneOperations().list(
         project=project,
         zone=zone,
         filter=filters,
@@ -1903,7 +1903,7 @@ def list_zone_operation(args):
                 }
                 data_res.append(data_res_item)
 
-        request = compute.zoneOperations().list_next(
+        request = COMPUTE.zoneOperations().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -1928,7 +1928,7 @@ def delete_zone_operation(args):
     name = args.get('name')
     zone = args.get('zone')
 
-    request = compute.zoneOperations().delete(
+    request = COMPUTE.zoneOperations().delete(
         project=project, zone=zone, operation=name
     )
     request.execute()
@@ -1960,7 +1960,7 @@ def list_region_operation(args):
 
     output = []
     data_res = []
-    request = compute.regionOperations().list(
+    request = COMPUTE.regionOperations().list(
         project=project,
         region=region,
         filter=filters,
@@ -1984,7 +1984,7 @@ def list_region_operation(args):
                 }
                 data_res.append(data_res_item)
 
-        request = compute.regionOperations().list_next(
+        request = COMPUTE.regionOperations().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -2009,7 +2009,7 @@ def delete_region_operation(args):
     name = args.get('name')
     region = args.get('region')
 
-    request = compute.regionOperations().delete(
+    request = COMPUTE.regionOperations().delete(
         project=project, region=region, operation=name
     )
     request.execute()
@@ -2038,7 +2038,7 @@ def list_global_operation(args):
 
     output = []
     data_res = []
-    request = compute.globalOperations().list(
+    request = COMPUTE.globalOperations().list(
         project=project,
         filter=filters,
         maxResults=max_results,
@@ -2061,7 +2061,7 @@ def list_global_operation(args):
                 }
                 data_res.append(data_res_item)
 
-        request = compute.globalOperations().list_next(
+        request = COMPUTE.globalOperations().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -2077,7 +2077,7 @@ def delete_global_operation(args):
     project = SERVICE_ACT_PROJECT_ID
     name = args.get('name')
 
-    request = compute.globalOperations().delete(project=project, operation=name)
+    request = COMPUTE.globalOperations().delete(project=project, operation=name)
     request.execute()
 
     return 'success'
@@ -2104,7 +2104,7 @@ def aggregated_list_addresses(args):
 
     output = []
     data_res = []
-    request = compute.addresses().aggregatedList(
+    request = COMPUTE.addresses().aggregatedList(
         project=project,
         filter=filters,
         maxResults=max_results,
@@ -2125,7 +2125,7 @@ def aggregated_list_addresses(args):
                         }
                         data_res.append(data_res_item)
 
-        request = compute.addresses().aggregatedList_next(
+        request = COMPUTE.addresses().aggregatedList_next(
             previous_request=request, previous_response=response
         )
 
@@ -2150,7 +2150,7 @@ def delete_address(args):
     address = args.get('address')
     region = args.get('region')
 
-    request = compute.addresses().delete(
+    request = COMPUTE.addresses().delete(
         project=project, region=region, address=address
     )
     response = request.execute()
@@ -2185,7 +2185,7 @@ def get_address(args):
     address = args.get('address')
     region = args.get('region')
 
-    request = compute.addresses().get(project=project, region=region, address=address)
+    request = COMPUTE.addresses().get(project=project, region=region, address=address)
     response = request.execute()
     data_res = {
         'id': response.get('id'),
@@ -2246,9 +2246,9 @@ def insert_address(args):
 
     project = SERVICE_ACT_PROJECT_ID
     response = (
-        compute.addresses()
-            .insert(project=project, region=region, body=config)
-            .execute()
+        COMPUTE.addresses()
+        .insert(project=project, region=region, body=config)
+        .execute()
     )
 
     data_res = {
@@ -2292,7 +2292,7 @@ def list_addresses(args):
 
     output = []
     data_res = []
-    request = compute.addresses().list(
+    request = COMPUTE.addresses().list(
         project=project,
         region=region,
         filter=filters,
@@ -2312,7 +2312,7 @@ def list_addresses(args):
                 }
                 data_res.append(data_res_item)
 
-        request = compute.addresses().list_next(
+        request = COMPUTE.addresses().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -2334,7 +2334,7 @@ def delete_global_address(args):
     project = SERVICE_ACT_PROJECT_ID
     address = args.get('address')
 
-    request = compute.globalAddresses().delete(project=project, address=address)
+    request = COMPUTE.globalAddresses().delete(project=project, address=address)
     response = request.execute()
 
     data_res = {
@@ -2364,7 +2364,7 @@ def get_global_address(args):
     project = SERVICE_ACT_PROJECT_ID
     address = args.get('address')
 
-    request = compute.globalAddresses().get(project=project, address=address)
+    request = COMPUTE.globalAddresses().get(project=project, address=address)
     response = request.execute()
 
     data_res = {
@@ -2428,7 +2428,7 @@ def insert_global_address(args):
         config.update({'network': network})
 
     project = SERVICE_ACT_PROJECT_ID
-    response = compute.globalAddresses().insert(project=project, body=config).execute()
+    response = COMPUTE.globalAddresses().insert(project=project, body=config).execute()
 
     data_res = {
         'status': response.get('status'),
@@ -2468,7 +2468,7 @@ def list_global_addresses(args):
 
     output = []
     data_res = []
-    request = compute.globalAddresses().list(
+    request = COMPUTE.globalAddresses().list(
         project=project,
         filter=filters,
         maxResults=max_results,
@@ -2487,7 +2487,7 @@ def list_global_addresses(args):
                 }
                 data_res.append(data_res_item)
 
-        request = compute.globalAddresses().list_next(
+        request = COMPUTE.globalAddresses().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -2521,7 +2521,7 @@ def aggregated_list_disks(args):
 
     output = []
     data_res = []
-    request = compute.disks().aggregatedList(
+    request = COMPUTE.disks().aggregatedList(
         project=project,
         filter=filters,
         maxResults=max_results,
@@ -2545,7 +2545,7 @@ def aggregated_list_disks(args):
                         }
                         data_res.append(data_res_item)
 
-        request = compute.disks().aggregatedList_next(
+        request = COMPUTE.disks().aggregatedList_next(
             previous_request=request, previous_response=response
         )
 
@@ -2615,9 +2615,9 @@ def create_disk_snapshot(args):
 
     project = SERVICE_ACT_PROJECT_ID
     response = (
-        compute.disks()
-            .createSnapshot(project=project, zone=zone, disk=disk, body=config)
-            .execute()
+        COMPUTE.disks()
+        .createSnapshot(project=project, zone=zone, disk=disk, body=config)
+        .execute()
     )
 
     data_res = {
@@ -2650,7 +2650,7 @@ def delete_disk(args):
     disk = args.get('disk')
     zone = args.get('zone')
 
-    request = compute.disks().delete(project=project, zone=zone, disk=disk)
+    request = COMPUTE.disks().delete(project=project, zone=zone, disk=disk)
     response = request.execute()
 
     data_res = {
@@ -2683,7 +2683,7 @@ def get_disk(args):
     disk = args.get('disk')
     zone = args.get('zone')
 
-    request = compute.disks().get(project=project, zone=zone, disk=disk)
+    request = COMPUTE.disks().get(project=project, zone=zone, disk=disk)
     response = request.execute()
 
     data_res = {
@@ -2815,7 +2815,7 @@ def insert_disk(args):
         config.update({'physicalBlockSizeBytes': int(physical_block_size_bytes)})
 
     project = SERVICE_ACT_PROJECT_ID
-    response = compute.disks().insert(project=project, zone=zone, body=config).execute()
+    response = COMPUTE.disks().insert(project=project, zone=zone, body=config).execute()
 
     data_res = {
         'status': response.get('status'),
@@ -2858,7 +2858,7 @@ def list_disks(args):
 
     output = []
     data_res = []
-    request = compute.disks().list(
+    request = COMPUTE.disks().list(
         project=project,
         zone=zone,
         filter=filters,
@@ -2881,7 +2881,7 @@ def list_disks(args):
                 }
                 data_res.append(data_res_item)
 
-        request = compute.disks().list_next(
+        request = COMPUTE.disks().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -2915,9 +2915,9 @@ def resize_disk(args):
 
     project = SERVICE_ACT_PROJECT_ID
     response = (
-        compute.disks()
-            .resize(project=project, zone=zone, disk=disk, body=config)
-            .execute()
+        COMPUTE.disks()
+        .resize(project=project, zone=zone, disk=disk, body=config)
+        .execute()
     )
 
     data_res = {
@@ -2963,7 +2963,7 @@ def set_disk_labels(args):
     if args.get('labelFingerprint') is not None:
         body.update({'labelFingerprint': label_fingerprint})
 
-    request = compute.disks().setLabels(
+    request = COMPUTE.disks().setLabels(
         project=project, zone=zone, resource=disk, body=body
     )
     response = request.execute()
@@ -3007,7 +3007,7 @@ def aggregated_list_disk_types(args):
 
     output = []
     data_res = []
-    request = compute.diskTypes().aggregatedList(
+    request = COMPUTE.diskTypes().aggregatedList(
         project=project,
         filter=filters,
         maxResults=max_results,
@@ -3027,7 +3027,7 @@ def aggregated_list_disk_types(args):
                         }
                         data_res.append(data_res_item)
 
-        request = compute.diskTypes().aggregatedList_next(
+        request = COMPUTE.diskTypes().aggregatedList_next(
             previous_request=request, previous_response=response
         )
 
@@ -3047,7 +3047,7 @@ def get_disk_type(args):
     disk_type = args.get('disktype')
     zone = args.get('zone')
 
-    request = compute.diskTypes().get(project=project, zone=zone, diskType=disk_type)
+    request = COMPUTE.diskTypes().get(project=project, zone=zone, diskType=disk_type)
     response = request.execute()
 
     data_res = {
@@ -3088,7 +3088,7 @@ def list_disks_types(args):
 
     output = []
     data_res = []
-    request = compute.diskTypes().list(
+    request = COMPUTE.diskTypes().list(
         project=project,
         zone=zone,
         filter=filters,
@@ -3107,7 +3107,7 @@ def list_disks_types(args):
                 }
                 data_res.append(data_res_item)
 
-        request = compute.diskTypes().list_next(
+        request = COMPUTE.diskTypes().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -3146,7 +3146,7 @@ def instance_groups_add_instances(args):
     body = {}
     body.update({'instances': instarry})
 
-    request = compute.instanceGroups().addInstances(
+    request = COMPUTE.instanceGroups().addInstances(
         project=project, zone=zone, instanceGroup=instance_group, body=body
     )
     response = request.execute()
@@ -3189,7 +3189,7 @@ def aggregated_list_instance_groups(args):
 
     output = []
     data_res = []
-    request = compute.instanceGroups().aggregatedList(
+    request = COMPUTE.instanceGroups().aggregatedList(
         project=project,
         filter=filters,
         maxResults=max_results,
@@ -3211,7 +3211,7 @@ def aggregated_list_instance_groups(args):
                         }
                         data_res.append(data_res_item)
 
-        request = compute.instanceGroups().aggregatedList_next(
+        request = COMPUTE.instanceGroups().aggregatedList_next(
             previous_request=request, previous_response=response
         )
 
@@ -3238,7 +3238,7 @@ def delete_instance_group(args):
     instance_group = args.get('instanceGroup')
     zone = args.get('zone')
 
-    request = compute.instanceGroups().delete(
+    request = COMPUTE.instanceGroups().delete(
         project=project, zone=zone, instanceGroup=instance_group
     )
     response = request.execute()
@@ -3273,7 +3273,7 @@ def get_instance_group(args):
     instance_group = args.get('instanceGroup')
     zone = args.get('zone')
 
-    request = compute.instanceGroups().get(
+    request = COMPUTE.instanceGroups().get(
         project=project, zone=zone, instanceGroup=instance_group
     )
     response = request.execute()
@@ -3314,8 +3314,7 @@ def insert_instance_group(args):
         name = name.lower()
         config.update({'name': name})
 
-    if args.get('zone'):
-        zone = args.get('zone')
+    zone = args.get('zone')
 
     if args.get('description'):
         description = args.get('description')
@@ -3331,9 +3330,9 @@ def insert_instance_group(args):
 
     project = SERVICE_ACT_PROJECT_ID
     response = (
-        compute.instanceGroups()
-            .insert(project=project, zone=zone, body=config)
-            .execute()
+        COMPUTE.instanceGroups()
+        .insert(project=project, zone=zone, body=config)
+        .execute()
     )
 
     data_res = {
@@ -3376,7 +3375,7 @@ def list_instance_groups(args):
     page_token = args.get('pageToken')
 
     output = []
-    request = compute.instanceGroups().list(
+    request = COMPUTE.instanceGroups().list(
         project=project,
         zone=zone,
         filter=filters,
@@ -3390,7 +3389,7 @@ def list_instance_groups(args):
             for item in response['items']:
                 output.append(item)
 
-        request = compute.instanceGroups().list_next(
+        request = COMPUTE.instanceGroups().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -3434,7 +3433,7 @@ def list_instance_groups_instances(args):
 
     output = []
     data_res = []
-    request = compute.instanceGroups().listInstances(
+    request = COMPUTE.instanceGroups().listInstances(
         project=project,
         zone=zone,
         instanceGroup=instance_group,
@@ -3455,7 +3454,7 @@ def list_instance_groups_instances(args):
                 }
                 data_res.append(data_res_item)
 
-        request = compute.instanceGroups().listInstances_next(
+        request = COMPUTE.instanceGroups().listInstances_next(
             previous_request=request, previous_response=response
         )
     output = {'Group': instance_group, 'Instances': output}
@@ -3493,7 +3492,7 @@ def instance_groups_remove_instances(args):
 
     body = {'instances': instarry}
 
-    request = compute.instanceGroups().removeInstances(
+    request = COMPUTE.instanceGroups().removeInstances(
         project=project, zone=zone, instanceGroup=instance_group, body=body
     )
     response = request.execute()
@@ -3529,11 +3528,9 @@ def set_instance_group_named_ports(args):
         The fingerprint of the named ports information for this instance group.
     """
     config = {}
-    if args.get('instanceGroup'):
-        instance_group = args.get('instanceGroup')
+    instance_group = args.get('instanceGroup')
 
-    if args.get('zone'):
-        zone = args.get('zone')
+    zone = args.get('zone')
 
     if args.get('namedPorts'):
         named_ports = args.get('namedPorts')
@@ -3545,11 +3542,9 @@ def set_instance_group_named_ports(args):
 
     project = SERVICE_ACT_PROJECT_ID
     response = (
-        compute.instanceGroups()
-            .setNamedPorts(
-            project=project, zone=zone, instanceGroup=instance_group, body=config
-        )
-            .execute()
+        COMPUTE.instanceGroups()
+        .setNamedPorts(project=project, zone=zone, instanceGroup=instance_group, body=config)
+        .execute()
     )
 
     data_res = {
@@ -3580,7 +3575,7 @@ def get_region(args):
     project = SERVICE_ACT_PROJECT_ID
     region = args.get('region')
 
-    request = compute.regions().get(project=project, region=region)
+    request = COMPUTE.regions().get(project=project, region=region)
     response = request.execute()
 
     data_res = {
@@ -3618,7 +3613,7 @@ def list_regions(args):
 
     output = []
     data_res = []
-    request = compute.regions().list(
+    request = COMPUTE.regions().list(
         project=project,
         filter=filters,
         maxResults=max_results,
@@ -3637,7 +3632,7 @@ def list_regions(args):
                 }
                 data_res.append(data_res_item)
 
-        request = compute.regions().list_next(
+        request = COMPUTE.regions().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -3660,7 +3655,7 @@ def get_zone(args):
     project = SERVICE_ACT_PROJECT_ID
     zone = args.get('zone')
 
-    request = compute.zones().get(project=project, zone=zone)
+    request = COMPUTE.zones().get(project=project, zone=zone)
     response = request.execute()
 
     data_res = {
@@ -3701,7 +3696,7 @@ def list_zones(args):
 
     output = []
     data_res = []
-    request = compute.zones().list(
+    request = COMPUTE.zones().list(
         project=project,
         filter=filters,
         maxResults=max_results,
@@ -3720,7 +3715,7 @@ def list_zones(args):
                 }
                 data_res.append(data_res_item)
 
-        request = compute.zones().list_next(
+        request = COMPUTE.zones().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -3756,31 +3751,26 @@ def aggregated_list_machine_types(args):
 
     output = []
     data_res = []
-    request = compute.machineTypes().aggregatedList(
+    request = COMPUTE.machineTypes().aggregatedList(
         project=project,
         filter=filters,
         maxResults=max_results,
         orderBy=order_by,
         pageToken=page_token
     )
-    while request:
-        response = request.execute()
-        if 'items' in response.keys():
-            for name, instances_scoped_list in response['items'].items():
-                if 'warning' not in instances_scoped_list.keys():
-                    for item in instances_scoped_list.get('machineTypes', []):
-                        output.append(item)
-                        data_res_item = {
-                            'id': item.get('id'),
-                            'name': item.get('name'),
-                            'memoryMb': item.get('memoryMb'),
-                            'guestCpus': item.get('guestCpus')
-                        }
-                        data_res.append(data_res_item)
-
-        request = compute.machineTypes().aggregatedList(
-            previous_request=request, previous_response=response
-        )
+    response = request.execute()
+    if 'items' in response.keys():
+        for name, instances_scoped_list in response['items'].items():
+            if 'warning' not in instances_scoped_list.keys():
+                for item in instances_scoped_list.get('machineTypes', []):
+                    output.append(item)
+                    data_res_item = {
+                        'id': item.get('id'),
+                        'name': item.get('name'),
+                        'memoryMb': item.get('memoryMb'),
+                        'guestCpus': item.get('guestCpus')
+                    }
+                    data_res.append(data_res_item)
 
     ec = {'GoogleCloudCompute.MachineTypes(val.id === obj.id)': output}
     return_outputs(
@@ -3807,7 +3797,7 @@ def get_machine_type(args):
     machine_type = args.get('machineType')
     zone = args.get('zone')
 
-    request = compute.machineTypes().get(
+    request = COMPUTE.machineTypes().get(
         project=project, zone=zone, machineType=machine_type
     )
     response = request.execute()
@@ -3854,7 +3844,7 @@ def list_machine_types(args):
 
     output = []
     data_res = []
-    request = compute.machineTypes().list(
+    request = COMPUTE.machineTypes().list(
         project=project,
         zone=zone,
         filter=filters,
@@ -3875,7 +3865,7 @@ def list_machine_types(args):
                 }
                 data_res.append(data_res_item)
 
-        request = compute.machineTypes().list_next(
+        request = COMPUTE.machineTypes().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -3957,7 +3947,7 @@ def insert_firewall(args):
         disabled = args.get('disabled') == 'true'
         config.update({'disabled': disabled})
 
-    request = compute.firewalls().insert(project=project, body=config)
+    request = COMPUTE.firewalls().insert(project=project, body=config)
     response = request.execute()
 
     data_res = {
@@ -4046,7 +4036,7 @@ def patch_firewall(args):
         disabled = True if args.get('disabled') == 'true' else False
         config.update({'disabled': disabled})
 
-    request = compute.firewalls().patch(project=project, firewall=name, body=config)
+    request = COMPUTE.firewalls().patch(project=project, firewall=name, body=config)
     response = request.execute()
 
     data_res = {
@@ -4089,7 +4079,7 @@ def list_firewalls(args):
 
     output = []
     data_res = []
-    request = compute.firewalls().list(
+    request = COMPUTE.firewalls().list(
         project=project,
         filter=filters,
         maxResults=max_results,
@@ -4108,7 +4098,7 @@ def list_firewalls(args):
                 }
                 data_res.append(data_res_item)
 
-        request = compute.firewalls().list_next(
+        request = COMPUTE.firewalls().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -4130,7 +4120,7 @@ def get_firewall(args):
     project = SERVICE_ACT_PROJECT_ID
     name = args.get('name')
 
-    request = compute.firewalls().get(project=project, firewall=name)
+    request = COMPUTE.firewalls().get(project=project, firewall=name)
     response = request.execute()
 
     data_res = {
@@ -4157,7 +4147,7 @@ def delete_firewall(args):
     project = SERVICE_ACT_PROJECT_ID
     name = args.get('name')
 
-    request = compute.firewalls().delete(project=project, firewall=name)
+    request = COMPUTE.firewalls().delete(project=project, firewall=name)
     response = request.execute()
 
     data_res = {
@@ -4188,7 +4178,7 @@ def delete_snapshot(args):
     project = SERVICE_ACT_PROJECT_ID
     name = args.get('name')
 
-    request = compute.snapshots().delete(project=project, snapshot=name)
+    request = COMPUTE.snapshots().delete(project=project, snapshot=name)
     response = request.execute()
 
     data_res = {
@@ -4212,7 +4202,7 @@ def get_snapshot(args):
     project = SERVICE_ACT_PROJECT_ID
     name = args.get('name')
 
-    request = compute.snapshots().get(project=project, snapshot=name)
+    request = COMPUTE.snapshots().get(project=project, snapshot=name)
     response = request.execute()
 
     data_res = {
@@ -4252,7 +4242,7 @@ def list_snapshots(args):
 
     output = []
     data_res = []
-    request = compute.snapshots().list(
+    request = COMPUTE.snapshots().list(
         project=project,
         filter=filters,
         maxResults=max_results,
@@ -4271,7 +4261,7 @@ def list_snapshots(args):
                 }
                 data_res.append(data_res_item)
 
-        request = compute.snapshots().list_next(
+        request = COMPUTE.snapshots().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -4302,7 +4292,7 @@ def set_snapshot_labels(args):
     if args.get('labelFingerprint'):
         body.update({'labelFingerprint': args.get('labelFingerprint')})
 
-    request = compute.snapshots().setLabels(project=project, resource=name, body=body)
+    request = COMPUTE.snapshots().setLabels(project=project, resource=name, body=body)
     response = request.execute()
 
     data_res = {
@@ -4328,7 +4318,7 @@ def add_project_info_metadata(metadata):
     :param metadata:  Each metadata entry is a key/value pair separated by ';' like so: key=abc,value=123;key=abc,value=123
     """
     project = SERVICE_ACT_PROJECT_ID
-    project_instance = compute.projects().get(project=project).execute()
+    project_instance = COMPUTE.projects().get(project=project).execute()
     fingerprint = project_instance.get('tags', {}).get('fingerprint')
     items = parse_labels(metadata)
     body = assign_params(
@@ -4336,7 +4326,7 @@ def add_project_info_metadata(metadata):
         items=items,
         kind='compute#metadata'
     )
-    raw_res = compute.projects().setCommonInstanceMetadata(project=project, body=body).execute()
+    raw_res = COMPUTE.projects().setCommonInstanceMetadata(project=project, body=body).execute()
     data_res = {
         'status': raw_res.get('status'),
         'kind': raw_res.get('kind'),
@@ -4358,264 +4348,270 @@ def add_project_info_metadata(metadata):
 EXECUTION CODE
 """
 
-try:
-    compute = build_and_authenticate(GSERVICE)
-    command = demisto.command()
-    if command == 'test-module':
-        # This is the call made when pressing the integration test button.
-        test_module()
 
-    elif command == 'gcp-compute-insert-instance':
-        create_instance(demisto.args())
-
-    elif command == 'gcp-compute-get-instance':
-        get_instance(demisto.args())
-
-    elif command == 'gcp-compute-delete-instance':
-        delete_instance(demisto.args())
-
-    elif command == 'gcp-compute-start-instance':
-        start_instance(demisto.args())
-
-    elif command == 'gcp-compute-stop-instance':
-        stop_instance(demisto.args())
-
-    elif command == 'gcp-compute-reset-instance':
-        reset_instance(demisto.args())
-
-    elif command == 'gcp-compute-list-instances':
-        list_instances(demisto.args())
-
-    elif command == 'gcp-compute-set-instance-labels':
-        set_instance_labels(demisto.args())
-
-    elif command == 'gcp-compute-set-instance-metadata':
-        set_instance_metadata(demisto.args())
-
-    elif command == 'gcp-compute-set-instance-machine-type':
-        set_instance_machine_type(demisto.args())
-
-    elif command == 'gcp-compute-aggregated-list-instances':
-        aggregated_list_instances(demisto.args())
-
-    elif command == 'gcp-compute-get-image-from-family':
-        get_image_from_family(demisto.args())
-
-    elif command == 'gcp-compute-get-image':
-        get_image(demisto.args())
-
-    elif command == 'gcp-compute-networks-add-peering':
-        networks_add_peering(demisto.args())
-
-    elif command == 'gcp-compute-delete-network':
-        delete_network(demisto.args())
-
-    elif command == 'gcp-compute-get-network':
-        get_network(demisto.args())
-
-    elif command == 'gcp-compute-insert-network':
-        insert_network(demisto.args())
-
-    elif command == 'gcp-compute-list-networks':
-        list_networks(demisto.args())
-
-    elif command == 'gcp-compute-networks-remove-peering':
-        networks_removepeering(demisto.args())
-
-    elif command == 'gcp-compute-get-global-operation':
-        get_global_operation(demisto.args())
-
-    elif command == 'gcp-compute-get-zone-operation':
-        get_zone_operation(demisto.args())
-
-    elif command == 'gcp-compute-get-region-operation':
-        get_region_operation(demisto.args())
-
-    elif command == 'gcp-compute-list-zone-operation':
-        list_zone_operation(demisto.args())
-
-    elif command == 'gcp-compute-list-global-operation':
-        list_global_operation(demisto.args())
-
-    elif command == 'gcp-compute-list-region-operation':
-        list_region_operation(demisto.args())
-
-    elif command == 'gcp-compute-delete-zone-operation':
-        delete_zone_operation(demisto.args())
-
-    elif command == 'gcp-compute-delete-global-operation':
-        delete_global_operation(demisto.args())
-
-    elif command == 'gcp-compute-delete-region-operation':
-        delete_region_operation(demisto.args())
-
-    elif command == 'gcp-compute-delete-address':
-        delete_address(demisto.args())
-
-    elif command == 'gcp-compute-get-address':
-        get_address(demisto.args())
-
-    elif command == 'gcp-compute-insert-address':
-        insert_address(demisto.args())
-
-    elif command == 'gcp-compute-list-addresses':
-        list_addresses(demisto.args())
-
-    elif command == 'gcp-compute-aggregated-list-addresses':
-        aggregated_list_addresses(demisto.args())
-
-    elif command == 'gcp-compute-delete-global-address':
-        delete_global_address(demisto.args())
-
-    elif command == 'gcp-compute-get-global-address':
-        get_global_address(demisto.args())
-
-    elif command == 'gcp-compute-insert-global-address':
-        insert_global_address(demisto.args())
-
-    elif command == 'gcp-compute-list-global-addresses':
-        list_global_addresses(demisto.args())
-
-    elif command == 'gcp-compute-aggregated-list-disks':
-        aggregated_list_disks(demisto.args())
-
-    elif command == 'gcp-compute-create-disk-snapshot':
-        create_disk_snapshot(demisto.args())
-
-    elif command == 'gcp-compute-delete-disk':
-        delete_disk(demisto.args())
-
-    elif command == 'gcp-compute-get-disk':
-        get_disk(demisto.args())
-
-    elif command == 'gcp-compute-insert-disk':
-        insert_disk(demisto.args())
-
-    elif command == 'gcp-compute-list-disks':
-        list_disks(demisto.args())
-
-    elif command == 'gcp-compute-resize-disk':
-        resize_disk(demisto.args())
-
-    elif command == 'gcp-compute-set-disk-labels':
-        set_disk_labels(demisto.args())
-
-    elif command == 'gcp-compute-aggregated-list-disk-types':
-        aggregated_list_disk_types(demisto.args())
-
-    elif command == 'gcp-compute-get-disk-type':
-        get_disk_type(demisto.args())
-
-    elif command == 'gcp-compute-list-disk-types':
-        list_disks_types(demisto.args())
-
-    elif command == 'gcp-compute-list-images':
-        list_images(demisto.args())
-
-    elif command == 'gcp-compute-delete-image':
-        delete_image(demisto.args())
-
-    elif command == 'gcp-compute-set-image-labels':
-        set_image_labels(demisto.args())
-
-    elif command == 'gcp-compute-insert-image':
-        insert_image(demisto.args())
-
-    elif command == 'gcp-compute-instance-groups-add-instances':
-        instance_groups_add_instances(demisto.args())
-
-    elif command == 'gcp-compute-aggregated-list-instance-groups':
-        aggregated_list_instance_groups(demisto.args())
-
-    elif command == 'gcp-compute-delete-instance-group':
-        delete_instance_group(demisto.args())
-
-    elif command == 'gcp-compute-get-instance-group':
-        get_instance_group(demisto.args())
-
-    elif command == 'gcp-compute-insert-instance-group':
-        insert_instance_group(demisto.args())
-
-    elif command == 'gcp-compute-list-instance-groups':
-        list_instance_groups(demisto.args())
-
-    elif command == 'gcp-compute-list-instance-group-instances':
-        list_instance_groups_instances(demisto.args())
-
-    elif command == 'gcp-compute-instance-groups-remove-instances':
-        instance_groups_remove_instances(demisto.args())
-
-    elif command == 'gcp-compute-set-group-instance-named-ports':
-        set_instance_group_named_ports(demisto.args())
-
-    elif command == 'gcp-compute-get-region':
-        get_region(demisto.args())
-
-    elif command == 'gcp-compute-list-regions':
-        list_regions(demisto.args())
-
-    elif command == 'gcp-compute-get-zone':
-        get_zone(demisto.args())
-
-    elif command == 'gcp-compute-list-zones':
-        list_zones(demisto.args())
-
-    elif command == 'gcp-compute-aggregated-list-machine-types':
-        aggregated_list_machine_types(demisto.args())
-
-    elif command == 'gcp-compute-get-machine-type':
-        get_machine_type(demisto.args())
-
-    elif command == 'gcp-compute-list-machine-types':
-        list_machine_types(demisto.args())
-
-    elif command == 'gcp-compute-wait-for-zone-operation':
-        wait_for_zone_operation(demisto.args())
-
-    elif command == 'gcp-compute-wait-for-region-operation':
-        wait_for_region_operation(demisto.args())
-
-    elif command == 'gcp-compute-wait-for-global-operation':
-        wait_for_global_operation(demisto.args())
-
-    elif command == 'gcp-compute-insert-firewall':
-        insert_firewall(demisto.args())
-
-    elif command == 'gcp-compute-patch-firewall':
-        patch_firewall(demisto.args())
-
-    elif command == 'gcp-compute-list-firewall':
-        list_firewalls(demisto.args())
-
-    elif command == 'gcp-compute-get-firewall':
-        get_firewall(demisto.args())
-
-    elif command == 'gcp-compute-delete-firewall':
-        delete_firewall(demisto.args())
-
-    elif command == 'gcp-compute-set-snapshot-labels':
-        set_snapshot_labels(demisto.args())
-
-    elif command == 'gcp-compute-list-snapshots':
-        list_snapshots(demisto.args())
-
-    elif command == 'gcp-compute-get-snapshot':
-        get_snapshot(demisto.args())
-
-    elif command == 'gcp-compute-delete-snapshot':
-        delete_snapshot(demisto.args())
-
-    elif command == 'gcp-compute-project-info-add-metadata':
-        add_project_info_metadata(**demisto.args())
-
-except Exception as e:
-    LOG(e)
+def main():
     try:
-        response = json.loads(e.content)  # type: ignore
-        response = response['error']
-        status_code = response.get('code')
-        err_message = response.get('message')
-        full_err_msg = 'error code: {}\n{}'.format(status_code, err_message)
-        return_error(full_err_msg)
-    except AttributeError:
-        return_error(e.message)
+        build_and_authenticate(GSERVICE)
+        command = demisto.command()
+        if command == 'test-module':
+            # This is the call made when pressing the integration test button.
+            test_module()
+
+        elif command == 'gcp-compute-insert-instance':
+            create_instance(demisto.args())
+
+        elif command == 'gcp-compute-get-instance':
+            get_instance(demisto.args())
+
+        elif command == 'gcp-compute-delete-instance':
+            delete_instance(demisto.args())
+
+        elif command == 'gcp-compute-start-instance':
+            start_instance(demisto.args())
+
+        elif command == 'gcp-compute-stop-instance':
+            stop_instance(demisto.args())
+
+        elif command == 'gcp-compute-reset-instance':
+            reset_instance(demisto.args())
+
+        elif command == 'gcp-compute-list-instances':
+            list_instances(demisto.args())
+
+        elif command == 'gcp-compute-set-instance-labels':
+            set_instance_labels(demisto.args())
+
+        elif command == 'gcp-compute-set-instance-metadata':
+            set_instance_metadata(demisto.args())
+
+        elif command == 'gcp-compute-set-instance-machine-type':
+            set_instance_machine_type(demisto.args())
+
+        elif command == 'gcp-compute-aggregated-list-instances':
+            aggregated_list_instances(demisto.args())
+
+        elif command == 'gcp-compute-get-image-from-family':
+            get_image_from_family(demisto.args())
+
+        elif command == 'gcp-compute-get-image':
+            get_image(demisto.args())
+
+        elif command == 'gcp-compute-networks-add-peering':
+            networks_add_peering(demisto.args())
+
+        elif command == 'gcp-compute-delete-network':
+            delete_network(demisto.args())
+
+        elif command == 'gcp-compute-get-network':
+            get_network(demisto.args())
+
+        elif command == 'gcp-compute-insert-network':
+            insert_network(demisto.args())
+
+        elif command == 'gcp-compute-list-networks':
+            list_networks(demisto.args())
+
+        elif command == 'gcp-compute-networks-remove-peering':
+            networks_removepeering(demisto.args())
+
+        elif command == 'gcp-compute-get-global-operation':
+            get_global_operation(demisto.args())
+
+        elif command == 'gcp-compute-get-zone-operation':
+            get_zone_operation(demisto.args())
+
+        elif command == 'gcp-compute-get-region-operation':
+            get_region_operation(demisto.args())
+
+        elif command == 'gcp-compute-list-zone-operation':
+            list_zone_operation(demisto.args())
+
+        elif command == 'gcp-compute-list-global-operation':
+            list_global_operation(demisto.args())
+
+        elif command == 'gcp-compute-list-region-operation':
+            list_region_operation(demisto.args())
+
+        elif command == 'gcp-compute-delete-zone-operation':
+            delete_zone_operation(demisto.args())
+
+        elif command == 'gcp-compute-delete-global-operation':
+            delete_global_operation(demisto.args())
+
+        elif command == 'gcp-compute-delete-region-operation':
+            delete_region_operation(demisto.args())
+
+        elif command == 'gcp-compute-delete-address':
+            delete_address(demisto.args())
+
+        elif command == 'gcp-compute-get-address':
+            get_address(demisto.args())
+
+        elif command == 'gcp-compute-insert-address':
+            insert_address(demisto.args())
+
+        elif command == 'gcp-compute-list-addresses':
+            list_addresses(demisto.args())
+
+        elif command == 'gcp-compute-aggregated-list-addresses':
+            aggregated_list_addresses(demisto.args())
+
+        elif command == 'gcp-compute-delete-global-address':
+            delete_global_address(demisto.args())
+
+        elif command == 'gcp-compute-get-global-address':
+            get_global_address(demisto.args())
+
+        elif command == 'gcp-compute-insert-global-address':
+            insert_global_address(demisto.args())
+
+        elif command == 'gcp-compute-list-global-addresses':
+            list_global_addresses(demisto.args())
+
+        elif command == 'gcp-compute-aggregated-list-disks':
+            aggregated_list_disks(demisto.args())
+
+        elif command == 'gcp-compute-create-disk-snapshot':
+            create_disk_snapshot(demisto.args())
+
+        elif command == 'gcp-compute-delete-disk':
+            delete_disk(demisto.args())
+
+        elif command == 'gcp-compute-get-disk':
+            get_disk(demisto.args())
+
+        elif command == 'gcp-compute-insert-disk':
+            insert_disk(demisto.args())
+
+        elif command == 'gcp-compute-list-disks':
+            list_disks(demisto.args())
+
+        elif command == 'gcp-compute-resize-disk':
+            resize_disk(demisto.args())
+
+        elif command == 'gcp-compute-set-disk-labels':
+            set_disk_labels(demisto.args())
+
+        elif command == 'gcp-compute-aggregated-list-disk-types':
+            aggregated_list_disk_types(demisto.args())
+
+        elif command == 'gcp-compute-get-disk-type':
+            get_disk_type(demisto.args())
+
+        elif command == 'gcp-compute-list-disk-types':
+            list_disks_types(demisto.args())
+
+        elif command == 'gcp-compute-list-images':
+            list_images(demisto.args())
+
+        elif command == 'gcp-compute-delete-image':
+            delete_image(demisto.args())
+
+        elif command == 'gcp-compute-set-image-labels':
+            set_image_labels(demisto.args())
+
+        elif command == 'gcp-compute-insert-image':
+            insert_image(demisto.args())
+
+        elif command == 'gcp-compute-instance-groups-add-instances':
+            instance_groups_add_instances(demisto.args())
+
+        elif command == 'gcp-compute-aggregated-list-instance-groups':
+            aggregated_list_instance_groups(demisto.args())
+
+        elif command == 'gcp-compute-delete-instance-group':
+            delete_instance_group(demisto.args())
+
+        elif command == 'gcp-compute-get-instance-group':
+            get_instance_group(demisto.args())
+
+        elif command == 'gcp-compute-insert-instance-group':
+            insert_instance_group(demisto.args())
+
+        elif command == 'gcp-compute-list-instance-groups':
+            list_instance_groups(demisto.args())
+
+        elif command == 'gcp-compute-list-instance-group-instances':
+            list_instance_groups_instances(demisto.args())
+
+        elif command == 'gcp-compute-instance-groups-remove-instances':
+            instance_groups_remove_instances(demisto.args())
+
+        elif command == 'gcp-compute-set-group-instance-named-ports':
+            set_instance_group_named_ports(demisto.args())
+
+        elif command == 'gcp-compute-get-region':
+            get_region(demisto.args())
+
+        elif command == 'gcp-compute-list-regions':
+            list_regions(demisto.args())
+
+        elif command == 'gcp-compute-get-zone':
+            get_zone(demisto.args())
+
+        elif command == 'gcp-compute-list-zones':
+            list_zones(demisto.args())
+
+        elif command == 'gcp-compute-aggregated-list-machine-types':
+            aggregated_list_machine_types(demisto.args())
+
+        elif command == 'gcp-compute-get-machine-type':
+            get_machine_type(demisto.args())
+
+        elif command == 'gcp-compute-list-machine-types':
+            list_machine_types(demisto.args())
+
+        elif command == 'gcp-compute-wait-for-zone-operation':
+            wait_for_zone_operation(demisto.args())
+
+        elif command == 'gcp-compute-wait-for-region-operation':
+            wait_for_region_operation(demisto.args())
+
+        elif command == 'gcp-compute-wait-for-global-operation':
+            wait_for_global_operation(demisto.args())
+
+        elif command == 'gcp-compute-insert-firewall':
+            insert_firewall(demisto.args())
+
+        elif command == 'gcp-compute-patch-firewall':
+            patch_firewall(demisto.args())
+
+        elif command == 'gcp-compute-list-firewall':
+            list_firewalls(demisto.args())
+
+        elif command == 'gcp-compute-get-firewall':
+            get_firewall(demisto.args())
+
+        elif command == 'gcp-compute-delete-firewall':
+            delete_firewall(demisto.args())
+
+        elif command == 'gcp-compute-set-snapshot-labels':
+            set_snapshot_labels(demisto.args())
+
+        elif command == 'gcp-compute-list-snapshots':
+            list_snapshots(demisto.args())
+
+        elif command == 'gcp-compute-get-snapshot':
+            get_snapshot(demisto.args())
+
+        elif command == 'gcp-compute-delete-snapshot':
+            delete_snapshot(demisto.args())
+
+        elif command == 'gcp-compute-project-info-add-metadata':
+            add_project_info_metadata(**demisto.args())
+
+    except Exception as e:
+        LOG(e)
+        try:
+            response = json.loads(e.content)  # type: ignore
+            response = response['error']
+            status_code = response.get('code')
+            err_message = response.get('message')
+            full_err_msg = 'error code: {}\n{}'.format(status_code, err_message)
+            return_error(full_err_msg)
+        except AttributeError:
+            return_error(e.message)
+
+
+if __name__ == 'builtins':  # pragma: no cover
+    main()
