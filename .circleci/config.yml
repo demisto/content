@@ -113,29 +113,6 @@ jobs:
             python3 -m pytest ./Tests/Marketplace/Tests/upload_packs_test.py -v
             python3 -m pytest ./Tests/Marketplace/Tests/search_and_install_packs_test.py -v
       - run:
-          name: Validate Files and Yaml
-          when: always
-          command: |
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
-              then
-                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
-                exit 0
-            fi
-
-            # Run flake8 on all excluding Integraions and Scripts (they will be handled in linting)
-            ./Tests/scripts/pyflake.sh *.py
-            find . -maxdepth 1 -type d -not \( -path . -o -path ./Integrations -o -path ./Scripts -o -path ./Beta_Integrations -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
-
-            [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD="false" || CHECK_BACKWARD="true"
-
-            if [ "${CHECK_BACKWARD}" = "true" ] ;
-              then
-                 demisto-sdk validate -g --post-commit
-
-              else
-                 demisto-sdk validate -g --post-commit --no-backward-comp
-            fi
-      - run:
           name: Secrets
           when: always
           command: |
@@ -218,34 +195,6 @@ jobs:
             unzip -q "$CIRCLE_ARTIFACTS/content_test.zip" -d "test_content_dir"
             zip -j "$CIRCLE_ARTIFACTS/all_content.zip" test_content_dir/*
             rm -r test_content_dir
-      - run:
-          name: Run Unit Testing and Lint
-          when: always
-          no_output_timeout: 5h
-          command: |
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 1 ] ;
-              then
-                echo "Skipping - unit tests are running only in container number 1"
-                exit 0
-            fi
-            echo "demisto-sdk version: $(demisto-sdk --version)"
-            echo "mypy version: $(mypy --version)"
-            echo "flake8 py2 version: $(python2 -m flake8 --version)"
-            echo "flake8 py3 version: $(python3 -m flake8 --version)"
-            echo "bandit py2 version: $(python2 -m bandit --version 2>&1)"
-            echo "bandit py3 version: $(python3 -m bandit --version 2>&1)"
-            echo "vulture py2 version: $(python2 -m vulture --version) 2>&1"
-            echo "vulture py3 version: $(python3 -m vulture --version) 2>&1"
-            SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
-            mkdir ./unit-tests
-            if [ -n "$SHOULD_LINT_ALL" ]; then
-              echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-              demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path ./artifacts
-            else
-              demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts
-            fi
-      - store_test_results:
-          path: ./unit-tests
       - store_artifacts:
           path: artifacts
           destination: artifacts
