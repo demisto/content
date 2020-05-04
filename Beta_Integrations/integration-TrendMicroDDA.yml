@@ -628,7 +628,7 @@ script:
             demisto.results({
                 'Type': entryTypes['note'],
                 'ContentsFormat': formats['text'],
-                'Content': 'Contents': {"value": res.text},
+                'Content': {"value": res.text},
                 'HumanReadable': 'Submission analyzation was not finished yet.',
                 'EntryContext': {
                     'TrendMicroDDA.Submission(val.SHA1 && val.SHA1==obj.SHA1)': ec
