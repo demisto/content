@@ -33,16 +33,11 @@ MOCK_PARSED_FULL_ACTION_REPORT = [OrderedDict([('Severity', '9.8'),
                                                ('Status', 'success')])]
 
 
-def test_pentera_operation_to_incident(mocker):
-    mocker.patch.object(demisto, 'args', return_value={
-        'custom_fields_output': 'penteraoperationdetails',
-        'full_action_report': MOCK_PARSED_FULL_ACTION_REPORT,
-        'context_key': 'PenteraIncidents'
-    })
-    full_action_report = argToList(demisto.args().get('full_action_report'))
-    custom_fields_output = demisto.args().get('custom_fields_output', False)
-    context_key = demisto.args().get('context_key', 'PenteraIncidents')
+def test_pentera_operation_to_incident():
+    full_action_report = argToList(MOCK_PARSED_FULL_ACTION_REPORT)
+    custom_fields_output = 'penteraoperationdetails'
+    context_key = 'PenteraIncidents'
 
     entries = pentera_operation_to_incident(full_action_report, custom_fields_output, context_key)
 
-    assert entries[0] == 'OK'
+    assert entries[0] == '### Map Pentera Operation to Incident'
