@@ -1,5 +1,5 @@
 Google Compute Engine delivers virtual machines running in Google's innovative data centers and worldwide fiber network. Compute Engine's tooling and workflow support enable scaling from single instances to global, load-balanced cloud computing.
-This integration was integrated and tested with version xx of Google Cloud Compute
+
 ## Configure Google Cloud Compute on Demisto
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -12,9 +12,16 @@ This integration was integrated and tested with version xx of Google Cloud Compu
 | proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+## Create a Service Account
+1. Go to the [Google documentation](https://developers.google.com/identity/protocols/OAuth2ServiceAccount#creatinganaccount) and follow the procedure in the Creating a Service Account section. After you create a service account, a Service Account Private Key file is downloaded. You will need this file when configuring an instance of the integration.
+2. Grant the Compute Admin permission to the Service Account to enable the Service Account to perform certain Google Cloud API commands.
+3. In Demisto, configure an instance of the Google Cloud Compute integration. For the Service Account Private Key parameter, add the Service Account Private Key file contents (JSON).
+
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### gcp-compute-insert-instance
 ***
 Creates an instance resource in the specified project using the data included in the request.
