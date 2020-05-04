@@ -65,38 +65,38 @@ script:
       description: IP address
       type: string
     - contextPath: IP.DetectionEngines
-      description: ''
+      description: The total number of engines that checked the indicator.
       type: number
     - contextPath: IP.Geo
       description: ''
     - contextPath: IP.Geo.Country
-      description: ''
+      description: The country in which the IP address is located.
       type: string
     - contextPath: IP.Geo.Description
-      description: ''
+      description: Additional information about the location.
       type: string
     - contextPath: IP.Geo.Location
-      description: ''
+      description: 'The geolocation where the IP address is located, in the format: latitude:longitude.'
       type: string
     - contextPath: IP.Hostname
-      description: ''
+      description: The hostname that is mapped to this IP address.
       type: string
     - contextPath: IP.PositiveDetections
-      description: ''
+      description: The number of engines that positively detected the indicator as malicious.
       type: number
     - contextPath: DBotScore
       description: ''
     - contextPath: DBotScore.Indicator
-      description: ''
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Score
-      description: ''
+      description: The actual score.
       type: number
     - contextPath: DBotScore.Type
-      description: ''
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: ''
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: APIVoid.IP.anonymity.is_hosting
       description: ''
@@ -186,30 +186,30 @@ script:
     - contextPath: Domain
       description: ''
     - contextPath: Domain.DNS
-      description: ''
+      description: A list of IP objects resolved by DNS.
       type: string
     - contextPath: Domain.DetectionEngines
-      description: ''
+      description: The total number of engines that checked the indicator.
       type: number
     - contextPath: Domain.Name
-      description: ''
+      description: 'The domain name, for example: "google.com".'
       type: string
     - contextPath: Domain.PositiveDetections
-      description: ''
+      description: The number of engines that positively detected the indicator as malicious.
       type: number
     - contextPath: DBotScore
       description: ''
     - contextPath: DBotScore.Indicator
-      description: ''
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Score
-      description: ''
+      description: The actual score.
       type: number
     - contextPath: DBotScore.Type
-      description: ''
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: ''
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: APIVoid.Domain.alexa_top_100k
       description: ''
@@ -311,27 +311,27 @@ script:
     - contextPath: URL
       description: ''
     - contextPath: URL.Data
-      description: ''
+      description: The URL
       type: string
     - contextPath: URL.DetectionEngines
-      description: ''
+      description: The total number of engines that checked the indicator.
       type: number
     - contextPath: URL.PositiveDetections
-      description: ''
+      description: The number of engines that positively detected the indicator as malicious.
       type: number
     - contextPath: DBotScore
       description: ''
     - contextPath: DBotScore.Indicator
-      description: ''
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Score
-      description: ''
+      description: The actual score.
       type: number
     - contextPath: DBotScore.Type
-      description: ''
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: ''
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: APIVoid.URL.risk_score.result
       description: ''
@@ -651,41 +651,39 @@ script:
     - contextPath: IP
       description: ''
     - contextPath: IP.Address
-      description: ''
+      description: IP address
       type: string
     - contextPath: IP.DetectionEngines
-      description: ''
+      description: The total number of engines that checked the indicator.
       type: number
     - contextPath: IP.Geo
       description: ''
     - contextPath: IP.Geo.Country
-      description: ''
+      description: The country in which the IP address is located.
       type: string
     - contextPath: IP.Geo.Description
-      description: ''
+      description: Additional information about the location.
       type: string
     - contextPath: IP.Geo.Location
-      description: ''
+      description: 'The geolocation where the IP address is located, in the format: latitude:longitude.'
       type: string
     - contextPath: IP.Hostname
-      description: ''
+      description: The hostname that is mapped to this IP address.
       type: string
     - contextPath: IP.PositiveDetections
-      description: ''
+      description: The number of engines that positively detected the indicator as malicious.
       type: number
-    - contextPath: DBotScore
-      description: ''
     - contextPath: DBotScore.Indicator
-      description: ''
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Score
-      description: ''
+      description: The actual score.
       type: number
     - contextPath: DBotScore.Type
-      description: ''
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: ''
+      description: The vendor used to calculate the score.
       type: string
     description: Returns the reputation of the IP.
   - name: domain
@@ -696,33 +694,29 @@ script:
       default: true
       isArray: true
     outputs:
-    - contextPath: Domain
-      description: ''
     - contextPath: Domain.DNS
-      description: ''
+      description: A list of IP objects resolved by DNS.
       type: string
     - contextPath: Domain.DetectionEngines
-      description: ''
+      description: The total number of engines that checked the indicator.
       type: number
     - contextPath: Domain.Name
-      description: ''
+      description: 'The domain name, for example: "google.com".'
       type: string
     - contextPath: Domain.PositiveDetections
-      description: ''
+      description: The number of engines that positively detected the indicator as malicious.
       type: number
-    - contextPath: DBotScore
-      description: ''
     - contextPath: DBotScore.Indicator
-      description: ''
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Score
-      description: ''
+      description: The actual score.
       type: number
     - contextPath: DBotScore.Type
-      description: ''
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: ''
+      description: The vendor used to calculate the score.
       type: string
     description: Returns the reputation of the domain.
   - name: url
@@ -733,16 +727,14 @@ script:
       default: true
       isArray: true
     outputs:
-    - contextPath: URL
-      description: ''
     - contextPath: URL.Data
-      description: ''
+      description: The URL
       type: string
     - contextPath: URL.DetectionEngines
-      description: ''
+      description: The total number of engines that checked the indicator.
       type: number
     - contextPath: URL.PositiveDetections
-      description: ''
+      description: The number of engines that positively detected the indicator as malicious.
       type: number
     - contextPath: URL.RiskScore
       description: ''
@@ -753,19 +745,16 @@ script:
     - contextPath: DBotScore
       description: ''
     - contextPath: DBotScore.Indicator
-      description: ''
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Score
-      description: ''
+      description: The actual score.
       type: number
     - contextPath: DBotScore.Type
-      description: ''
-      type: string
-    - contextPath: DBotScore.URL
-      description: ''
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: ''
+      description: The vendor used to calculate the score.
       type: string
     description: Returns the reputation of the URL.
   - name: apivoid-dns-lookup
@@ -1099,8 +1088,7 @@ script:
     - contextPath: APIVoid.Email.score
       description: ''
       type: number
-    description: Checks if an email address is disposable, if it has MX records, and
-      more.
+    description: Checks if an email address is disposable, if it has MX records, and more.
   - name: apivoid-threatlog
     arguments:
     - name: host
@@ -1117,7 +1105,7 @@ script:
       description: ''
       type: string
     - contextPath: Domain.Name
-      description: ''
+      description: 'The domain name, for example: "google.com".'
       type: string
     description: Check if a website is present on ThreatLog database
   - name: apivoid-parked-domain
@@ -1133,7 +1121,7 @@ script:
       description: ''
       type: boolean
     - contextPath: Domain.Name
-      description: ''
+      description: 'The domain name, for example: "google.com".'
       type: string
     description: Detect if a domain (i.e google.com) is actually parked
   - name: apivoid-domain-age
@@ -1167,10 +1155,10 @@ script:
       description: ''
       type: string
     - contextPath: Domain.CreationDate
-      description: ''
-      type: string
+      description: The date that the domain was created.
+      type: date
     - contextPath: Domain.Name
-      description: ''
+      description: 'The domain name, for example: "google.com".'
       type: string
     description: Get the registration date of a domain and the domain age in days
   - name: apivoid-url-to-image

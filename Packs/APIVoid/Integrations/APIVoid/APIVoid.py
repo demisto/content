@@ -7,6 +7,9 @@ from CommonServerUserPython import *
 import copy
 from base64 import b64decode
 
+# Disable insecure warnings
+requests.packages.urllib3.disable_warnings()
+
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 API_ENDPOINT = 'https://endpoint.apivoid.com'
@@ -125,6 +128,36 @@ class Client(BaseClient):
         return response
 
 
+def indicator_context(client, indicator, indicator_context_path, indicator_value_field, engines, detections):
+    # DBot Information
+    dbot_score = 0
+    if engines != 0:
+        detection_rate = (detections / engines) * 100
+
+        if detection_rate < client.good:
+            dbot_score = 1
+        if detection_rate > client.suspicious:
+            dbot_score = 2
+        if detection_rate > client.bad:
+            dbot_score = 3
+
+    if (client.malicious == "suspicious" and dbot_score >= 2) or (client.malicious == "bad" and dbot_score == 3):
+        indicator['Malicious'] = {
+            'Vendor': 'APIVoid',
+            'Description': f"Detection rate of {indicator['PositiveDetections']}/{indicator['DetectionEngines']}"
+        }
+
+    return {
+        indicator_context_path: indicator,
+        'DBotScore': {
+            'Score': dbot_score,
+            'Vendor': 'APIVoid',
+            'Indicator': indicator[indicator_value_field],
+            'Type': 'ip'
+        }
+    }
+
+
 def test_module(client):
 
     result = client.test()
@@ -150,65 +183,31 @@ def ip_command(client, args, reputation_only):
 
         # IP Information
         information = report.get('information', {})
-        ip = dict()
-        ip['Address'] = report['ip']
-        ip['Hostname'] = information.get('reverse_dns', None)
-        geo = dict()
         lat = information.get('latitude', None)
         lng = information.get('longitude', None)
-        geo['Location'] = f'{lat}:{lng}' if lat and lng else None
-        geo['Country'] = information.get('country_name', None)
-        geo['Description'] = information.get('isp', None)
-        ip['Geo'] = geo
-        ip['DetectionEngines'] = engines
-        ip['PositiveDetections'] = detections
-
-        # DBot Information
-        if detections and engines:
-            detection_rate = (detections / engines) * 100
-        else:
-            detection_rate = 0
-        dbot_score = 0
-        if detection_rate < client.good:
-            dbot_score = 1
-        if engines == 0:
-            dbot_score = 0
-        if detection_rate > client.suspicious:
-            dbot_score = 2
-        if detection_rate > client.bad:
-            dbot_score = 3
-        if (client.malicious == "suspicious" and dbot_score >= 2) or (client.malicious == "bad" and dbot_score == 3):
-            ip['Malicious'] = dict()
-            ip['Malicious']['Vendor'] = 'APIVoid'
-            ip['Malicious']['Description'] = f"Detection rate of {ip['PositiveDetections']}/{ip['DetectionEngines']}"
-
-        ec = {
-            'IP(val.ip && val.ip == obj.ip)': ip,
-            'DBotScore': {
-                'Score': dbot_score,
-                'Vendor': 'URL Void',
-                'Indicator': ip['Address'],
-                'Type': 'ip'
-            }
+        ip = {
+            'Address': report['ip'],
+            'Hostname': information.get('reverse_dns', None),
+            'Geo': {
+                'Location': f'{lat}:{lng}' if lat and lng else None,
+                'Country': information.get('country_name', None),
+                'Description': information.get('isp', None),
+            },
+            'DetectionEngines': engines,
+            'PositiveDetections': detections,
         }
-
-        md = tableToMarkdown(f'APIVoid information for {ip["Address"]}:', ip)
+        ec = indicator_context(client, ip, outputPaths['ip'], 'Address', engines, detections)
 
         if not reputation_only:
             ec['APIVoid.IP(val.ip && val.ip == obj.ip)'] = report
+
+        md = tableToMarkdown(f'APIVoid information for {ip["Address"]}:', ip)
 
     else:
         ec = {}
         md = f'## No information for {ip}'
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': ec,
-        'HumanReadable': md,
-        'ReadableContentsFormat': formats['markdown'],
-        'EntryContext': ec
-    })
+    return_outputs(md, ec, raw_response)
 
 
 def domain_command(client, args, reputation_only):
@@ -225,41 +224,14 @@ def domain_command(client, args, reputation_only):
         detections = report.get('blacklists', {}).get('detections', 0)
 
         # Domain Information
-        domain = dict()
-        domain['Name'] = report['host']
-        domain['DNS'] = report['host']
-        domain['DetectionEngines'] = engines
-        domain['PositiveDetections'] = detections
-
-        # DBot Information
-        if detections and engines:
-            detection_rate = (detections / engines) * 100
-        else:
-            detection_rate = 0
-        dbot_score = 0
-        if detection_rate < client.good:
-            dbot_score = 1
-        if engines == 0:
-            dbot_score = 0
-        if detection_rate > client.suspicious:
-            dbot_score = 2
-        if detection_rate > client.bad:
-            dbot_score = 3
-        if (client.malicious == "suspicious" and dbot_score >= 2) or (client.malicious == "bad" and dbot_score == 3):
-            domain['Malicious'] = dict()
-            domain['Malicious']['Vendor'] = 'APIVoid'
-            domain['Malicious']['Description'] = f"Detection rate of " \
-                f"{domain['PositiveDetections']}/{domain['DetectionEngines']}"
-
-        ec = {
-            'Domain(val.Name && val.Name == obj.Name)': domain,
-            'DBotScore': {
-                'Score': dbot_score,
-                'Vendor': 'URL Void',
-                'Indicator': domain['Name'],
-                'Type': 'domain'
-            }
+        domain = {
+            'Name': report['host'],
+            'DNS': report['host'],
+            'DetectionEngines': engines,
+            'PositiveDetections': detections,
         }
+
+        ec = indicator_context(client, domain, outputPaths['domain'], 'Name', engines, detections)
         md = tableToMarkdown(f'APIVoid information for {domain["Name"]}:', domain)
 
         if not reputation_only:
@@ -269,14 +241,7 @@ def domain_command(client, args, reputation_only):
         ec = {}
         md = f'## No information for {domain}'
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': ec,
-        'HumanReadable': md,
-        'ReadableContentsFormat': formats['markdown'],
-        'EntryContext': ec
-    })
+    return_outputs(md, ec, raw_response)
 
 
 def url_command(client, args, reputation_only):
@@ -295,39 +260,13 @@ def url_command(client, args, reputation_only):
         detections = report.get('domain_blacklist', {}).get('detections', 0)
 
         # URL Information
-        url = dict()
-        url['Data'] = report['url']
-        url['DetectionEngines'] = engines
-        url['PositiveDetections'] = detections
-
-        # DBot Information
-        if detections and engines:
-            detection_rate = (detections / engines) * 100
-        else:
-            detection_rate = 0
-        dbot_score = 0
-        if detection_rate < client.good:
-            dbot_score = 1
-        if engines == 0:
-            dbot_score = 0
-        if detection_rate > client.suspicious:
-            dbot_score = 2
-        if detection_rate > client.bad:
-            dbot_score = 3
-        if (client.malicious == "suspicious" and dbot_score >= 2) or (client.malicious == "bad" and dbot_score == 3):
-            url['Malicious'] = dict()
-            url['Malicious']['Vendor'] = 'APIVoid'
-            url['Malicious']['Description'] = f"Detection rate of {url['PositiveDetections']}/{url['DetectionEngines']}"
-
-        ec = {
-            'URL(val.ip && val.ip == obj.ip)': url,
-            'DBotScore': {
-                'Score': dbot_score,
-                'Vendor': 'URL Void',
-                'Indicator': url['Data'],
-                'Type': 'url'
-            }
+        url = {
+            'Data': report['url'],
+            'DetectionEngines': engines,
+            'PositiveDetections': detections,
         }
+
+        ec = indicator_context(client, url, outputPaths['url'], 'Data', engines, detections)
         md = tableToMarkdown(f'APIVoid information for {url["Data"]}:', url)
 
         if not reputation_only:
@@ -337,14 +276,7 @@ def url_command(client, args, reputation_only):
         ec = {}
         md = f'## No information for {url}'
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': ec,
-        'HumanReadable': md,
-        'ReadableContentsFormat': formats['markdown'],
-        'EntryContext': ec
-    })
+    return_outputs(md, ec, raw_response)
 
 
 def dns_lookup_command(client, args):
@@ -419,14 +351,7 @@ def ssl_lookup_command(client, args):
         ec = {}
         md = f'## No information for {host}'
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': raw_response,
-        'HumanReadable': md,
-        'ReadableContentsFormat': formats['markdown'],
-        'EntryContext': ec,
-    })
+    return_outputs(md, ec, raw_response)
 
 
 def email_address_command(client, args):
@@ -448,14 +373,7 @@ def email_address_command(client, args):
         ec = {}
         md = f'## No information for {email}'
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': raw_response,
-        'HumanReadable': md,
-        'ReadableContentsFormat': formats['markdown'],
-        'EntryContext': ec
-    })
+    return_outputs(md, ec, raw_response)
 
 
 def threatlog_command(client, args):
@@ -480,14 +398,7 @@ def threatlog_command(client, args):
         ec = {}
         md = f'## No information for {host}'
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': raw_response,
-        'HumanReadable': md,
-        'ReadableContentsFormat': formats['markdown'],
-        'EntryContext': ec,
-    })
+    return_outputs(md, ec, raw_response)
 
 
 def check_parked_domain_command(client, args):
@@ -512,14 +423,7 @@ def check_parked_domain_command(client, args):
         ec = {}
         md = f'## No information for {domain}'
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': raw_response,
-        'HumanReadable': md,
-        'ReadableContentsFormat': formats['markdown'],
-        'EntryContext': ec,
-    })
+    return_outputs(md, ec, raw_response)
 
 
 def domain_age_command(client, args):
@@ -545,14 +449,7 @@ def domain_age_command(client, args):
         ec = {}
         md = f'## No information for {domain}'
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': raw_response,
-        'HumanReadable': md,
-        'ReadableContentsFormat': formats['markdown'],
-        'EntryContext': ec,
-    })
+    return_outputs(md, ec, raw_response)
 
 
 def screenshot_command(client, args):
@@ -638,14 +535,7 @@ def site_trust_command(client, args):
         ec = {}
         md = f'## No information for {host}'
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': raw_response,
-        'HumanReadable': md,
-        'ReadableContentsFormat': formats['markdown'],
-        'EntryContext': ec,
-    })
+    return_outputs(md, ec, raw_response)
 
 
 def main():

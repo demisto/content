@@ -39,10 +39,10 @@ tasks:
       version: -1
       name: apivoid-dns-lookup
       description: Gets DNS records of a host.
-      script: apivoid|||apivoid-dns-lookup
+      script: '|||apivoid-dns-lookup'
       type: regular
       iscommand: true
-      brand: apivoid
+      brand: ''
     nexttasks:
       '#none#':
       - '2'
@@ -73,10 +73,10 @@ tasks:
       version: -1
       name: apivoid-domain
       description: Returns the reputation of the domain.
-      script: apivoid|||apivoid-domain
+      script: '|||apivoid-domain'
       type: regular
       iscommand: true
-      brand: apivoid
+      brand: ''
     nexttasks:
       '#none#':
       - '3'
@@ -105,10 +105,10 @@ tasks:
       version: -1
       name: apivoid-domain-age
       description: Get the registration date of a domain and the domain age in days
-      script: apivoid|||apivoid-domain-age
+      script: '|||apivoid-domain-age'
       type: regular
       iscommand: true
-      brand: apivoid
+      brand: ''
     nexttasks:
       '#none#':
       - '4'
@@ -137,10 +137,10 @@ tasks:
       version: -1
       name: apivoid-email-verify
       description: Checks if an email is disposable, if it has MX records and more.
-      script: apivoid|||apivoid-email-verify
+      script: '|||apivoid-email-verify'
       type: regular
       iscommand: true
-      brand: apivoid
+      brand: ''
     nexttasks:
       '#none#':
       - '5'
@@ -169,10 +169,10 @@ tasks:
       version: -1
       name: apivoid-ip
       description: Returns the reputation and extended context of the IP.
-      script: apivoid|||apivoid-ip
+      script: '|||apivoid-ip'
       type: regular
       iscommand: true
-      brand: apivoid
+      brand: ''
     nexttasks:
       '#none#':
       - '6'
@@ -201,10 +201,10 @@ tasks:
       version: -1
       name: apivoid-parked-domain
       description: Detect if a domain (i.e google.com) is actually parked
-      script: apivoid|||apivoid-parked-domain
+      script: '|||apivoid-parked-domain'
       type: regular
       iscommand: true
-      brand: apivoid
+      brand: ''
     nexttasks:
       '#none#':
       - '7'
@@ -233,10 +233,10 @@ tasks:
       version: -1
       name: apivoid-site-trustworthiness
       description: A smart API to accurately check the trustworthiness of a website
-      script: apivoid|||apivoid-site-trustworthiness
+      script: '|||apivoid-site-trustworthiness'
       type: regular
       iscommand: true
-      brand: apivoid
+      brand: ''
     nexttasks:
       '#none#':
       - '8'
@@ -265,10 +265,10 @@ tasks:
       version: -1
       name: apivoid-ssl-info
       description: Get useful SSL information from a remote host
-      script: apivoid|||apivoid-ssl-info
+      script: '|||apivoid-ssl-info'
       type: regular
       iscommand: true
-      brand: apivoid
+      brand: ''
     nexttasks:
       '#none#':
       - '9'
@@ -297,10 +297,10 @@ tasks:
       version: -1
       name: apivoid-threatlog
       description: Check if a website is present on ThreatLog database
-      script: apivoid|||apivoid-threatlog
+      script: '|||apivoid-threatlog'
       type: regular
       iscommand: true
-      brand: apivoid
+      brand: ''
     nexttasks:
       '#none#':
       - '10'
@@ -329,10 +329,10 @@ tasks:
       version: -1
       name: apivoid-url
       description: Returns the reputation of the URL.
-      script: apivoid|||apivoid-url
+      script: '|||apivoid-url'
       type: regular
       iscommand: true
-      brand: apivoid
+      brand: ''
     nexttasks:
       '#none#':
       - '11'
@@ -361,10 +361,10 @@ tasks:
       version: -1
       name: apivoid-url-to-html
       description: Get the body of an html page after javascript has been executed
-      script: apivoid|||apivoid-url-to-html
+      script: '|||apivoid-url-to-html'
       type: regular
       iscommand: true
-      brand: apivoid
+      brand: ''
     nexttasks:
       '#none#':
       - '12'
@@ -393,10 +393,10 @@ tasks:
       version: -1
       name: apivoid-url-to-image
       description: Capture a high-quality screenshot of any website or URL
-      script: apivoid|||apivoid-url-to-image
+      script: '|||apivoid-url-to-image'
       type: regular
       iscommand: true
-      brand: apivoid
+      brand: ''
     nexttasks:
       '#none#':
       - '13'
@@ -425,10 +425,10 @@ tasks:
       version: -1
       name: apivoid-url-to-pdf
       description: Convert an URL info high-quality and printable PDF document
-      script: apivoid|||apivoid-url-to-pdf
+      script: '|||apivoid-url-to-pdf'
       type: regular
       iscommand: true
-      brand: apivoid
+      brand: ''
     scriptarguments:
       url:
         simple: https://www.disney.com
@@ -454,10 +454,10 @@ tasks:
       version: -1
       name: ip
       description: Returns the reputation of the IP.
-      script: apivoid|||ip
+      script: APIVoid|||ip
       type: regular
       iscommand: true
-      brand: apivoid
+      brand: APIVoid
     nexttasks:
       '#none#':
       - '15'
@@ -486,10 +486,10 @@ tasks:
       version: -1
       name: domain
       description: Returns the reputation of the domain.
-      script: apivoid|||domain
+      script: APIVoid|||domain
       type: regular
       iscommand: true
-      brand: apivoid
+      brand: APIVoid
     nexttasks:
       '#none#':
       - '16'
@@ -518,10 +518,10 @@ tasks:
       version: -1
       name: url
       description: Returns the reputation of the URL.
-      script: apivoid|||url
+      script: APIVoid|||url
       type: regular
       iscommand: true
-      brand: apivoid
+      brand: APIVoid
     nexttasks:
       '#none#':
       - '1'
