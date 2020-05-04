@@ -255,8 +255,8 @@ def get_direct_reports_command(client: MsGraphClient, args: Dict):
     reports_readable, reports = parse_outputs(raw_reports)
     human_readable = tableToMarkdown(name=f"{user} - direct reports", t=reports_readable, removeNull=True)
     outputs = {
-        'DirectReports(val.manager == obj.manager)': {
-            'manager': user,
+        'MSGraphUserDirectReports(val.Manager == obj.Manager)': {
+            'Manager': user,
             'Reports': reports
         }
     }
