@@ -34,12 +34,10 @@ configuration:
   required: false
 - display: Fetch incidents
   name: isFetch
-  defaultvalue: ""
   type: 8
   required: false
 - display: Incident type
   name: incidentType
-  defaultvalue: ""
   type: 13
   required: false
 - display: 'Required severity levels for alerts separated by comma, from [Information,Warning,Threat,Severe,Critical].

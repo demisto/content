@@ -110,6 +110,10 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "Pipl",
+            "playbookID": "Pipl Test"
+        },
+        {
             "integrations": "AWS Feed",
             "playbookID": "AWS Feed Test",
             "fromversion": "5.5.0"
@@ -2768,6 +2772,7 @@
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "Pipl": "No instance",
         "PrismaAccess": "Instance will be provided soon by Lior and Prasen",
         "Trend Micro Apex": "Issue 23632",
         "Awake Security": "Issue 23376",

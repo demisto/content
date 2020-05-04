@@ -365,6 +365,7 @@ script:
     else:
         return_error('Command [{}] not implemented'.format(demisto.command()))
   type: python
+  subtype: python2
   commands:
   - name: file
     arguments:

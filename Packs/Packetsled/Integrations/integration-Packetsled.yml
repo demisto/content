@@ -101,15 +101,13 @@ configuration:
   required: true
 - display: Fetch incidents
   name: isFetch
-  defaultvalue: ""
   type: 8
   required: false
 - display: Incident type
   name: incidentType
-  defaultvalue: ""
   type: 13
   required: false
-- display: ""
+- display: "Username"
   name: credentials
   defaultvalue: ""
   type: 9
@@ -680,6 +678,7 @@ script:
             if response.status_code == 200:
                 demisto.results(fileResult(query,response.content))
   type: python
+  subtype: python2
   commands:
   - name: packetsled-get-incidents
     arguments:

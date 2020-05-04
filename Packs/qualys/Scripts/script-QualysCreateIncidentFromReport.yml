@@ -110,6 +110,7 @@ script: |-
           "Contents" : 'No data could be read.'
       } )
 type: python
+subtype: python2
 tags:
 - qualys
 comment: |-
