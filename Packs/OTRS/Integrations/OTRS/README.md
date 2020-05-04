@@ -24,7 +24,7 @@ You can execute these commands from the Demisto CLI, as part of an automation, o
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### otrs-get-ticket
 ***
-Retrieves details for an OTRS ticket by ticket ID or ticket number.
+Retrieves details for an OTRS ticket by ticket ID or ticket number. The arguments are both optional, but at least one is required for this integration to run.
 
 
 ##### Base Command
@@ -34,8 +34,8 @@ Retrieves details for an OTRS ticket by ticket ID or ticket number.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ticket_id | Ticket ID of the ticket to get details of. Exactly one between tocket_id or ticket_number must be provided. | Optional | 
-| ticket_number | Ticket Number of the ticket to get details of. Exactly one between tocket_id or ticket_number must be provided. | Optional | 
+| ticket_id | Ticket ID of the ticket to get details of. Ticket ID of the ticket to get details of. If not supplied, the ticket_number argument is required. | Optional | 
+| ticket_number | Ticket Number of the ticket to get details of. Ticket Number of the ticket to get details of. If not supplied, the ticket_id argument is required. | Optional | 
 
 
 ##### Context Output
