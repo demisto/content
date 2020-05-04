@@ -613,37 +613,37 @@ class Pack(object):
                 # with open(os.path.join(self._pack_path, 'releaseNotes.json'), "w") as f:
                 #     json.dump(f, release_notes)
             else:
-                if os.path.exists(os.path.join(self._pack_path, 'changelog.json')):
-                    print_warning("Path exists")
-                    latest = max(found_versions, key=self.major_minor_rev)
-                    latest_int = self.major_minor_rev(latest)
-                    _version = str(latest).replace('.md', '')
-                    version = str(_version).replace('_', '.')
-                    if not expected_release_version_int == latest_int:
-                        raise Exception(f"Conflict between version found in metadata ({expected_release_version_str}) "
-                                        f"and latest version found in ReleaseNotes dir ({version})")
-                        # sys.exit(1)
+            # if os.path.exists(os.path.join(self._pack_path, 'changelog.json')):
+                print_warning("Path exists")
+                latest = max(found_versions, key=self.major_minor_rev)
+                latest_int = self.major_minor_rev(latest)
+                _version = str(latest).replace('.md', '')
+                version = str(_version).replace('_', '.')
+                if not expected_release_version_int == latest_int:
+                    raise Exception(f"Conflict between version found in metadata ({expected_release_version_str}) "
+                                    f"and latest version found in ReleaseNotes dir ({version})")
+                    # sys.exit(1)
 
-                    # We need to retrieve previous releaseNotes.json here
-                    latest_gcp_rn_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, _version, '.json')
-                    existing_rn_file = storage_bucket.blob(prefix=latest_gcp_rn_path)
-                    previous_rn = json.loads(existing_rn_file.download_as_string(client=None))
-                    print_warning(str(previous_rn))
-                    # with open(os.path.join(self._pack_path, 'releaseNotes.json')) as f:
-                    #     previous_rn = json.load(f)
-                    latest_rn_path = os.path.join(release_notes_dir, latest)
-                    with open(latest_rn_path, 'r') as changelog_md:
-                        changelog_lines = changelog_md.read()
-                    version_changelog = {'releaseNotes': changelog_lines,
-                                         'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
-                    previous_rn[version] = version_changelog
-                    print_warning(str(version_changelog))
-                    with open(os.path.join(self._pack_path, 'changelog.json'), "w") as f:
-                        json.dump(f, previous_rn)
-                else:
-                    raise Exception(
-                        f"Release notes not found for {self._pack_name}. Please add them under the "
-                        f"ReleaseNotes directory.")
+                # We need to retrieve previous releaseNotes.json here
+                latest_gcp_rn_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, _version, '.json')
+                existing_rn_file = storage_bucket.blob(prefix=latest_gcp_rn_path)
+                previous_rn = json.loads(existing_rn_file.download_as_string(client=None))
+                print_warning(str(previous_rn))
+                # with open(os.path.join(self._pack_path, 'releaseNotes.json')) as f:
+                #     previous_rn = json.load(f)
+                latest_rn_path = os.path.join(release_notes_dir, latest)
+                with open(latest_rn_path, 'r') as changelog_md:
+                    changelog_lines = changelog_md.read()
+                version_changelog = {'releaseNotes': changelog_lines,
+                                     'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
+                previous_rn[version] = version_changelog
+                print_warning(str(version_changelog))
+                with open(os.path.join(self._pack_path, 'changelog.json'), "w") as f:
+                    json.dump(f, previous_rn)
+                # else:
+                #     raise Exception(
+                #         f"Release notes not found for {self._pack_name}. Please add them under the "
+                #         f"ReleaseNotes directory.")
             task_status = True
             print_color(
                 f"Finished creating changelog.json for {self._pack_name}", LOG_COLORS.GREEN)
