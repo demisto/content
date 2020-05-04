@@ -1,5 +1,5 @@
 ## [Unreleased]
-  - Clarified the documentation for usage of the ***impact*** and the ***urgency*** arguments in the commands:
+  - Improved documentation regarding the usage of the ***impact*** and the ***urgency*** arguments for the commands:
     - ***servicenow-update-ticket***
     - ***servicenow-create-ticket***
   - Added 4 commands:
