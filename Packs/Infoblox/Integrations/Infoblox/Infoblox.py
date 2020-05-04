@@ -83,8 +83,9 @@ class Client(BaseClient):
         if params:
             self.params.update(params)
         try:
-            return super()._http_request(method, url_suffix, full_url, headers, auth, json_data, self.params, data,
-                                         files, timeout, resp_type, ok_codes, **kwargs)
+            return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
+                                         auth=auth, json_data=json_data, params=self.params, data=data, files=files,
+                                         timeout=timeout, resp_type=resp_type, ok_codes=ok_codes, **kwargs)
         except DemistoException as error:
             raise parse_demisto_exception(error, 'text')
 
@@ -511,7 +512,7 @@ def create_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     substitute_name = args.get('substitute_name')
     if rule_type == 'Substitute (domain name)' and not substitute_name:
         raise DemistoException(f'Substitute (domain name) rules requires a substitute name argument')
-    raw_response = client.create_rpz_rule(rule_type, object_type, name, rp_zone, comment, substitute_name)
+    raw_response = client.create_rpz_rule(rule_type, object_type, name, rp_zone, substitute_name, comment)
     rule = raw_response.get('result', {})
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
                            rule.items()}
