@@ -144,4 +144,3 @@ class TestLogzio:
         request_body2 = requests_mock.request_history[1].json()
         assert "pageNumber" in request_body2["pagination"]
         assert request_body2["pagination"]["pageNumber"] == 2
-

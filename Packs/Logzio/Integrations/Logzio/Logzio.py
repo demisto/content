@@ -3,7 +3,6 @@ from CommonServerPython import *
 
 import urllib3
 import json
-import dateutil
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -22,7 +21,7 @@ SEARCH_RULE_LOGS_API_SUFFIX = "v2/security/rules/events/logs/search"
 
 
 class Client(BaseClient):
-    def __init__(self, region, security_api_token, op_api_token, verify, proxy, max_fetch = DEFAULT_LIMIT):
+    def __init__(self, region, security_api_token, op_api_token, verify, proxy, max_fetch=DEFAULT_LIMIT):
         self.security_api_token = security_api_token
         self.op_api_token = op_api_token
         self.region = region
@@ -171,8 +170,7 @@ def get_rule_logs_by_id_command(client, args):
     page_size = args.get("page_size", MAX_LOGZIO_DOCS)
     resp = client.get_rule_logs(id, size, page_size)
     context = {
-            'Logzio.Logs.Count': len(resp),
-            'Logzio.Logs.Results': resp
+        'Logzio.Logs': resp
     }
     return_outputs(tableToMarkdown("Logs", resp), context, resp)
 
