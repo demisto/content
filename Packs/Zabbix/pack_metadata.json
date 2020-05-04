@@ -2,7 +2,7 @@
     "name": "Zabbix",
     "description": "Allow integration with Zabbix api.",
     "support": "developer",
-    "serverMinVersion": "5.0.0",
+    "serverMinVersion": "4.5.0",
     "currentVersion": "2.0.0",
     "author": "Henrique Caires",
     "url": "https://github.com/HenriqueCaires",

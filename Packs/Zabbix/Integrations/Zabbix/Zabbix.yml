@@ -19,7 +19,7 @@ configuration:
   required: true
 script:
   commands:
-    - name: execute_command
+    - name: zabbix-execute-command
       arguments:
       - name: method
         required: true
@@ -31,14 +31,14 @@ script:
       - name: params
         description: JSON with params to send with call
       outputs:
-      - contextPath: result
+      - contextPath: Zabbix-Execute
         description: result
         type: Unknown
       description: Execute command on Zabbix API
     - name: test-module
       arguments: []
       description: Test if module is working
-    - name: hostgroup_get
+    - name: zabbix-hostgroup-get
       arguments:
       - name: params_graphids
         description: Return only host groups that contain hosts or templates with the
@@ -83,20 +83,20 @@ script:
       - name: params_with_triggers
         description: Return only host groups that contain hosts with triggers.
       outputs:
-      - contextPath: Zabbix.hostgroup_get.groupid
+      - contextPath: Zabbix.Hostgroup.groupid
         description: ID of the host group
         type: string
-      - contextPath: Zabbix.hostgroup_get.name
+      - contextPath: Zabbix.Hostgroup.name
         description: Name of the host group
         type: string
-      - contextPath: Zabbix.hostgroup_get.flags
+      - contextPath: Zabbix.Hostgroup.flags
         description: Origin of the host group
         type: number
-      - contextPath: Zabbix.hostgroup_get.internal
+      - contextPath: Zabbix.Hostgroup.internal
         description: Whether the group is used internally by the system.
         type: number
       description: Get host groups
-    - name: host_get
+    - name: zabbix-host-get
       arguments:
       - name: params_groupids
         description: Return only hosts that belong to the given groups.
@@ -150,124 +150,124 @@ script:
       - name: params_withInventory
         description: Return only hosts that have inventory data.
       outputs:
-      - contextPath: Zabbix.host_get.hostid
+      - contextPath: Zabbix.Host.hostid
         description: ID of the host.
         type: string
-      - contextPath: Zabbix.host_get.host
+      - contextPath: Zabbix.Host.host
         description: Technical name of the host.
         type: string
-      - contextPath: Zabbix.host_get.available
+      - contextPath: Zabbix.Host.available
         description: Availability of Zabbix agent.
         type: number
-      - contextPath: Zabbix.host_get.description
+      - contextPath: Zabbix.Host.description
         description: Description of the host.
         type: string
-      - contextPath: Zabbix.host_get.disable_until
+      - contextPath: Zabbix.Host.disable_until
         description: The next polling time of an unavailable Zabbix agent.
         type: date
-      - contextPath: Zabbix.host_get.error
+      - contextPath: Zabbix.Host.error
         description: Error text if Zabbix agent is unavailable.
         type: string
-      - contextPath: Zabbix.host_get.errors_from
+      - contextPath: Zabbix.Host.errors_from
         description: Time when Zabbix agent became unavailable.
         type: date
-      - contextPath: Zabbix.host_get.flags
+      - contextPath: Zabbix.Host.flags
         description: Origin of the host.
         type: number
-      - contextPath: Zabbix.host_get.inventory_mode
+      - contextPath: Zabbix.Host.inventory_mode
         description: (writeonly) Host inventory population mode.
         type: number
-      - contextPath: Zabbix.host_get.ipmi_authtype
+      - contextPath: Zabbix.Host.ipmi_authtype
         description: IPMI authentication algorithm.
         type: number
-      - contextPath: Zabbix.host_get.ipmi_available
+      - contextPath: Zabbix.Host.ipmi_available
         description: Availability of IPMI agent.
         type: number
-      - contextPath: Zabbix.host_get.ipmi_disable_until
+      - contextPath: Zabbix.Host.ipmi_disable_until
         description: The next polling time of an unavailable IPMI agent.
         type: date
-      - contextPath: Zabbix.host_get.ipmi_error
+      - contextPath: Zabbix.Host.ipmi_error
         description: Error text if IPMI agent is unavailable.
         type: string
-      - contextPath: Zabbix.host_get.ipmi_errors_from
+      - contextPath: Zabbix.Host.ipmi_errors_from
         description: Time when IPMI agent became unavailable.
         type: date
-      - contextPath: Zabbix.host_get.ipmi_password
+      - contextPath: Zabbix.Host.ipmi_password
         description: IPMI password.
         type: string
-      - contextPath: Zabbix.host_get.ipmi_privilege
+      - contextPath: Zabbix.Host.ipmi_privilege
         description: IPMI privilege level.
         type: number
-      - contextPath: Zabbix.host_get.ipmi_username
+      - contextPath: Zabbix.Host.ipmi_username
         description: IPMI username.
         type: string
-      - contextPath: Zabbix.host_get.jmx_available
+      - contextPath: Zabbix.Host.jmx_available
         description: Availability of JMX agent.
         type: number
-      - contextPath: Zabbix.host_get.jmx_disable_until
+      - contextPath: Zabbix.Host.jmx_disable_until
         description: The next polling time of an unavailable JMX agent.
         type: date
-      - contextPath: Zabbix.host_get.jmx_error
+      - contextPath: Zabbix.Host.jmx_error
         description: Error text if JMX agent is unavailable.
         type: string
-      - contextPath: Zabbix.host_get.jmx_errors_from
+      - contextPath: Zabbix.Host.jmx_errors_from
         description: Time when JMX agent became unavailable.
         type: date
-      - contextPath: Zabbix.host_get.maintenance_from
+      - contextPath: Zabbix.Host.maintenance_from
         description: Starting time of the effective maintenance.
         type: date
-      - contextPath: Zabbix.host_get.maintenance_status
+      - contextPath: Zabbix.Host.maintenance_status
         description: Effective maintenance status.
         type: number
-      - contextPath: Zabbix.host_get.maintenance_type
+      - contextPath: Zabbix.Host.maintenance_type
         description: Effective maintenance type.
         type: number
-      - contextPath: Zabbix.host_get.maintenanceid
+      - contextPath: Zabbix.Host.maintenanceid
         description: ID of the maintenance that is currently in effect on the host.
         type: string
-      - contextPath: Zabbix.host_get.name
+      - contextPath: Zabbix.Host.name
         description: Visible name of the host.
         type: string
-      - contextPath: Zabbix.host_get.proxy_hostid
+      - contextPath: Zabbix.Host.proxy_hostid
         description: ID of the proxy that is used to monitor the host.
         type: string
-      - contextPath: Zabbix.host_get.snmp_available
+      - contextPath: Zabbix.Host.snmp_available
         description: Availability of SNMP agent.
         type: number
-      - contextPath: Zabbix.host_get.snmp_disable_until
+      - contextPath: Zabbix.Host.snmp_disable_until
         description: The next polling time of an unavailable SNMP agent.
         type: date
-      - contextPath: Zabbix.host_get.snmp_error
+      - contextPath: Zabbix.Host.snmp_error
         description: Error text if SNMP agent is unavailable.
         type: string
-      - contextPath: Zabbix.host_get.snmp_errors_from
+      - contextPath: Zabbix.Host.snmp_errors_from
         description: Time when SNMP agent became unavailable.
         type: date
-      - contextPath: Zabbix.host_get.status
+      - contextPath: Zabbix.Host.status
         description: Status and function of the host.
         type: number
-      - contextPath: Zabbix.host_get.tls_connect
+      - contextPath: Zabbix.Host.tls_connect
         description: Connections to host.
         type: number
-      - contextPath: Zabbix.host_get.tls_accept
+      - contextPath: Zabbix.Host.tls_accept
         description: Connections from host.
         type: number
-      - contextPath: Zabbix.host_get.tls_issuer
+      - contextPath: Zabbix.Host.tls_issuer
         description: Certificate issuer.
         type: string
-      - contextPath: Zabbix.host_get.tls_subject
+      - contextPath: Zabbix.Host.tls_subject
         description: Certificate subject.
         type: string
-      - contextPath: Zabbix.host_get.tls_psk_identity
+      - contextPath: Zabbix.Host.tls_psk_identity
         description: PSK identity. Required if either tls_connect or tls_accept has
           PSK enabled.
         type: string
-      - contextPath: Zabbix.host_get.tls_psk
+      - contextPath: Zabbix.Host.tls_psk
         description: The preshared key, at least 32 hex digits. Required if either tls_connect
           or tls_accept has PSK enabled.
         type: string
       description: Get hosts
-    - name: trigger_get
+    - name: zabbix-trigger-get
       arguments:
       - name: params_triggerids
         description: Return only triggers with the given IDs.
@@ -327,66 +327,66 @@ script:
         description: Return only triggers with given tags. Exact match by tag and case-sensitive
           or case-insensitive search by tag value depending on operator value.
       outputs:
-      - contextPath: Zabbix.triggers_get.triggerid
+      - contextPath: Zabbix.Trigger.triggerid
         description: ID of the trigger.
         type: string
-      - contextPath: Zabbix.triggers_get.description
+      - contextPath: Zabbix.Trigger.description
         description: Name of the trigger.
         type: string
-      - contextPath: Zabbix.triggers_get.expression
+      - contextPath: Zabbix.Trigger.expression
         description: Reduced trigger expression.
         type: string
-      - contextPath: Zabbix.triggers_get.comments
+      - contextPath: Zabbix.Trigger.comments
         description: Additional description of the trigger.
         type: string
-      - contextPath: Zabbix.triggers_get.error
+      - contextPath: Zabbix.Trigger.error
         description: Error text if there have been any problems when updating the state
           of the trigger.
         type: string
-      - contextPath: Zabbix.triggers_get.flags
+      - contextPath: Zabbix.Trigger.flags
         description: Origin of the trigger.
         type: number
-      - contextPath: Zabbix.triggers_get.lastchange
+      - contextPath: Zabbix.Trigger.lastchange
         description: Time when the trigger last changed its state.
         type: date
-      - contextPath: Zabbix.triggers_get.priority
+      - contextPath: Zabbix.Trigger.priority
         description: Severity of the trigger.
         type: number
-      - contextPath: Zabbix.triggers_get.state
+      - contextPath: Zabbix.Trigger.state
         description: State of the trigger.
         type: number
-      - contextPath: Zabbix.triggers_get.status
+      - contextPath: Zabbix.Trigger.status
         description: Whether the trigger is enabled or disabled.
         type: number
-      - contextPath: Zabbix.triggers_get.templateid
+      - contextPath: Zabbix.Trigger.templateid
         description: ID of the parent template trigger.
         type: string
-      - contextPath: Zabbix.triggers_get.type
+      - contextPath: Zabbix.Trigger.type
         description: Whether the trigger can generate multiple problem events.
         type: number
-      - contextPath: Zabbix.triggers_get.url
+      - contextPath: Zabbix.Trigger.url
         description: URL associated with the trigger.
         type: string
-      - contextPath: Zabbix.triggers_get.value
+      - contextPath: Zabbix.Trigger.value
         description: Whether the trigger is in OK or problem state.
         type: number
-      - contextPath: Zabbix.triggers_get.recovery_mode
+      - contextPath: Zabbix.Trigger.recovery_mode
         description: OK event generation mode.
         type: number
-      - contextPath: Zabbix.triggers_get.recovery_expression
+      - contextPath: Zabbix.Trigger.recovery_expression
         description: Reduced trigger recovery expression.
         type: string
-      - contextPath: Zabbix.triggers_get.correlation_mode
+      - contextPath: Zabbix.Trigger.correlation_mode
         description: OK event closes.
         type: number
-      - contextPath: Zabbix.triggers_get.correlation_tag
+      - contextPath: Zabbix.Trigger.correlation_tag
         description: Tag for matching.
         type: string
-      - contextPath: Zabbix.triggers_get.manual_close
+      - contextPath: Zabbix.Trigger.manual_close
         description: Allow manual close.
         type: number
       description: Get triggers
-    - name: event_get
+    - name: zabbix-event-get
       arguments:
       - name: params_eventids
         description: Return only events with the given IDs.
@@ -438,51 +438,51 @@ script:
       - name: params_value
         description: Return only events with the given values.
       outputs:
-      - contextPath: Zabbix.event_get.eventid
+      - contextPath: Zabbix.Event.eventid
         description: ID of the event.
         type: string
-      - contextPath: Zabbix.event_get.source
+      - contextPath: Zabbix.Event.source
         description: Type of the event.
         type: number
-      - contextPath: Zabbix.event_get.object
+      - contextPath: Zabbix.Event.object
         description: Type of object that is related to the event.
         type: number
-      - contextPath: Zabbix.event_get.objectid
+      - contextPath: Zabbix.Event.objectid
         description: ID of the related object.
         type: string
-      - contextPath: Zabbix.event_get.acknowledged
+      - contextPath: Zabbix.Event.acknowledged
         description: Whether the event has been acknowledged.
         type: number
-      - contextPath: Zabbix.event_get.clock
+      - contextPath: Zabbix.Event.clock
         description: Time when the event was created.
         type: date
-      - contextPath: Zabbix.event_get.ns
+      - contextPath: Zabbix.Event.ns
         description: Nanoseconds when the event was created.
         type: number
-      - contextPath: Zabbix.event_get.name
+      - contextPath: Zabbix.Event.name
         description: Resolved event name.
         type: string
-      - contextPath: Zabbix.event_get.value
+      - contextPath: Zabbix.Event.value
         description: State of the related object.
         type: number
-      - contextPath: Zabbix.event_get.severity
+      - contextPath: Zabbix.Event.severity
         description: Event current severity.
         type: number
-      - contextPath: Zabbix.event_get.r_eventid
+      - contextPath: Zabbix.Event.r_eventid
         description: Recovery event ID
         type: string
-      - contextPath: Zabbix.event_get.c_eventid
+      - contextPath: Zabbix.Event.c_eventid
         description: ID of the event that was used to override (close) current event
           under global correlation rule. See correlationid to identify exact correlation
           rule.
         type: string
-      - contextPath: Zabbix.event_get.correlationid
+      - contextPath: Zabbix.Event.correlationid
         description: ID of the correlation rule that generated closing of the problem.
         type: string
-      - contextPath: Zabbix.event_get.userid
+      - contextPath: Zabbix.Event.userid
         description: User ID if the event was manually closed.
         type: string
-      - contextPath: Zabbix.event_get.suppressed
+      - contextPath: Zabbix.Event.suppressed
         description: Whether the event is suppressed.
         type: number
       description: Get events

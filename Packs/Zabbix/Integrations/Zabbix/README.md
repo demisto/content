@@ -26,20 +26,20 @@ This integration was integrated and tested with version xx of Zabbix
 ---
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-1. execute_command
+1. zabbix-execute-command
 2. test-module
-3. hostgroup_get
-4. host_get
-5. trigger_get
-6. event_get
-### 1. execute_command
+3. zabbix-hostgroup-get
+4. zabbix-host-get
+5. zabbix-trigger-get
+6. zabbix-event-get
+### 1. zabbix-execute-command
 ---
 Execute command on Zabbix API
 ##### Required Permissions
 **FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
-`execute_command`
+`zabbix-execute-command`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -52,17 +52,17 @@ Execute command on Zabbix API
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| result | Unknown | result | 
+| Zabbix-Execute | Unknown | result | 
 
 
 ##### Command Example
-```!execute_command method="host.get"
+```!zabbix-execute-command method="host.get"
 ```
 
 ##### Context Example
 ```
 {
-    "Zabbix.execute_command": [
+    "Zabbix.Execute": [
         {
             "jmx_available": "0", 
             "tls_connect": "1", 
@@ -87,7 +87,7 @@ Execute command on Zabbix API
             "tls_accept": "1", 
             "auto_compress": "1", 
             "host": "Zabbix server", 
-            "disable_until": "1586289490", 
+            "disable_until": "1588621755", 
             "ipmi_password": "", 
             "templateid": "0", 
             "tls_issuer": "", 
@@ -111,10 +111,10 @@ Execute command on Zabbix API
 ```
 
 ##### Human Readable Output
-### execute_command, {'method': 'host.get'}
+### zabbix-execute-command, {'method': 'host.get'}
 |auto_compress|available|description|disable_until|error|errors_from|flags|host|hostid|ipmi_authtype|ipmi_available|ipmi_disable_until|ipmi_error|ipmi_errors_from|ipmi_password|ipmi_privilege|ipmi_username|jmx_available|jmx_disable_until|jmx_error|jmx_errors_from|lastaccess|maintenance_from|maintenance_status|maintenance_type|maintenanceid|name|proxy_address|proxy_hostid|snmp_available|snmp_disable_until|snmp_error|snmp_errors_from|status|templateid|tls_accept|tls_connect|tls_issuer|tls_psk|tls_psk_identity|tls_subject|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | 2 |  | 1586289490 | Get value from agent failed: cannot connect to [[127.0.0.1]:10050]: [111] Connection refused | 1585321618 | 0 | Zabbix server | 10084 | -1 | 0 | 0 |  | 0 |  | 2 |  | 0 | 0 |  | 0 | 0 | 0 | 0 | 0 | 0 | Zabbix server |  | 0 | 0 | 0 |  | 0 | 0 | 0 | 1 | 1 |  |  |  |  |
+| 1 | 2 |  | 1588621755 | Get value from agent failed: cannot connect to [[127.0.0.1]:10050]: [111] Connection refused | 1585321618 | 0 | Zabbix server | 10084 | -1 | 0 | 0 |  | 0 |  | 2 |  | 0 | 0 |  | 0 | 0 | 0 | 0 | 0 | 0 | Zabbix server |  | 0 | 0 | 0 |  | 0 | 0 | 0 | 1 | 1 |  |  |  |  |
 
 
 ### 2. test-module
@@ -142,14 +142,14 @@ There is no context output for this command.
 ##### Human Readable Output
 ok
 
-### 3. hostgroup_get
+### 3. zabbix-hostgroup-get
 ---
 Get host groups
 ##### Required Permissions
 **FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
-`hostgroup_get`
+`zabbix-hostgroup-get`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -179,20 +179,20 @@ Get host groups
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zabbix.hostgroup_get.groupid | string | ID of the host group | 
-| Zabbix.hostgroup_get.name | string | Name of the host group | 
-| Zabbix.hostgroup_get.flags | number | Origin of the host group | 
-| Zabbix.hostgroup_get.internal | number | Whether the group is used internally by the system. | 
+| Zabbix.Hostgroup.groupid | string | ID of the host group | 
+| Zabbix.Hostgroup.name | string | Name of the host group | 
+| Zabbix.Hostgroup.flags | number | Origin of the host group | 
+| Zabbix.Hostgroup.internal | number | Whether the group is used internally by the system. | 
 
 
 ##### Command Example
-```!hostgroup_get params_real_hosts="True"
+```!zabbix-hostgroup-get params_real_hosts="True"
 ```
 
 ##### Context Example
 ```
 {
-    "Zabbix.hostgroup_get": [
+    "Zabbix.Hostgroup": [
         {
             "internal": "0", 
             "flags": "0", 
@@ -204,20 +204,20 @@ Get host groups
 ```
 
 ##### Human Readable Output
-### hostgroup_get, {'params_real_hosts': 'True'}
+### zabbix-hostgroup-get, {'params_real_hosts': 'True'}
 |flags|groupid|internal|name|
 |---|---|---|---|
 | 0 | 4 | 0 | Zabbix servers |
 
 
-### 4. host_get
+### 4. zabbix-host-get
 ---
 Get hosts
 ##### Required Permissions
 **FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
-`host_get`
+`zabbix-host-get`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -253,54 +253,54 @@ Get hosts
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zabbix.host_get.hostid | string | ID of the host. | 
-| Zabbix.host_get.host | string | Technical name of the host. | 
-| Zabbix.host_get.available | number | Availability of Zabbix agent. | 
-| Zabbix.host_get.description | string | Description of the host. | 
-| Zabbix.host_get.disable_until | date | The next polling time of an unavailable Zabbix agent. | 
-| Zabbix.host_get.error | string | Error text if Zabbix agent is unavailable. | 
-| Zabbix.host_get.errors_from | date | Time when Zabbix agent became unavailable. | 
-| Zabbix.host_get.flags | number | Origin of the host. | 
-| Zabbix.host_get.inventory_mode | number | (writeonly) Host inventory population mode. | 
-| Zabbix.host_get.ipmi_authtype | number | IPMI authentication algorithm. | 
-| Zabbix.host_get.ipmi_available | number | Availability of IPMI agent. | 
-| Zabbix.host_get.ipmi_disable_until | date | The next polling time of an unavailable IPMI agent. | 
-| Zabbix.host_get.ipmi_error | string | Error text if IPMI agent is unavailable. | 
-| Zabbix.host_get.ipmi_errors_from | date | Time when IPMI agent became unavailable. | 
-| Zabbix.host_get.ipmi_password | string | IPMI password. | 
-| Zabbix.host_get.ipmi_privilege | number | IPMI privilege level. | 
-| Zabbix.host_get.ipmi_username | string | IPMI username. | 
-| Zabbix.host_get.jmx_available | number | Availability of JMX agent. | 
-| Zabbix.host_get.jmx_disable_until | date | The next polling time of an unavailable JMX agent. | 
-| Zabbix.host_get.jmx_error | string | Error text if JMX agent is unavailable. | 
-| Zabbix.host_get.jmx_errors_from | date | Time when JMX agent became unavailable. | 
-| Zabbix.host_get.maintenance_from | date | Starting time of the effective maintenance. | 
-| Zabbix.host_get.maintenance_status | number | Effective maintenance status. | 
-| Zabbix.host_get.maintenance_type | number | Effective maintenance type. | 
-| Zabbix.host_get.maintenanceid | string | ID of the maintenance that is currently in effect on the host. | 
-| Zabbix.host_get.name | string | Visible name of the host. | 
-| Zabbix.host_get.proxy_hostid | string | ID of the proxy that is used to monitor the host. | 
-| Zabbix.host_get.snmp_available | number | Availability of SNMP agent. | 
-| Zabbix.host_get.snmp_disable_until | date | The next polling time of an unavailable SNMP agent. | 
-| Zabbix.host_get.snmp_error | string | Error text if SNMP agent is unavailable. | 
-| Zabbix.host_get.snmp_errors_from | date | Time when SNMP agent became unavailable. | 
-| Zabbix.host_get.status | number | Status and function of the host. | 
-| Zabbix.host_get.tls_connect | number | Connections to host. | 
-| Zabbix.host_get.tls_accept | number | Connections from host. | 
-| Zabbix.host_get.tls_issuer | string | Certificate issuer. | 
-| Zabbix.host_get.tls_subject | string | Certificate subject. | 
-| Zabbix.host_get.tls_psk_identity | string | PSK identity. Required if either tls_connect or tls_accept has PSK enabled. | 
-| Zabbix.host_get.tls_psk | string | The preshared key, at least 32 hex digits. Required if either tls_connect or tls_accept has PSK enabled. | 
+| Zabbix.Host.hostid | string | ID of the host. | 
+| Zabbix.Host.host | string | Technical name of the host. | 
+| Zabbix.Host.available | number | Availability of Zabbix agent. | 
+| Zabbix.Host.description | string | Description of the host. | 
+| Zabbix.Host.disable_until | date | The next polling time of an unavailable Zabbix agent. | 
+| Zabbix.Host.error | string | Error text if Zabbix agent is unavailable. | 
+| Zabbix.Host.errors_from | date | Time when Zabbix agent became unavailable. | 
+| Zabbix.Host.flags | number | Origin of the host. | 
+| Zabbix.Host.inventory_mode | number | (writeonly) Host inventory population mode. | 
+| Zabbix.Host.ipmi_authtype | number | IPMI authentication algorithm. | 
+| Zabbix.Host.ipmi_available | number | Availability of IPMI agent. | 
+| Zabbix.Host.ipmi_disable_until | date | The next polling time of an unavailable IPMI agent. | 
+| Zabbix.Host.ipmi_error | string | Error text if IPMI agent is unavailable. | 
+| Zabbix.Host.ipmi_errors_from | date | Time when IPMI agent became unavailable. | 
+| Zabbix.Host.ipmi_password | string | IPMI password. | 
+| Zabbix.Host.ipmi_privilege | number | IPMI privilege level. | 
+| Zabbix.Host.ipmi_username | string | IPMI username. | 
+| Zabbix.Host.jmx_available | number | Availability of JMX agent. | 
+| Zabbix.Host.jmx_disable_until | date | The next polling time of an unavailable JMX agent. | 
+| Zabbix.Host.jmx_error | string | Error text if JMX agent is unavailable. | 
+| Zabbix.Host.jmx_errors_from | date | Time when JMX agent became unavailable. | 
+| Zabbix.Host.maintenance_from | date | Starting time of the effective maintenance. | 
+| Zabbix.Host.maintenance_status | number | Effective maintenance status. | 
+| Zabbix.Host.maintenance_type | number | Effective maintenance type. | 
+| Zabbix.Host.maintenanceid | string | ID of the maintenance that is currently in effect on the host. | 
+| Zabbix.Host.name | string | Visible name of the host. | 
+| Zabbix.Host.proxy_hostid | string | ID of the proxy that is used to monitor the host. | 
+| Zabbix.Host.snmp_available | number | Availability of SNMP agent. | 
+| Zabbix.Host.snmp_disable_until | date | The next polling time of an unavailable SNMP agent. | 
+| Zabbix.Host.snmp_error | string | Error text if SNMP agent is unavailable. | 
+| Zabbix.Host.snmp_errors_from | date | Time when SNMP agent became unavailable. | 
+| Zabbix.Host.status | number | Status and function of the host. | 
+| Zabbix.Host.tls_connect | number | Connections to host. | 
+| Zabbix.Host.tls_accept | number | Connections from host. | 
+| Zabbix.Host.tls_issuer | string | Certificate issuer. | 
+| Zabbix.Host.tls_subject | string | Certificate subject. | 
+| Zabbix.Host.tls_psk_identity | string | PSK identity. Required if either tls_connect or tls_accept has PSK enabled. | 
+| Zabbix.Host.tls_psk | string | The preshared key, at least 32 hex digits. Required if either tls_connect or tls_accept has PSK enabled. | 
 
 
 ##### Command Example
-```!host_get params_groupids="4"
+```!zabbix-host-get params_groupids="4"
 ```
 
 ##### Context Example
 ```
 {
-    "Zabbix.host_get": [
+    "Zabbix.Host": [
         {
             "jmx_available": "0", 
             "tls_connect": "1", 
@@ -325,7 +325,7 @@ Get hosts
             "tls_accept": "1", 
             "auto_compress": "1", 
             "host": "Zabbix server", 
-            "disable_until": "1586289490", 
+            "disable_until": "1588621755", 
             "ipmi_password": "", 
             "templateid": "0", 
             "tls_issuer": "", 
@@ -349,20 +349,20 @@ Get hosts
 ```
 
 ##### Human Readable Output
-### host_get, {'params_groupids': '4'}
+### zabbix-host-get, {'params_groupids': '4'}
 |auto_compress|available|description|disable_until|error|errors_from|flags|host|hostid|ipmi_authtype|ipmi_available|ipmi_disable_until|ipmi_error|ipmi_errors_from|ipmi_password|ipmi_privilege|ipmi_username|jmx_available|jmx_disable_until|jmx_error|jmx_errors_from|lastaccess|maintenance_from|maintenance_status|maintenance_type|maintenanceid|name|proxy_address|proxy_hostid|snmp_available|snmp_disable_until|snmp_error|snmp_errors_from|status|templateid|tls_accept|tls_connect|tls_issuer|tls_psk|tls_psk_identity|tls_subject|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | 2 |  | 1586289490 | Get value from agent failed: cannot connect to [[127.0.0.1]:10050]: [111] Connection refused | 1585321618 | 0 | Zabbix server | 10084 | -1 | 0 | 0 |  | 0 |  | 2 |  | 0 | 0 |  | 0 | 0 | 0 | 0 | 0 | 0 | Zabbix server |  | 0 | 0 | 0 |  | 0 | 0 | 0 | 1 | 1 |  |  |  |  |
+| 1 | 2 |  | 1588621755 | Get value from agent failed: cannot connect to [[127.0.0.1]:10050]: [111] Connection refused | 1585321618 | 0 | Zabbix server | 10084 | -1 | 0 | 0 |  | 0 |  | 2 |  | 0 | 0 |  | 0 | 0 | 0 | 0 | 0 | 0 | Zabbix server |  | 0 | 0 | 0 |  | 0 | 0 | 0 | 1 | 1 |  |  |  |  |
 
 
-### 5. trigger_get
+### 5. zabbix-trigger-get
 ---
 Get triggers
 ##### Required Permissions
 **FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
-`trigger_get`
+`zabbix-trigger-get`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -397,35 +397,35 @@ Get triggers
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zabbix.triggers_get.triggerid | string | ID of the trigger. | 
-| Zabbix.triggers_get.description | string | Name of the trigger. | 
-| Zabbix.triggers_get.expression | string | Reduced trigger expression. | 
-| Zabbix.triggers_get.comments | string | Additional description of the trigger. | 
-| Zabbix.triggers_get.error | string | Error text if there have been any problems when updating the state of the trigger. | 
-| Zabbix.triggers_get.flags | number | Origin of the trigger. | 
-| Zabbix.triggers_get.lastchange | date | Time when the trigger last changed its state. | 
-| Zabbix.triggers_get.priority | number | Severity of the trigger. | 
-| Zabbix.triggers_get.state | number | State of the trigger. | 
-| Zabbix.triggers_get.status | number | Whether the trigger is enabled or disabled. | 
-| Zabbix.triggers_get.templateid | string | ID of the parent template trigger. | 
-| Zabbix.triggers_get.type | number | Whether the trigger can generate multiple problem events. | 
-| Zabbix.triggers_get.url | string | URL associated with the trigger. | 
-| Zabbix.triggers_get.value | number | Whether the trigger is in OK or problem state. | 
-| Zabbix.triggers_get.recovery_mode | number | OK event generation mode. | 
-| Zabbix.triggers_get.recovery_expression | string | Reduced trigger recovery expression. | 
-| Zabbix.triggers_get.correlation_mode | number | OK event closes. | 
-| Zabbix.triggers_get.correlation_tag | string | Tag for matching. | 
-| Zabbix.triggers_get.manual_close | number | Allow manual close. | 
+| Zabbix.Trigger.triggerid | string | ID of the trigger. | 
+| Zabbix.Trigger.description | string | Name of the trigger. | 
+| Zabbix.Trigger.expression | string | Reduced trigger expression. | 
+| Zabbix.Trigger.comments | string | Additional description of the trigger. | 
+| Zabbix.Trigger.error | string | Error text if there have been any problems when updating the state of the trigger. | 
+| Zabbix.Trigger.flags | number | Origin of the trigger. | 
+| Zabbix.Trigger.lastchange | date | Time when the trigger last changed its state. | 
+| Zabbix.Trigger.priority | number | Severity of the trigger. | 
+| Zabbix.Trigger.state | number | State of the trigger. | 
+| Zabbix.Trigger.status | number | Whether the trigger is enabled or disabled. | 
+| Zabbix.Trigger.templateid | string | ID of the parent template trigger. | 
+| Zabbix.Trigger.type | number | Whether the trigger can generate multiple problem events. | 
+| Zabbix.Trigger.url | string | URL associated with the trigger. | 
+| Zabbix.Trigger.value | number | Whether the trigger is in OK or problem state. | 
+| Zabbix.Trigger.recovery_mode | number | OK event generation mode. | 
+| Zabbix.Trigger.recovery_expression | string | Reduced trigger recovery expression. | 
+| Zabbix.Trigger.correlation_mode | number | OK event closes. | 
+| Zabbix.Trigger.correlation_tag | string | Tag for matching. | 
+| Zabbix.Trigger.manual_close | number | Allow manual close. | 
 
 
 ##### Command Example
-```!trigger_get params_only_true="True"
+```!zabbix-trigger-get params_only_true="True"
 ```
 
 ##### Context Example
 ```
 {
-    "Zabbix.trigger_get": [
+    "Zabbix.Trigger": [
         {
             "status": "0", 
             "value": "1", 
@@ -452,20 +452,20 @@ Get triggers
 ```
 
 ##### Human Readable Output
-### trigger_get, {'params_only_true': 'True'}
+### zabbix-trigger-get, {'params_only_true': 'True'}
 |comments|correlation_mode|correlation_tag|description|error|expression|flags|lastchange|manual_close|priority|recovery_expression|recovery_mode|state|status|templateid|triggerid|type|url|value|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 |  | 0 |  | Zabbix agent on {HOST.NAME} is unreachable for 5 minutes |  | {12900}=1 | 0 | 1585321941 | 0 | 3 |  | 0 | 0 | 0 | 10047 | 13491 | 0 |  | 1 |
 
 
-### 6. event_get
+### 6. zabbix-event-get
 ---
 Get events
 ##### Required Permissions
 **FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
-`event_get`
+`zabbix-event-get`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -495,30 +495,30 @@ Get events
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zabbix.event_get.eventid | string | ID of the event. | 
-| Zabbix.event_get.source | number | Type of the event. | 
-| Zabbix.event_get.object | number | Type of object that is related to the event. | 
-| Zabbix.event_get.objectid | string | ID of the related object. | 
-| Zabbix.event_get.acknowledged | number | Whether the event has been acknowledged. | 
-| Zabbix.event_get.clock | date | Time when the event was created. | 
-| Zabbix.event_get.ns | number | Nanoseconds when the event was created. | 
-| Zabbix.event_get.name | string | Resolved event name. | 
-| Zabbix.event_get.value | number | State of the related object. | 
-| Zabbix.event_get.severity | number | Event current severity. | 
-| Zabbix.event_get.r_eventid | string | Recovery event ID | 
-| Zabbix.event_get.c_eventid | string | ID of the event that was used to override (close) current event under global correlation rule. See correlationid to identify exact correlation rule. | 
-| Zabbix.event_get.correlationid | string | ID of the correlation rule that generated closing of the problem. | 
-| Zabbix.event_get.userid | string | User ID if the event was manually closed. | 
-| Zabbix.event_get.suppressed | number | Whether the event is suppressed. | 
+| Zabbix.Event.eventid | string | ID of the event. | 
+| Zabbix.Event.source | number | Type of the event. | 
+| Zabbix.Event.object | number | Type of object that is related to the event. | 
+| Zabbix.Event.objectid | string | ID of the related object. | 
+| Zabbix.Event.acknowledged | number | Whether the event has been acknowledged. | 
+| Zabbix.Event.clock | date | Time when the event was created. | 
+| Zabbix.Event.ns | number | Nanoseconds when the event was created. | 
+| Zabbix.Event.name | string | Resolved event name. | 
+| Zabbix.Event.value | number | State of the related object. | 
+| Zabbix.Event.severity | number | Event current severity. | 
+| Zabbix.Event.r_eventid | string | Recovery event ID | 
+| Zabbix.Event.c_eventid | string | ID of the event that was used to override (close) current event under global correlation rule. See correlationid to identify exact correlation rule. | 
+| Zabbix.Event.correlationid | string | ID of the correlation rule that generated closing of the problem. | 
+| Zabbix.Event.userid | string | User ID if the event was manually closed. | 
+| Zabbix.Event.suppressed | number | Whether the event is suppressed. | 
 
 
 ##### Command Example
-```!event_get params_time_from="1583020800"```
+```!zabbix-event-get params_time_from="1583020800"```
 
 ##### Context Example
 ```
 {
-    "Zabbix.event_get": [
+    "Zabbix.Event": [
         {
             "eventid": "12", 
             "name": "Zabbix agent on Zabbix server is unreachable for 5 minutes", 
@@ -575,7 +575,7 @@ Get events
 ```
 
 ##### Human Readable Output
-### event_get, {'params_time_from': '1583020800'}
+### zabbix-event-get, {'params_time_from': '1583020800'}
 |acknowledged|c_eventid|clock|correlationid|eventid|name|ns|object|objectid|r_eventid|severity|source|suppressed|userid|value|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 0 | 0 | 1585321941 | 0 | 12 | Zabbix agent on Zabbix server is unreachable for 5 minutes | 248457478 | 0 | 13491 | 0 | 3 | 0 | 0 | 0 | 1 |

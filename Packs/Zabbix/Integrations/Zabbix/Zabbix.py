@@ -33,9 +33,12 @@ class ZabbixIntegration:
     def logout(self, zapi):
         zapi.do_request('user.logout')
 
+    def output_path(self, command):
+        return '.'.join([w.capitalize() for w in command.split('-')[:-1]])
+
     def main(self):
         try:
-            known_commands = ['host_get', 'hostgroup_get', 'trigger_get', 'event_get']
+            known_commands = ['zabbix-host-get', 'zabbix-hostgroup-get', 'zabbix-trigger-get', 'zabbix-event-get']
             command = demisto.command()
             args = demisto.args()
             if command == 'test-module':
@@ -44,19 +47,20 @@ class ZabbixIntegration:
 
             result = None
             zapi = self.login()
-            if command == 'execute_command':
+            if command == 'zabbix-execute-command':
                 result = self.execute_command(zapi, args.get('method'), args)
             elif command in known_commands:
-                result = self.execute_command(zapi, command.replace('_', '.'), demisto.args())
+                result = self.execute_command(zapi, command.replace('zabbix-', '').replace('-', '.'), demisto.args())
             else:
                 return_error("Unknown command " + command)
 
             self.logout(zapi)
 
+            
             return_outputs(
                 tableToMarkdown(f'{command}, {str(args)}', result if isinstance(result, list) else [result]),
                 outputs={
-                    f'Zabbix.{command}': result
+                    self.output_path(command): result
                 },
                 raw_response=result
             )
