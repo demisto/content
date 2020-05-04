@@ -194,7 +194,7 @@ def test_sql_queries(command, args, response, expected_result, header, mocker):
     """
     mocker.patch.object(Client, '_create_engine_and_connect')  # needed in order not to make a connection in tests
     mocker.patch.object(Client, 'sql_query_execute_request', return_value=(response, header))
-    client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "")
+    client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "", False)
     result = command(client, args)
     assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
 
@@ -212,7 +212,7 @@ def test_sql_queries_with_empty_table(mocker):
     - validate the expected_result and the created context
     """
     mocker.patch.object(Client, '_create_engine_and_connect')
-    client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "")
+    client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "", False)
     mocker.patch.object(client.connection, 'execute', return_value=ConnectionMock())
     result = sql_query_execute(client, ARGS3)
     assert EMPTY_OUTPUT == result[1]  # entry context is found in the 2nd place in the result of the command
