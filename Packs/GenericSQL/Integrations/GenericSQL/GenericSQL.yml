@@ -37,7 +37,7 @@ configuration:
   name: connect_parameters
   required: false
   type: 0
-- display: Use SSL secured connection
+- display: Use an SSL connection
   hidden: false
   name: ssl_connect
   required: false
