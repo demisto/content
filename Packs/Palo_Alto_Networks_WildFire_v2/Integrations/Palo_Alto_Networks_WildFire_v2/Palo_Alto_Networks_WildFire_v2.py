@@ -476,8 +476,7 @@ def wildfire_get_verdicts_command():
 
         entry_context = {
             "WildFire.Verdicts(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5)": pretty_verdicts,
-            "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && "
-            "val.Type == obj.Type)": dbot_score_list
+            "DBotScore": dbot_score_list
         }
 
         demisto.results({
@@ -589,8 +588,7 @@ def create_report(file_hash, reports, file_info, format_='xml', verbose=False):
             dbot_score_file = 1
     dbot = [{'Indicator': file_hash, 'Type': 'hash', 'Vendor': 'WildFire', 'Score': dbot_score_file},
             {'Indicator': file_hash, 'Type': 'file', 'Vendor': 'WildFire', 'Score': dbot_score_file}]
-    entry_context["DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && "
-                  "val.Type == obj.Type)"] = dbot
+    entry_context["DBotScore"] = dbot
 
     if format_ == 'pdf':
         get_report_uri = URL + URL_DICT["report"]

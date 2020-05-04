@@ -30,8 +30,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "6":
     id: "6"
     taskid: 9816f0d5-e554-43d7-8726-ffa5e0f6523d
@@ -62,8 +60,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "7":
     id: "7"
     taskid: a67047ef-9070-4a13-8f32-a24a7ba2ac5a
@@ -99,8 +95,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "9":
     id: "9"
     taskid: 5d4100c8-f6a4-4513-8eed-9190dfbe6ee9
@@ -140,8 +134,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "10":
     id: "10"
     taskid: 95ea07d3-bac7-46ba-8ee8-cba8942d6612
@@ -176,8 +168,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "13":
     id: "13"
     taskid: 8b95c716-9987-42fd-8363-68c62f4b26bb
@@ -208,8 +198,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "15":
     id: "15"
     taskid: efe01132-e8e7-4d85-8320-80ddde1f73fc
@@ -248,8 +236,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "17":
     id: "17"
     taskid: 718b0bc8-beff-417d-80cd-b872401c587e
@@ -272,8 +258,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "18":
     id: "18"
     taskid: 71fcd5bf-c8f5-4958-88ac-7c7e45ed7d10
@@ -317,8 +301,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "19":
     id: "19"
     taskid: 8af34dd8-2862-4967-8526-9c9bdd4a6d42
@@ -360,8 +342,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "20":
     id: "20"
     taskid: a19d90a6-2fc8-4d8c-8588-cdc688dee615
@@ -397,8 +377,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "21":
     id: "21"
     taskid: bb23219f-380d-48a2-8907-9fb12dbf8f35
@@ -442,8 +420,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "22":
     id: "22"
     taskid: 6ea4d576-e7ad-4c7c-8300-e10fd19ddca4
@@ -474,8 +450,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "23":
     id: "23"
     taskid: 76be44c3-7496-40c0-89f4-eddbb2343115
@@ -510,8 +484,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "24":
     id: "24"
     taskid: 59f4106a-63cd-4065-8461-ec05f4a8a3b6
@@ -547,8 +519,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "25":
     id: "25"
     taskid: 152a6284-28e1-4c52-8105-df38ac78f0d4
@@ -583,8 +553,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "26":
     id: "26"
     taskid: bf71c670-3e16-4b14-80db-719a2d5886fb
@@ -615,8 +583,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "27":
     id: "27"
     taskid: 7e8658c9-1fec-47fa-8777-998f758beb22
@@ -655,14 +621,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "28":
     id: "28"
-    taskid: 104970db-2a4b-47e2-8918-096334df2fa3
+    taskid: cf19a4db-4e2d-4158-87cd-681f6a625d51
     type: regular
     task:
-      id: 104970db-2a4b-47e2-8918-096334df2fa3
+      id: cf19a4db-4e2d-4158-87cd-681f6a625d51
       version: -1
       name: file (with sha1 value in the argument file)
       description: Retrieve results for a file hash using WildFire
@@ -676,8 +640,12 @@ tasks:
     scriptarguments:
       file:
         simple: a31986a65068af86dbfeddad3e63e05f759b2b32
+      long: {}
       md5: {}
+      retries: {}
       sha256: {}
+      threshold: {}
+      wait: {}
     separatecontext: false
     view: |-
       {
@@ -689,8 +657,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "29":
     id: "29"
     taskid: b581de4c-23a8-4f99-83d1-3abbd8e6cb96
@@ -727,8 +693,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "30":
     id: "30"
     taskid: d20a5284-2f59-4eaa-85f4-46bec3fe1acc
@@ -763,8 +727,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "31":
     id: "31"
     taskid: f6ad72e2-5d0d-4bcb-8f40-82b1a844292c
@@ -801,8 +763,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "32":
     id: "32"
     taskid: 1d9f76d2-b3c7-4f9c-8470-ae6f6b97d5e2
@@ -830,14 +790,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "33":
     id: "33"
-    taskid: 5d0597e1-9c50-48ee-81d7-9a75c29c7976
+    taskid: 8bac8203-5d1a-45ef-877d-89d9ce66a65a
     type: condition
     task:
-      id: 5d0597e1-9c50-48ee-81d7-9a75c29c7976
+      id: 8bac8203-5d1a-45ef-877d-89d9ce66a65a
       version: -1
       name: Test enrichment of md5 or sha 256 does exist
       description: Test enrichment of md5 or sha 256 does exist
@@ -867,11 +825,7 @@ tasks:
                         simple: "32"
                 accessor: Indicator
                 transformers:
-                - operator: atIndex
-                  args:
-                    index:
-                      value:
-                        simple: "0"
+                - operator: uniq
             iscontext: true
           right:
             value:
@@ -892,11 +846,7 @@ tasks:
                         simple: "64"
                 accessor: Indicator
                 transformers:
-                - operator: atIndex
-                  args:
-                    index:
-                      value:
-                        simple: "1"
+                - operator: uniq
             iscontext: true
           right:
             value:
@@ -911,8 +861,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "34":
     id: "34"
     taskid: 2f96368c-5010-4440-8419-4f7635bf125c
@@ -964,8 +912,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "35":
     id: "35"
     taskid: 0fe7d87c-0a55-4a2f-8bdb-8222faad9fda
@@ -1000,8 +946,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "36":
     id: "36"
     taskid: 7bbfcd3f-f51f-413f-815a-e4ca96ee9a13
@@ -1033,8 +977,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "37":
     id: "37"
     taskid: f0db14ad-d0d6-4d8c-87dc-8bcf65cf303e
@@ -1073,8 +1015,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "38":
     id: "38"
     taskid: a6c56eb1-7faf-4876-8263-e65af9f8dbc3
@@ -1106,8 +1046,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "39":
     id: "39"
     taskid: dceddbf4-6230-4c4e-81fb-1f8a93b35767
@@ -1144,8 +1082,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "40":
     id: "40"
     taskid: e80d96be-e692-4f52-8c90-82ee6aaaa742
@@ -1183,14 +1119,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "41":
     id: "41"
-    taskid: 743d6f5c-1b79-43c7-8d19-08b8a9b9abaf
+    taskid: ce60334c-6b86-49aa-83fe-5b59115a1298
     type: regular
     task:
-      id: 743d6f5c-1b79-43c7-8d19-08b8a9b9abaf
+      id: ce60334c-6b86-49aa-83fe-5b59115a1298
       version: -1
       name: wildfire-file
       description: Retrieve results for a file hash using WildFire
@@ -1204,8 +1138,12 @@ tasks:
     scriptarguments:
       file:
         simple: 458464b0d08e76020f65f0c5fe8cfb4259dfb39161c1ed8d7fcb164ce49ab50c
+      long: {}
       md5: {}
+      retries: {}
       sha256: {}
+      threshold: {}
+      wait: {}
     separatecontext: false
     view: |-
       {
@@ -1217,8 +1155,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "42":
     id: "42"
     taskid: 77ff5316-f701-4b31-8483-7a3c1c75829f
@@ -1253,8 +1189,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "43":
     id: "43"
     taskid: fe35bf07-6c9c-427e-8442-9c3147253a1a
@@ -1289,8 +1223,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "44":
     id: "44"
     taskid: 71cc04bb-5cd2-4c47-8e27-724814d8f4bb
@@ -1323,8 +1255,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "45":
     id: "45"
     taskid: c17c4352-c580-4316-8c44-12a165473b7b
@@ -1361,8 +1291,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "46":
     id: "46"
     taskid: ff60ce66-d3cd-47be-8419-3c0cbc527a89
@@ -1399,8 +1327,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {
