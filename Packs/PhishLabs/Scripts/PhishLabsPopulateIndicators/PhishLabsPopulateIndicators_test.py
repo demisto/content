@@ -1,7 +1,7 @@
 import json
 
 
-def test_indicator_type_finder_1():
+def test_indicator_type_and_value_finder_email_recognition():
     from PhishLabsPopulateIndicators import indicator_type_and_value_finder
     indicator_data_1 = {
         'value': 'email@email.com',
@@ -13,7 +13,7 @@ def test_indicator_type_finder_1():
     assert indicator_value_1 == 'email@email.com'
 
 
-def test_indicator_type_finder_2():
+def test_indicator_type_and_value_finder_url_recognition():
     from PhishLabsPopulateIndicators import indicator_type_and_value_finder
     indicator_data_2 = {
         'value': 'https://www.some.path/email@email.com',
@@ -25,7 +25,7 @@ def test_indicator_type_finder_2():
     assert indicator_value_2 == 'https://www.some.path/email@email.com'
 
 
-def test_indicator_type_finder_3():
+def test_indicator_type_and_value_finder_file_recognition():
     from PhishLabsPopulateIndicators import indicator_type_and_value_finder
     files_json = """
             {
