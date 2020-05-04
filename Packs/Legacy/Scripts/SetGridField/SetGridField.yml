@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: Context path to list of items with similar properties or key value
+  description: Context path to list of items with similar properties or key-value
     pairs.
   isArray: false
   name: context_path
@@ -15,7 +15,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: True if to overwrite Grid Data, False otherwise.
+  description: Set to 'true' to overwrite Grid Data.
   isArray: false
   name: overwrite
   predefined:
@@ -24,25 +24,25 @@ args:
   required: false
   secret: false
 - default: false
-  description: Grid columns - comma separated (col1,col2,..,coln)
+  description: 'Comma-separated list of grid columns, for example: (col1,col2,..,coln).'
   isArray: true
   name: columns
   required: true
   secret: false
 - default: false
-  description: Keys to retrieve from items or "*" for max keys (limited when item
+  description: Keys to retrieve from items, or "*" for max keys (limited when item
     list to columns amount) - Key will not be columns correlated.
   isArray: true
   name: keys
   required: true
   secret: false
 - default: false
-  description: Column name to sort the rows by.
+  description: Column name by which to sort the rows.
   isArray: false
   name: sort_by
   required: false
   secret: false
-comment: Create Grid Table from items or key value pairs.
+comment: Creates a Grid table from items or key-value pairs.
 commonfields:
   id: SetGridField
   version: -1
