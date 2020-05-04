@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed an issue where tag parsing did not work as expected.
 
 ## [20.4.0] - 2020-04-14
 Added the *Tags* parameter.
