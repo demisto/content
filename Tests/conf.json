@@ -667,6 +667,12 @@
             "fromversion": "4.0.0"
         },
         {
+            "playbookID": "PAN-OS - Block IP and URL - External Dynamic List v2 Test",
+            "integrations": ["Panorama", "palo_alto_networks_pan_os_edl_management"],
+            "instance_names": "palo_alto_firewall_9.0",
+            "fromversion": "4.0.0"
+        },
+        {
             "playbookID": "Test_EDL",
             "integrations": "EDL",
             "fromversion": "5.5.0"
@@ -2049,6 +2055,12 @@
             "timeout": 1000
         },
         {
+            "playbookID": "PAN-OS EDL Setup v3 Test",
+            "integrations": ["Panorama", "palo_alto_networks_pan_os_edl_management"],
+            "instance_names": "palo_alto_firewall_9.0",
+            "timeout": 1000
+        },
+        {
             "integrations": "Snowflake",
             "playbookID": "Snowflake-Test"
         },
@@ -2700,10 +2712,13 @@
         }
     ],
     "skipped_tests": {
-        "Test_URLhaus": "Issue 23857",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get PrismaAccess instance",
         "Prisma_Access-Test": "unskip after we will get PrismaAccess instance",
         "Test-Shodan_v2": "Issue 23370",
+        "PAN-OS EDL Setup V2 Test": "Issue 23854",
+        "PAN-OS - Block IP and URL - External Dynamic List Test": "Issue 23854",
+        "PhishLabsIOC TestPlaybook": "integration bug (23926)",
+        "Test_URLhaus": "Issue 23857",
         "Symantec Deepsight Test": "Issue 22971",
         "OTRS Test": "Issue 23167",
         "Akamai_WAF_SIEM-Test": "Issue 22225",
