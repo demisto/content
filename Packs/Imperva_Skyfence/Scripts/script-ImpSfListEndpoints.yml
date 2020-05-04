@@ -20,6 +20,7 @@ script: |2
       else:
           demisto.results("No results.")
 type: python
+subtype: python2
 tags:
 - Imperva Skyfence
 comment: The endpoints list request enables a client application to receive a list
