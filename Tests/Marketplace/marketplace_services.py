@@ -569,7 +569,8 @@ class Pack(object):
             return task_status, True
 
     @staticmethod
-    def major_minor_rev(version, path=False):
+    def major_minor_rev(version, path=True):
+        print_warning(f"Version is {version}")
         """
         Returns version string as int to be used for version comparison.
         Accepts both paths (where version numbers use '_' as separators), as well as strings where
