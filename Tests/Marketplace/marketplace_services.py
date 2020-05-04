@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import sys
 import subprocess
 import fnmatch
@@ -99,6 +100,7 @@ class PackStatus(enum.Enum):
     FAILED_UPLOADING_PACK = "Failed in uploading pack zip to gcs"
     PACK_ALREADY_EXISTS = "Specified pack already exists in gcs under latest version"
     FAILED_REMOVING_PACK_SKIPPED_FOLDERS = "Failed to remove pack hidden and skipped folders"
+    FAILED_RELEASE_NOTES = "Failed to generate releaseNotes.json"
 
 
 class Pack(object):
@@ -127,6 +129,7 @@ class Pack(object):
     METADATA = "metadata.json"
     AUTHOR_IMAGE_NAME = "Author_image.png"
     EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS.value]
+    RELEASE_NOTES = "ReleaseNotes"
 
     def __init__(self, pack_name, pack_path):
         self._pack_name = pack_name
@@ -565,6 +568,85 @@ class Pack(object):
             print_error(f"Failed in uploading {self._pack_name} pack to gcs. Additional info:\n {e}")
             return task_status, True
 
+    @staticmethod
+    def major_minor_rev(version, path=False):
+        """
+        Returns version string as int to be used for version comparison.
+        Accepts both paths (where version numbers use '_' as separators), as well as strings where
+        version separators are '.'
+        :param version: string containing version number.
+        :param path: Bool to indicate if searching within a path or string
+        :return: Tuple of integers.
+        """
+        if path:
+            major, minor, rev = re.search('(\d+)_(\d+)_(\d+)', version).groups()
+        else:
+            major, minor, rev = re.search('(\d+)\.(\d+)\.(\d+)', version).groups()
+        return int(major), int(minor), int(rev)
+
+    def prepare_release_notes(self, storage_bucket):
+        """Need to implement the changelog.md parsing and changelog.json creation after design is
+        finalized.
+
+        """
+        task_status = False
+        try:
+            metadata_path = os.path.join(self._pack_path, Pack.METADATA)
+            with open(metadata_path, "r") as metadata_file:
+                metadata_json = json.load(metadata_file)
+            expected_release_version_str = metadata_json.get('currentVersion')
+            expected_release_version_int = self.major_minor_rev(expected_release_version_str, path=False)
+            release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
+            found_versions = []
+            for filename in os.listdir(release_notes_dir):
+                found_versions.append(filename)
+            if len(found_versions) == 0:
+                raise Exception(f"Release notes not found for {self._pack_name}. Please add them under the "
+                                f"ReleaseNotes directory.")
+            elif len(found_versions) == 1:
+                release_notes = {}
+                # If the found versions are only 1, there won't be a releaseNotes.json file in GCP
+                version_changelog = {'releaseNotes': 'HERE ARE RELEASE NOTES FOR FIRST RELEASE',
+                                     'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
+                release_notes['1.1.1'] = version_changelog
+                # with open(os.path.join(self._pack_path, 'releaseNotes.json'), "w") as f:
+                #     json.dump(f, release_notes)
+            else:
+                latest = max(found_versions, key=self.major_minor_rev)
+                latest_int = self.major_minor_rev(latest)
+                _version = str(latest).replace('.md', '')
+                version = str(_version).replace('_', '.')
+                if not expected_release_version_int == latest_int:
+                    print_error(f"Conflict between version found in metadata ({expected_release_version_str}) "
+                                f"and latest version found in ReleaseNotes dir ({version})")
+                    raise Exception
+
+                    # sys.exit(1)
+
+                # We need to retrieve previous releaseNotes.json here
+                latest_gcp_rn_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, _version, '.json')
+                existing_rn_file = storage_bucket.blob(prefix=latest_gcp_rn_path)
+                previous_rn = json.loads(existing_rn_file.download_as_string(client=None))
+                # with open(os.path.join(self._pack_path, 'releaseNotes.json')) as f:
+                #     previous_rn = json.load(f)
+                latest_rn_path = os.path.join(release_notes_dir, latest)
+                with open(latest_rn_path, 'r') as changelog_md:
+                    changelog_lines = changelog_md.read()
+                version_changelog = {'releaseNotes': changelog_lines,
+                                     'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
+                previous_rn[version] = version_changelog
+                with open(os.path.join(self._pack_path, 'releaseNotes.json'), "w") as f:
+                    json.dump(f, previous_rn)
+            task_status = True
+            print_color(
+                f"Finished creating releaseNotes.json for {self._pack_name}", LOG_COLORS.GREEN)
+        except Exception as e:
+            print_error(
+                f"Failed creating releaseNotes.json file for {self._pack_name}.\n "
+                f"Additional info: {e}")
+        finally:
+            return task_status
+
     def collect_content_items(self):
         """ Iterates over content items folders inside pack and collects content items data.
 
@@ -778,21 +860,21 @@ class Pack(object):
         finally:
             return task_status
 
-    def parse_release_notes(self):
-        """ Need to implement the changelog.md parsing and changelog.json creation after design is finalized.
-
-        """
-        changelog_md_path = os.path.join(self._pack_path, Pack.CHANGELOG_MD)
-
-        if not os.path.exists(changelog_md_path):
-            print_error(f"The pack {self._pack_name} is missing {Pack.CHANGELOG_MD} file.")
-            sys.exit(1)
-
-        # with open(changelog_md_path, 'r') as release_notes_file:
-        #     release_notes = release_notes_file.read()
-        # todo implement release notes logic and create changelog.json
-
-        return {}
+    # def parse_release_notes(self):
+    #     """ Need to implement the changelog.md parsing and changelog.json creation after design is finalized.
+    #
+    #     """
+    #     changelog_md_path = os.path.join(self._pack_path, Pack.CHANGELOG_MD)
+    #
+    #     if not os.path.exists(changelog_md_path):
+    #         print_error(f"The pack {self._pack_name} is missing {Pack.CHANGELOG_MD} file.")
+    #         sys.exit(1)
+    #
+    #     # with open(changelog_md_path, 'r') as release_notes_file:
+    #     #     release_notes = release_notes_file.read()
+    #     # todo implement release notes logic and create changelog.json
+    #
+    #     return {}
 
     def prepare_for_index_upload(self):
         """ Removes and leaves only necessary files in pack folder.
