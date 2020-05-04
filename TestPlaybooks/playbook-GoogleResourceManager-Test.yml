@@ -2,14 +2,12 @@ id: GoogleResourceManager-Test
 version: -1
 name: GoogleResourceManager-Test
 starttaskid: "0"
-description: ""
 tasks:
   "0":
     id: "0"
     taskid: 6c0d47de-0684-4fe3-8f6f-19a1d7c84434
     type: start
     task:
-      description: ""
       id: 6c0d47de-0684-4fe3-8f6f-19a1d7c84434
       version: -1
       name: ""
@@ -115,7 +113,6 @@ tasks:
     taskid: f64a91d0-3f2e-4362-8b61-b926354938ca
     type: condition
     task:
-      description: ""
       id: f64a91d0-3f2e-4362-8b61-b926354938ca
       version: -1
       name: Verify Project Creation
@@ -200,7 +197,6 @@ tasks:
     taskid: f3191c57-77c2-4ef0-81be-d2cde07e60e2
     type: condition
     task:
-      description: ""
       id: f3191c57-77c2-4ef0-81be-d2cde07e60e2
       version: -1
       name: Verify Project Deletion
@@ -268,7 +264,6 @@ tasks:
     taskid: 66247d03-4fad-4e08-8007-8ca5e944d3bd
     type: condition
     task:
-      description: ""
       id: 66247d03-4fad-4e08-8007-8ca5e944d3bd
       version: -1
       name: Verify Project Undeletion
@@ -335,7 +330,6 @@ tasks:
     taskid: eee44a5c-592b-4740-8b54-488e7a671a84
     type: condition
     task:
-      description: ""
       id: eee44a5c-592b-4740-8b54-488e7a671a84
       version: -1
       name: Verify Get Project
@@ -406,7 +400,6 @@ tasks:
     taskid: 0673512c-5d2f-4c27-852a-7f71266bc4e7
     type: condition
     task:
-      description: ""
       id: 0673512c-5d2f-4c27-852a-7f71266bc4e7
       version: -1
       name: Verify Search Organizations
@@ -472,7 +465,6 @@ tasks:
     taskid: 81a976df-9933-495e-8df7-74241e5ec411
     type: condition
     task:
-      description: ""
       id: 81a976df-9933-495e-8df7-74241e5ec411
       version: -1
       name: Verify Get Organization
@@ -571,7 +563,6 @@ tasks:
     taskid: 8a2bf404-16e7-4dfc-8a66-08e719f73915
     type: condition
     task:
-      description: ""
       id: 8a2bf404-16e7-4dfc-8a66-08e719f73915
       version: -1
       name: Verify List Projects (that one of the projects output to context is the
@@ -664,7 +655,6 @@ tasks:
     taskid: 561adc60-e39a-4c4b-8f64-8ad0c5a0b2f3
     type: regular
     task:
-      description: ""
       id: 561adc60-e39a-4c4b-8f64-8ad0c5a0b2f3
       version: -1
       name: print to the warroom
@@ -834,7 +824,6 @@ tasks:
     taskid: b0feeef5-c0f5-4c5d-8f6d-4d87108fd51d
     type: condition
     task:
-      description: ""
       id: b0feeef5-c0f5-4c5d-8f6d-4d87108fd51d
       version: -1
       name: Verify Update Project Command Changed the Project's name
@@ -852,7 +841,6 @@ tasks:
           left:
             value:
               simple: Updated Name Name
-            iscontext: false
           right:
             value:
               simple: GRM.Project.Name
@@ -880,4 +868,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
