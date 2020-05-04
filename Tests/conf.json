@@ -1750,7 +1750,7 @@
 
         },
         {
-            "playbookID": "Test Sagemaker",
+            "playbookID": "Test_Sagemaker",
             "integrations": "AWS Sagemaker"
 
         },
