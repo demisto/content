@@ -612,7 +612,7 @@ class Pack(object):
                 # with open(os.path.join(self._pack_path, 'releaseNotes.json'), "w") as f:
                 #     json.dump(f, release_notes)
             else:
-                if os.path.exists(os.path.dirname(release_notes_dir)):
+                if os.path.exists(os.path.join(self._pack_path, 'changelog.json')):
                     latest = max(found_versions, key=self.major_minor_rev)
                     latest_int = self.major_minor_rev(latest)
                     _version = str(latest).replace('.md', '')
@@ -620,8 +620,6 @@ class Pack(object):
                     if not expected_release_version_int == latest_int:
                         raise Exception(f"Conflict between version found in metadata ({expected_release_version_str}) "
                                         f"and latest version found in ReleaseNotes dir ({version})")
-
-
                         # sys.exit(1)
 
                     # We need to retrieve previous releaseNotes.json here
@@ -636,7 +634,7 @@ class Pack(object):
                     version_changelog = {'releaseNotes': changelog_lines,
                                          'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
                     previous_rn[version] = version_changelog
-                    with open(os.path.join(self._pack_path, 'releaseNotes.json'), "w") as f:
+                    with open(os.path.join(self._pack_path, 'changelog.json'), "w") as f:
                         json.dump(f, previous_rn)
                 else:
                     raise Exception(
@@ -644,10 +642,10 @@ class Pack(object):
                         f"ReleaseNotes directory.")
             task_status = True
             print_color(
-                f"Finished creating releaseNotes.json for {self._pack_name}", LOG_COLORS.GREEN)
+                f"Finished creating changelog.json for {self._pack_name}", LOG_COLORS.GREEN)
         except Exception as e:
             print_error(
-                f"Failed creating releaseNotes.json file for {self._pack_name}.\n "
+                f"Failed creating changelog.json file for {self._pack_name}.\n "
                 f"Additional info: {e}")
         finally:
             return task_status
