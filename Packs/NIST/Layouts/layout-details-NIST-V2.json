@@ -119,7 +119,7 @@
 						"type": "childInv",
 						"w": 1,
 						"x": 1,
-						"y": 4
+						"y": 6
 					},
 					{
 						"displayType": "ROW",
@@ -144,7 +144,7 @@
 						"type": "team",
 						"w": 1,
 						"x": 0,
-						"y": 4
+						"y": 6
 					},
 					{
 						"displayType": "CARD",
@@ -235,11 +235,12 @@
 						"static": false,
 						"w": 1,
 						"x": 2,
-						"y": 4
+						"y": 6
 					},
 					{
 						"displayType": "CARD",
 						"h": 2,
+						"hideItemTitleOnlyOne": true,
 						"hideName": false,
 						"i": "caseinfoid-f1804150-8d3c-11ea-994a-7f32eb6f2af9",
 						"items": [
@@ -261,6 +262,24 @@
 						"w": 1,
 						"x": 1,
 						"y": 0
+					},
+					{
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-332c3b40-8de7-11ea-802e-11ae2f7e52ac",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Bad or Suspicious Indicators",
+						"query": "reputation:Bad or reputation:Suspicious",
+						"queryType": "input",
+						"static": false,
+						"type": "indicators",
+						"w": 3,
+						"x": 0,
+						"y": 4
 					}
 				],
 				"type": "custom"
@@ -549,7 +568,7 @@
 						"minH": 1,
 						"minW": 1,
 						"moved": false,
-						"name": "Linked Incidents - Close Reason",
+						"name": "Linked Incidents - Closing Information",
 						"static": false,
 						"type": "linkedIncidents",
 						"w": 3,
