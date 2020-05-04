@@ -1,10 +1,10 @@
 id: Hunt File Hash
 version: -1
 name: Hunt File Hash
-description: "The playbook will extract IOCs from the incident details and attached\
-  \ files using regular expressions and then perform hash hunt in endpoints activity\
+description: "This playbook extracts IOCs from the incident details and attached\
+  \ files using regular expressions and then hunts for hashes on endpoints in the organization\
   \ using available tools.\nThe playbook supports multiple types of attachments. For\
-  \ the full supported attachments list, Please refer to \"Extract Indicators From\
+  \ the full supported attachments list, refer to \"Extract Indicators From\
   \ File - Generic v2\"."
 starttaskid: '0'
 tasks:
@@ -85,8 +85,8 @@ tasks:
     task:
       id: dc06ffdb-b63c-4d90-89da-cd056cdaaf7e
       version: -1
-      name: Extract indicator from incident details
-      description: Extract all indicators according to server indicators configuration.
+      name: Extract indicators from incident details
+      description: Extract all indicators according to server indicator configuration.
       script: Builtin|||extractIndicators
       type: regular
       iscommand: true
