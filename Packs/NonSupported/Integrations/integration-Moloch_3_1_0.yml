@@ -382,3 +382,5 @@ script:
     description: Retrieve the unique data for a field in json format
 hidden: false
 toversion: 3.1.0
+tests:
+- No Test
