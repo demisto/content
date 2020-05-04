@@ -2021,6 +2021,112 @@ script:
     - contextPath: ServiceNow.Ticket.TagID
       description: Ticket tag ID.
       type: String
+  - arguments:
+    - default: false
+      description: Query by name. Does not require an exact match.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Starting record index to begin retrieving records from.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: Query results limit.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Query the sc_cat_item table in ServiceNow
+    execution: false
+    name: servicenow-query-items
+    outputs:
+    - contextPath: ServiceNow.CatalogItem.ID
+      description: Catalog item system ID.
+      type: String
+    - contextPath: ServiceNow.CatalogItem.Name
+      description: Catalog item name
+      type: String
+    - contextPath: ServiceNow.CatalogItem.Description
+      description: Catalog item description
+      type: String
+    - contextPath: ServiceNow.CatalogItem.Price
+      description: Catalog item price
+      type: Number
+  - arguments:
+    - default: false
+      description: Catalog item system ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve item details by system ID.
+    execution: false
+    name: servicenow-get-item-details
+    outputs:
+    - contextPath: ServiceNow.CatalogItem.ID
+      description: Catalog item system ID.
+      type: String
+    - contextPath: ServiceNow.CatalogItem.Name
+      description: Catalog item name.
+      type: String
+    - contextPath: ServiceNow.CatalogItem.Description
+      description: Catalog item description.
+      type: String
+    - contextPath: ServiceNow.CatalogItem.Price
+      description: Catalog item price.
+      type: Number
+    - contextPath: ServiceNow.CatalogItem.Variables.Mandatory
+      description: Is the variable mandatory as part of the ordering process.
+      type: Boolean
+    - contextPath: ServiceNow.CatalogItem.Variables.Name
+      description: A name to identify the question.
+      type: String
+    - contextPath: ServiceNow.CatalogItem.Variables.Question
+      description: Question to ask users ordering the catalog item.
+      type: String
+    - contextPath: ServiceNow.CatalogItem.Variables.Type
+      description: The variable type.
+      type: String
+  - arguments:
+    - default: false
+      description: Catalog item system ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: Quantity of the item to order.
+      isArray: false
+      name: quantity
+      required: true
+      secret: false
+    - default: false
+      description: If there are mandatory variables defined for the item, they must
+        be passed to the endpoint. Can be retrieved using the servicenow-get-item-details
+        command. For example, var1=value1;var2=value2.
+      isArray: false
+      name: variables
+      required: false
+      secret: false
+    deprecated: false
+    description: Orders the specified ctaalog item.
+    execution: false
+    name: servicenow-create-item-order
+    outputs:
+    - contextPath: ServiceNow.OrderRequest.ID
+      description: Generated request system ID.
+      type: String
+    - contextPath: ServiceNow.OrderRequest.RequestNumber
+      description: Number of the generated request.
+      type: String
   dockerimage: demisto/python3:3.8.2.6981
   feed: false
   isfetch: true
