@@ -70,7 +70,7 @@ class TestZabbix():
         mocker.patch('demistomock.args', return_value={
             'method': 'host.get'
         })
-        mocker.patch('demistomock.command', return_value='execute_command')
+        mocker.patch('demistomock.command', return_value='zabbix-execute-command')
 
         zapi = ZabbixApiStub()
 
