@@ -1,6 +1,6 @@
-id: Hunt File Hash
+id: Hunt Hash
 version: -1
-name: Hunt File Hash
+name: Hunt Hash
 description: "This playbook extracts IOCs from the incident details and attached\
   \ files using regular expressions and then hunts for hashes on endpoints in the organization\
   \ using available tools.\nThe playbook supports multiple types of attachments. For\
