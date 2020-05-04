@@ -26,12 +26,7 @@ def main():
     try:
         incident = demisto.incidents()[0]
         details_table = pentera_dynamic_table(incident)
-        results = {
-            'ContentsFormat': formats['markdown'],
-            'Type': entryTypes['note'],
-            'Contents': details_table
-        }
-        demisto.results(results)
+        return_outputs(readable_output=details_table)
 
     except Exception as e:
         return_error(f'Error in creating PenteraDynamicTable: {str(e)}')
