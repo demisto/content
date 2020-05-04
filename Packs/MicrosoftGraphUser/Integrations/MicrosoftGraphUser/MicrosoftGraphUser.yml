@@ -404,37 +404,37 @@ script:
     - contextPath: MSGraphUserDirectReports.Manager
       description: The manager's user principal name.
       type: String
-    - contextPath: MSGraphUserDirectReports.Reports.@odata.type
+    - contextPath: MSGraphUserDirectReports.Reports.@Odata.Type
       description: A string value that can be used to classify user types in your directory, such as "Member" and "Guest".
       type: String
-    - contextPath: MSGraphUserDirectReports.Reports.displayName
+    - contextPath: MSGraphUserDirectReports.Reports.DisplayName
       description: The name displayed in the address book for the user. This is usually the combination of the user's first name, middle initial and last name.
       type: String
-    - contextPath: MSGraphUserDirectReports.Reports.givenName
+    - contextPath: MSGraphUserDirectReports.Reports.GivenName
       description: The given name (first name) of the user.
       type: String
-    - contextPath: MSGraphUserDirectReports.Reports.id
+    - contextPath: MSGraphUserDirectReports.Reports.ID
       description: The user ID in Microsoft Graph User.
       type: String
-    - contextPath: MSGraphUserDirectReports.Reports.jobTitle
+    - contextPath: MSGraphUserDirectReports.Reports.JobTitle
       description: The user's job title.
       type: Unknown
-    - contextPath: MSGraphUserDirectReports.Reports.mail
+    - contextPath: MSGraphUserDirectReports.Reports.Nail
       description: The email address of the user.
       type: Unknown
-    - contextPath: MSGraphUserDirectReports.Reports.mobilePhone
+    - contextPath: MSGraphUserDirectReports.Reports.MobilePhone
       description: The primary cellular telephone number for the user.
       type: Unknown
-    - contextPath: MSGraphUserDirectReports.Reports.officeLocation
+    - contextPath: MSGraphUserDirectReports.Reports.OfficeLocation
       description: The office location in the user's place of business.
       type: Unknown
-    - contextPath: MSGraphUserDirectReports.Reports.preferredLanguage
+    - contextPath: MSGraphUserDirectReports.Reports.PreferredLanguage
       description: 'The preferred language for the user. Should follow ISO 639-1 Code; for example: en-US.'
       type: Unknown
-    - contextPath: MSGraphUserDirectReports.Reports.surname
+    - contextPath: MSGraphUserDirectReports.Reports.Surname
       description: The user's surname (family name or last name).
       type: String
-    - contextPath: MSGraphUserDirectReports.Reports.userPrincipalName
+    - contextPath: MSGraphUserDirectReports.Reports.UserPrincipalName
       description: The user principal name (UPN) of the user. The UPN is an Internet-style login name for the user based on the Internet standard RFC 822. By convention, this should map to the user's email name. The general format is alias@domain, where domain must be present in the tenant’s collection of verified domains. This property is required when a user is created. The verified domains for the tenant can be accessed from the verifiedDomains property of organization.
       type: String
     description: Retrieves the direct reports for a user. Direct reports are the people
