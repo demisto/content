@@ -9,6 +9,14 @@ from typing import Tuple, Dict, Any
 REQUEST_HEADERS = {'Accept': 'application/json,text/html,application/xhtml +xml,application/xml;q=0.9,*/*;q=0.8',
                    'Content-Type': 'application/json'}
 
+FIELD_TYPE_DICT = {1: 'Text', 2: 'Numeric', 3: 'Date', 4: 'Values List', 6: 'TrackingID', 7: 'External Links',
+                   8: 'Users/Groups List', 9: 'Cross-Reference', 11: 'Attachment', 12: 'Image',
+                   14: 'Cross-Application Status Tracking (CAST)', 16: 'Matrix', 19: 'IP Address', 20: 'Record Status',
+                   21: 'First Published', 22: 'Last Updated Field', 23: 'Related Records', 24: 'Sub-Form',
+                   25: 'History Log',26: 'Discussion',27: 'Multiple Reference Display Control',
+                   28: 'Questionnaire Reference', 29: 'Access History', 30: 'V oting', 31: 'Scheduler',
+                   1001: 'Cross-Application Status Tracking Field Value'}
+
 
 def get_token_soap_request(user, password, instance):
     return '<?xml version="1.0" encoding="utf-8"?>' + \
@@ -211,16 +219,17 @@ class Client(BaseClient):
                 for field in res:
                     if field.get('RequestedObject') and field.get('IsSuccessful'):
                         field_item = field.get('RequestedObject')
-                        fields[field_item.get('Id')] = {'Type': field_item.get('Type'),
+                        fields[str(field_item.get('Id'))] = {'Type': field_item.get('Type'),
                                                         'Name': field_item.get('Name'),
                                                         'IsRequired': field_item.get('IsRequired', False)}
 
                 levels.append({'level': level_id, 'mapping': fields})
 
         if levels:
-            cache[app_id] = levels
+            cache[int(app_id)] = levels
             demisto.setIntegrationContext(cache)
-        return levels
+            return levels
+        return []
 
     def generate_field_contents(self, fields_values, level_fields):
         fields_values = json.loads(fields_values)
@@ -307,7 +316,7 @@ def get_application_fields_command(client: Client, args: Dict[str, str]) -> Tupl
 def get_field_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     field_id = args.get('field-id')
 
-    res = client.do_request('GET', f'core/system/fielddefinition/{field_id}')
+    res = client.do_request('GET', f'rsaarcher/api/core/system/fielddefinition/{field_id}')
     field = {}
     if res.get('RequestedObject') and res.get('IsSuccessful'):
         field_obj = res['RequestedObject']
@@ -327,14 +336,19 @@ def get_field_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, 
 def get_mapping_by_level_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     level = args.get('level')
 
-    res = client.do_request('GET', f'core/system/fielddefinition/level/{level}')
+    res = client.do_request('GET', f'rsaarcher/api/core/system/fielddefinition/level/{level}')
 
     items = []
     for item in res:
         if item.get('RequestedObject') and item.get('IsSuccessful'):
             item_obj = item['RequestedObject']
-            items.append({'Name': item_obj.get('Id'),
-                          'Type': item_obj.get('Type'),
+            item_type = item_obj.get('Type')
+            if item_type:
+                item_type = FIELD_TYPE_DICT.get(item_type,'Unknown')
+            else:
+                item_type = 'Unknown'
+            items.append({'Name': item_obj.get('Name'),
+                          'Type': item_type,
                           'levelId': item_obj.get('LevelId')})
 
     markdown = tableToMarkdown('archer-get-mapping-by-level', items)
@@ -366,7 +380,7 @@ def get_record_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
 
         record_fields = {}
         for _id, field in content_obj.get('FieldContents').items():
-            field_data = level_fields.get(int(_id))
+            field_data = level_fields.get(str(_id))
             field_value = field.get('Value')
             if isinstance(field_value, dict):
                 if field_data.get('Type') == 4:
@@ -434,31 +448,32 @@ def update_record_command(client: Client, args: Dict[str, str]) -> Tuple[str, di
 def execute_statistics_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     report_guid = args.get('report-guid')
     max_results = args.get('max-results')
-    raw_res = client.do_soap_request('archer-execute-statistic-search-by-report',
+    res = client.do_soap_request('archer-execute-statistic-search-by-report',
                                  report_guid=report_guid, max_results=max_results)
-    res = json.loads(xml2json(raw_res))
-    return res, {}, res
+    if res:
+        res = json.loads(xml2json(res))
+    return res, {}, {}
 
 
-def get_reports(client: Client) -> Tuple[str, dict, Any]:
-    raw_res = client.do_soap_request('archer-get-reports')
-    res = json.loads(xml2json(raw_res))
+def get_reports(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+    res = client.do_soap_request('archer-get-reports')
+    res = json.loads(xml2json(res))
     ec = res.get('ReportValues').get('ReportValue')
 
     context: dict = {
         f'Archer.Report(val.ReportGUID && val.ReportGUID == obj.ReportGUID)': ec
     }
-    return ec, context, raw_res
+    return ec, context, {}
 
 
 def search_options(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     report_guid = args.get('report-guid')
-    raw_res = client.do_soap_request('archer-get-search-options-by-guid', report_guid=report_guid)
+    res = client.do_soap_request('archer-get-search-options-by-guid', report_guid=report_guid)
     try:
-        res = json.loads(xml2json(raw_res))
+        res = json.loads(xml2json(res))
     except Exception as e:
         print('')
-    return res, {}, raw_res
+    return res, {}, {}
 
 
 def reset_cache(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
@@ -468,24 +483,24 @@ def reset_cache(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
 
 def get_value_list(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     field_id = args.get('field-id')
-    raw_res = client.do_soap_request('archer-get-valuelist', field_id=field_id)
+    res = client.do_soap_request('archer-get-valuelist', field_id=field_id)
     try:
-        res = json.loads(xml2json(raw_res))
+        res = json.loads(xml2json(res))
     except Exception as e:
         print('')
-    return res, {}, raw_res
+    return res, {}, {}
 
 
 def get_user_id(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     user_info = args.get('user-info')
     user_info = user_info.split('/')
-    raw_res = client.do_soap_request('archer-get-user-id',
+    res = client.do_soap_request('archer-get-user-id',
                                      domain=user_info[0].lower(), username=user_info[1].lower())
     try:
-        res = json.loads(xml2json(raw_res))
+        res = json.loads(xml2json(res))
     except Exception as e:
         print('')
-    return res, {}, raw_res
+    return res, {}, {}
 
 
 def main():
