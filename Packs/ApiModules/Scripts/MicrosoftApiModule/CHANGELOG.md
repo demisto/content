@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added status code verification for the HTTP 206.
 
 ## [20.4.0] - 2020-04-14
 Added support for integrations with authorization code grant flow.
