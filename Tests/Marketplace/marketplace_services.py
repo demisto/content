@@ -616,12 +616,13 @@ class Pack(object):
             # if os.path.exists(os.path.join(self._pack_path, 'changelog.json')):
                 print_warning("Path exists")
                 latest = max(found_versions, key=self.major_minor_rev)
+                print_warning(latest)
                 latest_int = self.major_minor_rev(latest)
                 _version = str(latest).replace('.md', '')
                 version = str(_version).replace('_', '.')
-                if not expected_release_version_int == latest_int:
-                    raise Exception(f"Conflict between version found in metadata ({expected_release_version_str}) "
-                                    f"and latest version found in ReleaseNotes dir ({version})")
+                # if not expected_release_version_int == latest_int:
+                #     raise Exception(f"Conflict between version found in metadata ({expected_release_version_str}) "
+                #                     f"and latest version found in ReleaseNotes dir ({version})")
                     # sys.exit(1)
 
                 # We need to retrieve previous releaseNotes.json here
