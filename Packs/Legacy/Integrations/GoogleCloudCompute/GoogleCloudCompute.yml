@@ -12844,4 +12844,4 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests
+- GoogleCloudCompute-Test

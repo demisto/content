@@ -1156,10 +1156,6 @@
             "playbookID": "GsuiteTest"
         },
         {
-            "integrations": "Google Cloud Compute",
-            "playbookID": "GoogleCloudCompute-Test"
-        },
-        {
             "integrations": "OpenPhish",
             "playbookID": "OpenPhish Test Playbook"
         },
@@ -2743,7 +2739,6 @@
         "VMware": "no License, and probably not going to get it",
         "AWS Sagemaker": "License expired, and probably not going to get it",
         "Symantec MSS": "No instance, probably not going to get it (issue 15513)",
-        "Google Cloud Compute": "Can't test yet",
         "Cymon": "The service was discontinued since April 30th, 2019.",
         "FireEye ETP": "No instance",
         "ProofpointTAP_v2": "No instance",
