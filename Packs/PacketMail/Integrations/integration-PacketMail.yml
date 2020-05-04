@@ -16,14 +16,14 @@ configuration:
   defaultvalue: ""
   type: 4
   required: false
-- display: Use Proxy
+- display: Use system proxy settings
   name: proxy
-  defaultvalue: "true"
+  defaultvalue: ""
   type: 8
   required: false
-- display: Insecure
+- display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "true"
+  defaultvalue: ""
   type: 8
   required: false
 - display: CSV list of lists that should be considered malicious
