@@ -584,7 +584,6 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations, pri
     inc_filter.query = 'id:' + str(inc_id)
     # inc_filter.query
     search_filter.filter = inc_filter
-    prints_manager.add_print_job('Incident filter: {}'.format(str(inc_filter)), print, thread_index)
 
     try:
         incidents = client.search_incidents(filter=search_filter)
