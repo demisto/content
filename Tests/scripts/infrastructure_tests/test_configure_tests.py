@@ -380,6 +380,23 @@ class TestSampleTesting:
 
         assert len(filterd_tests) == RANDOM_TESTS_NUM
 
+    def test_sample_tests__with_test(self, mocker):
+        """
+        Given:
+            - Sample tests is non empty
+            - Modified test equals 1 test
+        When:
+            - Calling get_modified_files
+        Then:
+            - Test filter should return 1 test
+        """
+        test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/past_test_playbook_2.yml'
+        get_modified_files_ret = create_get_modified_files_ret(modified_tests_list=[test_path],
+                                                               sample_tests=['test'])
+        filterd_tests = get_mock_test_list(mocker=mocker, git_diff_ret=self.GIT_DIFF_RET,
+                                           get_modified_files_ret=get_modified_files_ret)
+        assert len(filterd_tests) == 1
+
 
 class TestChangedCommonTesting:
     TEST_ID = 'TestCommonPython'
