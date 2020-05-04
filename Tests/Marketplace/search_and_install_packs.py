@@ -3,177 +3,201 @@ from __future__ import print_function
 import ast
 import json
 import demisto_client
-from time import sleep
-from threading import Thread, Lock
+from threading import Thread
 from demisto_sdk.commands.common.tools import print_error, print_color, LOG_COLORS, is_file_path_in_pack, \
     get_pack_name, run_threads_list
 
 
-def get_pack_id_by_path(path):
+def get_pack_display_name(path):
     if is_file_path_in_pack(path):
-        return get_pack_name(path)
+        pack_id = get_pack_name(path)
+        if pack_id:
+            with open('./Packs/{}/pack_metadata.json'.format(pack_id), 'r') as json_file:
+                pack_metadata = json.load(json_file)
+            return pack_metadata.get('name')
     return ''
 
 
-def get_pack_metadata(pack_id):  # todo: remove if not used
-    with open('./Packs/{}/pack_metadata.json'.format(pack_id), 'r') as json_file:
-        pack_metadata = json.load(json_file)
-    return pack_metadata
-
-
-def get_pack_from_results(search_results, pack_id):
+def get_pack_data_from_results(search_results, pack_display_name):
     for pack in search_results:
-        if pack.get('id') == pack_id:
-            return pack
+        if pack.get('name') == pack_display_name:
+            return {
+                'id': pack.get('id'),
+                'version': pack.get('currentVersion')
+            }
     return {}
 
 
-def search_pack(client, prints_manager, pack_id):  # todo: maybe change to pack_display_name
+def create_dependencies_data_structure(response_data, pack_id):
+    """ Creates the pack's dependencies data structure for the installation requests (only required and uninstalled).
+
+    Args:
+        response_data (dict): The configured client to use
+        pack_id (str): The pack ID
+
+    Returns:
+        (tuple): The dependencies data structure, and a string of the dependencies ids.
+    """
+    dependencies_data = []
+
+    if response_data and response_data.get('dependencies'):
+        for dependency in response_data.get('dependencies'):
+            is_required = dependency.get('dependants', {}).get(pack_id, {}).get('level', '') == 'required'
+            # empty currentVersion field implies the pack isn't installed yet
+            if not dependency.get('currentVersion') and is_required:
+                dependencies_data.append({
+                    'id': dependency.get('id'),
+                    'version': dependency.get('extras', {}).get('pack', {}).get('currentVersion')
+                })
+
+    dependencies_str = ', '.join(dependency['id'] for dependency in dependencies_data)
+
+    return dependencies_data, dependencies_str
+
+
+def get_pack_dependencies(client, prints_manager, pack_data):
+    """ Get the pack's required dependencies.
+
+    Args:
+        client (demisto_client): The configured client to use
+        prints_manager (ParallelPrintsManager): Print manager object
+        pack_data (dict): Contains the pack ID and version
+    """
+    pack_id = pack_data['id']
+    host = client.api_client.configuration.host
+    prints_manager.add_print_job('\nGetting pack {} dependencies from host {}...'.format(pack_id, host), print, 0)
+
+    response_data, status_code, _ = demisto_client.generic_request_func(
+        client,
+        path='/contentpacks/marketplace/search/dependencies',
+        method='POST',
+        body=[pack_data],
+        accept='application/json'
+    )
+
+    if 200 <= status_code < 300:
+        dependencies_data, dependencies_str = create_dependencies_data_structure(ast.literal_eval(response_data),
+                                                                                 pack_id)
+
+        prints_manager.add_print_job('Found the following dependencies for pack {}:\n{}'.format(pack_id,
+                                                                                                dependencies_str),
+                                     print_color, 0, LOG_COLORS.GREEN)
+        prints_manager.execute_thread_prints(0)
+        return dependencies_data
+    else:
+        result_object = ast.literal_eval(response_data)
+        message = result_object.get('message', '')
+        err_msg = 'Failed to get pack {} dependencies - with status code {}\n{}'.format(pack_id, status_code, message)
+        prints_manager.add_print_job(err_msg, print_error, 0)
+        prints_manager.execute_thread_prints(0)
+        return {}
+
+
+def search_pack(client, prints_manager, pack_display_name):
     """ Make a pack search request.
 
     Args:
         client (demisto_client): The configured client to use
         prints_manager (ParallelPrintsManager): Print manager object
-        pack_id (string): The pack ID
+        pack_display_name (string): The pack display name
 
     Returns:
-        (dict): Returns the pack metadata if found, or empty dict otherwise.
+        (dict): Returns the pack data if found, or empty dict otherwise.
     """
 
     host = client.api_client.configuration.host
-    print_msg = '\nMaking "POST" request to server - "{}" to search pack {}.'.format(host, pack_id)
+    print_msg = '\nMaking "POST" request to server - "{}" to search pack {}.'.format(host, pack_display_name)
     prints_manager.add_print_job(print_msg, print, 0)
 
     # make the search request
     response_data, status_code, _ = demisto_client.generic_request_func(client,
                                                                         path='/contentpacks/marketplace/search',
                                                                         method='POST',
-                                                                        body={"packsQuery": pack_id},
+                                                                        body={"packsQuery": pack_display_name},
                                                                         accept='application/json')
 
     if 200 <= status_code < 300:
         result_object = ast.literal_eval(response_data)
         search_results = result_object.get('packs', [])
-        pack_metadata = get_pack_from_results(search_results, pack_id)
-        if pack_metadata:
-            print_msg = '\nFound pack {} in bucket!'.format(pack_id)
+        pack_data = get_pack_data_from_results(search_results, pack_display_name)
+        if pack_data:
+            print_msg = '\nFound pack {} in bucket!'.format(pack_display_name)
             prints_manager.add_print_job(print_msg, print_color, 0, LOG_COLORS.GREEN)
             prints_manager.execute_thread_prints(0)
-            return pack_metadata
+            return pack_data
 
         else:
-            print_msg = 'Did not find pack {} in bucket.'.format(pack_id)
+            print_msg = 'Did not find pack {} in bucket.'.format(pack_display_name)
             prints_manager.add_print_job(print_msg, print_color, 0, LOG_COLORS.YELLOW)
             prints_manager.execute_thread_prints(0)
             return {}
     else:
         result_object = ast.literal_eval(response_data)
         msg = result_object.get('message', '')
-        err_msg = 'Pack {} search request failed - with status code {}\n{}'.format(pack_id, status_code, msg)
+        err_msg = 'Pack {} search request failed - with status code {}\n{}'.format(pack_display_name, status_code, msg)
         prints_manager.add_print_job(err_msg, print_error, 0)
         prints_manager.execute_thread_prints(0)
         return {}
 
 
-def install_pack(client, prints_manager, pack_id, pack_version):
+def install_pack(client, prints_manager, pack_display_name, packs_to_install):
     """ Make a pack installation request.
 
     Args:
         client (demisto_client): The configured client to use
         prints_manager (ParallelPrintsManager): Print manager object
-        pack_id (string): The pack ID
-        pack_version (string): The current version of the pack
+        pack_display_name (string): The pack display name
+        packs_to_install (list): A list of the packs to install.
     """
     host = client.api_client.configuration.host
-    prints_manager.add_print_job('\nMaking "POST" request to server - "{}" to install pack {}.'.format(host, pack_id),
-                                 print, 0)
+    prints_manager.add_print_job('\nMaking "POST" request to server - "{}" to install pack {}'
+                                 ' and its dependencies.'.format(host, pack_display_name), print, 0)
 
-    data = [{
-        "id": pack_id,
-        "version": pack_version
-    }]
+    request_data = {
+        'packs': packs_to_install,
+        'ignoreWarnings': True
+    }
 
     # make the pack installation request
     response_data, status_code, _ = demisto_client.generic_request_func(client,
                                                                         path='/contentpacks/marketplace/install',
                                                                         method='POST',
-                                                                        body=data,
+                                                                        body=request_data,
                                                                         accept='application/json')
 
     if 200 <= status_code < 300:
-        prints_manager.add_print_job('Pack {} Successfully Installed!'.format(pack_id), print_color, 0,
+        prints_manager.add_print_job('Pack {} Successfully Installed!'.format(pack_display_name), print_color, 0,
                                      LOG_COLORS.GREEN)
         prints_manager.execute_thread_prints(0)
     else:
         result_object = ast.literal_eval(response_data)
         message = result_object.get('message', '')
-        err_msg = 'Failed to install pack {} - with status code {}\n{}'.format(pack_id, status_code, message)
+        err_msg = 'Failed to install pack {} - with status code {}\n{}'.format(pack_display_name, status_code, message)
         prints_manager.add_print_job(err_msg, print_error, 0)
         prints_manager.execute_thread_prints(0)
 
 
-def is_installation_in_progress(pack_id, packs_in_progress, lock):
-    lock.acquire()
-    if pack_id not in packs_in_progress:
-        packs_in_progress.add(pack_id)
-        lock.release()
-        return False
-    else:
-        lock.release()
-        return True
+def search_and_install_pack(client, prints_manager, int_path, installed_packs):
+    pack_display_name = get_pack_display_name(int_path)
+    pack_data = search_pack(client, prints_manager, pack_display_name)
 
-
-def search_and_install_pack(client, prints_manager, pack_id, packs_in_progress, packs_installed, lock):
-    if not is_installation_in_progress(pack_id, packs_in_progress, lock):
-        pack_metadata = search_pack(client, prints_manager, pack_id)
-
-        # get dependencies, search & install them as well
-        dependencies = pack_metadata.get('dependencies', {}).keys()
-        threads_list = []
-        for pack in dependencies:
-            t = Thread(target=search_and_install_pack,
-                       kwargs={'client': client,
-                               'prints_manager': prints_manager,
-                               'pack_id': pack,
-                               'packs_in_progress': packs_in_progress,
-                               'packs_installed': packs_installed,
-                               'lock': lock})
-
-            threads_list.append(t)
-
-        run_threads_list(threads_list)
-
-        pack_version = pack_metadata.get('currentVersion', '')
-        install_pack(client, prints_manager, pack_id, pack_version)
-
-        packs_installed.add(pack_id)
-
-    else:
-        while pack_id not in packs_installed:
-            sleep(1)  # can't proceed to dependency before installed
+    dependencies = get_pack_dependencies(client, prints_manager, pack_data)
+    packs_to_install = [pack_data] + dependencies
+    install_pack(client, prints_manager, pack_display_name, packs_to_install)
+    installed_packs.update([pack['id'] for pack in packs_to_install])
 
 
 def search_and_install_packs_and_their_dependencies(integrations_files, client, prints_manager):
     threads_list = []
-    packs_in_progress = set()  # used to avoid double installation
-    packs_installed = set()  # used to avoid double installation
-    lock = Lock()
+    installed_packs = set()
 
-    packs = [get_pack_id_by_path(path) for path in integrations_files]  # todo: maybe change to pack display name
-
-    message = '\nInstalling the following packs (and their dependencies):\n{}'.format(', '.join(packs))
-    prints_manager.add_print_job(message, print, 0)
-
-    for pack_id in packs:
-        if pack_id:
-            thread = Thread(target=search_and_install_pack,
-                            kwargs={'client': client,
-                                    'prints_manager': prints_manager,
-                                    'pack_id': pack_id,
-                                    'packs_in_progress': packs_in_progress,
-                                    'packs_installed': packs_installed,
-                                    'lock': lock})
-            threads_list.append(thread)
+    for int_path in integrations_files:
+        thread = Thread(target=search_and_install_pack,
+                        kwargs={'client': client,
+                                'prints_manager': prints_manager,
+                                'int_path': int_path,
+                                'installed_packs': installed_packs})
+        threads_list.append(thread)
     run_threads_list(threads_list)
 
-    return packs_installed
+    return installed_packs

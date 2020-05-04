@@ -61,12 +61,33 @@ MOCK_PACKS_INSTALLATION_RESULT = """[
     }
 ]"""
 
+MOCK_PACKS_DEPENDENCIES_RESULT = """{
+    "dependencies": [
+        {
+            "id": "TestPack",
+            "currentVersion": "",
+            "dependants": {
+                "HelloWorld": {
+                    "level": "required"
+                }
+            },
+            "extras": {
+                "pack": {
+                    "currentVersion": "1.0.0"
+                }
+            }
+        }
+    ]
+}"""
+
 
 def mocked_generic_request_func(self, path, method, body, accept):
     if path == '/contentpacks/marketplace/search':
         return MOCK_PACKS_SEARCH_RESULTS, 200, None
     elif path == '/contentpacks/marketplace/install':
         return MOCK_PACKS_INSTALLATION_RESULT, 200, None
+    elif path == '/contentpacks/marketplace/search/dependencies':
+        return MOCK_PACKS_DEPENDENCIES_RESULT, 200, None
     return None, None, None
 
 
@@ -92,8 +113,8 @@ def test_search_and_install_packs_and_their_dependencies(mocker):
     When
     - Running integrations configuration tests.
     Then
-    - Ensure packs & their depenencies' search requests are valid.
-    - Ensure packs & their depenencies' installation requests are valid.
+    - Ensure packs & their dependencies' search requests are valid.
+    - Ensure packs & their dependencies' installation requests are valid.
     """
     good_integrations_files = [
         'Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.yml',
@@ -113,8 +134,7 @@ def test_search_and_install_packs_and_their_dependencies(mocker):
     assert 'HelloWorld' in installed_packs
     assert 'AzureSentinel' in installed_packs
     assert 'TestPack' in installed_packs
-    assert 'Base' in installed_packs
-    assert len(installed_packs) == 4
+    assert len(installed_packs) == 3
 
     installed_packs = search_and_install_packs_and_their_dependencies(bad_integrations_files,
                                                                       client,
