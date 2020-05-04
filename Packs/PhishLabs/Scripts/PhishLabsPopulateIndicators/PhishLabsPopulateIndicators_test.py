@@ -17,4 +17,4 @@ def test_indicator_type_finder():
 
     assert indicator_type_finder(indicator_data_1) == 'Email'
     assert indicator_type_finder(indicator_data_2) == 'URL'
-    assert indicator_type_finder(indicator_data_3) == 'File'
+    assert indicator_type_finder(indicator_data_3) == 'Attachment'

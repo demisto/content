@@ -20,10 +20,6 @@ def indicator_type_finder(indicator_data: dict):
     if re.match(str(emailRegex), str(indicator)) and str(indicator_data.get('type')).lower() != 'url':
         return FeedIndicatorType.Email
 
-    elif (re.match(sha256Regex, indicator) or re.match(md5Regex, indicator)  # type: ignore
-            or re.match(sha1Regex, indicator)):  # type: ignore
-        return FeedIndicatorType.File
-
     else:
         return indicator_data.get('type')
 
@@ -78,12 +74,12 @@ def main():
                 if indicator.get('createdAt'):
                     indicator_timestamp = datetime.strptime(indicator['createdAt'], '%Y-%m-%dT%H:%M:%SZ')
                 if indicator_type == 'Attachment':
-                    indicator_type = 'File MD5'
+                    indicator_type = FeedIndicatorType.File
                     file_md5_attribute = list(filter(lambda f: f.get('name') == 'md5', indicator.get('attributes', [])))
                     indicator_value = file_md5_attribute[0].get('value') if file_md5_attribute else ''
 
                 demisto_indicator = {
-                    'type': indicator_type_finder(indicator),
+                    'type': indicator_type,
                     'value': indicator_value,
                     'source': 'PhishLabs',
                     'reputation': 'Bad',
