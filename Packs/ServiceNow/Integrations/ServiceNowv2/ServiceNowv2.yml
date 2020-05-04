@@ -214,7 +214,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'Ticket urgency. You may select from the predefined options, or
-        define a custom field by using other value. e.g: "Urgent", "1 - Informational".'
+         use another value. e.g: "Urgent" or "5".'
       isArray: false
       name: urgency
       predefined:
