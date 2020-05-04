@@ -1,4 +1,4 @@
-"""HelloWorld Integration for Cortex XSOAR - Unit Tests file
+"""Humio Integration for Cortex XSOAR - Unit Tests file
 
 This file contains the Unit Tests for the HelloWorld Integration based
 on pytest. Cortex XSOAR contribution requirements mandate that every
