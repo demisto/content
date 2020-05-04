@@ -31,13 +31,16 @@ def load_extended_keys():
         EXTENDED_KEYS = integration_context.get('extended_keys', {})
 
     if not EXTENDED_KEYS:
-        session = login()
-        url = REST_ADDRESS + '/eventAttributeType/all'
-        response = session.get(url, verify=VERIFY_SSL, auth=AUTH)
-        EXTENDED_KEYS = dict((attr['attributeId'], attr['displayName']) for attr in response.json())
+        try:
+            session = login()
+            url = REST_ADDRESS + '/eventAttributeType/all'
+            response = session.get(url, verify=VERIFY_SSL, auth=AUTH)
+            EXTENDED_KEYS = dict((attr['attributeId'], attr['displayName']) for attr in response.json())
 
-        if demisto.command() != 'fetch-incidents':
-            demisto.setIntegrationContext({'extended_keys': EXTENDED_KEYS})
+            if demisto.command() != 'fetch-incidents':
+                demisto.setIntegrationContext({'extended_keys': EXTENDED_KEYS})
+        except Exception as e:
+            LOG('Extended keys error: ' + str(e))
 
 
 def parse_resource_type(resource_type):
