@@ -126,7 +126,7 @@ class MsGraphClient:
         next_page_url = response.get('@odata.nextLink')
         users = response.get('value')
         return users, next_page_url
-    
+
     def get_direct_reports(self, user):
         res = self.ms_client.http_request(
             method='GET',
@@ -260,7 +260,7 @@ def get_direct_reports_command(client: MsGraphClient, args: Dict):
             'Reports': reports
         }
     }
-    
+
     return human_readable, outputs, raw_reports
 
 

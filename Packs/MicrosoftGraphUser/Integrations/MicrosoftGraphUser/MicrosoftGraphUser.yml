@@ -338,8 +338,8 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: ' A CSV list of properties by which to filter the results, for
-        example: "displayName,jobTitle,mobilePhone" '
+      description: 'A CSV list of properties by which to filter the results, for
+        example: "displayName,jobTitle,mobilePhone"'
       isArray: false
       name: properties
       required: false
@@ -402,40 +402,40 @@ script:
     name: msgraph-direct-reports
     outputs:
     - contextPath: MSGraphUserDirectReports.Manager
-      description: 'The manager's user principal name.'
+      description: The manager's user principal name.
       type: String
     - contextPath: MSGraphUserDirectReports.Reports.@odata.type
-      description: 'A string value that can be used to classify user types in your directory, such as "Member" and "Guest".'
+      description: A string value that can be used to classify user types in your directory, such as "Member" and "Guest".
       type: String
     - contextPath: MSGraphUserDirectReports.Reports.displayName
-      description: 'The name displayed in the address book for the user. This is usually the combination of the user's first name, middle initial and last name.'
+      description: The name displayed in the address book for the user. This is usually the combination of the user's first name, middle initial and last name.
       type: String
     - contextPath: MSGraphUserDirectReports.Reports.givenName
-      description: 'The given name (first name) of the user.'
+      description: The given name (first name) of the user.
       type: String
     - contextPath: MSGraphUserDirectReports.Reports.id
-      description: 'The user ID in Microsoft Graph User.'
+      description: The user ID in Microsoft Graph User.
       type: String
     - contextPath: MSGraphUserDirectReports.Reports.jobTitle
-      description: 'The user’s job title.'
+      description: The user's job title.
       type: Unknown
     - contextPath: MSGraphUserDirectReports.Reports.mail
-      description: 'The email address of the user.'
+      description: The email address of the user.
       type: Unknown
     - contextPath: MSGraphUserDirectReports.Reports.mobilePhone
-      description: 'The primary cellular telephone number for the user.'
+      description: The primary cellular telephone number for the user.
       type: Unknown
     - contextPath: MSGraphUserDirectReports.Reports.officeLocation
-      description: 'The office location in the user's place of business.'
+      description: The office location in the user's place of business.
       type: Unknown
     - contextPath: MSGraphUserDirectReports.Reports.preferredLanguage
       description: 'The preferred language for the user. Should follow ISO 639-1 Code; for example: en-US.'
       type: Unknown
     - contextPath: MSGraphUserDirectReports.Reports.surname
-      description: 'The user's surname (family name or last name).'
+      description: The user's surname (family name or last name).
       type: String
     - contextPath: MSGraphUserDirectReports.Reports.userPrincipalName
-      description: 'The user principal name (UPN) of the user. The UPN is an Internet-style login name for the user based on the Internet standard RFC 822. By convention, this should map to the user's email name. The general format is alias@domain, where domain must be present in the tenant’s collection of verified domains. This property is required when a user is created. The verified domains for the tenant can be accessed from the verifiedDomains property of organization.'
+      description: The user principal name (UPN) of the user. The UPN is an Internet-style login name for the user based on the Internet standard RFC 822. By convention, this should map to the user's email name. The general format is alias@domain, where domain must be present in the tenant’s collection of verified domains. This property is required when a user is created. The verified domains for the tenant can be accessed from the verifiedDomains property of organization.
       type: String
     description: Retrieves the direct reports for a user. Direct reports are the people
         who have that user configured as their manager.
