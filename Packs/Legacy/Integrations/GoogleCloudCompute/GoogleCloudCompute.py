@@ -4360,6 +4360,7 @@ EXECUTION CODE
 
 def main():
     try:
+        build_and_authenticate(GSERVICE)
         command = demisto.command()
         if command == 'test-module':
             # This is the call made when pressing the integration test button.
