@@ -598,6 +598,7 @@ class Pack(object):
             expected_release_version_int = self.major_minor_rev(expected_release_version_str, path=False)
             release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
             found_versions = []
+            print_warning(f"Found versions are: {found_versions}")
             for filename in os.listdir(release_notes_dir):
                 found_versions.append(filename)
             if len(found_versions) == 0:
@@ -613,6 +614,7 @@ class Pack(object):
                 #     json.dump(f, release_notes)
             else:
                 if os.path.exists(os.path.join(self._pack_path, 'changelog.json')):
+                    print_warning("Path exists")
                     latest = max(found_versions, key=self.major_minor_rev)
                     latest_int = self.major_minor_rev(latest)
                     _version = str(latest).replace('.md', '')
@@ -626,6 +628,7 @@ class Pack(object):
                     latest_gcp_rn_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, _version, '.json')
                     existing_rn_file = storage_bucket.blob(prefix=latest_gcp_rn_path)
                     previous_rn = json.loads(existing_rn_file.download_as_string(client=None))
+                    print_warning(str(previous_rn))
                     # with open(os.path.join(self._pack_path, 'releaseNotes.json')) as f:
                     #     previous_rn = json.load(f)
                     latest_rn_path = os.path.join(release_notes_dir, latest)
@@ -634,6 +637,7 @@ class Pack(object):
                     version_changelog = {'releaseNotes': changelog_lines,
                                          'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
                     previous_rn[version] = version_changelog
+                    print_warning(str(version_changelog))
                     with open(os.path.join(self._pack_path, 'changelog.json'), "w") as f:
                         json.dump(f, previous_rn)
                 else:
