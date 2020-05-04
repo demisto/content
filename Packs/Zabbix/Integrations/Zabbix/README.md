@@ -52,7 +52,7 @@ Execute command on Zabbix API
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zabbix-Execute | Unknown | result | 
+| Zabbix.Execute | Unknown | result | 
 
 
 ##### Command Example
