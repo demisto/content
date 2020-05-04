@@ -854,5 +854,4 @@ inputs:
     In case of a malicious email, the "Block Indicators" sub-playbook will block all malicious indicators in the relevant integrations.
 outputs: []
 tests:
-- Phishing test - attachment
-- Phishing test - Inline
+  - No Test - run playbook-Phishing_test_-_attachment and playbook-Phishing_test_-_Inline manually

@@ -652,5 +652,4 @@ outputs:
   description: The format of the email if available
   type: string
 tests:
-  - Phishing test - attachment
-  - Phishing test - Inline
+  - No Test - run playbook-Phishing_test_-_attachment and playbook-Phishing_test_-_Inline manually
