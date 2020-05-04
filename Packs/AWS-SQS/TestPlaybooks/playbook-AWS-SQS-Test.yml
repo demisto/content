@@ -1,31 +1,26 @@
-id: fd93f620-9a2d-4fb6-85d1-151a6a72e46d
+id: AWS - SQS Test Playbook
 version: -1
 name: AWS - SQS Test Playbook
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: ac9d0975-25da-49fe-8bd4-6a08d9ab6eb6
     type: start
     task:
       id: ac9d0975-25da-49fe-8bd4-6a08d9ab6eb6
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 50
-        }
-      }
-  "1":
-    id: "1"
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     taskid: 18e64d5b-4cdb-49f8-8604-2da81abc16cc
     type: regular
     task:
@@ -40,7 +35,7 @@ tasks:
       brand: AWS - SQS
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     scriptarguments:
       contentBasedDeduplication: {}
       delaySeconds: {}
@@ -59,15 +54,9 @@ tasks:
       roleSessionName: {}
       visibilityTimeout: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 195
-        }
-      }
-  "2":
-    id: "2"
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 195\n  }\n}"
+  '2':
+    id: '2'
     taskid: e450ef3d-bca7-495d-83ec-11b19cc14f98
     type: regular
     task:
@@ -84,7 +73,7 @@ tasks:
       brand: AWS - SQS
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     scriptarguments:
       queueName:
         simple: testplaybook
@@ -94,15 +83,9 @@ tasks:
       roleSessionDuration: {}
       roleSessionName: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 545
-        }
-      }
-  "3":
-    id: "3"
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 545\n  }\n}"
+  '3':
+    id: '3'
     taskid: 95d58bf1-44f2-4dbc-8932-34c21d97aa99
     type: regular
     task:
@@ -119,7 +102,7 @@ tasks:
       brand: AWS - SQS
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     scriptarguments:
       queueNamePrefix:
         simple: testplaybook
@@ -128,15 +111,9 @@ tasks:
       roleSessionDuration: {}
       roleSessionName: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 895
-        }
-      }
-  "4":
-    id: "4"
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 895\n  }\n}"
+  '4':
+    id: '4'
     taskid: fb6ebb26-fc01-48e5-8d2f-4d5f1e9ca408
     type: regular
     task:
@@ -150,7 +127,7 @@ tasks:
       brand: AWS - SQS
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     scriptarguments:
       delaySeconds: {}
       messageBody:
@@ -163,15 +140,9 @@ tasks:
       roleSessionDuration: {}
       roleSessionName: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1245
-        }
-      }
-  "5":
-    id: "5"
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1245\n  }\n}"
+  '5':
+    id: '5'
     taskid: 2b4e9990-f560-421c-8a7f-a1f46a1e3e39
     type: regular
     task:
@@ -185,7 +156,7 @@ tasks:
       brand: AWS - SQS
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     scriptarguments:
       queueUrl:
         simple: ${AWS.SQS.Queues.QueueUrl}
@@ -194,15 +165,9 @@ tasks:
       roleSessionDuration: {}
       roleSessionName: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1595
-        }
-      }
-  "6":
-    id: "6"
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1595\n  }\n}"
+  '6':
+    id: '6'
     taskid: 6f59ad66-3365-47c6-845c-1538f331cdaf
     type: regular
     task:
@@ -224,160 +189,119 @@ tasks:
       roleSessionDuration: {}
       roleSessionName: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1770
-        }
-      }
-  "7":
-    id: "7"
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1770\n  }\n}"
+  '7':
+    id: '7'
     taskid: c30e45da-8103-4ec4-89ad-abf73e820cd4
     type: regular
     task:
       id: c30e45da-8103-4ec4-89ad-abf73e820cd4
       version: -1
       name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
+        \ object is an array: verify fields exists in each of the objects in the array\n\
+        - If matching object is not an array: verify fields exists in matching object\n\
+        - if 'expectedValue' is given: ensure that the given value is equal to the\
+        \ context path"
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: AWS.SQS.Queues.QueueUrl
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 370
-        }
-      }
-  "8":
-    id: "8"
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 370\n  }\n}"
+  '8':
+    id: '8'
     taskid: c5817be2-cdec-499f-8ace-cc177a2554e8
     type: regular
     task:
       id: c5817be2-cdec-499f-8ace-cc177a2554e8
       version: -1
       name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
+        \ object is an array: verify fields exists in each of the objects in the array\n\
+        - If matching object is not an array: verify fields exists in matching object\n\
+        - if 'expectedValue' is given: ensure that the given value is equal to the\
+        \ context path"
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: AWS.SQS.Queues.QueueUrl
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 720
-        }
-      }
-  "9":
-    id: "9"
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 720\n  }\n}"
+  '9':
+    id: '9'
     taskid: 06dbf427-bc71-468e-8700-3487e9470b56
     type: regular
     task:
       id: 06dbf427-bc71-468e-8700-3487e9470b56
       version: -1
       name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
+        \ object is an array: verify fields exists in each of the objects in the array\n\
+        - If matching object is not an array: verify fields exists in matching object\n\
+        - if 'expectedValue' is given: ensure that the given value is equal to the\
+        \ context path"
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: AWS.SQS.Queues.QueueUrl
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1070
-        }
-      }
-  "10":
-    id: "10"
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1070\n  }\n}"
+  '10':
+    id: '10'
     taskid: 19adb9d7-629c-438e-8bab-a075b58b4cd9
     type: regular
     task:
       id: 19adb9d7-629c-438e-8bab-a075b58b4cd9
       version: -1
       name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
+        \ object is an array: verify fields exists in each of the objects in the array\n\
+        - If matching object is not an array: verify fields exists in matching object\n\
+        - if 'expectedValue' is given: ensure that the given value is equal to the\
+        \ context path"
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: AWS.SQS.Queues.SentMessages.MessageId
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 274,
-          "y": 1420
-        }
-      }
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1815,
-        "width": 389,
-        "x": 265,
-        "y": 50
-      }
-    }
-  }
+    view: "{\n  \"position\": {\n    \"x\": 274,\n    \"y\": 1420\n  }\n}"
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1815,\n      \"width\": 389,\n      \"x\": 265,\n      \"y\":\
+  \ 50\n    }\n  }\n}"
 inputs: []
 outputs: []
+fromversion: 5.0.0
+description: ''

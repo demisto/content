@@ -1,34 +1,29 @@
-id: Test_Sagemaker
+id: Test Sagemaker
 version: -1
 rolename: []
 name: Test Sagemaker
 description: Sagemaker integration test
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: a736baaf-0043-47dd-80ac-f89f32c81dca
     type: start
     task:
       id: a736baaf-0043-47dd-80ac-f89f32c81dca
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
     note: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 21377f81-3b7a-4d54-8c77-878b4a9eef74
     type: regular
     task:
@@ -38,24 +33,19 @@ tasks:
       script: '|||predict-phishing'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       inputText:
         simple: Just a test
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 190
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 190\n  }\n}"
     note: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 72667334-1759-4c51-8b85-973cca6bfcdc
     type: regular
     task:
@@ -65,7 +55,8 @@ tasks:
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     scriptarguments:
       expectedValue: {}
       fields:
@@ -73,25 +64,11 @@ tasks:
       path:
         simple: DBotPhishingPrediction
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 370
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 370\n  }\n}"
     note: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 415,
-        "width": 380,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 415,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n\
+  \    }\n  }\n}"
 inputs: []
 outputs: []
+fromversion: 5.0.0
