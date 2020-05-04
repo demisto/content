@@ -1,10 +1,10 @@
 Run nmap scans with the given parameters.
-This integration was integrated and tested with version 7.70 of nmap. The nmap binary is shipped with the integration docker. You can see the options available for running an nmap scan here: https://nmap.org/book/man-briefoptions.html. Some scan options require **root** access for using raw packet scanning techniques. See [here](https://nmap.org/book/man-port-scanning-techniques.html) for detailed scanning techniques. If you've configured the Server to run docker images with a non-root internal user and you wish to use raw packet scanning (for example via the *-sS* option for SYN/ACK scan), make sure to exclude the *demisto/nmap* docker image as documented [here](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/5-5/cortex-xsoar-admin/docker/docker-hardening-guide/run-docker-with-non-root-internal-users.html).
+This integration was integrated and tested with version 7.70 of nmap. The nmap binary is shipped with the integration Docker. You can see the options available for running an nmap scan here: https://nmap.org/book/man-briefoptions.html. Some scan options require **root** access for using raw packet scanning techniques. See [here](https://nmap.org/book/man-port-scanning-techniques.html) for detailed scanning techniques. If you've configured the server to run Docker images with a non-root internal user and you want to use raw packet scanning (for example via the *-sS* option for SYN/ACK scan), make sure to exclude the *demisto/nmap* Docker image as documented [here](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/5-5/cortex-xsoar-admin/docker/docker-hardening-guide/run-docker-with-non-root-internal-users.html).
 
 ## Configure nmap on Demisto
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for nmap.
+2. Search for *מmap*.
 3. Click **Add instance** to create and configure a new integration instance.
 
 
@@ -25,27 +25,27 @@ Scan targets with the given parameters
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | targets | The targets to scan. Accepts comma-separated list. | Required | 
-| options | The nmap options to use as documented by nmap | Required | 
+| options | The nmap options to useת as documented by nmap. | Required | 
 
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NMAP.Scan.Summary | unknown | Scan summary | 
-| NMAP.Scan.Version | unknown | nmap version | 
-| NMAP.Scan.Started | unknown | Start time epoch | 
-| NMAP.Scan.Ended | unknown | End time epoch | 
-| NMAP.Scan.CommandLine | unknown | The command line being used | 
-| NMAP.Scan.ScanType | unknown | The type of discovery scan | 
-| NMAP.Scan.Hosts.Hostname | unknown | DNS hostname of scanned host | 
-| NMAP.Scan.Hosts.Address | unknown | Scanned host address | 
-| NMAP.Scan.Hosts.Status | unknown | Is the host up or down | 
-| NMAP.Scan.Hosts.Services.Port | unknown | The port of the service | 
-| NMAP.Scan.Hosts.Services.Protocol | unknown | The protocol of the service | 
-| NMAP.Scan.Hosts.Services.State | unknown | The state of the service | 
-| NMAP.Scan.Hosts.Services.Banner | unknown | Any captured banner from the service | 
-| NMAP.Scan.Hosts.Services.Service | unknown | The service name | 
+| NMAP.Scan.Summary | unknown | Scan summary. | 
+| NMAP.Scan.Version | unknown | nmap version. | 
+| NMAP.Scan.Started | unknown | Start time epoch. | 
+| NMAP.Scan.Ended | unknown | End time epoch. | 
+| NMAP.Scan.CommandLine | unknown | The command line being used. | 
+| NMAP.Scan.ScanType | unknown | The type of discovery scan. | 
+| NMAP.Scan.Hosts.Hostname | unknown | DNS hostname of scanned hostץ | 
+| NMAP.Scan.Hosts.Address | unknown | Scanned host address. | 
+| NMAP.Scan.Hosts.Status | unknown | Is the host up or down? | 
+| NMAP.Scan.Hosts.Services.Port | unknown | The port of the service. | 
+| NMAP.Scan.Hosts.Services.Protocol | unknown | The protocol of the service. | 
+| NMAP.Scan.Hosts.Services.State | unknown | The state of the service. | 
+| NMAP.Scan.Hosts.Services.Banner | unknown | Any captured banner from the service. | 
+| NMAP.Scan.Hosts.Services.Service | unknown | The service name. | 
 
 
 #### Command Example
