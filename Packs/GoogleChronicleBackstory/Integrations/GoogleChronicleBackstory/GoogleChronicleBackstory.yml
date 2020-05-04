@@ -85,10 +85,14 @@ configuration:
   - high
   required: false
   type: 15
-- display: Fetches incidents
+- display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
 - defaultvalue: 3 days
   display: First fetch time interval. The time range to consider for initial data
     fetch.(<number> <unit>, e.g., 1 day, 7 days, 3 months, 1 year).
@@ -550,7 +554,7 @@ script:
     - contextPath: GoogleChronicleBackstory.Alert.AlertCounts
       description: The total number of alerts.
       type: Number
-  dockerimage: demisto/googleapi-python3:1.0.0.4820
+  dockerimage: demisto/googleapi-python3:1.0.0.7535
   feed: false
   isfetch: true
   longRunning: false
