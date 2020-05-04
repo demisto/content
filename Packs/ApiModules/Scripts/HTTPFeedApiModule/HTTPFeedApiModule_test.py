@@ -1,5 +1,6 @@
-from HTTPFeedApiModule import get_indicators_command, Client, datestring_to_millisecond_timestamp
+from HTTPFeedApiModule import get_indicators_command, Client, datestring_to_millisecond_timestamp, feed_main
 import requests_mock
+import demistomock as demisto
 
 
 def test_get_indicators():
@@ -151,3 +152,138 @@ def test_get_feed_config():
     )
     # Check that if an empty .get_feed_config is called, an empty dict returned
     assert {} == client.get_feed_config()
+
+
+def test_feed_main_fetch_indicators(mocker, requests_mock):
+    """
+    Given
+    - Parameters (url, ignore_regex, feed_url_to_config and tags) to configure a feed.
+
+    When
+    - Fetching indicators.
+
+    Then
+    - Ensure createIndicators is called with 466 indicators to fetch.
+    - Ensure one of the indicators is fetched as expected.
+    """
+    feed_url = 'https://www.spamhaus.org/drop/asndrop.txt'
+    indicator_type = 'ASN'
+    tags = 'tag1,tag2'
+    feed_url_to_config = {
+        'https://www.spamhaus.org/drop/asndrop.txt': {
+            'indicator_type': indicator_type,
+            'indicator': {
+                'regex': '^AS[0-9]+'
+            },
+            'fields': [
+                {
+                    'asndrop_country': {
+                        'regex': r'^.*;\W([a-zA-Z]+)\W+',
+                        'transform': r'\1'
+                    }
+                },
+                {
+                    'asndrop_org': {
+                        'regex': r'^.*\|\W+(.*)',
+                        'transform': r'\1'
+                    }
+                }
+            ]
+        }
+    }
+
+    mocker.patch.object(
+        demisto, 'params',
+        return_value={
+            'url': feed_url,
+            'ignore_regex': '^;.*',
+            'feed_url_to_config': feed_url_to_config,
+            'feedTags': tags
+        }
+    )
+    mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
+    mocker.patch.object(demisto, 'createIndicators')
+
+    with open('test_data/asn_ranges.txt') as asn_ranges_txt:
+        asn_ranges = asn_ranges_txt.read().encode('utf8')
+
+    requests_mock.get(feed_url, content=asn_ranges)
+    feed_main('great_feed_name')
+
+    # verify createIndicators was called with 466 indicators
+    assert demisto.createIndicators.call_count == 1
+    indicators = demisto.createIndicators.call_args[0][0]
+    assert len(indicators) == 466
+
+    # verify one of the expected indicators
+    assert {
+        'rawJSON': {
+            'asndrop_country': 'US',
+            'asndrop_org': 'LAKSH CYBERSECURITY AND DEFENSE LLC',
+            'tags': tags.split(','),
+            'type': indicator_type,
+            'value': 'AS397539'
+        },
+        'type': indicator_type,
+        'value': 'AS397539'
+    } in indicators
+
+
+def test_feed_main_test_module(mocker, requests_mock):
+    """
+    Given
+    - Parameters (url, ignore_regex, feed_url_to_config and tags) to configure a feed.
+
+    When
+    - Running test-module (clicking on Test).
+
+    Then
+    - Ensure 'ok' is returned.
+    """
+    feed_url = 'https://www.spamhaus.org/drop/asndrop.txt'
+    indicator_type = 'ASN'
+    tags = 'tag1,tag2'
+    feed_url_to_config = {
+        'https://www.spamhaus.org/drop/asndrop.txt': {
+            'indicator_type': indicator_type,
+            'indicator': {
+                'regex': '^AS[0-9]+'
+            },
+            'fields': [
+                {
+                    'asndrop_country': {
+                        'regex': r'^.*;\W([a-zA-Z]+)\W+',
+                        'transform': r'\1'
+                    }
+                },
+                {
+                    'asndrop_org': {
+                        'regex': r'^.*\|\W+(.*)',
+                        'transform': r'\1'
+                    }
+                }
+            ]
+        }
+    }
+
+    mocker.patch.object(
+        demisto, 'params',
+        return_value={
+            'url': feed_url,
+            'ignore_regex': '^;.*',
+            'feed_url_to_config': feed_url_to_config,
+            'feedTags': tags
+        }
+    )
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(demisto, 'results')
+
+    with open('test_data/asn_ranges.txt') as asn_ranges_txt:
+        asn_ranges = asn_ranges_txt.read().encode('utf8')
+
+    requests_mock.get(feed_url, content=asn_ranges)
+    feed_main('great_feed_name')
+
+    assert demisto.results.call_count == 1
+    results = demisto.results.call_args[0][0]
+    assert results['HumanReadable'] == 'ok'

@@ -78,7 +78,10 @@ class Client:
 
         result = self.connection.execute(sql_query, bind_vars)
         results = result.fetchall()
-        headers = results[0].keys()
+        headers = []
+        if results:
+            # if the table isn't empty
+            headers = results[0].keys()
         return results, headers
 
 

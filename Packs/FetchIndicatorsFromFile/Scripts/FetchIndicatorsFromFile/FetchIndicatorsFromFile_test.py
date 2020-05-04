@@ -1,10 +1,3 @@
-import requests
-import warnings
-
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
-warnings.filterwarnings(action="ignore", message='.*certificate verify failed: '
-                                                 'self signed certificate in certificate chain')
 
 CSV_TEST_RESULTS_1 = [
     {'type': 'File', 'value': '4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0'},
@@ -57,52 +50,55 @@ def test_csv_file_to_indicator_list_2():
     assert CSV_TEST_RESULTS_2 == result
 
 
-def test_xls_file_to_indicator_list_1(caplog):
+def test_xls_file_to_indicator_list_1():
     from FetchIndicatorsFromFile import xls_file_to_indicator_list
     result = xls_file_to_indicator_list(file_path='test_data/IndicatorsXls.xlsx', sheet_name=None,
                                         col_num=1, starting_row=1, auto_detect=True, default_type=None, type_col=None,
                                         limit=None, offset=0)
     assert result == XLS_TEST_RESULTS_1
-    caplog.clear()
 
 
-def test_xls_file_to_indicator_list_2(caplog):
+def test_xls_file_to_indicator_list_2():
     from FetchIndicatorsFromFile import xls_file_to_indicator_list
     result = xls_file_to_indicator_list(file_path='test_data/IndicatorsXls.xlsx', sheet_name=None,
                                         col_num=1, starting_row=1, auto_detect=False, default_type=None, type_col=4,
                                         limit=3, offset=0)
     assert result == XLS_TEST_RESULTS_1
-    caplog.clear()
 
 
-def test_xls_file_to_indicator_list_3(caplog):
+def test_xls_file_to_indicator_list_3():
     from FetchIndicatorsFromFile import xls_file_to_indicator_list
     result = xls_file_to_indicator_list(file_path='test_data/IndicatorsXls.xlsx', sheet_name=None,
                                         col_num=1, starting_row=1, auto_detect=False, default_type=None, type_col=4,
                                         limit=3, offset=1)
     assert result == XLS_TEST_RESULTS_2
-    caplog.clear()
 
 
-def test_txt_file_to_indicator_list_1(caplog):
+def test_xls_file_to_indicator_list_4():
+    from FetchIndicatorsFromFile import xls_file_to_indicator_list
+    result = xls_file_to_indicator_list(file_path='test_data/IndicatorsXls.xlsx', sheet_name=None,
+                                        col_num=1, starting_row=0, auto_detect=True, default_type=None, type_col=None,
+                                        limit=None, offset=0)
+    assert result == XLS_TEST_RESULTS_1
+
+
+def test_txt_file_to_indicator_list_1():
     from FetchIndicatorsFromFile import txt_file_to_indicator_list
     result = txt_file_to_indicator_list(file_path='test_data/IndicatorsList.txt',
                                         auto_detect=True, default_type=None, limit=None, offset=0)
 
     assert result == TEXT_TEST_RESULT_1
-    caplog.clear()
 
 
-def test_txt_file_to_indicator_list_2(caplog):
+def test_txt_file_to_indicator_list_2():
     from FetchIndicatorsFromFile import txt_file_to_indicator_list
     result = txt_file_to_indicator_list(file_path='test_data/IndicatorsList.txt',
                                         auto_detect=False, default_type="File", limit=2, offset=2)
 
     assert result == TEXT_TEST_RESULT_2
-    caplog.clear()
 
 
-def test_detect_type(caplog):
+def test_detect_type():
     from FetchIndicatorsFromFile import detect_type
     assert 'File' == detect_type('4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0')
     assert 'Domain' == detect_type('demisto.com')
@@ -114,4 +110,3 @@ def test_detect_type(caplog):
     assert 'DomainGlob' == detect_type('*.demisto.com')
     assert 'IPv6CIDR' == detect_type('2001:db8:85a3:8d3:1319:8a2e:370:7348/32')
     assert None is detect_type('not_an_indicator')
-    caplog.clear()

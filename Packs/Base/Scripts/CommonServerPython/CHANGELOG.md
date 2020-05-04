@@ -1,5 +1,7 @@
 ## [Unreleased]
   - Added retry mechanism to the BaseClient
+
+## [20.4.1] - 2020-04-29
   - Deprecated the following enums: 
     - **entryTypes**
     - **formats**
