@@ -5,7 +5,7 @@ import demistomock as demisto
 import IronDefense as irondefense_module
 from IronDefense import IronDefense, LOG_PREFIX
 from unittest import TestCase, mock
-from unittest.mock import Mock
+from unittest.mock import Mock, call
 import requests
 from typing import Dict
 from http.client import HTTPException
@@ -596,6 +596,424 @@ class IronDefenseTest(TestCase):
                                                      files=None, timeout=self.class_under_test.request_timeout,
                                                      auth=None, verify=False)
 
+    # Mock Json Data for fetch_alert_incidents tests
+    def mock_fetch_alert_incidents_data(self):
+        data = {
+            'alert_notifications': [{
+                'alert_action': 'ANA_ALERT_CREATED',
+                'alert': {
+                    "category": "C1",
+                    "updated": "2020-04-09T04:29:10.471378Z",
+                    "sub_category": "SC1",
+                    "severity": 700,
+                },
+            }, {
+                'alert_action': 'ANA_ALERT_CREATED',
+                'alert': {
+                    'category': 'C1',
+                    'updated': '2020-04-09T04:29:10.471378Z',
+                    'sub_category': 'SC1',
+                    'severity': 400,
+                },
+            }, {
+                'alert_action': 'ANA_A1',
+                'alert': {
+                    'category': 'C1',
+                    'updated': '2020-04-09T04:29:10.471378Z',
+                    'sub_category': 'SC1',
+                    'severity': 700,
+                },
+            }, {
+                'alert_action': 'ANA_A2',
+                'alert': {
+                    'category': 'C1',
+                    'updated': '2020-04-09T04:29:10.471378Z',
+                    'sub_category': 'SC1',
+                    'severity': 700,
+                },
+            }, {
+                'alert_action': 'ANA_A3',
+                'alert': {
+                    'category': 'C1',
+                    'updated': '2020-04-09T04:29:10.471378Z',
+                    'sub_category': 'SC1',
+                    'severity': 700,
+                },
+            }, {
+                'alert_action': 'ANA_ALERT_CREATED',
+                'alert': {
+                    'category': 'C2',
+                    'updated': '2020-04-09T04:29:10.471378Z',
+                    'sub_category': 'SC2',
+                    'severity': 600,
+                },
+            }, {
+                'alert_action': 'ANA_ALERT_CREATED',
+                'alert': {
+                    'category': 'XC1',
+                    'updated': '2020-04-09T04:29:10.471378Z',
+                    'sub_category': 'SC2',
+                    'severity': 600,
+                },
+            }, {
+                'alert_action': 'ANA_ALERT_CREATED',
+                'alert': {
+                    'category': 'XC2',
+                    'updated': '2020-04-09T04:29:10.471378Z',
+                    'sub_category': 'SC2',
+                    'severity': 600,
+                },
+            }, {
+                'alert_action': 'ANA_ALERT_CREATED',
+                'alert': {
+                    'category': 'C1',
+                    'updated': '2020-04-09T04:29:10.471378Z',
+                    'sub_category': 'XSC1',
+                    'severity': 600,
+                },
+            }, {
+                'alert_action': 'ANA_ALERT_CREATED',
+                'alert': {
+                    'category': 'C2',
+                    'updated': '2020-04-09T04:29:10.471378Z',
+                    'sub_category': 'XSC2',
+                    'severity': 600,
+                },
+            }]
+        }
+        return data
+
+    # Test successful/unsuccessful responses for fetch_alert_incidents()
+    @mock.patch('requests.Response', autospec=True)
+    def test_fetch_alert_incidents(self, MockResponse):
+        MockResponse.return_value.headers = {}
+
+        # Test successful response
+        mock_response = MockResponse()
+        mock_response.status_code = 200
+        mock_response.json.return_value = self.mock_fetch_alert_incidents_data()
+        mock_response.headers['auth-token'] = 'some jwt token'
+        self.mock_session.request.return_value = mock_response
+
+        alert_limit = 50
+
+        expected_uri = 'https://{}:{}{}{}'.format(self.host, self.port, self.url_prefix, '/GetAlertNotifications')
+        expected_body = json.dumps({
+            'limit': alert_limit,
+        })
+
+        # Run test
+        self.class_under_test.fetch_alert_incidents(alert_limit=alert_limit)
+
+        self.mock_session.request.assert_called_with('POST', expected_uri, headers={}, data=expected_body, params={},
+                                                     files=None, timeout=self.class_under_test.request_timeout,
+                                                     auth=None, verify=False)
+
+        # Test failed response
+        mock_response = MockResponse()
+        mock_response.status_code = 403
+        mock_response.headers['auth-token'] = 'some jwt token'
+        mock_response.json.return_value = {
+            'msg': 'Some error'
+        }
+        self.mock_session.request.return_value = mock_response
+
+        # Run test
+        self.assertRaises(Exception, self.class_under_test.fetch_alert_incidents, alert_limit)
+
+        self.mock_session.request.assert_called_with('POST', expected_uri, headers={}, data=expected_body, params={},
+                                                     files=None, timeout=self.class_under_test.request_timeout,
+                                                     auth=None, verify=False)
+
+    # Test filtering from inputs on Alert Notifications
+    @mock.patch('requests.Response', autospec=True)
+    def test_fetch_alert_incidents_filtering(self, MockResponse):
+        MockResponse.return_value.headers = {}
+
+        mock_response = MockResponse()
+        mock_response.status_code = 200
+        mock_response.json.return_value = self.mock_fetch_alert_incidents_data()
+        mock_response.headers['auth-token'] = 'some jwt token'
+        self.mock_session.request.return_value = mock_response
+
+        # Input params for filtering
+        excluded_categories = ['xc1', 'xc2']
+        excluded_subcats = 'xsc1,xsc2'
+        severity_threshold = 500
+        included_alert_actions = ['Alert Created', 'A1', 'A2']
+        alert_limit = 50
+
+        # Define expectations
+        expected_resp_data = [
+            '{"category": "C1", "updated": "2020-04-09T04:29:10.471378Z", "sub_category": "SC1", "severity": 700}',
+            '{"category": "C1", "updated": "2020-04-09T04:29:10.471378Z", "sub_category": "SC1", "severity": 700}',
+            '{"category": "C1", "updated": "2020-04-09T04:29:10.471378Z", "sub_category": "SC1", "severity": 700}',
+            '{"category": "C2", "updated": "2020-04-09T04:29:10.471378Z", "sub_category": "SC2", "severity": 600}'
+        ]
+
+        # Run test
+        init_result = self.class_under_test.fetch_alert_incidents(alert_categories=excluded_categories,
+                                                                  alert_subcategories=excluded_subcats,
+                                                                  alert_severity_lower=severity_threshold,
+                                                                  alert_severity_upper=None, alert_limit=alert_limit,
+                                                                  alert_actions=included_alert_actions)
+
+        result = [init_result[0]["rawJSON"], init_result[1]["rawJSON"], init_result[2]["rawJSON"],
+                  init_result[3]["rawJSON"]]
+
+        self.assertEqual(expected_resp_data, result)
+
+    # Test default filtering on Alert Notifications
+    @mock.patch('requests.Response', autospec=True)
+    def test_fetch_alert_incidents_action_default(self, MockResponse):
+        MockResponse.return_value.headers = {}
+
+        mock_response = MockResponse()
+        mock_response.status_code = 200
+        mock_response.json.return_value = self.mock_fetch_alert_incidents_data()
+        mock_response.headers['auth-token'] = 'some jwt token'
+        self.mock_session.request.return_value = mock_response
+
+        # Input params for filtering
+        excluded_categories = None
+        excluded_subcats = None
+        severity_threshold = None
+        included_alert_actions = None
+        alert_limit = 50
+
+        # Define Expectations
+        expected_resp_data = [
+            '{"category": "C1", "updated": "2020-04-09T04:29:10.471378Z", "sub_category": "SC1", "severity": 700}',
+            '{"category": "C1", "updated": "2020-04-09T04:29:10.471378Z", "sub_category": "SC1", "severity": 400}',
+            '{"category": "C2", "updated": "2020-04-09T04:29:10.471378Z", "sub_category": "SC2", "severity": 600}',
+            '{"category": "XC1", "updated": "2020-04-09T04:29:10.471378Z", "sub_category": "SC2", "severity": 600}',
+            '{"category": "XC2", "updated": "2020-04-09T04:29:10.471378Z", "sub_category": "SC2", "severity": 600}',
+            '{"category": "C1", "updated": "2020-04-09T04:29:10.471378Z", "sub_category": "XSC1", "severity": 600}',
+            '{"category": "C2", "updated": "2020-04-09T04:29:10.471378Z", "sub_category": "XSC2", "severity": 600}'
+        ]
+
+        # Run test
+        init_result = self.class_under_test.fetch_alert_incidents(alert_categories=excluded_categories,
+                                                                  alert_subcategories=excluded_subcats,
+                                                                  alert_severity_lower=severity_threshold,
+                                                                  alert_severity_upper=None, alert_limit=alert_limit,
+                                                                  alert_actions=included_alert_actions)
+
+        result = [init_result[0]["rawJSON"], init_result[1]["rawJSON"], init_result[2]["rawJSON"],
+                  init_result[3]["rawJSON"], init_result[4]["rawJSON"], init_result[5]["rawJSON"],
+                  init_result[6]["rawJSON"]]
+
+        self.assertEqual(expected_resp_data, result)
+
+    # Mock Json Data for fetch_event_incidents()
+    def mock_fetch_event_incidents_data(self):
+        data = {
+            'event_notifications': [{
+                'event_action': 'ENA_EVENT_CREATED',
+                'event': {
+                    "category": "C1",
+                    "updated": "2020-04-09T04:29:10.471378Z",
+                    "sub_category": "SC1",
+                    "severity": 700,
+                },
+            }, {
+                'event_action': 'ENA_EVENT_CREATED',
+                'event': {
+                    'category': 'C1',
+                    'updated': '2020-04-09T04:29:10.471378Z',
+                    'sub_category': 'SC1',
+                    'severity': 400,
+                },
+            }, {
+                'event_action': 'ENA_A1',
+                'event': {
+                    'category': 'C1',
+                    'updated': '2020-04-09T04:29:10.471378Z',
+                    'sub_category': 'SC1',
+                    'severity': 700,
+                },
+            }, {
+                'event_action': 'ENA_A2',
+                'event': {
+                    'category': 'C1',
+                    'updated': '2020-04-09T04:29:10.471378Z',
+                    'sub_category': 'SC1',
+                    'severity': 700,
+                },
+            }, {
+                'event_action': 'ENA_A3',
+                'event': {
+                    'category': 'C1',
+                    'updated': '2020-04-09T04:29:10.471378Z',
+                    'sub_category': 'SC1',
+                    'severity': 700,
+                },
+            }, {
+                'event_action': 'ENA_EVENT_CREATED',
+                'event': {
+                    'category': 'C2',
+                    'updated': '2020-04-09T04:29:10.471378Z',
+                    'sub_category': 'SC2',
+                    'severity': 600,
+                },
+            }, {
+                'event_action': 'ENA_EVENT_CREATED',
+                'event': {
+                    'category': 'XC1',
+                    'updated': '2020-04-09T04:29:10.471378Z',
+                    'sub_category': 'SC2',
+                    'severity': 600,
+                },
+            }, {
+                'event_action': 'ENA_EVENT_CREATED',
+                'event': {
+                    'category': 'XC2',
+                    'updated': '2020-04-09T04:29:10.471378Z',
+                    'sub_category': 'SC2',
+                    'severity': 600,
+                },
+            }, {
+                'event_action': 'ENA_EVENT_CREATED',
+                'event': {
+                    'category': 'C1',
+                    'updated': '2020-04-09T04:29:10.471378Z',
+                    'sub_category': 'XSC1',
+                    'severity': 600,
+                },
+            }, {
+                'event_action': 'ENA_EVENT_CREATED',
+                'event': {
+                    'category': 'C2',
+                    'updated': '2020-04-09T04:29:10.471378Z',
+                    'sub_category': 'XSC2',
+                    'severity': 600,
+                },
+            }]
+        }
+        return data
+
+    # Test successful/unsuccessful responses for fetch_event_incidents()
+    @mock.patch('requests.Response', autospec=True)
+    def test_fetch_event_incidents(self, MockResponse):
+        MockResponse.return_value.headers = {}
+
+        # Test successful response
+        mock_response = MockResponse()
+        mock_response.status_code = 200
+        mock_response.json.return_value = self.mock_fetch_event_incidents_data()
+        mock_response.headers['auth-token'] = 'some jwt token'
+        self.mock_session.request.return_value = mock_response
+
+        event_limit = 50
+
+        expected_uri = 'https://{}:{}{}{}'.format(self.host, self.port, self.url_prefix, '/GetEventNotifications')
+        expected_body = json.dumps({
+            'limit': event_limit,
+        })
+
+        # Run test
+        self.class_under_test.fetch_event_incidents(event_limit=event_limit)
+
+        self.mock_session.request.assert_called_with('POST', expected_uri, headers={}, data=expected_body, params={},
+                                                     files=None, timeout=self.class_under_test.request_timeout,
+                                                     auth=None, verify=False)
+
+        # Test failed response
+        mock_response = MockResponse()
+        mock_response.status_code = 403
+        mock_response.headers['auth-token'] = 'some jwt token'
+        mock_response.json.return_value = {
+            'msg': 'Some error'
+        }
+        self.mock_session.request.return_value = mock_response
+
+        # Run test
+        self.assertRaises(Exception, self.class_under_test.fetch_event_incidents, event_limit)
+
+        self.mock_session.request.assert_called_with('POST', expected_uri, headers={}, data=expected_body, params={},
+                                                     files=None, timeout=self.class_under_test.request_timeout,
+                                                     auth=None, verify=False)
+
+    # Test filtering from inputs on Event Notifications
+    @mock.patch('requests.Response', autospec=True)
+    def test_fetch_event_incidents_filtering(self, MockResponse):
+        MockResponse.return_value.headers = {}
+
+        mock_response = MockResponse()
+        mock_response.status_code = 200
+        mock_response.json.return_value = self.mock_fetch_event_incidents_data()
+        mock_response.headers['auth-token'] = 'some jwt token'
+        self.mock_session.request.return_value = mock_response
+
+        # Input params for filtering
+        excluded_categories = ['xc1', 'xc2']
+        excluded_subcats = 'xsc1,xsc2'
+        severity_threshold = 500
+        included_event_actions = ['Event Created', 'A1', 'A2']
+        event_limit = 50
+
+        # Define expectations
+        expected_resp_data = [
+            '{"category": "C1", "updated": "2020-04-09T04:29:10.471378Z", "sub_category": "SC1", "severity": 700}',
+            '{"category": "C1", "updated": "2020-04-09T04:29:10.471378Z", "sub_category": "SC1", "severity": 700}',
+            '{"category": "C1", "updated": "2020-04-09T04:29:10.471378Z", "sub_category": "SC1", "severity": 700}',
+            '{"category": "C2", "updated": "2020-04-09T04:29:10.471378Z", "sub_category": "SC2", "severity": 600}'
+        ]
+
+        # Run test
+        init_result = self.class_under_test.fetch_event_incidents(event_categories=excluded_categories,
+                                                                  event_subcategories=excluded_subcats,
+                                                                  event_severity_lower=severity_threshold,
+                                                                  event_severity_upper=None, event_limit=event_limit,
+                                                                  event_actions=included_event_actions)
+
+        result = [init_result[0]["rawJSON"], init_result[1]["rawJSON"], init_result[2]["rawJSON"],
+                  init_result[3]["rawJSON"]]
+
+        self.assertEqual(expected_resp_data, result)
+
+    # Test default filtering on Event Notifications
+    @mock.patch('requests.Response', autospec=True)
+    def test_fetch_event_incidents_action_default(self, MockResponse):
+        MockResponse.return_value.headers = {}
+
+        mock_response = MockResponse()
+        mock_response.status_code = 200
+        mock_response.json.return_value = self.mock_fetch_event_incidents_data()
+        mock_response.headers['auth-token'] = 'some jwt token'
+        self.mock_session.request.return_value = mock_response
+
+        # Input params for filtering
+        excluded_categories = None
+        excluded_subcats = None
+        severity_threshold = None
+        included_event_actions = None
+        event_limit = 50
+
+        # Define Expectations
+        expected_resp_data = [
+            '{"category": "C1", "updated": "2020-04-09T04:29:10.471378Z", "sub_category": "SC1", "severity": 700}',
+            '{"category": "C1", "updated": "2020-04-09T04:29:10.471378Z", "sub_category": "SC1", "severity": 400}',
+            '{"category": "C2", "updated": "2020-04-09T04:29:10.471378Z", "sub_category": "SC2", "severity": 600}',
+            '{"category": "XC1", "updated": "2020-04-09T04:29:10.471378Z", "sub_category": "SC2", "severity": 600}',
+            '{"category": "XC2", "updated": "2020-04-09T04:29:10.471378Z", "sub_category": "SC2", "severity": 600}',
+            '{"category": "C1", "updated": "2020-04-09T04:29:10.471378Z", "sub_category": "XSC1", "severity": 600}',
+            '{"category": "C2", "updated": "2020-04-09T04:29:10.471378Z", "sub_category": "XSC2", "severity": 600}'
+        ]
+
+        # Run test
+        init_result = self.class_under_test.fetch_event_incidents(event_categories=excluded_categories,
+                                                                  event_subcategories=excluded_subcats,
+                                                                  event_severity_lower=severity_threshold,
+                                                                  event_severity_upper=None, event_limit=event_limit,
+                                                                  event_actions=included_event_actions)
+
+        result = [init_result[0]["rawJSON"], init_result[1]["rawJSON"], init_result[2]["rawJSON"],
+                  init_result[3]["rawJSON"], init_result[4]["rawJSON"], init_result[5]["rawJSON"],
+                  init_result[6]["rawJSON"]]
+
+        self.assertEqual(expected_resp_data, result)
+
     @mock.patch('requests.Response', autospec=True)
     def test_get_alert_irondome_information(self, MockResponse):
         MockResponse.return_value.headers = {}
@@ -793,134 +1211,602 @@ class IronDefenseTest(TestCase):
         mock_demisto.results.assert_called_once_with(expected_result)
 
     @mock.patch('IronDefense.demisto')
-    def test_get_event_command(self, mock_demisto):
+    def test_fetch_incidents_command(self, mock_demisto):
 
         irondefense_module.IRON_DEFENSE = Mock()
-        expected_result = 'result'
-        irondefense_module.IRON_DEFENSE.get_event.return_value = expected_result
+        irondefense_module.LOGGER = self.MockDemistoLogger(demisto, LOG_PREFIX)
+        expected_result = [
+            '{"category": "C1", "updated": "2020-04-09T04:29:10.471378Z", "sub_category": "SC1", "severity": 700}',
+            '{"category": "C1", "updated": "2020-04-09T04:29:10.471378Z", "sub_category": "SC1", "severity": 700}',
+            '{"category": "C1", "updated": "2020-04-09T04:29:10.471378Z", "sub_category": "SC1", "severity": 700}',
+            '{"category": "C2", "updated": "2020-04-09T04:29:10.471378Z", "sub_category": "SC2", "severity": 600}'
+        ]
+        irondefense_module.IRON_DEFENSE.fetch_alert_incidents.return_value = expected_result
 
+        # Notification related params
+        irondefense_module.PARAMS = {
+            "domeCategories": None,
+            "domeLimit": 500,
+            "enableDomeNotifications": False,
+            "alertCategories": None,
+            "alertSubCategories": None,
+            "alertSeverityLower": None,
+            "alertSeverityUpper": None,
+            "alertLimit": 500,
+            "alertActions": None,
+            "enableAlertNotifications": True,
+            "eventCategories": None,
+            "eventSubCategories": None,
+            "eventSeverityLower": None,
+            "eventSeverityUpper": None,
+            "eventLimit": 500,
+            "eventActions": None,
+            "enableEventNotifications": False,
+        }
+
+        expected_alert_categories = irondefense_module.PARAMS.get('alertCategories', None)
+        expected_alert_subcategories = irondefense_module.PARAMS.get('alertSubCategories', None)
+        expected_alert_severity_lower = irondefense_module.PARAMS.get('alertSeverityLower', None)
+        expected_alert_severity_upper = irondefense_module.PARAMS.get('alertSeverityUpper', None)
+        expected_alert_limit = int(irondefense_module.PARAMS.get('alertLimit', 500))
+        expected_alert_actions = irondefense_module.PARAMS.get('alertActions', None)
+
+        irondefense_module.fetch_incidents_command()
+        irondefense_module.IRON_DEFENSE.fetch_alert_incidents.assert_called_once_with(expected_alert_categories,
+                                                                                      expected_alert_subcategories,
+                                                                                      expected_alert_severity_lower,
+                                                                                      expected_alert_severity_upper,
+                                                                                      expected_alert_limit,
+                                                                                      expected_alert_actions)
+        mock_demisto.incidents.assert_called_once_with(expected_result)
+
+    @mock.patch('IronDefense.demisto')
+    def test_get_event_command(self, mock_demisto):
+
+        # Expectations
+        expected_event = {
+            'id': 'abc',
+            'category': 'cat',
+            'sub_category': 'subcat',
+        }
+
+        with open('./test-data/event-context-table.json') as event_context_table_file:
+            json_data = event_context_table_file.read()
+            enterprise_ips_table = json.loads(json_data)
+
+        with open('./test-data/event-context-key-value-table.json') as event_context_table_file:
+            json_data = event_context_table_file.read()
+            summary_table = json.loads(json_data)
+
+        expected_context = [summary_table, enterprise_ips_table]
+        expected_enterprise_ips = [{
+            'ip': '1.1.1.1',
+            'classification': 'CLASSIFICATION_ENTERPRISE',
+        }, {
+            'ip': '2.2.2.2',
+            'classification': 'CLASSIFICATION_ENTERPRISE_2',
+        }]
+        expected_summary_table = {
+            'session_size': '1069918',
+            'threshold_entity_time': '2020-04-11T09:00:00.000Z',
+            'producer_to_consumer_ratio': '1.977250634801539',
+            'threshold_size': '1020401'
+        }
+        expected_return_outputs_calls = [
+            call(readable_output='### IronDefense Event: cat - subcat\n'
+                                 'link\n'
+                                 '|category|id|sub_category|\n'
+                                 '|---|---|---|\n'
+                                 '| cat | abc | subcat |\n',
+                 outputs={
+                     'IronDefense.Event(val.id == obj.id)': expected_event,
+                 },
+                 raw_response=expected_event),
+            call(readable_output='### Event Context: enterprise_ips\n'
+                                 '|ip|classification|\n'
+                                 '|---|---|\n'
+                                 '| 1.1.1.1 | CLASSIFICATION_ENTERPRISE |\n'
+                                 '| 2.2.2.2 | CLASSIFICATION_ENTERPRISE_2 |\n',
+                 outputs={
+                     'IronDefense.Event.Context(val.name == obj.name)': enterprise_ips_table,
+                 },
+                 raw_response=enterprise_ips_table),
+            call(readable_output='### Event Context: summary\n'
+                                 '|producer_to_consumer_ratio|session_size|threshold_entity_time|threshold_size|\n'
+                                 '|---|---|---|---|\n'
+                                 '| 1.977250634801539 | 1069918 | 2020-04-11T09:00:00.000Z | 1020401 |\n',
+                 outputs={
+                     'IronDefense.Event.Context(val.name == obj.name)': summary_table,
+                 },
+                 raw_response=summary_table),
+        ]
         expected_event_id = 'aaa-bbb-ccc'
+
+        # Set up mocks
+        irondefense_module.IRON_DEFENSE = Mock()
+        get_event_result = {
+            'event': expected_event,
+            'context': expected_context,
+        }
+        irondefense_module.IRON_DEFENSE.get_event.return_value = get_event_result
+        irondefense_module.IRON_DEFENSE.create_markdown_link.return_value = 'link'
 
         def getArg_side_effect(arg):
             if arg == 'event_id':
                 return expected_event_id
 
-        mock_demisto.getArg.side_effect = getArg_side_effect
+        def event_context_table_contains_multi_columns_side_effect(table):
+            return table.get('name') == 'enterprise_ips'
 
+        mock_demisto.getArg.side_effect = getArg_side_effect
+        irondefense_module.IRON_DEFENSE.event_context_table_contains_multi_columns.side_effect = \
+            event_context_table_contains_multi_columns_side_effect
+        irondefense_module.IRON_DEFENSE.event_context_table_to_dict_list.return_value = \
+            expected_enterprise_ips
+        irondefense_module.IRON_DEFENSE.event_context_table_to_dict.return_value = \
+            expected_summary_table
+        irondefense_module.return_outputs = Mock()
+
+        # Execute
         irondefense_module.get_event_command()
+
+        # Assert
         irondefense_module.IRON_DEFENSE.get_event.assert_called_once_with(expected_event_id)
-        mock_demisto.results.assert_called_once_with(expected_result)
+        irondefense_module.return_outputs.assert_has_calls(expected_return_outputs_calls, any_order=True)
 
+    @mock.patch('IronDefense.return_outputs')
     @mock.patch('IronDefense.demisto')
-    def test_get_alerts_command(self, mock_demisto):
-
-        irondefense_module.IRON_DEFENSE = Mock()
-        expected_result = 'result'
-        irondefense_module.IRON_DEFENSE.get_alerts.return_value = expected_result
-
-        expected_alert_id = 'aaa-bbb-ccc'
-        expected_category = 'some_cat'
-        expected_subcategory = 'some_cat'
-        expected_status = 'some_status'
-        expected_analyst_severity = 'some_analyst_severity'
-        expected_analyst_expectation = 'some_analyst_expectation'
-        expected_min_severity = 0
-        expected_max_severity = 1000
-        expected_min_created = 'date1'
-        expected_max_created = 'date2'
-        expected_min_updated = 'date3'
-        expected_max_updated = 'date3'
-        expected_min_first_event_created = 'date4'
-        expected_max_first_event_created = 'date5'
-        expected_min_last_event_created = 'date6'
-        expected_max_last_event_created = 'date7'
-        expected_min_first_event_start_time = 'date8'
-        expected_max_first_event_start_time = 'date9'
-        expected_min_last_event_end_time = 'date10'
-        expected_max_last_event_end_time = 'date11'
-        expected_analytic_version = 10
+    def test_get_events_command(self, demisto_mock, return_outputs_mock):
+        # Expectations
+        expected_alert_id = 'abc'
         expected_limit = 42
-        expected_offset = 100
-        expected_sort = 'some sort'
+        expected_offset = 4242
+        expected_total = 5000
+        expected_event_1 = {
+            'id': '123',
+            'category': 'cat1',
+            'sub_category': 'subcat1'
+        }
+        expected_event_2 = {
+            'id': '456',
+            'category': 'cat2',
+            'sub_category': 'subcat2'
+        }
+        expected_calls = [
+            call(readable_output='### IronDefense Event 4243/5000\n'
+                                 'link\n'
+                                 '|category|id|sub_category|\n'
+                                 '|---|---|---|\n'
+                                 '| cat1 | 123 | subcat1 |\n',
+                 outputs={
+                     'IronDefense.Event(val.id == obj.id)': expected_event_1,
+                 },
+                 raw_response=expected_event_1
+                 ),
+            call(readable_output='### IronDefense Event 4244/5000\n'
+                                 'link\n'
+                                 '|category|id|sub_category|\n'
+                                 '|---|---|---|\n'
+                                 '| cat2 | 456 | subcat2 |\n',
+                 outputs={
+                     'IronDefense.Event(val.id == obj.id)': expected_event_2,
+                 },
+                 raw_response=expected_event_2
+                 ),
+        ]
 
-        def getArg_side_effect(arg):
-            if arg == 'alert_id':
+        # Setup mocks
+        def getArg_side_effect(arg_name):
+            if arg_name == 'alert_id':
                 return expected_alert_id
-            if arg == 'category':
-                return expected_category
-            if arg == 'sub_category':
-                return expected_subcategory
-            if arg == 'status':
-                return expected_status
-            if arg == 'analyst_severity':
-                return expected_analyst_severity
-            if arg == 'analyst_expectation':
-                return expected_analyst_expectation
-            if arg == 'min_severity':
-                return expected_min_severity
-            if arg == 'max_severity':
-                return expected_max_severity
-            if arg == 'min_created':
-                return expected_min_created
-            if arg == 'max_created':
-                return expected_max_created
-            if arg == 'min_updated':
-                return expected_min_updated
-            if arg == 'max_updated':
-                return expected_max_updated
-            if arg == 'min_first_event_created':
-                return expected_min_first_event_created
-            if arg == 'max_first_event_created':
-                return expected_max_first_event_created
-            if arg == 'min_last_event_created':
-                return expected_min_last_event_created
-            if arg == 'max_last_event_created':
-                return expected_max_last_event_created
-            if arg == 'min_first_event_start_time':
-                return expected_min_first_event_start_time
-            if arg == 'max_first_event_start_time':
-                return expected_max_first_event_start_time
-            if arg == 'min_last_event_end_time':
-                return expected_min_last_event_end_time
-            if arg == 'max_last_event_end_time':
-                return expected_max_last_event_end_time
-            if arg == 'analytic_version':
-                return expected_analytic_version
-            if arg == 'limit':
+            elif arg_name == 'limit':
                 return expected_limit
-            if arg == 'offset':
+            elif arg_name == 'offset':
                 return expected_offset
-            if arg == 'sort':
-                return expected_sort
+            else:
+                return None
+        demisto_mock.getArg.side_effect = getArg_side_effect
+        irondefense_module.IRON_DEFENSE = Mock()
+        irondefense_module.IRON_DEFENSE.get_events.return_value = {
+            'events': [expected_event_1, expected_event_2],
+            'constraint': {
+                'total': expected_total,
+                'offset': expected_offset,
+                'limit': expected_limit
+            }
+        }
+        irondefense_module.IRON_DEFENSE.create_markdown_link.return_value = 'link'
 
-        mock_demisto.getArg.side_effect = getArg_side_effect
+        # Execute test
+        irondefense_module.get_events_command()
 
+        # Assert results
+        irondefense_module.IRON_DEFENSE.get_events.assert_called_with(alert_id=expected_alert_id, limit=expected_limit,
+                                                                      offset=expected_offset)
+        return_outputs_mock.assert_has_calls(expected_calls, any_order=True)
+
+    @mock.patch('IronDefense.return_outputs')
+    @mock.patch('IronDefense.demisto')
+    def test_get_alerts_command(self, demisto_mock, return_outputs_mock):
+        # Expectations
+        expected_alert_id = 'a'
+        expected_category = 'b'
+        expected_sub_category = 'c'
+        expected_status = 'd'
+        expected_analyst_severity = 'x'
+        expected_analyst_expectation = 'e'
+        expected_min_severity = 'f'
+        expected_max_severity = 'g'
+        expected_min_created = 'h'
+        expected_max_created = 'i'
+        expected_min_updated = 'j'
+        expected_max_updated = 'k'
+        expected_min_first_event_created = 'l'
+        expected_max_first_event_created = 'm'
+        expected_min_last_event_created = 'n'
+        expected_max_last_event_created = 'o'
+        expected_min_first_event_start_time = 'p'
+        expected_max_first_event_start_time = 'q'
+        expected_min_last_event_end_time = 'r'
+        expected_max_last_event_end_time = 's'
+        expected_analytic_version = 't'
+        expected_limit = 'u'
+        expected_offset = 'v'
+        expected_sort = 'w'
+
+        expected_alert_1 = {
+            'id': '123',
+            'category': 'cat1',
+            'sub_category': 'subcat1'
+        }
+        expected_alert_2 = {
+            'id': '456',
+            'category': 'cat2',
+            'sub_category': 'subcat2'
+        }
+        expected_constraint = {
+            'limit': 4242,
+            'offset': 10,
+            'total': 42,
+        }
+        expected_calls = [
+            call(readable_output='### IronDefense Alert 11/42: cat1 - subcat1\n'
+                                 'link\n'
+                                 '|category|id|sub_category|\n'
+                                 '|---|---|---|\n'
+                                 '| cat1 | 123 | subcat1 |\n',
+                 outputs={
+                     'IronDefense.Alert(val.id == obj.id)': expected_alert_1,
+                 },
+                 raw_response=expected_alert_1
+                 ),
+            call(readable_output='### IronDefense Alert 12/42: cat2 - subcat2\n'
+                                 'link\n'
+                                 '|category|id|sub_category|\n'
+                                 '|---|---|---|\n'
+                                 '| cat2 | 456 | subcat2 |\n',
+                 outputs={
+                     'IronDefense.Alert(val.id == obj.id)': expected_alert_2,
+                 },
+                 raw_response=expected_alert_2
+                 ),
+            call(readable_output=f'### Query Constraints\n|limit|offset|total|\n|---|---|---|\n| 4242 | 10 | 42 |\n',
+                 outputs={
+                     'IronDefense.Query.GetAlerts': expected_constraint,
+                 },
+                 raw_response=expected_constraint
+                 ),
+        ]
+
+        # Setup mocks
+        def getArg_side_effect(arg_name):
+            arg_dict = {
+                'alert_id': expected_alert_id,
+                'category': expected_category,
+                'sub_category': expected_sub_category,
+                'status': expected_status,
+                'analyst_severity': expected_analyst_severity,
+                'analyst_expectation': expected_analyst_expectation,
+                'min_severity': expected_min_severity,
+                'max_severity': expected_max_severity,
+                'min_created': expected_min_created,
+                'max_created': expected_max_created,
+                'min_updated': expected_min_updated,
+                'max_updated': expected_max_updated,
+                'min_first_event_created': expected_min_first_event_created,
+                'max_first_event_created': expected_max_first_event_created,
+                'min_last_event_created': expected_min_last_event_created,
+                'max_last_event_created': expected_max_last_event_created,
+                'min_first_event_start_time': expected_min_first_event_start_time,
+                'max_first_event_start_time': expected_max_first_event_start_time,
+                'min_last_event_end_time': expected_min_last_event_end_time,
+                'max_last_event_end_time': expected_max_last_event_end_time,
+                'analytic_version': expected_analytic_version,
+                'limit': expected_limit,
+                'offset': expected_offset,
+                'sort': expected_sort,
+            }
+            return arg_dict[arg_name]
+
+        demisto_mock.getArg.side_effect = getArg_side_effect
+        irondefense_module.IRON_DEFENSE = Mock()
+        irondefense_module.IRON_DEFENSE.get_alerts.return_value = {
+            'alerts': [expected_alert_1, expected_alert_2],
+            'constraint': expected_constraint
+        }
+        irondefense_module.IRON_DEFENSE.create_markdown_link.return_value = 'link'
+
+        # Execute test
         irondefense_module.get_alerts_command()
-        irondefense_module.IRON_DEFENSE.get_alerts.assert_called_once_with(alert_id=expected_alert_id,
-                                                                           category=expected_category,
-                                                                           sub_category=expected_subcategory,
-                                                                           status=expected_status,
-                                                                           analyst_severity=expected_analyst_severity,
-                                                                           analyst_expectation=expected_analyst_expectation,
-                                                                           min_severity=expected_min_severity,
-                                                                           max_severity=expected_max_severity,
-                                                                           min_created=expected_min_created,
-                                                                           max_created=expected_max_created,
-                                                                           min_updated=expected_min_updated,
-                                                                           max_updated=expected_max_updated,
-                                                                           min_first_event_created=expected_min_first_event_created,
-                                                                           max_first_event_created=expected_max_first_event_created,
-                                                                           min_last_event_created=expected_min_last_event_created,
-                                                                           max_last_event_created=expected_max_last_event_created,
-                                                                           min_first_event_start_time=expected_min_first_event_start_time,
-                                                                           max_first_event_start_time=expected_max_first_event_start_time,
-                                                                           min_last_event_end_time=expected_min_last_event_end_time,
-                                                                           max_last_event_end_time=expected_max_last_event_end_time,
-                                                                           analytic_version=expected_analytic_version,
-                                                                           limit=expected_limit,
-                                                                           offset=expected_offset,
-                                                                           sort=expected_sort)
-        mock_demisto.results.assert_called_once_with(expected_result)
+
+        # Assert results
+        irondefense_module.IRON_DEFENSE.get_alerts.assert_called_with(alert_id=expected_alert_id,
+                                                                      category=expected_category,
+                                                                      sub_category=expected_sub_category,
+                                                                      status=expected_status,
+                                                                      analyst_severity=expected_analyst_severity,
+                                                                      analyst_expectation=expected_analyst_expectation,
+                                                                      min_severity=expected_min_severity,
+                                                                      max_severity=expected_max_severity,
+                                                                      min_created=expected_min_created,
+                                                                      max_created=expected_max_created,
+                                                                      min_updated=expected_min_updated,
+                                                                      max_updated=expected_max_updated,
+                                                                      min_first_event_created=expected_min_first_event_created,
+                                                                      max_first_event_created=expected_max_first_event_created,
+                                                                      min_last_event_created=expected_min_last_event_created,
+                                                                      max_last_event_created=expected_max_last_event_created,
+                                                                      min_first_event_start_time=(
+                                                                          expected_min_first_event_start_time),
+                                                                      max_first_event_start_time=(
+                                                                          expected_max_first_event_start_time),
+                                                                      min_last_event_end_time=expected_min_last_event_end_time,
+                                                                      max_last_event_end_time=expected_max_last_event_end_time,
+                                                                      analytic_version=expected_analytic_version,
+                                                                      limit=expected_limit,
+                                                                      offset=expected_offset,
+                                                                      sort=expected_sort)
+        return_outputs_mock.assert_has_calls(expected_calls, any_order=True)
+
+    @mock.patch('IronDefense.return_outputs')
+    @mock.patch('IronDefense.demisto')
+    def test_get_alert_irondome_information_command(self, demisto_mock, return_outputs_mock):
+        # load test data
+        with open('./test-data/get_alert_irondome_information_resp.json') as test_data:
+            json_data = test_data.read()
+            mock_resp = json.loads(json_data)
+
+        # Expectations
+        expected_alert_id = 'abc'
+
+        expected_correlations_output = {
+            'IronDome.Correlations(val.alert_id = obj.alert.id)': {
+                'alert_id': expected_alert_id,
+                'correlation': mock_resp.get('correlations')[0]
+            }
+        }
+        expected_correlations_raw = mock_resp.get('correlations')[0]
+        expected_ip_correlations_readable_output = '### IronDome IP Correlations in "redskins"\n' \
+                                                   '|ip|enterprise_correlations|community_correlations|\n' \
+                                                   '|---|---|---|\n' \
+                                                   '| 1.1.1.1 | 1 | 2 |\n'
+
+        expected_domain_correlations_readable_output = '### IronDome Domain Correlations in "redskins"\n' \
+                                                       '|domain|enterprise_correlations|community_correlations|\n' \
+                                                       '|---|---|---|\n' \
+                                                       '| bad.com | 3 | 4 |\n'
+
+        expected_behavior_correlations_readable_output = '### IronDome Behavior Correlations in "redskins"\n' \
+                                                         '|behavior|enterprise_correlations|community_correlations|\n' \
+                                                         '|---|---|---|\n' \
+                                                         '| true | 5 | 6 |\n'
+
+        expected_correlation_participation_output = {
+            'IronDome.CorrelationParticipation(val.alert_id = obj.alert.id)': {
+                'alert_id': expected_alert_id,
+                'correlation_participation': mock_resp.get('correlation_participation')[0]
+            }
+        }
+        expected_correlation_participation_readable_output = '### IronDome Correlation Participation in ' \
+                                                             '"redskins"\n|malicious' \
+                                                             '_count|suspicious_count|benign_count|whitelisted_count' \
+                                                             '|comments_count|activity_count|resource_owner|' \
+                                                             'first_seen|last_seen|\n|---|---|---|---|---|---|---|---' \
+                                                             '|---|\n| 7 | 8 | 9 | 10 | 11 | 12 | false | ' \
+                                                             '2020-01-08T10:40:00.000Z | 2020-02-07T19:22:56.000Z |\n'
+        expected_correlation_participation_raw = mock_resp.get('correlation_participation')[0]
+
+        expected_community_comments_output = {
+            'IronDome.CommunityComments(val.alert_id = obj.alert.id)': {
+                'alert_id': expected_alert_id,
+                'community_comments': mock_resp.get('community_comments'),
+            }
+        }
+        expected_community_comments_readable_output = '### IronDome Community ' \
+                                                      'Comments\n|created|comment|dome_tags|enterprise|' \
+                                                      'self|\n|---|---|---|---|---|\n| 2020-04-15T18:57:16.000Z | ' \
+                                                      'BrandonTest2 - Share irondome | demo,<br>brandon_test,<br>' \
+                                                      'BrandonNEWTEST,<br>Energy,<br>redskins | true | true |\n'
+        expected_community_comments_raw = mock_resp.get('community_comments')
+
+        expected_cognitive_system_score_output = {
+            'IronDome.CognitiveSystemScore(val.alert_id = obj.alert.id)': {
+                'alert_id': expected_alert_id,
+                'cognitive_system_score': mock_resp.get('cognitive_system_score')
+            }
+        }
+        expected_cognitive_system_score_readable_output = f'### Cognitive System Score: ' \
+                                                          f'{mock_resp.get("cognitive_system_score")}'
+        expected_cognitive_system_score_raw = mock_resp.get('cognitive_system_score')
+
+        expected_dome_notifications_output = {
+            'IronDome.Notification(val.alert_id = obj.alert.id)': {
+                'alert_id': expected_alert_id,
+                'dome_notification': mock_resp.get('dome_notifications')[0],
+            }
+        }
+        expected_dome_notifications_readable_output = '### IronDome Notification: ' \
+                                                      'DNC_JOINED_HIGH_RISK\n|alert_ids|category|created|' \
+                                                      'dome_tags|id|\n|---|---|---|---|---|\n| ' \
+                                                      '04f94226-60f7-4f1b-9569-15d7ddc01b7a | DNC_JOINED_HIGH_RISK ' \
+                                                      '| 2020-04-15T09:27:20.000Z | redskins | 576225 |\n'
+        expected_dome_notifications_raw = mock_resp.get('dome_notifications')[0]
+        expected_results = 'link'
+        expected_calls = [
+            call(readable_output=expected_ip_correlations_readable_output,
+                 outputs=expected_correlations_output,
+                 raw_response=expected_correlations_raw),
+            call(readable_output=expected_domain_correlations_readable_output,
+                 outputs=expected_correlations_output,
+                 raw_response=expected_correlations_raw),
+            call(readable_output=expected_behavior_correlations_readable_output,
+                 outputs=expected_correlations_output,
+                 raw_response=expected_correlations_raw),
+            call(readable_output=expected_correlation_participation_readable_output,
+                 outputs=expected_correlation_participation_output,
+                 raw_response=expected_correlation_participation_raw),
+            call(readable_output=expected_community_comments_readable_output,
+                 outputs=expected_community_comments_output,
+                 raw_response=expected_community_comments_raw),
+            call(readable_output=expected_cognitive_system_score_readable_output,
+                 outputs=expected_cognitive_system_score_output,
+                 raw_response=expected_cognitive_system_score_raw),
+            call(readable_output=expected_dome_notifications_readable_output,
+                 outputs=expected_dome_notifications_output,
+                 raw_response=expected_dome_notifications_raw),
+            call(readable_output=expected_results, outputs={})
+        ]
+
+        # Set up mocks
+        def getArg_side_effect(arg_name):
+            arg_dict = {
+                'alert_id': expected_alert_id,
+            }
+            return arg_dict[arg_name]
+
+        demisto_mock.getArg.side_effect = getArg_side_effect
+        irondefense_module.IRON_DEFENSE = Mock()
+        irondefense_module.IRON_DEFENSE.get_alert_irondome_information.return_value = mock_resp
+        irondefense_module.IRON_DEFENSE.create_dome_markdown_link.return_value = 'link'
+
+        # Execute test
+        irondefense_module.get_alert_irondome_information_command()
+
+        # Assert results
+        irondefense_module.IRON_DEFENSE.get_alert_irondome_information.assert_called_with(expected_alert_id)
+        return_outputs_mock.assert_has_calls(expected_calls, any_order=True)
+        irondefense_module.IRON_DEFENSE.create_dome_markdown_link.assert_called_with('Open IronDome information in '
+                                                                                     'IronVue',
+                                                                                     expected_alert_id)
+
+    @mock.patch('IronDefense.return_outputs')
+    @mock.patch('IronDefense.demisto')
+    def test_get_alert_irondome_information_command_empty_resp(self, demisto_mock, return_outputs_mock):
+
+        # Expectations
+        expected_alert_id = 'abc'
+        expected_results = f'No correlations found for alert ID: {expected_alert_id}'
+
+        # Setup mocks
+        def getArg_side_effect(arg_name):
+            arg_dict = {
+                'alert_id': expected_alert_id,
+            }
+            return arg_dict[arg_name]
+
+        demisto_mock.getArg.side_effect = getArg_side_effect
+        irondefense_module.IRON_DEFENSE = Mock()
+        irondefense_module.IRON_DEFENSE.get_alert_irondome_information.return_value = {
+            'correlations': [],
+            'correlation_participation': [],
+            'community_comments': [],
+            'dome_notifications': [],
+            'cognitive_system_score': 0
+        }
+
+        # Execute test
+        irondefense_module.get_alert_irondome_information_command()
+
+        # Assert results
+        irondefense_module.IRON_DEFENSE.get_alert_irondome_information.assert_called_with(expected_alert_id)
+        demisto_mock.results.assert_called_with(expected_results)
+        return_outputs_mock.assert_not_called()
+
+    def test_event_context_table_to_dict_list(self):
+        # Expectations
+        expected_dict_table_list = [{
+            'ip': '1.1.1.1',
+            'classification': 'CLASSIFICATION_ENTERPRISE',
+        }, {
+            'ip': '2.2.2.2',
+            'classification': 'CLASSIFICATION_ENTERPRISE_2',
+        }]
+
+        # Execute test
+        with open('./test-data/event-context-table.json') as event_context_table_file:
+            json_data = event_context_table_file.read()
+            event_context_table = json.loads(json_data)
+            actual_dict_table_list = self.class_under_test.event_context_table_to_dict_list(event_context_table)
+
+        # Assert results
+        self.assertEqual(expected_dict_table_list, actual_dict_table_list)
+
+    def test_event_context_to_dict(self):
+        # Expectations
+        expected_dict_table = {
+            'session_size': '1069918',
+            'threshold_entity_time': '2020-04-11T09:00:00.000Z',
+            'producer_to_consumer_ratio': '1.977250634801539',
+            'threshold_size': '1020401'
+        }
+
+        # Execute test
+        with open('./test-data/event-context-key-value-table.json') as event_context_table_file:
+            json_data = event_context_table_file.read()
+            event_context_table = json.loads(json_data)
+            actual_dict_table = self.class_under_test.event_context_table_to_dict(event_context_table)
+
+        # Assert results
+        self.assertEqual(expected_dict_table, actual_dict_table)
+
+    def test_event_context_table_contains_multi_columns(self):
+        # Execute test
+        with open('./test-data/event-context-table.json') as event_context_table_file:
+            json_data = event_context_table_file.read()
+            event_context_table = json.loads(json_data)
+            result = self.class_under_test.event_context_table_contains_multi_columns(event_context_table)
+            self.assertTrue(result)
+
+        with open('./test-data/event-context-key-value-table.json') as event_context_table_file:
+            json_data = event_context_table_file.read()
+            event_context_table = json.loads(json_data)
+            result = self.class_under_test.event_context_table_contains_multi_columns(event_context_table)
+            self.assertFalse(result)
+
+    def test_create_markdown_link(self):
+        # Expectations
+        link_text = 'asdf'
+        url = 'https://asdf.com'
+        expected_markdown_link = '[asdf](https://asdf.com)'
+
+        # Execute test
+        actual_markdown_link = self.class_under_test.create_markdown_link(link_text, url)
+
+        # Assert
+        self.assertEqual(expected_markdown_link, actual_markdown_link)
+
+    def test_create_dome_markdown_link(self):
+        # Expectations
+        link_text = 'asdf'
+        alert_id = 'abc'
+        expected_markdown_link = f'[asdf](https://{self.host}/alerts/irondome?filter=alertId%3D%3' \
+                                 f'D{alert_id})'
+
+        # Execute test
+        actual_markdown_link = self.class_under_test.create_dome_markdown_link(link_text, alert_id)
+
+        # Assert
+        self.assertEqual(expected_markdown_link, actual_markdown_link)
 
 
 if __name__ == '__main__':

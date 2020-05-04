@@ -21,7 +21,118 @@ configuration:
   name: requestTimeout
   required: false
   type: 0
-- display: Dome Notification Types to Exclude.
+- defaultvalue: 'true'
+  display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: 'true'
+  display: Enable Alert Notification Ingestion (Refresh Not Supported)
+  name: enableAlertNotifications
+  required: false
+  type: 8
+- defaultvalue: '500'
+  display: Alert Notification Limit Per Request
+  name: alertLimit
+  required: false
+  type: 0
+- display: Alert Notification Categories to Exclude
+  name: alertCategories
+  options:
+  - C2
+  - Action
+  - Access
+  - Recon
+  - Other
+  required: false
+  type: 16
+- display: Alert Notification SubCategories to Exclude (Enter in CSV Format)
+  name: alertSubCategories
+  required: false
+  type: 12
+- defaultvalue: '0'
+  display: Lower Bound of Severity for Alert Notification
+  name: alertSeverityLower
+  required: false
+  type: 0
+- defaultvalue: '1000'
+  display: Upper Bound of Severity for Alert Notification
+  name: alertSeverityUpper
+  required: false
+  type: 0
+- display: Alert Notification Actions to Include (Alert Created enabled by default)
+  name: alertActions
+  options:
+  - Alert Created
+  - Alert Updated
+  - Workflow Created
+  - Workflow Updated
+  - Alert Deleted
+  - Note Created
+  - Note Updated
+  - Alert Event Added
+  required: false
+  type: 16
+- defaultvalue: 'false'
+  display: Enable Event Notification Ingestion (Refresh Not Supported)
+  name: enableEventNotifications
+  required: false
+  type: 8
+- defaultvalue: '500'
+  display: Event Notification Limit Per Request.
+  name: eventLimit
+  required: false
+  type: 0
+- display: Event Notification Categories to Exclude
+  name: eventCategories
+  options:
+  - C2
+  - Action
+  - Access
+  - Recon
+  - Other
+  required: false
+  type: 16
+- display: Event Notification SubCategories to Exclude (Enter in CSV Format)
+  name: eventSubCategories
+  required: false
+  type: 12
+- defaultvalue: '0'
+  display: Lower Bound of Severity for Event Notification
+  name: eventSeverityLower
+  required: false
+  type: 0
+- defaultvalue: '1000'
+  display: Upper Bound of Severity for Event Notification
+  name: eventSeverityUpper
+  required: false
+  type: 0
+- display: Event Notification Actions to Include (Event Created enabled by default)
+  name: eventActions
+  options:
+  - Event Created
+  - Event Retro Whitelisted
+  - Event Added to Alert
+  - Event Deleted
+  - Event Alert Under Review
+  - Event Alert Closed
+  required: false
+  type: 16
+- defaultvalue: 'false'
+  display: Enable Dome Notification Ingestion (Refresh Not Supported)
+  name: enableDomeNotifications
+  required: false
+  type: 8
+- defaultvalue: '500'
+  display: Dome Notification Limit Per Request
+  name: domeLimit
+  required: false
+  type: 0
+- display: Dome Notification Types to Exclude
   name: domeCategories
   options:
   - Participant Added
@@ -35,92 +146,10 @@ configuration:
   - High Cognitive System Score
   required: false
   type: 16
-- display: Disable all Dome Notification Ingestion.
-  name: disableDomeNotifications
-  required: false
-  type: 8
-- display: Alert Notification Categories to Exclude.
-  name: alertCategories
-  options:
-  - C2
-  - Action
-  - Access
-  - Recon
-  - Other
-  required: false
-  type: 16
-- display: Alert Notification SubCategories to Exclude (enter in CSV format).
-  name: alertSubCategories
-  required: false
-  type: 12
-- defaultvalue: '0'
-  display: Lower Bound of Severity for Alert Notification.
-  name: alertSeverityLower
-  required: false
-  type: 0
-- defaultvalue: '1000'
-  display: Upper Bound of Severity for Alert Notification.
-  name: alertSeverityUpper
-  required: false
-  type: 0
-- display: Disable all Alert Notification Ingestion.
-  name: disableAlertNotifications
-  required: false
-  type: 8
-- display: Event Notification Categories to Exclude.
-  name: eventCategories
-  options:
-  - C2
-  - Action
-  - Access
-  - Recon
-  - Other
-  required: false
-  type: 16
-- display: Event Notification SubCategories to Exclude (enter in CSV format).
-  name: eventSubCategories
-  required: false
-  type: 12
-- defaultvalue: '0'
-  display: Lower Bound of Severity for Event Notification.
-  name: eventSeverityLower
-  required: false
-  type: 0
-- defaultvalue: '1000'
-  display: Upper Bound of Severity for Event Notification.
-  name: eventSeverityUpper
-  required: false
-  type: 0
-- display: Disable all Event Notification Ingestion.
-  name: disableEventNotifications
-  required: false
-  type: 8
-- defaultvalue: '500'
-  display: Dome Notification limit per request.
-  name: domeLimit
-  required: false
-  type: 0
-- defaultvalue: '500'
-  display: Alert Notification limit per request.
-  name: alertLimit
-  required: false
-  type: 0
-- defaultvalue: '500'
-  display: Event Notification limit per request.
-  name: eventLimit
-  required: false
-  type: 0
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
-description: The IronDefense Integration for Demisto allows users to interact with IronDefense alerts within Demisto. The
-  Integration provides the ability to rate alerts, update alert statuses, add comments to alerts, to report
-  observed bad activity, get alerts, get events, and get IronDome information.
+description: The IronDefense Integration for Demisto allows users to interact with
+  IronDefense alerts within Demisto. The Integration provides the ability to rate
+  alerts, update alert statuses, add comments to alerts, to report observed bad activity,
+  get alerts, get events, and get IronDome information.
 display: IronDefense
 name: IronDefense
 script:
@@ -134,7 +163,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The severity rating of the alert. Can be: "Undecided", "Benign", "Suspicious", "Malicious".'
+      description: 'The severity rating of the alert. Can be: "Undecided", "Benign",
+        "Suspicious", "Malicious".'
       isArray: false
       name: severity
       predefined:
@@ -146,7 +176,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Determines whether the rating was expected. Can be: "Unknown", "Expected", "Unexpected". Use "Unknown" if the rating is undecided.'
+      description: 'Determines whether the rating was expected. Can be: "Unknown",
+        "Expected", "Unexpected". Use "Unknown" if the rating is undecided.'
       isArray: false
       name: expectation
       predefined:
@@ -211,7 +242,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The alert status to set. Can be: "Awaiting Review", "Under Review", "Closed".'
+      description: 'The alert status to set. Can be: "Awaiting Review", "Under Review",
+        "Closed".'
       isArray: false
       name: status
       predefined:
@@ -294,131 +326,104 @@ script:
     execution: false
     name: irondefense-get-event
     outputs:
-    - contextPath: IronDefense.Event.ID
+    - contextPath: IronDefense.Event.id
       description: The event ID.
       type: String
-    - contextPath: IronDefense.Event.AlertID
+    - contextPath: IronDefense.Event.alert_id
       description: The associated alert ID.
       type: String
-    - contextPath: IronDefense.Event.Category
+    - contextPath: IronDefense.Event.category
       description: The event category.
       type: String
-    - contextPath: IronDefense.Event.SubCategory
+    - contextPath: IronDefense.Event.sub_category
       description: The event sub category.
       type: String
-    - contextPath: IronDefense.Event.Severity
+    - contextPath: IronDefense.Event.severity
       description: The event severity (0-1000).
       type: Number
-    - contextPath: IronDefense.Event.Confidence
+    - contextPath: IronDefense.Event.confidence
       description: The event confidence (real number between 0-1).
       type: Number
-    - contextPath: IronDefense.Event.Created
+    - contextPath: IronDefense.Event.created
       description: Time the event was created.
       type: Date
-    - contextPath: IronDefense.Event.Updated
+    - contextPath: IronDefense.Event.updated
       description: Time the event was last updated.
       type: Date
-    - contextPath: IronDefense.Event.StartTime
+    - contextPath: IronDefense.Event.start_time
       description: The start time of this event's activity.
       type: Date
-    - contextPath: IronDefense.Event.EndTime
+    - contextPath: IronDefense.Event.end_time
       description: The end time of this event's activity.
       type: Date
-    - contextPath: IronDefense.Event.IronDomeSharedTime
-      description: The time when the event was sent to IronDome - not present if not shared with irondome.
+    - contextPath: IronDefense.Event.iron_dome_shared_time
+      description: The time when the event was sent to IronDome - not present if not
+        shared with irondome.
       type: Date
-    - contextPath: IronDefense.Event.IsWhitelisted
+    - contextPath: IronDefense.Event.is_whitelisted
       description: True if the event activity was whitelisted, false otherwise.
       type: Boolean
-    - contextPath: IronDefense.Event.IsBlacklisted
+    - contextPath: IronDefense.Event.is_blacklisted
       description: True if the event activity was blacklisted, false otherwise.
       type: Boolean
-    - contextPath: IronDefense.Event.SrcIP
+    - contextPath: IronDefense.Event.src_ip
       description: The source IP associated with this event.
       type: String
-    - contextPath: IronDefense.Event.DstIP
+    - contextPath: IronDefense.Event.dst_ip
       description: The destination IP associated with this event.
       type: String
-    - contextPath: IronDefense.Event.DstPort
+    - contextPath: IronDefense.Event.dst_port
       description: The destination port associated with this event.
       type: Number
-    - contextPath: IronDefense.Event.AppDomains
+    - contextPath: IronDefense.Event.ppp_domains
       description: Any domains associated with this event.
       type: String
-    - contextPath: IronDefense.Event.PrimaryAppProtocol
+    - contextPath: IronDefense.Event.primary_app_protocol
       description: The primary application protocol associated with this event.
       type: String
-    - contextPath: IronDefense.Event.SecondaryAppProtocol
+    - contextPath: IronDefense.Event.secondary_app_protocol
       description: The secondary application protocol associated with this event.
       type: String
-    - contextPath: IronDefense.Event.BytesIn
+    - contextPath: IronDefense.Event.bytes_in
       description: The byte count of incoming traffic for this event.
       type: Number
-    - contextPath: IronDefense.Event.BytesOut
+    - contextPath: IronDefense.Event.bytes_out
       description: The byte count of outgoing traffic for this event.
       type: Number
-    - contextPath: IronDefense.Event.TotalBytes
-      description: The byte count of the total traffic (in either direction) for this event.
+    - contextPath: IronDefense.Event.total_bytes
+      description: The byte count of the total traffic (in either direction) for this
+        event.
       type: Number
-    - contextPath: IronDefense.Event.URL
+    - contextPath: IronDefense.Event.url
       description: The related URL for this event, if applicable.
       type: String
-    - contextPath: IronDefense.Event.RawDataFormats
+    - contextPath: IronDefense.Event.raw_data_formats
       description: The list of distinct raw data formats for this event.
       type: String
-    - contextPath: IronDefense.Event.SrcEntityAttribute
-      description: The source entity attribute related to this event, if one could be determined.
+    - contextPath: IronDefense.Event.src_entity_attribute
+      description: The source entity attribute related to this event, if one could
+        be determined.
       type: String
-    - contextPath: IronDefense.Event.SrcEntityAttributeType
-      description: The source entity attribute type related to this event, if one could be determined.
+    - contextPath: IronDefense.Event.src_entity_attribute_type
+      description: The source entity attribute type related to this event, if one
+        could be determined.
       type: String
-    - contextPath: IronDefense.Event.DstEntityAttribute
-      description: The destination entity attribute related to this event, if one could be determined.
+    - contextPath: IronDefense.Event.dst_entity_attribute
+      description: The destination entity attribute related to this event, if one
+        could be determined.
       type: String
-    - contextPath: IronDefense.Event.DstEntityAttributeType
-      description:  The destination entity attribute type related to this event, if one could be determined.
+    - contextPath: IronDefense.Event.dst_entity_attribute_type
+      description: The destination entity attribute type related to this event, if
+        one could be determined.
       type: String
-    - contextPath: IronDefense.Event.VueURL
+    - contextPath: IronDefense.Event.vue_url
       description: The url for displaying the event within IronVUE.
       type: String
-    - contextPath: IronDefense.Context.Name
+    - contextPath: IronDefense.Event.context.name
       description: The name of the context table.
       type: String
-    - contextPath: IronDefense.Context.Columns.Name
-      description: The name of the context column.
-      type: String
-    - contextPath: IronDefense.Context.Columns.Value.Data.StringValue
-      description: A string context value.
-      type: String
-    - contextPath: IronDefense.Context.Columns.Value.Data.IntValue
-      description: An integer context value.
-      type: Number
-    - contextPath: IronDefense.Context.Columns.Value.Data.LongValue
-      description: A long context value.
-      type: Number
-    - contextPath: IronDefense.Context.Columns.Value.Data.DoubleValue
-      description: A double context value.
-      type: Number
-    - contextPath: IronDefense.Context.Columns.Value.Data.IpValue
-      description: An IP context value.
-      type: String
-    - contextPath: IronDefense.Context.Columns.Value.Data.MacValue
-      description: A MAC context value.
-      type: String
-    - contextPath: IronDefense.Context.Columns.Value.Data.TimestampValue
-      description: A timestamp context value.
-      type: Date
-    - contextPath: IronDefense.Context.Columns.Value.Data.BoolValue
-      description: A boolean context value.
-      type: Boolean
-    - contextPath: IronDefense.Context.Columns.Value.Data.TransProtocolValue
-      description: A Transport Protocol context value.
-      type: String
-    - contextPath: IronDefense.Context.Columns.Value.Data.AppProtocolValue
-      description: An Application Protocol context value.
-      type: String
-    - contextPath: IronDefense.Context.Columns.Value.Data.UuidValue
-      description: A UUID context value.
+    - contextPath: IronDefense.Event.context.columns
+      description: Column values for the context table.
       type: String
   - arguments:
     - default: false
@@ -636,125 +641,213 @@ script:
     execution: false
     name: irondefense-get-alert-irondome-information
     outputs:
-    - contextPath: IronDefense.Correlations.DomeTag
+    - contextPath: IronDome.Correlations.alert_id
+      description: The alert ID the correlations are associated with.
+      type: String
+    - contextPath: IronDome.Correlations.alert_id.dome_tag
       description: The IronDome tag.
       type: String
-    - contextPath: IronDefense.Correlations.Correlations.IP
+    - contextPath: IronDome.Correlations.alert_id.correlations.ip
       description: The IP correlated on (if an IP correlation).
       type: String
-    - contextPath: IronDefense.Correlations.Correlations.Domain
+    - contextPath: IronDome.Correlations.alert_id.correlations.domain
       description: The Domain correlated on (if a Domain correlation).
       type: String
-    - contextPath: IronDefense.Correlations.Correlations.Behavior
+    - contextPath: IronDome.Correlations.alert_id.correlations.behavior
       description: True if the correlation was behavior-based.
       type: Boolean
-    - contextPath: IronDefense.Correlations.Correlations.EnterpriseCorrelations
+    - contextPath: IronDome.Correlations.alert_id.correlations.enterprise_correlations
       description: The number of enterprise correlations.
-      type:  Number
-    - contextPath: IronDefense.Correlations.Correlations.CommunityCorrelations
+      type: Number
+    - contextPath: IronDome.Correlations.alert_id.correlations.community_correlations
       description: The number of community correlations.
       type: Number
-    - contextPath: IronDefense.CorrelationParticipation.DomeTag
+    - contextPath: IronDome.CorrelationParticipation.alert_id
+      description: The alert ID the correlation participants are associated with.
+      type: String
+    - contextPath: IronDome.CorrelationParticipation.alert_id.correlation_participation.dome_tag
       description: The IronDome tag.
       type: String
-    - contextPath: IronDefense.CorrelationParticipation.Behavior.MaliciousCount
+    - contextPath: IronDome.CorrelationParticipation.alert_id.correlation_participation.behavior.malicious_count
       description: Count of malicious ratings.
       type: Number
-    - contextPath: IronDefense.CorrelationParticipation.Behavior.SuspiciousCount
+    - contextPath: IronDome.CorrelationParticipation.alert_id.correlation_participation.behavior.suspicious_count
       description: Count of suspicious ratings.
       type: Number
-    - contextPath: IronDefense.CorrelationParticipation.Behavior.BenignCount
+    - contextPath: IronDome.CorrelationParticipation.alert_id.correlation_participation.behavior.benign_count
       description: Count of benign ratings.
       type: Number
-    - contextPath: IronDefense.CorrelationParticipation.Behavior.WhitelistedCount
+    - contextPath: IronDome.CorrelationParticipation.alert_id.correlation_participation.behavior.whitelisted_count
       description: Count of whitelisted ratings.
       type: Number
-    - contextPath: IronDefense.CorrelationParticipation.Behavior.CommentsCount
+    - contextPath: IronDome.CorrelationParticipation.alert_id.correlation_participation.behavior.comments_count
       description: Count of comments made.
       type: Number
-    - contextPath: IronDefense.CorrelationParticipation.Behavior.ActivityCount
+    - contextPath: IronDome.CorrelationParticipation.alert_id.correlation_participation.behavior.activity_count
       description: Count of activity.
       type: Number
-    - contextPath: IronDefense.CorrelationParticipation.Behavior.ResourceOwner
+    - contextPath: IronDome.CorrelationParticipation.alert_id.correlation_participation.behavior.resource_owner
       description: True if the caller is the resource owner.
       type: Boolean
-    - contextPath: IronDefense.CorrelationParticipation.Behavior.FirstSeen
+    - contextPath: IronDome.CorrelationParticipation.alert_id.correlation_participation.behavior.first_seen
       description: The time the activity was first seen.
       type: Date
-    - contextPath: IronDefense.CorrelationParticipation.Behavior.LastSeen
+    - contextPath: IronDome.CorrelationParticipation.alert_id.correlation_participation.behavior.last_seen
       description: The time the activity was last seen.
       type: Date
-    - contextPath: IronDefense.CorrelationParticipation.Domain.MaliciousCount
+    - contextPath: IronDome.CorrelationParticipation.alert_id.correlation_participation.domain.malicious_count
       description: Count of malicious ratings.
       type: Number
-    - contextPath: IronDefense.CorrelationParticipation.Domain.SuspiciousCount
+    - contextPath: IronDome.CorrelationParticipation.alert_id.correlation_participation.domain.suspicious_count
       description: Count of suspicious ratings.
       type: Number
-    - contextPath: IronDefense.CorrelationParticipation.Domain.BenignCount
+    - contextPath: IronDome.CorrelationParticipation.alert_id.correlation_participation.domain.benign_count
       description: Count of benign ratings.
       type: Number
-    - contextPath: IronDefense.CorrelationParticipation.Domain.WhitelistedCount
+    - contextPath: IronDome.CorrelationParticipation.alert_id.correlation_participation.domain.whitelisted_count
       description: Count of whitelisted ratings.
       type: Number
-    - contextPath: IronDefense.CorrelationParticipation.Domain.CommentsCount
+    - contextPath: IronDome.CorrelationParticipation.alert_id.correlation_participation.domain.comments_count
       description: Count of comments made.
       type: Number
-    - contextPath: IronDefense.CorrelationParticipation.Domain.ActivityCount
+    - contextPath: IronDome.CorrelationParticipation.alert_id.correlation_participation.domain.activity_count
       description: Count of activity.
       type: Number
-    - contextPath: IronDefense.CorrelationParticipation.Domain.ResourceOwner
+    - contextPath: IronDome.CorrelationParticipation.alert_id.correlation_participation.domain.resource_owner
       description: True if the caller is the resource owner.
       type: Boolean
-    - contextPath: IronDefense.CorrelationParticipation.Domain.FirstSeen
+    - contextPath: IronDome.CorrelationParticipation.alert_id.correlation_participation.domain.first_seen
       description: The time the activity was first seen.
       type: Date
-    - contextPath: IronDefense.CorrelationParticipation.Domain.LastSeen
+    - contextPath: IronDome.CorrelationParticipation.alert_id.correlation_participation.domain.last_seen
       description: The time the activity was last seen.
       type: Date
-    - contextPath: IronDefense.CorrelationParticipation.Ip.MaliciousCount
+    - contextPath: IronDome.CorrelationParticipation.alert_id.correlation_participation.ip.malicious_count
       description: Count of malicious ratings.
       type: Number
-    - contextPath: IronDefense.CorrelationParticipation.Ip.SuspiciousCount
+    - contextPath: IronDome.CorrelationParticipation.alert_id.correlation_participation.ip.suspicious_count
       description: Count of suspicious ratings.
       type: Number
-    - contextPath: IronDefense.CorrelationParticipation.Ip.BenignCount
+    - contextPath: IronDome.CorrelationParticipation.alert_id.correlation_participation.ip.benign_count
       description: Count of benign ratings.
       type: Number
-    - contextPath: IronDefense.CorrelationParticipation.Ip.WhitelistedCount
+    - contextPath: IronDome.CorrelationParticipation.alert_id.correlation_participation.ip.whitelisted_count
       description: Count of whitelisted ratings.
       type: Number
-    - contextPath: IronDefense.CorrelationParticipation.Ip.CommentsCount
+    - contextPath: IronDome.CorrelationParticipation.alert_id.correlation_participation.ip.comments_count
       description: Count of comments made.
       type: Number
-    - contextPath: IronDefense.CorrelationParticipation.Ip.ActivityCount
+    - contextPath: IronDome.CorrelationParticipation.alert_id.correlation_participation.ip.activity_count
       description: Count of activity.
       type: Number
-    - contextPath: IronDefense.CorrelationParticipation.Ip.ResourceOwner
+    - contextPath: IronDome.CorrelationParticipation.alert_id.correlation_participation.ip.resource_owner
       description: True if the caller is the resource owner.
       type: Boolean
-    - contextPath: IronDefense.CorrelationParticipation.Ip.FirstSeen
+    - contextPath: IronDome.CorrelationParticipation.alert_id.correlation_participation.ip.first_seen
       description: The time the activity was first seen.
       type: Date
-    - contextPath: IronDefense.CorrelationParticipation.Ip.LastSeen
+    - contextPath: IronDome.CorrelationParticipation.alert_id.correlation_participation.ip.last_seen
       description: The time the activity was last seen.
       type: Date
-    - contextPath: IronDefense.CommunityComments.Created
+    - contextPath: IronDome.CommunityComments.alert_id
+      description: The alert ID associated with the community comments.
+      type: String
+    - contextPath: IronDome.CommunityComments.alert_id.community_comments.created
       description: The time that the comment was created.
       type: Date
-    - contextPath: IronDefense.CommunityComments.Comment
+    - contextPath: IronDome.CommunityComments.alert_id.community_comments.comment
       description: The comment text.
       type: String
-    - contextPath: IronDefense.CommunityComments.DomeTags
+    - contextPath: IronDome.CommunityComments.alert_id.community_comments.dome_tags
       description: The IronDome tags related to the comment.
       type: String
-    - contextPath: IronDefense.CommunityComments.Enterprise
+    - contextPath: IronDome.CommunityComments.alert_id.community_comments.enterprise
       description: True if enterprise.
       type: Boolean
-    - contextPath: IronDefense.CommunityComments.Self
+    - contextPath: IronDome.CommunityComments.alert_id.community_comments.self
       description: True if the comment was made by the caller.
       type: Boolean
-    - contextPath: IronDefense.CognitiveSystemScore
-      description: The cognitive system score for the alert.
+    - contextPath: IronDome.CognitiveSystemScore.alert_id
+      description: The alert ID associated with the cognitive system score.
+      type: String
+    - contextPath: IronDome.CognitiveSystemScore.alert_id.cognitive_system_score
+      description: The cognitive system score of the alert.
+      type: Number
+    - contextPath: IronDome.Notification.alert_id
+      description: The alert ID associated with the IronDome notification.
+      type: String
+    - contextPath: IronDome.Notification.alert_id.dome_notification.id
+      description: The unique ID of the notification.
+      type: String
+    - contextPath: IronDome.Notification.alert_id.dome_notification.category
+      description: The category of Dome notification.
+      type: String
+    - contextPath: IronDome.Notification.alert_id.dome_notification.created
+      description: The category of Dome notification.
+      type: Date
+    - contextPath: IronDome.Notification.alert_id.dome_notification.dome_tags
+      description: The IronDome tags related to this notification.
+      type: String
+    - contextPath: IronDome.Notification.alert_id.dome_notification.alert_ids
+      description: The IDs of the alerts related to this notification.
+      type: String
+    - contextPath: IronDome.Notification.alert_id.dome_notification.mismatch_details.enterprise_severities.analyst_severity
+      description: The mismatched severity across correlated alerts within the enterprise.
+      type: String
+    - contextPath: IronDome.Notification.alert_id.dome_notification.mismatch_details.enterprise_severities.count
+      description: The count of mismatched severity with this analyst rating.
+      type: Number
+    - contextPath: IronDome.Notification.alert_id.dome_notification.mismatch_details.community_severities.analyst_severity
+      description: The mismatched severity across correlated alerts within the community.
+      type: String
+    - contextPath: IronDome.Notification.alert_id.dome_notification.mismatch_details.community_severities.count
+      description: The count of mismatched severity with this analyst rating.
+      type: Number
+    - contextPath: IronDome.Notification.alert_id.dome_notification.severity_details.analyst_severity
+      description: The analyst severity of the alert.
+      type: String
+    - contextPath: IronDome.Notification.alert_id.dome_notification.comment_details.comment
+      description: The comment text in the notification.
+      type: String
+    - contextPath: IronDome.Notification.alert_id.dome_notification.severity_suspicious_details.domains
+      description: The list of domains correlated on a suspicious alert.
+      type: String
+    - contextPath: IronDome.Notification.alert_id.dome_notification.severity_suspicious_details.ips
+      description: The list of IPs correlated on a suspicious alert.
+      type: String
+    - contextPath: IronDome.Notification.alert_id.dome_notification.severity_suspicious_details.comments
+      description: The comments about this suspicious alert correlation.
+      type: String
+    - contextPath: IronDome.Notification.alert_id.dome_notification.severity_malicious_details.domains
+      description: The list of domains correlated on a malicious alert.
+      type: String
+    - contextPath: IronDome.Notification.alert_id.dome_notification.severity_malicious_details.ips
+      description: The list of IPs correlated on a malicious alert.
+      type: String
+    - contextPath: IronDome.Notification.alert_id.dome_notification.severity_malicious_details.comments
+      description: The comments about this malicious alert correlation.
+      type: String
+    - contextPath: IronDome.Notification.alert_id.dome_notification.severity_malicious_details.generated_threat_intel_rules.ip
+      description: The IP of a Threat Intelligence rule that was automatically created
+        based on an IronDome correlation.
+      type: String
+    - contextPath: IronDome.Notification.alert_id.dome_notification.severity_malicious_details.generated_threat_intel_rules.domain
+      description: The domain of a Threat Intelligence rule that was automatically
+        created based on an IronDome correlation.
+      type: String
+    - contextPath: IronDome.Notification.alert_id.dome_notification.severity_malicious_details.generated_threat_intel_rules.rule_id
+      description: The rule ID of a Threat Intelligence rule that was automatically
+        created based on an IronDome correlation.
+      type: String
+    - contextPath: IronDome.Notification.alert_id.dome_notification.severity_malicious_details.generated_threat_intel_rules.vue_url
+      description: The IronVUE URL of a Threat Intelligence rule that was automatically
+        created based on an IronDome correlation.
+      type: String
+    - contextPath: IronDome.Notification.alert_id.dome_notification.high_cognitive_system_score_details.enterprise_alert_score
+      description: The alert score for the enterprise.
+      type: Number
+    - contextPath: IronDome.Notification.alert_id.dome_notification.high_cognitive_system_score_details.cognitive_system_score
+      description: The cognitive system score.
       type: Number
   - arguments:
     - default: false
@@ -780,109 +873,116 @@ script:
     execution: false
     name: irondefense-get-events
     outputs:
-    - contextPath: IronDefense.Events.ID
+    - contextPath: IronDefense.Events.id
       description: The event ID.
       type: String
-    - contextPath: IronDefense.Events.AlertID
+    - contextPath: IronDefense.Events.alert_id
       description: The associated alert ID.
       type: String
-    - contextPath: IronDefense.Events.Category
+    - contextPath: IronDefense.Events.category
       description: The event category.
       type: String
-    - contextPath: IronDefense.Events.SubCategory
+    - contextPath: IronDefense.Events.sub_category
       description: The event sub category.
       type: String
-    - contextPath: IronDefense.Events.Severity
+    - contextPath: IronDefense.Events.severity
       description: The event severity (0-1000).
       type: Number
-    - contextPath: IronDefense.Events.Confidence
+    - contextPath: IronDefense.Events.confidence
       description: The event confidence (real number between 0-1).
       type: Number
-    - contextPath: IronDefense.Events.Created
+    - contextPath: IronDefense.Events.created
       description: Time the event was created.
       type: Date
-    - contextPath: IronDefense.Events.Updated
+    - contextPath: IronDefense.Events.updated
       description: Time the event was last updated.
       type: Date
-    - contextPath: IronDefense.Events.StartTime
+    - contextPath: IronDefense.Events.start_time
       description: The start time of this event's activity.
       type: Date
-    - contextPath: IronDefense.Events.EndTime
+    - contextPath: IronDefense.Events.end_time
       description: The end time of this event's activity.
       type: Date
-    - contextPath: IronDefense.Events.IronDomeSharedTime
-      description: The time when the event was sent to IronDome - not present if not shared with irondome.
+    - contextPath: IronDefense.Events.iron_dome_shared_time
+      description: The time when the event was sent to IronDome - not present if not
+        shared with irondome.
       type: Date
-    - contextPath: IronDefense.Events.IsWhitelisted
+    - contextPath: IronDefense.Events.is_whitelisted
       description: True if the event activity was whitelisted, false otherwise.
       type: Boolean
-    - contextPath: IronDefense.Events.IsBlacklisted
+    - contextPath: IronDefense.Events.is_blacklisted
       description: True if the event activity was blacklisted, false otherwise.
       type: Boolean
-    - contextPath: IronDefense.Events.SrcIP
+    - contextPath: IronDefense.Events.src_ip
       description: The source IP associated with this event.
       type: String
-    - contextPath: IronDefense.Events.DstIP
+    - contextPath: IronDefense.Events.dst_ip
       description: The destination IP associated with this event.
       type: String
-    - contextPath: IronDefense.Events.DstPort
+    - contextPath: IronDefense.Events.dst_port
       description: The destination port associated with this event.
       type: Number
-    - contextPath: IronDefense.Events.AppDomains
+    - contextPath: IronDefense.Events.app_domains
       description: Any domains associated with this event.
       type: String
-    - contextPath: IronDefense.Events.PrimaryAppProtocol
+    - contextPath: IronDefense.Events.primary_app_protocol
       description: The primary application protocol associated with this event.
       type: String
-    - contextPath: IronDefense.Events.SecondaryAppProtocol
+    - contextPath: IronDefense.Events.secondary_app_protocol
       description: The secondary application protocol associated with this event.
       type: String
-    - contextPath: IronDefense.Events.BytesIn
+    - contextPath: IronDefense.Events.bytes_in
       description: The byte count of incoming traffic for this event.
       type: Number
-    - contextPath: IronDefense.Events.BytesOut
+    - contextPath: IronDefense.Events.bytes_out
       description: The byte count of outgoing traffic for this event.
       type: Number
-    - contextPath: IronDefense.Events.TotalBytes
-      description: The byte count of the total traffic (in either direction) for this event.
+    - contextPath: IronDefense.Events.total_bytes
+      description: The byte count of the total traffic (in either direction) for this
+        event.
       type: Number
-    - contextPath: IronDefense.Events.URL
+    - contextPath: IronDefense.Events.url
       description: The related URL for this event, if applicable.
       type: String
-    - contextPath: IronDefense.Events.RawDataFormats
+    - contextPath: IronDefense.Events.raw_data_formats
       description: The list of distinct raw data formats for this event.
       type: String
-    - contextPath: IronDefense.Events.SrcEntityAttribute
-      description: The source entity attribute related to this event, if one could be determined.
+    - contextPath: IronDefense.Events.src_entity_attribute
+      description: The source entity attribute related to this event, if one could
+        be determined.
       type: String
-    - contextPath: IronDefense.Events.SrcEntityAttributeType
-      description: The source entity attribute type related to this event, if one could be determined.
+    - contextPath: IronDefense.Events.src_entity_attribute_type
+      description: The source entity attribute type related to this event, if one
+        could be determined.
       type: String
-    - contextPath: IronDefense.Events.DstEntityAttribute
-      description: The destination entity attribute related to this event, if one could be determined.
+    - contextPath: IronDefense.Events.dst_entity_attribute
+      description: The destination entity attribute related to this event, if one
+        could be determined.
       type: String
-    - contextPath: IronDefense.Events.DstEntityAttributeType
-      description:  The destination entity attribute type related to this event, if one could be determined.
+    - contextPath: IronDefense.Events.dst_entity_attribute_type
+      description: The destination entity attribute type related to this event, if
+        one could be determined.
       type: String
-    - contextPath: IronDefense.Events.VueURL
+    - contextPath: IronDefense.Events.vue_url
       description: The url for displaying the event within IronVUE.
       type: String
-    - contextPath: IronDefense.Constraint.Limit
+    - contextPath: IronDefense.Query.GetEvents.constraint.limit
       description: The maximum number of results that were requested to be returned.
       type: Number
-    - contextPath: IronDefense.Constraint.Offset
+    - contextPath: IronDefense.Query.GetEvents.constraint.offset
       description: The number of results that were skipped - used for paging the results.
       type: Number
-    - contextPath: IronDefense.Constraint.Total
+    - contextPath: IronDefense.Query.GetEvents.constraint.total
       description: The total number of results possible from the query.
       type: Number
   dockerimage: demisto/python3:3.7.5.4002
+  feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 tests:
 - No tests
