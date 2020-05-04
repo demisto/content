@@ -1,5 +1,5 @@
 import pytest
-from Packs.Legacy.Integrations.GoogleCloudCompute.GoogleCloudCompute import parse_resource_ids, parse_firewall_rule, \
+from GoogleCloudCompute import parse_resource_ids, parse_firewall_rule, \
     parse_metadata_items, parse_labels
 
 

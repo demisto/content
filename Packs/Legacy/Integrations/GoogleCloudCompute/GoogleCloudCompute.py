@@ -30,6 +30,15 @@ HELPER FUNCTIONS
 """
 
 
+def get_compute():
+    """
+    Gets an initialized instance of COMPUTE
+    """
+    if not COMPUTE:
+        return build_and_authenticate(GSERVICE)
+    return COMPUTE
+
+
 def parse_resource_ids(resource_id):
     """
     Split the resource ids to a list
@@ -136,7 +145,7 @@ def build_and_authenticate(googleservice):
     service_credentials = service_account.Credentials.from_service_account_info(
         service_account_info, scopes=SCOPE
     )
-    COMPUTE = discovery.build(GSERVICE, API_VERSION, credentials=service_credentials)
+    COMPUTE = discovery.build(googleservice, API_VERSION, credentials=service_credentials)
     return COMPUTE
 
 
@@ -154,7 +163,7 @@ def wait_for_zone_operation(args):
     name = args.get('name')
     while True:
         result = (
-            COMPUTE.zoneOperations()
+            get_compute().zoneOperations()
             .get(project=project, zone=zone, operation=name)
             .execute()
         )
@@ -199,7 +208,7 @@ def wait_for_region_operation(args):
     name = args.get('name')
     while True:
         result = (
-            COMPUTE.regionOperations()
+            get_compute().regionOperations()
             .get(project=project, region=region, operation=name)
             .execute()
         )
@@ -239,7 +248,7 @@ def wait_for_global_operation(args):
     name = args.get('name')
     while True:
         result = (
-            COMPUTE.globalOperations().get(project=project, operation=name).execute()
+            get_compute().globalOperations().get(project=project, operation=name).execute()
         )
         if result.get('status') == 'DONE':
             if 'error' in result:
@@ -715,7 +724,7 @@ def create_instance(args):
     project = SERVICE_ACT_PROJECT_ID
 
     operation = (
-        COMPUTE.instances().insert(project=project, zone=zone, body=config).execute()
+        get_compute().instances().insert(project=project, zone=zone, body=config).execute()
     )
 
     data_res = {
@@ -759,7 +768,7 @@ def list_instances(args):
     order_by = args.get('orderBy')
     page_token = args.get('pageToken')
 
-    request = COMPUTE.instances().list(
+    request = get_compute().instances().list(
         project=project,
         zone=zone,
         filter=filters,
@@ -782,7 +791,7 @@ def list_instances(args):
                 }
                 data_res.append(data_res_item)
 
-        request = COMPUTE.instances().list_next(
+        request = get_compute().instances().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -816,7 +825,7 @@ def aggregated_list_instances(args):
     output = []
     data_res = []
 
-    request = COMPUTE.instances().aggregatedList(
+    request = get_compute().instances().aggregatedList(
         project=project,
         filter=filters,
         maxResults=max_results,
@@ -838,7 +847,7 @@ def aggregated_list_instances(args):
                         }
                         data_res.append(data_res_item)
 
-        request = COMPUTE.instances().aggregatedList_next(
+        request = get_compute().instances().aggregatedList_next(
             previous_request=request, previous_response=response
         )
 
@@ -869,7 +878,7 @@ def set_instance_metadata(args):
     if args.get('metadataItems'):
         meta_data.update({'items': parse_metadata_items(args.get('metadataItems'))})
 
-    request = COMPUTE.instances().setMetadata(
+    request = get_compute().instances().setMetadata(
         project=project, zone=zone, instance=instance, body=meta_data
     )
     response = request.execute()
@@ -904,7 +913,7 @@ def get_instance(args):
     instance = args.get('instance')
     zone = args.get('zone')
 
-    request = COMPUTE.instances().get(project=project, zone=zone, instance=instance)
+    request = get_compute().instances().get(project=project, zone=zone, instance=instance)
     response = request.execute()
     data_res = {
         'id': response.get('id'),
@@ -934,7 +943,7 @@ def delete_instance(args):
     instance = args.get('instance')
     zone = args.get('zone')
 
-    request = COMPUTE.instances().delete(project=project, zone=zone, instance=instance)
+    request = get_compute().instances().delete(project=project, zone=zone, instance=instance)
     response = request.execute()
 
     data_res = {
@@ -967,7 +976,7 @@ def start_instance(args):
     instance = args.get('instance')
     zone = args.get('zone')
 
-    request = COMPUTE.instances().start(project=project, zone=zone, instance=instance)
+    request = get_compute().instances().start(project=project, zone=zone, instance=instance)
     response = request.execute()
 
     data_res = {
@@ -1000,7 +1009,7 @@ def stop_instance(args):
     instance = args.get('instance')
     zone = args.get('zone')
 
-    request = COMPUTE.instances().stop(project=project, zone=zone, instance=instance)
+    request = get_compute().instances().stop(project=project, zone=zone, instance=instance)
     response = request.execute()
 
     data_res = {
@@ -1033,7 +1042,7 @@ def reset_instance(args):
     instance = args.get('instance')
     zone = args.get('zone')
 
-    request = COMPUTE.instances().reset(project=project, zone=zone, instance=instance)
+    request = get_compute().instances().reset(project=project, zone=zone, instance=instance)
     response = request.execute()
 
     data_res = {
@@ -1077,7 +1086,7 @@ def set_instance_labels(args):
     if args.get('labelFingerprint'):
         body.update({'labelFingerprint': args.get('labelFingerprint')})
 
-    request = COMPUTE.instances().setLabels(
+    request = get_compute().instances().setLabels(
         project=project, zone=zone, instance=instance, body=body
     )
     response = request.execute()
@@ -1117,7 +1126,7 @@ def set_instance_machine_type(args):
 
     body = {'machineType': machine_type}
 
-    request = COMPUTE.instances().setMachineType(
+    request = get_compute().instances().setMachineType(
         project=project, zone=zone, instance=instance, body=body
     )
     response = request.execute()
@@ -1156,7 +1165,7 @@ def get_image(args):
 
     image = args.get('image')
 
-    request = COMPUTE.images().get(project=project, image=image)
+    request = get_compute().images().get(project=project, image=image)
     response = request.execute()
 
     data_res = {'id': response.get('id'), 'name': response.get('name')}
@@ -1181,7 +1190,7 @@ def get_image_from_family(args):
     project = args.get('project')
     family = args.get('family')
 
-    request = COMPUTE.images().getFromFamily(project=project, family=family)
+    request = get_compute().images().getFromFamily(project=project, family=family)
     response = request.execute()
 
     data_res = {
@@ -1229,7 +1238,7 @@ def list_images(args):
 
     output = []
     data_res = []
-    request = COMPUTE.images().list(
+    request = get_compute().images().list(
         project=project,
         filter=filters,
         maxResults=max_results,
@@ -1244,7 +1253,7 @@ def list_images(args):
                 data_res_item = {'id': image.get('id'), 'name': image.get('name')}
                 data_res.append(data_res_item)
 
-        request = COMPUTE.images().list_next(
+        request = get_compute().images().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -1266,7 +1275,7 @@ def delete_image(args):
     project = SERVICE_ACT_PROJECT_ID
     image = args.get('image')
 
-    request = COMPUTE.images().delete(project=project, image=image)
+    request = get_compute().images().delete(project=project, image=image)
     response = request.execute()
 
     data_res = {
@@ -1305,7 +1314,7 @@ def set_image_labels(args):
     labels = parse_labels(labels)
     body = {'labels': labels, 'labelFingerprint': label_fingerprint}
 
-    request = COMPUTE.images().setLabels(project=project, resource=image, body=body)
+    request = get_compute().images().setLabels(project=project, resource=image, body=body)
     response = request.execute()
 
     data_res = {
@@ -1484,7 +1493,7 @@ def insert_image(args):
 
     project = SERVICE_ACT_PROJECT_ID
     response = (
-        COMPUTE.images()
+        get_compute().images()
         .insert(project=project, forceCreate=force_create, body=config)
         .execute()
     )
@@ -1549,7 +1558,7 @@ def networks_add_peering(args):
 
     project = SERVICE_ACT_PROJECT_ID
     response = (
-        COMPUTE.networks()
+        get_compute().networks()
         .addPeering(project=project, network=network, body=config)
         .execute()
     )
@@ -1581,7 +1590,7 @@ def delete_network(args):
     project = SERVICE_ACT_PROJECT_ID
     network = args.get('network')
 
-    request = COMPUTE.networks().delete(project=project, network=network)
+    request = get_compute().networks().delete(project=project, network=network)
     response = request.execute()
 
     data_res = {
@@ -1611,7 +1620,7 @@ def get_network(args):
     project = SERVICE_ACT_PROJECT_ID
     network = args.get('network')
 
-    request = COMPUTE.networks().get(project=project, network=network)
+    request = get_compute().networks().get(project=project, network=network)
     response = request.execute()
 
     data_res = {'name': response.get('name'), 'id': response.get('id')}
@@ -1650,7 +1659,7 @@ def insert_network(args):
         config.update({'routingConfig': {'routingMode': routing_config_routing_mode}})
 
     project = SERVICE_ACT_PROJECT_ID
-    response = COMPUTE.networks().insert(project=project, body=config).execute()
+    response = get_compute().networks().insert(project=project, body=config).execute()
 
     data_res = {
         'status': response.get('status'),
@@ -1690,7 +1699,7 @@ def list_networks(args):
 
     output = []
     data_res = []
-    request = COMPUTE.networks().list(
+    request = get_compute().networks().list(
         project=project,
         filter=filters,
         maxResults=max_results,
@@ -1705,7 +1714,7 @@ def list_networks(args):
                 data_res_item = {'name': item.get('name'), 'id': item.get('id')}
                 data_res.append(data_res_item)
 
-        request = COMPUTE.networks().list_next(
+        request = get_compute().networks().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -1735,7 +1744,7 @@ def networks_removepeering(args):
 
     project = SERVICE_ACT_PROJECT_ID
     response = (
-        COMPUTE.networks()
+        get_compute().networks()
         .removePeering(project=project, network=network, body=config)
         .execute()
     )
@@ -1767,7 +1776,7 @@ def get_global_operation(args):
     project = SERVICE_ACT_PROJECT_ID
     operation = args.get('name')
 
-    request = COMPUTE.globalOperations().get(project=project, operation=operation)
+    request = get_compute().globalOperations().get(project=project, operation=operation)
     response = request.execute()
 
     data_res = {
@@ -1800,7 +1809,7 @@ def get_zone_operation(args):
     name = args.get('name')
     zone = args.get('zone')
 
-    request = COMPUTE.zoneOperations().get(project=project, zone=zone, operation=name)
+    request = get_compute().zoneOperations().get(project=project, zone=zone, operation=name)
     response = request.execute()
 
     data_res = {
@@ -1833,7 +1842,7 @@ def get_region_operation(args):
     name = args.get('name')
     region = args.get('region')
 
-    request = COMPUTE.regionOperations().get(
+    request = get_compute().regionOperations().get(
         project=project, region=region, operation=name
     )
     response = request.execute()
@@ -1879,7 +1888,7 @@ def list_zone_operation(args):
 
     output = []
     data_res = []
-    request = COMPUTE.zoneOperations().list(
+    request = get_compute().zoneOperations().list(
         project=project,
         zone=zone,
         filter=filters,
@@ -1903,7 +1912,7 @@ def list_zone_operation(args):
                 }
                 data_res.append(data_res_item)
 
-        request = COMPUTE.zoneOperations().list_next(
+        request = get_compute().zoneOperations().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -1928,7 +1937,7 @@ def delete_zone_operation(args):
     name = args.get('name')
     zone = args.get('zone')
 
-    request = COMPUTE.zoneOperations().delete(
+    request = get_compute().zoneOperations().delete(
         project=project, zone=zone, operation=name
     )
     request.execute()
@@ -1960,7 +1969,7 @@ def list_region_operation(args):
 
     output = []
     data_res = []
-    request = COMPUTE.regionOperations().list(
+    request = get_compute().regionOperations().list(
         project=project,
         region=region,
         filter=filters,
@@ -1984,7 +1993,7 @@ def list_region_operation(args):
                 }
                 data_res.append(data_res_item)
 
-        request = COMPUTE.regionOperations().list_next(
+        request = get_compute().regionOperations().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -2009,7 +2018,7 @@ def delete_region_operation(args):
     name = args.get('name')
     region = args.get('region')
 
-    request = COMPUTE.regionOperations().delete(
+    request = get_compute().regionOperations().delete(
         project=project, region=region, operation=name
     )
     request.execute()
@@ -2038,7 +2047,7 @@ def list_global_operation(args):
 
     output = []
     data_res = []
-    request = COMPUTE.globalOperations().list(
+    request = get_compute().globalOperations().list(
         project=project,
         filter=filters,
         maxResults=max_results,
@@ -2061,7 +2070,7 @@ def list_global_operation(args):
                 }
                 data_res.append(data_res_item)
 
-        request = COMPUTE.globalOperations().list_next(
+        request = get_compute().globalOperations().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -2077,7 +2086,7 @@ def delete_global_operation(args):
     project = SERVICE_ACT_PROJECT_ID
     name = args.get('name')
 
-    request = COMPUTE.globalOperations().delete(project=project, operation=name)
+    request = get_compute().globalOperations().delete(project=project, operation=name)
     request.execute()
 
     return 'success'
@@ -2104,7 +2113,7 @@ def aggregated_list_addresses(args):
 
     output = []
     data_res = []
-    request = COMPUTE.addresses().aggregatedList(
+    request = get_compute().addresses().aggregatedList(
         project=project,
         filter=filters,
         maxResults=max_results,
@@ -2125,7 +2134,7 @@ def aggregated_list_addresses(args):
                         }
                         data_res.append(data_res_item)
 
-        request = COMPUTE.addresses().aggregatedList_next(
+        request = get_compute().addresses().aggregatedList_next(
             previous_request=request, previous_response=response
         )
 
@@ -2150,7 +2159,7 @@ def delete_address(args):
     address = args.get('address')
     region = args.get('region')
 
-    request = COMPUTE.addresses().delete(
+    request = get_compute().addresses().delete(
         project=project, region=region, address=address
     )
     response = request.execute()
@@ -2185,7 +2194,7 @@ def get_address(args):
     address = args.get('address')
     region = args.get('region')
 
-    request = COMPUTE.addresses().get(project=project, region=region, address=address)
+    request = get_compute().addresses().get(project=project, region=region, address=address)
     response = request.execute()
     data_res = {
         'id': response.get('id'),
@@ -2246,7 +2255,7 @@ def insert_address(args):
 
     project = SERVICE_ACT_PROJECT_ID
     response = (
-        COMPUTE.addresses()
+        get_compute().addresses()
         .insert(project=project, region=region, body=config)
         .execute()
     )
@@ -2292,7 +2301,7 @@ def list_addresses(args):
 
     output = []
     data_res = []
-    request = COMPUTE.addresses().list(
+    request = get_compute().addresses().list(
         project=project,
         region=region,
         filter=filters,
@@ -2312,7 +2321,7 @@ def list_addresses(args):
                 }
                 data_res.append(data_res_item)
 
-        request = COMPUTE.addresses().list_next(
+        request = get_compute().addresses().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -2334,7 +2343,7 @@ def delete_global_address(args):
     project = SERVICE_ACT_PROJECT_ID
     address = args.get('address')
 
-    request = COMPUTE.globalAddresses().delete(project=project, address=address)
+    request = get_compute().globalAddresses().delete(project=project, address=address)
     response = request.execute()
 
     data_res = {
@@ -2364,7 +2373,7 @@ def get_global_address(args):
     project = SERVICE_ACT_PROJECT_ID
     address = args.get('address')
 
-    request = COMPUTE.globalAddresses().get(project=project, address=address)
+    request = get_compute().globalAddresses().get(project=project, address=address)
     response = request.execute()
 
     data_res = {
@@ -2428,7 +2437,7 @@ def insert_global_address(args):
         config.update({'network': network})
 
     project = SERVICE_ACT_PROJECT_ID
-    response = COMPUTE.globalAddresses().insert(project=project, body=config).execute()
+    response = get_compute().globalAddresses().insert(project=project, body=config).execute()
 
     data_res = {
         'status': response.get('status'),
@@ -2468,7 +2477,7 @@ def list_global_addresses(args):
 
     output = []
     data_res = []
-    request = COMPUTE.globalAddresses().list(
+    request = get_compute().globalAddresses().list(
         project=project,
         filter=filters,
         maxResults=max_results,
@@ -2487,7 +2496,7 @@ def list_global_addresses(args):
                 }
                 data_res.append(data_res_item)
 
-        request = COMPUTE.globalAddresses().list_next(
+        request = get_compute().globalAddresses().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -2521,7 +2530,7 @@ def aggregated_list_disks(args):
 
     output = []
     data_res = []
-    request = COMPUTE.disks().aggregatedList(
+    request = get_compute().disks().aggregatedList(
         project=project,
         filter=filters,
         maxResults=max_results,
@@ -2545,7 +2554,7 @@ def aggregated_list_disks(args):
                         }
                         data_res.append(data_res_item)
 
-        request = COMPUTE.disks().aggregatedList_next(
+        request = get_compute().disks().aggregatedList_next(
             previous_request=request, previous_response=response
         )
 
@@ -2615,7 +2624,7 @@ def create_disk_snapshot(args):
 
     project = SERVICE_ACT_PROJECT_ID
     response = (
-        COMPUTE.disks()
+        get_compute().disks()
         .createSnapshot(project=project, zone=zone, disk=disk, body=config)
         .execute()
     )
@@ -2650,7 +2659,7 @@ def delete_disk(args):
     disk = args.get('disk')
     zone = args.get('zone')
 
-    request = COMPUTE.disks().delete(project=project, zone=zone, disk=disk)
+    request = get_compute().disks().delete(project=project, zone=zone, disk=disk)
     response = request.execute()
 
     data_res = {
@@ -2683,7 +2692,7 @@ def get_disk(args):
     disk = args.get('disk')
     zone = args.get('zone')
 
-    request = COMPUTE.disks().get(project=project, zone=zone, disk=disk)
+    request = get_compute().disks().get(project=project, zone=zone, disk=disk)
     response = request.execute()
 
     data_res = {
@@ -2815,7 +2824,7 @@ def insert_disk(args):
         config.update({'physicalBlockSizeBytes': int(physical_block_size_bytes)})
 
     project = SERVICE_ACT_PROJECT_ID
-    response = COMPUTE.disks().insert(project=project, zone=zone, body=config).execute()
+    response = get_compute().disks().insert(project=project, zone=zone, body=config).execute()
 
     data_res = {
         'status': response.get('status'),
@@ -2858,7 +2867,7 @@ def list_disks(args):
 
     output = []
     data_res = []
-    request = COMPUTE.disks().list(
+    request = get_compute().disks().list(
         project=project,
         zone=zone,
         filter=filters,
@@ -2881,7 +2890,7 @@ def list_disks(args):
                 }
                 data_res.append(data_res_item)
 
-        request = COMPUTE.disks().list_next(
+        request = get_compute().disks().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -2915,7 +2924,7 @@ def resize_disk(args):
 
     project = SERVICE_ACT_PROJECT_ID
     response = (
-        COMPUTE.disks()
+        get_compute().disks()
         .resize(project=project, zone=zone, disk=disk, body=config)
         .execute()
     )
@@ -2963,7 +2972,7 @@ def set_disk_labels(args):
     if args.get('labelFingerprint') is not None:
         body.update({'labelFingerprint': label_fingerprint})
 
-    request = COMPUTE.disks().setLabels(
+    request = get_compute().disks().setLabels(
         project=project, zone=zone, resource=disk, body=body
     )
     response = request.execute()
@@ -3007,7 +3016,7 @@ def aggregated_list_disk_types(args):
 
     output = []
     data_res = []
-    request = COMPUTE.diskTypes().aggregatedList(
+    request = get_compute().diskTypes().aggregatedList(
         project=project,
         filter=filters,
         maxResults=max_results,
@@ -3027,7 +3036,7 @@ def aggregated_list_disk_types(args):
                         }
                         data_res.append(data_res_item)
 
-        request = COMPUTE.diskTypes().aggregatedList_next(
+        request = get_compute().diskTypes().aggregatedList_next(
             previous_request=request, previous_response=response
         )
 
@@ -3047,7 +3056,7 @@ def get_disk_type(args):
     disk_type = args.get('disktype')
     zone = args.get('zone')
 
-    request = COMPUTE.diskTypes().get(project=project, zone=zone, diskType=disk_type)
+    request = get_compute().diskTypes().get(project=project, zone=zone, diskType=disk_type)
     response = request.execute()
 
     data_res = {
@@ -3088,7 +3097,7 @@ def list_disks_types(args):
 
     output = []
     data_res = []
-    request = COMPUTE.diskTypes().list(
+    request = get_compute().diskTypes().list(
         project=project,
         zone=zone,
         filter=filters,
@@ -3107,7 +3116,7 @@ def list_disks_types(args):
                 }
                 data_res.append(data_res_item)
 
-        request = COMPUTE.diskTypes().list_next(
+        request = get_compute().diskTypes().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -3146,7 +3155,7 @@ def instance_groups_add_instances(args):
     body = {}
     body.update({'instances': instarry})
 
-    request = COMPUTE.instanceGroups().addInstances(
+    request = get_compute().instanceGroups().addInstances(
         project=project, zone=zone, instanceGroup=instance_group, body=body
     )
     response = request.execute()
@@ -3189,7 +3198,7 @@ def aggregated_list_instance_groups(args):
 
     output = []
     data_res = []
-    request = COMPUTE.instanceGroups().aggregatedList(
+    request = get_compute().instanceGroups().aggregatedList(
         project=project,
         filter=filters,
         maxResults=max_results,
@@ -3211,7 +3220,7 @@ def aggregated_list_instance_groups(args):
                         }
                         data_res.append(data_res_item)
 
-        request = COMPUTE.instanceGroups().aggregatedList_next(
+        request = get_compute().instanceGroups().aggregatedList_next(
             previous_request=request, previous_response=response
         )
 
@@ -3238,7 +3247,7 @@ def delete_instance_group(args):
     instance_group = args.get('instanceGroup')
     zone = args.get('zone')
 
-    request = COMPUTE.instanceGroups().delete(
+    request = get_compute().instanceGroups().delete(
         project=project, zone=zone, instanceGroup=instance_group
     )
     response = request.execute()
@@ -3273,7 +3282,7 @@ def get_instance_group(args):
     instance_group = args.get('instanceGroup')
     zone = args.get('zone')
 
-    request = COMPUTE.instanceGroups().get(
+    request = get_compute().instanceGroups().get(
         project=project, zone=zone, instanceGroup=instance_group
     )
     response = request.execute()
@@ -3330,7 +3339,7 @@ def insert_instance_group(args):
 
     project = SERVICE_ACT_PROJECT_ID
     response = (
-        COMPUTE.instanceGroups()
+        get_compute().instanceGroups()
         .insert(project=project, zone=zone, body=config)
         .execute()
     )
@@ -3375,7 +3384,7 @@ def list_instance_groups(args):
     page_token = args.get('pageToken')
 
     output = []
-    request = COMPUTE.instanceGroups().list(
+    request = get_compute().instanceGroups().list(
         project=project,
         zone=zone,
         filter=filters,
@@ -3389,7 +3398,7 @@ def list_instance_groups(args):
             for item in response['items']:
                 output.append(item)
 
-        request = COMPUTE.instanceGroups().list_next(
+        request = get_compute().instanceGroups().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -3433,7 +3442,7 @@ def list_instance_groups_instances(args):
 
     output = []
     data_res = []
-    request = COMPUTE.instanceGroups().listInstances(
+    request = get_compute().instanceGroups().listInstances(
         project=project,
         zone=zone,
         instanceGroup=instance_group,
@@ -3454,7 +3463,7 @@ def list_instance_groups_instances(args):
                 }
                 data_res.append(data_res_item)
 
-        request = COMPUTE.instanceGroups().listInstances_next(
+        request = get_compute().instanceGroups().listInstances_next(
             previous_request=request, previous_response=response
         )
     output = {'Group': instance_group, 'Instances': output}
@@ -3492,7 +3501,7 @@ def instance_groups_remove_instances(args):
 
     body = {'instances': instarry}
 
-    request = COMPUTE.instanceGroups().removeInstances(
+    request = get_compute().instanceGroups().removeInstances(
         project=project, zone=zone, instanceGroup=instance_group, body=body
     )
     response = request.execute()
@@ -3542,7 +3551,7 @@ def set_instance_group_named_ports(args):
 
     project = SERVICE_ACT_PROJECT_ID
     response = (
-        COMPUTE.instanceGroups()
+        get_compute().instanceGroups()
         .setNamedPorts(project=project, zone=zone, instanceGroup=instance_group, body=config)
         .execute()
     )
@@ -3575,7 +3584,7 @@ def get_region(args):
     project = SERVICE_ACT_PROJECT_ID
     region = args.get('region')
 
-    request = COMPUTE.regions().get(project=project, region=region)
+    request = get_compute().regions().get(project=project, region=region)
     response = request.execute()
 
     data_res = {
@@ -3613,7 +3622,7 @@ def list_regions(args):
 
     output = []
     data_res = []
-    request = COMPUTE.regions().list(
+    request = get_compute().regions().list(
         project=project,
         filter=filters,
         maxResults=max_results,
@@ -3632,7 +3641,7 @@ def list_regions(args):
                 }
                 data_res.append(data_res_item)
 
-        request = COMPUTE.regions().list_next(
+        request = get_compute().regions().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -3655,7 +3664,7 @@ def get_zone(args):
     project = SERVICE_ACT_PROJECT_ID
     zone = args.get('zone')
 
-    request = COMPUTE.zones().get(project=project, zone=zone)
+    request = get_compute().zones().get(project=project, zone=zone)
     response = request.execute()
 
     data_res = {
@@ -3696,7 +3705,7 @@ def list_zones(args):
 
     output = []
     data_res = []
-    request = COMPUTE.zones().list(
+    request = get_compute().zones().list(
         project=project,
         filter=filters,
         maxResults=max_results,
@@ -3715,7 +3724,7 @@ def list_zones(args):
                 }
                 data_res.append(data_res_item)
 
-        request = COMPUTE.zones().list_next(
+        request = get_compute().zones().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -3751,7 +3760,7 @@ def aggregated_list_machine_types(args):
 
     output = []
     data_res = []
-    request = COMPUTE.machineTypes().aggregatedList(
+    request = get_compute().machineTypes().aggregatedList(
         project=project,
         filter=filters,
         maxResults=max_results,
@@ -3797,7 +3806,7 @@ def get_machine_type(args):
     machine_type = args.get('machineType')
     zone = args.get('zone')
 
-    request = COMPUTE.machineTypes().get(
+    request = get_compute().machineTypes().get(
         project=project, zone=zone, machineType=machine_type
     )
     response = request.execute()
@@ -3844,7 +3853,7 @@ def list_machine_types(args):
 
     output = []
     data_res = []
-    request = COMPUTE.machineTypes().list(
+    request = get_compute().machineTypes().list(
         project=project,
         zone=zone,
         filter=filters,
@@ -3865,7 +3874,7 @@ def list_machine_types(args):
                 }
                 data_res.append(data_res_item)
 
-        request = COMPUTE.machineTypes().list_next(
+        request = get_compute().machineTypes().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -3947,7 +3956,7 @@ def insert_firewall(args):
         disabled = args.get('disabled') == 'true'
         config.update({'disabled': disabled})
 
-    request = COMPUTE.firewalls().insert(project=project, body=config)
+    request = get_compute().firewalls().insert(project=project, body=config)
     response = request.execute()
 
     data_res = {
@@ -4036,7 +4045,7 @@ def patch_firewall(args):
         disabled = True if args.get('disabled') == 'true' else False
         config.update({'disabled': disabled})
 
-    request = COMPUTE.firewalls().patch(project=project, firewall=name, body=config)
+    request = get_compute().firewalls().patch(project=project, firewall=name, body=config)
     response = request.execute()
 
     data_res = {
@@ -4079,7 +4088,7 @@ def list_firewalls(args):
 
     output = []
     data_res = []
-    request = COMPUTE.firewalls().list(
+    request = get_compute().firewalls().list(
         project=project,
         filter=filters,
         maxResults=max_results,
@@ -4098,7 +4107,7 @@ def list_firewalls(args):
                 }
                 data_res.append(data_res_item)
 
-        request = COMPUTE.firewalls().list_next(
+        request = get_compute().firewalls().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -4120,7 +4129,7 @@ def get_firewall(args):
     project = SERVICE_ACT_PROJECT_ID
     name = args.get('name')
 
-    request = COMPUTE.firewalls().get(project=project, firewall=name)
+    request = get_compute().firewalls().get(project=project, firewall=name)
     response = request.execute()
 
     data_res = {
@@ -4147,7 +4156,7 @@ def delete_firewall(args):
     project = SERVICE_ACT_PROJECT_ID
     name = args.get('name')
 
-    request = COMPUTE.firewalls().delete(project=project, firewall=name)
+    request = get_compute().firewalls().delete(project=project, firewall=name)
     response = request.execute()
 
     data_res = {
@@ -4178,7 +4187,7 @@ def delete_snapshot(args):
     project = SERVICE_ACT_PROJECT_ID
     name = args.get('name')
 
-    request = COMPUTE.snapshots().delete(project=project, snapshot=name)
+    request = get_compute().snapshots().delete(project=project, snapshot=name)
     response = request.execute()
 
     data_res = {
@@ -4202,7 +4211,7 @@ def get_snapshot(args):
     project = SERVICE_ACT_PROJECT_ID
     name = args.get('name')
 
-    request = COMPUTE.snapshots().get(project=project, snapshot=name)
+    request = get_compute().snapshots().get(project=project, snapshot=name)
     response = request.execute()
 
     data_res = {
@@ -4242,7 +4251,7 @@ def list_snapshots(args):
 
     output = []
     data_res = []
-    request = COMPUTE.snapshots().list(
+    request = get_compute().snapshots().list(
         project=project,
         filter=filters,
         maxResults=max_results,
@@ -4261,7 +4270,7 @@ def list_snapshots(args):
                 }
                 data_res.append(data_res_item)
 
-        request = COMPUTE.snapshots().list_next(
+        request = get_compute().snapshots().list_next(
             previous_request=request, previous_response=response
         )
 
@@ -4292,7 +4301,7 @@ def set_snapshot_labels(args):
     if args.get('labelFingerprint'):
         body.update({'labelFingerprint': args.get('labelFingerprint')})
 
-    request = COMPUTE.snapshots().setLabels(project=project, resource=name, body=body)
+    request = get_compute().snapshots().setLabels(project=project, resource=name, body=body)
     response = request.execute()
 
     data_res = {
@@ -4318,7 +4327,7 @@ def add_project_info_metadata(metadata):
     :param metadata:  Each metadata entry is a key/value pair separated by ';' like so: key=abc,value=123;key=abc,value=123
     """
     project = SERVICE_ACT_PROJECT_ID
-    project_instance = COMPUTE.projects().get(project=project).execute()
+    project_instance = get_compute().projects().get(project=project).execute()
     fingerprint = project_instance.get('tags', {}).get('fingerprint')
     items = parse_labels(metadata)
     body = assign_params(
@@ -4326,7 +4335,7 @@ def add_project_info_metadata(metadata):
         items=items,
         kind='compute#metadata'
     )
-    raw_res = COMPUTE.projects().setCommonInstanceMetadata(project=project, body=body).execute()
+    raw_res = get_compute().projects().setCommonInstanceMetadata(project=project, body=body).execute()
     data_res = {
         'status': raw_res.get('status'),
         'kind': raw_res.get('kind'),
@@ -4351,7 +4360,6 @@ EXECUTION CODE
 
 def main():
     try:
-        build_and_authenticate(GSERVICE)
         command = demisto.command()
         if command == 'test-module':
             # This is the call made when pressing the integration test button.
@@ -4613,5 +4621,5 @@ def main():
             return_error(e.message)
 
 
-if __name__ == 'builtins':  # pragma: no cover
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
