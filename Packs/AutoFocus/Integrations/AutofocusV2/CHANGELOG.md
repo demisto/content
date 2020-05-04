@@ -1,4 +1,5 @@
 ## [Unreleased]
+Improved handling for connection error
 
 
 ## [20.4.1] - 2020-04-29

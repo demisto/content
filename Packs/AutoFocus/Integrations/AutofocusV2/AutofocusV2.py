@@ -289,13 +289,18 @@ def parse_response(resp, err_operation):
 def http_request(url_suffix, method='POST', data={}, err_operation=None):
     # A wrapper for requests lib to send our requests and handle requests and responses better
     data.update({'apiKey': API_KEY})
-    res = requests.request(
-        method=method,
-        url=BASE_URL + url_suffix,
-        verify=USE_SSL,
-        data=json.dumps(data),
-        headers=HEADERS
-    )
+    try:
+        res = requests.request(
+            method=method,
+            url=BASE_URL + url_suffix,
+            verify=USE_SSL,
+            data=json.dumps(data),
+            headers=HEADERS
+        )
+    # Handle with connection error
+    except requests.exceptions.ConnectionError as err:
+        err_message = f'Error connecting to server. Check your URL/Proxy/Certificate settings: {err}'
+        return_error(err_message)
     return parse_response(res, err_operation)
 
 
@@ -906,7 +911,7 @@ def search_indicator(indicator_type, indicator_value):
                          f'Reason is: {ERROR_DICT[str(result.status_code)]}.')
         else:
             err_msg = f'Request Failed with message: {err}.'
-        return return_error(err_msg)
+        return_error(err_msg)
 
     return result_json
 
