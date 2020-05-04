@@ -38,10 +38,12 @@ PENTERA_INCIDENT = {
 }
 
 
-def test_pentera_dynamic_table(mocker):
-    mocker.patch.object(demisto, 'incidents', return_value=[{'CustomFields': PENTERA_INCIDENT}])
-    incident = demisto.incidents()[0]
+def test_pentera_dynamic_table():
+    incident = {'CustomFields': PENTERA_INCIDENT}
     details_table = pentera_dynamic_table(incident)
-
     assert isinstance(details_table, str)
-    assert details_table
+    assert '### BlueKeep (CVE-2019-0708) Vulnerability Discovery' in details_table
+    assert '|host|ipv4|' in details_table
+    assert '|  | 1.1.1.1 |' in details_table
+    assert '| 1.1.1.2 |  |' in details_table
+    assert '|  | 1.1.1.3 |' in details_table
