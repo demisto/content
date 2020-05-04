@@ -96,6 +96,36 @@ def get_server_url(server_url: str) -> str:
     return url
 
 
+def get_item_human_readable(data: dict) -> dict:
+    """Get item human readable.
+
+    Args:
+        data: item data.
+
+    Returns:
+        item human readable.
+    """
+    item = {
+        'ID': data.get('sys_id', ''),
+        'Name': data.get('name', ''),
+        'Description': data.get('short_description', ''),
+        'Price': data.get('price', ''),
+        'Variables': []
+    }
+    variables = data.get('variables')
+    if variables and isinstance(variables, list):
+        for var in variables:
+            if var:
+                pretty_variables = {
+                    'Question': var.get('label', ''),
+                    'Type': var.get('display_type', ''),
+                    'Name': var.get('name', ''),
+                    'Mandatory': var.get('mandatory', '')
+                }
+                item['Variables'].append(pretty_variables)
+    return item
+
+
 def create_ticket_context(data: dict, additional_fields: list = None) -> Any:
     """Create ticket context.
 
@@ -341,12 +371,14 @@ class Client(BaseClient):
     Client to use in the ServiceNow integration. Overrides BaseClient.
     """
 
-    def __init__(self, server_url: str, username: str, password: str, verify: bool, proxy: bool, fetch_time: str,
-                 sysparm_query: str, sysparm_limit: int, timestamp_field: str, ticket_type: str, get_attachments: bool):
+    def __init__(self, server_url: str, sc_server_url: str, username: str, password: str, verify: bool, proxy: bool,
+                 fetch_time: str, sysparm_query: str, sysparm_limit: int, timestamp_field: str, ticket_type: str,
+                 get_attachments: bool):
         """
 
         Args:
-            server_url: SNOW serveer url
+            server_url: SNOW server url
+            sc_server_url: SNOW Service Catalog url
             username: SNOW username
             password: SNOW password
             verify: whether to verify the request
@@ -359,6 +391,7 @@ class Client(BaseClient):
             get_attachments: whether to get ticket attachments by default
         """
         self._base_url = server_url
+        self._sc_server_url = sc_server_url
         self._verify = verify
         self._username = username
         self._password = password
@@ -372,14 +405,26 @@ class Client(BaseClient):
         self.sys_param_offset = 0
 
     def send_request(self, path: str, method: str = 'GET', body: dict = None, params: dict = None,
-                     headers: dict = None, file=None):
-        """
-        Generic request to ServiceNow.
+                     headers: dict = None, file=None, sc_api: bool = False):
+        """Generic request to ServiceNow.
+
+        Args:
+            path: API path
+            method: request method
+            body: request body
+            params: request params
+            headers: request headers
+            file: request  file
+            sc_api: Whether to send the request to the SC API
+
+        Returns:
+            response from API
         """
         body = body if body is not None else {}
         params = params if params is not None else {}
+        # if sc_api is set to true, then sending the request to the 'Service Catalog' instead of the 'now' API.
+        url = f'{self._base_url}{path}' if not sc_api else f'{self._sc_server_url}{path}'
 
-        url = f'{self._base_url}{path}'
         if not headers:
             headers = {
                 'Accept': 'application/json',
@@ -663,6 +708,31 @@ class Client(BaseClient):
             Response from API.
         """
         return self.send_request(f'table/{table_name}?sysparm_limit=1', 'GET')
+
+    def get_item_details(self, id_: str) -> dict:
+        """Get item details from service catalog by sending a GET request to the Service Catalog API.
+
+        Args:
+        id_: item id
+
+        Returns:
+            Response from API.
+        """
+        return self.send_request(f'servicecatalog/items/{id_}', 'GET', sc_api=True)
+
+    def create_item_order(self, id_: str, quantity: str, variables: dict = {}) -> dict:
+        """Create item order in the service catalog by sending a POST request to the Service Catalog API.
+
+        Args:
+        id_: item id
+        quantity: order quantity
+        variables: order variables
+
+        Returns:
+            Response from API.
+        """
+        body = {'sysparm_quantity': quantity, 'variables': variables}
+        return self.send_request(f'servicecatalog/items/{id_}/order_now', 'POST', body=body, sc_api=True)
 
 
 def get_ticket_command(client: Client, args: dict):
@@ -1478,6 +1548,104 @@ def get_table_name_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, A
     return human_readable, entry_context, result, False
 
 
+def query_items_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any], bool]:
+    """Query items.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    table_name = 'sc_cat_item'
+    limit = args.get('limit', client.sys_param_limit)
+    offset = args.get('offset', client.sys_param_offset)
+    name = str(args.get('name', ''))
+    items_query = f'nameLIKE{name}' if name else ''
+
+    result = client.query(table_name, limit, offset, items_query)
+    if not result or 'result' not in result:
+        return 'No items were found.', {}, {}, True
+    items = result.get('result', {})
+    if not isinstance(items, list):
+        items_list = [items]
+    else:
+        items_list = items
+    if len(items_list) == 0:
+        return 'No items were found.', {}, {}, True
+
+    mapped_items = []
+    for item in items_list:
+        mapped_items.append(get_item_human_readable(item))
+
+    headers = ['ID', 'Name', 'Price', 'Description']
+    human_readable = tableToMarkdown('ServiceNow Catalog Items', mapped_items, headers=headers,
+                                     removeNull=True, headerTransform=pascalToSpace)
+    entry_context = {'ServiceNow.CatalogItem(val.ID===obj.ID)': createContext(mapped_items, removeNull=True)}
+
+    return human_readable, entry_context, result, True
+
+
+def get_item_details_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any], bool]:
+    """Get item details.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    id_ = str(args.get('id', ''))
+
+    result = client.get_item_details(id_)
+    if not result or 'result' not in result:
+        return 'Item was not found.', {}, {}, True
+    item = result.get('result', {})
+    mapped_item = get_item_human_readable(item)
+
+    human_readable = tableToMarkdown('ServiceNow Catalog Item', t=mapped_item, headers=['ID', 'Name', 'Description'],
+                                     removeNull=True, headerTransform=pascalToSpace)
+    if mapped_item.get('Variables'):
+        human_readable += tableToMarkdown('Item Variables', t=mapped_item.get('Variables'),
+                                          headers=['Question', 'Type', 'Name', 'Mandatory'],
+                                          removeNull=True, headerTransform=pascalToSpace)
+    entry_context = {'ServiceNow.CatalogItem(val.ID===obj.ID)': createContext(mapped_item, removeNull=True)}
+
+    return human_readable, entry_context, result, True
+
+
+def create_order_item_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any], bool]:
+    """Create item order.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    id_ = str(args.get('id', ''))
+    quantity = str(args.get('quantity', '1'))
+    variables = split_fields(str(args.get('variables', '')))
+
+    result = client.create_item_order(id_, quantity, variables)
+    if not result or 'result' not in result:
+        return 'Order item was not created.', {}, {}, True
+    order_item = result.get('result', {})
+
+    mapped_item = {
+        'ID': order_item.get('sys_id'),
+        'RequestNumber': order_item.get('request_number')
+    }
+    human_readable = tableToMarkdown('ServiceNow Order Request', mapped_item,
+                                     removeNull=True, headerTransform=pascalToSpace)
+    entry_context = {'ServiceNow.OrderRequest(val.ID===obj.ID)': createContext(mapped_item, removeNull=True)}
+
+    return human_readable, entry_context, result, True
+
+
 def fetch_incidents(client: Client):
     query_params = {}
     incidents = []
@@ -1595,9 +1763,12 @@ def main():
     version = params.get('api_version')
     if version:
         api = f'/api/now/{version}/'
+        sc_api = f'/api/sn_sc/{version}/'
     else:
         api = '/api/now/'
+        sc_api = f'/api/sn_sc/'
     server_url = params.get('url')
+    sc_server_url = f'{get_server_url(server_url)}{sc_api}'
     server_url = f'{get_server_url(server_url)}{api}'
 
     fetch_time = params.get('fetch_time', '10 minutes').strip()
@@ -1609,8 +1780,8 @@ def main():
 
     raise_exception = False
     try:
-        client = Client(server_url, username, password, verify, proxy, fetch_time, sysparm_query, sysparm_limit,
-                        timestamp_field, ticket_type, get_attachments)
+        client = Client(server_url, sc_server_url, username, password, verify, proxy, fetch_time, sysparm_query,
+                        sysparm_limit, timestamp_field, ticket_type, get_attachments)
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]]] = {
             'test-module': test_module,
             'servicenow-update-ticket': update_ticket_command,
@@ -1631,7 +1802,10 @@ def main():
             'servicenow-query-computers': query_computers_command,
             'servicenow-query-groups': query_groups_command,
             'servicenow-query-users': query_users_command,
-            'servicenow-get-table-name': get_table_name_command
+            'servicenow-get-table-name': get_table_name_command,
+            'servicenow-query-items': query_items_command,
+            'servicenow-get-item-details': get_item_details_command,
+            'servicenow-create-item-order': create_order_item_command,
         }
         args = demisto.args()
         if command == 'fetch-incidents':
