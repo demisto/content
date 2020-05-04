@@ -4,24 +4,30 @@ from CommonServerUserPython import *
 from distutils.util import strtobool
 
 
-def indicator_type_finder(indicator_data: dict):
-    """Find the indicator type of the given indicator
+def indicator_type_and_value_finder(indicator_data: dict):
+    """Find the indicator type and value of the given indicator
 
     Args:
         indicator_data(dict): The data about the indicator
 
     Returns:
-        str. The indicator type
+        Tuple[str,str]. The indicator type and value
     """
-    indicator = indicator_data.get('value')
+    indicator_value = indicator_data.get('value')
     # PhishLabs IOC does not classify Email indicators correctly giving them typing of "ReplayTo", "HeaderReplyTo"
     # "ReturnPath" and so on - to combat that we find the Email indicator type by regex
     # returned URLs could fit the email regex at some cases so we exclude them
-    if re.match(str(emailRegex), str(indicator)) and str(indicator_data.get('type')).lower() != 'url':
-        return FeedIndicatorType.Email
+    if re.match(str(emailRegex), str(indicator_value)) and str(indicator_data.get('type')).lower() != 'url':
+        return FeedIndicatorType.Email, indicator_value
+
+    if indicator_data.get('type') == 'Attachment':
+        indicator_type = FeedIndicatorType.File
+        file_md5_attribute = list(filter(lambda f: f.get('name') == 'md5', indicator_data.get('attributes', [])))
+        indicator_value = file_md5_attribute[0].get('value') if file_md5_attribute else ''
+        return indicator_type, indicator_value
 
     else:
-        return indicator_data.get('type')
+        return indicator_data.get('type'), indicator_value
 
 
 def main():
@@ -68,15 +74,10 @@ def main():
                     return_error('Error deleting PhishLabs indicators - {}'.format(delete_res[0]['Contents']))
         else:
             for indicator in feed:
-                indicator_type = indicator_type_finder(indicator)
-                indicator_value = indicator.get('value')
+                indicator_type, indicator_value = indicator_type_and_value_finder(indicator)
                 indicator_timestamp = None
                 if indicator.get('createdAt'):
                     indicator_timestamp = datetime.strptime(indicator['createdAt'], '%Y-%m-%dT%H:%M:%SZ')
-                if indicator_type == 'Attachment':
-                    indicator_type = FeedIndicatorType.File
-                    file_md5_attribute = list(filter(lambda f: f.get('name') == 'md5', indicator.get('attributes', [])))
-                    indicator_value = file_md5_attribute[0].get('value') if file_md5_attribute else ''
 
                 demisto_indicator = {
                     'type': indicator_type,
