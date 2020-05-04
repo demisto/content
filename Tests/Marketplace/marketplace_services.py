@@ -617,9 +617,9 @@ class Pack(object):
                 _version = str(latest).replace('.md', '')
                 version = str(_version).replace('_', '.')
                 if not expected_release_version_int == latest_int:
-                    print_error(f"Conflict between version found in metadata ({expected_release_version_str}) "
-                                f"and latest version found in ReleaseNotes dir ({version})")
-                    raise Exception
+                    raise Exception(f"Conflict between version found in metadata ({expected_release_version_str}) "
+                                    f"and latest version found in ReleaseNotes dir ({version})")
+
 
                     # sys.exit(1)
 
