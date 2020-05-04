@@ -1156,6 +1156,10 @@
             "playbookID": "GsuiteTest"
         },
         {
+            "integrations": "Google Cloud Compute",
+            "playbookID": "GoogleCloudCompute-Test"
+        },
+        {
             "integrations": "OpenPhish",
             "playbookID": "OpenPhish Test Playbook"
         },
