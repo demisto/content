@@ -1,5 +1,9 @@
 import json
 import pytest
+import requests
+import requests_mock
+import sys
+
 
 IP_ADDRESS = '127.0.0.1'
 
@@ -125,9 +129,6 @@ def test_calculate_dbot_score_file():
 def test_connection_error(mocker):
 
     import AutofocusV2
-    import requests
-    import requests_mock
-    import sys
 
     RETURN_ERROR_TARGET = 'AutofocusV2.return_error'
     BASE_URL = 'https://autofocus.paloaltonetworks.com/api/v1.0'

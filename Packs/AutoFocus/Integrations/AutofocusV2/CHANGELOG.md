@@ -1,5 +1,5 @@
 ## [Unreleased]
-Improved handling for connection error
+Better error message for connection errors
 
 
 ## [20.4.1] - 2020-04-29
