@@ -64,8 +64,6 @@ def get_pack_dependencies(client, prints_manager, pack_data):
         pack_data (dict): Contains the pack ID and version
     """
     pack_id = pack_data['id']
-    host = client.api_client.configuration.host
-    prints_manager.add_print_job('\nGetting pack {} dependencies from host {}...'.format(pack_id, host), print, 0)
 
     response_data, status_code, _ = demisto_client.generic_request_func(
         client,
@@ -78,11 +76,11 @@ def get_pack_dependencies(client, prints_manager, pack_data):
     if 200 <= status_code < 300:
         dependencies_data, dependencies_str = create_dependencies_data_structure(ast.literal_eval(response_data),
                                                                                  pack_id)
-
-        prints_manager.add_print_job('Found the following dependencies for pack {}:\n{}'.format(pack_id,
-                                                                                                dependencies_str),
+        if dependencies_data:
+            prints_manager.add_print_job('Found the following dependencies for pack {}:\n{}'.format(pack_id,
+                                                                                                    dependencies_str),
                                      print_color, 0, LOG_COLORS.GREEN)
-        prints_manager.execute_thread_prints(0)
+            prints_manager.execute_thread_prints(0)
         return dependencies_data
     else:
         result_object = ast.literal_eval(response_data)
@@ -104,10 +102,6 @@ def search_pack(client, prints_manager, pack_display_name):
     Returns:
         (dict): Returns the pack data if found, or empty dict otherwise.
     """
-
-    host = client.api_client.configuration.host
-    print_msg = '\nMaking "POST" request to server - "{}" to search pack {}.'.format(host, pack_display_name)
-    prints_manager.add_print_job(print_msg, print, 0)
 
     # make the search request
     response_data, status_code, _ = demisto_client.generic_request_func(client,
@@ -149,14 +143,16 @@ def install_pack(client, prints_manager, pack_display_name, packs_to_install):
         pack_display_name (string): The pack display name
         packs_to_install (list): A list of the packs to install.
     """
-    host = client.api_client.configuration.host
-    prints_manager.add_print_job('\nMaking "POST" request to server - "{}" to install pack {}'
-                                 ' and its dependencies.'.format(host, pack_display_name), print, 0)
 
     request_data = {
         'packs': packs_to_install,
         'ignoreWarnings': True
     }
+
+    # for debugging in circle - will be removed
+    msg = f"Pack {pack_display_name} installation request body:\n" + str(request_data)
+    prints_manager.add_print_job(msg, print_error, 0)
+    prints_manager.execute_thread_prints(0)
 
     # make the pack installation request
     response_data, status_code, _ = demisto_client.generic_request_func(client,
@@ -181,10 +177,11 @@ def search_and_install_pack(client, prints_manager, int_path, installed_packs):
     pack_display_name = get_pack_display_name(int_path)
     pack_data = search_pack(client, prints_manager, pack_display_name)
 
-    dependencies = get_pack_dependencies(client, prints_manager, pack_data)
-    packs_to_install = [pack_data] + dependencies
-    install_pack(client, prints_manager, pack_display_name, packs_to_install)
-    installed_packs.update([pack['id'] for pack in packs_to_install])
+    if pack_data:
+        dependencies = get_pack_dependencies(client, prints_manager, pack_data)
+        packs_to_install = [pack_data] + dependencies
+        install_pack(client, prints_manager, pack_display_name, packs_to_install)
+        installed_packs.update([pack['id'] for pack in packs_to_install])
 
 
 def search_and_install_packs_and_their_dependencies(integrations_files, client, prints_manager):
