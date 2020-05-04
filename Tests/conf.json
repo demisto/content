@@ -252,6 +252,14 @@
             "playbookID": "AWS - SQS Test Playbook"
         },
         {
+            "integrations": "AWS - CloudWatchLogs",
+            "playbookID": "AWS - CloudWatchLogs Test Playbook"
+        },
+        {
+            "integrations": "AWS - Route53",
+            "playbookID": "AWS - Route53 Test Playbook"
+        },
+        {
             "integrations": "SlackV2",
             "playbookID": "Slack Test Playbook",
             "timeout" : 2400,
@@ -1742,7 +1750,7 @@
 
         },
         {
-            "playbookID": "Test_Sagemaker",
+            "playbookID": "Test Sagemaker",
             "integrations": "AWS Sagemaker"
 
         },
