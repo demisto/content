@@ -15,6 +15,7 @@
     "updated": "2020-04-22T09:00:00Z",
     "beta": false,
     "deprecated": false,
+    "certification": "",
     "useCases": [],
     "keywords": ["Zabbix"],
     "price": 0,
