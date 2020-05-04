@@ -1,5 +1,4 @@
 ## [Unreleased]
--
 Added 4 commands.
 - **salesforce-get-casecomment** 
 - **salesforce-post-casecomment** 

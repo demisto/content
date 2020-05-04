@@ -746,3 +746,5 @@ script:
         subjectGivenName, subjectProvince, issuerSerialNumber, issuerEmailAddress'
     description: Search for SSL certificates based on field values
   runonce: false
+tests:
+  - no test
