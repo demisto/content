@@ -46,6 +46,7 @@ script: |-
   if __name__ == '__builtin__':
       main()
 type: python
+subtype: python2
 tags:
 - email
 comment: Deprecated - use `ParseEmailFiles parse_only_headers=true`. This automation parses headers from an email file.
