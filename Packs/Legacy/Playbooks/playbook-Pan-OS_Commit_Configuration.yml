@@ -45,7 +45,7 @@ tasks:
       - '2'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isExists
           left:
@@ -316,7 +316,7 @@ tasks:
       - '3'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isExists
           left:
@@ -346,7 +346,7 @@ tasks:
       - '7'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isExists
           left:
@@ -457,7 +457,7 @@ tasks:
       - '12'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -490,7 +490,7 @@ tasks:
       - '5'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
