@@ -12,7 +12,7 @@ v = {version = "*",editable = true}
 flake8 = "*"
 
 [packages]
-pykafka = "*"
+pykafka = {git = "https://github.com/Parsely/pykafka.git", editable = true, ref = "master"}
 requests = "*"
 
 [requires]
