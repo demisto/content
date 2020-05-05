@@ -241,3 +241,5 @@ script:
       description: The query results
     description: Perform a query.
   runonce: false
+tests:
+  - No tests

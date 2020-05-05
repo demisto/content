@@ -1058,5 +1058,4 @@ script:
     description: Fetch details of a Crowdstrike Detection using the detection ID
   runonce: false
 tests:
-- CrowdStrike Endpoint Enrichment - Test
-- CrowdStrike FalconHost Test
+- No tests
