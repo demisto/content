@@ -569,7 +569,7 @@ class Pack(object):
             return task_status, True
 
     @staticmethod
-    def major_minor_rev(version, path=True):
+    def major_minor_rev(version, path=False):
         print_warning(f"Version is {version}")
         """
         Returns version string as int to be used for version comparison.
@@ -585,67 +585,50 @@ class Pack(object):
             major, minor, rev = re.search('(\d+)\.(\d+)\.(\d+)', version).groups()
         return int(major), int(minor), int(rev)
 
-    def prepare_release_notes(self, storage_bucket):
+    def prepare_release_notes(self, index_folder_path):
         """Need to implement the changelog.md parsing and changelog.json creation after design is
         finalized.
 
         """
         task_status = False
         try:
-            metadata_path = os.path.join(self._pack_path, Pack.METADATA)
-            with open(metadata_path, "r") as metadata_file:
-                metadata_json = json.load(metadata_file)
-            expected_release_version_str = metadata_json.get('currentVersion')
-            expected_release_version_int = self.major_minor_rev(expected_release_version_str, path=False)
             release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
-            found_versions = []
-            for filename in os.listdir(release_notes_dir):
-                found_versions.append(filename)
-            print_warning(f"Found versions are: {found_versions}")
-            if len(found_versions) == 0:
-                raise Exception(f"Release notes not found for {self._pack_name}. Please add them under the "
-                                f"ReleaseNotes directory.")
-            elif len(found_versions) == 1:
-                release_notes = {}
-                # If the found versions are only 1, there won't be a releaseNotes.json file in GCP
-                version_changelog = {'releaseNotes': 'HERE ARE RELEASE NOTES FOR FIRST RELEASE',
-                                     'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
-                release_notes['1.1.1'] = version_changelog
-                # with open(os.path.join(self._pack_path, 'releaseNotes.json'), "w") as f:
-                #     json.dump(f, release_notes)
-            else:
-            # if os.path.exists(os.path.join(self._pack_path, 'changelog.json')):
-                print_warning("Path exists")
-                latest = max(found_versions, key=self.major_minor_rev)
-                print_warning(latest)
-                latest_int = self.major_minor_rev(latest)
-                _version = str(latest).replace('.md', '')
-                version = str(_version).replace('_', '.')
-                # if not expected_release_version_int == latest_int:
-                #     raise Exception(f"Conflict between version found in metadata ({expected_release_version_str}) "
-                #                     f"and latest version found in ReleaseNotes dir ({version})")
-                    # sys.exit(1)
+            if os.path.exists(os.path.join(index_folder_path, self._pack_name, 'changelog.json')):
+                print_warning(f"Found Changelog for: {self._pack_name}")
+                changelog_path = os.path.join(self._pack_path, Pack.CHANGELOG_JSON)
+                if os.path.exists(release_notes_dir):
+                    found_versions = []
+                    for filename in os.listdir(release_notes_dir):
+                        _version = filename.replace('.md', '')
+                        version = _version.replace('_', '.')
+                        found_versions.append(version)
+                    latest_release_notes = max(found_versions, key=self.major_minor_rev)
+                    print_color(f"Latest ReleaseNotes version is: {latest_release_notes}", LOG_COLORS.GREEN)
+                    if self._current_version != latest_release_notes:
+                        print_error(f"Version mismatch detected between current version: {self._current_version} "
+                                    f"and latest release notes version: {latest_release_notes}")
+                    else:
+                        with open(changelog_path, "r") as changelog_file:
+                            changelog = json.load(changelog_file)
+                            if latest_release_notes in changelog:
+                                print_error(f"Found existing release notes for version: {latest_release_notes} "
+                                            f"in the {self._pack_name} pack.")
+                        latest_rn_file = latest_release_notes.replace('.', '_')
 
-                # We need to retrieve previous releaseNotes.json here
-                latest_gcp_rn_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, _version, '.json')
-                existing_rn_file = storage_bucket.get_blob(latest_gcp_rn_path)
-                previous_rn = json.loads(existing_rn_file.download_as_string(client=None))
-                print_warning(str(previous_rn))
-                # with open(os.path.join(self._pack_path, 'releaseNotes.json')) as f:
-                #     previous_rn = json.load(f)
-                latest_rn_path = os.path.join(release_notes_dir, latest)
-                with open(latest_rn_path, 'r') as changelog_md:
-                    changelog_lines = changelog_md.read()
-                version_changelog = {'releaseNotes': changelog_lines,
-                                     'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
-                previous_rn[version] = version_changelog
-                print_warning(str(version_changelog))
-                with open(os.path.join(self._pack_path, 'changelog.json'), "w") as f:
-                    json.dump(f, previous_rn)
-                # else:
-                #     raise Exception(
-                #         f"Release notes not found for {self._pack_name}. Please add them under the "
-                #         f"ReleaseNotes directory.")
+                        latest_rn_path = os.path.join(release_notes_dir, latest_rn_file, '.md')
+                        with open(latest_rn_path, 'r') as changelog_md:
+                            changelog_lines = changelog_md.read()
+                        version_changelog = {'releaseNotes': changelog_lines,
+                                             'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
+                        changelog[latest_release_notes] = version_changelog
+                        with open(os.path.join(self._pack_path, 'changelog.json'), "w") as f:
+                            json.dump(f, changelog)
+
+                else:
+                    print_warning(f"No ReleaseNotes directory was found for pack: {self._pack_name}")
+
+            else:
+                print_warning(f"No release notes found for: {self._pack_name}")
             task_status = True
             print_color(
                 f"Finished creating changelog.json for {self._pack_name}", LOG_COLORS.GREEN)
@@ -868,22 +851,6 @@ class Pack(object):
             print_error(f"Failed in formatting {self._pack_name} pack metadata. Additional info:\n{e}")
         finally:
             return task_status
-
-    # def parse_release_notes(self):
-    #     """ Need to implement the changelog.md parsing and changelog.json creation after design is finalized.
-    #
-    #     """
-    #     changelog_md_path = os.path.join(self._pack_path, Pack.CHANGELOG_MD)
-    #
-    #     if not os.path.exists(changelog_md_path):
-    #         print_error(f"The pack {self._pack_name} is missing {Pack.CHANGELOG_MD} file.")
-    #         sys.exit(1)
-    #
-    #     # with open(changelog_md_path, 'r') as release_notes_file:
-    #     #     release_notes = release_notes_file.read()
-    #     # todo implement release notes logic and create changelog.json
-    #
-    #     return {}
 
     def prepare_for_index_upload(self):
         """ Removes and leaves only necessary files in pack folder.
