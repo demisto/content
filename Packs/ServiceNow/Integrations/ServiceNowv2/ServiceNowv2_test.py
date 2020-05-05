@@ -4,21 +4,21 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     query_tickets_command, add_link_command, add_comment_command, upload_file_command, get_ticket_notes_command, \
     get_record_command, update_record_command, create_record_command, delete_record_command, query_table_command, \
     list_table_fields_command, query_computers_command, get_table_name_command, add_tag_command, query_items_command, \
-    get_item_details_command, create_order_item_command
+    get_item_details_command, create_order_item_command, document_route_to_table
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_QUERY_TICKETS, RESPONSE_ADD_LINK, \
     RESPONSE_ADD_COMMENT, RESPONSE_UPLOAD_FILE, RESPONSE_GET_TICKET_NOTES, RESPONSE_GET_RECORD, \
     RESPONSE_UPDATE_RECORD, RESPONSE_CREATE_RECORD, RESPONSE_QUERY_TABLE, RESPONSE_LIST_TABLE_FIELDS, \
     RESPONSE_QUERY_COMPUTERS, RESPONSE_GET_TABLE_NAME, RESPONSE_UPDATE_TICKET_ADDITIONAL, \
     RESPONSE_QUERY_TABLE_SYS_PARAMS, RESPONSE_ADD_TAG, RESPONSE_QUERY_ITEMS, RESPONSE_ITEM_DETAILS, \
-    RESPONSE_CREATE_ITEM_ORDER
+    RESPONSE_CREATE_ITEM_ORDER, RESPONSE_DOCUMENT_ROUTE
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \
     EXPECTED_TICKET_HR, EXPECTED_MULTIPLE_TICKET_HR, EXPECTED_UPDATE_TICKET, EXPECTED_UPDATE_TICKET_SC_REQ, \
     EXPECTED_CREATE_TICKET, EXPECTED_QUERY_TICKETS, EXPECTED_ADD_LINK_HR, EXPECTED_ADD_COMMENT_HR, \
     EXPECTED_UPLOAD_FILE, EXPECTED_GET_TICKET_NOTES, EXPECTED_GET_RECORD, EXPECTED_UPDATE_RECORD, \
     EXPECTED_CREATE_RECORD, EXPECTED_QUERY_TABLE, EXPECTED_LIST_TABLE_FIELDS, EXPECTED_QUERY_COMPUTERS, \
     EXPECTED_GET_TABLE_NAME, EXPECTED_UPDATE_TICKET_ADDITIONAL, EXPECTED_QUERY_TABLE_SYS_PARAMS, EXPECTED_ADD_TAG, \
-    EXPECTED_QUERY_ITEMS, EXPECTED_ITEM_DETAILS, EXPECTED_CREATE_ITEM_ORDER
+    EXPECTED_QUERY_ITEMS, EXPECTED_ITEM_DETAILS, EXPECTED_CREATE_ITEM_ORDER, EXPECTED_DOCUMENT_ROUTE
 
 
 def test_get_server_url():
@@ -105,6 +105,8 @@ def test_split_fields():
     (create_order_item_command, {'id': "1234", 'quantity': "3",
                                  'variables': "Additional_software_requirements=best_pc"},
     RESPONSE_CREATE_ITEM_ORDER, EXPECTED_CREATE_ITEM_ORDER, True),
+    (document_route_to_table, {'queue_id': 'queue_id', 'document_id': 'document_id'}, RESPONSE_DOCUMENT_ROUTE,
+     EXPECTED_DOCUMENT_ROUTE, True),
 ])  # noqa: E124
 def test_commands(command, args, response, expected_result, expected_auto_extract, mocker):
     """Unit test
