@@ -2619,6 +2619,10 @@
         {
             "integrations": "IBM Resilient Systems",
             "playbookID": "IBM Resilient Systems Test"
+        },
+        {
+            "integrations": "Zabbix",
+            "playbookID": "Zabbix"
         }
     ],
     "skipped_tests": {
