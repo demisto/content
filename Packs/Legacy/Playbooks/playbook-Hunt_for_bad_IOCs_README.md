@@ -1,4 +1,4 @@
-Assumes that malicious IOCs are in the right place in the context and starts hunting using available tools.
+DEPRECATED. Use the Search Endpoints By Hash playbook instead. Assumes that malicious IOCs are in the right place in the context and starts hunting using available tools.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

@@ -52,6 +52,7 @@ script: |-
 
   demisto.results('Incident context set')
 type: python
+subtype: python2
 tags:
 - infra
 comment: Inserts incident info and labels into context for use inside playbooks.

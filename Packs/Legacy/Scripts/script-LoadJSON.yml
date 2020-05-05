@@ -14,6 +14,7 @@ script: |-
       "ContentsFormat": formats['json'],
       "Contents": obj})
 type: python
+subtype: python2
 tags:
 - Utility
 comment: Loads a json from string input, and returns a json object result
