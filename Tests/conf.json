@@ -2750,6 +2750,9 @@
         {
             "playbookID": "EvaluateMLModllAtProduction-Test",
             "fromversion": "4.5.0"
+        },
+        {
+            "playbookID": "Extract Indicators From File - test"
         }
     ],
     "skipped_tests": {
@@ -2806,7 +2809,10 @@
         "PAN-OS Query Logs For Indicators Test": "Issue #23505",
         "Panorama Query Logs - Test": "Issue #23505",
         "palo_alto_panorama_test_pb": "Issue #22835",
-        "VxStream Test": "Issue #23795"
+        "VxStream Test": "Issue #23795",
+
+        "_comment": "~~~ DEPRECATED ~~~",
+        "Endpoint Enrichment - Generic v2 - Test": "DEPRECATED"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
@@ -2816,6 +2822,21 @@
         "skyformation": "No instance, old partner",
         "Pipl": "No instance",
         "PrismaAccess": "Instance will be provided soon by Lior and Prasen",
+        "URLhaus": "No instance",
+        "AlphaSOC Network Behavior Analytics": "No instance",
+        "IsItPhishing": "No instance",
+        "Verodin": "No instance",
+        "EasyVista": "No instance",
+        "Pipl": "No instance",
+        "Moloch": "No instance",
+        "Twilio": "No instance",
+        "Zendesk": "No instance",
+        "GuardiCore": "No instance",
+        "Nessus": "No instance",
+        "Cisco CloudLock": "No instance",
+        "SentinelOne": "No instance",
+        "Vectra v2": "No instance",
+        "Infoblox": "Issue 23770",
         "Trend Micro Apex": "Issue 23632",
         "Awake Security": "Issue 23376",
         "ExtraHop": "No license, issue 23731",
