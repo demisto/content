@@ -7,8 +7,8 @@ description: This playbook helps analysts manage the manual process of whitelist
   is set to search for indicators that have the 'whitelist_review' tag. The playbooks
   layout displays all of the related indicators in the summary page. While reviewing
   the indicators, the analyst can go to the summary page and tag the indicators accordingly
-  with tags 'such as, 'approved_black', 'approved_white', etc. Once the analyst completes
-  their review, the playbook can optionally send an email with a list of changes done
+  with tags such as, 'approved_black', 'approved_white', etc. Once the analyst completes
+  the review, the playbook can optionally send an email with a list of changes done
   by the analyst which haven't been approved. Once complete, the playbook removes
   the 'whitelist review' tag from the indicators.
 starttaskid: "0"
@@ -207,7 +207,7 @@ tasks:
       id: f7de89f6-eb9a-44e6-84da-8ef43a58aa25
       version: -1
       name: Remove whitelist review tag from indicators
-      description: Remove whitelist review tag from indicators
+      description: Removes the whitelist review tag from indicators
       script: Builtin|||removeIndicatorField
       type: regular
       iscommand: true
@@ -316,7 +316,7 @@ tasks:
     task:
       id: e9f7c185-a753-4fb4-83d4-3dc7fe0c2652
       version: -1
-      name: Make changes according the approvers request
+      name: Make changes according the approver's request
       type: regular
       iscommand: false
       brand: ""
@@ -404,7 +404,7 @@ tasks:
       title: List the indicators are are not approved
       description: The approver reviews the incident and changes made by the analyst.
         In case the approver needs specific indicators to be changed, they will list
-        the indicators in question.
+        the relevant indicators.
       sender: ""
       expired: false
       totalanswers: 0
@@ -463,7 +463,7 @@ tasks:
     task:
       id: 46edfee8-7778-4c27-85ed-d4b0fdc1825f
       version: -1
-      name: Are there indicators that werent approved?
+      name: Are there indicators that weren't approved?
       type: condition
       iscommand: false
       brand: ""
