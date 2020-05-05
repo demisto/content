@@ -1,36 +1,31 @@
 id: GCPWhitelist_Feed_Test
 version: -1
 name: GCPWhitelist_Feed_Test
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: f4072380-aa58-41d4-81db-89f66fe9913e
     type: start
     task:
       id: f4072380-aa58-41d4-81db-89f66fe9913e
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 60
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 60\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 76ee7244-09c8-4c54-8e45-04a531b6f3db
     type: regular
     task:
@@ -44,27 +39,21 @@ tasks:
       brand: GCP Whitelist Feed
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       extend-context:
         simple: Indicator=.
       limit:
-        simple: "2"
+        simple: '2'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 440
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 440\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: d82047b0-2349-429f-8afc-583384445e27
     type: condition
     task:
@@ -73,13 +62,14 @@ tasks:
       name: Assert Output
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
-      "true":
-      - "7"
+      'true':
+      - '7'
     separatecontext: false
     conditions:
-    - label: "true"
+    - label: 'true'
       condition:
       - - operator: hasLength
           left:
@@ -90,7 +80,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2"
+              simple: '2'
       - - operator: isNotEmpty
           left:
             value:
@@ -105,20 +95,14 @@ tasks:
                 root: Indicator
                 accessor: raw_response.[0].value
             iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 620
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 620\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: 266b7a3c-0cb6-4ea5-8111-b909dab38bb0
     type: title
     task:
@@ -130,20 +114,14 @@ tasks:
       iscommand: false
       brand: Builtin
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 1400
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 1400\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: 7847b576-232e-47bd-8488-fefe2d703171
     type: regular
     task:
@@ -157,26 +135,20 @@ tasks:
       brand: GCP Whitelist Feed
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     scriptarguments:
       extend-context:
         simple: Indicator=.
       limit: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 990
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 990\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: 7cb17a32-9c85-4ae9-81a3-2ec5ce2af75e
     type: condition
     task:
@@ -185,13 +157,14 @@ tasks:
       name: Assert Output
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
-      "true":
-      - "3"
+      'true':
+      - '3'
     separatecontext: false
     conditions:
-    - label: "true"
+    - label: 'true'
       condition:
       - - operator: hasLength
           left:
@@ -202,7 +175,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "10"
+              simple: '10'
       - - operator: isNotEmpty
           left:
             value:
@@ -217,20 +190,14 @@ tasks:
                 root: Indicator
                 accessor: raw_response.[0].value
             iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 1190
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 1190\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: ec76ed86-af39-4dd5-81c7-f87497c8c079
     type: regular
     task:
@@ -241,32 +208,26 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     scriptarguments:
       all:
-        simple: "yes"
+        simple: yes
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 820
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 820\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "8":
-    id: "8"
+  '8':
+    id: '8'
     taskid: 3827d23d-7aa1-4817-8c8c-83c64f1d0b81
     type: regular
     task:
@@ -277,42 +238,27 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     scriptarguments:
       all:
-        simple: "yes"
+        simple: yes
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 245
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 245\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1405,
-        "width": 380,
-        "x": 460,
-        "y": 60
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1405,\n      \"width\": 380,\n      \"x\": 460,\n      \"y\":\
+  \ 60\n    }\n  }\n}"
 inputs: []
 outputs: []
 fromversion: 5.5.0
