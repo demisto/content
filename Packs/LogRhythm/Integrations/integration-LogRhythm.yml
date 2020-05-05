@@ -14,7 +14,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: ""
+- display: Credentials
   name: Credentials
   defaultvalue: ""
   type: 9
