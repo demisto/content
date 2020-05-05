@@ -8,6 +8,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "LogPoint",
+            "playbookID": "LogPoint_test.yml",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Smokescreen IllusionBLACK",
             "playbookID": "Smokescreen IllusionBLACK-Test",
             "fromversion": "5.0.0"

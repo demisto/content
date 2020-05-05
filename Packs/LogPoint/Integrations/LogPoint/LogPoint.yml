@@ -1,194 +1,360 @@
+category: Analytics & SIEM
 commonfields:
   id: LogPoint
   version: -1
-name: LogPoint
-display: LogPoint
-category: Analytics & SIEM
-description: Integration to LogPoint SIEM
 configuration:
 - display: Server URL (e.g. https://192.168.1.1)
   name: url
-  defaultvalue: ""
-  type: 0
   required: true
-- display: Username
-  name: Username
-  defaultvalue: ""
   type: 0
+- display: username
+  name: username
   required: true
-- display: SECRET KEY (FOR FETCHING LOGS)
+  type: 0
+- display: Secret Key (Log Fetching Key)
   name: token
-  defaultvalue: ""
-  type: 4
   required: true
-- display: Trust any certificate (not secure)
+  type: 4
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
+  required: false
   type: 8
-  required: false
-- display: Fetch incidents starting from (%Y-%m-%dT%H:%M:%SZ)
+- defaultvalue: 1 hour
+  display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
   name: queryStartTime
-  defaultvalue: 1980-01-01T12:00:00Z
+  required: false
   type: 0
-  required: false
-- display: Status of incidents to get
+- defaultvalue: all
+  display: Incidents to fetch
   name: incindenttypetoget
-  defaultvalue: all
-  type: 15
-  required: false
   options:
   - all
   - unresolved
   - resolved
   - closed
+  required: false
+  type: 15
 - display: Fetch incidents
   name: isFetch
-  type: 8
   required: false
+  type: 8
 - display: Incident type
   name: incidentType
-  type: 13
   required: false
+  type: 13
+description: Integration to LogPoint SIEM
+display: LogPoint
+name: LogPoint
 script:
-  script: ''
-  type: python
   commands:
-  - name: lp-get-user-timezone
-    arguments: []
+  - deprecated: false
     description: To retrieve the timezone from the user preferences
-  - name: lp-get-logpoints
-    arguments: []
-    description: To retrieve the LogPoints
-  - name: lp-get-repos
-    arguments: []
-    description: Get all available repos
-  - name: lp-get-devices
-    arguments: []
-    description: Get all devices
-  - name: lp-get-livesearches
-    arguments: []
-    description: Get all configured live searches
-  - name: lp-get-livesearch-results
-    arguments:
-    - name: life-id
-      required: true
-      description: life-id
-    description: Get live search results
-  - name: lp-search
-    arguments:
-    - name: repo
-      description: repo
-      defaultValue: 127.0.0.1:5504/default
-    - name: query
-      required: true
-      description: query to use
-    - name: timeout
-      description: timeout for search
-      defaultValue: "500"
-    - name: client_name
-      description: which client name to use
-      defaultValue: gui
-    - name: starts
-      description: starts
-      defaultValue: '{}'
-    - name: limit
-      description: limit
-      defaultValue: "30"
-    - name: time-range
-      description: time-range to use. default 10mins
-      defaultValue: Last 10 minutes
+    execution: false
+    name: lp-get-user-timezone
     outputs:
-    - contextPath: Logpoint-SIEM.searchId
-      description: Search ID
+    - contextPath: LogPoint-SIEM.GetUserTimezone
+      description: Users timezone information
       type: Unknown
-    description: Search Logpoint for logs
-  - name: lp-search-results
-    arguments:
-    - name: searchId
-      required: true
-      description: Search ID to use
-    description: Get the search results
-  - name: lp-get-incidents
-    arguments:
-    - name: TimeStampFrom
-      required: true
-      description: From this timestamp
-    - name: TimeStampTo
-      required: true
-      description: To this timestamp
+  - deprecated: false
+    description: To retrieve the LogPoints
+    execution: false
+    name: lp-get-logpoints
     outputs:
-    - contextPath: Logpoint-SIEM.incidents
+    - contextPath: LogPoint-SIEM.GetLogpoints
+      description: LogPoints information
+      type: Unknown
+  - deprecated: false
+    description: Get all available repos
+    execution: false
+    name: lp-get-repos
+    outputs:
+    - contextPath: LogPoint-SIEM.GetRepos
+      description: List of all available Repos
+      type: Unknown
+  - deprecated: false
+    description: Get all devices
+    execution: false
+    name: lp-get-devices
+    outputs:
+    - contextPath: LogPoint-SIEM.GetDevices
+      description: List of all devices configured to LogPoint
+      type: Unknown
+  - deprecated: false
+    description: Get all configured live searches
+    execution: false
+    name: lp-get-livesearches
+    outputs:
+    - contextPath: LogPoint-SIEM.GetLiveSearches
+      description: Information about Live Searches
+      type: Unknown
+  - arguments:
+    - default: false
+      description: life-id
+      isArray: false
+      name: life-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get live search results
+    execution: false
+    name: lp-get-livesearch-results
+    outputs:
+    - contextPath: LogPoint-SIEM.GetLiveSearchResults
+      description: Live Search Results
+      type: Unknown
+  - arguments:
+    - default: false
+      defaultValue: 127.0.0.1:5504/default
+      description: repo
+      isArray: false
+      name: repo
+      required: false
+      secret: false
+    - default: false
+      description: query to use
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '500'
+      description: timeout for search in seconds
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - default: false
+      defaultValue: gui
+      description: which client name to use
+      isArray: false
+      name: client_name
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '{}'
+      description: starts
+      isArray: false
+      name: starts
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '30'
+      description: limit
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: Last 10 minutes
+      description: time-range to use. default 10mins
+      isArray: false
+      name: time-range
+      required: false
+      secret: false
+    deprecated: false
+    description: Search Logpoint for logs
+    execution: false
+    name: lp-search
+    outputs:
+    - contextPath: LogPoint-SIEM.Search
+      description: Search details
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Search ID to use
+      isArray: false
+      name: searchId
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the search results
+    execution: false
+    name: lp-search-results
+    outputs:
+    - contextPath: LogPoint-SIEM.SearchResults
+      description: Return of Search results
+      type: Unknown
+  - arguments:
+    - default: false
+      description: From this time (<number> <time unit>, e.g., 1 hour, 30 minutes)
+        or exact time (month day year) format)
+      isArray: false
+      name: From
+      required: true
+      secret: false
+    - default: false
+      description: From this time (<number> <time unit>, e.g., 1 hour, 30 minutes)
+        or exact time (month day year) format)
+      isArray: false
+      name: To
+      required: true
+      secret: false
+    deprecated: false
+    description: Get all incidents from LogPoint
+    execution: false
+    name: lp-get-incidents
+    outputs:
+    - contextPath: LogPoint-SIEM.GetIncidents
       description: List of incidents
       type: Unknown
-    description: Get all incidents from LogPoint
-  - name: lp-get-single-incident
-    arguments:
-    - name: IncidentObjectID
-      required: true
+  - arguments:
+    - default: false
       description: Value of field 'id'
-    - name: IncidentId
+      isArray: false
+      name: IncidentObjectID
       required: true
+      secret: false
+    - default: false
       description: |-
         Value of field 'incident_id' of the
         particular incident.
-    - name: Date
+      isArray: false
+      name: IncidentId
       required: true
+      secret: false
+    - default: false
       description: Value of field 'detection_timestamp' of the particular incident.
+      isArray: false
+      name: Date
+      required: true
+      secret: false
+    deprecated: false
     description: Get info from a single incident
-  - name: lp-get-incident-states
-    arguments:
-    - name: TimeStampFrom
+    execution: false
+    name: lp-get-single-incident
+    outputs:
+    - contextPath: LogPoint-SIEM.GetIncidentInfo
+      description: Information about the incident in question
+      type: Unknown
+  - arguments:
+    - default: false
+      description: From this time (<number> <time unit>, e.g., 1 hour, 30 minutes)
+        or exact time (month day year) format)
+      isArray: false
+      name: From
       required: true
-      description: From this timestamp
-    - name: TimeStampTo
+      secret: false
+    - default: false
+      description: To this time (<number> <time unit>, e.g., 1 hour, 30 minutes) or
+        exact time (month day year) format)
+      isArray: false
+      name: To
       required: true
-      description: To this timestamp
+      secret: false
+    deprecated: false
     description: Get states of the incidents
-  - name: lp-add-comment-to-incident
-    arguments:
-    - name: id
-      required: true
+    execution: false
+    name: lp-get-incident-states
+    outputs:
+    - contextPath: LogPoint-SIEM.GetIncidentStates
+      description: List the changes to the incidents
+      type: Unknown
+  - arguments:
+    - default: false
       description: Object id of a particular incident.
-    - name: comments
+      isArray: false
+      name: id
       required: true
+      secret: false
+    - default: false
       description: Comments to be added to a particular incident.
+      isArray: false
+      name: comments
+      required: true
+      secret: false
+    deprecated: false
     description: Add comment to an incident
-  - name: lp-assign-incident
-    arguments:
-    - name: id
-      required: true
+    execution: false
+    name: lp-add-comment-to-incident
+    outputs:
+    - contextPath: LogPoint-SIEM.AddingCommentsToIncident
+      description: Add the comment you want to the incident in question
+      type: Unknown
+  - arguments:
+    - default: false
       description: Object id of the incidents to be reassigned.
-    - name: new_assignee
+      isArray: false
+      name: id
       required: true
+      secret: false
+    - default: false
       description: Object id of the user whom the incidents are assigned.
+      isArray: false
+      name: new_assignee
+      required: true
+      secret: false
+    deprecated: false
     description: Assign incident to a new analyst
-  - name: lp-resolve-incident
-    arguments:
-    - name: id
-      required: true
+    execution: false
+    name: lp-assign-incident
+    outputs:
+    - contextPath: LogPoint-SIEM.AssignIncident
+      description: Assignment status
+      type: Unknown
+  - arguments:
+    - default: false
       description: id of the incident
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
     description: Resolve an incident
-  - name: lp-close-incident
-    arguments:
-    - name: id
-      required: true
+    execution: false
+    name: lp-resolve-incident
+    outputs:
+    - contextPath: LogPoint-SIEM.ResolveIncident
+      description: Resolve status
+      type: Unknown
+  - arguments:
+    - default: false
       description: id of the incident
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
     description: Close an incident
-  - name: lp-reopen-incident
-    arguments:
-    - name: id
-      required: true
+    execution: false
+    name: lp-close-incident
+    outputs:
+    - contextPath: LogPoint-SIEM.CloseIncident
+      description: Close status
+      type: Unknown
+  - arguments:
+    - default: false
       description: id of the incident
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
     description: Reopen an incident
-  - name: lp-get-all-users
-    arguments: []
+    execution: false
+    name: lp-reopen-incident
+    outputs:
+    - contextPath: LogPoint-SIEM.ReopenIncident
+      description: Re-opening status
+      type: Unknown
+  - deprecated: false
     description: List all users in the system
-  dockerimage: demisto/python3:3.7.4.977
+    execution: false
+    name: lp-get-all-users
+    outputs:
+    - contextPath: Account
+      description: List all users in the system
+      type: Unknown
+  dockerimage: demisto/python3:3.8.2.6981
+  feed: false
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
+  script: '-'
   subtype: python3
+  type: python

@@ -1,10 +1,13 @@
 import demistomock as demisto
 from CommonServerPython import *
+from CommonServerUserPython import *
 ''' IMPORTS '''
 
 
 import requests
 import json
+import dateparser
+from typing import Dict
 from urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 
@@ -70,12 +73,14 @@ def test_module(client):
     if response['success']:
         return 'ok'
     else:
-        return 'Failure'
+        return 'Error in test: ' + response['message']
 
 
 def results_return(titletoreturn, thingtoreturn, datapointtoreturnat):
+    data = {}
     finaldata = {}
-    finaldata[datapointtoreturnat] = thingtoreturn
+    data[datapointtoreturnat.replace(' ', '')] = thingtoreturn
+    finaldata['LogPoint-SIEM'] = data
     return demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
@@ -113,9 +118,10 @@ def get_and_return(method, client, incoming_data, command, titletoprint, url_suf
         if command == 'Get all users':
             results_return_account(titletoprint, response, DEFAULTCONTEXT)
         else:
-            results_return(titletoprint, response, LPDATACONTEXT)
+            results_return(titletoprint, response, command)
     else:
-        return demisto.results("Error in command: " + command + " response from server was: " + str(response))
+        errortext = 'Error in command: ' + command + ' response from server was: ' + str(response)
+        return demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": errortext})
 
 
 def get_user_timezone(client, args):
@@ -156,7 +162,7 @@ def get_livesearches(client, args):
 def get_livesearchresults(client, args):
     data = {}
     lifeid = args.get('life-id')
-    command = 'Get Live Search results'
+    command = 'Get Live Search Results'
     title = 'Live Search results for ' + lifeid
     data_original = {"type": "livesearches", "search_id": lifeid, "waiter_id": "foobar", "seen_version": "1"}
     data["requestData"] = json.dumps(data_original)
@@ -181,7 +187,7 @@ def search_logs(client, args):
 
 def search_results(client, args):
     data = {}
-    command = 'Search results'
+    command = 'Search Results'
     search_id = args.get('searchId')
     title = 'Search results'
     data_original = {"searchId": search_id, "waiter_id": 'foobar', "seen_version": '1'}
@@ -194,8 +200,8 @@ def search_results(client, args):
 
 def get_incidents(client, args):
     command = 'Get Incidents'
-    timestampfrom = args.get('TimeStampFrom')
-    timestampto = args.get('TimeStampTo')
+    timestampfrom = dateparser.parse(args.get('From')).timestamp()
+    timestampto = dateparser.parse(args.get('To')).timestamp()
     title = 'Get Incidents'
     data_original = {
         "requestData": {
@@ -209,8 +215,8 @@ def get_incidents(client, args):
 
 def get_incident_states(client, args):
     command = 'Get Incident States'
-    timestampfrom = args.get('TimeStampFrom')
-    timestampto = args.get('TimeStampTo')
+    timestampfrom = dateparser.parse(args.get('From')).timestamp()
+    timestampto = dateparser.parse(args.get('To')).timestamp()
     title = 'Get Incident States'
     data_original = {
         "requestData": {
@@ -239,7 +245,7 @@ def get_single_incident(client, args):
 
 
 def add_comments_to_incident(client, args):
-    command = 'Adding comments to incident'
+    command = 'Adding Comments To Incident'
     incident_id = args.get('id')
     comment = args.get('comments')
     title = 'Adding comments to incident'
@@ -309,14 +315,13 @@ def reopen_incident(client, args):
 def get_users(client, args):
     command = 'Get all users'
     title = 'Users'
-    data_original = {'a': 'a'}
-    data_original = {}
+    data_original: Dict[str, str] = {}
     get_and_return(INCIDENTMETHOD, client, data_original, command, title, USERSURL)
 
 
 def fetch_incidents(client):
-    timefrom = demisto.params().get('queryStartTime')
-    timestampfrom = int(datetime.strptime(timefrom, '%Y-%m-%dT%H:%M:%SZ').timestamp())
+    timefrom = dateparser.parse(demisto.params().get('queryStartTime'))
+    timestampfrom = int(timefrom.timestamp())
     timestampto = int(datetime.now().timestamp())
     lastrun = demisto.getLastRun()
     typeofincidents = demisto.params().get('incindenttypetoget')
@@ -384,7 +389,7 @@ def main():
     baseserver = demisto.params()['url'][:-1] \
         if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
     verify_certificate = not demisto.params().get('insecure', False)
-    username = demisto.params().get('Username')
+    username = demisto.params().get('username')
     basedata = {
         "username": username,
         "secret_key": token
