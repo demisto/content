@@ -335,9 +335,6 @@
             "playbookID": "TestAwsEC2GetPublicSGRules-Test"
         },
         {
-            "playbookID": "TestParseEmailFile-deprecated-script"
-        },
-        {
             "integrations": "RSA NetWitness Packets and Logs",
             "playbookID": "rsa_packets_and_logs_test"
         },
