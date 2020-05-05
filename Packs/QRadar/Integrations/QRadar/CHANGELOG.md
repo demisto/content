@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+- Fixed an issue with the test module validation.
 
 
 ## [20.4.0] - 2020-04-14

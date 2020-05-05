@@ -486,7 +486,9 @@ def get_domains_by_id(domain_id, _fields=''):
 
 
 def test_module():
-    get_offenses('0-0')
+    full_url = '{0}/api/ariel/databases'.format(SERVER)
+    headers = dict(AUTH_HEADERS)
+    send_request('GET', full_url, headers)
     # If encountered error, send_request will return_error
     return 'ok'
 
