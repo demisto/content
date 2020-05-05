@@ -650,7 +650,7 @@
         },
         {
             "integrations": "MxToolBox",
-            "playbookID": "MxToolbox_test"
+            "playbookID": "MxToolbox-test"
         },
         {
             "integrations": "Nessus",
