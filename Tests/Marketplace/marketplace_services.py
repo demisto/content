@@ -570,7 +570,6 @@ class Pack(object):
 
     @staticmethod
     def major_minor_rev(version, path=False):
-        print_warning(f"Version is {version}")
         """
         Returns version string as int to be used for version comparison.
         Accepts both paths (where version numbers use '_' as separators), as well as strings where
@@ -622,7 +621,7 @@ class Pack(object):
                                              'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
                         changelog[latest_release_notes] = version_changelog
                         with open(os.path.join(self._pack_path, 'changelog.json'), "w") as f:
-                            json.dump(f, changelog)
+                            json.dump(changelog, f)
 
                 else:
                     print_warning(f"No ReleaseNotes directory was found for pack: {self._pack_name}")
