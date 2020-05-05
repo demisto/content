@@ -214,7 +214,7 @@ tasks:
       - '5'
     scriptarguments:
       all:
-        simple: true
+        simple: "yes"
       index: {}
       key: {}
       keysToKeep: {}
@@ -244,7 +244,7 @@ tasks:
       - '1'
     scriptarguments:
       all:
-        simple: true
+        simple: "yes"
       index: {}
       key: {}
       keysToKeep: {}
