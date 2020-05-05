@@ -664,7 +664,6 @@ def replace_keys(data):
 
 
 def kv_store_collection_create(service):
-    print(service.namespace)
     service.kvstore.create(demisto.args()['kv_store_name'])
     return_outputs("KV store collection {} created successfully".format(service.namespace['app']), {}, {})
 
@@ -724,21 +723,24 @@ def kv_store_collection_data(service):
     args = demisto.args()
     stores = args['kv_store_collection_name'].split(',')
     query = build_kv_store_query(args)
-    res = []
+    any_res = False
     for store in stores:
         store_res = service.kvstore[store].data.query(**query)
         if len(store_res) != 0:
+            any_res = True
             human_readable = tableToMarkdown(name="list of collection values {}".format(store),
-                                             t=res)
+                                             t=store_res)
 
-            return_outputs(human_readable, {'Splunk.KVstoreData': {store: res}}, res)
+            return_outputs(human_readable, {'Splunk.KVstoreData': {store: store_res}}, store_res)
+    if not any_res:
+        return_outputs('results are not existing.')
 
 
 def kv_store_collection_delete_entry(service):
     args = demisto.args()
     store = args['kv_store_collection_name']
     query = build_kv_store_query(args)
-    service.kvstore[store].data.delete(json.dumps(query))
+    service.kvstore[store].data.delete(query)
     return_outputs('The values of the {} were deleted successfully'.format(store), {}, {})
 
 
@@ -796,7 +798,7 @@ def main():
         splunk_submit_event_hec_command()
     if demisto.command() == 'splunk-job-status':
         splunk_job_status(service)
-    if demisto.command().startswith('splunk-kv-'):
+    if demisto.command().startswith('splunk-kv-') and service is not None:
         service.namespace['app'] = demisto.args().get('app_name', 'search')
 
         if demisto.command() == 'splunk-kv-store-collection-create':

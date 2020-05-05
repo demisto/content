@@ -9,8 +9,6 @@
 - Added the ***splunk-kv-store-collection-search-entry*** command, which returns the KV store data for specific query.
 - Added the ***splunk-kv-store-collection-delete-entry*** command, which deletes the KV store data with specific query.
 
-
-
 ## [20.4.0] - 2020-04-14
 -
 - Added the ***splunk-job-status*** command, which checks the status of a job.
