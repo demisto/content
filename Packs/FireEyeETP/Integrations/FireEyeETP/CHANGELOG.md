@@ -1,5 +1,5 @@
 ## [Unreleased]
-Fixed an issue that caused ***fireeye-etp-search-messages*** command to fail.
+Fixed an issue where the ***fireeye-etp-search-messages*** command failed.
 
 
 ## [20.4.0] - 2020-04-14
