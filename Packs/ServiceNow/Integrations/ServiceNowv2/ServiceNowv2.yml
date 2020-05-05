@@ -213,7 +213,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Ticket urgency
+      description: 'Ticket urgency. You may select from the predefined options, or
+         use another value. e.g: "Urgent" or "5".'
       isArray: false
       name: urgency
       predefined:
@@ -224,7 +225,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Ticket severity
+      description: 'Ticket severity. You may select from the predefined options, or
+        use another value. e.g: "Urgent" or "5".'
       isArray: false
       name: severity
       predefined:
@@ -753,7 +755,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Ticket urgency
+      description: 'Ticket urgency. You may select from the predefined options, or
+        use another value. e.g: "Urgent" or "5".'
       isArray: false
       name: urgency
       predefined:
@@ -764,7 +767,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Ticket severity
+      description: 'Ticket severity. You may select from the predefined options, or
+        use another value. e.g: "Urgent" or "5".'
       isArray: false
       name: severity
       predefined:
