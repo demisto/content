@@ -283,3 +283,44 @@ EXPECTED_ADD_TAG = {
         'ID': '123', 'TagTitle': 'title', 'TagID': '1234'
     }
 }
+EXPECTED_QUERY_ITEMS = {
+    'ServiceNow.CatalogItem(val.ID===obj.ID)':
+        [
+            {
+                'ID': '123',
+                'Name': 'Apple iPad 3',
+                'Description': 'Apple iPad 3',
+                'Price': '600'
+            },
+            {
+                'ID': '1234',
+                'Name': 'Belkin iPad Mini Case',
+                'Description': 'Belkin iPad Mini 2 Case',
+                'Price': '50'
+            }
+        ]
+}
+EXPECTED_ITEM_DETAILS = {
+    'ServiceNow.CatalogItem(val.ID===obj.ID)': {
+        'ID': '1234', 'Name': 'Apple iPhone 5', 'Description': 'Apple iPhone 5', 'Price': '$599.99',
+        'Variables': [
+            {'Question': 'Allocated carrier', 'Type': 'Select Box', 'Name': 'carrier', 'Mandatory': False},
+            {'Question': 'Monthly data allowance', 'Type': 'Select Box', 'Name': 'data_plan', 'Mandatory': False},
+            {'Question': 'Contract duration', 'Type': 'Select Box', 'Name': 'duration', 'Mandatory': False},
+            {'Question': 'Color', 'Type': 'Select Box', 'Name': 'color', 'Mandatory': False},
+            {'Question': 'Storage', 'Type': 'Select Box', 'Name': 'storage', 'Mandatory': False}
+        ]
+    }
+}
+EXPECTED_CREATE_ITEM_ORDER = {
+    'ServiceNow.OrderRequest(val.ID===obj.ID)': {
+        'ID': '12', 'RequestNumber': 'REQ0010002'
+    }
+}
+EXPECTED_DOCUMENT_ROUTE = {
+    'ServiceNow.WorkItem(val.WorkItemID===obj.WorkItemID)':
+        {
+            'DisplayName': 'Incident: INC0000060', 'DocumentID': 'document_id', 'DocumentTable': 'incident',
+            'QueueID': 'queue_id', 'WorkItemID': 'work_item_id'
+        }
+}
