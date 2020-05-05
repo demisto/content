@@ -15,7 +15,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "4"
@@ -87,7 +86,6 @@ tasks:
       playbookName: Search Endpoints By Hash - CrowdStrike
       type: playbook
       iscommand: false
-      description: ""
       brand: ""
     nexttasks:
       '#none#':

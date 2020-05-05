@@ -1059,4 +1059,4 @@ script:
   runonce: false
 tests:
 - CrowdStrike Endpoint Enrichment - Test
-- crowdstrike_falconhost_test
+- CrowdStrike FalconHost Test

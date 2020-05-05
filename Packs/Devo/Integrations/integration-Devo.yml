@@ -241,5 +241,3 @@ script:
       description: The query results
     description: Perform a query.
   runonce: false
-tests:
-    - devo_test_playbook
