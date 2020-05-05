@@ -1,0 +1,51 @@
+id: Zabbix
+version: -1
+name: Zabbix
+fromversion: 4.5.0
+starttaskid: '0'
+description: Run test-module
+tasks:
+  '0':
+    id: '0'
+    taskid: 69b932fb-e047-4c83-8bd0-42d197c52913
+    type: start
+    task:
+      id: 69b932fb-e047-4c83-8bd0-42d197c52913
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: 32665f69-95a5-4cd8-85e3-0bef554aebe9
+    type: regular
+    task:
+      id: 32665f69-95a5-4cd8-85e3-0bef554aebe9
+      version: -1
+      name: test-module
+      description: Test if module is working
+      script: Zabbix|||test-module
+      type: regular
+      iscommand: true
+      brand: Zabbix
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 275,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n\
+  \    }\n  }\n}"
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
