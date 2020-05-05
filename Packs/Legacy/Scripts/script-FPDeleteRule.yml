@@ -1,6 +1,6 @@
 commonfields:
   id: FPDeleteRule
-  version: 1
+  version: -1
 name: FPDeleteRule
 script: |-
   from re import escape

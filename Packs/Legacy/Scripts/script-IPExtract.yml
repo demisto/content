@@ -1,6 +1,6 @@
 commonfields:
   id: IPExtract
-  version: 1
+  version: -1
 name: IPExtract
 script: |-
   import re

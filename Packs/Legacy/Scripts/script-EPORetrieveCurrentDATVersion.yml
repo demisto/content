@@ -1,6 +1,6 @@
 commonfields:
   id: EPORetrieveCurrentDATVersion
-  version: 1
+  version: -1
 name: EPORetrieveCurrentDATVersion
 script: |
   res = []

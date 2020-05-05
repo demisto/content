@@ -1,6 +1,6 @@
 commonfields:
   id: DamSensorDown
-  version: 37
+  version: -1
 name: DamSensorDown
 script: |-
   import sys

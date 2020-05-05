@@ -1,6 +1,6 @@
 commonfields:
   id: NessusGetReport
-  version: 1
+  version: -1
 name: NessusGetReport
 script: |
   from time import ctime

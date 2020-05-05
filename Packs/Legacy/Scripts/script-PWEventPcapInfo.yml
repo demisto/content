@@ -1,6 +1,6 @@
 commonfields:
   id: PWEventPcapInfo
-  version: 1
+  version: -1
 name: PWEventPcapInfo
 script: |
   res = []

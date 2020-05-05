@@ -1,6 +1,6 @@
 commonfields:
   id: XBUser
-  version: 1
+  version: -1
 name: XBUser
 script: |-
   import time

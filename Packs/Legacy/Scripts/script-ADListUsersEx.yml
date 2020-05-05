@@ -1,6 +1,6 @@
 commonfields:
   id: ADListUsersEx
-  version: 1
+  version: -1
 name: ADListUsersEx
 script: |-
   # Optional arguments and default values

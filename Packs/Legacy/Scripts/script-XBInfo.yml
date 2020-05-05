@@ -1,6 +1,6 @@
 commonfields:
   id: XBInfo
-  version: 1
+  version: -1
 name: XBInfo
 script: |-
   res = '## Exabeam global info'

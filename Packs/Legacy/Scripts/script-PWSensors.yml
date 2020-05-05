@@ -1,6 +1,6 @@
 commonfields:
   id: PWSensors
-  version: 1
+  version: -1
 name: PWSensors
 script: |
   res = []

@@ -1,6 +1,6 @@
 commonfields:
   id: SNUpdateTicket
-  version: 1
+  version: -1
 name: SNUpdateTicket
 script: |-
   DISPLAY_FIELDS = ['number', 'severity', 'category', 'opened_at', 'subcategory', 'priority', 'comments', 'short_description']

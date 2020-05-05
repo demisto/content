@@ -1,6 +1,6 @@
 commonfields:
   id: BinarySearchPy
-  version: 1
+  version: -1
 name: BinarySearchPy
 script: |-
   # Look for various hashes in the incident

@@ -1,6 +1,6 @@
 commonfields:
   id: RegProbeBasic
-  version: 1
+  version: -1
 name: RegProbeBasic
 script: |-
   keys = [ r"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run",

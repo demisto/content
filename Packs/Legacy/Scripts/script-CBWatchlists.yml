@@ -1,6 +1,6 @@
 commonfields:
   id: CBWatchlists
-  version: 1
+  version: -1
 name: CBWatchlists
 script: |-
   # args: id - Optional - only show the watchlist with this specific ID

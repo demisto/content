@@ -1,6 +1,6 @@
 commonfields:
   id: SNListTickets
-  version: 1
+  version: -1
 name: SNListTickets
 script: |-
   res = []

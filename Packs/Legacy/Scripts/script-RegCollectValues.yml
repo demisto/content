@@ -1,6 +1,6 @@
 commonfields:
   id: RegCollectValues
-  version: 1
+  version: -1
 name: RegCollectValues
 script: |-
   def Reg2Markdown(baseKey,regResp):

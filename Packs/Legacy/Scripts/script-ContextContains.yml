@@ -1,6 +1,6 @@
 commonfields:
   id: ContextContains
-  version: 53
+  version: -1
 name: ContextContains
 script: |
   def search(context, path, value):

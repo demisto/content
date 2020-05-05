@@ -1,6 +1,6 @@
 commonfields:
   id: SendEmailToManager
-  version: 1
+  version: -1
 name: SendEmailToManager
 toversion: 3.1.0
 script: |-

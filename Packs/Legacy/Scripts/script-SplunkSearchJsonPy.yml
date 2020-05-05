@@ -1,6 +1,6 @@
 commonfields:
   id: SplunkSearchJsonPy
-  version: 1
+  version: -1
 name: SplunkSearchJsonPy
 script: |+
   import json

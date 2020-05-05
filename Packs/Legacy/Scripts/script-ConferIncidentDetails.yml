@@ -1,6 +1,6 @@
 commonfields:
   id: ConferIncidentDetails
-  version: 1
+  version: -1
 name: ConferIncidentDetails
 script: |-
   import time

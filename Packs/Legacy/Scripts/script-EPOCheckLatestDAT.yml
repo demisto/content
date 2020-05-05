@@ -1,6 +1,6 @@
 commonfields:
   id: EPOCheckLatestDAT
-  version: 1
+  version: -1
 name: EPOCheckLatestDAT
 script: |
   import urllib2

@@ -1,6 +1,6 @@
 commonfields:
   id: CSIndicators
-  version: 1
+  version: -1
 name: CSIndicators
 script: |-
   import time

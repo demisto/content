@@ -1,6 +1,6 @@
 commonfields:
   id: PWObservationPcapInfo
-  version: 1
+  version: -1
 name: PWObservationPcapInfo
 script: |
   res = []
