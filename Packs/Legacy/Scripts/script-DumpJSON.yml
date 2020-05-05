@@ -10,6 +10,7 @@ script: |-
   demisto.setContext(JSON_CONTEXT_KEY, objStr)
   demisto.results(objStr)
 type: python
+subtype: python2
 tags:
 - Utility
 comment: Dumps a json from context key input, and returns a json object string result

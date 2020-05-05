@@ -18,6 +18,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Malwarebytes",
+            "playbookID": "Malwarebytes-Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Tanium Threat Response",
             "playbookID": "Tanium Threat Response Test"
         },
@@ -108,6 +113,10 @@
             "integrations": "Bambenek Consulting Feed",
             "playbookID": "BambenekConsultingFeed_Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Pipl",
+            "playbookID": "Pipl Test"
         },
         {
             "integrations": "AWS Feed",
@@ -333,9 +342,6 @@
         },
         {
             "playbookID": "TestAwsEC2GetPublicSGRules-Test"
-        },
-        {
-            "playbookID": "TestParseEmailFile-deprecated-script"
         },
         {
             "integrations": "RSA NetWitness Packets and Logs",
@@ -647,6 +653,14 @@
         {
             "playbookID": "Luminate-TestPlaybook",
             "integrations": "Luminate"
+        },
+        {
+            "integrations": "MxToolBox",
+            "playbookID": "MxToolbox-test"
+        },
+        {
+            "integrations": "Nessus",
+            "playbookID": "Nessus - Test"
         },
         {
             "playbookID": "Palo Alto Networks - Malware Remediation Test",
@@ -1470,6 +1484,24 @@
             "integrations": "Microsoft Graph Calendar",
             "playbookID": "Microsoft Graph Calendar - Test",
             "instance_names": "ms_graph_calendar_prod"
+        },
+        {
+            "integrations": "Microsoft Graph Device Management",
+            "playbookID": "MSGraph_DeviceManagement_Test",
+            "instance_names": "ms_graph_device_management_oproxy_dev",
+            "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "Microsoft Graph Device Management",
+            "playbookID": "MSGraph_DeviceManagement_Test",
+            "instance_names": "ms_graph_device_management_oproxy_prod",
+            "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "Microsoft Graph Device Management",
+            "playbookID": "MSGraph_DeviceManagement_Test",
+            "instance_names": "ms_graph_device_management_self_deployed_prod",
+            "fromversion": "4.1.0"
         },
         {
             "integrations": "RedLock",
@@ -2713,6 +2745,8 @@
         }
     ],
     "skipped_tests": {
+        "Send Investigation Summary Reports - Test": "Issue 24133",
+        "Test_URLhaus": "Issue 23857",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get PrismaAccess instance",
         "Prisma_Access-Test": "unskip after we will get PrismaAccess instance",
         "Test-Shodan_v2": "Issue 23370",
@@ -2727,7 +2761,6 @@
         "test_MsGraphFiles": "Issue 22853 ",
         "TestCofenseFeed": "Issue 22854",
         "Cybereason Test": "Issue 22683",
-        "AbuseIPDB Test": "Issue 22658",
         "Bluecat Address Manager test": "Issue 22616",
         "Office365_Feed_Test": "Issue 22517",
         "test-Expanse": "Expanse should provide domain that they have in their system",
@@ -2769,6 +2802,11 @@
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "Nessus": "No instance",
+        "MxToolBox": "No instance",
+        "Traps": "Issue 24122",
+        "skyformation": "No instance, old partner",
+        "Pipl": "No instance",
         "PrismaAccess": "Instance will be provided soon by Lior and Prasen",
         "Trend Micro Apex": "Issue 23632",
         "Awake Security": "Issue 23376",
