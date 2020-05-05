@@ -2743,3 +2743,12 @@ RESPONSE_CREATE_ITEM_ORDER = {
         "table": "sc_request"
     }
 }
+RESPONSE_DOCUMENT_ROUTE = {
+    "result": {
+        "display_name": "Incident: INC0000060",
+        "document_id": "document_id",
+        "document_table": "incident",
+        "queue": "queue_id",
+        "sys_id": "work_item_id"
+    }
+}
