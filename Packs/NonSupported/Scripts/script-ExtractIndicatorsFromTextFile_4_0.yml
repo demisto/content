@@ -90,4 +90,4 @@ outputs:
 scripttarget: 0
 runonce: false
 tests:
-  - Extract Indicators From File - test
+  - No Test - run manually playbook-Extract_Indicators_From_File_-_test_4_0
