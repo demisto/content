@@ -229,7 +229,7 @@ import json
 import requests
 import dateparser
 import traceback
-from typing import Any, Dict, Tuple, List, Optional, cast
+from typing import Any, Dict, Tuple, List, Optional, Union, cast
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -450,6 +450,31 @@ class Client(BaseClient):
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def parse_domain_date(domain_date: Union[List[str], str], date_format: str = '%Y-%m-%dT%H:%M:%S.000Z') -> Optional[str]:
+    """Converts whois date format to an ISO8601 string
+
+    Converts the HelloWorld domain WHOIS date (YYYY-mm-dd HH:MM:SS) format
+    in a datetime. If a list is returned with multiple elements, takes only
+    the first one.
+
+    :type domain_date: ``Union[List[str],str]``
+    :param severity:
+        a string or list of strings with the format 'YYYY-mm-DD HH:MM:SS'
+
+    :return: Parsed time in ISO8601 format
+    :rtype: ``Optional[str]``
+    """
+
+    if isinstance(domain_date, str):
+        # if str parse the value
+        return dateparser.parse(domain_date).strftime(date_format)
+    elif isinstance(domain_date, list) and len(domain_date) > 0 and isinstance(domain_date[0], str):
+        # if list with at least one element, parse the first element
+        return dateparser.parse(domain_date[0]).strftime(date_format)
+    # in any other case return nothing
+    return None
 
 
 def convert_to_demisto_severity(severity: str) -> int:
@@ -744,7 +769,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     for alert in alerts:
         # If no created_time set is as epoch (0). We use time in ms so we must
         # convert it from the HelloWorld API response
-        incident_created_time = int(alert.get('created', 0))
+        incident_created_time = int(alert.get('created', '0'))
         incident_created_time_ms = incident_created_time * 1000
 
         # If no name is present it will throw an exception
@@ -914,6 +939,8 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
     # than appending it every time. It's very important to use it every time you
     # output data in the context that can be updated.
     # More information: https://xsoar.pan.dev/docs/integrations/dt
+    # For standard context, outputPaths['ip'], defined in CommonServerPython
+    # already includes the right correct DT string.
     outputs = {
         'DBotScore(val.Vendor == obj.Vendor && val.Indicator == obj.Indicator)': dbot_score_list,
         outputPaths['ip']: ip_standard_list,
@@ -979,6 +1006,16 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], default_thre
         domain_data = client.get_domain_reputation(domain)
         domain_data['domain'] = domain
 
+        # INTEGRATION DEVELOPER TIP
+        # We want to convert the dates to ISO8601 as
+        # Cortex XSOAR customers and integrations use this format by default
+        if 'creation_date' in domain_data:
+            domain_data['creation_date'] = parse_domain_date(domain_data['creation_date'])
+        if 'expiration_date' in domain_data:
+            domain_data['expiration_date'] = parse_domain_date(domain_data['expiration_date'])
+        if 'updated_date' in domain_data:
+            domain_data['updated_date'] = parse_domain_date(domain_data['updated_date'])
+
         # HelloWorld score to XSOAR reputation mapping
         # See: https://xsoar.pan.dev/docs/integrations/dbot
 
@@ -993,6 +1030,7 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], default_thre
         else:
             score = 1  # good
 
+        # INTEGRATION DEVELOPER TIP
         # The context is bigger here than other commands, as it consists in 3
         # parts: the vendor-specific context (HelloWorld), the standard-context
         # (Domain) and the DBotScore.
@@ -1008,9 +1046,82 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], default_thre
             'Type': 'domain',
             'Score': score
         }
+
+        # Build Standard context for Domain
+        # This has a number of fields we need to handle
+
+        # INTEGRATION DEVELOPER TIP
+        # In the following code we do everything step by step for clarity, but
+        # you should use some sort of mapping to iterate more quickly and with
+        # cleaner code, for example:
+        # domain_standard_context_map = {
+        #     "updated_date": "UpdatedDate",
+        #     "expiration_date": "ExpirationDate",
+        #     "org": "Organization"
+        # }
+        #
+        # for k,v in domain_data.items():
+        # if k in domain_standard_context_mappings:
+        #     domain_standard_context[domain_standard_context_map[k]] = domain_data[k]
+
+        # dicts for Domain.WHOIS and Domain.Registrant and Domain.Registrar
+        domain_whois: Dict[str, Union[str, Dict[str, str]]] = {}
+        domain_registrant: Dict[str, str] = {}
+
+        # Domain Name
         domain_standard_context = {
             'Name': domain,
         }
+
+        # Domain.Registrant.Name
+        if 'name' in domain_data:
+            domain_registrant['Name'] = domain_data['name']
+
+        # Domain.Registrant.Country
+        if 'country' in domain_data:
+            domain_registrant['Country'] = domain_data['country']
+
+        # Domain.Organization
+        if 'org' in domain_data:
+            domain_standard_context['Organization'] = domain_data['org']
+
+        # Domain.NameServers and Domain.WHOIS.NameServers
+        if 'name_servers' in domain_data:
+            domain_standard_context['NameServers'] = domain_data['name_servers']
+            if isinstance(domain_data['name_servers'], list):
+                # if list, make it a csv
+                domain_whois['NameServers'] = ','.join(domain_data['name_servers'])
+            elif isinstance(domain_data['name_servers'], str):
+                # if string, just provide value
+                domain_whois['NameServers'] = (domain_data['name_servers'])
+            else:
+                # unknown format, skip it
+                pass
+
+        # Domain.CreationDate and Domain.WHOIS.CreationDate
+        if 'creation_date' in domain_data:
+            domain_standard_context['CreationDate'] = domain_data['creation_date']
+            domain_whois['CreationDate'] = domain_data['creation_date']
+
+        # Domain.ExpirationDate and Domain.WHOIS.ExpirationDate
+        if 'expiration_date' in domain_data:
+            domain_standard_context['ExpirationDate'] = domain_data['expiration_date']
+            domain_whois['ExpirationDate'] = domain_data['expiration_date']
+
+        # Domain.UpdatedDate and Domain.WHOIS.UpdatedDate
+        if 'updated_date' in domain_data:
+            domain_standard_context['UpdatedDate'] = domain_data['updated_date']
+            domain_whois['UpdatedDate'] = domain_data['updated_date']
+
+        # Domain.WHOIS.Registrar.Name
+        if 'registrar' in domain_data:
+            domain_whois['Registrar'] = {'Name': domain_data['registrar']}
+
+        # Append WHOIS and Registrant only if they contain values
+        if domain_whois:
+            domain_standard_context['WHOIS'] = domain_whois
+        if domain_registrant:
+            domain_standard_context['Registrant'] = domain_registrant
 
         if score == 3:
             # if score is bad must add DBotScore Vendor and Description
@@ -1025,10 +1136,12 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], default_thre
 
     # INTEGRATION DEVELOPER TIP
     # The ``val.Vandor == obj.Vendor && val.Indicator == obj.Indicator`` syntax
-    # is a DT transform that is used to update entities in the context rather
+    # is a DT string that is used to update entities in the context rather
     # than appending it every time. It's very important to use it every time you
     # output data in the context that can be updated.
     # More information: https://xsoar.pan.dev/docs/integrations/dt
+    # For standard context, outputPaths['domain'], defined in CommonServerPython
+    # already includes the right correct DT string.
     outputs = {
         'DBotScore(val.Vendor == obj.Vendor && val.Indicator == obj.Indicator)': dbot_score_list,
         outputPaths['domain']: domain_standard_list,
@@ -1108,6 +1221,15 @@ def search_alerts_command(client: Client, args: Dict[str, Any]) -> Tuple[str, di
         max_results=max_results
     )
 
+    # INTEGRATION DEVELOPER TIP
+    # We want to convert the "created" time from timestamp(s) to ISO8601 as
+    # Cortex XSOAR customers and integrations use this format by default
+    for alert in alerts:
+        if 'created' not in alert:
+            continue
+        created_time_ms = int(alert.get('created', '0')) * 1000
+        alert['created'] = timestamp_to_datestring(created_time_ms)
+
     readable_output = tableToMarkdown('HelloWorld Alerts', alerts)
     outputs = {
         'HelloWorld.Alert(val.alert_id == obj.alert_id)': alerts
@@ -1148,6 +1270,13 @@ def get_alert_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict, 
         raise ValueError('alert_id not specified')
 
     alert = client.get_alert(alert_id=alert_id)
+
+    # INTEGRATION DEVELOPER TIP
+    # We want to convert the "created" time from timestamp(s) to ISO8601 as
+    # Cortex XSOAR customers and integrations use this format by default
+    if 'created' in alert:
+        created_time_ms = int(alert.get('created', '0')) * 1000
+        alert['created'] = timestamp_to_datestring(created_time_ms)
 
     # tabletoMarkdown() is defined is CommonServerPython.py and is used very
     # often to convert lists and dicts into a human readable format in markdown
@@ -1198,6 +1327,13 @@ def update_alert_status_command(client: Client, args: Dict[str, Any]) -> Tuple[s
         raise ValueError('status must be either ACTIVE or CLOSED')
 
     alert = client.update_alert_status(alert_id, status)
+
+    # INTEGRATION DEVELOPER TIP
+    # We want to convert the "updated" time from timestamp(s) to ISO8601 as
+    # Cortex XSOAR customers and integrations use this format by default
+    if 'updated' in alert:
+        updated_time_ms = int(alert.get('updated', '0')) * 1000
+        alert['updated'] = timestamp_to_datestring(updated_time_ms)
 
     # tabletoMarkdown() is defined is CommonServerPython.py and is used very
     # often to convert lists and dicts into a human readable format in markdown

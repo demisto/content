@@ -1864,7 +1864,8 @@
             "integrations": "Google Cloud Storage",
             "playbookID": "GCS - Test",
             "timeout": 500,
-            "nightly": true
+            "nightly": true,
+            "memory_threshold": 80
         },
         {
             "integrations": "GooglePubSub",
@@ -2726,7 +2727,6 @@
         "test_MsGraphFiles": "Issue 22853 ",
         "TestCofenseFeed": "Issue 22854",
         "Cybereason Test": "Issue 22683",
-        "AbuseIPDB Test": "Issue 22658",
         "Bluecat Address Manager test": "Issue 22616",
         "Office365_Feed_Test": "Issue 22517",
         "test-Expanse": "Expanse should provide domain that they have in their system",

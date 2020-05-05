@@ -58,4 +58,6 @@ The default position is &\#x27;top&\#x27; | bottom |  | Optional |
 | Panorama.Commit.Warnings | Commit Warnings | unknown |
 | Panorama.Push.Warnings | Push  warnings | unknown |
 
-<!-- Playbook PNG image comes here -->
+## Playbook Image
+---
+![PAN-OS_EDL_Setup_v3](https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/PAN-OS_EDL_Setup_v3.png)
