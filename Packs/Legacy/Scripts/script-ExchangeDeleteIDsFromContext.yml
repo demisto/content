@@ -40,6 +40,7 @@ script: |-
   else:
       demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'No mail ids were found in context. Cannot continue.' } )
 type: python
+subtype: python2
 tags:
 - ews
 - exchange

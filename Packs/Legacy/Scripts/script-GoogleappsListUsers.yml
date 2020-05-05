@@ -22,6 +22,7 @@ script: |2
       else:
           demisto.results("No results.")
 type: python
+subtype: python2
 tags:
 - google apps
 comment: Retrieves a paginated list of either deleted users or all users in a domain

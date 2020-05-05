@@ -195,6 +195,7 @@ script:
         LOG.print_log()
         raise
   type: python
+  subtype: python2
   commands:
   - name: centreon-get-host-status
     arguments:
