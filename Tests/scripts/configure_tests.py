@@ -166,7 +166,7 @@ def get_modified_files(files_string):
                 is_indicator_json = True
 
             # conf.json
-            elif re.match(CONF_REGEX, file_path, re.IGNORECASE):
+            elif re.match(CONF_PATH, file_path, re.IGNORECASE):
                 is_conf_json = True
 
             # docs and test files do not influence integration tests filtering
@@ -411,7 +411,7 @@ def check_if_fetch_incidents_is_tested(missing_ids, integration_ids, id_set, con
 
         for test_playbook_id in test_playbook_ids:
             test_playbook = id_set__get_test_playbook(id_set, test_playbook_id)
-            if 'FetchFromInstance' in test_playbook.get('implementing_scripts'):
+            if test_playbook and 'FetchFromInstance' in test_playbook.get('implementing_scripts', []):
                 missing_ids = missing_ids - {missing_id}
                 tests_set.add(test_playbook_id)
 
@@ -974,20 +974,14 @@ def get_test_list(files_string, branch_name, two_before_ga_ver='0', conf=None, i
     if is_conf_json:
         tests = tests.union(get_test_from_conf(branch_name, conf))
 
-    if sample_tests:  # Choosing 3 random tests for infrastructure testing
-        print_warning('Collecting sample tests due to: {}'.format(','.join(sample_tests)))
-        tests = tests.union(
-            get_random_tests(tests_num=RANDOM_TESTS_NUM, conf=conf, id_set=id_set, server_version=two_before_ga_ver))
-
     if not tests:
+        tests = get_random_tests(tests_num=RANDOM_TESTS_NUM, conf=conf, id_set=id_set, server_version=two_before_ga_ver)
         if changed_common:
             print_warning('Adding 3 random tests due to: {}'.format(','.join(changed_common)))
-            tests = tests.union(get_random_tests(tests_num=RANDOM_TESTS_NUM, conf=conf, id_set=id_set,
-                                                 server_version=two_before_ga_ver))
+        elif sample_tests:  # Choosing 3 random tests for infrastructure testing
+            print_warning('Collecting sample tests due to: {}'.format(','.join(sample_tests)))
         else:
             print_warning("Running Sanity check only")
-            tests = get_random_tests(tests_num=RANDOM_TESTS_NUM, conf=conf, id_set=id_set,
-                                     server_version=two_before_ga_ver)
             tests.add('DocumentationTest')  # test with integration configured
             tests.add('TestCommonPython')  # test with no integration configured
 
