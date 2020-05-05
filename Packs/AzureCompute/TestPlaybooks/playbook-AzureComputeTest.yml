@@ -1,34 +1,29 @@
 id: Azure Compute - Test
 version: -1
 name: Azure Compute - Test
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 98c0064b-e483-4097-831f-f7a5c5c3e055
     type: start
     task:
       id: 98c0064b-e483-4097-831f-f7a5c5c3e055
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 20195e75-c884-4544-8231-6922ee05f8e5
     type: regular
     task:
@@ -42,20 +37,14 @@ tasks:
       brand: Azure Compute v2
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 230
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 96af46a5-438a-4310-8732-503d77c246fa
     type: regular
     task:
@@ -69,22 +58,16 @@ tasks:
       brand: Azure Compute v2
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       subscription_id: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 410
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 410\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: fe3418e8-0cfd-46da-8fea-f9bcc659c5bb
     type: regular
     task:
@@ -98,23 +81,17 @@ tasks:
       brand: Azure Compute v2
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       resource_group:
         simple: compute-integration
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 590
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 590\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: 0c9d8586-0106-4831-8422-bdb759ce6cbc
     type: regular
     task:
@@ -128,25 +105,19 @@ tasks:
       brand: Azure Compute v2
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     scriptarguments:
       resource_group:
         simple: compute-integration
       virtual_machine_name:
         simple: TestOAuth
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 770
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 770\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: d56a266d-3669-4292-8934-9d7b0c9c522b
     type: regular
     task:
@@ -164,27 +135,14 @@ tasks:
       virtual_machine_name:
         simple: TestOAuth
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 950
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 950\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 995,
-        "width": 380,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 995,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n\
+  \    }\n  }\n}"
 inputs: []
 outputs: []
+fromversion: 5.0.0
+description: ''

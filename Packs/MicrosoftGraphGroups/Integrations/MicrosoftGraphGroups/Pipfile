@@ -1,0 +1,31 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+pytest = "*"
+pytest-mock = "*"
+requests-mock = "*"
+flake8 = "*"
+
+[packages]
+cybox = "==2.1.0.13"  # disable-secrets-detection
+future = "==0.16.0"
+lxml = "==3.7.2"
+mixbox = "==1.0.1"
+olefile = "==0.44"
+ordered-set = "==2.0.1"
+python-dateutil = "==2.6.0"
+python-whois = "==0.7.0"
+requests = "==2.13.0"
+six = "==1.10.0"
+stix = "==1.2.0.2"  # disable-secrets-detection
+urllib3 = "==1.24"
+virtualenv = "==15.0.3"
+weakrefmethod = "==1.0.3"
+PySocks = "==1.6.8"
+
+[requires]
+python_version = "2.7"
