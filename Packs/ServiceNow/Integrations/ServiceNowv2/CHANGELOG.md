@@ -1,4 +1,7 @@
 ## [Unreleased]
+  - Improved documentation regarding the usage of the ***impact*** and the ***urgency*** arguments for the commands:
+    - ***servicenow-update-ticket***
+    - ***servicenow-create-ticket***
   - Added 4 commands:
     - ***servicenow-query-items***
     - ***servicenow-get-item-details***
