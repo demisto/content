@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+Added detailed instructions about scan option techniques.
 
 
 ## [20.4.0] - 2020-04-14

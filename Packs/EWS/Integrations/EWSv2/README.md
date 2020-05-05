@@ -1784,6 +1784,11 @@
 <td style="width: 318px;">Attachment name of the item attachment.</td>
 </tr>
 <tr>
+<td style="width: 349px;">Email.Items.ItemAttachments.attachmentName</td>
+<td style="width: 73px;">unknown</td>
+<td style="width: 318px;">Attachment name of the item attachment.</td>
+</tr>
+<tr>
 <td style="width: 349px;">EWS.Items.isRead</td>
 <td style="width: 73px;">String</td>
 <td style="width: 318px;">The read status of the email.</td>
@@ -2000,6 +2005,46 @@
 <td style="width: 349px;">EWS.Items.isRead</td>
 <td style="width: 73px;">String</td>
 <td style="width: 318px;">The read status of the email.</td>
+</tr>
+<tr>
+<td style="width: 349px;">Email.CC</td>
+<td style="width: 73px;">String</td>
+<td style="width: 318px;">Email addresses CC'ed to the email.</td>
+</tr>
+<tr>
+<td style="width: 349px;">Email.BCC</td>
+<td style="width: 73px;">String</td>
+<td style="width: 318px;">Email addresses BCC'ed to the email.</td>
+</tr>
+<tr>
+<td style="width: 349px;">Email.To</td>
+<td style="width: 73px;">String</td>
+<td style="width: 318px;">The recipient of the email.</td>
+</tr>
+<tr>
+<td style="width: 349px;">Email.From</td>
+<td style="width: 73px;">String</td>
+<td style="width: 318px;">The sender of the email.</td>
+</tr>
+<tr>
+<td style="width: 349px;">Email.Subject</td>
+<td style="width: 73px;">String</td>
+<td style="width: 318px;">The subject of the email.</td>
+</tr>
+<tr>
+<td style="width: 349px;">Email.Text</td>
+<td style="width: 73px;">String</td>
+<td style="width: 318px;">The plain-text version of the email.</td>
+</tr>
+<tr>
+<td style="width: 349px;">Email.HTML</td>
+<td style="width: 73px;">String</td>
+<td style="width: 318px;">The HTML version of the email.</td>
+</tr>
+<tr>
+<td style="width: 349px;">Email.HeadersMap</td>
+<td style="width: 73px;">String</td>
+<td style="width: 318px;">The headers of the email.</td>
 </tr>
 </tbody>
 </table>
