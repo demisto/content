@@ -207,12 +207,13 @@ Uploads a file from Demisto to MS Graph resource
 ### 3. msgraph-replace-existing-file
 
 ---
+
+Replace file context in MS Graph resource
+
 ##### Required Permissions
 
     Files.ReadWrite.All
     Sites.ReadWrite.All
-
-Replace file context in MS Graph resource
 
 ##### Base Command
 
@@ -797,14 +798,14 @@ There are no input arguments for this command.
 
 Download the contents of the file of a DriveItem.
 
-##### Base Command
-
-`msgraph-download-file`
-
 ##### Required Permissions
 
     Files.ReadWrite.All
     Sites.ReadWrite.All
+
+##### Base Command
+
+`msgraph-download-file`
 
 ##### Input
 
@@ -834,3 +835,6 @@ Download the contents of the file of a DriveItem.
 ##### Command Example
 
 ```!msgraph-download-file object_type=drives object_type_id=123 item_id=123```
+
+
+
