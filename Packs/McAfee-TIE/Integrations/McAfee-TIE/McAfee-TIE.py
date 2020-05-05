@@ -106,8 +106,14 @@ def parse_reputation(rep):
 
 def parse_reference(reference):
     agent_guid = reference.get('agentGuid')
+    date = reference.get('date')
+    try:
+        date = datetime.fromtimestamp(date)
+    except ValueError:
+        date = datetime.fromtimestamp(date / 1000)
+
     return {
-        'Date': str(datetime.fromtimestamp(reference.get('date'))),
+        'Date': str(date),
         'AgentGuid': agent_guid.replace('{', '').replace('}', '')  # remove brackets if exist
     }
 
