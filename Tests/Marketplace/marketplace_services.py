@@ -609,6 +609,7 @@ class Pack(object):
                     else:
                         with open(changelog_path, "r") as changelog_file:
                             changelog = json.load(changelog_file)
+                            print_color(changelog, LOG_COLORS.YELLOW)
                             if latest_release_notes in changelog:
                                 print_error(f"Found existing release notes for version: {latest_release_notes} "
                                             f"in the {self._pack_name} pack.")
