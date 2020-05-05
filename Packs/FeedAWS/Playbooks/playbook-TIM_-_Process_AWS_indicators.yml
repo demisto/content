@@ -729,7 +729,7 @@ inputs:
     simple: "No"
   required: false
   description: This input determines if processed indicators that have the whitelist_review tag are reviewed in a new incident. 
-  To create an incident, enter any value other than 'No'.
+    To create an incident, enter any value other than 'No'.
   playbookInputQuery: null
 outputs: []
 quiet: true
