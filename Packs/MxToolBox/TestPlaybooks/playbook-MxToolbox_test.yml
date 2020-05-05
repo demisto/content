@@ -1,6 +1,6 @@
-id: c7d68ad5MxToolbox_test
+id: MxToolbox-test
 version: -1
-name: MxToolbox_test
+name: MxToolbox-test
 starttaskid: "0"
 tasks:
   "0":
