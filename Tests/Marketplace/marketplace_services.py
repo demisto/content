@@ -610,6 +610,8 @@ class Pack(object):
                             if latest_release_notes in changelog:
                                 print_error(f"Found existing release notes for version: {latest_release_notes} "
                                             f"in the {self._pack_name} pack.")
+                                task_status = False
+                                return task_status
                         latest_rn_file = latest_release_notes.replace('.', '_')
 
                         latest_rn_path = os.path.join(release_notes_dir, latest_rn_file + '.md')
