@@ -588,7 +588,7 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations, pri
 
     try:
         incidents = client.search_incidents(filter=search_filter)
-        prints_manager.add_print_job('Incident search response: {}'.format(str(incidents)), print, thread_index)
+        # prints_manager.add_print_job('Incident search response: {}'.format(str(incidents)), print, thread_index)
     except ApiException as err:
         prints_manager.add_print_job(err, print, thread_index)
         incidents = {'total': 0}
@@ -598,7 +598,7 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations, pri
     while incidents['total'] < 1:
         try:
             incidents = client.search_incidents(filter=search_filter)
-            prints_manager.add_print_job('Incident search response: {}'.format(str(incidents)), print, thread_index)
+            # prints_manager.add_print_job('Incident search response: {}'.format(str(incidents)), print, thread_index)
         except ApiException as err:
             prints_manager.add_print_job(err, print, thread_index)
         if time.time() > timeout:
@@ -823,6 +823,9 @@ def test_integration(client, server_url, integrations, playbook_id, prints_manag
         i = i + 1
 
     __disable_integrations_instances(client, module_instances, prints_manager, thread_index=thread_index)
+
+    prints_manager.add_print_job('Manual Override: Skipping Docker Image Memory Check', print_warning, thread_index)
+    test_docker_images = False
 
     if test_docker_images:
         memory_threshold = options.get('memory_threshold', Docker.DEFAULT_CONTAINER_MEMORY_USAGE)
