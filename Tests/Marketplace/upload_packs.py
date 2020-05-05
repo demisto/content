@@ -504,7 +504,7 @@ def main():
             pack.cleanup()
             continue
 
-        task_status = pack.prepare_release_notes(storage_bucket)
+        task_status = pack.prepare_release_notes(index_folder_path)
         if not task_status:
             pack.status = PackStatus.FAILED_RELEASE_NOTES.name
             pack.cleanup()
