@@ -716,7 +716,7 @@ def build_kv_store_query(args):
     elif 'limit' in args:
         return {'limit': args['limit']}
     else:
-        return args.get('query')
+        return args.get('query', {})
 
 
 def kv_store_collection_data(service):
@@ -742,6 +742,17 @@ def kv_store_collection_delete_entry(service):
     query = build_kv_store_query(args)
     service.kvstore[store].data.delete(query)
     return_outputs('The values of the {} were deleted successfully'.format(store), {}, {})
+
+
+def check_error(service, args, error):
+    app = args.get('app_name')
+    store_name = args.get('kv_store_collection_name') or args.get('kv_store_name')
+    if app not in service.apps:
+        raise DemistoException('app not found')
+    elif store_name not in service.kvstore:
+        raise DemistoException('KV Store not found')
+    else:
+        raise error
 
 
 def main():
@@ -799,25 +810,27 @@ def main():
     if demisto.command() == 'splunk-job-status':
         splunk_job_status(service)
     if demisto.command().startswith('splunk-kv-') and service is not None:
-        service.namespace['app'] = demisto.args().get('app_name', 'search')
-
-        if demisto.command() == 'splunk-kv-store-collection-create':
-            kv_store_collection_create(service)
-        elif demisto.command() == 'splunk-kv-store-collection-config':
-            kv_store_collection_config(service)
-        elif demisto.command() == 'splunk-kv-store-collection-delete':
-            kv_store_collection_delete(service)
-        elif demisto.command() == 'splunk-kv-store-collections-list':
-            kv_store_collections_list(service)
-        elif demisto.command() == 'splunk-kv-store-collection-add-entries':
-            kv_store_collection_add_entries(service)
-        elif demisto.command() in ['splunk-kv-store-collection-data-list', 'splunk-kv-store-collection-search-entry']:
-            kv_store_collection_data(service)
-        elif demisto.command() == 'splunk-kv-store-collection-data-delete':
-            kv_store_collection_data_delete(service)
-        elif demisto.command() == 'splunk-kv-store-collection-delete-entry':
-            kv_store_collection_delete_entry(service)
-
+        args = demisto.args()
+        service.namespace['app'] = args.get('app_name', 'search')
+        try:
+            if demisto.command() == 'splunk-kv-store-collection-create':
+                kv_store_collection_create(service)
+            elif demisto.command() == 'splunk-kv-store-collection-config':
+                kv_store_collection_config(service)
+            elif demisto.command() == 'splunk-kv-store-collection-delete':
+                kv_store_collection_delete(service)
+            elif demisto.command() == 'splunk-kv-store-collections-list':
+                kv_store_collections_list(service)
+            elif demisto.command() == 'splunk-kv-store-collection-add-entries':
+                kv_store_collection_add_entries(service)
+            elif demisto.command() in ['splunk-kv-store-collection-data-list', 'splunk-kv-store-collection-search-entry']:
+                kv_store_collection_data(service)
+            elif demisto.command() == 'splunk-kv-store-collection-data-delete':
+                kv_store_collection_data_delete(service)
+            elif demisto.command() == 'splunk-kv-store-collection-delete-entry':
+                kv_store_collection_delete_entry(service)
+        except KeyError as error:
+            check_error(service, args, error)
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
