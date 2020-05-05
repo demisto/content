@@ -13,9 +13,9 @@ args:
     isArray: true
   - name: custom_fields_output
     description: Name of the field to serialize details into
-    defaultValue: false
   - name: context_key
     description: Context key to be used for the output. If omitted is PenteraIncidents
+    defaultValue: PenteraIncidents
 outputs:
   - contextPath: PenteraIncidents
     description: Pentera list of incidents
