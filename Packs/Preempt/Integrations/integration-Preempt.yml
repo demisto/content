@@ -497,5 +497,5 @@ script:
     - contextPath: Preempt.Alerts.Cursor
       description: Cursor of last retrieved activity for pagination
     description: Get the alerts generated according to given arguments
-  dockerimage: demisto/python
+  dockerimage45: demisto/python
   isfetch: true
