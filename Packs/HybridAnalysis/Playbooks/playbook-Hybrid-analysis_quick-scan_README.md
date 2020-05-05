@@ -34,4 +34,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Hybrid-analysis_quick-scan](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Hybrid-analysis_quick-scan.png)
+![Hybrid-analysis_quick-scan](https://raw.githubusercontent.com/demisto/content/bf8a2c7a52660270f2feb78b649076aa204a25e3/Packs/HybridAnalysis/doc_files/Hybrid-analysis_quick-scan.png)
