@@ -6,6 +6,7 @@ script: |2
 
   demisto.results(demisto.executeCommand("grr_get_files", demisto.args()))
 type: python
+subtype: python2
 tags:
 - GRR
 comment: Downloads files from specified machine without requiring approval

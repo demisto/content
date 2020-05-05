@@ -1004,7 +1004,7 @@ def main():
             'Authorization': f'SSWS {apitoken}'
         },
         proxy=proxy,
-        ok_codes=(200, 204))
+        ok_codes=(200, 201, 204))
 
     try:
         if command in commands:

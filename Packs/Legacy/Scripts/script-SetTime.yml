@@ -11,6 +11,7 @@ script: |-
   demisto.setContext(fieldName, now)
   demisto.results( demisto.executeCommand("setIncident", {fieldName: now }) )
 type: python
+subtype: python2
 tags: []
 comment: Fill the current time in a custom incident field
 system: true

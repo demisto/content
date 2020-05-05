@@ -9,6 +9,7 @@ script: |
   res = demisto.dt(value, dt)
   demisto.results(res)
 type: python
+subtype: python2
 tags:
 - transformer
 - general

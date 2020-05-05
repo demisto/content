@@ -32,6 +32,7 @@ script: |-
       except Exception as ex:
           demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents': "Error occurred while parsing output from D2Autoruns:\n" + str(ex) + '\n\nAutoruns output:\n' + respAR[0]['Contents'] })
 type: python
+subtype: python2
 tags:
 - endpoint
 - forensics
