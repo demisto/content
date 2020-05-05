@@ -615,7 +615,7 @@ class Pack(object):
                                             f"in the {self._pack_name} pack.")
                         latest_rn_file = latest_release_notes.replace('.', '_')
 
-                        latest_rn_path = os.path.join(release_notes_dir, latest_rn_file, '.md')
+                        latest_rn_path = os.path.join(release_notes_dir, latest_rn_file + '.md')
                         with open(latest_rn_path, 'r') as changelog_md:
                             changelog_lines = changelog_md.read()
                         version_changelog = {'releaseNotes': changelog_lines,
