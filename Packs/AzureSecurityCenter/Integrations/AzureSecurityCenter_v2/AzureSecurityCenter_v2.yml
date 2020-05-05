@@ -262,7 +262,7 @@ script:
       type: String
     - description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
         command. If not specified, the default subscription ID is used.
-      type: Unknown
+      type: String
   - arguments:
     - default: false
       description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
