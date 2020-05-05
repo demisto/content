@@ -4,7 +4,7 @@
 	"version": -1,
 	"sortValues": null,
 	"locked": false,
-	"name": "Manually Review Indicators for Whitelisting",
+	"name": "Review Indicators Manually For Whitelisting",
 	"color": "#4CAF50",
 	"playbookId": "TIM - Review Indicators Manually For Whitelisting",
 	"hours": 0,
