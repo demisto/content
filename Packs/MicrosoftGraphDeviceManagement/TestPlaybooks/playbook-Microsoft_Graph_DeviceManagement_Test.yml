@@ -1,9 +1,6 @@
-elasticcommonfields: {}
 id: MSGraph_DeviceManagement_Test
-fromversion: 5.0.0
 version: -1
 name: MSGraph_DeviceManagement_Test
-description: test pb
 starttaskid: '0'
 tasks:
   '0':
@@ -16,7 +13,7 @@ tasks:
       name: ''
       iscommand: false
       brand: ''
-      description: description
+      description: ''
     nexttasks:
       '#none#':
       - '5'
@@ -118,7 +115,7 @@ tasks:
       type: title
       iscommand: false
       brand: ''
-      description: description
+      description: ''
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
     note: false
@@ -144,7 +141,7 @@ tasks:
       - '1'
     scriptarguments:
       all:
-        simple: true
+        simple: yes
       index: {}
       key: {}
       keysToKeep: {}
@@ -167,13 +164,13 @@ tasks:
       type: condition
       iscommand: false
       brand: ''
-      description: description
+      description: ''
     nexttasks:
-      true:
+      yes:
       - '2'
     separatecontext: false
     conditions:
-    - label: true
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -221,5 +218,5 @@ view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n
   \    }\n  }\n}"
 inputs: []
 outputs: []
-tests:
-- No tests (auto formatted)
+fromversion: 5.0.0
+description: ''
