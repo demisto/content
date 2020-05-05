@@ -150,6 +150,10 @@ def install_pack(client, prints_manager, pack_display_name, packs_to_install, in
         'ignoreWarnings': True
     }
 
+    msg = f'Pack {pack_display_name} installation request body:\n{str(request_data)}'
+    prints_manager.add_print_job(msg, print_color, 0, LOG_COLORS.GREEN)
+    prints_manager.execute_thread_prints(0)
+
     # make the pack installation request
     try:
         response_data, status_code, _ = demisto_client.generic_request_func(client,
@@ -190,6 +194,11 @@ def search_and_install_pack(client, prints_manager, int_path, installed_packs):
 def search_and_install_packs_and_their_dependencies(integrations_files, client, prints_manager):
     threads_list = []
     installed_packs = set()
+
+    host = client.api_client.configuration.host
+    msg = f'Starting to search and install packs in server: {host}'
+    prints_manager.add_print_job(msg, print_color, 0, LOG_COLORS.GREEN)
+    prints_manager.execute_thread_prints(0)
 
     for int_path in integrations_files:
         thread = Thread(target=search_and_install_pack,
