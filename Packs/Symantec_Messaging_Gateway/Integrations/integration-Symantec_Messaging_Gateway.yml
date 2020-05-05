@@ -20,12 +20,12 @@ configuration:
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "true"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "false"
+  defaultvalue: ""
   type: 8
   required: false
 script:
@@ -569,4 +569,5 @@ script:
   - name: smg-get-blocked-ips
     arguments: []
     description: Returns a list of all blocked IP addresses.
-  dockerimage: demisto/bs4
+  dockerimage45: demisto/bs4
+  dockerimage: demisto/bs4:1.0.0.7863
