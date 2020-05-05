@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 if [[ "$#" -lt 2 ]]; then
-  echo "Usage: $0 <content branch name: such as master> <circle ci token> [server branch name] [nightly: set to true or leave blank]"
+  echo "Usage: $0 <content branch name: such as master> <circle ci token> [server build number] [nightly: set to true or leave blank]"
   echo "You can get a circle ci token from: CircleCI -> User -> Personal API Tokens"
-  echo "Note: if doing a nightly build you must specify server branch name"
+  echo "Note: if doing a nightly build you must specify server build number"
   exit 1
 fi
 
@@ -26,7 +26,7 @@ else
   {
     "build_parameters": {
       "NON_AMI_RUN": "true",
-      "SERVER_BRANCH_NAME": "$3",
+      "ARTIFACT_BUILD_NUM": "$3",
       "NIGHTLY": "$4"
     }
   }
