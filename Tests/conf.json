@@ -2764,6 +2764,7 @@
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "skyformation": "No instance, old partner",
         "PrismaAccess": "Instance will be provided soon by Lior and Prasen",
         "Trend Micro Apex": "Issue 23632",
         "Awake Security": "Issue 23376",
