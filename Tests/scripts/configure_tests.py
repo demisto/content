@@ -931,17 +931,15 @@ def is_any_test_runnable(test_ids, conf, id_set=None, server_version='0'):
     return False
 
 
-def get_random_tests(tests_num, conf=None, id_set=None, server_version='0'):
+def get_random_tests(tests_num, rand, conf=None, id_set=None, server_version='0'):
     """Gets runnable tests for the server version"""
     if not id_set:
         with open("./Tests/id_set.json", 'r') as conf_file:
             id_set = json.load(conf_file)
 
     tests = set([])
-
     test_ids = conf.get_test_playbook_ids()
 
-    rand = random.Random(time.time())
     while len(tests) < tests_num:
         test = rand.choice(test_ids)
         if is_test_runnable(test, id_set, conf, server_version):
@@ -976,7 +974,8 @@ def get_test_list(files_string, branch_name, two_before_ga_ver='0', conf=None, i
         tests = tests.union(get_test_from_conf(branch_name, conf))
 
     if not tests:
-        tests = get_random_tests(tests_num=RANDOM_TESTS_NUM, conf=conf, id_set=id_set, server_version=two_before_ga_ver)
+        rand = random.Random(files_string + branch_name)
+        tests = get_random_tests(tests_num=RANDOM_TESTS_NUM, rand=rand, conf=conf, id_set=id_set, server_version=two_before_ga_ver)
         if changed_common:
             print_warning('Adding 3 random tests due to: {}'.format(','.join(changed_common)))
         elif sample_tests:  # Choosing 3 random tests for infrastructure testing
