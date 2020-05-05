@@ -134,7 +134,7 @@ def search_pack(client, prints_manager, pack_display_name):
         return {}
 
 
-def install_pack(client, prints_manager, pack_display_name, packs_to_install):
+def install_pack(client, prints_manager, pack_display_name, packs_to_install, installed_packs):
     """ Make a pack installation request.
 
     Args:
@@ -142,6 +142,7 @@ def install_pack(client, prints_manager, pack_display_name, packs_to_install):
         prints_manager (ParallelPrintsManager): Print manager object
         pack_display_name (string): The pack display name
         packs_to_install (list): A list of the packs to install.
+        installed_packs (set): A set of packs that were installed so far.
     """
 
     request_data = {
@@ -149,26 +150,29 @@ def install_pack(client, prints_manager, pack_display_name, packs_to_install):
         'ignoreWarnings': True
     }
 
-    # for debugging in circle - will be removed
-    msg = f"Pack {pack_display_name} installation request body:\n" + str(request_data)
-    prints_manager.add_print_job(msg, print_error, 0)
-    prints_manager.execute_thread_prints(0)
-
     # make the pack installation request
-    response_data, status_code, _ = demisto_client.generic_request_func(client,
-                                                                        path='/contentpacks/marketplace/install',
-                                                                        method='POST',
-                                                                        body=request_data,
-                                                                        accept='application/json')
+    try:
+        response_data, status_code, _ = demisto_client.generic_request_func(client,
+                                                                            path='/contentpacks/marketplace/install',
+                                                                            method='POST',
+                                                                            body=request_data,
+                                                                            accept='application/json')
 
-    if 200 <= status_code < 300:
-        prints_manager.add_print_job('Pack {} Successfully Installed!'.format(pack_display_name), print_color, 0,
-                                     LOG_COLORS.GREEN)
-        prints_manager.execute_thread_prints(0)
-    else:
-        result_object = ast.literal_eval(response_data)
-        message = result_object.get('message', '')
-        err_msg = 'Failed to install pack {} - with status code {}\n{}'.format(pack_display_name, status_code, message)
+        if 200 <= status_code < 300:
+            prints_manager.add_print_job('Pack {} Successfully Installed!'.format(pack_display_name), print_color, 0,
+                                         LOG_COLORS.GREEN)
+            prints_manager.execute_thread_prints(0)
+            installed_packs.update([pack['id'] for pack in packs_to_install])
+        else:
+            result_object = ast.literal_eval(response_data)
+            message = result_object.get('message', '')
+            err_msg = 'Failed to install pack {} - with status code {}\n{}'.format(pack_display_name,
+                                                                                   status_code,
+                                                                                   message)
+            prints_manager.add_print_job(err_msg, print_error, 0)
+            prints_manager.execute_thread_prints(0)
+    except Exception as e:
+        err_msg = f'The request to install pack {pack_display_name} has failed. Reason:\n{str(e)}'
         prints_manager.add_print_job(err_msg, print_error, 0)
         prints_manager.execute_thread_prints(0)
 
@@ -180,8 +184,7 @@ def search_and_install_pack(client, prints_manager, int_path, installed_packs):
     if pack_data:
         dependencies = get_pack_dependencies(client, prints_manager, pack_data)
         packs_to_install = [pack_data] + dependencies
-        install_pack(client, prints_manager, pack_display_name, packs_to_install)
-        installed_packs.update([pack['id'] for pack in packs_to_install])
+        install_pack(client, prints_manager, pack_display_name, packs_to_install, installed_packs)
 
 
 def search_and_install_packs_and_their_dependencies(integrations_files, client, prints_manager):
