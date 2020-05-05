@@ -127,7 +127,7 @@ script:
     name: servicenow-get-ticket
     outputs:
     - contextPath: ServiceNow.Ticket.ID
-      description: ServiceNow ticket ID
+      description: ServiceNow ticket ID.
       type: string
     - contextPath: ServiceNow.Ticket.OpenedBy
       description: ServiceNow ticket opener ID
