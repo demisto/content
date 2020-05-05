@@ -825,6 +825,7 @@ script:
 
     sys.exit(0)
   type: python
+  subtype: python2
   commands:
   - name: netwitness-get-machines
     arguments:

@@ -38,6 +38,7 @@ script: |-
       except:
           pass
 type: python
+subtype: python2
 tags:
 - reputation
 comment: |-

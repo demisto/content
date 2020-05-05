@@ -594,6 +594,7 @@ script:
     except Exception as e:
         return_error(str(e))
   type: python
+  subtype: python2
   commands:
   - name: ip
     arguments:

@@ -10,6 +10,7 @@ script: |
   else:
       demisto.results('no')
 type: python
+subtype: python2
 tags:
 - server
 - Utility

@@ -24,6 +24,7 @@ script: |+
 
       demisto.results(demisto.executeCommand('internal-misp-upload-sample', args))
 type: python
+subtype: python2
 tags: []
 comment: Upload malicious file sample to MISP
 enabled: true

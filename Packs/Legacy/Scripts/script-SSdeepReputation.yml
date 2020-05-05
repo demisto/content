@@ -90,6 +90,7 @@ script: |-
   else:
       demisto.results(ssdeep_indicator.get('score', 0))
 type: python
+subtype: python2
 tags:
 - reputation
 comment: Calculate ssdeep reputation based on similar files (by ssdeep similarity)

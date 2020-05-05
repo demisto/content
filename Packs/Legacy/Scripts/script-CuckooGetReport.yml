@@ -4,6 +4,7 @@ commonfields:
 name: CuckooGetReport
 script: 'demisto.results( demisto.executeCommand("cuckoo-get-task-report", { "id": demisto.args()["taskID"] }) )'
 type: python
+subtype: python2
 tags:
 - cuckoo
 comment: Get the report for a completed analysis.
