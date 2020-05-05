@@ -139,6 +139,7 @@ class Pack(object):
         self._support_type = None  # initialized in load_user_metadata function
         self._current_version = None  # initialized in load_user_metadata function
         self._hidden = False  # initialized in load_user_metadata function
+        self._description = None  # initialized in load_user_metadata function
 
     @property
     def name(self):
@@ -217,6 +218,18 @@ class Pack(object):
         """ setter of hidden property of the pack.
         """
         self._hidden = hidden_value
+
+    @property
+    def description(self):
+        """ str: Description of the pack (found in pack_metadata.json).
+        """
+        return self._description
+
+    @description.setter
+    def description(self, description_value):
+        """ setter of description property of the pack.
+        """
+        self._description = description_value
 
     @property
     def server_min_version(self):
@@ -608,7 +621,14 @@ class Pack(object):
                         changelog[latest_release_notes] = version_changelog
                         with open(os.path.join(self._pack_path, 'changelog.json'), "w") as f:
                             json.dump(changelog, f)
-
+                elif self._current_version == '1.0.0':
+                    changelog = {}
+                    version_changelog = {'releaseNotes': self._description,
+                                         'displayName': '1.0.0',
+                                         'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
+                    changelog['1.0.0'] = version_changelog
+                    with open(os.path.join(self._pack_path, 'changelog.json'), "w") as f:
+                        json.dump(changelog, f)
                 else:
                     print_warning(f"No ReleaseNotes directory was found for pack: {self._pack_name}")
 
@@ -786,6 +806,7 @@ class Pack(object):
             self.support_type = user_metadata.get('support', Metadata.XSOAR_SUPPORT)
             self.current_version = user_metadata.get('currentVersion', '')
             self.hidden = user_metadata.get('hidden', False)
+            self.description = user_metadata.get('description', False)
 
             print(f"Finished loading {self._pack_name} pack user metadata")
             task_status = True
