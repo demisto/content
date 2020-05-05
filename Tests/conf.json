@@ -261,7 +261,15 @@
         },
         {
             "integrations": "AWS - SQS",
-            "playbookID": "fd93f620-9a2d-4fb6-85d1-151a6a72e46d"
+            "playbookID": "AWS - SQS Test Playbook"
+        },
+        {
+            "integrations": "AWS - CloudWatchLogs",
+            "playbookID": "AWS - CloudWatchLogs Test Playbook"
+        },
+        {
+            "integrations": "AWS - Route53",
+            "playbookID": "AWS - Route53 Test Playbook"
         },
         {
             "integrations": "SlackV2",
@@ -1792,7 +1800,7 @@
             "integrations": "MaxMind GeoIP2"
         },
         {
-            "playbookID": "Test_Sagemaker",
+            "playbookID": "Test Sagemaker",
             "integrations": "AWS Sagemaker"
         },
         {
