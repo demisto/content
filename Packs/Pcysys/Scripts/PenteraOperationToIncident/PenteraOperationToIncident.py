@@ -1,7 +1,7 @@
 from typing import Union, List
 
 import demistomock as demisto
-from CommonServerPython import return_outputs, return_error, argToList, json
+from CommonServerPython import *
 
 
 def pentera_operation_to_incident(full_action_report: list, custom_fields_output: Union[str, bool], context_key: str):
