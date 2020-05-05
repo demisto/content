@@ -422,3 +422,5 @@ script:
   runonce: false
 hidden: false
 fromversion: 3.5.0
+tests:
+  - no test
