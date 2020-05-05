@@ -2768,6 +2768,7 @@
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "Traps": "Issue 24122",
         "PrismaAccess": "Instance will be provided soon by Lior and Prasen",
         "Trend Micro Apex": "Issue 23632",
         "Awake Security": "Issue 23376",
