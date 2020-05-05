@@ -946,6 +946,19 @@ def keys_to_camel_case(value):
     return str_to_camel_case(value)
 
 
+def email_ec(item):
+    return {
+        'CC': None if not item.cc_recipients else [mailbox.email_address for mailbox in item.cc_recipients],
+        'BCC': None if not item.bcc_recipients else [mailbox.email_address for mailbox in item.bcc_recipients],
+        'To': None if not item.to_recipients else [mailbox.email_address for mailbox in item.to_recipients],
+        'From': item.author.email_address,
+        'Subject': item.subject,
+        'Text': item.text_body,
+        'HTML': item.body,
+        'HeadersMap': {header.name: header.value for header in item.headers},
+    }
+
+
 def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=False):
     def parse_object_as_dict(object):
         raw_dict = {}
@@ -1695,7 +1708,8 @@ def get_items(item_ids, target_mailbox=None):
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Get items', items_to_context, ITEMS_RESULTS_HEADERS),
         ENTRY_CONTEXT: {
-            CONTEXT_UPDATE_EWS_ITEM: items_to_context
+            CONTEXT_UPDATE_EWS_ITEM: items_to_context,
+            'Email': [email_ec(item) for item in items],
         }
     }
 
