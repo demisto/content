@@ -4,8 +4,8 @@ fromversion: 5.5.0
 name: TIM - Process Office365 indicators
 description: This playbook handles the tagging of Office365 indicators. Specify the
   tag to apply to these indicators in the playbook inputs. An example tag will be
-  approved_white. If no inputs are specified the indicators will be tagged for manual
-  review. The use can specify weather a manual review incident is required.
+  approved_white. If no inputs are specified, the indicators will be tagged for manual
+  review. The user can specify whether a manual review incident is required.
 starttaskid: "0"
 tasks:
   "0":
@@ -114,7 +114,7 @@ tasks:
       id: 217fffc0-984d-43c4-8f6b-9d2956c748d9
       version: -1
       name: Tag Office365 indicators with tag from inputs
-      description: Adds the tag to the indicator.
+      description: Adds the tag provided in the input to the indicator.
       script: Builtin|||appendIndicatorField
       type: regular
       iscommand: true
@@ -212,7 +212,7 @@ tasks:
       id: 95505141-c065-40f7-87f7-34ddea589cbb
       version: -1
       name: Tag Office365 indicators with tag whitelist review
-      description: Adds the tag to the indicator.
+      description: Adds the whitelist_review tag to the indicator.
       script: Builtin|||appendIndicatorField
       type: regular
       iscommand: true
@@ -701,7 +701,7 @@ inputs:
   value: {}
   required: false
   description: 'Use this input to define which tag to apply to Office 365 Feed indicators.
-    An example tag can be approved_white. If no tags are specified in the input the
+    An example tag can be approved_white. If no tags are specified in the input, the
     tag whitelist_review will be used. '
   playbookInputQuery: null
 - key: ""
@@ -728,9 +728,8 @@ inputs:
   value:
     simple: "No"
   required: false
-  description: This input determines if processed indicators that have the whitelist
-    review tag are reviewed in a new incident. To create an incident, enter any value
-    other than 'No'.
+  description: This input determines if processed indicators that have the whitelist_review tag are reviewed in a new incident. 
+  To create an incident, enter any value other than 'No'.
   playbookInputQuery: null
 outputs: []
 quiet: true
