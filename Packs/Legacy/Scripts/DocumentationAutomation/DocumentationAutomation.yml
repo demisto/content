@@ -67,8 +67,8 @@ args:
   required: false
   secret: false
 comment: |-
-  Automates integration documentation.
-  See (https://github.com/demisto/content/tree/master/docs/integration_documentation)[https://github.com/demisto/content/tree/master/docs/integration_documentation]
+  Deprecated. The recommended way to generate documentation is via the demisto-sdk. 
+  See: https://xsoar.pan.dev/docs/integrations/integration-docs
 commonfields:
   id: DocumentationAutomation
   version: -1
@@ -82,3 +82,7 @@ tags: []
 runas: DBotWeakRole
 runonce: false
 subtype: python2
+fromversion: 1.0.0
+deprecated: true
+tests:
+- No tests (auto formatted)

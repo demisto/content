@@ -17,14 +17,6 @@ OUTPUT_FILE_PATH = 'out{id}.pdf'
 DISABLE_LOGOS = True  # Bugfix before sane-reports can work with image files.
 
 
-def fix_base64(base64str, filename):
-    """ Some of the base64 strings are too big for the shell, so let's write
-    them to disk """
-    with open(WORKING_DIR / filename, "wb") as fh:
-        base64str = base64str[base64str.index(";base64,") + 8:]
-        fh.write(base64.b64decode(base64str))
-
-
 def random_string(size=10):
     return ''.join(
         random.choices(string.ascii_uppercase + string.digits, k=size))
@@ -41,20 +33,10 @@ try:
     pageSize = demisto.args().get('paperSize', 'letter')
     disableHeaders = demisto.args().get('disableHeaders', '')
 
-    if DISABLE_LOGOS:
-        headerRightImage = ''
-        headerLeftImage = ''
-    else:
-        if headerLeftImage != '':
-            fix_base64(headerLeftImage, "left.png")
-            headerLeftImage = "left.png"
-        if headerRightImage != '':
-            fix_base64(headerRightImage, "right.png")
-            headerRightImage = "right.png"
-
+    # Note: After headerRightImage the empty one is for legacy argv in server.js
     extra_cmd = f"{orientation} {resourceTimeout} {reportType} " + \
-                f"{headerLeftImage} {headerRightImage} {pageSize} " + \
-                f"{disableHeaders}"
+                f'"{headerLeftImage}" "{headerRightImage}" "" ' + \
+                f'"{pageSize}" "{disableHeaders}"'
 
     # Generate a random input file so we won't override on concurrent usage
     input_id = random_string()
@@ -69,7 +51,22 @@ try:
 
     cmd = ['./reportsServer', input_file, output_file, 'dist'] + shlex.split(
         extra_cmd)
-    subprocess.check_output(cmd, cwd=WORKING_DIR)
+
+    # Logging things for debugging
+    params = f'[orientation="{orientation}",' \
+        f' resourceTimeout="{resourceTimeout}",' \
+        f' reportType="{reportType}", headerLeftImage="{headerLeftImage}",' \
+        f' headerRightImage="{headerRightImage}", pageSize="{pageSize}",' \
+        f' disableHeaders="{disableHeaders}" '
+    LOG(f"Sane-pdf parameters: {params}]")
+    cmd_string = " ".join(cmd)
+    LOG(f"Sane-pdf cmd: {cmd_string}")
+    LOG.print_log()
+
+    # Execute the report creation
+    out = subprocess.check_output(cmd, cwd=WORKING_DIR,
+                                  stderr=subprocess.STDOUT)
+    LOG(f"Sane-pdf output: {str(out)}")
 
     abspath_output_file = WORKING_DIR / output_file
     with open(abspath_output_file, 'rb') as f:
@@ -78,6 +75,13 @@ try:
     os.remove(abspath_output_file)
     return_outputs(readable_output='Successfully generated pdf',
                    outputs={}, raw_response={'data': encoded})
+
+except subprocess.CalledProcessError as e:
+    tb = traceback.format_exc()
+    wrap = "=====sane-pdf-reports error====="
+    err = f'{wrap}\n{tb}{wrap}, process error: {e.output}\n'
+    return_error(f'[SanePdfReports Automation Error] - {err}')
+
 except Exception:
     tb = traceback.format_exc()
     wrap = "=====sane-pdf-reports error====="
