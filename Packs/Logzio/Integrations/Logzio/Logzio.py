@@ -133,6 +133,28 @@ def test_module(client):
         return 'Test failed: {}'.format(e)
 
 
+def get_formatted_logs(response):
+    content = []
+    for log in response:
+        log_context = {
+            'content': log
+        }
+        if 'type' in log:
+            log_context['type'] = log.get("type", None),
+        if '@timestamp' in log:
+            log_context['timestamp'] = log.get("@timestamp", None)
+        content.append(log_context)
+    if len(content) == 0:
+        context = None
+        readable = '### No logs were found'
+    else:
+        context = {
+            'Logzio.Result': content
+        }
+        readable = tableToMarkdown("Logs", content)
+    return readable, context
+
+
 def search_logs_command(client, args):
     if client.op_api_token is None:
         return_error("Operational API Token wasn't provided, cannot perform search")
@@ -140,26 +162,9 @@ def search_logs_command(client, args):
     size = args.get('size', MAX_LOGZIO_DOCS)
     from_time = args.get('from_time')
     to_time = args.get('to_time')
-    resp = client.search_logs(query, size, from_time, to_time)
-    content = []
-    for res in resp:
-        log = res.get("_source", None)
-        log_context = {
-            'type': log.get("type", None),
-            'timestamp': log.get("@timestamp", None),
-            'content': log
-        }
-        content.append(log_context)
-    if len(content) == 0:
-        context = None
-        readable = '### No logs were found'
-    else:
-        context = {
-            'Logzio.Logs': content
-
-        }
-        readable = tableToMarkdown("Logs", content)
-    return_outputs(readable, context, content)
+    resp = [log["_source"] for log in client.search_logs(query, size, from_time, to_time)]
+    readable, context = get_formatted_logs(resp)
+    return_outputs(readable, context, resp)
 
 
 def get_rule_logs_by_id_command(client, args):
@@ -169,10 +174,8 @@ def get_rule_logs_by_id_command(client, args):
     size = args.get("size", 100)
     page_size = args.get("page_size", MAX_LOGZIO_DOCS)
     resp = client.get_rule_logs(id, size, page_size)
-    context = {
-        'Logzio.Logs': resp
-    }
-    return_outputs(tableToMarkdown("Logs", resp), context, resp)
+    readable, context = get_formatted_logs(resp)
+    return_outputs(readable, context, resp)
 
 
 def fetch_incidents(client, last_run, search, severities, first_fetch_time):
