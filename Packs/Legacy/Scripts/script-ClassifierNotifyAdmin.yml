@@ -31,6 +31,7 @@ script: |-
 
   demisto.results(res)
 type: python
+subtype: python2
 tags:
 - Classifier
 comment: Send mail to admin, notifying that classification failed

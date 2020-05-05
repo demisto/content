@@ -14,6 +14,7 @@ script: |-
       'EntryContext': {'GeneratedIP': ip}
   })
 type: python
+subtype: python2
 tags: []
 comment: Generates random IP address
 enabled: true

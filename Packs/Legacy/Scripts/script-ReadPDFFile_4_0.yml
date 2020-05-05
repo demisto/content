@@ -103,6 +103,7 @@ script: |-
       else:
           demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "EntryID {0} path could not be found".format(entryID) } )
 type: python
+subtype: python2
 tags:
 - Utility
 - ingestion

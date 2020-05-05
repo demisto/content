@@ -115,6 +115,10 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "Pipl",
+            "playbookID": "Pipl Test"
+        },
+        {
             "integrations": "AWS Feed",
             "playbookID": "AWS Feed Test",
             "fromversion": "5.5.0"
@@ -346,9 +350,6 @@
         },
         {
             "playbookID": "TestAwsEC2GetPublicSGRules-Test"
-        },
-        {
-            "playbookID": "TestParseEmailFile-deprecated-script"
         },
         {
             "integrations": "RSA NetWitness Packets and Logs",
@@ -660,6 +661,14 @@
         {
             "playbookID": "Luminate-TestPlaybook",
             "integrations": "Luminate"
+        },
+        {
+            "integrations": "MxToolBox",
+            "playbookID": "MxToolbox-test"
+        },
+        {
+            "integrations": "Nessus",
+            "playbookID": "Nessus - Test"
         },
         {
             "playbookID": "Palo Alto Networks - Malware Remediation Test",
@@ -2731,11 +2740,11 @@
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get PrismaAccess instance",
         "Prisma_Access-Test": "unskip after we will get PrismaAccess instance",
         "Test-Shodan_v2": "Issue 23370",
-        "Symantec Deepsight Test": "Issue 22971",
         "PAN-OS EDL Setup V2 Test": "Issue 23854",
         "PAN-OS - Block IP and URL - External Dynamic List Test": "Issue 23854",
         "PhishLabsIOC TestPlaybook": "integration bug (23926)",
         "Test_URLhaus": "Issue 23857",
+        "Symantec Deepsight Test": "Issue 22971",
         "OTRS Test": "Issue 23167",
         "Akamai_WAF_SIEM-Test": "Issue 22225",
         "Cloaken-Test": "Issue 20036",
@@ -2783,7 +2792,11 @@
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "Nessus": "No instance",
+        "MxToolBox": "No instance",
         "Traps": "Issue 24122",
+        "skyformation": "No instance, old partner",
+        "Pipl": "No instance",
         "PrismaAccess": "Instance will be provided soon by Lior and Prasen",
         "Trend Micro Apex": "Issue 23632",
         "Awake Security": "Issue 23376",
