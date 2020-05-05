@@ -741,6 +741,7 @@ script:
     else:
         demisto.results('Command not implement yet')
   type: python
+  subtype: python2
   commands:
   - name: vigilante-query-infected-host-data
     arguments:

@@ -115,6 +115,10 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "Pipl",
+            "playbookID": "Pipl Test"
+        },
+        {
             "integrations": "AWS Feed",
             "playbookID": "AWS Feed Test",
             "fromversion": "5.5.0"
@@ -649,6 +653,14 @@
         {
             "playbookID": "Luminate-TestPlaybook",
             "integrations": "Luminate"
+        },
+        {
+            "integrations": "MxToolBox",
+            "playbookID": "MxToolbox-test"
+        },
+        {
+            "integrations": "Nessus",
+            "playbookID": "Nessus - Test"
         },
         {
             "playbookID": "Palo Alto Networks - Malware Remediation Test",
@@ -2772,8 +2784,11 @@
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "Nessus": "No instance",
+        "MxToolBox": "No instance",
         "Traps": "Issue 24122",
         "skyformation": "No instance, old partner",
+        "Pipl": "No instance",
         "PrismaAccess": "Instance will be provided soon by Lior and Prasen",
         "Trend Micro Apex": "Issue 23632",
         "Awake Security": "Issue 23376",

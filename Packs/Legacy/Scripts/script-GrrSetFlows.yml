@@ -6,6 +6,7 @@ script: |2
 
   demisto.results(demisto.executeCommand("grr_set_flows", demisto.args()))
 type: python
+subtype: python2
 tags:
 - GRR
 comment: Starts a flow on a given client with given parameters
