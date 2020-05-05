@@ -87,6 +87,7 @@ script:
         })
         sys.exit(0)
   type: python
+  subtype: python2
   commands:
   - name: predict-phishing
     arguments:
@@ -100,7 +101,8 @@ script:
       description: The predication probability (range 0-1)
       type: number
     description: Classify input text (usually email content)
-  dockerimage: demisto/boto3
+  dockerimage: demisto/boto3:1.9.55
+  dockerimage45: demisto/boto3
   runonce: false
 tests:
-  - Test_Sagemaker
+  - Test Sagemaker
