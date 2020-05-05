@@ -125,21 +125,24 @@ script:
       required: true
       description: 'Id to poll for '
     outputs:
-    - contextPath: Humio.Poll
+    - contextPath: Humio.Result
       description: Poll results
       type: Unknown
-    - contextPath: Humio.Poll.cancelled
+    - contextPath: Humio.Result.cancelled
       description: If it was cancelled
       type: Unknown
-    - contextPath: Humio.Poll.events
+    - contextPath: Humio.Result.events
       description: Events in the poll
       type: Unknown
-    - contextPath: Humio.Poll.done
+    - contextPath: Humio.Result.done
       description: If its done
       type: Unknown
-    - contextPath: Humio.Poll.metaData
+    - contextPath: Humio.Result.metaData
       description: MetaData from the poll
       type: Unknown
+    - contextPath: Humio.Result.job_id
+      description: Humio Job id the results came from
+      type: String
     description: Issue poll command to Humio
   - name: humio-delete-job
     arguments:
@@ -156,9 +159,36 @@ script:
       required: true
       description: Repository to use
     outputs:
-    - contextPath: Humio.Alerts
-      description: List of alerts
-      type: Unknown
+    - contextPath: Humio.Alert.description
+      description: Description of the alert
+      type: String
+    - contextPath: Humio.Alert.id
+      description: The alert id
+      type: String
+    - contextPath: Humio.Alert.name
+      description: The alert name
+      type: String
+    - contextPath: Humio.Alert.notifiers
+      description: The notifiers the alert will use
+      type: String
+    - contextPath: Humio.Alert.query.end
+      description: the end time of the query
+      type: String
+    - contextPath: Humio.Alert.query.isLive
+      description: whether or not the query is live
+      type: Number
+    - contextPath: Humio.Alert.query.queryString
+      description: The query string being used
+      type: String
+    - contextPath: Humio.Alert.query.start
+      description: The start time of the query
+      type: String
+    - contextPath: Humio.Alert.silenced
+      description: Whether or not the alert is enabled
+      type: Number
+    - contextPath: Humio.Alert.throttleTimeMillis
+      description: The throttle time for alerts
+      type: Number
     description: List alerts from Humio
   - name: humio-get-alert-by-id
     arguments:
@@ -169,9 +199,36 @@ script:
       required: true
       description: Alert ID
     outputs:
-    - contextPath: Humio.Alerts
-      description: Alert details
-      type: Unknown
+    - contextPath: Humio.Alert.description
+      description: Description of the alert
+      type: String
+    - contextPath: Humio.Alert.id
+      description: The alert id
+      type: String
+    - contextPath: Humio.Alert.name
+      description: The alert name
+      type: String
+    - contextPath: Humio.Alert.notifiers
+      description: The notifiers the alert will use
+      type: String
+    - contextPath: Humio.Alert.query.end
+      description: the end time of the query
+      type: String
+    - contextPath: Humio.Alert.query.isLive
+      description: whether or not the query is live
+      type: Number
+    - contextPath: Humio.Alert.query.queryString
+      description: The query string being used
+      type: String
+    - contextPath: Humio.Alert.query.start
+      description: The start time of the query
+      type: String
+    - contextPath: Humio.Alert.silenced
+      description: Whether or not the alert is enabled
+      type: Number
+    - contextPath: Humio.Alert.throttleTimeMillis
+      description: The throttle time for alerts
+      type: Number
     description: list alerts by id from Humio
   - name: humio-create-alert
     arguments:
@@ -185,29 +242,60 @@ script:
       required: true
       description: Query to use
     - name: start
-      required: true
+      required: false
+      defaultValue: "24h"
       description: Start time, relative or epoch in ms.
     - name: description
-      required: true
+      required: false
+      defaultValue: ""
       description: Description of the alert
     - name: throttleTimeMillis
-      required: true
+      required: false
+      defaultValue: "300000"
       description: Time millis interval
     - name: silenced
       description: Is it silenced
       defaultValue: "false"
     - name: notifiers
       required: true
-      description: array of notifier ID strings use , as delimiter
+      description: comma-separated values of notifier IDs
       isArray: true
     - name: labels
-      required: true
-      description: array of text labels
+      required: false
+      description: comma-separated values of labels
+      defaultValue: ""
       isArray: true
     outputs:
-    - contextPath: Humio.CreatedAlerts
-      description: Created alert details
-      type: Unknown
+    - contextPath: Humio.Alert.description
+      description: Description of the alert
+      type: String
+    - contextPath: Humio.Alert.id
+      description: The alert id
+      type: String
+    - contextPath: Humio.Alert.name
+      description: The alert name
+      type: String
+    - contextPath: Humio.Alert.notifiers
+      description: The notifiers the alert will use
+      type: String
+    - contextPath: Humio.Alert.query.end
+      description: the end time of the query
+      type: String
+    - contextPath: Humio.Alert.query.isLive
+      description: whether or not the query is live
+      type: Number
+    - contextPath: Humio.Alert.query.queryString
+      description: The query string being used
+      type: String
+    - contextPath: Humio.Alert.query.start
+      description: The start time of the query
+      type: String
+    - contextPath: Humio.Alert.silenced
+      description: Whether or not the alert is enabled
+      type: Number
+    - contextPath: Humio.Alert.throttleTimeMillis
+      description: The throttle time for alerts
+      type: Number
     description: Create an alert in Humio
   - name: humio-list-notifiers
     arguments:
@@ -215,7 +303,7 @@ script:
       required: true
       description: Repository to use
     outputs:
-    - contextPath: Humio.Notifiers
+    - contextPath: Humio.Notifier
       description: List of notifiers
       type: Unknown
     description: List all notifiers in Humio
@@ -254,9 +342,36 @@ script:
       required: true
       description: ID of the alert
     outputs:
-    - contextPath: Humio.ModifiedAlerts
-      description: updated alert details
-      type: Unknown
+    - contextPath: Humio.Alert.description
+      description: Description of the alert
+      type: String
+    - contextPath: Humio.Alert.id
+      description: The alert id
+      type: String
+    - contextPath: Humio.Alert.name
+      description: The alert name
+      type: String
+    - contextPath: Humio.Alert.notifiers
+      description: The notifiers the alert will use
+      type: String
+    - contextPath: Humio.Alert.query.end
+      description: the end time of the query
+      type: String
+    - contextPath: Humio.Alert.query.isLive
+      description: whether or not the query is live
+      type: Number
+    - contextPath: Humio.Alert.query.queryString
+      description: The query string being used
+      type: String
+    - contextPath: Humio.Alert.query.start
+      description: The start time of the query
+      type: String
+    - contextPath: Humio.Alert.silenced
+      description: Whether or not the alert is enabled
+      type: Number
+    - contextPath: Humio.Alert.throttleTimeMillis
+      description: The throttle time for alerts
+      type: Number
     description: Update an alert in Humio
   - name: humio-delete-alert
     arguments:
@@ -280,7 +395,7 @@ script:
       required: true
       description: ID to use
     outputs:
-    - contextPath: Humio.Notifiers
+    - contextPath: Humio.Notifier
       description: Details of the notifier
       type: Unknown
     description: Get notifier from Humio by id
