@@ -507,9 +507,12 @@ jobs:
             if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/run_tests.sh "Demisto PreGA" | tee ./artifacts/tests_outputs/demisto_prega.log
-                export RETVAL=$?
-                cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
-                exit $RETVAL
+                # export RETVAL=$?
+                # exit $RETVAL
+                if [[ -f "./Tests/failed_tests.txt" ]]; then
+                  echo "copying ./Tests/failed_tests.txt to $CIRCLE_ARTIFACTS/failed_tests.txt"
+                  cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
+                fi
                 echo "failing step purposely"
                 exit 1
 
