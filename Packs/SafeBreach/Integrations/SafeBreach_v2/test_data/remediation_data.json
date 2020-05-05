@@ -1,0 +1,14 @@
+{
+  "remediationData": {
+    "Attack": {
+      "814": {
+        "SHA256": [
+          "109c702578b261d0eda01506625423f5a2b8cc107b0d8dfad84d39fb02bfa5cb"
+        ],
+        "Drop Path": [
+          "%temp%/Llac.exe"
+        ]
+      }
+    }
+  }
+}

@@ -14,7 +14,7 @@
 <li><strong>Server URL</strong></li>
 <li><strong>API Key</strong></li>
 <li><strong>API Secret</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy</strong></li>
 </ul>
 </li>

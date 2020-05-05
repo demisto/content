@@ -1,5 +1,5 @@
 id: fake_test_playbook
-version: 1
+version: -1
 name: fake_test_playbook
 starttaskid: "0"
 tasks:

@@ -1,4 +1,8 @@
 ## [Unreleased]
+-
+
+
+## [20.4.0] - 2020-04-14
 Added an option to retrieve the full model predictions on the test set.
 
 ## [20.3.3] - 2020-03-18

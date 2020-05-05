@@ -22,6 +22,12 @@ def http_request_mock(method, endpoint, params=None, token=False):
     elif endpoint == 'events':
         r = MOCK_EVENTS
 
+    elif endpoint == 'behavior/risky-flows':
+        r = MOCK_BEHAVIOR
+
+    elif endpoint == 'assets/certificates':
+        r = MOCK_CERTIFICATE_RESPONSE
+
     return r
 
 
@@ -42,7 +48,22 @@ def test_fetch_incidents(mocker):
     main()
     results = demisto.results.call_args[0]
     r = json.loads(results[0]['Contents'])
-    # print(r[0])
+    assert r[0]['name'] == "NTP_SERVER on 203.215.173.113:123/UDP"
+    assert r[0]['severity'] == 1
+
+
+def test_fetch_incidents_with_behavior(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'api_key': TEST_API_KEY,
+        'first_run': '7',
+        'behavior': True
+    })
+    mocker.patch('Expanse.http_request', side_effect=http_request_mock)
+    mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+    mocker.patch.object(demisto, 'results')
+    main()
+    results = demisto.results.call_args[0]
+    r = json.loads(results[0]['Contents'])
     assert r[0]['name'] == "NTP_SERVER on 203.215.173.113:123/UDP"
     assert r[0]['severity'] == 1
 
@@ -82,6 +103,28 @@ def test_domain(mocker):
     assert results[0]['Contents']['domain'] == TEST_DOMAIN
     assert results[0]['EntryContext']['DBotScore']['Type'] == 'url'
     assert results[0]['EntryContext']['Domain(val.Name == obj.Name)']['Name'] == TEST_DOMAIN
+
+
+def test_certificate(mocker):
+    mocker.patch.object(demisto, 'args', return_value={'common_name': TEST_DOMAIN})
+    mocker.patch('Expanse.http_request', side_effect=http_request_mock)
+    mocker.patch.object(demisto, 'command', return_value='expanse-get-certificate')
+    mocker.patch.object(demisto, 'results')
+    main()
+    results = demisto.results.call_args[0]
+    assert results[0]['EntryContext']['Expanse.Certificate(val.SearchTerm == obj.SearchTerm)']['CommonName'] == TEST_DOMAIN
+
+
+def test_behavior(mocker):
+    mocker.patch.object(demisto, 'args', return_value={'ip': TEST_IP, 'start_time': '2020-03-28T00:00:00.000Z'})
+    mocker.patch('Expanse.http_request', side_effect=http_request_mock)
+    mocker.patch.object(demisto, 'command', return_value='expanse-get-behavior')
+    mocker.patch.object(demisto, 'results')
+    main()
+    results = demisto.results.call_args[0]
+    assert results[0]['EntryContext']['Expanse.Behavior(val.SearchTerm == obj.SearchTerm)']['SearchTerm'] == TEST_IP
+    assert results[0]['EntryContext']['Expanse.Behavior(val.SearchTerm == obj.SearchTerm)']['ExternalAddresses'] \
+        == '169.255.204.27'
 
 
 MOCK_TOKEN_RESPONSE = {
@@ -691,4 +734,143 @@ MOCK_EVENTS = {
         }
 
     ]
+}
+MOCK_BEHAVIOR = {
+    "meta": {
+        "totalCount": 1
+    },
+    "pagination": {
+        "next": False
+    },
+    "data": [
+        {
+            "id": "705092a5-d139-3e48-bbad-42539cc14304",
+            "tenantBusinessUnitId": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5",
+            "businessUnit": {
+                "id": "6b73ef6c-b230-3797-b321-c4a340169eb7",
+                "name": "Acme Latex Supply"
+            },
+            "riskRule": {
+                "id": "02b6c647-65f4-4b69-b4b0-64af34fd1b29",
+                "name": "Connections to and from Blacklisted Countries",
+                "description": "Connections to and from Blacklisted Countries \
+                (Belarus, Côte d'Ivoire, Cuba, Democratic Republic of the Congo, \
+                    Iran, Iraq, Liberia, North Korea, South Sudan, Sudan, Syria, Zimbabwe)",
+                "additionalDataFields": "[]"
+            },
+            "internalAddress": "74.142.119.130",
+            "internalPort": 443,
+            "externalAddress": "169.255.204.27",
+            "externalPort": 43624,
+            "flowDirection": "INBOUND",
+            "acked": True,
+            "protocol": "TCP",
+            "externalCountryCodes": [
+                "CD"
+            ],
+            "internalCountryCodes": [
+                "CN"
+            ],
+            "externalCountryCode": "CD",
+            "internalCountryCode": "CN",
+            "internalExposureTypes": [
+                "HttpServer"
+            ],
+            "internalDomains": [
+                "base2.pets.com"
+            ],
+            "internalTags": {
+                "ipRange": []
+            },
+            "observationTimestamp": "2020-03-22T23:44:31.506Z",
+            "created": "2020-03-23T02:28:00.336449Z"
+        }
+    ]
+}
+MOCK_CERTIFICATE_RESPONSE = {
+    "data": [{
+        "id": "1079d791-79f6-3122-a965-980471a244e8",
+        "tenant": {
+            "id": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5",
+            "name": "VanDelay Industries",
+            "tenantId": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5"
+        },
+        "businessUnits": [
+            {
+                "id": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5",
+                "name": "VanDelay Industries",
+                "tenantId": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5"
+            }
+        ],
+        "dateAdded": "2019-11-21T09:15:02.271281Z",
+        "firstObserved": None,
+        "lastObserved": None,
+        "providers": [
+            {
+                "id": "Unknown",
+                "name": "None"
+            }
+        ],
+        "certificate": {
+            "md5Hash": "Jr8RiLR4OfFslz9VmELI9g==",
+            "id": "26bf1188-b478-39f1-ac97-3f559842c8f6",
+            "issuer": "C=GB,ST=Greater Manchester,L=Salford,O=COMODO CA Limited,CN=COMODO RSA \
+            Organization Validation Secure Server CA",
+            "issuerAlternativeNames": "",
+            "issuerCountry": "GB",
+            "issuerEmail": None,
+            "issuerLocality": "Salford",
+            "issuerName": "COMODO RSA Organization Validation Secure Server CA",
+            "issuerOrg": "COMODO CA Limited",
+            "issuerOrgUnit": None,
+            "issuerState": "Greater Manchester",
+            "publicKey": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0/zl9UD5ylG59/MtZpU0NWT3zrT5uRFUU2FgOoiZOZ9MklZqm+HHV+e3lTHrx+\
+            5JlAccfS8lkVdvJIrOAGe9Py5S2Ir6rCUmJMrWCpmEXE5clrifMjg1PA4ueVlcYkNnNK5oHhGMa6WhVXQlA9YK2e9i4KMdqXA1WzPRpvgz32oARBSHv3KWl5W\
+            JacbFj9seobIyGcqeyZEQaIJoE0tbLRi2qy0KShLf9+Uc7mQnNFwD8Y8Zqo96zE65c5+NctwKteYMs2XMFXtJ5sknALFrwbvsYZfUxXn/glgSU+v5jQUcyCNr\
+            GcevhZHW3D9Ia2mymbfKfszUVMRl/Fpi3EmxHwIDAQAB",
+            "publicKeyAlgorithm": "RSA",
+            "publicKeyRsaExponent": 65537,
+            "signatureAlgorithm": "SHA256withRSA",
+            "subject": "C=US,PostalCode=60179,ST=Illinois,L=Hoffman Estates,O=Sears Brands LLC,OU=eCommerce Development,OU=Multi-Domain \
+            SSL,CN=base2.pets.com",
+            "subjectAlternativeNames": "base3.pets.com,base4.pets.com",
+            "subjectCountry": "US",
+            "subjectEmail": None,
+            "subjectLocality": "Hoffman Estates",
+            "subjectName": "base2.pets.com",
+            "subjectOrg": "Sears Brands LLC",
+            "subjectOrgUnit": "eCommerce Development,Multi-Domain SSL",
+            "subjectState": "Illinois",
+            "serialNumber": "145397449086924134621453997645674717378",
+            "validNotBefore": "2016-03-22T00:00:00Z",
+            "validNotAfter": "2018-03-22T23:59:59Z",
+            "version": "3",
+            "publicKeyBits": 2048,
+            "pemSha256": "8OLAalY9ZOgYCD6yQJWyGNXZrWl9bugv-S3AGlIQi84=",
+            "pemSha1": "DN3fXmU-IR3C6l1CTISAlgpvGFA=",
+            "publicKeyModulus": "d3fce5f540f9ca51b9f7f32d6695343564f7ceb4f9b911545361603a8899399f4c92566a9be1c757e7b79531ebc7ee4994071c7\
+            d2f2591576f248ace0067bd3f2e52d88afaac252624cad60a99845c4e5c96b89f3238353c0e2e79595c62436734ae681e118c6ba5a155742503d60ad9ef6\
+            2e0a31da970355b33d1a6f833df6a00441487bf729697958969c6c58fdb1ea1b23219ca9ec99110688268134b5b2d18b6ab2d0a4a12dff7e51cee6427345\
+            c03f18f19aa8f7acc4eb9739f8d72dc0ab5e60cb365cc157b49e6c92700b16bc1bbec6197d4c579ff82581253ebf98d051cc8236b19c7af8591d6dc3f486\
+            b69b299b7ca7eccd454c465fc5a62dc49b11f",
+            "publicKeySpki": "U_pBSH73cx7BWHRuE3UZvYkONJ8s694ziYTHbLVgtis="
+        },
+        "commonName": "base2.pets.com",
+        "properties": [
+            "EXPIRED"
+        ],
+        "hasLinkedCloudResources": False,
+        "certificateAdvertisementStatus": [
+            "NO_CERTIFICATE_ADVERTISEMENT"
+        ],
+        "serviceStatus": [
+            "NO_ACTIVE_SERVICE",
+            "NO_ACTIVE_CLOUD_SERVICE",
+            "NO_ACTIVE_ON_PREM_SERVICE"
+        ],
+        "details": {
+            "recentIps": [],
+            "cloudResources": []
+        }
+    }]
 }

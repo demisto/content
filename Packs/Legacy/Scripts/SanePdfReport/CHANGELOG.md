@@ -1,4 +1,8 @@
 ## [Unreleased]
+- Fixed logos usage and added failure verbose output.
+
+
+## [20.4.0] - 2020-04-14
 -
 
 

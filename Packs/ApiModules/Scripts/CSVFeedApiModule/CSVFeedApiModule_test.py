@@ -148,3 +148,11 @@ def test_get_feed_content():
             raw_response = requests.get(url)
 
             assert client.get_feed_content_divided_to_lines(url, raw_response) == expected_output
+
+
+def test_date_format_parsing():
+    formatted_date = date_format_parsing('2020-02-01 12:13:14')
+    assert formatted_date == '2020-02-01T12:13:14Z'
+
+    formatted_date = date_format_parsing('2020-02-01 12:13:14.11111')
+    assert formatted_date == '2020-02-01T12:13:14Z'

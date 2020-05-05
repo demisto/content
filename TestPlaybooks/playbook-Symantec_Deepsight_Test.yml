@@ -1,5 +1,5 @@
 id: Symantec Deepsight Test
-version: 9
+version: -1
 name: Symantec Deepsight Test
 starttaskid: "0"
 tasks:
