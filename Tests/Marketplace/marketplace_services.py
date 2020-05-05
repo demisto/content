@@ -618,6 +618,7 @@ class Pack(object):
                         with open(latest_rn_path, 'r') as changelog_md:
                             changelog_lines = changelog_md.read()
                         version_changelog = {'releaseNotes': changelog_lines,
+                                             'displayName': latest_release_notes,
                                              'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
                         changelog[latest_release_notes] = version_changelog
                         with open(os.path.join(self._pack_path, 'changelog.json'), "w") as f:
