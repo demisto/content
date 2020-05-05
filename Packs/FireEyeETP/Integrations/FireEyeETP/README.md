@@ -119,7 +119,7 @@ Search for messages using specific message attributes as indicators.
          "attributes": {  
             "acceptedDateTime": "2018-06-09T10:49:32.000Z",
             "countryCode": "US",
-            "domain": "eartv45.uni",
+            "domain": "demisto.com",
             "downStreamMsgID": "250 2.0.0 OK 100041373 d14-v6si970000qtb.70 - gsmtp",
             "emailSize": 9.89,
             "lastModifiedDateTime": "2018-06-09T10:49:33.329Z",
@@ -127,10 +127,10 @@ Search for messages using specific message attributes as indicators.
                "Security Operations Center <SOC@corp.com>"
             ],
             "recipientSMTP": [  
-               "jason@corp.com"
+               "jason@demisto.com"
             ],
-            "senderHeader": "\"newnsm@corp.com\" <newnsm@ corp.com >",
-            "senderSMTP": "prvs=691a9462a=jblanks@ corp.com ",
+            "senderHeader": "\"soc@demisto.com\" <bot@demisto.com >",
+            "senderSMTP": "prvs=691a94fds62a=demisto@demisto.com ",
             "senderIP": "***.***.***.***",
             "status": "delivered",
             "subject": "Attack TCP: SYN Host Sweep (Medium)",
@@ -146,7 +146,7 @@ Search for messages using specific message attributes as indicators.
                "type": "domain",
                "id": 29074,
                "attributes": {  
-                  "name": " corp.com "
+                  "name": " demisto.com "
                }
             }
          ],
@@ -264,19 +264,19 @@ fireeye-etp-get-alerts
         },
         "email": {
           "status": "quarantined",
-          "source_ip": "68.232.135.242",
+          "source_ip": "xx.xxx.xxx.xxx",
           "smtp": {
-            "rcpt_to": "morty@earth45. uni ",
-            "mail_from": "rick@earth45. uni "
+            "rcpt_to": "demisto@demisto.com",
+            "mail_from": "bot@demisto.com"
           },
           "etp_message_id": "0103174000EA2CA54302e5ef",
           "headers": {
-            "cc": "<birdperson@ earth45.uni>",
-            "to": "< morty@earth45. uni >",
-            "from": " rick@ earth45. uni ",
+            "cc": "<birdperson@demisto.com>",
+            "to": "< morty@demisto.com >",
+            "from": " rick@demisto.com ",
             "subject": "[ CAT 6 ] DOHMH: Suspicious Activity Detected | 11810"
           },
-          "attachment": "hxxp://ppiqjeuwooooowdqjdq.com/REX/slick.php?utma=gorc'",
+          "attachment": "hxxp://xyzt.com/REX/slick.php?utma=gorc'",
           "timestamp": {
             "accepted": "2018-04-02T22:28:38"
           }
@@ -379,7 +379,7 @@ Returns detailed information for any specified alert. Alerts that are more than 
                   "malware_detected": {  
                      "malware": [  
                         {  
-                           "domain": "112.126.94.107",
+                           "domain": "xxx.xxx.xx.xxx",
                            "downloaded_at": "2018-04-03T15:57:58Z",
                            "executed_at": "2018-04-03T15:57:59Z",
                            "name": "Phish.LIVE.DTI.URL",
@@ -401,19 +401,19 @@ Returns detailed information for any specified alert. Alerts that are more than 
             },
             "email": {  
                "status": "quarantined",
-               "source_ip": "68.232.142.41",
+               "source_ip": "xx.xxx.xxx.xx",
                "smtp": {  
-                  "rcpt_to": "rachel@corp.com",
-                  "mail_from": "soc+bncbc433amq6qhrb76ir3l0000edcdhd3q@corp.com "
+                  "rcpt_to": "demisto@demisto.com",
+                  "mail_from": "bot@demisto.com"
                },
                "etp_message_id": "76CF1709028AAAA5d61a8dbe",
                "headers": {  
-                  "cc": "\u003csoc@corp.com\u003e|\u003cquiessence@ corp.com\u003e|\u003csarwar@ corp.com\u003e",
-                  "to": "\u003crachel @ orp.com \u003e",
-                  "from": "soc+bncbc433amq6qhrb76000edcdhd3q@corp.com",
+                  "cc": "\u003cbot@soc.com\u003e|\u003csoc@bot.com\u003e",
+                  "to": "\u003cdemisto@demisto.com\u003e",
+                  "from": "bot@demisto.com",
                   "subject": "[CAT 6] HRA: Suspicious Executable | 11819"
                },
-               "attachment": "hxxp://112.126.94.107/shop/ok.exe',([System.IO.Path]::GetTempPath()+'\\KQEW.exe')",
+               "attachment": "hxxp://xxx.xxx.xx.xxx/shop/ok.exe',([System.IO.Path]::GetTempPath()+'\\KQEW.exe')",
                "timestamp": {  
                   "accepted": "2018-04-03T15:57:55"
                }
