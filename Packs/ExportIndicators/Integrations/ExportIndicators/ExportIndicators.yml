@@ -60,6 +60,7 @@ configuration:
   name: longRunning
   required: false
   type: 8
+  hidden: true
 - additionalinfo: Requires a unique port for each long-running integration instance.
     Do not use the same port for multiple instances.
   display: Listen Port
@@ -271,7 +272,7 @@ script:
       On-Demand).
     execution: false
     name: eis-update
-  dockerimage: demisto/teams:1.0.0.7727
+  dockerimage: demisto/teams:1.0.0.7832
   feed: false
   isfetch: false
   longRunning: true
