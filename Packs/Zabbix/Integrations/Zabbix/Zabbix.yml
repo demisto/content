@@ -5,7 +5,8 @@ name: Zabbix
 display: Zabbix
 category: Utilities
 description: ''
-detaileddescription: ''
+detaileddescription: For more information about the API, parameters, authentication
+  and more, you can check the official documentation of the API at https://www.zabbix.com/documentation/current/manual/api
 configuration:
 - display: Url
   name: url
@@ -312,10 +313,10 @@ script:
           or disabled item hosts.
       - name: params_lastChangeSince
         description: Return only triggers that have changed their state after the given
-          time.
+          time (use timestamp format).
       - name: params_lastChangeTill
         description: Return only triggers that have changed their state before the given
-          time.
+          time (use timestamp format).
       - name: params_only_true
         description: Return only triggers that have recently been in a problem state.
       - name: params_min_severity
@@ -423,18 +424,18 @@ script:
         description: Return only events with IDs less or equal to the given ID.
       - name: params_time_from
         description: Return only events that have been created after or at the given
-          time.
+          time (use timestamp format).
       - name: params_time_till
         description: Return only events that have been created before or at the given
-          time.
+          time (use timestamp format).
       - name: params_problem_time_from
         description: Returns only events that were in the problem state starting with
           problem_time_from. Applies only if the source is trigger event and object
-          is trigger. Mandatory if problem_time_till is specified.
+          is trigger. Mandatory if problem_time_till is specified (use timestamp format).
       - name: params_problem_time_till
         description: Returns only events that were in the problem state until problem_time_till.
           Applies only if the source is trigger event and object is trigger. Mandatory
-          if problem_time_from is specified.
+          if problem_time_from is specified (use timestamp format).
       - name: params_value
         description: Return only events with the given values.
       outputs:

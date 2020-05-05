@@ -57,7 +57,7 @@ class ZabbixIntegration:
             self.logout(zapi)
 
             return_outputs(
-                tableToMarkdown(f'{command}, {str(args)}', result if isinstance(result, list) else [result]),
+                tableToMarkdown(f'{command}', result if isinstance(result, list) else [result]),
                 outputs={
                     self.output_path(command): result
                 },

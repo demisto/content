@@ -111,7 +111,7 @@ Execute command on Zabbix API
 ```
 
 ##### Human Readable Output
-### zabbix-execute-command, {'method': 'host.get'}
+### zabbix-execute-command
 |auto_compress|available|description|disable_until|error|errors_from|flags|host|hostid|ipmi_authtype|ipmi_available|ipmi_disable_until|ipmi_error|ipmi_errors_from|ipmi_password|ipmi_privilege|ipmi_username|jmx_available|jmx_disable_until|jmx_error|jmx_errors_from|lastaccess|maintenance_from|maintenance_status|maintenance_type|maintenanceid|name|proxy_address|proxy_hostid|snmp_available|snmp_disable_until|snmp_error|snmp_errors_from|status|templateid|tls_accept|tls_connect|tls_issuer|tls_psk|tls_psk_identity|tls_subject|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 1 | 2 |  | 1588621755 | Get value from agent failed: cannot connect to [[127.0.0.1]:10050]: [111] Connection refused | 1585321618 | 0 | Zabbix server | 10084 | -1 | 0 | 0 |  | 0 |  | 2 |  | 0 | 0 |  | 0 | 0 | 0 | 0 | 0 | 0 | Zabbix server |  | 0 | 0 | 0 |  | 0 | 0 | 0 | 1 | 1 |  |  |  |  |
@@ -204,7 +204,7 @@ Get host groups
 ```
 
 ##### Human Readable Output
-### zabbix-hostgroup-get, {'params_real_hosts': 'True'}
+### zabbix-hostgroup-get
 |flags|groupid|internal|name|
 |---|---|---|---|
 | 0 | 4 | 0 | Zabbix servers |
@@ -349,7 +349,7 @@ Get hosts
 ```
 
 ##### Human Readable Output
-### zabbix-host-get, {'params_groupids': '4'}
+### zabbix-host-get
 |auto_compress|available|description|disable_until|error|errors_from|flags|host|hostid|ipmi_authtype|ipmi_available|ipmi_disable_until|ipmi_error|ipmi_errors_from|ipmi_password|ipmi_privilege|ipmi_username|jmx_available|jmx_disable_until|jmx_error|jmx_errors_from|lastaccess|maintenance_from|maintenance_status|maintenance_type|maintenanceid|name|proxy_address|proxy_hostid|snmp_available|snmp_disable_until|snmp_error|snmp_errors_from|status|templateid|tls_accept|tls_connect|tls_issuer|tls_psk|tls_psk_identity|tls_subject|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 1 | 2 |  | 1588621755 | Get value from agent failed: cannot connect to [[127.0.0.1]:10050]: [111] Connection refused | 1585321618 | 0 | Zabbix server | 10084 | -1 | 0 | 0 |  | 0 |  | 2 |  | 0 | 0 |  | 0 | 0 | 0 | 0 | 0 | 0 | Zabbix server |  | 0 | 0 | 0 |  | 0 | 0 | 0 | 1 | 1 |  |  |  |  |
@@ -385,8 +385,8 @@ Get triggers
 | params_withAcknowledgedEvents | Return only triggers with all events acknowledged. | Optional | 
 | params_withLastEventUnacknowledged | Return only triggers with the last event unacknowledged. | Optional | 
 | params_skipDependent | Skip triggers in a problem state that are dependent on other triggers. Note that the other triggers are ignored if disabled, have disabled items or disabled item hosts. | Optional | 
-| params_lastChangeSince | Return only triggers that have changed their state after the given time. | Optional | 
-| params_lastChangeTill | Return only triggers that have changed their state before the given time. | Optional | 
+| params_lastChangeSince | Return only triggers that have changed their state after the given time (use timestamp format). | Optional | 
+| params_lastChangeTill | Return only triggers that have changed their state before the given time (use timestamp format). | Optional | 
 | params_only_true | Return only triggers that have recently been in a problem state. | Optional | 
 | params_min_severity | Return only triggers with severity greater or equal than the given severity. | Optional | 
 | params_evaltype | Rules for tag searching. | Optional | 
@@ -452,7 +452,7 @@ Get triggers
 ```
 
 ##### Human Readable Output
-### zabbix-trigger-get, {'params_only_true': 'True'}
+### zabbix-trigger-get
 |comments|correlation_mode|correlation_tag|description|error|expression|flags|lastchange|manual_close|priority|recovery_expression|recovery_mode|state|status|templateid|triggerid|type|url|value|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 |  | 0 |  | Zabbix agent on {HOST.NAME} is unreachable for 5 minutes |  | {12900}=1 | 0 | 1585321941 | 0 | 3 |  | 0 | 0 | 0 | 10047 | 13491 | 0 |  | 1 |
@@ -484,10 +484,10 @@ Get events
 | params_tags | Return only events with given tags. Exact match by tag and case-insensitive search by value and operator. | Optional | 
 | params_eventid_from | Return only events with IDs greater or equal to the given ID. | Optional | 
 | params_eventid_till | Return only events with IDs less or equal to the given ID. | Optional | 
-| params_time_from | Return only events that have been created after or at the given time. | Optional | 
-| params_time_till | Return only events that have been created before or at the given time. | Optional | 
-| params_problem_time_from | Returns only events that were in the problem state starting with problem_time_from. Applies only if the source is trigger event and object is trigger. Mandatory if problem_time_till is specified. | Optional | 
-| params_problem_time_till | Returns only events that were in the problem state until problem_time_till. Applies only if the source is trigger event and object is trigger. Mandatory if problem_time_from is specified. | Optional | 
+| params_time_from | Return only events that have been created after or at the given time (use timestamp format). | Optional | 
+| params_time_till | Return only events that have been created before or at the given time (use timestamp format). | Optional | 
+| params_problem_time_from | Returns only events that were in the problem state starting with problem_time_from. Applies only if the source is trigger event and object is trigger. Mandatory if problem_time_till is specified (use timestamp format). | Optional | 
+| params_problem_time_till | Returns only events that were in the problem state until problem_time_till. Applies only if the source is trigger event and object is trigger. Mandatory if problem_time_from is specified (use timestamp format). | Optional | 
 | params_value | Return only events with the given values. | Optional | 
 
 
@@ -575,7 +575,7 @@ Get events
 ```
 
 ##### Human Readable Output
-### zabbix-event-get, {'params_time_from': '1583020800'}
+### zabbix-event-get
 |acknowledged|c_eventid|clock|correlationid|eventid|name|ns|object|objectid|r_eventid|severity|source|suppressed|userid|value|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 0 | 0 | 1585321941 | 0 | 12 | Zabbix agent on Zabbix server is unreachable for 5 minutes | 248457478 | 0 | 13491 | 0 | 3 | 0 | 0 | 0 | 1 |
