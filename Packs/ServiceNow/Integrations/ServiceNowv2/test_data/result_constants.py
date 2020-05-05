@@ -317,3 +317,10 @@ EXPECTED_CREATE_ITEM_ORDER = {
         'ID': '12', 'RequestNumber': 'REQ0010002'
     }
 }
+EXPECTED_DOCUMENT_ROUTE = {
+    'ServiceNow.WorkItem(val.WorkItemID===obj.WorkItemID)':
+        {
+            'DisplayName': 'Incident: INC0000060', 'DocumentID': 'document_id', 'DocumentTable': 'incident',
+            'QueueID': 'queue_id', 'WorkItemID': 'work_item_id'
+        }
+}
