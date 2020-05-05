@@ -39,6 +39,7 @@ script: |-
   comment = demisto.executeCommand('salesforce-push-comment', {'oid': oid, 'text': text})
   demisto.results(comment)
 type: python
+subtype: python2
 tags: []
 comment: Ask a user a question via Salesforce Chatter and process the reply directly into the investigation.
 enabled: true
