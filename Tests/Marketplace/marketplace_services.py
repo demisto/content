@@ -623,19 +623,18 @@ class Pack(object):
                         changelog[latest_release_notes] = version_changelog
                         with open(os.path.join(self._pack_path, 'changelog.json'), "w") as f:
                             json.dump(changelog, f)
-                elif self._current_version == '1.0.0':
-                    changelog = {}
-                    version_changelog = {'releaseNotes': self._description,
-                                         'displayName': '1.0.0',
-                                         'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
-                    changelog['1.0.0'] = version_changelog
-                    with open(os.path.join(self._pack_path, 'changelog.json'), "w") as f:
-                        json.dump(changelog, f)
-                else:
-                    print_warning(f"No ReleaseNotes directory was found for pack: {self._pack_name}")
-
+            elif self._current_version == '1.0.0':
+                changelog = {}
+                version_changelog = {'releaseNotes': self._description,
+                                     'displayName': '1.0.0',
+                                     'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
+                changelog['1.0.0'] = version_changelog
+                with open(os.path.join(self._pack_path, 'changelog.json'), "w") as f:
+                    json.dump(changelog, f)
             else:
                 print_warning(f"No release notes found for: {self._pack_name}")
+                task_status = False
+                return task_status
             task_status = True
             print_color(
                 f"Finished creating changelog.json for {self._pack_name}", LOG_COLORS.GREEN)
