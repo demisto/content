@@ -27,6 +27,7 @@ script: |+
           return_error('Hash length is invalid.')
 
 type: python
+subtype: python2
 tags: []
 comment: Download malicious file sample from MISP
 enabled: true

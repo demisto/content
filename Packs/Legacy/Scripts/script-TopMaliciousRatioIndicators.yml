@@ -53,6 +53,7 @@ script: |-
         'HumanReadable': tableToMarkdown('Top Malicious Ratio Indicators', sorted_indicators, headers=['ID', 'Malicious Ratio', 'Type', 'Value', 'Last Seen'])
   })
 type: python
+subtype: python2
 tags:
 - widget
 comment: |-

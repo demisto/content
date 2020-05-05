@@ -54,6 +54,7 @@ system: false
 tags: [Utility]
 timeout: '0'
 type: python
+subtype: python2
 runonce: false
 tests: [Ping Test Playbook]
 toversion: 4.5.9

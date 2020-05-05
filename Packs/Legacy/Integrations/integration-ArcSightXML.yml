@@ -188,6 +188,7 @@ script:
         update_case()
 
   type: python
+  subtype: python2
   commands:
   - name: arcsight-update-case
     arguments:

@@ -41,6 +41,7 @@ script: |-
       res.extend(['No suspicious files found', 'no'])
   demisto.results(res)
 type: python
+subtype: python2
 tags:
 - hash
 - server
