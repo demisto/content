@@ -1,5 +1,5 @@
 id: GCPWhitelist_Feed_Test
-version: 10
+version: -1
 name: GCPWhitelist_Feed_Test
 starttaskid: "0"
 tasks:
