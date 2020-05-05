@@ -974,7 +974,8 @@ def get_test_list(files_string, branch_name, two_before_ga_ver='0', conf=None, i
 
     if not tests:
         rand = random.Random(branch_name)
-        tests = get_random_tests(tests_num=RANDOM_TESTS_NUM, rand=rand, conf=conf, id_set=id_set, server_version=two_before_ga_ver)
+        tests = get_random_tests(
+            tests_num=RANDOM_TESTS_NUM, rand=rand, conf=conf, id_set=id_set, server_version=two_before_ga_ver)
         if changed_common:
             print_warning('Adding 3 random tests due to: {}'.format(','.join(changed_common)))
         elif sample_tests:  # Choosing 3 random tests for infrastructure testing
