@@ -1889,7 +1889,7 @@ tasks:
       - '43'
     scriptarguments:
       AutoCommit:
-        simple: No
+        simple: 'No'
       CustomBlockRule:
         simple: 'True'
       CustomURLCategory: {}
