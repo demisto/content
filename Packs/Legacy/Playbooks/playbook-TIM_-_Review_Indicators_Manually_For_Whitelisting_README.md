@@ -29,4 +29,4 @@ This playbook does not use any scripts.
 ---
 There are no outputs for this playbook.
 
-<!-- Playbook PNG image comes here -->
+![Playbook Image](https://raw.githubusercontent.com/demisto/content/05df12f12419ea6911a106ff61b4dc9a2780d55e/docs/images/playbooks/TIM_-_Review_Indicators_Manually_For_Whitelisting.png)
