@@ -442,6 +442,7 @@ script:
     finally:
         logout()
   type: python
+  subtype: python2
   commands:
   - name: minerva-add-exclusion
     arguments:
