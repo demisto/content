@@ -126,6 +126,7 @@ script:
         LOG.print_log()
         return_error(e.message)
   type: python
+  subtype: python2
   commands:
   - name: yoda-speak-translate
     arguments:

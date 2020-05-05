@@ -266,6 +266,7 @@ script:
             'Contents': 'error has occured: %s' % (e.message,),
         })
   type: python
+  subtype: python2
   commands:
   - name: lum-block-user
     arguments:
