@@ -649,6 +649,14 @@
             "integrations": "Luminate"
         },
         {
+            "integrations": "MxToolBox",
+            "playbookID": "MxToolbox_test"
+        },
+        {
+            "integrations": "Nessus",
+            "playbookID": "Nessus - Test"
+        },
+        {
             "playbookID": "Palo Alto Networks - Malware Remediation Test",
             "integrations": "Palo Alto Minemeld",
             "fromversion": "4.5.0"
@@ -2768,6 +2776,8 @@
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "Nessus": "No instance",
+        "MxToolBox": "No instance",
         "PrismaAccess": "Instance will be provided soon by Lior and Prasen",
         "Trend Micro Apex": "Issue 23632",
         "Awake Security": "Issue 23376",

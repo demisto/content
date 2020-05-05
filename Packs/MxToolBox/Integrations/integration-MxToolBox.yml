@@ -124,3 +124,5 @@ script:
     - contextPath: MXToolbox.Transcript
       description: Query transcript
     description: Run any supported command on the mxtoolbox API
+tests:
+  - MxToolbox_test
