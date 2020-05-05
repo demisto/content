@@ -2206,3 +2206,549 @@ RESPONSE_ADD_TAG = {
         "view_name": ""
     }
 }
+RESPONSE_QUERY_ITEMS = {
+    "result": [
+        {
+            "active": "true",
+            "availability": "on_both",
+            "billable": "false",
+            "category": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "cost": "0",
+            "custom_cart": "",
+            "delivery_plan": "",
+            "delivery_plan_script": "",
+            "delivery_time": "1970-01-03 00:00:00",
+            "description": "desc",
+            "display_price_property": "non_zero",
+            "entitlement_script": "",
+            "flow_designer_flow": "",
+            "group": "",
+            "hide_sp": "false",
+            "icon": "",
+            "ignore_price": "false",
+            "image": "",
+            "list_price": "0",
+            "location": "",
+            "mandatory_attachment": "false",
+            "meta": "",
+            "mobile_hide_price": "false",
+            "mobile_picture": "",
+            "mobile_picture_type": "use_desktop_picture",
+            "model": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "name": "Apple iPad 3",
+            "no_attachment_v2": "false",
+            "no_cart": "false",
+            "no_cart_v2": "false",
+            "no_delivery_time_v2": "false",
+            "no_order": "false",
+            "no_order_now": "false",
+            "no_proceed_checkout": "false",
+            "no_quantity": "false",
+            "no_quantity_v2": "false",
+            "no_search": "false",
+            "no_wishlist_v2": "false",
+            "omit_price": "false",
+            "order": "0",
+            "ordered_item_link": "",
+            "picture": "",
+            "preview": "JavaScript",
+            "price": "600",
+            "recurring_frequency": "",
+            "recurring_price": "0",
+            "request_method": "",
+            "roles": "",
+            "sc_catalogs": "catalog",
+            "sc_ic_item_staging": "",
+            "sc_ic_version": "",
+            "short_description": "Apple iPad 3",
+            "show_variable_help_on_load": "false",
+            "start_closed": "false",
+            "sys_class_name": "pc_hardware_cat_item",
+            "sys_created_by": "admin",
+            "sys_created_on": "2013-12-08 15:22:04",
+            "sys_id": "123",
+            "sys_mod_count": "17",
+            "sys_name": "Apple iPad 3",
+            "sys_package": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "sys_policy": "",
+            "sys_scope": {
+                "link": "demisto.com",
+                "value": "global"
+            },
+            "sys_tags": "",
+            "sys_update_name": "pc_hardware_cat_item_060f3afa3731300054b6a3549dbe5d3e",
+            "sys_updated_by": "admin",
+            "sys_updated_on": "2016-03-17 21:26:33",
+            "template": "",
+            "type": "item",
+            "use_sc_layout": "true",
+            "vendor": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "visible_bundle": "true",
+            "visible_guide": "true",
+            "visible_standalone": "true",
+            "workflow": {
+                "link": "demisto.com",
+                "value": "admin"
+            }
+        },
+        {
+            "active": "true",
+            "availability": "on_desktop",
+            "billable": "false",
+            "category": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "cost": "50",
+            "custom_cart": "",
+            "delivery_plan": "",
+            "delivery_plan_script": "",
+            "delivery_time": "1970-01-03 00:00:00",
+            "description": "desc",
+            "display_price_property": "non_zero",
+            "entitlement_script": "",
+            "flow_designer_flow": "",
+            "group": "",
+            "hide_sp": "false",
+            "icon": "",
+            "ignore_price": "false",
+            "image": "",
+            "list_price": "0",
+            "location": "",
+            "mandatory_attachment": "false",
+            "meta": "",
+            "mobile_hide_price": "false",
+            "mobile_picture": "",
+            "mobile_picture_type": "use_desktop_picture",
+            "model": "",
+            "name": "Belkin iPad Mini Case",
+            "no_attachment_v2": "false",
+            "no_cart": "false",
+            "no_cart_v2": "false",
+            "no_delivery_time_v2": "false",
+            "no_order": "false",
+            "no_order_now": "false",
+            "no_proceed_checkout": "false",
+            "no_quantity": "false",
+            "no_quantity_v2": "false",
+            "no_search": "false",
+            "no_wishlist_v2": "false",
+            "omit_price": "false",
+            "order": "0",
+            "ordered_item_link": "",
+            "picture": "",
+            "preview": "JavaScript",
+            "price": "50",
+            "recurring_frequency": "monthly",
+            "recurring_price": "0",
+            "request_method": "",
+            "roles": "",
+            "sc_catalogs": "catalog",
+            "sc_ic_item_staging": "",
+            "sc_ic_version": "",
+            "short_description": "Belkin iPad Mini 2 Case",
+            "show_variable_help_on_load": "false",
+            "start_closed": "false",
+            "sys_class_name": "pc_hardware_cat_item",
+            "sys_created_by": "johanneke.stam",
+            "sys_created_on": "2014-12-10 12:13:20",
+            "sys_id": "1234",
+            "sys_mod_count": "12",
+            "sys_name": "Belkin iPad Mini Case",
+            "sys_package": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "sys_policy": "",
+            "sys_scope": {
+                "link": "demisto.com",
+                "value": "global"
+            },
+            "sys_tags": "",
+            "sys_update_name": "pc_hardware_cat_item_90af095bcd38798071a208d710d1b64f",
+            "sys_updated_by": "admin",
+            "sys_updated_on": "2016-03-16 00:42:51",
+            "template": "",
+            "type": "item",
+            "use_sc_layout": "true",
+            "vendor": "",
+            "visible_bundle": "true",
+            "visible_guide": "true",
+            "visible_standalone": "true",
+            "workflow": {
+                "link": "demisto.com",
+                "value": "admin"
+            }
+        }
+    ]
+}
+RESPONSE_ITEM_DETAILS = {
+    "result": {
+        "catalogs": [
+            {
+                "active": True,
+                "sys_id": "1234",
+                "title": "Service Catalog"
+            }
+        ],
+        "categories": [
+            {
+                "active": True,
+                "category": {
+                    "active": True,
+                    "sys_id": "1234",
+                    "title": "Mobiles"
+                },
+                "sys_id": "1234",
+                "title": "Hardware"
+            }
+        ],
+        "category": {
+            "sys_id": "1234",
+            "title": "Mobiles"
+        },
+        "client_script": {
+            "onChange": [],
+            "onLoad": [],
+            "onSubmit": []
+        },
+        "content_type": "",
+        "data_lookup": [],
+        "description": "desc",
+        "icon": "images/service_catalog/generic_small.gifx",
+        "kb_article": "",
+        "local_currency": "USD",
+        "localized_price": "$599.99",
+        "localized_recurring_price": "$30.00",
+        "mandatory_attachment": False,
+        "name": "Apple iPhone 5",
+        "order": 10,
+        "picture": "pic.iix",
+        "price": "$599.99",
+        "price_currency": "USD",
+        "recurring_frequency": "Monthly",
+        "recurring_price": "$30.00",
+        "recurring_price_currency": "USD",
+        "request_method": "",
+        "short_description": "Apple iPhone 5",
+        "show_delivery_time": False,
+        "show_price": True,
+        "show_quantity": True,
+        "show_wishlist": True,
+        "sys_class_name": "pc_hardware_cat_item",
+        "sys_id": "1234",
+        "type": "catalog_item",
+        "ui_policy": [
+            {
+                "actions": [],
+                "condition_fields": [],
+                "conditions": [],
+                "debug": False,
+                "onload": True,
+                "reverse": False,
+                "script_false": "",
+                "script_true": "",
+                "short_description": "Hide allocated carrier",
+                "source_table": "catalog_ui_policy",
+                "sys_id": "sys_id",
+                "table": "(catalog)"
+            }
+        ],
+        "url": "",
+        "variables": [
+            {
+                "attributes": "edge_encryption_enabled=true",
+                "choices": [
+                    {
+                        "index": 0,
+                        "label": "-- None --",
+                        "value": ""
+                    },
+                    {
+                        "index": 1,
+                        "label": "AT \u0026 T Mobility",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": 0,
+                        "recurring_price_currency": "USD",
+                        "value": "at_and_t_mobility"
+                    },
+                    {
+                        "index": 2,
+                        "label": "Cricket Wireless",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": 0,
+                        "recurring_price_currency": "USD",
+                        "value": "cricket_wireless"
+                    },
+                    {
+                        "index": 3,
+                        "label": "MetroPCS",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": 0,
+                        "recurring_price_currency": "USD",
+                        "value": "metropcs"
+                    },
+                    {
+                        "index": 4,
+                        "label": "Sprint Nextel",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": 0,
+                        "recurring_price_currency": "USD",
+                        "value": "sprint_nextel"
+                    },
+                    {
+                        "index": 5,
+                        "label": "T-Mobile USA",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": 0,
+                        "recurring_price_currency": "USD",
+                        "value": "t_mobile_usa"
+                    },
+                    {
+                        "index": 6,
+                        "label": "TracFone Wireless",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": 0,
+                        "recurring_price_currency": "USD",
+                        "value": "tracfone_wireless"
+                    },
+                    {
+                        "index": 7,
+                        "label": "U.S. Cellular",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": 0,
+                        "recurring_price_currency": "USD",
+                        "value": "us_cellular"
+                    },
+                    {
+                        "index": 8,
+                        "label": "Verizon Wireless",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": 0,
+                        "recurring_price_currency": "USD",
+                        "value": "verizon_wireless"
+                    }
+                ],
+                "display_type": "Select Box",
+                "displayvalue": "",
+                "friendly_type": "select_box",
+                "help_text": "",
+                "id": "id",
+                "label": "Allocated carrier",
+                "mandatory": False,
+                "max_length": 0,
+                "name": "carrier",
+                "read_only": False,
+                "render_label": True,
+                "type": 5,
+                "value": ""
+            },
+            {
+                "attributes": "edge_encryption_enabled=true",
+                "choices": [
+                    {
+                        "index": 0,
+                        "label": "-- None --",
+                        "value": ""
+                    },
+                    {
+                        "index": 1,
+                        "label": "500MB",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": 1,
+                        "recurring_price_currency": "USD",
+                        "value": "500MB"
+                    },
+                    {
+                        "index": 2,
+                        "label": "Unlimited",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": 4,
+                        "recurring_price_currency": "USD",
+                        "value": "unlimited"
+                    }
+                ],
+                "display_type": "Select Box",
+                "displayvalue": "",
+                "friendly_type": "select_box",
+                "help_text": "",
+                "id": "id",
+                "label": "Monthly data allowance",
+                "mandatory": False,
+                "max_length": 0,
+                "name": "data_plan",
+                "read_only": False,
+                "render_label": True,
+                "type": 5,
+                "value": ""
+            },
+            {
+                "attributes": "edge_encryption_enabled=true",
+                "choices": [
+                    {
+                        "index": 0,
+                        "label": "12 Months",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": 0,
+                        "recurring_price_currency": "USD",
+                        "value": "twelve_months"
+                    },
+                    {
+                        "index": 1,
+                        "label": "18 Months",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": -2,
+                        "recurring_price_currency": "USD",
+                        "value": "eighteen_months"
+                    },
+                    {
+                        "index": 2,
+                        "label": "24 Months",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": -4,
+                        "recurring_price_currency": "USD",
+                        "value": "twentyfour_months"
+                    }
+                ],
+                "display_type": "Select Box",
+                "displayvalue": "",
+                "friendly_type": "select_box",
+                "help_text": "",
+                "id": "id",
+                "label": "Contract duration",
+                "mandatory": False,
+                "max_length": 0,
+                "name": "duration",
+                "read_only": False,
+                "render_label": True,
+                "type": 5,
+                "value": ""
+            },
+            {
+                "attributes": "edge_encryption_enabled=true",
+                "choices": [
+                    {
+                        "index": 0,
+                        "label": "Black",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": 0,
+                        "recurring_price_currency": "USD",
+                        "value": "black"
+                    },
+                    {
+                        "index": 1,
+                        "label": "Slate",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": 0,
+                        "recurring_price_currency": "USD",
+                        "value": "slate"
+                    }
+                ],
+                "display_type": "Select Box",
+                "displayvalue": "",
+                "friendly_type": "select_box",
+                "help_text": "",
+                "id": "id",
+                "label": "Color",
+                "mandatory": False,
+                "max_length": 0,
+                "name": "color",
+                "read_only": False,
+                "render_label": True,
+                "type": 5,
+                "value": ""
+            },
+            {
+                "attributes": "edge_encryption_enabled=true",
+                "choices": [
+                    {
+                        "index": 0,
+                        "label": "64GB",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": 0,
+                        "recurring_price_currency": "USD",
+                        "value": "sixtyfour"
+                    },
+                    {
+                        "index": 1,
+                        "label": "32GB",
+                        "price": 50,
+                        "price_currency": "USD",
+                        "recurring_price": 0,
+                        "recurring_price_currency": "USD",
+                        "value": "thirtytwo"
+                    },
+                    {
+                        "index": 2,
+                        "label": "16GB",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": 0,
+                        "recurring_price_currency": "USD",
+                        "value": "sixteen"
+                    }
+                ],
+                "display_type": "Select Box",
+                "displayvalue": "64GB",
+                "friendly_type": "select_box",
+                "help_text": "",
+                "id": "id",
+                "label": "Storage",
+                "mandatory": False,
+                "max_length": 0,
+                "name": "storage",
+                "read_only": False,
+                "render_label": True,
+                "type": 5,
+                "value": "sixtyfour"
+            }
+        ],
+        "visible_standalone": True
+    }
+}
+RESPONSE_CREATE_ITEM_ORDER = {
+    "result": {
+        "number": "REQ0010002",
+        "request_id": "1234",
+        "request_number": "REQ0010002",
+        "sys_id": "12",
+        "table": "sc_request"
+    }
+}
+RESPONSE_DOCUMENT_ROUTE = {
+    "result": {
+        "display_name": "Incident: INC0000060",
+        "document_id": "document_id",
+        "document_table": "incident",
+        "queue": "queue_id",
+        "sys_id": "work_item_id"
+    }
+}
