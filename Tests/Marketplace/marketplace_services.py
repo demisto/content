@@ -100,7 +100,7 @@ class PackStatus(enum.Enum):
     FAILED_UPLOADING_PACK = "Failed in uploading pack zip to gcs"
     PACK_ALREADY_EXISTS = "Specified pack already exists in gcs under latest version"
     FAILED_REMOVING_PACK_SKIPPED_FOLDERS = "Failed to remove pack hidden and skipped folders"
-    FAILED_RELEASE_NOTES = "Failed to generate releaseNotes.json"
+    FAILED_RELEASE_NOTES = "Failed to generate changelog.json"
 
 
 class Pack(object):
@@ -568,22 +568,6 @@ class Pack(object):
             print_error(f"Failed in uploading {self._pack_name} pack to gcs. Additional info:\n {e}")
             return task_status, True
 
-    @staticmethod
-    def major_minor_rev(version, path=False):
-        """
-        Returns version string as int to be used for version comparison.
-        Accepts both paths (where version numbers use '_' as separators), as well as strings where
-        version separators are '.'
-        :param version: string containing version number.
-        :param path: Bool to indicate if searching within a path or string
-        :return: Tuple of integers.
-        """
-        if path:
-            major, minor, rev = re.search('(\d+)_(\d+)_(\d+)', version).groups()
-        else:
-            major, minor, rev = re.search('(\d+)\.(\d+)\.(\d+)', version).groups()
-        return int(major), int(minor), int(rev)
-
     def prepare_release_notes(self, index_folder_path):
         """Need to implement the changelog.md parsing and changelog.json creation after design is
         finalized.
@@ -592,24 +576,26 @@ class Pack(object):
         task_status = False
         try:
             release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
-            if os.path.exists(os.path.join(index_folder_path, self._pack_name, 'changelog.json')):
-                print_warning(f"Found Changelog for: {self._pack_name}")
-                changelog_path = os.path.join(self._pack_path, Pack.CHANGELOG_JSON)
+            if os.path.exists(os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)):
+                print_color(f"Found Changelog for: {self._pack_name}", LOG_COLORS.NATIVE)
+                changelog_index_path = os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
                 if os.path.exists(release_notes_dir):
                     found_versions = []
                     for filename in os.listdir(release_notes_dir):
                         _version = filename.replace('.md', '')
                         version = _version.replace('_', '.')
                         found_versions.append(version)
-                    latest_release_notes = max(found_versions, key=self.major_minor_rev)
+                    latest_release_notes = max(found_versions, key=LooseVersion)
                     print_color(f"Latest ReleaseNotes version is: {latest_release_notes}", LOG_COLORS.GREEN)
                     if self._current_version != latest_release_notes:
+                        # TODO Need to implement support for pre-release versions
                         print_error(f"Version mismatch detected between current version: {self._current_version} "
                                     f"and latest release notes version: {latest_release_notes}")
+                        task_status = False
+                        return task_status
                     else:
-                        with open(changelog_path, "r") as changelog_file:
+                        with open(changelog_index_path, "r") as changelog_file:
                             changelog = json.load(changelog_file)
-                            print_color(changelog, LOG_COLORS.YELLOW)
                             if latest_release_notes in changelog:
                                 print_error(f"Found existing release notes for version: {latest_release_notes} "
                                             f"in the {self._pack_name} pack.")
