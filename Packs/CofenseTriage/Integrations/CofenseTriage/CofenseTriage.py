@@ -6,6 +6,7 @@ from io import BytesIO
 from PIL import Image
 from datetime import datetime
 import functools
+import json
 
 DEFAULT_TIME_RANGE = '7 days'  # type: str
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'  # type: str
@@ -133,10 +134,12 @@ class TriageReport:
 
     def to_json(self):
         """Flatten the Reporter object to a set of `reporter_` prefixed attributes"""
-        return {
-            **self.attrs,
-            **{f"reporter_{k}": v for k, v in self.reporter.attrs.items()},
-        }
+        return json.dumps(
+            {
+                **self.attrs,
+                **{f"reporter_{k}": v for k, v in self.reporter.attrs.items()},
+            }
+        )
 
     @property
     @functools.lru_cache()
@@ -241,7 +244,7 @@ def fetch_reports() -> None:
         },
     )
 
-    already_fetched = set(demisto.getLastRun().get('reports_fetched', '[]'))
+    already_fetched = set(demisto.getLastRun().get('reports_fetched', []))
 
     triage_reports = [
         TriageReport(report)
@@ -267,7 +270,7 @@ def fetch_reports() -> None:
             break
 
     demisto.incidents(incidents)
-    demisto.setLastRun({'reports_fetched': already_fetched})  # TODO JSON?
+    demisto.setLastRun({'reports_fetched': already_fetched})
 
 
 def search_reports_command() -> None:

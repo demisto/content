@@ -18,6 +18,11 @@ def set_demisto_arg(name, value):
     DEMISTO_ARGS[name] = value
 
 
+def set_demisto_args(args):
+    for name, value in args.items():
+        set_demisto_arg(name, value)
+
+
 def get_demisto_arg(name):
     if name in DEMISTO_ARGS:
         return DEMISTO_ARGS[name]
@@ -34,6 +39,7 @@ def stub_demisto_setup(mocker):
     mocker.patch("demistomock.getParam", get_demisto_arg)  # args ≡ params in tests
     mocker.patch("demistomock.results")
     mocker.patch("demistomock.incidents")
+    mocker.patch("demistomock.setLastRun")
 
 
 class TestCofenseTriage:
@@ -77,12 +83,49 @@ class TestCofenseTriage:
         CofenseTriage.fetch_reports()
 
         demisto_incidents = CofenseTriage.demisto.incidents.call_args_list[0][0][0]
+        assert len(demisto_incidents) == 2
         assert (
             demisto_incidents[0]["name"]
             == "cofense triage report 13363: Phishing Simulation"
         )
         assert demisto_incidents[0]["occurred"] == "2020-03-19T16:43:09.715Z"
         assert demisto_incidents[0]["severity"] == 1
+        assert len(demisto_incidents[0]["rawJSON"]) == 1931
+
+        CofenseTriage.demisto.setLastRun.assert_called_once_with(
+            {"reports_fetched": {13392, 13363}}
+        )
+
+    @freeze_time("2000-10-31")
+    def test_fetch_reports_already_fetched(self, mocker, requests_mock):
+        set_demisto_args(
+            {
+                "max_fetch": 10,
+                "date_range": "1 day",
+                "category_id": 5,
+                "match_priority": 2,
+                "tags": "",
+            }
+        )
+        requests_mock.get(
+            "https://some-triage-host/api/public/v1/processed_reports?category_id=5&match_priority=2&tags=&start_date=2000-10-30T00%3A00%3A00.000000Z",
+            text=fixture_from_file("processed_reports.json"),
+        )
+        requests_mock.get(
+            "https://some-triage-host/api/public/v1/reporters/5331",
+            text=fixture_from_file("reporters.json"),
+        )
+        mocker.patch("demistomock.getLastRun", lambda: {"reports_fetched": {13363}})
+
+        CofenseTriage.fetch_reports()
+
+        demisto_incidents = CofenseTriage.demisto.incidents.call_args_list[0][0][0]
+        assert len(demisto_incidents) == 1
+        assert demisto_incidents[0]["name"] == "cofense triage report 13392: Crimeware"
+
+        CofenseTriage.demisto.setLastRun.assert_called_once_with(
+            {"reports_fetched": {13392, 13363}}
+        )
 
     @freeze_time("2000-10-31")
     def test_search_reports_command(self, requests_mock):
