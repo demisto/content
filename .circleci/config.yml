@@ -6,9 +6,9 @@ jobs:
     resource_class: medium+
     parallelism: 2
     environment:
-      CONTENT_VERSION: "20.4.0"
+      CONTENT_VERSION: "20.4.1"
       SERVER_VERSION: "5.5.0"
-      GIT_SHA1: "8e167aa32b7c7c76ca7d4ac2fa5fdae88be1b64f" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "79973624c8b5f0c7ee33d22e8e541d2a8edf1920" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - setup_remote_docker
@@ -240,9 +240,9 @@ jobs:
             mkdir ./unit-tests
             if [ -n "$SHOULD_LINT_ALL" ]; then
               echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-              demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path ./artifacts --json-report ./artifacts
+              demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path ./artifacts
             else
-              demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts --json-report ./artifacts
+              demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts
             fi
       - store_test_results:
           path: ./unit-tests

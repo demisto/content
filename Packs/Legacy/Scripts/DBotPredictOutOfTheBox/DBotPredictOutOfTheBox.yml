@@ -58,6 +58,17 @@ args:
   - 'false'
   required: false
   secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: Whether to set Demisto out-of-the-box DBot fields.
+  isArray: false
+  name: setIncidentFields
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
 commonfields:
   id: DBotPredictOutOfTheBox
   version: -1

@@ -1127,6 +1127,58 @@ class TestBaseClient:
     text = {"status": "ok"}
     client = BaseClient('http://example.com/api/v2/', ok_codes=(200, 201))
 
+    RETRIES_POSITIVE_TEST = [
+        'get',
+        'put',
+        'post'
+    ]
+
+    @pytest.mark.parametrize('method', RETRIES_POSITIVE_TEST)
+    def test_http_requests_with_retry_sanity(self, method):
+        """
+            Given
+            - A base client
+
+            When
+            - Making http request call with retries configured to a number higher then 0
+
+            Then
+            -  Ensure a successful request return response as expected
+        """
+        url = 'http://httpbin.org/{}'.format(method)
+        res = self.client._http_request(method,
+                                        '',
+                                        full_url=url,
+                                        retries=1,
+                                        status_list_to_retry=[401])
+        assert res['url'] == url
+    RETRIES_NEGATIVE_TESTS_INPUT = [
+        ('get', 400), ('get', 401), ('get', 500),
+        ('put', 400), ('put', 401), ('put', 500),
+        ('post', 400), ('post', 401), ('post', 500),
+
+    ]
+
+    @pytest.mark.parametrize('method, status', RETRIES_NEGATIVE_TESTS_INPUT)
+    def test_http_requests_with_retry_negative_sanity(self, method, status):
+        """
+            Given
+            - A base client
+
+            When
+            - Making http request call with retries configured to a number higher then 0
+
+            Then
+            -  An unsuccessful request returns a DemistoException regardless the bad status code.
+        """
+        from CommonServerPython import DemistoException
+        with raises(DemistoException, match='{}'.format(status)):
+            self.client._http_request(method,
+                                      '',
+                                      full_url='http://httpbin.org/status/{}'.format(status),
+                                      retries=3,
+                                      status_list_to_retry=[400, 401, 500])
+
     def test_http_request_json(self, requests_mock):
         requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
         res = self.client._http_request('get', 'event')

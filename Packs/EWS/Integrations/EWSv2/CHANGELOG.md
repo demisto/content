@@ -1,6 +1,8 @@
 ## [Unreleased]
-- Add Email entry context for ews-get-items.
-- Fixed an issue where the **fetch-incidents** command caused a timeout from EWS.
+- Command - "ews-get-items", add Email entry context by demisto standards as an output.
+
+## [20.4.1] - 2020-04-29
+Fixed an issue where the **fetch-incidents** command caused a timeout from EWS.
 
 ## [20.4.0] - 2020-04-14
 -
