@@ -192,7 +192,7 @@ class MITMProxy:
         self.rerecorded_tests = []
 
         silence_output(self.ami.call, ['mkdir', '-p', tmp_folder], stderr='null')
-        silence_output(self.ami.call, ['pip', 'install', 'python-dateutil'], stderr='null')
+        # silence_output(self.ami.call, ['pip', 'install', 'python-dateutil'], stderr='null')
 
     def configure_proxy_in_demisto(self, demisto_api_key, server, proxy=''):
         client = demisto_client.configure(base_url=server, api_key=demisto_api_key,
