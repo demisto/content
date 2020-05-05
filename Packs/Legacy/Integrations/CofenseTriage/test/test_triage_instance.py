@@ -21,7 +21,7 @@ class TestTriageInstance:
 
         requests = triage_instance.request("processed_reports")
 
-        assert len(requests) == 1
+        assert len(requests) == 2
         assert requests[0]["report_subject"] == "suspicious subject"
 
     def test_request_unsuccessful(self, mocker, requests_mock, triage_instance):

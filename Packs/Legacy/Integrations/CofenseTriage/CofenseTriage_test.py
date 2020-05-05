@@ -138,11 +138,14 @@ class TestCofenseTriage:
             ({"url": "example.com"}, []),
             ({"url": "nah"}, []),
             ({"created_at": parse_triage_date("2055-03-19T16:43:09.715Z")}, []),
-            ({"created_at": parse_triage_date("1999-03-19T16:43:09.715Z")}, [13363]),
+            (
+                {"created_at": parse_triage_date("1999-03-19T16:43:09.715Z")},
+                [13363, 13392],
+            ),
             ({"file_hash": "123"}, [13363]),
             ({"file_hash": "1234"}, [13363]),
             ({"file_hash": "5"}, []),
-            ({"reporter": "5331"}, [13363]),
+            ({"reporter": "5331"}, [13363, 13392]),
             ({"reporter": "2000"}, []),
         ],
     )
