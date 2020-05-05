@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+Set **bypass exclusion list** parameter to true by default.
 
 ## [20.3.4] - 2020-03-30
 -
