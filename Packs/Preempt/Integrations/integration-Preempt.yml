@@ -28,12 +28,10 @@ configuration:
   required: true
 - display: Fetch incidents
   name: isFetch
-  defaultvalue: ""
   type: 8
   required: false
 - display: Incident type
   name: incidentType
-  defaultvalue: ""
   type: 13
   required: false
 - display: Days to look back
@@ -43,12 +41,12 @@ configuration:
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "true"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "false"
+  defaultvalue: ""
   type: 8
   required: false
 script:
@@ -498,5 +496,5 @@ script:
     - contextPath: Preempt.Alerts.Cursor
       description: Cursor of last retrieved activity for pagination
     description: Get the alerts generated according to given arguments
-  dockerimage: demisto/python
+  dockerimage45: demisto/python
   isfetch: true
