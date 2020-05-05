@@ -1,31 +1,26 @@
-id: 4078d8b6-37c6-42d7-8324-16096a2feb51
+id: AWS - Route53 Test Playbook
 version: -1
 name: AWS - Route53 Test Playbook
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 47d5b2dc-3355-4fcb-8944-fac9d6b87d2b
     type: start
     task:
       id: 47d5b2dc-3355-4fcb-8944-fac9d6b87d2b
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 50
-        }
-      }
-  "1":
-    id: "1"
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     taskid: 63bcf396-3d00-4fa3-8cf5-a378d85cd6f5
     type: regular
     task:
@@ -40,7 +35,7 @@ tasks:
       brand: AWS - Route53
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     scriptarguments:
       comment:
         simple: test
@@ -54,19 +49,13 @@ tasks:
       target:
         simple: 192.168.1.1
       ttl:
-        simple: "300"
+        simple: '300'
       type:
         simple: A
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 545
-        }
-      }
-  "2":
-    id: "2"
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 545\n  }\n}"
+  '2':
+    id: '2'
     taskid: 457a6e1e-a2c7-4bdf-8319-8fb7e89405be
     type: regular
     task:
@@ -90,19 +79,13 @@ tasks:
       target:
         simple: 192.168.1.2
       ttl:
-        simple: "300"
+        simple: '300'
       type:
         simple: A
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 2120
-        }
-      }
-  "3":
-    id: "3"
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 2120\n  }\n}"
+  '3':
+    id: '3'
     taskid: c92a5826-e0d2-40c5-8b77-469b5fde2a65
     type: regular
     task:
@@ -117,23 +100,17 @@ tasks:
       brand: AWS - Route53
     nexttasks:
       '#none#':
-      - "8"
-      - "14"
-      - "15"
+      - '8'
+      - '14'
+      - '15'
     scriptarguments:
       roleArn: {}
       roleSessionDuration: {}
       roleSessionName: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 195
-        }
-      }
-  "4":
-    id: "4"
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 195\n  }\n}"
+  '4':
+    id: '4'
     taskid: d03c6ae3-826e-4e87-8c35-1fa4999fecc3
     type: regular
     task:
@@ -147,8 +124,8 @@ tasks:
       brand: AWS - Route53
     nexttasks:
       '#none#':
-      - "13"
-      - "16"
+      - '13'
+      - '16'
     scriptarguments:
       hostedZoneId:
         simple: ${AWS.Route53.HostedZones.Id}
@@ -161,15 +138,9 @@ tasks:
       startRecordType:
         simple: A
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1420
-        }
-      }
-  "5":
-    id: "5"
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1420\n  }\n}"
+  '5':
+    id: '5'
     taskid: a0151161-8b69-45a9-8054-4b36193952e2
     type: regular
     task:
@@ -183,22 +154,16 @@ tasks:
       brand: AWS - Route53
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       id:
         simple: ${AWS.Route53.RecordSetsChange.Id}
       waiterDelay: {}
       waiterMaxAttempts: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1245
-        }
-      }
-  "6":
-    id: "6"
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1245\n  }\n}"
+  '6':
+    id: '6'
     taskid: 26f6cccc-bb99-4cde-8093-dbcf89bc4bcd
     type: regular
     task:
@@ -215,7 +180,7 @@ tasks:
       brand: AWS - Route53
     nexttasks:
       '#none#':
-      - "12"
+      - '12'
     scriptarguments:
       hostedZoneId:
         simple: ${AWS.Route53.HostedZones.Id}
@@ -228,15 +193,9 @@ tasks:
       roleSessionDuration: {}
       roleSessionName: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1770
-        }
-      }
-  "7":
-    id: "7"
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1770\n  }\n}"
+  '7':
+    id: '7'
     taskid: bd9a9001-802a-4255-8305-6fb613f63fe7
     type: regular
     task:
@@ -252,7 +211,7 @@ tasks:
       brand: AWS - Route53
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     scriptarguments:
       comment: {}
       hostedZoneId:
@@ -265,300 +224,231 @@ tasks:
       target:
         simple: 192.168.1.2
       ttl:
-        simple: "300"
+        simple: '300'
       type:
         simple: A
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 895
-        }
-      }
-  "8":
-    id: "8"
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 895\n  }\n}"
+  '8':
+    id: '8'
     taskid: 309127f2-4e84-4552-8928-e81571899e4d
     type: regular
     task:
       id: 309127f2-4e84-4552-8928-e81571899e4d
       version: -1
       name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
+        \ object is an array: verify fields exists in each of the objects in the array\n\
+        - If matching object is not an array: verify fields exists in matching object\n\
+        - if 'expectedValue' is given: ensure that the given value is equal to the\
+        \ context path"
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: AWS.Route53.HostedZones.Id
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 49,
-          "y": 370
-        }
-      }
-  "9":
-    id: "9"
+    view: "{\n  \"position\": {\n    \"x\": 49,\n    \"y\": 370\n  }\n}"
+  '9':
+    id: '9'
     taskid: 700d05f2-fb07-4eed-8aad-cc66944ef67a
     type: regular
     task:
       id: 700d05f2-fb07-4eed-8aad-cc66944ef67a
       version: -1
       name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
+        \ object is an array: verify fields exists in each of the objects in the array\n\
+        - If matching object is not an array: verify fields exists in matching object\n\
+        - if 'expectedValue' is given: ensure that the given value is equal to the\
+        \ context path"
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: AWS.Route53.RecordSetsChange.Id
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 720
-        }
-      }
-  "10":
-    id: "10"
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 720\n  }\n}"
+  '10':
+    id: '10'
     taskid: d340952a-4c9c-4d78-8438-1b4f7474211a
     type: regular
     task:
       id: d340952a-4c9c-4d78-8438-1b4f7474211a
       version: -1
       name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
+        \ object is an array: verify fields exists in each of the objects in the array\n\
+        - If matching object is not an array: verify fields exists in matching object\n\
+        - if 'expectedValue' is given: ensure that the given value is equal to the\
+        \ context path"
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: AWS.Route53.RecordSetsChange.Id
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1070
-        }
-      }
-  "12":
-    id: "12"
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1070\n  }\n}"
+  '12':
+    id: '12'
     taskid: bcbd1813-79f4-4960-81df-e0052aa905a2
     type: regular
     task:
       id: bcbd1813-79f4-4960-81df-e0052aa905a2
       version: -1
       name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
+        \ object is an array: verify fields exists in each of the objects in the array\n\
+        - If matching object is not an array: verify fields exists in matching object\n\
+        - if 'expectedValue' is given: ensure that the given value is equal to the\
+        \ context path"
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: AWS.Route53.TestDNSAnswer.RecordName
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1945
-        }
-      }
-  "13":
-    id: "13"
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1945\n  }\n}"
+  '13':
+    id: '13'
     taskid: f46cf2d9-ace2-481a-84a7-080b2d2800bb
     type: regular
     task:
       id: f46cf2d9-ace2-481a-84a7-080b2d2800bb
       version: -1
       name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
+        \ object is an array: verify fields exists in each of the objects in the array\n\
+        - If matching object is not an array: verify fields exists in matching object\n\
+        - if 'expectedValue' is given: ensure that the given value is equal to the\
+        \ context path"
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: AWS.Route53.HostedZones.Id
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1595
-        }
-      }
-  "14":
-    id: "14"
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 1595\n  }\n}"
+  '14':
+    id: '14'
     taskid: 3e32a637-d71e-46fa-864a-56d606465841
     type: regular
     task:
       id: 3e32a637-d71e-46fa-864a-56d606465841
       version: -1
       name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
+        \ object is an array: verify fields exists in each of the objects in the array\n\
+        - If matching object is not an array: verify fields exists in matching object\n\
+        - if 'expectedValue' is given: ensure that the given value is equal to the\
+        \ context path"
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: AWS.Route53.HostedZones.Name
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 370
-        }
-      }
-  "15":
-    id: "15"
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 370\n  }\n}"
+  '15':
+    id: '15'
     taskid: 0ae823ec-4e72-452b-8c45-6b1abafa7673
     type: regular
     task:
       id: 0ae823ec-4e72-452b-8c45-6b1abafa7673
       version: -1
       name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
+        \ object is an array: verify fields exists in each of the objects in the array\n\
+        - If matching object is not an array: verify fields exists in matching object\n\
+        - if 'expectedValue' is given: ensure that the given value is equal to the\
+        \ context path"
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: AWS.Route53.HostedZones.ResourceRecordSetCount
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 370
-        }
-      }
-  "16":
-    id: "16"
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 370\n  }\n}"
+  '16':
+    id: '16'
     taskid: 31e6c025-eef0-4f3c-8466-4e90b44f374d
     type: regular
     task:
       id: 31e6c025-eef0-4f3c-8466-4e90b44f374d
       version: -1
       name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
+        \ object is an array: verify fields exists in each of the objects in the array\n\
+        - If matching object is not an array: verify fields exists in matching object\n\
+        - if 'expectedValue' is given: ensure that the given value is equal to the\
+        \ context path"
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: AWS.Route53.HostedZones.Name
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1595
-        }
-      }
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 2165,
-        "width": 1241,
-        "x": 49,
-        "y": 50
-      }
-    }
-  }
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1595\n  }\n}"
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 2165,\n      \"width\": 1241,\n      \"x\": 49,\n      \"y\":\
+  \ 50\n    }\n  }\n}"
 inputs: []
 outputs: []
+fromversion: 5.0.0
+description: ''
