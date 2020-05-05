@@ -3,15 +3,10 @@
 	"kind": "details",
 	"layout": {
 		"TypeName": "",
-		"commitMessage": "",
 		"id": "SANS",
 		"kind": "details",
 		"modified": "2020-05-04T09:21:53.129094377Z",
 		"name": "",
-		"prevKind": "details",
-		"prevTypeId": "SANS",
-		"shouldCommit": false,
-		"sortValues": null,
 		"system": false,
 		"tabs": [
 			{
@@ -576,7 +571,6 @@
 			}
 		],
 		"typeId": "SANS",
-		"vcShouldIgnore": false,
 		"version": -1
 	},
 	"typeId": "SANS",
