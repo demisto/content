@@ -18,10 +18,7 @@ API_USER = demisto.params()['credentials']['identifier']
 API_PASS = demisto.params()['credentials']['password']
 VERIFY_SSL = not demisto.params()['insecure']
 
-del os.environ['HTTP_PROXY']
-del os.environ['HTTPS_PROXY']
-del os.environ['http_proxy']
-del os.environ['https_proxy']
+handle_proxy()
 
 
 class BSAPI:
