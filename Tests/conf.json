@@ -18,6 +18,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Malwarebytes",
+            "playbookID": "Malwarebytes-Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Tanium Threat Response",
             "playbookID": "Tanium Threat Response Test"
         },
@@ -333,9 +338,6 @@
         },
         {
             "playbookID": "TestAwsEC2GetPublicSGRules-Test"
-        },
-        {
-            "playbookID": "TestParseEmailFile-deprecated-script"
         },
         {
             "integrations": "RSA NetWitness Packets and Logs",
@@ -2721,6 +2723,8 @@
         }
     ],
     "skipped_tests": {
+        "Send Investigation Summary Reports - Test": "Issue 24133",
+        "Test_URLhaus": "Issue 23857",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get PrismaAccess instance",
         "Prisma_Access-Test": "unskip after we will get PrismaAccess instance",
         "Test-Shodan_v2": "Issue 23370",
@@ -2778,6 +2782,8 @@
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Nessus": "No instance",
         "MxToolBox": "No instance",
+        "Traps": "Issue 24122",
+        "skyformation": "No instance, old partner",
         "PrismaAccess": "Instance will be provided soon by Lior and Prasen",
         "Trend Micro Apex": "Issue 23632",
         "Awake Security": "Issue 23376",
