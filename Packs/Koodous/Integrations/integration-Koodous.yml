@@ -54,3 +54,5 @@ script:
       required: true
       description: The hash of the sample (MD5, SHA1 or SHA256)
     description: Check APK sample.
+tests:
+  - No tests

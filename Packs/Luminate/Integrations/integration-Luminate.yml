@@ -37,12 +37,10 @@ configuration:
   required: true
 - display: Fetch incidents
   name: isFetch
-  defaultvalue: ""
   type: 8
   required: false
 - display: Incident type
   name: incidentType
-  defaultvalue: ""
   type: 13
   required: false
 script:
@@ -266,6 +264,7 @@ script:
             'Contents': 'error has occured: %s' % (e.message,),
         })
   type: python
+  subtype: python2
   commands:
   - name: lum-block-user
     arguments:
