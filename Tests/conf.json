@@ -667,6 +667,12 @@
             "fromversion": "4.0.0"
         },
         {
+            "playbookID": "PAN-OS - Block IP and URL - External Dynamic List v2 Test",
+            "integrations": ["Panorama", "palo_alto_networks_pan_os_edl_management"],
+            "instance_names": "palo_alto_firewall_9.0",
+            "fromversion": "4.0.0"
+        },
+        {
             "playbookID": "Test_EDL",
             "integrations": "EDL",
             "fromversion": "5.5.0"
@@ -1858,7 +1864,8 @@
             "integrations": "Google Cloud Storage",
             "playbookID": "GCS - Test",
             "timeout": 500,
-            "nightly": true
+            "nightly": true,
+            "memory_threshold": 80
         },
         {
             "integrations": "GooglePubSub",
@@ -2046,6 +2053,12 @@
                 "palo_alto_networks_pan_os_edl_management"
             ],
             "instance_names": "palo_alto_panorama",
+            "timeout": 1000
+        },
+        {
+            "playbookID": "PAN-OS EDL Setup v3 Test",
+            "integrations": ["Panorama", "palo_alto_networks_pan_os_edl_management"],
+            "instance_names": "palo_alto_firewall_9.0",
             "timeout": 1000
         },
         {
@@ -2706,6 +2719,10 @@
         "Prisma_Access-Test": "unskip after we will get PrismaAccess instance",
         "Test-Shodan_v2": "Issue 23370",
         "Symantec Deepsight Test": "Issue 22971",
+        "PAN-OS EDL Setup V2 Test": "Issue 23854",
+        "PAN-OS - Block IP and URL - External Dynamic List Test": "Issue 23854",
+        "PhishLabsIOC TestPlaybook": "integration bug (23926)",
+        "Test_URLhaus": "Issue 23857",
         "OTRS Test": "Issue 23167",
         "Akamai_WAF_SIEM-Test": "Issue 22225",
         "Cloaken-Test": "Issue 20036",
@@ -2830,7 +2847,6 @@
         "Tenable.sc": "unstable instance",
         "VirusTotal - Private API": "Issue 22638",
         "_comment": "~~~ OTHER ~~~",
-        "Cortex Data Lake": "Issue 23718",
         "Pentera": "authentication method will not work with testing",
         "EclecticIQ Platform": "Issue 8821",
         "BitDam": "Issue #17247",

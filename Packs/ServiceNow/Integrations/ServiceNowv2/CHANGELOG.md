@@ -1,5 +1,12 @@
 ## [Unreleased]
-  - Added the ***servicenow-add-tag*** command.
+  - Improved documentation regarding the usage of the ***impact*** and the ***urgency*** arguments for the commands:
+    - ***servicenow-update-ticket***
+    - ***servicenow-create-ticket***
+  - Added 4 commands:
+    - ***servicenow-query-items***
+    - ***servicenow-get-item-details***
+    - ***servicenow-create-item-order***
+    - ***servicenow-add-tag***
   - Added the *system_params* argument to the ***servicenow-query-table***, ***servicenow-query-tickets*** commands.
 
 ## [20.4.1] - 2020-04-29
