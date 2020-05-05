@@ -610,7 +610,7 @@ class Pack(object):
                             if latest_release_notes in changelog:
                                 print_error(f"Found existing release notes for version: {latest_release_notes} "
                                             f"in the {self._pack_name} pack.")
-                                task_status = False
+                                task_status = True
                                 return task_status
                         latest_rn_file = latest_release_notes.replace('.', '_')
 
