@@ -329,7 +329,7 @@ script:
       default: true
       description: OPSWAT scan id
     description: Get OPSWAT result
-  dockerimage: demisto/python3:3.7.2.214
+  dockerimage: demisto/python3:3.8.2.6981
   subtype: python3
   runonce: false
 tests:

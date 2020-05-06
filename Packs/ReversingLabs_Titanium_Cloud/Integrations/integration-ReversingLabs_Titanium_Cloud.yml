@@ -285,6 +285,5 @@ script:
       type: number
     description: Retrieve Malware Presence Status from ReversingLabs
   runonce: false
-  subtype: python3
 tests:
  -  ReversingLabsTCTest
