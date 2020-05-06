@@ -142,7 +142,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: English
-  description: The language of the input text
+  description: The language of the input text. Default is "English". Can be "English", "German", "French", "Spanish", "Portuguese", "Italian", "Dutch", or "Other".
   isArray: false
   name: language
   predefined:
@@ -159,8 +159,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: tokenizer
-  description: Tokenization method for text. Need to be chosen only in case language
-    set as "Other".
+  description: Tokenization method for text. Only required when the language argument is set to "Other". Can be "tokenizer", "byWords", or "byLetters".
   isArray: false
   name: tokenizationMethod
   predefined:
