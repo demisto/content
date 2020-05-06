@@ -19,13 +19,13 @@ This integration was integrated and tested with version xx of Microsoft_Graph_Fi
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for Microsoft_Graph_Files.
 3. Click __Add instance__ to create and configure a new integration instance.
-   * __Name__: a textual name for the integration instance.
-   * __Server URL__
-   * __ID (received from the admin consent - see Detailed Instructions)__
-   * __Token (received from the admin consent - see Detailed Instructions)__
-   * __Key (received from the admin consent - see Detailed Instructions)__
-   * __Trust any certificate (not secure)__
-   * __Use system proxy settings__
+   - __Name__: a textual name for the integration instance.
+   - __Server URL__
+   - __ID (received from the admin consent - see Detailed Instructions)__
+   - __Token (received from the admin consent - see Detailed Instructions)__
+   - __Key (received from the admin consent - see Detailed Instructions)__
+   - __Trust any certificate (not secure)__
+   - __Use system proxy settings__
 4. Click __Test__ to validate the URLs, token, and connection.
 
 
