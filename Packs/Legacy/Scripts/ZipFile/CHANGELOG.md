@@ -1,4 +1,11 @@
 ## [Unreleased]
+
+
+## [20.4.1] - 2020-04-29
+Added support for files with special characters in the name.
+
+
+## [20.4.0] - 2020-04-14
 -
 
 

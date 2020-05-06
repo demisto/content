@@ -21,21 +21,21 @@ configuration:
   required: false
   type: 8
 - defaultvalue: '7'
-  display: IP Threshold. Minimum risk score for the IP to be consodered malicious
+  display: IP Threshold. Minimum risk score for the IP to be considered malicious
     (ranges from 1 to 10).
   hidden: false
   name: ip_threshold
   required: false
   type: 0
 - defaultvalue: '7'
-  display: URL Threshold. Minimum risk score for the URL to be consodered malicious
+  display: URL Threshold. Minimum risk score for the URL to be considered malicious
     (ranges from 1 to 10).
   hidden: false
   name: url_threshold
   required: false
   type: 0
 - defaultvalue: '5'
-  display: CVE Threshold. Minimum risk score for the URL to be consodered malicious
+  display: CVE Threshold. Minimum risk score for the URL to be considered malicious
     (ranges from 1 to 10).
   hidden: false
   name: cve_threshold
@@ -150,13 +150,10 @@ script:
       description: The actual score.
       type: number
   - arguments:
-    - auto: PREDEFINED
-      default: true
+    - default: true
       description: The file hash md5/sha1/sha256 to check
       isArray: true
       name: file
-      predefined:
-      - comma seperated optional values
       required: true
       secret: false
     - default: false
@@ -221,15 +218,12 @@ script:
       - ''
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
+    - default: false
       description: If the score is above the given threshold, will be considered malicious.
         If threshold is not specified, the default URL threshold, as configured in
         the instance settings, will be used.
       isArray: false
       name: threshold
-      predefined:
-      - comma seperated optional values
       required: false
       secret: false
     - auto: PREDEFINED
@@ -266,13 +260,10 @@ script:
       description: The actual score.
       type: number
   - arguments:
-    - auto: PREDEFINED
-      default: true
+    - default: true
       description: The cve to search for
       isArray: true
       name: cve_id
-      predefined:
-      - comma seperated optional values
       required: true
       secret: false
     deprecated: false
@@ -320,13 +311,10 @@ script:
       description: The exploitability of the CVE.
       type: String
   - arguments:
-    - auto: PREDEFINED
-      default: false
+    - default: false
       description: The number of results to return
       isArray: false
       name: limit
-      predefined:
-      - comma seperated optional values
       required: false
       secret: false
     - default: false

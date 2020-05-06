@@ -22,6 +22,7 @@ script: |
   demisto.results(file_result_existing_file(outputName))
 
 type: python
+subtype: python2
 tags: []
 comment: Removing the password protection from a PDF file and adding a new file entry
   with the unlocked PDF.

@@ -60,6 +60,7 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
+  defaultvalue: "true"
 - display: Tags
   name: feedTags
   required: false
@@ -91,7 +92,7 @@ script:
     execution: false
     name: fastly-get-indicators
   dockerimage: demisto/jmespath:1.0.0.6980
-  feed: false
+  feed: true
   isfetch: false
   longRunning: false
   longRunningPort: false
