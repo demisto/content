@@ -1,7 +1,7 @@
 id: QRadarCorrelationLog
 version: -1
 name: QRadarCorrelationLog
-description: This playbook get the correlation logs of multiple QIDs.
+description: This playbook retrieves the correlation logs of multiple QIDs.
 starttaskid: '0'
 tasks:
   '0':
