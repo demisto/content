@@ -744,7 +744,7 @@ new incident [details]
 mirror incident-id
 </pre>
 <h3>Notifications</h3>
-<p>The integration sends notifications according to the configured notification settings found in the user preferences page in Cortex XSOAR, and additionally to the pre determined channel dedicated for incident notifications (according to the integration configuration).
+<p>The integration sends notifications as they are configured in the notification settings (User Preferences in Cortex XSOAR), and to the dedicated channel configured for incident notifications (according to the integration configuration).
 If a dedicated channel for incident notifications is configured, the following notifications will be sent there:</p>
 <ul>
 <li>Incident opened</li>
