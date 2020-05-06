@@ -29,4 +29,6 @@ This playbook does not use any scripts.
 ---
 There are no outputs for this playbook.
 
+## Playbook Image
+---
 ![Playbook Image](https://raw.githubusercontent.com/demisto/content/8206fc4ae62e42cb218085fab9a4b0cd10496300/Packs/FeedAWS/doc_files/TIM_-_Process_AWS_indicators.png)
