@@ -2753,6 +2753,11 @@
         },
         {
             "playbookID": "Extract Indicators From File - test"
+        },
+        {
+            "integrations": "GCP Whitelist Feed",
+            "playbookID": "GCPWhitelist_Feed_Test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
