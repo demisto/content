@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+-
 
 ## [20.4.1] - 2020-04-29
 Fixed an issue where the time calculation for the first fetch was incorrect.

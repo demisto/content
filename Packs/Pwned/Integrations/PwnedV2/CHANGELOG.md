@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+-
 
 ## [20.4.0] - 2020-04-14
 Added the **pwned-username** command the allow searching usernames. 
