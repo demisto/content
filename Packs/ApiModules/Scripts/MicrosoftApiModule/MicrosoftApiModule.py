@@ -75,7 +75,7 @@ class MicrosoftClient(BaseClient):
         self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
         self.verify = verify
 
-    def http_request(self, *args, **kwargs):
+    def http_request(self, *args, resp_type='json', headers=None, return_empty_response=False, **kwargs):
         """
         Overrides Base client request function, retrieves and adds to headers access token before sending the request.
 
@@ -83,12 +83,38 @@ class MicrosoftClient(BaseClient):
             requests.Response: The http response
         """
         token = self.get_access_token()
-        headers = {
+        default_headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         }
-        return super()._http_request(*args, headers=headers, **kwargs)  # type: ignore[misc]
+        if headers:
+            default_headers.update(headers)
+
+        response = super()._http_request(   # type: ignore[misc]
+            *args, resp_type="response", headers=default_headers, **kwargs)
+
+        # 206 indicates Partial Content, reason will be in the warning header.
+        # In that case, logs with the warning header will be written.
+        if response.status_code == 206:
+            demisto.debug(str(response.headers))
+
+        is_response_empty_and_successful = (response.status_code == 204)
+        if is_response_empty_and_successful and return_empty_response:
+            return response
+
+        try:
+            if resp_type == 'json':
+                return response.json()
+            if resp_type == 'text':
+                return response.text
+            if resp_type == 'content':
+                return response.content
+            if resp_type == 'xml':
+                ET.parse(response.text)
+            return response
+        except ValueError as exception:
+            raise DemistoException('Failed to parse json object from response: {}'.format(response.content), exception)
 
     def get_access_token(self):
         """

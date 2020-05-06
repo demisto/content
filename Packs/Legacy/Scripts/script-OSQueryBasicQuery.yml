@@ -25,6 +25,7 @@ script: |-
 
   demisto.results(res + error_res)
 type: python
+subtype: python2
 tags:
 - OSQuery
 comment: |-

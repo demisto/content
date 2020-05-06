@@ -1,6 +1,11 @@
 ## Overview
 Use the Securonix integration to manage incidents and watchlists.
-Integration was build and tested with SNYPR Version 6.3.
+Integration was built and tested with SNYPR Versions: 6.2, 6.3.
+
+This integration supports both cloud and on-prem instances of Securonix.
+To configure a cloud base instance use the *tenant* parameter only.
+To configure an on-prem instance, use both the *host* and *tenant* parameters.
+For more information, visit: `securonix/etnants/<tenantname>/securonix_home/responses/demisto` 
 
 ## Configure Securonix on Demisto
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -1172,4 +1177,4 @@ Creates an incident. For more information about the required arguments, see the 
 
 ## Limitations
 The `opened` argument for fetching and listing incidents is currently not filtering the only the opened incidents.
-This is an open issue on the vendor side, currently happening on SNYPR Version 6.3 and 6.2. 
+This is an open issue on the vendor side, currently happening on SNYPR Versions 6.2, 6,3.

@@ -13,6 +13,7 @@ script: |
       counter = counter - 1
   demisto.results(res)
 type: python
+subtype: python2
 tags: []
 enabled: true
 args:

@@ -23,6 +23,7 @@ script: |
       'EntryContext': {'Exif':arr}
   })
 type: python
+subtype: python2
 tags:
 - Utility
 comment: Read image files metadata and provide Exif tags

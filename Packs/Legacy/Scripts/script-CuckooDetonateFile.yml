@@ -14,6 +14,7 @@ script: |-
       else:
           demisto.results( res + [{ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'No taskID returned.' }] )
 type: python
+subtype: python2
 tags:
 - cuckoo
 comment: Adds a file to the list of pending tasks. Returns the ID of the newly created
