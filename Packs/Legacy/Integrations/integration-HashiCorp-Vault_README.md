@@ -12,7 +12,7 @@
 <li><strong>HashiCorps server URL (e.g., <a href="https://192.168.0.1:8200/" rel="nofollow">https://192.168.0.1:8200</a>)</strong></li>
 <li><strong>Username</strong></li>
 <li><strong>Authentication token</strong></li>
-<li><strong>Trust any certificate (unsecure)</strong></li>
+<li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 <li>
 <strong>Fetches credentials</strong> - If set, the integration will fetch credentials from Vault to Demisto.</li>

@@ -24,7 +24,7 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: unsecure
   defaultvalue: ""
   type: 8
@@ -594,6 +594,7 @@ script:
     except Exception as e:
         return_error(str(e))
   type: python
+  subtype: python2
   commands:
   - name: ip
     arguments:

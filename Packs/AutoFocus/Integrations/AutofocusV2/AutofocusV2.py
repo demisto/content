@@ -1,3 +1,5 @@
+from typing import Optional
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -39,6 +41,7 @@ API_PARAM_DICT = {
         'Ascending': 'asc',
         'Descending': 'desc'
     },
+    'artifact': 'artifactSource',
     'sort': {
         'App Name': 'app_name',
         'App Packagename': 'app_packagename',
@@ -151,7 +154,8 @@ API_PARAM_DICT = {
         'filename': 'FileName',
         'device_industry': 'Industry',
         'upload_src': 'UploadSource',
-        'fileurl': 'FileURL'
+        'fileurl': 'FileURL',
+        'artifact': 'Artifact',
     }
 }
 SAMPLE_ANALYSIS_LINE_KEYS = {
@@ -285,25 +289,63 @@ def parse_response(resp, err_operation):
 def http_request(url_suffix, method='POST', data={}, err_operation=None):
     # A wrapper for requests lib to send our requests and handle requests and responses better
     data.update({'apiKey': API_KEY})
-    res = requests.request(
-        method=method,
-        url=BASE_URL + url_suffix,
-        verify=USE_SSL,
-        data=json.dumps(data),
-        headers=HEADERS
-    )
+    try:
+        res = requests.request(
+            method=method,
+            url=BASE_URL + url_suffix,
+            verify=USE_SSL,
+            data=json.dumps(data),
+            headers=HEADERS
+        )
+    # Handle with connection error
+    except requests.exceptions.ConnectionError as err:
+        err_message = f'Error connecting to server. Check your URL/Proxy/Certificate settings: {err}'
+        return_error(err_message)
     return parse_response(res, err_operation)
 
 
-def validate_sort_and_order(sort, order):
-    if sort and not order:
-        return_error('Please specify the order of sorting (Ascending or Descending).')
-    if order and not sort:
-        return_error('Please specify a field to sort by.')
-    return sort and order
+def validate_sort_and_order_and_artifact(sort: Optional[str] = None, order: Optional[str] = None,
+                                         artifact_source: Optional[str] = None) -> bool:
+    """
+    Function that validates the arguments combination.
+    sort and order arguments must be defined together.
+    Sort and order can't appear with artifact.
+    Args:
+        sort: variable to sort by.
+        order: the order which the results is ordered by.
+        artifact_source: true if artifacts are needed and false otherwise.
+    Returns:
+        true if arguments are valid for the request, false otherwise.
+    """
+    if artifact_source == 'true' and sort:
+        raise Exception('Please remove or disable one of sort or artifact,'
+                        ' As they are not supported in the api together.')
+    elif sort and not order:
+        raise Exception('Please specify the order of sorting (Ascending or Descending).')
+    elif order and not sort:
+        raise Exception('Please specify a field to sort by.')
+    elif sort and order:
+        return True
+    return False
 
 
-def do_search(search_object, query, scope, size=None, sort=None, order=None, err_operation=None):
+def do_search(search_object: str, query: dict, scope: Optional[str], size: Optional[str] = None,
+              sort: Optional[str] = None, order: Optional[str] = None, err_operation: Optional[str] = None,
+              artifact_source: Optional[str] = None) -> dict:
+    """
+    This function created the data to be sent in http request and sends it.
+    Args:
+        search_object: Type of search sessions or samples.
+        query: Query based on conditions specified within this object.
+        scope:  Scope of the search. Only available and required for: samples. e.g. Public, Global, Private.
+        size: Number of results to provide.
+        sort: Sort based on the provided artifact.
+        order: How to display sort results in ascending or descending order.
+        err_operation: String error which specificed which command failed.
+        artifact_source: Whether artifacts are wanted or not.
+    Returns:
+        raw response of the http request.
+    """
     path = '/samples/search' if search_object == 'samples' else '/sessions/search'
     data = {
         'query': query,
@@ -311,24 +353,40 @@ def do_search(search_object, query, scope, size=None, sort=None, order=None, err
     }
     if scope:
         data.update({'scope': API_PARAM_DICT['scope'][scope]})  # type: ignore
-    if validate_sort_and_order(sort, order):
+    if validate_sort_and_order_and_artifact(sort, order, artifact_source):
         data.update({'sort': {API_PARAM_DICT['sort'][sort]: {'order': API_PARAM_DICT['order'][order]}}})  # type: ignore
-
+    if artifact_source == 'true':
+        data.update({'artifactSource': 'af'})
+        data.update({'type': 'scan'})
     # Remove nulls
     data = createContext(data, removeNull=True)
     result = http_request(path, data=data, err_operation=err_operation)
     return result
 
 
-def run_search(search_object, query, scope=None, size=None, sort=None, order=None):
+def run_search(search_object: str, query: str, scope: Optional[str] = None, size: str = None, sort: str = None,
+               order: str = None, artifact_source: str = None) -> dict:
+    """
+    This function searches the relevent search and returns search info for result command.
+    Args:
+        search_object: Type of search sessions or samples.
+        query: Query based on conditions specified within this object.
+        scope:  Scope of the search. Only available and required for: samples. e.g. Public, Global, Private.
+        size: Number of results to provide.
+        sort: Sort based on the provided artifact.
+        order: How to display sort results in ascending or descending order.
+        artifact_source: Whether artifacts are wanted or not.
+    Returns:
+        dict of response for result commands.
+    """
     result = do_search(search_object, query=json.loads(query), scope=scope, size=size, sort=sort, order=order,
-                       err_operation='Search operation failed')
+                       artifact_source=artifact_source, err_operation='Search operation failed')
     in_progress = result.get('af_in_progress')
     status = 'in progress' if in_progress else 'complete'
     search_info = {
         'AFCookie': result.get('af_cookie'),
         'Status': status,
-        'SessionStart': datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
+        'SessionStart': datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
     }
     return search_info
 
@@ -684,12 +742,13 @@ def filter_object_entries_by_dict_values(result_object, response_dict_name):
 
 
 def search_samples(query=None, scope=None, size=None, sort=None, order=None, file_hash=None, domain=None, ip=None,
-                   url=None, wildfire_verdict=None, first_seen=None, last_updated=None):
+                   url=None, wildfire_verdict=None, first_seen=None, last_updated=None, artifact_source=None):
     validate_no_query_and_indicators(query, [file_hash, domain, ip, url, wildfire_verdict, first_seen, last_updated])
     if not query:
         validate_no_multiple_indicators_for_search([file_hash, domain, ip, url])
         query = build_sample_search_query(file_hash, domain, ip, url, wildfire_verdict, first_seen, last_updated)
-    return run_search('samples', query=query, scope=scope, size=size, sort=sort, order=order)
+    return run_search('samples', query=query, scope=scope, size=size, sort=sort, order=order,
+                      artifact_source=artifact_source)
 
 
 def build_sample_search_query(file_hash, domain, ip, url, wildfire_verdict, first_seen, last_updated):
@@ -827,9 +886,16 @@ def search_indicator(indicator_type, indicator_value):
             headers=headers,
             params=params
         )
+
         # Handle error responses gracefully
         result.raise_for_status()
         result_json = result.json()
+
+    # Handle with connection error
+    except requests.exceptions.ConnectionError as err:
+        err_message = f'Error connecting to server. Check your URL/Proxy/Certificate settings: {err}'
+        return_error(err_message)
+
     # Unexpected errors (where no json object was received)
     except Exception as err:
         try:
@@ -845,7 +911,7 @@ def search_indicator(indicator_type, indicator_value):
                          f'Reason is: {ERROR_DICT[str(result.status_code)]}.')
         else:
             err_msg = f'Request Failed with message: {err}.'
-        return return_error(err_msg)
+        return_error(err_msg)
 
     return result_json
 
@@ -912,71 +978,6 @@ def calculate_dbot_score(indicator_response, indicator_type):
     else:
         score = next(iter(latest_pan_verdicts.values()))
         return VERDICTS_TO_DBOTSCORE.get(score.lower(), 0)
-
-
-def get_indicator_outputs(indicator_type, indicators, indicator_context_output):
-    human_readable = ''
-    raw_res = []
-    scores = []
-    _indicators = []
-    context = []
-
-    for indicator in indicators:
-        indicator_response = indicator['response']
-        indicator_value = indicator['value']
-
-        dbot_score = {
-            'Indicator': indicator_value,
-            'Type': indicator_type.lower(),
-            'Vendor': VENDOR_NAME,
-            'Score': indicator['score']
-        }
-
-        indicator_context = {
-            indicator_context_output: indicator_value
-        }
-
-        if indicator['score'] == 3:
-            indicator_context['Malicious'] = {
-                'Vendor': VENDOR_NAME
-            }
-
-        if indicator_type == 'Domain':
-            whois = dict()  # type: ignore
-            whois['Admin'] = dict()
-            whois['Registrant'] = dict()
-            whois['Registrar'] = dict()
-            whois['CreationDate'] = indicator_response['WhoisDomainCreationDate']
-            whois['ExpirationDate'] = indicator_response['WhoisDomainExpireDate']
-            whois['UpdatedDate'] = indicator_response['WhoisDomainUpdateDate']
-            whois['Admin']['Email'] = indicator_response['WhoisAdminEmail']
-            whois['Admin']['Name'] = indicator_response['WhoisAdminName']
-            whois['Registrar']['Name'] = indicator_response['WhoisRegistrar']
-            whois['Registrant']['Name'] = indicator_response['WhoisRegistrant']
-            indicator_context['WHOIS'] = whois
-
-        tags = indicator_response.get('Tags')
-        table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {indicator_value}'
-        if tags:
-            indicators_data = indicator_response.copy()
-            del indicators_data['Tags']
-            md = tableToMarkdown(table_name, indicators_data, headerTransform=string_to_table_header)
-            md += tableToMarkdown('Indicator Tags:', tags, headerTransform=string_to_table_header)
-        else:
-            md = tableToMarkdown(table_name, indicator_response, headerTransform=string_to_table_header)
-
-        human_readable += md
-        raw_res.append(indicator['raw_response'])
-        scores.append(dbot_score)
-        context.append(indicator_context)
-        _indicators.append(indicator_response)
-
-    ec = {
-        outputPaths['dbotscore']: scores,
-        outputPaths[indicator_type.lower()]: context,
-        f'AutoFocus.{indicator_type}(val.IndicatorValue === obj.IndicatorValue)': _indicators,
-    }
-    return_outputs(readable_output=human_readable, outputs=ec, raw_response=raw_res)
 
 
 def check_for_ip(indicator):
@@ -1098,9 +1099,10 @@ def search_samples_command():
     max_results = args.get('max_results')
     sort = args.get('sort')
     order = args.get('order')
+    artifact_source = args.get('artifact')
     info = search_samples(query=query, scope=scope, size=max_results, sort=sort, order=order, file_hash=file_hash,
                           domain=domain, ip=ip, url=url, wildfire_verdict=wildfire_verdict, first_seen=first_seen,
-                          last_updated=last_updated)
+                          last_updated=last_updated, artifact_source=artifact_source)
     md = tableToMarkdown(f'Search Samples Info:', info)
     demisto.results({
         'Type': entryTypes['note'],
@@ -1140,23 +1142,51 @@ def samples_search_results_command():
     af_cookie = args.get('af_cookie')
     results, status = get_search_results('samples', af_cookie)
     files = get_files_data_from_results(results)
+    hr = ''
     if not results or len(results) == 0:
-        md = results = 'No entries found that match the query'
+        hr = 'No entries found that match the query'
         status = 'complete'
-    else:
-        md = tableToMarkdown(f'Search Samples Results is {status}', results)
     context = {
         'AutoFocus.SamplesResults(val.ID === obj.ID)': results,
         'AutoFocus.SamplesSearch(val.AFCookie ==== obj.AFCookie)': {'Status': status, 'AFCookie': af_cookie},
         outputPaths['file']: files
     }
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['text'],
-        'Contents': results,
-        'EntryContext': context,
-        'HumanReadable': md
-    })
+    if not results:
+        return_outputs(readable_output=hr, outputs=context, raw_response={})
+    else:
+        # for each result a new entry will be set with two tables, one of the result and one of its artifacts
+        for result in results:
+            if 'Artifact' in result:
+                hr = samples_search_result_hr(result, status)
+                return_outputs(readable_output=hr, outputs=context, raw_response=results)
+            else:
+                hr = tableToMarkdown(f'Search Samples Result is {status}', result)
+                hr += tableToMarkdown(f'Artifacts for Sample: ', [])
+                return_outputs(readable_output=hr, outputs=context, raw_response=results)
+
+
+def samples_search_result_hr(result: dict, status: str) -> str:
+    """
+    Creates human readable output for a specific entry which contains two tables, one for the result's
+    and another for the artifacts that are related to it.
+    Args:
+        result: one result of the search sample command.
+        status: status of result command.
+    Returns:
+        human readable of two tables for this result.
+    """
+    artifact = result.pop('Artifact')
+    updated_artifact = []
+    for indicator in artifact:
+        # Filter on returned indicator types, as we do not support Mutex and User Agent.
+        if 'Mutex' not in indicator.get('indicator_type') and 'User Agent' not in indicator.get('indicator_type'):
+            updated_artifact.append(indicator)
+    rest = result
+    hr = tableToMarkdown(f'Search Samples Result is {status}', rest)
+    hr += '\n\n'
+    hr += tableToMarkdown(f'Artifacts for Sample: ', updated_artifact, headers=["b", "g", "m", "indicator_type",
+                                                                                "confidence", "indicator"])
+    return hr
 
 
 def sessions_search_results_command():
@@ -1665,5 +1695,5 @@ def main():
         return_error(f'Unexpected error: {e}')
 
 
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
