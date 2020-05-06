@@ -32,6 +32,7 @@ mitre_field_mapping = {
     "mitreplatforms": {"name": "x_mitre_platforms", "type": "dict"},
     "mitresystemrequirements": {"name": "x_mitre_system_requirements", "type": "list"},
     "mitreversion": {"name": "x_mitre_version", "type": "str"},
+    "mitretype": {"name": "type", "type": "str"}
 }
 
 # Disable insecure warnings

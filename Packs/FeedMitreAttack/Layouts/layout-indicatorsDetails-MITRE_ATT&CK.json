@@ -388,7 +388,18 @@
                                 "listId": "ypjwzououe-46872580-6de2-11ea-9c1b-ff36e343d489",
                                 "sectionItemType": "field",
                                 "startCol": 1
-                            }
+                            },
+                            {
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "mitretype",
+								"height": 53,
+								"id": "ac850800-8f95-11ea-aaae-09201c5db9bc",
+								"index": 4,
+								"listId": "ypjwzououe-46872580-6de2-11ea-9c1b-ff36e343d489",
+								"sectionItemType": "field",
+								"startCol": 1
+							}
                         ],
                         "maxW": 3,
                         "minH": 1,
