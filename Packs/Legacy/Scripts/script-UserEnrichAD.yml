@@ -4,6 +4,7 @@ commonfields:
 name: UserEnrichAD
 script: demisto.results( demisto.executeCommand("ADGetUser", demisto.args()))
 type: python
+subtype: python2
 comment: 'Enhancement automation for user type indicator, to enrich the user name from Active Directory data'
 tags:
 - enhancement

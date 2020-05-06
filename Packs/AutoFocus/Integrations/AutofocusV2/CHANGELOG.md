@@ -1,5 +1,11 @@
 ## [Unreleased]
+Added support for improved error messages for server connection issues.
+
+
+## [20.4.1] - 2020-04-29
 Fixed an issue where ***!file*** only accepted a lower case hash.
+Added the *artifact* argument to the ***autofocus-search-samples*** command, which by default is set to "true" and retrieves the artifacts of the sample.
+
 
 ## [20.4.0] - 2020-04-14
 -

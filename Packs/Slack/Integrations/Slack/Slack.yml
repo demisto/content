@@ -54,6 +54,7 @@ configuration:
   name: longRunning
   required: false
   type: 8
+  hidden: true
 - display: Bot display name in Slack (Demisto Integration by default)
   name: bot_name
   required: false

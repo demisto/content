@@ -206,27 +206,26 @@ def get_http_flows(pcap_file_path):
 
     # Filter all non HTTP packets
     http_packets = [p for p in capture_object if "HTTP" in p]
-
     http_packets = fix_order(http_packets)
 
     # Construct request <> response dicts
     http_flows = []
+
     for req, res in _chunker(http_packets, 2):
-        # GZ decompress if needed
-        # if res["HTTP"].get_field_value("Content-Encoding") == "gzip":
-        #
-        #     # Fix data not existing
-        #     if not hasattr(res["HTTP"], "data"):
-        #         res["HTTP"].data = res["HTTP"].get("file_data")
-        #     # else:
-        #         # try:
-        #         #     res["HTTP"].data = decode_gzip(res["HTTP"].data)
-        #         # except zlib.error:
-        #         #     res["HTTP"].data = "Couldn't decompress gzip data (incomplete or truncated stream)."
+        sanitized_req = req
+        sanitized_res = res
+
+        if req:
+            req_fields = req['HTTP'].__dict__["_all_fields"].keys()
+
+            # if the file contains only a response, the response will falsely appear in the 'req' variable
+            if 'http.response' in req_fields:
+                sanitized_req = None
+                sanitized_res = req
 
         http_flows.append({
-            "Request": req,
-            "Response": res
+            "Request": sanitized_req,
+            "Response": sanitized_res
         })
     return http_flows
 
