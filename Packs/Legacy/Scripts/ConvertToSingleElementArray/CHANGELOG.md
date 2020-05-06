@@ -1,2 +1,2 @@
 ## [Unreleased]
-Added a transformer to convert a single string to an array of that string.
+Added a transformer that converts a single string to an array of that string.
