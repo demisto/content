@@ -639,7 +639,7 @@ def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_te
 
 
 def get_and_print_server_numeric_version(tests_settings):
-    if tests_settings.is_local_run:
+    if tests_settings.is_local_run or not os.path.isfile('./Tests/images_data.txt'):
         # TODO: verify this logic, it's a workaround because the test_image file does not exist on local run
         return '99.99.98'  # latest
     with open('./Tests/images_data.txt', 'r') as image_data_file:
@@ -776,13 +776,13 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
 
     tests_data_keeper.add_tests_data(succeed_playbooks, failed_playbooks, skipped_tests,
                                      skipped_integration, unmockable_integrations)
-    if not tests_settings.is_local_run:
+    if is_ami:
         tests_data_keeper.add_proxy_related_test_data(proxy)
 
-    if is_ami and build_name == 'master':
-        updating_mocks_msg = "Pushing new/updated mock files to mock git repo."
-        prints_manager.add_print_job(updating_mocks_msg, print, thread_index)
-        ami.upload_mock_files(build_name, build_number)
+        if build_name == 'master':
+            updating_mocks_msg = "Pushing new/updated mock files to mock git repo."
+            prints_manager.add_print_job(updating_mocks_msg, print, thread_index)
+            ami.upload_mock_files(build_name, build_number)
 
     if playbook_skipped_integration and build_name == 'master':
         comment = 'The following integrations are skipped and critical for the test:\n {}'.\

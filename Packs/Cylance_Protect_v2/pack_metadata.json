@@ -1,0 +1,23 @@
+{
+    "name": "Cylance Protect v2",
+    "description": "Manage Endpoints using Cylance protect",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Endpoint"
+    ],
+    "tags": [
+        "Cylance Protect v2"
+    ],
+    "created": "2020-04-14T00:00:00Z",
+    "updated": "2020-03-14T00:00:00Z",
+    "beta": false,
+    "deprecated": false,
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {},
+    "displayedImages": []
+}

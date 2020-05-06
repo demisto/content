@@ -18,6 +18,7 @@ script: |-
   demisto.results(demisto.executeCommand(demisto.getArg('pollingCommand'), args))
 
 type: python
+subtype: python2
 tags: []
 comment: Runs a specified polling command one time. This is useful for initiating a local playbook context before running a polling scheduled task.
 enabled: true

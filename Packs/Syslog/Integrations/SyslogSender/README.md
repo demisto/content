@@ -133,3 +133,11 @@ Message sent to Syslog successfully.
 ---
 Make sure you can access the Syslog server on the provided IP address and the port is open.
 If you're experiencing further issues, contact us at [support@demisto.com](mailto:support@demisto.com)
+
+## Demo Video
+---
+<video controls>
+    <source src="https://github.com/demisto/content/raw/59db426d41882c9b2d61e39ad7b3dfb0fec335e1/Packs/Syslog/Integrations/SyslogSender/doc_assets/syslog-sender-demo.mp4"
+            type="video/mp4"/>
+    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content/blob/59db426d41882c9b2d61e39ad7b3dfb0fec335e1/Packs/Syslog/Integrations/SyslogSender/doc_assets/syslog-sender-demo.mp4 
+</video>

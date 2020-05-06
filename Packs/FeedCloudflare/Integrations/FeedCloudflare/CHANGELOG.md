@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Set the default value for the *bypass exclusion list* parameter to "true".
 
 ## [20.4.0] - 2020-04-14
 Added the *Tags* parameter.

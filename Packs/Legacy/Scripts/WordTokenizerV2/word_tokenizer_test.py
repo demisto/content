@@ -13,7 +13,7 @@ def get_args():
 
 demistomock.args = get_args
 
-from WordTokenizer import remove_line_breaks, clean_html, tokenize_text, word_tokenize,\
+from WordTokenizerV2 import remove_line_breaks, clean_html, tokenize_text, word_tokenize,\
     remove_multiple_whitespaces, map_indices_to_words  # noqa
 
 
