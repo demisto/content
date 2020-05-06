@@ -29,6 +29,10 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Use a self-deployed Azure Application
+  name: self_deployed
+  required: false
+  type: 8
 description: Microsoft Graph Groups enables you to create and manage different types
   of groups and group functionality according to your requirements.
 display: Microsoft Graph Groups
@@ -437,7 +441,7 @@ script:
     description: Removes a member from a group.
     execution: false
     name: msgraph-groups-remove-member
-  dockerimage: demisto/crypto:1.0.0.4187
+  dockerimage: demisto/crypto:1.0.0.7634
   isfetch: false
   longRunning: false
   longRunningPort: false

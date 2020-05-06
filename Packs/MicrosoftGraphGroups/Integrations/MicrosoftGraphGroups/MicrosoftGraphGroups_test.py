@@ -1,13 +1,8 @@
 import pytest
-from MicrosoftGraphGroups import epoch_seconds, parse_outputs, camel_case_to_readable, Client, list_groups_command,\
+from MicrosoftGraphGroups import parse_outputs, camel_case_to_readable, MsGraphClient, list_groups_command,\
     get_group_command, create_group_command
 from test_data.response_constants import RESPONSE_LIST_GROUPS, RESPONSE_GET_GROUP, RESPONSE_CREATE_GROUP
 from test_data.result_constants import EXPECTED_LIST_GROUPS, EXPECTED_GET_GROUP, EXPECTED_CREATE_GROUP
-
-
-def test_epoch_seconds():
-    integer = epoch_seconds()
-    assert isinstance(integer, int)
 
 
 def test_camel_case_to_readable():
@@ -43,8 +38,9 @@ def test_parse_outputs():
      RESPONSE_CREATE_GROUP, EXPECTED_CREATE_GROUP),
 ])  # noqa: E124
 def test_commands(command, args, response, expected_result, mocker):
-    client = Client('https://graph.microsoft.com/v1.0', 'tenant-id', 'auth_and_token_url', 'auth_id',
-                    'token_retrieval_url', 'enc_key', 'use_ssl', 'proxies')
-    mocker.patch.object(client, 'http_request', return_value=response)
+    client = MsGraphClient(base_url='https://graph.microsoft.com/v1.0', tenant_id='tenant-id',
+                           auth_id='auth_and_token_url', enc_key='enc_key', app_name='ms-graph-groups',
+                           verify='use_ssl', proxy='proxies', self_deployed='self_deployed')
+    mocker.patch.object(client.ms_client, 'http_request', return_value=response)
     result = command(client, args)
     assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
