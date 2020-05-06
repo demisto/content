@@ -25,6 +25,7 @@ script: |-
 
   demisto.executeCommand("setIncident", incidents)
 type: python
+subtype: python2
 tags: []
 enabled: true
 args:
