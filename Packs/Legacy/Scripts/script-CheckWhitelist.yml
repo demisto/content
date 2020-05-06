@@ -23,6 +23,7 @@ script: |
           demisto.setContext(contextKey, contextDic)
       demisto.results(answer)
 type: python
+subtype: python2
 tags:
 - whitelist
 comment: Check whether the given item is in the whitelist

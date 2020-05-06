@@ -29,6 +29,7 @@ script: |-
       demisto.results( {'ContentsFormat': formats['text'], 'Type': entryTypes['note'], 'Contents': 'No results.'} )
   demisto.results(res)
 type: python
+subtype: python2
 tags:
 - carbon-black
 - endpoint

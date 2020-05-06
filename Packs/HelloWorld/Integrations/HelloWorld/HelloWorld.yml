@@ -141,8 +141,8 @@ script:
       description: Alert type. For example 'Bug' or 'Vulnerability'.
       type: String
     - contextPath: HelloWorld.Alert.created
-      description: Alert created time. Format is timestamp in seconds from epoch (i.e. 1587835844).
-      type: Number
+      description: Alert created time. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
+      type: Date
     - contextPath: HelloWorld.Alert.name
       description: Alert name.
       type: String
@@ -165,8 +165,8 @@ script:
       description: Alert ID.
       type: String
     - contextPath: HelloWorld.Alert.created
-      description: Alert created time. Format is timestamp in seconds from epoch (i.e. 1587835844).
-      type: Number
+      description: Alert created time. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
+      type: Date
     - contextPath: HelloWorld.Alert.description
       description: Alert description.
       type: String
@@ -208,8 +208,8 @@ script:
       description: Alert ID.
       type: String
     - contextPath: HelloWorld.Alert.updated
-      description: Alert update time. Format is timestamp in seconds from epoch (i.e. 1587835844).
-      type: Number
+      description: Alert update time. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
+      type: Date
     - contextPath: HelloWorld.Alert.alert_status
       description: Alert status. Can be 'ACTIVE' or 'CLOSED'.
       type: String
@@ -277,7 +277,7 @@ script:
       type: Unknown
     - contextPath: HelloWorld.IP.network.events.timestamp
       description: The timestamp when the event occurred.
-      type: Date
+      type: String
     - contextPath: HelloWorld.IP.network.handle
       description: The handle of the network.
       type: String
@@ -326,11 +326,17 @@ script:
     - contextPath: HelloWorld.IP.score
       description: Reputation score from HelloWorld for this IP (0 to 100, where higher is worse).
       type: Number
-    - contextPath: IP.ASN
-      description: The autonomous system name for the IP address.
-      type: String
     - contextPath: IP.Address
       description: IP address.
+      type: String
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor reporting the IP address as malicious.
+      type: String            
+    - contextPath: IP.Malicious.Description
+      description: A description explaining why the IP address was reported as malicious.
+      type: String   
+    - contextPath: IP.ASN
+      description: The autonomous system name for the IP address.
       type: String
     description: Return IP information and reputation
   - name: domain
@@ -359,6 +365,51 @@ script:
     - contextPath: Domain.Name
       description: The domain name.
       type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: The vendor reporting the domain as malicious.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: A description explaining why the domain was reported as malicious.
+      type: String
+    - contextPath: Domain.Registrant.Name
+      description: The name of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Country
+      description: The country of the registrant.
+      type: String
+    - contextPath: Domain.Organization
+      description: The organization of the domain.
+      type: String
+    - contextPath: Domain.CreationDate
+      description: The creation date of the domain. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
+      type: Date
+    - contextPath: Domain.ExpirationDate
+      description: The expiration date of the domain. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
+      type: Date
+    - contextPath: Domain.UpdatedDate
+      description: The date when the domain was last updated. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
+      type: Date
+    - contextPath: Domain.NameServers
+      description: Name servers of the domain.
+      type: String
+    - contextPath: Domain.WHOIS.NameServers
+      description: A CSV string of name servers, for example 'ns1.bla.com, ns2.bla.com'.
+      type: String
+    - contextPath: Domain.WHOIS.CreationDate
+      description: The creation date of the domain. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
+      type: Date
+    - contextPath: Domain.WHOIS.UpdatedDate
+      description: The date when the domain was last updated. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
+      type: Date
+    - contextPath: Domain.WHOIS.ExpirationDate
+      description: The expiration date of the domain.
+      type: Date
+    - contextPath: Domain.WHOIS.Registrar.Name
+      description: The name of the registrar, for example 'GoDaddy'
+      type: String
+    - contextPath: IP.ASN
+      description: The autonomous system name for the IP address.
+      type: String      
     - contextPath: HelloWorld.Domain.address
       description: Domain admin address.
       type: String
@@ -369,7 +420,7 @@ script:
       description: Domain admin country.
       type: String
     - contextPath: HelloWorld.Domain.creation_date
-      description: Domain creation date.
+      description: Domain creation date. Format is ISO8601.
       type: Date
     - contextPath: HelloWorld.Domain.dnssec
       description: DNSSEC status.
@@ -384,7 +435,7 @@ script:
       description: Contact emails.
       type: String
     - contextPath: HelloWorld.Domain.expiration_date
-      description: Expiration date.
+      description: Expiration date. Format is ISO8601.
       type: Date
     - contextPath: HelloWorld.Domain.name
       description: Domain admin name.
@@ -412,7 +463,7 @@ script:
       description: Domain status.
       type: String
     - contextPath: HelloWorld.Domain.updated_date
-      description: Updated date.
+      description: Updated date. Format is ISO8601.
       type: Date
     - contextPath: HelloWorld.Domain.whois_server
       description: WHOIS server.

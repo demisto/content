@@ -21,6 +21,7 @@ script: |
           options = demisto.get(field, "selectValues")
       demisto.results({"hidden": False, "options": options})
 type: python
+subtype: python2
 tags:
 - field-display
 comment: When you apply this script to an incident field, that incident field is hidden for new incidents, and it displays in edit mode.

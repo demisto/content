@@ -103,6 +103,7 @@ script: |+
           demisto.results({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'FireEye: Failed to detonate file {0}, exit status = {1}'.format(file,status) })
 
 type: python
+subtype: python2
 tags:
 - fireeye
 - file
