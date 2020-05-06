@@ -2738,7 +2738,7 @@
             "playbookID": "IBM Resilient Systems Test"
         },
         {
-            "integrations": "PrismaAccess",
+            "integrations": ["PrismaAccess", "Prisma Access Egress IP feed"],
             "playbookID": "Prisma_Access_Egress_IP_Feed-Test",
             "timeout": 60000,
             "fromversion": "5.5.0",

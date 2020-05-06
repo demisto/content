@@ -67,6 +67,7 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
+  defaultvalue: "true"
 - additionalinfo: Timeout of the polling request in seconds.
   defaultvalue: '20'
   display: Request Timeout
