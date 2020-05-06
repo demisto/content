@@ -2978,6 +2978,7 @@
         "ReversingLabs A1000": "Checking",
         "Check Point": "Checking",
         "okta": "Test Module failing, suspect it requires SSL",
+        "Okta v2": "dynamic test, need to revisit and better avoid conflicts",
         "Awake Security": "Checking",
         "ArcSight ESM v2": "Checking",
         "Phish.AI": "Checking",
