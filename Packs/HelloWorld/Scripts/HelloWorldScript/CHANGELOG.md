@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.4.1] - 2020-04-29
 Improved unit tests and documentation
 
 ## [20.1.2] - 2020-01-22

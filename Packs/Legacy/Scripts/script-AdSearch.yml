@@ -30,6 +30,7 @@ script: |-
       else:
           demisto.results("No results.")
 type: python
+subtype: python2
 tags:
 - active directory
 comment: Run Active Directory queries

@@ -4,6 +4,7 @@ commonfields:
 name: SetContext
 script: demisto.setContext(demisto.args()['key'], demisto.args()['value'])
 type: python
+subtype: python2
 tags:
 - Utility
 comment: Sets key/value pair in incident's context

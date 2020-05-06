@@ -37,6 +37,7 @@ script: |-
                       'EntryContext': context
       })
 type: python
+subtype: python2
 tags: []
 comment: The automation takes Excel file (entryID) as an input and parses its content to the war room and context
 enabled: true

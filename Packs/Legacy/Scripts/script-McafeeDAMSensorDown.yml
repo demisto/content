@@ -1,6 +1,6 @@
 commonfields:
   id: DamSensorDown
-  version: 37
+  version: -1
 name: DamSensorDown
 script: |-
   import sys
@@ -45,6 +45,7 @@ script: |-
   });
   demisto.results(res);
 type: python
+subtype: python2
 tags:
 - preProcessing
 comment: |

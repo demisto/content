@@ -1,4 +1,7 @@
 ## [Unreleased]
+The playbook now uses Block Indicators - Generic v2 to block malicious indicators (off by default).
+
+## [20.4.1] - 2020-04-29
 - Added the *OnCall* input to assign only users that are on shift.
 - Fixed an issue where the playbook was not authenticating emails.
 
