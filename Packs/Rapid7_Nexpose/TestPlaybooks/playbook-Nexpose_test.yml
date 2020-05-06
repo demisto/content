@@ -191,7 +191,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "16"
     scriptarguments:
       expectedValue: {}
       fields:
@@ -239,82 +239,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 2645
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "8":
-    id: "8"
-    taskid: 34391d40-9120-4f7c-8aa2-a94764f0bdbf
-    type: regular
-    task:
-      id: 34391d40-9120-4f7c-8aa2-a94764f0bdbf
-      version: -1
-      name: nexpose-get-asset-vulnerability
-      description: Returns the details and possible remediations for an asset's given
-        vulnerability.
-      script: Rapid7 Nexpose|||nexpose-get-asset-vulnerability
-      type: regular
-      iscommand: true
-      brand: Rapid7 Nexpose
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      id:
-        simple: ${Nexpose.Asset.AssetId}
-      vulnerabilityId:
-        simple: ${Nexpose.Asset.Vulnerability.Id}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "9":
-    id: "9"
-    taskid: ca237638-4044-4307-80c7-a27fcee161a3
-    type: regular
-    task:
-      id: ca237638-4044-4307-80c7-a27fcee161a3
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: Type
-      path:
-        simple: Nexpose.Asset.Vulnerability.Solution
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 1245
+          "y": 2295
         }
       }
     note: false
@@ -351,7 +276,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 2820
+          "y": 2470
         }
       }
     note: false
@@ -391,7 +316,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 2995
+          "y": 2645
         }
       }
     note: false
@@ -436,7 +361,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1595
+          "y": 1245
         }
       }
     note: false
@@ -468,7 +393,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1770
+          "y": 1420
         }
       }
     note: false
@@ -497,7 +422,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1420
+          "y": 1070
         }
       }
     note: false
@@ -529,7 +454,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 2120
         }
       }
     note: false
@@ -561,7 +486,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3520
+          "y": 3170
         }
       }
     note: false
@@ -590,7 +515,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 3695
+          "y": 3345
         }
       }
     note: false
@@ -625,7 +550,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 1945
         }
       }
     note: false
@@ -665,7 +590,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 3345
+          "y": 2995
         }
       }
     note: false
@@ -698,7 +623,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 3170
+          "y": 2820
         }
       }
     note: false
@@ -731,7 +656,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1945
+          "y": 1595
         }
       }
     note: false
@@ -768,7 +693,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 2120
+          "y": 1770
         }
       }
     note: false
@@ -781,7 +706,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3740,
+        "height": 3390,
         "width": 492.5,
         "x": 50,
         "y": 50

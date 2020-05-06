@@ -1,4 +1,5 @@
 ## [Unreleased]
+  - Fixed an issue where ***eis-update*** command failed when *query* argument is not supplied.
   - Removed `Long Running Instance` from instance configuration.
 
 ## [20.4.1] - 2020-04-29
