@@ -10,6 +10,7 @@ script: |-
       res += demisto.executeCommand('CBLiveGetFile',{'path': fileLocations[md5][0], 'hostname': fileLocations[md5][1]})
   demisto.results(res)
 type: python
+subtype: python2
 tags:
 - carbon-black
 - endpoint
