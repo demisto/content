@@ -1,12 +1,10 @@
 from typing import Dict, Tuple, Optional, Any
-from datetime import datetime
-import base64
+import demistomock as demisto
 import urllib3
-import requests
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from CommonServerPython import *
 
 # Disable insecure warnings
+
 urllib3.disable_warnings()
 
 INTEGRATION_CONTEXT_NAME = 'MSGraphGroups'
@@ -63,190 +61,14 @@ def parse_outputs(groups_data: Dict[str, str]) -> Tuple[dict, dict]:
     return group_readable, group_outputs
 
 
-def epoch_seconds() -> int:
+class MsGraphClient:
     """
-    Return the number of seconds for return current date.
-    """
-    return int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds())
+      Microsoft Graph Mail Client enables authorized access to a user's Office 365 mail data in a personal account.
+      """
 
-
-def get_encrypted(content: str, key: str) -> str:
-    """
-
-    Args:
-        content (str): content to encrypt. For a request to Demistobot for a new access token, content should be
-            the tenant id
-        key (str): encryption key from Demistobot
-
-    Returns:
-        encrypted timestamp:content
-    """
-
-    def create_nonce() -> bytes:
-        return os.urandom(12)
-
-    def encrypt(string: str, enc_key: str) -> bytes:
-        """
-
-        Args:
-            enc_key (str):
-            string (str):
-
-        Returns:
-            bytes:
-        """
-        # String to bytes
-        enc_key = base64.b64decode(enc_key)
-        # Create key
-        aes_gcm = AESGCM(enc_key)
-        # Create nonce
-        nonce = create_nonce()
-        # Create ciphered data
-        data = string.encode()
-        ct_ = aes_gcm.encrypt(nonce, data, None)
-        return base64.b64encode(nonce + ct_)
-
-    now = epoch_seconds()
-    encrypted = encrypt(f'{now}:{content}', key).decode('utf-8')
-    return encrypted
-
-
-class Client(BaseClient):
-    """
-    Client to use in the MS Graph Groups integration. Overrides BaseClient
-    """
-    def __init__(self, base_url: str, tenant: str, auth_and_token_url: str, auth_id: str, token_retrieval_url: str,
-                 enc_key: str, verify: bool, proxy: bool):
-        super().__init__(base_url, verify, proxy)
-        self.tenant = tenant
-        self.auth_and_token_url = auth_and_token_url
-        self.auth_id = auth_id
-        self.token_retrieval_url = token_retrieval_url
-        self.enc_key = enc_key
-
-    def get_access_token(self):
-        """Get the Microsoft Graph Access token from the instance token or generates a new one if needed.
-
-        Returns:
-            The access token.
-        """
-        integration_context = demisto.getIntegrationContext()
-        access_token = integration_context.get('access_token')
-        valid_until = integration_context.get('valid_until')
-        calling_context = demisto.callingContext.get('context', {})  # type: ignore[attr-defined]
-        brand_name = calling_context.get('IntegrationBrand', '')
-        instance_name = calling_context.get('IntegrationInstance', '')
-        if access_token and valid_until:
-            if epoch_seconds() < valid_until:
-                return access_token
-
-        headers = {'Accept': 'application/json'}
-        headers['X-Content-Version'] = CONTENT_RELEASE_VERSION
-        headers['X-Branch-Name'] = CONTENT_BRANCH_NAME
-        headers['X-Content-Name'] = brand_name or instance_name or 'Name not found'
-        try:
-            dbot_response = requests.post(
-                self.token_retrieval_url,
-                headers=headers,
-                data=json.dumps({
-                    'app_name': APP_NAME,
-                    'registration_id': self.auth_id,
-                    'encrypted_token': get_encrypted(self.tenant, self.enc_key)
-                }),
-                verify=self._verify
-            )
-        except requests.exceptions.SSLError as err:
-            demisto.debug(str(err))
-            raise Exception(f'Connection error in the API call to Microsoft Graph.\n'
-                            f'Check your not secure parameter.\n\n{err}')
-        except requests.ConnectionError as err:
-            demisto.debug(str(err))
-            raise Exception(f'Connection error in the API call to Microsoft Graph.\n'
-                            f'Check your Server URL parameter.\n\n{err}')
-        if dbot_response.status_code not in {200, 201}:
-            msg = 'Error in authentication. Try checking the credentials you entered.'
-            try:
-                demisto.info(f'Authentication failure from server: {dbot_response.status_code}'
-                             f' {dbot_response.reason} {dbot_response.text}')
-                err_response = dbot_response.json()
-                server_msg = err_response.get('message')
-                if not server_msg:
-                    title = err_response.get('title')
-                    detail = err_response.get('detail')
-                    if title:
-                        server_msg = f'{title}. {detail}'
-                if server_msg:
-                    msg += f' Server message: {server_msg}'
-            except Exception as err:
-                demisto.error(f'Failed parsing error response - Exception: {err}')
-            raise Exception(msg)
-        try:
-            gcloud_function_exec_id = dbot_response.headers.get('Function-Execution-Id')
-            demisto.info(f'Google Cloud Function Execution ID: {gcloud_function_exec_id}')
-            parsed_response = dbot_response.json()
-        except ValueError:
-            raise Exception(
-                'There was a problem in retrieving an updated access token.\n'
-                'The response from the Demistobot server did not contain the expected content.'
-            )
-        access_token = parsed_response.get('access_token')
-        expires_in = parsed_response.get('expires_in', 3595)
-        time_buffer = 5  # seconds by which to shorten the validity period
-        if expires_in - time_buffer > 0:
-            # err on the side of caution with a slightly shorter access token validity period
-            expires_in = expires_in - time_buffer
-
-        demisto.setIntegrationContext({
-            'access_token': access_token,
-            'valid_until': epoch_seconds() + expires_in
-        })
-        return access_token
-
-    def http_request(self, method: str, url_suffix: str = None, params: Dict = None, body: Optional[str] = None,
-                     next_link: str = None):
-        """
-        Generic request to Microsoft Graph
-        """
-        token = self.get_access_token()
-        if next_link:
-            url = next_link
-        else:
-            url = f'{self._base_url}{url_suffix}'
-
-        try:
-            response = requests.request(
-                method,
-                url,
-                headers={
-                    'Authorization': 'Bearer ' + token,
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                params=params,
-                data=body,
-                verify=self._verify,
-            )
-        except requests.exceptions.SSLError as err:
-            demisto.debug(str(err))
-            raise Exception(f'Connection error in the API call to Microsoft Graph.\n'
-                            f'Check your not secure parameter.\n\n{err}')
-        except requests.ConnectionError as err:
-            demisto.debug(str(err))
-            raise Exception(f'Connection error in the API call to Microsoft Graph.\n'
-                            f'Check your Server URL parameter.\n\n{err}')
-        try:
-            data = response.json() if response.text else {}
-            if not response.ok:
-                raise Exception(f'API call to MS Graph failed [{response.status_code}]'
-                                f' - {demisto.get(data, "error.message")}')
-            elif response.status_code == 206:  # 206 indicates Partial Content, reason will be in the warning header
-                demisto.debug(str(response.headers))
-
-            return data
-
-        except TypeError as exc:
-            demisto.debug(str(exc))
-            raise Exception(f'Error in API call to Microsoft Graph, could not parse result [{response.status_code}]')
+    def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed):
+        self.ms_client = MicrosoftClient(tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
+                                         base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed)
 
     def test_function(self):
         """Performs basic GET request to check if the API is reachable and authentication is successful.
@@ -254,10 +76,10 @@ class Client(BaseClient):
         Returns:
             ok if successful.
         """
-        self.http_request('GET', 'groups', params={'$orderby': 'displayName'})
+        self.ms_client.http_request(method='GET', url_suffix='groups', params={'$orderby': 'displayName'})
         demisto.results('ok')
 
-    def list_groups(self, order_by: str = None, next_link: str = None, top: int = None, filter_: str = None) -> Dict:
+    def list_groups(self, order_by: str = None, next_link: str = None, top: int = None, filter_: str = None):
         """Returns all groups by sending a GET request.
 
         Args:
@@ -269,15 +91,18 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        params = {'$orderby': order_by} if order_by else {}
         if next_link:  # pagination
-            groups = self.http_request('GET', next_link=next_link)
-        elif filter_:
-            groups = self.http_request('GET', f'groups?$filter={filter_}&$top={top}', params=params)
-        else:
-            groups = self.http_request('GET', f'groups?$top={top}', params=params)
-
-        return groups
+            return self.ms_client.http_request(method='GET', full_url=next_link)
+        # default value = 100
+        params = {'$top': top}
+        if order_by:
+            params['$orderby'] = order_by  # type: ignore
+        if filter_:
+            params['$filter'] = filter_  # type: ignore
+        return self.ms_client.http_request(
+            method='GET',
+            url_suffix='groups',
+            params=params)
 
     def get_group(self, group_id: str) -> Dict:
         """Returns a single group by sending a GET request.
@@ -288,7 +113,7 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        group = self.http_request('GET', f'groups/{group_id}')
+        group = self.ms_client.http_request(method='GET', url_suffix=f'groups/{group_id}')
         return group
 
     def create_group(self, properties: Dict[str, Optional[Any]]) -> Dict:
@@ -300,7 +125,7 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        group = self.http_request('POST', 'groups', body=json.dumps(properties))
+        group = self.ms_client.http_request(method='POST', url_suffix='groups', json_data=properties)
         return group
 
     def delete_group(self, group_id: str):
@@ -311,9 +136,10 @@ class Client(BaseClient):
         """
         #  If successful, this method returns 204 No Content response code.
         #  It does not return anything in the response body.
-        self.http_request('DELETE ', f'groups/{group_id}')
+        #  Using resp_type="text" to avoid parsing error in the calling method.
+        self.ms_client.http_request(method='DELETE ', url_suffix=f'groups/{group_id}', resp_type="text")
 
-    def list_members(self, group_id: str, next_link: str = None, top: int = None, filter_: str = None) -> Dict:
+    def list_members(self, group_id: str, next_link: str = None, top: int = None, filter_: str = None):
         """List all group members by sending a GET request.
 
         Args:
@@ -326,13 +152,15 @@ class Client(BaseClient):
             Response from API.
         """
         if next_link:  # pagination
-            members = self.http_request('GET', next_link)
-        elif filter_:
-            members = self.http_request('GET', f'groups/{group_id}/members?$filter={filter_}&$top={top}')
-        else:
-            members = self.http_request('GET', f'groups/{group_id}/members?$top={top}')
+            return self.ms_client.http_request(method='GET', full_url=next_link)
+        params = {'$top': top}
+        if filter_:
+            params['$filter'] = filter_  # type: ignore
 
-        return members
+        return self.ms_client.http_request(
+            method='GET',
+            url_suffix=f'groups/{group_id}/members',
+            params=params)
 
     def add_member(self, group_id: str, properties: Dict[str, str]):
         """Add a single member to a group by sending a POST request.
@@ -342,7 +170,12 @@ class Client(BaseClient):
         """
         #  If successful, this method returns 204 No Content response code.
         #  It does not return anything in the response body.
-        self.http_request('POST', f'groups/{group_id}/members/$ref', body=json.dumps(properties))
+        #  Using resp_type="text" to avoid parsing error in the calling method.
+        self.ms_client.http_request(
+            method='POST',
+            url_suffix=f'groups/{group_id}/members/$ref',
+            json_data=properties,
+            resp_type="text")
 
     def remove_member(self, group_id: str, user_id: str):
         """Remove a single member to a group by sending a DELETE request.
@@ -352,10 +185,13 @@ class Client(BaseClient):
         """
         #  If successful, this method returns 204 No Content response code.
         #  It does not return anything in the response body.
-        self.http_request('DELETE', f'groups/{group_id}/members/{user_id}/$ref')
+        #  Using resp_type="text" to avoid parsing error in the calling method.
+        self.ms_client.http_request(
+            method='DELETE',
+            url_suffix=f'groups/{group_id}/members/{user_id}/$ref', resp_type="text")
 
 
-def test_function_command(client: Client, args: Dict):
+def test_function_command(client: MsGraphClient, args: Dict):
     """Performs a basic GET request to check if the API is reachable and authentication is successful.
 
     Args:
@@ -365,7 +201,7 @@ def test_function_command(client: Client, args: Dict):
     client.test_function()
 
 
-def list_groups_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def list_groups_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """Lists all groups and return outputs in Demisto's format.
 
     Args:
@@ -402,7 +238,7 @@ def list_groups_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, groups
 
 
-def get_group_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_group_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """Get a group by group id and return outputs in Demisto's format.
 
     Args:
@@ -424,7 +260,7 @@ def get_group_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, group
 
 
-def create_group_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_group_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """Create a group and return outputs in Demisto's format.
 
     Args:
@@ -455,7 +291,7 @@ def create_group_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, group
 
 
-def delete_group_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def delete_group_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """Delete a group by group id and return outputs in Demisto's format
 
     Args:
@@ -481,7 +317,7 @@ def delete_group_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, NO_OUTPUTS
 
 
-def list_members_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def list_members_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """List a group members by group id. return outputs in Demisto's format.
 
     Args:
@@ -527,7 +363,7 @@ def list_members_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, members
 
 
-def add_member_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def add_member_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """Add a member to a group by group id and user id. return outputs in Demisto's format.
 
     Args:
@@ -547,7 +383,7 @@ def add_member_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return human_readable, NO_OUTPUTS, NO_OUTPUTS
 
 
-def remove_member_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def remove_member_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """Remove a member from a group by group id and user id. return outputs in Demisto's format.
 
     Args:
@@ -569,17 +405,14 @@ def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    base_url = demisto.params().get('url').rstrip('/') + '/v1.0/'
-    tenant = demisto.params().get('tenant_id')
-    auth_and_token_url = demisto.params().get('auth_id').split('@')
-    auth_id = auth_and_token_url[0]
-    enc_key = demisto.params().get('enc_key')
-    verify = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy') == 'true'
-    if len(auth_and_token_url) != 2:
-        token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # guardrails-disable-line
-    else:
-        token_retrieval_url = auth_and_token_url[1]
+    params: dict = demisto.params()
+    base_url = params.get('url', '').rstrip('/') + '/v1.0/'
+    tenant = params.get('tenant_id')
+    auth_and_token_url = params.get('auth_id')
+    enc_key = params.get('enc_key')
+    verify = not params.get('insecure', False)
+    proxy = params.get('proxy')
+    self_deployed: bool = params.get('self_deployed', False)
 
     commands = {
         'test-module': test_function_command,
@@ -595,7 +428,8 @@ def main():
     LOG(f'Command being called is {command}')
 
     try:
-        client = Client(base_url, tenant, auth_and_token_url, auth_id, token_retrieval_url, enc_key, verify, proxy)
+        client = MsGraphClient(base_url=base_url, tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key,
+                               app_name=APP_NAME, verify=verify, proxy=proxy, self_deployed=self_deployed)
         # Run the command
         human_readable, entry_context, raw_response = commands[command](client, demisto.args())
         # create a war room entry
@@ -604,6 +438,8 @@ def main():
     except Exception as err:
         return_error(str(err))
 
+
+from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
