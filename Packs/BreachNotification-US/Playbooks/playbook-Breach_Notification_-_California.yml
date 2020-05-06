@@ -1,0 +1,1304 @@
+id: Breach Notification - California
+version: -1
+name: Breach Notification - California
+description: "This playbook helps the analyst check if the breached data meets the\
+  \ criteria for breach notification according to California law, and follows through\
+  \ with notification procedures if it does.\n\nDISCLAIMER: Please consult with your\
+  \ legal team before implementing this playbook.\n\n**Source:** http://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1798.82."
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 9f52fb66-6378-4f4a-869f-570560e9450b
+    type: start
+    task:
+      id: 9f52fb66-6378-4f4a-869f-570560e9450b
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '39'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 930,\n    \"y\": -1330\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: 50308fe4-ca3b-46ea-871a-e3a9760ab883
+    type: collection
+    task:
+      id: 50308fe4-ca3b-46ea-871a-e3a9760ab883
+      version: -1
+      name: Notify DPO of suspected data breach
+      type: collection
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 115\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${incident.dpoemailaddress}
+      subject:
+        simple: Suspected Data Breach in your organization
+      body:
+        simple: "Hello,\nA suspected data breach has occurred in your organization\
+          \ and requires your attention.\n\nData breach details:\n\nCompany: ${incident.companyname}\n\
+          Country: ${incident.countrywherethebreachtookplace}\nDate/Time: ${incident.datetimeofthebreach}\n\
+          Affected data type: ${incident.affecteddata}\nApprox. # of affected data\
+          \ subjects: ${incident.approximatenumberofaffecteddatasubjects}\nData encryption\
+          \ status: ${incident.dataencryptionstatus}\nWhere data is hosted: ${incident.whereisdatahosted}\n\
+          Approx. # of affected data records: ${incident.affectedindividualscontactinformation.0.approximatenumberofdatarecordsbreached}\n\
+          The suspected cause of the breach: ${incident.possiblecauseofthebreach}\n\
+          If the cause is malicious, the specific cause might have been: ${incident.maliciouscauseifthecauseisamaliciousattack}\n\
+          Refer to the 'California legislative information' site for more details\
+          \ about the notification process: http://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1798.82.\n\
+          \nPlease complete the following form to continue the data breach investigation. "
+      methods:
+      - email
+      format: ''
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - Yes
+      - No
+    form:
+      questions:
+      - id: '0'
+        label: ''
+        labelarg:
+          simple: In your assessment, does the breach involve the personal data of
+            living individuals?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - Yes
+        - No
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: If the answer is 'Yes', please proceed and fill out the following
+          questions. In that case the breach will be documented.
+        readonly: false
+      - id: '1'
+        label: ''
+        labelarg:
+          simple: How likely is it that the breach will result in a risk to individuals?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - Likely
+        - Unlikely
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: Risk - The resulting risk of the impact of the breach on individuals.
+          When assessing the risk to individuals as a result of a breach, the controller
+          should consider the specific circumstances of the breach, including the
+          severity of the potential impact and the likelihood of this occurring. If
+          the answer is 'Likely' to result in a risk to individuals, please process
+          to fill out the next question, and the section regarding the information
+          for the breach report.
+        readonly: false
+      - id: '2'
+        label: ''
+        labelarg:
+          simple: Are you aware of the cause of the breach?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options:
+        - ''
+        - Malicious attack - internal
+        - Malicious attack - external
+        - Accident (system failure)
+        - Negligence (human error)
+        - Other
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
+        readonly: false
+      - id: '3'
+        label: ''
+        labelarg:
+          simple: If a result of a malicious attack, what caused the breach?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options:
+        - ''
+        - Unknown vulnerability
+        - Cryptolockers
+        - Fire reconnaissance
+        - Phishing
+        - Distributed denial of service
+        - Malware
+        - Social engineering
+        - Blackmail
+        - Other
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
+        readonly: false
+      - id: '4'
+        label: ''
+        labelarg:
+          simple: What is the likely impact of the breach?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options:
+        - ''
+        - Data publication
+        - Data theft
+        - Identity theft or fraud
+        - Loss of data
+        - Loss of confidentiality of personal data
+        - Property damage
+        - Direct financial loss
+        - Business interruption
+        - Liability issues
+        - Damage to the reputation
+        - Other
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: '"A data protection impact assessment (...) shall in particular be
+          required in the case of: (a) a systematic and extensive evaluation of personal
+          aspects relating to natural persons which is based on automated processing,
+          including profiling, and on which decisions are based that produce legal
+          effects concerning the natural person or similarly significantly affect
+          the natural person; (b) processing on a large scale of special categories
+          of data referred to in Article 9(1), or of personal data relating to criminal
+          convictions and offences referred to in Article 10; or (c) a systematic
+          monitoring of a publicly accessible area on a large scale. - GDPR Art. 35'
+        readonly: false
+      - id: '5'
+        label: ''
+        labelarg:
+          simple: "What measures have been taken to mitigate the adverse effects of\
+            \ the\nbreach?"
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: '"(d) describe the measures taken or proposed to be taken by the
+          controller to address the personal data breach, including, where appropriate,
+          measures to mitigate its possible adverse effects." - GDPR Art. 33'
+        readonly: false
+      - id: '6'
+        label: ''
+        labelarg:
+          simple: Additional information that is relevant to the case
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
+        readonly: false
+      title: Suspected PII data breach
+      description: Suspected PII data breach was found in your organization
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+  '2':
+    id: '2'
+    taskid: 66ad9306-e86d-467e-83bc-6c745c4d56ef
+    type: condition
+    task:
+      id: 66ad9306-e86d-467e-83bc-6c745c4d56ef
+      version: -1
+      name: DPO confirmed a breach happened
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '47'
+      yes:
+      - '46'
+    separatecontext: false
+    defaultassigneecomplex:
+      simple: ${Suspected GDPR data breach.Answers.0}
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Suspected GDPR data breach.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Yes
+    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 290\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '9':
+    id: '9'
+    taskid: daca1250-72a6-4885-87f3-a0c6fb6fd066
+    type: title
+    task:
+      id: daca1250-72a6-4885-87f3-a0c6fb6fd066
+      version: -1
+      name: Breach documentation process
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 1505\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '15':
+    id: '15'
+    taskid: ec92987e-d48e-4c68-8bd8-da4df1716f9e
+    type: regular
+    task:
+      id: ec92987e-d48e-4c68-8bd8-da4df1716f9e
+      version: -1
+      name: Generate breach report
+      description: "A script that automatically generates an investigation summary\
+        \ report. The script can also be used\nin a post-processing workflow."
+      scriptName: GenerateInvestigationSummaryReport
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '36'
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      name: {}
+      type:
+        simple: docx
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 1670\n  }\n}"
+    note: false
+    timertriggers:
+    - fieldname: gdprnotifyauthorities
+      action: start
+    ignoreworker: false
+  '19':
+    id: '19'
+    taskid: aa3b5159-9eeb-49b7-88d8-f7fcfc17ae80
+    type: regular
+    task:
+      id: aa3b5159-9eeb-49b7-88d8-f7fcfc17ae80
+      version: -1
+      name: Breach is documented in Demisto
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '38'
+    scriptarguments:
+      value:
+        simple: The breach was reported and is documented in Demisto.
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 4040\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '20':
+    id: '20'
+    taskid: 558e7237-1588-474f-8b4c-214a68bea922
+    type: title
+    task:
+      id: 558e7237-1588-474f-8b4c-214a68bea922
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 930,\n    \"y\": 4380\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '25':
+    id: '25'
+    taskid: 9c855c61-9d2f-4b6a-8f35-6b936b8f50a9
+    type: regular
+    task:
+      id: 9c855c61-9d2f-4b6a-8f35-6b936b8f50a9
+      version: -1
+      name: Upload the report to California attorney general
+      description: "\"A person or business that is required to issue a security breach\
+        \ notification pursuant to this section to more than 500 California residents\
+        \ as a result of a single breach of the security system shall electronically\
+        \ submit a single sample copy of that security breach notification, excluding\
+        \ any personally identifiable information, to the Attorney General. A single\
+        \ sample copy of a security breach notification shall not be deemed to be\
+        \ within subdivision (f) of Section 6254 of the Government Code.\"\nSubmit\
+        \ the report to https://oag.ca.gov/privacy/databreach/report-a-breach\n\n\
+        **Source: http://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1798.82.\n\
+        **Email:** : ISO@dds.ca.gov, Security@state.ca.gov  \n**Phone:** (916) 445-5239"
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '58'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 680,\n    \"y\": 2805\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '28':
+    id: '28'
+    taskid: 7432dcf3-4ea8-43bd-8a61-bd91bc6a4d8f
+    type: regular
+    task:
+      id: 7432dcf3-4ea8-43bd-8a61-bd91bc6a4d8f
+      version: -1
+      name: Notify Individuals
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '62'
+    scriptarguments:
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: "Hello,\nWe have discovered that your personal data has been compromised,\
+          \ and may be at high risk.\n\nThe nature of the data breached:\nData type:\
+          \ ${incident.affecteddatatype}\nData encryption status: ${incident.dataencryptionstatus}\n\
+          Data is hosted at: ${incident.whereisdatahosted}\n\nThe likely consequences\
+          \ might be:\n${incident.likelyimpact}\n\nThe steps we have taken to mitigate\
+          \ the breach:\n${incident.measurestomitigate}\n\nFor more information, you\
+          \ can contact:\nContact Name: ${incident.contactname}\nContact Position:\
+          \ ${incident.position}\nContact Address: ${incident.contactaddress}\nContact\
+          \ Postal Code: ${incident.postalcode}\nContact City: ${incident.city}\n\
+          Contact Country: ${incident.country}\nContact E-mail Address: ${incident.dpoemailaddress}\n\
+          Contact Tel: ${incident.telephoneno}\n\nWe apologize for any inconvenience\
+          \ you might have experienced."
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: Notification - Your data has been compromised
+      to:
+        simple: ${incident.affectedindividualscontactinformation.emailaddress}
+      transientFile: {}
+      transientFileContent: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 30,\n    \"y\": 3290\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '29':
+    id: '29'
+    taskid: dc4bbf9f-9f4c-4221-86aa-7d97f182c65e
+    type: title
+    task:
+      id: dc4bbf9f-9f4c-4221-86aa-7d97f182c65e
+      version: -1
+      name: DPO updates report
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '30'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 0,\n    \"y\": 2195\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '30':
+    id: '30'
+    taskid: 50780bf6-c5a8-4dfd-8121-641fe8ce80a2
+    type: regular
+    task:
+      id: 50780bf6-c5a8-4dfd-8121-641fe8ce80a2
+      version: -1
+      name: Get new report from DPO
+      description: manual task - ask user to send new report
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '57'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 0,\n    \"y\": 2320\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '33':
+    id: '33'
+    taskid: 703ee51d-4b71-480d-82c4-8eabcde3ee77
+    type: title
+    task:
+      id: 703ee51d-4b71-480d-82c4-8eabcde3ee77
+      version: -1
+      name: Contact authorities
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 680,\n    \"y\": 2670\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '36':
+    id: '36'
+    taskid: 1e63f1b1-99cd-45e4-88f8-ab49072c7777
+    type: regular
+    task:
+      id: 1e63f1b1-99cd-45e4-88f8-ab49072c7777
+      version: -1
+      name: Send report to DPO approval
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '37'
+    scriptarguments:
+      attachIDs:
+        simple: ${Report.FileID}
+      attachNames:
+        simple: ${Report.Name}
+      bcc: {}
+      body:
+        simple: This is the data breach report generated from Demisto.
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: Generated data breach report from Demisto
+      to:
+        simple: ${incident.dpoemailaddress}
+      transientFile: {}
+      transientFileContent: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 1850\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '37':
+    id: '37'
+    taskid: 1f9453ad-30f6-4478-8ab0-3c7d6fcb3477
+    type: condition
+    task:
+      id: 1f9453ad-30f6-4478-8ab0-3c7d6fcb3477
+      version: -1
+      name: Get DPO Approval for the report
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      No:
+      - '29'
+      Yes:
+      - '57'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 2025\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${incident.dpoemailaddress}
+      subject:
+        simple: 'Data Breach report approval '
+      body:
+        simple: "Hello,\n\nPlease specify if you approve sending the data breach report\
+          \ to the authorities.\n\nApprove sending the data breach report generated\
+          \ from Demisto, click Yes.\n\nDecline sending the data breach report generated\
+          \ from Demisto, click No.\nIf you decline sending the report, please generate\
+          \ a new report and forward it to your SOC team."
+      methods:
+      - email
+      format: ''
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - Yes
+      - No
+  '38':
+    id: '38'
+    taskid: 4c8b6f56-7304-40da-8442-558303c6a9ab
+    type: regular
+    task:
+      id: 4c8b6f56-7304-40da-8442-558303c6a9ab
+      version: -1
+      name: Close Investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+      description: ''
+    nexttasks:
+      '#none#':
+      - '20'
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 930,\n    \"y\": 4210\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '39':
+    id: '39'
+    taskid: 10aafbec-f6e0-4e7f-89a6-7b031383f4f6
+    type: condition
+    task:
+      id: 10aafbec-f6e0-4e7f-89a6-7b031383f4f6
+      version: -1
+      name: Is breached data encrypted?
+      description: Check if breached data has been encrypted. If breached data is
+        encrypted and the encryption has not been compromised, there is no need for
+        breach notification.
+      tags:
+      - DataEncryption
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '44'
+      Yes:
+      - '40'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: dataencryptionstatus
+            iscontext: true
+          right:
+            value:
+              simple: Full
+          ignorecase: true
+    view: "{\n  \"position\": {\n    \"x\": 930,\n    \"y\": -1170\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '40':
+    id: '40'
+    taskid: d93812e0-e430-496f-8ed7-2c6e717c9b34
+    type: condition
+    task:
+      id: d93812e0-e430-496f-8ed7-2c6e717c9b34
+      version: -1
+      name: Has encryption been compromised?
+      description: Are the encryption keys or the encrypted data compromised in any
+        way?
+      tags:
+      - DataEnryption
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      No:
+      - '41'
+      Yes:
+      - '44'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 1180,\n    \"y\": -990\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '41':
+    id: '41'
+    taskid: 82d67999-ac94-4b37-8ffc-43f7ea78018b
+    type: collection
+    task:
+      id: 82d67999-ac94-4b37-8ffc-43f7ea78018b
+      version: -1
+      name: Analyst review
+      type: collection
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '42'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 1360,\n    \"y\": -820\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject:
+        simple: ${incident.rawName} | Analyst review required
+      body:
+        simple: "Hello,\n\nA breach incident has opened.\nThe breached data is encrypted,\
+          \ and the encryption key does not compromise.\n\nPlease review the information\
+          \ and the incident details to make sure there is no breach."
+      methods:
+      - email
+      format: ''
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: '0'
+        label: ''
+        labelarg:
+          simple: Has encryption neem compromised?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - Yes
+        - No
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
+        readonly: false
+      - id: '1'
+        label: ''
+        labelarg:
+          simple: Explain What happened
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: Explain in your words the incident origin, what you have checked,
+          and any information related to this incident.
+        readonly: false
+      title: Analyst review
+      description: "A breach incident has opened.\nThe breached data is encrypted,\
+        \ and the encryption key does not compromise.\n\nPlease review the information\
+        \ and the incident details to make sure there is no breach."
+      sender: ''
+      expired: false
+      totalanswers: 0
+  '42':
+    id: '42'
+    taskid: f976cc8c-10b6-4117-8818-c721e31911c1
+    type: condition
+    task:
+      id: f976cc8c-10b6-4117-8818-c721e31911c1
+      version: -1
+      name: Notification still required?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '43'
+      yes:
+      - '44'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Analyst review
+                accessor: Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Yes
+          ignorecase: true
+    view: "{\n  \"position\": {\n    \"x\": 1360,\n    \"y\": -650\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '43':
+    id: '43'
+    taskid: da2aa149-ef13-495c-8dd1-d80b89ee4e94
+    type: regular
+    task:
+      id: da2aa149-ef13-495c-8dd1-d80b89ee4e94
+      version: -1
+      name: Close investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '20'
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        complex:
+          root: Analyst review
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: Analyst review.Answers.0
+                iscontext: true
+          accessor: Answers.1
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 1420,\n    \"y\": 290\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '44':
+    id: '44'
+    taskid: 6ed34013-68e6-472f-8742-d21be0c88551
+    type: playbook
+    task:
+      id: 6ed34013-68e6-472f-8742-d21be0c88551
+      version: -1
+      name: Breach notification - PII Check
+      playbookName: Breach notification - PII Check
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '45'
+    separatecontext: true
+    view: "{\n  \"position\": {\n    \"x\": 930,\n    \"y\": -420\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '45':
+    id: '45'
+    taskid: d59e07cf-efef-4d28-8e8f-181f65b68130
+    type: condition
+    task:
+      id: d59e07cf-efef-4d28-8e8f-181f65b68130
+      version: -1
+      name: Is PII compromised?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '47'
+      yes:
+      - '51'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PIICompromised
+            iscontext: true
+          right:
+            value:
+              simple: 'True'
+          ignorecase: true
+    view: "{\n  \"position\": {\n    \"x\": 930,\n    \"y\": -250\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '46':
+    id: '46'
+    taskid: 2c6c2751-d9e6-4c95-86db-025b2ae80e57
+    type: title
+    task:
+      id: 2c6c2751-d9e6-4c95-86db-025b2ae80e57
+      version: -1
+      name: PII Breach Notification required
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '52'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 520\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '47':
+    id: '47'
+    taskid: 49a14b2b-2553-41e2-8fff-474638f1ce46
+    type: title
+    task:
+      id: 49a14b2b-2553-41e2-8fff-474638f1ce46
+      version: -1
+      name: No breach has occurred
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '38'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 930,\n    \"y\": 520\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '49':
+    id: '49'
+    taskid: 0a7a5d59-9368-4b03-838d-1c6e820d0734
+    type: regular
+    task:
+      id: 0a7a5d59-9368-4b03-838d-1c6e820d0734
+      version: -1
+      name: Analyst review
+      description: The breach does not contain California resident information. Please
+        review which state information the breach contains, and start measures according
+        to the laws of that particular state.
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '43'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 1160,\n    \"y\": 115\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '51':
+    id: '51'
+    taskid: 4371b475-d7b9-48fb-8969-f8de4d25fb0a
+    type: condition
+    task:
+      id: 4371b475-d7b9-48fb-8969-f8de4d25fb0a
+      version: -1
+      name: Does breach contain California resident information?
+      description: "California breach notification laws come into effect only if data\
+        \ of California residents have been breached.\nIf yes, continue the investigation.\n\
+        If no, decide on the further course of action."
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      No:
+      - '49'
+      Yes:
+      - '1'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 520,\n    \"y\": -80\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '52':
+    id: '52'
+    taskid: bf307665-76f6-4ab5-8dac-779f9512b07c
+    type: regular
+    task:
+      id: bf307665-76f6-4ab5-8dac-779f9512b07c
+      version: -1
+      name: Assemble a list of all the breached PII
+      description: Assemble a list of all breached PII as found in the Breach Notification
+        - PII Check playbook.
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '53'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 650\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '53':
+    id: '53'
+    taskid: 6ff9db9f-a91f-4d14-89b3-c3c1fa79f661
+    type: regular
+    task:
+      id: 6ff9db9f-a91f-4d14-89b3-c3c1fa79f661
+      version: -1
+      name: Notify management with the severity of data breach
+      description: "Stakeholders to be included:\n•\tCISO\n•\tPrivacy officer\n•\t\
+        Data Protection Officer (DPO) \n•\tOrganization legal VP\n•\tMarketing VP\n\
+        •\tAccounting VP\n•\tPublic relations VP\n•\tOrganization’s external legal\
+        \ adviser\nThis may change according to organizational policy."
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '54'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 820\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '54':
+    id: '54'
+    taskid: a35cd7c4-ad50-4a21-82da-19c820712507
+    type: title
+    task:
+      id: a35cd7c4-ad50-4a21-82da-19c820712507
+      version: -1
+      name: Send Breach Notification
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '55'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 1010\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '55':
+    id: '55'
+    taskid: 0a496248-72ea-4a10-82cd-73cdbcf192a8
+    type: condition
+    task:
+      id: 0a496248-72ea-4a10-82cd-73cdbcf192a8
+      version: -1
+      name: Does law enforcement require delaying breach notification?
+      description: "According to California law, breach notification may be delayed\
+        \ if a law enforcement agency determines that the notification will impede\
+        \ a criminal investigation.\n\n**Source: http://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1798.82."
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      No:
+      - '9'
+      Yes:
+      - '56'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 1150\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '56':
+    id: '56'
+    taskid: 38338776-875f-4d93-8369-df7db6172316
+    type: regular
+    task:
+      id: 38338776-875f-4d93-8369-df7db6172316
+      version: -1
+      name: Wait to hear back from law enforcement
+      type: regular
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 580,\n    \"y\": 1320\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '57':
+    id: '57'
+    taskid: 034fe90b-ced3-4cb8-8606-eb05f24dc947
+    type: condition
+    task:
+      id: 034fe90b-ced3-4cb8-8606-eb05f24dc947
+      version: -1
+      name: Checks number of affected data subjects
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      Less than 500:
+      - '58'
+      More than 500:
+      - '33'
+    separatecontext: false
+    conditions:
+    - label: More than 500
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: incident
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: incident.approximatenumberofaffecteddatasubjects
+                      iscontext: true
+                accessor: approximatenumberofaffecteddatasubjects
+            iscontext: true
+          right:
+            value:
+              simple: '500'
+    - label: Less than 500
+      condition:
+      - - operator: lessThan
+          left:
+            value:
+              complex:
+                root: incident
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: incident.approximatenumberofaffecteddatasubjects
+                      iscontext: true
+                accessor: approximatenumberofaffecteddatasubjects
+            iscontext: true
+          right:
+            value:
+              simple: '500'
+    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 2490\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '58':
+    id: '58'
+    taskid: 8004735a-a979-4517-8055-add69d0e6cba
+    type: title
+    task:
+      id: 8004735a-a979-4517-8055-add69d0e6cba
+      version: -1
+      name: Notify Residents
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '59'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 2980\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '59':
+    id: '59'
+    taskid: 7931c4b4-243f-4a61-8c01-e54df95fd86e
+    type: condition
+    task:
+      id: 7931c4b4-243f-4a61-8c01-e54df95fd86e
+      version: -1
+      name: Is the cost of reaching out to residents less than $250,000 OR Are less
+        than 500,000 residents impacted?
+      description: "If these conditions are met, the organization can request a substitute\
+        \ notification.\n\n\"Substitute notice, if the person or business demonstrates\
+        \ that the cost of providing notice would exceed two hundred fifty thousand\
+        \ dollars ($250,000), or that the affected class of subject persons to be\
+        \ notified exceeds 500,000, or the person or business does not have sufficient\
+        \ contact information. Substitute notice shall consist of all of the following:\n\
+        \n(A) Email notice when the person or business has an email address for the\
+        \ subject persons.\n\n(B) Conspicuous posting, for a minimum of 30 days, of\
+        \ the notice on the internet website page of the person or business, if the\
+        \ person or business maintains one. For purposes of this subparagraph, conspicuous\
+        \ posting on the person’s or business’s internet website means providing a\
+        \ link to the notice on the home page or first significant page after entering\
+        \ the internet website that is in larger type than the surrounding text, or\
+        \ in contrasting type, font, or color to the surrounding text of the same\
+        \ size, or set off from the surrounding text of the same size by symbols or\
+        \ other marks that call attention to the link.\n\n(C) Notification to major\
+        \ statewide media.\"\n\n**Source: http://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1798.82."
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '60'
+      No:
+      - '28'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 3120\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '60':
+    id: '60'
+    taskid: b7393541-19b4-473a-8cb5-5740c870fa70
+    type: title
+    task:
+      id: b7393541-19b4-473a-8cb5-5740c870fa70
+      version: -1
+      name: Substitute Notice Options
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '61'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 590,\n    \"y\": 3290\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '61':
+    id: '61'
+    taskid: 5aa38f6b-44d4-4c7d-8351-50a031221ddb
+    type: regular
+    task:
+      id: 5aa38f6b-44d4-4c7d-8351-50a031221ddb
+      version: -1
+      name: Implement substitute resident notification
+      description: "Choose the following:  \n* Email notice\n* Conspicuous, highly-visible\
+        \ notice on the company website for 30 days.\n* Notification to major statewide\
+        \ media.  \n\n**Source: http://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1798.82."
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '62'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 590,\n    \"y\": 3400\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '62':
+    id: '62'
+    taskid: ccf7ed71-99eb-458c-80da-d1735fdba98e
+    type: title
+    task:
+      id: ccf7ed71-99eb-458c-80da-d1735fdba98e
+      version: -1
+      name: Corrective action for breached accounts
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '63'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 3570\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '63':
+    id: '63'
+    taskid: 50be53cd-9645-41f7-88b8-973a17a56335
+    type: condition
+    task:
+      id: 50be53cd-9645-41f7-88b8-973a17a56335
+      version: -1
+      name: Does breach data contain user account details?
+      description: "If yes, work on resetting user passwords.\nIf no, continue with\
+        \ the investigation."
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      No:
+      - '19'
+      Yes:
+      - '64'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 3700\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '64':
+    id: '64'
+    taskid: 2f37f6cb-0cf8-43c2-82be-ab64f24f8f6b
+    type: regular
+    task:
+      id: 2f37f6cb-0cf8-43c2-82be-ab64f24f8f6b
+      version: -1
+      name: Reset user passwords
+      description: Activate a 'reset password' process for all affected accounts.
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 580,\n    \"y\": 3870\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: "{\n  \"linkLabelsPosition\": {\n    \"2_46_yes\": 0.57,\n    \"2_47_#default#\"\
+  : 0.14,\n    \"37_29_No\": 0.33,\n    \"37_57_Yes\": 0.26,\n    \"39_40_Yes\": 0.43,\n\
+  \    \"39_44_#default#\": 0.16,\n    \"40_41_No\": 0.38,\n    \"40_44_Yes\": 0.16,\n\
+  \    \"42_43_#default#\": 0.12,\n    \"42_44_yes\": 0.23,\n    \"45_47_#default#\"\
+  : 0.13,\n    \"45_51_yes\": 0.25,\n    \"51_1_Yes\": 0.43,\n    \"51_49_No\": 0.22,\n\
+  \    \"55_56_Yes\": 0.35,\n    \"55_9_No\": 0.39,\n    \"57_33_More than 500\":\
+  \ 0.26,\n    \"57_58_Less than 500\": 0.22,\n    \"59_28_No\": 0.31,\n    \"59_60_#default#\"\
+  : 0.32,\n    \"63_19_No\": 0.32,\n    \"63_64_Yes\": 0.33\n  },\n  \"paper\": {\n\
+  \    \"dimensions\": {\n      \"height\": 5775,\n      \"width\": 1800,\n      \"\
+  x\": 0,\n      \"y\": -1330\n    }\n  }\n}"
+inputs: []
+outputs: []
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
