@@ -179,6 +179,10 @@
             "playbookID": "JsonWhoIs-Test"
         },
         {
+            "integrations": "Maltiverse",
+            "playbookID": "Maltiverse Test"
+        },
+        {
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test",
             "instance_names": "ms_graph_mail_dev"
