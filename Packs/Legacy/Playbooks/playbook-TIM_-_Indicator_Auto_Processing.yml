@@ -59,8 +59,7 @@ tasks:
       '#none#':
       - "14"
     scriptarguments:
-      OrganizationsExternalIPListName:
-        simple: ExternalIPaddresses
+      OrganizationsExternalIPListName: {}
     separatecontext: true
     view: |-
       {
@@ -135,8 +134,7 @@ tasks:
       '#none#':
       - "14"
     scriptarguments:
-      BusinessPartnersIPListName:
-        simple: BusinessPartnersIPaddresses
+      BusinessPartnersIPListName: {}
     separatecontext: true
     view: |-
       {
