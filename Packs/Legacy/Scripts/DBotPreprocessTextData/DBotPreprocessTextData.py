@@ -43,10 +43,7 @@ def pre_process_nlp(text_data):
     res = demisto.executeCommand('WordTokenizerNLP', {
         'value': json.dumps(text_data),
         'isValueJson': 'yes',
-        'tokenizationMethod': demisto.args()['tokenizationMethod'],
-        'language': demisto.args()['language']
     })
-
     if is_error(res):
         return_error(get_error(res))
     processed_text_data = res[0]['Contents']
