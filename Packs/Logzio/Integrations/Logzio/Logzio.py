@@ -18,6 +18,14 @@ BASE_URL = "https://api.logz.io/"
 TRIGGERED_RULES_API_SUFFIX = "v2/security/rules/events/search"
 SEARCH_LOGS_API_SUFFIX = "v1/search"
 SEARCH_RULE_LOGS_API_SUFFIX = "v2/security/rules/events/logs/search"
+SEVERITIES_DICT = {
+    "UNCLASSIFIED": 0,
+    "INFO": 0.5,
+    "LOW": 1,
+    "MEDIUM": 2,
+    "HIGH": 3,
+    "SEVERE": 4
+}
 
 
 class Client(BaseClient):
@@ -194,10 +202,12 @@ def fetch_incidents(client, last_run, search, severities, first_fetch_time):
             del event["hits"]  # this field is incorrect
         event_date = datetime.fromtimestamp(event["eventDate"])
         event_date_string = event_date.strftime(DATE_FORMAT)
+        event['datasource'] = 'Logz.Io'
         incident = {
             "name": event.get("name", ""),
             "rawJSON": json.dumps(event),
-            "occurred": event_date_string
+            "occurred": event_date_string,
+            "severity": SEVERITIES_DICT[event.get("severity", "UNCLASSIFIED")]
         }
         incidents.append(incident)
     if incidents:
