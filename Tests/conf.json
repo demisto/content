@@ -179,6 +179,10 @@
             "playbookID": "JsonWhoIs-Test"
         },
         {
+            "integrations": "Maltiverse",
+            "playbookID": "Maltiverse Test"
+        },
+        {
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test",
             "instance_names": "ms_graph_mail_dev"
@@ -2734,7 +2738,7 @@
             "playbookID": "IBM Resilient Systems Test"
         },
         {
-            "integrations": "PrismaAccess",
+            "integrations": ["PrismaAccess", "Prisma Access Egress IP feed"],
             "playbookID": "Prisma_Access_Egress_IP_Feed-Test",
             "timeout": 60000,
             "fromversion": "5.5.0",
@@ -2757,6 +2761,11 @@
         {
             "integrations": "Zabbix",
             "playbookID": "Zabbix"
+        },
+        {
+            "integrations": "GCP Whitelist Feed",
+            "playbookID": "GCPWhitelist_Feed_Test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
