@@ -55,6 +55,7 @@ script: |+
   demisto.results(res)
 
 type: python
+subtype: python2
 tags:
 - checkpoint
 comment: Connect to a checkpoint firewall appliance using SSH and retrieve status

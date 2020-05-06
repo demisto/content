@@ -21,4 +21,5 @@ script: |-
 
   demisto.results(res)
 type: python
+subtype: python2
 tags: []
