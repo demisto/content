@@ -114,10 +114,12 @@ def to_search_attribute_object(value, filter=None, is_list=False, valid_values=N
                 raise ValueError('{} is not a valid value'.format(val))
 
     attribute = {
-        'value': values
+        'value': values,
+        'includes': ['SMTP', 'HEADER']
     }
     if filter:
         attribute['filter'] = filter
+
     return attribute
 
 

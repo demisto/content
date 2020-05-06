@@ -3,7 +3,7 @@
 if [[ "$#" -lt 2 ]]; then
   echo "Usage: $0 <content branch name: such as master> <circle ci token> [server branch name] [nightly: set to true or leave blank]"
   echo "You can get a circle ci token from: CircleCI -> User -> Personal API Tokens"
-  echo "Note: if doiong a nightly build you must specify server branch name"
+  echo "Note: if doing a nightly build you must specify server branch name"
   exit 1
 fi
 

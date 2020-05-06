@@ -6,6 +6,7 @@ script: |2
 
   demisto.results(demisto.executeCommand("grr_get_hunt", demisto.args()))
 type: python
+subtype: python2
 tags:
 - GRR
 comment: Renders hunt's summary

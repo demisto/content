@@ -22,6 +22,7 @@ script: |-
 
   demisto.results("Fetched according to command.")
 type: python
+subtype: python2
 tags: []
 comment: 'This automation creates new incidents from RSA Archer. '
 enabled: true

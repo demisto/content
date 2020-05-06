@@ -15,6 +15,7 @@ script: |+
           demisto.results(res)
 
 type: python
+subtype: python2
 tags:
 - cuckoo
 comment: Check the current status of a task in Cuckoo sandbox.
