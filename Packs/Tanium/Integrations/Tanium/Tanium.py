@@ -418,7 +418,7 @@ def format_context(res):
     """
     context = []
     for element in res:
-        context.append({key: value.replace("\n", " ") for (key, value) in element.items()})
+        context.append({key: value.split('\n') if '\n' in value else value for (key, value) in element.items()})
 
     return context
 
