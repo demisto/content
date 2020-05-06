@@ -18,6 +18,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Malwarebytes",
+            "playbookID": "Malwarebytes-Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Tanium Threat Response",
             "playbookID": "Tanium Threat Response Test"
         },
@@ -110,6 +115,10 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "Pipl",
+            "playbookID": "Pipl Test"
+        },
+        {
             "integrations": "AWS Feed",
             "playbookID": "AWS Feed Test",
             "fromversion": "5.5.0"
@@ -168,6 +177,10 @@
         {
             "integrations": "JsonWhoIs",
             "playbookID": "JsonWhoIs-Test"
+        },
+        {
+            "integrations": "Maltiverse",
+            "playbookID": "Maltiverse Test"
         },
         {
             "integrations": "MicrosoftGraphMail",
@@ -252,7 +265,15 @@
         },
         {
             "integrations": "AWS - SQS",
-            "playbookID": "fd93f620-9a2d-4fb6-85d1-151a6a72e46d"
+            "playbookID": "AWS - SQS Test Playbook"
+        },
+        {
+            "integrations": "AWS - CloudWatchLogs",
+            "playbookID": "AWS - CloudWatchLogs Test Playbook"
+        },
+        {
+            "integrations": "AWS - Route53",
+            "playbookID": "AWS - Route53 Test Playbook"
         },
         {
             "integrations": "SlackV2",
@@ -333,9 +354,6 @@
         },
         {
             "playbookID": "TestAwsEC2GetPublicSGRules-Test"
-        },
-        {
-            "playbookID": "TestParseEmailFile-deprecated-script"
         },
         {
             "integrations": "RSA NetWitness Packets and Logs",
@@ -647,6 +665,14 @@
         {
             "playbookID": "Luminate-TestPlaybook",
             "integrations": "Luminate"
+        },
+        {
+            "integrations": "MxToolBox",
+            "playbookID": "MxToolbox-test"
+        },
+        {
+            "integrations": "Nessus",
+            "playbookID": "Nessus - Test"
         },
         {
             "playbookID": "Palo Alto Networks - Malware Remediation Test",
@@ -1477,6 +1503,24 @@
             "instance_names": "ms_graph_calendar_prod"
         },
         {
+            "integrations": "Microsoft Graph Device Management",
+            "playbookID": "MSGraph_DeviceManagement_Test",
+            "instance_names": "ms_graph_device_management_oproxy_dev",
+            "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "Microsoft Graph Device Management",
+            "playbookID": "MSGraph_DeviceManagement_Test",
+            "instance_names": "ms_graph_device_management_oproxy_prod",
+            "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "Microsoft Graph Device Management",
+            "playbookID": "MSGraph_DeviceManagement_Test",
+            "instance_names": "ms_graph_device_management_self_deployed_prod",
+            "fromversion": "4.1.0"
+        },
+        {
             "integrations": "RedLock",
             "playbookID": "RedLockTest",
             "nightly": true
@@ -1765,7 +1809,7 @@
             "integrations": "MaxMind GeoIP2"
         },
         {
-            "playbookID": "Test_Sagemaker",
+            "playbookID": "Test Sagemaker",
             "integrations": "AWS Sagemaker"
         },
         {
@@ -2715,9 +2759,19 @@
         {
             "playbookID": "EvaluateMLModllAtProduction-Test",
             "fromversion": "4.5.0"
+        },
+        {
+            "playbookID": "Extract Indicators From File - test"
+        },
+        {
+            "integrations": "GCP Whitelist Feed",
+            "playbookID": "GCPWhitelist_Feed_Test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
+        "Send Investigation Summary Reports - Test": "Issue 24133",
+        "Test_URLhaus": "Issue 23857",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get PrismaAccess instance",
         "Prisma_Access-Test": "unskip after we will get PrismaAccess instance",
         "Test-Shodan_v2": "Issue 23370",
@@ -2769,11 +2823,34 @@
         "PAN-OS Query Logs For Indicators Test": "Issue #23505",
         "Panorama Query Logs - Test": "Issue #23505",
         "palo_alto_panorama_test_pb": "Issue #22835",
-        "VxStream Test": "Issue #23795"
+        "VxStream Test": "Issue #23795",
+
+        "_comment": "~~~ DEPRECATED ~~~",
+        "Endpoint Enrichment - Generic v2 - Test": "DEPRECATED"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "Nessus": "No instance",
+        "MxToolBox": "No instance",
+        "Traps": "Issue 24122",
+        "skyformation": "No instance, old partner",
+        "Pipl": "No instance",
         "PrismaAccess": "Instance will be provided soon by Lior and Prasen",
+        "URLhaus": "No instance",
+        "AlphaSOC Network Behavior Analytics": "No instance",
+        "IsItPhishing": "No instance",
+        "Verodin": "No instance",
+        "EasyVista": "No instance",
+        "Pipl": "No instance",
+        "Moloch": "No instance",
+        "Twilio": "No instance",
+        "Zendesk": "No instance",
+        "GuardiCore": "No instance",
+        "Nessus": "No instance",
+        "Cisco CloudLock": "No instance",
+        "SentinelOne": "No instance",
+        "Vectra v2": "No instance",
+        "Infoblox": "Issue 23770",
         "Trend Micro Apex": "Issue 23632",
         "Awake Security": "Issue 23376",
         "ExtraHop": "No license, issue 23731",

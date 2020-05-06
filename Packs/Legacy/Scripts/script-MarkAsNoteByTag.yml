@@ -23,6 +23,7 @@ script: |
           demisto.results({'Type': entryTypes['error'], 'ContentsFormat': formats['text'],
               'Contents': "No entries with '" + demisto.getArg('tag') + "' found"})
 type: python
+subtype: python2
 tags:
 - Utility
 comment: Mark entries as notes if they are tagged with given tag

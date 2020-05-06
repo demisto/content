@@ -1,4 +1,9 @@
 import json
+import pytest
+import requests
+import requests_mock
+import sys
+
 
 IP_ADDRESS = '127.0.0.1'
 
@@ -119,3 +124,21 @@ def test_calculate_dbot_score_file():
     raw_indicator = IP_RES_JSON['indicator']
     score = calculate_dbot_score(raw_indicator, 'File')
     assert score == 3
+
+
+def test_connection_error(mocker):
+
+    import AutofocusV2
+
+    RETURN_ERROR_TARGET = 'AutofocusV2.return_error'
+    BASE_URL = 'https://autofocus.paloaltonetworks.com/api/v1.0'
+
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=sys.exit)
+
+    with requests_mock.Mocker() as m:
+        m.get(f'{BASE_URL}/tic', exc=requests.exceptions.ConnectionError)
+
+        with pytest.raises(SystemExit):
+            AutofocusV2.search_indicator('ip', '8.8.8.8')
+        assert 'Error connecting to server. Check your URL/Proxy/Certificate settings'\
+               in return_error_mock.call_args[0][0]

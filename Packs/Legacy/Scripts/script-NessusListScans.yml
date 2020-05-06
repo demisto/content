@@ -1,6 +1,6 @@
 commonfields:
   id: NessusListScans
-  version: 1
+  version: -1
 name: NessusListScans
 script: |
   from time import ctime
@@ -32,6 +32,7 @@ script: |
                   "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resScanList)})
   demisto.results(res)
 type: python
+subtype: python2
 tags:
 - nessus
 comment: Display the list of folders and scans from Nessus.

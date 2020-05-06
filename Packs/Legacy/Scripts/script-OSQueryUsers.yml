@@ -7,6 +7,7 @@ script: |-
 
   demisto.results(demisto.executeCommand("OSQueryBasicQuery", {'query':QUERY, 'system':demisto.args()['system']}))
 type: python
+subtype: python2
 tags:
 - OSQuery
 comment: Returns Users Table from a remote system using OSQuery
