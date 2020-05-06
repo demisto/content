@@ -1,5 +1,7 @@
 ## [Unreleased]
--
+1. Changed behaviour: if no threshold which meets the precision requirement is found, closest threshold will be
+returned.
+2. New output was added of model evaluation using different confidence thresholds, per class.
 
 
 ## [20.4.0] - 2020-04-14
