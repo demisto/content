@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: The context to change. (i.e ${Context.Key})
+  description: The context to change (i.e., ${Context.Key}).
   isArray: false
   name: input
   required: false
@@ -8,7 +8,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'True'
-  description: If True replaces the existing key.
+  description: If "True" replaces the existing key. The default is "True".
   isArray: false
   name: inplace
   predefined:
@@ -26,7 +26,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'False'
-  description: If "True" capitalize the first letter of the context key
+  description: If "True" capitalizes the first letter of the context key.
   isArray: false
   name: capitalize
   predefined:
