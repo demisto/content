@@ -124,7 +124,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: tokenizer
-  description: Tokenization method for text. Only required when the language argument is set to "Other".
+  description: Tokenization method for text. Only required when the language argument is set to "Other". Can be "tokenizer", "byWords", or "byLetters".
   isArray: false
   name: tokenizationMethod
   predefined:
