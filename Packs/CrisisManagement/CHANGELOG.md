@@ -1,2 +1,2 @@
 ## [Unreleased]
-Created a pack for Crisis Management.
+Added a pack for Crisis Management.
