@@ -73,12 +73,15 @@ script:
       description: Unix timestamp. Specifies the latest timestamp to be returned by the query.
     description: Returns logs from your Logz.io operations account using an Apache Lucene query.
     outputs:
-    - contextPath: Logzio.Logs.Count
-      description: Number of results
-      type: number
-    - contextPath: Logzio.Logs.Results
+    - contextPath: Logzio.Result
       description: An array of the search results
-    description: Returns logs from your Logz.io Operations account by Lucene query
+      type: Unknown
+    - contextPath: Logzio.Result.type
+      description: The log's type
+      type: string
+    - contextPath: Logzio.Result.timestamp
+      description: The log's timestamp
+      type: date
   - name: logzio-get-logs-by-rule-id
     arguments:
     - name: id
@@ -90,10 +93,15 @@ script:
       description: An integer specifying the maximum number of results to return
       defaultValue: "100"
     outputs:
-    - contextPath: Logzio.Logs.Count
-      description: Number of results
-    - contextPath: Logzio.Logs.Results
-      description: The logs that triggered the rule
+    - contextPath: Logzio.Result
+      description: An array of the search results
+      type: Unknown
+    - contextPath: Logzio.Result.type
+      description: The log's type
+      type: string
+    - contextPath: Logzio.Result.timestamp
+      description: The log's timestamp
+      type: date
     description: Returns the raw logs that triggered the security rule in Logz.io.
   dockerimage: demisto/python3:3.8.2.6981
   isfetch: true
