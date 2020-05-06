@@ -1,2 +1,2 @@
 ## [Unreleased]
-Added option for perprocessing text in more languages
+Added the *language* and *tokenizer* arguments, which enable you to preprocess text in additional languages.
