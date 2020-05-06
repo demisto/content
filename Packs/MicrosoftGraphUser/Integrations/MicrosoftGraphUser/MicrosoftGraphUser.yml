@@ -439,7 +439,7 @@ script:
       type: String
     description: Retrieves the direct reports for a user. Direct reports are the people
         who have that user configured as their manager.
-  dockerimage: demisto/crypto:1.0.0.303
+  dockerimage: demisto/crypto:1.0.0.7634
   isfetch: false
   longRunning: false
   longRunningPort: false
