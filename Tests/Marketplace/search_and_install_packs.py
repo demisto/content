@@ -7,9 +7,6 @@ from threading import Thread, Lock
 from demisto_sdk.commands.common.tools import print_error, print_color, LOG_COLORS, is_file_path_in_pack, \
     get_pack_name, run_threads_list
 
-import time
-
-
 
 def get_pack_display_name(path):
     if is_file_path_in_pack(path):
@@ -118,13 +115,13 @@ def search_pack(client, prints_manager, pack_display_name):
         search_results = result_object.get('packs', [])
         pack_data = get_pack_data_from_results(search_results, pack_display_name)
         if pack_data:
-            print_msg = '\nFound pack {} in bucket!'.format(pack_display_name)
+            print_msg = 'Found pack {} in bucket!\n'.format(pack_display_name)
             prints_manager.add_print_job(print_msg, print_color, 0, LOG_COLORS.GREEN)
             prints_manager.execute_thread_prints(0)
             return pack_data
 
         else:
-            print_msg = 'Did not find pack {} in bucket.'.format(pack_display_name)
+            print_msg = 'Did not find pack {} in bucket.\n'.format(pack_display_name)
             prints_manager.add_print_job(print_msg, print_color, 0, LOG_COLORS.YELLOW)
             prints_manager.execute_thread_prints(0)
             return {}
@@ -151,11 +148,6 @@ def install_packs(client, prints_manager, packs_to_install):
         'ignoreWarnings': True
     }
 
-    msg = f'Packs installation request body:\n{str(request_data)}\n'
-    start = time.time()
-    prints_manager.add_print_job(msg, print_color, 0, LOG_COLORS.GREEN)
-    prints_manager.execute_thread_prints(0)
-
     # make the pack installation request
     try:
         response_data, status_code, _ = demisto_client.generic_request_func(client,
@@ -165,7 +157,7 @@ def install_packs(client, prints_manager, packs_to_install):
                                                                             accept='application/json')
 
         if 200 <= status_code < 300:
-            prints_manager.add_print_job('Packs Successfully Installed!', print_color, 0,
+            prints_manager.add_print_job('Packs Successfully Installed!\n', print_color, 0,
                                          LOG_COLORS.GREEN)
             prints_manager.execute_thread_prints(0)
         else:
@@ -177,11 +169,6 @@ def install_packs(client, prints_manager, packs_to_install):
     except Exception as e:
         err_msg = f'The request to install packs has failed. Reason:\n{str(e)}'
         prints_manager.add_print_job(err_msg, print_error, 0)
-        prints_manager.execute_thread_prints(0)
-    finally:
-        end = time.time()
-        msg = f'took {end - start} seconds.'
-        prints_manager.add_print_job(msg, print_color, 0, LOG_COLORS.GREEN)
         prints_manager.execute_thread_prints(0)
 
 
@@ -208,7 +195,7 @@ def search_and_install_packs_and_their_dependencies(integrations_files, client, 
     installation_request_body = []
 
     host = client.api_client.configuration.host
-    msg = f'Starting to search and install packs in server: {host}'
+    msg = f'Starting to search and install packs in server: {host}\n'
     prints_manager.add_print_job(msg, print_color, 0, LOG_COLORS.GREEN)
     prints_manager.execute_thread_prints(0)
 
