@@ -34,13 +34,14 @@ This integration was integrated and tested with version 1.0 of Microsoft Graph G
 </ol>
 
 <h2>Use a Self-Deployed Azure Application</h2>
-<p>To use a self-configured Azure application, a need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following Microsoft article:
+<p>To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following Microsoft article:
 <a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app">https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app</a></p>
 <p>The Tenant ID, Client ID, and Client secret are required for the integration.
-To configure the integration in Demisto to use the application, place those parameters in the following manner (instead of how you received them from the admin consent in the current doc):
-<p>ID - Client ID<br>
-Token - Tenant ID<br>
-Key - Client Secret</p></p>
+When you configure the integration in Demisto enter those parameters in the appropriate fields (instead of how you received them from the admin consent in the current doc):
+<ul>
+<li>ID - Client ID</li>
+<li>Token - Tenant ID/li>
+<li>Key - Client Secret/li></ul>
 
 <h2>Required Permissions in the MS Graph Groups App:</h2>
 <li>Directory.ReadWrite.All - Delegated</li>
