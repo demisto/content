@@ -284,13 +284,13 @@ def main():
     target_precision = calculate_and_validate_float_parameter("targetPrecision")
     target_recall = calculate_and_validate_float_parameter("targetRecall")
     detailed_output = 'detailedOutput' in demisto.args() and demisto.args()['detailedOutput'] == 'true'
-    entry = find_threshold(y_true_str=y_true,
+    entries = find_threshold(y_true_str=y_true,
                            y_pred_str=y_pred_all_classes,
                            customer_target_precision=target_precision,
                            target_recall=target_recall,
                            detailed_output=detailed_output)
 
-    demisto.results(entry)
+    demisto.results(entries)
 
 
 def calculate_and_validate_float_parameter(var_name):
