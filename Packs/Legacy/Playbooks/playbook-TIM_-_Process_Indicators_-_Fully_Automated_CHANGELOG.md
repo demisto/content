@@ -1,5 +1,5 @@
 ## [Unreleased]
-Fixed task name.
+Fixed task name and score.
 
 ## [20.4.1] - 2020-04-20
 Added conditional tasks to check for result scores.

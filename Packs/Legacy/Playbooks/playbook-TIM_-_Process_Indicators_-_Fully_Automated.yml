@@ -418,7 +418,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: "1"
+                        simple: "2"
                 accessor: value
             iscontext: true
     view: |-
