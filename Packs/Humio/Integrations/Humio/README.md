@@ -492,14 +492,14 @@ List alerts from Humio
 >### Humio Alerts
 >|description|error|id|labels|lastAlarm|name|notifiers|query|silenced|throttleTimeMillis|
 >|---|---|---|---|---|---|---|---|---|---|
->|  | All notifications failed. | ArHY37FM9Z8kWxYMRknwmdR5yJwNEUgc |  | 1588680716684 | new_alert_namme2 | AQs6CuWm-uyXfYaNzwMyDGTX4S4qyAez | end: now<br>isLive: true<br>queryString: alert=true<br>start: 24h | false | 300000 |
->|  | All notifications failed. | zXN-qja2pm5YFKVYDnllAmK4ctQ3wiOs |  | 1588680716684 | new_alert_name3 | AQs6CuWm-uyXfYaNzwMyDGTX4S4qyAez | end: now<br>isLive: true<br>queryString: alert=true<br>start: 24h | false | 300000 |
->|  | All notifications failed. | dIn3uuIvY4Gz90Bt2Dn2mVtDuB11ZUl2 |  | 1588680716685 | SampleAlert | BTkuj8QArhIFMh_L39FoN0tnyTUEXplc | end: now<br>isLive: true<br>queryString: foo=bar<br>start: 24h | false | 300000 |
->| new_alert | All notifications failed. | kgguoWz0KgxEwge8IQt70L33C1J83U0C | label | 1588680716684 | new_alert_name | AQs6CuWm-uyXfYaNzwMyDGTX4S4qyAez | end: now<br>isLive: true<br>queryString: alert=true<br>start: 24h | false | 500000 |
->| description 2 |  | zNVae7vz-DH7GpeQUPfx1KXMGXGg7bf7 | label | 1588677696684 | new name | BTkuj8QArhIFMh_L39FoN0tnyTUEXplc | end: now<br>isLive: true<br>queryString: test=true<br>start: 24h | false | 500000 |
->|  | All notifications failed. | sFeYsP2mOJ_-CAqKt9frixFIYzXluiTB |  | 1588680716684 | new_alert_name2 | AQs6CuWm-uyXfYaNzwMyDGTX4S4qyAez | end: now<br>isLive: true<br>queryString: alert=true<br>start: 24h | false | 300000 |
->|  | All notifications failed. | sn82IuvTc9Vfnl45XqLWoZASIcBezvu1 |  | 1588680716684 | new_alert_name4 | AQs6CuWm-uyXfYaNzwMyDGTX4S4qyAez | end: now<br>isLive: true<br>queryString: alert=true<br>start: 24h | false | 300000 |
->|  | All notifications failed. | ljeBta_tEvrGRRbae7MzLRiZG4NbckBm |  | 1588680716684 | new_alert_name5 | AQs6CuWm-uyXfYaNzwMyDGTX4S4qyAez | end: now<br>isLive: true<br>queryString: alert=true<br>start: 24h | false | 300000 |
+>|  | All notifications failed. | ArHY37FM9Z8kWxYMRknwmdR5yJwNEUgc |  | 1588680716684 | new_alert_namme2 | AQs6CuWm-uyXfYaNzwMyDGTX4S4qyAez | end: now<br/>isLive: true<br/>queryString: alert=true<br/>start: 24h | false | 300000 |
+>|  | All notifications failed. | zXN-qja2pm5YFKVYDnllAmK4ctQ3wiOs |  | 1588680716684 | new_alert_name3 | AQs6CuWm-uyXfYaNzwMyDGTX4S4qyAez | end: now<br/>isLive: true<br/>queryString: alert=true<br/>start: 24h | false | 300000 |
+>|  | All notifications failed. | dIn3uuIvY4Gz90Bt2Dn2mVtDuB11ZUl2 |  | 1588680716685 | SampleAlert | BTkuj8QArhIFMh_L39FoN0tnyTUEXplc | end: now<br/>isLive: true<br/>queryString: foo=bar<br/>start: 24h | false | 300000 |
+>| new_alert | All notifications failed. | kgguoWz0KgxEwge8IQt70L33C1J83U0C | label | 1588680716684 | new_alert_name | AQs6CuWm-uyXfYaNzwMyDGTX4S4qyAez | end: now<br/>isLive: true<br/>queryString: alert=true<br/>start: 24h | false | 500000 |
+>| description 2 |  | zNVae7vz-DH7GpeQUPfx1KXMGXGg7bf7 | label | 1588677696684 | new name | BTkuj8QArhIFMh_L39FoN0tnyTUEXplc | end: now<br/>isLive: true<br/>queryString: test=true<br/>start: 24h | false | 500000 |
+>|  | All notifications failed. | sFeYsP2mOJ_-CAqKt9frixFIYzXluiTB |  | 1588680716684 | new_alert_name2 | AQs6CuWm-uyXfYaNzwMyDGTX4S4qyAez | end: now<br/>isLive: true<br/>queryString: alert=true<br/>start: 24h | false | 300000 |
+>|  | All notifications failed. | sn82IuvTc9Vfnl45XqLWoZASIcBezvu1 |  | 1588680716684 | new_alert_name4 | AQs6CuWm-uyXfYaNzwMyDGTX4S4qyAez | end: now<br/>isLive: true<br/>queryString: alert=true<br/>start: 24h | false | 300000 |
+>|  | All notifications failed. | ljeBta_tEvrGRRbae7MzLRiZG4NbckBm |  | 1588680716684 | new_alert_name5 | AQs6CuWm-uyXfYaNzwMyDGTX4S4qyAez | end: now<br/>isLive: true<br/>queryString: alert=true<br/>start: 24h | false | 300000 |
 
 
 ### humio-get-alert-by-id
@@ -569,7 +569,7 @@ list alerts by id from Humio
 >### Humio Alerts
 >|error|id|lastAlarm|name|notifiers|query|silenced|throttleTimeMillis|
 >|---|---|---|---|---|---|---|---|
->| All notifications failed. | ArHY37FM9Z8kWxYMRknwmdR5yJwNEUgc | 1588680716684 | new_alert_namme2 | AQs6CuWm-uyXfYaNzwMyDGTX4S4qyAez | end: now<br>isLive: true<br>queryString: alert=true<br>start: 24h | false | 300000 |
+>| All notifications failed. | ArHY37FM9Z8kWxYMRknwmdR5yJwNEUgc | 1588680716684 | new_alert_namme2 | AQs6CuWm-uyXfYaNzwMyDGTX4S4qyAez | end: now<br/>isLive: true<br/>queryString: alert=true<br/>start: 24h | false | 300000 |
 
 
 ### humio-create-alert
@@ -644,7 +644,7 @@ Create an alert in Humio
 >### Humio Alerts
 >|id|name|notifiers|query|silenced|throttleTimeMillis|
 >|---|---|---|---|---|---|
->| _LLJeuH_--APkyCVaj3NDdXPlyfAtcsB | SampleTestAlert | BTkuj8QArhIFMh_L39FoN0tnyTUEXplc | end: now<br>isLive: true<br>queryString: foo=bar<br>start: 24h | false | 300000 |
+>| _LLJeuH_--APkyCVaj3NDdXPlyfAtcsB | SampleTestAlert | BTkuj8QArhIFMh_L39FoN0tnyTUEXplc | end: now<br/>isLive: true<br/>queryString: foo=bar<br/>start: 24h | false | 300000 |
 
 
 ### humio-list-notifiers
@@ -715,8 +715,8 @@ List all notifiers in Humio
 >### Humio Notifiers
 >|entity|id|name|properties|
 >|---|---|---|---|
->| WebHookNotifier | BTkuj8QArhIFMh_L39FoN0tnyTUEXplc | Null Webhook | bodyTemplate: {<br>  "repository": "{repo_name}",<br>  "timestamp": "{alert_triggered_timestamp}",<br>  "alert": {<br>    "name": "{alert_name}",<br>    "description": "{alert_description}",<br>    "query": {<br>      "queryString": "{query_string} ",<br>      "end": "{query_time_end}",<br>      "start": "{query_time_start}"<br>    },<br>    "notifierID": "{alert_notifier_id}",<br>    "id": "{alert_id}",<br>    "linkURL": "{url}"<br>  },<br>  "warnings": "{warnings}",<br>  "events": {events},<br>  "numberOfEvents": {event_count}<br>}<br>headers: {"Content-Type": "application/json"}<br>ignoreSSL: false<br>method: POST<br>url: http://localhost |
->| WebHookNotifier | AQs6CuWm-uyXfYaNzwMyDGTX4S4qyAez | other | bodyTemplate: BODY<br>headers: {"Content-Type": "application/json"}<br>ignoreSSL: false<br>method: POST<br>url: http://localhost |
+>| WebHookNotifier | BTkuj8QArhIFMh_L39FoN0tnyTUEXplc | Null Webhook | bodyTemplate: {<br/>  "repository": "{repo_name}",<br/>  "timestamp": "{alert_triggered_timestamp}",<br/>  "alert": {<br/>    "name": "{alert_name}",<br/>    "description": "{alert_description}",<br/>    "query": {<br/>      "queryString": "{query_string} ",<br/>      "end": "{query_time_end}",<br/>      "start": "{query_time_start}"<br/>    },<br/>    "notifierID": "{alert_notifier_id}",<br/>    "id": "{alert_id}",<br/>    "linkURL": "{url}"<br/>  },<br/>  "warnings": "{warnings}",<br/>  "events": {events},<br/>  "numberOfEvents": {event_count}<br/>}<br/>headers: {"Content-Type": "application/json"}<br/>ignoreSSL: false<br/>method: POST<br/>url: http://localhost |
+>| WebHookNotifier | AQs6CuWm-uyXfYaNzwMyDGTX4S4qyAez | other | bodyTemplate: BODY<br/>headers: {"Content-Type": "application/json"}<br/>ignoreSSL: false<br/>method: POST<br/>url: http://localhost |
 
 
 ### humio-delete-alert
@@ -807,5 +807,5 @@ Get notifier from Humio by id
 >### Humio Notifiers
 >|entity|id|name|properties|
 >|---|---|---|---|
->| WebHookNotifier | BTkuj8QArhIFMh_L39FoN0tnyTUEXplc | Null Webhook | bodyTemplate: {<br>  "repository": "{repo_name}",<br>  "timestamp": "{alert_triggered_timestamp}",<br>  "alert": {<br>    "name": "{alert_name}",<br>    "description": "{alert_description}",<br>    "query": {<br>      "queryString": "{query_string} ",<br>      "end": "{query_time_end}",<br>      "start": "{query_time_start}"<br>    },<br>    "notifierID": "{alert_notifier_id}",<br>    "id": "{alert_id}",<br>    "linkURL": "{url}"<br>  },<br>  "warnings": "{warnings}",<br>  "events": {events},<br>  "numberOfEvents": {event_count}<br>}<br>headers: {"Content-Type": "application/json"}<br>ignoreSSL: false<br>method: POST<br>url: http://localhost |
+>| WebHookNotifier | BTkuj8QArhIFMh_L39FoN0tnyTUEXplc | Null Webhook | bodyTemplate: {<br/>  "repository": "{repo_name}",<br/>  "timestamp": "{alert_triggered_timestamp}",<br/>  "alert": {<br/>    "name": "{alert_name}",<br/>    "description": "{alert_description}",<br/>    "query": {<br/>      "queryString": "{query_string} ",<br/>      "end": "{query_time_end}",<br/>      "start": "{query_time_start}"<br/>    },<br/>    "notifierID": "{alert_notifier_id}",<br/>    "id": "{alert_id}",<br/>    "linkURL": "{url}"<br/>  },<br/>  "warnings": "{warnings}",<br/>  "events": {events},<br/>  "numberOfEvents": {event_count}<br/>}<br/>headers: {"Content-Type": "application/json"}<br/>ignoreSSL: false<br/>method: POST<br/>url: http://localhost |
 
