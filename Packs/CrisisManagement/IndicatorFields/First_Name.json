@@ -1,13 +1,13 @@
 {
-	"id": "incident_employeemanageremail",
+	"id": "indicator_firstname",
 	"version": -1,
-	"fromVersion": "5.0.0",
-	"modified": "2019-12-17T17:01:58.202161586Z",
-	"name": "Employee Manager Email",
+	"modified": "2020-04-30T12:06:07.419033663Z",
+	"fromVersion": "5.5.0",
+	"name": "First Name",
 	"ownerOnly": false,
 	"placeholder": "",
-	"description": "The email address of the employee's manager.",
-	"cliName": "employeemanageremail",
+	"description": "The first name of the employee.",
+	"cliName": "firstname",
 	"type": "shortText",
 	"closeForm": false,
 	"editForm": true,
@@ -22,12 +22,11 @@
 	"locked": false,
 	"system": false,
 	"content": true,
-	"group": 0,
+	"group": 2,
+	"mergeStrategy": "",
 	"hidden": false,
 	"associatedTypes": [
-		"Employee Offboarding",
-		"Port Scan",
-		"Employee Health Check"
+		"Employee"
 	],
 	"systemAssociatedTypes": null,
 	"associatedToAll": false,
@@ -38,5 +37,6 @@
 	"defaultRows": null,
 	"sla": 0,
 	"threshold": 72,
-	"breachScript": ""
+	"breachScript": "",
+	"validatedError": ""
 }
