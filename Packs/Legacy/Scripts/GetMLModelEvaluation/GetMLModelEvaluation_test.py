@@ -1,5 +1,4 @@
 import json
-import pytest
 
 from GetMLModelEvaluation import find_threshold
 
@@ -32,22 +31,23 @@ y_pred += [{'class1': 0.1, 'class2': 0.9}] * 1
 
 def test_threshold_found(mocker):
     global y_true, y_pred
-    entry = find_threshold(y_pred_str=json.dumps(y_pred),
-                           y_true_str=json.dumps(y_true),
-                           customer_target_precision=0.65,
-                           target_recall=0)
+    [entry, _] = find_threshold(y_pred_str=json.dumps(y_pred),
+                                y_true_str=json.dumps(y_true),
+                                customer_target_precision=0.65,
+                                target_recall=0)
     assert abs(entry['Contents']['threshold'] - 0.7) < 10 ** -2
 
 
 def test_threshold_found_2(mocker):
     global y_true, y_pred
-    entry = find_threshold(y_pred_str=json.dumps(y_pred),
-                           y_true_str=json.dumps(y_true),
-                           customer_target_precision=0.6,
-                           target_recall=0)
+    [entry, _] = find_threshold(y_pred_str=json.dumps(y_pred),
+                                y_true_str=json.dumps(y_true),
+                                customer_target_precision=0.6,
+                                target_recall=0)
     assert abs(entry['Contents']['threshold'] - 0) < 10 ** -2
 
 
 def test_no_existing_threshold(mocker):
-    entry = find_threshold(y_pred_str=json.dumps(y_pred), y_true_str=json.dumps(y_true), customer_target_precision=0.7, target_recall=0)
+    [entry, _] = find_threshold(y_pred_str=json.dumps(y_pred), y_true_str=json.dumps(y_true),
+                                customer_target_precision=0.7, target_recall=0)
     assert abs(entry['Contents']['threshold'] - 0.7) < 10 ** -2

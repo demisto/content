@@ -74,12 +74,12 @@ def calculate_df_row(class_, threshold, y_true_per_class, y_pred_per_class):
     fp = sum(1 for i, y_true_i in enumerate(y_true_class) if y_true_i == 0 and y_pred_class_binary[i] == 1.0)
     total = int(sum(y_true_class))
     row = {'Class': class_,
-              'Precision': precision,
-              'Recall': recall,
-              'TP': classified_correctly,
-              'FP': fp,
-              'Coverage': int(above_thresh),
-              'Total': total}
+           'Precision': precision,
+           'Recall': recall,
+           'TP': classified_correctly,
+           'FP': fp,
+           'Coverage': int(above_thresh),
+           'Total': total}
     return row
 
 
@@ -106,10 +106,12 @@ def output_report(y_true, y_true_per_class, y_pred, y_pred_per_class, found_thre
     human_readable_threshold = ['## Summary']
     # in case the found threshold meets the target accuracy
     if actual_threshold_precision >= target_precision or abs(found_threshold - target_precision) < 10 ** -2:
-        human_readable_threshold += ['- A confidence threshold of {:.2f} meets the conditions of required precision.'.format(found_threshold)]
+        human_readable_threshold += ['- A confidence threshold of {:.2f} meets the conditions of required precision.'
+                                     .format(found_threshold)]
     else:
         human_readable_threshold += ['- Could not find a threshold which meets the conditions of required precision. '
-                                      'The confidence threshold of {:.2f} achieved highest possible precision'.format(found_threshold)]
+                                     'The confidence threshold of {:.2f} achieved highest '
+                                     'possible precision'.format(found_threshold)]
     human_readable_threshold += [
         '- {}/{} incidents of the evaluation set were predicted with higher confidence than this threshold.'.format(
             int(coverage), int(test_set_size)),
@@ -189,7 +191,7 @@ def find_threshold(y_true_str, y_pred_str, customer_target_precision, target_rec
         return_error('Could not find any threshold at ranges {}-{:.2f}'.format(target_unified_precision,
                                                                                customer_target_precision))
     entry = output_report(np.array(y_true), y_true_per_class, np.array(y_pred), y_pred_per_class, unified_threshold,
-                          customer_target_precision,unified_threshold_precision, detailed_output)
+                          customer_target_precision, unified_threshold_precision, detailed_output)
     per_class_entry = calculate_per_class_report_entry(class_to_arrs, labels, y_pred_per_class, y_true_per_class)
     return [entry, per_class_entry]
 
@@ -232,19 +234,15 @@ def calculate_per_class_report_entry(class_to_arrs, labels, y_pred_per_class, y_
     class_to_thresholds = {class_: {} for class_ in labels}
     for class_ in labels:
         class_to_thresholds[class_] = set([0])
-        precision_threshold_tuples = [(p, t, r) for p, t, r in zip(class_to_arrs[class_]['precisions'][:-1],
-                                                                   class_to_arrs[class_]['thresholds'][1:],
-                                                                   class_to_arrs[class_]['recalls'][:-1])]
         for target_precision in np.arange(0.95, 0.5, -0.05):
+            # indexing is done by purpose - the ith precision corresponds with threshold i-1. Last precision is 1
+            for i, precision in enumerate(class_to_arrs[class_]['precisions'][1:-1]):
+                if precision > target_precision:
+                    threshold = class_to_arrs[class_]['thresholds'][i]
+                    class_to_thresholds[class_].add(threshold)
+                    break
             if len(class_to_thresholds[class_]) >= 4:
                 break
-            tuples_above_target = [(p, t) for p, t, r in precision_threshold_tuples if p > target_precision and r > 0]
-            if len(tuples_above_target) > 0:
-                threshold = tuples_above_target[0][1]
-            else:
-                threshold = None
-            if threshold is not None:
-                class_to_thresholds[class_].add(threshold)
     per_class_context = {}
     for class_ in labels:
         class_threshold_df = pd.DataFrame(columns=['Threshold', 'Precision', 'Recall', 'TP', 'FP', 'Coverage', 'Total'])
@@ -285,10 +283,10 @@ def main():
     target_recall = calculate_and_validate_float_parameter("targetRecall")
     detailed_output = 'detailedOutput' in demisto.args() and demisto.args()['detailedOutput'] == 'true'
     entries = find_threshold(y_true_str=y_true,
-                           y_pred_str=y_pred_all_classes,
-                           customer_target_precision=target_precision,
-                           target_recall=target_recall,
-                           detailed_output=detailed_output)
+                             y_pred_str=y_pred_all_classes,
+                             customer_target_precision=target_precision,
+                             target_recall=target_recall,
+                             detailed_output=detailed_output)
 
     demisto.results(entries)
 
