@@ -1,5 +1,5 @@
 ## [Unreleased]
-Added the option to preprocess text in additional languages.
+Added the *language* and *tokenizer* arguments, which enable you to preprocess text in additional languages.
 
 ## [20.4.0] - 2020-04-14
 -
