@@ -225,3 +225,25 @@ class TestVersionSorting:
         mocker.patch("os.path.exists", return_value=False)
         latest_version = dummy_pack.latest_version
         assert latest_version == "1.0.0"
+
+
+class TestChangelogCreation:
+    """ Test class for changelog.json creation step.
+
+    """
+
+    @pytest.fixture(scope="class")
+    def dummy_pack(self):
+        """ dummy pack fixture
+        """
+        sample_pack = Pack(pack_name="TestPack", pack_path="dummy_path")
+        sample_pack.description = 'Sample description'
+        sample_pack.current_version = '1.0.0'
+        return sample_pack
+
+    def test_prepare_release_notes(self, mocker, dummy_pack):
+        """ In case changelog.json doesn't exists, expected result should be initial version 1.0.0
+        """
+        mocker.patch("os.path.exists", return_value=False)
+        result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path='DummyPath')
+        assert result is True
