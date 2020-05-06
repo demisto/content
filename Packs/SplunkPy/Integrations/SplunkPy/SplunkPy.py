@@ -748,11 +748,11 @@ def check_error(service, args, error):
     app = args.get('app_name')
     store_name = args.get('kv_store_collection_name') or args.get('kv_store_name')
     if app not in service.apps:
-        raise DemistoException('app not found')
+        return DemistoException('app not found')
     elif store_name not in service.kvstore:
-        raise DemistoException('KV Store not found')
+        return DemistoException('KV Store not found')
     else:
-        raise error
+        return error
 
 
 def main():
@@ -830,7 +830,8 @@ def main():
             elif demisto.command() == 'splunk-kv-store-collection-delete-entry':
                 kv_store_collection_delete_entry(service)
         except KeyError as error:
-            check_error(service, args, error)
+            raise check_error(service, args, error)
+
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()

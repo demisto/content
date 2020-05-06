@@ -1,6 +1,7 @@
 from copy import deepcopy
 import pytest
 import SplunkPy as splunk
+
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
 
 DICT_RAW_RESPONSE = '"1528755951, search_name="NG_SIEM_UC25- High number of hits against ' \
@@ -16,7 +17,6 @@ LIST_RAW = 'Feb 13 09:02:55 1,2020/02/13 09:02:55,001606001116,THREAT,url,' \
            'ethernet1/2,ethernet1/1,forwardAll,2020/02/13 09:02:55,59460,1,62889,80,0,0,0x208000,tcp,alert,' \
            '"ushship.com/xed/config.bin",(9999),not-resolved,informational,client-to-server,' \
            '0,0x0,1.1.22.22-5.6.7.8,United States,0,text/html'
-
 
 RAW_WITH_MESSAGE = '{"@timestamp":"2019-10-15T13:30:08.578-04:00","message":"{"TimeStamp":"2019-10-15 13:30:08",' \
                    '"CATEGORY_1":"CONTACT","ASSOCIATEOID":"G2N2TJETBRAAX68V","HOST":' \
@@ -215,3 +215,45 @@ def test_commands(search_result, chosen_fields, expected_result):
     headers = update_headers_from_field_names(search_result, chosen_fields)
 
     assert expected_result == headers
+
+
+DemistoException = splunk.DemistoException
+data_test_check_error = [
+    ({}, Exception(), 'app not found'),
+    ({"kv_store_collection_name": "test"}, Exception(), 'app not found'),
+    ({'app_name': 'app'}, Exception(), 'KV Store not found'),
+    ({'app_name': 'app', 'kv_store_name': 'store'}, Exception(), ''),
+    ({'app_name': 'app', 'kv_store_collection_name': 'store'}, Exception(), ''),
+    ({'app_name': 'app', 'kv_store_name': 'not_store'}, Exception(), 'KV Store not found'),
+    ({'app_name': 'app', 'kv_store_collection_name': 'not_store'}, Exception(), 'KV Store not found')
+]
+
+
+@pytest.mark.parametrize('args, error, out_error', data_test_check_error)
+def test_check_error(args, error, out_error):
+    class Service:
+        def __init__(self):
+            self.apps = ['app']
+            self.kvstore = ['store']
+
+    output = str(splunk.check_error(Service(), args, error))
+    assert output == out_error, 'check_error(service, {}, {})\n\treturns: {}\n\tinstead: {}'.format(args, error,
+                                                                                                    output, out_error)
+
+
+data_test_build_kv_store_query = [
+    ({}, {}),
+    ({"key": "key"}, {}),
+    ({"key": "demisto", "value": "is awesome"}, {"demisto": "is awesome"}),
+    ({"key": "demisto", "value": "is awesome", "limit": 1, "query": "test"}, {"demisto": "is awesome"}),
+    ({"key": "key", "limit": 1}, {"limit": 1}),
+    ({"key": "key", "query": 'test_query'}, 'test_query'),
+    ({"query": 'test_query'}, 'test_query'),
+    ({"query": 'test_query', "value": "awesome"}, 'test_query')
+]
+
+
+@pytest.mark.parametrize('args, expected_query', data_test_build_kv_store_query)
+def test_build_kv_store_query(args, expected_query):
+    output = splunk.build_kv_store_query(args)
+    assert output == expected_query, 'build_kv_store_query({})\n\treturns: {}\n\tinstead: {}'.format(args, output, expected_query)
