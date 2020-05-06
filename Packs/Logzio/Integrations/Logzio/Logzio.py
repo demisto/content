@@ -136,14 +136,9 @@ def test_module(client):
 def get_formatted_logs(response):
     content = []
     for log in response:
-        log_context = {
-            'content': log
-        }
-        if 'type' in log:
-            log_context['type'] = log.get("type", None),
         if '@timestamp' in log:
-            log_context['timestamp'] = log.get("@timestamp", None)
-        content.append(log_context)
+            log['timestamp'] = log["@timestamp"]
+        content.append(log)
     if len(content) == 0:
         context = None
         readable = '### No logs were found'
