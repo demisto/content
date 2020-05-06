@@ -3,7 +3,7 @@
     "description": "Use the ipinfo.io API to get data about an IP address",
     "support": "Cortex XSOAR",
     "serverMinVersion": "5.0.0",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.2.0",
     "author": "Cortex XSOAR",
     "url": "",
     "email": "",
