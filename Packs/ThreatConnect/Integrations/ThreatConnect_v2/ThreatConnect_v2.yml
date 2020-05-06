@@ -62,7 +62,7 @@ script:
       default: true
       description: The IPv4 or IPv6 address.
     - name: owners
-      description: A CSV list of a client's organizations, sources, or communities
+      description: A comma-separated list of a client's organizations, sources, or communities
         to which a user has permissions. For example, users with admin permissions
         can search for indicators belonging to all owners.
     - name: ratingThreshold
@@ -131,7 +131,7 @@ script:
       default: true
       description: The URL for which to search. For example, "www.demisto.com".
     - name: owners
-      description: A CSV list of a client's organizations, sources, or communities
+      description: A comma-separated list of a client's organizations, sources, or communities
         to which a client’s API user has been granted permission. For example, "owner1",
         "owner2", or "owner3".
     - name: ratingThreshold
@@ -200,7 +200,7 @@ script:
       default: true
       description: The hash of the file. Can be "MD5", "SHA-1", or "SHA-256".
     - name: owners
-      description: A CSV list of a client's organizations, sources, or communities
+      description: A comma-separated list of a client's organizations, sources, or communities
         to which a user has permissions. For example, users with admin permissions
         can search for indicators belonging to all owners.
     - name: ratingThreshold
@@ -935,7 +935,7 @@ script:
       default: true
       description: The name of the domain.
     - name: owners
-      description: A CSV list of a client's organizations, sources, or communities
+      description: A comma-separated list of a client's organizations, sources, or communities
         to which a user has permissions. For example, users with admin permissions
         can search for indicators belonging to all owners.
     - name: ratingThreshold
@@ -1119,7 +1119,7 @@ script:
     - name: whoisActive
       description: The active indicator (only for hosts).
     - name: updatedValues
-      description: A CSV list of field:value pairs to update. For example, "rating=3",
+      description: A comma-separated list of field:value pairs to update. For example, "rating=3",
         "confidence=42", and "description=helloWorld".
     - name: falsePositive
       auto: PREDEFINED
