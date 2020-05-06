@@ -2759,6 +2759,10 @@
             "playbookID": "Extract Indicators From File - test"
         },
         {
+            "integrations": "Zabbix",
+            "playbookID": "Zabbix"
+        },
+        {
             "integrations": "GCP Whitelist Feed",
             "playbookID": "GCPWhitelist_Feed_Test",
             "fromversion": "5.5.0"
@@ -2941,7 +2945,10 @@
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
-        "Ipstack": "reached out our monthly quota (08/03/2020)"
+        "Ipstack": "reached out our monthly quota (08/03/2020)",
+
+        "_comment2": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
+        "Zabbix": "Supported by external developer"
     },
     "nightly_integrations": [
         "Lastline v2",
