@@ -36,6 +36,12 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
+- defaultvalue: All
+  display: Queue number for fetch query
+  name: fetch_queue_id
+  required: false
+  type: 0
+  additionalinfo: If you wish to fetch incidents of a specific queues should add their ids with seperated comma. By default all tickets from all queues will be returned.
 - display: Incident type
   name: incidentType
   required: false
@@ -48,12 +54,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: All
-  display: Queue number for fetch query
-  name: fetch_queue_id
-  required: false
-  type: 0
-  additionalinfo: If you wish to fetch incidents of a specific queue you should enter its id. By default all tickets from all queues will be returned.
 description: This is the Quest KACE integration.
 display: Quest KACE Systems Management Appliance
 name: QuestKace

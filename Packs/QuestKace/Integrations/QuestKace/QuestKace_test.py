@@ -125,3 +125,23 @@ def test_fetch_No_Results(mocker):
     incidents = fetch_incidents(client=client, last_run={'last_fetch': '2020-04-12T02:28:02Z'},
                                 fetch_time="1 day", fetch_shaping="", fetch_limit="5")
     assert incidents == []
+
+
+# TODO
+def create_body_from_args(mocker):
+    return []
+
+
+# TODO
+def shaping_by_fields(mocker):
+    return []
+
+
+# TODO
+def set_shaping(mocker):
+    return []
+
+
+# TODO
+def convert_specific_keys(mocker):
+    return []

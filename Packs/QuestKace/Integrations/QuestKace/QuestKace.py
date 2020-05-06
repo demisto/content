@@ -20,11 +20,11 @@ def convert_snake_to_camel(snake_str: str) -> str:
         """
     snake_split = snake_str.split("_")
     camel_string = "".join(map(str.capitalize, snake_split))
-    camel_string = check_demisto_convension(camel_string)
+    camel_string = convert_specific_keys(camel_string)
     return camel_string
 
 
-def check_demisto_convension(string: str):
+def convert_specific_keys(string: str):
     """
     Convert specific keys to demisto standard
     Args:
@@ -94,12 +94,6 @@ def parse_response(lst: list):
         context_dict = convert_dict_snake_to_camel(dic)
         list_res.append(context_dict)
     return list_res
-
-
-def add_IsDeleted_key(raw_response: list) -> list:
-    for response in raw_response:
-        response['IsDeleted'] = False
-    return raw_response
 
 
 class Client(BaseClient):
@@ -200,11 +194,10 @@ class Client(BaseClient):
             'x-dell-api-version': '5',
             'Cookie': self._cookie
         }
+        url_suffix = '/inventory/machines'
         if filter_fields:
-            return self._http_request("GET", url_suffix=f"/inventory/machines?filtering={filter_fields}",
-                                      headers=headers)
-        else:
-            return self._http_request("GET", url_suffix=f"/inventory/machines", headers=headers)
+            url_suffix += f'?filtering={filter_fields}'
+        return self._http_request("GET", url_suffix=url_suffix, headers=headers)
 
     def assets_list_request(self, filter_fields: Optional[str] = None) -> dict:
         """List of assets.
@@ -217,10 +210,10 @@ class Client(BaseClient):
             'x-dell-api-version': '5',
             'Cookie': self._cookie
         }
+        url_suffix = '/asset/assets'
         if filter_fields:
-            return self._http_request("GET", url_suffix=f"/asset/assets?filtering={filter_fields}", headers=headers)
-        else:
-            return self._http_request("GET", url_suffix="/asset/assets", headers=headers)
+            url_suffix += f'?filtering={filter_fields}'
+        return self._http_request("GET", url_suffix=url_suffix, headers=headers)
 
     def queues_list_request(self, filter_fields: Optional[str] = None) -> dict:
         """List of queues.
@@ -233,11 +226,10 @@ class Client(BaseClient):
             'x-dell-api-version': '5',
             'Cookie': self._cookie
         }
+        url_suffix = '/service_desk/queues?shaping=fields all'
         if filter_fields:
-            return self._http_request("GET", url_suffix=f"/service_desk/queues?shaping=fields all"
-                                                        f"&filtering={filter_fields}", headers=headers)
-        else:
-            return self._http_request("GET", url_suffix="/service_desk/queues?shaping=fields all", headers=headers)
+            url_suffix += f'&filtering={filter_fields}'
+        return self._http_request("GET", url_suffix=url_suffix, headers=headers)
 
     def queues_list_fields_request(self, queue_number: str) -> dict:
         """List of fields in specific queue.
@@ -262,7 +254,6 @@ class Client(BaseClient):
            Returns:
                Response from API.
         """
-        url = "/service_desk/tickets"
         if not shaping_fields:
             shaping_fields = set_shaping(self)
         self.update_token()
@@ -272,15 +263,15 @@ class Client(BaseClient):
             'x-dell-api-version': '5',
             'Cookie': self._cookie
         }
+        url_suffix = f"/service_desk/tickets?shaping={shaping_fields}"
         if filter_fields:
-            return self._http_request("GET", url_suffix=f"{url}?filtering={filter_fields}&"
-                                                        f"shaping={shaping_fields}", headers=headers)
-        else:
-            return self._http_request("GET", url_suffix=f"/service_desk/tickets?shaping={shaping_fields}",
-                                      headers=headers)
+            url_suffix += f'&filtering={filter_fields}'
+        return self._http_request("GET", url_suffix=url_suffix, headers=headers)
 
     def create_ticket_request(self, data: str) -> dict:
         """Create Ticket
+            Args:
+                data (str): the body of the request.
            Returns:
                Response from API.
         """
@@ -295,6 +286,9 @@ class Client(BaseClient):
 
     def update_ticket_request(self, ticket_id: str, data: str) -> dict:
         """Update Ticket.
+           Args:
+            ticket_id (str): ticket id that will be updated.
+            data (str): the body of the request.
            Returns:
                Response from API.
         """
@@ -309,6 +303,8 @@ class Client(BaseClient):
 
     def delete_ticket_request(self, ticket_id: str) -> dict:
         """Delete Ticket.
+            Args:
+                ticket_id (str): ticket id that will be deleted.
            Returns:
                Response from API.
         """
@@ -321,10 +317,10 @@ class Client(BaseClient):
         }
         return self._http_request("DELETE", url_suffix=f"/service_desk/tickets/{ticket_id}", headers=headers)
 
-    def ticket_by_id_request(self, id: int) -> dict:
+    def ticket_by_id_request(self, filtering_id: int) -> dict:
         """Specific ticket details by ID.
             Args:
-                id: id for filtering by it.
+                filtering_id: id for filtering by it.
            Returns:
                Response from API.
         """
@@ -334,7 +330,7 @@ class Client(BaseClient):
             'x-dell-api-version': '5',
             'Cookie': self._cookie
         }
-        filter_fields = f"id eq {id}"
+        filter_fields = f"id eq {filtering_id}"
         return self._http_request("GET", url_suffix=f"/service_desk/tickets?filtering={filter_fields}", headers=headers)
 
 
@@ -444,10 +440,10 @@ def get_tickets_list_command(client, args) -> Tuple[str, dict, dict]:
     response = client.tickets_list_request(custom_shaping, custom_filter)
     raw_response = response.get('Tickets')[:limit]
     context = parse_response(raw_response)
-    context = add_IsDeleted_key(context)
+    for response in context:
+        response['IsDeleted'] = False
     human_readable_markdown = tableToMarkdown(f'Quest Kace Tickets', context, removeNull=True,
-                                              headers=['ID', 'Title', 'Created', 'Modified', 'HdQueueID', 'DueDate',
-                                                       'IsDeleted'])
+                                              headers=['ID', 'Title', 'Created', 'Modified', 'HdQueueID', 'DueDate'])
     context = {
         'QuestKace.Ticket(val.ID === obj.ID)': context
     }
@@ -476,7 +472,6 @@ def create_ticket_command(client, args) -> Tuple[str, dict, dict]:
     priority = args.get('priority')
     machine = args.get('machine')
     asset = args.get('asset')
-    # owner = "for now" #??????
     if not custom_fields:
         temp_data = create_body_from_args(hd_queue_id, title, summary, impact, category, status, priority, machine,
                                           asset)
@@ -486,20 +481,17 @@ def create_ticket_command(client, args) -> Tuple[str, dict, dict]:
     data = json.dumps(temp_data)
     demisto.log(data)
     response = client.create_ticket_request(data)
-    if response.get('Result') == 'Success':
-        try:
-            id = response.get('IDs')[0]
-        except Exception as e:
-            raise DemistoException(e)
-        client.update_token()
-        res = client.ticket_by_id_request(id)
-        ticket = res.get('Tickets')
-        ticket_view = tableToMarkdown(f'New ticket was added successfully, ticket number {id}.\n', ticket)
-        return ticket_view, {}, {}
-    elif response.get('errorDescription'):
-        raise DemistoException(f"Error while adding a new ticket.\n {response.get('errorDescription')}")
-    else:
+    if response.get('Result') != 'Success':
         raise DemistoException(f'Error while adding a new ticket.')
+    try:
+        id = response.get('IDs')[0]
+    except Exception as e:
+        raise DemistoException(e)
+    client.update_token()
+    res = client.ticket_by_id_request(id)
+    ticket = res.get('Tickets')
+    ticket_view = tableToMarkdown(f'New ticket was added successfully, ticket number {id}.\n', ticket)
+    return ticket_view, {}, {}
 
 
 def create_body_from_args(hd_queue_id: str = None, title: str = None, summary: str = None, impact: str = None,
@@ -558,7 +550,6 @@ def update_ticket_command(client, args) -> Tuple[str, dict, dict]:
     priority = args.get('priority')
     machine = args.get('machine')
     asset = args.get('asset')
-    # owner = "for now"
     custom_fields = args.get('custom_fields')
 
     if not custom_fields:
@@ -570,14 +561,13 @@ def update_ticket_command(client, args) -> Tuple[str, dict, dict]:
     data = json.dumps(temp_data)
 
     response = client.update_ticket_request(ticket_id, data)
-    if response.get('Result') == 'Success':
-        client.update_token()
-        res = client.ticket_by_id_request(ticket_id)
-        ticket = res.get('Tickets')
-        ticket_view = tableToMarkdown(f'Ticket number {ticket_id} was updated successfully.\n', ticket)
-        return ticket_view, {}, {}
-    else:
+    if response.get('Result') != 'Success':
         raise DemistoException(f'Error while updating the ticket.')
+    client.update_token()
+    res = client.ticket_by_id_request(ticket_id)
+    ticket = res.get('Tickets')
+    ticket_view = tableToMarkdown(f'Ticket number {ticket_id} was updated successfully.\n', ticket)
+    return ticket_view, {}, {}
 
 
 def delete_ticket_command(client, args) -> Tuple[str, dict, dict]:
@@ -597,7 +587,6 @@ def delete_ticket_command(client, args) -> Tuple[str, dict, dict]:
         context = {}
         old_context = demisto.dt(demisto.context(), f'QuestKace.Ticket(val.ID === {ticket_id})')
         if old_context:
-            demisto.info(f'test old cotext {str(old_context)}')
             if isinstance(old_context, list):
                 old_context = old_context[0]
             old_context['IsDeleted'] = True
@@ -610,7 +599,7 @@ def delete_ticket_command(client, args) -> Tuple[str, dict, dict]:
 
 
 def fetch_incidents(client: Client, fetch_time: str, fetch_shaping: str, last_run: Dict, fetch_limit: str,
-                    fetch_queue_id: Optional[str] = None, fetch_filter: Optional[str] = None) -> list:
+                    fetch_queue_id: Optional[list] = None, fetch_filter: Optional[str] = None) -> list:
     """
     This function will execute each interval (default is 1 minute).
     Args:
@@ -619,28 +608,50 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_shaping: str, last_ru
         fetch_shaping: shaping for the request.
         fetch_filter: custom filters for the request.
         fetch_limit: limit for number of fetch incidents per fetch.
-        fetch_queue_id: queue id for fetch, if not givven then fetch runs on all tickets in the system
+        fetch_queue_id: queue id for fetch, if not given then fetch runs on all tickets in the system
         last_run (dateparser.time): The greatest incident created_time we fetched from last fetch
     Returns:
-        next_run: This will be last_run in the next fetch-incidents
         incidents: Incidents that will be created in Demisto
     """
+
     time_format = '%Y-%m-%dT%H:%M:%SZ'
     if not last_run:  # if first time running
         new_last_run = {'last_fetch': parse_date_range(fetch_time, date_format=time_format)[0]}
     else:
         new_last_run = last_run
 
+    if not fetch_shaping:
+        integration_context = demisto.getIntegrationContext()
+        if integration_context:
+
+            valid_until = integration_context.get('valid_until')
+            time_now = int(time.time())
+            if time_now < valid_until:
+                fetch_shaping = integration_context.get('shaping_fields')
+            else:
+                fetch_shaping = set_shaping(client, fetch_queue_id)
+                integration_context = {
+                    'shaping_fields': fetch_shaping,
+                    'valid_until': int(time.time()) + 3600 * 24
+                }
+                demisto.setIntegrationContext(integration_context)
+        else:
+            fetch_shaping = set_shaping(client, fetch_queue_id)
+            integration_context = {
+                'shaping_fields': fetch_shaping,
+                'valid_until': int(time.time()) + 3600 * 24
+            }
+            demisto.setIntegrationContext(integration_context)
+
     parsed_last_time = datetime.strptime(new_last_run.get('last_fetch', ''), time_format)
     filter_after_last_run = f'created gt {parsed_last_time}'
     fetch_filter_for_query = f'{filter_after_last_run}'
     if fetch_queue_id:
-        filter_by_queue_id = f'hd_queue_id eq {fetch_queue_id}'
+        queue_id_str = ';'.join(fetch_queue_id)
+        filter_by_queue_id = f'hd_queue_id in {queue_id_str}'
         fetch_filter_for_query = f'{fetch_filter_for_query},{filter_by_queue_id}'
     if fetch_filter:
         fetch_filter_for_query = f'{fetch_filter_for_query},{fetch_filter}'
-    if not fetch_shaping:
-        fetch_shaping = set_shaping(client, fetch_queue_id)
     demisto.info(f"Fetching Incident has Started,\n"
                  f"Fetch filter is {fetch_filter_for_query}\n"
                  f"Last fetch was on {str(parsed_last_time)}")
@@ -657,9 +668,9 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_shaping: str, last_ru
     return incidents
 
 
-def get_fields_by_queue(client, queue: Optional[str]) -> list:
+def get_fields_by_queue(client, queue: Optional[list]) -> list:
     if queue:
-        queues_id = [queue]
+        queues_id = queue
     else:
         queues = client.queues_list_request()
         queues = queues.get('Queues', [])
@@ -680,13 +691,28 @@ def get_fields_by_queue(client, queue: Optional[str]) -> list:
 
 
 def shaping_by_fields(fields: list) -> str:
+    """
+    Creating a shaping for the request which is from the fields and seperated by comma's
+    Args:
+        fields: List of fields that would be part of the shaping.
+    Returns:
+        str of the shaping.
+    """
     shaping = 'hd_ticket all'
     for field in fields:
-        shaping = f'{shaping},{field} limited'
+        shaping += f',{field} limited'
     return shaping
 
 
-def set_shaping(client, queue: Optional[str] = None) -> str:
+def set_shaping(client, queue: Optional[list] = None) -> str:
+    """
+    Creating a shaping for the request.
+    Args:
+        client: Client in order to get the queue fields.
+        queue: If specific queue is given for the shaping.
+    Returns:
+        str of the shaping.
+    """
     fields = get_fields_by_queue(client, queue)
     shaping = shaping_by_fields(fields)
     return shaping
@@ -739,14 +765,10 @@ def main():
 
     # fetch incidents params
     fetch_limit = params.get('fetch_limit', 10)
-    fetch_time = params.get('fetch_time', '1 hour')
-    # fetch_shaping = params.get('fetch_shaping', "hd_ticket all,submitter limited,owner limited,"
-    #                                             " asset limited,machine limited,"
-    #                                             " priority limited,category limited, impact limited,"
-    #                                             "status limited, related_tickets limited")
+    fetch_time = params.get('fetch_time', '1 day')
     fetch_shaping = params.get('fetch_shaping')
     fetch_filter = params.get('fetch_filter')
-    fetch_queue_id = params.get('fetch_queue_id')
+    fetch_queue_id = argToList(params.get('fetch_queue_id'))
     try:
         client = Client(
             url=base_url,
