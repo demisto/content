@@ -740,7 +740,7 @@ def kv_store_collection_delete_entry(service):
     args = demisto.args()
     store = args['kv_store_collection_name']
     query = build_kv_store_query(args)
-    service.kvstore[store].data.delete(query)
+    service.kvstore[store].data.delete(json.dumps(query))
     return_outputs('The values of the {} were deleted successfully'.format(store), {}, {})
 
 

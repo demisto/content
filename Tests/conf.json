@@ -1223,6 +1223,11 @@
         },
         {
             "integrations": "SplunkPy",
+            "playbookID": "SplunkPy_KV_commands",
+            "memory_threshold": 500
+        },
+        {
+            "integrations": "SplunkPy",
             "playbookID": "Splunk-Test",
             "memory_threshold": 500
         },
