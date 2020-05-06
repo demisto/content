@@ -4,6 +4,7 @@ commonfields:
 name: CuckooGetScreenshot
 script: demisto.results(demisto.executeCommand("cuckoo-task-screenshot", demisto.args()))
 type: python
+subtype: python2
 tags:
 - cuckoo
 comment: Detonate the file in Cuckoo sandbox.

@@ -39,6 +39,7 @@ script: |
       res.append( { "Type" : entryTypes["note"], "ContentsFormat" : formats["text"], "Contents" : answer } )
       demisto.results(res)
 type: python
+subtype: python2
 tags:
 - Mimecast
 comment: Find an email across all mailboxes, and return the list of mailboxes where the email was found, as well as Yes if the mail was found anywhere or No otherwise.

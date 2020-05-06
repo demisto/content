@@ -48,6 +48,7 @@ script:
         demisto.results({'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': json.dumps(r, cls=ReportEncoder),
             'HumanReadable': md, 'EntryContext': {'NMAP.Scan': scan}})
   type: python
+  subtype: python2
   commands:
   - name: nmap-scan
     arguments:

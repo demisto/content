@@ -14,6 +14,7 @@ script: |-
       'EntryContext': {'GeneratedUUID': uuid}
   })
 type: python
+subtype: python2
 tags: []
 comment: Generates random UUID
 enabled: true
