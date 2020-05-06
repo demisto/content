@@ -1,5 +1,5 @@
 ## [Unreleased]
-Set **bypass exclusion list** parameter to true by default.
+Set the default value for the *bypass exclusion list* parameter to "true".
 
 ## [20.4.1] - 2020-04-29
 Added support for **service** field mapping.
