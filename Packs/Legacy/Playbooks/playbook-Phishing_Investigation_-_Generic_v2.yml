@@ -227,11 +227,11 @@ tasks:
     nexttasks:
       '#default#':
       - '31'
-      'Malicious ':
+      'Malicious':
       - '30'
     separatecontext: false
     conditions:
-    - label: 'Malicious '
+    - label: 'Malicious'
       condition:
       - - operator: greaterThanOrEqual
           left:
@@ -509,9 +509,9 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
-      No:
+      'No':
       - '16'
-      Yes:
+      'Yes':
       - '17'
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 130,\n    \"y\": 3470\n  }\n}"
@@ -556,11 +556,11 @@ tasks:
     nexttasks:
       '#default#':
       - '43'
-      yes:
+      'yes':
       - '28'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isExists
           left:
@@ -597,11 +597,11 @@ tasks:
     nexttasks:
       '#default#':
       - '43'
-      yes:
+      'yes':
       - '91'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isExists
           left:
@@ -973,11 +973,11 @@ tasks:
     nexttasks:
       '#default#':
       - '84'
-      yes:
+      'yes':
       - '80'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isEqualString
           left:
@@ -1485,42 +1485,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '86':
-    id: '86'
-    taskid: b88d67de-5b86-49e0-8e3d-14a93ca89b8b
-    type: playbook
-    task:
-      id: b88d67de-5b86-49e0-8e3d-14a93ca89b8b
-      version: -1
-      name: URL Enrichment - Generic v2
-      playbookName: URL Enrichment - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ''
-      description: ''
-    nexttasks:
-      '#none#':
-      - '56'
-    scriptarguments:
-      Rasterize:
-        simple: 'True'
-      URL:
-        complex:
-          root: URL
-          accessor: Data
-          transformers:
-          - operator: uniq
-      VerifyURL:
-        simple: 'False'
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ''
-      wait: 1
-    view: "{\n  \"position\": {\n    \"x\": -52.5,\n    \"y\": 1020\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
   '87':
     id: '87'
     taskid: bf7ea13b-64cd-46fb-8563-825432a1c808
@@ -1876,11 +1840,11 @@ tasks:
     nexttasks:
       '#default#':
       - '56'
-      yes:
+      'yes':
       - '89'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -1925,7 +1889,7 @@ tasks:
       - '43'
     scriptarguments:
       AutoCommit:
-        simple: No
+        simple: 'No'
       CustomBlockRule:
         simple: 'True'
       CustomURLCategory: {}
