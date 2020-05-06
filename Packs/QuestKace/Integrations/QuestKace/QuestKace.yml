@@ -16,14 +16,12 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- defaultvalue: 1 hour
+- defaultvalue: 1 day
   display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
   name: fetch_time
   required: false
   type: 0
-- defaultvalue: '"hd_ticket all,submitter limited,owner limited, asset limited,machine
-    limited, priority limited,category limited, impact limited,status limited"'
-  display: Shaping query parameter for tickets.
+- display: Shaping query parameter for tickets
   name: fetch_shaping
   required: false
   type: 0
@@ -32,7 +30,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: '50'
-  display: Fetch limit per query.
+  display: Fetch limit per query
   name: fetch_limit
   required: false
   type: 0
@@ -48,6 +46,11 @@ configuration:
   name: proxy
   required: false
   type: 8
+- defaultvalue: All
+  display: Queue number for fetch query
+  name: fetch_queue_id
+  required: false
+  type: 0
 description: This is the Quest KACE integration.
 display: Quest KACE Systems Management Appliance
 name: QuestKace
@@ -60,6 +63,14 @@ script:
         50.
       isArray: false
       name: limit
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Filter for the query. Each filter is specified by an optional entity name, a field name, an
+        operator, and a value. e.g. "title eq test" / "id gt 1 / hd_queue_id in 1;2;3" . Combination of filters is seperated by comma.
+      isArray: false
+      name: custom_filter
       required: false
       secret: false
     deprecated: false
@@ -144,6 +155,14 @@ script:
       name: limit
       required: false
       secret: false
+    - default: false
+      description: |-
+        Filter for the query. Each filter is specified by an optional entity name, a field name, an
+        operator, and a value. e.g. "title eq test" / "id gt 1 / hd_queue_id in 1;2;3" . Combination of filters is seperated by comma.
+      isArray: false
+      name: custom_filter
+      required: false
+      secret: false
     deprecated: false
     description: All assets of QuestKace system.
     execution: false
@@ -191,6 +210,14 @@ script:
       description: The maximum number of tickets to return. The default value is 50.
       isArray: false
       name: limit
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Filter for the query. Each filter is specified by an optional entity name, a field name, an
+        operator, and a value. e.g. "title eq test" / "id gt 1 / hd_queue_id in 1;2;3" . Combination of filters is seperated by comma.
+      isArray: false
+      name: custom_filter
       required: false
       secret: false
     deprecated: false
@@ -250,7 +277,7 @@ script:
     - default: false
       description: |-
         Filter for the query. Each filter is specified by an optional entity name, a field name, an
-        operator, and a value. e.g. "title eq test" / "id gt 1"
+        operator, and a value. e.g. "title eq test" / "id gt 1 / hd_queue_id in 1;2;3" . Combination of filters is seperated by comma.
       isArray: false
       name: custom_filter
       required: false

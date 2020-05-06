@@ -34,6 +34,7 @@ def test_commands(command, args, response, expected_result, mocker):
     Check if all commands with given arguments run correctly according to expected result.
     """
     mocker.patch.object(Client, 'get_token', return_value=(1, 1))
+    mocker.patch('QuestKace.set_shaping', return_value=[])
     client = Client(url='https://demisto', username='admin', password='admin', verify=True,
                     proxy=True)
     mocker.patch.object(client, '_http_request', return_value=response)
@@ -65,6 +66,7 @@ def test_first_fetch(mocker):
         Validate that the first run of fetch incidents runs correctly.
         """
     mocker.patch('QuestKace.parse_date_range', return_value=("2020-03-11T08:30:41Z", 'never mind'))
+    mocker.patch('QuestKace.set_shaping', return_value=[])
     mocker.patch.object(Client, 'tickets_list_request', return_value=FIRST_FETCH_INCIDENTS_RAW_RESPONSE)
     mocker.patch.object(Client, 'get_token', return_value=(1, 1))
     client = Client(url="http://test.com", username="admin", password="123", verify=False, proxy=False)
@@ -89,6 +91,7 @@ def test_second_fetch(mocker):
         Validate That the name and occurred exist in the created incidents.
         Validate The id of returned incidents.
         """
+    mocker.patch('QuestKace.set_shaping', return_value=[])
     mocker.patch.object(Client, 'tickets_list_request', return_value=SECOND_FETCH_INCIDENTS_RAW_RESPONSE)
     mocker.patch.object(Client, 'get_token', return_value=(1, 1))
     client = Client(url="http://test.com", username="admin", password="123", verify=False, proxy=False)
@@ -115,6 +118,7 @@ def test_fetch_No_Results(mocker):
         - Check that no incidents are created falsely.
         """
     mocker.patch('QuestKace.parse_date_range', return_value=("2020-03-11 08:30:41", 'never mind'))
+    mocker.patch('QuestKace.set_shaping', return_value=[])
     mocker.patch.object(Client, 'tickets_list_request', return_value=NO_RESULTS_FETCH_INCIDENTS_RAW_RESPONSE)
     mocker.patch.object(Client, 'get_token', return_value=(1, 1))
     client = Client(url="http://test.com", username="admin", password="123", verify=False, proxy=False)
