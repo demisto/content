@@ -857,6 +857,21 @@ def get_searchable_mailboxes(protocol):
     return get_entry_for_object("Searchable mailboxes", 'EWS.Mailboxes', searchable_mailboxes)
 
 
+def search_mailboxes_by_ids(mailbox_ids, protocol, filter, limit):
+    search_results = []  # type: list
+    for mailbox_ids_batch in batch(mailbox_ids, batch_size=22):
+        try:
+            search_results.extend(SearchMailboxes(protocol=protocol).call(filter, mailbox_ids_batch))
+        except TransportError, e:
+            if "ItemCount>0<" in str(e):
+                pass
+            else:
+                raise e
+        if len(search_results) >= limit:
+            break
+    return search_results
+
+
 def search_mailboxes(protocol, filter, limit=100, mailbox_search_scope=None, email_addresses=None):
     mailbox_ids = []
     limit = int(limit)
@@ -878,14 +893,11 @@ def search_mailboxes(protocol, filter, limit=100, mailbox_search_scope=None, ema
         mailboxes = [x for x in entry[ENTRY_CONTEXT]['EWS.Mailboxes'] if MAILBOX_ID in x.keys()]
         mailbox_ids = map(lambda x: x[MAILBOX_ID], mailboxes)
 
-    try:
-        search_results = SearchMailboxes(protocol=protocol).call(filter, mailbox_ids)
-        search_results = search_results[:limit]
-    except TransportError, e:
-        if "ItemCount>0<" in str(e):
-            return "No results for search query: " + filter
-        else:
-            raise e
+    search_results = search_mailboxes_by_ids(mailbox_ids, protocol, filter, limit)
+    if len(search_results) == 0:
+        return "No results for search query: " + filter
+
+    search_results = search_results[:limit]
 
     return get_entry_for_object("Search mailboxes results",
                                 CONTEXT_UPDATE_EWS_ITEM,
