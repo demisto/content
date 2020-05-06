@@ -758,8 +758,8 @@ script:
       secret: false
     - default: false
       description: A free-text query for which to search. This forms the WHERE part
-        of the query, for example, !cdl-query-traffic-logs query="src LIKE '192.168.1.*'
-        AND dst='8.8.8.8'"
+        of the query, for example, !cdl-query-traffic-logs query="source_ip.value LIKE '192.168.1.*'
+        AND dest_ip.value='8.8.8.8' And dest_port=1234"
       isArray: false
       name: query
       required: false

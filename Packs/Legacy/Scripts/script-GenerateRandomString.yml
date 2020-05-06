@@ -67,6 +67,7 @@ script: |
   ec = {'RandomString': password }
   demisto.results(create_entry('RandomString Generated.',raw, ec))
 type: python
+subtype: python2
 tags: []
 enabled: true
 args:

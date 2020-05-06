@@ -23,6 +23,7 @@ script: |
       else:
           demisto.results("No results.")
 type: python
+subtype: python2
 tags:
 - RSA NetWitness Security Analytics
 comment: Returns all the RSA NetWitness SA events in the defined time range

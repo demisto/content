@@ -8,6 +8,7 @@ script: |
   ec = {demisto.args()['parent']+'(true)': dict(zip(keys, values))}
   demisto.results({'Type': entryTypes['note'], 'Contents': ec, 'ContentsFormat': formats['json'], 'HumanReadable': 'Keys ' + ','.join(keys) + ' set', 'EntryContext': ec})
 type: python
+subtype: python2
 tags:
 - Utility
 comment: Set multiple keys/values to the context.

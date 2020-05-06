@@ -213,7 +213,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Ticket urgency
+      description: 'Ticket urgency. You may select from the predefined options, or
+         use another value. e.g: "Urgent" or "5".'
       isArray: false
       name: urgency
       predefined:
@@ -224,7 +225,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Ticket severity
+      description: 'Ticket severity. You may select from the predefined options, or
+        use another value. e.g: "Urgent" or "5".'
       isArray: false
       name: severity
       predefined:
@@ -753,7 +755,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Ticket urgency
+      description: 'Ticket urgency. You may select from the predefined options, or
+        use another value. e.g: "Urgent" or "5".'
       isArray: false
       name: urgency
       predefined:
@@ -764,7 +767,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Ticket severity
+      description: 'Ticket severity. You may select from the predefined options, or
+        use another value. e.g: "Urgent" or "5".'
       isArray: false
       name: severity
       predefined:
@@ -1970,6 +1974,207 @@ script:
     - contextPath: ServiceNow.Ticket.Note.Type
       description: Ticket note type
       type: string
+  - arguments:
+    - default: false
+      description: Ticket System ID
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: 'Tag system ID. Can be retrieved using: "!servicenow-query-table
+        table_name=label fields=name,active,sys_id"'
+      isArray: false
+      name: tag_id
+      required: true
+      secret: false
+    - default: false
+      description: 'Tag title. e.g: "Incident - INC000001"'
+      isArray: false
+      name: title
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: incident
+      description: Ticket type.
+      isArray: false
+      name: ticket_type
+      predefined:
+      - incident
+      - problem
+      - change_request
+      - sc_request
+      - sc_task
+      - sc_req_item
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Adds a tag to a ticket. The tag will be visible in the label_entry
+      table and can be retrieved using: "!servicenow-query-table table_name=label_entry
+      fields=title,table,sys_id,id_display,id_type"'
+    execution: false
+    name: servicenow-add-tag
+    outputs:
+    - contextPath: ServiceNow.Ticket.ID
+      description: The unique ticket identifier.
+      type: String
+    - contextPath: ServiceNow.Ticket.TagTitle
+      description: Ticket tag title.
+      type: String
+    - contextPath: ServiceNow.Ticket.TagID
+      description: Ticket tag ID.
+      type: String
+  - arguments:
+    - default: false
+      description: Query by name. Does not require an exact match.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Starting record index to begin retrieving records from.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: Query results limit.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Query the sc_cat_item table in ServiceNow
+    execution: false
+    name: servicenow-query-items
+    outputs:
+    - contextPath: ServiceNow.CatalogItem.ID
+      description: Catalog item system ID.
+      type: String
+    - contextPath: ServiceNow.CatalogItem.Name
+      description: Catalog item name
+      type: String
+    - contextPath: ServiceNow.CatalogItem.Description
+      description: Catalog item description
+      type: String
+    - contextPath: ServiceNow.CatalogItem.Price
+      description: Catalog item price
+      type: Number
+  - arguments:
+    - default: false
+      description: Catalog item system ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve item details by system ID.
+    execution: false
+    name: servicenow-get-item-details
+    outputs:
+    - contextPath: ServiceNow.CatalogItem.ID
+      description: Catalog item system ID.
+      type: String
+    - contextPath: ServiceNow.CatalogItem.Name
+      description: Catalog item name.
+      type: String
+    - contextPath: ServiceNow.CatalogItem.Description
+      description: Catalog item description.
+      type: String
+    - contextPath: ServiceNow.CatalogItem.Price
+      description: Catalog item price.
+      type: Number
+    - contextPath: ServiceNow.CatalogItem.Variables.Mandatory
+      description: Is the variable mandatory as part of the ordering process.
+      type: Boolean
+    - contextPath: ServiceNow.CatalogItem.Variables.Name
+      description: A name to identify the question.
+      type: String
+    - contextPath: ServiceNow.CatalogItem.Variables.Question
+      description: Question to ask users ordering the catalog item.
+      type: String
+    - contextPath: ServiceNow.CatalogItem.Variables.Type
+      description: The variable type.
+      type: String
+  - arguments:
+    - default: false
+      description: Catalog item system ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: Quantity of the item to order.
+      isArray: false
+      name: quantity
+      required: true
+      secret: false
+    - default: false
+      description: If there are mandatory variables defined for the item, they must
+        be passed to the endpoint. Can be retrieved using the servicenow-get-item-details
+        command. For example, var1=value1;var2=value2.
+      isArray: false
+      name: variables
+      required: false
+      secret: false
+    deprecated: false
+    description: Orders the specified ctaalog item.
+    execution: false
+    name: servicenow-create-item-order
+    outputs:
+    - contextPath: ServiceNow.OrderRequest.ID
+      description: Generated request system ID.
+      type: String
+    - contextPath: ServiceNow.OrderRequest.RequestNumber
+      description: Number of the generated request.
+      type: String
+  - arguments:
+    - default: false
+      description: Queue ID. Can be retrieved using "!servicenow-query-table table_name=awa_queue
+        fields=name,number,order"
+      isArray: false
+      name: queue_id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: incident
+      description: Document table.
+      isArray: false
+      name: document_table
+      required: false
+      secret: false
+    - default: false
+      description: Document ID.
+      isArray: false
+      name: document_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Document a route to a queue. Requires an installation of the Advanced
+      Work Assignments plugin. An active queue and service channel to the designated
+      table.
+    execution: false
+    name: servicenow-document-route-to-queue
+    outputs:
+    - contextPath: ServiceNow.WorkItem.WorkItemID
+      description: Unique ID of the work item assigned to the queue.
+      type: String
+    - contextPath: ServiceNow.WorkItem.DocumentTable
+      description: Name of the table associated with the document
+      type: String
+    - contextPath: ServiceNow.WorkItem.DocumentID
+      description: Unique ID of the document to be routed to the queue.
+      type: String
+    - contextPath: ServiceNow.WorkItem.QueueID
+      description: Unique ID of the queue on which to route a document.
+      type: String
+    - contextPath: ServiceNow.WorkItem.DisplayName
+      description: Name of the document to be routed by this work item, e.g., case
+        record.
+      type: String
   dockerimage: demisto/python3:3.8.2.6981
   feed: false
   isfetch: true

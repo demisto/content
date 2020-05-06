@@ -6,6 +6,7 @@ script: |2
 
   demisto.results(demisto.executeCommand("grr_get_flows", demisto.args()))
 type: python
+subtype: python2
 tags:
 - GRR
 comment: Lists flows launched on a given client
