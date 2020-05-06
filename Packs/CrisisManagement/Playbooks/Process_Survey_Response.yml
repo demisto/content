@@ -1316,4 +1316,4 @@ outputs: []
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
-description: ''
+description: 'This playbook processes the survery responses. It updates that the employee responded to the survey and what their health status is. If necessary, it opens IT or HR incidents, and updates the process survey tracker.'
