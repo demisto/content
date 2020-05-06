@@ -125,7 +125,7 @@ RAW_JSON_RESPONSE_3 = [
                 "column.display_name": "header1",
                 "column.result_type": "DataSize",
                 "column.values": [
-                    "data_1"
+                    None
                 ],
                 "column.what_hash": 0
             },
@@ -220,7 +220,7 @@ RESULT_DICT_2 = [
 
 RESULT_DICT_3 = [
     {
-        "header1": "data_1",
+        "header1": None,
         "header2": "data_2",
         "header3": "data_3",
         "header4": "data_4",
@@ -259,7 +259,7 @@ CONTEXT_RESULT_DICT_2 = [
 
 CONTEXT_RESULT_DICT_3 = [
     {
-        "header1": "data_1",
+        "header1": None,
         "header2": "data_2",
         "header3": "data_3",
         "header4": "data_4",

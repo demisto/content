@@ -43,10 +43,15 @@ def raw_response_to_json(raw_json):
     for row_dict in raw_json:
         row_key = row_dict.keys()[0]
         parsed_row_dict = {}
-
         for cell in row_dict[row_key]:
             column_name = cell.get('column.display_name')
-            cell_value = '\n'.join(cell.get('column.values'))
+            cell_value = cell.get('column.values')
+            if len(cell_value) > 0 and cell_value[0] is not None:
+                cell_value = '\n'.join(cell.get('column.values'))
+
+            else:
+                cell_value = None
+
             parsed_row_dict[column_name] = cell_value
 
         result.append(parsed_row_dict)
@@ -418,7 +423,8 @@ def format_context(res):
     """
     context = []
     for element in res:
-        context.append({key: value.split('\n') if '\n' in value else value for (key, value) in element.items()})
+        context.append({key: value.split('\n') if value and '\n' in value else value
+                        for (key, value) in element.items()})
 
     return context
 
