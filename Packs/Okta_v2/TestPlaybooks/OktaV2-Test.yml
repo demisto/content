@@ -6,10 +6,10 @@ starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: d47bb8b5-b632-48bc-837d-c379101531ad
+    taskid: 8b74e486-3d52-4290-8443-e0440244ced7
     type: start
     task:
-      id: d47bb8b5-b632-48bc-837d-c379101531ad
+      id: 8b74e486-3d52-4290-8443-e0440244ced7
       version: -1
       name: ''
       iscommand: false
@@ -27,10 +27,10 @@ tasks:
     quietmode: 0
   '1':
     id: '1'
-    taskid: b3af0deb-9879-4d67-81d9-b36dab82a6bd
+    taskid: fb410ff5-2dec-4708-8c79-0a3ce070a07d
     type: regular
     task:
-      id: b3af0deb-9879-4d67-81d9-b36dab82a6bd
+      id: fb410ff5-2dec-4708-8c79-0a3ce070a07d
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -40,7 +40,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '54'
+      - '60'
     scriptarguments:
       all:
         simple: yes
@@ -57,10 +57,10 @@ tasks:
     quietmode: 0
   '5':
     id: '5'
-    taskid: f2c36766-5003-47aa-8efe-4a2a4c645cf3
+    taskid: 85ff5a56-96be-4c80-8a9a-2b4a497d502e
     type: regular
     task:
-      id: f2c36766-5003-47aa-8efe-4a2a4c645cf3
+      id: 85ff5a56-96be-4c80-8a9a-2b4a497d502e
       version: -1
       name: create user with activation
       description: Creates a new user with an option of setting password, recovery
@@ -87,7 +87,7 @@ tasks:
         simple: Test 1 that
       division: {}
       email:
-        simple: Test1@test.com
+        simple: ${RandomString}@test.com
       employeeNumber:
         simple: '12345'
       firstName:
@@ -100,7 +100,7 @@ tasks:
         simple: Test1
       locale: {}
       login:
-        simple: Test1@test.com
+        simple: ${RandomString}@test.com
       manager: {}
       managerId: {}
       middleName: {}
@@ -130,7 +130,7 @@ tasks:
       userType: {}
       zipCode: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 377.5,\n    \"y\": 895\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 377.5,\n    \"y\": 545\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -138,10 +138,10 @@ tasks:
     quietmode: 0
   '7':
     id: '7'
-    taskid: 005e59c8-557b-49b7-8fd0-76a95f36ab35
+    taskid: 2b3368bd-4cf9-4f7d-89dc-ffc1f92ae263
     type: regular
     task:
-      id: 005e59c8-557b-49b7-8fd0-76a95f36ab35
+      id: 2b3368bd-4cf9-4f7d-89dc-ffc1f92ae263
       version: -1
       name: deactivate user
       description: Deactivate User.
@@ -154,9 +154,9 @@ tasks:
       - '9'
     scriptarguments:
       username:
-        simple: Test1@test.com
+        simple: ${RandomString}@test.com
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1070\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 720\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -164,10 +164,10 @@ tasks:
     quietmode: 0
   '8':
     id: '8'
-    taskid: 6ca5af49-178b-48db-881f-5e19b0dcc7b1
+    taskid: 33d117fb-5c73-419a-81f1-fdaf008ea995
     type: regular
     task:
-      id: 6ca5af49-178b-48db-881f-5e19b0dcc7b1
+      id: 33d117fb-5c73-419a-81f1-fdaf008ea995
       version: -1
       name: add user to Demisto group
       description: Adds a user to a group with OKTA_GROUP type
@@ -185,9 +185,9 @@ tasks:
         simple: Demisto
       userId: {}
       username:
-        simple: Test1@test.com
+        simple: ${RandomString}@test.com
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1022.5,\n    \"y\": 1420\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 1022.5,\n    \"y\": 1070\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -195,10 +195,10 @@ tasks:
     quietmode: 0
   '9':
     id: '9'
-    taskid: 3dc27955-b202-4610-8ad5-4331bfd54a92
+    taskid: a1165a64-a2db-4735-8194-70de744b1c33
     type: regular
     task:
-      id: 3dc27955-b202-4610-8ad5-4331bfd54a92
+      id: a1165a64-a2db-4735-8194-70de744b1c33
       version: -1
       name: activate user
       description: Activates a specific user.
@@ -212,9 +212,9 @@ tasks:
       - '8'
     scriptarguments:
       username:
-        simple: Test1@test.com
+        simple: ${RandomString}@test.com
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1245\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 895\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -222,10 +222,10 @@ tasks:
     quietmode: 0
   '10':
     id: '10'
-    taskid: 52e6730b-f2e7-412a-82a9-c66d53aef277
+    taskid: 02e64ba6-7aa5-4b7f-8524-44026f3aee36
     type: regular
     task:
-      id: 52e6730b-f2e7-412a-82a9-c66d53aef277
+      id: 02e64ba6-7aa5-4b7f-8524-44026f3aee36
       version: -1
       name: get Demisto group members
       description: Enumerates all users that are members of  a group
@@ -243,7 +243,7 @@ tasks:
       limit: {}
       verbose: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1452.5,\n    \"y\": 1595\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 1452.5,\n    \"y\": 1245\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -251,10 +251,10 @@ tasks:
     quietmode: 0
   '11':
     id: '11'
-    taskid: 32a7ab43-b41b-4132-858f-b8b33c44d478
+    taskid: e1e9c792-1031-490e-8ef7-49e487e58e9e
     type: regular
     task:
-      id: 32a7ab43-b41b-4132-858f-b8b33c44d478
+      id: e1e9c792-1031-490e-8ef7-49e487e58e9e
       version: -1
       name: get groups for user
       description: Returns all user groups associated with a specified user.
@@ -267,9 +267,9 @@ tasks:
       - '22'
     scriptarguments:
       username:
-        simple: Test1@test.com
+        simple: ${RandomString}@test.com
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 1595\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 1245\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -277,10 +277,10 @@ tasks:
     quietmode: 0
   '13':
     id: '13'
-    taskid: a7528ba6-c010-483c-8610-6861169a4693
+    taskid: 4e1a169b-a8fc-4a95-8be5-87633374edb0
     type: regular
     task:
-      id: a7528ba6-c010-483c-8610-6861169a4693
+      id: 4e1a169b-a8fc-4a95-8be5-87633374edb0
       version: -1
       name: remove from group
       description: Removes a user from a group with OKTA_GROUP type
@@ -298,9 +298,9 @@ tasks:
         simple: Demisto
       userId: {}
       username:
-        simple: Test1@test.com
+        simple: ${RandomString}@test.com
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1022.5,\n    \"y\": 1945\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 1022.5,\n    \"y\": 1595\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -308,10 +308,10 @@ tasks:
     quietmode: 0
   '14':
     id: '14'
-    taskid: cd470349-62ce-4b2e-833d-10e0de023e16
+    taskid: e3bab74f-2bf9-4c9d-8411-38c7c7746813
     type: regular
     task:
-      id: cd470349-62ce-4b2e-833d-10e0de023e16
+      id: e3bab74f-2bf9-4c9d-8411-38c7c7746813
       version: -1
       name: update user
       description: Update user with a given login, all fields are optional, fields
@@ -363,10 +363,10 @@ tasks:
       title: {}
       userType: {}
       username:
-        simple: Test1@test.com
+        simple: ${RandomString}@test.com
       zipCode: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1770\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1420\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -374,10 +374,10 @@ tasks:
     quietmode: 0
   '15':
     id: '15'
-    taskid: e4809cdb-057e-4f1d-85d0-ac79f1958e13
+    taskid: e8fd5c45-94f5-418e-83bf-fb7e7c13d9d1
     type: regular
     task:
-      id: e4809cdb-057e-4f1d-85d0-ac79f1958e13
+      id: e8fd5c45-94f5-418e-83bf-fb7e7c13d9d1
       version: -1
       name: suspend user
       description: Suspends a user. This operation can only be performed on users
@@ -392,9 +392,9 @@ tasks:
       - '16'
     scriptarguments:
       username:
-        simple: Test1@test.com
+        simple: ${RandomString}@test.com
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1420\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1070\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -402,10 +402,10 @@ tasks:
     quietmode: 0
   '16':
     id: '16'
-    taskid: bfefee1c-6b20-4373-8a2e-f8aebd1e522e
+    taskid: b798e503-ebcb-4222-8a0a-d9c352e75205
     type: regular
     task:
-      id: bfefee1c-6b20-4373-8a2e-f8aebd1e522e
+      id: b798e503-ebcb-4222-8a0a-d9c352e75205
       version: -1
       name: unsuspend user
       description: Returns a user to ACTIVE status. This operation can only be performed
@@ -420,9 +420,9 @@ tasks:
       - '30'
     scriptarguments:
       username:
-        simple: Test1@test.com
+        simple: ${RandomString}@test.com
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1595\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1245\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -430,10 +430,10 @@ tasks:
     quietmode: 0
   '22':
     id: '22'
-    taskid: baafb54c-8387-4cc2-806c-7521bbc01289
+    taskid: 0296d9ec-1b3f-4ea2-89bd-7eb112317a0b
     type: condition
     task:
-      id: baafb54c-8387-4cc2-806c-7521bbc01289
+      id: 0296d9ec-1b3f-4ea2-89bd-7eb112317a0b
       version: -1
       name: verify results
       type: condition
@@ -455,7 +455,7 @@ tasks:
           right:
             value:
               simple: Demisto
-    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 1770\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 1420\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -463,10 +463,10 @@ tasks:
     quietmode: 0
   '23':
     id: '23'
-    taskid: 46a7f970-727f-4df5-81ad-cc51b6d0bff9
+    taskid: b11b322e-fa1d-4ddb-8699-9d9c70f04a6e
     type: condition
     task:
-      id: 46a7f970-727f-4df5-81ad-cc51b6d0bff9
+      id: b11b322e-fa1d-4ddb-8699-9d9c70f04a6e
       version: -1
       name: verify results
       type: condition
@@ -480,15 +480,16 @@ tasks:
     conditions:
     - label: yes
       condition:
-      - - operator: isEqualString
+      - - operator: containsString
           left:
             value:
               simple: Account.Username
             iscontext: true
           right:
             value:
-              simple: Test1@test.com
-    view: "{\n  \"position\": {\n    \"x\": 1452.5,\n    \"y\": 1770\n  }\n}"
+              simple: ${RandomString}
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 1452.5,\n    \"y\": 1420\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -496,18 +497,18 @@ tasks:
     quietmode: 0
   '27':
     id: '27'
-    taskid: e092a273-01cb-4cf1-8bc3-eb2cbca6ba84
+    taskid: 53fe83db-1e9d-401e-8355-abdd91cdff8f
     type: regular
     task:
-      id: e092a273-01cb-4cf1-8bc3-eb2cbca6ba84
+      id: 53fe83db-1e9d-401e-8355-abdd91cdff8f
       version: -1
       name: get-user
       description: Fetches information for a specific user. You must enter one or
         more parameters for the command to run
-      script: '|||okta-get-user'
+      script: Okta v2|||okta-get-user
       type: regular
       iscommand: true
-      brand: ''
+      brand: Okta v2
     nexttasks:
       '#none#':
       - '28'
@@ -515,10 +516,10 @@ tasks:
       userId: {}
       userid: {}
       username:
-        simple: Test1@test.com
+        simple: ${RandomString}@test.com
       verbose: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1945\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1595\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -526,10 +527,10 @@ tasks:
     quietmode: 0
   '28':
     id: '28'
-    taskid: f586dfdf-3be5-4cd4-8dac-4f3a7e6f43e1
+    taskid: d9d8bede-aa8d-4b84-82a9-4f25ccd84839
     type: condition
     task:
-      id: f586dfdf-3be5-4cd4-8dac-4f3a7e6f43e1
+      id: d9d8bede-aa8d-4b84-82a9-4f25ccd84839
       version: -1
       name: verify result
       type: condition
@@ -551,7 +552,7 @@ tasks:
           right:
             value:
               simple: Test1 Updated
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 2120\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1770\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -559,10 +560,10 @@ tasks:
     quietmode: 0
   '29':
     id: '29'
-    taskid: f11bb220-30d2-4972-8a6e-cbcdd3c94cdb
+    taskid: ea816ca0-693b-46e0-89c9-e8c1279e468e
     type: regular
     task:
-      id: f11bb220-30d2-4972-8a6e-cbcdd3c94cdb
+      id: ea816ca0-693b-46e0-89c9-e8c1279e468e
       version: -1
       name: okta-delete-user
       description: Delete specified user
@@ -576,9 +577,9 @@ tasks:
     scriptarguments:
       userId: {}
       username:
-        simple: Test1@test.com
+        simple: ${RandomString}@test.com
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 2645\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 2295\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -586,10 +587,10 @@ tasks:
     quietmode: 0
   '30':
     id: '30'
-    taskid: 01ded4d5-4e26-4a3f-870c-80db05d9f92b
+    taskid: 2ee280e2-ebf7-493f-89b3-387970f4fb52
     type: regular
     task:
-      id: 01ded4d5-4e26-4a3f-870c-80db05d9f92b
+      id: 2ee280e2-ebf7-493f-89b3-387970f4fb52
       version: -1
       name: set-password
       description: Sets passwords without validating existing user credentials
@@ -604,9 +605,9 @@ tasks:
       password:
         simple: Bb123456
       username:
-        simple: Test1@test.com
+        simple: ${RandomString}@test.com
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1770\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1420\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -614,27 +615,27 @@ tasks:
     quietmode: 0
   '34':
     id: '34'
-    taskid: e92a1f05-353a-4a0c-8de7-4f45e332cc13
+    taskid: 1690306c-4045-4913-8350-cc8f9e724a09
     type: regular
     task:
-      id: e92a1f05-353a-4a0c-8de7-4f45e332cc13
+      id: 1690306c-4045-4913-8350-cc8f9e724a09
       version: -1
       name: okta-search
       description: Search for Okta users
-      script: '|||okta-search'
+      script: Okta v2|||okta-search
       type: regular
       iscommand: true
-      brand: ''
+      brand: Okta v2
     nexttasks:
       '#none#':
       - '35'
     scriptarguments:
       limit: {}
       term:
-        simple: Test1@test.com
+        simple: ${RandomString}@test.com
       verbose: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 2295\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1945\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -642,10 +643,10 @@ tasks:
     quietmode: 0
   '35':
     id: '35'
-    taskid: 35ccf028-1a2f-4143-8220-2cf7f878c36d
+    taskid: 99e80a52-4f89-43e7-8e15-f08504651201
     type: condition
     task:
-      id: 35ccf028-1a2f-4143-8220-2cf7f878c36d
+      id: 99e80a52-4f89-43e7-8e15-f08504651201
       version: -1
       name: verify result
       type: condition
@@ -666,8 +667,9 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Test1@test.com
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 2470\n  }\n}"
+              simple: RandomString
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 2120\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -675,10 +677,10 @@ tasks:
     quietmode: 0
   '36':
     id: '36'
-    taskid: 5aa78add-587b-4a72-8384-87493365fb58
+    taskid: 318413ae-a2df-41d3-8570-e5ea932c6162
     type: regular
     task:
-      id: 5aa78add-587b-4a72-8384-87493365fb58
+      id: 318413ae-a2df-41d3-8570-e5ea932c6162
       version: -1
       name: get-user-factors
       description: Returns all the enrolled facors for the specified user.
@@ -694,7 +696,7 @@ tasks:
         simple: 00upt1w8t40wFQM2v0h7
       username: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1042.5,\n    \"y\": 1070\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 1042.5,\n    \"y\": 720\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -702,10 +704,10 @@ tasks:
     quietmode: 0
   '37':
     id: '37'
-    taskid: debfffb3-466d-4f3b-8b1f-286d6082a14c
+    taskid: bbd76fa7-0801-4997-8c0d-cc358c53e170
     type: condition
     task:
-      id: debfffb3-466d-4f3b-8b1f-286d6082a14c
+      id: bbd76fa7-0801-4997-8c0d-cc358c53e170
       version: -1
       name: verify result
       type: condition
@@ -731,7 +733,7 @@ tasks:
           right:
             value:
               simple: sms
-    view: "{\n  \"position\": {\n    \"x\": 1042.5,\n    \"y\": 1245\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 1042.5,\n    \"y\": 895\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -739,10 +741,10 @@ tasks:
     quietmode: 0
   '38':
     id: '38'
-    taskid: 2218f611-750b-4a1a-899b-e6f5ff3765bf
+    taskid: 5022b1c4-ea42-472f-81ba-8c9866504b99
     type: title
     task:
-      id: 2218f611-750b-4a1a-899b-e6f5ff3765bf
+      id: 5022b1c4-ea42-472f-81ba-8c9866504b99
       version: -1
       name: Done
       type: title
@@ -750,7 +752,7 @@ tasks:
       brand: ''
       description: ''
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 3490\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 3140\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -758,10 +760,10 @@ tasks:
     quietmode: 0
   '39':
     id: '39'
-    taskid: 0c06a608-0d56-4820-8fa2-df255e3cd33e
+    taskid: 775940fd-ace4-46b4-8e94-2f63ff217d70
     type: regular
     task:
-      id: 0c06a608-0d56-4820-8fa2-df255e3cd33e
+      id: 775940fd-ace4-46b4-8e94-2f63ff217d70
       version: -1
       name: okta-search
       description: Search for Okta users
@@ -775,10 +777,10 @@ tasks:
     scriptarguments:
       limit: {}
       term:
-        simple: Test1@test.com
+        simple: ${RandomString}@test.com
       verbose: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 2820\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 2470\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -786,10 +788,10 @@ tasks:
     quietmode: 0
   '40':
     id: '40'
-    taskid: fceb0c4b-410c-4170-87cd-f6e5b6bec192
+    taskid: 8ebc5232-55fb-4088-873a-a407b9d77daa
     type: regular
     task:
-      id: fceb0c4b-410c-4170-87cd-f6e5b6bec192
+      id: 8ebc5232-55fb-4088-873a-a407b9d77daa
       version: -1
       name: get Demisto group members
       description: Enumerates all users that are members of  a group
@@ -807,7 +809,7 @@ tasks:
       limit: {}
       verbose: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1022.5,\n    \"y\": 2120\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 1022.5,\n    \"y\": 1770\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -815,10 +817,10 @@ tasks:
     quietmode: 0
   '41':
     id: '41'
-    taskid: 4404d5f9-6739-49d3-8c14-4af8ea14e26b
+    taskid: 7447a400-b7cc-43cc-8984-9fdb8a000877
     type: condition
     task:
-      id: 4404d5f9-6739-49d3-8c14-4af8ea14e26b
+      id: 7447a400-b7cc-43cc-8984-9fdb8a000877
       version: -1
       name: verify results
       type: condition
@@ -839,8 +841,8 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Test1@test.com
-    view: "{\n  \"position\": {\n    \"x\": 1022.5,\n    \"y\": 2295\n  }\n}"
+              simple: ${RandomString}@test.com
+    view: "{\n  \"position\": {\n    \"x\": 1022.5,\n    \"y\": 1945\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -848,10 +850,10 @@ tasks:
     quietmode: 0
   '42':
     id: '42'
-    taskid: 5ede702b-cdfb-4a84-881c-4bde6735166c
+    taskid: fba643de-9de3-4c5e-81f6-f6a11875df12
     type: condition
     task:
-      id: 5ede702b-cdfb-4a84-881c-4bde6735166c
+      id: fba643de-9de3-4c5e-81f6-f6a11875df12
       version: -1
       name: verify result
       type: condition
@@ -872,8 +874,8 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Test1@test.com
-    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 2995\n  }\n}"
+              simple: ${RandomString}@test.com
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 2645\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -881,18 +883,18 @@ tasks:
     quietmode: 0
   '43':
     id: '43'
-    taskid: 76e936a9-27c7-4a52-8c66-1566b9afe6cb
+    taskid: ebe12f07-4cac-48f7-8dcf-91e8dcf67a32
     type: regular
     task:
-      id: 76e936a9-27c7-4a52-8c66-1566b9afe6cb
+      id: ebe12f07-4cac-48f7-8dcf-91e8dcf67a32
       version: -1
       name: list groups with query =de
       description: Lists groups in your organization. A subset of groups can be returned
         that match a supported filter expression or query.
-      script: '|||okta-list-groups'
+      script: Okta v2|||okta-list-groups
       type: regular
       iscommand: true
-      brand: ''
+      brand: Okta v2
     nexttasks:
       '#none#':
       - '44'
@@ -902,7 +904,7 @@ tasks:
       query:
         simple: de
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1022.5,\n    \"y\": 2470\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 1022.5,\n    \"y\": 2120\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -910,10 +912,10 @@ tasks:
     quietmode: 0
   '44':
     id: '44'
-    taskid: cde474f1-4e51-4442-8732-55639fc23e0c
+    taskid: 66b06a98-8190-4367-84b0-4cfc48d1bd5d
     type: condition
     task:
-      id: cde474f1-4e51-4442-8732-55639fc23e0c
+      id: 66b06a98-8190-4367-84b0-4cfc48d1bd5d
       version: -1
       name: verify results
       type: condition
@@ -935,7 +937,7 @@ tasks:
           right:
             value:
               simple: Demisto
-    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": 2645\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": 2295\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -943,10 +945,10 @@ tasks:
     quietmode: 0
   '47':
     id: '47'
-    taskid: 75c0de42-d7a6-4740-84e9-2a5cc34c6e86
+    taskid: df2ed7b2-a6d1-4253-8721-272be7df3e1c
     type: regular
     task:
-      id: 75c0de42-d7a6-4740-84e9-2a5cc34c6e86
+      id: df2ed7b2-a6d1-4253-8721-272be7df3e1c
       version: -1
       name: get-group-assignments
       description: Get events for when a user added to a group
@@ -964,7 +966,7 @@ tasks:
       sortOrder: {}
       until: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1022.5,\n    \"y\": 2995\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 1022.5,\n    \"y\": 2645\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -972,10 +974,10 @@ tasks:
     quietmode: 0
   '48':
     id: '48'
-    taskid: 13dfc2d7-d780-470e-83ea-83e65e2d4ab2
+    taskid: f1a04f1c-a50b-4c89-8004-80a6dd5cd5b3
     type: condition
     task:
-      id: 13dfc2d7-d780-470e-83ea-83e65e2d4ab2
+      id: f1a04f1c-a50b-4c89-8004-80a6dd5cd5b3
       version: -1
       name: verify results
       type: condition
@@ -999,7 +1001,7 @@ tasks:
           right:
             value:
               simple: Add user to group membership
-    view: "{\n  \"position\": {\n    \"x\": 1022.5,\n    \"y\": 3170\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 1022.5,\n    \"y\": 2820\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1007,10 +1009,10 @@ tasks:
     quietmode: 0
   '50':
     id: '50'
-    taskid: 177a14ee-64a4-4ab7-8088-a719a565063a
+    taskid: db183226-4928-4d55-87a5-62d53cdcbb93
     type: condition
     task:
-      id: 177a14ee-64a4-4ab7-8088-a719a565063a
+      id: db183226-4928-4d55-87a5-62d53cdcbb93
       version: -1
       name: verify results
       type: condition
@@ -1034,7 +1036,7 @@ tasks:
           right:
             value:
               simple: Add user to application membership
-    view: "{\n  \"position\": {\n    \"x\": 1452.5,\n    \"y\": 3170\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 1452.5,\n    \"y\": 2820\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1042,10 +1044,10 @@ tasks:
     quietmode: 0
   '51':
     id: '51'
-    taskid: f163df9d-3c33-4b77-8d5f-7a2a87bcc86a
+    taskid: 897312c7-df2e-458c-86bd-1685b6b800eb
     type: title
     task:
-      id: f163df9d-3c33-4b77-8d5f-7a2a87bcc86a
+      id: 897312c7-df2e-458c-86bd-1685b6b800eb
       version: -1
       name: Logs
       type: title
@@ -1057,7 +1059,7 @@ tasks:
       - '47'
       - '53'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": 2835\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": 2485\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1065,10 +1067,10 @@ tasks:
     quietmode: 0
   '52':
     id: '52'
-    taskid: d1d823f4-c675-4079-8b67-c4435ed2b63b
+    taskid: 3559776c-0c35-4585-8e10-1fcb648bccf3
     type: title
     task:
-      id: d1d823f4-c675-4079-8b67-c4435ed2b63b
+      id: 3559776c-0c35-4585-8e10-1fcb648bccf3
       version: -1
       name: End of Logs
       type: title
@@ -1079,7 +1081,7 @@ tasks:
       '#none#':
       - '38'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": 3345\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": 2995\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1087,10 +1089,10 @@ tasks:
     quietmode: 0
   '53':
     id: '53'
-    taskid: efe2f852-681d-41ac-8206-fce9194aae49
+    taskid: 75e187ec-23b5-460a-896f-b2f6c6f73aca
     type: regular
     task:
-      id: efe2f852-681d-41ac-8206-fce9194aae49
+      id: 75e187ec-23b5-460a-896f-b2f6c6f73aca
       version: -1
       name: application-assignments
       description: Returnes events for when a user was assigned to an application
@@ -1108,33 +1110,39 @@ tasks:
       sortOrder: {}
       until: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1452.5,\n    \"y\": 2995\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 1452.5,\n    \"y\": 2645\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '54':
-    id: '54'
-    taskid: bbdc4cf5-914f-4169-8777-3e0a04cb566c
+  '60':
+    id: '60'
+    taskid: 6cb433dc-5d88-4c17-8336-2ac6655b9e50
     type: regular
     task:
-      id: bbdc4cf5-914f-4169-8777-3e0a04cb566c
+      id: 6cb433dc-5d88-4c17-8336-2ac6655b9e50
       version: -1
-      name: Check if Test1@test.com exists
-      description: Searches for Okta users.
-      script: '|||okta-search'
+      name: 'Generate a random login prefix '
+      description: Generates random string
+      scriptName: GenerateRandomString
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ''
     nexttasks:
       '#none#':
-      - '55'
+      - '5'
     scriptarguments:
-      limit: {}
-      term:
-        simple: Test1@test.com
-      verbose: {}
+      Digits:
+        simple: 'True'
+      Length:
+        simple: '8'
+      Lowercase:
+        simple: 'True'
+      Punctuation:
+        simple: 'False'
+      Uppercase:
+        simple: 'False'
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 377.5,\n    \"y\": 370\n  }\n}"
     note: false
@@ -1142,70 +1150,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '55':
-    id: '55'
-    taskid: b2820523-8a07-43b3-8493-c6952f7b11ce
-    type: condition
-    task:
-      id: b2820523-8a07-43b3-8493-c6952f7b11ce
-      version: -1
-      name: verify result
-      type: condition
-      iscommand: false
-      brand: ''
-      description: ''
-    nexttasks:
-      '#default#':
-      - '5'
-      yes:
-      - '56'
-    separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: containsString
-          left:
-            value:
-              simple: Account.Email
-            iscontext: true
-          right:
-            value:
-              simple: Test1@test.com
-    view: "{\n  \"position\": {\n    \"x\": 377.5,\n    \"y\": 545\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '56':
-    id: '56'
-    taskid: 347a47ca-000a-43ff-8b21-07a4c9851268
-    type: regular
-    task:
-      id: 347a47ca-000a-43ff-8b21-07a4c9851268
-      version: -1
-      name: okta-delete-user
-      description: Delete specified user
-      script: Okta v2|||okta-delete-user
-      type: regular
-      iscommand: true
-      brand: Okta v2
-    nexttasks:
-      '#none#':
-      - '5'
-    scriptarguments:
-      userId: {}
-      username:
-        simple: Test1@test.com
-    separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 720\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
 view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 3505,\n      \"width\": 1782.5,\n      \"x\": 50,\n      \"y\"\
+  \     \"height\": 3155,\n      \"width\": 1782.5,\n      \"x\": 50,\n      \"y\"\
   : 50\n    }\n  }\n}"
 inputs: []
 outputs: []
