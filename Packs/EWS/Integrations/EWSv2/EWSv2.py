@@ -859,7 +859,7 @@ def get_searchable_mailboxes(protocol):
 
 def search_mailboxes_by_ids(mailbox_ids, protocol, filter, limit):
     search_results = []  # type: list
-    for mailbox_ids_batch in batch(mailbox_ids, batch_size=22):
+    for mailbox_ids_batch in batch(mailbox_ids, batch_size=500):
         try:
             search_results.extend(SearchMailboxes(protocol=protocol).call(filter, mailbox_ids_batch))
         except TransportError, e:
