@@ -22,7 +22,7 @@
     "contextValue": "",
     "excludedBrands": [],
     "defaultMapping": null,
-    "manualMapping": {},
+    "manualMapping": null,
     "fileHashesPriority": null,
     "expiration": 20160,
     "fromVersion": "5.5.0"
