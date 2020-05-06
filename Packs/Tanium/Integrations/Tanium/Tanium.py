@@ -38,103 +38,18 @@ except Exception:
     raise
 
 
-def clear_apostrophes(value):
-    """Clear leading an trailing apostrophe from a value
-    """
-    if value.startswith('\"'):
-        value = value[1:]
-    if value.endswith('\"'):
-        value = value[:-1]
-
-    return value
-
-
-def split_lines(string_lines):
-    """Split a csv string to a list of the csv values
-
-    Args:
-        string_lines(str): A string representing the values of a csv
-
-    Returns:
-        list. A list of csv values.
-    """
-    string_lines = string_lines.split(',')
-    formatted_lines = []
-    for val in string_lines:
-        # make sure no extra line drops at the start of the value
-        while val.startswith('\n'):
-            val = val[1:]
-
-        # situation1: val1\nval2 or val1\n"val2_1\nval2_2"
-        if '\n' in val and not val.startswith("\""):
-            split_values = val.split("\n", 1)
-            formatted_lines.append(clear_apostrophes(split_values[0]))
-            formatted_lines.append(clear_apostrophes(split_values[1]))
-
-        # situation2: "val1_1\nval1_2"\nval2,
-        elif '\n' in val and val.startswith("\"") and not val.endswith("\""):
-            val = val[1:]
-            split_values = val.split("\"\n", 1)
-            formatted_lines.append(clear_apostrophes(split_values[0]))
-            formatted_lines.append(clear_apostrophes(split_values[1]))
-
-        elif '\n' in val and val.startswith("\"") and val.endswith("\""):
-            # situation3: "val1_1\nval1_2"
-            if val.count("\"") == 2:
-                formatted_lines.append(clear_apostrophes(val))
-
-            # situation4: "val1_1\nval1_2"\n"val2_1\nval2_2"
-            else:
-                val = val[1:]
-                split_values = val.split("\"\n", 1)
-                formatted_lines.append(clear_apostrophes(split_values[0]))
-                formatted_lines.append(clear_apostrophes(split_values[1]))
-
-        # situation5: no formatting needed
-        else:
-            formatted_lines.append(clear_apostrophes(val))
-
-    return formatted_lines
-
-
-def csvstr_to_list(text_content):
-    """Gets a csv string representing a table of an answer given from Tanium and formats it as a list of dictionaries
-
-    Args:
-        text_content (str): a csv string containing the tabled answer for the question asked in Tanium
-
-    Returns:
-        list. The formatted answer as a list where each element is a dict representing a line of the tabled answer
-    """
-    # string_lines is an array of split lines that together create the full CSV
-    # the first element will always be the headers but the next elements do not necessarily correlate to the csv lines
-    # for expmple:
-    # ['header1,header2,header3', 'col1,"col2_1', 'col2_2",col3']
-    # this represents a table with 3 headers and a *single line* below it -
-    # col1 relates to header1, col3 relates to header3 and col2_1
-    # and col2_2 relate to header2 as marked by the leading and trailing apostrophes (")
-    # for more examples of this look at Tanium_test.py
-    text_content = '\n'.join(text_content.splitlines())
-    text_content = text_content.split('\n', 1)
-    headers = text_content[0].split(',')
-    if len(text_content) < 2:
-        return []
-    string_lines = text_content[1]
-    total_cols_num = len(headers)
-    string_lines = split_lines(string_lines)
-    total_rows_num = len(string_lines) // total_cols_num
+def raw_response_to_json(raw_json):
     result = []
-    for row_index in range(total_rows_num):
-        row_starting_cell_index = row_index * total_cols_num
-        row_final_cell_index = row_starting_cell_index + total_cols_num
-        row = string_lines[row_starting_cell_index:row_final_cell_index]
-        table_dict = {}
-        for index in range(total_cols_num):
-            header = headers[index]
-            value = row[index]
-            table_dict[header] = value
+    for row_dict in raw_json:
+        row_key = row_dict.keys()[0]
+        parsed_row_dict = {}
 
-        result.append(table_dict)
+        for cell in row_dict[row_key]:
+            column_name = cell.get('column.display_name')
+            cell_value = '\n'.join(cell.get('column.values'))
+            parsed_row_dict[column_name] = cell_value
+
+        result.append(parsed_row_dict)
 
     return result
 
@@ -518,11 +433,14 @@ def askQuestion(handler, kwargs):
     if response.get('question_results'):
         export_kwargs = {}
         export_kwargs['obj'] = response['question_results']
-        export_kwargs['export_format'] = 'csv'
+        export_kwargs['export_format'] = 'json'
         LOG("exporting tanium question response")
         out = handler.export_obj(**export_kwargs)
+        if out:
+            result = raw_response_to_json(json.loads(out))
 
-        result = csvstr_to_list(out)
+        else:
+            result = []
 
         ec = {'Tanium.QuestionResults': format_context(result)}
         return create_entry(
