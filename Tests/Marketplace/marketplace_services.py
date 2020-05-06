@@ -596,7 +596,7 @@ class Pack(object):
                         _version = filename.replace('.md', '')
                         version = _version.replace('_', '.')
                         found_versions.append(version)
-                    latest_release_notes = max(found_versions, key=LooseVersion)
+                    latest_release_notes = found_versions.sort(reverse=True)[0]
                     print_color(f"Latest ReleaseNotes version is: {latest_release_notes}", LOG_COLORS.GREEN)
                     if self._current_version != latest_release_notes:
                         # TODO Need to implement support for pre-release versions
