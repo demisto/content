@@ -595,8 +595,9 @@ class Pack(object):
                     for filename in os.listdir(release_notes_dir):
                         _version = filename.replace('.md', '')
                         version = _version.replace('_', '.')
-                        found_versions.append(version)
-                    latest_release_notes = found_versions.sort(reverse=True)[0]
+                        found_versions.append(LooseVersion(version).vstring)
+                    found_versions.sort(reverse=True)
+                    latest_release_notes = found_versions[0]
                     print_color(f"Latest ReleaseNotes version is: {latest_release_notes}", LOG_COLORS.GREEN)
                     if self._current_version != latest_release_notes:
                         # TODO Need to implement support for pre-release versions
