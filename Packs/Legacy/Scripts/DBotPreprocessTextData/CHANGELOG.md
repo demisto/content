@@ -1,5 +1,5 @@
 ## [Unreleased]
-Added option for perprocessing text in more languages
+Added the option to preprocess text in additional languages.
 
 ## [20.4.0] - 2020-04-14
 -
