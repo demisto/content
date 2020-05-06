@@ -43,9 +43,10 @@ def options_handler():
 def get_failing_unit_tests_file_data():
     try:
         failing_ut_list = None
-        if os.path.isfile('./artifacts/failed_unittests.txt'):
+        file_name = './artifacts/failed_unit_tests_report.txt'
+        if os.path.isfile(file_name):
             print('Extracting failed_unittests')
-            with open('./artifacts/failed_unittests.txt', 'r') as failed_unittests_file:
+            with open(file_name, 'r') as failed_unittests_file:
                 failing_ut = failed_unittests_file.readlines()
                 failing_ut_list = [line.strip('\n') for line in failing_ut]
         else:
@@ -178,7 +179,8 @@ def slack_notifier(build_url, slack_token, env_results_file_name, container):
     branch_name_reg = re.search(r'\* (.*)', branches)
     branch_name = branch_name_reg.group(1)
 
-    if branch_name == 'master':
+    # if branch_name == 'master':
+    if branch_name == 'unitests_lint_fix':
         print("Extracting build status")
         # container 1: unit tests
         if int(container):
@@ -194,7 +196,7 @@ def slack_notifier(build_url, slack_token, env_results_file_name, container):
         slack_client = SlackClient(slack_token)
         slack_client.api_call(
             "chat.postMessage",
-            channel="dmst-content-team",
+            channel="test-shahaf",
             username="Content CircleCI",
             as_user="False",
             attachments=content_team_attachments
@@ -203,10 +205,10 @@ def slack_notifier(build_url, slack_token, env_results_file_name, container):
 
 def main():
     options = options_handler()
-    if options.nightly:
-        slack_notifier(options.url, options.slack, options.env_results_file_name, options.node_index)
-    else:
-        print_color("Not nightly build, stopping Slack Notifications about Content build", LOG_COLORS.RED)
+    # if options.nightly:
+    slack_notifier(options.url, options.slack, options.env_results_file_name, options.node_index)
+    # else:
+    #     print_color("Not nightly build, stopping Slack Notifications about Content build", LOG_COLORS.RED)
 
 
 if __name__ == '__main__':
