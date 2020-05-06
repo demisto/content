@@ -1,9 +1,9 @@
 id: QRadar - Get offense correlations v2
 version: -1
 name: QRadar - Get offense correlations v2
-description: "Run on a QRadar offense to get more information\n\n* Get all correlations\
+description: "Run on a QRadar offense to get more information:\n\n* Get all correlations\
   \ relevant to the offense\n* Get all logs relevant to the correlations (not done\
-  \ by default, set \"GetCorrelationLogs\" to \"True\")\n\nInputs:\n* GetCorrelationLogs\
+  \ by default - set \"GetCorrelationLogs\" to \"True\")\n\nInputs:\n* GetCorrelationLogs\
   \ (default: False)\n* MaxLogsCount (default: 20)"
 starttaskid: '0'
 tasks:
@@ -497,7 +497,7 @@ inputs:
   value:
     simple: 'True'
   required: false
-  description: If "True" will get all of the offense's correlations logs
+  description: When set to "True", retrieves all of the offense's correlations logs
   playbookInputQuery:
 - key: MaxLogsCount
   value:
