@@ -31,12 +31,10 @@ This integration was integrated and tested with version xx of Microsoft_Graph_Fi
 
 ## Use a Self-Deployed Azure Application
 
-To use a self-configured Azure application, a need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following Microsoft article:
-https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app">https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app
-<br/>The Tenant ID, Client ID, and Client secret are required for the integration.
-To configure the integration in Demisto to use the application, place those parameters in the following manner (instead of how you received them from the admin consent in the current doc):
-* ID - Client ID<br/>
-* Token - Tenant ID<br/>
+To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the [Microsoft documentation](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
+<br/>The Tenant ID, Client ID, and Client secret are required for the integration. When you configure the integration in Demisto enter those parameters in the appropriate fields (instead of how you received them from the admin consent in the current doc).
+* ID - Client ID<
+* Token - Tenant ID
 * Key - Client Secret
 
 ## Commands
