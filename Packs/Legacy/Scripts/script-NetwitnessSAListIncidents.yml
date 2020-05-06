@@ -17,6 +17,7 @@ script: |
       else:
           demisto.results("No results.")
 type: python
+subtype: python2
 tags:
 - RSA NetWitness Security Analytics
 comment: List NetWitness SA incidents. Filtering and sorting the list is also supported

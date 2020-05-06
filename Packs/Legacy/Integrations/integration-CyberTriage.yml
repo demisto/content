@@ -232,6 +232,7 @@ script:
     elif demisto.command() == 'test-module':
         test_connection()
   type: python
+  subtype: python2
   commands:
   - name: ct-triage-endpoint
     arguments:

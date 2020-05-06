@@ -59,6 +59,7 @@ script: |
 
   demisto.results({'Type': entryTypes['note'], 'Contents': pyResults, 'EntryContext': {'pcap_results': pyResults}, 'ContentsFormat': formats['json'], 'HumanReadable': displayData})
 type: python
+subtype: python2
 tags:
 - Utility
 - file
