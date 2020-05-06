@@ -14,13 +14,13 @@ tasks:
       iscommand: false
     nexttasks:
       '#none#':
-      - "20"
+      - "22"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": -60
+          "y": -230
         }
       }
     note: false
@@ -689,15 +689,50 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "22":
+    id: "22"
+    taskid: 256ecc97-5241-422f-8cf3-bcbf64e435d0
+    type: regular
+    task:
+      id: 256ecc97-5241-422f-8cf3-bcbf64e435d0
+      version: -1
+      name: clean_start
+      description: |-
+        Should fail if some previous playbook failed.
+        so we ignore errors.
+      script: 'splunk-kv-store-collection-delete'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      app_name: {}
+      kv_store_name:
+        simple: test_playbook
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -95
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2840,
+        "height": 3010,
         "width": 940,
         "x": -110,
-        "y": -60
+        "y": -230
       }
     }
   }
