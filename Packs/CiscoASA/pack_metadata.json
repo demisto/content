@@ -10,7 +10,9 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Recommended by Cortex XSOAR"
+    ],
     "created": "2020-03-22T10:10:08Z",
     "updated": "2020-03-22T10:10:08Z",
     "beta": false,
