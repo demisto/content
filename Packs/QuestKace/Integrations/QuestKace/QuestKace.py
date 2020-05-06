@@ -571,7 +571,11 @@ def update_ticket_command(client, args) -> Tuple[str, dict, dict]:
 
     response = client.update_ticket_request(ticket_id, data)
     if response.get('Result') == 'Success':
-        return f'Ticket was updated successfully. Ticket number {ticket_id}', {}, {}
+        client.update_token()
+        res = client.ticket_by_id_request(ticket_id)
+        ticket = res.get('Tickets')
+        ticket_view = tableToMarkdown(f'Ticket number {ticket_id} was updated successfully.\n', ticket)
+        return ticket_view, {}, {}
     else:
         raise DemistoException(f'Error while updating the ticket.')
 
