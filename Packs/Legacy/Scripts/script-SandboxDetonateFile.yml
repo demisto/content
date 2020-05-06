@@ -168,6 +168,7 @@ script: |-
   else:
       demisto.results('No results.')
 type: python
+subtype: python2
 tags:
 - sandblast
 - cuckoo
