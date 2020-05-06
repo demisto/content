@@ -12,7 +12,7 @@ enabled: true
 args:
 - name: value
   default: true
-  description: array
+  description: The string to convert to an array of that string.
   isArray: true
 scripttarget: 0
 subtype: python3
