@@ -16,7 +16,7 @@ Unit tests can be checked in 3 ways:
 - From PyCharm
 
 Example with demisto-sdk (from the content root directory):
-demisto-sdk lint -d Packs/HelloWorld/Integrations/HelloWorld
+demisto-sdk lint -i Packs/HelloWorld/Integrations/HelloWorld
 
 Coverage
 --------
@@ -90,8 +90,8 @@ def test_start_scan(requests_mock):
     from HelloWorld import Client, scan_start_command
 
     mock_response = {
-        "scan_id": "7a161a3f-8d53-42de-80cd-92fb017c5a12",
-        "status": "RUNNING"
+        'scan_id': '7a161a3f-8d53-42de-80cd-92fb017c5a12',
+        'status': 'RUNNING'
     }
     requests_mock.get('https://test.com/api/v1/start_scan?hostname=example.com', json=mock_response)
 
@@ -111,9 +111,9 @@ def test_start_scan(requests_mock):
 
     assert outputs == {
         'HelloWorld.Scan(val.scan_id == obj.scan_id)': {
-            "scan_id": "7a161a3f-8d53-42de-80cd-92fb017c5a12",
-            "status": "RUNNING",
-            "hostname": "example.com"
+            'scan_id': '7a161a3f-8d53-42de-80cd-92fb017c5a12',
+            'status': 'RUNNING',
+            'hostname': 'example.com'
         }
     }
 
@@ -129,20 +129,20 @@ def test_status_scan(requests_mock):
     from HelloWorld import Client, scan_status_command
 
     mock_response = {
-        "scan_id": "100",
-        "status": "COMPLETE"
+        'scan_id': '100',
+        'status': 'COMPLETE'
     }
     requests_mock.get('https://test.com/api/v1/check_scan?scan_id=100', json=mock_response)
 
     mock_response = {
-        "scan_id": "200",
-        "status": "RUNNING"
+        'scan_id': '200',
+        'status': 'RUNNING'
     }
     requests_mock.get('https://test.com/api/v1/check_scan?scan_id=200', json=mock_response)
 
     mock_response = {
-        "scan_id": "300",
-        "status": "COMPLETE"
+        'scan_id': '300',
+        'status': 'COMPLETE'
     }
     requests_mock.get('https://test.com/api/v1/check_scan?scan_id=300', json=mock_response)
 
@@ -163,16 +163,16 @@ def test_status_scan(requests_mock):
     assert outputs == {
         'HelloWorld.Scan(val.scan_id == obj.scan_id)': [
             {
-                "scan_id": "100",
-                "status": "COMPLETE"
+                'scan_id': '100',
+                'status': 'COMPLETE'
             },
             {
-                "scan_id": "200",
-                "status": "RUNNING"
+                'scan_id': '200',
+                'status': 'RUNNING'
             },
             {
-                "scan_id": "300",
-                "status": "COMPLETE"
+                'scan_id': '300',
+                'status': 'COMPLETE'
             }
         ]
     }
@@ -227,7 +227,7 @@ def test_search_alerts(requests_mock):
     mock_response = util_load_json('test_data/search_alerts.json')
     requests_mock.get(
         'https://test.com/api/v1/get_alerts?alert_status=ACTIVE&severity=Critical&max_results=2&start_time=1581982463',
-        json=mock_response)
+        json=mock_response['alerts'])
 
     client = Client(
         base_url='https://test.com/api/v1',
@@ -246,8 +246,13 @@ def test_search_alerts(requests_mock):
 
     _, outputs, _ = search_alerts_command(client, args)
 
+    # We modify the timestamp from the raw mock_response of the API, because the
+    # integration changes the format from timestamp to ISO8601.
+    mock_response['alerts'][0]['created'] = '2020-02-17T23:34:23.000Z'
+    mock_response['alerts'][1]['created'] = '2020-02-17T23:34:23.000Z'
+
     assert outputs == {
-        'HelloWorld.Alert(val.alert_id == obj.alert_id)': mock_response
+        'HelloWorld.Alert(val.alert_id == obj.alert_id)': mock_response['alerts']
     }
 
 
@@ -277,6 +282,10 @@ def test_get_alert(requests_mock):
     }
 
     _, outputs, _ = get_alert_command(client, args)
+
+    # We modify the timestamp from the raw mock_response of the API, because the
+    # integration changes the format from timestamp to ISO8601.
+    mock_response['created'] = '2020-04-17T14:43:59.000Z'
 
     assert outputs == {
         'HelloWorld.Alert(val.alert_id == obj.alert_id)': mock_response
@@ -312,6 +321,10 @@ def test_update_alert_status(requests_mock):
 
     _, outputs, _ = update_alert_status_command(client, args)
 
+    # We modify the timestamp from the raw mock_response of the API, because the
+    # integration changes the format from timestamp to ISO8601.
+    mock_response['updated'] = '2020-04-17T14:45:12.000Z'
+
     assert outputs == {
         'HelloWorld.Alert(val.alert_id == obj.alert_id)': mock_response
     }
@@ -339,7 +352,7 @@ def test_ip(requests_mock):
     )
 
     args = {
-        'ip': "151.1.1.1",
+        'ip': '151.1.1.1',
         'threshold': 65,
     }
 
@@ -372,11 +385,17 @@ def test_domain(requests_mock):
     )
 
     args = {
-        'domain': "google.com",
+        'domain': 'google.com',
         'threshold': 65,
     }
 
     _, outputs, _ = domain_reputation_command(client, args, 65)
+
+    # We modify the timestamps from the raw mock_response of the API, because the
+    # integration changes the format from timestamp to ISO8601.
+    mock_response['expiration_date'] = '2028-09-14T04:00:00.000Z'
+    mock_response['creation_date'] = '1997-09-15T04:00:00.000Z'
+    mock_response['updated_date'] = '2019-09-09T15:39:04.000Z'
 
     assert outputs['HelloWorld.Domain(val.domain == obj.domain)']
     assert outputs['HelloWorld.Domain(val.domain == obj.domain)'][0]

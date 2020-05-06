@@ -104,6 +104,7 @@ script: |
                       "Contents": "Error occurred while parsing section " + s + " from report. Exception info:\n" + str(ex) })
   demisto.results(res)
 type: python
+subtype: python2
 tags:
 - cuckoo
 comment: Display the contents of a Cuckoo report file from a war room entry.

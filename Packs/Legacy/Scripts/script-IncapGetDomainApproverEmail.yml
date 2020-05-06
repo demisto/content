@@ -17,6 +17,7 @@ script: |2
       else:
           demisto.results("No results.")
 type: python
+subtype: python2
 tags:
 - Incapsula
 comment: Use this operation to get the list of email addresses that can be used when

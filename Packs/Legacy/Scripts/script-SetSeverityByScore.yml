@@ -43,6 +43,7 @@ script: |-
           demisto.executeCommand('IncidentSet', {'severity': 'medium'})
   # If no escalation required - don't change severity
 type: python
+subtype: python2
 tags:
 - url
 - ip
