@@ -1,10 +1,9 @@
 # pylint: disable=no-member
-from collections import defaultdict, Counter
-from io import BytesIO, StringIO
-
 import demisto_ml
 import numpy as np
 import pandas as pd
+from collections import defaultdict, Counter
+from io import BytesIO, StringIO
 from sklearn.model_selection import StratifiedKFold
 
 from CommonServerPython import *
@@ -164,10 +163,10 @@ def set_tag_field(data, tag_fields):
 
 
 def output_model_evaluation(model_name, y_test, y_pred, res, context_field, human_readable_title=None):
-    threshold = float(res[0]['Contents']['threshold'])
-    confusion_matrix = json.loads(res[0]['Contents']['csr_matrix_at_threshold'])
-    metrics_df = json.loads(res[0]['Contents']['metrics_df'])
-    human_readable = res[0]['HumanReadable']
+    threshold = float(res['Contents']['threshold'])
+    confusion_matrix = json.loads(res['Contents']['csr_matrix_at_threshold'])
+    metrics_df = json.loads(res['Contents']['metrics_df'])
+    human_readable = res['HumanReadable']
     if human_readable_title is not None:
         human_readable = '\n'.join([human_readable_title, human_readable])
     result_entry = {
@@ -316,8 +315,8 @@ def main():
     tag_fields = demisto.args()['tagField'].split(",")
     labels_mapping = get_phishing_map_labels(demisto.args()['phishingLabels'])
     keyword_min_score = float(demisto.args()['keywordMinScore'])
-    return_predictions_on_test_set = demisto.args()['returnPredictionsOnTestSet'] == 'true'
-    original_text_fields = demisto.args()['originalTextFields']
+    return_predictions_on_test_set = demisto.args().get('returnPredictionsOnTestSet', 'false') == 'true'
+    original_text_fields = demisto.args().get('originalTextFields', '')
     if input_type.endswith("filename"):
         data = read_files_by_name(input, input_type.split("_")[0].strip())
     else:
@@ -359,17 +358,19 @@ def main():
         target_recall = 1 - float(demisto.args()['maxBelowThreshold'])
     else:
         target_recall = 0
-    res_threshold = get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall, detailed=True)
+    [threshold_metrics_entry, per_class_entry] = get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall,
+                                                                         detailed=True)
+    demisto.results(per_class_entry)
     # show results if no threshold (threhsold=0) was used. Following code is reached only if a legal thresh was found:
-    if not np.isclose(float(res_threshold[0]['Contents']['threshold']), 0):
-        res = get_ml_model_evaluation(y_test, y_pred, target_accuracy=0, target_recall=0)
+    if not np.isclose(float(threshold_metrics_entry['Contents']['threshold']), 0):
+        [no_threshold_metrics_entry, _] = get_ml_model_evaluation(y_test, y_pred, target_accuracy=0, target_recall=0)
         human_readable = '\n'.join(['## Results for No Threshold',
                                     'The following results were achieved by using no threshold (threshold equals 0)'])
-        output_model_evaluation(model_name=model_name, y_test=y_test, y_pred=y_pred, res=res,
+        output_model_evaluation(model_name=model_name, y_test=y_test, y_pred=y_pred, res=no_threshold_metrics_entry,
                                 context_field='DBotPhishingClassifierNoThresh', human_readable_title=human_readable)
     # show results for the threshold found - last result so it will appear first
-    confusion_matrix = output_model_evaluation(model_name=model_name, y_test=y_test, y_pred=y_pred, res=res_threshold,
-                                               context_field='DBotPhishingClassifier')
+    confusion_matrix = output_model_evaluation(model_name=model_name, y_test=y_test, y_pred=y_pred,
+                                               res=threshold_metrics_entry, context_field='DBotPhishingClassifier')
     if store_model:
         store_model_in_demisto(model_name, model_override, X, y, confusion_matrix)
         demisto.results("Done training on {} samples model stored successfully".format(len(y)))
