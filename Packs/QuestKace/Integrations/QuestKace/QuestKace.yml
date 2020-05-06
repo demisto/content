@@ -25,10 +25,12 @@ configuration:
   name: fetch_shaping
   required: false
   type: 0
+  additionalinfo: Shaping parameter limits the amount of returned data. In order to get more extended data use shaping. If non is givven all the data will be returned.
 - display: Filter for the tickets
   name: fetch_filter
   required: false
   type: 0
+  additionalinfo: Adding this argument will enable you to filter the results. e.g "id eq 2" , "machine.name eq Mac".
 - defaultvalue: '50'
   display: Fetch limit per query
   name: fetch_limit
@@ -51,6 +53,7 @@ configuration:
   name: fetch_queue_id
   required: false
   type: 0
+  additionalinfo: If you wish to fetch incidents of a specific queue you should enter its id. By default all tickets from all queues will be returned.
 description: This is the Quest KACE integration.
 display: Quest KACE Systems Management Appliance
 name: QuestKace
