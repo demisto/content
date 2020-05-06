@@ -211,10 +211,6 @@ def test_function() -> None:
         response = TRIAGE_INSTANCE.request("processed_reports")
 
         if response:
-            # test fetching mechanism
-            if demisto.params().get('isFetch'):
-                fetch_reports()
-
             demisto.results('ok')
         else:
             return_error(
