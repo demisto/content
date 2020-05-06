@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from sklearn.metrics import precision_score, recall_score
+from sklearn.metrics import precision_score, recall_score, precision_recall_curve
 from tabulate import tabulate
 
 from CommonServerPython import *
@@ -148,7 +148,7 @@ def output_report(y_true, y_true_per_class, y_pred, y_pred_per_class, threshold,
     return entry
 
 
-def find_threshold(y_true_str, y_pred_str, target_precision, target_recall, detailed_output=True):
+def find_threshold(y_true_str, y_pred_str, customer_target_precision, target_recall, detailed_output=True):
     y_true = convert_str_to_json(y_true_str, 'yTrue')
     y_pred_all_classes = convert_str_to_json(y_pred_str, 'yPred')
     labels = sorted(set(y_true + y_pred_all_classes[0].keys()))
@@ -162,21 +162,49 @@ def find_threshold(y_true_str, y_pred_str, target_precision, target_recall, deta
         predicted_class = sorted(y.items(), key=lambda x: x[1], reverse=True)[0][0]
         y_pred_per_class[predicted_class][i] = y[predicted_class]
         y_pred.append(predicted_class)
-    for threshold in np.arange(0, 1, 0.05):
-        if any(binarize(y_pred_per_class[class_], threshold).sum() == 0 for class_ in labels):
-            break
-        if all(precision_score(y_true_per_class[class_],
-                               binarize(y_pred_per_class[class_], threshold)) >= target_precision for class_ in
-               labels) and \
-                all(recall_score(y_true_per_class[class_],
-                                 binarize(y_pred_per_class[class_], threshold)) >= target_recall for class_ in labels):
-            entry = output_report(np.array(y_true), y_true_per_class, np.array(y_pred), y_pred_per_class,
-                                  threshold, detailed_output)
-            return entry
 
-    return_error('Could not find threshold which satisfies the following conditions :\n\
-    1. precision larger or equal than {} for all classes \n\
-    2. recall larger or equal than {} for all classes'.format(target_precision, target_recall))
+    class_to_arrs = {class_: {} for class_ in labels}
+    for class_ in labels:
+        precision_arr, recall_arr, thresholds_arr = precision_recall_curve(y_true_per_class[class_], y_pred_per_class[class_])
+        class_to_arrs[class_]['precisions'] = precision_arr
+        class_to_arrs[class_]['recalls'] = recall_arr
+        class_to_arrs[class_]['thresholds'] = thresholds_arr
+
+    class_to_precision_to_threshold = {class_: {} for class_ in labels}
+    for class_ in labels:
+        for i, precision in reversed(list(enumerate(class_to_arrs[class_]['precisions'][:-1]))):
+            for target_precision in np.arange(0.95, 0, -0.05):
+                if precision > target_precision:
+                    class_to_precision_to_threshold[class_][target_precision] = class_to_arrs[class_]['thresholds'][i]
+                    break
+            if len(class_to_precision_to_threshold[class_]) > 4:
+                break
+
+    # find one threshold:
+    target_unified_precision = customer_target_precision
+    unified_threshold_found = False
+    while not unified_threshold_found:
+        threshold_per_class = {}
+        for class_ in labels:
+            for i, precision in reversed(list(enumerate(class_to_arrs[class_]['precisions'][:-1]))):
+                if i == 0:
+                    break
+                if precision > target_unified_precision:
+                    threshold_per_class[class_] = class_to_arrs[class_]['thresholds'][i-1]
+        if len(threshold_per_class) == len(labels):
+            unified_threshold = max(threshold_per_class.values())
+            for class_ in labels:
+                threshold_idx = np.argmax(class_to_arrs[class_]['thresholds'] >= unified_threshold)
+                if class_to_arrs[class_]['precisions'][threshold_idx+1] >= target_unified_precision:
+                    unified_threshold_found = True
+                else:
+                    unified_threshold_found = False
+        else:
+            target_unified_precision -= 0.025
+
+    entry = output_report(np.array(y_true), y_true_per_class, np.array(y_pred), y_pred_per_class,
+                          unified_threshold, detailed_output)
+    return entry
 
 
 def convert_str_to_json(str_json, var_name):
@@ -195,7 +223,7 @@ def main():
     detailed_output = 'detailedOutput' in demisto.args() and demisto.args()['detailedOutput'] == 'true'
     entry = find_threshold(y_true_str=y_true,
                            y_pred_str=y_pred_all_classes,
-                           target_precision=target_precision,
+                           customer_target_precision=target_precision,
                            target_recall=target_recall,
                            detailed_output=detailed_output)
 
