@@ -32,6 +32,7 @@ script: |-
   })
   sys.exit(0)
 type: python
+subtype: python2
 tags:
 - Utilities
 comment: "This command will allow you to run commands against a local Docker Container.

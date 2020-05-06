@@ -203,7 +203,7 @@ script:
       description: A list of malware URLs associated with this payload (max. 100).
       type: Unknown
   - arguments:
-    - default: false
+    - default: true
       description: SHA256 hash of the file to download.
       isArray: false
       name: file

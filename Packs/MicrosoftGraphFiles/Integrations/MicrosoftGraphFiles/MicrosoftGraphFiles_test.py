@@ -1,11 +1,9 @@
 import pytest
-from freezegun import freeze_time
 import json
 import CommonServerPython
-from MicrosoftGraphFiles import epoch_seconds, get_encrypted, remove_identity_key, url_validation, \
-    parse_key_to_context, delete_file_command, download_file_command, list_sharepoint_sites_command, \
-    list_drive_content_command, create_new_folder_command, list_drives_in_site_command, Client
-
+from MicrosoftGraphFiles import remove_identity_key, url_validation, parse_key_to_context, delete_file_command, \
+    download_file_command, list_sharepoint_sites_command, list_drive_content_command, create_new_folder_command, \
+    list_drives_in_site_command, MsGraphClient
 
 with open("test_data/response.json", "rb") as test_data:
     commands_responses = json.load(test_data)
@@ -27,41 +25,9 @@ class File(object):
     content = b"12345"
 
 
-class TestClient(Client):
-    def __init__(self):
-        self.http_call = ""
-        self.access_token = "1234"
-        self.headers = {"Authorization": f"Bearer {self.access_token}"}
-        self.base_url = "12435"
-
-    def get_access_token(self):
-        return self.get_access_token
-
-
-@freeze_time("2015-01-16T20:00:00+00:00")
-def test_epoch_seconds():
-    """
-    Given:
-
-    When
-        - Save creation time for access token in context
-    Then
-        - The function returns current date in seconds
-    """
-    assert epoch_seconds() == 1421438400
-
-
-def test_get_encrypted():
-    """
-    Given:
-
-    When
-        - Save creation time for access token in context
-    Then
-        - The function returns current date in seconds
-    """
-    res = get_encrypted("34534545", "hgrfhgfgf9qxsgaff4UmdxIYqsLRjCExiHsJgfgj+vf=")
-    assert isinstance(res, str) and res
+client_mocker = MsGraphClient(
+    tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name',
+    base_url='url', verify='use_ssl', proxy='proxy', self_deployed='self_deployed', ok_codes=(1, 2, 3))
 
 
 def test_remove_identity_key_with_valid_application_input():
@@ -193,10 +159,9 @@ def test_parse_key_to_context_exclude_keys_from_list():
     [
         (
             download_file_command,
-            {"object_type": "drives", "object_type_id": "123", "item_id": "232"},
-            File,
-            commands_expected_results["download_file"],
-        )
+            {"object_type": "drives", "object_type_id": "123", "item_id": "232"}, File,
+            commands_expected_results["download_file"]
+      ),
     ],
 )  # noqa: E124
 def test_download_file(command, args, response, expected_result, mocker):
@@ -208,9 +173,8 @@ def test_download_file(command, args, response, expected_result, mocker):
     Then
         - return FileResult object
     """
-    client = TestClient()
-    mocker.patch.object(client, "http_call", return_value=response)
-    result = command(client, args)
+    mocker.patch.object(client_mocker.ms_client, "http_request", return_value=response)
+    result = command(client_mocker, args)
     assert "Contents" in list(result.keys())
 
 
@@ -234,9 +198,8 @@ def test_delete_file(command, args, response, expected_result, mocker):
     Then
         - return FileResult object
     """
-    client = TestClient()
-    mocker.patch.object(client, "http_call", return_value=response)
-    human_readable, result = command(client, args)
+    mocker.patch.object(client_mocker.ms_client, "http_request", return_value=response)
+    human_readable, result = command(client_mocker, args)
     assert expected_result == result
 
 
@@ -260,9 +223,8 @@ def test_list_tenant_sites(command, args, response, expected_result, mocker):
     Then
         - return FileResult object
     """
-    client = TestClient()
-    mocker.patch.object(client, "http_call", return_value=response)
-    result = command(client, args)
+    mocker.patch.object(client_mocker.ms_client, "http_request", return_value=response)
+    result = command(client_mocker, args)
     assert expected_result == result[1]
 
 
@@ -286,9 +248,8 @@ def test_list_drive_content(command, args, response, expected_result, mocker):
     Then
         - return FileResult object
     """
-    client = TestClient()
-    mocker.patch.object(client, "http_call", return_value=response)
-    result = command(client, args)
+    mocker.patch.object(client_mocker.ms_client, "http_request", return_value=response)
+    result = command(client_mocker, args)
     assert expected_result == result[1]
 
 
@@ -317,9 +278,8 @@ def test_create_name_folder(command, args, response, expected_result, mocker):
     Then
         - return FileResult object
     """
-    client = TestClient()
-    mocker.patch.object(client, "http_call", return_value=response)
-    result = command(client, args)
+    mocker.patch.object(client_mocker.ms_client, "http_request", return_value=response)
+    result = command(client_mocker, args)
     assert expected_result == result[1]
 
 
@@ -343,7 +303,6 @@ def test_list_drives_in_site(command, args, response, expected_result, mocker):
     Then
         - return FileResult object
     """
-    client = TestClient()
-    mocker.patch.object(client, "http_call", return_value=response)
-    result = command(client, args)
+    mocker.patch.object(client_mocker.ms_client, "http_request", return_value=response)
+    result = command(client_mocker, args)
     assert expected_result == result[1]

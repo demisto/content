@@ -24,6 +24,7 @@ configuration:
   name: longRunning
   required: false
   type: 8
+  hidden: true
 - display: Event type to fetch
   name: event_type
   defaultvalue: DetectionSummaryEvent

@@ -12,6 +12,7 @@ script: |-
   else:
       demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "You must provide name or uid." } )
 type: python
+subtype: python2
 tags:
 - checkpoint
 comment: Delete access rule objects configured in Checkpoint FW.

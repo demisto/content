@@ -20,6 +20,7 @@ script: |-
   })
   demisto.results(res)
 type: python
+subtype: python2
 tags: []
 comment: Create a duplicate incident to the current.
 enabled: true

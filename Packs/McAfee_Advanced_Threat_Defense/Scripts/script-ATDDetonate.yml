@@ -72,6 +72,7 @@ script: |-
   else:
       demisto.results({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'ATD: Failed to detonate source, exit status = {0}'.format(status) })
 type: python
+subtype: python2
 tags:
 - file
 - enhancement

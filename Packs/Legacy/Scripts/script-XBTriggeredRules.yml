@@ -1,6 +1,6 @@
 commonfields:
   id: XBTriggeredRules
-  version: 1
+  version: -1
 name: XBTriggeredRules
 script: |-
   res = []
@@ -16,6 +16,7 @@ script: |-
   else:
       demisto.results(entry)
 type: python
+subtype: python2
 tags:
 - server
 - analytics
