@@ -17,6 +17,7 @@ script: |
       else:
           demisto.results("No results.")
 type: python
+subtype: python2
 tags:
 - lightcyber
 comment: Shows detected entities from LightCyber Magna.

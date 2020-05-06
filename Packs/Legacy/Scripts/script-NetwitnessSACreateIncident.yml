@@ -16,6 +16,7 @@ script: |
       else:
           demisto.results("No results.")
 type: python
+subtype: python2
 tags:
 - RSA NetWitness Security Analytics
 comment: Create an incident inside NetWitness SA from a set of NetWitness events.
