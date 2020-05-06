@@ -1,6 +1,5 @@
 ## [Unreleased]
--
-
+Added download report of a task
 
 ## [20.4.0] - 2020-04-14
 -

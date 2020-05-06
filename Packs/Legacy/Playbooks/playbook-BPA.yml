@@ -47,6 +47,9 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
+    scriptarguments:
+      generate_zip_bundle:
+        simple: "true"
     separatecontext: false
     view: |-
       {
