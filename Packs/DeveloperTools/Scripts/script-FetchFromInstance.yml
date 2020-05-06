@@ -89,6 +89,6 @@ outputs:
   description: All incidents entries (raw JSON)
 scripttarget: 0
 runonce: false
-deprecated: true
+deprecated: false
 tests:
   - No test - cannot create a dummy integration inorder to test that
