@@ -95,7 +95,8 @@ class TestZonesOperations:
                                  "|Disable|FQDN|Reference ID|Rpz Policy|Rpz Severity|Rpz Type|View|\n" \
                                  "|---|---|---|---|---|---|---|\n" \
                                  "| false | test.com | zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50ZXN0:test.com/default " \
-                                 "| GIVEN | WARNING | LOCAL | default |\n"
+                                 "| GIVEN | WARNING | LOCAL | default |\n" \
+                                 "!!!!!"
         assert context == {
             'Infoblox.ResponsePolicyZones(val.FQDN && val.FQDN === obj.FQDN)': {
                 'ReferenceID': 'zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50ZXN0:test.com/default',

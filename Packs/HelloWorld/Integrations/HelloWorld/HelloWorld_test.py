@@ -450,6 +450,6 @@ def test_fetch_incidents(requests_mock):
             'name': 'Hello World Alert 200',
             'occurred': '2020-02-17T23:34:23.000Z',
             'rawJSON': json.dumps(mock_response['alerts'][1]),
-            'severity': 2,  # medium, this is XSOAR severity (already converted)
+            'severity': 3,  # medium, this is XSOAR severity (already converted)
         }
     ]
