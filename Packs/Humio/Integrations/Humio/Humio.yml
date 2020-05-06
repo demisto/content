@@ -303,76 +303,19 @@ script:
       required: true
       description: Repository to use
     outputs:
-    - contextPath: Humio.Notifier
-      description: List of notifiers
-      type: Unknown
+    - contextPath: Humio.Notifier.entity
+      description: The type of notifier
+      type: String
+    - contextPath: Humio.Notifier.id
+      description: The notifier ID
+      type: String
+    - contextPath: Humio.Notifier.name
+      description: The notifier name
+      type: String
+    - contextPath: Humio.Notifier.properties.bodyTemplate
+      description: The notifier body template
+      type: String
     description: List all notifiers in Humio
-  - name: humio-update-alert
-    arguments:
-    - name: name
-      required: true
-      description: Name of the alert
-    - name: queryString
-      required: true
-      description: Query to use
-    - name: start
-      required: true
-      description: Start time either relative or epoch in ms
-    - name: description
-      required: true
-      description: Description of the alert
-    - name: throttleTimeMillis
-      required: true
-      description: maximum frequency that notifications are sent
-    - name: silenced
-      description: is it silenced
-      defaultValue: "false"
-    - name: notifiers
-      required: true
-      description: Which notifiers?
-      isArray: true
-    - name: labels
-      required: true
-      description: Labels to use
-      isArray: true
-    - name: repository
-      required: true
-      description: Which repository
-    - name: id
-      required: true
-      description: ID of the alert
-    outputs:
-    - contextPath: Humio.Alert.description
-      description: Description of the alert
-      type: String
-    - contextPath: Humio.Alert.id
-      description: The alert id
-      type: String
-    - contextPath: Humio.Alert.name
-      description: The alert name
-      type: String
-    - contextPath: Humio.Alert.notifiers
-      description: The notifiers the alert will use
-      type: String
-    - contextPath: Humio.Alert.query.end
-      description: the end time of the query
-      type: String
-    - contextPath: Humio.Alert.query.isLive
-      description: whether or not the query is live
-      type: Number
-    - contextPath: Humio.Alert.query.queryString
-      description: The query string being used
-      type: String
-    - contextPath: Humio.Alert.query.start
-      description: The start time of the query
-      type: String
-    - contextPath: Humio.Alert.silenced
-      description: Whether or not the alert is enabled
-      type: Number
-    - contextPath: Humio.Alert.throttleTimeMillis
-      description: The throttle time for alerts
-      type: Number
-    description: Update an alert in Humio
   - name: humio-delete-alert
     arguments:
     - name: repository
@@ -395,9 +338,18 @@ script:
       required: true
       description: ID to use
     outputs:
-    - contextPath: Humio.Notifier
-      description: Details of the notifier
-      type: Unknown
+    - contextPath: Humio.Notifier.entity
+      description: The type of notifier
+      type: String
+    - contextPath: Humio.Notifier.id
+      description: The notifier ID
+      type: String
+    - contextPath: Humio.Notifier.name
+      description: The notifier name
+      type: String
+    - contextPath: Humio.Notifier.properties.bodyTemplate
+      description: The notifier body template
+      type: String
     description: Get notifier from Humio by id
   dockerimage: demisto/python3:3.7.4.2245
   isfetch: true

@@ -13,6 +13,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Humio",
+            "playbookID": "Humio-Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Tanium Threat Response",
             "playbookID": "Tanium Threat Response Test"
         },

@@ -220,44 +220,6 @@ def humio_create_alert(client, args, headers):
         )
 
 
-def humio_update_alert(client, args, headers):
-    fulldata = {}
-    data = {}
-    data["queryString"] = args.get("queryString")
-    data["start"] = args.get("start")
-    data["end"] = "now"
-    data["isLive"] = True
-    fulldata["name"] = args.get("name")
-    fulldata["description"] = args.get("description")
-    fulldata["throttleTimeMillis"] = int(args.get("throttleTimeMillis"))
-    fulldata["silenced"] = args.get("silenced", "false").lower() in [
-        "true",
-        "1",
-        "t",
-        "y",
-        "yes",
-    ]
-    fulldata["notifiers"] = [
-        notifier for notifier in args.get("notifiers").split(",") if notifier
-    ]
-    fulldata["labels"] = [label for label in args.get("labels").split(",") if label]
-    fulldata["query"] = data
-    url = "/api/v1/repositories/" + args.get("repository") + "/alerts/" + args.get("id")
-    headers["Accept"] = "application/json"
-    response = client.http_request("PUT", url, fulldata, headers)
-    if response.status_code == 200:
-        result = response.json()
-        markdown = tableToMarkdown("Humio Alerts", result, removeNull=True)
-        outputs = {"Humio.Alert(val.id == obj.id)": result}
-        return markdown, outputs, result
-    else:
-        raise ValueError(
-            "Error:"
-            + " response from server was: "
-            + str(response.text)
-        )
-
-
 def humio_delete_alert(client, args, headers):
     data: Dict[str, str] = {}
     url = "/api/v1/repositories/" + args.get("repository") + "/alerts/" + args.get("id")
@@ -411,7 +373,6 @@ def main():
             "humio-list-alerts": humio_list_alerts,
             "humio-get-alert-by-id": humio_get_alert_by_id,
             "humio-create-alert": humio_create_alert,
-            "humio-update-alert": humio_update_alert,
             "humio-delete-alert": humio_delete_alert,
             "humio-list-notifiers": humio_list_notifiers,
             "humio-get-notifier-by-id": humio_get_notifier_by_id,

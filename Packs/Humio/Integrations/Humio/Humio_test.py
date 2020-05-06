@@ -194,34 +194,6 @@ def test_humio_create_alert(requests_mock):
     assert outputs["Humio.Alert(val.id == obj.id)"] == mock_response
 
 
-def test_humio_update_alert(requests_mock):
-    """Tests that a humio alert can be fetched based on its id"""
-    from Humio import Client, humio_update_alert
-
-    mock_response = util_load_json("test_data/update_alert_results.json")
-    requests_mock.put(
-        "https://test.com/api/v1/repositories/sandbox/alerts/UQjuWHAb3ya4sDC6kGhe0Pkn1hBZJQYi",
-        json=mock_response,
-    )
-
-    client = Client(base_url="https://test.com", verify=False, proxies=None)
-    args = {
-        "id": "UQjuWHAb3ya4sDC6kGhe0Pkn1hBZJQYi",
-        "queryString": "alert=true",
-        "start": "24h",
-        "name": "TestingAlert",
-        "description": "Description of TestingAlert",
-        "throttleTimeMillis": "3000000",
-        "repository": "sandbox",
-        "silenced": "true",
-        "notifiers": "BTkuj8QArhIFMh_L39FoN0tnyTUEXplc",
-        "labels": "",
-    }
-
-    _, outputs, _ = humio_update_alert(client, args, headers)
-    assert outputs["Humio.Alert(val.id == obj.id)"] == mock_response
-
-
 def test_humio_list_notifiers(requests_mock):
     """Tests that a humio alerts can be listed"""
     from Humio import Client, humio_list_notifiers
