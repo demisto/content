@@ -245,5 +245,6 @@ class TestChangelogCreation:
         """ In case changelog.json doesn't exists, expected result should be initial version 1.0.0
         """
         mocker.patch("os.path.exists", return_value=False)
-        result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path='DummyPath')
+        dummy_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_data")
+        result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path)
         assert result is True
