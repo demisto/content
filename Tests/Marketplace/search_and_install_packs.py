@@ -3,9 +3,12 @@ from __future__ import print_function
 import ast
 import json
 import demisto_client
-from threading import Thread
+from threading import Thread, Lock
 from demisto_sdk.commands.common.tools import print_error, print_color, LOG_COLORS, is_file_path_in_pack, \
     get_pack_name, run_threads_list
+
+import time
+
 
 
 def get_pack_display_name(path):
@@ -134,15 +137,13 @@ def search_pack(client, prints_manager, pack_display_name):
         return {}
 
 
-def install_pack(client, prints_manager, pack_display_name, packs_to_install, installed_packs):
-    """ Make a pack installation request.
+def install_packs(client, prints_manager, packs_to_install):
+    """ Make a packs installation request.
 
     Args:
         client (demisto_client): The configured client to use
         prints_manager (ParallelPrintsManager): Print manager object
-        pack_display_name (string): The pack display name
         packs_to_install (list): A list of the packs to install.
-        installed_packs (set): A set of packs that were installed so far.
     """
 
     request_data = {
@@ -150,7 +151,8 @@ def install_pack(client, prints_manager, pack_display_name, packs_to_install, in
         'ignoreWarnings': True
     }
 
-    msg = f'Pack {pack_display_name} installation request body:\n{str(request_data)}'
+    msg = f'Packs installation request body:\n{str(request_data)}\n'
+    start = time.time()
     prints_manager.add_print_job(msg, print_color, 0, LOG_COLORS.GREEN)
     prints_manager.execute_thread_prints(0)
 
@@ -163,37 +165,47 @@ def install_pack(client, prints_manager, pack_display_name, packs_to_install, in
                                                                             accept='application/json')
 
         if 200 <= status_code < 300:
-            prints_manager.add_print_job('Pack {} Successfully Installed!'.format(pack_display_name), print_color, 0,
+            prints_manager.add_print_job('Packs Successfully Installed!', print_color, 0,
                                          LOG_COLORS.GREEN)
             prints_manager.execute_thread_prints(0)
-            installed_packs.update([pack['id'] for pack in packs_to_install])
         else:
             result_object = ast.literal_eval(response_data)
             message = result_object.get('message', '')
-            err_msg = 'Failed to install pack {} - with status code {}\n{}'.format(pack_display_name,
-                                                                                   status_code,
-                                                                                   message)
+            err_msg = 'Failed to install packs - with status code {}\n{}'.format(status_code, message)
             prints_manager.add_print_job(err_msg, print_error, 0)
             prints_manager.execute_thread_prints(0)
     except Exception as e:
-        err_msg = f'The request to install pack {pack_display_name} has failed. Reason:\n{str(e)}'
+        err_msg = f'The request to install packs has failed. Reason:\n{str(e)}'
         prints_manager.add_print_job(err_msg, print_error, 0)
+        prints_manager.execute_thread_prints(0)
+    finally:
+        end = time.time()
+        msg = f'took {end - start} seconds.'
+        prints_manager.add_print_job(msg, print_color, 0, LOG_COLORS.GREEN)
         prints_manager.execute_thread_prints(0)
 
 
-def search_and_install_pack(client, prints_manager, int_path, installed_packs):
+def search_packs_and_their_dependencies(client, prints_manager, int_path, packs_to_install, installation_request_body, lock):
     pack_display_name = get_pack_display_name(int_path)
     pack_data = search_pack(client, prints_manager, pack_display_name)
 
     if pack_data:
         dependencies = get_pack_dependencies(client, prints_manager, pack_data)
-        packs_to_install = [pack_data] + dependencies
-        install_pack(client, prints_manager, pack_display_name, packs_to_install, installed_packs)
+        current_packs_to_install = [pack_data] + dependencies
+
+        lock.acquire()
+        for pack in current_packs_to_install:
+            if pack['id'] not in packs_to_install:
+                packs_to_install.append(pack['id'])
+                installation_request_body.append(pack)
+        lock.release()
 
 
 def search_and_install_packs_and_their_dependencies(integrations_files, client, prints_manager):
+    lock = Lock()
     threads_list = []
-    installed_packs = set()
+    packs_to_install = []
+    installation_request_body = []
 
     host = client.api_client.configuration.host
     msg = f'Starting to search and install packs in server: {host}'
@@ -201,12 +213,16 @@ def search_and_install_packs_and_their_dependencies(integrations_files, client, 
     prints_manager.execute_thread_prints(0)
 
     for int_path in integrations_files:
-        thread = Thread(target=search_and_install_pack,
+        thread = Thread(target=search_packs_and_their_dependencies,
                         kwargs={'client': client,
                                 'prints_manager': prints_manager,
                                 'int_path': int_path,
-                                'installed_packs': installed_packs})
+                                'packs_to_install': packs_to_install,
+                                'installation_request_body': installation_request_body,
+                                'lock': lock})
         threads_list.append(thread)
     run_threads_list(threads_list)
 
-    return installed_packs
+    install_packs(client, prints_manager, installation_request_body)
+
+    return packs_to_install
