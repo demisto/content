@@ -53,7 +53,7 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
-- additionalinfo: Supports CSV values.
+- additionalinfo: Supports comma-separated values.
   display: Tags
   name: feedTags
   required: false
