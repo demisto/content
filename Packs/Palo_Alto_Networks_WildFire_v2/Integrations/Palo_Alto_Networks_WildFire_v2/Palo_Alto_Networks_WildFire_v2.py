@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 import json
 import shutil
 import requests
-
+from typing import Dict, Any
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -75,6 +75,7 @@ VERDICTS_TO_DBOTSCORE = {
 
 class NotFoundError(Exception):
     """ Report or File not found. """
+
     def __init__(self, *args):  # real signature unknown
         pass
 
@@ -172,12 +173,20 @@ def create_dbot_score_from_verdict(pretty_verdict):
         raise Exception('Hash is missing in WildFire verdict.')
     if pretty_verdict["Verdict"] not in VERDICTS_TO_DBOTSCORE:
         raise Exception('This hash verdict is not mapped to a DBotScore. Contact Demisto support for more information.')
-    dbot_score = {
+    dbot_score = [{
         'Indicator': pretty_verdict["SHA256"] if 'SHA256' in pretty_verdict else pretty_verdict["MD5"],
         'Type': 'hash',
         'Vendor': 'WildFire',
         'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]]
+    },
+        {
+            'Indicator': pretty_verdict["SHA256"] if 'SHA256' in pretty_verdict else pretty_verdict["MD5"],
+            'Type': 'file',
+            'Vendor': 'WildFire',
+            'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]]
     }
+
+    ]
     return dbot_score
 
 
@@ -210,13 +219,20 @@ def create_dbot_score_from_verdicts(pretty_verdicts):
             raise Exception(
                 'This hash verdict is not mapped to a DBotScore. Contact Demisto support for more information.')
 
-        dbot_score = {
+        dbot_score_type_hash = {
             'Indicator': pretty_verdict["SHA256"] if "SHA256" in pretty_verdict else pretty_verdict["MD5"],
             'Type': 'hash',
             'Vendor': 'WildFire',
             'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]]
         }
-        dbot_score_arr.append(dbot_score)
+        dbot_score_type_file = {
+            'Indicator': pretty_verdict["SHA256"] if "SHA256" in pretty_verdict else pretty_verdict["MD5"],
+            'Type': 'file',
+            'Vendor': 'WildFire',
+            'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]]
+        }
+        dbot_score_arr.append(dbot_score_type_hash)
+        dbot_score_arr.append(dbot_score_type_file)
 
     return dbot_score_arr
 
@@ -401,12 +417,11 @@ def wildfire_get_verdict_command():
         pretty_verdict = prettify_verdict(verdict_data)
         human_readable = tableToMarkdown('WildFire Verdict', pretty_verdict, removeNull=True)
 
-        dbot_score = create_dbot_score_from_verdict(pretty_verdict)
+        dbot_score_list = create_dbot_score_from_verdict(pretty_verdict)
         entry_context = {
             "WildFire.Verdicts(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5)": pretty_verdict,
-            "DBotScore": dbot_score
+            "DBotScore": dbot_score_list
         }
-
         demisto.results({
             'Type': entryTypes['note'],
             'Contents': result,
@@ -456,10 +471,11 @@ def wildfire_get_verdicts_command():
         pretty_verdicts = prettify_verdicts(verdicts_data)
         human_readable = tableToMarkdown('WildFire Verdicts', pretty_verdicts, removeNull=True)
 
-        dbot_score = create_dbot_score_from_verdicts(pretty_verdicts)
+        dbot_score_list = create_dbot_score_from_verdicts(pretty_verdicts)
+
         entry_context = {
             "WildFire.Verdicts(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5)": pretty_verdicts,
-            "DBotScore": dbot_score
+            "DBotScore": dbot_score_list
         }
 
         demisto.results({
@@ -550,18 +566,14 @@ def create_report(file_hash, reports, file_info, format_='xml', verbose=False):
         if len(evidence_text) > 0:
             outputs["Evidence"]["Text"] = evidence_text
 
-    entry_context = {}
-    entry_context["DBotScore"] = {
-        'Indicator': file_hash,
-        'Type': 'hash',
-        'Vendor': 'WildFire',
-        'Score': 0
-    }
+    entry_context = {}  # type: Dict[str, Any]
+    dbot_score_file = 0
+
     entry_context["WildFire.Report(val.SHA256 === obj.SHA256)"] = outputs
 
     if file_info:
         if file_info["malware"] == 'yes':
-            entry_context["DBotScore"]["Score"] = 3
+            dbot_score_file = 3
             entry_context[outputPaths['file']] = {
                 'Type': file_info["filetype"],
                 'MD5': file_info["md5"],
@@ -572,7 +584,11 @@ def create_report(file_hash, reports, file_info, format_='xml', verbose=False):
                 'Malicious': {'Vendor': 'WildFire'}
             }
         else:
-            entry_context["DBotScore"]["Score"] = 1
+            dbot_score_file = 1
+    dbot = [{'Indicator': file_hash, 'Type': 'hash', 'Vendor': 'WildFire', 'Score': dbot_score_file},
+            {'Indicator': file_hash, 'Type': 'file', 'Vendor': 'WildFire', 'Score': dbot_score_file}]
+    entry_context["DBotScore"] = dbot
+
     if format_ == 'pdf':
         get_report_uri = URL + URL_DICT["report"]
         params = {

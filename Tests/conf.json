@@ -912,7 +912,7 @@
         },
         {
             "integrations": "GRR",
-            "playbookID": "grr_test",
+            "playbookID": "GRR Test",
             "nightly": true
         },
         {
@@ -1330,7 +1330,7 @@
         },
         {
             "integrations": "carbonblackliveresponse",
-            "playbookID": "CarbonBlackLiveResponseTest",
+            "playbookID": "Carbon Black Live Response Test",
             "nightly": true
         },
         {
@@ -1565,7 +1565,7 @@
         },
         {
             "integrations": "carbonblack-v2",
-            "playbookID": "CarbonBlackResponseTest"
+            "playbookID": "Carbon Black Response Test"
         },
         {
             "integrations": "Cisco Umbrella Investigate",
@@ -2743,7 +2743,7 @@
             "playbookID": "IBM Resilient Systems Test"
         },
         {
-            "integrations": "PrismaAccess",
+            "integrations": ["PrismaAccess", "Prisma Access Egress IP feed"],
             "playbookID": "Prisma_Access_Egress_IP_Feed-Test",
             "timeout": 60000,
             "fromversion": "5.5.0",
@@ -2762,6 +2762,10 @@
         },
         {
             "playbookID": "Extract Indicators From File - test"
+        },
+        {
+            "integrations": "Zabbix",
+            "playbookID": "Zabbix"
         },
         {
             "integrations": "GCP Whitelist Feed",
@@ -2946,7 +2950,10 @@
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
-        "Ipstack": "reached out our monthly quota (08/03/2020)"
+        "Ipstack": "reached out our monthly quota (08/03/2020)",
+
+        "_comment2": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
+        "Zabbix": "Supported by external developer"
     },
     "nightly_integrations": [
         "Lastline v2",
@@ -2976,6 +2983,7 @@
         "ReversingLabs A1000": "Checking",
         "Check Point": "Checking",
         "okta": "Test Module failing, suspect it requires SSL",
+        "Okta v2": "dynamic test, need to revisit and better avoid conflicts",
         "Awake Security": "Checking",
         "ArcSight ESM v2": "Checking",
         "Phish.AI": "Checking",
