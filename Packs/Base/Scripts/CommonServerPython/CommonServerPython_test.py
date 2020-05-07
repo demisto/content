@@ -1670,5 +1670,3 @@ def test_appendContext(mocker, context_mock, data_mock, key, expected_answer):
         appendContext(key, data_mock)
 
     assert expected_answer in demisto.results.call_args[0][0]['Contents']
-
-
