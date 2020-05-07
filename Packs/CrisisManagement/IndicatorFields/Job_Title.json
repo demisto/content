@@ -6,7 +6,7 @@
 	"name": "Job Title",
 	"ownerOnly": false,
 	"placeholder": "",
-	"description": "The job title of the employee.",
+	"description": "The employee's job title.",
 	"cliName": "jobtitle",
 	"type": "shortText",
 	"closeForm": false,

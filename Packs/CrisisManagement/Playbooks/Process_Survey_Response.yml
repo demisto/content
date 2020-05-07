@@ -51,7 +51,7 @@ tasks:
       id: 93d7947c-976e-4938-8283-da7c6ea4fd09
       version: -1
       name: Update survey response tracker
-      description: Updates the key used to track the processed employee responses.
+      description: Updates the lastupdatedindex context key used to track the processed employee responses.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1316,4 +1316,4 @@ outputs: []
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
-description: ''
+description: 'This playbook processes the survery responses. It updates that the employee responded to the survey and what their health status is. If necessary, it opens IT or HR incidents, and updates the process survey tracker.'

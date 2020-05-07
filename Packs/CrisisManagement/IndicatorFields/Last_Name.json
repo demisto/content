@@ -6,7 +6,7 @@
 	"name": "Last Name",
 	"ownerOnly": false,
 	"placeholder": "",
-	"description": "The last name of the employee.",
+	"description": "The employee's last name.",
 	"cliName": "lastname",
 	"type": "shortText",
 	"closeForm": false,

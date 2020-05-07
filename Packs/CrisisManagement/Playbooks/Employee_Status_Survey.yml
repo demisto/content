@@ -5,8 +5,8 @@ description: Manages a crisis event where employees have to work remotely due to
   pandemic, issues with the workplace or similar situations. Sends a questionnaire
   to all direct reports under a given manager. The questionnaire asks the employees
   for their health status and whether they need any help. The data is saved as employee
-  indicators in Cortex XSOAR, while IT and HR incidents are created to provide help
-  for employees who stated that they need it.
+  indicators in Cortex XSOAR, while IT and HR incidents are created to provide assistance
+  to employees who requested it.
 starttaskid: '0'
 tasks:
   '0':
@@ -66,7 +66,7 @@ tasks:
         simple: Voluntary employee checkin
       body:
         simple: "Hi,\n\nYour voluntary participation in this employee\nhealth check\
-          \ enables Palo Alto Networks to be proactive in protecting\nit's employees.\
+          \ enables us to be proactive in protecting our employees.\
           \ Thank you for your participation.\n\nRegards,\nEmployee Health Monitoring\
           \ Team"
       methods:
@@ -85,7 +85,7 @@ tasks:
         label: ''
         labelarg:
           simple: Which out of the following options best represents your current
-            health condition
+            health condition?
         required: true
         gridcolumns: []
         defaultrows: []
@@ -127,7 +127,7 @@ tasks:
         - No, I am good
         fieldassociated: ''
         placeholder: ''
-        tooltip: 'If you are facing challenges please describe your problem in comments
+        tooltip: 'If you are facing challenges, please describe your problem in the comments
           field below. '
         readonly: false
       - id: '3'
@@ -244,7 +244,7 @@ tasks:
       version: -1
       name: Continuously Process Survey Responses
       description: Continuously processes new questionnaire responses as they are
-        coming.
+        received.
       playbookName: Continuously Process Survey Responses
       type: playbook
       iscommand: false
@@ -287,8 +287,7 @@ tasks:
       version: -1
       name: Stop processing responses due to survey expiration
       description: Sets a key in context indicating that the survey expired, which
-        in turn stops the survey response processing that runs as long as the survey
-        is not expired.
+        in turn stops the survey response processing. 
       scriptName: Set
       type: regular
       iscommand: false
@@ -518,8 +517,8 @@ tasks:
     task:
       id: 9a8fe33e-72d5-4017-8bff-90cda1015c05
       version: -1
-      name: Get direct reports for the manager
-      description: Retrieves the direct reports for a user. Direct reports are the
+      name: Get manager's direct reports
+      description: Retrieves the direct reports for a specific user. Direct reports are the
         people who have that user configured as their manager.
       script: Microsoft Graph User|||msgraph-direct-reports
       type: regular

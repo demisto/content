@@ -6,7 +6,7 @@
 	"name": "Employee Health Status",
 	"ownerOnly": false,
 	"placeholder": "",
-	"description": "The current health status of the employee as indicated by him or her. Can be one of the following: \"No health issues with me or my family\", \"One of my family members is not well\", \"I am not feeling well\", \"I choose not to answer\".",
+	"description": "The current health status of the employee as indicated by them. Can be one of the following: \"No health issues with me or my family\", \"One of my family members is not well\", \"I am not feeling well\", \"I choose not to answer\".",
 	"cliName": "employeehealthstatus",
 	"type": "singleSelect",
 	"closeForm": false,
