@@ -79,7 +79,7 @@ def get_pack_dependencies(client, prints_manager, pack_data):
         if dependencies_data:
             prints_manager.add_print_job('Found the following dependencies for pack {}:\n{}'.format(pack_id,
                                                                                                     dependencies_str),
-                                     print_color, 0, LOG_COLORS.GREEN)
+                                         print_color, 0, LOG_COLORS.GREEN)
             prints_manager.execute_thread_prints(0)
         return dependencies_data
     else:
@@ -167,7 +167,7 @@ def install_packs(client, prints_manager, packs_to_install):
             prints_manager.add_print_job(err_msg, print_error, 0)
             prints_manager.execute_thread_prints(0)
     except Exception as e:
-        err_msg = f'The request to install packs has failed. Reason:\n{str(e)}'
+        err_msg = 'The request to install packs has failed. Reason:\n{}'.format(str(e))
         prints_manager.add_print_job(err_msg, print_error, 0)
         prints_manager.execute_thread_prints(0)
 
@@ -215,7 +215,7 @@ def search_and_install_packs_and_their_dependencies(files_paths, client, prints_
     installation_request_body = []  # the packs to install, in the request format
 
     host = client.api_client.configuration.host
-    msg = f'Starting to search and install packs in server: {host}\n'
+    msg = 'Starting to search and install packs in server: {}\n'.format(host)
     prints_manager.add_print_job(msg, print_color, 0, LOG_COLORS.GREEN)
     prints_manager.execute_thread_prints(0)
 
