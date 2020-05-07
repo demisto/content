@@ -1162,7 +1162,7 @@ def appendContext(key, data, dedup=False):
             if isinstance(data, STRING_TYPES):
                 new_val = data + ',' + existing
             else:
-                return_error("Cannot append data to the existing context - \n The data is of instance {} while the "
+                return_error("Cannot append data to the existing context - \n The data is of type {} while the "
                              "context in the specified path is of instance {}.".format(type(data), type(existing)))
 
         if isinstance(existing, dict):
@@ -1170,7 +1170,7 @@ def appendContext(key, data, dedup=False):
                 existing.update(data)
                 new_val = existing
             else:
-                return_error("Cannot append data to the existing context - \n The data is of instance {} while the "
+                return_error("Cannot append data to the existing context - \n The data is of type {} while the "
                             "context in the specified path is of instance {}.".format(type(data), type(existing)))
 
         if isinstance(existing, list):
