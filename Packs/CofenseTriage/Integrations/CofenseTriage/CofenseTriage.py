@@ -258,7 +258,7 @@ def fetch_reports() -> None:
         }
 
         if report.attachment:
-            incident['attachment'] = report.attachment
+            incident['attachment'] = [report.attachment]
 
         incidents.append(incident)
         already_fetched.add(report.id)

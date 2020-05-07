@@ -65,7 +65,7 @@ class TestCofenseTriage:
         CofenseTriage.return_error.assert_called_once()
 
     @freeze_time("2000-10-31")
-    def test_fetch_reports(self, requests_mock):
+    def test_fetch_reports(self, mocker, requests_mock):
         set_demisto_arg("max_fetch", 10)
         set_demisto_arg("date_range", "1 day")
         set_demisto_arg("category_id", 5)
@@ -79,6 +79,10 @@ class TestCofenseTriage:
             "https://some-triage-host/api/public/v1/reporters/5331",
             text=fixture_from_file("reporters.json"),
         )
+        mocker.patch(
+            "CofenseTriage.CofenseTriage.fileResult",
+            lambda filename, data: {"FileID": "file_id", "FileName": "file_name"},
+        )
 
         CofenseTriage.fetch_reports()
 
@@ -91,6 +95,10 @@ class TestCofenseTriage:
         assert demisto_incidents[0]["occurred"] == "2020-03-19T16:43:09.715Z"
         assert demisto_incidents[0]["severity"] == 1
         assert len(demisto_incidents[0]["rawJSON"]) == 1931
+
+        assert demisto_incidents[1]["attachment"] == [
+            {"name": "file_name", "path": "file_id"}
+        ]
 
         CofenseTriage.demisto.setLastRun.assert_called_once_with(
             {"reports_fetched": "[13392, 13363]"}
