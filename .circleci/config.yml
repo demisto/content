@@ -508,11 +508,9 @@ jobs:
               then
                 ./Tests/scripts/run_tests.sh "Demisto PreGA" | tee ./artifacts/tests_outputs/demisto_prega.log
                 # export RETVAL=$?
+                cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
                 # exit $RETVAL
-                if [[ -f "./Tests/failed_tests.txt" ]]; then
-                  echo "copying ./Tests/failed_tests.txt to $CIRCLE_ARTIFACTS/failed_tests.txt"
-                  cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
-                fi
+                echo "endtime: $(date)"
                 echo "failing step purposely"
                 exit 1
 
@@ -603,3 +601,14 @@ workflows:
   commit:
     jobs:
       - build
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 21 * * *"
+          filters:
+            branches:
+              only:
+                - figure-out-mocks
+    jobs:
+      - build:
+          context: nightly_env
