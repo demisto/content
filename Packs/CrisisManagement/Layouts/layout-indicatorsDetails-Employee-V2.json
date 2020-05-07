@@ -3,7 +3,7 @@
     "kind": "indicatorsDetails",
     "layout": {
         "TypeName": "",
-        "id": "427f6979-5dbc-48b4-8c43-f028db017f33",
+        "id": "Employee",
         "kind": "indicatorsDetails",
         "modified": "2020-05-06T08:42:13.186310914Z",
         "name": "",
@@ -166,10 +166,10 @@
                 "type": "custom"
             }
         ],
-        "typeId": "427f6979-5dbc-48b4-8c43-f028db017f33",
+        "typeId": "Employee",
         "version": -1
     },
-    "typeId": "427f6979-5dbc-48b4-8c43-f028db017f33",
+    "typeId": "Employee",
     "version": -1,
 	"fromVersion": "5.5.0"
 }

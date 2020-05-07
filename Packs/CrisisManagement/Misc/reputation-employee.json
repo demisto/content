@@ -19,7 +19,7 @@
 	"contextValue": "",
 	"excludedBrands": [],
 	"defaultMapping": null,
-	"manualMapping": {},
+	"manualMapping": null,
 	"fileHashesPriority": null,
 	"expiration": 0
 }
