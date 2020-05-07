@@ -287,8 +287,8 @@ class TestChangelogCreation:
             }
         }'''
         new_changelog_file = '# This is a new release for 2.0.2'
-        mocker.patch('builtins.open', mock_open(read_data=original_changelog))
-        mocker.patch('builtins.open', mock_open(read_data=new_changelog_file))
+        mocker.patch('builtins.open', mock_open(read_data=original_changelog), new_callable=mock_open())
+        mocker.patch('builtins.open', mock_open(read_data=new_changelog_file), new_callable=mock_open())
         # handle1 = MagicMock('file1').__enter__.return_value
         # handle1.__iter__.return_value = original_changelog
         # handle2 = MagicMock('file2').__enter__.return_value
