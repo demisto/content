@@ -272,7 +272,7 @@ class TestChangelogCreation:
         dummy_pack.current_version = '2.0.2'
         mocker.patch("os.path.exists", return_value=True)
         dir_list = ['1_0_1.md', '2_0_2.md', '2_0_0.md']
-        mocker.patch("os.dir.list", return_value=dir_list)
+        mocker.patch("os.listdir", return_value=dir_list)
         original_changelog = '''
         {
             "1.0.0": {
