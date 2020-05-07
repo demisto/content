@@ -543,7 +543,7 @@
             "playbookID": "WordTokenizeTest"
         },
         {
-            "integration": "QRadar",
+            "integrations": "QRadar",
             "playbookID" :  "test playbook - QRadarCorreltaions"
         },
         {
