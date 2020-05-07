@@ -56,13 +56,13 @@ Sends an email using Gmail.
 | bcc | The additional recipient email address (BCC). | Optional | 
 | htmlBody | The contents (body) of the email to be sent in HTML format. | Optional | 
 | replyTo | The email address used to reply to the message. | Optional | 
-| attachNames | A comma-separated list of new names to renamfor existing attachments, which relates to the order that they were attached to the email.<br>        For example, rename the first and third file attachNames=new_fileName1,,new_fileName3<br>        To rename the second and fifth files, attachNames=,new_fileName2,,,new_fileName5 | Optional | 
+| attachNames | A comma-separated list of new names to renamfor existing attachments, which relates to the order that they were attached to the email. For example, rename the first and third file attachNames=new_fileName1,,new_fileName3 To rename the second and fifth files, attachNames=,new_fileName2,,,new_fileName5 | Optional | 
 | attachCIDs | A comma-separated list of CID images to embed attachments to the email. | Optional | 
-| transientFile | The textual name for an attached file. Multiple files are supported as a<br>        comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test<br>        2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz". | Optional | 
-| transientFileContent | The content for the attached file. Multiple files are supported as a comma-separated<br>        list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test<br>        2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz". | Optional | 
-| transientFileCID | The CID image for an attached file to include within the email body. Multiple files are<br>        supported as comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt"<br>        transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz". | Optional | 
+| transientFile | The textual name for an attached file. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz". | Optional | 
+| transientFileContent | The content for the attached file. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz". | Optional | 
+| transientFileCID | The CID image for an attached file to include within the email body. Multiple files are supported as comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz". | Optional | 
 | additionalHeader | A comma-separated list of additional headers in the format: headerName=headerValue. For example, "headerName1=headerValue1,headerName2=headerValue2". | Optional | 
-| templateParams | 'Replaces {varname} variables with values from this parameter. Expected<br>       values are in the form of a JSON document. For example, {"varname" :{"value" "some<br>       value", "key": "context key"}}. Each var name can either be provided with<br>       the value or a context key to retrieve the value.' | Optional | 
+| templateParams | 'Replaces {varname} variables with values from this parameter. Expected values are in the form of a JSON document. For example, {"varname" :{"value" "some  value", "key": "context key"}}. Each var name can either be provided with  the value or a context key to retrieve the value.' | Optional | 
 
 
 ##### Context Output
@@ -87,21 +87,21 @@ Sends an email using Gmail.
 ```
 {
     "Gmail.SentMail": [
-        {
-            "Body": "this is the body", 
-            "From": "example@demisto.com", 
-            "Cc": null, 
-            "Labels": [
-                "SENT"
-            ], 
-            "Bcc": null, 
-            "To": "test@demistodev.com", 
-            "ThreadId": "16f662789d3a2972", 
-            "Mailbox": "test@demistodev.com", 
-            "Type": "Gmail", 
-            "ID": "16f662789d3a2972", 
-            "Subject": "this is the subject"
-        }
+ {
+     "Body": "this is the body", 
+     "From": "example@demisto.com", 
+     "Cc": null, 
+     "Labels": [
+  "SENT"
+     ], 
+     "Bcc": null, 
+     "To": "test@demistodev.com", 
+     "ThreadId": "16f662789d3a2972", 
+     "Mailbox": "test@demistodev.com", 
+     "Type": "Gmail", 
+     "ID": "16f662789d3a2972", 
+     "Subject": "this is the subject"
+ }
     ]
 }
 ```
