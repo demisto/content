@@ -13,6 +13,7 @@ script: |
   res = demisto.executeCommand("createList", {"listName": demisto.args()['listName'], "listData": encoded_data})
   demisto.results(res)
 type: python
+subtype: python2
 tags: []
 comment: Create historic file for text classifier
 enabled: true

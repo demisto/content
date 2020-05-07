@@ -35,6 +35,7 @@ script: |-
       res += demisto.executeCommand("setPlaybook", {'name': inArgs['playbook']})
   demisto.results(res)
 type: python
+subtype: python2
 tags:
 - management
 comment: Modify incident info such as name, owner, type, etc.

@@ -20,6 +20,7 @@ script: |-
 
   demisto.results('Tests PASS')
 type: python
+subtype: python2
 tags: []
 comment: 'Tests for common functions xml2json and json2xml '
 enabled: true
