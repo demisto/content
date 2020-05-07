@@ -1,30 +1,25 @@
 id: McAfeeWebGatewayTest
 version: -1
 name: McAfeeWebGatewayTest
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 69bd377e-ef65-427b-814a-e2633ad0e673
     type: start
     task:
       id: 69bd377e-ef65-427b-814a-e2633ad0e673
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-  "1":
-    id: "1"
+      - '1'
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     taskid: 21895ba1-e23f-4372-873f-8c6a1fef55f6
     type: regular
     task:
@@ -34,23 +29,18 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     scriptarguments:
       all:
-        simple: "yes"
+        simple: yes
       key: {}
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-  "2":
-    id: "2"
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '2':
+    id: '2'
     taskid: e8d297c4-1422-4482-8b89-fece1edaa98e
     type: regular
     task:
@@ -61,21 +51,16 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Web Gateway
+      description: ''
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     scriptarguments:
       list_id:
         simple: ${MWG.Lists.[0].Name}
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-  "5":
-    id: "5"
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '5':
+    id: '5'
     taskid: 617f4b82-2a0f-45c4-8e86-2b98d6009c23
     type: regular
     task:
@@ -85,22 +70,17 @@ tasks:
       scriptName: PrintContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     scriptarguments:
       outputformat:
         simple: json
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-  "6":
-    id: "6"
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+  '6':
+    id: '6'
     taskid: 54f280cb-b7d0-436d-86a6-f0c75d221f89
     type: regular
     task:
@@ -110,10 +90,11 @@ tasks:
       scriptName: ContextContains
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     scriptarguments:
       all: {}
       attributes: {}
@@ -131,15 +112,9 @@ tasks:
         simple: MWG.ListEntries.ListID
       value:
         simple: ${MWG.Lists.[0].Name}
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-  "7":
-    id: "7"
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+  '7':
+    id: '7'
     taskid: cebe844b-50f1-4616-85b2-ad9d584c7e37
     type: regular
     task:
@@ -150,20 +125,15 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Web Gateway
+      description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       list_id: {}
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-  "9":
-    id: "9"
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '9':
+    id: '9'
     taskid: f11f2910-87e6-4e99-8617-29ee939383bc
     type: regular
     task:
@@ -174,21 +144,16 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Web Gateway
+      description: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     scriptarguments:
       list_id:
         simple: ${MWG.Lists.[5].Name}
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-  "10":
-    id: "10"
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '10':
+    id: '10'
     taskid: 5f768160-2263-4a50-887a-072c07a1bbb6
     type: regular
     task:
@@ -202,21 +167,15 @@ tasks:
       brand: McAfee Web Gateway
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     scriptarguments:
       entry_pos:
-        simple: "0"
+        simple: '0'
       list_id:
         simple: com.scur.type.applcontrol.261
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-  "11":
-    id: "11"
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+  '11':
+    id: '11'
     taskid: dde0ac15-c085-46bd-8361-5179fa198d62
     type: regular
     task:
@@ -226,25 +185,20 @@ tasks:
       scriptName: ContextContains
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     scriptarguments:
       key: {}
       path:
         simple: MWG.ListEntries.Name
       value:
         simple: Zenno
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-  "13":
-    id: "13"
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1420\n  }\n}"
+  '13':
+    id: '13'
     taskid: 7a538336-2c85-4474-8170-dedf4368485f
     type: regular
     task:
@@ -255,26 +209,21 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Web Gateway
+      description: ''
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
     scriptarguments:
       description: {}
       entry_pos:
-        simple: "0"
+        simple: '0'
       list_id:
         simple: com.scur.type.string.263
       name:
         simple: escaping <, > and & worked on ${incident.created}
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1945
-        }
-      }
-  "14":
-    id: "14"
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1945\n  }\n}"
+  '14':
+    id: '14'
     taskid: 99e59d82-d9ea-4694-89af-ff442d255dad
     type: regular
     task:
@@ -285,20 +234,15 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Web Gateway
+      description: ''
     scriptarguments:
       entry_pos:
-        simple: "0"
+        simple: '0'
       list_id:
         simple: com.scur.type.string.263
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2295
-        }
-      }
-  "15":
-    id: "15"
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2295\n  }\n}"
+  '15':
+    id: '15'
     taskid: 04bd808c-7137-42bb-80b0-0bf12458b44b
     type: regular
     task:
@@ -308,23 +252,18 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "16"
+      - '16'
     scriptarguments:
       all:
-        simple: "yes"
+        simple: yes
       key: {}
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1595
-        }
-      }
-  "16":
-    id: "16"
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1595\n  }\n}"
+  '16':
+    id: '16'
     taskid: 95ca16b8-5aa0-4f1c-8bed-c80e27ed9121
     type: regular
     task:
@@ -335,21 +274,16 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Web Gateway
+      description: ''
     nexttasks:
       '#none#':
-      - "13"
+      - '13'
     scriptarguments:
       list_id:
         simple: com.scur.type.string.263
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1770
-        }
-      }
-  "17":
-    id: "17"
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1770\n  }\n}"
+  '17':
+    id: '17'
     taskid: 56286803-2f67-4929-81c0-efce2885c718
     type: regular
     task:
@@ -361,30 +295,17 @@ tasks:
       scriptName: Sleep
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "14"
+      - '14'
     scriptarguments:
       seconds:
-        simple: "5"
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2120
-        }
-      }
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 2340,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
+        simple: '5'
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2120\n  }\n}"
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 2340,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"
 inputs: []
+fromversion: 5.0.0
+description: ''

@@ -2719,5 +2719,5 @@ script:
     description: Executes an endpoint memory dump.
   runonce: false
 tests:
-  - CarbonBlackLiveResponseTest
+  - Carbon Black Live Response Test
 fromversion: 3.6.1

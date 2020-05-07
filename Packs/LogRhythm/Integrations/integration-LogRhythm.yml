@@ -14,7 +14,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: ""
+- display: Credentials
   name: Credentials
   defaultvalue: ""
   type: 9
@@ -31,7 +31,6 @@ configuration:
   required: false
 - display: Fetch incidents
   name: isFetch
-  defaultvalue: ""
   type: 8
   required: false
 - display: Default page size for alarm queries
@@ -46,7 +45,6 @@ configuration:
   required: false
 - display: Incident type
   name: incidentType
-  defaultvalue: ""
   type: 13
   required: false
 script:
