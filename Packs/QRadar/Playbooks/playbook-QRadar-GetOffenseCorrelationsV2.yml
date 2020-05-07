@@ -188,7 +188,7 @@ tasks:
         simple: "SELECT *,\n\"CRE Name\" AS \"CREName\",\n\"CRE Description\" AS \"\
           CREDescription\",\nCATEGORYNAME(highlevelcategory) AS \"Category\"\n${QRadar.AdditionalFields}\n\
           FROM events WHERE \"CRE NAME\" <> NULL AND INOFFENSE(${inputs.ID})\nLIMIT\
-          \ ${inputs.MaxCorrelationCount}\nSTART '${incident.labels.start_time}'"
+          \ ${inputs.MaxCorrelationCount}\nSTART '${inputs.StartTime}'"
       range: {}
       timeout:
         simple: '600'
@@ -339,7 +339,7 @@ tasks:
         simple: "SELECT *,\n\"CRE Name\" AS \"CREName\",\n\"CRE Description\" AS \"\
           CREDescription\",\nCATEGORYNAME(highlevelcategory) AS \"Category\"\n${QRadar.AdditionalFields}\n\
           FROM events WHERE \"CRE NAME\" IS NULL AND INOFFENSE(${inputs.ID})\nLIMIT\
-          \ ${inputs.MaxCorrelationCount}\nSTART '${incident.labels.start_time}'"
+          \ ${inputs.MaxCorrelationCount}\nSTART '${inputs.StartTime}'"
       range: {}
       timeout:
         simple: '600'
