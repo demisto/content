@@ -287,7 +287,7 @@ class TestChangelogCreation:
             }
         }'''
         new_changelog_file = '# This is a new release for 2.0.2'
-        mocker.patch('builtins.open', side_effect=[mock_open(original_changelog), mock_open(new_changelog_file)])
+        mocker.patch('builtins.open', side_effect=[mock_open(read_data=original_changelog), mock_open(read_data=new_changelog_file)])
         dummy_path = 'Irrelevant/Test/Path'
         result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path)
         assert result is True
