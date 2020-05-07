@@ -110,6 +110,7 @@ script: |-
 
       demisto.results(results)
 type: python
+subtype: python2
 tags:
 - Utility
 - file

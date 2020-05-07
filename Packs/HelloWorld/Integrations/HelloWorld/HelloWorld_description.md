@@ -1,3 +1,3 @@
 ## Hello World
 - This section explains how to configure the instance of HelloWorld in Cortex XSOAR.
-- To obtain the HelloWorld API Key, ask to the Cortex XSOAR team on the `#dmst-integrations-help` channel on the [Slack DFIR community](https://dfircommunity.slack.com).
+- You can use the following API Key: `43ea9b2d-4998-43a6-ae91-aba62a26868c`

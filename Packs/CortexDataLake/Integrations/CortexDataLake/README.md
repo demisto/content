@@ -30,6 +30,16 @@ This integration was integrated and tested with version 2 of Cortex Data Lake
     * __Subtype of events to fetch (Firewall)__: Select from all,attack,url,virus,spyware,vulnerability,file,scan,flood,packet,resource,data,url-content,wildfire,extpcap,wildfire-virus,http-hdr-insert,http-hdr,email-hdr,spyware-dns,spyware-wildfire-dns,spyware-wpc-dns,spyware-custom-dns,spyware-cloud-dns,spyware-raven,spyware-wildfire-raven,spyware-wpc-raven,wpc-virus,sctp
     * __Incidents fetched per query__: How many incidents will be fetched per query. Caution: high number could create overload. Default is 10.
 4. Click __Test__ to validate the URLs, token, and connection.
+
+In order for the integration to work, the following URLs need to be accessible:
+
+ - For authentication: 
+   - `oproxy.demisto.ninja`
+   - `api.paloaltonetworks.com `
+ - For API requests, one of the following:
+   - US: `api.us.cdl.paloaltonetworks.com`
+   - EU: `api.nl.cdl.paloaltonetworks.com`
+
 ## Fetched Incidents Data
 Fetches Firewall threat logs as incidents
 
@@ -577,7 +587,7 @@ Searches the Cortex firewall.traffic table. Traffic logs contain entries for the
 | to_zone | A destination zone name or an array of zone names to search. | Optional | 
 | source_port | Source port utilized by the session. Can be port number or an array of destination port numbers to search. For example '443' or '443,445' | Optional | 
 | action | An action name or an array of action names to search. | Optional | 
-| query | A free-text query for which to search. This forms the WHERE part of the query, for example, !cdl-query-traffic-logs query="src LIKE '192.168.1.*' AND dst='8.8.8.8'" | Optional | 
+| query | A free-text query for which to search. This forms the WHERE part of the query, for example, !cdl-query-traffic-logs query="source_ip.value LIKE '192.168.1.*' AND dest_ip.value='8.8.8.8' And dest_port=1234" | Optional | 
 | fields | The fields that are selected in the query. Selection can be "all" (same as *) or a comma saparated list of specific fields in the table.  | Optional | 
 | start_time | The query start time. For example, start_time="2018-04-26 00:00:00" | Optional | 
 | end_time | The query end time. For example, end_time="2018-04-26 00:00:00". | Optional | 

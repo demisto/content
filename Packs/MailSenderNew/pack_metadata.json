@@ -1,24 +1,26 @@
 {
     "name": "Mail Sender (New)",
-    "description": "",
-    "support": "demisto",
-    "serverMinVersion": "4.5.0",
+    "description": "Send emails implemented in Python with embedded image support",
+    "support": "xsoar",
+    "certification": "certified",
+    "price": 0,
+    "serverMinVersion": "4.1.0",
     "currentVersion": "1.0.0",
-    "author": "Demisto",
-    "url": "",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
         "Messaging"
     ],
     "tags": [
+        "Mail Sender (New)"
     ],
-    "created": "2020-04-12T13:51:32Z",
-    "updated": "2020-04-12T13:51:32Z",
+    "created": "2020-04-14T00:00:00Z",
+    "updated": "2020-03-14T00:00:00Z",
     "beta": false,
     "deprecated": false,
-    "certification": "certified",
     "useCases": [],
     "keywords": [],
-    "price": "0",
-    "dependencies": {}
+    "dependencies": {},
+    "displayedImages": []
 }
