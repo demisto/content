@@ -580,9 +580,13 @@ class Pack(object):
             return task_status, True
 
     def prepare_release_notes(self, index_folder_path):
-        """Need to implement the changelog.md parsing and changelog.json creation after design is
-        finalized.
+        """
+        Handles the creation and update of the changelog.json files.
 
+        Args:
+            index_folder_path (str): Path to the unzipped index json.
+        Returns:
+            bool: whether the operation succeeded.
         """
         task_status = False
         try:
