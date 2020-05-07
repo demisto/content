@@ -10,10 +10,10 @@ This integration was integrated and tested with version xx of Logz.io
 ---
 
 Integrate with Logz.io Cloud SIEM to automatically remediate security incidents identified by Logz.io and increase observability into incident details. 
-The integration allows Demisto users to automatically remediate incidents identified by Logz.io Cloud SIEM using Demisto Playbooks.
-In addition, users can query Logz.io directly from Demisto to investigate open questions or retrieve the logs responsible for triggering security rules.
+The integration allows Cortex XSOAR users to automatically remediate incidents identified by Logz.io Cloud SIEM using Cortex XSOAR Playbooks.
+In addition, users can query Logz.io directly from Cortex XSOAR to investigate open questions or retrieve the logs responsible for triggering security rules.
 
-## Configure Logz.io on Demisto
+## Configure Logz.io on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Analytics & SIEM__.
@@ -35,7 +35,7 @@ In addition, users can query Logz.io directly from Demisto to investigate open q
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. logzio-search-logs
 2. logzio-get-logs-by-rule-id
