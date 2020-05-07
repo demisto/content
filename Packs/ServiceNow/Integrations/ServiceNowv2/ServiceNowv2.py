@@ -1695,7 +1695,7 @@ def document_route_to_table(client: Client, args: dict) -> Tuple[Any, Dict[Any, 
     return human_readable, entry_context, result, True
 
 
-def fetch_incidents(client: Client):
+def fetch_incidents(client: Client) -> list:
     query_params = {}
     incidents = []
 
@@ -1775,8 +1775,8 @@ def fetch_incidents(client: Client):
         count += 1
         snow_time = result.get(client.timestamp_field)
 
-    demisto.incidents(incidents)
     demisto.setLastRun({'time': snow_time})
+    return incidents
 
 
 def test_module(client: Client, *_):
@@ -1860,7 +1860,8 @@ def main():
         args = demisto.args()
         if command == 'fetch-incidents':
             raise_exception = True
-            fetch_incidents(client)
+            incidents = fetch_incidents(client)
+            demisto.incidents(incidents)
         elif command == 'servicenow-get-ticket':
             demisto.results(get_ticket_command(client, args))
         elif command in commands:
