@@ -280,8 +280,8 @@ class TestChangelogCreation:
         result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path)
         assert result is True
 
-    @patch('__builtin__.open', new_callable=mock_open, read_data=original_changelog)
-    @patch('__builtin__.open', new_callable=mock_open, read_data=new_changelog_file)
+    @patch('builtins.open', new_callable=mock_open, read_data=original_changelog)
+    @patch('builtins.open', new_callable=mock_open, read_data=new_changelog_file)
     def test_prepare_release_notes_upgrade_version(self, mocker, dummy_pack):
 
         """ In case changelog.json does exists, expected result should be initial version 1.0.0
