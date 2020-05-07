@@ -40,7 +40,6 @@ class PCAP():
         self.emails_extracted = set([])
         self.homemade_extracted = set([])
         self.last_layer = set([])
-        self.kerb_data = set()
         self.irc_data = list()
         self.protocol_data: Dict[str, Any] = dict()
         self.extracted_protocols = extracted_protocols
@@ -73,6 +72,7 @@ class PCAP():
             self.reg_cmd = re.compile(COMMAND_REGEX)
         if 'KERBEROS' in extracted_protocols:
             self.reg_sname = re.compile(SNAME_REGEX)
+            self.kerb_data = set()
         if 'SSH' in extracted_protocols:
             self.ssh_data = {'ClientProtocols': set(),
                          'ServerProtocols': set(),
@@ -81,6 +81,9 @@ class PCAP():
             self.reg_message_code = re.compile(MESSAGE_CODE)
         if 'FTP' in extracted_protocols:
             self.reg_res_code = re.compile(RESPONSE_CODE)
+        if 'TELNET' in extracted_protocols:
+            self.telnet_data = set()
+            self.telnet_commands = set()
         if homemade_regex:
             self.reg_homemade = re.compile(self.homemade_regex)
 
@@ -116,10 +119,17 @@ class PCAP():
                 })
 
         if 'TELNET' in self.extracted_protocols:
-            telnet_layer = packet.get_multiple_layers('TELNET')
-            if telnet_layer:
+            try:
+                telnet_layer = packet.telnet
+                for message in telnet_layer._get_all_field_lines():
+                    if 'Data:' in message:
+                        self.telnet_data.add(message.lstrip('Data: '))
+                        continue
+                    if ':' not in message:
+                        self.telnet_commands.add(message.lstrip('\t').rstrip('\n'))
+                return
+            except Exception:
                 pass
-            # TODO finish this
 
         if 'LLMNR' in self.extracted_protocols:
             llmnr_layer = packet.get_multiple_layers('llmnr')
@@ -271,7 +281,7 @@ class PCAP():
                     # responses in the same conversation
                     add_to_data(self.protocol_data['FTP'], ftp_data)
                 else:
-                    add_to_data(self.protocol_data['FTP'], ftp_data, next_id=packet.tcp.nxtseq)
+                    add_to_data(self.protocol_data['FTP'], ftp_data, next_id=packet.tcp.ack)
             except Exception:
                 pass
 
@@ -312,6 +322,9 @@ class PCAP():
             general_context['SSH'] = dict()
             for key in self.ssh_data.keys():
                 general_context['SSH'][key] = list(self.ssh_data[key])
+        if 'TELNET' in self.extracted_protocols:
+            general_context['Telnet'] = {'Commands': list(self.telnet_commands),
+                                         'Data': list(self.telnet_data)}
         if is_flows:
             general_context['Flow'] = flows_to_ec(self.flows)
         if is_reg_extract:
@@ -667,10 +680,10 @@ def local_main():  # TODO remove this function
     # file_path = "/Users/olichter/Downloads/iseries.cap"
     #file_path = "/Users/olichter/Downloads/2019-12-03-traffic-analysis-exercise.pcap"  # 1 min
     # file_path = "/Users/olichter/Downloads/smb-on-windows-10.pcapng"  # ran for 2.906 secs
-    # file_path = "/Users/olichter/Downloads/telnet-cooked.pcap"
+    file_path = "/Users/olichter/Downloads/telnet-cooked.pcap"                  # telnet
     # file_path = "/Users/olichter/Downloads/SSHv2.cap"                        #SSH
     # file_path = "/Users/olichter/Downloads/SkypeIRC.cap"                        #IRC
-    file_path = "/Users/olichter/Downloads/ftp.pcapng"                      #FTP
+    # file_path = "/Users/olichter/Downloads/ftp.pcapng"                      #FTP
     # PC Script
     entry_id = ''
 
@@ -678,7 +691,7 @@ def local_main():  # TODO remove this function
     conversation_number_to_display = 15
     is_flows = True
     is_reg_extract = True
-    extracted_protocols = ['SMTP', 'DNS', 'HTTP', 'SMB2', 'NETBIOS', 'ICMP', 'KERBEROS', 'SYSLOG', 'SSH', 'IRC', 'FTP']
+    extracted_protocols = ['SMTP', 'DNS', 'HTTP', 'SMB2', 'NETBIOS', 'ICMP', 'KERBEROS', 'SYSLOG', 'SSH', 'IRC', 'FTP', 'TELNET']
 
     pcap_filter = ''
     # pcap_filter_new_file_name = ''  # '/Users/olichter/Downloads/try.pcap'
@@ -702,6 +715,5 @@ if __name__ in ['__main__', 'builtin', 'builtins']:
     print(datetime.now() - startTime)
 
 # TODO: fix todos
-#TODO: see how to add SSH ID
-#TODO: FTP has a lot of requests and responses in the same conversation
-#TODO: Document all function
+# TODO: see how to add SSH ID
+# TODO: Document all function
