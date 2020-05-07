@@ -1,29 +1,17 @@
 ## Overview
 ---
 
-Fetch incidents from Logz.io Cloud SIEM to activate Demisto Playbooks
+Fetch & remediate security incidents identified by Logz.io Cloud SIEM
+This integration was integrated and tested with version xx of Logz.io
+## Logz.io Playbook
+---
 
 ## Use Cases
 ---
 
 Integrate with Logz.io Cloud SIEM to automatically remediate security incidents identified by Logz.io and increase observability into incident details. 
 The integration allows Demisto users to automatically remediate incidents identified by Logz.io Cloud SIEM using Demisto Playbooks.
-In addition, users can query Logz.io directly from Demisto to investigate open questions or retrieve the logs responsible for triggering security rules. 
-
-
-## Prerequisites 
----
-
-1. Logz.io Cloud SIEM - You’ll need to have a Logz.io Cloud SIEM add-on. If you need to add it, please contact support@logz.io. 
-
-2. API Tokens - You’ll need to have active API Tokens for each of the relevant Logz.io accounts. Keep in mind that API tokens are specific to account ID. Your Logz.io Operations accounts and associated Security account have separate API Tokens. 
-
-
-## Logz.io Playbook
----
-
-Logz.io provides a sample playbook to get you started. You can add as many playbooks as you’ll need to keep increasing your security. 
-
+In addition, users can query Logz.io directly from Demisto to investigate open questions or retrieve the logs responsible for triggering security rules.
 
 ## Configure Logz.io on Demisto
 ---
@@ -32,18 +20,18 @@ Logz.io provides a sample playbook to get you started. You can add as many playb
 2. Search for Logz.io.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
-    * __Fetch incidents__
+    * __Fetch incidents.__
     * __Incident type__
     * __API token for Logz.io Security account__
     * __API token for Logz.io Operations account__
     * __Region code of your Logz.io account__
     * __Filter on rule names (Lucene syntax)__
     * __Filter by rule severity__
-    * __First-time retroactive fetch (e.g., 12 hours, 7 days)__
+    * __First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)__
+    * __Max. number of incidents fetched per run__
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
 4. Click __Test__ to validate the URLs, token, and connection.
-
 
 ## Commands
 ---
@@ -51,6 +39,7 @@ You can execute these commands from the Demisto CLI, as part of an automation, o
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. logzio-search-logs
 2. logzio-get-logs-by-rule-id
+
 ### 1. logzio-search-logs
 ---
 Returns logs from your Logz.io Operations account by Lucene query
@@ -63,553 +52,1523 @@ Your Logz.io account type should be PRO or above.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | A string  specifying the search query, written in Lucene syntax.  | Required | 
-| size | An integer specifying the maximum number  of results to return | Optional | 
-| from_time | Unix timestamp. Specifies the earliest timestamp to be returned by the query.  | Optional | 
-| to_time | Unix timestamp. Specifies the latest timestamp to be returned by the query.  | Optional | 
+| query | A string specifying the search query, written in Apache Lucene syntax e.g. 'fname:John AND sname:Smith' . | Required | 
+| size | An integer specifying the maximum number of results to return. | Optional | 
+| from_time | Unix timestamp. Specifies the earliest timestamp to be returned by the query. | Optional | 
+| to_time | Unix timestamp. Specifies the latest timestamp to be returned by the query. | Optional | 
 
 
 ##### Context Output
 
-```
-{
-    "Logzio.Logs.Results": [], 
-    "Logzio.Logs.Count": 0
-}
-```
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Logzio.Result | Unknown | An array of search results | 
+| Logzio.Result.type | string | Log type in the index | 
+| Logzio.Result.timestamp | date | The log's timestamp | 
+
+
 ##### Command Example
-```!logzio-search-logs query="action:Teardown AND protocol:TCP" size=10```
+```!logzio-search-logs query="ThreatType:trojan OR input.type:tcp" size="5"```
 
 ##### Context Example
 ```
 {
-    "Logzio.Logs.Results": [
+    "Logzio.Result": [
         {
-            "protocol": "TCP", 
-            "@timestamp": "2020-03-26T00:02:12.458Z", 
-            "dst_interface": "identity", 
-            "_logzio_pattern": 4032921, 
-            "duration": "0:10:06", 
-            "message": "<190>Mar 26 2020 00:02:09: %ASA-6-302014: Teardown TCP connection 2807 for mgmt:10.0.250.44/6514 to identity:10.0.250.193/36939 duration 0:10:06 bytes 0 Connection timeout", 
-            "src_port": "6514", 
+            "ThreatType": [
+                "trojan", 
+                "trojan"
+            ], 
+            "Severity": [
+                "3", 
+                "3"
+            ], 
+            "DetectionMessage": [
+                "IDS_OAS_DEFAULT_THREAT_MESSAGE", 
+                "IDS_OAS_DEFAULT_THREAT_MESSAGE"
+            ], 
+            "@timestamp": "2020-05-06T00:01:04.441+0000", 
+            "TargetFileSize": [
+                "249952", 
+                "249952"
+            ], 
+            "domain": [
+                "Win-Sec-2", 
+                "Win-Sec-2"
+            ], 
+            "tenantGUID": "{00000000-0000-0000-0000-000000000000}", 
+            "SecondActionStatus": [
+                "False", 
+                "False"
+            ], 
+            "EPOEvents": "EventFwd", 
+            "DurationBeforeDetection": [
+                "18", 
+                "18"
+            ], 
+            "Cleanable": [
+                "True", 
+                "True"
+            ], 
+            "bpsId": "1", 
+            "FirstAttemptedAction": [
+                "IDS_ALERT_THACT_ATT_CLE", 
+                "IDS_ALERT_THACT_ATT_CLE"
+            ], 
+            "SourceProcessName": [
+                "C:\\Windows\\explorer.exe", 
+                "C:\\Windows\\explorer.exe"
+            ], 
+            "AnalyzerName": [
+                "McAfee Endpoint Security", 
+                "McAfee Endpoint Security"
+            ], 
+            "AnalyzerContentCreationDate": [
+                "2020-02-22T08:24:00Z", 
+                "2020-02-22T08:24:00Z"
+            ], 
+            "TargetAccessTime": [
+                "2020-02-23T15:43:22Z", 
+                "2020-02-23T15:43:22Z"
+            ], 
+            "TargetCreateTime": [
+                "2020-02-23T15:43:21Z", 
+                "2020-02-23T15:43:21Z"
+            ], 
+            "TargetHostName": [
+                "WinSec3", 
+                "WinSec3"
+            ], 
+            "logzio_codec": "plain", 
+            "DetectedUTC": [
+                "2020-02-23T15:43:40Z", 
+                "2020-02-23T15:43:40Z"
+            ], 
+            "Analyzer": [
+                "ENDP_AM_1060", 
+                "ENDP_AM_1060"
+            ], 
+            "TargetHash": [
+                "81da244a770c46ace2cf112214f8e75e", 
+                "81da244a770c46ace2cf112214f8e75e"
+            ], 
+            "AttackVectorType": [
+                "4", 
+                "4"
+            ], 
+            "tags": [
+                "beats-5015", 
+                "_grokparsefailure", 
+                "_grokparsefailure", 
+                "_logz_http_bulk_json_8070"
+            ], 
+            "ThreatActionTaken": [
+                "IDS_ALERT_ACT_TAK_DEL", 
+                "IDS_ALERT_ACT_TAK_DEL"
+            ], 
+            "ThreatCategory": [
+                "av.detect", 
+                "av.detect"
+            ], 
+            "AnalyzerEngineVersion": [
+                "6010.8670", 
+                "6010.8670"
+            ], 
+            "SourceHostName": [
+                "WinSec3", 
+                "WinSec3"
+            ], 
+            "FirstActionStatus": [
+                "True", 
+                "True"
+            ], 
+            "TargetName": [
+                "test.exe", 
+                "test.exe"
+            ], 
+            "TargetFileName": [
+                "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth\\test.exe", 
+                "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth\\test.exe"
+            ], 
+            "tenantId": "1", 
             "log": {
                 "source": {
-                    "address": "10.0.250.193:60909"
+                    "address": "10.0.1.9:49874"
                 }
             }, 
-            "logzio_codec": "json", 
-            "log_timestamp": "Mar 26 00:02:09 2020", 
-            "src_ip": "10.0.250.44", 
+            "GMTTime": [
+                "2020-02-23T15:43:40", 
+                "2020-02-23T15:43:40"
+            ], 
+            "ThreatEventID": [
+                "1027", 
+                "1027"
+            ], 
+            "AMCoreContentVersion": [
+                "3990.0", 
+                "3990.0"
+            ], 
+            "AnalyzerDATVersion": [
+                "3990.0", 
+                "3990.0"
+            ], 
+            "timestamp": "2020-05-06T00:01:04.441+0000", 
+            "NaturalLangDescription": [
+                "IDS_NATURAL_LANG_OAS_DETECTION_DEL|TargetName=test.exe|TargetPath=C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth|ThreatName=Trojan-FRTB!81DA244A770C|SourceProcessName=C:\\Windows\\explorer.exe|ThreatType=trojan|TargetUserName=WinSec3\\Logzio", 
+                "IDS_NATURAL_LANG_OAS_DETECTION_DEL|TargetNametest.exe|TargetPath=C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth|ThreatName=Trojan-FRTB!81DA244A770C|SourceProcessName=C:\\Windows\\explorer.exe|ThreatType=trojan|TargetUserName=WinSec3\\Logzio"
+            ], 
+            "beat_agent": {
+                "ephemeral_id": "8d15318f-3a3e-436c-a93e-1b6e8fec0cfb", 
+                "type": "filebeat", 
+                "hostname": "SecLinux", 
+                "version": "7.5.0", 
+                "id": "348cbd8b-b4ce-4531-b6d1-ab6beb37d65f"
+            }, 
+            "AnalyzerVersion": [
+                "10.6.1", 
+                "10.6.1"
+            ], 
+            "TargetUserName": [
+                "WinSec3\\Logzio", 
+                "WinSec3\\Logzio"
+            ], 
+            "TaskName": [
+                "IDS_OAS_TASK_NAME", 
+                "IDS_OAS_TASK_NAME"
+            ], 
+            "ThreatName": [
+                "Trojan-FRTB!81DA244A770C", 
+                "Trojan-FRTB!81DA244A770C"
+            ], 
+            "AnalyzerHostName": [
+                "WinSec3", 
+                "WinSec3"
+            ], 
+            "EPOevent": {
+                "SoftwareInfo": {
+                    "CommonFields": {
+                        "AnalyzerDATVersion": "3990.0", 
+                        "Analyzer": "ENDP_AM_1060", 
+                        "AnalyzerDetectionMethod": "On-Access Scan", 
+                        "AnalyzerVersion": "10.6.1", 
+                        "AnalyzerEngineVersion": "6010.8670", 
+                        "AnalyzerHostName": "WinSec3", 
+                        "AnalyzerName": "McAfee Endpoint Security"
+                    }, 
+                    "Event": {
+                        "EventID": "1027", 
+                        "GMTTime": "2020-02-23T15:43:40", 
+                        "CustomFields": {
+                            "DetectionMessage": "IDS_OAS_DEFAULT_THREAT_MESSAGE", 
+                            "TargetFileSize": "249952", 
+                            "SecondActionStatus": "false", 
+                            "DurationBeforeDetection": "18", 
+                            "Cleanable": "true", 
+                            "FirstAttemptedAction": "IDS_ALERT_THACT_ATT_CLE", 
+                            "AnalyzerContentCreationDate": "2020-02-22T08:24:00Z", 
+                            "TargetAccessTime": "2020-02-23T15:43:22Z", 
+                            "AttackVectorType": "4", 
+                            "ThreatDetectedOnCreation": "true", 
+                            "FirstActionStatus": "true", 
+                            "TargetName": "test.exe", 
+                            "AMCoreContentVersion": "3990.0", 
+                            "NaturalLangDescription": "IDS_NATURAL_LANG_OAS_DETECTION_DEL|TargetName=test.exe|TargetPath=C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth|ThreatName=Trojan-FRTB!81DA244A770C|SourceProcessName=C:\\Windows\\explorer.exe|ThreatType=trojan|TargetUserName=WinSec3\\Logzio", 
+                            "TaskName": "IDS_OAS_TASK_NAME", 
+                            "TargetHash": "81da244a770c46ace2cf112214f8e75e", 
+                            "SecondAttemptedAction": "IDS_ALERT_THACT_ATT_DEL", 
+                            "TargetCreateTime": "2020-02-23T15:43:21Z", 
+                            "TargetModifyTime": "2020-02-23T15:43:22Z", 
+                            "BladeName": "IDS_BLADE_NAME_SPB", 
+                            "AnalyzerGTIQuery": "true", 
+                            "AccessRequested_obj": {}, 
+                            "TargetPath": "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth"
+                        }, 
+                        "CommonFields": {
+                            "ThreatType": "trojan", 
+                            "ThreatEventID": "1027", 
+                            "TargetHostName": "WinSec3", 
+                            "DetectedUTC": "2020-02-23T15:43:40Z", 
+                            "TargetFileName": "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth\\test.exe", 
+                            "ThreatSeverity": "2", 
+                            "ThreatCategory": "av.detect", 
+                            "TargetUserName": "WinSec3\\Logzio", 
+                            "SourceHostName": "WinSec3", 
+                            "ThreatName": "Trojan-FRTB!81DA244A770C", 
+                            "SourceProcessName": "C:\\Windows\\explorer.exe", 
+                            "ThreatActionTaken": "IDS_ALERT_ACT_TAK_DEL", 
+                            "ThreatHandled": "true"
+                        }, 
+                        "Severity": "3"
+                    }
+                }, 
+                "MachineInfo": {
+                    "RawMACAddress": "000d3a373482", 
+                    "UserName": "SYSTEM", 
+                    "MachineName": "WinSec3", 
+                    "OSName": "Windows 10 Workstation", 
+                    "TimeZoneBias": "0", 
+                    "AgentGUID": "{d140d3c9-53ed-4367-857d-a5a396a97775}", 
+                    "IPAddress": "10.0.1.10"
+                }
+            }, 
+            "SecondAttemptedAction": [
+                "IDS_ALERT_THACT_ATT_DEL", 
+                "IDS_ALERT_THACT_ATT_DEL"
+            ], 
+            "EventID": [
+                "1027", 
+                "1027"
+            ], 
             "input": {
                 "type": "tcp"
             }, 
-            "type": "cisco-asa", 
-            "tags": [
-                "beats-5015", 
-                "_logzio_codec_json", 
-                "_jsonparsefailure"
+            "type": "mcafee_epo", 
+            "tenantNodePath": "1\\2", 
+            "TargetModifyTime": [
+                "2020-02-23T15:43:22Z", 
+                "2020-02-23T15:43:22Z"
             ], 
-            "connection_id": "2807", 
-            "reason": "Connection timeout", 
-            "src_interface": "mgmt", 
+            "AnalyzerDetectionMethod": [
+                "On-Access Scan", 
+                "On-Access Scan"
+            ], 
+            "BladeName": [
+                "IDS_BLADE_NAME_SPB", 
+                "IDS_BLADE_NAME_SPB"
+            ], 
+            "ThreatSeverity": [
+                "2", 
+                "2"
+            ], 
+            "AnalyzerGTIQuery": [
+                "True", 
+                "True"
+            ], 
+            "AccessRequested": [
+                "", 
+                ""
+            ], 
             "ecs": {
                 "version": "1.1.0"
             }, 
-            "dst_ip": "10.0.250.193", 
-            "ciscotag": "ASA-6-302014", 
-            "bytes": "0", 
-            "dst_port": "36939", 
-            "action": "Teardown", 
-            "beat_agent": {
-                "ephemeral_id": "f6acc59c-b3f2-4b22-81a2-27144692a89b", 
-                "type": "filebeat", 
-                "hostname": "ip-10-0-250-44", 
-                "version": "7.4.0", 
-                "id": "d6130ca5-9587-4210-9698-edfd367abb6d"
-            }, 
-            "syslog_pri": "190", 
+            "ThreatHandled": [
+                "True", 
+                "True"
+            ], 
+            "TargetPath": [
+                "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth", 
+                "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth"
+            ], 
             "@metadata": {
                 "beat": "filebeat", 
-                "version": "7.4.0", 
+                "version": "7.5.0", 
                 "type": "_doc"
-            }
+            }, 
+            "ThreatDetectedOnCreation": [
+                "True", 
+                "True"
+            ]
         }, 
         {
-            "protocol": "TCP", 
-            "@timestamp": "2020-03-26T00:02:12.458Z", 
-            "dst_interface": "identity", 
-            "_logzio_pattern": 4032921, 
-            "duration": "0:10:06", 
-            "message": "<190>Mar 26 2020 00:02:09: %ASA-6-302014: Teardown TCP connection 2809 for mgmt:10.0.250.44/6514 to identity:10.0.250.193/22578 duration 0:10:06 bytes 0 Connection timeout", 
-            "src_port": "6514", 
+            "ThreatType": [
+                "trojan", 
+                "trojan"
+            ], 
+            "Severity": [
+                "3", 
+                "3"
+            ], 
+            "DetectionMessage": [
+                "IDS_OAS_DEFAULT_THREAT_MESSAGE", 
+                "IDS_OAS_DEFAULT_THREAT_MESSAGE"
+            ], 
+            "@timestamp": "2020-05-06T02:01:13.778+0000", 
+            "TargetFileSize": [
+                "249952", 
+                "249952"
+            ], 
+            "domain": [
+                "Win-Sec-2", 
+                "Win-Sec-2"
+            ], 
+            "tenantGUID": "{00000000-0000-0000-0000-000000000000}", 
+            "SecondActionStatus": [
+                "False", 
+                "False"
+            ], 
+            "EPOEvents": "EventFwd", 
+            "DurationBeforeDetection": [
+                "18", 
+                "18"
+            ], 
+            "Cleanable": [
+                "True", 
+                "True"
+            ], 
+            "bpsId": "1", 
+            "FirstAttemptedAction": [
+                "IDS_ALERT_THACT_ATT_CLE", 
+                "IDS_ALERT_THACT_ATT_CLE"
+            ], 
+            "SourceProcessName": [
+                "C:\\Windows\\explorer.exe", 
+                "C:\\Windows\\explorer.exe"
+            ], 
+            "AnalyzerName": [
+                "McAfee Endpoint Security", 
+                "McAfee Endpoint Security"
+            ], 
+            "AnalyzerContentCreationDate": [
+                "2020-02-22T08:24:00Z", 
+                "2020-02-22T08:24:00Z"
+            ], 
+            "TargetAccessTime": [
+                "2020-02-23T15:43:22Z", 
+                "2020-02-23T15:43:22Z"
+            ], 
+            "TargetCreateTime": [
+                "2020-02-23T15:43:21Z", 
+                "2020-02-23T15:43:21Z"
+            ], 
+            "TargetHostName": [
+                "WinSec3", 
+                "WinSec3"
+            ], 
+            "logzio_codec": "plain", 
+            "DetectedUTC": [
+                "2020-02-23T15:43:40Z", 
+                "2020-02-23T15:43:40Z"
+            ], 
+            "Analyzer": [
+                "ENDP_AM_1060", 
+                "ENDP_AM_1060"
+            ], 
+            "TargetHash": [
+                "81da244a770c46ace2cf112214f8e75e", 
+                "81da244a770c46ace2cf112214f8e75e"
+            ], 
+            "AttackVectorType": [
+                "4", 
+                "4"
+            ], 
+            "tags": [
+                "beats-5015", 
+                "_grokparsefailure", 
+                "_grokparsefailure", 
+                "_logz_http_bulk_json_8070"
+            ], 
+            "ThreatActionTaken": [
+                "IDS_ALERT_ACT_TAK_DEL", 
+                "IDS_ALERT_ACT_TAK_DEL"
+            ], 
+            "ThreatCategory": [
+                "av.detect", 
+                "av.detect"
+            ], 
+            "AnalyzerEngineVersion": [
+                "6010.8670", 
+                "6010.8670"
+            ], 
+            "SourceHostName": [
+                "WinSec3", 
+                "WinSec3"
+            ], 
+            "FirstActionStatus": [
+                "True", 
+                "True"
+            ], 
+            "TargetName": [
+                "test.exe", 
+                "test.exe"
+            ], 
+            "TargetFileName": [
+                "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth\\test.exe", 
+                "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth\\test.exe"
+            ], 
+            "tenantId": "1", 
             "log": {
                 "source": {
-                    "address": "10.0.250.193:60909"
+                    "address": "10.0.1.9:49874"
                 }
             }, 
-            "logzio_codec": "json", 
-            "log_timestamp": "Mar 26 00:02:09 2020", 
-            "src_ip": "10.0.250.44", 
+            "GMTTime": [
+                "2020-02-23T15:43:40", 
+                "2020-02-23T15:43:40"
+            ], 
+            "ThreatEventID": [
+                "1027", 
+                "1027"
+            ], 
+            "AMCoreContentVersion": [
+                "3990.0", 
+                "3990.0"
+            ], 
+            "AnalyzerDATVersion": [
+                "3990.0", 
+                "3990.0"
+            ], 
+            "timestamp": "2020-05-06T02:01:13.778+0000", 
+            "NaturalLangDescription": [
+                "IDS_NATURAL_LANG_OAS_DETECTION_DEL|TargetName=test.exe|TargetPath=C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth|ThreatName=Trojan-FRTB!81DA244A770C|SourceProcessName=C:\\Windows\\explorer.exe|ThreatType=trojan|TargetUserName=WinSec3\\Logzio", 
+                "IDS_NATURAL_LANG_OAS_DETECTION_DEL|TargetNametest.exe|TargetPath=C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth|ThreatName=Trojan-FRTB!81DA244A770C|SourceProcessName=C:\\Windows\\explorer.exe|ThreatType=trojan|TargetUserName=WinSec3\\Logzio"
+            ], 
+            "beat_agent": {
+                "ephemeral_id": "8d15318f-3a3e-436c-a93e-1b6e8fec0cfb", 
+                "type": "filebeat", 
+                "hostname": "SecLinux", 
+                "version": "7.5.0", 
+                "id": "348cbd8b-b4ce-4531-b6d1-ab6beb37d65f"
+            }, 
+            "AnalyzerVersion": [
+                "10.6.1", 
+                "10.6.1"
+            ], 
+            "TargetUserName": [
+                "WinSec3\\Logzio", 
+                "WinSec3\\Logzio"
+            ], 
+            "TaskName": [
+                "IDS_OAS_TASK_NAME", 
+                "IDS_OAS_TASK_NAME"
+            ], 
+            "ThreatName": [
+                "Trojan-FRTB!81DA244A770C", 
+                "Trojan-FRTB!81DA244A770C"
+            ], 
+            "AnalyzerHostName": [
+                "WinSec3", 
+                "WinSec3"
+            ], 
+            "EPOevent": {
+                "SoftwareInfo": {
+                    "CommonFields": {
+                        "AnalyzerDATVersion": "3990.0", 
+                        "Analyzer": "ENDP_AM_1060", 
+                        "AnalyzerDetectionMethod": "On-Access Scan", 
+                        "AnalyzerVersion": "10.6.1", 
+                        "AnalyzerEngineVersion": "6010.8670", 
+                        "AnalyzerHostName": "WinSec3", 
+                        "AnalyzerName": "McAfee Endpoint Security"
+                    }, 
+                    "Event": {
+                        "EventID": "1027", 
+                        "GMTTime": "2020-02-23T15:43:40", 
+                        "CustomFields": {
+                            "DetectionMessage": "IDS_OAS_DEFAULT_THREAT_MESSAGE", 
+                            "TargetFileSize": "249952", 
+                            "SecondActionStatus": "false", 
+                            "DurationBeforeDetection": "18", 
+                            "Cleanable": "true", 
+                            "FirstAttemptedAction": "IDS_ALERT_THACT_ATT_CLE", 
+                            "AnalyzerContentCreationDate": "2020-02-22T08:24:00Z", 
+                            "TargetAccessTime": "2020-02-23T15:43:22Z", 
+                            "AttackVectorType": "4", 
+                            "ThreatDetectedOnCreation": "true", 
+                            "FirstActionStatus": "true", 
+                            "TargetName": "test.exe", 
+                            "AMCoreContentVersion": "3990.0", 
+                            "NaturalLangDescription": "IDS_NATURAL_LANG_OAS_DETECTION_DEL|TargetName=test.exe|TargetPath=C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth|ThreatName=Trojan-FRTB!81DA244A770C|SourceProcessName=C:\\Windows\\explorer.exe|ThreatType=trojan|TargetUserName=WinSec3\\Logzio", 
+                            "TaskName": "IDS_OAS_TASK_NAME", 
+                            "TargetHash": "81da244a770c46ace2cf112214f8e75e", 
+                            "SecondAttemptedAction": "IDS_ALERT_THACT_ATT_DEL", 
+                            "TargetCreateTime": "2020-02-23T15:43:21Z", 
+                            "TargetModifyTime": "2020-02-23T15:43:22Z", 
+                            "BladeName": "IDS_BLADE_NAME_SPB", 
+                            "AnalyzerGTIQuery": "true", 
+                            "AccessRequested_obj": {}, 
+                            "TargetPath": "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth"
+                        }, 
+                        "CommonFields": {
+                            "ThreatType": "trojan", 
+                            "ThreatEventID": "1027", 
+                            "TargetHostName": "WinSec3", 
+                            "DetectedUTC": "2020-02-23T15:43:40Z", 
+                            "TargetFileName": "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth\\test.exe", 
+                            "ThreatSeverity": "2", 
+                            "ThreatCategory": "av.detect", 
+                            "TargetUserName": "WinSec3\\Logzio", 
+                            "SourceHostName": "WinSec3", 
+                            "ThreatName": "Trojan-FRTB!81DA244A770C", 
+                            "SourceProcessName": "C:\\Windows\\explorer.exe", 
+                            "ThreatActionTaken": "IDS_ALERT_ACT_TAK_DEL", 
+                            "ThreatHandled": "true"
+                        }, 
+                        "Severity": "3"
+                    }
+                }, 
+                "MachineInfo": {
+                    "RawMACAddress": "000d3a373482", 
+                    "UserName": "SYSTEM", 
+                    "MachineName": "WinSec3", 
+                    "OSName": "Windows 10 Workstation", 
+                    "TimeZoneBias": "0", 
+                    "AgentGUID": "{d140d3c9-53ed-4367-857d-a5a396a97775}", 
+                    "IPAddress": "10.0.1.10"
+                }
+            }, 
+            "SecondAttemptedAction": [
+                "IDS_ALERT_THACT_ATT_DEL", 
+                "IDS_ALERT_THACT_ATT_DEL"
+            ], 
+            "EventID": [
+                "1027", 
+                "1027"
+            ], 
             "input": {
                 "type": "tcp"
             }, 
-            "type": "cisco-asa", 
-            "tags": [
-                "beats-5015", 
-                "_logzio_codec_json", 
-                "_jsonparsefailure"
+            "type": "mcafee_epo", 
+            "tenantNodePath": "1\\2", 
+            "TargetModifyTime": [
+                "2020-02-23T15:43:22Z", 
+                "2020-02-23T15:43:22Z"
             ], 
-            "connection_id": "2809", 
-            "reason": "Connection timeout", 
-            "src_interface": "mgmt", 
+            "AnalyzerDetectionMethod": [
+                "On-Access Scan", 
+                "On-Access Scan"
+            ], 
+            "BladeName": [
+                "IDS_BLADE_NAME_SPB", 
+                "IDS_BLADE_NAME_SPB"
+            ], 
+            "ThreatSeverity": [
+                "2", 
+                "2"
+            ], 
+            "AnalyzerGTIQuery": [
+                "True", 
+                "True"
+            ], 
+            "AccessRequested": [
+                "", 
+                ""
+            ], 
             "ecs": {
                 "version": "1.1.0"
             }, 
-            "dst_ip": "10.0.250.193", 
-            "ciscotag": "ASA-6-302014", 
-            "bytes": "0", 
-            "dst_port": "22578", 
-            "action": "Teardown", 
-            "beat_agent": {
-                "ephemeral_id": "f6acc59c-b3f2-4b22-81a2-27144692a89b", 
-                "type": "filebeat", 
-                "hostname": "ip-10-0-250-44", 
-                "version": "7.4.0", 
-                "id": "d6130ca5-9587-4210-9698-edfd367abb6d"
-            }, 
-            "syslog_pri": "190", 
+            "ThreatHandled": [
+                "True", 
+                "True"
+            ], 
+            "TargetPath": [
+                "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth", 
+                "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth"
+            ], 
             "@metadata": {
                 "beat": "filebeat", 
-                "version": "7.4.0", 
+                "version": "7.5.0", 
                 "type": "_doc"
-            }
+            }, 
+            "ThreatDetectedOnCreation": [
+                "True", 
+                "True"
+            ]
         }, 
         {
-            "protocol": "TCP", 
-            "@timestamp": "2020-03-26T00:02:12.458Z", 
-            "dst_interface": "identity", 
-            "_logzio_pattern": 4032921, 
-            "duration": "0:10:06", 
-            "message": "<190>Mar 26 2020 00:02:09: %ASA-6-302014: Teardown TCP connection 2808 for mgmt:10.0.250.44/6514 to identity:10.0.250.193/21436 duration 0:10:06 bytes 0 Connection timeout", 
-            "src_port": "6514", 
+            "ThreatType": [
+                "trojan", 
+                "trojan"
+            ], 
+            "Severity": [
+                "3", 
+                "3"
+            ], 
+            "DetectionMessage": [
+                "IDS_OAS_DEFAULT_THREAT_MESSAGE", 
+                "IDS_OAS_DEFAULT_THREAT_MESSAGE"
+            ], 
+            "@timestamp": "2020-05-06T02:16:14.944+0000", 
+            "TargetFileSize": [
+                "249952", 
+                "249952"
+            ], 
+            "domain": [
+                "Win-Sec-2", 
+                "Win-Sec-2"
+            ], 
+            "tenantGUID": "{00000000-0000-0000-0000-000000000000}", 
+            "SecondActionStatus": [
+                "False", 
+                "False"
+            ], 
+            "EPOEvents": "EventFwd", 
+            "DurationBeforeDetection": [
+                "18", 
+                "18"
+            ], 
+            "Cleanable": [
+                "True", 
+                "True"
+            ], 
+            "bpsId": "1", 
+            "FirstAttemptedAction": [
+                "IDS_ALERT_THACT_ATT_CLE", 
+                "IDS_ALERT_THACT_ATT_CLE"
+            ], 
+            "SourceProcessName": [
+                "C:\\Windows\\explorer.exe", 
+                "C:\\Windows\\explorer.exe"
+            ], 
+            "AnalyzerName": [
+                "McAfee Endpoint Security", 
+                "McAfee Endpoint Security"
+            ], 
+            "AnalyzerContentCreationDate": [
+                "2020-02-22T08:24:00Z", 
+                "2020-02-22T08:24:00Z"
+            ], 
+            "TargetAccessTime": [
+                "2020-02-23T15:43:22Z", 
+                "2020-02-23T15:43:22Z"
+            ], 
+            "TargetCreateTime": [
+                "2020-02-23T15:43:21Z", 
+                "2020-02-23T15:43:21Z"
+            ], 
+            "TargetHostName": [
+                "WinSec3", 
+                "WinSec3"
+            ], 
+            "logzio_codec": "plain", 
+            "DetectedUTC": [
+                "2020-02-23T15:43:40Z", 
+                "2020-02-23T15:43:40Z"
+            ], 
+            "Analyzer": [
+                "ENDP_AM_1060", 
+                "ENDP_AM_1060"
+            ], 
+            "TargetHash": [
+                "81da244a770c46ace2cf112214f8e75e", 
+                "81da244a770c46ace2cf112214f8e75e"
+            ], 
+            "AttackVectorType": [
+                "4", 
+                "4"
+            ], 
+            "tags": [
+                "beats-5015", 
+                "_grokparsefailure", 
+                "_grokparsefailure", 
+                "_logz_http_bulk_json_8070"
+            ], 
+            "ThreatActionTaken": [
+                "IDS_ALERT_ACT_TAK_DEL", 
+                "IDS_ALERT_ACT_TAK_DEL"
+            ], 
+            "ThreatCategory": [
+                "av.detect", 
+                "av.detect"
+            ], 
+            "AnalyzerEngineVersion": [
+                "6010.8670", 
+                "6010.8670"
+            ], 
+            "SourceHostName": [
+                "WinSec3", 
+                "WinSec3"
+            ], 
+            "FirstActionStatus": [
+                "True", 
+                "True"
+            ], 
+            "TargetName": [
+                "test.exe", 
+                "test.exe"
+            ], 
+            "TargetFileName": [
+                "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth\\test.exe", 
+                "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth\\test.exe"
+            ], 
+            "tenantId": "1", 
             "log": {
                 "source": {
-                    "address": "10.0.250.193:60909"
+                    "address": "10.0.1.9:49874"
                 }
             }, 
-            "logzio_codec": "json", 
-            "log_timestamp": "Mar 26 00:02:09 2020", 
-            "src_ip": "10.0.250.44", 
+            "GMTTime": [
+                "2020-02-23T15:43:40", 
+                "2020-02-23T15:43:40"
+            ], 
+            "ThreatEventID": [
+                "1027", 
+                "1027"
+            ], 
+            "AMCoreContentVersion": [
+                "3990.0", 
+                "3990.0"
+            ], 
+            "AnalyzerDATVersion": [
+                "3990.0", 
+                "3990.0"
+            ], 
+            "timestamp": "2020-05-06T02:16:14.944+0000", 
+            "NaturalLangDescription": [
+                "IDS_NATURAL_LANG_OAS_DETECTION_DEL|TargetName=test.exe|TargetPath=C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth|ThreatName=Trojan-FRTB!81DA244A770C|SourceProcessName=C:\\Windows\\explorer.exe|ThreatType=trojan|TargetUserName=WinSec3\\Logzio", 
+                "IDS_NATURAL_LANG_OAS_DETECTION_DEL|TargetNametest.exe|TargetPath=C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth|ThreatName=Trojan-FRTB!81DA244A770C|SourceProcessName=C:\\Windows\\explorer.exe|ThreatType=trojan|TargetUserName=WinSec3\\Logzio"
+            ], 
+            "beat_agent": {
+                "ephemeral_id": "8d15318f-3a3e-436c-a93e-1b6e8fec0cfb", 
+                "type": "filebeat", 
+                "hostname": "SecLinux", 
+                "version": "7.5.0", 
+                "id": "348cbd8b-b4ce-4531-b6d1-ab6beb37d65f"
+            }, 
+            "AnalyzerVersion": [
+                "10.6.1", 
+                "10.6.1"
+            ], 
+            "TargetUserName": [
+                "WinSec3\\Logzio", 
+                "WinSec3\\Logzio"
+            ], 
+            "TaskName": [
+                "IDS_OAS_TASK_NAME", 
+                "IDS_OAS_TASK_NAME"
+            ], 
+            "ThreatName": [
+                "Trojan-FRTB!81DA244A770C", 
+                "Trojan-FRTB!81DA244A770C"
+            ], 
+            "AnalyzerHostName": [
+                "WinSec3", 
+                "WinSec3"
+            ], 
+            "EPOevent": {
+                "SoftwareInfo": {
+                    "CommonFields": {
+                        "AnalyzerDATVersion": "3990.0", 
+                        "Analyzer": "ENDP_AM_1060", 
+                        "AnalyzerDetectionMethod": "On-Access Scan", 
+                        "AnalyzerVersion": "10.6.1", 
+                        "AnalyzerEngineVersion": "6010.8670", 
+                        "AnalyzerHostName": "WinSec3", 
+                        "AnalyzerName": "McAfee Endpoint Security"
+                    }, 
+                    "Event": {
+                        "EventID": "1027", 
+                        "GMTTime": "2020-02-23T15:43:40", 
+                        "CustomFields": {
+                            "DetectionMessage": "IDS_OAS_DEFAULT_THREAT_MESSAGE", 
+                            "TargetFileSize": "249952", 
+                            "SecondActionStatus": "false", 
+                            "DurationBeforeDetection": "18", 
+                            "Cleanable": "true", 
+                            "FirstAttemptedAction": "IDS_ALERT_THACT_ATT_CLE", 
+                            "AnalyzerContentCreationDate": "2020-02-22T08:24:00Z", 
+                            "TargetAccessTime": "2020-02-23T15:43:22Z", 
+                            "AttackVectorType": "4", 
+                            "ThreatDetectedOnCreation": "true", 
+                            "FirstActionStatus": "true", 
+                            "TargetName": "test.exe", 
+                            "AMCoreContentVersion": "3990.0", 
+                            "NaturalLangDescription": "IDS_NATURAL_LANG_OAS_DETECTION_DEL|TargetName=test.exe|TargetPath=C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth|ThreatName=Trojan-FRTB!81DA244A770C|SourceProcessName=C:\\Windows\\explorer.exe|ThreatType=trojan|TargetUserName=WinSec3\\Logzio", 
+                            "TaskName": "IDS_OAS_TASK_NAME", 
+                            "TargetHash": "81da244a770c46ace2cf112214f8e75e", 
+                            "SecondAttemptedAction": "IDS_ALERT_THACT_ATT_DEL", 
+                            "TargetCreateTime": "2020-02-23T15:43:21Z", 
+                            "TargetModifyTime": "2020-02-23T15:43:22Z", 
+                            "BladeName": "IDS_BLADE_NAME_SPB", 
+                            "AnalyzerGTIQuery": "true", 
+                            "AccessRequested_obj": {}, 
+                            "TargetPath": "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth"
+                        }, 
+                        "CommonFields": {
+                            "ThreatType": "trojan", 
+                            "ThreatEventID": "1027", 
+                            "TargetHostName": "WinSec3", 
+                            "DetectedUTC": "2020-02-23T15:43:40Z", 
+                            "TargetFileName": "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth\\test.exe", 
+                            "ThreatSeverity": "2", 
+                            "ThreatCategory": "av.detect", 
+                            "TargetUserName": "WinSec3\\Logzio", 
+                            "SourceHostName": "WinSec3", 
+                            "ThreatName": "Trojan-FRTB!81DA244A770C", 
+                            "SourceProcessName": "C:\\Windows\\explorer.exe", 
+                            "ThreatActionTaken": "IDS_ALERT_ACT_TAK_DEL", 
+                            "ThreatHandled": "true"
+                        }, 
+                        "Severity": "3"
+                    }
+                }, 
+                "MachineInfo": {
+                    "RawMACAddress": "000d3a373482", 
+                    "UserName": "SYSTEM", 
+                    "MachineName": "WinSec3", 
+                    "OSName": "Windows 10 Workstation", 
+                    "TimeZoneBias": "0", 
+                    "AgentGUID": "{d140d3c9-53ed-4367-857d-a5a396a97775}", 
+                    "IPAddress": "10.0.1.10"
+                }
+            }, 
+            "SecondAttemptedAction": [
+                "IDS_ALERT_THACT_ATT_DEL", 
+                "IDS_ALERT_THACT_ATT_DEL"
+            ], 
+            "EventID": [
+                "1027", 
+                "1027"
+            ], 
             "input": {
                 "type": "tcp"
             }, 
-            "type": "cisco-asa", 
-            "tags": [
-                "beats-5015", 
-                "_logzio_codec_json", 
-                "_jsonparsefailure"
+            "type": "mcafee_epo", 
+            "tenantNodePath": "1\\2", 
+            "TargetModifyTime": [
+                "2020-02-23T15:43:22Z", 
+                "2020-02-23T15:43:22Z"
             ], 
-            "connection_id": "2808", 
-            "reason": "Connection timeout", 
-            "src_interface": "mgmt", 
+            "AnalyzerDetectionMethod": [
+                "On-Access Scan", 
+                "On-Access Scan"
+            ], 
+            "BladeName": [
+                "IDS_BLADE_NAME_SPB", 
+                "IDS_BLADE_NAME_SPB"
+            ], 
+            "ThreatSeverity": [
+                "2", 
+                "2"
+            ], 
+            "AnalyzerGTIQuery": [
+                "True", 
+                "True"
+            ], 
+            "AccessRequested": [
+                "", 
+                ""
+            ], 
             "ecs": {
                 "version": "1.1.0"
             }, 
-            "dst_ip": "10.0.250.193", 
-            "ciscotag": "ASA-6-302014", 
-            "bytes": "0", 
-            "dst_port": "21436", 
-            "action": "Teardown", 
-            "beat_agent": {
-                "ephemeral_id": "f6acc59c-b3f2-4b22-81a2-27144692a89b", 
-                "type": "filebeat", 
-                "hostname": "ip-10-0-250-44", 
-                "version": "7.4.0", 
-                "id": "d6130ca5-9587-4210-9698-edfd367abb6d"
-            }, 
-            "syslog_pri": "190", 
+            "ThreatHandled": [
+                "True", 
+                "True"
+            ], 
+            "TargetPath": [
+                "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth", 
+                "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth"
+            ], 
             "@metadata": {
                 "beat": "filebeat", 
-                "version": "7.4.0", 
+                "version": "7.5.0", 
                 "type": "_doc"
-            }
+            }, 
+            "ThreatDetectedOnCreation": [
+                "True", 
+                "True"
+            ]
         }, 
         {
-            "protocol": "TCP", 
-            "@timestamp": "2020-03-26T02:04:05.999Z", 
-            "dst_interface": "identity", 
-            "_logzio_pattern": 4032921, 
-            "duration": "0:10:06", 
-            "message": "<190>Mar 26 2020 02:04:02: %ASA-6-302014: Teardown TCP connection 2869 for mgmt:10.0.250.44/6514 to identity:10.0.250.193/61195 duration 0:10:06 bytes 0 Connection timeout", 
-            "src_port": "6514", 
+            "ThreatType": [
+                "trojan", 
+                "trojan"
+            ], 
+            "Severity": [
+                "3", 
+                "3"
+            ], 
+            "DetectionMessage": [
+                "IDS_OAS_DEFAULT_THREAT_MESSAGE", 
+                "IDS_OAS_DEFAULT_THREAT_MESSAGE"
+            ], 
+            "@timestamp": "2020-05-06T02:31:16.087+0000", 
+            "TargetFileSize": [
+                "249952", 
+                "249952"
+            ], 
+            "domain": [
+                "Win-Sec-2", 
+                "Win-Sec-2"
+            ], 
+            "tenantGUID": "{00000000-0000-0000-0000-000000000000}", 
+            "SecondActionStatus": [
+                "False", 
+                "False"
+            ], 
+            "EPOEvents": "EventFwd", 
+            "DurationBeforeDetection": [
+                "18", 
+                "18"
+            ], 
+            "Cleanable": [
+                "True", 
+                "True"
+            ], 
+            "bpsId": "1", 
+            "FirstAttemptedAction": [
+                "IDS_ALERT_THACT_ATT_CLE", 
+                "IDS_ALERT_THACT_ATT_CLE"
+            ], 
+            "SourceProcessName": [
+                "C:\\Windows\\explorer.exe", 
+                "C:\\Windows\\explorer.exe"
+            ], 
+            "AnalyzerName": [
+                "McAfee Endpoint Security", 
+                "McAfee Endpoint Security"
+            ], 
+            "AnalyzerContentCreationDate": [
+                "2020-02-22T08:24:00Z", 
+                "2020-02-22T08:24:00Z"
+            ], 
+            "TargetAccessTime": [
+                "2020-02-23T15:43:22Z", 
+                "2020-02-23T15:43:22Z"
+            ], 
+            "TargetCreateTime": [
+                "2020-02-23T15:43:21Z", 
+                "2020-02-23T15:43:21Z"
+            ], 
+            "TargetHostName": [
+                "WinSec3", 
+                "WinSec3"
+            ], 
+            "logzio_codec": "plain", 
+            "DetectedUTC": [
+                "2020-02-23T15:43:40Z", 
+                "2020-02-23T15:43:40Z"
+            ], 
+            "Analyzer": [
+                "ENDP_AM_1060", 
+                "ENDP_AM_1060"
+            ], 
+            "TargetHash": [
+                "81da244a770c46ace2cf112214f8e75e", 
+                "81da244a770c46ace2cf112214f8e75e"
+            ], 
+            "AttackVectorType": [
+                "4", 
+                "4"
+            ], 
+            "tags": [
+                "beats-5015", 
+                "_grokparsefailure", 
+                "_grokparsefailure", 
+                "_logz_http_bulk_json_8070"
+            ], 
+            "ThreatActionTaken": [
+                "IDS_ALERT_ACT_TAK_DEL", 
+                "IDS_ALERT_ACT_TAK_DEL"
+            ], 
+            "ThreatCategory": [
+                "av.detect", 
+                "av.detect"
+            ], 
+            "AnalyzerEngineVersion": [
+                "6010.8670", 
+                "6010.8670"
+            ], 
+            "SourceHostName": [
+                "WinSec3", 
+                "WinSec3"
+            ], 
+            "FirstActionStatus": [
+                "True", 
+                "True"
+            ], 
+            "TargetName": [
+                "test.exe", 
+                "test.exe"
+            ], 
+            "TargetFileName": [
+                "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth\\test.exe", 
+                "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth\\test.exe"
+            ], 
+            "tenantId": "1", 
             "log": {
                 "source": {
-                    "address": "10.0.250.193:35071"
+                    "address": "10.0.1.9:49874"
                 }
             }, 
-            "logzio_codec": "json", 
-            "log_timestamp": "Mar 26 02:04:02 2020", 
-            "src_ip": "10.0.250.44", 
+            "GMTTime": [
+                "2020-02-23T15:43:40", 
+                "2020-02-23T15:43:40"
+            ], 
+            "ThreatEventID": [
+                "1027", 
+                "1027"
+            ], 
+            "AMCoreContentVersion": [
+                "3990.0", 
+                "3990.0"
+            ], 
+            "AnalyzerDATVersion": [
+                "3990.0", 
+                "3990.0"
+            ], 
+            "timestamp": "2020-05-06T02:31:16.087+0000", 
+            "NaturalLangDescription": [
+                "IDS_NATURAL_LANG_OAS_DETECTION_DEL|TargetName=test.exe|TargetPath=C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth|ThreatName=Trojan-FRTB!81DA244A770C|SourceProcessName=C:\\Windows\\explorer.exe|ThreatType=trojan|TargetUserName=WinSec3\\Logzio", 
+                "IDS_NATURAL_LANG_OAS_DETECTION_DEL|TargetNametest.exe|TargetPath=C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth|ThreatName=Trojan-FRTB!81DA244A770C|SourceProcessName=C:\\Windows\\explorer.exe|ThreatType=trojan|TargetUserName=WinSec3\\Logzio"
+            ], 
+            "beat_agent": {
+                "ephemeral_id": "8d15318f-3a3e-436c-a93e-1b6e8fec0cfb", 
+                "type": "filebeat", 
+                "hostname": "SecLinux", 
+                "version": "7.5.0", 
+                "id": "348cbd8b-b4ce-4531-b6d1-ab6beb37d65f"
+            }, 
+            "AnalyzerVersion": [
+                "10.6.1", 
+                "10.6.1"
+            ], 
+            "TargetUserName": [
+                "WinSec3\\Logzio", 
+                "WinSec3\\Logzio"
+            ], 
+            "TaskName": [
+                "IDS_OAS_TASK_NAME", 
+                "IDS_OAS_TASK_NAME"
+            ], 
+            "ThreatName": [
+                "Trojan-FRTB!81DA244A770C", 
+                "Trojan-FRTB!81DA244A770C"
+            ], 
+            "AnalyzerHostName": [
+                "WinSec3", 
+                "WinSec3"
+            ], 
+            "EPOevent": {
+                "SoftwareInfo": {
+                    "CommonFields": {
+                        "AnalyzerDATVersion": "3990.0", 
+                        "Analyzer": "ENDP_AM_1060", 
+                        "AnalyzerDetectionMethod": "On-Access Scan", 
+                        "AnalyzerVersion": "10.6.1", 
+                        "AnalyzerEngineVersion": "6010.8670", 
+                        "AnalyzerHostName": "WinSec3", 
+                        "AnalyzerName": "McAfee Endpoint Security"
+                    }, 
+                    "Event": {
+                        "EventID": "1027", 
+                        "GMTTime": "2020-02-23T15:43:40", 
+                        "CustomFields": {
+                            "DetectionMessage": "IDS_OAS_DEFAULT_THREAT_MESSAGE", 
+                            "TargetFileSize": "249952", 
+                            "SecondActionStatus": "false", 
+                            "DurationBeforeDetection": "18", 
+                            "Cleanable": "true", 
+                            "FirstAttemptedAction": "IDS_ALERT_THACT_ATT_CLE", 
+                            "AnalyzerContentCreationDate": "2020-02-22T08:24:00Z", 
+                            "TargetAccessTime": "2020-02-23T15:43:22Z", 
+                            "AttackVectorType": "4", 
+                            "ThreatDetectedOnCreation": "true", 
+                            "FirstActionStatus": "true", 
+                            "TargetName": "test.exe", 
+                            "AMCoreContentVersion": "3990.0", 
+                            "NaturalLangDescription": "IDS_NATURAL_LANG_OAS_DETECTION_DEL|TargetName=test.exe|TargetPath=C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth|ThreatName=Trojan-FRTB!81DA244A770C|SourceProcessName=C:\\Windows\\explorer.exe|ThreatType=trojan|TargetUserName=WinSec3\\Logzio", 
+                            "TaskName": "IDS_OAS_TASK_NAME", 
+                            "TargetHash": "81da244a770c46ace2cf112214f8e75e", 
+                            "SecondAttemptedAction": "IDS_ALERT_THACT_ATT_DEL", 
+                            "TargetCreateTime": "2020-02-23T15:43:21Z", 
+                            "TargetModifyTime": "2020-02-23T15:43:22Z", 
+                            "BladeName": "IDS_BLADE_NAME_SPB", 
+                            "AnalyzerGTIQuery": "true", 
+                            "AccessRequested_obj": {}, 
+                            "TargetPath": "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth"
+                        }, 
+                        "CommonFields": {
+                            "ThreatType": "trojan", 
+                            "ThreatEventID": "1027", 
+                            "TargetHostName": "WinSec3", 
+                            "DetectedUTC": "2020-02-23T15:43:40Z", 
+                            "TargetFileName": "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth\\test.exe", 
+                            "ThreatSeverity": "2", 
+                            "ThreatCategory": "av.detect", 
+                            "TargetUserName": "WinSec3\\Logzio", 
+                            "SourceHostName": "WinSec3", 
+                            "ThreatName": "Trojan-FRTB!81DA244A770C", 
+                            "SourceProcessName": "C:\\Windows\\explorer.exe", 
+                            "ThreatActionTaken": "IDS_ALERT_ACT_TAK_DEL", 
+                            "ThreatHandled": "true"
+                        }, 
+                        "Severity": "3"
+                    }
+                }, 
+                "MachineInfo": {
+                    "RawMACAddress": "000d3a373482", 
+                    "UserName": "SYSTEM", 
+                    "MachineName": "WinSec3", 
+                    "OSName": "Windows 10 Workstation", 
+                    "TimeZoneBias": "0", 
+                    "AgentGUID": "{d140d3c9-53ed-4367-857d-a5a396a97775}", 
+                    "IPAddress": "10.0.1.10"
+                }
+            }, 
+            "SecondAttemptedAction": [
+                "IDS_ALERT_THACT_ATT_DEL", 
+                "IDS_ALERT_THACT_ATT_DEL"
+            ], 
+            "EventID": [
+                "1027", 
+                "1027"
+            ], 
             "input": {
                 "type": "tcp"
             }, 
-            "type": "cisco-asa", 
-            "tags": [
-                "beats-5015", 
-                "_logzio_codec_json", 
-                "_jsonparsefailure"
+            "type": "mcafee_epo", 
+            "tenantNodePath": "1\\2", 
+            "TargetModifyTime": [
+                "2020-02-23T15:43:22Z", 
+                "2020-02-23T15:43:22Z"
             ], 
-            "connection_id": "2869", 
-            "reason": "Connection timeout", 
-            "src_interface": "mgmt", 
+            "AnalyzerDetectionMethod": [
+                "On-Access Scan", 
+                "On-Access Scan"
+            ], 
+            "BladeName": [
+                "IDS_BLADE_NAME_SPB", 
+                "IDS_BLADE_NAME_SPB"
+            ], 
+            "ThreatSeverity": [
+                "2", 
+                "2"
+            ], 
+            "AnalyzerGTIQuery": [
+                "True", 
+                "True"
+            ], 
+            "AccessRequested": [
+                "", 
+                ""
+            ], 
             "ecs": {
                 "version": "1.1.0"
             }, 
-            "dst_ip": "10.0.250.193", 
-            "ciscotag": "ASA-6-302014", 
-            "bytes": "0", 
-            "dst_port": "61195", 
-            "action": "Teardown", 
-            "beat_agent": {
-                "ephemeral_id": "f6acc59c-b3f2-4b22-81a2-27144692a89b", 
-                "type": "filebeat", 
-                "hostname": "ip-10-0-250-44", 
-                "version": "7.4.0", 
-                "id": "d6130ca5-9587-4210-9698-edfd367abb6d"
-            }, 
-            "syslog_pri": "190", 
+            "ThreatHandled": [
+                "True", 
+                "True"
+            ], 
+            "TargetPath": [
+                "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth", 
+                "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth"
+            ], 
             "@metadata": {
                 "beat": "filebeat", 
-                "version": "7.4.0", 
+                "version": "7.5.0", 
                 "type": "_doc"
-            }
+            }, 
+            "ThreatDetectedOnCreation": [
+                "True", 
+                "True"
+            ]
         }, 
         {
-            "protocol": "TCP", 
-            "@timestamp": "2020-03-26T02:04:05.999Z", 
-            "dst_interface": "identity", 
-            "_logzio_pattern": 4032921, 
-            "duration": "0:10:06", 
-            "message": "<190>Mar 26 2020 02:04:02: %ASA-6-302014: Teardown TCP connection 2868 for mgmt:10.0.250.44/6514 to identity:10.0.250.193/62326 duration 0:10:06 bytes 0 Connection timeout", 
-            "src_port": "6514", 
+            "ThreatType": [
+                "trojan", 
+                "trojan"
+            ], 
+            "Severity": [
+                "3", 
+                "3"
+            ], 
+            "DetectionMessage": [
+                "IDS_OAS_DEFAULT_THREAT_MESSAGE", 
+                "IDS_OAS_DEFAULT_THREAT_MESSAGE"
+            ], 
+            "@timestamp": "2020-05-06T01:46:12.663+0000", 
+            "TargetFileSize": [
+                "249952", 
+                "249952"
+            ], 
+            "domain": [
+                "Win-Sec-2", 
+                "Win-Sec-2"
+            ], 
+            "tenantGUID": "{00000000-0000-0000-0000-000000000000}", 
+            "SecondActionStatus": [
+                "False", 
+                "False"
+            ], 
+            "EPOEvents": "EventFwd", 
+            "DurationBeforeDetection": [
+                "18", 
+                "18"
+            ], 
+            "Cleanable": [
+                "True", 
+                "True"
+            ], 
+            "bpsId": "1", 
+            "FirstAttemptedAction": [
+                "IDS_ALERT_THACT_ATT_CLE", 
+                "IDS_ALERT_THACT_ATT_CLE"
+            ], 
+            "SourceProcessName": [
+                "C:\\Windows\\explorer.exe", 
+                "C:\\Windows\\explorer.exe"
+            ], 
+            "AnalyzerName": [
+                "McAfee Endpoint Security", 
+                "McAfee Endpoint Security"
+            ], 
+            "AnalyzerContentCreationDate": [
+                "2020-02-22T08:24:00Z", 
+                "2020-02-22T08:24:00Z"
+            ], 
+            "TargetAccessTime": [
+                "2020-02-23T15:43:22Z", 
+                "2020-02-23T15:43:22Z"
+            ], 
+            "TargetCreateTime": [
+                "2020-02-23T15:43:21Z", 
+                "2020-02-23T15:43:21Z"
+            ], 
+            "TargetHostName": [
+                "WinSec3", 
+                "WinSec3"
+            ], 
+            "logzio_codec": "plain", 
+            "DetectedUTC": [
+                "2020-02-23T15:43:40Z", 
+                "2020-02-23T15:43:40Z"
+            ], 
+            "Analyzer": [
+                "ENDP_AM_1060", 
+                "ENDP_AM_1060"
+            ], 
+            "TargetHash": [
+                "81da244a770c46ace2cf112214f8e75e", 
+                "81da244a770c46ace2cf112214f8e75e"
+            ], 
+            "AttackVectorType": [
+                "4", 
+                "4"
+            ], 
+            "tags": [
+                "beats-5015", 
+                "_grokparsefailure", 
+                "_grokparsefailure", 
+                "_logz_http_bulk_json_8070"
+            ], 
+            "ThreatActionTaken": [
+                "IDS_ALERT_ACT_TAK_DEL", 
+                "IDS_ALERT_ACT_TAK_DEL"
+            ], 
+            "ThreatCategory": [
+                "av.detect", 
+                "av.detect"
+            ], 
+            "AnalyzerEngineVersion": [
+                "6010.8670", 
+                "6010.8670"
+            ], 
+            "SourceHostName": [
+                "WinSec3", 
+                "WinSec3"
+            ], 
+            "FirstActionStatus": [
+                "True", 
+                "True"
+            ], 
+            "TargetName": [
+                "test.exe", 
+                "test.exe"
+            ], 
+            "TargetFileName": [
+                "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth\\test.exe", 
+                "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth\\test.exe"
+            ], 
+            "tenantId": "1", 
             "log": {
                 "source": {
-                    "address": "10.0.250.193:35071"
+                    "address": "10.0.1.9:49874"
                 }
             }, 
-            "logzio_codec": "json", 
-            "log_timestamp": "Mar 26 02:04:02 2020", 
-            "src_ip": "10.0.250.44", 
+            "GMTTime": [
+                "2020-02-23T15:43:40", 
+                "2020-02-23T15:43:40"
+            ], 
+            "ThreatEventID": [
+                "1027", 
+                "1027"
+            ], 
+            "AMCoreContentVersion": [
+                "3990.0", 
+                "3990.0"
+            ], 
+            "AnalyzerDATVersion": [
+                "3990.0", 
+                "3990.0"
+            ], 
+            "timestamp": "2020-05-06T01:46:12.663+0000", 
+            "NaturalLangDescription": [
+                "IDS_NATURAL_LANG_OAS_DETECTION_DEL|TargetName=test.exe|TargetPath=C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth|ThreatName=Trojan-FRTB!81DA244A770C|SourceProcessName=C:\\Windows\\explorer.exe|ThreatType=trojan|TargetUserName=WinSec3\\Logzio", 
+                "IDS_NATURAL_LANG_OAS_DETECTION_DEL|TargetNametest.exe|TargetPath=C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth|ThreatName=Trojan-FRTB!81DA244A770C|SourceProcessName=C:\\Windows\\explorer.exe|ThreatType=trojan|TargetUserName=WinSec3\\Logzio"
+            ], 
+            "beat_agent": {
+                "ephemeral_id": "8d15318f-3a3e-436c-a93e-1b6e8fec0cfb", 
+                "type": "filebeat", 
+                "hostname": "SecLinux", 
+                "version": "7.5.0", 
+                "id": "348cbd8b-b4ce-4531-b6d1-ab6beb37d65f"
+            }, 
+            "AnalyzerVersion": [
+                "10.6.1", 
+                "10.6.1"
+            ], 
+            "TargetUserName": [
+                "WinSec3\\Logzio", 
+                "WinSec3\\Logzio"
+            ], 
+            "TaskName": [
+                "IDS_OAS_TASK_NAME", 
+                "IDS_OAS_TASK_NAME"
+            ], 
+            "ThreatName": [
+                "Trojan-FRTB!81DA244A770C", 
+                "Trojan-FRTB!81DA244A770C"
+            ], 
+            "AnalyzerHostName": [
+                "WinSec3", 
+                "WinSec3"
+            ], 
+            "EPOevent": {
+                "SoftwareInfo": {
+                    "CommonFields": {
+                        "AnalyzerDATVersion": "3990.0", 
+                        "Analyzer": "ENDP_AM_1060", 
+                        "AnalyzerDetectionMethod": "On-Access Scan", 
+                        "AnalyzerVersion": "10.6.1", 
+                        "AnalyzerEngineVersion": "6010.8670", 
+                        "AnalyzerHostName": "WinSec3", 
+                        "AnalyzerName": "McAfee Endpoint Security"
+                    }, 
+                    "Event": {
+                        "EventID": "1027", 
+                        "GMTTime": "2020-02-23T15:43:40", 
+                        "CustomFields": {
+                            "DetectionMessage": "IDS_OAS_DEFAULT_THREAT_MESSAGE", 
+                            "TargetFileSize": "249952", 
+                            "SecondActionStatus": "false", 
+                            "DurationBeforeDetection": "18", 
+                            "Cleanable": "true", 
+                            "FirstAttemptedAction": "IDS_ALERT_THACT_ATT_CLE", 
+                            "AnalyzerContentCreationDate": "2020-02-22T08:24:00Z", 
+                            "TargetAccessTime": "2020-02-23T15:43:22Z", 
+                            "AttackVectorType": "4", 
+                            "ThreatDetectedOnCreation": "true", 
+                            "FirstActionStatus": "true", 
+                            "TargetName": "test.exe", 
+                            "AMCoreContentVersion": "3990.0", 
+                            "NaturalLangDescription": "IDS_NATURAL_LANG_OAS_DETECTION_DEL|TargetName=test.exe|TargetPath=C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth|ThreatName=Trojan-FRTB!81DA244A770C|SourceProcessName=C:\\Windows\\explorer.exe|ThreatType=trojan|TargetUserName=WinSec3\\Logzio", 
+                            "TaskName": "IDS_OAS_TASK_NAME", 
+                            "TargetHash": "81da244a770c46ace2cf112214f8e75e", 
+                            "SecondAttemptedAction": "IDS_ALERT_THACT_ATT_DEL", 
+                            "TargetCreateTime": "2020-02-23T15:43:21Z", 
+                            "TargetModifyTime": "2020-02-23T15:43:22Z", 
+                            "BladeName": "IDS_BLADE_NAME_SPB", 
+                            "AnalyzerGTIQuery": "true", 
+                            "AccessRequested_obj": {}, 
+                            "TargetPath": "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth"
+                        }, 
+                        "CommonFields": {
+                            "ThreatType": "trojan", 
+                            "ThreatEventID": "1027", 
+                            "TargetHostName": "WinSec3", 
+                            "DetectedUTC": "2020-02-23T15:43:40Z", 
+                            "TargetFileName": "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth\\test.exe", 
+                            "ThreatSeverity": "2", 
+                            "ThreatCategory": "av.detect", 
+                            "TargetUserName": "WinSec3\\Logzio", 
+                            "SourceHostName": "WinSec3", 
+                            "ThreatName": "Trojan-FRTB!81DA244A770C", 
+                            "SourceProcessName": "C:\\Windows\\explorer.exe", 
+                            "ThreatActionTaken": "IDS_ALERT_ACT_TAK_DEL", 
+                            "ThreatHandled": "true"
+                        }, 
+                        "Severity": "3"
+                    }
+                }, 
+                "MachineInfo": {
+                    "RawMACAddress": "000d3a373482", 
+                    "UserName": "SYSTEM", 
+                    "MachineName": "WinSec3", 
+                    "OSName": "Windows 10 Workstation", 
+                    "TimeZoneBias": "0", 
+                    "AgentGUID": "{d140d3c9-53ed-4367-857d-a5a396a97775}", 
+                    "IPAddress": "10.0.1.10"
+                }
+            }, 
+            "SecondAttemptedAction": [
+                "IDS_ALERT_THACT_ATT_DEL", 
+                "IDS_ALERT_THACT_ATT_DEL"
+            ], 
+            "EventID": [
+                "1027", 
+                "1027"
+            ], 
             "input": {
                 "type": "tcp"
             }, 
-            "type": "cisco-asa", 
-            "tags": [
-                "beats-5015", 
-                "_logzio_codec_json", 
-                "_jsonparsefailure"
+            "type": "mcafee_epo", 
+            "tenantNodePath": "1\\2", 
+            "TargetModifyTime": [
+                "2020-02-23T15:43:22Z", 
+                "2020-02-23T15:43:22Z"
             ], 
-            "connection_id": "2868", 
-            "reason": "Connection timeout", 
-            "src_interface": "mgmt", 
+            "AnalyzerDetectionMethod": [
+                "On-Access Scan", 
+                "On-Access Scan"
+            ], 
+            "BladeName": [
+                "IDS_BLADE_NAME_SPB", 
+                "IDS_BLADE_NAME_SPB"
+            ], 
+            "ThreatSeverity": [
+                "2", 
+                "2"
+            ], 
+            "AnalyzerGTIQuery": [
+                "True", 
+                "True"
+            ], 
+            "AccessRequested": [
+                "", 
+                ""
+            ], 
             "ecs": {
                 "version": "1.1.0"
             }, 
-            "dst_ip": "10.0.250.193", 
-            "ciscotag": "ASA-6-302014", 
-            "bytes": "0", 
-            "dst_port": "62326", 
-            "action": "Teardown", 
-            "beat_agent": {
-                "ephemeral_id": "f6acc59c-b3f2-4b22-81a2-27144692a89b", 
-                "type": "filebeat", 
-                "hostname": "ip-10-0-250-44", 
-                "version": "7.4.0", 
-                "id": "d6130ca5-9587-4210-9698-edfd367abb6d"
-            }, 
-            "syslog_pri": "190", 
-            "@metadata": {
-                "beat": "filebeat", 
-                "version": "7.4.0", 
-                "type": "_doc"
-            }
-        }, 
-        {
-            "protocol": "TCP", 
-            "@timestamp": "2020-03-26T02:04:05.999Z", 
-            "dst_interface": "identity", 
-            "_logzio_pattern": 4032921, 
-            "duration": "0:10:06", 
-            "message": "<190>Mar 26 2020 02:04:02: %ASA-6-302014: Teardown TCP connection 2867 for mgmt:10.0.250.44/6514 to identity:10.0.250.193/21600 duration 0:10:06 bytes 0 Connection timeout", 
-            "src_port": "6514", 
-            "log": {
-                "source": {
-                    "address": "10.0.250.193:35071"
-                }
-            }, 
-            "logzio_codec": "json", 
-            "log_timestamp": "Mar 26 02:04:02 2020", 
-            "src_ip": "10.0.250.44", 
-            "input": {
-                "type": "tcp"
-            }, 
-            "type": "cisco-asa", 
-            "tags": [
-                "beats-5015", 
-                "_logzio_codec_json", 
-                "_jsonparsefailure"
+            "ThreatHandled": [
+                "True", 
+                "True"
             ], 
-            "connection_id": "2867", 
-            "reason": "Connection timeout", 
-            "src_interface": "mgmt", 
-            "ecs": {
-                "version": "1.1.0"
-            }, 
-            "dst_ip": "10.0.250.193", 
-            "ciscotag": "ASA-6-302014", 
-            "bytes": "0", 
-            "dst_port": "21600", 
-            "action": "Teardown", 
-            "beat_agent": {
-                "ephemeral_id": "f6acc59c-b3f2-4b22-81a2-27144692a89b", 
-                "type": "filebeat", 
-                "hostname": "ip-10-0-250-44", 
-                "version": "7.4.0", 
-                "id": "d6130ca5-9587-4210-9698-edfd367abb6d"
-            }, 
-            "syslog_pri": "190", 
-            "@metadata": {
-                "beat": "filebeat", 
-                "version": "7.4.0", 
-                "type": "_doc"
-            }
-        }, 
-        {
-            "protocol": "TCP", 
-            "@timestamp": "2020-03-26T01:35:02.408Z", 
-            "dst_interface": "identity", 
-            "_logzio_pattern": 4032921, 
-            "duration": "0:11:07", 
-            "message": "<190>Mar 26 2020 01:34:59: %ASA-6-302014: Teardown TCP connection 2854 for mgmt:10.0.250.44/6514 to identity:10.0.250.193/15756 duration 0:11:07 bytes 0 Connection timeout", 
-            "src_port": "6514", 
-            "log": {
-                "source": {
-                    "address": "10.0.250.193:46448"
-                }
-            }, 
-            "logzio_codec": "json", 
-            "log_timestamp": "Mar 26 01:34:59 2020", 
-            "src_ip": "10.0.250.44", 
-            "input": {
-                "type": "tcp"
-            }, 
-            "type": "cisco-asa", 
-            "tags": [
-                "beats-5015", 
-                "_logzio_codec_json", 
-                "_jsonparsefailure"
+            "TargetPath": [
+                "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth", 
+                "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth"
             ], 
-            "connection_id": "2854", 
-            "reason": "Connection timeout", 
-            "src_interface": "mgmt", 
-            "ecs": {
-                "version": "1.1.0"
-            }, 
-            "dst_ip": "10.0.250.193", 
-            "ciscotag": "ASA-6-302014", 
-            "bytes": "0", 
-            "dst_port": "15756", 
-            "action": "Teardown", 
-            "beat_agent": {
-                "ephemeral_id": "f6acc59c-b3f2-4b22-81a2-27144692a89b", 
-                "type": "filebeat", 
-                "hostname": "ip-10-0-250-44", 
-                "version": "7.4.0", 
-                "id": "d6130ca5-9587-4210-9698-edfd367abb6d"
-            }, 
-            "syslog_pri": "190", 
             "@metadata": {
                 "beat": "filebeat", 
-                "version": "7.4.0", 
+                "version": "7.5.0", 
                 "type": "_doc"
-            }
-        }, 
-        {
-            "protocol": "TCP", 
-            "@timestamp": "2020-03-26T00:33:44.100Z", 
-            "dst_interface": "identity", 
-            "_logzio_pattern": 4032921, 
-            "duration": "0:10:06", 
-            "message": "<190>Mar 26 2020 00:33:41: %ASA-6-302014: Teardown TCP connection 2823 for mgmt:10.0.250.44/6514 to identity:10.0.250.193/47532 duration 0:10:06 bytes 0 Connection timeout", 
-            "src_port": "6514", 
-            "log": {
-                "source": {
-                    "address": "10.0.250.193:33309"
-                }
             }, 
-            "logzio_codec": "json", 
-            "log_timestamp": "Mar 26 00:33:41 2020", 
-            "src_ip": "10.0.250.44", 
-            "input": {
-                "type": "tcp"
-            }, 
-            "type": "cisco-asa", 
-            "tags": [
-                "beats-5015", 
-                "_logzio_codec_json", 
-                "_jsonparsefailure"
-            ], 
-            "connection_id": "2823", 
-            "reason": "Connection timeout", 
-            "src_interface": "mgmt", 
-            "ecs": {
-                "version": "1.1.0"
-            }, 
-            "dst_ip": "10.0.250.193", 
-            "ciscotag": "ASA-6-302014", 
-            "bytes": "0", 
-            "dst_port": "47532", 
-            "action": "Teardown", 
-            "beat_agent": {
-                "ephemeral_id": "f6acc59c-b3f2-4b22-81a2-27144692a89b", 
-                "type": "filebeat", 
-                "hostname": "ip-10-0-250-44", 
-                "version": "7.4.0", 
-                "id": "d6130ca5-9587-4210-9698-edfd367abb6d"
-            }, 
-            "syslog_pri": "190", 
-            "@metadata": {
-                "beat": "filebeat", 
-                "version": "7.4.0", 
-                "type": "_doc"
-            }
-        }, 
-        {
-            "protocol": "TCP", 
-            "@timestamp": "2020-03-26T00:33:44.099Z", 
-            "dst_interface": "identity", 
-            "_logzio_pattern": 4032921, 
-            "duration": "0:10:06", 
-            "message": "<190>Mar 26 2020 00:33:41: %ASA-6-302014: Teardown TCP connection 2822 for mgmt:10.0.250.44/6514 to identity:10.0.250.193/61990 duration 0:10:06 bytes 0 Connection timeout", 
-            "src_port": "6514", 
-            "log": {
-                "source": {
-                    "address": "10.0.250.193:33309"
-                }
-            }, 
-            "logzio_codec": "json", 
-            "log_timestamp": "Mar 26 00:33:41 2020", 
-            "src_ip": "10.0.250.44", 
-            "input": {
-                "type": "tcp"
-            }, 
-            "type": "cisco-asa", 
-            "tags": [
-                "beats-5015", 
-                "_logzio_codec_json", 
-                "_jsonparsefailure"
-            ], 
-            "connection_id": "2822", 
-            "reason": "Connection timeout", 
-            "src_interface": "mgmt", 
-            "ecs": {
-                "version": "1.1.0"
-            }, 
-            "dst_ip": "10.0.250.193", 
-            "ciscotag": "ASA-6-302014", 
-            "bytes": "0", 
-            "dst_port": "61990", 
-            "action": "Teardown", 
-            "beat_agent": {
-                "ephemeral_id": "f6acc59c-b3f2-4b22-81a2-27144692a89b", 
-                "type": "filebeat", 
-                "hostname": "ip-10-0-250-44", 
-                "version": "7.4.0", 
-                "id": "d6130ca5-9587-4210-9698-edfd367abb6d"
-            }, 
-            "syslog_pri": "190", 
-            "@metadata": {
-                "beat": "filebeat", 
-                "version": "7.4.0", 
-                "type": "_doc"
-            }
-        }, 
-        {
-            "protocol": "TCP", 
-            "@timestamp": "2020-03-26T00:33:44.099Z", 
-            "dst_interface": "identity", 
-            "_logzio_pattern": 4032921, 
-            "duration": "0:10:06", 
-            "message": "<190>Mar 26 2020 00:33:41: %ASA-6-302014: Teardown TCP connection 2824 for mgmt:10.0.250.44/6514 to identity:10.0.250.193/41993 duration 0:10:06 bytes 0 Connection timeout", 
-            "src_port": "6514", 
-            "log": {
-                "source": {
-                    "address": "10.0.250.193:33309"
-                }
-            }, 
-            "logzio_codec": "json", 
-            "log_timestamp": "Mar 26 00:33:41 2020", 
-            "src_ip": "10.0.250.44", 
-            "input": {
-                "type": "tcp"
-            }, 
-            "type": "cisco-asa", 
-            "tags": [
-                "beats-5015", 
-                "_logzio_codec_json", 
-                "_jsonparsefailure"
-            ], 
-            "connection_id": "2824", 
-            "reason": "Connection timeout", 
-            "src_interface": "mgmt", 
-            "ecs": {
-                "version": "1.1.0"
-            }, 
-            "dst_ip": "10.0.250.193", 
-            "ciscotag": "ASA-6-302014", 
-            "bytes": "0", 
-            "dst_port": "41993", 
-            "action": "Teardown", 
-            "beat_agent": {
-                "ephemeral_id": "f6acc59c-b3f2-4b22-81a2-27144692a89b", 
-                "type": "filebeat", 
-                "hostname": "ip-10-0-250-44", 
-                "version": "7.4.0", 
-                "id": "d6130ca5-9587-4210-9698-edfd367abb6d"
-            }, 
-            "syslog_pri": "190", 
-            "@metadata": {
-                "beat": "filebeat", 
-                "version": "7.4.0", 
-                "type": "_doc"
-            }
+            "ThreatDetectedOnCreation": [
+                "True", 
+                "True"
+            ]
         }
-    ], 
-    "Logzio.Logs.Count": 10
+    ]
 }
 ```
 
 ##### Human Readable Output
 ### Logs
-|@metadata|@timestamp|_logzio_pattern|action|beat_agent|bytes|ciscotag|connection_id|dst_interface|dst_ip|dst_port|duration|ecs|input|log|log_timestamp|logzio_codec|message|protocol|reason|src_interface|src_ip|src_port|syslog_pri|tags|type|
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| beat: filebeat<br>type: _doc<br>version: 7.4.0 | 2020-03-26T00:02:12.458Z | 4032921 | Teardown | version: 7.4.0<br>type: filebeat<br>ephemeral_id: f6acc59c-b3f2-4b22-81a2-27144692a89b<br>hostname: ip-10-0-250-44<br>id: d6130ca5-9587-4210-9698-edfd367abb6d | 0 | ASA-6-302014 | 2807 | identity | 10.0.250.193 | 36939 | 0:10:06 | version: 1.1.0 | type: tcp | source: {"address": "10.0.250.193:60909"} | Mar 26 00:02:09 2020 | json | <190>Mar 26 2020 00:02:09: %ASA-6-302014: Teardown TCP connection 2807 for mgmt:10.0.250.44/6514 to identity:10.0.250.193/36939 duration 0:10:06 bytes 0 Connection timeout | TCP | Connection timeout | mgmt | 10.0.250.44 | 6514 | 190 | beats-5015,<br>_logzio_codec_json,<br>_jsonparsefailure | cisco-asa |
-| beat: filebeat<br>type: _doc<br>version: 7.4.0 | 2020-03-26T00:02:12.458Z | 4032921 | Teardown | hostname: ip-10-0-250-44<br>id: d6130ca5-9587-4210-9698-edfd367abb6d<br>version: 7.4.0<br>type: filebeat<br>ephemeral_id: f6acc59c-b3f2-4b22-81a2-27144692a89b | 0 | ASA-6-302014 | 2809 | identity | 10.0.250.193 | 22578 | 0:10:06 | version: 1.1.0 | type: tcp | source: {"address": "10.0.250.193:60909"} | Mar 26 00:02:09 2020 | json | <190>Mar 26 2020 00:02:09: %ASA-6-302014: Teardown TCP connection 2809 for mgmt:10.0.250.44/6514 to identity:10.0.250.193/22578 duration 0:10:06 bytes 0 Connection timeout | TCP | Connection timeout | mgmt | 10.0.250.44 | 6514 | 190 | beats-5015,<br>_logzio_codec_json,<br>_jsonparsefailure | cisco-asa |
-| beat: filebeat<br>type: _doc<br>version: 7.4.0 | 2020-03-26T00:02:12.458Z | 4032921 | Teardown | type: filebeat<br>ephemeral_id: f6acc59c-b3f2-4b22-81a2-27144692a89b<br>hostname: ip-10-0-250-44<br>id: d6130ca5-9587-4210-9698-edfd367abb6d<br>version: 7.4.0 | 0 | ASA-6-302014 | 2808 | identity | 10.0.250.193 | 21436 | 0:10:06 | version: 1.1.0 | type: tcp | source: {"address": "10.0.250.193:60909"} | Mar 26 00:02:09 2020 | json | <190>Mar 26 2020 00:02:09: %ASA-6-302014: Teardown TCP connection 2808 for mgmt:10.0.250.44/6514 to identity:10.0.250.193/21436 duration 0:10:06 bytes 0 Connection timeout | TCP | Connection timeout | mgmt | 10.0.250.44 | 6514 | 190 | beats-5015,<br>_logzio_codec_json,<br>_jsonparsefailure | cisco-asa |
-| beat: filebeat<br>type: _doc<br>version: 7.4.0 | 2020-03-26T02:04:05.999Z | 4032921 | Teardown | hostname: ip-10-0-250-44<br>id: d6130ca5-9587-4210-9698-edfd367abb6d<br>version: 7.4.0<br>type: filebeat<br>ephemeral_id: f6acc59c-b3f2-4b22-81a2-27144692a89b | 0 | ASA-6-302014 | 2869 | identity | 10.0.250.193 | 61195 | 0:10:06 | version: 1.1.0 | type: tcp | source: {"address": "10.0.250.193:35071"} | Mar 26 02:04:02 2020 | json | <190>Mar 26 2020 02:04:02: %ASA-6-302014: Teardown TCP connection 2869 for mgmt:10.0.250.44/6514 to identity:10.0.250.193/61195 duration 0:10:06 bytes 0 Connection timeout | TCP | Connection timeout | mgmt | 10.0.250.44 | 6514 | 190 | beats-5015,<br>_logzio_codec_json,<br>_jsonparsefailure | cisco-asa |
-| beat: filebeat<br>type: _doc<br>version: 7.4.0 | 2020-03-26T02:04:05.999Z | 4032921 | Teardown | version: 7.4.0<br>type: filebeat<br>ephemeral_id: f6acc59c-b3f2-4b22-81a2-27144692a89b<br>hostname: ip-10-0-250-44<br>id: d6130ca5-9587-4210-9698-edfd367abb6d | 0 | ASA-6-302014 | 2868 | identity | 10.0.250.193 | 62326 | 0:10:06 | version: 1.1.0 | type: tcp | source: {"address": "10.0.250.193:35071"} | Mar 26 02:04:02 2020 | json | <190>Mar 26 2020 02:04:02: %ASA-6-302014: Teardown TCP connection 2868 for mgmt:10.0.250.44/6514 to identity:10.0.250.193/62326 duration 0:10:06 bytes 0 Connection timeout | TCP | Connection timeout | mgmt | 10.0.250.44 | 6514 | 190 | beats-5015,<br>_logzio_codec_json,<br>_jsonparsefailure | cisco-asa |
-| beat: filebeat<br>type: _doc<br>version: 7.4.0 | 2020-03-26T02:04:05.999Z | 4032921 | Teardown | id: d6130ca5-9587-4210-9698-edfd367abb6d<br>version: 7.4.0<br>type: filebeat<br>ephemeral_id: f6acc59c-b3f2-4b22-81a2-27144692a89b<br>hostname: ip-10-0-250-44 | 0 | ASA-6-302014 | 2867 | identity | 10.0.250.193 | 21600 | 0:10:06 | version: 1.1.0 | type: tcp | source: {"address": "10.0.250.193:35071"} | Mar 26 02:04:02 2020 | json | <190>Mar 26 2020 02:04:02: %ASA-6-302014: Teardown TCP connection 2867 for mgmt:10.0.250.44/6514 to identity:10.0.250.193/21600 duration 0:10:06 bytes 0 Connection timeout | TCP | Connection timeout | mgmt | 10.0.250.44 | 6514 | 190 | beats-5015,<br>_logzio_codec_json,<br>_jsonparsefailure | cisco-asa |
-| beat: filebeat<br>type: _doc<br>version: 7.4.0 | 2020-03-26T01:35:02.408Z | 4032921 | Teardown | ephemeral_id: f6acc59c-b3f2-4b22-81a2-27144692a89b<br>hostname: ip-10-0-250-44<br>id: d6130ca5-9587-4210-9698-edfd367abb6d<br>version: 7.4.0<br>type: filebeat | 0 | ASA-6-302014 | 2854 | identity | 10.0.250.193 | 15756 | 0:11:07 | version: 1.1.0 | type: tcp | source: {"address": "10.0.250.193:46448"} | Mar 26 01:34:59 2020 | json | <190>Mar 26 2020 01:34:59: %ASA-6-302014: Teardown TCP connection 2854 for mgmt:10.0.250.44/6514 to identity:10.0.250.193/15756 duration 0:11:07 bytes 0 Connection timeout | TCP | Connection timeout | mgmt | 10.0.250.44 | 6514 | 190 | beats-5015,<br>_logzio_codec_json,<br>_jsonparsefailure | cisco-asa |
-| beat: filebeat<br>type: _doc<br>version: 7.4.0 | 2020-03-26T00:33:44.100Z | 4032921 | Teardown | version: 7.4.0<br>type: filebeat<br>ephemeral_id: f6acc59c-b3f2-4b22-81a2-27144692a89b<br>hostname: ip-10-0-250-44<br>id: d6130ca5-9587-4210-9698-edfd367abb6d | 0 | ASA-6-302014 | 2823 | identity | 10.0.250.193 | 47532 | 0:10:06 | version: 1.1.0 | type: tcp | source: {"address": "10.0.250.193:33309"} | Mar 26 00:33:41 2020 | json | <190>Mar 26 2020 00:33:41: %ASA-6-302014: Teardown TCP connection 2823 for mgmt:10.0.250.44/6514 to identity:10.0.250.193/47532 duration 0:10:06 bytes 0 Connection timeout | TCP | Connection timeout | mgmt | 10.0.250.44 | 6514 | 190 | beats-5015,<br>_logzio_codec_json,<br>_jsonparsefailure | cisco-asa |
-| beat: filebeat<br>type: _doc<br>version: 7.4.0 | 2020-03-26T00:33:44.099Z | 4032921 | Teardown | type: filebeat<br>ephemeral_id: f6acc59c-b3f2-4b22-81a2-27144692a89b<br>hostname: ip-10-0-250-44<br>id: d6130ca5-9587-4210-9698-edfd367abb6d<br>version: 7.4.0 | 0 | ASA-6-302014 | 2822 | identity | 10.0.250.193 | 61990 | 0:10:06 | version: 1.1.0 | type: tcp | source: {"address": "10.0.250.193:33309"} | Mar 26 00:33:41 2020 | json | <190>Mar 26 2020 00:33:41: %ASA-6-302014: Teardown TCP connection 2822 for mgmt:10.0.250.44/6514 to identity:10.0.250.193/61990 duration 0:10:06 bytes 0 Connection timeout | TCP | Connection timeout | mgmt | 10.0.250.44 | 6514 | 190 | beats-5015,<br>_logzio_codec_json,<br>_jsonparsefailure | cisco-asa |
-| beat: filebeat<br>type: _doc<br>version: 7.4.0 | 2020-03-26T00:33:44.099Z | 4032921 | Teardown | hostname: ip-10-0-250-44<br>id: d6130ca5-9587-4210-9698-edfd367abb6d<br>version: 7.4.0<br>type: filebeat<br>ephemeral_id: f6acc59c-b3f2-4b22-81a2-27144692a89b | 0 | ASA-6-302014 | 2824 | identity | 10.0.250.193 | 41993 | 0:10:06 | version: 1.1.0 | type: tcp | source: {"address": "10.0.250.193:33309"} | Mar 26 00:33:41 2020 | json | <190>Mar 26 2020 00:33:41: %ASA-6-302014: Teardown TCP connection 2824 for mgmt:10.0.250.44/6514 to identity:10.0.250.193/41993 duration 0:10:06 bytes 0 Connection timeout | TCP | Connection timeout | mgmt | 10.0.250.44 | 6514 | 190 | beats-5015,<br>_logzio_codec_json,<br>_jsonparsefailure | cisco-asa |
+|@metadata|@timestamp|AMCoreContentVersion|AccessRequested|Analyzer|AnalyzerContentCreationDate|AnalyzerDATVersion|AnalyzerDetectionMethod|AnalyzerEngineVersion|AnalyzerGTIQuery|AnalyzerHostName|AnalyzerName|AnalyzerVersion|AttackVectorType|BladeName|Cleanable|DetectedUTC|DetectionMessage|DurationBeforeDetection|EPOEvents|EPOevent|EventID|FirstActionStatus|FirstAttemptedAction|GMTTime|NaturalLangDescription|SecondActionStatus|SecondAttemptedAction|Severity|SourceHostName|SourceProcessName|TargetAccessTime|TargetCreateTime|TargetFileName|TargetFileSize|TargetHash|TargetHostName|TargetModifyTime|TargetName|TargetPath|TargetUserName|TaskName|ThreatActionTaken|ThreatCategory|ThreatDetectedOnCreation|ThreatEventID|ThreatHandled|ThreatName|ThreatSeverity|ThreatType|beat_agent|bpsId|domain|ecs|input|log|logzio_codec|tags|tenantGUID|tenantId|tenantNodePath|timestamp|type|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| beat: filebeat<br>version: 7.5.0<br>type: _doc | 2020-05-06T00:01:04.441+0000 | 3990.0,<br>3990.0 | ,<br> | ENDP_AM_1060,<br>ENDP_AM_1060 | 2020-02-22T08:24:00Z,<br>2020-02-22T08:24:00Z | 3990.0,<br>3990.0 | On-Access Scan,<br>On-Access Scan | 6010.8670,<br>6010.8670 | True,<br>True | WinSec3,<br>WinSec3 | McAfee Endpoint Security,<br>McAfee Endpoint Security | 10.6.1,<br>10.6.1 | 4,<br>4 | IDS_BLADE_NAME_SPB,<br>IDS_BLADE_NAME_SPB | True,<br>True | 2020-02-23T15:43:40Z,<br>2020-02-23T15:43:40Z | IDS_OAS_DEFAULT_THREAT_MESSAGE,<br>IDS_OAS_DEFAULT_THREAT_MESSAGE | 18,<br>18 | EventFwd | SoftwareInfo: {"CommonFields": {"AnalyzerDATVersion": "3990.0", "Analyzer": "ENDP_AM_1060", "AnalyzerDetectionMethod": "On-Access Scan", "AnalyzerVersion": "10.6.1", "AnalyzerEngineVersion": "6010.8670", "AnalyzerHostName": "WinSec3", "AnalyzerName": "McAfee Endpoint Security"}, "Event": {"EventID": "1027", "GMTTime": "2020-02-23T15:43:40", "CustomFields": {"DetectionMessage": "IDS_OAS_DEFAULT_THREAT_MESSAGE", "TargetFileSize": "249952", "TargetModifyTime": "2020-02-23T15:43:22Z", "DurationBeforeDetection": "18", "Cleanable": "true", "FirstAttemptedAction": "IDS_ALERT_THACT_ATT_CLE", "AnalyzerContentCreationDate": "2020-02-22T08:24:00Z", "TargetAccessTime": "2020-02-23T15:43:22Z", "AttackVectorType": "4", "ThreatDetectedOnCreation": "true", "FirstActionStatus": "true", "TargetName": "test.exe", "AMCoreContentVersion": "3990.0", "NaturalLangDescription": "IDS_NATURAL_LANG_OAS_DETECTION_DEL\|TargetName=test.exe\|TargetPath=C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth\|ThreatName=Trojan-FRTB!81DA244A770C\|SourceProcessName=C:\\Windows\\explorer.exe\|ThreatType=trojan\|TargetUserName=WinSec3\\Logzio", "TaskName": "IDS_OAS_TASK_NAME", "TargetHash": "81da244a770c46ace2cf112214f8e75e", "SecondAttemptedAction": "IDS_ALERT_THACT_ATT_DEL", "TargetCreateTime": "2020-02-23T15:43:21Z", "SecondActionStatus": "false", "BladeName": "IDS_BLADE_NAME_SPB", "AnalyzerGTIQuery": "true", "AccessRequested_obj": {}, "TargetPath": "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth"}, "CommonFields": {"ThreatType": "trojan", "TargetHostName": "WinSec3", "DetectedUTC": "2020-02-23T15:43:40Z", "TargetFileName": "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth\\test.exe", "SourceHostName": "WinSec3", "ThreatSeverity": "2", "ThreatCategory": "av.detect", "TargetUserName": "WinSec3\\Logzio", "SourceProcessName": "C:\\Windows\\explorer.exe", "ThreatName": "Trojan-FRTB!81DA244A770C", "ThreatEventID": "1027", "ThreatActionTaken": "IDS_ALERT_ACT_TAK_DEL", "ThreatHandled": "true"}, "Severity": "3"}}<br>MachineInfo: {"RawMACAddress": "000d3a373482", "UserName": "SYSTEM", "MachineName": "WinSec3", "OSName": "Windows 10 Workstation", "TimeZoneBias": "0", "AgentGUID": "{d140d3c9-53ed-4367-857d-a5a396a97775}", "IPAddress": "10.0.1.10"} | 1027,<br>1027 | True,<br>True | IDS_ALERT_THACT_ATT_CLE,<br>IDS_ALERT_THACT_ATT_CLE | 2020-02-23T15:43:40,<br>2020-02-23T15:43:40 | IDS_NATURAL_LANG_OAS_DETECTION_DEL\|TargetName=test.exe\|TargetPath=C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth\|ThreatName=Trojan-FRTB!81DA244A770C\|SourceProcessName=C:\Windows\explorer.exe\|ThreatType=trojan\|TargetUserName=WinSec3\Logzio,<br>IDS_NATURAL_LANG_OAS_DETECTION_DEL\|TargetNametest.exe\|TargetPath=C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth\|ThreatName=Trojan-FRTB!81DA244A770C\|SourceProcessName=C:\Windows\explorer.exe\|ThreatType=trojan\|TargetUserName=WinSec3\Logzio | False,<br>False | IDS_ALERT_THACT_ATT_DEL,<br>IDS_ALERT_THACT_ATT_DEL | 3,<br>3 | WinSec3,<br>WinSec3 | C:\Windows\explorer.exe,<br>C:\Windows\explorer.exe | 2020-02-23T15:43:22Z,<br>2020-02-23T15:43:22Z | 2020-02-23T15:43:21Z,<br>2020-02-23T15:43:21Z | C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth\test.exe,<br>C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth\test.exe | 249952,<br>249952 | 81da244a770c46ace2cf112214f8e75e,<br>81da244a770c46ace2cf112214f8e75e | WinSec3,<br>WinSec3 | 2020-02-23T15:43:22Z,<br>2020-02-23T15:43:22Z | test.exe,<br>test.exe | C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth,<br>C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth | WinSec3\Logzio,<br>WinSec3\Logzio | IDS_OAS_TASK_NAME,<br>IDS_OAS_TASK_NAME | IDS_ALERT_ACT_TAK_DEL,<br>IDS_ALERT_ACT_TAK_DEL | av.detect,<br>av.detect | True,<br>True | 1027,<br>1027 | True,<br>True | Trojan-FRTB!81DA244A770C,<br>Trojan-FRTB!81DA244A770C | 2,<br>2 | trojan,<br>trojan | ephemeral_id: 8d15318f-3a3e-436c-a93e-1b6e8fec0cfb<br>type: filebeat<br>hostname: SecLinux<br>version: 7.5.0<br>id: 348cbd8b-b4ce-4531-b6d1-ab6beb37d65f | 1 | Win-Sec-2,<br>Win-Sec-2 | version: 1.1.0 | type: tcp | source: {"address": "10.0.1.9:49874"} | plain | beats-5015,<br>_grokparsefailure,<br>_grokparsefailure,<br>_logz_http_bulk_json_8070 | {00000000-0000-0000-0000-000000000000} | 1 | 1\2 | 2020-05-06T00:01:04.441+0000 | mcafee_epo |
+| beat: filebeat<br>version: 7.5.0<br>type: _doc | 2020-05-06T02:01:13.778+0000 | 3990.0,<br>3990.0 | ,<br> | ENDP_AM_1060,<br>ENDP_AM_1060 | 2020-02-22T08:24:00Z,<br>2020-02-22T08:24:00Z | 3990.0,<br>3990.0 | On-Access Scan,<br>On-Access Scan | 6010.8670,<br>6010.8670 | True,<br>True | WinSec3,<br>WinSec3 | McAfee Endpoint Security,<br>McAfee Endpoint Security | 10.6.1,<br>10.6.1 | 4,<br>4 | IDS_BLADE_NAME_SPB,<br>IDS_BLADE_NAME_SPB | True,<br>True | 2020-02-23T15:43:40Z,<br>2020-02-23T15:43:40Z | IDS_OAS_DEFAULT_THREAT_MESSAGE,<br>IDS_OAS_DEFAULT_THREAT_MESSAGE | 18,<br>18 | EventFwd | SoftwareInfo: {"CommonFields": {"AnalyzerDATVersion": "3990.0", "Analyzer": "ENDP_AM_1060", "AnalyzerDetectionMethod": "On-Access Scan", "AnalyzerVersion": "10.6.1", "AnalyzerEngineVersion": "6010.8670", "AnalyzerHostName": "WinSec3", "AnalyzerName": "McAfee Endpoint Security"}, "Event": {"EventID": "1027", "GMTTime": "2020-02-23T15:43:40", "CustomFields": {"DetectionMessage": "IDS_OAS_DEFAULT_THREAT_MESSAGE", "TargetFileSize": "249952", "TargetModifyTime": "2020-02-23T15:43:22Z", "DurationBeforeDetection": "18", "Cleanable": "true", "FirstAttemptedAction": "IDS_ALERT_THACT_ATT_CLE", "AnalyzerContentCreationDate": "2020-02-22T08:24:00Z", "TargetAccessTime": "2020-02-23T15:43:22Z", "AttackVectorType": "4", "ThreatDetectedOnCreation": "true", "FirstActionStatus": "true", "TargetName": "test.exe", "AMCoreContentVersion": "3990.0", "NaturalLangDescription": "IDS_NATURAL_LANG_OAS_DETECTION_DEL\|TargetName=test.exe\|TargetPath=C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth\|ThreatName=Trojan-FRTB!81DA244A770C\|SourceProcessName=C:\\Windows\\explorer.exe\|ThreatType=trojan\|TargetUserName=WinSec3\\Logzio", "TaskName": "IDS_OAS_TASK_NAME", "TargetHash": "81da244a770c46ace2cf112214f8e75e", "SecondAttemptedAction": "IDS_ALERT_THACT_ATT_DEL", "TargetCreateTime": "2020-02-23T15:43:21Z", "SecondActionStatus": "false", "BladeName": "IDS_BLADE_NAME_SPB", "AnalyzerGTIQuery": "true", "AccessRequested_obj": {}, "TargetPath": "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth"}, "CommonFields": {"ThreatType": "trojan", "TargetHostName": "WinSec3", "DetectedUTC": "2020-02-23T15:43:40Z", "TargetFileName": "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth\\test.exe", "SourceHostName": "WinSec3", "ThreatSeverity": "2", "ThreatCategory": "av.detect", "TargetUserName": "WinSec3\\Logzio", "SourceProcessName": "C:\\Windows\\explorer.exe", "ThreatName": "Trojan-FRTB!81DA244A770C", "ThreatEventID": "1027", "ThreatActionTaken": "IDS_ALERT_ACT_TAK_DEL", "ThreatHandled": "true"}, "Severity": "3"}}<br>MachineInfo: {"RawMACAddress": "000d3a373482", "UserName": "SYSTEM", "MachineName": "WinSec3", "OSName": "Windows 10 Workstation", "TimeZoneBias": "0", "AgentGUID": "{d140d3c9-53ed-4367-857d-a5a396a97775}", "IPAddress": "10.0.1.10"} | 1027,<br>1027 | True,<br>True | IDS_ALERT_THACT_ATT_CLE,<br>IDS_ALERT_THACT_ATT_CLE | 2020-02-23T15:43:40,<br>2020-02-23T15:43:40 | IDS_NATURAL_LANG_OAS_DETECTION_DEL\|TargetName=test.exe\|TargetPath=C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth\|ThreatName=Trojan-FRTB!81DA244A770C\|SourceProcessName=C:\Windows\explorer.exe\|ThreatType=trojan\|TargetUserName=WinSec3\Logzio,<br>IDS_NATURAL_LANG_OAS_DETECTION_DEL\|TargetNametest.exe\|TargetPath=C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth\|ThreatName=Trojan-FRTB!81DA244A770C\|SourceProcessName=C:\Windows\explorer.exe\|ThreatType=trojan\|TargetUserName=WinSec3\Logzio | False,<br>False | IDS_ALERT_THACT_ATT_DEL,<br>IDS_ALERT_THACT_ATT_DEL | 3,<br>3 | WinSec3,<br>WinSec3 | C:\Windows\explorer.exe,<br>C:\Windows\explorer.exe | 2020-02-23T15:43:22Z,<br>2020-02-23T15:43:22Z | 2020-02-23T15:43:21Z,<br>2020-02-23T15:43:21Z | C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth\test.exe,<br>C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth\test.exe | 249952,<br>249952 | 81da244a770c46ace2cf112214f8e75e,<br>81da244a770c46ace2cf112214f8e75e | WinSec3,<br>WinSec3 | 2020-02-23T15:43:22Z,<br>2020-02-23T15:43:22Z | test.exe,<br>test.exe | C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth,<br>C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth | WinSec3\Logzio,<br>WinSec3\Logzio | IDS_OAS_TASK_NAME,<br>IDS_OAS_TASK_NAME | IDS_ALERT_ACT_TAK_DEL,<br>IDS_ALERT_ACT_TAK_DEL | av.detect,<br>av.detect | True,<br>True | 1027,<br>1027 | True,<br>True | Trojan-FRTB!81DA244A770C,<br>Trojan-FRTB!81DA244A770C | 2,<br>2 | trojan,<br>trojan | ephemeral_id: 8d15318f-3a3e-436c-a93e-1b6e8fec0cfb<br>type: filebeat<br>hostname: SecLinux<br>version: 7.5.0<br>id: 348cbd8b-b4ce-4531-b6d1-ab6beb37d65f | 1 | Win-Sec-2,<br>Win-Sec-2 | version: 1.1.0 | type: tcp | source: {"address": "10.0.1.9:49874"} | plain | beats-5015,<br>_grokparsefailure,<br>_grokparsefailure,<br>_logz_http_bulk_json_8070 | {00000000-0000-0000-0000-000000000000} | 1 | 1\2 | 2020-05-06T02:01:13.778+0000 | mcafee_epo |
+| beat: filebeat<br>version: 7.5.0<br>type: _doc | 2020-05-06T02:16:14.944+0000 | 3990.0,<br>3990.0 | ,<br> | ENDP_AM_1060,<br>ENDP_AM_1060 | 2020-02-22T08:24:00Z,<br>2020-02-22T08:24:00Z | 3990.0,<br>3990.0 | On-Access Scan,<br>On-Access Scan | 6010.8670,<br>6010.8670 | True,<br>True | WinSec3,<br>WinSec3 | McAfee Endpoint Security,<br>McAfee Endpoint Security | 10.6.1,<br>10.6.1 | 4,<br>4 | IDS_BLADE_NAME_SPB,<br>IDS_BLADE_NAME_SPB | True,<br>True | 2020-02-23T15:43:40Z,<br>2020-02-23T15:43:40Z | IDS_OAS_DEFAULT_THREAT_MESSAGE,<br>IDS_OAS_DEFAULT_THREAT_MESSAGE | 18,<br>18 | EventFwd | SoftwareInfo: {"CommonFields": {"AnalyzerDATVersion": "3990.0", "Analyzer": "ENDP_AM_1060", "AnalyzerDetectionMethod": "On-Access Scan", "AnalyzerVersion": "10.6.1", "AnalyzerEngineVersion": "6010.8670", "AnalyzerHostName": "WinSec3", "AnalyzerName": "McAfee Endpoint Security"}, "Event": {"EventID": "1027", "GMTTime": "2020-02-23T15:43:40", "CustomFields": {"DetectionMessage": "IDS_OAS_DEFAULT_THREAT_MESSAGE", "TargetFileSize": "249952", "TargetModifyTime": "2020-02-23T15:43:22Z", "DurationBeforeDetection": "18", "Cleanable": "true", "FirstAttemptedAction": "IDS_ALERT_THACT_ATT_CLE", "AnalyzerContentCreationDate": "2020-02-22T08:24:00Z", "TargetAccessTime": "2020-02-23T15:43:22Z", "AttackVectorType": "4", "ThreatDetectedOnCreation": "true", "FirstActionStatus": "true", "TargetName": "test.exe", "AMCoreContentVersion": "3990.0", "NaturalLangDescription": "IDS_NATURAL_LANG_OAS_DETECTION_DEL\|TargetName=test.exe\|TargetPath=C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth\|ThreatName=Trojan-FRTB!81DA244A770C\|SourceProcessName=C:\\Windows\\explorer.exe\|ThreatType=trojan\|TargetUserName=WinSec3\\Logzio", "TaskName": "IDS_OAS_TASK_NAME", "TargetHash": "81da244a770c46ace2cf112214f8e75e", "SecondAttemptedAction": "IDS_ALERT_THACT_ATT_DEL", "TargetCreateTime": "2020-02-23T15:43:21Z", "SecondActionStatus": "false", "BladeName": "IDS_BLADE_NAME_SPB", "AnalyzerGTIQuery": "true", "AccessRequested_obj": {}, "TargetPath": "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth"}, "CommonFields": {"ThreatType": "trojan", "TargetHostName": "WinSec3", "DetectedUTC": "2020-02-23T15:43:40Z", "TargetFileName": "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth\\test.exe", "SourceHostName": "WinSec3", "ThreatSeverity": "2", "ThreatCategory": "av.detect", "TargetUserName": "WinSec3\\Logzio", "SourceProcessName": "C:\\Windows\\explorer.exe", "ThreatName": "Trojan-FRTB!81DA244A770C", "ThreatEventID": "1027", "ThreatActionTaken": "IDS_ALERT_ACT_TAK_DEL", "ThreatHandled": "true"}, "Severity": "3"}}<br>MachineInfo: {"RawMACAddress": "000d3a373482", "UserName": "SYSTEM", "MachineName": "WinSec3", "OSName": "Windows 10 Workstation", "TimeZoneBias": "0", "AgentGUID": "{d140d3c9-53ed-4367-857d-a5a396a97775}", "IPAddress": "10.0.1.10"} | 1027,<br>1027 | True,<br>True | IDS_ALERT_THACT_ATT_CLE,<br>IDS_ALERT_THACT_ATT_CLE | 2020-02-23T15:43:40,<br>2020-02-23T15:43:40 | IDS_NATURAL_LANG_OAS_DETECTION_DEL\|TargetName=test.exe\|TargetPath=C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth\|ThreatName=Trojan-FRTB!81DA244A770C\|SourceProcessName=C:\Windows\explorer.exe\|ThreatType=trojan\|TargetUserName=WinSec3\Logzio,<br>IDS_NATURAL_LANG_OAS_DETECTION_DEL\|TargetNametest.exe\|TargetPath=C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth\|ThreatName=Trojan-FRTB!81DA244A770C\|SourceProcessName=C:\Windows\explorer.exe\|ThreatType=trojan\|TargetUserName=WinSec3\Logzio | False,<br>False | IDS_ALERT_THACT_ATT_DEL,<br>IDS_ALERT_THACT_ATT_DEL | 3,<br>3 | WinSec3,<br>WinSec3 | C:\Windows\explorer.exe,<br>C:\Windows\explorer.exe | 2020-02-23T15:43:22Z,<br>2020-02-23T15:43:22Z | 2020-02-23T15:43:21Z,<br>2020-02-23T15:43:21Z | C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth\test.exe,<br>C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth\test.exe | 249952,<br>249952 | 81da244a770c46ace2cf112214f8e75e,<br>81da244a770c46ace2cf112214f8e75e | WinSec3,<br>WinSec3 | 2020-02-23T15:43:22Z,<br>2020-02-23T15:43:22Z | test.exe,<br>test.exe | C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth,<br>C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth | WinSec3\Logzio,<br>WinSec3\Logzio | IDS_OAS_TASK_NAME,<br>IDS_OAS_TASK_NAME | IDS_ALERT_ACT_TAK_DEL,<br>IDS_ALERT_ACT_TAK_DEL | av.detect,<br>av.detect | True,<br>True | 1027,<br>1027 | True,<br>True | Trojan-FRTB!81DA244A770C,<br>Trojan-FRTB!81DA244A770C | 2,<br>2 | trojan,<br>trojan | ephemeral_id: 8d15318f-3a3e-436c-a93e-1b6e8fec0cfb<br>type: filebeat<br>hostname: SecLinux<br>version: 7.5.0<br>id: 348cbd8b-b4ce-4531-b6d1-ab6beb37d65f | 1 | Win-Sec-2,<br>Win-Sec-2 | version: 1.1.0 | type: tcp | source: {"address": "10.0.1.9:49874"} | plain | beats-5015,<br>_grokparsefailure,<br>_grokparsefailure,<br>_logz_http_bulk_json_8070 | {00000000-0000-0000-0000-000000000000} | 1 | 1\2 | 2020-05-06T02:16:14.944+0000 | mcafee_epo |
+| beat: filebeat<br>version: 7.5.0<br>type: _doc | 2020-05-06T02:31:16.087+0000 | 3990.0,<br>3990.0 | ,<br> | ENDP_AM_1060,<br>ENDP_AM_1060 | 2020-02-22T08:24:00Z,<br>2020-02-22T08:24:00Z | 3990.0,<br>3990.0 | On-Access Scan,<br>On-Access Scan | 6010.8670,<br>6010.8670 | True,<br>True | WinSec3,<br>WinSec3 | McAfee Endpoint Security,<br>McAfee Endpoint Security | 10.6.1,<br>10.6.1 | 4,<br>4 | IDS_BLADE_NAME_SPB,<br>IDS_BLADE_NAME_SPB | True,<br>True | 2020-02-23T15:43:40Z,<br>2020-02-23T15:43:40Z | IDS_OAS_DEFAULT_THREAT_MESSAGE,<br>IDS_OAS_DEFAULT_THREAT_MESSAGE | 18,<br>18 | EventFwd | SoftwareInfo: {"CommonFields": {"AnalyzerDATVersion": "3990.0", "Analyzer": "ENDP_AM_1060", "AnalyzerDetectionMethod": "On-Access Scan", "AnalyzerVersion": "10.6.1", "AnalyzerEngineVersion": "6010.8670", "AnalyzerHostName": "WinSec3", "AnalyzerName": "McAfee Endpoint Security"}, "Event": {"EventID": "1027", "GMTTime": "2020-02-23T15:43:40", "CustomFields": {"DetectionMessage": "IDS_OAS_DEFAULT_THREAT_MESSAGE", "TargetFileSize": "249952", "TargetModifyTime": "2020-02-23T15:43:22Z", "DurationBeforeDetection": "18", "Cleanable": "true", "FirstAttemptedAction": "IDS_ALERT_THACT_ATT_CLE", "AnalyzerContentCreationDate": "2020-02-22T08:24:00Z", "TargetAccessTime": "2020-02-23T15:43:22Z", "AttackVectorType": "4", "ThreatDetectedOnCreation": "true", "FirstActionStatus": "true", "TargetName": "test.exe", "AMCoreContentVersion": "3990.0", "NaturalLangDescription": "IDS_NATURAL_LANG_OAS_DETECTION_DEL\|TargetName=test.exe\|TargetPath=C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth\|ThreatName=Trojan-FRTB!81DA244A770C\|SourceProcessName=C:\\Windows\\explorer.exe\|ThreatType=trojan\|TargetUserName=WinSec3\\Logzio", "TaskName": "IDS_OAS_TASK_NAME", "TargetHash": "81da244a770c46ace2cf112214f8e75e", "SecondAttemptedAction": "IDS_ALERT_THACT_ATT_DEL", "TargetCreateTime": "2020-02-23T15:43:21Z", "SecondActionStatus": "false", "BladeName": "IDS_BLADE_NAME_SPB", "AnalyzerGTIQuery": "true", "AccessRequested_obj": {}, "TargetPath": "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth"}, "CommonFields": {"ThreatType": "trojan", "TargetHostName": "WinSec3", "DetectedUTC": "2020-02-23T15:43:40Z", "TargetFileName": "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth\\test.exe", "SourceHostName": "WinSec3", "ThreatSeverity": "2", "ThreatCategory": "av.detect", "TargetUserName": "WinSec3\\Logzio", "SourceProcessName": "C:\\Windows\\explorer.exe", "ThreatName": "Trojan-FRTB!81DA244A770C", "ThreatEventID": "1027", "ThreatActionTaken": "IDS_ALERT_ACT_TAK_DEL", "ThreatHandled": "true"}, "Severity": "3"}}<br>MachineInfo: {"RawMACAddress": "000d3a373482", "UserName": "SYSTEM", "MachineName": "WinSec3", "OSName": "Windows 10 Workstation", "TimeZoneBias": "0", "AgentGUID": "{d140d3c9-53ed-4367-857d-a5a396a97775}", "IPAddress": "10.0.1.10"} | 1027,<br>1027 | True,<br>True | IDS_ALERT_THACT_ATT_CLE,<br>IDS_ALERT_THACT_ATT_CLE | 2020-02-23T15:43:40,<br>2020-02-23T15:43:40 | IDS_NATURAL_LANG_OAS_DETECTION_DEL\|TargetName=test.exe\|TargetPath=C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth\|ThreatName=Trojan-FRTB!81DA244A770C\|SourceProcessName=C:\Windows\explorer.exe\|ThreatType=trojan\|TargetUserName=WinSec3\Logzio,<br>IDS_NATURAL_LANG_OAS_DETECTION_DEL\|TargetNametest.exe\|TargetPath=C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth\|ThreatName=Trojan-FRTB!81DA244A770C\|SourceProcessName=C:\Windows\explorer.exe\|ThreatType=trojan\|TargetUserName=WinSec3\Logzio | False,<br>False | IDS_ALERT_THACT_ATT_DEL,<br>IDS_ALERT_THACT_ATT_DEL | 3,<br>3 | WinSec3,<br>WinSec3 | C:\Windows\explorer.exe,<br>C:\Windows\explorer.exe | 2020-02-23T15:43:22Z,<br>2020-02-23T15:43:22Z | 2020-02-23T15:43:21Z,<br>2020-02-23T15:43:21Z | C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth\test.exe,<br>C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth\test.exe | 249952,<br>249952 | 81da244a770c46ace2cf112214f8e75e,<br>81da244a770c46ace2cf112214f8e75e | WinSec3,<br>WinSec3 | 2020-02-23T15:43:22Z,<br>2020-02-23T15:43:22Z | test.exe,<br>test.exe | C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth,<br>C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth | WinSec3\Logzio,<br>WinSec3\Logzio | IDS_OAS_TASK_NAME,<br>IDS_OAS_TASK_NAME | IDS_ALERT_ACT_TAK_DEL,<br>IDS_ALERT_ACT_TAK_DEL | av.detect,<br>av.detect | True,<br>True | 1027,<br>1027 | True,<br>True | Trojan-FRTB!81DA244A770C,<br>Trojan-FRTB!81DA244A770C | 2,<br>2 | trojan,<br>trojan | ephemeral_id: 8d15318f-3a3e-436c-a93e-1b6e8fec0cfb<br>type: filebeat<br>hostname: SecLinux<br>version: 7.5.0<br>id: 348cbd8b-b4ce-4531-b6d1-ab6beb37d65f | 1 | Win-Sec-2,<br>Win-Sec-2 | version: 1.1.0 | type: tcp | source: {"address": "10.0.1.9:49874"} | plain | beats-5015,<br>_grokparsefailure,<br>_grokparsefailure,<br>_logz_http_bulk_json_8070 | {00000000-0000-0000-0000-000000000000} | 1 | 1\2 | 2020-05-06T02:31:16.087+0000 | mcafee_epo |
+| beat: filebeat<br>version: 7.5.0<br>type: _doc | 2020-05-06T01:46:12.663+0000 | 3990.0,<br>3990.0 | ,<br> | ENDP_AM_1060,<br>ENDP_AM_1060 | 2020-02-22T08:24:00Z,<br>2020-02-22T08:24:00Z | 3990.0,<br>3990.0 | On-Access Scan,<br>On-Access Scan | 6010.8670,<br>6010.8670 | True,<br>True | WinSec3,<br>WinSec3 | McAfee Endpoint Security,<br>McAfee Endpoint Security | 10.6.1,<br>10.6.1 | 4,<br>4 | IDS_BLADE_NAME_SPB,<br>IDS_BLADE_NAME_SPB | True,<br>True | 2020-02-23T15:43:40Z,<br>2020-02-23T15:43:40Z | IDS_OAS_DEFAULT_THREAT_MESSAGE,<br>IDS_OAS_DEFAULT_THREAT_MESSAGE | 18,<br>18 | EventFwd | SoftwareInfo: {"CommonFields": {"AnalyzerDATVersion": "3990.0", "Analyzer": "ENDP_AM_1060", "AnalyzerDetectionMethod": "On-Access Scan", "AnalyzerVersion": "10.6.1", "AnalyzerEngineVersion": "6010.8670", "AnalyzerHostName": "WinSec3", "AnalyzerName": "McAfee Endpoint Security"}, "Event": {"EventID": "1027", "GMTTime": "2020-02-23T15:43:40", "CustomFields": {"DetectionMessage": "IDS_OAS_DEFAULT_THREAT_MESSAGE", "TargetFileSize": "249952", "TargetModifyTime": "2020-02-23T15:43:22Z", "DurationBeforeDetection": "18", "Cleanable": "true", "FirstAttemptedAction": "IDS_ALERT_THACT_ATT_CLE", "AnalyzerContentCreationDate": "2020-02-22T08:24:00Z", "TargetAccessTime": "2020-02-23T15:43:22Z", "AttackVectorType": "4", "ThreatDetectedOnCreation": "true", "FirstActionStatus": "true", "TargetName": "test.exe", "AMCoreContentVersion": "3990.0", "NaturalLangDescription": "IDS_NATURAL_LANG_OAS_DETECTION_DEL\|TargetName=test.exe\|TargetPath=C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth\|ThreatName=Trojan-FRTB!81DA244A770C\|SourceProcessName=C:\\Windows\\explorer.exe\|ThreatType=trojan\|TargetUserName=WinSec3\\Logzio", "TaskName": "IDS_OAS_TASK_NAME", "TargetHash": "81da244a770c46ace2cf112214f8e75e", "SecondAttemptedAction": "IDS_ALERT_THACT_ATT_DEL", "TargetCreateTime": "2020-02-23T15:43:21Z", "SecondActionStatus": "false", "BladeName": "IDS_BLADE_NAME_SPB", "AnalyzerGTIQuery": "true", "AccessRequested_obj": {}, "TargetPath": "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth"}, "CommonFields": {"ThreatType": "trojan", "TargetHostName": "WinSec3", "DetectedUTC": "2020-02-23T15:43:40Z", "TargetFileName": "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth\\test.exe", "SourceHostName": "WinSec3", "ThreatSeverity": "2", "ThreatCategory": "av.detect", "TargetUserName": "WinSec3\\Logzio", "SourceProcessName": "C:\\Windows\\explorer.exe", "ThreatName": "Trojan-FRTB!81DA244A770C", "ThreatEventID": "1027", "ThreatActionTaken": "IDS_ALERT_ACT_TAK_DEL", "ThreatHandled": "true"}, "Severity": "3"}}<br>MachineInfo: {"RawMACAddress": "000d3a373482", "UserName": "SYSTEM", "MachineName": "WinSec3", "OSName": "Windows 10 Workstation", "TimeZoneBias": "0", "AgentGUID": "{d140d3c9-53ed-4367-857d-a5a396a97775}", "IPAddress": "10.0.1.10"} | 1027,<br>1027 | True,<br>True | IDS_ALERT_THACT_ATT_CLE,<br>IDS_ALERT_THACT_ATT_CLE | 2020-02-23T15:43:40,<br>2020-02-23T15:43:40 | IDS_NATURAL_LANG_OAS_DETECTION_DEL\|TargetName=test.exe\|TargetPath=C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth\|ThreatName=Trojan-FRTB!81DA244A770C\|SourceProcessName=C:\Windows\explorer.exe\|ThreatType=trojan\|TargetUserName=WinSec3\Logzio,<br>IDS_NATURAL_LANG_OAS_DETECTION_DEL\|TargetNametest.exe\|TargetPath=C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth\|ThreatName=Trojan-FRTB!81DA244A770C\|SourceProcessName=C:\Windows\explorer.exe\|ThreatType=trojan\|TargetUserName=WinSec3\Logzio | False,<br>False | IDS_ALERT_THACT_ATT_DEL,<br>IDS_ALERT_THACT_ATT_DEL | 3,<br>3 | WinSec3,<br>WinSec3 | C:\Windows\explorer.exe,<br>C:\Windows\explorer.exe | 2020-02-23T15:43:22Z,<br>2020-02-23T15:43:22Z | 2020-02-23T15:43:21Z,<br>2020-02-23T15:43:21Z | C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth\test.exe,<br>C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth\test.exe | 249952,<br>249952 | 81da244a770c46ace2cf112214f8e75e,<br>81da244a770c46ace2cf112214f8e75e | WinSec3,<br>WinSec3 | 2020-02-23T15:43:22Z,<br>2020-02-23T15:43:22Z | test.exe,<br>test.exe | C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth,<br>C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth | WinSec3\Logzio,<br>WinSec3\Logzio | IDS_OAS_TASK_NAME,<br>IDS_OAS_TASK_NAME | IDS_ALERT_ACT_TAK_DEL,<br>IDS_ALERT_ACT_TAK_DEL | av.detect,<br>av.detect | True,<br>True | 1027,<br>1027 | True,<br>True | Trojan-FRTB!81DA244A770C,<br>Trojan-FRTB!81DA244A770C | 2,<br>2 | trojan,<br>trojan | ephemeral_id: 8d15318f-3a3e-436c-a93e-1b6e8fec0cfb<br>type: filebeat<br>hostname: SecLinux<br>version: 7.5.0<br>id: 348cbd8b-b4ce-4531-b6d1-ab6beb37d65f | 1 | Win-Sec-2,<br>Win-Sec-2 | version: 1.1.0 | type: tcp | source: {"address": "10.0.1.9:49874"} | plain | beats-5015,<br>_grokparsefailure,<br>_grokparsefailure,<br>_logz_http_bulk_json_8070 | {00000000-0000-0000-0000-000000000000} | 1 | 1\2 | 2020-05-06T01:46:12.663+0000 | mcafee_epo |
 
 
 ### 2. logzio-get-logs-by-rule-id
 ---
-Returns the raw logs that triggered the security rule in Logz.io. 
+Fetches the logs that triggered a security event in Logz.io Cloud SIEM
 ##### Required Permissions
-Your Logz.io account type should be PRO or above.
+**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `logzio-get-logs-by-rule-id`
@@ -617,126 +1576,148 @@ Your Logz.io account type should be PRO or above.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Security rule ID in Logz.io. In Demisto, it appears under the field 'alertEventId'. | Required | 
+| id | Logz.io Alert Event ID (found under Incident details) | Required | 
 | size | An integer specifying the maximum number of results to return | Optional | 
 
 
 ##### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Logzio.Result | Unknown | An array of search results | 
+| Logzio.Result.type | string | Log type in the index | 
+| Logzio.Result.timestamp | date | The log's timestamp | 
+
 
 ##### Command Example
-```!logzio-get-logs-by-rule-id id=e9ef3227-7ed8-4060-8c25-4d78e9571537```
+```!logzio-get-logs-by-rule-id id=9fb0e6a9-90c0-43ac-8e50-23028d8ea76c size=10```
 
 ##### Context Example
 ```
 {
-    "Logzio.Logs.Results": [
+    "Logzio.Result": [
         {
-            "log": {
-                "file": {}, 
-                "offset": 1624454
+            "log_information": {
+                "level": "warning"
             }, 
             "logzio_codec": "json", 
-            "output_message": "Error File below / or /root opened for writing", 
-            "@timestamp": "2020-03-29T14:46:17.236Z", 
+            "timestamp": "2020-05-06T08:28:04.640Z", 
+            "@timestamp": "2020-05-06T08:28:04.640Z", 
             "tags": [
                 "beats-5015", 
-                "_logzio_codec_json"
+                "_logzio_codec_json", 
+                "_jsonparsefailure"
             ], 
-            "output_fields": {
-                "proc.cmdline": "micro /etc/ssh/sshd_config", 
-                "fd.name": "/root/.config/micro/buffers/history", 
-                "user.name": "root", 
-                "evt.time": 1585493176520316700, 
-                "container.image.repository": "nginx", 
-                "proc.name": "micro", 
-                "proc.pname": "micro", 
-                "container.id": "3ef0a1a5172c"
-            }, 
-            "rule": "Write below root", 
-            "output": "17:46:16.520316598: Error File below / or /root opened for writing (user=root command=micro /etc/ssh/sshd_config parent=micro file=/root/.config/micro/buffers/history program=micro container_id=3ef0a1a5172c image=nginx)", 
-            "priority": "Error", 
             "ecs": {
                 "version": "1.4.0"
             }, 
-            "time": "2020-03-29T14:46:16.520316598Z", 
-            "input": {
-                "type": "log"
-            }, 
-            "source_string": "/events.txt", 
             "beat_agent": {
-                "ephemeral_id": "d48ac506-a40b-4ff0-bef7-0325648ce451", 
-                "type": "filebeat", 
-                "hostname": "ubuntu-VirtualBox", 
-                "version": "7.6.1", 
-                "id": "6eda6199-a716-4c01-94a5-03b4bde48a14"
+                "ephemeral_id": "2e94ea91-0375-4b60-8766-ee6d3f254832", 
+                "type": "winlogbeat", 
+                "hostname": "WinTesting", 
+                "version": "7.6.2", 
+                "id": "3aa2739f-7d9c-48d1-8d95-9441d5fbffe1"
             }, 
-            "message": "{\"output\":\"17:46:16.520316598: Error File below / or /root opened for writing (user=root command=micro /etc/ssh/sshd_config parent=micro file=/root/.config/micro/buffers/history program=micro container_id=3ef0a1a5172c image=nginx)\",\"priority\":\"Error\",\"rule\":\"Write below root\",\"time\":\"2020-03-29T14:46:16.520316598Z\", \"output_fields\": {\"container.id\":\"3ef0a1a5172c\",\"container.image.repository\":\"nginx\",\"evt.time\":1585493176520316598,\"fd.name\":\"/root/.config/micro/buffers/history\",\"proc.cmdline\":\"micro /etc/ssh/sshd_config\",\"proc.name\":\"micro\",\"proc.pname\":\"micro\",\"user.name\":\"root\"}}", 
-            "type": "falco", 
+            "message": "Windows Defender Antivirus has detected malware or other potentially unwanted software.\n For more information please see the following:\nhttps://go.microsoft.com/fwlink/?linkid=37020&name=Virus:DOS/EICAR_Test_File&threatid=2147519003&enterprise=0\n \tName: Virus:DOS/EICAR_Test_File\n \tID: 2147519003\n \tSeverity: Severe\n \tCategory: Virus\n \tPath: containerfile:_C:\\Users\\test_user\\Downloads\\eicar_com.zip; file:_C:\\Users\\test_user\\Downloads\\eicar_com.zip->eicar.com; webfile:_C:\\Users\\test_user\\Downloads\\eicar_com.zip|https://www.eicar.org/download/eicar_com.zip|pid:7500,ProcessStart:132332202146885957\n \tDetection Origin: Internet\n \tDetection Type: Concrete\n \tDetection Source: Downloads and attachments\n \tUser: WinTesting\\test_user\n \tProcess Name: Unknown\n \tSignature Version: AV: 1.315.44.0, AS: 1.315.44.0, NIS: 1.315.44.0\n \tEngine Version: AM: 1.1.17000.7, NIS: 1.1.17000.7", 
+            "winlog": {
+                "activity_id": "{2baa0795-dcd6-4cf7-b921-d9ad5e9cd6f0}", 
+                "task": "", 
+                "event_id": 1116, 
+                "process": {
+                    "pid": 3232, 
+                    "thread": {
+                        "id": 4992
+                    }
+                }, 
+                "api": "wineventlog", 
+                "opcode": "Info", 
+                "user": {
+                    "domain": "NT AUTHORITY", 
+                    "identifier": "S-1-5-18", 
+                    "type": "User", 
+                    "name": "SYSTEM"
+                }, 
+                "computer_name": "WinTesting", 
+                "record_id": 136, 
+                "provider_name": "Microsoft-Windows-Windows Defender", 
+                "provider_guid": "{11cd958a-c507-4ef3-b3f2-5fd9dfbd2c78}", 
+                "event_data": {
+                    "Type Name": "%%822", 
+                    "Error Code": "0x00000000", 
+                    "State": "1", 
+                    "Category Name": "Virus", 
+                    "Additional Actions String": "No additional actions required", 
+                    "Post Clean Status": "0", 
+                    "Action Name": "%%887", 
+                    "Threat ID": "2147519003", 
+                    "Signature Version": "AV: 1.315.44.0, AS: 1.315.44.0, NIS: 1.315.44.0", 
+                    "Category ID": "42", 
+                    "Execution Name": "%%812", 
+                    "Detection ID": "{26C3583A-98B2-4E88-9B8A-0E9BDEBEB9B4}", 
+                    "Status Code": "1", 
+                    "Product Name": "%%827", 
+                    "Action ID": "9", 
+                    "Path": "containerfile:_C:\\Users\\test_user\\Downloads\\eicar_com.zip; file:_C:\\Users\\test_user\\Downloads\\eicar_com.zip->eicar.com; webfile:_C:\\Users\\test_user\\Downloads\\eicar_com.zip|https://www.eicar.org/download/eicar_com.zip|pid:7500,ProcessStart:132332202146885957", 
+                    "Process Name": "Unknown", 
+                    "Detection User": "WinTesting\\test_user", 
+                    "Detection Time": "2020-05-06T08:28:04.604Z", 
+                    "FWLink": "https://go.microsoft.com/fwlink/?linkid=37020&name=Virus:DOS/EICAR_Test_File&threatid=2147519003&enterprise=0", 
+                    "Execution ID": "0", 
+                    "Origin Name": "%%847", 
+                    "Error Description": "The operation completed successfully. ", 
+                    "Type ID": "0", 
+                    "Additional Actions ID": "0", 
+                    "Threat Name": "Virus:DOS/EICAR_Test_File", 
+                    "Severity ID": "5", 
+                    "Severity Name": "Severe", 
+                    "Engine Version": "AM: 1.1.17000.7, NIS: 1.1.17000.7", 
+                    "Source Name": "%%819", 
+                    "Origin ID": "4", 
+                    "Pre Execution Status": "0", 
+                    "Product Version": "4.18.2004.6", 
+                    "Source ID": "4"
+                }, 
+                "channel": "Microsoft-Windows-Windows Defender/Operational", 
+                "event_id_description": "Unknown"
+            }, 
+            "type": "wineventlog", 
+            "event": {
+                "kind": "event", 
+                "code": 1116, 
+                "provider": "Microsoft-Windows-Windows Defender", 
+                "created": "2020-05-06T08:28:05.674Z"
+            }, 
             "@metadata": {
-                "beat": "filebeat", 
-                "version": "7.6.1", 
-                "type": "_doc"
-            }
-        }, 
-        {
-            "log": {
-                "file": {}, 
-                "offset": 1623840
-            }, 
-            "logzio_codec": "json", 
-            "output_message": "Error File below / or /root opened for writing", 
-            "@timestamp": "2020-03-29T14:46:14.236Z", 
-            "tags": [
-                "beats-5015", 
-                "_logzio_codec_json"
-            ], 
-            "output_fields": {
-                "proc.cmdline": "micro /etc/ssh/sshd_config", 
-                "fd.name": "/root/.config/micro/backups/%etc%ssh%sshd_config", 
-                "user.name": "root", 
-                "evt.time": 1585493172518809000, 
-                "container.image.repository": "nginx", 
-                "proc.name": "micro", 
-                "proc.pname": "micro", 
-                "container.id": "3ef0a1a5172c"
-            }, 
-            "rule": "Write below root", 
-            "output": "17:46:12.518809016: Error File below / or /root opened for writing (user=root command=micro /etc/ssh/sshd_config parent=micro file=/root/.config/micro/backups/%etc%ssh%sshd_config program=micro container_id=3ef0a1a5172c image=nginx)", 
-            "priority": "Error", 
-            "ecs": {
-                "version": "1.4.0"
-            }, 
-            "time": "2020-03-29T14:46:12.518809016Z", 
-            "input": {
-                "type": "log"
-            }, 
-            "source_string": "/events.txt", 
-            "beat_agent": {
-                "ephemeral_id": "d48ac506-a40b-4ff0-bef7-0325648ce451", 
-                "type": "filebeat", 
-                "hostname": "ubuntu-VirtualBox", 
-                "version": "7.6.1", 
-                "id": "6eda6199-a716-4c01-94a5-03b4bde48a14"
-            }, 
-            "message": "{\"output\":\"17:46:12.518809016: Error File below / or /root opened for writing (user=root command=micro /etc/ssh/sshd_config parent=micro file=/root/.config/micro/backups/%etc%ssh%sshd_config program=micro container_id=3ef0a1a5172c image=nginx)\",\"priority\":\"Error\",\"rule\":\"Write below root\",\"time\":\"2020-03-29T14:46:12.518809016Z\", \"output_fields\": {\"container.id\":\"3ef0a1a5172c\",\"container.image.repository\":\"nginx\",\"evt.time\":1585493172518809016,\"fd.name\":\"/root/.config/micro/backups/%etc%ssh%sshd_config\",\"proc.cmdline\":\"micro /etc/ssh/sshd_config\",\"proc.name\":\"micro\",\"proc.pname\":\"micro\",\"user.name\":\"root\"}}", 
-            "type": "falco", 
-            "@metadata": {
-                "beat": "filebeat", 
-                "version": "7.6.1", 
+                "beat": "winlogbeat", 
+                "version": "7.6.2", 
                 "type": "_doc"
             }
         }
-    ],
-    "Logzio.Logs.Count": 3
+    ]
 }
 ```
 
 ##### Human Readable Output
 ### Logs
-|@metadata|@timestamp|beat_agent|ecs|input|log|logzio_codec|message|output|output_fields|output_message|priority|rule|source_string|tags|time|type|
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| beat: filebeat<br>type: _doc<br>version: 7.6.1 | 2020-03-29T14:46:17.236Z | hostname: ubuntu-VirtualBox<br>id: 6eda6199-a716-4c01-94a5-03b4bde48a14<br>version: 7.6.1<br>type: filebeat<br>ephemeral_id: d48ac506-a40b-4ff0-bef7-0325648ce451 | version: 1.4.0 | type: log | offset: 1624454<br>file: {} | json | {"output":"17:46:16.520316598: Error File below / or /root opened for writing (user=root command=micro /etc/ssh/sshd_config parent=micro file=/root/.config/micro/buffers/history program=micro container_id=3ef0a1a5172c image=nginx)","priority":"Error","rule":"Write below root","time":"2020-03-29T14:46:16.520316598Z", "output_fields": {"container.id":"3ef0a1a5172c","container.image.repository":"nginx","evt.time":1585493176520316598,"fd.name":"/root/.config/micro/buffers/history","proc.cmdline":"micro /etc/ssh/sshd_config","proc.name":"micro","proc.pname":"micro","user.name":"root"}} | 17:46:16.520316598: Error File below / or /root opened for writing (user=root command=micro /etc/ssh/sshd_config parent=micro file=/root/.config/micro/buffers/history program=micro container_id=3ef0a1a5172c image=nginx) | container.id: 3ef0a1a5172c<br>container.image.repository: nginx<br>evt.time: 1585493176520316598<br>fd.name: /root/.config/micro/buffers/history<br>proc.cmdline: micro /etc/ssh/sshd_config<br>proc.name: micro<br>proc.pname: micro<br>user.name: root | Error File below / or /root opened for writing | Error | Write below root | /events.txt | beats-5015,<br>_logzio_codec_json | 2020-03-29T14:46:16.520316598Z | falco |
-| beat: filebeat<br>type: _doc<br>version: 7.6.1 | 2020-03-29T14:46:14.236Z | version: 7.6.1<br>type: filebeat<br>ephemeral_id: d48ac506-a40b-4ff0-bef7-0325648ce451<br>hostname: ubuntu-VirtualBox<br>id: 6eda6199-a716-4c01-94a5-03b4bde48a14 | version: 1.4.0 | type: log | offset: 1623840<br>file: {} | json | {"output":"17:46:12.518809016: Error File below / or /root opened for writing (user=root command=micro /etc/ssh/sshd_config parent=micro file=/root/.config/micro/backups/%etc%ssh%sshd_config program=micro container_id=3ef0a1a5172c image=nginx)","priority":"Error","rule":"Write below root","time":"2020-03-29T14:46:12.518809016Z", "output_fields": {"container.id":"3ef0a1a5172c","container.image.repository":"nginx","evt.time":1585493172518809016,"fd.name":"/root/.config/micro/backups/%etc%ssh%sshd_config","proc.cmdline":"micro /etc/ssh/sshd_config","proc.name":"micro","proc.pname":"micro","user.name":"root"}} | 17:46:12.518809016: Error File below / or /root opened for writing (user=root command=micro /etc/ssh/sshd_config parent=micro file=/root/.config/micro/backups/%etc%ssh%sshd_config program=micro container_id=3ef0a1a5172c image=nginx) | container.id: 3ef0a1a5172c<br>container.image.repository: nginx<br>evt.time: 1585493172518809016<br>fd.name: /root/.config/micro/backups/%etc%ssh%sshd_config<br>proc.cmdline: micro /etc/ssh/sshd_config<br>proc.name: micro<br>proc.pname: micro<br>user.name: root | Error File below / or /root opened for writing | Error | Write below root | /events.txt | beats-5015,<br>_logzio_codec_json | 2020-03-29T14:46:12.518809016Z | falco |
+|@metadata|@timestamp|beat_agent|ecs|event|log_information|logzio_codec|message|tags|timestamp|type|winlog|
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| beat: winlogbeat<br>type: _doc<br>version: 7.6.2 | 2020-05-06T08:28:04.640Z | hostname: WinTesting<br>id: 3aa2739f-7d9c-48d1-8d95-9441d5fbffe1<br>version: 7.6.2<br>type: winlogbeat<br>ephemeral_id: 2e94ea91-0375-4b60-8766-ee6d3f254832 | version: 1.4.0 | kind: event<br>code: 1116<br>provider: Microsoft-Windows-Windows Defender<br>created: 2020-05-06T08:28:05.674Z | level: warning | json | Windows Defender Antivirus has detected malware or other potentially unwanted software.<br> For more information please see the following:<br>https://go.microsoft.com/fwlink/?linkid=37020&name=Virus:DOS/EICAR_Test_File&threatid=2147519003&enterprise=0<br> 	Name: Virus:DOS/EICAR_Test_File<br> 	ID: 2147519003<br> 	Severity: Severe<br> 	Category: Virus<br> 	Path: containerfile:_C:\Users\test_user\Downloads\eicar_com.zip; file:_C:\Users\test_user\Downloads\eicar_com.zip->eicar.com; webfile:_C:\Users\test_user\Downloads\eicar_com.zip\|https://www.eicar.org/download/eicar_com.zip\|pid:7500,ProcessStart:132332202146885957<br> 	Detection Origin: Internet<br> 	Detection Type: Concrete<br> 	Detection Source: Downloads and attachments<br> 	User: WinTesting\test_user<br> 	Process Name: Unknown<br> 	Signature Version: AV: 1.315.44.0, AS: 1.315.44.0, NIS: 1.315.44.0<br> 	Engine Version: AM: 1.1.17000.7, NIS: 1.1.17000.7 | beats-5015,<br>_logzio_codec_json,<br>_jsonparsefailure | 2020-05-06T08:28:04.640Z | wineventlog | channel: Microsoft-Windows-Windows Defender/Operational<br>provider_name: Microsoft-Windows-Windows Defender<br>api: wineventlog<br>computer_name: WinTesting<br>user: {"name": "SYSTEM", "domain": "NT AUTHORITY", "type": "User", "identifier": "S-1-5-18"}<br>provider_guid: {11cd958a-c507-4ef3-b3f2-5fd9dfbd2c78}<br>activity_id: {2baa0795-dcd6-4cf7-b921-d9ad5e9cd6f0}<br>process: {"pid": 3232, "thread": {"id": 4992}}<br>event_data: {"Path": "containerfile:_C:\\Users\\test_user\\Downloads\\eicar_com.zip; file:_C:\\Users\\test_user\\Downloads\\eicar_com.zip->eicar.com; webfile:_C:\\Users\\test_user\\Downloads\\eicar_com.zip\|https://www.eicar.org/download/eicar_com.zip\|pid:7500,ProcessStart:132332202146885957", "Action Name": "%%887", "Product Version": "4.18.2004.6", "Severity ID": "5", "Signature Version": "AV: 1.315.44.0, AS: 1.315.44.0, NIS: 1.315.44.0", "Post Clean Status": "0", "Execution Name": "%%812", "Type ID": "0", "Category ID": "42", "Engine Version": "AM: 1.1.17000.7, NIS: 1.1.17000.7", "Threat Name": "Virus:DOS/EICAR_Test_File", "Category Name": "Virus", "Origin ID": "4", "Error Description": "The operation completed successfully. ", "Detection User": "WinTesting\\test_user", "Product Name": "%%827", "State": "1", "Detection Time": "2020-05-06T08:28:04.604Z", "Error Code": "0x00000000", "Source Name": "%%819", "FWLink": "https://go.microsoft.com/fwlink/?linkid=37020&name=Virus:DOS/EICAR_Test_File&threatid=2147519003&enterprise=0", "Threat ID": "2147519003", "Source ID": "4", "Detection ID": "{26C3583A-98B2-4E88-9B8A-0E9BDEBEB9B4}", "Status Code": "1", "Additional Actions ID": "0", "Additional Actions String": "No additional actions required", "Severity Name": "Severe", "Action ID": "9", "Execution ID": "0", "Type Name": "%%822", "Origin Name": "%%847", "Pre Execution Status": "0", "Process Name": "Unknown"}<br>task: <br>opcode: Info<br>event_id: 1116<br>record_id: 136<br>event_id_description: Unknown |
 
+
+## Additional Information
+---
+
+## Known Limitations
+---
+
+## Troubleshooting
+---
+
+
+## Possible Errors (DO NOT PUBLISH ON ZENDESK):
+* "Operational API Token wasn't provided, cannot perform search"
+* "Security API Token wasn't provided, cannot perform search"
+* "Security API Token wasn't provided, cannot fetch incidents"
+* 'No tokens were provided. Please provide either Logz.io Operational API token,'
+' Logz.io Security API token, or both.'
+* 'Failed to execute command. Error: {}'.format(str(e
