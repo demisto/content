@@ -1809,7 +1809,7 @@ def main():
     username = params['credentials']['identifier']
     password = params['credentials']['password']
     verify = not params.get('insecure', False)
-    proxy = demisto.params().get('proxy') is True
+    proxy = params.get('proxy') is True
 
     version = params.get('api_version')
     if version:
