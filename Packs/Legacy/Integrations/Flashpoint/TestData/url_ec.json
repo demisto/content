@@ -7,6 +7,7 @@
   },
   "URL(val.Data && val.Data == obj.Data)": {
     "Name": "http://123-fake-api.com",
+    "Data": "http://123-fake-api.com",
     "Malicious": {
       "Vendor": "Flashpoint",
       "Description": "Found in malicious indicators dataset"
