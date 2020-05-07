@@ -1,29 +1,34 @@
 id: Flashpoint_event-Test
 version: -1
 name: Flashpoint_event-Test
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 3993c590-142e-4d16-842b-b6ac79ec5571
     type: start
     task:
       id: 3993c590-142e-4d16-842b-b6ac79ec5571
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '1':
-    id: '1'
+  "1":
+    id: "1"
     taskid: ef2a6649-7ffa-461d-8f4e-d2310f27b2b8
     type: regular
     task:
@@ -34,24 +39,30 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     scriptarguments:
       all:
-        simple: yes
+        simple: "yes"
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '2':
-    id: '2'
+  "2":
+    id: "2"
     taskid: 37345d2a-10e6-4cab-863c-6fb3c6aaf853
     type: regular
     task:
@@ -65,17 +76,23 @@ tasks:
       brand: Flashpoint
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       event_id:
         simple: Hu2SoTWJWteLrH9mR94JbQ
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 410\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '3':
-    id: '3'
+  "3":
+    id: "3"
     taskid: 3146a184-516e-45d2-8c2c-aaa815c5ae4b
     type: condition
     task:
@@ -84,14 +101,13 @@ tasks:
       name: Verify event by id
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '5'
+      "yes":
+      - "5"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -128,12 +144,18 @@ tasks:
             value:
               simple: ${Flashpoint.Event.Tags}
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 620\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 620
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '4':
-    id: '4'
+  "4":
+    id: "4"
     taskid: 7dcc56c4-61d2-4423-82af-6234b29b2537
     type: regular
     task:
@@ -154,12 +176,18 @@ tasks:
         simple: ${incident.id}
       phishingsubtype: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1590\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1590
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '5':
-    id: '5'
+  "5":
+    id: "5"
     taskid: 730f54be-f692-4c7d-8fae-e087478379f6
     type: title
     task:
@@ -168,18 +196,23 @@ tasks:
       name: Test events details
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '6'
+      - "6"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 850\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 850
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '6':
-    id: '6'
+  "6":
+    id: "6"
     taskid: b48d5c42-506a-4698-8e58-99a861073824
     type: regular
     task:
@@ -190,24 +223,30 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '7'
+      - "7"
     scriptarguments:
       all:
-        simple: yes
+        simple: "yes"
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 990\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 990
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '7':
-    id: '7'
+  "7":
+    id: "7"
     taskid: dafff343-641b-4df0-8fc0-e83948dec6be
     type: regular
     task:
@@ -221,20 +260,26 @@ tasks:
       brand: Flashpoint
     nexttasks:
       '#none#':
-      - '8'
+      - "8"
     scriptarguments:
       attack_ids: {}
       limit:
-        simple: '5'
+        simple: "5"
       report_fpid: {}
       time_period: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 1170\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 1170
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '8':
-    id: '8'
+  "8":
+    id: "8"
     taskid: 94a24c2e-28a3-48be-825d-05bc1d4206a0
     type: condition
     task:
@@ -243,14 +288,13 @@ tasks:
       name: Verify events details by param
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '4'
+      "yes":
+      - "4"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: hasLength
           left:
@@ -259,7 +303,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '5'
+              simple: "5"
       - - operator: isExists
           left:
             value:
@@ -290,14 +334,27 @@ tasks:
             value:
               simple: ${Flashpoint.Event.Tags}
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 1360\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 1360
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 1635,\n      \"width\": 410,\n      \"x\": 450,\n      \"y\":\
-  \ 50\n    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1635,
+        "width": 410,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
 inputs: []
 outputs: []
-fromversion: 5.0.0
-description: ''

@@ -1,32 +1,37 @@
 id: cisco-ise-test-playbook
 version: -1
 name: cisco-ise-test-playbook
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 811f5238-4944-46fe-896d-064eb82a0e1b
     type: start
     task:
       id: 811f5238-4944-46fe-896d-064eb82a0e1b
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '1'
-      - '3'
-      - '5'
-      - '6'
+      - "1"
+      - "3"
+      - "5"
+      - "6"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '1':
-    id: '1'
+  "1":
+    id: "1"
     taskid: 7d041b6f-4c9d-4e18-813d-7966fc4285c5
     type: regular
     task:
@@ -37,17 +42,23 @@ tasks:
       script: '|||cisco-ise-get-endpoints'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '2':
-    id: '2'
+  "2":
+    id: "2"
     taskid: 28977b90-39aa-45cc-8c7a-c26410669157
     type: regular
     task:
@@ -58,20 +69,26 @@ tasks:
       script: '|||cisco-ise-get-endpoint-id'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '8'
+      - "8"
     scriptarguments:
       macAddress:
         simple: 00:0E:35:D4:D8:51
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 410\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '3':
-    id: '3'
+  "3":
+    id: "3"
     taskid: c3483aaa-2e53-4035-8402-100c1672af34
     type: regular
     task:
@@ -82,17 +99,23 @@ tasks:
       script: '|||cisco-ise-get-policies'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '4'
+      - "4"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 980,\n    \"y\": 220\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 220
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '4':
-    id: '4'
+  "4":
+    id: "4"
     taskid: dfb0dc3d-e0ae-4af3-878c-85ba1a689d34
     type: regular
     task:
@@ -103,17 +126,23 @@ tasks:
       script: '|||cisco-ise-get-policy'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     scriptarguments:
       policy_name:
         simple: policyTest23
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 980,\n    \"y\": 400\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 400
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '5':
-    id: '5'
+  "5":
+    id: "5"
     taskid: dab3717c-0a56-4750-8664-6d4568d862fa
     type: regular
     task:
@@ -124,14 +153,20 @@ tasks:
       script: '|||cisco-ise-get-groups'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -10,\n    \"y\": 230\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 230
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '6':
-    id: '6'
+  "6":
+    id: "6"
     taskid: 157e2c4c-4606-4b3b-8811-ad6cef0562fd
     type: regular
     task:
@@ -142,28 +177,34 @@ tasks:
       scriptName: GenerateRandomString
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '7'
+      - "7"
     scriptarguments:
       Digits:
-        simple: 'False'
+        simple: "False"
       Length:
-        simple: '5'
+        simple: "5"
       Lowercase:
-        simple: 'True'
+        simple: "True"
       Punctuation:
-        simple: 'False'
+        simple: "False"
       Uppercase:
-        simple: 'False'
+        simple: "False"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -450,\n    \"y\": 230\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -450,
+          "y": 230
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '7':
-    id: '7'
+  "7":
+    id: "7"
     taskid: 17c26e17-2731-4e0c-8278-8906edb8a639
     type: regular
     task:
@@ -174,19 +215,25 @@ tasks:
       script: '|||cisco-ise-create-policy'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     scriptarguments:
       policy_actions:
         simple: QUARANTINE
       policy_name:
         simple: ${RandomString}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -450,\n    \"y\": 410\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -450,
+          "y": 410
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '8':
-    id: '8'
+  "8":
+    id: "8"
     taskid: 090d1052-88e6-412d-8ae0-87653b69de3d
     type: regular
     task:
@@ -197,20 +244,33 @@ tasks:
       script: '|||cisco-ise-get-endpoint-details'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     scriptarguments:
       endpointID:
         simple: ${Endpoint.ID}
       macAddress: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 600\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 600
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 645,\n      \"width\": 1810,\n      \"x\": -450,\n      \"y\"\
-  : 50\n    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 645,
+        "width": 1810,
+        "x": -450,
+        "y": 50
+      }
+    }
+  }
 inputs: []
 outputs: []
-fromversion: 5.0.0
-description: ''

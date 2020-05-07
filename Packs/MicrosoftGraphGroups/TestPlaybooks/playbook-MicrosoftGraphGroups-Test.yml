@@ -2,21 +2,18 @@ id: Microsoft Graph Groups - Test
 version: -1
 name: Microsoft Graph Groups - Test
 starttaskid: "0"
-description: ""
-fromversion: 5.0.0
 tasks:
   "0":
-    description: ""
     id: "0"
     taskid: e05b1592-66dd-400f-89ab-f748adfdf873
     type: start
+    description: ""
     task:
       id: e05b1592-66dd-400f-89ab-f748adfdf873
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "10"
@@ -277,7 +274,6 @@ tasks:
     taskid: 3c84982d-0350-435d-8660-3a94e554f14a
     type: title
     task:
-      description: ""
       id: 3c84982d-0350-435d-8660-3a94e554f14a
       version: -1
       name: GROUPS
@@ -303,7 +299,6 @@ tasks:
     taskid: 33e708c4-bd79-4a36-82e0-08a22179c519
     type: title
     task:
-      description: ""
       id: 33e708c4-bd79-4a36-82e0-08a22179c519
       version: -1
       name: MEMBERS
