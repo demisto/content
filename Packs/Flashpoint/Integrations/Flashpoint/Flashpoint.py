@@ -1,4 +1,4 @@
-from Packs.Legacy.Integrations.Flashpoint.CommonServerPython import *
+from CommonServerPython import *
 
 """ IMPORTS """
 import ipaddress
