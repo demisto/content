@@ -1,5 +1,5 @@
 ## [Unreleased]
-  - Fixed an issue when ***fetch-incidents*** with attachments.
+  - Fixed an issue where ***fetch-incidents*** command with attachments did not work as expected.
   - Added 5 commands:
     - ***servicenow-query-items***
     - ***servicenow-get-item-details***
