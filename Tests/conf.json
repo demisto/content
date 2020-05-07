@@ -912,7 +912,7 @@
         },
         {
             "integrations": "GRR",
-            "playbookID": "grr_test",
+            "playbookID": "GRR Test",
             "nightly": true
         },
         {
