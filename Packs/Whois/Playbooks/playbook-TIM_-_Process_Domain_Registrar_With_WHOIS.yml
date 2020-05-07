@@ -140,7 +140,7 @@ tasks:
       name: FilterByList
       description: Checks whether the specified item is in a list. The default list
         is the Demisto Indicators Whitelist.
-      scriptName: FilterByList2
+      scriptName: FilterByList
       type: regular
       iscommand: false
       brand: ""
