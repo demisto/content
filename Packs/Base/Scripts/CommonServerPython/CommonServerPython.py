@@ -1160,7 +1160,7 @@ def appendContext(key, data, dedup=False):
     if existing:
         if isinstance(existing, STRING_TYPES):
             if isinstance(data, STRING_TYPES):
-                new_val = data + ', ' + existing
+                new_val = data + ',' + existing
             else:
                 return_error("Cannot append data to the existing context - \n The data is of instance {} while the "
                              "context in the specified path is of instance {}.".format(type(data), type(existing)))

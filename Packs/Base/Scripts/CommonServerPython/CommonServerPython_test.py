@@ -1617,7 +1617,7 @@ CONTEXT_MOCK = {
 }
 
 UPDATED_CONTEXT = {
-    'str_key': 'str_data, str_value',
+    'str_key': 'str_data,str_value',
     'dict_key': {
         'key1': 'val1',
         'key2': 'val2',
