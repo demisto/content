@@ -3,6 +3,8 @@ from CommonServerPython import *
 
 import urllib3
 import json
+import dateparser
+import time
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -76,12 +78,18 @@ class Client(BaseClient):
             },
             "size": size
         }
-        if from_time != "" or to_time != "":
+        if from_time is not None or to_time is not None:
             time_filter = {}
-            if from_time != "":
+            if from_time is not None:
+                if not from_time.isdigit():
+                    from_time = dateparser.parse(from_time, settings={'TIMEZONE': 'UTC'})
+                    from_time = int(time.mktime(from_time.timetuple()))
                 time_filter["from"] = from_time
                 time_filter["include_lower"] = True
-            if to_time != "":
+            if to_time is not None:
+                if not to_time.isdigit():
+                    to_time = dateparser.parse(to_time, settings={'TIMEZONE': 'UTC'})
+                    to_time = int(time.mktime(to_time.timetuple()))
                 time_filter["to"] = to_time
                 time_filter["include_upper"] = True
             payload["query"]["bool"]["must"].append(
@@ -126,7 +134,7 @@ class Client(BaseClient):
             'X-API-TOKEN': api_token
         }
         return BaseClient._http_request(self, "POST", url_suffix, headers=headers, data=json.dumps(payload),
-                                        ok_codes=(200, ))
+                                        ok_codes=(200,))
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''

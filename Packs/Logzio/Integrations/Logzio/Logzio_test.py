@@ -103,8 +103,9 @@ class TestLogzio:
         args = {
             "query": "name:test",
             "size": 20,
-            "from_time": 1581261159,
-            "to_time": 1581174759
+            "from_time": "1581261159",
+            "to_time": "1581174759"
+
         }
 
         requests_mock.post("{}{}".format(BASE_URL, Logzio.SEARCH_LOGS_API_SUFFIX), json=SEARCH_LOGS_RESPONSE_EMPTY_BODY)
@@ -115,8 +116,8 @@ class TestLogzio:
         assert "query" in request_body["query"]["bool"]["must"][0]["query_string"]
         assert request_body["query"]["bool"]["must"][0]["query_string"]["query"] == "name:test"
         time_range = request_body["query"]["bool"]["must"][1]["range"]["@timestamp"]
-        assert time_range["to"] == 1581174759
-        assert time_range["from"] == 1581261159
+        assert time_range["to"] == "1581174759"
+        assert time_range["from"] == "1581261159"
 
     def test_logzio_get_rule_logs(self, requests_mock):
         client = Logzio.Client("us", "fake-security-token", "fake-operational-token", False, False)
