@@ -446,7 +446,7 @@ class Client(BaseClient):
                 raise Exception('Failed to upload file - ' + str(err))
         else:
             res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {}, params=params,
-                                   auth=(self._username, self._password), verify=self._verify)
+                                   auth=(self._username, self._password), verify=self._verify, proxies=self._proxies)
 
         try:
             obj = res.json()
