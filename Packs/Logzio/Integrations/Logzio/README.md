@@ -56,6 +56,7 @@ Your Logz.io account type should be PRO or above.
 | size | An integer specifying the maximum number of results to return. | Optional | 
 | from_time | Unix timestamp. Specifies the earliest timestamp to be returned by the query. | Optional | 
 | to_time | Unix timestamp. Specifies the latest timestamp to be returned by the query. | Optional | 
+| timeout | Timeout in seconds | Optional | 
 
 
 ##### Context Output
@@ -1578,6 +1579,7 @@ Fetches the logs that triggered a security event in Logz.io Cloud SIEM
 | --- | --- | --- |
 | id | Logz.io Alert Event ID (found under Incident details) | Required | 
 | size | An integer specifying the maximum number of results to return | Optional | 
+| timeout | Timeout in seconds | Optional | 
 
 
 ##### Context Output
