@@ -2,6 +2,7 @@ id: Microsoft Graph Groups - Test
 version: -1
 name: Microsoft Graph Groups - Test
 starttaskid: "0"
+description: ""
 tasks:
   "0":
     id: "0"
