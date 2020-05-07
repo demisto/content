@@ -1,5 +1,5 @@
 ## [Unreleased]
-  - Fixed an issue where proxy configuration was always being used.
+  - Fixed an issue where system proxy settings were always being used.
   - Fixed an issue where ***fetch-incidents*** command with attachments did not work as expected.
   - Added 5 commands:
     - ***servicenow-query-items***
