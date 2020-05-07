@@ -41,11 +41,11 @@ tasks:
     nexttasks:
       '#default#':
       - '2'
-      yes:
+      'yes':
       - '5'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: general.isExists
           left:
@@ -177,11 +177,11 @@ tasks:
     nexttasks:
       '#default#':
       - '2'
-      yes:
+      'yes':
       - '4'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: string.isEqual
           left:

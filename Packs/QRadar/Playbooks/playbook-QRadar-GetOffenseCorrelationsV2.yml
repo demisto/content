@@ -43,11 +43,11 @@ tasks:
     nexttasks:
       '#default#':
       - '2'
-      true:
+      'true':
       - '5'
     separatecontext: false
     conditions:
-    - label: true
+    - label: 'true'
       condition:
       - - operator: isExists
           left:
@@ -136,11 +136,11 @@ tasks:
     nexttasks:
       '#default#':
       - '2'
-      true:
+      'true':
       - '19'
     separatecontext: false
     conditions:
-    - label: true
+    - label: 'true'
       condition:
       - - operator: isEqualString
           left:
@@ -258,11 +258,11 @@ tasks:
     nexttasks:
       '#default#':
       - '10'
-      true:
+      'true':
       - '7'
     separatecontext: false
     conditions:
-    - label: true
+    - label: 'true'
       condition:
       - - operator: inList
           left:
@@ -294,11 +294,11 @@ tasks:
     nexttasks:
       '#default#':
       - '10'
-      true:
+      'true':
       - '13'
     separatecontext: false
     conditions:
-    - label: true
+    - label: 'true'
       condition:
       - - operator: inList
           left:
@@ -472,11 +472,11 @@ tasks:
       '#default#':
       - '11'
       - '12'
-      true:
+      'true':
       - '23'
     separatecontext: false
     conditions:
-    - label: true
+    - label: 'true'
       condition:
       - - operator: isNotEmpty
           left:
