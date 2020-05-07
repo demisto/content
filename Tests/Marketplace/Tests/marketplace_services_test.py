@@ -232,22 +232,6 @@ class TestChangelogCreation:
 
     """
 
-    def multi_mock_open(*file_contents):
-        from unittest.mock import mock_open
-        """Create a mock "open" that will mock open multiple files in sequence
-        Args:
-            *file_contents ([str]): a list of file contents to be returned by open
-        Returns:
-            (MagicMock) a mock opener that will return the contents of the first
-                file when opened the first time, the second file when opened the
-                second time, etc.
-        """
-        mock_files = [mock_open(read_data=content).return_value for content in file_contents]
-        mock_opener = mock_open()
-        mock_opener.side_effect = mock_files
-
-        return mock_opener
-
     @pytest.fixture(scope="class")
     def dummy_pack(self):
         """ dummy pack fixture
@@ -267,9 +251,15 @@ class TestChangelogCreation:
         assert result is True
 
     def test_prepare_release_notes_upgrade_version(self, mocker, dummy_pack):
-        from unittest.mock import MagicMock, mock_open
-        """ In case changelog.json does exists, expected result should be initial version 1.0.0
+        from unittest.mock import mock_open
         """
+           Given:
+               - Valid new version and valid current changelog found in index.
+           When:
+               - Upgrading versions and adding to changelog.json
+           Then:
+               - return True
+       """
         dummy_pack.current_version = '2.0.2'
         mocker.patch("os.path.exists", return_value=True)
         dir_list = ['1_0_1.md', '2_0_2.md', '2_0_0.md']
@@ -286,8 +276,70 @@ class TestChangelogCreation:
                 "released": "2020-06-05T13:39:33Z"
             }
         }'''
-        new_changelog_file = '# This is a new release for 2.0.2'
-        mocker.patch('builtins.open', side_effect=[mock_open(read_data=original_changelog), mock_open(read_data=new_changelog_file)])
+        mocker.patch('builtins.open', mock_open(read_data=original_changelog))
+        dummy_path = 'Irrelevant/Test/Path'
+        result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path)
+        assert result is True
+
+    def test_prepare_release_notes_upgrade_version_mismatch(self, mocker, dummy_pack):
+        from unittest.mock import mock_open
+        """
+           Given:
+               - Invalid new version and valid current changelog found in index. Mismatching versions.
+           When:
+               - Upgrading versions and adding to changelog.json
+           Then:
+               - return False
+       """
+        dummy_pack.current_version = '2.0.0'
+        mocker.patch("os.path.exists", return_value=True)
+        dir_list = ['1_0_1.md', '2_0_2.md', '2_0_0.md']
+        mocker.patch("os.listdir", return_value=dir_list)
+        original_changelog = '''{
+            "1.0.0": {
+                "releaseNotes": "First release notes",
+                "displayName": "1.0.0",
+                "released": "2020-05-05T13:39:33Z"
+            },
+            "2.0.0": {
+                "releaseNotes": "Second release notes",
+                "displayName": "2.0.0",
+                "released": "2020-06-05T13:39:33Z"
+            }
+        }'''
+        mocker.patch('builtins.open', mock_open(read_data=original_changelog))
+        dummy_path = 'Irrelevant/Test/Path'
+        result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path)
+        assert result is False
+
+    def test_prepare_release_notes_upgrade_version_dup(self, mocker, dummy_pack):
+        from unittest.mock import mock_open
+        # TODO When we move to not overriding packs in the build, we will need to change result returned.
+        """
+           Given:
+               - Valid new version and valid current changelog found in index with existing version.
+           When:
+               - Not updating versions and adding to changelog.json
+           Then:
+               - return True
+       """
+        dummy_pack.current_version = '2.0.0'
+        mocker.patch("os.path.exists", return_value=True)
+        dir_list = ['1_0_1.md', '2_0_0.md']
+        mocker.patch("os.listdir", return_value=dir_list)
+        original_changelog = '''{
+            "1.0.0": {
+                "releaseNotes": "First release notes",
+                "displayName": "1.0.0",
+                "released": "2020-05-05T13:39:33Z"
+            },
+            "2.0.0": {
+                "releaseNotes": "Second release notes",
+                "displayName": "2.0.0",
+                "released": "2020-06-05T13:39:33Z"
+            }
+        }'''
+        mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         dummy_path = 'Irrelevant/Test/Path'
         result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path)
         assert result is True
