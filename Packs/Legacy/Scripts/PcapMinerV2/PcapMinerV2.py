@@ -22,7 +22,7 @@ RESPONSE_CODE = r'Response code: (.+)'
 
 
 class PCAP():
-    def __init__(self, is_reg_extract, extracted_protocols, homemade_regex):
+    def __init__(self, is_reg_extract, extracted_protocols, homemade_regex, unique_ips):
         # setup data structures
         self.hierarchy = {}  # type: Dict[str, int]
         self.num_of_packets = 0
@@ -45,6 +45,7 @@ class PCAP():
         self.protocol_data: Dict[str, Any] = dict()
         self.extracted_protocols = extracted_protocols
         self.homemade_regex = homemade_regex
+        self.unique_ips = unique_ips
         for protocol in extracted_protocols:
             self.protocol_data[protocol] = dict()
 
@@ -84,6 +85,14 @@ class PCAP():
             self.reg_homemade = re.compile(self.homemade_regex)
 
     def extract_context_from_packet(self, packet, is_reg_extract=False):
+        if is_reg_extract:
+            self.ips_extracted.update(self.reg_ip.findall(str(packet)))
+            self.emails_extracted.update(self.reg_email.findall(str(packet)))
+            self.urls_extracted.update(self.reg_url.findall(str(packet)))
+
+        if self.homemade_regex:
+            self.homemade_extracted.update(self.reg_homemade.findall((str(packet))))
+
         if 'DNS' in self.extracted_protocols:
             dns_layer = packet.get_multiple_layers('dns')
             if dns_layer:
@@ -139,16 +148,30 @@ class PCAP():
                 add_to_data(self.protocol_data['SYSLOG'], syslog_data)
 
         if 'SMTP' in self.extracted_protocols:
-            imf_layer = packet.get_multiple_layers('imf')
-            if imf_layer:
+            try:
+                imf_layer = packet.imf
                 imf_data = {
-                    'ID': imf_layer[0].get('Message-ID', -1),
-                    'To': imf_layer[0].get('to'),
-                    'From': imf_layer[0].get('from'),
-                    'Subject': imf_layer[0].get('subject'),
-                    'MimeVersion': imf_layer[0].get('mime-version')
+                    'ID': imf_layer.get('Message-ID', -1),
+                    'To': imf_layer.get('to'),
+                    'From': imf_layer.get('from'),
+                    'Subject': imf_layer.get('subject'),
+                    'MimeVersion': imf_layer.get('mime-version')
                 }
                 add_to_data(self.protocol_data['SMTP'], imf_data)
+                return
+            except Exception:
+                pass
+
+            try:
+                smtp_layer = packet.smtp
+                parameters = smtp_layer.req_parameter.split(':')
+                smtp_data = {'ID': packet.tcp.seq}
+                if len(parameters) == 2:
+                    smtp_data[parameters[0].title()] = strip(parameters[1], ['<', '>'])
+                add_to_data(self.protocol_data['SMTP'], smtp_data, packet.tcp.nxtseq)
+                return
+            except Exception:
+                pass
 
         if 'SMB2' in self.extracted_protocols:
             smb_layer = packet.get_multiple_layers('smb2')
@@ -234,25 +257,23 @@ class PCAP():
                 add_to_data(self.protocol_data['IRC'], irc_data, next_id=packet.tcp.nxtseq)
 
         if 'FTP' in self.extracted_protocols:
-            ftp_layer = packet.get_multiple_layers('ftp')
-            if ftp_layer:
-                res_code_results = self.reg_res_code.findall(str(ftp_layer[0]))
+            try:
+                ftp_layer = packet.ftp
+                res_code_results = self.reg_res_code.findall(str(ftp_layer))
                 ftp_data = {
                     'ID': packet.tcp.get('seq'),
-                    'RequestCommand': ftp_layer[0].get('request_command'),
-                    'ResponseArgs': ftp_layer[0].get('response_arg'),
+                    'RequestCommand': ftp_layer.get('request_command'),
+                    'ResponseArgs': ftp_layer.get('response_arg'),
                     'ResponseCode': res_code_results[0] if res_code_results else None
                 }
-                add_to_data(self.protocol_data['FTP'], ftp_data, next_id=packet.tcp.nxtseq)
-
-
-        if is_reg_extract:
-            self.ips_extracted.update(self.reg_ip.findall(str(packet)))
-            self.emails_extracted.update(self.reg_email.findall(str(packet)))
-            self.urls_extracted.update(self.reg_url.findall(str(packet)))
-
-        if self.homemade_regex:
-            self.homemade_extracted.update(self.reg_homemade.findall((str(packet))))
+                if ftp_data['ResponseCode']:
+                    # if packet is a response, don't update ID. This is because FTP may have a lot of requests and
+                    # responses in the same conversation
+                    add_to_data(self.protocol_data['FTP'], ftp_data)
+                else:
+                    add_to_data(self.protocol_data['FTP'], ftp_data, next_id=packet.tcp.nxtseq)
+            except Exception:
+                pass
 
     def get_outputs(self, entry_id, conversation_number_to_display=15, is_flows=False, is_reg_extract=False):
         if self.num_of_packets == 0:
@@ -299,6 +320,16 @@ class PCAP():
             general_context['Email'] = list(self.emails_extracted)
         if self.homemade_regex:
             general_context['Regex'] = list(self.homemade_extracted)
+        if self.unique_ips:
+            all_ips = self.unique_source_ip.copy()
+            all_ips.update(self.unique_dest_ip)
+            if general_context.get('IP'):
+                general_context.get('IP').append(list(all_ips))
+            else:
+                general_context['IP'] = list(all_ips)
+
+            general_context['SourceIP'] = list(self.unique_source_ip)
+            general_context['DestIP'] = list(self.unique_dest_ip)
         ec = {'PcapResults(val.EntryID == obj.EntryID)': general_context}
         return md, ec, general_context
 
@@ -307,9 +338,9 @@ class PCAP():
             cap = pyshark.FileCapture(file_path, display_filter=pcap_filter, output_file=pcap_filter_new_file_path,
                                       decryption_key=decrypt_key, encryption_type='WPA-PWD', keep_packets=False)
 
-            # j = 0
+            j = 0
             for packet in cap:
-                # j += 1
+                j += 1
                 # if (j % 100 == 0):
                 #     print(j)
                 self.last_layer.add(packet.layers[-1].layer_name)
@@ -559,6 +590,9 @@ def add_to_data(d: dict, data: dict, next_id: int=None) -> None:
         return
     else:
         if not d.get(data_id):
+            if len(data.keys()) == 1:
+                # The dictionary doesn't exist and is empty (except ID)
+                return
             if next_id:
                 d[next_id] = remove_nones(data)
             else:
@@ -567,7 +601,9 @@ def add_to_data(d: dict, data: dict, next_id: int=None) -> None:
             if next_id and next_id > data_id:
                 # id exists but we want to keep its next seq as ID (and also next seq id is larger therefore
                 # there's another packet in the future)
-                d[next_id] = d.pop(data_id).update(remove_nones(data))
+                temp = d.pop(data_id)
+                temp.update(remove_nones(data))
+                d[next_id] = temp
             else:
                 # ID exists, we just want to update it.
                 d[data_id].update(remove_nones(data))
@@ -601,12 +637,13 @@ def main():
     homemade_regex = demisto.args().get('custom_regex', '')  # 'Layer (.+):'
     pcap_filter_new_file_path = ''
     pcap_filter_new_file_name = demisto.args().get('filtered_file_name', '')
+    unique_ips = demisto.args().get('extract_ips', 'False') == 'True'
 
     if pcap_filter_new_file_name:
         temp = demisto.uniqueFile()
         pcap_filter_new_file_path = demisto.investigation()['id'] + '_' + temp
 
-    pcap = PCAP(is_reg_extract, extracted_protocols, homemade_regex)
+    pcap = PCAP(is_reg_extract, extracted_protocols, homemade_regex, unique_ips)
     pcap.mine(file_path, decrypt_key, is_flows, is_reg_extract, pcap_filter, pcap_filter_new_file_path)
     hr, ec, raw = pcap.get_outputs(entry_id, conversation_number_to_display, is_flows, is_reg_extract)
     return_outputs(hr, ec, raw)
@@ -647,22 +684,24 @@ def local_main():  # TODO remove this function
     # pcap_filter_new_file_name = ''  # '/Users/olichter/Downloads/try.pcap'
     homemade_regex = ''  # 'Layer (.+):'
     pcap_filter_new_file_path = ''
+    unique_ips = True
 
-    pcap = PCAP(is_reg_extract, extracted_protocols, homemade_regex)
+    pcap = PCAP(is_reg_extract, extracted_protocols, homemade_regex, unique_ips)
     pcap.mine(file_path, decrypt_key, is_flows, is_reg_extract, pcap_filter, pcap_filter_new_file_path)
     hr, ec, raw = pcap.get_outputs(entry_id, conversation_number_to_display, is_flows, is_reg_extract)
     return_outputs(hr, ec, raw)
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
-    main()
-    #
-    # from datetime import datetime
-    #
-    # startTime = datetime.now()
-    # local_main()
-    # print(datetime.now() - startTime)
+    # main()
+
+    from datetime import datetime
+
+    startTime = datetime.now()
+    local_main()
+    print(datetime.now() - startTime)
 
 # TODO: fix todos
 #TODO: see how to add SSH ID
-#TODO: fix seq and next seq id (specifically in ftp)
+#TODO: FTP has a lot of requests and responses in the same conversation
+#TODO: Document all function

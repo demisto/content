@@ -75,6 +75,17 @@ args:
   name: wpa_password
   required: false
   secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'False'
+  description: Output to context the source and destination ips in the pcap file.
+  isArray: false
+  name: extract_ips
+  predefined:
+  - 'True'
+  - 'False'
+  required: false
+  secret: false
 commonfields:
   id: 386e2ffc-fcf5-406c-840a-68c3ff2fefe8
   version: -1
