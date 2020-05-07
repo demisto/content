@@ -1,4 +1,5 @@
 ## [Unreleased]
+  - Fixed a typo in ***fetch-incidents***
   - Added 5 commands:
     - ***servicenow-query-items***
     - ***servicenow-get-item-details***
