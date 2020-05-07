@@ -356,7 +356,8 @@ def split_fields(fields: str = '') -> dict:
 
     if fields:
         if '=' not in fields:
-            raise Exception(f"The argument: {fields}.\nmust contain a '=' to specify the keys and values. e.g: key=val.")
+            raise Exception(
+                f"The argument: {fields}.\nmust contain a '=' to specify the keys and values. e.g: key=val.")
         arr_fields = fields.split(';')
         for f in arr_fields:
             field = f.split('=', 1)  # a field might include a '=' sign in the value. thus, splitting only once.
@@ -390,12 +391,13 @@ class Client(BaseClient):
             ticket_type: default ticket type
             get_attachments: whether to get ticket attachments by default
         """
+        super().__init__(base_url='', verify=verify, proxy=proxy)
         self._base_url = server_url
         self._sc_server_url = sc_server_url
-        self._verify = verify
+        # self._verify = verify
         self._username = username
         self._password = password
-        self._proxies = handle_proxy() if proxy else None
+        # self._proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
         self.fetch_time = fetch_time
         self.timestamp_field = timestamp_field
         self.ticket_type = ticket_type
@@ -438,36 +440,25 @@ class Client(BaseClient):
                 file_name = file['name']
                 shutil.copy(demisto.getFilePath(file_entry)['path'], file_name)
                 with open(file_name, 'rb') as f:
-                    files = {'file': f}
-                    res = requests.request(method, url, headers=headers, params=params, data=body, files=files,
-                                           auth=(self._username, self._password), verify=self._verify,
-                                           proxies=self._proxies)
+                    json_res = self._http_request(method, '', full_url=url, headers=headers,
+                                                  data=json.dumps(body) if body else {},
+                                                  params=params, auth=(self._username, self._password),
+                                                  files={'file': f}, resp_type='json')
                 shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
             except Exception as err:
                 raise Exception('Failed to upload file - ' + str(err))
         else:
-            res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {}, params=params,
-                                   auth=(self._username, self._password), verify=self._verify, proxies=self._proxies)
-
-        try:
-            obj = res.json()
-        except Exception as err:
-            if not res.content:
-                return ''
-            raise Exception(f'Error parsing reply - {str(res.content)} - {str(err)}')
-
-        if 'error' in obj:
-            message = obj.get('error', {}).get('message')
-            details = obj.get('error', {}).get('detail')
+            json_res = self._http_request(method, '', full_url=url, headers=headers,
+                                          data=json.dumps(body) if body else {},
+                                          params=params, auth=(self._username, self._password), resp_type='json')
+        if 'error' in json_res:
+            message = json_res.get('error', {}).get('message')
+            details = json_res.get('error', {}).get('detail')
             if message == 'No Record found':
                 return {'result': []}  # Return an empty results array
             raise Exception(f'ServiceNow Error: {message}, details: {details}')
 
-        if res.status_code < 200 or res.status_code >= 300:
-            raise Exception(f'Got status code {str(res.status_code)} with url {url} with body {str(res.content)}'
-                            f' with headers {str(res.headers)}')
-
-        return obj
+        return json_res
 
     def get_table_name(self, ticket_type: str = '') -> str:
         """Get the relevant table name from th client.
@@ -537,8 +528,9 @@ class Client(BaseClient):
                      for attachment in attachments]
 
         for link in links:
-            file_res = requests.get(link[0], auth=(self._username, self._password), verify=self._verify,
-                                    proxies=self._proxies)
+            file_res = self._http_request('GET', '', full_url=link[0], auth=(self._username, self._password))
+            # file_res = requests.get(link[0], auth=(self._username, self._password), verify=self._verify,
+            #                         proxies=self._proxies)
             if file_res is not None:
                 entries.append(fileResult(link[1], file_res.content))
 
@@ -1614,7 +1606,6 @@ def get_item_details_command(client: Client, args: dict) -> Tuple[Any, Dict[Any,
         Demisto Outputs.
     """
     id_ = str(args.get('id', ''))
-
     result = client.get_item_details(id_)
     if not result or 'result' not in result:
         return 'Item was not found.', {}, {}, True
@@ -1628,7 +1619,6 @@ def get_item_details_command(client: Client, args: dict) -> Tuple[Any, Dict[Any,
                                           headers=['Question', 'Type', 'Name', 'Mandatory'],
                                           removeNull=True, headerTransform=pascalToSpace)
     entry_context = {'ServiceNow.CatalogItem(val.ID===obj.ID)': createContext(mapped_item, removeNull=True)}
-
     return human_readable, entry_context, result, True
 
 
