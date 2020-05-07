@@ -1,6 +1,6 @@
 commonfields:
   id: CYFileRep
-  version: 1
+  version: -1
 name: CYFileRep
 script: |-
   # Retrieve file entry reputation using Cylance
@@ -41,6 +41,7 @@ script: |-
   else:
       demisto.results('Unable to retrieve entry')
 type: python
+subtype: python2
 tags:
 - server
 - threat-intel

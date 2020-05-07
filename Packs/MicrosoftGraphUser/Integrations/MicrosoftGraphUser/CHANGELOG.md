@@ -1,4 +1,7 @@
 ## [Unreleased]
+Added the ***msgraph-direct-reports*** command, which retrieves a user's direct reports.
+
+## [20.4.1] - 2020-04-29
 Added support to authenticate using a self-deployed Azure application.
 
 ## [20.4.0] - 2020-04-14

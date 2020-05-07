@@ -17,6 +17,7 @@ script: |-
       else:
           demisto.results("Successfully uploaded file to incident")
 type: python
+subtype: python2
 tags:
 - DemistoAPI
 comment: Copies a file from this incident to the specified incident. The file is uploaded as an attachment to the specified incident’s Summary page, and recorded as an entry in the War Room.

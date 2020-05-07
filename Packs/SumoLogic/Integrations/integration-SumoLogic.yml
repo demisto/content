@@ -1,0 +1,343 @@
+commonfields:
+  id: SumoLogic
+  version: -1
+name: SumoLogic
+display: SumoLogic
+category: Analytics & SIEM
+image: data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDIyLjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCA1NzcgMTA3LjMiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDU3NyAxMDcuMzsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtmaWxsOiMwMDAwOTk7fQo8L3N0eWxlPgo8dGl0bGU+QXNzZXQgMTwvdGl0bGU+CjxnIGlkPSJMYXllcl8yXzFfIj4KCTxnIGlkPSJMYXllcl8xLTIiPgoJCTxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0xMTguMywyMy44djYwLjRoLTE0LjF2LTYuNEMxMDEsODMsOTUuMSw4Niw4Ni41LDg2Yy0xNC4zLDAtMjEuNC03LjQtMjEuNC0xOS4yVjIzLjhoMTUuNHYzOC45CgkJCWMwLDYuMywzLjQsMTAsMTAsMTBjNy43LDAsMTIuNC00LjQsMTIuNC0xMi41VjIzLjhIMTE4LjN6IE0yMTguMyw0MnY0Mi4yaC0xNS40VjQ2LjZjMC03LjItMi45LTExLjYtOS42LTExLjZzLTEwLjYsNS0xMC42LDEyCgkJCXYzNy4yaC0xNS40VjQ2LjZjMC03LjctMy4yLTExLjYtOS42LTExLjZjLTYuOCwwLTEwLjYsNS0xMC42LDEydjM3LjJoLTE1LjRWMjMuOGgxNC4zdjYuN2MzLjUtNS44LDkuMy04LjcsMTcuMi04LjcKCQkJYzcuNywwLDEzLjUsMy4yLDE2LjgsOC45YzQuMS01LjksMTAuMi04LjksMTguMS04LjlDMjExLDIxLjgsMjE4LjMsMjkuNSwyMTguMyw0MkwyMTguMyw0MnogTTM0MS45LDg0LjJoLTE1LjRWMC4yaDE1LjRWODQuMnoKCQkJIE01MDguOSw4NC4yaC0xNS40VjIzLjhoMTUuNEw1MDguOSw4NC4yeiBNNDkzLjIsMTQuN2gxNS45VjBoLTE1LjlWMTQuN3ogTTU2Ni42LDYzLjZjLTYuMyw2LjctMTAuNiw5LjMtMTYuNCw5LjMKCQkJYy02LjksMC0xMS44LTQtMTQtMTAuMlY0NS4xYzIuMy02LjMsNy4yLTEwLjMsMTQuMi0xMC4zYzUuMSwwLDkuMiwxLjgsMTUuNyw3LjlsOS42LTkuNWMtNy43LTguNC0xNS4yLTExLjUtMjUuMy0xMS41CgkJCWMtMTQuMSwwLTI1LDcuNC0yOS4zLDE5Ljh2MjQuOEM1MjUuMyw3OC43LDUzNiw4Niw1NTAsODZjMTAuOSwwLDE4LjQtMy42LDI2LjgtMTRMNTY2LjYsNjMuNnogTTMxLjcsNDdjLTQuMi0wLjktNy4yLTEuNy04LjktMi4xCgkJCWMtMi4xLTAuNi0zLjctMS40LTQuNS0yLjV2LTQuNmMxLjQtMi4yLDQuOC0zLjYsOS41LTMuNmM2LjUsMCwxMSwxLjUsMTguMSw3LjFsOC4zLTEwYy04LjQtNy0xNS42LTkuNS0yNi05LjUKCQkJYy0xMiwwLTIwLjMsNC45LTIzLjYsMTEuOXYxNS4yYzIuNiw1LjEsOC42LDgsMjAuNiwxMC42YzQuMywxLDcuMiwxLjcsOC45LDJjMi4yLDAuNyw0LjIsMS42LDUuMywzLjJ2NS4zCgkJCWMtMS41LDIuNC01LjEsMy43LTkuOCwzLjdjLTMuNCwwLjEtNi43LTAuNi05LjgtMS45Yy0zLTEuMi02LjUtMy41LTEwLjktNy4xTDAsNzQuNkM5LjYsODMuMSwxNy43LDg2LDI5LjIsODYKCQkJYzEyLjMsMCwyMS00LjcsMjQuMy0xMi4yVjU4LjVDNTAuNyw1Mi44LDQ0LDQ5LjgsMzEuNyw0N3ogTTI1OC43LDIxLjdjLTEzLjksMC0yNC44LDcuNS0yOS4zLDE5LjV2MjUuNAoJCQljNC40LDEyLDE1LjQsMTkuNSwyOS4zLDE5LjVjMTMuOSwwLDI0LjctNy41LDI5LjEtMTkuNFY0MS4xQzI4My4zLDI5LjIsMjcyLjQsMjEuNywyNTguNywyMS43TDI1OC43LDIxLjd6IE0yNzIuOSw2Mi44CgkJCWMtMi40LDYuNC03LjUsMTAuMi0xNC4zLDEwLjJjLTYuNywwLTEyLTMuOC0xNC40LTEwLjJWNDVjMi40LTYuNCw3LjUtMTAuMywxNC40LTEwLjNjNi44LDAsMTEuOCwzLjksMTQuMiwxMC4zTDI3Mi45LDYyLjh6CgkJCSBNMzgzLjEsMjEuN2MtMTMuOSwwLTI0LjgsNy41LTI5LjMsMTkuNXYyNS40YzQuNSwxMiwxNS40LDE5LjUsMjkuMywxOS41czI0LjctNy41LDI5LjEtMTkuNFY0MS4xCgkJCUM0MDcuOCwyOS4yLDM5Ni45LDIxLjcsMzgzLjEsMjEuN3ogTTM5Ny4zLDYyLjhjLTIuNCw2LjQtNy41LDEwLjItMTQuMiwxMC4ycy0xMi0zLjgtMTQuNC0xMC4yVjQ1YzIuNC02LjQsNy41LTEwLjMsMTQuNC0xMC4zCgkJCXMxMS44LDMuOSwxNC4yLDEwLjNWNjIuOHogTTQ2NS44LDIzLjh2Ni43Yy0zLjktNS44LTEwLTguNy0xOC40LTguN2MtMTEuNCwwLTIwLjYsNy0yNC42LDE4LjF2MjQuOWMzLjksMTEuMSwxMy4xLDE4LDI0LjYsMTgKCQkJYzcuNywwLDEzLjUtMi42LDE3LjYtNy43djQuOGMwLDEwLTUuOCwxNC43LTE0LjgsMTQuN2MtNi43LDAtMTIuMi0yLTIxLTcuMmwtNy41LDExLjFjOC41LDUuNywxOC41LDguOCwyOC43LDguOQoJCQljMTcsMCwyOS41LTkuMSwyOS41LTI2LjFWMjMuOEg0NjUuOHogTTQ2My45LDYwLjVjLTIuMyw1LjctNy4xLDkuMy0xMy4xLDkuM3MtMTAuOC0zLjUtMTMuMS05LjNWNDRjMi4zLTUuNyw3LTkuMiwxMy4xLTkuMgoJCQlzMTAuOCwzLjUsMTMuMSw5LjJWNjAuNXoiLz4KCTwvZz4KPC9nPgo8L3N2Zz4K
+description: Cloud-based service for logs & metrics management
+detaileddescription: |-
+  Follow this guide to generate access keys: [https://help.sumologic.com/Manage/Security/Access_Keys](https://help.sumologic.com/Manage/Security/Access_Keys).
+  For the URL argument, take a look here: [https://help.sumologic.com/APIs/01Collector_Management_API/Sumo_Logic_Endpoints](https://help.sumologic.com/APIs/01Collector_Management_API/Sumo_Logic_Endpoints)
+  For a list of possible values for the **timeZone** parameter, refer to the **TZ database name** column in this [Wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) article.
+configuration:
+- display: 'Sumo Logic URL (region specific), for example: https://api.us2.sumologic.com/api/'
+  name: url
+  defaultvalue: https://api.us2.sumologic.com/api/
+  type: 0
+  required: true
+- display: API Version
+  name: apiVersion
+  defaultvalue: v1
+  type: 0
+  required: true
+- display: Access ID - can be created in Sumo Logic under "Settings"
+  name: accessID
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Access key - can be created in Sumo Logic under "Settings"
+  name: accessKey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Use system proxy settings
+  name: useproxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Seconds to sleep between checking for results
+  name: sleepBetweenChecks
+  defaultvalue: "3"
+  type: 0
+  required: true
+- display: Default maximum number of records to retrieve
+  name: limit
+  defaultvalue: "100"
+  type: 0
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Run this query to fetch new events as incidents
+  name: fetchQuery
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Timeframe for first fetch (in seconds)
+  name: firstFetch
+  defaultvalue: "600"
+  type: 0
+  required: false
+- display: Time between fetches (in seconds). The actual time will be the maximum between the selected value and the server configuration.
+  name: fetchDelay
+  defaultvalue: 60
+  type: 0
+  required: false
+- display: Default max total wait for results (in milliseconds)
+  name: maxTimeout
+  defaultvalue: "600"
+  type: 0
+  required: false
+- display: Time zone of the collector to fetch from (see detailed description)
+  name: timeZone
+  defaultvalue: UTC
+  type: 0
+  required: false
+- display: Fetch aggregate records (instead of messages)
+  name: fetchRecords
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: |
+    var server = params.url.replace(/[\/]+$/, '') + '/' + params.apiVersion + '/';
+
+    var doReq = function(method, path, parameters, cookies) {
+        var result = http(
+            server + path + (method === 'GET' && parameters ? encodeToURLQuery(parameters) : ''),
+            {
+                Headers: {'Content-Type': ['application/json'], 'Accept': ['application/json']},
+                Method: method,
+                Body: method == 'POST' && parameters ? JSON.stringify(parameters) : '',
+                Username: params.accessID,
+                Password: params.accessKey,
+                Cookies: cookies
+            },
+            params.insecure,
+            params.useproxy
+        );
+        if (result.StatusCode < 200 || result.StatusCode > 299) {
+            var errObj;
+            try {
+                errObj = JSON.parse(result.Body);
+            } catch (ex) {
+                // Ignore this - we will just throw the status code back
+            }
+            if (errObj) {
+                throw 'Status: ' + result.StatusCode + '\nID: ' + errObj.id + '\nCode: ' + errObj.code + '\nMessage: ' + errObj.message;
+            }
+            throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode;
+        }
+        if (result.Body === '') {
+            throw 'No content received.';
+        }
+        var obj;
+        try {
+            obj = JSON.parse(result.Body);
+        } catch (ex) {
+            throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
+        }
+        return {body: result.Body, obj: obj, statusCode: result.StatusCode, cookies: result.Cookies};
+    };
+
+    var search = function(query, from, to, limit, offset, timezone, maxTimeToWaitForResults, byReceiptTime, sleep, waitForSearchComplete) {
+        var p = {query: query};
+        if (from) {
+            p.from = from;
+        }
+        if (to) {
+            p.to = to;
+        }
+        if (timezone) {
+            p.timeZone = timezone;
+        }
+        if (byReceiptTime) {
+            p.byReceiptTime = byReceiptTime;
+        }
+        // Create the job
+        var res = doReq('POST', 'search/jobs', p, null);
+        try {
+            var done = false;
+            var stat;
+            // Wait for results based on parameters
+            for (var i=0; i<maxTimeToWaitForResults / sleep; i++) {
+                wait(sleep);
+                stat = doReq('GET', 'search/jobs/' + res.obj.id, null, res.cookies);
+                if (stat.obj.state === 'DONE GATHERING RESULTS' || (!waitForSearchComplete && stat.obj.messageCount > (offset + 1) * limit)) {
+                    done = true;
+                    break;
+                }
+                if (stat.obj.state === 'CANCELLED') {
+                    throw 'Job ' + res.obj.id + ' was cancelled';
+                }
+            }
+            if (done) {
+                var results = {};
+                if (stat.obj.messageCount > 0) {
+                    var msg = doReq('GET', 'search/jobs/' + res.obj.id + '/messages', {offset: offset, limit: limit}, res.cookies);
+                    results.messages = msg.obj.messages.map(function(m) {return m.map;});
+                }
+                if (stat.obj.recordCount > 0) {
+                    var rec = doReq('GET', 'search/jobs/' + res.obj.id + '/records', {offset: offset, limit: limit}, res.cookies);
+                    results.records = rec.obj.records.map(function(m) {return m.map;});
+                }
+                return results;
+            }
+            throw 'Timeout while waiting for job ' + res.obj.id;
+        } finally {
+            try {
+                doReq('DELETE', 'search/jobs/' + res.obj.id, null, res.cookies);
+            } catch (ex) {
+                logInfo('SumoLogic error deleting job - ' + ex);
+            }
+        }
+    };
+
+    var a2i = function(v, d) {
+        return v ? parseInt(v) : d;
+    };
+
+    var defaultLimit = 100, defaultSleep = 3, defaultTimeout = 180, defaultSearchTimeout = 10;
+
+    switch (command) {
+        // This is the call made when pressing the integration test button.
+        case 'test-module':
+            doReq('GET', 'collectors', {limit: '3'}, null);
+            return 'ok';
+        case 'fetch-incidents':
+            if (!params.fetchQuery) {
+                throw 'No fetch query defined, not doing SumoLogic fetch';
+            }
+            var now = (new Date()).getTime();
+            var lastRun = getLastRun();
+            if (!lastRun || !lastRun.time) {
+                lastRun = {time: now - parseInt(params.firstFetch) * 1000};
+                setLastRun({time: now});
+            }
+
+            if (params.fetchDelay) {
+                if (now < lastRun.time + parseInt(params.fetchDelay) * 1000) {
+                    return JSON.stringify([]);
+                }
+            }
+
+            var s = search(params.fetchQuery, lastRun.time, now, a2i(params.limit, defaultLimit), 0, params.timeZone, a2i(params.maxTimeout, 180), false,
+                a2i(params.sleepBetweenChecks, defaultSleep), params.fetchRecords);
+            var incidents = [];
+
+            if (!params.fetchRecords && s.messages) {
+                for (var i=0; i<s.messages.length; i++) {
+                    var incident = {name: 'Incident from SumoLogic' + s.messages[i]._messageid,
+                        details: s.messages[i]._raw, labels: [], rawJSON: JSON.stringify(s.messages[i])};
+                    var props = Object.getOwnPropertyNames(s.messages[i]);
+                    for (var j=0; j<props.length; j++) {
+                        if (props[j] !== '_raw') {
+                            incident.labels.push({type: props[j], value: s.messages[i][props[j]]});
+                        }
+                    }
+                    incidents.push(incident);
+                }
+            }
+
+            if (params.fetchRecords && s.records) {
+                for (var i=0; i<s.records.length; i++) {
+                    var incident = {name: 'Incident from SumoLogic',
+                        details: JSON.stringify(s.records[i]), labels: [], rawJSON: JSON.stringify(s.records[i])};
+                    var props = Object.getOwnPropertyNames(s.records[i]);
+                    for (var j=0; j<props.length; j++) {
+                        if (props[j] !== '_raw') {
+                            incident.labels.push({type: props[j], value: s.records[i][props[j]]});
+                        }
+                    }
+                    incidents.push(incident);
+                }
+            }
+            setLastRun({time: now});
+            return JSON.stringify(incidents);
+        case 'search':
+            query = args.query
+            var httpIndex = query.indexOf('http')
+            if (httpIndex != -1) {
+                var httpSubstring = query.substring(httpIndex)
+                var whitespaceIndex = httpSubstring.indexOf(' ')
+                var url = httpSubstring.substring(0, whitespaceIndex)
+                url = url.replace(/=/g, '\\\\=')
+                var beforeHttp = query.substring(0, httpIndex)
+                var afterWhitespace = query.substring(httpIndex + whitespaceIndex)
+                query = beforeHttp + url + afterWhitespace
+            }
+            var headers = 'headers' in args ? argToList(args.headers) : undefined;
+            var waitForSearchComplete = args.waitForSearchComplete == 'true';
+            var s = search(query, args.from, args.to, a2i(args.limit, defaultLimit), a2i(args.offset, 0), args.timezone,
+                a2i(args.maxTimeToWaitForResults, defaultSearchTimeout) * 60, args.byReceiptTime, a2i(params.sleepBetweenChecks, defaultSleep),
+                waitForSearchComplete);
+            var md = '';
+            var ec = {};
+            if (s.messages && s.messages.length > 0) {
+                md = tableToMarkdown('SumoLogic Search Messages', s.messages, headers) + '\n';
+                ec.Search = {Messages: s.messages.length > defaultLimit ? s.messages.slice(0, defaultLimit) : s.messages};
+            }
+            if (s.records && s.records.length > 0) {
+                md += tableToMarkdown('SumoLogic Search Records', s.records, headers);
+                ec.Search = {Records: s.records.length > defaultLimit ? s.records.slice(0, defaultLimit) : s.records};
+            }
+            if (!md) {
+                md = 'No results found';
+            }
+            return {Type: entryTypes.note, Contents: s, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+        default:
+            return {Type: entryTypes.error, Contents: 'Unknown command - ' + command, ContentsFormat: formats.text};
+    }
+  type: javascript
+  commands:
+  - name: search
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: The search query to execute.
+    - name: from
+      required: true
+      description: 'The ISO 8601 date of the time range to start the search. For example:
+        2016-08-28T12:00:00. Can also be milliseconds since epoch.'
+    - name: to
+      required: true
+      description: 'The ISO 8601 date of the time range to end the search. For example:
+        2016-08-28T12:00:00). Can also be milliseconds since epoch.'
+    - name: limit
+      description: Maximum number of results to return from the query. Default is
+        100. The value specified will override the default set in the "limit" parameter.
+      defaultValue: "100"
+    - name: offset
+      description: Return results starting at this offset. should be int - by default
+        is 0
+      defaultValue: "0"
+    - name: timezone
+      description: The time zone if from/to is not in milliseconds. Default is UTC.
+        See this (https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) article
+        for a list of time zone codes.
+      defaultValue: UTC
+    - name: maxTimeToWaitForResults
+      description: Maximum amount of time (in minutes) to wait for the search to complete.
+        Default is 10 minutes.
+      defaultValue: "10"
+    - name: headers
+      description: 'A comma-separated list of table headers that are displayed in order. For example:
+        "_blockid,_collector,_format".'
+    - name: byReceiptTime
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If "true", the search is executed using receipt time. Default is
+        "false".
+      defaultValue: "false"
+    - name: waitForSearchComplete
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If "true", the search will wait for the query to iterate over all messages before returning results.
+        This is useful when working with aggregate records, as otherwise the query may return partial values.
+      defaultValue: "false"
+    outputs:
+    - contextPath: Search.Messages
+      description: The array of raw message objects.
+    - contextPath: Search.Records
+      description: The array of aggregate records.
+    description: Search SumoLogic for records that match the specified query.
+  isfetch: true
+  runonce: false
+tests:
+  - SumoLogic-Test
