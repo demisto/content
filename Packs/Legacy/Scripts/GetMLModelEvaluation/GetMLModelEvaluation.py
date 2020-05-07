@@ -186,7 +186,7 @@ def find_threshold(y_true_str, y_pred_str, customer_target_precision, target_rec
 
     # find threshold for all classes such as precision of all classes are higher than target precision:
     unified_threshold, unified_threshold_precision, target_unified_precision = find_best_threshold_for_target_precision(
-        class_to_arrs, customer_target_precision, labels, y_true_per_class, y_pred_per_class)
+        class_to_arrs, customer_target_precision, labels)
     if unified_threshold is None or unified_threshold_precision is None:
         return_error('Could not find any threshold at ranges {}-{:.2f}'.format(target_unified_precision,
                                                                                customer_target_precision))
@@ -196,8 +196,7 @@ def find_threshold(y_true_str, y_pred_str, customer_target_precision, target_rec
     return [entry, per_class_entry]
 
 
-def find_best_threshold_for_target_precision(class_to_arrs, customer_target_precision, labels, y_true_per_class,
-                                             y_pred_per_class):
+def find_best_threshold_for_target_precision(class_to_arrs, customer_target_precision, labels):
     target_unified_precision = customer_target_precision
     unified_threshold_found = False
     threshold = None
@@ -220,9 +219,8 @@ def find_best_threshold_for_target_precision(class_to_arrs, customer_target_prec
                 legal_threshold_for_all_classes = True
                 threshold_precision = sys.maxint
                 for class_ in labels:
-                    threshold_precision_for_class = precision_score(y_true=y_true_per_class[class_],
-                                                                    y_pred=binarize(y_pred_per_class[class_], threshold)
-                                                                    )
+                    i = np.argmax(class_to_arrs[class_]['thresholds']>= threshold)
+                    threshold_precision_for_class = class_to_arrs[class_]['precisions'][i+1]
                     threshold_precision = min(threshold_precision, threshold_precision_for_class)
                     if threshold_precision_for_class >= target_unified_precision:
                         legal_threshold_for_all_classes = True
