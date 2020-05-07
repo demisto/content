@@ -402,7 +402,7 @@ script:
     name: msgraph-direct-reports
     outputs:
     - contextPath: MSGraphUserDirectReports.Manager
-      description: The manager's user principal name.
+      description: The manager's user principal name (UPN).
       type: String
     - contextPath: MSGraphUserDirectReports.Reports.@Odata.Type
       description: A string value that can be used to classify user types in your directory, such as "Member" and "Guest".
