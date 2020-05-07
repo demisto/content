@@ -13,6 +13,7 @@ tasks:
       id: 34cae85e-421e-4f7f-8d14-c4a6efc0529f
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -135,6 +136,7 @@ tasks:
       id: 004efb46-e83d-48ac-828b-03ce4f7e1f71
       version: -1
       name: Verify Context - Incident Details
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -246,6 +248,7 @@ tasks:
       id: 0f3224a6-3e12-498c-8688-d69463b98421
       version: -1
       name: Verify Context - Incident Violations
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -459,6 +462,7 @@ tasks:
       id: 8c3dd598-70f4-471f-8ef7-5b25a398f09b
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
