@@ -1760,7 +1760,7 @@ def fetch_incidents(client: Client):
                         raise Exception(f"Error getting attachment: {str(file_result.get('Contents', ''))}")
                     file_names.append({
                         'path': file_result.get('FileID', ''),
-                        'name': file_result.ge('File', '')
+                        'name': file_result.get('File', '')
                     })
 
         incidents.append({
