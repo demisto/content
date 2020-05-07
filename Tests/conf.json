@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "MITRE ATT&CK",
+            "playbookID": "Mitre Attack List 10 Indicators Feed Test"
+        },
+        {
             "integrations": "URLhaus",
             "playbookID": "Test_URLhaus",
             "timeout": 1000
