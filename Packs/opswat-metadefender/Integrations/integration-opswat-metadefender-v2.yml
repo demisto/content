@@ -173,8 +173,9 @@ script:
                 dbotScore = 2
             else:
                 dbotScore = 1
+            ec['DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)'] = {'Indicator': file_hash, 'Type': 'hash', 'Vendor': 'OPSWAT', 'Score': dbotScore}
+            ec['DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)'] = {'Indicator': file_hash, 'Type': 'file', 'Vendor': 'OPSWAT', 'Score': dbotScore}
 
-            ec['DBotScore'] = {'Indicator': file_hash, 'Type': 'hash', 'Vendor': 'OPSWAT', 'Score': dbotScore}
         else:
             md += f'No results for hash {file_hash}\n'
         entry = {
@@ -257,7 +258,10 @@ script:
                     dbotScore = 2
                 else:
                     dbotScore = 1
-                ec['DBotScore'] = {'Indicator': file_info['md5'], 'Type': 'hash', 'Vendor': 'OPSWAT', 'Score': dbotScore}
+
+                ec['DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)'] = {'Indicator': file_info['md5'], 'Type': 'hash', 'Vendor': 'OPSWAT', 'Score': dbotScore}
+                ec['DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)'] = {'Indicator': file_info['md5'], 'Type': 'file', 'Vendor': 'OPSWAT', 'Score': dbotScore}
+
         else:
             md += 'No results for this id\n';
         entry = {
@@ -325,7 +329,7 @@ script:
       default: true
       description: OPSWAT scan id
     description: Get OPSWAT result
-  dockerimage: demisto/python3:3.7.2.214
+  dockerimage: demisto/python3:3.8.2.6981
   subtype: python3
   runonce: false
 tests:
