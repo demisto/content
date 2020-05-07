@@ -93,7 +93,7 @@ class TestCofenseTriage:
         assert len(demisto_incidents[0]["rawJSON"]) == 1931
 
         CofenseTriage.demisto.setLastRun.assert_called_once_with(
-            {"reports_fetched": {13392, 13363}}
+            {"reports_fetched": "[13392, 13363]"}
         )
 
     @freeze_time("2000-10-31")
@@ -115,7 +115,7 @@ class TestCofenseTriage:
             "https://some-triage-host/api/public/v1/reporters/5331",
             text=fixture_from_file("reporters.json"),
         )
-        mocker.patch("demistomock.getLastRun", lambda: {"reports_fetched": {13363}})
+        mocker.patch("demistomock.getLastRun", lambda: {"reports_fetched": "[13363]"})
 
         CofenseTriage.fetch_reports()
 
@@ -124,7 +124,7 @@ class TestCofenseTriage:
         assert demisto_incidents[0]["name"] == "cofense triage report 13392: Crimeware"
 
         CofenseTriage.demisto.setLastRun.assert_called_once_with(
-            {"reports_fetched": {13392, 13363}}
+            {"reports_fetched": "[13392, 13363]"}
         )
 
     @freeze_time("2000-10-31")

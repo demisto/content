@@ -240,7 +240,7 @@ def fetch_reports() -> None:
         },
     )
 
-    already_fetched = set(demisto.getLastRun().get('reports_fetched', []))
+    already_fetched = set(json.loads(demisto.getLastRun().get("reports_fetched", "[]")))
 
     triage_reports = [
         TriageReport(report)
@@ -266,7 +266,7 @@ def fetch_reports() -> None:
             break
 
     demisto.incidents(incidents)
-    demisto.setLastRun({'reports_fetched': already_fetched})
+    demisto.setLastRun({"reports_fetched": json.dumps(list(already_fetched))})
 
 
 def search_reports_command() -> None:
