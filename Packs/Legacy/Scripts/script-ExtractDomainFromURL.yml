@@ -21,6 +21,7 @@ script: |+
       demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "Error while trying to parse URL" } )
 
 type: python
+subtype: python2
 tags:
 - url
 - domain

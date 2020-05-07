@@ -20,6 +20,7 @@ script: |-
 
   demisto.results(delim.join([str(data[i-1]) for i in fields]))
 type: python
+subtype: python2
 tags:
 - transformer
 - string

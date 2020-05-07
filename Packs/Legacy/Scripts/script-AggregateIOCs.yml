@@ -13,6 +13,7 @@ script: |-
   else:
       demisto.setContext('found_iocs', '')
 type: python
+subtype: python2
 tags:
 - Utility
 system: true

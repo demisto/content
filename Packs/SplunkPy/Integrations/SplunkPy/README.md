@@ -1,4 +1,4 @@
-Use the SplunkPy integration to fetch events (logs) from within Coretx XSOAR, push events from Coretx XSOAR to SplunkPy, and fetch SplunkPy ES notable events as Coretx XSOAR incidents.
+Use the SplunkPy integration to fetch events (logs) from within Cortex XSOAR, push events from Cortex XSOAR to SplunkPy, and fetch SplunkPy ES notable events as Cortex XSOAR incidents.
 
 This integration was integrated and tested with Splunk v6.5.
 
@@ -8,7 +8,7 @@ This integration was integrated and tested with Splunk v6.5.
 * Create a new event in Splunk.
 * Get results of a search that was executed in Splunk.
 
-## Configure SplunkPy on Coretx XSOAR
+## Configure SplunkPy on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for SplunkPy.
@@ -55,20 +55,20 @@ Use the following naming convention: (demisto_fields_{type}).
 ![image](https://user-images.githubusercontent.com/50324325/63265623-bccdd600-c296-11e9-9303-47b9791b0205.png)
 5. Define a scheduled search, the results of which are stored in the summary index. For more information about scheduling searches, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Knowledge/Definesearchmacros). 
 ![image](https://user-images.githubusercontent.com/50324325/63265640-c5261100-c296-11e9-9bd6-426fb328c09c.png)
-6. In the Summary indexing section, select the summary index, and enter the {key:value} pair for Coretx XSOAR classification.
+6. In the Summary indexing section, select the summary index, and enter the {key:value} pair for Cortex XSOAR classification.
 ![image](https://user-images.githubusercontent.com/50324325/63265665-d0793c80-c296-11e9-9919-cf6c6af33294.png)
-7. Configure the incident type in Coretx XSOAR by navigating to __Settings > Advanced > Incident Types.__
+7. Configure the incident type in Cortex XSOAR by navigating to __Settings > Advanced > Incident Types.__
 ![image](https://user-images.githubusercontent.com/50324325/63265677-d66f1d80-c296-11e9-95df-190ab18ae484.png)
 8. Navigate to __Settings > Integrations > Classification & Mapping__, and drag the value to the appropriate incident type.
 ![image](https://user-images.githubusercontent.com/50324325/63265720-ea1a8400-c296-11e9-8062-dd40606c5a42.png)
-9. Click the __Edit mapping__ link to map the Splunk fields to Coretx XSOAR.
+9. Click the __Edit mapping__ link to map the Splunk fields to Cortex XSOAR.
 ![image](https://user-images.githubusercontent.com/50324325/63265811-1d5d1300-c297-11e9-8026-52ff1cf30cbf.png)
 10. (Optional) Create custom fields.
 11. Build a playbook and assign it as the default for this incident type.
 
 
 ## Commands
-You can execute these commands from the Coretx XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get results

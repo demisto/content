@@ -70,6 +70,7 @@ script: |-
 
   demisto.results(file_entry)
 type: python
+subtype: python2
 tags:
 - RecordedFuture
 comment: Extracts the URL risk list from Recorded Future and creates indicators
