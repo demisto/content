@@ -1,6 +1,7 @@
 import pytest
 import json
 import os
+from unittest.mock import patch, mock_open
 from Tests.Marketplace.marketplace_services import Pack, Metadata, input_to_list, get_valid_bool, convert_price, \
     get_higher_server_version
 
@@ -231,6 +232,19 @@ class TestChangelogCreation:
     """ Test class for changelog.json creation step.
 
     """
+    original_changelog = '''{
+        "1.0.0": {
+            "releaseNotes": "First release notes",
+            "displayName": "1.0.0",
+            "released": "2020-05-05T13:39:33Z"
+        },
+        "2.0.0": {
+            "releaseNotes": "Second release notes",
+            "displayName": "2.0.0",
+            "released": "2020-06-05T13:39:33Z"
+        }
+    }'''
+    new_changelog_file = '# This is a new release for 2.0.2'
 
     def multi_mock_open(*file_contents):
         from unittest.mock import mock_open
@@ -266,34 +280,16 @@ class TestChangelogCreation:
         result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path)
         assert result is True
 
+    @patch('__builtin__.open', new_callable=mock_open, read_data=original_changelog)
+    @patch('__builtin__.open', new_callable=mock_open, read_data=new_changelog_file)
     def test_prepare_release_notes_upgrade_version(self, mocker, dummy_pack):
-        from unittest.mock import MagicMock, mock_open
+
         """ In case changelog.json does exists, expected result should be initial version 1.0.0
         """
         dummy_pack.current_version = '2.0.2'
         mocker.patch("os.path.exists", return_value=True)
         dir_list = ['1_0_1.md', '2_0_2.md', '2_0_0.md']
         mocker.patch("os.listdir", return_value=dir_list)
-        original_changelog = '''{
-            "1.0.0": {
-                "releaseNotes": "First release notes",
-                "displayName": "1.0.0",
-                "released": "2020-05-05T13:39:33Z"
-            },
-            "2.0.0": {
-                "releaseNotes": "Second release notes",
-                "displayName": "2.0.0",
-                "released": "2020-06-05T13:39:33Z"
-            }
-        }'''
-        new_changelog_file = '# This is a new release for 2.0.2'
-        mocker.patch('builtins.open', mock_open(read_data=original_changelog), new_callable=mock_open())
-        mocker.patch('builtins.open', mock_open(read_data=new_changelog_file), new_callable=mock_open())
-        # handle1 = MagicMock('file1').__enter__.return_value
-        # handle1.__iter__.return_value = original_changelog
-        # handle2 = MagicMock('file2').__enter__.return_value
-        # handle2.__iter__.return_value = new_changelog_file
-        # mock_open.side_effect = (handle1, handle2)
         dummy_path = 'Irrelevant/Test/Path'
         result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path)
         assert result is True
