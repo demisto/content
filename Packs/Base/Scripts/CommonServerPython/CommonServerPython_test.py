@@ -1638,7 +1638,6 @@ DATA_MOCK_DICT = {
 STR_KEY = "str_key"
 DICT_KEY = "dict_key"
 
-
 APPEND_CONTEXT_INPUT = [
     (CONTEXT_MOCK, DATA_MOCK_STRING, STR_KEY, "key = {}, val = {}".format(STR_KEY, UPDATED_CONTEXT[STR_KEY])),
     (CONTEXT_MOCK, DATA_MOCK_LIST, STR_KEY, "Cannot append data to the existing context"),
@@ -1648,9 +1647,12 @@ APPEND_CONTEXT_INPUT = [
     (CONTEXT_MOCK, DATA_MOCK_LIST, DICT_KEY, "Cannot append data to the existing context"),
     (CONTEXT_MOCK, DATA_MOCK_DICT, DICT_KEY, "key = {}, val = {}".format(DICT_KEY, UPDATED_CONTEXT[DICT_KEY])),
 
-    (CONTEXT_MOCK, DATA_MOCK_STRING, 'list_key_str', "key = {}, val = {}".format('list_key_str', UPDATED_CONTEXT['list_key_str'])),
-    (CONTEXT_MOCK, DATA_MOCK_LIST, 'list_key_list', "key = {}, val = {}".format('list_key_list', UPDATED_CONTEXT['list_key_list'])),
-    (CONTEXT_MOCK, DATA_MOCK_DICT, 'list_key_dict', "key = {}, val = {}".format('list_key_dict', UPDATED_CONTEXT['list_key_dict'])),
+    (CONTEXT_MOCK, DATA_MOCK_STRING, 'list_key_str',
+     "key = {}, val = {}".format('list_key_str', UPDATED_CONTEXT['list_key_str'])),
+    (CONTEXT_MOCK, DATA_MOCK_LIST, 'list_key_list',
+     "key = {}, val = {}".format('list_key_list', UPDATED_CONTEXT['list_key_list'])),
+    (CONTEXT_MOCK, DATA_MOCK_DICT, 'list_key_dict',
+     "key = {}, val = {}".format('list_key_dict', UPDATED_CONTEXT['list_key_dict'])),
 ]
 
 
@@ -1660,7 +1662,7 @@ def get_set_context(key, val):
 
 
 @pytest.mark.parametrize('context_mock, data_mock, key, expected_answer', APPEND_CONTEXT_INPUT)
-def test_appendContext(mocker, context_mock, data_mock, key, expected_answer):
+def test_append_context(mocker, context_mock, data_mock, key, expected_answer):
     from CommonServerPython import demisto
     mocker.patch.object(demisto, 'get', return_value=context_mock.get(key))
     mocker.patch.object(demisto, 'setContext', side_effect=get_set_context)
