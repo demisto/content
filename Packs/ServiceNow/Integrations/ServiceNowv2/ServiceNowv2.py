@@ -372,9 +372,8 @@ class Client(BaseClient):
     Client to use in the ServiceNow integration. Overrides BaseClient.
     """
 
-    def __init__(self, server_url: str, sc_server_url: str, username: str, password: str, verify: bool, proxy: bool,
-                 fetch_time: str, sysparm_query: str, sysparm_limit: int, timestamp_field: str, ticket_type: str,
-                 get_attachments: bool):
+    def __init__(self, server_url: str, sc_server_url: str, username: str, password: str, verify: bool, fetch_time: str,
+                 sysparm_query: str, sysparm_limit: int, timestamp_field: str, ticket_type: str, get_attachments: bool):
         """
 
         Args:
@@ -383,7 +382,6 @@ class Client(BaseClient):
             username: SNOW username
             password: SNOW password
             verify: whether to verify the request
-            proxy: whether to allow proxy
             fetch_time: first time fetch for fetch_incidents
             sysparm_query: system query
             sysparm_limit: system limit
@@ -391,11 +389,12 @@ class Client(BaseClient):
             ticket_type: default ticket type
             get_attachments: whether to get ticket attachments by default
         """
-        super().__init__(base_url='', verify=verify, proxy=proxy)
         self._base_url = server_url
         self._sc_server_url = sc_server_url
+        self._verify = verify
         self._username = username
         self._password = password
+        self._proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
         self.fetch_time = fetch_time
         self.timestamp_field = timestamp_field
         self.ticket_type = ticket_type
@@ -438,17 +437,23 @@ class Client(BaseClient):
                 file_name = file['name']
                 shutil.copy(demisto.getFilePath(file_entry)['path'], file_name)
                 with open(file_name, 'rb') as f:
-                    json_res = self._http_request(method, '', full_url=url, headers=headers,
-                                                  data=json.dumps(body) if body else {},
-                                                  params=params, auth=(self._username, self._password),
-                                                  files={'file': f}, resp_type='json')
+                    res = requests.request(method, url, headers=headers, data=body, params=params, files={'file': f},
+                                           auth=(self._username, self._password), verify=self._verify,
+                                           proxies=self._proxies)
                 shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
             except Exception as err:
                 raise Exception('Failed to upload file - ' + str(err))
         else:
-            json_res = self._http_request(method, '', full_url=url, headers=headers,
-                                          data=json.dumps(body) if body else {},
-                                          params=params, auth=(self._username, self._password), resp_type='json')
+            res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {}, params=params,
+                                   auth=(self._username, self._password), verify=self._verify, proxies=self._proxies)
+
+        try:
+            json_res = res.json()
+        except Exception as err:
+            if not res.content:
+                return ''
+            raise Exception(f'Error parsing reply - {str(res.content)} - {str(err)}')
+
         if 'error' in json_res:
             message = json_res.get('error', {}).get('message')
             details = json_res.get('error', {}).get('detail')
@@ -456,7 +461,11 @@ class Client(BaseClient):
                 return {'result': []}  # Return an empty results array
             raise Exception(f'ServiceNow Error: {message}, details: {details}')
 
-        return json_res
+        if res.status_code < 200 or res.status_code >= 300:
+            raise Exception(f'Got status code {str(res.status_code)} with url {url} with body {str(res.content)}'
+                            f' with headers {str(res.headers)}')
+
+    return json_res
 
     def get_table_name(self, ticket_type: str = '') -> str:
         """Get the relevant table name from th client.
@@ -526,9 +535,8 @@ class Client(BaseClient):
                      for attachment in attachments]
 
         for link in links:
-            file_res = self._http_request('GET', '', full_url=link[0], auth=(self._username, self._password))
-            # file_res = requests.get(link[0], auth=(self._username, self._password), verify=self._verify,
-            #                         proxies=self._proxies)
+            file_res = requests.get(link[0], auth=(self._username, self._password), verify=self._verify,
+                                    proxies=self._proxies)
             if file_res is not None:
                 entries.append(fileResult(link[1], file_res.content))
 
