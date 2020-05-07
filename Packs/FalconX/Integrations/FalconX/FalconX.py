@@ -9,20 +9,22 @@ import requests
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
-access_token = "eyJhbGciOiJSUzI1NiIsImtpZCI6InB1YmxpYzphNDdiNTc2MS0zYzk3LTQwMmItOTgzNi0wNmNhODI0NTViOTMiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOlsiMTU3YjMyZjRmNWE5NDQ1Yjg1ODRiODM3ZWY4MDQ0NzciXSwiY2xpZW50X2lkIjoiMTU3YjMyZjRmNWE5NDQ1Yjg1ODRiODM3ZWY4MDQ0NzciLCJleHAiOjE1ODg0MzgxNzUsImlhdCI6MTU4ODQzNjM3NSwiaXNzIjoiaHR0cHM6Ly9hcGkuY3Jvd2RzdHJpa2UuY29tLyIsImp0aSI6ImMxZGQwZTM5LTdhOTEtNDcwZi1iYmQyLWQ0YTgxYzMxY2UyNiIsIm5iZiI6MTU4ODQzNjM3NSwic3ViIjoiMTU3YjMyZjRmNWE5NDQ1Yjg1ODRiODM3ZWY4MDQ0NzcifQ.ij0bWNnCh2sTbFGaE7v59AjguuLCxhLqOvct0k89uuTYEtc2rjORFRxkdDEoHasmUP8P086kGshGtite2MLJ_Ge0zoomXpIi-sU8v9zDjPQzStpgXmvPbAEl0i-wzHuM0FH5umjVe_5bZj4vuMqttQ-64HNg6aXzlkf3p1DVQUDQAizGkHiHIzoB8xGfXaj267bKeBzvq4Gl9J-9CipskKki93TZehY7_ex8VIjBKyup_0GAxVRwrV9JMx87MIhOculeupmlp7yoVqucRKDDJ1GHUZA9mVAFwgzTttk07F2CkOmMFKzfg-qRZs9Rhwi_U4BoNnFJMmD-tXvSNXovinGOE8tLM1dgpyOVCV_ETPx9LsF-QQR809r6LgQCV-Rasv-gVvrf1iPWvR3DpSYfEAkdOdoLYhxBrRZhRZYYz4gC74uTVZEel8answJGdT6b5uAef2Z-YCzAuqB70aVaYgZLvi09oNIb2o9jf5gV61GNlyw8dy-mOaiQtYz3BSryDRpby2M9D4g3jm0EGTxc_RHdT4Z0OhseqtKtIZj0eURbhDXMYinPqX4ECQYijrD0lNvYUIsZNKyR9a4Zn-EPZCZepNa5pBJA2inIcx1SxptVg3TdYF6rdXe1JKZ4THIRAcWWYqg2p6lB10QYv6DPA427I6jzFFfMwIcpamzVfIQ"
+access_token = "eyJhbGciOiJSUzI1NiIsImtpZCI6InB1YmxpYzphNDdiNTc2MS0zYzk3LTQwMmItOTgzNi0wNmNhODI0NTViOTMiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOlsiMTU3YjMyZjRmNWE5NDQ1Yjg1ODRiODM3ZWY4MDQ0NzciXSwiY2xpZW50X2lkIjoiMTU3YjMyZjRmNWE5NDQ1Yjg1ODRiODM3ZWY4MDQ0NzciLCJleHAiOjE1ODg2OTAzMzIsImlhdCI6MTU4ODY4ODUzMiwiaXNzIjoiaHR0cHM6Ly9hcGkuY3Jvd2RzdHJpa2UuY29tLyIsImp0aSI6Ijc1ZmM4MzFmLTBmY2QtNDI1Mi05YTE2LTc3ZDM1MzVkZWZkNyIsIm5iZiI6MTU4ODY4ODUzMiwic3ViIjoiMTU3YjMyZjRmNWE5NDQ1Yjg1ODRiODM3ZWY4MDQ0NzcifQ.cymJfswMYtFlqV25EAmQ5MEuCQ_OKnmtFPZsYp5D8Q-x-aGgFSaAEn9XB_b0iPiCVEpHwepxsa_Puo0wXaTY17pmDALWQjrTA6tDeN1eQ4EYs-sCUoZyuu9hDv4_ENIB5u7Y1jpXQfBudeemPSKBoWuuuASUJ1czooDR0VBJIrTRa0IjEG_VP6cJgkv22oQxHhUj7am0PeckE0Pfdzg8jPG7E7iTB8XIPj-40bDYUeOBnUg94pVmwmUqeWd_BTKBqL60fx3L8RrFls2mkUJ42bwhEOXzJ1h3OhYzBAmrTJw6oIje1J7qCjZz-YFuFmrQhueNK9ybPf-BgA0qH4YjtD6sLFhXuJ9RhTXH3uFVPcX3f75RVrmld1eZdGabenvmilZgiKFXN8vT92Hqpa28P17ALlag2gjQbfqMvGa33KLvmgvoYeBD1oU41FnGYpl1f1kp-4Nm3oakKlKaAOZZMyut_9R9li7AS51zYTGUAyIzGcogXRn2FiCCPEH7KUDTdlesPzkqZDw_ePUz4aCcj2CY-PGA1c1C1TZN-7e1XEqBkb2cMQbbCSCALdu1QWT6JqUUk2LyKXdIPSCOsglcRsF5WtTE3L0MzMhLmYvnhzPdQ47vzoDMOrQAXs3gl0JuUARYGj3kvp1tilfC3mKNsUbbL_fz2W-C0cS-JuqfjgY"
+
+URL = "https://api.crowdstrike.com/"
 
 
 class Client(BaseClient):
     """
-      Client to use in the FalconX integration. Overrides BaseClient
-      """
+    Client to use in the FalconX integration. Overrides BaseClient
+    """
 
     def __init__(self, server_url: str, username: str, password: str):
         self._base_url = server_url
         self._username = username
         self._password = password
-        self.token = self._generate_token()
-        # self.token = access_token
+        #self.token = self._generate_token()
+        self.token = access_token
 
     def http_request(self, method, url_suffix, data, headers=None, params=None, response_type: str = 'json'):
         """
@@ -78,7 +80,7 @@ class Client(BaseClient):
         return token_res.get('access_token')
 
 
-def test_module(client, args):
+def test_module(client):
     """
     If a client was made then an accesses token was successfully reached,
     therefor the username and password are valid and a connection was made
@@ -88,15 +90,13 @@ def test_module(client, args):
 
 
 # is failing
-def upload_file(client, args):
-
-    file = args.get('file', "")
-    file_name = args.get('file_name', "")
-    comment = args.get('comment', "")
-    is_confidential = args.get('is_confidential')
-
-    if not file or not file_name:
-        raise ValueError('Please add a valid file and file name.')
+def upload_file_command(
+        client: Client,
+        file, # orel.fix file type??????
+        file_name: str,
+        comment: str,
+        is_confidential: str
+) -> Tuple[str, dict, dict]:
 
     url_suffix = f"/samples/entities/samples/v2?file_name={file_name}&is_confidential={is_confidential}&comment={comment}"
 
@@ -112,16 +112,18 @@ def upload_file(client, args):
     return response
 
 
-def send_uploaded_file_to_sendbox_analysis(client, args):
-    sha256 = args.get('sha256', "")
-    environment_id = args.get('environment_id', "")
-    action_script = args.get('action_script', "")
-    command_line = args.get('command_line', "")
-    document_password = args.get('document_password')
-    enable_tor = args.get('enable_tor') # default is false
-    submit_name = args.get('submit_name', "")
-    system_date = args.get('system_date', "")
-    system_time = args.get('system_time', "")
+def send_uploaded_file_to_sendbox_analysis_command(
+        client: Client,
+        sha256: str,
+        environment_id: int, #orel.debug - make sure there are final number of options
+        action_script: str,
+        command_line: str,
+        document_password: str,
+        enable_tor: str,
+        submit_name: str,
+        system_date: str,
+        system_time: str
+) -> Tuple[str, dict, dict]:
 
     url_suffix = "/falconx/entities/submissions/v1"
     body = {
@@ -148,17 +150,20 @@ def send_uploaded_file_to_sendbox_analysis(client, args):
     return response
 
 
-def send_url_to_sandbox_analysis(client, args):
+def send_url_to_sandbox_analysis_command(
+        client: Client,
+        url: str,
+        environment_id: int, #orel.debug - make sure there are final number of options
+        action_script: str,
+        command_line: str,
+        document_password: str,
+        enable_tor: str,
+        submit_name: str,
+        system_date: str,
+        system_time: str
+) -> Tuple[str, dict, dict]:
+
     url_suffix = "/falconx/entities/submissions/v1"
-    url = args.get('url', "")
-    environment_id = args.get('environment_id', "")
-    action_script = args.get('action_script', "")
-    command_line = args.get('command_line', "")
-    document_password = args.get('document_password')
-    enable_tor = args.get('enable_tor')  # default is false
-    submit_name = args.get('submit_name', "")
-    system_date = args.get('system_date', "")
-    system_time = args.get('system_time', "")
 
     body = {
         "sandbox": [
@@ -175,18 +180,22 @@ def send_url_to_sandbox_analysis(client, args):
             }
         ]
     }
+
     payload = "{    \"sandbox\": [\n        {\n            \"url\": \"https://www.google.com\",\n            \"environment_id\": 160,\n            \"action_script\": \"\",\n            \"command_line\": \"\",\n            \"document_password\": \"\",\n            \"enable_tor\": false,\n            \"submit_name\": \"\",\n            \"system_date\": \"\",\n            \"system_time\": \"\"\n        }\n    ]\n}"
     headers = {
         'Authorization': 'bearer ' + client.token,
         'Content-Type': 'application/json',
     }
-    response = client.http_request("POST", url_suffix, headers=headers, data=str(body))
+    response = client.http_request("POST", url_suffix, headers=headers, json=body)
     demisto.log(response)
     return response
 
 
-def get_full_report(client, args):
-    ids = args.get("ids", "")
+def get_full_report_command(
+        client: Client,
+        ids: list
+) -> Tuple[str, dict, dict]:
+
     url_suffix = f"/falconx/entities/reports/v1?ids={id}"
     params = {
         "ids": ids
@@ -200,8 +209,11 @@ def get_full_report(client, args):
     return response
 
 
-def get_report_summary(client, args):
-    ids = args.get("ids", "")
+def get_report_summary_command(
+        client: Client,
+        ids: list
+) -> Tuple[str, dict, dict]:
+
     url_suffix = f"/falconx/entities/report-summaries/v1?ids={id}"
     params = {
         "ids": ids
@@ -215,8 +227,11 @@ def get_report_summary(client, args):
     return response
 
 
-def get_analysis_status(client, args):
-    ids = args.get("ids", "")
+def get_analysis_status_command(
+        client: Client,
+        ids: list
+) -> Tuple[str, dict, dict]:
+
     url_suffix = f"/falconx/entities/submissions/v1?ids={ids}"
 
     params = {
@@ -231,9 +246,13 @@ def get_analysis_status(client, args):
     return response
 
 
-def download_ioc(client, args):
-    id = args.get("id", "")
-    accept_encoding = args.get("accept_encoding", "")
+def download_ioc_command( #orel.fix - name??? where is it?
+        client: Client,
+        id: str,
+        name: str,
+        accept_encoding: str
+) -> Tuple[str, dict, dict]:
+
     url_suffix = f"/falconx/entities/artifacts/v1?id={id}" \
                  f"&name=&Accept-Encoding={accept_encoding}"
 
@@ -250,7 +269,9 @@ def download_ioc(client, args):
     return response
 
 
-def check_quota_status(client, args):
+def check_quota_status_command(
+        client: Client
+) -> Tuple[str, dict, dict]:
     url_suffix = f"/falconx/entities/submissions/v1?ids="
 
     headers = {
@@ -262,11 +283,14 @@ def check_quota_status(client, args):
     return response
 
 
-def find_sandbox_reports(client, args):
-    filter = args.get("filter", "")
-    offset = args.get("offset", "")
-    limit = args.get("limit", "")
-    sort = args.get("sort", "")
+def find_sandbox_reports_command(
+        client: Client,
+        filter: str,
+        offset: str,
+        limit: int,
+        sort: str
+) -> Tuple[str, dict, dict]:
+
     url_suffix = f"/falconx/queries/reports/v1?filter={filter}&offset={offset}&limit{limit}=&sort={sort}"
 
     params = {
@@ -284,11 +308,14 @@ def find_sandbox_reports(client, args):
     return response
 
 
-def find_submission_id(client, args):
-    filter = args.get("filter", "")
-    offset = args.get("offset", "")
-    limit = args.get("limit", "")
-    sort = args.get("sort", "")
+def find_submission_id_command(
+        client: Client,
+        filter: str,
+        offset: str,
+        limit: int,
+        sort: str
+) -> Tuple[str, dict, dict]:
+
     url_suffix = f"/falconx/queries/submissions/v1?filter={filter}&offset={offset}&limit{limit}=&sort={sort}"
 
     params = {
@@ -307,30 +334,28 @@ def find_submission_id(client, args):
 
 
 def main():
-    # print("start")
-    url = "https://api.crowdstrike.com/" # CONST?
     params = demisto.params()
     username = params.get('credentials').get('identifier')
     password = params.get('credentials').get('password')
     try:
         command = demisto.command()
         LOG(f'Command being called in FalconX Sandbox is: {command}')
-        client = Client(server_url=url, username=username, password=password)
+        client = Client(server_url=URL, username=username, password=password)
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
             'test-module': test_module,
-            'cs-fx-upload-file': upload_file,
-            'cs-fx-detonate-uploaded-file': send_uploaded_file_to_sendbox_analysis,
-            'cs-fx-detonate-url': send_url_to_sandbox_analysis,
-            'cs-fx-get-full-report': get_full_report,
-            'cs-fx-get-report-summary': get_report_summary,
-            'cs-fx-get-analysis-status': get_analysis_status,
-            'cs-fx-download-ioc': download_ioc,
-            'cs-fx-check-quota': check_quota_status,
-            'cs-fx-find-reports': find_sandbox_reports,
-            'cs-fx-find-submission-id': find_submission_id
+            'cs-fx-upload-file': upload_file_command,
+            'cs-fx-detonate-uploaded-file': send_uploaded_file_to_sendbox_analysis_command,
+            'cs-fx-detonate-url': send_url_to_sandbox_analysis_command,
+            'cs-fx-get-full-report': get_full_report_command,
+            'cs-fx-get-report-summary': get_report_summary_command,
+            'cs-fx-get-analysis-status': get_analysis_status_command,
+            'cs-fx-download-ioc': download_ioc_command,
+            'cs-fx-check-quota': check_quota_status_command,
+            'cs-fx-find-reports': find_sandbox_reports_command,
+            'cs-fx-find-submission-id': find_submission_id_command
         }
         if command in commands:
-            return_outputs(*commands[command](client, demisto.args()))
+            return_outputs(*commands[command](client, **demisto.args()))
         else:
             raise NotImplementedError(f'{command} is not an existing FalconX command')
     except Exception as err:
