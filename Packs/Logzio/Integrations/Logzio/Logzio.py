@@ -15,6 +15,8 @@ DEFAULT_LIMIT = 50
 MAX_LOGZIO_DOCS = 1000
 ONE_MINUTE = 60
 ONE_HOUR = ONE_MINUTE * 60
+DEFAULT_TIMEOUT_SEC = 2
+MAX_REQUEST_TIMEOUT = 15
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 BASE_URL = "https://api.logz.io/"
 TRIGGERED_RULES_API_SUFFIX = "v2/security/rules/events/search"
@@ -63,7 +65,7 @@ class Client(BaseClient):
         remove_nulls_from_dictionary(payload)
         return self.execute_api(TRIGGERED_RULES_API_SUFFIX, payload, self.security_api_token)
 
-    def search_logs(self, query, size, from_time, to_time):
+    def search_logs(self, query, size, from_time, to_time, timeout=DEFAULT_TIMEOUT_SEC):
         payload = {
             "query": {
                 "bool": {
@@ -95,10 +97,10 @@ class Client(BaseClient):
                     "range": {"@timestamp": time_filter}
                 }
             )
-        response = self.execute_api(SEARCH_LOGS_API_SUFFIX, payload, self.op_api_token)
+        response = self.execute_api(SEARCH_LOGS_API_SUFFIX, payload, self.op_api_token, timeout)
         return response.get("hits", {}).get("hits", {})
 
-    def get_rule_logs(self, id, size, page_size=MAX_LOGZIO_DOCS):
+    def get_rule_logs(self, id, size, page_size=MAX_LOGZIO_DOCS, timeout=DEFAULT_TIMEOUT_SEC):
         payload = {
             "filter": {
                 "alertEventId": id
@@ -108,13 +110,13 @@ class Client(BaseClient):
                 "pageSize": page_size
             }
         }
-        response = self.execute_api(SEARCH_RULE_LOGS_API_SUFFIX, payload, self.security_api_token)
+        response = self.execute_api(SEARCH_RULE_LOGS_API_SUFFIX, payload, self.security_api_token, timeout)
         total = response.get("total", 0)
         results = response.get("results", [])
         if total > page_size and size > page_size:
             for i in range(2, (min(size, total) + page_size - 1) // page_size + 1):  # Ceiling division
                 payload["pagination"]["pageNumber"] = i
-                response = self.execute_api(SEARCH_RULE_LOGS_API_SUFFIX, payload, self.security_api_token)
+                response = self.execute_api(SEARCH_RULE_LOGS_API_SUFFIX, payload, self.security_api_token, timeout)
                 results += response.get("results", [])
         return results
 
@@ -126,13 +128,15 @@ class Client(BaseClient):
             return "-{}".format(self.region)
         return ""
 
-    def execute_api(self, url_suffix, payload, api_token):
+    def execute_api(self, url_suffix, payload, api_token, timeout=None):
+        if timeout is None or float(timeout) > 15:
+            timeout = 15
         headers = {
             'Content-Type': 'application/json',
             'X-API-TOKEN': api_token
         }
         return BaseClient._http_request(self, "POST", url_suffix, headers=headers, data=json.dumps(payload),
-                                        ok_codes=(200,))
+                                        ok_codes=(200,), timeout=float(timeout))
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -171,7 +175,8 @@ def search_logs_command(client, args):
     size = args.get('size', MAX_LOGZIO_DOCS)
     from_time = args.get('from_time')
     to_time = args.get('to_time')
-    resp = [log["_source"] for log in client.search_logs(query, size, from_time, to_time)]
+    timeout = args.get("timeout", DEFAULT_TIMEOUT_SEC)
+    resp = [log["_source"] for log in client.search_logs(query, size, from_time, to_time, timeout)]
     readable, context = get_formatted_logs(resp)
     return_outputs(readable, context, resp)
 
@@ -182,7 +187,8 @@ def get_rule_logs_by_id_command(client, args):
     id = args.get("id")
     size = args.get("size", 100)
     page_size = args.get("page_size", MAX_LOGZIO_DOCS)
-    resp = client.get_rule_logs(id, size, page_size)
+    timeout = args.get("timeout", DEFAULT_TIMEOUT_SEC)
+    resp = client.get_rule_logs(id, size, page_size, timeout)
     readable, context = get_formatted_logs(resp)
     return_outputs(readable, context, resp)
 
