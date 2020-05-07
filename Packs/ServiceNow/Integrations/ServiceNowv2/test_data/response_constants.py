@@ -2819,3 +2819,128 @@ RESPONSE_FETCH = {
             }
         ]
 }
+RESPONSE_FETCH_ATTACHMENTS_TICKET = {
+    "result": [
+        {
+            "active": "false",
+            "activity_due": "2016-12-13 01:26:36",
+            "additional_assignee_list": "",
+            "approval": "not requested",
+            "approval_history": "",
+            "approval_set": "",
+            "assigned_to": {
+                "link": "https://dev61466.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2007",
+                "value": "5137153cc611227c000bbd1bd8cd2007"
+            },
+            "assignment_group": {
+                "link": "https://dev61466.service-now.com/api/now/table/sys_user_group/287ebd7da9fe198100f92cc8d1d2154e",
+                "value": "287ebd7da9fe198100f92cc8d1d2154e"
+            },
+            "business_duration": "1970-01-01 08:00:00",
+            "business_service": {
+                "link": "https://dev61466.service-now.com/api/now/table/cmdb_ci_service/27d32778c0a8000b00db970eeaa60f16",
+                "value": "27d32778c0a8000b00db970eeaa60f16"
+            },
+            "business_stc": "28800",
+            "calendar_duration": "1970-01-02 04:23:17",
+            "calendar_stc": "102197",
+            "caller_id": {
+                "link": "https://dev61466.service-now.com/api/now/table/sys_user/681ccaf9c0a8016400b98a06818d57c7",
+                "value": "681ccaf9c0a8016400b98a06818d57c7"
+            },
+            "category": "inquiry",
+            "caused_by": "",
+            "child_incidents": "0",
+            "close_code": "Solved (Permanently)",
+            "close_notes": "This incident is resolved.",
+            "closed_at": "2016-12-14 02:46:44",
+            "closed_by": {
+                "link": "https://dev61466.service-now.com/api/now/table/sys_user/681ccaf9c0a8016400b98a06818d57c7",
+                "value": "681ccaf9c0a8016400b98a06818d57c7"
+            },
+            "cmdb_ci": {
+                "link": "https://dev61466.service-now.com/api/now/table/cmdb_ci/109562a3c611227500a7b7ff98cc0dc7",
+                "value": "109562a3c611227500a7b7ff98cc0dc7"
+            },
+            "comments": "",
+            "comments_and_work_notes": "",
+            "company": {
+                "link": "https://dev61466.service-now.com/api/now/table/core_company/31bea3d53790200044e0bfc8bcbe5dec",
+                "value": "31bea3d53790200044e0bfc8bcbe5dec"
+            },
+            "contact_type": "self-service",
+            "contract": "",
+            "correlation_display": "",
+            "correlation_id": "",
+            "delivery_plan": "",
+            "delivery_task": "",
+            "description": "I am unable to connect to the email server. It appears to be down.",
+            "due_date": "",
+            "escalation": "0",
+            "expected_start": "",
+            "follow_up": "",
+            "group_list": "",
+            "hold_reason": "",
+            "impact": "2",
+            "incident_state": "7",
+            "knowledge": "false",
+            "location": "",
+            "made_sla": "true",
+            "notify": "1",
+            "number": "INC0000060",
+            "opened_at": "2016-12-12 15:19:57",
+            "opened_by": {
+                "link": "https://dev61466.service-now.com/api/now/table/sys_user/681ccaf9c0a8016400b98a06818d57c7",
+                "value": "681ccaf9c0a8016400b98a06818d57c7"
+            },
+            "order": "",
+            "parent": "",
+            "parent_incident": "",
+            "priority": "3",
+            "problem_id": "",
+            "reassignment_count": "2",
+            "reopen_count": "0",
+            "reopened_by": "",
+            "reopened_time": "",
+            "resolved_at": "2016-12-13 21:43:14",
+            "resolved_by": {
+                "link": "https://dev61466.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2007",
+                "value": "5137153cc611227c000bbd1bd8cd2007"
+            },
+            "rfc": "",
+            "service_offering": "",
+            "severity": "3",
+            "short_description": "Unable to connect to email",
+            "skills": "",
+            "sla_due": "",
+            "state": "7",
+            "subcategory": "email",
+            "sys_class_name": "incident",
+            "sys_created_by": "employee",
+            "sys_created_on": "2016-12-12 15:19:57",
+            "sys_domain": {
+                "link": "https://dev61466.service-now.com/api/now/table/sys_user_group/global",
+                "value": "global"
+            },
+            "sys_domain_path": "/",
+            "sys_id": "1c741bd70b2322007518478d83673af3",
+            "sys_mod_count": "16",
+            "sys_tags": "",
+            "sys_updated_by": "admin",
+            "sys_updated_on": "2020-05-07 09:36:13",
+            "time_worked": "",
+            "upon_approval": "proceed",
+            "upon_reject": "cancel",
+            "urgency": "2",
+            "user_input": "",
+            "watch_list": "",
+            "work_end": "",
+            "work_notes": "",
+            "work_notes_list": "",
+            "work_start": ""
+        }
+    ]
+}
+RESPONSE_FETCH_ATTACHMENTS_FILE = [
+    {'Contents': '', 'ContentsFormat': 'text', 'Type': 3, 'File': 'wireframe', 'FileID': 'file_id'}
+]
