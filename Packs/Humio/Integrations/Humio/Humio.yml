@@ -247,7 +247,6 @@ script:
       description: Start time, relative or epoch in ms.
     - name: description
       required: false
-      defaultValue: ""
       description: Description of the alert
     - name: throttleTimeMillis
       required: false

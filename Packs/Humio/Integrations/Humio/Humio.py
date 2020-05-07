@@ -190,7 +190,7 @@ def humio_create_alert(client, args, headers):
     data["end"] = "now"
     data["isLive"] = True
     fulldata["name"] = args.get("name")
-    fulldata["description"] = args.get("description")
+    fulldata["description"] = args.get("description", "")
     fulldata["throttleTimeMillis"] = int(args.get("throttleTimeMillis"))
     fulldata["silenced"] = args.get("silenced", "false").lower() in [
         "true",
