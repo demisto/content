@@ -123,7 +123,7 @@ def test_commands(command, args, response, expected_result, expected_auto_extrac
     - create the context
     validate the entry context
     """
-    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'proxy', 'fetch_time',
+    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments')
     mocker.patch.object(client, 'send_request', return_value=response)
     result = command(client, args)
@@ -152,7 +152,7 @@ def test_no_ec_commands(command, args, response, expected_hr, expected_auto_extr
     - create the context
     validate the human readable
     """
-    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'proxy', 'fetch_time',
+    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments')
     mocker.patch.object(client, 'send_request', return_value=response)
     result = command(client, args)
@@ -174,7 +174,7 @@ def test_fetch_incidents(mocker):
     Validate The length of the results.
     """
     mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
-    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'proxy', 'fetch_time',
+    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='incident', get_attachments=False)
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
@@ -197,7 +197,7 @@ def test_fetch_incidents_with_attachments(mocker):
     Validate The length of the results and the attachment content.
     """
     mocker.patch('ServiceNowv2.parse_date_range', return_value=("2016-10-10 15:19:57", 'never mind'))
-    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'proxy', 'fetch_time',
+    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='incident', get_attachments=True)
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH_ATTACHMENTS_TICKET)

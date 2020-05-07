@@ -465,7 +465,7 @@ class Client(BaseClient):
             raise Exception(f'Got status code {str(res.status_code)} with url {url} with body {str(res.content)}'
                             f' with headers {str(res.headers)}')
 
-    return json_res
+        return json_res
 
     def get_table_name(self, ticket_type: str = '') -> str:
         """Get the relevant table name from th client.
@@ -1805,7 +1805,6 @@ def main():
     username = params['credentials']['identifier']
     password = params['credentials']['password']
     verify = not params.get('insecure', False)
-    proxy = params.get('proxy') is True
 
     version = params.get('api_version')
     if version:
@@ -1827,7 +1826,7 @@ def main():
 
     raise_exception = False
     try:
-        client = Client(server_url, sc_server_url, username, password, verify, proxy, fetch_time, sysparm_query,
+        client = Client(server_url, sc_server_url, username, password, verify, fetch_time, sysparm_query,
                         sysparm_limit, timestamp_field, ticket_type, get_attachments)
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]]] = {
             'test-module': test_module,
