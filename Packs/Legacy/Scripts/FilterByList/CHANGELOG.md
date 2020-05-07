@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+* Added a delimiter argument to split the list with
 
 
 ## [20.4.0] - 2020-04-14
