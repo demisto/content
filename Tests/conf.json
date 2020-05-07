@@ -1501,19 +1501,19 @@
             "integrations": "Microsoft Graph Device Management",
             "playbookID": "MSGraph_DeviceManagement_Test",
             "instance_names": "ms_graph_device_management_oproxy_dev",
-            "fromversion": "4.1.0"
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Microsoft Graph Device Management",
             "playbookID": "MSGraph_DeviceManagement_Test",
             "instance_names": "ms_graph_device_management_oproxy_prod",
-            "fromversion": "4.1.0"
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Microsoft Graph Device Management",
             "playbookID": "MSGraph_DeviceManagement_Test",
             "instance_names": "ms_graph_device_management_self_deployed_prod",
-            "fromversion": "4.1.0"
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "RedLock",
