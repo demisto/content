@@ -1764,7 +1764,7 @@ def fetch_incidents(client: Client) -> list:
                     })
 
         incidents.append({
-            'name': 'ServiceNow Incident ' + result.get('number'),
+            'name': f"ServiceNow Incident {result.get('number')}",
             'labels': labels,
             'details': json.dumps(result),
             'severity': severity,
