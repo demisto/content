@@ -274,7 +274,7 @@ class TestChangelogCreation:
         mocker.patch("os.path.exists", return_value=True)
         dir_list = ['1_0_1.md', '2_0_2.md', '2_0_0.md']
         mocker.patch("os.listdir", return_value=dir_list)
-        original_changelog = {
+        original_changelog = '''{
             "1.0.0": {
                 "releaseNotes": "First release notes",
                 "displayName": "1.0.0",
@@ -285,9 +285,9 @@ class TestChangelogCreation:
                 "displayName": "2.0.0",
                 "released": "2020-06-05T13:39:33Z"
             }
-        }
+        }'''
         new_changelog_file = '# This is a new release for 2.0.2'
-        mocker.patch('builtins.open', mock_open(read_data=json.dumps(original_changelog)))
+        mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         mocker.patch('builtins.open', mock_open(read_data=new_changelog_file))
         # handle1 = MagicMock('file1').__enter__.return_value
         # handle1.__iter__.return_value = original_changelog
