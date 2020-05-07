@@ -1,9 +1,10 @@
-from CommonServerPython import *
 import pickle
 import re
 import uuid
 from datetime import datetime, timedelta
 from dateutil import parser
+
+from CommonServerPython import *
 
 
 def parse_datetime(datetime_str):
@@ -91,22 +92,24 @@ def get_comma_sep_list(value):
 
 def main():
     # fetch query
-    query = build_incidents_query(demisto.args().get('query'),
-                                  demisto.args().get('incidentTypes'),
-                                  demisto.args()['timeField'],
-                                  demisto.args().get('fromDate'),
-                                  demisto.args().get('toDate'),
-                                  demisto.args().get('NonEmptyFields'))
+    d_args = dist(demisto.args())
+    d_args['NonEmptyFields'] = d_args['NonEmptyFields'].replace('incident.', '')
+    query = build_incidents_query(d_args.get('query'),
+                                  d_args.get('incidentTypes'),
+                                  d_args['timeField'],
+                                  d_args.get('fromDate'),
+                                  d_args.get('toDate'),
+                                  d_args.get('NonEmptyFields'))
 
-    incident_list = get_incidents(query, demisto.args()['timeField'],
-                                  int(demisto.args()['limit']),
-                                  demisto.args().get('fromDate'))
-    fields_to_populate = demisto.args().get('populateFields')
+    incident_list = get_incidents(query, d_args['timeField'],
+                                  int(d_args['limit']),
+                                  d_args.get('fromDate'))
+    fields_to_populate = d_args.get('populateFields')
     if fields_to_populate:
         fields_to_populate = get_comma_sep_list(fields_to_populate)
-        fields_to_populate += get_comma_sep_list(demisto.args().get('NonEmptyFields', ''))
+        fields_to_populate += get_comma_sep_list(d_args.get('NonEmptyFields', ''))
         fields_to_populate = set([x for x in fields_to_populate if x])
-    include_context = demisto.args()['includeContext'] == 'true'
+    include_context = d_args['includeContext'] == 'true'
     # extend incidents fields \ context
     new_incident_list = []
     for i in incident_list:
@@ -125,7 +128,7 @@ def main():
     # output
     file_name = str(uuid.uuid4())
 
-    output_format = demisto.args()['outputFormat']
+    output_format = d_args['outputFormat']
     if output_format == 'pickle':
         data_encoded = pickle.dumps(incident_list)
     elif output_format == 'json':
