@@ -32,7 +32,7 @@ echo "Finished copying successfully."
 echo "Updating modified content packs in the bucket ..."
 
 CONTENT_PACKS_TO_INSTALL_FILE="./Tests/content_packs_to_install.txt"
-CONTENT_PACKS_TO_INSTALL=$(paste -sd, CONTENT_PACKS_TO_INSTALL_FILE)
+CONTENT_PACKS_TO_INSTALL=$(paste -sd, $CONTENT_PACKS_TO_INSTALL_FILE)
 
 echo "Updating the following content packs: $CONTENT_PACKS_TO_INSTALL ..."
 python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s $KF -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -p CONTENT_PACKS_TO_INSTALL -o -sb $TARGET_PATH -sn false -rt false

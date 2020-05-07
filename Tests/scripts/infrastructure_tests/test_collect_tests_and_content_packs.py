@@ -412,9 +412,10 @@ class TestSampleTesting:
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/past_test_playbook_2.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_tests_list=[test_path],
                                                                sample_tests=['test'])
-        filterd_tests = get_mock_test_list(mocker=mocker, git_diff_ret=self.GIT_DIFF_RET,
+        filterd_tests, content_packs = get_mock_test_list(mocker=mocker, git_diff_ret=self.GIT_DIFF_RET,
                                            get_modified_files_ret=get_modified_files_ret)
         assert len(filterd_tests) == 1
+        assert content_packs == set()
 
 
 class TestChangedCommonTesting:
@@ -837,8 +838,8 @@ class TestExtractMatchingObjectFromIdSet:
         Then
         - ensure test_playbook_a will run/returned
         """
-        from Tests.scripts import configure_tests
-        configure_tests._FAILED = False  # reset the FAILED flag
+        from Tests.scripts import collect_tests_and_content_packs
+        collect_tests_and_content_packs._FAILED = False  # reset the FAILED flag
 
         # Given
         # - integration_a exists
@@ -874,7 +875,7 @@ class TestExtractMatchingObjectFromIdSet:
 
             # When
             # - filtering tests to run
-            filtered_tests = get_test_list(
+            filtered_tests, content_packs = get_test_list_and_content_packs_to_install(
                 files_string='',
                 branch_name='dummy_branch',
                 two_before_ga_ver=TWO_BEFORE_GA_VERSION,
@@ -885,9 +886,10 @@ class TestExtractMatchingObjectFromIdSet:
             # Then
             # - ensure test_playbook_a will run/returned
             assert 'test_playbook_a' in filtered_tests
+            assert content_packs == set()
 
             # - ensure the validation not failing
-            assert not configure_tests._FAILED
+            assert not collect_tests_and_content_packs._FAILED
         finally:
             # delete the mocked files
             TestUtils.delete_files([
@@ -896,4 +898,4 @@ class TestExtractMatchingObjectFromIdSet:
             ])
 
             # reset _FAILED flag
-            configure_tests._FAILED = False
+            collect_tests_and_content_packs._FAILED = False
