@@ -607,6 +607,7 @@ def url_lookup_command(client, url):
 
         url_context = {
             'Name': url,
+            'Data': url,
             'Malicious': {
                 'Vendor': 'Flashpoint',
                 'Description': 'Found in malicious indicators dataset'
@@ -701,12 +702,21 @@ def file_lookup_command(client, file):
             }
             flashpoint_file_context.append(event)
 
-        dbot_context = {
-            'Indicator': file,
-            'Type': indicator_type,
-            'Vendor': 'Flashpoint',
-            'Score': 3
-        }
+        dbot_context = [
+            {
+                'Indicator': file,
+                'Type': 'hash',
+                'Vendor': 'Flashpoint',
+                'Score': 3
+            },
+
+            {
+                'Indicator': file,
+                'Type': 'file',
+                'Vendor': 'Flashpoint',
+                'Score': 3
+            }
+        ]
 
         file_context = {
             indicator_type: file,
@@ -728,12 +738,22 @@ def file_lookup_command(client, file):
         hr = '### Flashpoint File reputation for ' + file + '\n'
         hr += 'Reputation: Unknown\n\n'
         ec = {
-            'DBotScore': {
-                'Indicator': file,
-                'Type': 'file',
-                'Vendor': 'Flashpoint',
-                'Score': 0
-            }
+            'DBotScore':
+                [
+                    {
+                        'Indicator': file,
+                        'Type': 'file',
+                        'Vendor': 'Flashpoint',
+                        'Score': 0
+                    },
+                    {
+                        'Indicator': file,
+                        'Type': 'hash',
+                        'Vendor': 'Flashpoint',
+                        'Score': 0
+                    }
+
+                ]
         }
 
         return hr, ec, resp

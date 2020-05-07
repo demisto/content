@@ -245,7 +245,8 @@ script:
         var o = res.obj;
         var ec = {};
         if (o.response_code === 0) {
-            ec.DBotScore = {Indicator: hash, Type: 'hash', Vendor: 'VirusTotal', Score: 0};
+            ec["DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)"] = {Indicator: hash, Type: 'hash', Vendor: 'VirusTotal', Score: 0};
+            ec["DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)"] = {Indicator: hash, Type: 'file', Vendor: 'VirusTotal', Score: 0};
             return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
                 HumanReadable: 'VirusTotal does not have details about ' + hash + '\n' + res.obj.verbose_msg};
         }
@@ -282,6 +283,7 @@ script:
                 dbotScore = 1;
             }
             ec.DBotScore.push({Indicator: hash, Type: 'hash', Vendor: 'VirusTotal', Score: dbotScore});
+            ec.DBotScore.push({Indicator: hash, Type: 'file', Vendor: 'VirusTotal', Score: dbotScore});
             md += 'MD5 / SHA1 / SHA256: **' + r[i].md5 + ' / ' + r[i].sha1 + ' / ' + r[i].sha256 + '**\n';
             longFormat = FULL_RESPONSE? 'true': longFormat;
             if (longFormat === 'true' && r[i].scans) { // add scans table
@@ -1378,3 +1380,5 @@ script:
         paging.
     description: Private API. Retrieves comments for a given resource.
   runonce: false
+tests:
+ -  virusTotal-test-playbook
