@@ -2,31 +2,58 @@
 ---
 
 The Illusive Attack Management API allows customers to retrieve detected incidents with a forensics timeline, attack surface insights, collect forensics on-demand, and manage a variety of operations with regard to deceptive entities, deception policies, and more.
-This integration was integrated and tested with version 126 of Illusive Networks
-## IllusiveNetworks Playbook
----
+This integration was integrated and tested with version xx of IllusiveNetworks
 
 ## Use Cases
 ---
+- Retrieve detected incidents with a rich set of details and a forensics timeline
+- Collect forensics from any compromised host and retrieve a forensics timeline
+- Manage deceptive entities - retrieve detailed lists, approve suggested, delete, and query
+- Manage deception policy assignments per host
+- Retrieve attack surface insights for Crown Jewels and specific hosts
 
 ## Configure IllusiveNetworks on Demisto
 ---
+####Illusive Console
+1. Open the Illusive Management console, navigate to Settings > General, and locate the API KEYS section. Generate a new API key with all permissions and copy the token at the end of the process.
 
-1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+####Demisto Console
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for IllusiveNetworks.
-3. Click __Add instance__ to create and configure a new integration instance.
-    * __Name__: a textual name for the integration instance.
-    * __Server URL (e.g. https://example.net)__
-    * __API Token__
-    * __Fetch incidents__
-    * __Incident type__
-    * __Trust any certificate (not secure)__
-    * __Use system proxy settings__
-    * __The initial time to fetch from__
-4. Click __Test__ to validate the URLs, token, and connection.
+3. Click **Add instance** to create and configure a new integration instance.
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| url | Server URL \(e.g. https://example.net\) | True |
+| Authorization | API Token | True |
+| isFetch | Fetch incidents | False |
+| incidentType | Incident type | False |
+| insecure | Trust any certificate \(not secure\) | False |
+| proxy | Use system proxy settings | False |
+| fetch_time | The initial time to fetch from | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
+
 ## Fetched Incidents Data
 ---
-
+{
+ "sourceIp": "10.90.10.25", 
+ "sourceOperatingSystem": null,
+ "policyName": null,
+ "incidentTypes": ["DECEPTION"],
+ "riskInsights": {"stepsToDomainAdmin": null, "stepsToCrownJewel": null},
+ "deceptionFamilies": ["FAMILY_TYPE_BROWSERS"],
+ "lastSeenUser": null,
+ "closed": false,
+ "unread": true,
+ "flagged": false,
+ "hasForensics": false,
+ "incidentId": 32,
+ "incidentTimeUTC": "2020-05-04T11:37:10.231Z",
+ "sourceHostname": null,
+ "userNotes": null
+ }
+ 
 ## Commands
 ---
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
@@ -47,11 +74,12 @@ After you successfully execute a command, a DBot message appears in the War Room
 14. illusive-run-forensics-on-demand
 15. illusive-get-incidents
 16. illusive-get-event-incident-id
-### 1. illusive-get-forensics-timeline
+
+### illusive-get-forensics-timeline
 ---
 Retrieve forensics timeline for a specific incident
-##### Required Permissions
-None
+
+
 ##### Base Command
 
 `illusive-get-forensics-timeline`
@@ -60,8 +88,8 @@ None
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | The desired incident ID | Required | 
-| start_date | The starting date of the forensics timeline.<br/>start_date is in Zulu time format, for example: 1993-09-24T17:30:00.000Z. | Optional | 
-| end_date | The last date of the forensics timeline.<br/>end_date is in Zulu time format, for example: 1993-09-24T17:30:00.000Z. | Optional | 
+| start_date | The starting date of the forensics timeline. | Optional | 
+| end_date | The last date of the forensics timeline. | Optional | 
 
 
 ##### Context Output
@@ -75,12 +103,12 @@ None
 | Illusive.Forensics.Evidence.starred | Boolean | Whether the forensics evidence has been starred | 
 | Illusive.Forensics.Evidence.time | Date | Date and time of the forensics evidence  | 
 | Illusive.Forensics.Evidence.title | String | The forensics evidence description | 
-| Illusive.Forensics.IncidentId | String | The Incident Id | 
-| Illusive.Forensics.Status | String | The process progress ( Done, InProgress) | 
+| Illusive.Forensics.IncidentId | String | The Incdient Id | 
+| Illusive.Forensics.Status | String | The process progress \( Done, InProgress\) | 
 
 
 ##### Command Example
-illusive-get-forensics-timeline incident_id=80 start_date=2020-02-21T15:00:00.000Z end_date=2020-04-21T15:39:32.954Z
+illusive-get-forensics-timeline incident_id=80 start_date="10 days" end_date="3 hours"
 
 ##### Human Readable Output
 ### Illusive Forensics Timeline
@@ -90,11 +118,11 @@ illusive-get-forensics-timeline incident_id=80 start_date=2020-02-21T15:00:00.00
 | date: 2020-04-21 15:05:21.035<br/>serviceType: EXTERNAL<br/>hasForensics: No<br/>data: API call source IP: 172.16.1.42<br/>sourceIP: 172.27.139.14<br/>id: 92<br/>type: EXTERNAL<br/>title: [External] Event 92 | 92 | 421c517d-a252-4aec-a492-2ad6486ad6ab | MANAGEMENT | false | 1587481521035 | [External] Event 92 | EVENT |
 
 
-### 2. illusive-get-asm-host-insight
+### illusive-get-asm-host-insight
 ---
 Retrieve the specified host insights from Attack Surface Manager
-##### Required Permissions
-None
+
+
 ##### Base Command
 
 `illusive-get-asm-host-insight`
@@ -109,14 +137,14 @@ None
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Illusive.AttackSurfaceInsights.Host.DomainName | String | The host domain | 
-| Illusive.AttackSurfaceInsights.Host.HostName | String | The host hostname | 
-| Illusive.AttackSurfaceInsights.Host.HostType | String | The host type (Server, Workstation, Other) | 
-| Illusive.AttackSurfaceInsights.Host.IpAddresses | String | The host IP address | 
-| Illusive.AttackSurfaceInsights.Host.OperatingSystemName | String | The host operating system name | 
-| Illusive.AttackSurfaceInsights.Host.OperatingSystemVersion | String | The host operating system version | 
-| Illusive.AttackSurfaceInsights.Host.OrganizationalUnit | String | The host Active Directory Organizational Unit | 
-| Illusive.AttackSurfaceInsights.Host.SourceConnectivityExposure | Number | The host Source Connectivity Exposure to crown jewels and domain user credentials | 
+| Illusive.AttackSurfaceInsightsHost.DomainName | String | The host domain | 
+| Illusive.AttackSurfaceInsightsHost.HostName | String | The host hostname | 
+| Illusive.AttackSurfaceInsightsHost.HostType | String | The host type \(Server, Workstation, Other\) | 
+| Illusive.AttackSurfaceInsightsHost.IpAddresses | String | The host IP address | 
+| Illusive.AttackSurfaceInsightsHost.OperatingSystemName | String | The host operating system name | 
+| Illusive.AttackSurfaceInsightsHost.OperatingSystemVersion | String | The host operating system version | 
+| Illusive.AttackSurfaceInsightsHost.OrganizationalUnit | String | The host Active Directory Organizational Unit | 
+| Illusive.AttackSurfaceInsightsHost.SourceConnectivityExposure | Number | The host Source Connectivity Exposure to crown jewels and domain user credentials | 
 
 
 ##### Command Example
@@ -130,11 +158,11 @@ illusive-get-asm-host-insight hostnameOrIp=172.27.139.12
 | illusive.com | win5.illusive.com | Workstation | 172.27.139.12,::1,fe80::ffff:ffff:fffe,fe80::2d2d:5763:8c1a:7b9 | Windows 10 |  | clients | 0.0 |
 
 
-### 3. illusive-get-asm-cj-insight
+### illusive-get-asm-cj-insight
 ---
 Retrieve Crown-Jewels insights from Attack Surface Manager
-##### Required Permissions
-None
+
+
 ##### Base Command
 
 `illusive-get-asm-cj-insight`
@@ -146,11 +174,11 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Illusive.AttackSurfaceInsights.CrownJewel.data | Unknown | The number of connections to this Crown Jewel per service type | 
-| Illusive.AttackSurfaceInsights.CrownJewel.hostname | String | The crown jewel hostname | 
-| Illusive.AttackSurfaceInsights.CrownJewel.machineTagAndSubTags.tag | String | The List of a crown jewel category and subcategory couplings | 
-| Illusive.AttackSurfaceInsights.CrownJewel.MachineTagAndSubTags.subTag | String | The List of a crown jewel category and subcategory couplings | 
-| Illusive.AttackSurfaceInsights.CrownJewel.targetExposureRank | Number | The crown jewel target exposure | 
+| Illusive.AttackSurfaceInsightsCrownJewel.data | Unknown | The number of connections to this Crown Jewel per service type | 
+| Illusive.AttackSurfaceInsightsCrownJewel.hostname | String | The crown jewel hostname | 
+| Illusive.AttackSurfaceInsightsCrownJewel.machineTagAndSubTags.tag | String | The List of a crown jewel category and subcategory couplings | 
+| Illusive.AttackSurfaceInsightsCrownJewel.MachineTagAndSubTags.subTag | String | The List of a crown jewel category and subcategory couplings | 
+| Illusive.AttackSurfaceInsightsCrownJewel.targetExposureRank | Number | The crown jewel target exposure | 
 
 
 ##### Command Example
@@ -163,11 +191,11 @@ illusive-get-asm-cj-insight
 | {'key': 'RDP', 'value': 1} | 172.27.139.12 | {'tag': 'Mainframe', 'subTag': 'MAINFRAME'} | 0.0 |
 
 
-### 4. illusive-get-deceptive-users
+### illusive-get-deceptive-users
 ---
 Retrieve a list of all deceptive users
-##### Required Permissions
-None
+
+
 ##### Base Command
 
 `illusive-get-deceptive-users`
@@ -184,9 +212,9 @@ None
 | --- | --- | --- |
 | Illusive.DeceptiveUser.userName | String | The deceptive user name | 
 | Illusive.DeceptiveUser.domainName | String | The deceptive user domain | 
-| Illusive.DeceptiveUser.policyNames  | Unknown | The deception policies the deceptive user is assigned to | 
+| Illusive.DeceptiveUser.policyNames | Unknown | The deception policies the deceptive user is assigned to | 
 | Illusive.DeceptiveUser.password | String | The deceptive user password | 
-| Illusive.DeceptiveUser.deceptiveState | String | The deceptive user state (APPROVED, SUGGESTED, ALL) | 
+| Illusive.DeceptiveUser.deceptiveState | String | The deceptive user state \(APPROVED, SUGGESTED, ALL\) | 
 | Illusive.DeceptiveUser.adUser | Boolean | Whether the deceptive user is a genuine user in Active Directory | 
 | Illusive.DeceptiveUser.activeUser | Boolean | In case the deceptive user is a real AD user, indicates whether he is active | 
 
@@ -202,11 +230,11 @@ None
 | false | false | APPROVED | illusive.com | Password | Full Protection | user2 |
 
 
-### 5. illusive-get-deceptive-servers
+### illusive-get-deceptive-servers
 ---
 Retrieve a list of all deceptive servers
-##### Required Permissions
-None
+
+
 ##### Base Command
 
 `illusive-get-deceptive-servers`
@@ -224,7 +252,7 @@ None
 | Illusive.DeceptiveServer.host | String | The deceptive server hostname | 
 | Illusive.DeceptiveServer.policyNames | String | The deception policies the deceptive server is assigned to | 
 | Illusive.DeceptiveServer.adHost | Boolean | Whether the deceptive server is a genuine machine in Active Directory | 
-| Illusive.DeceptiveServer.deceptiveState | String | The deceptive server state (APPROVED, SUGGESTED, ALL) | 
+| Illusive.DeceptiveServer.deceptiveState | String | The deceptive server state \(APPROVED, SUGGESTED, ALL\) | 
 | Illusive.DeceptiveServer.serviceTypes | String | The deception services the deceptive server is assigned to | 
 
 
@@ -240,11 +268,11 @@ None
 | false | APPROVED | server3.illusive.com | adiPo,<br/>Full Protection | FTP,<br/>SHARE,<br/>DB |
 
 
-### 6. illusive-is-deceptive-user
+### illusive-is-deceptive-user
 ---
 Retrieve whether a specified user is deceptive
-##### Required Permissions
-None
+
+
 ##### Base Command
 
 `illusive-is-deceptive-user`
@@ -273,11 +301,11 @@ None
 | true | user1 |
 
 
-### 7. illusive-is-deceptive-server
+### illusive-is-deceptive-server
 ---
 Retrieve whether a specified server is deceptive
-##### Required Permissions
-None
+
+
 ##### Base Command
 
 `illusive-is-deceptive-server`
@@ -306,11 +334,11 @@ None
 | server5.illusive.com | false |
 
 
-### 8. illusive-add-deceptive-users
+### illusive-add-deceptive-users
 ---
 Add or approve deceptive users
-##### Required Permissions
-None
+
+
 ##### Base Command
 
 `illusive-add-deceptive-users`
@@ -338,11 +366,11 @@ There is no context output for this command.
 | illusive.com | pass | All Policies | user3 |
 
 
-### 9. illusive-add-deceptive-servers
+### illusive-add-deceptive-servers
 ---
 Add or approve deceptive servers
-##### Required Permissions
-None
+
+
 ##### Base Command
 
 `illusive-add-deceptive-servers`
@@ -373,11 +401,11 @@ There is no context output for this command.
 | server4.illusive.com | All Policies | FTP,<br/>SSH |
 
 
-### 10. illusive-delete-deceptive-users
+### illusive-delete-deceptive-users
 ---
 Delete deceptive users
-##### Required Permissions
-None
+
+
 ##### Base Command
 
 `illusive-delete-deceptive-users`
@@ -398,11 +426,12 @@ There is no context output for this command.
 ##### Human Readable Output
 ###  Deceptive User ['user3'] was successfully Deleted
 
-### 11. illusive-delete-deceptive-servers
+
+### illusive-delete-deceptive-servers
 ---
 Delete deceptive servers
-##### Required Permissions
-None
+
+
 ##### Base Command
 
 `illusive-delete-deceptive-servers`
@@ -428,11 +457,12 @@ There is no context output for this command.
 ##### Human Readable Output
 ###Deceptive Servers ['server5.illusive.com', 'server1.illusive.com'] were successfully Deleted
 
-### 12. illusive-assign-host-to-policy
+
+### illusive-assign-host-to-policy
 ---
 Assign a deception policy to domain hosts
-##### Required Permissions
-None
+
+
 ##### Base Command
 
 `illusive-assign-host-to-policy`
@@ -458,11 +488,11 @@ There is no context output for this command.
 | WIN7@illusive.com | true | Full Protection |
 
 
-### 13. illusive-remove-host-from-policy
+### illusive-remove-host-from-policy
 ---
 Remove deception policy assignment from domain hosts
-##### Required Permissions
-None
+
+
 ##### Base Command
 
 `illusive-remove-host-from-policy`
@@ -487,11 +517,11 @@ There is no context output for this command.
 | WIN7@illusive.com | false |  |
 
 
-### 14. illusive-run-forensics-on-demand
+### illusive-run-forensics-on-demand
 ---
 Collect forensics on a specified host and retrieve the forensics timeline
-##### Required Permissions
-None
+
+
 ##### Base Command
 
 `illusive-run-forensics-on-demand`
@@ -519,11 +549,11 @@ None
 | 123 |
 
 
-### 15. illusive-get-incidents
+### illusive-get-incidents
 ---
 Retrieve incidents
-##### Required Permissions
-None
+
+
 ##### Base Command
 
 `illusive-get-incidents`
@@ -536,7 +566,7 @@ None
 | has_forensics | Whether to retrieve incidents with forensics only | Optional | 
 | limit | Use offset and limit for pagination.<br/>The maximum limit is 100. | Optional | 
 | offset | Use offset and limit for pagination. | Optional | 
-| start_date | start_date is in Zulu time format, for example: 1993-09-24T17:30:00.000Z. | Optional | 
+| start_date | start date | Optional | 
 
 
 ##### Context Output
@@ -544,7 +574,9 @@ None
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Illusive.Incident.closed | Boolean | Whether the incident has been closed | 
-| Illusive.Incident.deceptionFamilies | String | The deception families of the deceptions used to trigger the incident | 
+| Illusive.Incident.deceptionFamilies | String | The deception families of the
+deceptions used to trigger
+the incident | 
 | Illusive.Incident.flagged | Boolean | Whether the incident has been flagged | 
 | Illusive.Incident.hasForensics | Boolean | Whether incident has forensics | 
 | Illusive.Incident.incidentId | Number | The Incident ID | 
@@ -571,11 +603,11 @@ None
 | false | FAMILY_TYPE_BROWSERS | false | false | 28 | 2020-04-20T06:44:33.207Z | DECEPTION |  |  | stepsToDomainAdmin: null<br/>stepsToCrownJewel: null |  | 172.27.139.14 |  | false |  |
 
 
-### 16. illusive-get-event-incident-id
+### illusive-get-event-incident-id
 ---
 Retrieve the incident ID of an event
-##### Required Permissions
-None
+
+
 ##### Base Command
 
 `illusive-get-event-incident-id`
@@ -592,7 +624,7 @@ None
 | --- | --- | --- |
 | Illusive.Event.incidentId | String | The Incident ID | 
 | Illusive.Event.eventId | String | The given event ID | 
-| Illusive.Event.status | String | The status command ( Done, InProgress) | 
+| Illusive.Event.status | String | The status command \( Done, InProgress\) | 
 
 
 ##### Command Example
@@ -604,14 +636,3 @@ None
 |---|---|---|
 | 80 | 72 | Done |
 
-## Additional Information
----
-
-## Known Limitations
----
-
-## Troubleshooting
----
-
-
-## Possible Errors (DO NOT PUBLISH ON ZENDESK):

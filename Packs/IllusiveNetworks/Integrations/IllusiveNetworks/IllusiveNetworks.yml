@@ -51,17 +51,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: |-
-        The starting date of the forensics timeline.
-        start_date is in Zulu time format, for example: 1993-09-24T17:30:00.000Z.
+      description: The starting date of the forensics timeline.
       isArray: false
       name: start_date
       required: false
       secret: false
     - default: false
-      description: |-
-        The last date of the forensics timeline.
-        end_date is in Zulu time format, for example: 1993-09-24T17:30:00.000Z.
+      description: The last date of the forensics timeline.
       isArray: false
       name: end_date
       required: false
@@ -110,28 +106,28 @@ script:
     execution: false
     name: illusive-get-asm-host-insight
     outputs:
-    - contextPath: Illusive.AttackSurfaceInsights.Host.DomainName
+    - contextPath: Illusive.AttackSurfaceInsightsHost.DomainName
       description: The host domain
       type: String
-    - contextPath: Illusive.AttackSurfaceInsights.Host.HostName
+    - contextPath: Illusive.AttackSurfaceInsightsHost.HostName
       description: The host hostname
       type: String
-    - contextPath: Illusive.AttackSurfaceInsights.Host.HostType
+    - contextPath: Illusive.AttackSurfaceInsightsHost.HostType
       description: The host type (Server, Workstation, Other)
       type: String
-    - contextPath: Illusive.AttackSurfaceInsights.Host.IpAddresses
+    - contextPath: Illusive.AttackSurfaceInsightsHost.IpAddresses
       description: The host IP address
       type: String
-    - contextPath: Illusive.AttackSurfaceInsights.Host.OperatingSystemName
+    - contextPath: Illusive.AttackSurfaceInsightsHost.OperatingSystemName
       description: The host operating system name
       type: String
-    - contextPath: Illusive.AttackSurfaceInsights.Host.OperatingSystemVersion
+    - contextPath: Illusive.AttackSurfaceInsightsHost.OperatingSystemVersion
       description: The host operating system version
       type: String
-    - contextPath: Illusive.AttackSurfaceInsights.Host.OrganizationalUnit
+    - contextPath: Illusive.AttackSurfaceInsightsHost.OrganizationalUnit
       description: The host Active Directory Organizational Unit
       type: String
-    - contextPath: Illusive.AttackSurfaceInsights.Host.SourceConnectivityExposure
+    - contextPath: Illusive.AttackSurfaceInsightsHost.SourceConnectivityExposure
       description: The host Source Connectivity Exposure to crown jewels and domain
         user credentials
       type: Number
@@ -140,19 +136,19 @@ script:
     execution: false
     name: illusive-get-asm-cj-insight
     outputs:
-    - contextPath: Illusive.AttackSurfaceInsights.CrownJewel.data
+    - contextPath: Illusive.AttackSurfaceInsightsCrownJewel.data
       description: The number of connections to this Crown Jewel per service type
       type: Unknown
-    - contextPath: Illusive.AttackSurfaceInsights.CrownJewel.hostname
+    - contextPath: Illusive.AttackSurfaceInsightsCrownJewel.hostname
       description: The crown jewel hostname
       type: String
-    - contextPath: Illusive.AttackSurfaceInsights.CrownJewel.machineTagAndSubTags.tag
+    - contextPath: Illusive.AttackSurfaceInsightsCrownJewel.machineTagAndSubTags.tag
       description: The List of a crown jewel category and subcategory couplings
       type: String
-    - contextPath: Illusive.AttackSurfaceInsights.CrownJewel.MachineTagAndSubTags.subTag
+    - contextPath: Illusive.AttackSurfaceInsightsCrownJewel.MachineTagAndSubTags.subTag
       description: The List of a crown jewel category and subcategory couplings
       type: String
-    - contextPath: Illusive.AttackSurfaceInsights.CrownJewel.targetExposureRank
+    - contextPath: Illusive.AttackSurfaceInsightsCrownJewel.targetExposureRank
       description: The crown jewel target exposure
       type: Number
   - arguments:
@@ -165,8 +161,8 @@ script:
       name: type
       predefined:
       - ALL
-      - ' SUGGESTED'
-      - ' APPROVED'
+      - SUGGESTED
+      - APPROVED
       required: false
       secret: false
     deprecated: false
@@ -180,7 +176,7 @@ script:
     - contextPath: Illusive.DeceptiveUser.domainName
       description: The deceptive user domain
       type: String
-    - contextPath: 'Illusive.DeceptiveUser.policyNames '
+    - contextPath: Illusive.DeceptiveUser.policyNames
       description: The deception policies the deceptive user is assigned to
       type: Unknown
     - contextPath: Illusive.DeceptiveUser.password
@@ -206,8 +202,8 @@ script:
       name: type
       predefined:
       - ALL
-      - ' SUGGESTED'
-      - ' APPROVED'
+      - SUGGESTED
+      - APPROVED
       required: false
       secret: false
     deprecated: false
@@ -410,7 +406,7 @@ script:
       name: has_forensics
       predefined:
       - 'True'
-      - ' False'
+      - 'False'
       required: false
       secret: false
     - default: false
@@ -428,7 +424,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'start_date is in Zulu time format, for example: 1993-09-24T17:30:00.000Z.'
+      description: start date
       isArray: false
       name: start_date
       required: false

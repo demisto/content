@@ -164,8 +164,11 @@ def fetch_incidents(client, last_run, first_fetch_time):
     items = client.list_all_incidents(None, None, limit=10, offset=0, start_date=latest_created_time)
     for item in items:
         incident_created_time = item['incidentTimeUTC']
+        incident_type = 'None'
+        if len(item['incidentTypes']) > 0:
+            incident_type = str(item['incidentTypes'][0])
         incident = {
-            'name': str(item['incidentId']),
+            'name': "Illusive Attack Management detected an incident of type " + incident_type,
             'occurred': (dateparser.parse(incident_created_time)).strftime('%Y-%m-%dT%H:%M:%SZ'),
             'rawJSON': json.dumps(item)
         }
@@ -238,7 +241,7 @@ def add_deceptive_users_command(client: Client, args: dict) -> Tuple:
 
 
 def add_deceptive_servers_command(client: Client, args: dict) -> Tuple:
-    host_name = args.get("host", None)  # must be <host>.<domain>
+    host_name = args.get("host", "")  # must be <host>.<domain>
     service_types = argToList(args.get("service_types"))
     policy_names = argToList(args.get('policy_names'), "All Policies")
 
@@ -329,6 +332,10 @@ def get_forensics_timeline_command(client: Client, args: dict) -> Tuple:
     incident_id = args.get("incident_id")
     start_date = args.get("start_date", None)
     end_date = args.get("end_date", None)
+    if start_date:
+        start_date, _ = parse_date_range(start_date, date_format=DATE_FORMAT, utc=True)
+    if end_date:
+        end_date, _ = parse_date_range(end_date, date_format=DATE_FORMAT, utc=True)
 
     try:
         result = client.get_forensics_timeline(incident_id, start_date, end_date)
@@ -378,7 +385,7 @@ def get_asm_host_insight_command(client: Client, args: dict) -> Tuple:
             raise DemistoException("{}".format(e.args[0]))
     readable_output = tableToMarkdown('Illusive ASM Host Insights', result)
     outputs = {
-        'Illusive.AttackSurfaceInsights.Host(val.ipAddresses == obj.ipAddresses)': result
+        'Illusive.AttackSurfaceInsightsHost(val.ipAddresses == obj.ipAddresses)': result
     }
 
     return (
@@ -400,7 +407,7 @@ def get_asm_cj_insight_command(client: Client, args: dict) -> Tuple:
             raise DemistoException("{}".format(e.args[0]))
     readable_output = tableToMarkdown('Illusive ASM Crown Jewels Insights', result)
     outputs = {
-        'Illusive.AttackSurfaceInsights.CrownJewel(val.hostname == obj.hostname)': result
+        'Illusive.AttackSurfaceInsightsCrownJewel(val.hostname == obj.hostname)': result
     }
 
     return (
@@ -428,10 +435,8 @@ def run_forensics_on_demand_command(client: Client, args: dict) -> Tuple:
 
 def is_deceptive_user_command(client: Client, args: dict) -> Tuple:
     username = args.get("username", None)
-    is_deceptive_user = True
-    r = client.is_deceptive_user(username)
-    if not r:
-        is_deceptive_user = False
+    is_deceptive_user = False
+    is_deceptive_user = True if client.is_deceptive_user(username) else is_deceptive_user
     result = {
         'Username': username,
         'IsDeceptiveUser': is_deceptive_user
@@ -449,11 +454,8 @@ def is_deceptive_user_command(client: Client, args: dict) -> Tuple:
 
 def is_deceptive_server_command(client: Client, args: dict) -> Tuple:
     hostname = args.get("hostname", None)
-    is_deceptive_server = True
-    r = client.is_deceptive_server(hostname)
-    if not r:
-        is_deceptive_server = False
-
+    is_deceptive_server = False
+    is_deceptive_server = True if client.is_deceptive_server(hostname) else is_deceptive_server
     result = {
         'Hostname': hostname,
         'IsDeceptiveServer': is_deceptive_server
@@ -516,6 +518,8 @@ def get_incidents_command(client: Client, args: dict) -> Tuple:
     limit = args.get("limit", 10)
     offset = args.get("offset", 0)
     start_date = args.get("start_date", None)
+    if start_date:
+        start_date, _ = parse_date_range(start_date, date_format=DATE_FORMAT, utc=True)
     if incident_id:
         incident = client.get_incident(incident_id)
     else:

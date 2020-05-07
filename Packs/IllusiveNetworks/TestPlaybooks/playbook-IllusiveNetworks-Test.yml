@@ -52,10 +52,10 @@ tasks:
     quietmode: 0
   '2':
     id: '2'
-    taskid: 312a2c1b-ee30-4c80-8d1f-60fca434f077
+    taskid: 2797e085-950f-4ff1-8459-2872283d0a3f
     type: regular
     task:
-      id: 312a2c1b-ee30-4c80-8d1f-60fca434f077
+      id: 2797e085-950f-4ff1-8459-2872283d0a3f
       version: -1
       name: illusive-get-forensics-timeline
       script: '|||illusive-get-forensics-timeline'
@@ -69,7 +69,7 @@ tasks:
     scriptarguments:
       end_date: {}
       incident_id:
-        simple: '127'
+        simple: ${inputs.incident_id}
       start_date: {}
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 400\n  }\n}"
@@ -80,10 +80,10 @@ tasks:
     quietmode: 0
   '3':
     id: '3'
-    taskid: 8f4327a0-3760-4cab-89dc-0097bff7b800
+    taskid: 95dd7e64-5fef-4bfa-8490-e8e916a1c323
     type: condition
     task:
-      id: 8f4327a0-3760-4cab-89dc-0097bff7b800
+      id: 95dd7e64-5fef-4bfa-8490-e8e916a1c323
       version: -1
       name: Verify Outputs
       type: condition
@@ -91,7 +91,7 @@ tasks:
       brand: ''
       description: ''
     nexttasks:
-      '#default#':
+      yes:
       - '4'
     separatecontext: false
     conditions:
@@ -102,30 +102,14 @@ tasks:
             value:
               simple: Illusive.Forensics.Evidence.details
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Illusive.Forensics.Evidence.eventId
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Illusive.Forensics.Evidence.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Illusive.Forensics.Evidence.starred
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Illusive.Forensics.Evidence.time
-            iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isEqualString
           left:
             value:
               simple: Illusive.Forensics.IncidentId
+            iscontext: true
+          right:
+            value:
+              simple: inputs.incident_id
             iscontext: true
     view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 600\n  }\n}"
     note: false
@@ -135,10 +119,10 @@ tasks:
     quietmode: 0
   '4':
     id: '4'
-    taskid: ca82cf04-d4c0-4282-88dd-a2e6a9d90bcd
+    taskid: 598be859-aee5-4609-8e93-53b75738322b
     type: regular
     task:
-      id: ca82cf04-d4c0-4282-88dd-a2e6a9d90bcd
+      id: 598be859-aee5-4609-8e93-53b75738322b
       version: -1
       name: illusive-get-asm-host-insight
       script: '|||illusive-get-asm-host-insight'
@@ -151,7 +135,7 @@ tasks:
       - '5'
     scriptarguments:
       hostnameOrIp:
-        simple: 172.27.139.12
+        simple: ${inputs.ip}
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 800\n  }\n}"
     note: false
@@ -161,10 +145,10 @@ tasks:
     quietmode: 0
   '5':
     id: '5'
-    taskid: a4a1ee90-462a-4a6f-8029-1bc3dd1a75e0
+    taskid: 77ebac93-59d6-48e8-8152-d5bdf8c4ade5
     type: condition
     task:
-      id: a4a1ee90-462a-4a6f-8029-1bc3dd1a75e0
+      id: 77ebac93-59d6-48e8-8152-d5bdf8c4ade5
       version: -1
       name: Verify Outputs
       type: condition
@@ -172,51 +156,16 @@ tasks:
       brand: ''
       description: ''
     nexttasks:
-      '#default#':
+      yes:
       - '6'
     separatecontext: false
     conditions:
     - label: yes
       condition:
-      - - operator: isNotEmpty
+      - - operator: isEmpty
           left:
             value:
-              simple: Illusive.AttackSurfaceInsights.Host.DomainName
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Illusive.AttackSurfaceInsights.Host.HostName
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Illusive.AttackSurfaceInsights.Host.HostType
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Illusive.AttackSurfaceInsights.Host.IpAddresses
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Illusive.AttackSurfaceInsights.Host.OperatingSystemName
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Illusive.AttackSurfaceInsights.Host.OperatingSystemVersion
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Illusive.AttackSurfaceInsights.Host.OrganizationalUnit
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Illusive.AttackSurfaceInsights.Host.SourceConnectivityExposure
+              simple: Illusive.AttackSurfaceInsightsHost
             iscontext: true
     view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 980\n  }\n}"
     note: false
@@ -249,10 +198,10 @@ tasks:
     quietmode: 0
   '7':
     id: '7'
-    taskid: 467705bf-d276-4f82-84c7-f4ba61d45d1a
+    taskid: f5fc487d-5742-47a9-87b3-5b42a5eee29b
     type: condition
     task:
-      id: 467705bf-d276-4f82-84c7-f4ba61d45d1a
+      id: f5fc487d-5742-47a9-87b3-5b42a5eee29b
       version: -1
       name: Verify Outputs
       type: condition
@@ -260,36 +209,20 @@ tasks:
       brand: ''
       description: ''
     nexttasks:
-      '#default#':
+      yes:
       - '8'
     separatecontext: false
     conditions:
     - label: yes
       condition:
-      - - operator: isNotEmpty
+      - - operator: containsGeneral
           left:
             value:
-              simple: Illusive.AttackSurfaceInsights.CrownJewel.data
+              simple: Illusive.AttackSurfaceInsightsCrownJewel.hostname
             iscontext: true
-      - - operator: isNotEmpty
-          left:
+          right:
             value:
-              simple: Illusive.AttackSurfaceInsights.CrownJewel.hostname
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Illusive.AttackSurfaceInsights.CrownJewel.machineTagAndSubTags.tag
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Illusive.AttackSurfaceInsights.CrownJewel.MachineTagAndSubTags.subTag
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Illusive.AttackSurfaceInsights.CrownJewel.targetExposureRank
+              simple: inputs.ip
             iscontext: true
     view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1400\n  }\n}"
     note: false
@@ -299,10 +232,10 @@ tasks:
     quietmode: 0
   '8':
     id: '8'
-    taskid: f9589e8c-761a-4974-838f-2fcd3f2c7c56
+    taskid: 1eed4a02-74a4-43c8-8f92-562bd3ad8fd1
     type: regular
     task:
-      id: f9589e8c-761a-4974-838f-2fcd3f2c7c56
+      id: 1eed4a02-74a4-43c8-8f92-562bd3ad8fd1
       version: -1
       name: illusive-get-deceptive-users
       script: '|||illusive-get-deceptive-users'
@@ -355,10 +288,10 @@ tasks:
     quietmode: 0
   '10':
     id: '10'
-    taskid: 43b86eae-2967-42c3-8e4f-b0fdb6a9bc6b
+    taskid: b9666766-1d9c-4c70-8761-316c29d847b1
     type: regular
     task:
-      id: 43b86eae-2967-42c3-8e4f-b0fdb6a9bc6b
+      id: b9666766-1d9c-4c70-8761-316c29d847b1
       version: -1
       name: illusive-get-deceptive-servers
       script: '|||illusive-get-deceptive-servers'
@@ -660,10 +593,10 @@ tasks:
     quietmode: 0
   '20':
     id: '20'
-    taskid: 1b86189a-db4b-470d-8bd0-91d797dd709c
+    taskid: 3f2806a6-4c66-4934-80ed-9d0132c17b63
     type: regular
     task:
-      id: 1b86189a-db4b-470d-8bd0-91d797dd709c
+      id: 3f2806a6-4c66-4934-80ed-9d0132c17b63
       version: -1
       name: illusive-assign-host-to-policy
       script: '|||illusive-assign-host-to-policy'
@@ -676,7 +609,7 @@ tasks:
       - '21'
     scriptarguments:
       hosts:
-        simple: WIN8@illusive.com
+        simple: ${inputs.host_name}
       policy_name:
         simple: Full Protection
     separatecontext: false
@@ -688,10 +621,10 @@ tasks:
     quietmode: 0
   '21':
     id: '21'
-    taskid: 3ba5a895-6169-4954-86ec-b2a1dbaed3dd
+    taskid: f43fa0fd-6a7d-4ef7-8093-a0584bc38dd2
     type: regular
     task:
-      id: 3ba5a895-6169-4954-86ec-b2a1dbaed3dd
+      id: f43fa0fd-6a7d-4ef7-8093-a0584bc38dd2
       version: -1
       name: illusive-remove-host-from-policy
       script: '|||illusive-remove-host-from-policy'
@@ -704,7 +637,7 @@ tasks:
       - '22'
     scriptarguments:
       hosts:
-        simple: WIN8@illusive.com
+        simple: ${inputs.host_name}
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 4200\n  }\n}"
     note: false
@@ -714,10 +647,10 @@ tasks:
     quietmode: 0
   '22':
     id: '22'
-    taskid: 7ca4c52a-ef31-41a9-89e6-6c2ba5b34f69
+    taskid: 51efc6cc-f3f0-4987-84da-0798078479ca
     type: regular
     task:
-      id: 7ca4c52a-ef31-41a9-89e6-6c2ba5b34f69
+      id: 51efc6cc-f3f0-4987-84da-0798078479ca
       version: -1
       name: illusive-run-forensics-on-demand
       script: '|||illusive-run-forensics-on-demand'
@@ -730,7 +663,7 @@ tasks:
       - '23'
     scriptarguments:
       fqdn_or_ip:
-        simple: 172.27.139.12
+        simple: ${inputs.ip}
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 4400\n  }\n}"
     note: false
@@ -770,10 +703,10 @@ tasks:
     quietmode: 0
   '24':
     id: '24'
-    taskid: 5c4fa5f3-1b02-49fd-8777-e7f3e15393aa
+    taskid: 9ba656a7-c4a1-4a52-856f-6c75f6d7cc70
     type: regular
     task:
-      id: 5c4fa5f3-1b02-49fd-8777-e7f3e15393aa
+      id: 9ba656a7-c4a1-4a52-856f-6c75f6d7cc70
       version: -1
       name: illusive-get-incidents
       script: '|||illusive-get-incidents'
@@ -788,7 +721,7 @@ tasks:
       has_forensics: {}
       hostnames: {}
       incident_id:
-        simple: '127'
+        simple: ${inputs.incident_id}
       limit: {}
       offset: {}
       start_date: {}
@@ -801,10 +734,10 @@ tasks:
     quietmode: 0
   '25':
     id: '25'
-    taskid: dac9a3b8-54a5-499f-8657-2d8a60f048f6
+    taskid: 4f5d3349-32a5-4a8b-8fc0-fe85b29606fa
     type: condition
     task:
-      id: dac9a3b8-54a5-499f-8657-2d8a60f048f6
+      id: 4f5d3349-32a5-4a8b-8fc0-fe85b29606fa
       version: -1
       name: Verify Outputs
       type: condition
@@ -825,7 +758,8 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '127'
+              simple: inputs.incident_id
+            iscontext: true
     view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 5000\n  }\n}"
     note: false
     timertriggers: []
@@ -834,10 +768,10 @@ tasks:
     quietmode: 0
   '26':
     id: '26'
-    taskid: 34a357c4-e765-493c-8693-c199a425c860
+    taskid: 14ac4cec-6000-43e6-8d5c-c646e6a3076f
     type: regular
     task:
-      id: 34a357c4-e765-493c-8693-c199a425c860
+      id: 14ac4cec-6000-43e6-8d5c-c646e6a3076f
       version: -1
       name: illusive-get-event-incident-id
       script: '|||illusive-get-event-incident-id'
@@ -850,7 +784,7 @@ tasks:
       - '27'
     scriptarguments:
       event_id:
-        simple: '167'
+        simple: ${inputs.event_id}
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 5190\n  }\n}"
     note: false
@@ -860,10 +794,10 @@ tasks:
     quietmode: 0
   '27':
     id: '27'
-    taskid: 06f88a9b-2ba3-465f-85b7-2a46227a3af6
+    taskid: 704dddaa-9993-4793-88c8-7e3fb8c67df0
     type: condition
     task:
-      id: 06f88a9b-2ba3-465f-85b7-2a46227a3af6
+      id: 704dddaa-9993-4793-88c8-7e3fb8c67df0
       version: -1
       name: Verify Outputs
       type: condition
@@ -884,7 +818,8 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '129'
+              simple: inputs.incident_id
+            iscontext: true
       - - operator: isEqualString
           left:
             value:
@@ -892,8 +827,9 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '167'
-    view: "{\n  \"position\": {\n    \"x\": 60,\n    \"y\": 5400\n  }\n}"
+              simple: inputs.event_id
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 5400\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -919,9 +855,33 @@ tasks:
     skipunavailable: false
     quietmode: 0
 view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 5615,\n      \"width\": 390,\n      \"x\": 50,\n      \"y\": 50\n\
+  \     \"height\": 5615,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
   \    }\n  }\n}"
-inputs: []
+inputs:
+- key: incident_id
+  value:
+    simple: '2'
+  required: true
+  description: ''
+  playbookInputQuery:
+- key: event_id
+  value:
+    simple: '3'
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: ip
+  value:
+    simple: 172.27.118.14
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: host_name
+  value:
+    simple: WIN8@illusive.com
+  required: false
+  description: ''
+  playbookInputQuery:
 outputs: []
 fromversion: 5.0.0
 description: ''

@@ -134,7 +134,7 @@ def test_get_asm_host_insight_command(requests_mock):
     }
     _, outputs, _ = get_asm_host_insight_command(client, args)
 
-    assert outputs == {'Illusive.AttackSurfaceInsights.Host(val.ipAddresses == obj.ipAddresses)':
+    assert outputs == {'Illusive.AttackSurfaceInsightsHost(val.ipAddresses == obj.ipAddresses)':
                        {'hostname': 'aaa', 'domainName': 'bbb', 'ipAddresses': '1.1.1.1'}}
 
 
@@ -148,7 +148,7 @@ def test_get_asm_cj_insight_command(requests_mock):
     }
     _, outputs, _ = get_asm_cj_insight_command(client, args)
 
-    assert outputs == {'Illusive.AttackSurfaceInsights.CrownJewel(val.hostname == obj.hostname)':
+    assert outputs == {'Illusive.AttackSurfaceInsightsCrownJewel(val.hostname == obj.hostname)':
                        {'data': [], 'hostname': 'bbb', 'machineTagAndSubTags': {'tag': 'tag', 'subTag': 'sub'}}}
 
 
@@ -182,15 +182,19 @@ def test_get_deceptive_servers_command(requests_mock):
 
 def test_get_forensics_timeline_command(requests_mock):
     mock_response = {'IncidentId': "aaa", 'Status': 'Done', 'Evidence': []}
-    requests_mock.get('https://server/api/v1/forensics/timeline?incident_id=3'
-                      '&end_date=1994-09-24T17:30:00.000Z&start_date=1993-09-24T17:30:00.000Z', json=mock_response)
-
     client = Client(base_url='https://server', verify=False, credentials='test')
+    start_date = "1 month"
+    end_date = "3 days"
     args = {
         'incident_id': "3",
-        'start_date': "1993-09-24T17:30:00.000Z",
-        'end_date': "1994-09-24T17:30:00.000Z"
+        'start_date': start_date,
+        'end_date': end_date
     }
+    start_date_parsed, _ = parse_date_range(start_date, date_format=DATE_FORMAT, utc=True)
+    end_date_parsed, _ = parse_date_range(end_date, date_format=DATE_FORMAT, utc=True)
+    url = 'https://server/api/v1/forensics/timeline?incident_id=3&end_date={}&start_date={}'\
+        .format(end_date_parsed, start_date_parsed)
+    requests_mock.get(url, json=mock_response)
     _, outputs, _ = get_forensics_timeline_command(client, args)
 
     assert outputs == {'Illusive.Forensics(val.IncidentId == obj.IncidentId)':
@@ -272,8 +276,7 @@ def test_get_incident_command(requests_mock):
     client = Client(base_url='https://server', verify=False, credentials='test')
     args = {
         'incident_id': "13",
-        'start_date': "1993-09-24T17:30:00.000Z",
-        'end_date': "1994-09-24T17:30:00.000Z"
+        'start_date': "3 days"
     }
     _, outputs, _ = get_incidents_command(client, args)
 

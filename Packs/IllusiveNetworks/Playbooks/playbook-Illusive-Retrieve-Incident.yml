@@ -8,10 +8,10 @@ starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: 6a28f289-d1c4-4474-8b84-9224721804a8
+    taskid: c418f7e8-6010-49f4-80aa-54052c8428a6
     type: start
     task:
-      id: 6a28f289-d1c4-4474-8b84-9224721804a8
+      id: c418f7e8-6010-49f4-80aa-54052c8428a6
       version: -1
       name: ''
       iscommand: false
@@ -25,12 +25,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   '1':
     id: '1'
-    taskid: 1b77703e-0353-47e5-8112-6539c9c9b6c7
+    taskid: 8e998ffa-70c4-4609-8fc9-4e47ced3b3a7
     type: regular
     task:
-      id: 1b77703e-0353-47e5-8112-6539c9c9b6c7
+      id: 8e998ffa-70c4-4609-8fc9-4e47ced3b3a7
       version: -1
       name: illusive-get-incidents
       description: Retrieve incidents
@@ -55,12 +57,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   '2':
     id: '2'
-    taskid: 9232b9e7-3f15-4252-8383-6fbe74b1d814
+    taskid: 2b7128d2-8288-48b2-8451-85651f63989e
     type: condition
     task:
-      id: 9232b9e7-3f15-4252-8383-6fbe74b1d814
+      id: 2b7128d2-8288-48b2-8451-85651f63989e
       version: -1
       name: Check If Incident Has Forensics
       type: condition
@@ -90,12 +94,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   '3':
     id: '3'
-    taskid: 178b6b11-43f1-4e52-8da1-7abb02a71ac7
+    taskid: c24b2463-4642-4d69-8209-66f425ede653
     type: regular
     task:
-      id: 178b6b11-43f1-4e52-8da1-7abb02a71ac7
+      id: c24b2463-4642-4d69-8209-66f425ede653
       version: -1
       name: illusive-get-forensics-timeline
       description: Retrieve forensics timeline for a specific incident
@@ -122,12 +128,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   '5':
     id: '5'
-    taskid: a77db5bd-4c3c-4882-85bf-cd2b2d2a00d8
+    taskid: 07ef76cf-d732-4051-8b3b-87d60059e1b7
     type: regular
     task:
-      id: a77db5bd-4c3c-4882-85bf-cd2b2d2a00d8
+      id: 07ef76cf-d732-4051-8b3b-87d60059e1b7
       version: -1
       name: Print No Forensics Timeline for Incdient
       description: Prints text to war room (Markdown supported)
@@ -143,12 +151,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   '6':
     id: '6'
-    taskid: f77899aa-acc8-4544-83b6-b95037e16d0c
+    taskid: c8f99fa8-9ba3-4347-8aee-bbd05ef093d1
     type: regular
     task:
-      id: f77899aa-acc8-4544-83b6-b95037e16d0c
+      id: c8f99fa8-9ba3-4347-8aee-bbd05ef093d1
       version: -1
       name: Print Incident Forensics Timeline
       description: Prints text to war room (Markdown supported)
@@ -164,12 +174,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   '7':
     id: '7'
-    taskid: 2ae61415-ccdd-4a43-8dde-d3a2ad4d2132
+    taskid: 8846a6d7-5c88-4001-8f9c-c076d8b6a31c
     type: condition
     task:
-      id: 2ae61415-ccdd-4a43-8dde-d3a2ad4d2132
+      id: 8846a6d7-5c88-4001-8f9c-c076d8b6a31c
       version: -1
       name: Check Initial Values
       type: condition
@@ -198,12 +210,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   '8':
     id: '8'
-    taskid: 0ad3a5d3-70d0-43e7-8348-019a7482acda
+    taskid: e61b3940-208a-4fda-8339-d2b3d40b4ec3
     type: regular
     task:
-      id: 0ad3a5d3-70d0-43e7-8348-019a7482acda
+      id: e61b3940-208a-4fda-8339-d2b3d40b4ec3
       version: -1
       name: Input Error
       description: Prints an error entry with a given message
@@ -219,6 +233,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
   \     \"height\": 985,\n      \"width\": 970,\n      \"x\": 450,\n      \"y\": -150\n\
   \    }\n  }\n}"
@@ -227,17 +243,18 @@ inputs:
   value: {}
   required: false
   description: The desired incident ID to retrieve.
+  playbookInputQuery:
 - key: start_date
   value: {}
   required: false
-  description: "The starting date of the forensics timeline.\nstart_date is in Zulu\
-    \ time format, for example: 1993-09-24T17:30:00.000Z."
+  description: The starting date of the forensics timeline.
+  playbookInputQuery:
 - key: end_date
   value: {}
   required: false
-  description: "The last date of the forensics timeline.\nend_date is in Zulu time\
-    \ format, for example: 1993-09-24T17:30:00.000Z."
+  description: The last date of the forensics timeline.
+  playbookInputQuery:
 outputs: []
 fromversion: 5.0.0
 tests:
-- No tests
+- No tests (auto formatted)

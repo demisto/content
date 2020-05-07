@@ -7,10 +7,10 @@ starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: 26137395-79b0-4857-8072-33af854bcc9e
+    taskid: ed6d083e-e1cd-4ae0-84d7-f2828a072b87
     type: start
     task:
-      id: 26137395-79b0-4857-8072-33af854bcc9e
+      id: ed6d083e-e1cd-4ae0-84d7-f2828a072b87
       version: -1
       name: ''
       iscommand: false
@@ -28,10 +28,10 @@ tasks:
     quietmode: 0
   '1':
     id: '1'
-    taskid: 77631a46-ffd6-40b9-8604-40bdf735beae
+    taskid: 1cf52913-441c-4134-8ba9-8381a0bca803
     type: regular
     task:
-      id: 77631a46-ffd6-40b9-8604-40bdf735beae
+      id: 1cf52913-441c-4134-8ba9-8381a0bca803
       version: -1
       name: illusive-run-forensics-on-demand
       description: Collect forensics on a specified host and retrieve the forensics
@@ -59,10 +59,10 @@ tasks:
     quietmode: 0
   '2':
     id: '2'
-    taskid: 8c3f3e87-96e2-438e-8d83-ccc42662dab4
+    taskid: bb14546a-7c81-4eca-8d9d-0f96a0e40c76
     type: playbook
     task:
-      id: 8c3f3e87-96e2-438e-8d83-ccc42662dab4
+      id: bb14546a-7c81-4eca-8d9d-0f96a0e40c76
       version: -1
       name: GenericPolling
       playbookName: GenericPolling
@@ -104,10 +104,10 @@ tasks:
     quietmode: 0
   '3':
     id: '3'
-    taskid: a56de899-3250-437c-816b-b9407bdda3ed
+    taskid: 3f1cc91a-836b-42a5-8eae-547afcda187e
     type: regular
     task:
-      id: a56de899-3250-437c-816b-b9407bdda3ed
+      id: 3f1cc91a-836b-42a5-8eae-547afcda187e
       version: -1
       name: illusive-get-event-incident-id
       description: event_id
@@ -132,10 +132,10 @@ tasks:
     quietmode: 0
   '4':
     id: '4'
-    taskid: 47cad768-3e61-4984-84d5-56033cf53fe8
+    taskid: 9d6bc3e9-24b5-4da3-81ce-781d45e2d8ed
     type: playbook
     task:
-      id: 47cad768-3e61-4984-84d5-56033cf53fe8
+      id: 9d6bc3e9-24b5-4da3-81ce-781d45e2d8ed
       version: -1
       name: GenericPolling
       playbookName: GenericPolling
@@ -177,10 +177,10 @@ tasks:
     quietmode: 0
   '5':
     id: '5'
-    taskid: 509ab199-4120-4fdc-83ca-c80ac984e40b
+    taskid: a52e3d01-2468-4d6f-8d47-0fb1c01883ad
     type: regular
     task:
-      id: 509ab199-4120-4fdc-83ca-c80ac984e40b
+      id: a52e3d01-2468-4d6f-8d47-0fb1c01883ad
       version: -1
       name: illusive-get-forensics-timeline
       description: Retrieve forensics timeline for a specific incident
@@ -211,10 +211,10 @@ tasks:
     quietmode: 0
   '6':
     id: '6'
-    taskid: 37e07154-a4d3-42ef-800f-6155f03b835c
+    taskid: 95fdbe7b-20ca-437b-8590-0652dc3ac96d
     type: regular
     task:
-      id: 37e07154-a4d3-42ef-800f-6155f03b835c
+      id: 95fdbe7b-20ca-437b-8590-0652dc3ac96d
       version: -1
       name: Print Forensics Timeline
       description: Prints text to war room (Markdown supported)
@@ -236,10 +236,10 @@ tasks:
     quietmode: 0
   '7':
     id: '7'
-    taskid: 67d1f714-38ef-4245-8f0d-3e13b1551ba4
+    taskid: 848ad3a7-879b-425b-83df-0d43df1f87dc
     type: regular
     task:
-      id: 67d1f714-38ef-4245-8f0d-3e13b1551ba4
+      id: 848ad3a7-879b-425b-83df-0d43df1f87dc
       version: -1
       name: Input Error
       description: Prints an error entry with a given message
@@ -259,10 +259,10 @@ tasks:
     quietmode: 0
   '8':
     id: '8'
-    taskid: 99ab278c-1bd6-4f78-8921-124df67758f4
+    taskid: 7254d0f0-45c5-4fbe-82fc-46c62c542e85
     type: condition
     task:
-      id: 99ab278c-1bd6-4f78-8921-124df67758f4
+      id: 7254d0f0-45c5-4fbe-82fc-46c62c542e85
       version: -1
       name: Input Check
       type: condition
@@ -295,10 +295,10 @@ tasks:
     quietmode: 0
   '9':
     id: '9'
-    taskid: 8d0534f7-ad11-4716-8098-b4478314628d
+    taskid: 2bf45a50-77e4-49d8-893f-2d7b51ced1b6
     type: regular
     task:
-      id: 8d0534f7-ad11-4716-8098-b4478314628d
+      id: 2bf45a50-77e4-49d8-893f-2d7b51ced1b6
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -334,16 +334,14 @@ inputs:
 - key: start_date
   value: {}
   required: false
-  description: "The starting date of the forensics timeline.\nstart_date is in Zulu\
-    \ time format, for example: 1993-09-24T17:30:00.000Z."
+  description: "The starting date of the forensics timeline.\n"
   playbookInputQuery:
 - key: end_date
   value: {}
   required: false
-  description: "The last date of the forensics timeline.\nend_date is in Zulu time\
-    \ format, for example: 1993-09-24T17:30:00.000Z.\n"
+  description: "The last date of the forensics timeline.\n"
   playbookInputQuery:
 outputs: []
 fromversion: 5.0.0
 tests:
-- No tests
+- No tests (auto formatted)
