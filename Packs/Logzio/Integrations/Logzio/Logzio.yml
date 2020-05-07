@@ -48,9 +48,9 @@ configuration:
   - MEDIUM
   - LOW
   - INFO
-- display: First-time retroactive fetch (e.g., 12 hours, 7 days)
+- display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
   name: fetch_time
-  defaultvalue: 1 hours
+  defaultvalue: 1 hour
   type: 0
   required: false
 - display: Max. number of incidents fetched per run
