@@ -615,7 +615,6 @@ def get_expanse_exposure_context(data):
     }
 
 
-
 def fetch_events_incidents_command(start_date, end_date, token, next_=None):
     """
     retrieve active exposures from Expanse API and create incidents
@@ -911,6 +910,7 @@ def exposures_command():
     human_readable = tableToMarkdown("Expanse Exposure information for: {search}".format(search=search), expanse_exposure_context)
     expanse_exposure_context['Exposures'] = raw_exposures
     return_outputs(human_readable, ec, exposures)
+
 
 def arg_to_timestamp(arg, arg_name: str, required: bool = False):
     if arg is None:
