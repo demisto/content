@@ -51,3 +51,23 @@ def test_no_existing_threshold(mocker):
     [entry, _] = find_threshold(y_pred_str=json.dumps(y_pred), y_true_str=json.dumps(y_true),
                                 customer_target_precision=0.7, target_recall=0)
     assert abs(entry['Contents']['threshold'] - 0.7) < 10 ** -2
+
+
+def test_prediction_equals_one_prob(mocker):
+    y_true = ['class1'] * 7 + ['class2'] * 7
+    y_pred = [{'class1': 1}] * 7 + [{'class2': 1}] * 7
+    [entry, _] = find_threshold(y_pred_str=json.dumps(y_pred),
+                                y_true_str=json.dumps(y_true),
+                                customer_target_precision=0.6,
+                                target_recall=0)
+    assert abs(entry['Contents']['threshold'] - 1) < 10 ** -2
+
+
+def test_almost_all_predictions_equals_one_prob(mocker):
+    y_true = ['class1'] * 7 + ['class2'] * 7
+    y_pred = [{'class1': 1}] * 6 + [{'class1': 0.95}] + [{'class2': 1}] * 7
+    [entry, _] = find_threshold(y_pred_str=json.dumps(y_pred),
+                                y_true_str=json.dumps(y_true),
+                                customer_target_precision=0.6,
+                                target_recall=0)
+    assert abs(entry['Contents']['threshold'] - 1) < 10 ** -2

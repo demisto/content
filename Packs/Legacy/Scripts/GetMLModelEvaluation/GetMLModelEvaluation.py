@@ -83,7 +83,7 @@ def calculate_df_row(class_, threshold, y_true_per_class, y_pred_per_class):
     return row
 
 
-def convert_df_to_human(metrics_df):
+def reformat_df_fractions_to_percentage(metrics_df):
     hr_df = metrics_df.copy()
     hr_df['Precision'] = hr_df['Precision'].apply(lambda p: '{:.1f}%'.format(p * 100))
     hr_df['TP'] = hr_df.apply(lambda row: '{}/{} ({:.1f}%)'.format(int(row['TP']),
@@ -124,7 +124,7 @@ def output_report(y_true, y_true_per_class, y_pred, y_pred_per_class, found_thre
         '- Evaluation of the model performance using this probability threshold can be found below:']
     pd.set_option('display.max_columns', None)
 
-    tablualted_csr = tabulate(convert_df_to_human(metrics_df), tablefmt="pipe", headers="keys")
+    tablualted_csr = tabulate(reformat_df_fractions_to_percentage(metrics_df), tablefmt="pipe", headers="keys")
     class_metrics_human_readable = ['## Metrics per Class', tablualted_csr]
     class_metrics_explanation_human_readable = ['### Metrics Explanation'] + ['- ' + row for row in metrics_explanation]
     csr_matrix_readable = ['## Confusion Matrix',
@@ -206,7 +206,7 @@ def find_best_threshold_for_target_precision(class_to_arrs, customer_target_prec
         precision_per_class = {}
         for class_ in labels:
             # indexing is done by purpose - the ith precision corresponds with threshold i-1. Last precision is 1
-            for i, precision in enumerate(class_to_arrs[class_]['precisions'][1:-1]):
+            for i, precision in enumerate(class_to_arrs[class_]['precisions'][1:]):
                 if precision > target_unified_precision:
                     threshold_per_class[class_] = class_to_arrs[class_]['thresholds'][i]
                     precision_per_class[class_] = precision
@@ -236,7 +236,7 @@ def calculate_per_class_report_entry(class_to_arrs, labels, y_pred_per_class, y_
         class_to_thresholds[class_] = set([0])
         for target_precision in np.arange(0.95, 0.5, -0.05):
             # indexing is done by purpose - the ith precision corresponds with threshold i-1. Last precision is 1
-            for i, precision in enumerate(class_to_arrs[class_]['precisions'][1:-1]):
+            for i, precision in enumerate(class_to_arrs[class_]['precisions'][1:]):
                 if precision > target_precision:
                     threshold = class_to_arrs[class_]['thresholds'][i]
                     class_to_thresholds[class_].add(threshold)
@@ -250,7 +250,7 @@ def calculate_per_class_report_entry(class_to_arrs, labels, y_pred_per_class, y_
             row = calculate_df_row(class_, threshold, y_true_per_class, y_pred_per_class)
             row['Threshold'] = threshold
             class_threshold_df = class_threshold_df.append(row, ignore_index=True)
-        class_threshold_df = convert_df_to_human(class_threshold_df)
+        class_threshold_df = reformat_df_fractions_to_percentage(class_threshold_df)
         class_threshold_df['Threshold'] = class_threshold_df['Threshold'].apply(lambda p: '{:.2f}'.format(p))
         class_threshold_df = class_threshold_df[['Threshold', 'Precision', 'TP', 'FP', 'Coverage', 'Total']]
         class_threshold_df.set_index('Threshold', inplace=True)
