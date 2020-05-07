@@ -127,10 +127,10 @@ tasks:
     ignoreworker: false
   '8':
     id: '8'
-    taskid: d1a10ed0-7972-4405-89a5-ca78faa901ac
+    taskid: 66431d57-683f-46d7-83d8-ee7b683a894e
     type: title
     task:
-      id: d1a10ed0-7972-4405-89a5-ca78faa901ac
+      id: 66431d57-683f-46d7-83d8-ee7b683a894e
       version: -1
       name: PII compromised
       description: "Use the below definitions of PII to discern whether breached data\
@@ -149,7 +149,7 @@ tasks:
       '#none#':
       - '18'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1200,\n    \"y\": 900\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 1170,\n    \"y\": 980\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -207,13 +207,13 @@ tasks:
     ignoreworker: false
   '18':
     id: '18'
-    taskid: 48e375eb-56aa-49dc-8ff5-6cfff193de88
+    taskid: aa613ba6-502c-41a5-8d6b-8935d0be346a
     type: regular
     task:
-      id: 48e375eb-56aa-49dc-8ff5-6cfff193de88
+      id: aa613ba6-502c-41a5-8d6b-8935d0be346a
       version: -1
       name: Store PIICompromised - true
-      description: Store the fact that PII was compromised in context.
+      description: Store the fact that PII compromised.
       scriptName: Set
       type: regular
       iscommand: false
@@ -229,35 +229,7 @@ tasks:
       value:
         simple: 'True'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1200,\n    \"y\": 1040\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '20':
-    id: '20'
-    taskid: efff1820-7faa-4bac-81e8-ca5f6ef0a0c2
-    type: regular
-    task:
-      id: efff1820-7faa-4bac-81e8-ca5f6ef0a0c2
-      version: -1
-      name: Store PIICompromised - false
-      description: Store the fact that PII isn't compromised in context.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '28'
-    scriptarguments:
-      append: {}
-      key:
-        simple: PIICompromised
-      stringify: {}
-      value:
-        simple: 'False'
-    separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 2790,\n    \"y\": 925\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 1170,\n    \"y\": 1110\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -289,10 +261,10 @@ tasks:
     ignoreworker: false
   '22':
     id: '22'
-    taskid: 5ac8b241-4d28-4891-8410-824e6eaf104a
+    taskid: 7a3f6746-6a0d-4e75-8cdc-98853a2a506e
     type: regular
     task:
-      id: 5ac8b241-4d28-4891-8410-824e6eaf104a
+      id: 7a3f6746-6a0d-4e75-8cdc-98853a2a506e
       version: -1
       name: Store Medical Information breached
       description: Store the fact that the breach contains PII type of medical information.
@@ -315,12 +287,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    fieldMapping:
+    - incidentfield: Medical Information breached
+      output:
+        simple: 'True'
   '23':
     id: '23'
-    taskid: 0aca8434-84d1-4df3-895f-4ce90b118873
+    taskid: 277ace78-242e-43c6-81b0-253b6947b005
     type: regular
     task:
-      id: 0aca8434-84d1-4df3-895f-4ce90b118873
+      id: 277ace78-242e-43c6-81b0-253b6947b005
       version: -1
       name: Store health insurance breached
       description: Store the fact that the breach contains PII type of health insurance
@@ -344,12 +320,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    fieldMapping:
+    - incidentfield: Health insurance breached
+      output:
+        simple: 'True'
   '24':
     id: '24'
-    taskid: 75c14c26-4e15-417f-8d92-c2db3bf2307f
+    taskid: 936ce505-799c-405a-8334-ee59028fd74a
     type: regular
     task:
-      id: 75c14c26-4e15-417f-8d92-c2db3bf2307f
+      id: 936ce505-799c-405a-8334-ee59028fd74a
       version: -1
       name: Store financial information breached
       description: Store the fact that the breach contains PII type of financial information.
@@ -372,12 +352,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    fieldMapping:
+    - incidentfield: Financial information breached
+      output:
+        simple: 'True'
   '25':
     id: '25'
-    taskid: f5ebc0f3-83d2-4fdf-82f7-b1051dc039cc
+    taskid: bde39e10-364c-41e9-800d-8cf54943f240
     type: regular
     task:
-      id: f5ebc0f3-83d2-4fdf-82f7-b1051dc039cc
+      id: bde39e10-364c-41e9-800d-8cf54943f240
       version: -1
       name: Store account information breached
       description: Store the fact that the breach contains PII type of account information.
@@ -400,12 +384,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    fieldMapping:
+    - incidentfield: Account information breached
+      output:
+        simple: 'True'
   '26':
     id: '26'
-    taskid: e17085b1-0d0c-4cd7-808c-52f6bc78e66d
+    taskid: 3f2163fb-a087-479e-899b-b5da17f75f66
     type: regular
     task:
-      id: e17085b1-0d0c-4cd7-808c-52f6bc78e66d
+      id: 3f2163fb-a087-479e-899b-b5da17f75f66
       version: -1
       name: Store unique identification number breached
       description: Store the fact that the breach contains PII type of unique identification
@@ -429,12 +417,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    fieldMapping:
+    - incidentfield: Unique identification number breached
+      output:
+        simple: 'True'
   '27':
     id: '27'
-    taskid: 5b9e92bf-3c8b-445e-8f30-a10fa45eb32d
+    taskid: 021d6828-21a7-4c4e-89c9-188246a86fea
     type: regular
     task:
-      id: 5b9e92bf-3c8b-445e-8f30-a10fa45eb32d
+      id: 021d6828-21a7-4c4e-89c9-188246a86fea
       version: -1
       name: Store  unique biometric data breached
       description: Store the fact that the breach contains PII type of unique biometric
@@ -458,6 +450,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    fieldMapping:
+    - incidentfield: Unique biometric data breached
+      output:
+        simple: 'True'
   '28':
     id: '28'
     taskid: c04af34d-83eb-4f13-8bbc-61da5ec2135d
@@ -471,7 +467,7 @@ tasks:
       brand: ''
       description: ''
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1200,\n    \"y\": 1230\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 1170,\n    \"y\": 1300\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -497,27 +493,78 @@ tasks:
       brand: ''
     nexttasks:
       No:
-      - '20'
+      - '28'
       Yes:
-      - '8'
+      - '30'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 2800,\n    \"y\": 720\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 3080,\n    \"y\": 625\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
+  '30':
+    id: '30'
+    taskid: 11c8e13f-2e0a-4595-8fb1-07b8ae8dcef5
+    type: regular
+    task:
+      id: 11c8e13f-2e0a-4595-8fb1-07b8ae8dcef5
+      version: -1
+      name: Store other PII data breached
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      append: {}
+      key:
+        simple: OtherPIIBreached
+      stringify: {}
+      value:
+        simple: 'True'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 2680,\n    \"y\": 800\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Other PII data breached
+      output:
+        simple: 'True'
 view: "{\n  \"linkLabelsPosition\": {\n    \"14_29_#default#\": 0.15,\n    \"15_29_#default#\"\
-  : 0.15,\n    \"21_29_#default#\": 0.26,\n    \"29_8_Yes\": 0.1,\n    \"3_29_#default#\"\
-  : 0.1,\n    \"4_29_#default#\": 0.1,\n    \"5_29_#default#\": 0.12\n  },\n  \"paper\"\
-  : {\n    \"dimensions\": {\n      \"height\": 1210,\n      \"width\": 3100,\n  \
-  \    \"x\": 80,\n      \"y\": 85\n    }\n  }\n}"
+  : 0.15,\n    \"21_29_#default#\": 0.26,\n    \"29_28_No\": 0.1,\n    \"29_30_Yes\"\
+  : 0.38,\n    \"3_29_#default#\": 0.1,\n    \"4_29_#default#\": 0.1,\n    \"5_29_#default#\"\
+  : 0.12\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1280,\n \
+  \     \"width\": 3380,\n      \"x\": 80,\n      \"y\": 85\n    }\n  }\n}"
 inputs: []
 outputs:
-- contextPath: IsPIICompromised
-  description: Flag to set if there is any PII in compromised data?
+- contextPath: PIICompromised
+  description: Store the fact that PII compromised.
   type: boolean
-- contextPath: IsSensitivePIICompromised
-  description: Flag to set if there is any sensitive PII in compromised data?
-  type: boolean
+- contextPath: HealthInsuranceBreached
+  description: Store the fact that the breach contains PII type of health insurance
+    information.
+  type: unknown
+- contextPath: MedicalInformationBreached
+  description: Store the fact that the breach contains PII type of medical information.
+  type: unknown
+- contextPath: FinancialInformationBreached
+  description: Store the fact that the breach contains PII type of financial information.
+  type: unknown
+- contextPath: AccountInformationBreached
+  description: Store the fact that the breach contains PII type of account information.
+  type: unknown
+- contextPath: UniqueIdentificationNumberBreached
+  description: Store the fact that the breach contains PII type of unique identification
+    number.
+  type: unknown
+- contextPath: UniqueBiometricDataBreached
+  description: Store the fact that the breach contains PII type of unique biometric
+    data.
+  type: unknown
+sourceplaybookid: Breach Playbook - PII Check Playbook - California
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
