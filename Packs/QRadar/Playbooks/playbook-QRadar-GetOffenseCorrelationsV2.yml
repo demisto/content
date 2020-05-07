@@ -35,7 +35,7 @@ tasks:
     task:
       id: 5fa964a0-5f5e-49eb-8a3d-bce2813adaf6
       version: -1
-      name: Is this a QRadar offense and CRE inserted correctly?
+      name: Is CRE inserted correctly?
       type: condition
       iscommand: false
       brand: ''
@@ -49,23 +49,6 @@ tasks:
     conditions:
     - label: 'true'
       condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: QRadar
-                    ignorecase: true
-                accessor: brand
-            iscontext: true
       - - operator: inList
           left:
             value:
