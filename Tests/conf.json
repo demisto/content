@@ -1501,19 +1501,19 @@
             "integrations": "Microsoft Graph Device Management",
             "playbookID": "MSGraph_DeviceManagement_Test",
             "instance_names": "ms_graph_device_management_oproxy_dev",
-            "fromversion": "4.1.0"
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Microsoft Graph Device Management",
             "playbookID": "MSGraph_DeviceManagement_Test",
             "instance_names": "ms_graph_device_management_oproxy_prod",
-            "fromversion": "4.1.0"
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Microsoft Graph Device Management",
             "playbookID": "MSGraph_DeviceManagement_Test",
             "instance_names": "ms_graph_device_management_self_deployed_prod",
-            "fromversion": "4.1.0"
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "RedLock",
@@ -3005,6 +3005,10 @@
         "Microsoft_Graph_Files": "Test direct access to oproxy",
         "Microsoft Graph Groups": "Test direct access to oproxy",
         "Microsoft Defender Advanced Threat Protection": "Test direct access to oproxy",
+        "Azure Security Center v2": "Test direct access to oproxy",
+        "Microsoft Graph Calendar": "Test direct access to oproxy",
+        "Microsoft Graph Device Management": "Test direct access to oproxy",
+        "Azure Compute v2": "Test direct access to oproxy",
         "SafeBreach": "SSL Issues",
         "AWS - CloudWatchLogs": "Issue 20958",
         "Gmail Single User": "googleclient sdk has time based challenge exchange",
