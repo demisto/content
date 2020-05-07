@@ -1,6 +1,6 @@
-import Packs.Palo_Alto_Networks_WildFire_v2.Integrations.Palo_Alto_Networks_WildFire_v2.demistomock as demisto
-from Packs.Palo_Alto_Networks_WildFire_v2.Integrations.Palo_Alto_Networks_WildFire_v2.CommonServerPython import *
-from Packs.Palo_Alto_Networks_WildFire_v2.Integrations.Palo_Alto_Networks_WildFire_v2.CommonServerUserPython import *
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
 
 import json
 import shutil
