@@ -1334,65 +1334,65 @@ script:
       required: true
       description: The alert id
     outputs:
-    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceType
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceInfo.DeviceType
       description: Device Type
-    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Group
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceInfo.Group
       description: Group
-    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.GroupId
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceInfo.GroupId
       description: Group Id
-    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.RegisteredTime
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceInfo.RegisteredTime
       description: Registered Time
-    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceId
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceInfo.DeviceId
       description: Device Id
-    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceName
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceInfo.DeviceName
       description: Device Name
-    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Status
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceInfo.Status
       description: Status
-    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.OsVersion
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceInfo.OsVersion
       description: Os Version
-    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.SensorVersion
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceInfo.SensorVersion
       description: Sensor Version
-    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.UserName
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceInfo.UserName
       description: User Name
-    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Importance
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceInfo.Importance
       description: Importance
-    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Message
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceInfo.Message
       description: Message
-    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Success
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceInfo.Success
       description: Success
-    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.ParentHash
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.ParentHash
       description: Parent Hash
-    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.PolicyState
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.PolicyState
       description: Policy State
-    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.LongDescription
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.LongDescription
       description: Long Description
-    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.CommandLine
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.CommandLine
       description: Command Line
-    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.ParentPid
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.ParentPid
       description: Parent Pid
-    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.ProcessId
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.ProcessId
       description: Process Id
-    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.ThreatIndicators
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.ThreatIndicators
       description: Threat Indicators
-    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.ApplicationPath
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.ApplicationPath
       description: Application Path
-    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.ProcessHash
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.ProcessHash
       description: Process Hash
-    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.ProcessMd5Hash
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.ProcessMd5Hash
       description: Process Md5Hash
-    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.EventId
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.EventId
       description: Event Id
-    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.EventTime
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.EventTime
       description: Event Time
-    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.EventType
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.EventType
       description: Event Type
-    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.KillChainStatus
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.KillChainStatus
       description: Kill Chain Status
-    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.ParentName
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.ParentName
       description: Parent Name
-    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.ParentPPid
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.ParentPPid
       description: ParentP Pid
-    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.ProcessPPid
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.ProcessPPid
       description: ProcessP Pid
     - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.ThreatInfo.IncidentId
       description: Incident Id

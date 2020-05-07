@@ -32,7 +32,6 @@ jobs:
             sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
             chmod +x ./Tests/scripts/*
             chmod +x ./Tests/lastest_server_build_scripts/*
-            echo "Parameters: NIGHTLY: $NIGHTLY, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME, INSTANCE_TESTS: $INSTANCE_TESTS"
             if [ ! -e "venv" ]; then
               echo "installing venv"
               NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap
@@ -48,6 +47,9 @@ jobs:
             # store in bash env so we load our venv in each step
             echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
             git config diff.renameLimit 6000
+
+            echo "========== Build Parameters =========="
+            echo "Parameters: NIGHTLY: $NIGHTLY, INSTANCE_TESTS: $INSTANCE_TESTS, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME, ARTIFACT_BUILD_NUM: $ARTIFACT_BUILD_NUM"
             python --version
             python3 --version
             demisto-sdk --version
@@ -258,27 +260,6 @@ jobs:
                 python3 ./Tests/scripts/verify_base_branch_for_contribution.py $CIRCLE_BRANCH
             fi
       - run:
-          name: Download Artifacts
-          when: always
-          command: |
-            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
-              echo "Skipping instance tests for forked PRs"
-              exit 0
-            fi
-            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
-              then
-                echo 'Skipping - running only in container number 0.'
-                exit 0;
-            fi
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                echo "Using AMI - Not downloading artifacts"
-
-              else
-                ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
-                cp demistoserver.sh ./Tests/scripts/awsinstancetool/ansibleinstall/demistoserver.sh
-            fi
-      - run:
           name: Download Configuration
           when: always
           command: |
@@ -298,6 +279,27 @@ jobs:
               else
                 ./Tests/lastest_server_build_scripts/download_demisto_conf.sh
             fi
+      - run:
+          name: Download Artifacts
+          when: always
+          command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping instance tests for forked PRs"
+              exit 0
+            fi
+            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo 'Skipping - running only in container number 0.'
+                exit 0;
+            fi
+            if ./Tests/scripts/is_ami.sh ;
+              then
+                echo "Using AMI - Not downloading artifacts"
+              else
+                ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
+                cp demistoserver.sh ./Tests/scripts/awsinstancetool/ansibleinstall/demistoserver.sh
+            fi
+
       - run:
           name: Create Instance
           when: always
@@ -326,7 +328,8 @@ jobs:
                 python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -outfile ./env_results.json
 
               else
-                python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -outfile ./env_results.json
+                . ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
+                python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -custombuild true -circleurl $SERVER_DOWNLOAD_LINK -circleToken $SERVER_CI_TOKEN -outfile ./env_results.json
             fi
       - run:
           name: Setup Instance
@@ -374,7 +377,7 @@ jobs:
                 ./Tests/scripts/run_tests.sh "Demisto GA"
 
               else
-                ./Tests/lastest_server_build_scripts/run_tests.sh
+                ./Tests/scripts/run_tests.sh "master"
             fi
       - run:
           name: Run Tests - One Before GA

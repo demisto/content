@@ -79,6 +79,7 @@ script: |2
                           'ReadableContentsFormat' : formats['markdown'],
                           'EntryContext' : context})
 type: python
+subtype: python2
 tags:
 - epo
 comment: Return system info

@@ -58,6 +58,7 @@ script: |-
   demisto.setContext('CrowdStrikeUrlParse.AgentId', AgentId)
   demisto.setContext('CrowdStrikeUrlParse.DetectId', DetectId)
 type: python
+subtype: python2
 tags:
 - crowdstrike
 comment: |-

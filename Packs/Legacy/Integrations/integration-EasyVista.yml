@@ -166,6 +166,7 @@ script:
         raise
 
   type: python
+  subtype: python2
   commands:
   - name: easy-vista-search
     arguments:
@@ -271,3 +272,5 @@ script:
       type: string
     description: This method allows a list of incidents / requests (service, change,
       investment) to be obtained.
+tests:
+  - No tests

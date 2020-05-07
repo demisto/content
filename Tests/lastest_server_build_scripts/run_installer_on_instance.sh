@@ -24,12 +24,15 @@ ssh ${USER}@${PUBLIC_IP} 'mkdir -p ~/installer_files'
 
 scp ${INSTALLER} ${USER}@${PUBLIC_IP}:~/installer_files/installer.sh
 
-# copy licence to instance
+# copy license to instance
 DEMISTO_LIC_PATH=$(cat demisto_lic_path)
 scp ${DEMISTO_LIC_PATH} ${USER}@${PUBLIC_IP}:~/installer_files/demisto.lic
 
 DEMISTO_SEVERCONF_PATH=$(cat demisto_conf_path)
 scp ${DEMISTO_SEVERCONF_PATH} ${USER}@${PUBLIC_IP}:~/installer_files/demisto.conf
+
+DEMISTO_OTC_PATH=$(cat demisto_otc_path)
+scp ${DEMISTO_OTC_PATH} ${USER}@${PUBLIC_IP}:~/installer_files/otc.conf
 
 echo "get installer and run installation script"
 INSTALL_COMMAND_Y="cd ~/installer_files \
@@ -38,26 +41,12 @@ INSTALL_COMMAND_Y="cd ~/installer_files \
     && sudo cp demisto.lic /usr/local/demisto/ \
     && sudo ./installer.sh -- -y -do-not-start-server \
     && sudo cp demisto.conf /etc/demisto.conf \
+    && sudo cp otc.conf /var/lib/demisto/otc.conf.json \
     && sudo setcap 'cap_net_bind_service=+ep' /usr/local/demisto/server" # setcap is need for listening on low port (443)
 
 ssh -t ${USER}@${PUBLIC_IP} ${INSTALL_COMMAND_Y}
 
 echo "server is ready to start!"
-
-echo "update server with branch content"
-
-ssh ${USER}@${PUBLIC_IP} 'mkdir ~/content'
-ssh ${USER}@${PUBLIC_IP} 'mkdir ~/TestPlaybooks'
-ssh ${USER}@${PUBLIC_IP} 'mkdir ~/Beta_Integrations'
-
-scp artifacts/content_new.zip ${USER}@${PUBLIC_IP}:~/content
-scp artifacts/content_test.zip ${USER}@${PUBLIC_IP}:~/content
-scp -r ./Beta_Integrations/* ${USER}@${PUBLIC_IP}:~/Beta_Integrations
-
-# override exiting content with current
-COPY_CONTENT_COMMAND="sudo unzip -o ~/content/content_new.zip -d /usr/local/demisto/res \
-    && sudo unzip -o ~/content/content_test.zip -d /usr/local/demisto/res && sudo cp -r ~/Beta_Integrations/* /usr/local/demisto/res"
-ssh -t ${USER}@${PUBLIC_IP} ${COPY_CONTENT_COMMAND}
 
 echo "start server"
 
