@@ -1772,19 +1772,25 @@ class Common(object):
         def to_context(self):
             pass
 
-    class DBotScore(Indicator):
+    class DBotScore(object):
         """
         DBotScore class
+
         :type indicator: ``str``
         :param indicator: indicator value, ip, hash, domain, url, etc
+
         :type indicator_type: ``DBotScoreType``
         :param indicator_type: use DBotScoreType class
+
         :type integration_name: ``str``
         :param integration_name: integration name
+
         :type score: ``DBotScore``
         :param score: DBotScore.NONE, DBotScore.GOOD, DBotScore.SUSPICIOUS, DBotScore.BAD
+
         :type malicious_description: ``str``
         :param malicious_description: if the indicator is malicious and have explanation for it then set it to this field
+
         :return: None
         :rtype: ``None``
         """
@@ -1841,34 +1847,44 @@ class Common(object):
     class IP(Indicator):
         """
         IP indicator class - https://xsoar.pan.dev/docs/context-standards#ip
+
         :type ip: ``str``
         :param ip: IP address
+
         :type asn: ``str``
         :param asn: The autonomous system name for the IP address, for example: "AS8948".
+
         :type hostname: ``str``
         :param hostname: The hostname that is mapped to this IP address.
+
         :type geo_latitude: ``str``
         :param geo_latitude: The geolocation where the IP address is located, in the format: latitude
+
         :type geo_longitude: ``str``
         :param geo_longitude: The geolocation where the IP address is located, in the format: longitude.
+
         :type geo_country: ``str``
         :param geo_country: The country in which the IP address is located.
+
         :type geo_description: ``str``
         :param geo_description: Additional information about the location.
+
         :type detection_engines: ``int``
         :param detection_engines: The total number of engines that checked the indicator.
+
         :type positive_engines: ``int``
         :param positive_engines: The number of engines that positively detected the indicator as malicious.
+
         :type dbot_score: ``DBotScore``
         :param dbot_score:
+
         :return: None
         :rtype: ``None``
         """
         CONTEXT_PATH = 'IP(val.Address && val.Address == obj.Address)'
 
-        def __init__(self, ip, asn=None, hostname=None, geo_latitude=None, geo_longitude=None, geo_country=None,
-                     geo_description=None, detection_engines=None, positive_engines=None, dbot_score=None):
-
+        def __init__(self, ip, dbot_score, asn=None, hostname=None, geo_latitude=None, geo_longitude=None,
+                     geo_country=None, geo_description=None, detection_engines=None, positive_engines=None):
             self.ip = ip
             self.asn = asn
             self.hostname = hostname
@@ -1879,15 +1895,8 @@ class Common(object):
             self.detection_engines = detection_engines
             self.positive_engines = positive_engines
 
-            self.dbot_score = None
-            if dbot_score:
-                if not isinstance(dbot_score, Common.DBotScore):
-                    raise ValueError('dbot_score must be of type DBotScore')
-
-                self.dbot_score = dbot_score
-
-        def set_dbot_score(self, dbot_score):
-            # type: (Common.DBotScore) -> None
+            if not isinstance(dbot_score, Common.DBotScore):
+                raise ValueError('dbot_score must be of type DBotScore')
 
             self.dbot_score = dbot_score
 
@@ -1977,42 +1986,61 @@ class Common(object):
         File indicator class - https://xsoar.pan.dev/docs/context-standards#file
         :type name: ``str``
         :param name: The full file name (including file extension).
+
         :type entry_id: ``str``
         :param entry_id: The ID for locating the file in the War Room.
+
         :type size: ``int``
         :param size: The size of the file in bytes.
+
         :type md5: ``str``
         :param md5: The MD5 hash of the file.
+
         :type sha1: ``str``
         :param sha1: The SHA1 hash of the file.
+
         :type sha256: ``str``
         :param sha256: The SHA256 hash of the file.
+
         :type sha512: ``str``
         :param sha512: The SHA512 hash of the file.
+
         :type ssdeep: ``str``
         :param ssdeep: The ssdeep hash of the file (same as displayed in file entries).
+
         :type extension: ``str``
         :param extension: The file extension, for example: "xls".
+
         :type file_type: ``str``
         :param file_type: The file type, as determined by libmagic (same as displayed in file entries).
+
         :type hostname: ``str``
         :param hostname: The name of the host where the file was found. Should match Path.
+
         :type path: ``str``
         :param path: The path where the file is located.
+
         :type company: ``str``
         :param company: The name of the company that released a binary.
+
         :type product_name: ``str``
         :param product_name: The name of the product to which this file belongs.
+
         :type digital_signature__publisher: ``str``
         :param digital_signature__publisher: The publisher of the digital signature for the file.
+
         :type signature: ``FileSignature``
         :param signature: File signature class
+
         :type actor: ``str``
         :param actor: The actor reference.
+
         :type tags: ``str``
         :param tags: Tags of the file.
+
         :type dbot_score: ``DBotScore``
         :param dbot_score: If file has a score then create and set a DBotScore object
+
         :rtype: ``None``
         :return: None
         """
@@ -2021,10 +2049,9 @@ class Common(object):
                        'val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || ' \
                        'val.SSDeep && val.SSDeep == obj.SSDeep)'
 
-        def __init__(self, name=None, entry_id=None, size=None, md5=None, sha1=None, sha256=None, sha512=None,
-                     ssdeep=None,
-                     extension=None, file_type=None, hostname=None, path=None, company=None, product_name=None,
-                     digital_signature__publisher=None, signature=None, actor=None, tags=None, dbot_score=None):
+        def __init__(self, dbot_score, name=None, entry_id=None, size=None, md5=None, sha1=None, sha256=None,
+                     sha512=None, ssdeep=None, extension=None, file_type=None, hostname=None, path=None, company=None,
+                     product_name=None, digital_signature__publisher=None, signature=None, actor=None, tags=None):
 
             self.name = name
             self.entry_id = entry_id
@@ -2044,11 +2071,6 @@ class Common(object):
             self.signature = signature
             self.actor = actor
             self.tags = tags
-
-            self.dbot_score = dbot_score
-
-        def set_dbot_score(self, dbot_score):
-            # type: (Common.DBotScore) -> None
 
             self.dbot_score = dbot_score
 
@@ -2125,7 +2147,7 @@ class Common(object):
         :return: None
         :rtype: ``None``
         """
-        CONTEXT_PATH = 'URL(val.Data && val.Data == obj.Data)'
+        CONTEXT_PATH = 'CVE(val.ID && val.ID == obj.ID)'
 
         def __init__(self, id, cvss, published, modified, description):
             # type (str, str, str, str, str) -> None
@@ -2135,13 +2157,6 @@ class Common(object):
             self.published = published
             self.modified = modified
             self.description = description
-
-            self.dbot_score = None
-
-        def set_dbot_score(self, dbot_score):
-            # type: (Common.DBotScore) -> None
-
-            self.dbot_score = dbot_score
 
         def to_context(self):
             cve_context = {
@@ -2161,11 +2176,8 @@ class Common(object):
                 cve_context['Description'] = self.description
 
             ret_value = {
-                Common.URL.CONTEXT_PATH: cve_context
+                Common.CVE.CONTEXT_PATH: cve_context
             }
-
-            if self.dbot_score:
-                ret_value.update(self.dbot_score.to_context())
 
             return ret_value
 
@@ -2174,26 +2186,25 @@ class Common(object):
         URL indicator - https://xsoar.pan.dev/docs/context-standards#url
         :type url: ``str``
         :param url: The URL
+
         :type detection_engines: ``int``
         :param detection_engines: The total number of engines that checked the indicator.
+
         :type positive_detections: ``int``
         :param positive_detections: The number of engines that positively detected the indicator as malicious.
+
         :type dbot_score: ``DBotScore``
         :param dbot_score: If URL has reputation then create DBotScore object
+
         :return: None
         :rtype: ``None``
         """
         CONTEXT_PATH = 'URL(val.Data && val.Data == obj.Data)'
 
-        def __init__(self, url, detection_engines=None, positive_detections=None, dbot_score=None):
+        def __init__(self, url, dbot_score, detection_engines=None, positive_detections=None):
             self.url = url
             self.detection_engines = detection_engines
             self.positive_detections = positive_detections
-
-            self.dbot_score = dbot_score
-
-        def set_dbot_score(self, dbot_score):
-            # type: (Common.DBotScore) -> None
 
             self.dbot_score = dbot_score
 
@@ -2228,7 +2239,7 @@ class Common(object):
         WHOIS is a class that used with Domain class
         """
 
-        def __init__(self, domain_status=None, name_servers=None, creation_date=None, update_date=None,
+        def __init__(self, domain_status=None, name_servers=None, creation_date=None, updated_date=None,
                      expiration_date=None, registrar_name=None, registrar_abuse_email=None, registrar_abuse_phone=None,
                      registrant_name=None, registrant_email=None, registrant_phone=None,
                      admin_name=None, admin_email=None, admin_phone=None):
@@ -2236,7 +2247,7 @@ class Common(object):
             self.domain_status = domain_status
             self.name_servers = name_servers
             self.creation_date = creation_date
-            self.update_date = update_date
+            self.updated_date = updated_date
             self.expiration_date = expiration_date
             self.registrar_name = registrar_name
             self.registrar_abuse_email = registrar_abuse_email
@@ -2262,8 +2273,8 @@ class Common(object):
             if self.creation_date:
                 whois_context['CreationDate'] = self.creation_date
 
-            if self.update_date:
-                whois_context['UpdateDate'] = self.update_date
+            if self.updated_date:
+                whois_context['UpdatedDate'] = self.updated_date
 
             if self.expiration_date:
                 whois_context['ExpirationDate'] = self.expiration_date
@@ -2297,9 +2308,9 @@ class Common(object):
         """
         CONTEXT_PATH = 'Domain(val.Name && val.Name == obj.Name)'
 
-        def __init__(self, domain, dns=None, detection_engines=None, positive_detections=None, whois=None,
-                     organization=None, sub_domains=None, creation_date=None, update_date=None, expiration_date=None,
-                     domain_status=None, name_servers=None, dbot_score=None):
+        def __init__(self, domain, dbot_score, dns=None, detection_engines=None, positive_detections=None, whois=None,
+                     organization=None, sub_domains=None, creation_date=None, updated_date=None, expiration_date=None,
+                     domain_status=None, name_servers=None):
             self.domain = domain
             self.dns = dns
             self.detection_engines = detection_engines
@@ -2308,17 +2319,11 @@ class Common(object):
             self.organization = organization
             self.sub_domains = sub_domains
             self.creation_date = creation_date
-            self.update_date = update_date
+            self.updated_date = updated_date
             self.expiration_date = expiration_date
 
             self.domain_status = domain_status
             self.name_servers = name_servers
-
-            # DBotScore fields
-            self.dbot_score = dbot_score
-
-        def set_dbot_score(self, dbot_score):
-            # type: (Common.DBotScore) -> None
 
             self.dbot_score = dbot_score
 
@@ -2357,8 +2362,8 @@ class Common(object):
             if self.creation_date:
                 domain_context['CreationDate'] = self.creation_date
 
-            if self.update_date:
-                domain_context['UpdateDate'] = self.update_date
+            if self.updated_date:
+                domain_context['UpdatedDate'] = self.updated_date
 
             if self.expiration_date:
                 domain_context['ExpirationDate'] = self.expiration_date
@@ -2380,6 +2385,7 @@ class Common(object):
                 ret_value.update(self.dbot_score.to_context())
 
             return ret_value
+
 
 class CommandResults:
     """
@@ -2430,7 +2436,14 @@ class CommandResults:
 
         if self.indicators:
             for indicator in self.indicators:
-                outputs.update(indicator.to_context())
+                context_outputs = indicator.to_context()
+                for key in context_outputs.keys():
+                    value = context_outputs[key]
+
+                    if key not in outputs:
+                        outputs[key] = []
+
+                    outputs[key].append(value)
 
         if self.raw_response:
             raw_response = self.raw_response

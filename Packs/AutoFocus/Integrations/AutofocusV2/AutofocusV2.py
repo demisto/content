@@ -1396,7 +1396,7 @@ def search_domain_command(args):
             whois=Common.WHOIS(
                 creation_date=indicator.get('whoisDomainCreationDate'),
                 expiration_date=indicator.get('whoisDomainExpireDate'),
-                update_date=indicator.get('whoisDomainUpdateDate'),
+                updated_date=indicator.get('whoisDomainUpdateDate'),
 
                 admin_email=indicator.get('whoisAdminEmail'),
                 admin_name=indicator.get('whoisAdminName'),
