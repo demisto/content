@@ -267,8 +267,7 @@ class TestChangelogCreation:
         assert result is True
 
     def test_prepare_release_notes_upgrade_version(self, mocker, dummy_pack):
-        from unittest.mock import MagicMock
-        from unittest.mock import mock_open
+        from unittest.mock import MagicMock, mock_open
         """ In case changelog.json does exists, expected result should be initial version 1.0.0
         """
         dummy_pack.current_version = '2.0.2'
@@ -293,7 +292,7 @@ class TestChangelogCreation:
         handle1.__iter__.return_value = original_changelog
         handle2 = MagicMock('file2').__enter__.return_value
         handle2.__iter__.return_value = new_changelog_file
-        mock_open.return_value.side_effect = (handle1, handle2)
+        mock_open.side_effect = (handle1, handle2)
         dummy_path = 'Irrelevant/Test/Path'
         result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path)
         assert result is True
