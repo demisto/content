@@ -95,7 +95,10 @@ def login():
         'user': USERNAME,
         'pass': PASSWORD
     }
-    SESSION.post(SERVER, data=data)  # type: ignore
+    res = SESSION.post(SERVER, data=data)  # type: ignore
+    if res.status_code not in {200, 201, 202}:
+        return_error("Error: login failed. please check your credentials.")
+
 
 
 def logout():
