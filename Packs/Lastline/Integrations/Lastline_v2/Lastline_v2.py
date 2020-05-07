@@ -1,9 +1,9 @@
 import hashlib
 from typing import Dict, List
 from urllib3 import disable_warnings
-import Packs.Lastline_v2.Integrations.Lastline_v2.demistomock as demisto
-from Packs.Lastline_v2.Integrations.Lastline_v2.CommonServerPython import *
-from Packs.Lastline_v2.Integrations.Lastline_v2.CommonServerUserPython import *
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
 
 
 INTEGRATION_COMMAND_NAME = "lastline"
