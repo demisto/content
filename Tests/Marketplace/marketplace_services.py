@@ -6,6 +6,7 @@ import shutil
 import yaml
 import enum
 import base64
+import urllib.parse
 from distutils.util import strtobool
 from distutils.version import LooseVersion
 from datetime import datetime
@@ -1024,7 +1025,7 @@ class Pack(object):
                     pack_image_blob.upload_from_file(image_file)
                     uploaded_integration_images.append({
                         'name': image_data.get('display_name', ''),
-                        'imagePath': pack_image_blob.name if GCPConfig.USE_GCS_RELATIVE_PATH
+                        'imagePath': urllib.parse.quote(pack_image_blob.name) if GCPConfig.USE_GCS_RELATIVE_PATH
                         else pack_image_blob.public_url
                     })
 
