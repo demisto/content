@@ -1,0 +1,5 @@
+otrs-create-ticket title="TestTicket" queue="Inbox::SIEM" state="New" priority="2Low" customer_user="jb" article_subject="TestArticle" article_body="Testing" type="Unclassified"
+otrs-get-ticket ticket_id="7023"
+otrs-update-ticket ticket_id="7023" title="UpdatedTitle" state="Open" priority="1VeryLow" type="Incident"
+otrs-search-ticket state="PendingReminder" title="7023"
+otrs-close-ticket ticket_id="7023" article_subject="ClosingSubject" article_body="ClosingBody"
