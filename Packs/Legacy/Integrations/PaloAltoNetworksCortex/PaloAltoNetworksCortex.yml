@@ -140,7 +140,7 @@ configuration:
   - wsmprovhost.exe Rare Child Process
   required: false
   type: 16
-description: Deprecated - We recommend using Cortex Data Lake integration instead.
+description: Deprecated - We recommend using the Cortex Data Lake integration instead.
   This framework manages all PA's cloud managed products
 display: Palo Alto Networks Cortex (Deprecated)
 name: Palo Alto Networks Cortex
