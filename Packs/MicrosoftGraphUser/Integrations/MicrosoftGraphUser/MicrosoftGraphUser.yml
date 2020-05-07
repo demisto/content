@@ -419,7 +419,7 @@ script:
     - contextPath: MSGraphUserDirectReports.Reports.JobTitle
       description: The user's job title.
       type: Unknown
-    - contextPath: MSGraphUserDirectReports.Reports.Nail
+    - contextPath: MSGraphUserDirectReports.Reports.Mail
       description: The email address of the user.
       type: Unknown
     - contextPath: MSGraphUserDirectReports.Reports.MobilePhone
