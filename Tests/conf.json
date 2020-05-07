@@ -1325,7 +1325,7 @@
         },
         {
             "integrations": "carbonblackliveresponse",
-            "playbookID": "CarbonBlackLiveResponseTest",
+            "playbookID": "Carbon Black Live Response Test",
             "nightly": true
         },
         {
@@ -1560,7 +1560,7 @@
         },
         {
             "integrations": "carbonblack-v2",
-            "playbookID": "CarbonBlackResponseTest"
+            "playbookID": "Carbon Black Response Test"
         },
         {
             "integrations": "Cisco Umbrella Investigate",
