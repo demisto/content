@@ -28,6 +28,7 @@ FETCH_QUEUE = demisto.params()['fetch_queue']
 CURLY_BRACKETS_REGEX = r'\{(.*?)\}'  # Extracts string in curly brackets, e.g. '{string}' -> 'string'
 apostrophe = "'"
 SESSION = requests.session()
+SESSION.verify = USE_SSL
 REFERER = demisto.params().get('referer')
 HEADERS = {'Referer': REFERER} if REFERER else {}
 
@@ -96,7 +97,9 @@ def login():
         'pass': PASSWORD
     }
     res = SESSION.post(SERVER, data=data)  # type: ignore
-    if res.status_code not in {200, 201, 202}:
+    response_text = str(res.text)
+    are_credentials_wrong = 'Your username or password is incorrect' in response_text
+    if are_credentials_wrong:
         return_error("Error: login failed. please check your credentials.")
 
 
