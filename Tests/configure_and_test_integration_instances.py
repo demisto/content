@@ -23,6 +23,8 @@ from demisto_sdk.commands.common.tools import server_version_compare
 from Tests.update_content_data import update_content
 # from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies
 
+MARKET_PLACE_MACHINES = ('master',)
+
 
 def options_handler():
     parser = argparse.ArgumentParser(description='Utility for instantiating and testing integration instances')
@@ -287,7 +289,7 @@ def get_content_version_details(client, ami_name, prints_manager, thread_index):
     prints_manager.add_print_job(installed_content_message, print_color, thread_index, LOG_COLORS.GREEN)
 
     # make request to installed content details
-    uri = '/content/installedlegacy' if ami_name in ('master', ) else '/content/installed'
+    uri = '/content/installedlegacy' if ami_name in MARKET_PLACE_MACHINES else '/content/installed'
     response_data, status_code, _ = demisto_client.generic_request_func(self=client, path=uri,
                                                                         method='POST')
 
@@ -554,7 +556,9 @@ def update_content_on_demisto_instance(client, server, ami_name, prints_manager,
                 'Content Update to version: {} was Unsuccessful:\n{}'.format(release, err_details),
                 print_error, thread_index)
             prints_manager.execute_thread_prints(thread_index)
-            os._exit(1)
+
+            if ami_name not in MARKET_PLACE_MACHINES:
+                os._exit(1)
 
 
 def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, postupdate_success,
