@@ -394,10 +394,8 @@ class Client(BaseClient):
         super().__init__(base_url='', verify=verify, proxy=proxy)
         self._base_url = server_url
         self._sc_server_url = sc_server_url
-        # self._verify = verify
         self._username = username
         self._password = password
-        # self._proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
         self.fetch_time = fetch_time
         self.timestamp_field = timestamp_field
         self.ticket_type = ticket_type
