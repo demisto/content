@@ -2,36 +2,40 @@
 
 ---
 
-Integration description: Microsoft Graph lets your app get an authorized access to files in OneDrive, SharePoint and MS Teams across all organization. (requires admin consent).
+Microsoft Graph lets your app get an authorized access to files in OneDrive, SharePoint and MS Teams across all organization. (requires admin consent).
 This integration was integrated and tested with version xx of Microsoft_Graph_Files
 
-## Microsoft_Graph_Files Playbook
+## Required Permissions
+1. Directory.Read.All - Delegated
+2. Files.ReadWrite.All - Application
+3. Files.ReadWrite.All - Delegated
+4. Sites.ReadWrite.All - Application
+5. Sites.ReadWrite.All - Delegated
+6. User.Read - Delegated
 
----
+## Configure Microsoft Graph Files on Demisto
 
-## Use Cases
-
----
-
-## Configure Microsoft_Graph_Files on Demisto
-
----
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for Microsoft_Graph_Files.
 3. Click __Add instance__ to create and configure a new integration instance.
-   * __Name__: a textual name for the integration instance.
-   * __Server URL__
-   * __ID (received from the admin consent - see Detailed Instructions)__
-   * __Token (received from the admin consent - see Detailed Instructions)__
-   * __Key (received from the admin consent - see Detailed Instructions)__
-   * __Trust any certificate (not secure)__
-   * __Use system proxy settings__
+   - __Name__: a textual name for the integration instance.
+   - __Server URL__
+   - __ID (received from the admin consent - see Detailed Instructions)__
+   - __Token (received from the admin consent - see Detailed Instructions)__
+   - __Key (received from the admin consent - see Detailed Instructions)__
+   - __Trust any certificate (not secure)__
+   - __Use system proxy settings__
 4. Click __Test__ to validate the URLs, token, and connection.
 
-## Fetched Incidents Data
 
----
+## Use a Self-Deployed Azure Application
+
+To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the [Microsoft documentation](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
+<br/>The Tenant ID, Client ID, and Client secret are required for the integration. When you configure the integration in Demisto enter those parameters in the appropriate fields (instead of how you received them from the admin consent in the current doc).
+* ID - Client ID
+* Token - Tenant ID
+* Key - Client Secret
 
 ## Commands
 
@@ -57,7 +61,7 @@ Delete a DriveItem by using its ID
 
 ##### Required Permissions
 
-**FILL IN REQUIRED PERMISSIONS HERE**
+    Files.ReadWrite.All
 
 ##### Base Command
 
@@ -97,7 +101,7 @@ Uploads a file from Demisto to MS Graph resource
 
 ##### Required Permissions
 
-**FILL IN REQUIRED PERMISSIONS HERE**
+    Files.ReadWrite.All
 
 ##### Base Command
 
@@ -206,7 +210,8 @@ Replace file context in MS Graph resource
 
 ##### Required Permissions
 
-**FILL IN REQUIRED PERMISSIONS HERE**
+    Files.ReadWrite.All
+    Sites.ReadWrite.All
 
 ##### Base Command
 
@@ -314,7 +319,9 @@ Create a new folder in a Drive with a specified parent item or path.
 
 ##### Required Permissions
 
-**FILL IN REQUIRED PERMISSIONS HERE**
+    Files.ReadWrite.All
+    Sites.ReadWrite.All
+
 
 ##### Base Command
 
@@ -415,7 +422,8 @@ Returns the list of Drive resources available for a target Site
 
 ##### Required Permissions
 
-**FILL IN REQUIRED PERMISSIONS HERE**
+    Sites.ReadWrite.All
+    Files.ReadWrite.All
 
 ##### Base Command
 
@@ -501,7 +509,8 @@ This command list all the drive's files and folders
 
 ##### Required Permissions
 
-**FILL IN REQUIRED PERMISSIONS HERE**
+    Files.ReadWrite.All
+    Sites.ReadWrite.All
 
 ##### Base Command
 
@@ -610,7 +619,7 @@ Returns a list of the tenant Sites
 
 ##### Required Permissions
 
-**FILL IN REQUIRED PERMISSIONS HERE**
+    Sites.ReadWrite.All
 
 ##### Base Command
 
@@ -789,7 +798,8 @@ Download the contents of the file of a DriveItem.
 
 ##### Required Permissions
 
-**FILL IN REQUIRED PERMISSIONS HERE**
+    Files.ReadWrite.All
+    Sites.ReadWrite.All
 
 ##### Base Command
 
