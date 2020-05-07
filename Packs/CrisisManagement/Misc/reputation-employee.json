@@ -21,6 +21,5 @@
 	"defaultMapping": null,
 	"manualMapping": {},
 	"fileHashesPriority": null,
-	"expiration": 0,
-	"shouldShareComments": false
+	"expiration": 0
 }
