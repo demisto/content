@@ -2,6 +2,7 @@ id: Test Playbook McAfee ePO
 version: -1
 name: Test Playbook McAfee ePO
 description: Test the McAfee ePO integration by running basic commands
+fromversion: 5.0.0
 starttaskid: '0'
 tasks:
   '0':
