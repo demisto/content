@@ -1,7 +1,8 @@
 {
     "name": "Microsoft Graph Groups",
     "description": "Microsoft Graph Groups enables you to create and manage different types of groups and group functionality according to your requirements.",
-    "support": "xsoar",
+    "support": "Cortex XSOAR",
+    "serverMinVersion": "4.1.0",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
@@ -10,12 +11,13 @@
         "IT Services"
     ],
     "tags": [],
-    "created": "2020-04-14T00:00:00Z",
-    "updated": "2020-03-14T00:00:00Z",
+    "created": "2020-04-20T11:24:15Z",
+    "updated": "2020-04-20T11:24:15Z",
     "beta": false,
     "deprecated": false,
+    "certification": "certified",
     "useCases": [],
     "keywords": [],
-    "dependencies": {},
-    "displayedImages": []
+    "price": 0,
+    "dependencies": {}
 }
