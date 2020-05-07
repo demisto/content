@@ -1156,17 +1156,34 @@ def appendContext(key, data, dedup=False):
     if data is None:
         return
     existing = demisto.get(demisto.context(), key)
+
     if existing:
-        strBased = isinstance(data, STRING_TYPES) and isinstance(existing, STRING_TYPES)
-        if strBased:
-            data = data.split(',')
-            existing = existing.split(',')
-        newVal = data + existing
+        if isinstance(existing, STRING_TYPES):
+            if isinstance(data, STRING_TYPES):
+                new_val = data + ', ' + existing
+            else:
+                return_error("Cannot append data to the existing context - \n The data is of instance {} while the "
+                             "context in the specified path is of instance {}.".format(type(data), type(existing)))
+
+        if isinstance(existing, dict):
+            if isinstance(data, dict):
+                existing.update(data)
+                new_val = existing
+            else:
+                return_error("Cannot append data to the existing context - \n The data is of instance {} while the "
+                            "context in the specified path is of instance {}.".format(type(data), type(existing)))
+
+        if isinstance(existing, list):
+            if isinstance(data, list):
+                existing.extend(data)
+            else:
+                existing.append(data)
+            new_val = existing
+
         if dedup:
-            newVal = list(set(newVal))
-        if strBased:
-            newVal = ','.join(newVal)
-        demisto.setContext(key, newVal)
+            new_val = list(set(new_val))
+
+        demisto.setContext(key, new_val)
     else:
         demisto.setContext(key, data)
 
