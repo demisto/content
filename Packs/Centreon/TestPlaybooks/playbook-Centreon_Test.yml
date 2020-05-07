@@ -1,26 +1,31 @@
 id: Centreon-Test-Playbook
 version: -1
 name: Centreon-Test-Playbook
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 14e584a2-db11-473e-8668-7c20e1e47e03
     type: start
     task:
       id: 14e584a2-db11-473e-8668-7c20e1e47e03
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
-  '1':
-    id: '1'
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
     taskid: 39a86d2d-ef6d-4c46-8201-3702706e17f0
     type: regular
     task:
@@ -44,10 +49,24 @@ tasks:
       status: {}
       viewType: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 275,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n\
-  \    }\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
 inputs: []
 outputs: []
-description: ''

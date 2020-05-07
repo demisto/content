@@ -1,29 +1,35 @@
 id: CuckooTest
 version: -1
 name: CuckooTest
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 72626119-b97c-4141-82ef-370fb9ed3b11
     type: start
     task:
       id: 72626119-b97c-4141-82ef-370fb9ed3b11
       version: -1
-      name: ''
+      name: ""
       description: '-'
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 50\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '1':
-    id: '1'
+  "1":
+    id: "1"
     taskid: 4a4101e9-b07d-4186-8686-c71d8ccbbb3a
     type: regular
     task:
@@ -34,10 +40,10 @@ tasks:
       scriptName: http
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       body: {}
       filename: {}
@@ -53,12 +59,18 @@ tasks:
         simple: https://github.com/demisto/content/raw/master/TestData/pdf_noeof.pdf
       username: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '2':
-    id: '2'
+  "2":
+    id: "2"
     taskid: 08d587b8-ddf0-4212-85c5-af9491110886
     type: regular
     task:
@@ -69,25 +81,31 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '11'
-      - '1'
+      - "11"
+      - "1"
     scriptarguments:
       all:
-        simple: yes
+        simple: "yes"
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 195\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '3':
-    id: '3'
+  "3":
+    id: "3"
     taskid: 73d4c5e5-b609-49e8-8b60-ba8e395e7b8b
     type: playbook
     task:
@@ -98,24 +116,30 @@ tasks:
       playbookName: Detonate File - Cuckoo
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     scriptarguments:
       File:
         simple: ${File}
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
-    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 545\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '7':
-    id: '7'
+  "7":
+    id: "7"
     taskid: 44a55722-69e1-4453-8dce-7ba793b00045
     type: title
     task:
@@ -125,14 +149,20 @@ tasks:
       description: done file
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1215\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1215
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '8':
-    id: '8'
+  "8":
+    id: "8"
     taskid: 4ec9088d-1ec0-4831-84b6-7f8c2d267263
     type: playbook
     task:
@@ -143,24 +173,30 @@ tasks:
       playbookName: Detonate URL - Cuckoo
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '7'
+      - "7"
     scriptarguments:
       URL:
         simple: google.com
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
-    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1040\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1040
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '9':
-    id: '9'
+  "9":
+    id: "9"
     taskid: 9195d534-6cd8-4d62-8eba-aea963b1770c
     type: title
     task:
@@ -170,17 +206,23 @@ tasks:
       description: done file detonate
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '10'
+      - "10"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 720\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '10':
-    id: '10'
+  "10":
+    id: "10"
     taskid: bcb8b1fd-eaad-4e8e-858a-1e3af6fb620c
     type: regular
     task:
@@ -191,24 +233,30 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '8'
+      - "8"
     scriptarguments:
       all:
-        simple: yes
+        simple: "yes"
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 865\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 865
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '11':
-    id: '11'
+  "11":
+    id: "11"
     taskid: 6a88f674-9d86-478a-8b8c-2e95b4bdaf6f
     type: regular
     task:
@@ -219,10 +267,10 @@ tasks:
       scriptName: http
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       body: {}
       filename: {}
@@ -233,19 +281,34 @@ tasks:
       password: {}
       proxy: {}
       saveAsFile:
-        simple: yes
+        simple: "yes"
       unsecure: {}
       url:
         simple: https://github.com/demisto/content/raw/master/TestData/pdf-example-password.pdf
       username: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 370\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 1230,\n      \"width\": 810,\n      \"x\": 50,\n      \"y\": 50\n\
-  \    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1230,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
 inputs: []
 outputs: []
-description: '-'
+description: "-"
