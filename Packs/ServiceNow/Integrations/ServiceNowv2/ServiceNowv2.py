@@ -440,7 +440,8 @@ class Client(BaseClient):
                 with open(file_name, 'rb') as f:
                     files = {'file': f}
                     res = requests.request(method, url, headers=headers, params=params, data=body, files=files,
-                                           auth=(self._username, self._password), verify=self._verify)
+                                           auth=(self._username, self._password), verify=self._verify,
+                                           proxies=self._proxies)
                 shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
             except Exception as err:
                 raise Exception('Failed to upload file - ' + str(err))
@@ -536,7 +537,8 @@ class Client(BaseClient):
                      for attachment in attachments]
 
         for link in links:
-            file_res = requests.get(link[0], auth=(self._username, self._password), verify=self._verify)
+            file_res = requests.get(link[0], auth=(self._username, self._password), verify=self._verify,
+                                    proxies=self._proxies)
             if file_res is not None:
                 entries.append(fileResult(link[1], file_res.content))
 
