@@ -350,5 +350,4 @@ view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n
   \    }\n  }\n}"
 inputs: []
 outputs: []
-fromversion: 5.0.0
 description: ''

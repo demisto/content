@@ -817,7 +817,7 @@
         },
         {
             "integrations": "Devo",
-            "playbookID": "Devo test playbook",
+            "playbookID": "Devo test",
             "timeout": 500
         },
         {
@@ -1177,7 +1177,7 @@
         },
         {
             "integrations": "FalconHost",
-            "playbookID": "CrowdStrike FalconHost Test"
+            "playbookID": "FalconHost Test"
         },
         {
             "integrations": "CrowdstrikeFalcon",
