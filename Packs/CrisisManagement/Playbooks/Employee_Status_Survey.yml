@@ -855,7 +855,7 @@ inputs:
   value:
     complex:
       root: incident
-      accessor: employeemanageremail
+      accessor: manageremail
   required: false
   description: The email of the manager whose direct reports should be contacted for
     their health status and offered assistance.

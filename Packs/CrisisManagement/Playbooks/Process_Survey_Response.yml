@@ -278,7 +278,7 @@ tasks:
       emailurlclicked: {}
       employeedisplayname: {}
       employeeemail: {}
-      employeemanageremail: {}
+      manageremail: {}
       endpointstatus: {}
       entryIDs: {}
       exfiltratedfiles: {}
@@ -736,7 +736,7 @@ tasks:
       emailurlclicked: {}
       employeedisplayname: {}
       employeeemail: {}
-      employeemanageremail: {}
+      manageremail: {}
       endpointstatus: {}
       entryIDs: {}
       exfiltratedfiles: {}

@@ -1,13 +1,13 @@
 {
-	"id": "incident_employeemanageremail",
+	"id": "incident_manageremail",
 	"version": -1,
 	"fromVersion": "5.0.0",
 	"modified": "2019-12-17T17:01:58.202161586Z",
-	"name": "Employee Manager Email",
+	"name": "Manager Email",
 	"ownerOnly": false,
 	"placeholder": "",
-	"description": "The email address of the employee's manager.",
-	"cliName": "employeemanageremail",
+	"description": "The user's manager email.",
+	"cliName": "manageremail",
 	"type": "shortText",
 	"closeForm": false,
 	"editForm": true,
@@ -25,8 +25,7 @@
 	"group": 0,
 	"hidden": false,
 	"associatedTypes": [
-		"Employee Offboarding",
-		"Port Scan"
+		"Employee Health Check"
 	],
 	"systemAssociatedTypes": null,
 	"associatedToAll": false,
