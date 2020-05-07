@@ -1,0 +1,507 @@
+id: TIM - Process Domain Registrar With WHOIS
+version: -1
+fromversion: 5.5.0
+name: TIM - Process Domain Registrar With WHOIS
+description: This playbook runs the whois enrichment on domain indicators provided
+  by an indicator query such as "type:Domain". The playbook than compares the domains
+  registrars against the Cortex XSOAR list provided in the inputs.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7a672deb-4ed1-43d6-82f2-64e2c0cc6193
+    type: start
+    task:
+      id: 7a672deb-4ed1-43d6-82f2-64e2c0cc6193
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 8048c6d6-6c8c-407c-8b55-36b3f73b13d4
+    type: condition
+    task:
+      id: 8048c6d6-6c8c-407c-8b55-36b3f73b13d4
+      version: -1
+      name: Are there query results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: playbookQuery.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 7e169b90-e980-4c8b-8a93-4a630659f913
+    type: title
+    task:
+      id: 7e169b90-e980-4c8b-8a93-4a630659f913
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 350b22cc-315f-4b48-817e-726095a219b4
+    type: regular
+    task:
+      id: 350b22cc-315f-4b48-817e-726095a219b4
+      version: -1
+      name: Run Whois on indicators
+      description: Provides data enrichment for domains.
+      script: Whois|||whois
+      type: regular
+      iscommand: true
+      brand: Whois
+    nexttasks:
+      '#none#':
+      - "4"
+      - "13"
+    scriptarguments:
+      query:
+        simple: ${playbookQuery.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -680,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 3860a6ad-8729-4705-800f-c94bbe14a950
+    type: regular
+    task:
+      id: 3860a6ad-8729-4705-800f-c94bbe14a950
+      version: -1
+      name: FilterByList
+      description: Checks whether the specified item is in a list. The default list
+        is the Demisto Indicators Whitelist.
+      scriptName: FilterByList2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+      - "20"
+    scriptarguments:
+      delimiter:
+        simple: ;
+      ignorecase:
+        simple: "yes"
+      listname:
+        simple: ${inputs.ApprovedRegistrarsListName}
+      matchexact:
+        simple: "yes"
+      values:
+        simple: ${Domain.Whois.Registrar.Name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 651a2341-edc5-4db3-815f-e3fdc225d1f6
+    type: condition
+    task:
+      id: 651a2341-edc5-4db3-815f-e3fdc225d1f6
+      version: -1
+      name: Is there an approved registrars list?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ApprovedRegistrarsListName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 35ac5711-94b3-4539-8fdd-ccb32efaea81
+    type: regular
+    task:
+      id: 35ac5711-94b3-4539-8fdd-ccb32efaea81
+      version: -1
+      name: Set non approved domains
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: NonApprovedDomains
+      stringify: {}
+      value:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: Domain
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: fc969d33-7b21-4e5c-8596-2f97f80f56ee
+    type: condition
+    task:
+      id: fc969d33-7b21-4e5c-8596-2f97f80f56ee
+      version: -1
+      name: Are there domains without Whois query results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: startWith
+          left:
+            value:
+              simple: Domain.Whois.Raw
+            iscontext: true
+          right:
+            value:
+              simple: NOT FOUND
+    view: |-
+      {
+        "position": {
+          "x": -680,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: e8b0b40f-4494-4666-80f4-13735cec57c7
+    type: regular
+    task:
+      id: e8b0b40f-4494-4666-80f4-13735cec57c7
+      version: -1
+      name: Set domains without Whois results
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: NonApprovedDomains
+      stringify: {}
+      value:
+        complex:
+          root: Domain
+          filters:
+          - - operator: startWith
+              left:
+                value:
+                  simple: Domain.Whois.Raw
+                iscontext: true
+              right:
+                value:
+                  simple: NOT FOUND
+          accessor: Whois.QueryValue
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -870,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: de3fe8c1-0e6f-4b1f-8ce6-a6094751cf05
+    type: regular
+    task:
+      id: de3fe8c1-0e6f-4b1f-8ce6-a6094751cf05
+      version: -1
+      name: Set domains by approved registrars
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ApprovedDomains
+      stringify: {}
+      value:
+        complex:
+          root: Domain
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: Domain.Whois.Registrar.Name
+                iscontext: true
+              right:
+                value:
+                  simple: List.In
+                iscontext: true
+          accessor: Whois.QueryValue
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: ba8ca90e-af1e-44a0-88ad-81e0200494a2
+    type: regular
+    task:
+      id: ba8ca90e-af1e-44a0-88ad-81e0200494a2
+      version: -1
+      name: Set domains by non approved registrars
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: NonApprovedDomains
+      stringify: {}
+      value:
+        complex:
+          root: Domain
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: Domain.Whois.Registrar.Name
+                iscontext: true
+              right:
+                value:
+                  simple: List.NotIn
+                iscontext: true
+          accessor: Whois.QueryValue
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1345,
+        "width": 1970,
+        "x": -870,
+        "y": -80
+      }
+    }
+  }
+inputs:
+- key: ""
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+    query: ""
+    queryEntity: indicators
+    results: null
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue: null
+        fromvalue: null
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: false
+- key: ApprovedRegistrarsListName
+  value: {}
+  required: false
+  description: This Cortex XSoar list name that contains the approved registrars.
+  playbookInputQuery: null
+outputs:
+- contextPath: NonApprovedDomains
+  description: Domains for which the registrar isn't approved.
+  type: string
+- contextPath: ApprovedDomains
+  description: Domains for which the registrar is approved.
+  type: string
+quiet: true
+tests:
+- No test
