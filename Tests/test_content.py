@@ -1,26 +1,27 @@
 from __future__ import print_function
+import os
 import re
 import sys
 import json
 import time
-import urllib3
 import argparse
-import requests
 import threading
 import subprocess
-import os
 from time import sleep
 from datetime import datetime
+from distutils.version import LooseVersion
 
+import urllib3
+import requests
 import demisto_client.demisto_api
 from slackclient import SlackClient
 
 from Tests.mock_server import MITMProxy, AMIConnection
 from Tests.test_integration import Docker, test_integration, disable_all_integrations
-from demisto_sdk.commands.common.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF, PB_Status
 from Tests.test_dependencies import get_used_integrations, get_tests_allocation_for_threads
+from demisto_sdk.commands.common.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF, PB_Status
 from demisto_sdk.commands.common.tools import print_color, print_error, print_warning, \
-    LOG_COLORS, str2bool, server_version_compare
+    LOG_COLORS, str2bool
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -111,11 +112,12 @@ class ParallelPrintsManager:
         thread_last_update = self.threads_last_update_times[thread_index]
         return current_time - thread_last_update > 300
 
-    def add_print_job(self, message_to_print, print_function_to_execute, thread_index, message_color=None):
-        if message_color:
-            print_job = PrintJob(message_to_print, print_function_to_execute, message_color)
-        else:
-            print_job = PrintJob(message_to_print, print_function_to_execute)
+    def add_print_job(self, message_to_print, print_function_to_execute, thread_index, message_color=None,
+                      include_timestamp=False):
+        if include_timestamp:
+            message_to_print = f'[{datetime.now()}] {message_to_print}'
+
+        print_job = PrintJob(message_to_print, print_function_to_execute, message_color=message_color)
         self.threads_print_jobs[thread_index].append(print_job)
         if self.should_update_thread_status(thread_index):
             print("Thread {} is still running.".format(thread_index))
@@ -325,7 +327,7 @@ def mock_run(tests_settings, c, proxy, failed_playbooks, integrations, playbook_
 
     if proxy.has_mock_file(playbook_id):
         start_mock_message = '{} (Mock: Playback)'.format(start_message)
-        prints_manager.add_print_job(start_mock_message, print, thread_index)
+        prints_manager.add_print_job(start_mock_message, print, thread_index, include_timestamp=True)
         proxy.start(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
         # run test
         status, inc_id = test_integration(c, server_url, integrations, playbook_id, prints_manager, test_options,
@@ -336,34 +338,32 @@ def mock_run(tests_settings, c, proxy, failed_playbooks, integrations, playbook_
             succeed_message = 'PASS: {} succeed'.format(test_message)
             prints_manager.add_print_job(succeed_message, print_color, thread_index, LOG_COLORS.GREEN)
             succeed_playbooks.append(playbook_id)
-            end_mock_message = '------ Test {} end ------\n'.format(test_message)
-            prints_manager.add_print_job(end_mock_message, print, thread_index)
-
+            end_mock_message = f'------ Test {test_message} end ------\n'
+            prints_manager.add_print_job(end_mock_message, print, thread_index, include_timestamp=True)
             return
 
-        elif status == PB_Status.NOT_SUPPORTED_VERSION:
+        if status == PB_Status.NOT_SUPPORTED_VERSION:
             not_supported_version_message = 'PASS: {} skipped - not supported version'.format(test_message)
             prints_manager.add_print_job(not_supported_version_message, print, thread_index)
             succeed_playbooks.append(playbook_id)
-            end_mock_message = '------ Test {} end ------\n'.format(test_message)
-            prints_manager.add_print_job(end_mock_message, print, thread_index)
-
+            end_mock_message = f'------ Test {test_message} end ------\n'
+            prints_manager.add_print_job(end_mock_message, print, thread_index, include_timestamp=True)
             return
-        elif status == PB_Status.FAILED_DOCKER_TEST:
+
+        if status == PB_Status.FAILED_DOCKER_TEST:
             error_message = 'Failed: {} failed'.format(test_message)
             prints_manager.add_print_job(error_message, print_error, thread_index)
             failed_playbooks.append(playbook_id)
-            end_mock_message = '------ Test {} end ------\n'.format(test_message)
-            prints_manager.add_print_job(end_mock_message, print, thread_index)
-
+            end_mock_message = f'------ Test {test_message} end ------\n'
+            prints_manager.add_print_job(end_mock_message, print, thread_index, include_timestamp=True)
             return
-        else:
-            mock_failed_message = "Test failed with mock, recording new mock file. (Mock: Recording)"
-            prints_manager.add_print_job(mock_failed_message, print, thread_index)
-            rerecord = True
+
+        mock_failed_message = "Test failed with mock, recording new mock file. (Mock: Recording)"
+        prints_manager.add_print_job(mock_failed_message, print, thread_index)
+        rerecord = True
     else:
         mock_recording_message = start_message + ' (Mock: Recording)'
-        prints_manager.add_print_job(mock_recording_message, print, thread_index)
+        prints_manager.add_print_job(mock_recording_message, print, thread_index, include_timestamp=True)
 
     # Mock recording - no mock file or playback failure.
     succeed = run_and_record(tests_settings, c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
@@ -372,22 +372,23 @@ def mock_run(tests_settings, c, proxy, failed_playbooks, integrations, playbook_
 
     if rerecord and succeed:
         proxy.rerecorded_tests.append(playbook_id)
-    test_end_message = '------ Test {} end ------\n'.format(test_message)
-    prints_manager.add_print_job(test_end_message, print, thread_index)
+    test_end_message = f'------ Test {test_message} end ------\n'
+    prints_manager.add_print_job(test_end_message, print, thread_index, include_timestamp=True)
 
 
 def run_test(tests_settings, demisto_api_key, proxy, failed_playbooks, integrations, unmockable_integrations,
              playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number,
              server_url, build_name, prints_manager, is_ami=True, thread_index=0):
-    start_message = '------ Test %s start ------' % (test_message,)
+    start_message = f'------ Test {test_message} start ------'
     client = demisto_client.configure(base_url=server_url, api_key=demisto_api_key, verify_ssl=False)
 
     if not is_ami or (not integrations or has_unmockable_integration(integrations, unmockable_integrations)):
-        prints_manager.add_print_job(start_message + ' (Mock: Disabled)', print, thread_index)
+        prints_manager.add_print_job(start_message + ' (Mock: Disabled)', print, thread_index, include_timestamp=True)
         run_test_logic(tests_settings, client, failed_playbooks, integrations, playbook_id, succeed_playbooks,
                        test_message, test_options, slack, circle_ci, build_number, server_url, build_name,
                        prints_manager, thread_index=thread_index)
-        prints_manager.add_print_job('------ Test %s end ------\n' % (test_message,), print, thread_index)
+        prints_manager.add_print_job('------ Test %s end ------\n' % (test_message,), print, thread_index,
+                                     include_timestamp=True)
 
         return
     mock_run(tests_settings, client, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
@@ -580,9 +581,11 @@ def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_te
 
     # Skip nightly test
     if skip_nightly_test:
-        prints_manager.add_print_job('\n------ Test {} start ------'.format(test_message), print, thread_index)
+        prints_manager.add_print_job(f'\n------ Test {test_message} start ------', print, thread_index,
+                                     include_timestamp=True)
         prints_manager.add_print_job('Skip test', print, thread_index)
-        prints_manager.add_print_job('------ Test {} end ------\n'.format(test_message), print, thread_index)
+        prints_manager.add_print_job(f'------ Test {test_message} end ------\n', print, thread_index,
+                                     include_timestamp=True)
         return
 
     if not run_all_tests:
@@ -602,14 +605,16 @@ def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_te
     # Skip version mismatch test
     test_from_version = t.get('fromversion', '0.0.0')
     test_to_version = t.get('toversion', '99.99.99')
-    if (server_version_compare(test_from_version, server_numeric_version) > 0
-            or server_version_compare(test_to_version, server_numeric_version) < 0):
-        prints_manager.add_print_job('\n------ Test {} start ------'.format(test_message), print, thread_index)
+
+    if not (LooseVersion(test_from_version) <= LooseVersion(server_numeric_version) <= LooseVersion(test_to_version)):
+        prints_manager.add_print_job(f'\n------ Test {test_message} start ------', print, thread_index,
+                                     include_timestamp=True)
         warning_message = 'Test {} ignored due to version mismatch (test versions: {}-{})'.format(test_message,
                                                                                                   test_from_version,
                                                                                                   test_to_version)
         prints_manager.add_print_job(warning_message, print_warning, thread_index)
-        prints_manager.add_print_job('------ Test {} end ------\n'.format(test_message), print, thread_index)
+        prints_manager.add_print_job(f'------ Test {test_message} end ------\n', print, thread_index,
+                                     include_timestamp=True)
         return
 
     are_params_set = set_integration_params(demisto_api_key, integrations, secret_params, instance_names_conf,
@@ -634,7 +639,7 @@ def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_te
 
 
 def get_and_print_server_numeric_version(tests_settings):
-    if tests_settings.is_local_run:
+    if tests_settings.is_local_run or not os.path.isfile('./Tests/images_data.txt'):
         # TODO: verify this logic, it's a workaround because the test_image file does not exist on local run
         return '99.99.98'  # latest
     with open('./Tests/images_data.txt', 'r') as image_data_file:
@@ -648,6 +653,10 @@ def get_and_print_server_numeric_version(tests_settings):
                 server_numeric_version = server_numeric_version[0]
             else:
                 server_numeric_version = '99.99.98'  # latest
+
+            if server_numeric_version.count('.') == 1:
+                server_numeric_version += ".0"
+
             print('Server image info: {}'.format(image_data[0]))
             print('Server version: {}'.format(server_numeric_version))
             return server_numeric_version
@@ -767,13 +776,13 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
 
     tests_data_keeper.add_tests_data(succeed_playbooks, failed_playbooks, skipped_tests,
                                      skipped_integration, unmockable_integrations)
-    if not tests_settings.is_local_run:
+    if is_ami:
         tests_data_keeper.add_proxy_related_test_data(proxy)
 
-    if is_ami and build_name == 'master':
-        updating_mocks_msg = "Pushing new/updated mock files to mock git repo."
-        prints_manager.add_print_job(updating_mocks_msg, print, thread_index)
-        ami.upload_mock_files(build_name, build_number)
+        if build_name == 'master':
+            updating_mocks_msg = "Pushing new/updated mock files to mock git repo."
+            prints_manager.add_print_job(updating_mocks_msg, print, thread_index)
+            ami.upload_mock_files(build_name, build_number)
 
     if playbook_skipped_integration and build_name == 'master':
         comment = 'The following integrations are skipped and critical for the test:\n {}'.\
@@ -834,14 +843,10 @@ def manage_tests(tests_settings):
         execute_testing(tests_settings, server_ip, mockable_tests, unmockable_tests, tests_data_keeper, prints_manager,
                         thread_index=0, is_ami=False)
     elif tests_settings.isAMI:
-        """
-        Running tests in AMI configuration.
-        This is the way we run most tests, including running Circle for PRs and nightly.
-        """
+        # Running tests in AMI configuration.
+        # This is the way we run most tests, including running Circle for PRs and nightly.
         if is_nightly:
-            """
-            If the build is a nightly build, run tests in parallel.
-            """
+            # If the build is a nightly build, run tests in parallel.
             test_allocation = get_tests_allocation_for_threads(number_of_instances, tests_settings.conf_path)
             current_thread_index = 0
             all_unmockable_tests_list = get_unmockable_tests(tests_settings)
@@ -891,11 +896,9 @@ def manage_tests(tests_settings):
 
     else:
         # TODO: understand better when this occurs and what will be the settings
-        """
-        This case is rare, and usually occurs on two cases:
-        1. When someone from Server wants to trigger a content build on their branch.
-        2. When someone from content wants to run tests on a specific build.
-        """
+        # This case is rare, and usually occurs on two cases:
+        # 1. When someone from Server wants to trigger a content build on their branch.
+        # 2. When someone from content wants to run tests on a specific build.
         server_numeric_version = '99.99.98'  # assume latest
         print("Using server version: {} (assuming latest for non-ami)".format(server_numeric_version))
         instance_ip = instances_ips[0][1]
@@ -906,7 +909,7 @@ def manage_tests(tests_settings):
     print_test_summary(tests_data_keeper, tests_settings.isAMI)
     create_result_files(tests_data_keeper)
 
-    if len(tests_data_keeper.failed_playbooks):
+    if tests_data_keeper.failed_playbooks:
         tests_failed_msg = "Some tests have failed. Not destroying instances."
         print(tests_failed_msg)
         sys.exit(1)

@@ -22,6 +22,7 @@ script: |
                   "Contents": "Error occurred while parsing data. Exception info:\n" + str(ex) + "\n\nInvalid data:\n" + str(data)})
   demisto.results(res)
 type: python
+subtype: python2
 tags:
 - Utility
 - Condition

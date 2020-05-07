@@ -296,6 +296,115 @@ RESPONSE_UPDATE_TICKET_SC_REQ = {
         "work_start": ""
     }
 }
+RESPONSE_UPDATE_TICKET_ADDITIONAL = {
+    "result": {
+        "active": "true",
+        "activity_due": "",
+        "additional_assignee_list": "",
+        "approval": "rejected",
+        "approval_history": "",
+        "approval_set": "",
+        "assigned_to": "",
+        "assignment_group": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "business_duration": "",
+        "business_service": "",
+        "business_stc": "",
+        "calendar_duration": "",
+        "calendar_stc": "",
+        "caller_id": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "category": "network",
+        "caused_by": "",
+        "child_incidents": "",
+        "close_code": "",
+        "close_notes": "",
+        "closed_at": "",
+        "closed_by": "",
+        "cmdb_ci": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "comments": "",
+        "comments_and_work_notes": "",
+        "company": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "contact_type": "phone",
+        "correlation_display": "",
+        "correlation_id": "",
+        "delivery_plan": "",
+        "delivery_task": "",
+        "description": "Unable to access Oregon mail server. Is it down?",
+        "due_date": "",
+        "escalation": "0",
+        "expected_start": "",
+        "follow_up": "",
+        "group_list": "",
+        "hold_reason": "",
+        "impact": "3",
+        "incident_state": "1",
+        "knowledge": "false",
+        "location": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "made_sla": "false",
+        "notify": "1",
+        "number": "INC0000039",
+        "opened_at": "2019-09-05 00:41:01",
+        "opened_by": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "order": "",
+        "parent": "",
+        "parent_incident": "",
+        "priority": "5",
+        "problem_id": "",
+        "reassignment_count": "",
+        "reopen_count": "",
+        "reopened_by": "",
+        "reopened_time": "",
+        "resolved_at": "",
+        "resolved_by": "",
+        "rfc": "",
+        "severity": "2",
+        "short_description": "Trouble getting to Oregon mail server",
+        "sla_due": "2019-09-26 00:41:01",
+        "state": "1",
+        "subcategory": "",
+        "sys_class_name": "incident",
+        "sys_created_by": "admin",
+        "sys_created_on": "2019-09-05 00:42:29",
+        "sys_domain": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "sys_domain_path": "/",
+        "sys_id": "1234",
+        "sys_mod_count": "15",
+        "sys_tags": "",
+        "sys_updated_by": "admin",
+        "sys_updated_on": "2020-04-22 07:50:03",
+        "time_worked": "",
+        "u_custom_field_test": "eyy123",
+        "upon_approval": "",
+        "upon_reject": "",
+        "urgency": "3",
+        "user_input": "",
+        "watch_list": "",
+        "work_end": "",
+        "work_notes": "",
+        "work_notes_list": "",
+        "work_start": ""
+    }
+}
 RESPONSE_QUERY_TICKETS = {
     "result": [
         {
@@ -1499,6 +1608,292 @@ RESPONSE_QUERY_TABLE = {
         }
     ]
 }
+RESPONSE_QUERY_TABLE_SYS_PARAMS = {
+    "result": [
+        {
+            "active": {
+                "display_value": "true",
+                "value": "true"
+            },
+            "activity_due": {
+                "display_value": "UNKNOWN",
+                "value": ""
+            },
+            "additional_assignee_list": {
+                "display_value": "",
+                "value": ""
+            },
+            "approval": {
+                "display_value": "Not Yet Requested",
+                "value": "not requested"
+            },
+            "approval_history": {
+                "display_value": "",
+                "value": ""
+            },
+            "approval_set": {
+                "display_value": "",
+                "value": ""
+            },
+            "assigned_to": {
+                "display_value": "",
+                "value": ""
+            },
+            "assignment_group": {
+                "display_value": "Procurement",
+                "value": "1234"
+            },
+            "business_duration": {
+                "display_value": "",
+                "value": ""
+            },
+            "business_service": {
+                "display_value": "",
+                "value": ""
+            },
+            "calendar_duration": {
+                "display_value": "",
+                "value": ""
+            },
+            "calendar_stc": {
+                "display_value": "",
+                "value": ""
+            },
+            "close_notes": {
+                "display_value": "",
+                "value": ""
+            },
+            "closed_at": {
+                "display_value": "",
+                "value": ""
+            },
+            "closed_by": {
+                "display_value": "",
+                "value": ""
+            },
+            "cmdb_ci": {
+                "display_value": "",
+                "value": ""
+            },
+            "comments": {
+                "display_value": "",
+                "value": ""
+            },
+            "comments_and_work_notes": {
+                "display_value": "",
+                "value": ""
+            },
+            "company": {
+                "display_value": "",
+                "value": ""
+            },
+            "contact_type": {
+                "display_value": None,
+                "value": ""
+            },
+            "contract": {
+                "display_value": "",
+                "value": ""
+            },
+            "correlation_display": {
+                "display_value": "",
+                "value": ""
+            },
+            "correlation_id": {
+                "display_value": "",
+                "value": ""
+            },
+            "delivery_plan": {
+                "display_value": "",
+                "value": ""
+            },
+            "delivery_task": {
+                "display_value": "",
+                "value": ""
+            },
+            "description": {
+                "display_value": "Order from vendor or move from in-stock inventory\n\t\t",
+                "value": "Order from vendor or move from in-stock inventory\n\t\t"
+            },
+            "due_date": {
+                "display_value": "2020-04-20 13:58:46",
+                "value": "2020-04-20 20:58:46"
+            },
+            "escalation": {
+                "display_value": "Normal",
+                "value": "0"
+            },
+            "expected_start": {
+                "display_value": "2020-04-20 13:58:46",
+                "value": "2020-04-20 20:58:46"
+            },
+            "follow_up": {
+                "display_value": "",
+                "value": ""
+            },
+            "group_list": {
+                "display_value": "",
+                "value": ""
+            },
+            "impact": {
+                "display_value": "3 - Low",
+                "value": "3"
+            },
+            "knowledge": {
+                "display_value": "false",
+                "value": "false"
+            },
+            "location": {
+                "display_value": "",
+                "value": ""
+            },
+            "made_sla": {
+                "display_value": "true",
+                "value": "true"
+            },
+            "number": {
+                "display_value": "TASK0000001",
+                "value": "TASK0000001"
+            },
+            "opened_at": {
+                "display_value": "2020-04-20 13:58:46",
+                "value": "2020-04-20 20:58:46"
+            },
+            "opened_by": {
+                "display_value": "System Administrator",
+                "value": "1234"
+            },
+            "order": {
+                "display_value": "",
+                "value": ""
+            },
+            "parent": {
+                "display_value": "RITM0000001",
+                "value": "aeed229047801200e0ef563dbb9a71c2"
+            },
+            "priority": {
+                "display_value": "4 - Low",
+                "value": "4"
+            },
+            "reassignment_count": {
+                "display_value": "0",
+                "value": "0"
+            },
+            "request": {
+                "display_value": "REQ0000001",
+                "value": "1234"
+            },
+            "request_item": {
+                "display_value": "RITM0000001",
+                "value": "1234"
+            },
+            "sc_catalog": {
+                "display_value": "",
+                "value": ""
+            },
+            "service_offering": {
+                "display_value": "",
+                "value": ""
+            },
+            "short_description": {
+                "display_value": "Order from vendor or move from in-stock inventory\n\t\t",
+                "value": "Order from vendor or move from in-stock inventory\n\t\t"
+            },
+            "skills": {
+                "display_value": "",
+                "value": ""
+            },
+            "sla_due": {
+                "display_value": "UNKNOWN",
+                "value": ""
+            },
+            "state": {
+                "display_value": "Open",
+                "value": "1"
+            },
+            "sys_class_name": {
+                "display_value": "Catalog Task",
+                "value": "sc_task"
+            },
+            "sys_created_by": {
+                "display_value": "admin",
+                "value": "admin"
+            },
+            "sys_created_on": {
+                "display_value": "2020-04-20 13:58:46",
+                "value": "2020-04-20 20:58:46"
+            },
+            "sys_domain": {
+                "display_value": "global",
+                "value": "global"
+            },
+            "sys_domain_path": {
+                "display_value": "/",
+                "value": "/"
+            },
+            "sys_id": {
+                "display_value": "1234",
+                "value": "1234"
+            },
+            "sys_mod_count": {
+                "display_value": "0",
+                "value": "0"
+            },
+            "sys_tags": {
+                "display_value": "",
+                "value": ""
+            },
+            "sys_updated_by": {
+                "display_value": "admin",
+                "value": "admin"
+            },
+            "sys_updated_on": {
+                "display_value": "2020-04-20 13:58:46",
+                "value": "2020-04-20 20:58:46"
+            },
+            "time_worked": {
+                "display_value": "",
+                "value": ""
+            },
+            "upon_approval": {
+                "display_value": "Proceed to Next Task",
+                "value": "proceed"
+            },
+            "upon_reject": {
+                "display_value": "Cancel all future Tasks",
+                "value": "cancel"
+            },
+            "urgency": {
+                "display_value": "3 - Low",
+                "value": "3"
+            },
+            "user_input": {
+                "display_value": "",
+                "value": ""
+            },
+            "watch_list": {
+                "display_value": "",
+                "value": ""
+            },
+            "work_end": {
+                "display_value": "",
+                "value": ""
+            },
+            "work_notes": {
+                "display_value": "",
+                "value": ""
+            },
+            "work_notes_list": {
+                "display_value": "",
+                "value": ""
+            },
+            "work_start": {
+                "display_value": "",
+                "value": ""
+            }
+        }
+    ]
+}
 RESPONSE_LIST_TABLE_FIELDS = {
     "result": [
         {
@@ -1781,4 +2176,579 @@ RESPONSE_GET_TABLE_NAME = {
             "ws_access": "true"
         }
     ]
+}
+RESPONSE_ADD_TAG = {
+    "result": {
+        "auto": "",
+        "comments": "",
+        "id_display": "INC0000009",
+        "id_type": "Incident",
+        "label": {
+            "link": "demisto.com",
+            "value": "admin"
+        },
+        "notify_onchange": "false",
+        "notify_script": "",
+        "notify_when": "",
+        "read": "no",
+        "reference_count": "",
+        "sys_created_by": "admin",
+        "sys_created_on": "2020-04-30 08:59:33",
+        "sys_id": "1234",
+        "sys_mod_count": "0",
+        "sys_tags": "",
+        "sys_updated_by": "admin",
+        "sys_updated_on": "2020-04-30 08:59:33",
+        "table": "",
+        "table_key": "",
+        "title": "title",
+        "url": "incident.do?sys_id=1234\u0026sysparm_view=",
+        "view_name": ""
+    }
+}
+RESPONSE_QUERY_ITEMS = {
+    "result": [
+        {
+            "active": "true",
+            "availability": "on_both",
+            "billable": "false",
+            "category": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "cost": "0",
+            "custom_cart": "",
+            "delivery_plan": "",
+            "delivery_plan_script": "",
+            "delivery_time": "1970-01-03 00:00:00",
+            "description": "desc",
+            "display_price_property": "non_zero",
+            "entitlement_script": "",
+            "flow_designer_flow": "",
+            "group": "",
+            "hide_sp": "false",
+            "icon": "",
+            "ignore_price": "false",
+            "image": "",
+            "list_price": "0",
+            "location": "",
+            "mandatory_attachment": "false",
+            "meta": "",
+            "mobile_hide_price": "false",
+            "mobile_picture": "",
+            "mobile_picture_type": "use_desktop_picture",
+            "model": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "name": "Apple iPad 3",
+            "no_attachment_v2": "false",
+            "no_cart": "false",
+            "no_cart_v2": "false",
+            "no_delivery_time_v2": "false",
+            "no_order": "false",
+            "no_order_now": "false",
+            "no_proceed_checkout": "false",
+            "no_quantity": "false",
+            "no_quantity_v2": "false",
+            "no_search": "false",
+            "no_wishlist_v2": "false",
+            "omit_price": "false",
+            "order": "0",
+            "ordered_item_link": "",
+            "picture": "",
+            "preview": "JavaScript",
+            "price": "600",
+            "recurring_frequency": "",
+            "recurring_price": "0",
+            "request_method": "",
+            "roles": "",
+            "sc_catalogs": "catalog",
+            "sc_ic_item_staging": "",
+            "sc_ic_version": "",
+            "short_description": "Apple iPad 3",
+            "show_variable_help_on_load": "false",
+            "start_closed": "false",
+            "sys_class_name": "pc_hardware_cat_item",
+            "sys_created_by": "admin",
+            "sys_created_on": "2013-12-08 15:22:04",
+            "sys_id": "123",
+            "sys_mod_count": "17",
+            "sys_name": "Apple iPad 3",
+            "sys_package": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "sys_policy": "",
+            "sys_scope": {
+                "link": "demisto.com",
+                "value": "global"
+            },
+            "sys_tags": "",
+            "sys_update_name": "pc_hardware_cat_item_060f3afa3731300054b6a3549dbe5d3e",
+            "sys_updated_by": "admin",
+            "sys_updated_on": "2016-03-17 21:26:33",
+            "template": "",
+            "type": "item",
+            "use_sc_layout": "true",
+            "vendor": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "visible_bundle": "true",
+            "visible_guide": "true",
+            "visible_standalone": "true",
+            "workflow": {
+                "link": "demisto.com",
+                "value": "admin"
+            }
+        },
+        {
+            "active": "true",
+            "availability": "on_desktop",
+            "billable": "false",
+            "category": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "cost": "50",
+            "custom_cart": "",
+            "delivery_plan": "",
+            "delivery_plan_script": "",
+            "delivery_time": "1970-01-03 00:00:00",
+            "description": "desc",
+            "display_price_property": "non_zero",
+            "entitlement_script": "",
+            "flow_designer_flow": "",
+            "group": "",
+            "hide_sp": "false",
+            "icon": "",
+            "ignore_price": "false",
+            "image": "",
+            "list_price": "0",
+            "location": "",
+            "mandatory_attachment": "false",
+            "meta": "",
+            "mobile_hide_price": "false",
+            "mobile_picture": "",
+            "mobile_picture_type": "use_desktop_picture",
+            "model": "",
+            "name": "Belkin iPad Mini Case",
+            "no_attachment_v2": "false",
+            "no_cart": "false",
+            "no_cart_v2": "false",
+            "no_delivery_time_v2": "false",
+            "no_order": "false",
+            "no_order_now": "false",
+            "no_proceed_checkout": "false",
+            "no_quantity": "false",
+            "no_quantity_v2": "false",
+            "no_search": "false",
+            "no_wishlist_v2": "false",
+            "omit_price": "false",
+            "order": "0",
+            "ordered_item_link": "",
+            "picture": "",
+            "preview": "JavaScript",
+            "price": "50",
+            "recurring_frequency": "monthly",
+            "recurring_price": "0",
+            "request_method": "",
+            "roles": "",
+            "sc_catalogs": "catalog",
+            "sc_ic_item_staging": "",
+            "sc_ic_version": "",
+            "short_description": "Belkin iPad Mini 2 Case",
+            "show_variable_help_on_load": "false",
+            "start_closed": "false",
+            "sys_class_name": "pc_hardware_cat_item",
+            "sys_created_by": "johanneke.stam",
+            "sys_created_on": "2014-12-10 12:13:20",
+            "sys_id": "1234",
+            "sys_mod_count": "12",
+            "sys_name": "Belkin iPad Mini Case",
+            "sys_package": {
+                "link": "demisto.com",
+                "value": "admin"
+            },
+            "sys_policy": "",
+            "sys_scope": {
+                "link": "demisto.com",
+                "value": "global"
+            },
+            "sys_tags": "",
+            "sys_update_name": "pc_hardware_cat_item_90af095bcd38798071a208d710d1b64f",
+            "sys_updated_by": "admin",
+            "sys_updated_on": "2016-03-16 00:42:51",
+            "template": "",
+            "type": "item",
+            "use_sc_layout": "true",
+            "vendor": "",
+            "visible_bundle": "true",
+            "visible_guide": "true",
+            "visible_standalone": "true",
+            "workflow": {
+                "link": "demisto.com",
+                "value": "admin"
+            }
+        }
+    ]
+}
+RESPONSE_ITEM_DETAILS = {
+    "result": {
+        "catalogs": [
+            {
+                "active": True,
+                "sys_id": "1234",
+                "title": "Service Catalog"
+            }
+        ],
+        "categories": [
+            {
+                "active": True,
+                "category": {
+                    "active": True,
+                    "sys_id": "1234",
+                    "title": "Mobiles"
+                },
+                "sys_id": "1234",
+                "title": "Hardware"
+            }
+        ],
+        "category": {
+            "sys_id": "1234",
+            "title": "Mobiles"
+        },
+        "client_script": {
+            "onChange": [],
+            "onLoad": [],
+            "onSubmit": []
+        },
+        "content_type": "",
+        "data_lookup": [],
+        "description": "desc",
+        "icon": "images/service_catalog/generic_small.gifx",
+        "kb_article": "",
+        "local_currency": "USD",
+        "localized_price": "$599.99",
+        "localized_recurring_price": "$30.00",
+        "mandatory_attachment": False,
+        "name": "Apple iPhone 5",
+        "order": 10,
+        "picture": "pic.iix",
+        "price": "$599.99",
+        "price_currency": "USD",
+        "recurring_frequency": "Monthly",
+        "recurring_price": "$30.00",
+        "recurring_price_currency": "USD",
+        "request_method": "",
+        "short_description": "Apple iPhone 5",
+        "show_delivery_time": False,
+        "show_price": True,
+        "show_quantity": True,
+        "show_wishlist": True,
+        "sys_class_name": "pc_hardware_cat_item",
+        "sys_id": "1234",
+        "type": "catalog_item",
+        "ui_policy": [
+            {
+                "actions": [],
+                "condition_fields": [],
+                "conditions": [],
+                "debug": False,
+                "onload": True,
+                "reverse": False,
+                "script_false": "",
+                "script_true": "",
+                "short_description": "Hide allocated carrier",
+                "source_table": "catalog_ui_policy",
+                "sys_id": "sys_id",
+                "table": "(catalog)"
+            }
+        ],
+        "url": "",
+        "variables": [
+            {
+                "attributes": "edge_encryption_enabled=true",
+                "choices": [
+                    {
+                        "index": 0,
+                        "label": "-- None --",
+                        "value": ""
+                    },
+                    {
+                        "index": 1,
+                        "label": "AT \u0026 T Mobility",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": 0,
+                        "recurring_price_currency": "USD",
+                        "value": "at_and_t_mobility"
+                    },
+                    {
+                        "index": 2,
+                        "label": "Cricket Wireless",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": 0,
+                        "recurring_price_currency": "USD",
+                        "value": "cricket_wireless"
+                    },
+                    {
+                        "index": 3,
+                        "label": "MetroPCS",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": 0,
+                        "recurring_price_currency": "USD",
+                        "value": "metropcs"
+                    },
+                    {
+                        "index": 4,
+                        "label": "Sprint Nextel",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": 0,
+                        "recurring_price_currency": "USD",
+                        "value": "sprint_nextel"
+                    },
+                    {
+                        "index": 5,
+                        "label": "T-Mobile USA",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": 0,
+                        "recurring_price_currency": "USD",
+                        "value": "t_mobile_usa"
+                    },
+                    {
+                        "index": 6,
+                        "label": "TracFone Wireless",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": 0,
+                        "recurring_price_currency": "USD",
+                        "value": "tracfone_wireless"
+                    },
+                    {
+                        "index": 7,
+                        "label": "U.S. Cellular",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": 0,
+                        "recurring_price_currency": "USD",
+                        "value": "us_cellular"
+                    },
+                    {
+                        "index": 8,
+                        "label": "Verizon Wireless",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": 0,
+                        "recurring_price_currency": "USD",
+                        "value": "verizon_wireless"
+                    }
+                ],
+                "display_type": "Select Box",
+                "displayvalue": "",
+                "friendly_type": "select_box",
+                "help_text": "",
+                "id": "id",
+                "label": "Allocated carrier",
+                "mandatory": False,
+                "max_length": 0,
+                "name": "carrier",
+                "read_only": False,
+                "render_label": True,
+                "type": 5,
+                "value": ""
+            },
+            {
+                "attributes": "edge_encryption_enabled=true",
+                "choices": [
+                    {
+                        "index": 0,
+                        "label": "-- None --",
+                        "value": ""
+                    },
+                    {
+                        "index": 1,
+                        "label": "500MB",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": 1,
+                        "recurring_price_currency": "USD",
+                        "value": "500MB"
+                    },
+                    {
+                        "index": 2,
+                        "label": "Unlimited",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": 4,
+                        "recurring_price_currency": "USD",
+                        "value": "unlimited"
+                    }
+                ],
+                "display_type": "Select Box",
+                "displayvalue": "",
+                "friendly_type": "select_box",
+                "help_text": "",
+                "id": "id",
+                "label": "Monthly data allowance",
+                "mandatory": False,
+                "max_length": 0,
+                "name": "data_plan",
+                "read_only": False,
+                "render_label": True,
+                "type": 5,
+                "value": ""
+            },
+            {
+                "attributes": "edge_encryption_enabled=true",
+                "choices": [
+                    {
+                        "index": 0,
+                        "label": "12 Months",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": 0,
+                        "recurring_price_currency": "USD",
+                        "value": "twelve_months"
+                    },
+                    {
+                        "index": 1,
+                        "label": "18 Months",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": -2,
+                        "recurring_price_currency": "USD",
+                        "value": "eighteen_months"
+                    },
+                    {
+                        "index": 2,
+                        "label": "24 Months",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": -4,
+                        "recurring_price_currency": "USD",
+                        "value": "twentyfour_months"
+                    }
+                ],
+                "display_type": "Select Box",
+                "displayvalue": "",
+                "friendly_type": "select_box",
+                "help_text": "",
+                "id": "id",
+                "label": "Contract duration",
+                "mandatory": False,
+                "max_length": 0,
+                "name": "duration",
+                "read_only": False,
+                "render_label": True,
+                "type": 5,
+                "value": ""
+            },
+            {
+                "attributes": "edge_encryption_enabled=true",
+                "choices": [
+                    {
+                        "index": 0,
+                        "label": "Black",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": 0,
+                        "recurring_price_currency": "USD",
+                        "value": "black"
+                    },
+                    {
+                        "index": 1,
+                        "label": "Slate",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": 0,
+                        "recurring_price_currency": "USD",
+                        "value": "slate"
+                    }
+                ],
+                "display_type": "Select Box",
+                "displayvalue": "",
+                "friendly_type": "select_box",
+                "help_text": "",
+                "id": "id",
+                "label": "Color",
+                "mandatory": False,
+                "max_length": 0,
+                "name": "color",
+                "read_only": False,
+                "render_label": True,
+                "type": 5,
+                "value": ""
+            },
+            {
+                "attributes": "edge_encryption_enabled=true",
+                "choices": [
+                    {
+                        "index": 0,
+                        "label": "64GB",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": 0,
+                        "recurring_price_currency": "USD",
+                        "value": "sixtyfour"
+                    },
+                    {
+                        "index": 1,
+                        "label": "32GB",
+                        "price": 50,
+                        "price_currency": "USD",
+                        "recurring_price": 0,
+                        "recurring_price_currency": "USD",
+                        "value": "thirtytwo"
+                    },
+                    {
+                        "index": 2,
+                        "label": "16GB",
+                        "price": 0,
+                        "price_currency": "USD",
+                        "recurring_price": 0,
+                        "recurring_price_currency": "USD",
+                        "value": "sixteen"
+                    }
+                ],
+                "display_type": "Select Box",
+                "displayvalue": "64GB",
+                "friendly_type": "select_box",
+                "help_text": "",
+                "id": "id",
+                "label": "Storage",
+                "mandatory": False,
+                "max_length": 0,
+                "name": "storage",
+                "read_only": False,
+                "render_label": True,
+                "type": 5,
+                "value": "sixtyfour"
+            }
+        ],
+        "visible_standalone": True
+    }
+}
+RESPONSE_CREATE_ITEM_ORDER = {
+    "result": {
+        "number": "REQ0010002",
+        "request_id": "1234",
+        "request_number": "REQ0010002",
+        "sys_id": "12",
+        "table": "sc_request"
+    }
+}
+RESPONSE_DOCUMENT_ROUTE = {
+    "result": {
+        "display_name": "Incident: INC0000060",
+        "document_id": "document_id",
+        "document_table": "incident",
+        "queue": "queue_id",
+        "sys_id": "work_item_id"
+    }
 }

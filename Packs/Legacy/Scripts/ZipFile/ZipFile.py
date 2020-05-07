@@ -59,7 +59,7 @@ def main():
     shutil.copy(filePath, fileCurrentName)
     # zipping the file
     if password:
-        pyminizip.compress(fileCurrentName, zipName, password, 5)
+        pyminizip.compress(fileCurrentName, None, zipName, password, 5)
 
     else:
         zf = zipfile.ZipFile(zipName, mode='w')

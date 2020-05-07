@@ -1,4 +1,8 @@
 ## [Unreleased]
+  - Fixed an issue where empty query results raised an error.
+  - Added support for SSL connection.
+
+## [20.4.1] - 2020-04-29
 - Fixed an issue where mysql default tables where not available for querying.
 - Added support for stack trace and the query error message.
 - Added support to Oracle connection.

@@ -73,6 +73,7 @@ script: |-
   else:
       demisto.results("No new incidents were created.")
 type: python
+subtype: python2
 tags:
 - nexpose
 comment: |-

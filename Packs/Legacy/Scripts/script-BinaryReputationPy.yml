@@ -1,6 +1,6 @@
 commonfields:
   id: BinaryReputationPy
-  version: 1
+  version: -1
 name: BinaryReputationPy
 script: |-
   from time import sleep
@@ -66,6 +66,7 @@ script: |-
       res.extend(['No suspicious files found', 'no'])
   demisto.results(res)
 type: python
+subtype: python2
 tags:
 - hash
 - server
