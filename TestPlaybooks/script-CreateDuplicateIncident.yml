@@ -27,6 +27,7 @@ script: |
   res = demisto.executeCommand("createNewIncident", duplicate_incident)
   demisto.results(res)
 type: python
+subtype: python2
 tags: []
 comment: Create duplicate incident to the current incident.
 enabled: true

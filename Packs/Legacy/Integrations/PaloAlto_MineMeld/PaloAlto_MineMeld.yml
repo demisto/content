@@ -177,7 +177,7 @@ script:
       description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
       description: The actual score.
@@ -252,7 +252,7 @@ script:
       description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
       description: The actual score.
@@ -333,7 +333,7 @@ script:
       description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
       description: The actual score.
@@ -408,7 +408,7 @@ script:
       description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
       description: The actual score.

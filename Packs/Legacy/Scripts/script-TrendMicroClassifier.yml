@@ -136,6 +136,7 @@ script: |-
           if isError(resp[0]):
               demisto.results(resp)
 type: python
+subtype: python2
 tags:
 - Classifier
 - Trend Micro

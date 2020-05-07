@@ -65,6 +65,7 @@ script: |
 
   demisto.results(res)
 type: python
+subtype: python2
 tags:
 - QRadar
 comment: Full search through QRadar advance query languages

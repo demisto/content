@@ -35,6 +35,7 @@ script: |-
                          'EntryContext': {'DecodedMimeHeader': result}
   })
 type: python
+subtype: python2
 tags: []
 comment: Decode MIME base64 headers.
 enabled: true
