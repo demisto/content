@@ -74,7 +74,7 @@ script:
     - contextPath: PAN-OS-BPA.JobResults.Checks
       description: The list of checks.
       type: Unknown
-  dockerimage: demisto/python3:3.7.5.4583
+  dockerimage: demisto/python3:3.8.2.6981
   feed: false
   isfetch: false
   longRunning: false
