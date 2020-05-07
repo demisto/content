@@ -412,9 +412,10 @@ class TestSampleTesting:
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/past_test_playbook_2.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_tests_list=[test_path],
                                                                sample_tests=['test'])
-        filterd_tests = get_mock_test_list(mocker=mocker, git_diff_ret=self.GIT_DIFF_RET,
+        filterd_tests, content_packs = get_mock_test_list(mocker=mocker, git_diff_ret=self.GIT_DIFF_RET,
                                            get_modified_files_ret=get_modified_files_ret)
         assert len(filterd_tests) == 1
+        assert content_packs == set()
 
 
 class TestChangedCommonTesting:
