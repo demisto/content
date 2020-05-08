@@ -2234,73 +2234,6 @@ class Common(object):
 
             return ret_value
 
-    class WHOIS(object):
-        """ ignore docstring
-        WHOIS is a class that used with Domain class
-        """
-
-        def __init__(self, domain_status=None, name_servers=None, creation_date=None, updated_date=None,
-                     expiration_date=None, registrar_name=None, registrar_abuse_email=None, registrar_abuse_phone=None,
-                     registrant_name=None, registrant_email=None, registrant_phone=None,
-                     admin_name=None, admin_email=None, admin_phone=None):
-
-            self.domain_status = domain_status
-            self.name_servers = name_servers
-            self.creation_date = creation_date
-            self.updated_date = updated_date
-            self.expiration_date = expiration_date
-            self.registrar_name = registrar_name
-            self.registrar_abuse_email = registrar_abuse_email
-            self.registrar_abuse_phone = registrar_abuse_phone
-
-            self.registrant_name = registrant_name
-            self.registrant_email = registrant_email
-            self.registrant_phone = registrant_phone
-
-            self.admin_name = admin_name
-            self.admin_email = admin_email
-            self.admin_phone = admin_phone
-
-        def to_context(self):
-            whois_context = {}
-
-            if self.domain_status:
-                whois_context['DomainStatus'] = self.domain_status
-
-            if self.name_servers:
-                whois_context['NameServers'] = self.name_servers
-
-            if self.creation_date:
-                whois_context['CreationDate'] = self.creation_date
-
-            if self.updated_date:
-                whois_context['UpdatedDate'] = self.updated_date
-
-            if self.expiration_date:
-                whois_context['ExpirationDate'] = self.expiration_date
-
-            if self.registrar_name or self.registrar_abuse_email or self.registrar_abuse_phone:
-                whois_context['Registrar'] = {
-                    'Name': self.registrar_name,
-                    'AbuseEmail': self.registrar_abuse_email,
-                    'AbusePhone': self.registrar_abuse_phone
-                }
-
-            if self.registrant_name or self.registrant_phone or self.registrant_email:
-                whois_context['Registrant'] = {
-                    'Name': self.registrant_name,
-                    'Email': self.registrant_email,
-                    'Phone': self.registrant_phone
-                }
-
-            if self.admin_name or self.admin_email or self.admin_phone:
-                whois_context['Admin'] = {
-                    'Name': self.admin_name,
-                    'Email': self.admin_email,
-                    'Phone': self.admin_phone
-                }
-
-            return whois_context
 
     class Domain(Indicator):
         """ ignore docstring
@@ -2308,19 +2241,36 @@ class Common(object):
         """
         CONTEXT_PATH = 'Domain(val.Name && val.Name == obj.Name)'
 
-        def __init__(self, domain, dbot_score, dns=None, detection_engines=None, positive_detections=None, whois=None,
+        def __init__(self, domain, dbot_score, dns=None, detection_engines=None, positive_detections=None,
                      organization=None, sub_domains=None, creation_date=None, updated_date=None, expiration_date=None,
-                     domain_status=None, name_servers=None):
+                     domain_status=None, name_servers=None,
+                     registrar_name=None, registrar_abuse_email=None, registrar_abuse_phone=None,
+                     registrant_name=None, registrant_email=None, registrant_phone=None, registrant_country=None,
+                     admin_name=None, admin_email=None, admin_phone=None, admin_country=None):
             self.domain = domain
             self.dns = dns
             self.detection_engines = detection_engines
             self.positive_detections = positive_detections
-            self.whois = whois
             self.organization = organization
             self.sub_domains = sub_domains
             self.creation_date = creation_date
             self.updated_date = updated_date
             self.expiration_date = expiration_date
+
+            self.registrar_name = registrar_name
+            self.registrar_abuse_email = registrar_abuse_email
+            self.registrar_abuse_phone = registrar_abuse_phone
+
+            self.registrant_name = registrant_name
+            self.registrant_email = registrant_email
+            self.registrant_phone = registrant_phone
+            self.registrant_country = registrant_country
+
+            self.admin_name = admin_name
+            self.admin_email = admin_email
+            self.admin_phone = admin_phone
+            self.admin_country = admin_country
+
 
             self.domain_status = domain_status
             self.name_servers = name_servers
@@ -2331,6 +2281,7 @@ class Common(object):
             domain_context = {
                 'Name': self.domain
             }
+            whois_context = {}
 
             if self.dns:
                 domain_context['DNS'] = self.dns
@@ -2341,14 +2292,31 @@ class Common(object):
             if self.positive_detections:
                 domain_context['PositiveDetections'] = self.positive_detections
 
-            if self.whois:
-                domain_context['WHOIS'] = self.whois.to_context()
+            if self.registrar_name or self.registrar_abuse_email or self.registrar_abuse_phone:
+                domain_context['Registrar'] = {
+                    'Name': self.registrar_name,
+                    'AbuseEmail': self.registrar_abuse_email,
+                    'AbusePhone': self.registrar_abuse_phone
+                }
+                whois_context['Registrar'] = domain_context['Registrar']
 
-                if 'Admin' in domain_context['WHOIS']:
-                    domain_context['Admin'] = domain_context['WHOIS']['Admin']
+            if self.registrant_name or self.registrant_phone or self.registrant_email or self.registrant_country:
+                domain_context['Registrant'] = {
+                    'Name': self.registrant_name,
+                    'Email': self.registrant_email,
+                    'Phone': self.registrant_phone,
+                    'Country': self.registrant_country
+                }
+                whois_context['Registrant'] = domain_context['Registrant']
 
-                if 'Registrant' in domain_context['WHOIS']:
-                    domain_context['Registrant'] = domain_context['WHOIS']['Registrant']
+            if self.admin_name or self.admin_email or self.admin_phone or self.admin_country:
+                domain_context['Admin'] = {
+                    'Name': self.admin_name,
+                    'Email': self.admin_email,
+                    'Phone': self.admin_phone,
+                    'Country': self.admin_country
+                }
+                whois_context['Admin'] = domain_context['Admin']
 
             if self.organization:
                 domain_context['Organization'] = self.organization
@@ -2358,24 +2326,32 @@ class Common(object):
 
             if self.domain_status:
                 domain_context['DomainStatus'] = self.domain_status
+                whois_context['DomainStatus'] = domain_context['DomainStatus']
 
             if self.creation_date:
                 domain_context['CreationDate'] = self.creation_date
+                whois_context['CreationDate'] = domain_context['CreationDate']
 
             if self.updated_date:
                 domain_context['UpdatedDate'] = self.updated_date
+                whois_context['UpdatedDate'] = domain_context['UpdatedDate']
 
             if self.expiration_date:
                 domain_context['ExpirationDate'] = self.expiration_date
+                whois_context['ExpirationDate'] = domain_context['ExpirationDate']
 
             if self.name_servers:
                 domain_context['NameServers'] = self.name_servers
+                whois_context['NameServers'] = domain_context['NameServers']
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 domain_context['Malicious'] = {
                     'Vendor': self.dbot_score.integration_name,
                     'Description': self.dbot_score.malicious_description
                 }
+
+            if whois_context:
+                domain_context['WHOIS'] = whois_context
 
             ret_value = {
                 Common.Domain.CONTEXT_PATH: domain_context

@@ -1097,15 +1097,13 @@ class TestCommandResults:
             detection_engines=10,
             positive_detections=5,
             organization='Some Organization',
-            whois=Common.WHOIS(
-                admin_phone='18000000',
-                admin_email='admin@test.com',
+            admin_phone='18000000',
+            admin_email='admin@test.com',
 
-                registrant_name='Mr Registrant',
+            registrant_name='Mr Registrant',
 
-                registrar_name='Mr Registrar',
-                registrar_abuse_email='registrar@test.com'
-            ),
+            registrar_name='Mr Registrar',
+            registrar_abuse_email='registrar@test.com',
             creation_date='2019-01-01T00:00:00',
             updated_date='2019-01-02T00:00:00',
             expiration_date=None,
@@ -1136,49 +1134,65 @@ class TestCommandResults:
             'EntryContext': {
                 'Domain(val.Name && val.Name == obj.Name)': [
                     {
-                        'Name': 'somedomain.com',
-                        'DNS': 'dns.somedomain',
-                        'DetectionEngines': 10,
-                        'PositiveDetections': 5,
-                        'Organization': 'Some Organization',
-                        'CreationDate': '2019-01-01T00:00:00',
-                        'UpdatedDate': '2019-01-02T00:00:00',
-                        'DomainStatus': 'ACTIVE',
-                        'NameServers': [
-                            'PNS31.CLOUDNS.NET',
-                            'PNS32.CLOUDNS.NET'
-                        ],
-                        'Subdomains': [
-                            'sub-domain1.somedomain.com',
-                            'sub-domain2.somedomain.com',
-                            'sub-domain3.somedomain.com'
-                        ],
-                        'Admin': {
-                            'Phone': '18000000',
-                            'Email': 'admin@test.com',
-                            'Name': None
+                        "Name": "somedomain.com",
+                        "DNS": "dns.somedomain",
+                        "DetectionEngines": 10,
+                        "PositiveDetections": 5,
+                        "Registrar": {
+                            "Name": "Mr Registrar",
+                            "AbuseEmail": "registrar@test.com",
+                            "AbusePhone": None
                         },
-                        'Registrant': {
-                            'Name': 'Mr Registrant',
-                            'Email': None,
-                            'Phone': None
+                        "Registrant": {
+                            "Name": "Mr Registrant",
+                            "Email": None,
+                            "Phone": None,
+                            "Country": None
                         },
-                        'WHOIS': {
-                            'Admin': {
-                                'Name': None,
-                                'Phone': '18000000',
-                                'Email': 'admin@test.com'
+                        "Admin": {
+                            "Name": None,
+                            "Email": "admin@test.com",
+                            "Phone": "18000000",
+                            "Country": None
+                        },
+                        "Organization": "Some Organization",
+                        "Subdomains": [
+                            "sub-domain1.somedomain.com",
+                            "sub-domain2.somedomain.com",
+                            "sub-domain3.somedomain.com"
+                        ],
+                        "DomainStatus": "ACTIVE",
+                        "CreationDate": "2019-01-01T00:00:00",
+                        "UpdatedDate": "2019-01-02T00:00:00",
+                        "NameServers": [
+                            "PNS31.CLOUDNS.NET",
+                            "PNS32.CLOUDNS.NET"
+                        ],
+                        "WHOIS": {
+                            "Registrar": {
+                                "Name": "Mr Registrar",
+                                "AbuseEmail": "registrar@test.com",
+                                "AbusePhone": None
                             },
-                            'Registrar': {
-                                'Name': 'Mr Registrar',
-                                'AbuseEmail': 'registrar@test.com',
-                                'AbusePhone': None
+                            "Registrant": {
+                                "Name": "Mr Registrant",
+                                "Email": None,
+                                "Phone": None,
+                                "Country": None
                             },
-                            'Registrant': {
-                                'Name': 'Mr Registrant',
-                                'Email': None,
-                                'Phone': None
-                            }
+                            "Admin": {
+                                "Name": None,
+                                "Email": "admin@test.com",
+                                "Phone": "18000000",
+                                "Country": None
+                            },
+                            "DomainStatus": "ACTIVE",
+                            "CreationDate": "2019-01-01T00:00:00",
+                            "UpdatedDate": "2019-01-02T00:00:00",
+                            "NameServers": [
+                                "PNS31.CLOUDNS.NET",
+                                "PNS32.CLOUDNS.NET"
+                            ]
                         }
                     }
                 ],
