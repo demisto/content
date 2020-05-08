@@ -205,17 +205,15 @@ def file(hash):
         context_file['TrustLevel'] = tl_score['trust_level']
         context_file['Vendor'] = tl_score['vendor']
 
-        dbot_score = {'Indicator': hash, 'Type': 'hash', 'Vendor': tl_score['vendor'], 'Score': tl_score['score']}
+        dbot_score = [{'Indicator': hash, 'Type': 'hash', 'Vendor': tl_score['vendor'], 'Score': tl_score['score']},
+                      {'Indicator': hash, 'Type': 'file', 'Vendor': tl_score['vendor'], 'Score': tl_score['score']}]
         if tl_score['score'] >= 2:
             context_file['Malicious'] = {
                 'Vendor': tl_score['vendor'],
                 'Score': tl_score['score'],
                 'Description': 'Trust level is ' + str(tl_score['trust_level'])
             }
-        ec = {
-            'DBotScore': dbot_score
-        }
-        ec[outputPaths['file']] = context_file
+        ec = {'DBotScore': dbot_score, outputPaths['file']: context_file}
 
         return {
             'Type': entryTypes['note'],
