@@ -1008,7 +1008,7 @@ Returns failed login events.
         "Logs": {
             "Events": {
                 "actor": {
-                    "alternateId": "gfilippov@paloaltonetworks.com",
+                    "alternateId": "goo@test.com",
                     "detailEntry": null,
                     "displayName": "unknown",
                     "id": "unknown",

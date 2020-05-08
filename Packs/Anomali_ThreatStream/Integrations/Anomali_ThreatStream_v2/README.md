@@ -938,13 +938,13 @@
 </table>
 <p>  </p>
 <h5>Command Example</h5>
-<pre>threatstream-email-reputation email=svellis@sault.com
+<pre>threatstream-email-reputation email=goo@test.com
 </pre>
 <h5>Context Example</h5>
 <pre>{
     "DBotScore": {
         "Vendor": "Anomali Labs Compromised Credentials", 
-        "Indicator": "svellis@sault.com", 
+        "Indicator": "goo@test.com", 
         "Score": 2, 
         "Type": "email"
     }, 
@@ -955,12 +955,12 @@
         "Modified": "2019-06-24T09:50:23.810Z", 
         "Source": "Anomali Labs Compromised Credentials", 
         "Type": "email", 
-        "Email": "svellis@sault.com"
+        "Email": "goo@test.com"
     }
 }
 </pre>
 <h5>Human Readable Output</h5>
-<h3>Email reputation for:<span> </span>sveis@ault.com</h3>
+<h3>Email reputation for:<span> </span>foo@test.com</h3>
 <table style="width: 698px;" border="2">
 <thead>
 <tr>
@@ -981,7 +981,7 @@
 <td style="width: 51px;">active</td>
 <td style="width: 144px;">2019-06-24T09:50:23.810Z</td>
 <td style="width: 65px;">low</td>
-<td style="width: 111px;">sveis@ault.com</td>
+<td style="width: 111px;">foo@test.com</td>
 </tr>
 </tbody>
 </table>
