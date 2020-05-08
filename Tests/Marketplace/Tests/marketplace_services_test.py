@@ -349,7 +349,7 @@ class TestChangelogCreation:
 
 
 class TestImagesUpload:
-    """
+    """ Test class for integration images upload.
 
     """
 
@@ -372,6 +372,14 @@ class TestImagesUpload:
     ])
     def test_upload_integration_images_with_special_character(self, mocker, dummy_pack, integration_name,
                                                               expected_result):
+        """
+           Given:
+               - Integration name with special characters.
+           When:
+               - When pack has integration with special character.
+           Then:
+               - return encoded url
+       """
         temp_image_name = f'{integration_name.replace(" ", "")}_image.png'
         search_for_images_return_value = [{'display_name': integration_name,
                                            'image_path': f'/path/{temp_image_name}'}]
@@ -394,6 +402,14 @@ class TestImagesUpload:
     ])
     def test_upload_integration_images_without_special_character(self, mocker, dummy_pack, integration_name,
                                                                  expected_result):
+        """
+           Given:
+               - Integration name without special characters.
+           When:
+               - When pack has integration no special character.
+           Then:
+               - validate that encoded url did not change the original url.
+       """
         temp_image_name = f'{integration_name.replace(" ", "")}_image.png'
         search_for_images_return_value = [{'display_name': integration_name,
                                            'image_path': f'/path/{temp_image_name}'}]
