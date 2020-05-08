@@ -1285,7 +1285,7 @@ There is no context output for this command.
 ### Uptycs Asset Tag
 |hostName|tags|
 |---|---|
-|kyle-mbp-work|Uptycs=work laptop,<br>owner=Uptycs office,<br>network=low,<br>cpu=unknown,<br>memory=unknown,<br>disk=high|
+|kyle-mbp-work|Uptycs=work laptop,<br/>owner=Uptycs office,<br/>network=low,<br/>cpu=unknown,<br/>memory=unknown,<br/>disk=high|
 
 
 ### 14. uptycs-get-user-information
@@ -1912,7 +1912,7 @@ There is no context output for this command.
 ### Uptycs User Asset Groups
 |B schmoll|Mike Boldi|Milan Shah|
 |---|---|---|
-|email: bschmoll@uptycs.com<br>id: 33436e24-f30f-42d0-8438-d948be12b5af|email: mboldi@uptycs.com<br>id: e43b0119-8d23-4ea2-9fd9-3a9ff14fc195|email: milans100@gmail.com<br>id: 89d26aa4-f0a8-48d9-a174-ce5285d9dd60|
+|email: bschmoll@uptycs.com<br/>id: 33436e24-f30f-42d0-8438-d948be12b5af|email: mboldi@uptycs.com<br/>id: e43b0119-8d23-4ea2-9fd9-3a9ff14fc195|email: milans100@gmail.com<br/>id: 89d26aa4-f0a8-48d9-a174-ce5285d9dd60|
 
 
 ### 23. uptycs-get-threat-indicator
@@ -2592,5 +2592,4 @@ While the Demisto-Uptycs integration provides multiple commands with which to ac
 
 ## Troubleshooting
 ---
-
 
