@@ -385,6 +385,7 @@ class TestImagesUpload:
                                            'image_path': f'/path/{temp_image_name}'}]
         mocker.patch("marketplace_services_test.Pack._search_for_images", return_value=search_for_images_return_value)
         mocker.patch('builtins.open', mock_open(read_data="image_data"))
+        mocker.patch("Tests.Marketplace.marketplace_services.print")
         dummy_storage_bucket = mocker.MagicMock()
         dummy_storage_bucket.blob.return_value.name = os.path.join(GCPConfig.STORAGE_BASE_PATH, "TestPack",
                                                                    temp_image_name)
@@ -415,6 +416,7 @@ class TestImagesUpload:
                                            'image_path': f'/path/{temp_image_name}'}]
         mocker.patch("marketplace_services_test.Pack._search_for_images", return_value=search_for_images_return_value)
         mocker.patch('builtins.open', mock_open(read_data="image_data"))
+        mocker.patch("Tests.Marketplace.marketplace_services.print")
         dummy_storage_bucket = mocker.MagicMock()
         dummy_storage_bucket.blob.return_value.name = os.path.join(GCPConfig.STORAGE_BASE_PATH, "TestPack",
                                                                    temp_image_name)
