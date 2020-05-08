@@ -1,6 +1,6 @@
 commonfields:
   id: CommonUserServer
-  version: 1
+  version: -1
 name: CommonUserServer
 script: ""
 type: javascript
