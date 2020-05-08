@@ -6,6 +6,7 @@ import shutil
 import yaml
 import enum
 import base64
+import urllib.parse
 from distutils.util import strtobool
 from distutils.version import LooseVersion
 from datetime import datetime
@@ -111,17 +112,16 @@ class Pack(object):
     Attributes:
         PACK_INITIAL_VERSION (str): pack initial version that will be used as default.
         CHANGELOG_JSON (str): changelog json full name, may be changed in the future.
-        CHANGELOG_MD (str): changelog md full name.
         README (str): pack's readme file name.
         METADATA (str): pack's metadata file name, the one that will be deployed to cloud storage.
         USER_METADATA (str); user metadata file name, the one that located in content repo.
         EXCLUDE_DIRECTORIES (list): list of directories to excluded before uploading pack zip to storage.
         AUTHOR_IMAGE_NAME (str): author image file name.
+        RELEASE_NOTES (str): release notes folder name.
 
     """
     PACK_INITIAL_VERSION = "1.0.0"
     CHANGELOG_JSON = "changelog.json"
-    CHANGELOG_MD = "changelog.md"
     README = "README.md"
     USER_METADATA = "pack_metadata.json"
     METADATA = "metadata.json"
@@ -590,10 +590,11 @@ class Pack(object):
         """
         task_status = False
         try:
-            release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
             if os.path.exists(os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)):
                 print_color(f"Found Changelog for: {self._pack_name}", LOG_COLORS.NATIVE)
                 changelog_index_path = os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
+                release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
+
                 if os.path.exists(release_notes_dir):
                     found_versions = []
                     for filename in os.listdir(release_notes_dir):
@@ -602,6 +603,7 @@ class Pack(object):
                         found_versions.append(LooseVersion(version))
                     found_versions.sort(reverse=True)
                     latest_release_notes = found_versions[0].vstring
+
                     print_color(f"Latest ReleaseNotes version is: {latest_release_notes}", LOG_COLORS.GREEN)
                     if self._current_version != latest_release_notes:
                         # TODO Need to implement support for pre-release versions
@@ -612,40 +614,51 @@ class Pack(object):
                     else:
                         with open(changelog_index_path, "r") as changelog_file:
                             changelog = json.load(changelog_file)
+
                             if latest_release_notes in changelog:
-                                print_error(f"Found existing release notes for version: {latest_release_notes} "
-                                            f"in the {self._pack_name} pack.")
+                                print_warning(f"Found existing release notes for version: {latest_release_notes} "
+                                              f"in the {self._pack_name} pack.")
                                 task_status = True
                                 return task_status
-                        latest_rn_file = latest_release_notes.replace('.', '_')
 
+                        latest_rn_file = latest_release_notes.replace('.', '_')
                         latest_rn_path = os.path.join(release_notes_dir, latest_rn_file + '.md')
+
                         with open(latest_rn_path, 'r') as changelog_md:
                             changelog_lines = changelog_md.read()
                         version_changelog = {'releaseNotes': changelog_lines,
                                              'displayName': latest_release_notes,
                                              'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
                         changelog[latest_release_notes] = version_changelog
-                        with open(os.path.join(self._pack_path, 'changelog.json'), "w") as f:
-                            json.dump(changelog, f)
-            elif self._current_version == '1.0.0':
+
+                        with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), "w") as f:
+                            json.dump(changelog, f, indent=4)
+
+                else:  # will enter only on initial version and release notes folder still was not created
+                    shutil.copyfile(changelog_index_path, os.path.join(self._pack_path, Pack.CHANGELOG_JSON))
+                    print(f"Keeping existing {Pack.CHANGELOG_JSON} of {self._pack_name} pack.")
+
+            elif self._current_version == Pack.PACK_INITIAL_VERSION:
                 changelog = {}
                 version_changelog = {'releaseNotes': self._description,
-                                     'displayName': '1.0.0',
+                                     'displayName': Pack.PACK_INITIAL_VERSION,
                                      'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
-                changelog['1.0.0'] = version_changelog
-                with open(os.path.join(self._pack_path, 'changelog.json'), "w") as f:
-                    json.dump(changelog, f)
+                changelog[Pack.PACK_INITIAL_VERSION] = version_changelog
+
+                with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), "w") as f:
+                    json.dump(changelog, f, indent=4)
+
             else:
-                print_warning(f"No release notes found for: {self._pack_name}")
+                print_error(f"No release notes found for: {self._pack_name}")
                 task_status = False
                 return task_status
+
             task_status = True
             print_color(
-                f"Finished creating changelog.json for {self._pack_name}", LOG_COLORS.GREEN)
+                f"Finished creating {Pack.CHANGELOG_JSON} for {self._pack_name}", LOG_COLORS.GREEN)
         except Exception as e:
             print_error(
-                f"Failed creating changelog.json file for {self._pack_name}.\n "
+                f"Failed creating {Pack.CHANGELOG_JSON} file for {self._pack_name}.\n "
                 f"Additional info: {e}")
         finally:
             return task_status
@@ -1016,7 +1029,7 @@ class Pack(object):
                     pack_image_blob.upload_from_file(image_file)
                     uploaded_integration_images.append({
                         'name': image_data.get('display_name', ''),
-                        'imagePath': pack_image_blob.name if GCPConfig.USE_GCS_RELATIVE_PATH
+                        'imagePath': urllib.parse.quote(pack_image_blob.name) if GCPConfig.USE_GCS_RELATIVE_PATH
                         else pack_image_blob.public_url
                     })
 
