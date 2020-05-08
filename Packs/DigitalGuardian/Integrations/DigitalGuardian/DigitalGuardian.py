@@ -73,10 +73,10 @@ def test_module():
     try:
         _ = r.json() if r.text else {}
         if not r.ok:
-            demisto.results(f'Cannot connect to ARC, Response {r.status_code}: {r.text}')
+            return_error(f'Cannot connect to ARC, Response {r.status_code}: {r.text}')
         demisto.results('ok')
     except TypeError as ex:
-        demisto.results(str(ex))
+        return_error(str(ex))
 
 
 def get_watchlist_id(watchlist_name: str) -> str:
