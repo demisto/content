@@ -634,6 +634,10 @@ class Pack(object):
                         with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), "w") as f:
                             json.dump(changelog, f, indent=4)
 
+                else:  # will enter only on initial version and release notes folder still was not created
+                    shutil.copyfile(changelog_index_path, os.path.join(self._pack_path, Pack.CHANGELOG_JSON))
+                    print(f"Keeping existing {Pack.CHANGELOG_JSON} of {self._pack_name} pack.")
+
             elif self._current_version == Pack.PACK_INITIAL_VERSION:
                 changelog = {}
                 version_changelog = {'releaseNotes': self._description,
