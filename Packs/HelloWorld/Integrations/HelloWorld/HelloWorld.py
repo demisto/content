@@ -1442,7 +1442,7 @@ def main() -> None:
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client, first_fetch_time)
-            demisto.results(result)
+            return_results(result)
 
         elif demisto.command() == 'fetch-incidents':
             # Set and define the fetch incidents command to run after activated via integration settings.
