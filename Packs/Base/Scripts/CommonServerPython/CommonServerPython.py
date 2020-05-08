@@ -2450,6 +2450,7 @@ class CommandResults:
 
         if self.outputs:
             if not self.readable_output:
+                # if markdown is not provided then create table by default
                 human_readable = tableToMarkdown('Results', self.outputs)
             else:
                 human_readable = self.readable_output
@@ -2457,10 +2458,16 @@ class CommandResults:
             if not self.raw_response:
                 raw_response = self.outputs
 
-            outputs_key = '{}(val.{} == obj.{})'.format(self.outputs_prefix, self.outputs_key_field, self.outputs_key_field)
-            outputs.update({
-                outputs_key: self.outputs
-            })
+            if self.outputs_prefix and self.outputs_key_field:
+                # if both prefix and key field provided then create DT key
+                outputs_key = '{}(val.{} == obj.{})'.format(self.outputs_prefix, self.outputs_key_field, self.outputs_key_field)
+                outputs[outputs_key] = self.outputs
+            elif self.outputs_prefix:
+                outputs_key = '{}'.format(self.outputs_prefix, self.outputs_key_field)
+                outputs[outputs_key] = self.outputs
+            else:
+                outputs = self.outputs
+                human_readable = self.readable_output  # prefix and key field not provided, human readable should
 
         return_entry = {
             'Type': EntryType.NOTE,

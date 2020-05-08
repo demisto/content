@@ -1034,6 +1034,37 @@ class TestCommandResults:
             }
         }
 
+    def test_return_list_of_items_the_old_way(self):
+        from CommonServerPython import CommandResults, EntryFormat, EntryType
+        tickets = [
+            {
+                'ticket_id': 1,
+                'title': 'foo'
+            },
+            {
+                'ticket_id': 2,
+                'title': 'goo'
+            }
+        ]
+        results = CommandResults(
+            outputs_prefix=None,
+            outputs_key_field=None,
+            outputs={
+                'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
+            },
+            raw_response=tickets
+        )
+
+        assert results.to_context() == {
+            'Type': EntryType.NOTE,
+            'ContentsFormat': EntryFormat.JSON,
+            'Contents': tickets,
+            'HumanReadable': None,
+            'EntryContext': {
+                'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
+            }
+        }
+
     def test_create_dbot_score_with_invalid_score(self):
         from CommonServerPython import Common, DBotScoreType
 
