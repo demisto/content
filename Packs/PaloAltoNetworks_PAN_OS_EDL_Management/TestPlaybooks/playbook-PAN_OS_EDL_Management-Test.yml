@@ -2,7 +2,6 @@ id: PAN OS EDL Management - Test
 version: -1
 name: PAN OS EDL Management - Test
 description: non scale testing of pan-os edl integration
-fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":

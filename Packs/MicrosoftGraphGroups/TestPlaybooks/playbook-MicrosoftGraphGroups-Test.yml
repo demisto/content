@@ -3,7 +3,6 @@ version: -1
 name: Microsoft Graph Groups - Test
 starttaskid: "0"
 description: ""
-fromversion: 5.0.0
 tasks:
   "0":
     id: "0"
