@@ -6,36 +6,6 @@ from CommonServerPython import *
 RETURN_ERROR_TARGET = 'DigitalGuardian.return_error'
 
 
-def test_missing_parameters(mocker):
-    from DigitalGuardian import main
-
-    params_0 = {}
-
-    params_1 = {
-        "auth_url": "https://authorization_url.com"
-    }
-
-    mocker.patch.object(demisto, 'params', return_value=params_0)
-    mocker.patch.object(demisto, 'command', return_value='test-module')
-    return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=InterruptedError())
-
-    with pytest.raises(InterruptedError):
-        main()
-
-    err_msg = return_error_mock.call_args_list[0][0][0]
-    assert "Missing required parameter(s)" in err_msg
-    assert "auth_url" in err_msg
-
-    return_error_mock.reset_mock()
-    mocker.patch.object(demisto, 'params', return_value=params_1)
-    with pytest.raises(InterruptedError):
-        main()
-
-    err_msg = return_error_mock.call_args_list[0][0][0]
-    assert "Missing required parameter(s)" in err_msg
-    assert "arc_url" in err_msg
-
-
 def test_test_module(mocker, capfd):
     from DigitalGuardian import main
 

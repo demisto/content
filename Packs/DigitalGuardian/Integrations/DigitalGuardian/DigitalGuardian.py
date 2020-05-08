@@ -18,6 +18,7 @@ CLIENT_SECRET: str
 AUTH_HEADERS: dict
 CLIENT_HEADERS: dict
 VERIFY_CERT: bool
+PROXY: bool
 
 
 def init_globals():
@@ -26,7 +27,7 @@ def init_globals():
     :return: void
     """
 
-    global AUTH_SERVER, AUTH_URL, ARC_URL, CLIENT_ID, CLIENT_SECRET, AUTH_HEADERS, CLIENT_HEADERS, VERIFY_CERT
+    global AUTH_SERVER, AUTH_URL, ARC_URL, CLIENT_ID, CLIENT_SECRET, AUTH_HEADERS, CLIENT_HEADERS, VERIFY_CERT, PROXY
 
     AUTH_SERVER = demisto.getParam('auth_url')
     AUTH_URL = AUTH_SERVER + '/as/token.oauth2'
@@ -38,6 +39,7 @@ def init_globals():
     VERIFY_CERT = not demisto.params().get('insecure', False)
     AUTH_HEADERS = {'Content-Type': 'application/x-www-form-urlencoded'}
     CLIENT_HEADERS = {'Authorization': ''}
+    PROXY = demisto.getParam('proxy')
 
     handle_proxy()
 
@@ -60,22 +62,21 @@ def request_api_token():
         api_key = response_json['access_token']
         CLIENT_HEADERS['Authorization'] = 'Bearer ' + api_key
     else:
-        return_error('Error in request_api_token [%d] - %s' % (r.status_code, r.reason))
+        return_error(f'Error in request_api_token [{r.status_code}] - {r.reason}')
 
 
 def test_module():
     """
     Performs basic get request to get item samples
     """
-    request_api_token()
     r = requests.get(url=ARC_URL + '/watchlists', headers=CLIENT_HEADERS, verify=VERIFY_CERT)
     try:
         _ = r.json() if r.text else {}
         if not r.ok:
-            demisto.results('Cannot connect to ARC')
+            demisto.results(f'Cannot connect to ARC, Response {r.status_code}: {r.text}')
         demisto.results('ok')
     except TypeError as ex:
-        demisto.debug(str(ex))
+        demisto.results(str(ex))
 
 
 def get_watchlist_id(watchlist_name: str) -> str:
@@ -84,7 +85,6 @@ def get_watchlist_id(watchlist_name: str) -> str:
     :param watchlist_name:
     :return: watchlist id
     """
-    request_api_token()
     full_url = ARC_URL + '/watchlists/'
     r = requests.get(url=full_url, headers=CLIENT_HEADERS, verify=VERIFY_CERT)
     json_text = json.loads(r.text)
@@ -94,10 +94,10 @@ def get_watchlist_id(watchlist_name: str) -> str:
             if item.get('display_name').lower() == watchlist_name.lower():
                 list_id = item.get('name')
     else:
-        return_error('Error retrieving watchlist_id for ' + watchlist_name + ', ' + str(r.status_code) + ': ' + r.text)
+        return_error(f'Error retrieving watchlist_id for {watchlist_name}, {r.status_code}: {r.text}')
 
     if not list_id:
-        return_error('Unable to find watchlist_id for ' + watchlist_name)
+        return_error(f'Unable to find watchlist_id for {watchlist_name}')
 
     return str(list_id)
 
@@ -106,7 +106,6 @@ def get_list_id(list_name: str, list_type: str) -> str:
     """
     Get List ID by name and type
     """
-    request_api_token()
     full_url = ARC_URL + '/lists/' + list_type
     r = requests.get(url=full_url, headers=CLIENT_HEADERS, verify=VERIFY_CERT)
     json_text = json.loads(r.text)
@@ -116,10 +115,10 @@ def get_list_id(list_name: str, list_type: str) -> str:
             if str(jText['name']).lower() == list_name.lower():
                 list_id = jText['id']
     else:
-        return_error('Error retrieving list_id for ' + list_name + ', ' + str(r.status_code) + ': ' + r.text)
+        return_error(f'Error retrieving list_id for {list_name}, {r.status_code}: {r.text}')
 
     if not list_id:
-        return_error('List id not found for name ' + list_name + ' and type ' + list_type)
+        return_error(f'List id not found for name {list_name} and type {list_type}')
 
     return str(list_id)
 
@@ -174,12 +173,12 @@ def add_entry_to_componentlist():
                 demisto.results('added componentlist entry ({}) to componentlist name ({})'.format(componentlist_entry,
                                                                                                    componentlist_name))
             else:
-                demisto.results(
+                return_error(
                     'Failed to add componentlist entry({}) to componentlist name ({}). The response failed with status '
                     'code {}. The '
                     'response was: {}'.format(componentlist_entry, componentlist_name, r.status_code, r.text))
         else:
-            demisto.results('Failed to find componentlist name ({})').format(componentlist_name)
+            return_error('Failed to find componentlist name ({})').format(componentlist_name)
 
 
 def check_componentlist_entry():
@@ -205,7 +204,7 @@ def check_componentlist_entry():
                 if str(jText['content_value']).lower() == componentlist_entry.lower():
                     componentlist = jText['content_value']
         else:
-            return_error('Unable to find componentlist named ' + componentlist_name + ', ' + r.status_code)
+            return_error(f'Unable to find componentlist named {componentlist_name}, {r.status_code}')
 
     if componentlist:
         return_outputs(readable_output='Componentlist found', outputs={
@@ -234,7 +233,7 @@ def rm_entry_from_componentlist():
         demisto.results('removed componentlist entry ({}) from componentlist name ({})'.format(componentlist_entry,
                                                                                                componentlist_name))
     else:
-        demisto.results(
+        return_error(
             'Failed to remove componentlist entry({}) from componentlist name ({}). The response failed with '
             'status code {}. The response was: {}'.format(componentlist_entry, componentlist_name, r.status_code,
                                                           r.text))
@@ -257,7 +256,7 @@ def add_entry_to_watchlist():
     if 200 <= r.status_code <= 299:
         demisto.results('added watchlist entry ({}) to watchlist name ({})'.format(watchlist_entry, watchlist_name))
     else:
-        demisto.results(
+        return_error(
             'Failed to add watchlist entry({}) to watchlist name ({}). The response failed with status code {}. '
             'The response was: {}'.format(watchlist_entry, watchlist_name, r.status_code, r.text))
 
@@ -301,7 +300,7 @@ def rm_entry_from_watchlist():
         demisto.results(
             'removed watchlist entry ({}) from watchlist name ({})'.format(watchlist_entry, watchlist_name))
     else:
-        demisto.results(
+        return_error(
             'Failed to remove watchlist entry({}) from watchlist name ({}). The response failed with status code {}. '
             'The response was: {}'.format(watchlist_entry, watchlist_name, r.status_code, r.text))
 
@@ -312,7 +311,6 @@ def get_items_request():
     """
     incident_list = []
     oldname = ''
-    request_api_token()
 
     export_profile = demisto.params().get('export_profile', None)
 
@@ -541,22 +539,19 @@ def main():
     }
 
     try:
-        required_params = {'auth_url', 'arc_url', 'client_id', 'client_secret'}
-
-        if demisto.params().keys() < required_params:
-            missing_params = required_params - demisto.params().keys()
-            return_error('Missing required parameter(s): %s' % missing_params)
-
         init_globals()
 
         command = demisto.command()
 
-        LOG('Command being called is %s' % command)
+        LOG(f'Command being called is {command}')
 
         if command not in commands:
-            return_error('Command "%s" not implemented' % command)
+            return_error(f'Command "{command}" not implemented')
 
         command_fn = commands[command]
+
+        request_api_token()
+
         command_fn()
 
     except Exception as e:

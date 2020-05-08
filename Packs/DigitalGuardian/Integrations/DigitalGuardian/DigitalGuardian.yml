@@ -3,12 +3,24 @@ commonfields:
   id: Digital Guardian
   version: -1
 configuration:
-- display: auth_url
+- display: Auth Server URL
   name: auth_url
   required: true
   type: 0
-- display: arc_url
+- display: Gateway Base URL
   name: arc_url
+  required: true
+  type: 0
+- display: API Client ID
+  name: client_id
+  required: true
+  type: 0
+- display: API Client Secret
+  name: client_secret
+  required: true
+  type: 4
+- display: Export Profile
+  name: export_profile
   required: true
   type: 0
 - display: Fetch incidents
@@ -23,19 +35,11 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: client_id
-  name: client_id
-  required: true
-  type: 0
-- display: client_secret
-  name: client_secret
-  required: true
-  type: 4
-- display: export_profile
-  name: export_profile
-  required: true
-  type: 0
-description: Digital Guardian ARC Watchlist Integration
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Use Digital Guardian Integration to fetch incidents and to programmatically add or remove entries from watchlists and component lists.
 display: Digital Guardian
 name: Digital Guardian
 script:

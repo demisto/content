@@ -1,7 +1,7 @@
 To use Digital Guardian External API calls, you must first get a valid token to use for authentication.
 
 ### Getting a new Token
-You must obtain the following values by filing a request via the Digital Guardian Support Portal:
+You must obtain the following values by submitting a request to support@digitalguardian.com
 
 | **Requested Information** | **Mapped to Integration Field Name** |
 | --- | --- |
@@ -11,5 +11,5 @@ You must obtain the following values by filing a request via the Digital Guardia
 | Auth Server URL | auth_url |
 
 Note:
-The export_profile for use with this integration has the ID of 'demisto'.  This Export Profile requires ARC 2.12.0 in order to function properly.
+The Export Profile for use with this integration has the ID of 'demisto'.  This Export Profile requires ARC 2.12.0 in order to function properly.
 
