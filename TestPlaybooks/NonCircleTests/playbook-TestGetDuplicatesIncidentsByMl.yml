@@ -1,5 +1,5 @@
 id: 5dc848e5-a649-4394-8300-386770d39d75
-version: 5
+version: -1
 name: TestGetDuplicatesIncidentsByMl
 starttaskid: "0"
 tasks:

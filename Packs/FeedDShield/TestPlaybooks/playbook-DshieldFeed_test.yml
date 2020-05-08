@@ -1,7 +1,7 @@
 elasticcommonfields: {}
 id: playbook-DshieldFeed_test
 fromversion: 5.5.0
-version: 3
+version: -1
 contentitemexportablefields:
   contentitemfields:
     propagationLabels:

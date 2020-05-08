@@ -164,7 +164,7 @@ def indicator_dbot_ec(indicator: Dict, type_ec: AnyStr) -> Tuple[Dict, Dict]:
             'Indicator': indicator.get('url'),
             'Type': 'URL',
             'Vendor': INTEGRATION_NAME,
-            'Score': dbotscores.get('High') if indicator.get('malicious') == 'true' else dbotscores.get('Low')
+            'Score': Common.DBotScore.BAD if indicator.get('malicious') == 'true' else Common.DBotScore.GOOD
         }
     elif type_ec == 'file-ec':
         ec = {
@@ -180,7 +180,7 @@ def indicator_dbot_ec(indicator: Dict, type_ec: AnyStr) -> Tuple[Dict, Dict]:
             'Indicator': indicator.get('fileName'),
             'Type': 'File',
             'Vendor': INTEGRATION_NAME,
-            'Score': dbotscores.get('High') if indicator.get('malicious') == 'true' else dbotscores.get('Low')
+            'Score': Common.DBotScore.BAD if indicator.get('malicious') == 'true' else Common.DBotScore.GOOD
         }
 
     return dbotscore, ec
