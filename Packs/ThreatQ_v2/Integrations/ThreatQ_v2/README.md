@@ -2914,7 +2914,7 @@
 </table>
 <p> </p>
 <h5>Command Example</h5>
-<pre>  !threatq-edit-indicator id=173317 description="This is a new description" type="Email Address" value=dtavori@paloaltonetworks.com
+<pre>  !threatq-edit-indicator id=173317 description="This is a new description" type="Email Address" value=goo@test.com
 </pre>
 <h5>Human Readable Output</h5>
 <p><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/ThreatQ_v2_edit-indicator.png" alt="edit-indicator.png"></p>
