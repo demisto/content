@@ -2834,10 +2834,11 @@
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "AttackIQFireDrill": "Issue 24281",
         "Nessus": "No instance",
         "MxToolBox": "No instance",
         "Traps": "Issue 24122",
-        "skyformation": "No instance, old partner",
+        "Skyformation": "No instance, old partner",
         "Pipl": "No instance",
         "PrismaAccess": "Instance will be provided soon by Lior and Prasen",
         "URLhaus": "No instance",
