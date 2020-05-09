@@ -1,0 +1,434 @@
+id: GRR Test
+version: -1
+name: GRR Test
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 9d85c68a-14e9-47cf-8759-622a6e53f645
+    type: start
+    task:
+      id: 9d85c68a-14e9-47cf-8759-622a6e53f645
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 70\n  }\n}"
+    note: false
+  '1':
+    id: '1'
+    taskid: d02f4503-1083-41e9-843d-b444f252fa56
+    type: condition
+    task:
+      id: d02f4503-1083-41e9-843d-b444f252fa56
+      version: -1
+      name: Is GRR enabled?
+      description: Verify that there is a valid instance of GRR enabled.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '3'
+      yes:
+      - '2'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: GRR
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+    note: false
+  '2':
+    id: '2'
+    taskid: e98889ae-643a-47bf-8693-0e18f87c9ac8
+    type: regular
+    task:
+      id: e98889ae-643a-47bf-8693-0e18f87c9ac8
+      version: -1
+      name: Delete Context
+      description: Delete context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      all:
+        simple: yes
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 400\n  }\n}"
+    note: false
+  '3':
+    id: '3'
+    taskid: 0e639583-8467-4d9c-870f-d367058b1342
+    type: title
+    task:
+      id: 0e639583-8467-4d9c-870f-d367058b1342
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": -310,\n    \"y\": 1880\n  }\n}"
+    note: false
+  '4':
+    id: '4'
+    taskid: 25183cef-26a7-4f99-8902-b7d8a8abc967
+    type: regular
+    task:
+      id: 25183cef-26a7-4f99-8902-b7d8a8abc967
+      version: -1
+      name: Get Clients
+      description: Gets GRR clients
+      script: GRR|||grr-get-clients
+      type: regular
+      iscommand: true
+      brand: GRR
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      count: {}
+      headers: {}
+      offset: {}
+      query: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 560\n  }\n}"
+    note: false
+  '5':
+    id: '5'
+    taskid: 930ffb60-ed8c-4122-8961-7ff2629bae52
+    type: condition
+    task:
+      id: 930ffb60-ed8c-4122-8961-7ff2629bae52
+      version: -1
+      name: Are there any active clients?
+      description: Verify there are active clients
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '3'
+      yes:
+      - '6'
+      - '11'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Client
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 730\n  }\n}"
+    note: false
+  '6':
+    id: '6'
+    taskid: 9cf5944a-9824-453c-816c-d83ef853f8e0
+    type: regular
+    task:
+      id: 9cf5944a-9824-453c-816c-d83ef853f8e0
+      version: -1
+      name: Create a new flow
+      description: Creates new flow
+      script: GRR|||grr-set-flows
+      type: regular
+      iscommand: true
+      brand: GRR
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      client_id:
+        simple: ${Client.[0].ID}
+      flow:
+        simple: '{"name":"AnalyzeClientMemory"}'
+      headers: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 925\n  }\n}"
+    note: false
+  '7':
+    id: '7'
+    taskid: 8ac03ae0-473e-4c29-86e8-8b3e832936d9
+    type: regular
+    task:
+      id: 8ac03ae0-473e-4c29-86e8-8b3e832936d9
+      version: -1
+      name: Save new flow to context
+      description: Save new flow to context
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      append: {}
+      key:
+        simple: GrrTest.Flow.ID
+      value:
+        simple: ${Flow.ID}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1120\n  }\n}"
+    note: false
+  '8':
+    id: '8'
+    taskid: 5bcc0331-fb2b-4715-80db-7030eb998510
+    type: regular
+    task:
+      id: 5bcc0331-fb2b-4715-80db-7030eb998510
+      version: -1
+      name: Delete Flow from context
+      description: Delete flow from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      all:
+        simple: no
+      index: {}
+      key:
+        simple: Flow
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1300\n  }\n}"
+    note: false
+  '9':
+    id: '9'
+    taskid: dd646a44-481c-4f70-8610-530bbe985ea1
+    type: regular
+    task:
+      id: dd646a44-481c-4f70-8610-530bbe985ea1
+      version: -1
+      name: Get flows
+      description: Gets all of the client's flows
+      script: GRR|||grr-get-flows
+      type: regular
+      iscommand: true
+      brand: GRR
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      client_id:
+        simple: ${Client.[0].ID}
+      count: {}
+      headers: {}
+      offset: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1470\n  }\n}"
+    note: false
+  '10':
+    id: '10'
+    taskid: d42fe790-12e9-4198-8002-6a3ee6cdb45c
+    type: condition
+    task:
+      id: d42fe790-12e9-4198-8002-6a3ee6cdb45c
+      version: -1
+      name: Verify created flow is in flow list
+      description: Verify the created flow is in list
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '3'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Flow.ID
+            iscontext: true
+          right:
+            value:
+              simple: GrrTest.Flow.ID
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1650\n  }\n}"
+    note: false
+  '11':
+    id: '11'
+    taskid: ee6d0d71-7275-4b20-827b-a38a7aafaad8
+    type: regular
+    task:
+      id: ee6d0d71-7275-4b20-827b-a38a7aafaad8
+      version: -1
+      name: Create new (empty) hunt
+      description: Creates new (empty) hunt
+      script: GRR|||grr-set-hunts
+      type: regular
+      iscommand: true
+      brand: GRR
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments:
+      headers: {}
+      hunt_args: {}
+      hunt_runner_args: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 520,\n    \"y\": 925\n  }\n}"
+    note: false
+  '12':
+    id: '12'
+    taskid: 97bec399-1a01-40b1-8172-3ef985df1045
+    type: regular
+    task:
+      id: 97bec399-1a01-40b1-8172-3ef985df1045
+      version: -1
+      name: Save new hunt to context
+      description: Save new hunt to context
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      append: {}
+      key:
+        simple: GrrTest.Hunt.ID
+      value:
+        simple: ${Hunt.ID}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 520,\n    \"y\": 1120\n  }\n}"
+    note: false
+  '13':
+    id: '13'
+    taskid: 5ce93299-68e7-4f32-858b-385191e7a340
+    type: regular
+    task:
+      id: 5ce93299-68e7-4f32-858b-385191e7a340
+      version: -1
+      name: Delete Hunt from context
+      description: Delete all hunts from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '14'
+    scriptarguments:
+      all:
+        simple: no
+      index: {}
+      key:
+        simple: Hunt
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 520,\n    \"y\": 1300\n  }\n}"
+    note: false
+  '14':
+    id: '14'
+    taskid: 0d793175-8ad2-4165-8cc6-e9d3be9894a2
+    type: regular
+    task:
+      id: 0d793175-8ad2-4165-8cc6-e9d3be9894a2
+      version: -1
+      name: Get hunts
+      description: Get all hunts within a timeframe of 10000
+      script: GRR|||grr-get-hunts
+      type: regular
+      iscommand: true
+      brand: GRR
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      active_within:
+        simple: '10000'
+      count: {}
+      created_by: {}
+      description_contains: {}
+      headers: {}
+      offset: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 520,\n    \"y\": 1470\n  }\n}"
+    note: false
+  '15':
+    id: '15'
+    taskid: e56d0310-ec0e-4e09-8a55-fd00e55599db
+    type: condition
+    task:
+      id: e56d0310-ec0e-4e09-8a55-fd00e55599db
+      version: -1
+      name: Verify created hunt is in hunt list
+      description: Verify created hunt is in hunt list
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '3'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Hunt.ID
+            iscontext: true
+          right:
+            value:
+              simple: GrrTest.Hunt.ID
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 520,\n    \"y\": 1650\n  }\n}"
+    note: false
+view: "{\n  \"linkLabelsPosition\": {\n    \"1_3_#default#\": 0.88,\n    \"5_3_#default#\"\
+  : 0.57\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1875,\n \
+  \     \"width\": 1210,\n      \"x\": -310,\n      \"y\": 70\n    }\n  }\n}"
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''
