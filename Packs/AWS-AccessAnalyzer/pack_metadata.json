@@ -1,6 +1,6 @@
 {
-    "name": "ThreatQ",
-    "description": "A threat intelligence platform that collects and interprets intelligence data from open sources and manages indicator scoring, types, and attributes.",
+    "name": "AWS - AccessAnalyzer (beta)",
+    "description": "Amazon Web Services IAM Access Analyzer",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -9,7 +9,9 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "AWS - AccessAnalyzer (beta)"
+    ],
     "created": "2020-04-14T00:00:00Z",
     "updated": "2020-03-14T00:00:00Z",
     "beta": true,

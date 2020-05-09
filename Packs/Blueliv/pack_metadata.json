@@ -1,6 +1,6 @@
 {
-    "name": "ThreatQ",
-    "description": "A threat intelligence platform that collects and interprets intelligence data from open sources and manages indicator scoring, types, and attributes.",
+    "name": "Blueliv (Beta)",
+    "description": "Blueliv reduces risk through actionable, dynamic and targeted threat intelligence, trusted by your organization.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -9,7 +9,9 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "Blueliv (Beta)"
+    ],
     "created": "2020-04-14T00:00:00Z",
     "updated": "2020-03-14T00:00:00Z",
     "beta": true,
