@@ -1,8 +1,9 @@
 import pytest
 import json
 import os
+from unittest.mock import mock_open
 from Tests.Marketplace.marketplace_services import Pack, Metadata, input_to_list, get_valid_bool, convert_price, \
-    get_higher_server_version
+    get_higher_server_version, GCPConfig
 
 
 @pytest.fixture(scope="module")
@@ -251,7 +252,6 @@ class TestChangelogCreation:
         assert result is True
 
     def test_prepare_release_notes_upgrade_version(self, mocker, dummy_pack):
-        from unittest.mock import mock_open
         """
            Given:
                - Valid new version and valid current changelog found in index.
@@ -261,6 +261,7 @@ class TestChangelogCreation:
                - return True
        """
         dummy_pack.current_version = '2.0.2'
+        mocker.patch("Tests.Marketplace.marketplace_services.print_color")
         mocker.patch("os.path.exists", return_value=True)
         dir_list = ['1_0_1.md', '2_0_2.md', '2_0_0.md']
         mocker.patch("os.listdir", return_value=dir_list)
@@ -282,7 +283,6 @@ class TestChangelogCreation:
         assert result is True
 
     def test_prepare_release_notes_upgrade_version_mismatch(self, mocker, dummy_pack):
-        from unittest.mock import mock_open
         """
            Given:
                - Invalid new version and valid current changelog found in index. Mismatching versions.
@@ -292,6 +292,8 @@ class TestChangelogCreation:
                - return False
        """
         dummy_pack.current_version = '2.0.0'
+        mocker.patch("Tests.Marketplace.marketplace_services.print_error")
+        mocker.patch("Tests.Marketplace.marketplace_services.print_color")
         mocker.patch("os.path.exists", return_value=True)
         dir_list = ['1_0_1.md', '2_0_2.md', '2_0_0.md']
         mocker.patch("os.listdir", return_value=dir_list)
@@ -313,7 +315,6 @@ class TestChangelogCreation:
         assert result is False
 
     def test_prepare_release_notes_upgrade_version_dup(self, mocker, dummy_pack):
-        from unittest.mock import mock_open
         # TODO When we move to not overriding packs in the build, we will need to change result returned.
         """
            Given:
@@ -325,6 +326,8 @@ class TestChangelogCreation:
        """
         dummy_pack.current_version = '2.0.0'
         mocker.patch("os.path.exists", return_value=True)
+        mocker.patch("Tests.Marketplace.marketplace_services.print_warning")
+        mocker.patch("Tests.Marketplace.marketplace_services.print_color")
         dir_list = ['1_0_1.md', '2_0_0.md']
         mocker.patch("os.listdir", return_value=dir_list)
         original_changelog = '''{
@@ -343,3 +346,82 @@ class TestChangelogCreation:
         dummy_path = 'Irrelevant/Test/Path'
         result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path)
         assert result is True
+
+
+class TestImagesUpload:
+    """ Test class for integration images upload.
+
+    """
+
+    @pytest.fixture(scope="class")
+    def dummy_pack(self):
+        """ dummy pack fixture
+        """
+        return Pack(pack_name="TestPack", pack_path="dummy_path")
+
+    @pytest.mark.parametrize("integration_name,expected_result", [
+        ("Have I Been Pwned? v2",
+         [{'name': 'Have I Been Pwned? v2', 'imagePath': 'content/packs/TestPack/HaveIBeenPwned%3Fv2_image.png'}]),
+        ("Have I Been Pwned! v2",
+         [{'name': 'Have I Been Pwned! v2', 'imagePath': 'content/packs/TestPack/HaveIBeenPwned%21v2_image.png'}]),
+        ("Have I Been Pwned$ v2",
+         [{'name': 'Have I Been Pwned$ v2', 'imagePath': 'content/packs/TestPack/HaveIBeenPwned%24v2_image.png'}]),
+        ("Integration!@#$ Name^%$",
+         [{'name': 'Integration!@#$ Name^%$',
+           'imagePath': 'content/packs/TestPack/Integration%21%40%23%24Name%5E%25%24_image.png'}])
+    ])
+    def test_upload_integration_images_with_special_character(self, mocker, dummy_pack, integration_name,
+                                                              expected_result):
+        """
+           Given:
+               - Integration name with special characters.
+           When:
+               - When pack has integration with special character.
+           Then:
+               - return encoded url
+       """
+        temp_image_name = f'{integration_name.replace(" ", "")}_image.png'
+        search_for_images_return_value = [{'display_name': integration_name,
+                                           'image_path': f'/path/{temp_image_name}'}]
+        mocker.patch("marketplace_services_test.Pack._search_for_images", return_value=search_for_images_return_value)
+        mocker.patch('builtins.open', mock_open(read_data="image_data"))
+        mocker.patch("Tests.Marketplace.marketplace_services.print")
+        dummy_storage_bucket = mocker.MagicMock()
+        dummy_storage_bucket.blob.return_value.name = os.path.join(GCPConfig.STORAGE_BASE_PATH, "TestPack",
+                                                                   temp_image_name)
+        task_status, integration_images = dummy_pack.upload_integration_images(storage_bucket=dummy_storage_bucket)
+
+        assert task_status
+        assert len(expected_result) == len(integration_images)
+        assert integration_images == expected_result
+
+    @pytest.mark.parametrize("integration_name,expected_result", [
+        ("Integration Name",
+         [{'name': 'Integration Name', 'imagePath': 'content/packs/TestPack/IntegrationName_image.png'}]),
+        ("IntegrationName",
+         [{'name': 'IntegrationName', 'imagePath': 'content/packs/TestPack/IntegrationName_image.png'}])
+    ])
+    def test_upload_integration_images_without_special_character(self, mocker, dummy_pack, integration_name,
+                                                                 expected_result):
+        """
+           Given:
+               - Integration name without special characters.
+           When:
+               - When pack has integration no special character.
+           Then:
+               - validate that encoded url did not change the original url.
+       """
+        temp_image_name = f'{integration_name.replace(" ", "")}_image.png'
+        search_for_images_return_value = [{'display_name': integration_name,
+                                           'image_path': f'/path/{temp_image_name}'}]
+        mocker.patch("marketplace_services_test.Pack._search_for_images", return_value=search_for_images_return_value)
+        mocker.patch('builtins.open', mock_open(read_data="image_data"))
+        mocker.patch("Tests.Marketplace.marketplace_services.print")
+        dummy_storage_bucket = mocker.MagicMock()
+        dummy_storage_bucket.blob.return_value.name = os.path.join(GCPConfig.STORAGE_BASE_PATH, "TestPack",
+                                                                   temp_image_name)
+        task_status, integration_images = dummy_pack.upload_integration_images(storage_bucket=dummy_storage_bucket)
+
+        assert task_status
+        assert len(expected_result) == len(integration_images)
+        assert integration_images == expected_result
