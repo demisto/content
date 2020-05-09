@@ -11,7 +11,7 @@ The web server for the integration runs within a long-running Docker container. 
 ## Important Information
  - The messaging endpoint must be either the URL of the Demisto server, including the configured port, or the proxy that redirects the messages received from Teams to the Demisto server. 
  - It's important that the port is opened for outside communication and that the port is not being used, meaning that no service is listening on it. Therefore, the default port, 443, should not be used.
- - For additional security, we recommend placing the Teams integration webserver behind a reverse proxy (such as nginx).
+ - For additional security, we recommend placing the Teams integration webserver behind a reverse proxy (such as NGINX).
  - By default, the web server that the integration starts provides services in HTTP. For communication to be in HTTPS you need to provide a certificate and private key in the following format:
  ```
  `-----BEGIN CERTIFICATE-----`
@@ -23,6 +23,60 @@ The web server for the integration runs within a long-running Docker container. 
  `...`
  `-----END PRIVATE KEY-----`
 ```
+ - Microsoft do not support self-signed certificate, and require a chain-trusted certificate issued by a trusted CA.
+ 
+## Setup Examples
+
+### 1. Using Cortex XSOAR rerouting
+In this configuration, we will use Cortex XSOAR functionality, which reroutes HTTPS requests that hit the default port (443) to the webserver the integration spins up.
+
+The messaging endpoint need to be: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g. `https://my.demisto.live/instance/execute/teams`
+
+The integration instance name, `teams` in this example, need to be configured in the [Configure Microsoft Teams on Demisto](#configure-microsoft-teams-on-demisto) step.
+
+The port to be configured in [Configure Microsoft Teams on Demisto](#configure-microsoft-teams-on-demisto) step should be any available port that is not used by another service.
+
+ - Note: This optional is available only to Cortex XSOAR version 5.5.0 and later.
+
+### 2. Using NGINX as reverse proxy
+In this configuration, the inbound connection, from Microsoft Teams to Cortex XSOAR, goes through a reverse proxy (e.g. NGINX) which relay the HTTPS requests posted from Microsoft Teams
+to the Cortex XSOAR server on HTTP.
+
+On NGINX, configure the following:
+ - SSL certificate under `ssl_certificate` and `ssl_certificate_key`
+ - The Cortex XSOAR server (including the port) under `proxy_pass`, e.g. `http://mydemistoinstance.com:7000`
+ 
+Follow [Configuring Upstream Servers NGINX guide](https://docs.nginx.com/nginx/admin-guide/security-controls/securing-http-traffic-upstream/#configuring-upstream-servers) for more details.
+
+The port (`7000` in this example), to which the reverse proxy should forward the traffic on HTTP, should be the same port you specify in the integration instance configuration, as the webserver the integration spins up, listens on that port.
+
+![image](./doc_files/RP-NGINX.png)
+
+![image](./doc_files/InstanceConfig7000.png)
+
+### 3. Using Apache reverse proxy and Cortex XSOAR engine
+In this configuration, the inbound connection, from Microsoft Teams to Cortex XSOAR, goes through a reverse proxy (e.g. Apache) and possibly a load balancer, which relay the HTTPS requests posted from Microsoft Teams
+to a Cortex XSOAR engine, which can be put in a DMZ, on HTTP.
+
+The port (`7000` in this example), to which the reverse proxy should forward the traffic on HTTP, should be the same port you specify in the integration instance configuration, as the webserver the integration spins up, listens on that port.
+
+![image](./doc_files/RP-Engine.png)
+
+![image](./doc_files/InstanceConfig7000.png)
+
+
+### 4. Using Cloudflare
+In this configuration, we will use [Cloudflare proxy](https://support.cloudflare.com/hc/en-us/articles/360039824852-Cloudflare-and-the-Cloud-Conceptual-overview-videos).
+
+The messaging endpoint should be the Cortex XSOAR URL, which need to be hosted on Cloudflare, with the port to which Cloudflare proxy directs the HTTPS traffic, e.g. `https://mysite.com:8443`
+
+In the [Configure Microsoft Teams on Demisto](#configure-microsoft-teams-on-demisto) step, the following need to be configured:
+ - The port selected above.
+ - A certificate and key for configuring HTTPS webserver. This certificate can be self-signed.
+
+The proxy intercepts HTTPS traffic, presents a public CA certificate, then proxies it to the webserver.
+
+Every HTTPS traffic that will hit the selected messaging endpoint, will be directed to the HTTPS webserver the integration spins up, and will then be processed.
 
 ## Prerequisites
 
@@ -89,6 +143,7 @@ Before you can create an instance of the Microsoft Teams integration in Demisto,
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
+| Name | The integration instance name.<br>If using Cortex XSOAR rerouting configuration, insert here the instance name you configured in the messaging endpoint. | True |
 | bot_id | Bot ID | True |
 | bot_password | Bot Password | True |
 | team | Default team - team to which messages and notifications are sent. If a team is specified as a command argument, it overrides this parameter | True |
@@ -107,6 +162,8 @@ Before you can create an instance of the Microsoft Teams integration in Demisto,
 
 ### Add the Demisto Bot to a Team
 
+  - Note: the following need to be done after configuring the integration on Cortex XSOAR (the previous step).
+  
 1. In Microsoft Teams, access the Store.
 2. Search for **Demisto Bot** and click the Demisto Bot widget.
 3. Click the arrow on the **Open** button and select **Add to a team**.
@@ -351,4 +408,44 @@ There is no context output for this command.
 ##### Human Readable Output
 The channel "example channel" was created successfully
 
+## Running commands from Microsoft Teams
+You can run Cortex XSOAR commands, according to the user permissions, from Microsoft Teams in a mirrored investigation channel.
+
+Note: Like every message in a mirrored channel, in order for it to be passed to the bot, the bot must be mentioned.
+
+For example, in order to check the reputation of the IP address 8.8.8.8, run the following: `@Demisto Bot !ip ip=8.8.8.8`
+
+## Direct messages commands
+You can chat with the bot in direct messages in order to retrieve data (list incidents and tasks) and run operations (create incident and mirror an investigation) related to Cortex XSOAR.
+
+You can send the message `help` in order to see the supported commands:
+
+## Troubleshooting
+
+The way the integration works is that it spins up a webserver which listens to events and data posted to it from Microsoft Teams.
+
+If you see the error message `Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly.`, then it means that the tenant ID was never posted to the webserver, which should happen for the first time when the bot is added to the configured team.
+
+This probably means that there is a connection issue, and the webserver does not intercept the HTTPS queries from Microsoft Teams.
+
+In order to troubleshoot, first verify the Docker container is up and running and publish the configured port to the outside world:
+
+From the Cortex XSOAR / Cortex XSOAR engine machine run: `docker ps | grep teams`
+
+You should see the following, assuming port 7000 is used:
+
+`988fdf341127        demisto/teams:1.0.0.6483      "python /tmp/pyrunne…"   6 seconds ago       Up 4 seconds        0.0.0.0:7000->7000/tcp   demistoserver_pyexecLongRunning-b60c04f9-754e-4b68-87ed-8f8113419fdb-demistoteams1.0.0.6483--26` 
+ 
+If the Docker container is up and running, try running cURL queries, to verify the webserver is up and running and listens on the configured URL:
+
+ - To the messaging endpoint from a separate box.
+ - From the Cortex XSOAR machine to localhost.
+ 
+   - Note: The webserver supports only POST method queries.
+   
+If the cURL queries were sent successfully, you should see in Cortex XSOAR logs the following line: `Finished processing Microsoft Teams activity successfully`
+
+## Download Demisto Bot
+
 [Demisto Bot zip](https://raw.githubusercontent.com/demisto/content/b222375925eb13feaaa28cd8b1c814b4d212f2e4/Integrations/MicrosoftTeams/doc_files/DemistoBot.zip)
+
