@@ -1,15 +1,17 @@
 {
-    "name": "ThreatQ",
-    "description": "A threat intelligence platform that collects and interprets intelligence data from open sources and manages indicator scoring, types, and attributes.",
+    "name": "Palo Alto Traps ESM (Beta)",
+    "description": "Palo Alto Traps ESM beta integration.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Data Enrichment & Threat Intelligence"
+        "Endpoint"
     ],
-    "tags": [],
+    "tags": [
+        "Palo Alto Traps ESM (Beta)"
+    ],
     "created": "2020-04-14T00:00:00Z",
     "updated": "2020-03-14T00:00:00Z",
     "beta": true,
