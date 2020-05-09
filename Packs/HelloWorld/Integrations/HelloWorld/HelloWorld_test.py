@@ -77,7 +77,7 @@ def test_say_hello():
     }
     response = say_hello_command(client, args)
 
-    assert response.outputs['hello'] == 'Hello Dbot'
+    assert response.outputs == 'Hello Dbot'
 
 
 def test_start_scan(requests_mock):
@@ -182,7 +182,7 @@ def test_scan_results(mocker, requests_mock):
     the output of the command function with the expected output.
     """
     from HelloWorld import Client, scan_results_command
-    import demistomock as demisto
+
     mock_response = util_load_json('test_data/scan_results.json')
     requests_mock.get('https://test.com/api/v1/get_scan_results?scan_id=100', json=mock_response)
 
@@ -199,16 +199,10 @@ def test_scan_results(mocker, requests_mock):
         'format': 'json'
     }
 
-    # return_outputs calls demisto.results,
-    # that is the reason we patch demisto.results
-    mocker.patch.object(demisto, 'results')
+    response = scan_results_command(client, args)
 
-    scan_results_command(client, args)
-
-    assert demisto.results.call_count == 1
-
-    outputs = demisto.results.call_args[0][0]['EntryContext']
-    assert outputs['HelloWorld.Scan(val.scan_id == obj.scan_id)'] == mock_response
+    # outputs = demisto.results.call_args[0][0]['EntryContext']
+    assert response.outputs == mock_response
 
 
 def test_search_alerts(requests_mock):

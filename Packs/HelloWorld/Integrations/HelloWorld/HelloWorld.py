@@ -145,9 +145,9 @@ Command Functions
 
 Command functions perform the mapping between XSOAR inputs and outputs to the
 Client class functions inputs and outputs. As a best practice, they shouldn't
-contain calls to ``demisto.args()``, ``demisto.results()``, ``return_results``,
-``return_outputs``, ``return_error`` and ``demisto.command()`` as those should
-be handled through the ``main()`` function.
+contain calls to ``demisto.args()``, ``demisto.results()``, ``return_error``
+and ``demisto.command()`` as those should be handled through the ``main()``
+function.
 However, in command functions, use ``demisto`` or ``CommonServerPython.py``
 artifacts, such as ``demisto.debug()`` or the ``CommandResults`` class and the
 ``Common.*`` classes.
@@ -162,12 +162,19 @@ using the ``CommandResults`` class, that is then passed to ``return_results()``
 in the ``main()`` function.
 ``return_results()`` is defined in ``CommonServerPython.py`` to return
 the data to XSOAR. ``return_results()`` actually wraps ``demisto.results()``.
-You will use ``demisto.results()`` directly only in specific conditions (i.e.
-check the ``scan_results_command`` function here that has the option to return
-a file to Demisto).
+You should never use ``demisto.results()`` directly.
 
-When you use ``return_results()`` in command functions, you usually return
-pass some types of data:
+Sometimes you will need to return values in a format that is not compatible
+with ``CommandResults`` (for example files): in that case you must return a
+data structure that is then pass passed to ``return.results()``. (i.e.
+check the ``scan_results_command`` function in this filethat has the option
+to return a file to Cortex XSOAR).
+
+In any case you should never call ``return_results()`` directly from the
+command functions.
+
+When you use create the CommandResults object in command functions, you
+usually pass some types of data:
 
 - Human Readable: usually in Markdown format. This is what is presented to the
 analyst in the War Room. You can use ``tableToMarkdown()``, defined in
@@ -1328,7 +1335,7 @@ def scan_status_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def scan_results_command(client: Client, args: Dict[str, Any]) -> None:
+def scan_results_command(client: Client, args: Dict[str, Any]) -> Union[Dict[str, Any], CommandResults]:
     """helloworld-scan-results command: Returns results for a HelloWorld scan
 
     :type client: ``Client``
@@ -1340,8 +1347,13 @@ def scan_results_command(client: Client, args: Dict[str, Any]) -> None:
         ``args['scan_id']`` scan ID to retrieve results
         ``args['format']`` format of the results. Options are 'file' or 'json'
 
-    :return: ``None``, as it calls ``return_outputs()`` or `demisto.results()`` directly
-    :rtype:
+    :return:
+        A ``CommandResults`` compatible to return ``return_results()``,
+        that contains a scan result when json format is selected, or
+        A Dict of entries also compatible to ``return_results()`` that
+        contains the output file when file format is selected.
+
+    :rtype: ``Union[Dict[str, Any],CommandResults]``
     """
 
     scan_id = args.get('scan_id', None)
@@ -1354,14 +1366,15 @@ def scan_results_command(client: Client, args: Dict[str, Any]) -> None:
     # This function supports returning data in multiple formats, either in a json
     # format that is then mapped to a table, or as a file attachment.
     # In this case, if the format is "file", the return value is different and
-    # uses ``demisto.results()`` and ``fileResult()`` instead of
-    # ``return_outputs()`` or ``return_results()``. Use ``return_results()``
-    # when possible but, if you need to return anything special like a file,
-    # you can use this format.
+    # uses a raw format  and ``fileResult()`` directly instead of
+    # ``CommandResults``. In either case you should return data to main and
+    # call ``return_results()`` from there.
+    # Always use ``CommandResults`` when possible but, if you need to return
+    # anything special like a file, you can use this raw format.
 
     results = client.scan_results(scan_id=scan_id)
     if scan_format == 'file':
-        demisto.results(
+        return (
             fileResult(
                 filename=f'{scan_id}.json',
                 data=json.dumps(results, indent=4),
@@ -1372,21 +1385,22 @@ def scan_results_command(client: Client, args: Dict[str, Any]) -> None:
         # This scan returns CVE information. CVE is also part of the XSOAR
         # context standard, so we must extract CVE IDs and return them also.
         # See: https://xsoar.pan.dev/docs/integrations/context-standards#cve
-        cves: List[str] = []
+        cves: List[Common.CVE] = []
         entities = results.get('entities', [])
         for e in entities:
             if 'vulns' in e.keys() and isinstance(e['vulns'], list):
-                cves.extend(e['vulns'])
+                cves.extend([Common.CVE(id=c, cvss=None, published=None, modified=None, description=None) for c in e['vulns']])
 
-        markdown = tableToMarkdown(f'Scan {scan_id} results', entities)
-        return_outputs(
-            readable_output=markdown,
-            outputs={
-                'HelloWorld.Scan(val.scan_id == obj.scan_id)': results,
-                'CVE(val.ID == obj.ID).ID': list(set(cves))  # make the output unique
-            },
-            raw_response=results
+        readable_output = tableToMarkdown(f'Scan {scan_id} results', entities)
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='HelloWorld.Scan',
+            outputs_key_field='scan_id',
+            outputs=results,
+            indicators=list(set(cves))  # make the indicator list unique
         )
+    else:
+        raise ValueError('Incorrect format, must be "json" or "file"')
 
 
 ''' MAIN FUNCTION '''
@@ -1502,7 +1516,7 @@ def main() -> None:
             return_results(scan_status_command(client, demisto.args()))
 
         elif demisto.command() == 'helloworld-scan-results':
-            scan_results_command(client, demisto.args())
+            return_results(scan_results_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
