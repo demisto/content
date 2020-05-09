@@ -109,6 +109,8 @@ def test_start_scan(requests_mock):
 
     response = scan_start_command(client, args)
 
+    assert response.outputs_prefix == 'HelloWorld.Scan'
+    assert response.outputs_key_field == 'scan_id'
     assert response.outputs == {
         'scan_id': '7a161a3f-8d53-42de-80cd-92fb017c5a12',
         'status': 'RUNNING',
@@ -158,6 +160,8 @@ def test_status_scan(requests_mock):
 
     response = scan_status_command(client, args)
 
+    assert response.outputs_prefix == 'HelloWorld.Scan'
+    assert response.outputs_key_field == 'scan_id'
     assert response.outputs == [
         {
             'scan_id': '100',
@@ -182,6 +186,7 @@ def test_scan_results(mocker, requests_mock):
     the output of the command function with the expected output.
     """
     from HelloWorld import Client, scan_results_command
+    from CommonServerPython import Common
 
     mock_response = util_load_json('test_data/scan_results.json')
     requests_mock.get('https://test.com/api/v1/get_scan_results?scan_id=100', json=mock_response)
@@ -201,8 +206,14 @@ def test_scan_results(mocker, requests_mock):
 
     response = scan_results_command(client, args)
 
-    # outputs = demisto.results.call_args[0][0]['EntryContext']
     assert response.outputs == mock_response
+    assert response.outputs_prefix == 'HelloWorld.Scan'
+    assert response.outputs_key_field == 'scan_id'
+
+    # This command also returns Common.CVE data
+    assert isinstance(response.indicators, list)
+    assert len(response.indicators) > 0
+    assert isinstance(response.indicators[0], Common.CVE)
 
 
 def test_search_alerts(requests_mock):
@@ -241,6 +252,8 @@ def test_search_alerts(requests_mock):
     mock_response['alerts'][0]['created'] = '2020-02-17T23:34:23.000Z'
     mock_response['alerts'][1]['created'] = '2020-02-17T23:34:23.000Z'
 
+    assert response.outputs_prefix == 'HelloWorld.Alert'
+    assert response.outputs_key_field == 'alert_id'
     assert response.outputs == mock_response['alerts']
 
 
@@ -276,6 +289,8 @@ def test_get_alert(requests_mock):
     mock_response['created'] = '2020-04-17T14:43:59.000Z'
 
     assert response.outputs == mock_response
+    assert response.outputs_prefix == 'HelloWorld.Alert'
+    assert response.outputs_key_field == 'alert_id'
 
 
 def test_update_alert_status(requests_mock):
@@ -312,6 +327,8 @@ def test_update_alert_status(requests_mock):
     mock_response['updated'] = '2020-04-17T14:45:12.000Z'
 
     assert response.outputs == mock_response
+    assert response.outputs_prefix == 'HelloWorld.Alert'
+    assert response.outputs_key_field == 'alert_id'
 
 
 def test_ip(requests_mock):
@@ -322,9 +339,11 @@ def test_ip(requests_mock):
     the output of the command function with the expected output.
     """
     from HelloWorld import Client, ip_reputation_command
+    from CommonServerPython import Common
 
+    ip_to_check = '151.1.1.1'
     mock_response = util_load_json('test_data/ip_reputation.json')
-    requests_mock.get('http://test.com/api/v1/ip?ip=151.1.1.1',
+    requests_mock.get(f'http://test.com/api/v1/ip?ip={ip_to_check}',
                       json=mock_response)
 
     client = Client(
@@ -336,13 +355,21 @@ def test_ip(requests_mock):
     )
 
     args = {
-        'ip': '151.1.1.1',
+        'ip': ip_to_check,
         'threshold': 65,
     }
 
     response = ip_reputation_command(client, args, 65)
 
-    response.outputs[0] == mock_response
+    assert response.outputs[0] == mock_response
+    assert response.outputs_prefix == 'HelloWorld.IP'
+    assert response.outputs_key_field == 'ip'
+
+    # This command also returns Common.IP data
+    assert isinstance(response.indicators, list)
+    assert len(response.indicators) == 1
+    assert isinstance(response.indicators[0], Common.IP)
+    assert response.indicators[0].ip == ip_to_check
 
 
 def test_domain(requests_mock):
@@ -353,9 +380,11 @@ def test_domain(requests_mock):
     the output of the command function with the expected output.
     """
     from HelloWorld import Client, domain_reputation_command
+    from CommonServerPython import Common
 
+    domain_to_check = 'google.com'
     mock_response = util_load_json('test_data/domain_reputation.json')
-    requests_mock.get('http://test.com/api/v1/domain?domain=google.com',
+    requests_mock.get(f'http://test.com/api/v1/domain?domain={domain_to_check}',
                       json=mock_response)
 
     client = Client(
@@ -367,7 +396,7 @@ def test_domain(requests_mock):
     )
 
     args = {
-        'domain': 'google.com',
+        'domain': domain_to_check,
         'threshold': 65,
     }
 
@@ -380,6 +409,14 @@ def test_domain(requests_mock):
     mock_response['updated_date'] = '2019-09-09T15:39:04.000Z'
 
     assert response.outputs[0] == mock_response
+    assert response.outputs_prefix == 'HelloWorld.Domain'
+    assert response.outputs_key_field == 'domain'
+
+    # This command also returns Common.Domain data
+    assert isinstance(response.indicators, list)
+    assert len(response.indicators) == 1
+    assert isinstance(response.indicators[0], Common.Domain)
+    assert response.indicators[0].domain == domain_to_check
 
 
 def test_fetch_incidents(requests_mock):
