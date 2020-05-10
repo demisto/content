@@ -62,7 +62,8 @@ def parse_firewall_rule(rule_str):
     for f in rule_str.split(';'):
         match = regex.match(f)
         if match is None:
-            raise ValueError('Could not parse field: %s' % (f,))
+            raise ValueError('Could not parse field: {}. Please make sure you provided like so: '
+                             'ipprotocol=abc,ports=123;ipprotocol=fed,ports=456'.format(f))
 
         rules.append({'IPProtocol': match.group(1), 'ports': match.group(2).split(',')})
 
@@ -81,7 +82,8 @@ def parse_metadata_items(tags_str):
     for f in tags_str.split(';'):
         match = regex.match(f)
         if match is None:
-            raise ValueError('Could not parse field: %s' % (f,))
+            raise ValueError('Could not parse field: {}. Please make sure you provided like so: '
+                             'key=abc,value=123;key=fed,value=456'.format(f))
 
         tags.append({'key': match.group(1), 'value': match.group(2)})
 
@@ -100,7 +102,8 @@ def parse_named_ports(tags_str):
     for f in tags_str.split(';'):
         match = regex.match(f)
         if match is None:
-            raise ValueError('Could not parse field: %s' % (f,))
+            raise ValueError('Could not parse field: {}. Please make sure you provided like so: '
+                             'name=abc,port=123;name=fed,port=456'.format(f))
 
         tags.append({'name': match.group(1).lower(), 'port': match.group(2)})
 
@@ -119,7 +122,8 @@ def parse_labels(tags_str):
     for f in tags_str.split(';'):
         match = regex.match(f)
         if match is None:
-            raise ValueError('Could not parse field: ' + f)
+            raise ValueError('Could not parse field: {}. Please make sure you provided like so: '
+                             'key=abc,value=123;key=def,value=456'.format(f))
 
         tags.update({match.group(1).lower(): match.group(2).lower()})
 
@@ -4329,7 +4333,7 @@ def add_project_info_metadata(metadata):
     project = SERVICE_ACT_PROJECT_ID
     project_instance = get_compute().projects().get(project=project).execute()
     fingerprint = project_instance.get('tags', {}).get('fingerprint')
-    items = parse_labels(metadata)
+    items = parse_metadata_items(metadata)
     body = assign_params(
         fingerprint=fingerprint,
         items=items,
