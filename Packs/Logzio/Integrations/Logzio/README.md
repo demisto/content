@@ -5,6 +5,7 @@ Fetch & remediate security incidents identified by Logz.io Cloud SIEM
 This integration was integrated and tested with version xx of Logz.io
 ## Logz.io Playbook
 ---
+Logz.Io Handle Alert: used to handle alerts retrieved from Logz.io. The playbook will retrieve the related events that generated the alert using the logzio-get-logs-by-rule-id command
 
 ## Use Cases
 ---
