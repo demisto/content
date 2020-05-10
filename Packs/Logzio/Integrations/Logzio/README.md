@@ -28,7 +28,7 @@ In addition, users can query Logz.io directly from Cortex XSOAR to investigate o
     * __Region code of your Logz.io account__
     * __Filter on rule names (Lucene syntax)__
     * __Filter by rule severity__
-    * __First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)__
+    * __First fetch time range ({number} {time unit}, e.g., 1 hour, 30 minutes)__
     * __Max. number of incidents fetched per run__
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
