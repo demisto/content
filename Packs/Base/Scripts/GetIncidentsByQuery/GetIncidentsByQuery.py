@@ -92,7 +92,7 @@ def get_comma_sep_list(value):
 
 def main():
     # fetch query
-    d_args = dist(demisto.args())
+    d_args = dict(demisto.args())
     d_args['NonEmptyFields'] = d_args['NonEmptyFields'].replace('incident.', '')
     query = build_incidents_query(d_args.get('query'),
                                   d_args.get('incidentTypes'),
