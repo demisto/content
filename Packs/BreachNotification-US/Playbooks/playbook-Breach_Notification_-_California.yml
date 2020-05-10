@@ -408,7 +408,7 @@ tasks:
       id: 66b59375-0ee8-4c4b-8b67-8ef3ae4e4e45
       version: -1
       name: Upload the report to California attorney general
-      description: "\A person or business that is required to issue a security breach\
+      description: "A person or business that is required to issue a security breach\
         \ notification pursuant to this section to more than 500 California residents\
         \ as a result of a single breach of the security system shall electronically\
         \ submit a single sample copy of that security breach notification, excluding\
