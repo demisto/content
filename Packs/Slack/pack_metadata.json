@@ -1,5 +1,5 @@
 {
-    "name": "Slack v2",
+    "name": "Slack",
     "description": "Send messages and notifications to your Slack team.",
     "support": "xsoar",
     "serverMinVersion": "5.0.0",
