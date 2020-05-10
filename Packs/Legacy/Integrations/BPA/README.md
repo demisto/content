@@ -181,7 +181,7 @@ There are no input arguments for this command.
   <tbody>
     <tr>
       <td>generate_zip_bundle</td>
-      <td>whether or not to download the panorama report</td>
+      <td>Whether to download the Panorama report. Can be "true" or "false". Default is "false".</td>
       <td>Optional</td>
     </tr>
   </tbody>
