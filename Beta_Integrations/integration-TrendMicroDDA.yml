@@ -628,7 +628,7 @@ script:
             demisto.results({
                 'Type': entryTypes['note'],
                 'ContentsFormat': formats['text'],
-                'Content': {"value": res.text},
+                'Content': {"value": res},
                 'HumanReadable': 'Submission analyzation was not finished yet.',
                 'EntryContext': {
                     'TrendMicroDDA.Submission(val.SHA1 && val.SHA1==obj.SHA1)': ec
@@ -791,7 +791,7 @@ script:
             get_sample_list_command()
 
     except Exception as e:
-        LOG(e.message)
+        LOG(str(e))
         LOG.print_log()
         raise
 
@@ -1039,6 +1039,7 @@ script:
       defaultValue: "1"
     description: Retrieves a brief XML report of a given submission
   runonce: false
+  dockerimage: demisto/python:2.7.17.5734
 beta: true
 tests:
 - No Test - run "Test Playbook TrendMicroDDA" manually
