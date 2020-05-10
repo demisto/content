@@ -1,28 +1,17 @@
-import binascii
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-
 """ IMPORTS """
 
-import json
-import requests
-from urllib.parse import urlencode, parse_qs, urlparse
-from datetime import datetime
+from urllib.parse import parse_qs, urlparse
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 """ GLOBALS/PARAMS """
 
-# Service base URL
-NETLOC = "graph.microsoft.com"
-
 INTEGRATION_NAME = "MsGraphFiles"
-
 APP_NAME = "ms-graph-files"
 
 RESPONSE_KEYS_DICTIONARY = {
@@ -97,56 +86,6 @@ def remove_identity_key(source):
     return new_source
 
 
-def epoch_seconds():
-    """
-    Return the number of seconds for return current date.
-    """
-    return int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds())
-
-
-def get_encrypted(content, key):
-    """
-    Args:
-        content (str): content to encrypt. For a request to Demistobot for a new access token, content should be
-            the tenant id
-        key (str): encryption key from Demistobot
-    Returns:
-        encrypted timestamp:content
-    """
-
-    def create_nonce():
-        return os.urandom(12)
-
-    def encrypt(string, enc_key):
-        """
-        Args:
-            string: content to encrypt. For a request to Demistobot for a new access token, content should be
-                the tenant id
-            key encryption key from Demistobot
-
-        Returns:
-            encrypted timestamp:content
-        """
-        try:
-            # String to bytes
-            enc_key = base64.b64decode(enc_key)
-        except binascii.Error:
-            raise DemistoException(
-                "It looks like 'Key' value is incorrect. please " "provide another one."
-            )
-        aes_gcm = AESGCM(enc_key)
-        # Create nonce
-        nonce = create_nonce()
-        # Create ciphered data
-        data = string.encode()
-        ct_ = aes_gcm.encrypt(nonce, data, None)
-        return base64.b64encode(nonce + ct_)
-
-    now = epoch_seconds()
-    encrypted = encrypt(f"{now}:{content}", key).decode("utf-8")
-    return encrypted
-
-
 def url_validation(url):
     """
     this function tests if a user provided a valid next link url
@@ -163,122 +102,25 @@ def url_validation(url):
     return url
 
 
-class Client(BaseClient):
+class MsGraphClient:
     """
-    Client will implement the service API, should not contain Demisto logic.
-    Should do requests and return data
+    Microsoft Graph Client enables authorized access to organization's files in OneDrive, SharePoint, and MS Teams.
     """
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        auth_and_token_url = demisto.params().get("auth_id").split("@")
-        if len(auth_and_token_url) != 2:
-            token_retrieval_url = (
-                "https://oproxy.demisto.ninja/obtain-token"  # guardrails-disable-line
-            )
-        else:
-            token_retrieval_url = auth_and_token_url[1]
-        self.base_url = kwargs["base_url"]
-        self.auth_id = auth_and_token_url[0]
-        self.tenant_id = demisto.params().get("tenant_id")
-        self.enc_key = demisto.params().get("enc_key")
-        self.host = demisto.params().get("host")
-        self.auto_url = token_retrieval_url
-        self.access_token = self.get_access_token()
-        self.headers = {"Authorization": f"Bearer {self.access_token}"}
-
-    def http_call(self, *args, **kwargs):
-        """
-        this function performs http requests
-        :param args: http requests parameters
-        :param kwargs: http requests parameters
-        :return: raw response from api
-        """
-        LOG(f"Sending: ")
-        kwargs["timeout"] = 15
-        res = self._http_request(*args, **kwargs)
-        if "status_code" in res and res.status_code == 401:
-            self.access_token = self.get_access_token()
-
-            res = self._http_request(*args, **kwargs)
-        return res
-
-    def return_valid_access_token_if_exist_in_context(self):
-        """
-        this function returns a valid access token from Demisto context if exists
-        :return: valid access token or None
-        """
-        integration_context = demisto.getIntegrationContext()
-        access_token = integration_context.get("access_token")
-        valid_until = integration_context.get("valid_until")
-        if access_token and valid_until:
-            if epoch_seconds() < valid_until:
-                return access_token
-
-    def return_token_and_save_it_in_context(self, access_token_response):
-        """
-        this function saves the received access token in demisto context
-        :param access_token_response: access token
-        :return: the new access token
-        """
-        access_token = access_token_response.get("access_token")
-
-        if not access_token:
-            return demisto.error("Access Token returned empty")
-        expires_in = access_token_response.get("expires_in", 3595)
-        time_buffer = 5  # seconds by which to shorten the validity period
-        if expires_in - time_buffer > 0:
-            # err on the side of caution with a slightly shorter access token validity period
-            expires_in = expires_in - time_buffer
-
-        demisto.setIntegrationContext(
-            {"access_token": access_token, "valid_until": epoch_seconds() + expires_in}
-        )
-        return access_token
-
-    def get_access_token(self):
-        """Get the Microsoft Graph Access token from the instance token or generates a new one if needed.
-
-        Returns:
-            The access token.
-        """
-        context_access_token = self.return_valid_access_token_if_exist_in_context()
-        if context_access_token:
-            return context_access_token
-
-        body = json.dumps(
-            {
-                "app_name": APP_NAME,
-                "registration_id": self.auth_id,
-                "encrypted_token": get_encrypted(self.tenant_id, self.enc_key),
-            }
-        )
-        try:
-            access_token_res = self._http_request(
-                method="POST",
-                full_url=self.auto_url,
-                data=body,
-                headers={"Accept": "application/json"},
-                url_suffix="",
-            )
-        except DemistoException as error:
-            title = "Error in authentication. Try checking the credentials you entered."
-            raise DemistoException(title, error)
-        else:
-            return self.return_token_and_save_it_in_context(access_token_res)
+    def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed, ok_codes):
+        self.ms_client = MicrosoftClient(
+            tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
+            base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes)
 
     def list_sharepoint_sites(self):
         """
         This function returns a list of the tenant sites
         :return: graph api raw response
         """
-        url = f"{self.base_url}/sites"
         query_string = {"search": "*"}
-        return self.http_call(
+        return self.ms_client.http_request(
             method="GET",
-            full_url=url,
-            headers=self.headers,
-            url_suffix="",
+            url_suffix="sites",
             params=query_string,
         )
 
@@ -298,23 +140,16 @@ class Client(BaseClient):
                 "next_page_url: if you have used the limit argument."
             )
 
-        if limit:
-            params = urlencode({"$top": limit})
-        else:
-            params = ""
+        params = {"$top": limit} if limit else ""
 
         if next_page_url:
             url = url_validation(next_page_url)
-        else:
-            url = f"{self.base_url}/sites/{site_id}/drives"
+            return self.ms_client.http_request(method="GET", full_url=url, params=params)
 
-        return self.http_call(
-            "GET", full_url=url, params=params, headers=self.headers, url_suffix=""
-        )
+        url_suffix = f"sites/{site_id}/drives"
+        return self.ms_client.http_request(method="GET", params=params, url_suffix=url_suffix)
 
-    def list_drive_content(
-        self, object_type, object_type_id, item_id=None, limit=None, next_page_url=None
-    ):
+    def list_drive_content(self, object_type, object_type_id, item_id=None, limit=None, next_page_url=None):
         """
         This command list all the drive's files and folders
         :param object_type: ms graph resource.
@@ -324,30 +159,21 @@ class Client(BaseClient):
         :param next_page_url: the URL for the next results page. optional.
         :return: graph api raw response
         """
+        params = {"$top": limit} if limit else ""
+
         if next_page_url:
             url = url_validation(next_page_url)
-        else:
-            if not item_id:
-                item_id = "root"
-            if object_type == "drives":
-                url = f"{object_type}/{object_type_id}/items/{item_id}/children"
+            return self.ms_client.http_request(method="GET", full_url=url, params=params)
 
-            elif object_type in ["groups", "sites", "users"]:
-                url = f"{object_type}/{object_type_id}/drive/items/{item_id}/children"
+        if object_type == "drives":
+            uri = f"{object_type}/{object_type_id}/items/{item_id}/children"
+        elif object_type in ["groups", "sites", "users"]:
+            uri = f"{object_type}/{object_type_id}/drive/items/{item_id}/children"
 
-            url = self.base_url + f"/{url}"
-
-        if limit:
-            params = urlencode({"$top": limit})
-        else:
-            params = ""
-
-        return self.http_call(
+        return self.ms_client.http_request(
             method="GET",
-            full_url=url,
-            url_suffix="",
+            url_suffix=uri,
             params=params,
-            headers=self.headers,
         )
 
     def replace_existing_file(self, object_type, object_type_id, item_id, entry_id):
@@ -367,17 +193,14 @@ class Client(BaseClient):
                 f"Please provide another one."
             )
         if object_type == "drives":
-            url = f"{object_type}/{object_type_id}/items/{item_id}/content"
+            uri = f"{object_type}/{object_type_id}/items/{item_id}/content"
 
         elif object_type in ["groups", "sites", "users"]:
-            url = f"{object_type}/{object_type_id}/drive/items/{item_id}/content"
-
-        # send request
-        url = self.base_url + f"/{url}"
+            uri = f"{object_type}/{object_type_id}/drive/items/{item_id}/content"
         with open(file_path, "rb") as file:
-            self.headers["Content-Type"] = "application/octet-stream"
-            return self.http_call(
-                "PUT", full_url=url, data=file, headers=self.headers, url_suffix=""
+            headers = {"Content-Type": "application/octet-stream"}
+            return self.ms_client.http_request(
+                method="PUT", data=file, headers=headers, url_suffix=uri
             )
 
     def delete_file(self, object_type, object_type_id, item_id):
@@ -389,29 +212,20 @@ class Client(BaseClient):
         :return: graph api raw response
         """
         if object_type == "drives":
-            url = f"{object_type}/{object_type_id}/items/{item_id}"
+            uri = f"{object_type}/{object_type_id}/items/{item_id}"
 
         elif object_type in ["groups", "sites", "users"]:
-            url = f"{object_type}/{object_type_id}/drive/items/{item_id}"
+            uri = f"{object_type}/{object_type_id}/drive/items/{item_id}"
 
         # send request
-        url = self.base_url + f"/{url}"
-        self.headers[
-            "Content-Type"
-        ] = "text/plain"  # request returned empty and can not decoded to json
-        if "" == self.http_call(
-            "DELETE",
-            full_url=url,
-            headers=self.headers,
-            url_suffix="",
-            resp_type="text",
-        ):
-            # resp_type='text' returned empty and can not decoded to json
-            return f"Item was deleted successfully"
+        self.ms_client.http_request(
+            method="DELETE",
+            url_suffix=uri,
+            resp_type="text")
 
-    def upload_new_file(
-        self, object_type, object_type_id, parent_id, file_name, entry_id
-    ):
+        return "Item was deleted successfully"
+
+    def upload_new_file(self, object_type, object_type_id, parent_id, file_name, entry_id):
         """
         this function upload new file to a selected folder(parent_id)
         :param object_type: drive/ group/ me/ site/ users
@@ -424,17 +238,15 @@ class Client(BaseClient):
         file_path = demisto.getFilePath(entry_id).get("path")
 
         if "drives" == object_type:
-            url = f"{object_type}/{object_type_id}/items/{parent_id}:/{file_name}:/content"
+            uri = f"{object_type}/{object_type_id}/items/{parent_id}:/{file_name}:/content"
 
         elif object_type in ["groups", "users", "sites"]:
-            url = f"{object_type}/{object_type_id}/drive/items/{parent_id}:/{file_name}:/content"
-            # for sites, groups, users
-        url = self.base_url + f"/{url}"
+            uri = f"{object_type}/{object_type_id}/drive/items/{parent_id}:/{file_name}:/content"
+
         with open(file_path, "rb") as file:
-            self.headers["Content-Type"] = "application/octet-stream"
-            return self.http_call(
-                "PUT", full_url=url, headers=self.headers, url_suffix="", data=file
-            )
+            headers = {"Content-Type": "application/octet-stream"}
+            return self.ms_client.http_request(
+                method="PUT", headers=headers, url_suffix=uri, data=file)
 
     def download_file(self, object_type, object_type_id, item_id):
         """
@@ -445,19 +257,13 @@ class Client(BaseClient):
         :return: graph api raw response
         """
         if object_type == "drives":
-            url = f"{object_type}/{object_type_id}/items/{item_id}/content"
+            uri = f"{object_type}/{object_type_id}/items/{item_id}/content"
 
         elif object_type in ["groups", "sites", "users"]:
-            url = f"{object_type}/{object_type_id}/drive/items/{item_id}/content"
+            uri = f"{object_type}/{object_type_id}/drive/items/{item_id}/content"
 
         # send request
-        url = self.base_url + f"/{url}"
-        res = self.http_call(
-            "GET", full_url=url, headers=self.headers, url_suffix="", resp_type=""
-        )  # it needs
-        # resp_type='' to stay empty because if response type is empty http_requests returned the raw response.
-        # I need it because graph api returns an response as text without content so res.text fails
-        return res
+        return self.ms_client.http_request(method="GET", url_suffix=uri, resp_type='response')
 
     def create_new_folder(self, object_type, object_type_id, parent_id, folder_name):
         """
@@ -469,53 +275,40 @@ class Client(BaseClient):
         :return: graph api raw response
         """
         if object_type == "drives":
-            url = f"{object_type}/{object_type_id}/items/{parent_id}/children"
+            uri = f"{object_type}/{object_type_id}/items/{parent_id}/children"
 
         elif object_type in ["groups", "sites", "users"]:
-            url = f"{object_type}/{object_type_id}/drive/items/{parent_id}/children"
+            uri = f"{object_type}/{object_type_id}/drive/items/{parent_id}/children"
 
         # send request
-        url = self.base_url + f"/{url}"
-
         payload = {
             "name": folder_name,
             "folder": {},
             "@microsoft.graph.conflictBehavior": "rename",
         }
-        self.headers["Content-Type"] = "application/json"
-        demisto.log(f"sending POST to {url}, with the next payload: {payload}")
-        return self.http_call(
-            "POST", full_url=url, json_data=payload, headers=self.headers, url_suffix=""
-        )
+
+        return self.ms_client.http_request(method="POST", json_data=payload, url_suffix=uri)
 
 
-def module_test(client, *_):
+def module_test(client: MsGraphClient, *_):
     """
     Performs basic get request to get item samples
     """
-    result = client.get_access_token()
-    if result:
-        try:
-            client.http_call(
-                full_url=client.base_url + "/sites/root",
-                headers=client.headers,
-                params={"top": "1"},
-                timeout=7,
-                url_suffix="",
-                method="GET",
-            )
+    try:
+        client.ms_client.http_request(
+            url_suffix="sites/root",
+            params={"top": "1"},
+            timeout=7,
+            method="GET")
 
-        except Exception as e:
-            raise DemistoException(
-                f"Test failed. please check if Server Url is correct. \n {e}"
-            )
-        else:
-            return "ok"
-    else:
-        return "Test failed because could not get access token"
+    except Exception as e:
+        raise DemistoException(
+            f"Test failed. please check if Server Url is correct. \n {e}"
+        )
+    return 'ok'
 
 
-def download_file_command(client, args):
+def download_file_command(client: MsGraphClient, args):
     """
     This function runs download file command
     :return: FileResult object
@@ -545,7 +338,7 @@ def list_drive_content_human_readable_object(parsed_drive_items):
     return human_readable_content_obj
 
 
-def list_drive_content_command(client, args):
+def list_drive_content_command(client: MsGraphClient, args):
     """
     This function runs list drive children command
     :return: human_readable, context, result
@@ -602,7 +395,7 @@ def list_share_point_sites_human_readable_object(parsed_drive_items):
     return human_readable_content_obj
 
 
-def list_sharepoint_sites_command(client, *_):
+def list_sharepoint_sites_command(client: MsGraphClient, *_):
     """
     This function runs list tenant site command
     :return: human_readable, context, result
@@ -644,7 +437,7 @@ def list_drives_human_readable_object(parsed_drive_items):
     return human_readable_content_obj
 
 
-def list_drives_in_site_command(client, args):
+def list_drives_in_site_command(client: MsGraphClient, args):
     """
     This function run the list drives in site command
     :return: human_readable, context, result
@@ -682,7 +475,7 @@ def list_drives_in_site_command(client, args):
     return human_readable, context, result
 
 
-def replace_an_existing_file_command(client, args):
+def replace_an_existing_file_command(client: MsGraphClient, args):
     """
     This function runs the replace existing file command
     :return: human_readable, context, result
@@ -719,7 +512,7 @@ def replace_an_existing_file_command(client, args):
     return human_readable, context, result
 
 
-def upload_new_file_command(client, args):
+def upload_new_file_command(client: MsGraphClient, args):
     """
     This function uploads new file to graph api
     :return: human_readable, context, result
@@ -751,11 +544,10 @@ def upload_new_file_command(client, args):
 
     # context == output
     context = {f"{INTEGRATION_NAME}.UploadedFiles(val.ID === obj.ID)": context_entry}
+    return human_readable, context, result
 
-    return (human_readable, context, result)
 
-
-def create_new_folder_command(client, args):
+def create_new_folder_command(client: MsGraphClient, args):
     """
     This function runs create new folder command
     :return: human_readable, context, result
@@ -794,7 +586,7 @@ def create_new_folder_command(client, args):
     return human_readable, context, result
 
 
-def delete_file_command(client, args):
+def delete_file_command(client: MsGraphClient, args):
     """
     runs delete file command
     :return: raw response and action result test
@@ -815,35 +607,35 @@ def delete_file_command(client, args):
 
 
 def main():
-    # Should we use SSL
-    verify_certificate = not demisto.params().get("insecure", False)
-    proxy = demisto.params().get("proxy", False)
-    base_url = demisto.params().get("host", False)
-    LOG(f"Command being called is {demisto.command()}")
+    params: dict = demisto.params()
+    base_url: str = params.get('host', '').rstrip('/') + '/v1.0/'
+    tenant = params.get('tenant_id')
+    auth_id = params.get('auth_id')
+    enc_key = params.get('enc_key')
+    use_ssl: bool = not params.get('insecure', False)
+    proxy: bool = params.get('proxy', False)
+    self_deployed: bool = params.get('self_deployed', False)
+    ok_codes: tuple = (200, 204, 201)
+
     try:
-        # client = Client(BASE_URL, proxy=proxy, verify=verify_certificate)
-        client = Client(
-            base_url=base_url + "/v1.0",
-            verify=verify_certificate,
-            proxy=proxy,
-            ok_codes=(200, 204, 201),
-        )
+        client = MsGraphClient(base_url=base_url, tenant_id=tenant, auth_id=auth_id, enc_key=enc_key, app_name=APP_NAME,
+                               verify=use_ssl, proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes)
+
+        LOG(f"Command being called is {demisto.command()}")
+
         if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
             result = module_test(client)
             demisto.results(result)
-
         elif demisto.command() == "msgraph-delete-file":
             readable_output, raw_response = delete_file_command(client, demisto.args())
-            return_outputs(readable_output=readable_output)
+            return_outputs(readable_output=readable_output, raw_response=raw_response)
+        elif demisto.command() == "msgraph-list-sharepoint-sites":
+            return_outputs(*list_sharepoint_sites_command(client, demisto.args()))
         elif demisto.command() == "msgraph-download-file":
             # it has to be demisto.results instead of return_outputs.
             # because fileResult contains 'content': '' and if that key is empty return_outputs returns error.
-            demisto.results(
-                download_file_command(client, demisto.args())
-            )
-        elif demisto.command() == "msgraph-list-sharepoint-sites":
-            return_outputs(*list_sharepoint_sites_command(client, demisto.args()))
+            demisto.results(download_file_command(client, demisto.args()))
         elif demisto.command() == "msgraph-list-drive-content":
             return_outputs(*list_drive_content_command(client, demisto.args()))
         elif demisto.command() == "msgraph-create-new-folder":
@@ -861,6 +653,8 @@ def main():
             f"Failed to execute {demisto.command()} command. Error: {str(err)}", err
         )
 
+
+from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

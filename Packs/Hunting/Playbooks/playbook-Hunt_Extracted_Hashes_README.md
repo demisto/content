@@ -28,4 +28,9 @@ This playbook does not use any scripts.
 ---
 There are no outputs for this playbook.
 
-<!-- Playbook PNG image comes here -->
+## Playbook Image
+---
+![Hunt_Extracted_Hashes](https://raw.githubusercontent.com/demisto/content/master/Packs/Hunting/doc_files/Hunt_Extracted_Hashes.png)
+
+
+

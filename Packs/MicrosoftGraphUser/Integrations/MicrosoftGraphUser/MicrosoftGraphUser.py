@@ -112,7 +112,7 @@ class MsGraphClient:
 
     def get_user(self, user, properties):
         user_data = self.ms_client.http_request(
-            method='GET ',
+            method='GET',
             url_suffix=f'users/{user}',
             params={'$select': properties})
         user_data.pop('@odata.context', None)
@@ -126,6 +126,14 @@ class MsGraphClient:
         next_page_url = response.get('@odata.nextLink')
         users = response.get('value')
         return users, next_page_url
+
+    def get_direct_reports(self, user):
+        res = self.ms_client.http_request(
+            method='GET',
+            url_suffix=f'users/{user}/directReports')
+
+        res.pop('@odata.context', None)
+        return res.get('value', [])
 
 
 def test_function(client, _):
@@ -239,6 +247,23 @@ def list_users_command(client: MsGraphClient, args: Dict):
     return human_readable, outputs, users_data
 
 
+def get_direct_reports_command(client: MsGraphClient, args: Dict):
+    user = args.get('user')
+
+    raw_reports = client.get_direct_reports(user)
+
+    reports_readable, reports = parse_outputs(raw_reports)
+    human_readable = tableToMarkdown(name=f"{user} - direct reports", t=reports_readable, removeNull=True)
+    outputs = {
+        'MSGraphUserDirectReports(val.Manager == obj.Manager)': {
+            'Manager': user,
+            'Reports': reports
+        }
+    }
+
+    return human_readable, outputs, raw_reports
+
+
 def main():
     params: dict = demisto.params()
     url = params.get('host', '').rstrip('/') + '/v1.0/'
@@ -258,7 +283,8 @@ def main():
         'msgraph-user-create': create_user_command,
         'msgraph-user-get-delta': get_delta_command,
         'msgraph-user-get': get_user_command,
-        'msgraph-user-list': list_users_command
+        'msgraph-user-list': list_users_command,
+        'msgraph-direct-reports': get_direct_reports_command
     }
     command = demisto.command()
     LOG(f'Command being called is {command}')

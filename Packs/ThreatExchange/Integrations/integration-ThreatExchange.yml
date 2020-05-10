@@ -48,7 +48,7 @@ script:
     }
 
     var defaultLimit = 20;
-    
+
     var doReq = function(method, path, parameters) {
         if (!parameters) {
             parameters = {};
@@ -99,8 +99,15 @@ script:
             ec.DBotScore.push({
                 Indicator: hash,
                 Type: 'hash',
-                Vendor: 'ThreatExchange', Score: 0
+                Vendor: 'ThreatExchange',
+                Score: 0
             });
+            ec.DBotScore.push({
+                Indicator: hash,
+                Type: 'file',
+                Vendor: 'ThreatExchange',
+                Score: 0
+            })
 
             return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
                 HumanReadable: 'ThreatExchange does not have details about ' + hash + '\n',
@@ -127,6 +134,12 @@ script:
                 Vendor: 'ThreatExchange',
                 Score: dbotScore
             });
+            ec.DBotScore.push({
+                Indicator: hash,
+                Type: 'file',
+                Vendor: 'ThreatExchange',
+                Score: dbotScore
+            })
         }
         return {
             Type: entryTypes.note,
@@ -136,6 +149,23 @@ script:
             EntryContext: ec
         };
     };
+
+    var dbotTypeHashList = function(hash, score)
+    {
+        return [{
+                Indicator: hash,
+                Type: 'hash',
+                Vendor: 'ThreatExchange',
+                Score: score
+            },
+            {
+                Indicator: hash,
+                Type: 'file',
+                Vendor: 'ThreatExchange',
+                Score: score
+            }
+            ]
+    }
 
     var doIP = function(ip) {
         if (!isValidIP(ip)) {
@@ -424,92 +454,90 @@ script:
     - name: file
       required: true
       default: true
-      description: Hash of the file to query. Supports MD5, SHA1 and SHA256.
+      description: Hash of the file to query. Supports MD5, SHA1 and SHA256 hashes.
     - name: limit
-      description: Defines the maximum size of a page of results. The maximum is 1000.
+      description: The maximum number of results per page. The maximum is 1000. Default is 20.
       defaultValue: "20"
     - name: headers
-      description: 'Headers to display in Human readable format, comma separated format,
-        for example: header1,header2,header3'
+      description: 'A comma-separated list of headers to display in human-readable format. For example: header1,header2,header3'
     - name: since
-      description: ' Returns malware collected after a timestamp, format: 1391813489'
+      description: 'The start timestamp for collecting malware, format: 1391813489'
     - name: until
-      description: 'Returns malware collected before a timestamp, format: 1391813489'
+      description: 'The end timestamp for collecting malware, format: 1391813489'
     outputs:
     - contextPath: File.MD5
-      description: Bad hash found
+      description: Bad MD5 hash found.
     - contextPath: File.SHA1
-      description: Bad hash SHA1
+      description: Bad SHA1 hash found.
     - contextPath: File.SHA256
-      description: Bad hash SHA256
+      description: Bad SHA256 hash found.
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision
     - contextPath: File.Malicious.Description
-      description: For malicious files, the reason for the vendor to make the decision
+      description: For malicious files, the reason that the vendor made the decision.
     - contextPath: File.Malicious.Score
-      description: For malicious files, the score from the vendor
-    description: Check file reputation of the given hash
+      description: For malicious files, the score from the vendor.
+    description: Checks the file reputation of the given hash.
   - name: ip
     arguments:
     - name: ip
       required: true
       default: true
-      description: IP address to check
+      description: IP address to check.
     - name: headers
-      description: 'Headers to display in Human readable format, comma separated format,
-        for example: header1,header2,header3'
+      description: 'A comma-separated list of headers to display in human-readable format. For example: header1,header2,header3.'
     outputs:
     - contextPath: IP.Address
-      description: Bad IP Address found
+      description: Bad IP address found.
     - contextPath: IP.Malicious.Vendor
-      description: For malicious IPs, the vendor that made the decision
+      description: For malicious IPs addresse, the vendor that made the decision.
     - contextPath: IP.Malicious.Description
-      description: For malicious IPs, the reason for the vendor to make the decision
+      description: For malicious IP addresses, the reason that the vendor made the decision.
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
     - contextPath: IP.Malicious.Score
-      description: For malicious IPs, the score from the vendor
-    description: Check IP Reputation
+      description: For malicious IP addresses, the score from the vendor.
+    description: Checks the reputation of the given IP address.
   - name: url
     arguments:
     - name: url
       required: true
       description: URL to be checked
     - name: limit
-      description: Defines the maximum size of a page of results. The maximum is 1000.
+      description: The maximum number of results per page. The maximum is 1000. Default is 20.
       defaultValue: "20"
     - name: headers
       description: 'Headers to display in Human readable format, comma separated format,
         for example: header1,header2,header3'
     - name: since
-      description: 'Returns malware collected after a timestamp, format: 1391813489'
+      description: 'The start timestamp for collecting malware, format: 1391813489'
     - name: until
-      description: 'Returns malware collected before a timestamp, format: 1391813489'
+      description: 'The end timestamp for collecting malware, format: 1391813489'
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
     - contextPath: URL.Malicious.Vendor
       description: For malicious URLs, the vendor that made the decision
     - contextPath: URL.Malicious.Description
@@ -524,50 +552,50 @@ script:
       default: true
       description: Domain name to check reputation
     - name: limit
-      description: Defines the maximum size of a page of results. The maximum is 1000.
+      description: The maximum number of results per page. The maximum is 1000. Default is 20.
       defaultValue: "20"
     - name: headers
       description: 'Headers to display in Human readable format, comma separated format,
         for example: header1,header2,header3'
     - name: since
-      description: 'Returns malware collected after a timestamp, format: 1391813489'
+      description: 'The start timestamp for collecting malware, format: 1391813489'
     - name: until
-      description: 'Returns malware collected before a timestamp, format: 1391813489'
+      description: 'The end timestamp for collecting malware, format: 1391813489'
     outputs:
     - contextPath: Domain.Name
       description: Bad domain found
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
     - contextPath: Domain.Malicious.Vendor
       description: For malicious domains, the vendor that made the decision
     - contextPath: Domain.Malicious.Description
-      description: For malicious domains, the reason for the vendor to make the decision
+      description: For malicious domains, the reason that the vendor made the decision.
     description: Check domain reputation
   - name: threatexchange-query
     arguments:
     - name: text
       default: true
-      description: Freeform text field with a value to search for. This can be a file
-        hash or a string found in other fields of the objects
+      description: Free-form text field with a value to search for. This can be a file
+        hash or a string found in other fields of the objects.
     - name: type
-      description: 'The type of descriptor to search for, look at: https://developers.facebook.com/docs/threat-exchange/reference/apis/indicator-type/v2.9'
+      description: 'The type of descriptor to search for. For more information see: https://developers.facebook.com/docs/threat-exchange/reference/apis/indicator-type/v2.9'
     - name: limit
-      description: Defines the maximum size of a page of results. The maximum is 1000.
+      description: The maximum number of results per page. The maximum is 1000. Default is 20.
       defaultValue: "20"
     - name: headers
       description: 'Headers to display in Human readable format, comma separated format,
         for example: header1,header2,header3'
     - name: since
-      description: 'Returns malware collected after a timestamp, format: 1391813489'
+      description: 'The start timestamp for collecting malware, format: 1391813489'
     - name: until
-      description: 'Returns malware collected before a timestamp, format: 1391813489'
-    description: ' Searching for subjective opinions on indicators of compromise stored
+      description: 'The end timestamp for collecting malware, format: 1391813489'
+    description: ' Searches for subjective opinions on indicators of compromise stored
       in ThreatExchange'
   - name: threatexchange-members
     arguments: []
@@ -576,3 +604,5 @@ script:
       address. You can set this address, if desired, under the settings panel for
       your application
 hidden: false
+tests:
+  - ThreatExchange-test
