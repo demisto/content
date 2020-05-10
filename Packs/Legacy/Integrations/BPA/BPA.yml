@@ -47,7 +47,7 @@ script:
         predefined:
           - "false"
           - "true"
-        description: whether or not to download the panorama report
+        description: Whether to download the Panorama report. Can be "true" or "false". Default is "false".
         defaultValue: "false"
     outputs:
     - contextPath: PAN-OS-BPA.SubmittedJob.JobID
