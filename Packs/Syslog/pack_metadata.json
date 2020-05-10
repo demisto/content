@@ -10,9 +10,7 @@
     "categories": [
         "Messaging"
     ],
-    "tags": [
-        "Syslog"
-    ],
+    "tags": [],
     "created": "2020-03-15T17:02:40Z",
     "beta": false,
     "deprecated": false,
