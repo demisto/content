@@ -11,7 +11,9 @@ description: 'Note: This is a beta playbook, which lets you implement and test p
   asks the employees for their health status and whether they need any help. The data
   is saved as employee indicators in Cortex XSOAR, while IT and HR incidents are created
   to provide assistance to employees who requested it. The questionnaire expires after
-  24 hours by default, and during that time the responses are processed every 5 minutes.'
+  24 hours by default, and during that time the responses are processed every 5 minutes.
+  These settings can be edited via the task that sends the questionnaire and the loop settings
+  of the Continuously Process Survey Responses playbook, respectively.'
 starttaskid: '0'
 tasks:
   '0':
