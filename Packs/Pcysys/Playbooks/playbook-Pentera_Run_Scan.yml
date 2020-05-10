@@ -249,3 +249,5 @@ outputs:
   type: unknown
 fromversion: 5.0.0
 description: ''
+tests:
+- No tests (auto formatted)
