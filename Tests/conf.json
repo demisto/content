@@ -19,11 +19,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "Tufin",
-            "playbookID": "Tufin-Test",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "JSON Feed",
             "playbookID": "JSON_Feed_Test",
             "fromversion": "5.5.0"
@@ -294,7 +289,7 @@
         },
         {
             "integrations": "Tufin",
-            "playbookID": "Tufin Test"
+            "playbookID": "Tufin-Test"
         },
         {
             "integrations": "Looker",
