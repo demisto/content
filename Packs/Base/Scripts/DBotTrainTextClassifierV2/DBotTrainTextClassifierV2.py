@@ -305,7 +305,7 @@ def get_X_and_y_from_data(data, text_field):
 
 
 def main():
-    input = demisto.args()['input']s
+    input = demisto.args()['input']
     input_type = demisto.args()['inputType']
     model_name = demisto.args()['modelName']
     store_model = demisto.args()['storeModel'] == 'true'
