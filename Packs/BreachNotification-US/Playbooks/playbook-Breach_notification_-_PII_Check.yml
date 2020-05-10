@@ -1,8 +1,8 @@
 id: Breach notification - PII Check
 version: -1
 name: Breach notification - PII Check
-description: "This playbook goes through a checklist to help the analyst discern whether\
-  \ the breached data contain any Personally Identifiable Information (PII) according\
+description: "This playbook processes a checklist to help an analyst discern whether\
+  \ the breached data contains any Personally Identifiable Information (PII) according\
   \ to California law.\n\nDISCLAIMER: Please consult with your legal team before implementing\
   \ this playbook.\n\n**Source: http://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1798.82."
 starttaskid: '0'
@@ -59,7 +59,7 @@ tasks:
       id: 63ef7e9b-2885-4248-887a-f45b4748980e
       version: -1
       name: Does data contain medical information?
-      description: "“Medical information” is defined as information regarding an individual’s\
+      description: "Medical information is defined as information regarding an individual’s\
         \ medical history, mental or physical condition, or medical treatment or diagnosis\
         \ by a health care professional.\n**Source:** http://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1798.82."
       type: condition
@@ -85,7 +85,7 @@ tasks:
       name: Does data contain financial information?
       description: "Account number or credit or debit card number, in combination\
         \ with any required security code, access code, or password that would permit\
-        \ access to an individual’s financial account.\n**Source:** http://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1798.82."
+        \ access to an individual’s financial accounts.\n**Source:** http://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1798.82."
       type: condition
       iscommand: false
       brand: ''
@@ -107,7 +107,7 @@ tasks:
       id: f14bccb4-c4f1-46b5-8978-3109e24c1dc5
       version: -1
       name: Does data contain health insurance information?
-      description: "“Health insurance information” means an individual’s health insurance\
+      description: "Health insurance information means an individual’s health insurance\
         \ policy number or subscriber identification number, any unique identifier\
         \ used by a health insurer to identify the individual, or any information\
         \ in an individual’s application and claims history, including any appeals\
@@ -212,8 +212,8 @@ tasks:
     task:
       id: aa613ba6-502c-41a5-8d6b-8935d0be346a
       version: -1
-      name: Store PIICompromised - true
-      description: Store the fact that PII compromised.
+      name: Set Store PIICompromised Flag
+      description: Indicates that there was PII compromised.
       scriptName: Set
       type: regular
       iscommand: false
@@ -266,7 +266,7 @@ tasks:
     task:
       id: 7a3f6746-6a0d-4e75-8cdc-98853a2a506e
       version: -1
-      name: Store Medical Information breached
+      name: Set Medical Information Breached flag
       description: Store the fact that the breach contains PII type of medical information.
       scriptName: Set
       type: regular
@@ -298,7 +298,7 @@ tasks:
     task:
       id: 277ace78-242e-43c6-81b0-253b6947b005
       version: -1
-      name: Store health insurance breached
+      name: Set Health Insurance Breached flag
       description: Store the fact that the breach contains PII type of health insurance
         information.
       scriptName: Set
@@ -331,7 +331,7 @@ tasks:
     task:
       id: 936ce505-799c-405a-8334-ee59028fd74a
       version: -1
-      name: Store financial information breached
+      name: Set Financial Information Breached flag
       description: Store the fact that the breach contains PII type of financial information.
       scriptName: Set
       type: regular
@@ -363,7 +363,7 @@ tasks:
     task:
       id: bde39e10-364c-41e9-800d-8cf54943f240
       version: -1
-      name: Store account information breached
+      name: Set Account Information Breached flag
       description: Store the fact that the breach contains PII type of account information.
       scriptName: Set
       type: regular
@@ -395,7 +395,7 @@ tasks:
     task:
       id: 3f2163fb-a087-479e-899b-b5da17f75f66
       version: -1
-      name: Store unique identification number breached
+      name: Set Unique Identification Number Breached flag
       description: Store the fact that the breach contains PII type of unique identification
         number.
       scriptName: Set
@@ -428,7 +428,7 @@ tasks:
     task:
       id: 021d6828-21a7-4c4e-89c9-188246a86fea
       version: -1
-      name: Store  unique biometric data breached
+      name: Set Unique Biometric Data Breached flag
       description: Store the fact that the breach contains PII type of unique biometric
         data.
       scriptName: Set
@@ -508,7 +508,7 @@ tasks:
     task:
       id: 11c8e13f-2e0a-4595-8fb1-07b8ae8dcef5
       version: -1
-      name: Store other PII data breached
+      name: Set Other PII Data Breached flag
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
