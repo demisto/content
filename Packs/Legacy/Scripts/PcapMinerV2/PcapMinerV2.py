@@ -43,14 +43,14 @@ class PCAP():
         self.max_time = -float('inf')
         self.conversations = {}  # type: Dict[tuple, Any]
         self.flows = {}  # type: Dict[tuple, Any]
-        self.unique_source_ip = set([])
-        self.unique_dest_ip = set([])
-        self.ips_extracted = set([])
-        self.urls_extracted = set([])
-        self.emails_extracted = set([])
-        self.homemade_extracted = set([])
-        self.last_layer = set([])
-        self.irc_data = list()
+        self.unique_source_ip = set([])  # type: set
+        self.unique_dest_ip = set([])  # type: set
+        self.ips_extracted = set([])  # type: set
+        self.urls_extracted = set([])  # type: set
+        self.emails_extracted = set([])  # type: set
+        self.homemade_extracted = set([])  # type: set
+        self.last_layer = set([])  # type: set
+        self.irc_data = list()  # type: list
         self.protocol_data = dict()  # type: Dict[str, Any]
         self.extracted_protocols = extracted_protocols
         self.homemade_regex = homemade_regex
@@ -62,7 +62,7 @@ class PCAP():
         if 'LLMNR' in extracted_protocols:
             self.llmnr_type = re.compile('Type: (.*)\n')
             self.llmnr_class = re.compile('Class: (.*)\n')
-            self.llmnr_dict = {}
+            self.llmnr_dict = {}  # type: dict
 
         if is_reg_extract:
             self.reg_ip = re.compile(IP_REGEX)
@@ -73,7 +73,7 @@ class PCAP():
             self.reg_pragma = re.compile(PRAGMA_REGEX)
 
         if 'ICMP' in extracted_protocols:
-            self.icmp_data = set()
+            self.icmp_data = set()  # type: set
         if 'DNS' in extracted_protocols or 'NETBIOS' in extracted_protocols or 'ICMP' in extracted_protocols:
             self.reg_type = re.compile(TYPE_REGEX)
         if 'NETBIOS' in extracted_protocols:
@@ -82,22 +82,23 @@ class PCAP():
             self.reg_cmd = re.compile(COMMAND_REGEX)
         if 'KERBEROS' in extracted_protocols:
             self.reg_sname = re.compile(SNAME_REGEX)
-            self.kerb_data = set()
+            self.kerb_data = set()  # type: set
         if 'SSH' in extracted_protocols:
-            self.ssh_data = {'ClientProtocols': set(),
-                         'ServerProtocols': set(),
-                         'KeyExchangeMessageCode': set()
-                        }
+            self.ssh_data = {
+                'ClientProtocols': set(),
+                'ServerProtocols': set(),
+                'KeyExchangeMessageCode': set()
+            }  # type: dict
             self.reg_message_code = re.compile(MESSAGE_CODE)
         if 'FTP' in extracted_protocols:
             self.reg_res_code = re.compile(RESPONSE_CODE)
         if 'TELNET' in extracted_protocols:
-            self.telnet_data = set()
-            self.telnet_commands = set()
+            self.telnet_data = set()  # type: set
+            self.telnet_commands = set()  # type: set
         if homemade_regex:
             self.reg_homemade = re.compile(self.homemade_regex)
 
-    def extract_context_from_packet(self, packet, layers_str: str, is_reg_extract: bool=False) -> None:
+    def extract_context_from_packet(self, packet, layers_str: str, is_reg_extract: bool = False) -> None:
         """
         Get a packet and extract context from it for the specified protocols specified in `self.extracted_protocols`
         Args:
@@ -147,7 +148,6 @@ class PCAP():
                     self.telnet_commands.add(message.lstrip('\t').rstrip('\n'))
             return
 
-
         if 'LLMNR' in self.extracted_protocols and 'LLMNR' in layers:
             llmnr_layer = packet.llmnr
             llmnr_layer_string = str(llmnr_layer)
@@ -195,7 +195,6 @@ class PCAP():
                     smtp_data[parameters[0].title()] = strip(parameters[1], ['<', '>'])
                 add_to_data(self.protocol_data['SMTP'], smtp_data, packet.tcp.nxtseq)
                 return
-
 
         if 'SMB2' in self.extracted_protocols and 'SMB2' in layers:
             smb_layer = packet.smb2
@@ -253,7 +252,7 @@ class PCAP():
                 command = irc_layer.get('request_command')
                 trailer = irc_layer.get('request_trailer', '')
                 prefix = irc_layer.get('request_prefix', '')
-                parameters = irc_layer.get('request').replace(command,'').replace(trailer, '')\
+                parameters = irc_layer.get('request').replace(command, '').replace(trailer, '')\
                     .replace(prefix, '').split(' ')
                 parameters.remove(' ')
                 irc_data = {
@@ -496,7 +495,6 @@ class PCAP():
     #             else:
     #                 add_to_data(self.protocol_data['FTP'], ftp_data, next_id=packet.tcp.ack)
 
-
     def get_outputs(self, entry_id, conversation_number_to_display=15, is_flows=False, is_reg_extract=False):
         if self.num_of_packets == 0:
             return "## No packets found.\nTry changing the filter, if applied.", {}, {}
@@ -549,7 +547,7 @@ class PCAP():
             all_ips = self.unique_source_ip.copy()
             all_ips.update(self.unique_dest_ip)
             if general_context.get('IP'):
-                general_context.get('IP').append(list(all_ips))
+                general_context.get('IP').append(list(all_ips))  # type: ignore
             else:
                 general_context['IP'] = list(all_ips)
 
@@ -812,7 +810,7 @@ def remove_nones(d: dict) -> dict:
     return {k: v for k, v in d.items() if v is not None}
 
 
-def add_to_data(d: dict, data: dict, next_id: int=None) -> None:
+def add_to_data(d: dict, data: dict, next_id: int = None) -> None:
     """
     updates dictionary d to include/update the data. Also removes None values.
     Args:
@@ -918,7 +916,8 @@ def local_main():  # TODO remove this function
     conversation_number_to_display = 15
     is_flows = True
     is_reg_extract = True
-    extracted_protocols = ['SMTP', 'DNS', 'HTTP', 'SMB2', 'NETBIOS', 'ICMP', 'KERBEROS', 'SYSLOG', 'SSH', 'IRC', 'FTP', 'TELNET', 'LLMNR']
+    extracted_protocols = ['SMTP', 'DNS', 'HTTP', 'SMB2', 'NETBIOS', 'ICMP', 'KERBEROS', 'SYSLOG', 'SSH',
+                           'IRC', 'FTP', 'TELNET', 'LLMNR']
 
     pcap_filter = ''
     # pcap_filter_new_file_name = ''  # '/Users/olichter/Downloads/try.pcap'
