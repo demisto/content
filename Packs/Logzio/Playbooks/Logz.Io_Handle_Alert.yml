@@ -1,5 +1,5 @@
 id: Logz.Io Handle Alert
-version: 4
+version: -1
 name: Logz.Io Handle Alert
 description: Handles a Logz.io Alert by retrieving the events that generated it.
 starttaskid: "0"
