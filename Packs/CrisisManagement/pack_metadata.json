@@ -1,7 +1,7 @@
 {
     "name": "Crisis Management",
     "description": "Manage crises such as pandemics or other events that would change the conditions under which employees would normally work.",
-    "support": "demisto",
+    "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "",
@@ -12,11 +12,12 @@
     "tags": [
         "Crisis",
         "Pandemic",
-        "Remote Work"
+        "Remote Work",
+        "COVID-19"
     ],
     "created": "2020-05-06T08:54:47Z",
     "updated": "2020-05-06T08:54:47Z",
-    "beta": false,
+    "beta": true,
     "deprecated": false,
     "useCases": [],
     "keywords": [],
