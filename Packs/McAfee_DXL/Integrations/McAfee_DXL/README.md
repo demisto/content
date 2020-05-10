@@ -27,8 +27,8 @@ To configure the ePO server, you need to upload the public key.
     ![export Broker list](https://github.com/demisto/content/raw/master/Packs/McAfee_DXL/Integrations/McAfee_DXL/create_keys/img/export_Brocker_list.png)
 5. Click **Import** and select the **client.crt** file.
     ![click import](https://github.com/demisto/content/raw/master/Packs/McAfee_DXL/Integrations/McAfee_DXL/create_keys/img/click_import.png)
-    ![select client.crt file](https://github.com/demisto/content/raw/master/Integrations/McAfee_DXL/create_keys/img/select_client.crt_file.png)
-    ![click ok](https://github.com/demisto/content/raw/dxl_exemple/master/McAfee_DXL/create_keys/img/click_ok.png)
+    ![select client.crt file](https://github.com/demisto/content/raw/master/Packs/McAfee_DXL/Integrations/McAfee_DXL/create_keys/img/select_client.crt_file.png)
+    ![click ok](https://github.com/demisto/content/raw/master/Packs/McAfee_DXL/Integrations/McAfee_DXL/create_keys/img/click_ok.png)
 6. Click **Save**.
     ![click save](https://github.com/demisto/content/raw/master/Packs/McAfee_DXL/Integrations/McAfee_DXL/create_keys/img/click_save.png)
 7. Test the integration (it may take a few minutes until the key is enabled).
