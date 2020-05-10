@@ -78,5 +78,5 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 <video controls>
     <source src="https://github.com/demisto/content/raw/6184bdcf6e2f5ed3429dc07ddf7fe6d67a5565f7/Packs/NIST/doc_files/NIST-Demo.mp4"
             type="video/mp4"/>
-    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content/raw/b0962770bbabf8a1c1923261d4b43d9a1c25eb99/Packs/GDPR/doc_files/GDPR_Data_Breach_Notification.mp4
+    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content/raw/6184bdcf6e2f5ed3429dc07ddf7fe6d67a5565f7/Packs/NIST/doc_files/NIST-Demo.mp4
 </video>
