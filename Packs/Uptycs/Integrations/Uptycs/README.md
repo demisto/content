@@ -1226,7 +1226,7 @@ There is no context output for this command.
         "status": "assigned", 
         "code": "OUTBOUND_CONNECTION_TO_THREAT_IOC", 
         "updatedAt": "2019-07-19T17:07:27.447Z", 
-        "updatedByEmail": "bschmoll@uptycs.com", 
+        "updatedByEmail": "goo@test.com", 
         "updatedByAdmin": true, 
         "updatedBy": "B schmoll", 
         "id": "9cb18abd-2c9a-43a8-988a-0601e9140f6c", 
@@ -1509,7 +1509,7 @@ get info for an Uptycs user
                 "name": "admin"
             }
         }, 
-        "email": "bschmoll@uptycs.com", 
+        "email": "goo@test.com", 
         "name": "B schmoll", 
         "id": "33436e24-f30f-42d0-8438-d948be12b5af"
     }
@@ -1520,7 +1520,7 @@ get info for an Uptycs user
 ### Uptycs User Information
 |name|email|id|
 |---|---|---|
-|B schmoll|bschmoll@uptycs.com|33436e24-f30f-42d0-8438-d948be12b5af|
+|B schmoll|goo@test.com|33436e24-f30f-42d0-8438-d948be12b5af|
 
 
 ### 15. uptycs-get-threat-indicators
@@ -1794,7 +1794,7 @@ get a list of Uptycs users
             "id": "33436e24-f30f-42d0-8438-d948be12b5af", 
             "updatedAt": "2018-09-25T16:10:28.140Z", 
             "active": true, 
-            "email": "bschmoll@uptycs.com", 
+            "email": "goo@test.com", 
             "createdAt": "2018-09-24T17:24:38.635Z"
         }
     ]
@@ -1805,7 +1805,7 @@ get a list of Uptycs users
 ### Uptycs Users
 |name|email|id|admin|active|createdAt|updatedAt|
 |---|---|---|---|---|---|---|
-|B schmoll|bschmoll@uptycs.com|33436e24-f30f-42d0-8438-d948be12b5af|true|true|2018-09-24T17:24:38.635Z|2018-09-25T16:10:28.140Z|
+|B schmoll|goo@test.com|33436e24-f30f-42d0-8438-d948be12b5af|true|true|2018-09-24T17:24:38.635Z|2018-09-25T16:10:28.140Z|
 
 
 ### 21. uptycs-get-asset-groups
@@ -1893,15 +1893,15 @@ There is no context output for this command.
 {
     "Uptycs.UserGroups": {
         "B schmoll": {
-            "email": "bschmoll@uptycs.com", 
+            "email": "goo@test.com", 
             "id": "33436e24-f30f-42d0-8438-d948be12b5af"
         }, 
         "Mike Boldi": {
-            "email": "mboldi@uptycs.com", 
+            "email": "woo@test.com", 
             "id": "e43b0119-8d23-4ea2-9fd9-3a9ff14fc195"
         }, 
         "Milan Shah": {
-            "email": "milans100@gmail.com", 
+            "email": "foo@test.com", 
             "id": "89d26aa4-f0a8-48d9-a174-ce5285d9dd60"
         }
     }
@@ -1912,7 +1912,7 @@ There is no context output for this command.
 ### Uptycs User Asset Groups
 |B schmoll|Mike Boldi|Milan Shah|
 |---|---|---|
-|email: bschmoll@uptycs.com<br/>id: 33436e24-f30f-42d0-8438-d948be12b5af|email: mboldi@uptycs.com<br/>id: e43b0119-8d23-4ea2-9fd9-3a9ff14fc195|email: milans100@gmail.com<br/>id: 89d26aa4-f0a8-48d9-a174-ce5285d9dd60|
+|email: goo@test.com<br/>id: 33436e24-f30f-42d0-8438-d948be12b5af|email: woo@test.com<br/>id: e43b0119-8d23-4ea2-9fd9-3a9ff14fc195|email: foo@test.com<br/>id: 89d26aa4-f0a8-48d9-a174-ce5285d9dd60|
 
 
 ### 23. uptycs-get-threat-indicator
