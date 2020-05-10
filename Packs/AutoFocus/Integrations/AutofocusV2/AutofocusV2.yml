@@ -1045,7 +1045,8 @@ script:
     - contextPath: Domain.Name
       description: The domain name.
       type: String
-  dockerimage: demisto/python3:3.7.2.214
+  dockerimage45: demisto/python3:3.7.2.214
+  dockerimage: demisto/python3:3.8.2.6981
   isfetch: false
   longRunning: false
   longRunningPort: false
