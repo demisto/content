@@ -1,5 +1,5 @@
 ## [Unreleased]
-Added download report of a task
+Added an argument that enables you to download a Panorama report.
 
 ## [20.4.0] - 2020-04-14
 -
