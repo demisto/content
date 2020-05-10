@@ -116,19 +116,19 @@ def test_search_and_install_packs_and_their_dependencies(mocker):
     - Ensure packs & their dependencies' search requests are valid.
     - Ensure packs & their dependencies' installation requests are valid.
     """
-    good_integrations_files = [
-        'Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.yml',
-        'Packs/AzureSentinel/Integrations/AzureSentinel/AzureSentinel.yml'
+    good_pack_ids = [
+        'HelloWorld',
+        'AzureSentinel'
     ]
 
-    bad_integrations_files = ['malformed_integration_file']
+    bad_pack_ids = ['malformed_pack_id']
 
     client = MockClient()
 
     mocker.patch.object(demisto_client, 'generic_request_func', side_effect=mocked_generic_request_func)
     prints_manager = ParallelPrintsManager(1)
 
-    installed_packs = search_and_install_packs_and_their_dependencies(good_integrations_files,
+    installed_packs = search_and_install_packs_and_their_dependencies(good_pack_ids,
                                                                       client,
                                                                       prints_manager)
     assert 'HelloWorld' in installed_packs
@@ -136,7 +136,7 @@ def test_search_and_install_packs_and_their_dependencies(mocker):
     assert 'TestPack' in installed_packs
     assert len(installed_packs) == 3
 
-    installed_packs = search_and_install_packs_and_their_dependencies(bad_integrations_files,
+    installed_packs = search_and_install_packs_and_their_dependencies(bad_pack_ids,
                                                                       client,
                                                                       prints_manager)
     assert len(installed_packs) == 0

@@ -4,8 +4,7 @@ import ast
 import json
 import demisto_client
 from threading import Thread, Lock
-from demisto_sdk.commands.common.tools import print_error, print_color, LOG_COLORS, is_file_path_in_pack, \
-    get_pack_name, run_threads_list
+from demisto_sdk.commands.common.tools import print_error, print_color, LOG_COLORS, run_threads_list
 
 
 def get_pack_display_name(pack_id):
@@ -147,6 +146,11 @@ def install_packs(client, prints_manager, packs_to_install):
         'packs': packs_to_install,
         'ignoreWarnings': True
     }
+
+    # TODO: remove print
+    req_str = str(request_data)
+    prints_manager.add_print_job(req_str, print_color, 0, LOG_COLORS.GREEN)
+    prints_manager.execute_thread_prints(0)
 
     # make the pack installation request
     try:
