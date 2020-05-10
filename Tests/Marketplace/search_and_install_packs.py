@@ -150,11 +150,6 @@ def install_packs(client, prints_manager, packs_to_install):
         'ignoreWarnings': True
     }
 
-    # TODO: remove print
-    req_str = str(request_data)
-    prints_manager.add_print_job(req_str, print_color, 0, LOG_COLORS.GREEN)
-    prints_manager.execute_thread_prints(0)
-
     # make the pack installation request
     try:
         response_data, status_code, _ = demisto_client.generic_request_func(client,
@@ -200,22 +195,12 @@ def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_i
         current_packs_to_install = [pack_data]
         current_packs_to_install.extend(dependencies)
 
-        # TODO: remove print
-        req_str = 'pack {} depends: {}\nto_install: {}'.format(pack_id, dependencies, current_packs_to_install)
-        prints_manager.add_print_job(req_str, print_color, 0, LOG_COLORS.GREEN)
-        prints_manager.execute_thread_prints(0)
-
         lock.acquire()
         for pack in current_packs_to_install:
-            if pack_id not in packs_to_install:
-                packs_to_install.append(pack_id)
+            if pack['id'] not in packs_to_install:
+                packs_to_install.append(pack['id'])
                 installation_request_body.append(pack)
         lock.release()
-
-        # TODO: remove print
-        req_str = 'packs to install for {}: {}'.format(pack_id, str(packs_to_install))
-        prints_manager.add_print_job(req_str, print_color, 0, LOG_COLORS.GREEN)
-        prints_manager.execute_thread_prints(0)
 
 
 def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager):
