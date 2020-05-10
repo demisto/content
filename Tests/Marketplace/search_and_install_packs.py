@@ -172,6 +172,8 @@ def install_packs(client, prints_manager, packs_to_install):
         err_msg = 'The request to install packs has failed. Reason:\n{}'.format(str(e))
         prints_manager.add_print_job(err_msg, print_error, 0)
         prints_manager.execute_thread_prints(0)
+        return False
+    return True
 
 
 def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_install, installation_request_body, lock):
@@ -234,6 +236,6 @@ def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_man
         threads_list.append(thread)
     run_threads_list(threads_list)
 
-    install_packs(client, prints_manager, installation_request_body)
+    installed_packs_successfully = install_packs(client, prints_manager, installation_request_body)
 
-    return packs_to_install
+    return installed_packs_successfully, packs_to_install

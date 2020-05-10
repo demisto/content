@@ -755,12 +755,18 @@ def main():
     new_integrations_files, modified_integrations_files = get_new_and_modified_integration_files(git_sha1)
     new_integrations_names, modified_integrations_names = [], []
 
+    installed_content_packs_successfully = True
+
     if server_version_compare(server_numeric_version, '6.0') >= 0:
         with open('./Tests/content_packs_to_install.txt', 'r') as packs_stream:
             pack_ids = [pack_id.rstrip('\n') for pack_id in packs_stream.readlines()]
         client = demisto_client.configure(base_url=servers[0], username=username, password=password,
                                           verify_ssl=False)
-        search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager)
+        installed_content_packs_successfully, installed_packs = search_and_install_packs_and_their_dependencies(
+            pack_ids, client, prints_manager
+        )
+        installed_packs_message = "Installed the content packs: {}".format(installed_packs)
+        prints_manager.add_print_job(installed_packs_message, print_color, 0, LOG_COLORS.GREEN)
 
     if new_integrations_files:
         new_integrations_names = get_integration_names_from_files(new_integrations_files)
@@ -918,7 +924,7 @@ def main():
     success = report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, postupdate_success,
                                   new_integrations_names, prints_manager)
     prints_manager.execute_thread_prints(0)
-    if not success:
+    if not success or not installed_content_packs_successfully:
         sys.exit(2)
 
 
