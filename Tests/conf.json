@@ -2767,6 +2767,11 @@
             "integrations": "GCP Whitelist Feed",
             "playbookID": "GCPWhitelist_Feed_Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Endace",
+            "playbookID": "Endace-Test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
@@ -2926,6 +2931,7 @@
         "Tenable.sc": "unstable instance",
         "VirusTotal - Private API": "Issue 22638",
         "_comment": "~~~ OTHER ~~~",
+        "Endace": "Issue 24304",
         "Pentera": "authentication method will not work with testing",
         "EclecticIQ Platform": "Issue 8821",
         "BitDam": "Issue #17247",
