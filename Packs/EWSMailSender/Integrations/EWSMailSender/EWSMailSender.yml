@@ -82,8 +82,7 @@ script:
       description: 'A CSV list of CIDs to embed attachments within the email itself.'
       isArray: true
     description: Sends an email using EWS.
-  dockerimage: demisto/py-ews:2.0
-  dockerimage45: demisto/py-ews
+  dockerimage: demisto/py-ews:latest  # DO NOT CHANGE to 2.0. See: issue 24133
 tests:
   - "EWS Mail Sender Test"
   - "EWS Mail Sender Test 2"
