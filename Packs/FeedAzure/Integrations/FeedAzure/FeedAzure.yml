@@ -60,6 +60,7 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
+  defaultvalue: "true"
 - defaultvalue: All
   display: Regions
   name: regions
