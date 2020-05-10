@@ -30,6 +30,7 @@ script: |-
 
         demisto.results({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': res})
 type: python
+subtype: python2
 tags: []
 comment: Deprecated, use "Detonate File - VMRay playbook instead"
 enabled: true

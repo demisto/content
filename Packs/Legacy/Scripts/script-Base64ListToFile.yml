@@ -27,6 +27,7 @@ script: |-
   # output file to warroom
   demisto.results(fileResult(outfilename, bin_file))
 type: python
+subtype: python2
 tags:
 - list
 - Utility

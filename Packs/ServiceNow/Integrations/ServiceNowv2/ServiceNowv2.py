@@ -96,6 +96,36 @@ def get_server_url(server_url: str) -> str:
     return url
 
 
+def get_item_human_readable(data: dict) -> dict:
+    """Get item human readable.
+
+    Args:
+        data: item data.
+
+    Returns:
+        item human readable.
+    """
+    item = {
+        'ID': data.get('sys_id', ''),
+        'Name': data.get('name', ''),
+        'Description': data.get('short_description', ''),
+        'Price': data.get('price', ''),
+        'Variables': []
+    }
+    variables = data.get('variables')
+    if variables and isinstance(variables, list):
+        for var in variables:
+            if var:
+                pretty_variables = {
+                    'Question': var.get('label', ''),
+                    'Type': var.get('display_type', ''),
+                    'Name': var.get('name', ''),
+                    'Mandatory': var.get('mandatory', '')
+                }
+                item['Variables'].append(pretty_variables)
+    return item
+
+
 def create_ticket_context(data: dict, additional_fields: list = None) -> Any:
     """Create ticket context.
 
@@ -314,7 +344,7 @@ def generate_body(fields: dict = {}, custom_fields: dict = {}) -> dict:
 
 
 def split_fields(fields: str = '') -> dict:
-    """Split str fields of Demisto arguments to SNOW request fields by the char - ;.
+    """Split str fields of Demisto arguments to SNOW request fields by the char ';'.
 
     Args:
         fields: fields in a string representation.
@@ -329,7 +359,7 @@ def split_fields(fields: str = '') -> dict:
             raise Exception(f"The argument: {fields}.\nmust contain a '=' to specify the keys and values. e.g: key=val.")
         arr_fields = fields.split(';')
         for f in arr_fields:
-            field = f.split('=')
+            field = f.split('=', 1)  # a field might include a '=' sign in the value. thus, splitting only once.
             if len(field) > 1:
                 dic_fields[field[0]] = field[1]
 
@@ -341,12 +371,14 @@ class Client(BaseClient):
     Client to use in the ServiceNow integration. Overrides BaseClient.
     """
 
-    def __init__(self, server_url: str, username: str, password: str, verify: bool, proxy: bool, fetch_time: str,
-                 sysparm_query: str, sysparm_limit: int, timestamp_field: str, ticket_type: str, get_attachments: bool):
+    def __init__(self, server_url: str, sc_server_url: str, username: str, password: str, verify: bool, proxy: bool,
+                 fetch_time: str, sysparm_query: str, sysparm_limit: int, timestamp_field: str, ticket_type: str,
+                 get_attachments: bool):
         """
 
         Args:
-            server_url: SNOW serveer url
+            server_url: SNOW server url
+            sc_server_url: SNOW Service Catalog url
             username: SNOW username
             password: SNOW password
             verify: whether to verify the request
@@ -359,6 +391,7 @@ class Client(BaseClient):
             get_attachments: whether to get ticket attachments by default
         """
         self._base_url = server_url
+        self._sc_server_url = sc_server_url
         self._verify = verify
         self._username = username
         self._password = password
@@ -372,14 +405,26 @@ class Client(BaseClient):
         self.sys_param_offset = 0
 
     def send_request(self, path: str, method: str = 'GET', body: dict = None, params: dict = None,
-                     headers: dict = None, file=None):
-        """
-        Generic request to ServiceNow.
+                     headers: dict = None, file=None, sc_api: bool = False):
+        """Generic request to ServiceNow.
+
+        Args:
+            path: API path
+            method: request method
+            body: request body
+            params: request params
+            headers: request headers
+            file: request  file
+            sc_api: Whether to send the request to the SC API
+
+        Returns:
+            response from API
         """
         body = body if body is not None else {}
         params = params if params is not None else {}
+        # if sc_api is set to true, then sending the request to the 'Service Catalog' instead of the 'now' API.
+        url = f'{self._base_url}{path}' if not sc_api else f'{self._sc_server_url}{path}'
 
-        url = f'{self._base_url}{path}'
         if not headers:
             headers = {
                 'Accept': 'application/json',
@@ -617,14 +662,31 @@ class Client(BaseClient):
         return self.send_request('attachment/upload', 'POST', headers={'Accept': 'application/json'},
                                  body=body, file={'id': file_id, 'name': file_name})
 
-    def query(self, table_name: str, sys_param_limit: str, sys_param_offset: str, sys_param_query: str) -> dict:
-        """Query tickets by sending a PATCH request.
+    def add_tag(self, ticket_id: str, tag_id: str, title: str, ticket_type: str) -> dict:
+        """Adds a tag to a ticket by sending a POST request.
+
+        Args:
+            ticket_id: ticket id
+            tag_id:  tag id
+            title: tag title
+            ticket_type: ticket type
+
+        Returns:
+            Response from API.
+        """
+        body = {'label': tag_id, 'table': ticket_type, 'table_key': ticket_id, 'title': title}
+        return self.send_request('/table/label_entry', 'POST', body=body)
+
+    def query(self, table_name: str, sys_param_limit: str, sys_param_offset: str, sys_param_query: str,
+              system_params: dict = {}) -> dict:
+        """Query records by sending a GET request.
 
         Args:
         table_name: table name
         sys_param_limit: limit the number of results
         sys_param_offset: offset the results
         sys_param_query: the query
+        system_params: system parameters
 
         Returns:
             Response from API.
@@ -632,6 +694,8 @@ class Client(BaseClient):
         query_params = {'sysparm_limit': sys_param_limit, 'sysparm_offset': sys_param_offset}
         if sys_param_query:
             query_params['sysparm_query'] = sys_param_query
+        if system_params:
+            query_params.update(system_params)
         return self.send_request(f'table/{table_name}', 'GET', params=query_params)
 
     def get_table_fields(self, table_name: str) -> dict:
@@ -644,6 +708,45 @@ class Client(BaseClient):
             Response from API.
         """
         return self.send_request(f'table/{table_name}?sysparm_limit=1', 'GET')
+
+    def get_item_details(self, id_: str) -> dict:
+        """Get item details from service catalog by sending a GET request to the Service Catalog API.
+
+        Args:
+        id_: item id
+
+        Returns:
+            Response from API.
+        """
+        return self.send_request(f'servicecatalog/items/{id_}', 'GET', sc_api=True)
+
+    def create_item_order(self, id_: str, quantity: str, variables: dict = {}) -> dict:
+        """Create item order in the service catalog by sending a POST request to the Service Catalog API.
+
+        Args:
+        id_: item id
+        quantity: order quantity
+        variables: order variables
+
+        Returns:
+            Response from API.
+        """
+        body = {'sysparm_quantity': quantity, 'variables': variables}
+        return self.send_request(f'servicecatalog/items/{id_}/order_now', 'POST', body=body, sc_api=True)
+
+    def document_route_to_table_request(self, queue_id: str, document_table: str, document_id: str) -> dict:
+        """Routes a document(ticket/incident) to a queue by sending a GET request.
+
+        Args:
+        queue_id: Queue ID.
+        document_table: Document table.
+        document_id: Document ID.
+
+        Returns:
+            Response from API.
+        """
+        body = {'document_sys_id': document_id, 'document_table': document_table}
+        return self.send_request(f'awa/queues/{queue_id}/work_item', 'POST', body=body)
 
 
 def get_ticket_command(client: Client, args: dict):
@@ -665,11 +768,11 @@ def get_ticket_command(client: Client, args: dict):
 
     result = client.get(ticket_type, ticket_id, generate_body({}, custom_fields), number)
     if not result or 'result' not in result:
-        return 'Ticket was not found.', {}, {}
+        return 'Ticket was not found.'
 
     if isinstance(result['result'], list):
         if len(result['result']) == 0:
-            return 'Ticket was not found.', {}, {}
+            return 'Ticket was not found.'
         ticket = result['result'][0]
     else:
         ticket = result['result']
@@ -813,11 +916,12 @@ def query_tickets_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
     sys_param_limit = args.get('limit', client.sys_param_limit)
     sys_param_offset = args.get('offset', client.sys_param_offset)
     sys_param_query = str(args.get('query', ''))
+    system_params = split_fields(args.get('system_params', ''))
     additional_fields = argToList(str(args.get('additional_fields')))
 
     ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
 
-    result = client.query(ticket_type, sys_param_limit, sys_param_offset, sys_param_query)
+    result = client.query(ticket_type, sys_param_limit, sys_param_offset, sys_param_query, system_params)
 
     if not result or 'result' not in result or len(result['result']) == 0:
         return 'No ServiceNow tickets matched the query.', {}, {}, True
@@ -947,6 +1051,43 @@ def upload_file_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bo
         'ServiceNow.Ticket(val.ID===obj.ID)': context,
         'Ticket(val.ID===obj.ID)': context
     }
+
+    return human_readable, entry_context, result, True
+
+
+def add_tag_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bool]:
+    """Add tag to a ticket.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    ticket_id = str(args.get('id', ''))
+    tag_id = str(args.get('tag_id', ''))
+    title = str(args.get('title', ''))
+    ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
+
+    result = client.add_tag(ticket_id, tag_id, title, ticket_type)
+    if not result or 'result' not in result:
+        raise Exception(f'Could not add tag {title} to ticket {ticket_id}.')
+
+    added_tag_resp = result.get('result', {})
+    hr_ = {
+        'Title': added_tag_resp.get('title'),
+        'Ticket ID': added_tag_resp.get('id_display'),
+        'Ticket Type': added_tag_resp.get('id_type'),
+        'Tag ID': added_tag_resp.get('sys_id'),
+    }
+    human_readable = tableToMarkdown(f'Tag {tag_id} was added successfully to ticket {ticket_id}.', t=hr_)
+    context = {
+        'ID': ticket_id,
+        'TagTitle': added_tag_resp.get('title'),
+        'TagID': added_tag_resp.get('sys_id'),
+    }
+    entry_context = {'ServiceNow.Ticket(val.ID===obj.ID)': context}
 
     return human_readable, entry_context, result, True
 
@@ -1146,10 +1287,11 @@ def query_table_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bo
     table_name = str(args.get('table_name', ''))
     sys_param_limit = args.get('limit', client.sys_param_limit)
     sys_param_query = str(args.get('query', ''))
+    system_params = split_fields(args.get('system_params', ''))
     sys_param_offset = args.get('offset', client.sys_param_offset)
     fields = args.get('fields')
 
-    result = client.query(table_name, sys_param_limit, sys_param_offset, sys_param_query)
+    result = client.query(table_name, sys_param_limit, sys_param_offset, sys_param_query, system_params)
     if not result or 'result' not in result or len(result['result']) == 0:
         return 'No results found', {}, {}, False
     table_entries = result.get('result', {})
@@ -1420,6 +1562,139 @@ def get_table_name_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, A
     return human_readable, entry_context, result, False
 
 
+def query_items_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any], bool]:
+    """Query items.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    table_name = 'sc_cat_item'
+    limit = args.get('limit', client.sys_param_limit)
+    offset = args.get('offset', client.sys_param_offset)
+    name = str(args.get('name', ''))
+    items_query = f'nameLIKE{name}' if name else ''
+
+    result = client.query(table_name, limit, offset, items_query)
+    if not result or 'result' not in result:
+        return 'No items were found.', {}, {}, True
+    items = result.get('result', {})
+    if not isinstance(items, list):
+        items_list = [items]
+    else:
+        items_list = items
+    if len(items_list) == 0:
+        return 'No items were found.', {}, {}, True
+
+    mapped_items = []
+    for item in items_list:
+        mapped_items.append(get_item_human_readable(item))
+
+    headers = ['ID', 'Name', 'Price', 'Description']
+    human_readable = tableToMarkdown('ServiceNow Catalog Items', mapped_items, headers=headers,
+                                     removeNull=True, headerTransform=pascalToSpace)
+    entry_context = {'ServiceNow.CatalogItem(val.ID===obj.ID)': createContext(mapped_items, removeNull=True)}
+
+    return human_readable, entry_context, result, True
+
+
+def get_item_details_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any], bool]:
+    """Get item details.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    id_ = str(args.get('id', ''))
+
+    result = client.get_item_details(id_)
+    if not result or 'result' not in result:
+        return 'Item was not found.', {}, {}, True
+    item = result.get('result', {})
+    mapped_item = get_item_human_readable(item)
+
+    human_readable = tableToMarkdown('ServiceNow Catalog Item', t=mapped_item, headers=['ID', 'Name', 'Description'],
+                                     removeNull=True, headerTransform=pascalToSpace)
+    if mapped_item.get('Variables'):
+        human_readable += tableToMarkdown('Item Variables', t=mapped_item.get('Variables'),
+                                          headers=['Question', 'Type', 'Name', 'Mandatory'],
+                                          removeNull=True, headerTransform=pascalToSpace)
+    entry_context = {'ServiceNow.CatalogItem(val.ID===obj.ID)': createContext(mapped_item, removeNull=True)}
+
+    return human_readable, entry_context, result, True
+
+
+def create_order_item_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any], bool]:
+    """Create item order.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    id_ = str(args.get('id', ''))
+    quantity = str(args.get('quantity', '1'))
+    variables = split_fields(str(args.get('variables', '')))
+
+    result = client.create_item_order(id_, quantity, variables)
+    if not result or 'result' not in result:
+        return 'Order item was not created.', {}, {}, True
+    order_item = result.get('result', {})
+
+    mapped_item = {
+        'ID': order_item.get('sys_id'),
+        'RequestNumber': order_item.get('request_number')
+    }
+    human_readable = tableToMarkdown('ServiceNow Order Request', mapped_item,
+                                     removeNull=True, headerTransform=pascalToSpace)
+    entry_context = {'ServiceNow.OrderRequest(val.ID===obj.ID)': createContext(mapped_item, removeNull=True)}
+
+    return human_readable, entry_context, result, True
+
+
+def document_route_to_table(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any], bool]:
+    """Document routes to table.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    queue_id = str(args.get('queue_id', ''))
+    document_table = str(args.get('document_table', ''))
+    document_id = str(args.get('document_id', ''))
+
+    result = client.document_route_to_table_request(queue_id, document_table, document_id)
+    if not result or 'result' not in result:
+        return 'Route to table was not found.', {}, {}, True
+
+    route = result.get('result', {})
+    context = {
+        'DisplayName': route.get('display_name'),
+        'DocumentID': route.get('document_id'),
+        'DocumentTable': route.get('document_table'),
+        'QueueID': route.get('queue'),
+        'WorkItemID': route.get('sys_id')
+    }
+
+    headers = ['DisplayName', 'DocumentID', 'DocumentTable', 'QueueID', 'WorkItemID']
+    human_readable = tableToMarkdown('ServiceNow Queue', t=context, headers=headers, removeNull=True,
+                                     headerTransform=pascalToSpace)
+    entry_context = {'ServiceNow.WorkItem(val.WorkItemID===obj.WorkItemID)': createContext(context, removeNull=True)}
+
+    return human_readable, entry_context, result, True
+
+
 def fetch_incidents(client: Client):
     query_params = {}
     incidents = []
@@ -1537,9 +1812,12 @@ def main():
     version = params.get('api_version')
     if version:
         api = f'/api/now/{version}/'
+        sc_api = f'/api/sn_sc/{version}/'
     else:
         api = '/api/now/'
+        sc_api = f'/api/sn_sc/'
     server_url = params.get('url')
+    sc_server_url = f'{get_server_url(server_url)}{sc_api}'
     server_url = f'{get_server_url(server_url)}{api}'
 
     fetch_time = params.get('fetch_time', '10 minutes').strip()
@@ -1551,8 +1829,8 @@ def main():
 
     raise_exception = False
     try:
-        client = Client(server_url, username, password, verify, proxy, fetch_time, sysparm_query, sysparm_limit,
-                        timestamp_field, ticket_type, get_attachments)
+        client = Client(server_url, sc_server_url, username, password, verify, proxy, fetch_time, sysparm_query,
+                        sysparm_limit, timestamp_field, ticket_type, get_attachments)
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]]] = {
             'test-module': test_module,
             'servicenow-update-ticket': update_ticket_command,
@@ -1562,6 +1840,7 @@ def main():
             'servicenow-add-link': add_link_command,
             'servicenow-add-comment': add_comment_command,
             'servicenow-upload-file': upload_file_command,
+            'servicenow-add-tag': add_tag_command,
             'servicenow-get-ticket-notes': get_ticket_notes_command,
             'servicenow-get-record': get_record_command,
             'servicenow-update-record': update_record_command,
@@ -1572,7 +1851,11 @@ def main():
             'servicenow-query-computers': query_computers_command,
             'servicenow-query-groups': query_groups_command,
             'servicenow-query-users': query_users_command,
-            'servicenow-get-table-name': get_table_name_command
+            'servicenow-get-table-name': get_table_name_command,
+            'servicenow-query-items': query_items_command,
+            'servicenow-get-item-details': get_item_details_command,
+            'servicenow-create-item-order': create_order_item_command,
+            'servicenow-document-route-to-queue': document_route_to_table,
         }
         args = demisto.args()
         if command == 'fetch-incidents':

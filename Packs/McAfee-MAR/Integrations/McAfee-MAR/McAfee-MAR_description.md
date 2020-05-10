@@ -1,5 +1,5 @@
 ### Prerequisites - Connect to McAfee Active Response (MAR) using the DXL MAR client.
-  - Create certificates & configure dxl. (see: https://github.com/demisto/content/blob/master/Integrations/McAfee_DXL/README.md)
+  - Create certificates & configure dxl. (see: https://github.com/demisto/content/blob/master/Packs/McAfee_DXL/Integrations/McAfee_DXL/README.md)
   - You must have the following files:
     - Broker CA certificates (`brokercerts.crt` file)
     - Client certificate (`client.crt` file)

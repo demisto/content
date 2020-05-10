@@ -17,6 +17,7 @@ script: |+
 
 
 type: python
+subtype: python2
 tags:
 - ipinfo
 comment: Query ipinfo.io regarding an IP address. Returns a table, or if a specific

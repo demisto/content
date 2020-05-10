@@ -42,7 +42,7 @@ script:
       description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Score
-      description: The indicator score.
+      description: The actual score.
       type: number
     - contextPath: DBotScore.Type
       description: The indicator type.
@@ -86,8 +86,8 @@ script:
     - contextPath: Flashpoint.IP.Event.Comment
       description: The comment that was provided when the indicator was observed.
       type: string
-    description: Looks up details of an IP indicator. The reputation of the IP address is considered malicious 
-      if there's at least one IOC event in the Flashpoint database that matches the IP indicator. 
+    description: Looks up details of an IP indicator. The reputation of the IP address is considered malicious
+      if there's at least one IOC event in the Flashpoint database that matches the IP indicator.
       Alternatively, the IP address is considered suspicious if it matches any one of the Torrent's Peer IP Address or Forum Visit's Peer IP Address.
   - name: domain
     arguments:
@@ -101,7 +101,7 @@ script:
       description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Score
-      description: The indicator score.
+      description: The actual score.
       type: number
     - contextPath: DBotScore.Type
       description: The indicator type.
@@ -145,7 +145,7 @@ script:
     - contextPath: Domain.Name
       description: Name of domain.
       type: string
-    description: Lookup the "Domain" type indicator details. The reputation of Domain is considered Malicious 
+    description: Lookup the "Domain" type indicator details. The reputation of Domain is considered Malicious
       if there's at least one IOC event in Flashpoint database matching the Domain indicator.
   - name: filename
     arguments:
@@ -159,7 +159,7 @@ script:
       description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Score
-      description: The indicator score.
+      description: The actual score.
       type: number
     - contextPath: DBotScore.Type
       description: The indicator type.
@@ -194,7 +194,7 @@ script:
     - contextPath: Flashpoint.Filename.Event.Comment
       description: The comment that was provided when the indicator was observed.
       type: string
-    description: Lookup the "Filename" type indicator details. The reputation of Filename is considered Malicious 
+    description: Lookup the "Filename" type indicator details. The reputation of Filename is considered Malicious
       if there's at least one IOC event in Flashpoint database matching the Filename indicator.
   - name: url
     arguments:
@@ -208,7 +208,7 @@ script:
       description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Score
-      description: The indicator score.
+      description: The actual score.
       type: number
     - contextPath: DBotScore.Type
       description: The indicator type.
@@ -249,7 +249,10 @@ script:
     - contextPath: URL.Malicious.Vendor
       description: Vendor of malicious url.
       type: string
-    description: Lookup the "URL" type indicator details. The reputation of Url is considered Malicious 
+    - contextPath: URL.Data
+      description: The URL
+      type: string
+    description: Lookup the "URL" type indicator details. The reputation of Url is considered Malicious
       if there's at least one IOC event in Flashpoint database matching the Url indicator.
   - name: file
     arguments:
@@ -263,7 +266,7 @@ script:
       description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Score
-      description: The indicator score.
+      description: The actual score.
       type: number
     - contextPath: DBotScore.Type
       description: The indicator type.
@@ -319,7 +322,7 @@ script:
     - contextPath: File.SHA256
       description: SHA256 type file.
       type: string
-    description: Lookup the "File" type indicator details. The reputation of File-hash is considered Malicious 
+    description: Lookup the "File" type indicator details. The reputation of File-hash is considered Malicious
       if there's at least one IOC event in Flashpoint database matching the File-hash indicator.
   - name: email
     arguments:
@@ -333,7 +336,7 @@ script:
       description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Score
-      description: The indicator score.
+      description: The actual score.
       type: number
     - contextPath: DBotScore.Type
       description: The indicator type.
@@ -374,7 +377,7 @@ script:
     - contextPath: Account.Email.Name
       description: Name of indicator.
       type: string
-    description: Lookup the "Email" type indicator details. The reputation of Email is considered Malicious 
+    description: Lookup the "Email" type indicator details. The reputation of Email is considered Malicious
       if there's at least one IOC event in Flashpoint database matching the Email indicator.
   - name: flashpoint-search-intelligence-reports
     arguments:
@@ -484,7 +487,7 @@ script:
       description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Score
-      description: The indicator score.
+      description: The actual score.
       type: number
     - contextPath: DBotScore.Type
       description: The indicator type.
@@ -562,7 +565,7 @@ script:
     arguments:
     - name: post_id
       required: true
-      description: The post ID, which gives post information embedded within the forum, room, user, and so on. To retrieve the post ID, run the flashpoint-search-forum-posts and see the value under the Flashpoint.Forum.Post.PostId context path. 
+      description: The post ID, which gives post information embedded within the forum, room, user, and so on. To retrieve the post ID, run the flashpoint-search-forum-posts and see the value under the Flashpoint.Forum.Post.PostId context path.
     outputs:
     - contextPath: Flashpoint.Forum.Post.Forum
       description: Forum details of the post, including id, hostname, stats, description,
@@ -605,7 +608,7 @@ script:
     - contextPath: Flashpoint.Forum.Post
       description: A list of forum posts based on the search keyword.
     description: Search forum posts using a keyword
-  dockerimage: demisto/python3:3.7.5.4583
+  dockerimage: demisto/python3:3.8.2.6981
   runonce: false
   subtype: python3
 tests:

@@ -1,6 +1,6 @@
 commonfields:
   id: ConferSetSeverity
-  version: 1
+  version: -1
 name: ConferSetSeverity
 script: |-
   # Severity levels are 4 - Critical, 3 - High, 2 - Medium, 1 - Low, 0 - Unknown
@@ -33,6 +33,7 @@ script: |-
   else:
       demisto.results('No details were found for the incident')
 type: python
+subtype: python2
 tags:
 - confer
 comment: Set incident severity according to indicators found in an confer alert

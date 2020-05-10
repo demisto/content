@@ -18,6 +18,7 @@ script: |
       'Note': note
   } )
 type: python
+subtype: python2
 tags: []
 comment: Display HTML in the War Room.
 system: true

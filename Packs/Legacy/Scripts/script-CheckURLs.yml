@@ -51,6 +51,7 @@ script: |-
           res.append('No URLs found within data. Nothing to check.')
   demisto.results(res)
 type: python
+subtype: python2
 tags:
 - server
 - threat-intel

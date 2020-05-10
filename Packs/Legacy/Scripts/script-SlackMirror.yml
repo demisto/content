@@ -5,6 +5,7 @@ name: SlackMirror
 script: |-
   demisto.results(demisto.executeCommand('slack-mirror-investigation', demisto.args()))
 type: python
+subtype: python2
 tags:
 - slack
 comment: Mirror an incident to a Slack private channel. You can chose what to mirror with the type argument. A Slack private channel will be created and the incident team invited. Messages on Slack will be reflected in the war room and vice versa.
