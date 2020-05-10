@@ -289,7 +289,7 @@
         },
         {
             "integrations": "Tufin",
-            "playbookID": "Tufin Test"
+            "playbookID": "Tufin-Test"
         },
         {
             "integrations": "Looker",
