@@ -2967,6 +2967,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "MITRE ATT&CK": "Using taxii2client package",
         "MongoDB": "Our instance not using SSL",
         "Cortex Data Lake": "Integration requires SSL",
         "Google Key Management Service": "The API requires an SSL secure connection to work.",
