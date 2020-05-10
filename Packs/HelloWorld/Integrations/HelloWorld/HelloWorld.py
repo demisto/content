@@ -57,7 +57,7 @@ can be returned in JSON or attachment file format.
 Info on GenericPolling: https://xsoar.pan.dev/docs/playbooks/generic-polling
 
 Please check the HelloWorld Design Document referenced above for details about
-the raw API responses as well as the design details for this integration.
+the raw API responsens as well as the design details for this integration.
 
 This integration also has a ``say-hello`` command for backward compatibility,
 that doesn't connect to an API and just returns a ``Hello {name}`` string,
