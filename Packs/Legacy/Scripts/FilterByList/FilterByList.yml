@@ -39,7 +39,7 @@ args:
   secret: false
 - default: false
   defaultValue: ','
-  description: A one-character string used to delimite fields. For example, a comma ",", should match the list separator configuration
+  description: A one-character string used to delimit fields. For example, a comma "," should match the list separator configuration.
   isArray: false
   name: delimiter
   required: false
