@@ -25,4 +25,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Continuously_Process_Survey_Response]https://github.com/demisto/content/blob/ec6cda315c0d1e15cf36a3c93cc936dd90dfbc48/Packs/CrisisManagement/doc_files/Continuously_Process_Survey_Responses.png?raw=true
+![Continuously_Process_Survey_Response]https://raw.githubusercontent.com/demisto/content/ec6cda315c0d1e15cf36a3c93cc936dd90dfbc48/Packs/CrisisManagement/doc_files/Continuously_Process_Survey_Responses.png
