@@ -45,6 +45,7 @@ threshold == 0.8 -> TP = 7  FP = 1 -> Precision = 0.875
 threshold == 0.9 -> TP = 0  FP = 1 -> Precision = 0
 '''
 
+
 def test_threshold_found_0(mocker):
     global y_true, y_pred
     [entry, _] = find_threshold(y_pred_str=json.dumps(y_pred),
@@ -137,4 +138,3 @@ def test_all_wrong_predictions_2(mocker):
                                 customer_target_precision=0,
                                 target_recall=0)
     assert entry['Contents']['threshold'] >= 0.5
-
